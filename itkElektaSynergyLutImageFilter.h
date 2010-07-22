@@ -1,5 +1,5 @@
-#ifndef __itkSynergyLutImageFilter_h
-#define __itkSynergyLutImageFilter_h
+#ifndef __itkElektaSynergyLutImageFilter_h
+#define __itkElektaSynergyLutImageFilter_h
 
 #include "itkLutImageFilter.h"
 #include <itkNumericTraits.h>
@@ -7,19 +7,19 @@
 namespace itk
 {
 
-/** \class SynergyLutImageFilter
- * \brief Lookup table for Synergy data.
+/** \class ElektaSynergyLutImageFilter
+ * \brief Lookup table for Elekta Synergy data.
  *
  * The lookup table converts the raw values to the logarithm of the value divided by the max
  *
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT SynergyLutImageFilter: public LutImageFilter<TInputImage, TOutputImage>
+class ITK_EXPORT ElektaSynergyLutImageFilter: public LutImageFilter<TInputImage, TOutputImage>
 {
 
 public:
   /** Standard class typedefs. */
-  typedef SynergyLutImageFilter Self;
+  typedef ElektaSynergyLutImageFilter Self;
   typedef LutImageFilter<TInputImage, TOutputImage> Superclass;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
@@ -32,21 +32,21 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(SynergyLutImageFilter, LutImageFilter);
+  itkTypeMacro(ElektaSynergyLutImageFilter, LutImageFilter);
 
 protected:
-  SynergyLutImageFilter();
-  virtual ~SynergyLutImageFilter() {}
+  ElektaSynergyLutImageFilter();
+  virtual ~ElektaSynergyLutImageFilter() {}
 
 private:
-  SynergyLutImageFilter(const Self&); //purposely not implemented
+  ElektaSynergyLutImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);        //purposely not implemented
 };
 
 } // end namespace itk
 
 template <class TInputImage, class TOutputImage>
-itk::SynergyLutImageFilter<TInputImage, TOutputImage>::SynergyLutImageFilter()
+itk::ElektaSynergyLutImageFilter<TInputImage, TOutputImage>::SynergyLutImageFilter()
 {
   // Create the lut
   typename LutType::Pointer lut = LutType::New();
