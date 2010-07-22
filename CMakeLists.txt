@@ -1,11 +1,18 @@
 #=========================================================
-# ReconTK = Reconstruction toolkit
-cmake_minimum_required(VERSION 2.4)
-cmake_policy(VERSION 2.4)
-if(COMMAND cmake_policy)
-    cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
-PROJECT(ReconTK)
+# RTK = Reconstruction toolkit
+PROJECT(RTK)
+#=========================================================
+
+#=========================================================
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6.0)
+
+## Tell CMake to be quiet
+CMAKE_POLICY (SET CMP0003 NEW)
+
+## Default to release
+IF (NOT CMAKE_BUILD_TYPE)
+  SET (CMAKE_BUILD_TYPE Release)
+ENDIF (NOT CMAKE_BUILD_TYPE)
 #=========================================================
 
 #=========================================================
@@ -18,8 +25,23 @@ ELSE(ITK_FOUND)
 ENDIF(ITK_FOUND)
 #=========================================================
 
-ADD_EXECUTABLE(synergylut synergylut.cxx itkHisImageIO.cxx itkHisImageIOFactory.cxx)
-TARGET_LINK_LIBRARIES(synergylut ITKIO)
+#=========================================================
+ADD_LIBRARY(rtkIO STATIC
+            itkHisImageIO.cxx
+            itkHisImageIOFactory.cxx
+            itkHndImageIO.cxx
+            itkHndImageIOFactory.cxx)
+TARGET_LINK_LIBRARIES(rtkIO ITKIO)
+#=========================================================
 
-ADD_EXECUTABLE(synergyramp synergyramp.cxx itkHisImageIO.cxx itkHisImageIOFactory.cxx)
-TARGET_LINK_LIBRARIES(synergyramp ITKIO ITKAlgorithms)
+#=========================================================
+ADD_EXECUTABLE(rtkprojections rtkprojections.cxx)
+TARGET_LINK_LIBRARIES(rtkprojections rtkIO)
+#=========================================================
+
+#=========================================================
+ADD_EXECUTABLE(rtkramp rtkramp.cxx)
+TARGET_LINK_LIBRARIES(rtkramp rtkIO ITKAlgorithms)
+#=========================================================
+
+
