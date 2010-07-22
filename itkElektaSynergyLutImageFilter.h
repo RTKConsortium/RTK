@@ -46,7 +46,7 @@ private:
 } // end namespace itk
 
 template <class TInputImage, class TOutputImage>
-itk::ElektaSynergyLutImageFilter<TInputImage, TOutputImage>::SynergyLutImageFilter()
+itk::ElektaSynergyLutImageFilter<TInputImage, TOutputImage>::ElektaSynergyLutImageFilter()
 {
   // Create the lut
   typename LutType::Pointer lut = LutType::New();
