@@ -80,7 +80,7 @@ void ProjectionsReader<TOutputImage>
       m_RawDataReader = reader;
 
       // Convert raw to Projections
-      typedef itk::SynergyLutImageFilter<InputImageType, OutputImageType> lutFilterType;
+      typedef itk::ElektaSynergyLutImageFilter<InputImageType, OutputImageType> lutFilterType;
       typename lutFilterType::Pointer lutFilter = lutFilterType::New();
       lutFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = lutFilter;
