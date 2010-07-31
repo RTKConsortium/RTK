@@ -26,6 +26,14 @@ ENDIF(ITK_FOUND)
 #=========================================================
 
 #=========================================================
+SET (RTK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+SET (RTK_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR})
+SET (RTK_LIBRARIES rtkIO)
+CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/RTKconfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/RTKconfig.cmake)
+#=========================================================
+
+#=========================================================
 ADD_LIBRARY(rtkIO STATIC
             itkHisImageIO.cxx
             itkHisImageIOFactory.cxx
