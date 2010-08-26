@@ -1,3 +1,4 @@
+#include "rtkramp_ggo.h"
 #include "itkProjectionsReader.h"
 #include "itkFFTRampImageFilter.h"
 
@@ -8,12 +9,7 @@
 
 int main(int argc, char * argv[])
 {
-  if( argc < 4 ) {
-    std::cerr << "Read projections, ramp filter them and write the result to a single 3D." << std::endl;
-    std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " directory regularExp outputImageFile " << std::endl;
-    return EXIT_FAILURE;
-  }
+  GGO(rtkramp, args_info);
 
   typedef double OutputPixelType;
   const unsigned int Dimension = 3;
@@ -22,9 +18,9 @@ int main(int argc, char * argv[])
 
   // Generate file names
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(argv[1]);
+  names->SetDirectory(args_info.path_arg);
   names->SetNumericSort(false);
-  names->SetRegularExpression(argv[2]);
+  names->SetRegularExpression(args_info.regexp_arg);
   names->SetSubMatch(0);
 
   // Projections reader
@@ -40,7 +36,7 @@ int main(int argc, char * argv[])
   // Write
   typedef itk::ImageFileWriter<  OutputImageType >  WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( argv[3] );
+  writer->SetFileName( args_info.output_arg );
   writer->SetInput( rampFilter->GetOutput() );
   writer->UpdateOutputInformation();
   writer->SetNumberOfStreamDivisions( 1 + rampFilter->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );

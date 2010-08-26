@@ -34,6 +34,11 @@ CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/RTKconfig.cmake.in
 #=========================================================
 
 #=========================================================
+SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+FIND_PACKAGE(Gengetopt)
+#=========================================================
+
+#=========================================================
 ADD_LIBRARY(rtkIO STATIC
             itkHisImageIO.cxx
             itkHisImageIOFactory.cxx
@@ -43,12 +48,14 @@ TARGET_LINK_LIBRARIES(rtkIO ITKIO)
 #=========================================================
 
 #=========================================================
-ADD_EXECUTABLE(rtkprojections rtkprojections.cxx)
+WRAP_GGO(rtkprojections_GGO_C rtkprojections.ggo)
+ADD_EXECUTABLE(rtkprojections rtkprojections.cxx ${rtkprojections_GGO_C})
 TARGET_LINK_LIBRARIES(rtkprojections rtkIO)
 #=========================================================
 
 #=========================================================
-ADD_EXECUTABLE(rtkramp rtkramp.cxx)
+WRAP_GGO(rtkramp_GGO_C rtkramp.ggo)
+ADD_EXECUTABLE(rtkramp rtkramp.cxx ${rtkramp_GGO_C})
 TARGET_LINK_LIBRARIES(rtkramp rtkIO ITKAlgorithms)
 #=========================================================
 
