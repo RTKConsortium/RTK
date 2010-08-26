@@ -1,4 +1,6 @@
 #include "rtkprojections_ggo.h"
+#include "rtkMacro.h"
+
 #include "itkProjectionsReader.h"
 
 #include <itkImageFileWriter.h>

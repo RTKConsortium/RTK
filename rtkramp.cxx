@@ -1,4 +1,6 @@
 #include "rtkramp_ggo.h"
+#include "rtkMacro.h"
+
 #include "itkProjectionsReader.h"
 #include "itkFFTRampImageFilter.h"
 
