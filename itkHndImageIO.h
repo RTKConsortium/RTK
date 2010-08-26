@@ -108,9 +108,6 @@ virtual void WriteImageInformation() { WriteImageInformation(false); }
 virtual bool CanWriteFile(const char* filename);
 virtual void Write(const void* buffer);
 
-protected:
-int m_HeaderSize;
-
 }; // end class HndImageIO
 
 } // end namespace
