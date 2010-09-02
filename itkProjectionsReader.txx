@@ -11,6 +11,7 @@
 // Elekta Synergy includes
 #include "itkHisImageIOFactory.h"
 #include "itkElektaSynergyLutImageFilter.h"
+#include "itkElektaSynergyRawImageFilter.h"
 
 namespace itk
 {
@@ -80,12 +81,20 @@ void ProjectionsReader<TOutputImage>
       reader->SetFileNames( this->GetFileNames() );
       m_RawDataReader = reader;
 
+#if 1
       // Convert raw to Projections
       typedef itk::ElektaSynergyLutImageFilter<InputImageType, OutputImageType> lutFilterType;
       typename lutFilterType::Pointer lutFilter = lutFilterType::New();
       lutFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = lutFilter;
-      }
+#else
+      // Idem but uses a point-by-point operation instead of a lut
+      typedef itk::ElektaSynergyRawImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+      rawFilter->SetInput( reader->GetOutput() );
+      m_RawToProjectionsFilter = rawFilter;
+#endif
+    }
     else
       {
       ///////////// Default: whatever the format, we assume that we directly read the Projections
