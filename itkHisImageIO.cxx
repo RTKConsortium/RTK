@@ -61,6 +61,12 @@ void itk::HisImageIO::ReadImageInformation()
   SetDimensions(1, brx-ulx+1);
   if (nrframes>1)
     SetDimensions(2, nrframes);
+
+  SetSpacing(0, 409.6/GetDimensions(0));
+  SetSpacing(1, 409.6/GetDimensions(1));
+
+  SetOrigin(0, -0.5*(GetDimensions(0)-1)*GetSpacing(0));
+  SetOrigin(1, -0.5*(GetDimensions(1)-1)*GetSpacing(1));
 } ////
 
 //--------------------------------------------------------------------
