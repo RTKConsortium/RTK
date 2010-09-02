@@ -1,0 +1,12 @@
+package "rtk"
+version "Creates an RTK geometry file from simulated/regular trajectory."
+
+option "config"      - "Config file"                                           string          no
+
+option "output"      o "Output file name"                                      string          yes
+option "first_angle" f "First angle (°)"                                       double          no  default="0"
+option "nproj"       n "Number of projections"                                 int             yes
+option "arc"         a "Angular arc covevered by the acquisition (°)"          double          no  default="360"
+option "sdd"         - "Source to detector distance (mm)"                      double          no  default="1536"
+option "sid"         - "Source to isocenter distance (mm)"                     double          no  default="1000"
+

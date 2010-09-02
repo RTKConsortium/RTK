@@ -16,6 +16,20 @@ ENDIF (NOT CMAKE_BUILD_TYPE)
 #=========================================================
 
 #=========================================================
+# Help function to debug CMake
+MACRO (DD in)
+  MESSAGE(${in}=${${in}})
+ENDMACRO(DD)
+#=========================================================
+
+#=========================================================
+# Remove some MS Visual c++ flags
+IF(MSVC)
+  ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)
+ENDIF(MSVC)
+#=========================================================
+
+#=========================================================
 # Find ITK (required)
 FIND_PACKAGE(ITK)
 IF(ITK_FOUND)
@@ -43,7 +57,10 @@ ADD_LIBRARY(rtkIO STATIC
             itkHisImageIO.cxx
             itkHisImageIOFactory.cxx
             itkHndImageIO.cxx
-            itkHndImageIOFactory.cxx)
+            itkHndImageIOFactory.cxx
+            rtkHomogeneousMatrix.cxx
+            rtkThreeDCircularGeometry.cxx
+            rtkThreeDCircularGeometryXMLFile.cxx)
 TARGET_LINK_LIBRARIES(rtkIO ITKIO)
 #=========================================================
 
@@ -58,5 +75,24 @@ WRAP_GGO(rtkramp_GGO_C rtkramp.ggo)
 ADD_EXECUTABLE(rtkramp rtkramp.cxx ${rtkramp_GGO_C})
 TARGET_LINK_LIBRARIES(rtkramp rtkIO ITKAlgorithms)
 #=========================================================
+
+#=========================================================
+#All the executables below are meant to create RTK ThreeDCircularGeometry files
+
+WRAP_GGO(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo)
+ADD_EXECUTABLE(rtkvarianobigeometry rtkvarianobigeometry.cxx rtkVarianObiXMLFileReader.cxx ${rtkvarianobigeometry_GGO_C})
+TARGET_LINK_LIBRARIES(rtkvarianobigeometry rtkIO)
+
+WRAP_GGO(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo)
+ADD_EXECUTABLE(rtksimulatedgeometry rtksimulatedgeometry.cxx ${rtksimulatedgeometry_GGO_C})
+TARGET_LINK_LIBRARIES(rtksimulatedgeometry rtkIO)
+
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
+ADD_SUBDIRECTORY(xbase)
+WRAP_GGO(rtkelektasynergygeometry_GGO_C rtkelektasynergygeometry.ggo)
+ADD_EXECUTABLE(rtkelektasynergygeometry rtkelektasynergygeometry.cxx ${rtkelektasynergygeometry_GGO_C})
+TARGET_LINK_LIBRARIES(rtkelektasynergygeometry rtkIO rtkXbase)
+#=========================================================
+
 
 
