@@ -100,5 +100,9 @@ ADD_EXECUTABLE(rtkfdk rtkfdk.cxx ${rtkfdk_GGO_C})
 TARGET_LINK_LIBRARIES(rtkfdk rtkIO ITKAlgorithms)
 #=========================================================
 
-
+#=========================================================
+WRAP_GGO(rtkamsterdamshroud_GGO_C rtkamsterdamshroud.ggo)
+ADD_EXECUTABLE(rtkamsterdamshroud rtkamsterdamshroud.cxx ${rtkamsterdamshroud_GGO_C})
+TARGET_LINK_LIBRARIES(rtkamsterdamshroud rtkIO)
+#=========================================================
 
