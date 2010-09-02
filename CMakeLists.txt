@@ -94,5 +94,11 @@ ADD_EXECUTABLE(rtkelektasynergygeometry rtkelektasynergygeometry.cxx ${rtkelekta
 TARGET_LINK_LIBRARIES(rtkelektasynergygeometry rtkIO rtkXbase)
 #=========================================================
 
+#=========================================================
+WRAP_GGO(rtkfdk_GGO_C rtkfdk.ggo)
+ADD_EXECUTABLE(rtkfdk rtkfdk.cxx ${rtkfdk_GGO_C})
+TARGET_LINK_LIBRARIES(rtkfdk rtkIO ITKAlgorithms)
+#=========================================================
+
 
 
