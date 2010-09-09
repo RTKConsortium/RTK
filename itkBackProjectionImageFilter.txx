@@ -46,7 +46,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 }
 
 /**
- * GenerateData Performs the accumulation
+ * GenerateData performs the accumulation
  */
 template <class TInputImage, class TOutputImage>
 void
