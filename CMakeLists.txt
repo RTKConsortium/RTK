@@ -87,11 +87,9 @@ WRAP_GGO(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo)
 ADD_EXECUTABLE(rtksimulatedgeometry rtksimulatedgeometry.cxx ${rtksimulatedgeometry_GGO_C})
 TARGET_LINK_LIBRARIES(rtksimulatedgeometry rtkIO)
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
-ADD_SUBDIRECTORY(xbase)
 WRAP_GGO(rtkelektasynergygeometry_GGO_C rtkelektasynergygeometry.ggo)
-ADD_EXECUTABLE(rtkelektasynergygeometry rtkelektasynergygeometry.cxx ${rtkelektasynergygeometry_GGO_C})
-TARGET_LINK_LIBRARIES(rtkelektasynergygeometry rtkIO rtkXbase)
+ADD_EXECUTABLE(rtkelektasynergygeometry rtkelektasynergygeometry.cxx rtkDbf.cxx ${rtkelektasynergygeometry_GGO_C})
+TARGET_LINK_LIBRARIES(rtkelektasynergygeometry rtkIO)
 #=========================================================
 
 #=========================================================
