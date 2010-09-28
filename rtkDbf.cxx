@@ -73,10 +73,11 @@ DbfFile::~DbfFile()
 
 bool DbfFile::ReadNextRecord()
 {
-//  do{
+  do
+    {
     m_Stream.read(m_Record, m_RecordSize);
-//  }
-//  while(m_Stream.gcount() == m_RecordSize /*&& m_Record[0] == '*'*/);
+    }
+  while(m_Stream.gcount() == m_RecordSize && m_Record[0] == 0x2A);
   return m_Stream.gcount() == m_RecordSize;
 }
 
