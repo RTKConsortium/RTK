@@ -61,31 +61,45 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
   interpolator->SetInputImage( inputPtr );
 
-  InputImagePointType point2D;
-  OutputImagePointType point3D;
-
-  for(unsigned int iProj=0; iProj<inputPtr->GetLargestPossibleRegion().GetSize(2); iProj+=1+this->m_SkipProjection)
+  // Compute two matrices to go from index to phyisal point and vice-versa
+  const unsigned int Dimension = TInputImage::ImageDimension;
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol  = GetIndexToPhysicalPointMatrix< OutputImageType >(outputPtr);
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixTmp = GetPhysicalPointToIndexMatrix< InputImageType >(inputPtr);
+  itk::Matrix<double, Dimension, Dimension> matrixProj;
+  for(unsigned int i=0; i<Dimension-1; i++)
     {
+    for(unsigned int j=0; j<Dimension-1; j++)
+      matrixProj[i][j] = matrixTmp[i][j];
+    matrixProj[i][Dimension-1] = matrixTmp[i][Dimension];
+    }
+  matrixProj[Dimension-1][Dimension-1] = 1.0;
+
+  ContinuousIndex<double, Dimension> pointProj;
+  for(unsigned int iProj=0; iProj<inputPtr->GetLargestPossibleRegion().GetSize(Dimension-1); iProj+=1+this->m_SkipProjection)
+    {
+    // Create an index to index projection matrix instead of the physical point 
+    // to physical point projection matrix provided by Geometry
+    rtk::Geometry<Dimension>::MatrixType matrix = matrixProj.GetVnlMatrix() *
+                                                  this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
+                                                  matrixVol.GetVnlMatrix();
     typedef ImageRegionIteratorWithIndex<TOutputImage> RegionIterator;
     RegionIterator it(this->GetOutput(), outputRegionForThread);
     while(!it.IsAtEnd())
       {
-      outputPtr->TransformIndexToPhysicalPoint( it.GetIndex(), point3D );
-
-      point2D.Fill(0.0);
-      for(unsigned int i=0; i<3; i++)
+      pointProj.Fill(0.0);
+      for(unsigned int i=0; i<Dimension; i++)
         {
-        for(unsigned int j=0; j<3; j++)
-          point2D[i] += this->m_Geometry->GetMatrices()[iProj][i][j] * point3D[j];
-        point2D[i] += this->m_Geometry->GetMatrices()[iProj][i][3];        
+        for(unsigned int j=0; j<Dimension; j++)
+          pointProj[i] += matrix[i][j] * it.GetIndex()[j];
+        pointProj[i] += matrix[i][Dimension];        
         }
 
-      point2D[0] = point2D[0]/point2D[2];
-      point2D[1] = point2D[1]/point2D[2];
-      point2D[2] = iProj;
+      for(unsigned int i=0; i<Dimension-1; i++)
+        pointProj[i] = pointProj[i]/pointProj[Dimension-1];
+      pointProj[Dimension-1] = iProj;
 
-      if( interpolator->IsInsideBuffer( point2D ) )
-        it.Set( it.Get() + interpolator->Evaluate( point2D ) );
+      if( interpolator->IsInsideBuffer( pointProj ) )
+        it.Set( it.Get() + interpolator->EvaluateAtContinuousIndex( pointProj ) );
 
       ++it;
       }
