@@ -2,6 +2,7 @@
 #define RTKHOMOGENEOUSMATRIX_H
 
 #include <itkMatrix.h>
+#include <itkImage.h>
 
 //--------------------------------------------------------------------
 itk::Matrix< double, 3, 3 >
@@ -23,6 +24,45 @@ GetProjectionMagnificationMatrix( double sdd, double sid )
   matrix[TDimension-1][TDimension-1] = 1.0;
   matrix[TDimension-1][TDimension  ] = sid;
   return matrix;
+}
+
+//--------------------------------------------------------------------
+/** Get IndexToPhysicalPoint matrix from an image (no accessor provided by ITK) */
+//template <class TPixel, unsigned int VImageDimension>
+template <class TImageType>
+itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>
+GetIndexToPhysicalPointMatrix(const typename TImageType::Pointer image)
+{
+  const unsigned int Dimension = TImageType::ImageDimension;
+  itk::Matrix<double, Dimension + 1, Dimension + 1> matrix;
+  matrix.Fill(0.0);
+
+  itk::Index<Dimension> index;
+  itk::Point<TImageType::PixelType, Dimension> point;
+
+  for(unsigned int j=0; j<Dimension; j++)
+    {
+    index.Fill(0);
+    index[j] = 1;
+    image->TransformIndexToPhysicalPoint(index,point);
+    for(unsigned int i=0; i<Dimension; i++)
+      matrix[i][j] = point[i]-image->GetOrigin()[i];
+    }
+  for(unsigned int i=0; i<Dimension; i++)
+    matrix[i][Dimension] = image->GetOrigin()[i];
+  matrix[Dimension][Dimension] = 1.0;
+
+  return matrix;
+}
+
+//--------------------------------------------------------------------
+/** Get PhysicalPointToIndex matrix from an image (no accessor provided by ITK) */
+//template <class TPixel, unsigned int VImageDimension>
+template <class TImageType>
+itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>
+GetPhysicalPointToIndexMatrix(const typename TImageType::Pointer image)
+{
+  return GetIndexToPhysicalPointMatrix<TImageType>(image).GetInverse();
 }
 
 #endif // RTKHOMOGENEOUSMATRIX_H
