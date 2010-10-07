@@ -89,6 +89,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     // Extract the current slice
     region.SetIndex(Dimension-1, iProj);
     extractFilter->SetExtractionRegion(region);
+    extractFilter->Update();
 
     // Create an index to index projection matrix instead of the physical point 
     // to physical point projection matrix provided by Geometry
