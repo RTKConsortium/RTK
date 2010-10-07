@@ -97,7 +97,7 @@ WriteFile()
     output << std::endl;
     output << indent << indent;
     this->WriteStartElement("ProjectionOffsetY",output);
-    output << this->m_InputObject->GetProjectionOffsetsX()[i];
+    output << this->m_InputObject->GetProjectionOffsetsY()[i];
     this->WriteEndElement("ProjectionOffsetY",output);
     output << std::endl;
 
