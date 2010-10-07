@@ -4,6 +4,7 @@
 #include "itkBackProjectionImageFilter.h"
 #include "itkProjectionsReader.h"
 #include "itkFFTRampImageFilter.h"
+#include "itkFDKWeightProjectionFilter.h"
 
 #include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -32,10 +33,21 @@ int main(int argc, char * argv[])
   reader->SetFileNames( names->GetFileNames() );
   reader->GenerateOutputInformation();
 
+  // Geometry
+  rtk::ThreeDCircularGeometryXMLFileReader::Pointer geometryReader = rtk::ThreeDCircularGeometryXMLFileReader::New();
+  geometryReader->SetFilename(args_info.geometry_arg);
+  geometryReader->GenerateOutputInformation();
+
+  // Weight projections according to fdk algorithm
+  typedef itk::FDKWeightProjectionFilter< OutputImageType > WeightFilterType;
+  WeightFilterType::Pointer weightFilter = WeightFilterType::New();
+  weightFilter->SetInput( reader->GetOutput() );
+  weightFilter->SetSourceToDetectorDistance( geometryReader->GetOutputObject()->GetSourceToDetectorDistance() );
+
   // Ramp filter
   typedef itk::FFTRampImageFilter<OutputImageType> RampFilterType;
   RampFilterType::Pointer rampFilter = RampFilterType::New();
-  rampFilter->SetInput( reader->GetOutput() );
+  rampFilter->SetInput( weightFilter->GetOutput() );
 
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
@@ -51,11 +63,6 @@ int main(int argc, char * argv[])
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
   }
-
-  // Geometry
-  rtk::ThreeDCircularGeometryXMLFileReader::Pointer geometryReader = rtk::ThreeDCircularGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  geometryReader->GenerateOutputInformation();
 
   // Backprojection
   typedef itk::BackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
