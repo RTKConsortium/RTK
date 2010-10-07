@@ -91,16 +91,16 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   kernel->Allocate();
   kernel->FillBuffer(0.);
 
-  // Compute kernel in space domain
-  // (see Kak & Slaney, chapter 3 page 91 equation 124)
+  // Compute kernel in space domain (see Kak & Slaney, chapter 3 equation 61 page 72)
+  // although spacing is not squared according to equation 69 page 75
   const double spacing = this->GetInput()->GetSpacing()[0];
   IndexType i,j;
   i.Fill(0);
   j.Fill(0);
-  kernel->SetPixel(i, 1./(4.*spacing*spacing));
-  for(i[0]=1, j[0]=size[0]-1; i[0] < typename IndexType::IndexValueType(size[0]/2); i[0]+=2, j[0]-=2) {
-    double v = i[0] * vnl_math::pi * spacing;
-    v = -1. / (v*v);
+  kernel->SetPixel(i, 1./(4.*spacing));
+  for(i[0]=1, j[0]=size[0]-1; i[0] < typename IndexType::IndexValueType(size[0]/4); i[0]+=2, j[0]-=2) {
+    double v = i[0] * vnl_math::pi;
+    v = -1. / (v * v * spacing);
     kernel->SetPixel(i, v);
     kernel->SetPixel(j, v);
   }
