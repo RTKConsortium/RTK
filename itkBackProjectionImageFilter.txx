@@ -3,6 +3,7 @@
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
+#include <itkExtractImageFilter.h>
 
 namespace itk
 {
@@ -54,52 +55,68 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, 
                        int threadId )
 {
-  InputImagePointer inputPtr = const_cast< TInputImage * >( this->GetInput() );
+  const unsigned int Dimension = TInputImage::ImageDimension;
+
   OutputImagePointer outputPtr = this->GetOutput();
 
-  typedef itk::LinearInterpolateImageFunction< TInputImage, double > InterpolatorType;
+  // The input is a stack of projections, we need to extract only one projection
+  // for efficiency during interpolation
+  typedef itk::Image<TInputImage::PixelType, Dimension-1> ProjectionImageType;
+  typedef itk::ExtractImageFilter< TInputImage, ProjectionImageType > ExtractFilterType;
+  ExtractFilterType::Pointer extractFilter = ExtractFilterType::New();
+  extractFilter->SetInput(this->GetInput());
+  ExtractFilterType::InputImageRegionType region = this->GetInput()->GetLargestPossibleRegion();
+  const unsigned int nProj = region.GetSize(Dimension-1);
+  region.SetSize(Dimension-1, 0);
+  extractFilter->SetExtractionRegion(region);
+  extractFilter->Update();
+
+  // Create interpolator, could be any interpolation
+  typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  interpolator->SetInputImage( inputPtr );
+  interpolator->SetInputImage( extractFilter->GetOutput() );
 
   // Compute two matrices to go from index to phyisal point and vice-versa
-  const unsigned int Dimension = TInputImage::ImageDimension;
   itk::Matrix<double, Dimension+1, Dimension+1> matrixVol  = GetIndexToPhysicalPointMatrix< OutputImageType >(outputPtr);
-  itk::Matrix<double, Dimension+1, Dimension+1> matrixTmp = GetPhysicalPointToIndexMatrix< InputImageType >(inputPtr);
-  itk::Matrix<double, Dimension, Dimension> matrixProj;
-  for(unsigned int i=0; i<Dimension-1; i++)
-    {
-    for(unsigned int j=0; j<Dimension-1; j++)
-      matrixProj[i][j] = matrixTmp[i][j];
-    matrixProj[i][Dimension-1] = matrixTmp[i][Dimension];
-    }
-  matrixProj[Dimension-1][Dimension-1] = 1.0;
+  itk::Matrix<double, Dimension, Dimension> matrixProj = GetPhysicalPointToIndexMatrix< ProjectionImageType >(extractFilter->GetOutput());
 
-  ContinuousIndex<double, Dimension> pointProj;
-  for(unsigned int iProj=0; iProj<inputPtr->GetLargestPossibleRegion().GetSize(Dimension-1); iProj+=1+this->m_SkipProjection)
+  // Continuous index at which we interpolate
+  ContinuousIndex<double, Dimension-1> pointProj;
+
+  // Go over each projection
+  for(unsigned int iProj=0; iProj<nProj; iProj+=1+this->m_SkipProjection)
     {
+    // Extract the current slice
+    region.SetIndex(Dimension-1, iProj);
+    extractFilter->SetExtractionRegion(region);
+
     // Create an index to index projection matrix instead of the physical point 
     // to physical point projection matrix provided by Geometry
     rtk::Geometry<Dimension>::MatrixType matrix = matrixProj.GetVnlMatrix() *
                                                   this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
                                                   matrixVol.GetVnlMatrix();
+    // Go over each voxel
     typedef ImageRegionIteratorWithIndex<TOutputImage> RegionIterator;
     RegionIterator it(this->GetOutput(), outputRegionForThread);
     while(!it.IsAtEnd())
       {
-      pointProj.Fill(0.0);
-      for(unsigned int i=0; i<Dimension; i++)
+      // Compute projection index
+      for(unsigned int i=0; i<Dimension-1; i++)
         {
+        pointProj[i] = matrix[i][Dimension];
         for(unsigned int j=0; j<Dimension; j++)
           pointProj[i] += matrix[i][j] * it.GetIndex()[j];
-        pointProj[i] += matrix[i][Dimension];        
         }
-
+      double perspFactor = matrix[Dimension-1][Dimension];
+      for(unsigned int j=0; j<Dimension; j++)
+        perspFactor += matrix[Dimension-1][j] * it.GetIndex()[j];
+      perspFactor = 1/perspFactor;
       for(unsigned int i=0; i<Dimension-1; i++)
-        pointProj[i] = pointProj[i]/pointProj[Dimension-1];
-      pointProj[Dimension-1] = iProj;
+        pointProj[i] = pointProj[i]*perspFactor;
 
-      if( interpolator->IsInsideBuffer( pointProj ) )
-        it.Set( it.Get() + interpolator->EvaluateAtContinuousIndex( pointProj ) );
+      // Interpolate if in projection
+      if( interpolator->IsInsideBuffer(pointProj) )
+        it.Set( it.Get() + interpolator->EvaluateAtContinuousIndex(pointProj) );
 
       ++it;
       }
