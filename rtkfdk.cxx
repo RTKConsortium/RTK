@@ -1,5 +1,6 @@
 #include "rtkfdk_ggo.h"
 #include "rtkThreeDCircularGeometryXMLFile.h"
+#include "rtkGgoFunctions.h"
 
 #include "itkBackProjectionImageFilter.h"
 #include "itkProjectionsReader.h"
@@ -64,12 +65,16 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
+  // Create reconstructed volume
+  OutputImageType::Pointer tomography = rtk::CreateImageFromGgo<OutputImageType>(args_info);
+
   // Backprojection
   typedef itk::BackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
   BackProjectionFilterType::Pointer bpFilter = BackProjectionFilterType::New();
-  bpFilter->SetInput( streamer->GetOutput() );
+  bpFilter->SetInput( 0, tomography );
+  bpFilter->SetInput( 1, streamer->GetOutput() );
   bpFilter->SetGeometry( geometryReader->GetOutputObject() );
-  bpFilter->SetFromGengetopt(args_info);
+  bpFilter->SetInPlace( true );
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType >  WriterType;
