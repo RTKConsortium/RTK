@@ -8,7 +8,6 @@ option "regexp"		 r	"Regular expression to select projection files in path"		  s
 option "output"    o "Output file name"                                          string    yes
 
 section "Backprojection"
-option "skip_proj" s "Skip projections"          int       no   default="0"
 option "origin"    - "Origin (default=centered)" double multiple no
 option "dimension" - "Dimension"                 int    multiple no  default="256"
 option "spacing"   - "Spacing"                   double multiple no  default="1"
