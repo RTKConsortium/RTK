@@ -5,7 +5,9 @@
 #include "itkImageIOBase.h"
 
 #if defined (_MSC_VER) && (_MSC_VER < 1600)
-#include "msinttypes/stdint.h"
+//SR: taken from
+//#include "msinttypes/stdint.h"
+typedef unsigned int uint32_t;
 #else
 #include <stdint.h>
 #endif
