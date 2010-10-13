@@ -6,13 +6,26 @@
 
 namespace itk
 {
+template <class TInputImage, class TOutputImage>
+void
+FDKWeightProjectionFilter<TInputImage, TOutputImage>
+::EnlargeOutputRequestedRegion( DataObject *output )
+{
+  TOutputImage::RegionType region = this->GetOutput()->GetRequestedRegion();
+  for(unsigned int i=0; i<WeightImageType::ImageDimension; i++)
+    {
+    region.SetIndex(i, 0);
+    region.SetSize(i, this->GetOutput()->GetLargestPossibleRegion().GetSize()[i]);
+    }
+  this->GetOutput()->SetRequestedRegion(region);
+}
 
 template <class TInputImage, class TOutputImage>
 void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  // Compute weights image parameters (== one project, i.e. one slice of the input)
+  // Compute weights image parameters (== one projection, i.e. one slice of the input)
   WeightImageType::SizeType size;
   WeightImageType::SpacingType spacing;
   WeightImageType::PointType origin;
@@ -57,11 +70,6 @@ void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId)
 {
-  // Check that the number of pixels of the region is consistent with m_WeightImage
-  if(m_WeightsImage->GetLargestPossibleRegion().GetNumberOfPixels() !=
-     outputRegionForThread.GetNumberOfPixels() / outputRegionForThread.GetSize()[outputRegionForThread.ImageDimension-1])
-    itkGenericExceptionMacro(<< "FDKWeightProjectionFilter::ThreadedGenerateData: outputRegionForThread does not contain full slices");
-
   // Prepare iterators
   typedef ImageRegionConstIterator<InputImageType> InputConstIterator;
   InputConstIterator itI(this->GetInput(), outputRegionForThread);

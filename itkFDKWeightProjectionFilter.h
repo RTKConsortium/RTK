@@ -1,7 +1,7 @@
 #ifndef __itkFDKWeightProjectionFilter_h
 #define __itkFDKWeightProjectionFilter_h
 
-#include "itkImageToImageFilter.h"
+#include "itkInPlaceImageFilter.h"
 
 /** \class FDKWeightProjectionFilter
  * \brief Weighting of projections to correct for the divergence in
@@ -14,7 +14,7 @@ namespace itk
 
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT FDKWeightProjectionFilter :
-  public ImageToImageFilter<TInputImage, TOutputImage>
+  public InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
@@ -41,11 +41,12 @@ public:
   itkGetMacro(SourceToDetectorDistance, double);
 
 protected:
-  FDKWeightProjectionFilter():m_WeightsImage(NULL), m_CurrentSDD(-1){}
+  FDKWeightProjectionFilter():m_WeightsImage(NULL), m_CurrentSDD(-1){ this->SetInPlace(true); }
   ~FDKWeightProjectionFilter(){}
 
-  void BeforeThreadedGenerateData();
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId);
+  virtual void EnlargeOutputRequestedRegion( DataObject *output );
+  virtual void BeforeThreadedGenerateData();
+  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId);
 
 private:
   FDKWeightProjectionFilter(const Self&); //purposely not implemented
