@@ -32,7 +32,7 @@ public:
   itkSetMacro(Geometry, GeometryPointer);
 
 protected:
-  BackProjectionImageFilter() {this->SetNumberOfRequiredInputs(2);};
+  BackProjectionImageFilter() {this->SetNumberOfRequiredInputs(2); this->SetInPlace( true ); };
   virtual ~BackProjectionImageFilter() {};
 
   /** Apply changes to the input image requested region. */
