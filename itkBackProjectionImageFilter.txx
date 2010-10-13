@@ -13,12 +13,14 @@ void
 BackProjectionImageFilter<TInputImage,TOutputImage>
 ::GenerateInputRequestedRegion()
 {
+  // Input 0 is the volume in which we backproject
   typename Superclass::InputImagePointer inputPtr0 =
     const_cast< TInputImage * >( this->GetInput(0) );
   if ( !inputPtr0 )
     return;
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
+  // Input 1 is the stack of projections to backproject
   typename Superclass::InputImagePointer  inputPtr1 =
     const_cast< TInputImage * >( this->GetInput(1) );
   if ( !inputPtr1 )
@@ -82,8 +84,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
                                                   matrixVol.GetVnlMatrix();
 
     // Go over each voxel
-    itIn.Begin();
-    itOut.Begin();
+    itIn.GoToBegin();
+    itOut.GoToBegin();
     while(!itIn.IsAtEnd())
       {
       // Compute projection index
