@@ -10,7 +10,8 @@ Get2DRigidTransformationHomogeneousMatrix( double angleX, double transX, double 
 
 //--------------------------------------------------------------------
 itk::Matrix< double, 4, 4 >
-Get3DRigidTransformationHomogeneousMatrix( double angleX, double angleY, double angleZ, double transX, double transY, double transZ );
+Get3DRigidTransformationHomogeneousMatrix( double angleX, double angleY, double angleZ,
+                                           double transX, double transY, double transZ );
 
 //--------------------------------------------------------------------
 template< unsigned int TDimension >
@@ -31,7 +32,7 @@ GetProjectionMagnificationMatrix( double sdd, double sid )
 //template <class TPixel, unsigned int VImageDimension>
 template <class TImageType>
 itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>
-GetIndexToPhysicalPointMatrix(const typename TImageType::Pointer image)
+GetIndexToPhysicalPointMatrix(const TImageType *image)
 {
   const unsigned int Dimension = TImageType::ImageDimension;
   itk::Matrix<double, Dimension + 1, Dimension + 1> matrix;
@@ -60,7 +61,7 @@ GetIndexToPhysicalPointMatrix(const typename TImageType::Pointer image)
 //template <class TPixel, unsigned int VImageDimension>
 template <class TImageType>
 itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>
-GetPhysicalPointToIndexMatrix(const typename TImageType::Pointer image)
+GetPhysicalPointToIndexMatrix(const TImageType *image)
 {
   return GetIndexToPhysicalPointMatrix<TImageType>(image).GetInverse();
 }
