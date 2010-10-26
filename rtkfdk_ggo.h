@@ -54,9 +54,6 @@ struct args_info_rtkfdk
   char * output_arg;	/**< @brief Output file name.  */
   char * output_orig;	/**< @brief Output file name original value given at command line.  */
   const char *output_help; /**< @brief Output file name help description.  */
-  int skip_proj_arg;	/**< @brief Skip projections (default='0').  */
-  char * skip_proj_orig;	/**< @brief Skip projections original value given at command line.  */
-  const char *skip_proj_help; /**< @brief Skip projections help description.  */
   double* origin_arg;	/**< @brief Origin (default=centered).  */
   char ** origin_orig;	/**< @brief Origin (default=centered) original value given at command line.  */
   unsigned int origin_min; /**< @brief Origin (default=centered)'s minimum occurreces */
@@ -80,7 +77,6 @@ struct args_info_rtkfdk
   unsigned int path_given ;	/**< @brief Whether path was given.  */
   unsigned int regexp_given ;	/**< @brief Whether regexp was given.  */
   unsigned int output_given ;	/**< @brief Whether output was given.  */
-  unsigned int skip_proj_given ;	/**< @brief Whether skip_proj was given.  */
   unsigned int origin_given ;	/**< @brief Whether origin was given.  */
   unsigned int dimension_given ;	/**< @brief Whether dimension was given.  */
   unsigned int spacing_given ;	/**< @brief Whether spacing was given.  */

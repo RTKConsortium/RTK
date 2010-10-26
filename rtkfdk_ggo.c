@@ -39,7 +39,6 @@ const char *args_info_rtkfdk_help[] = {
   "  -r, --regexp=STRING    Regular expression to select projection files in path",
   "  -o, --output=STRING    Output file name",
   "\nBackprojection:",
-  "  -s, --skip_proj=INT    Skip projections  (default=`0')",
   "      --origin=DOUBLE    Origin (default=centered)",
   "      --dimension=INT    Dimension  (default=`256')",
   "      --spacing=DOUBLE   Spacing  (default=`1')",
@@ -101,7 +100,6 @@ void clear_given (struct args_info_rtkfdk *args_info)
   args_info->path_given = 0 ;
   args_info->regexp_given = 0 ;
   args_info->output_given = 0 ;
-  args_info->skip_proj_given = 0 ;
   args_info->origin_given = 0 ;
   args_info->dimension_given = 0 ;
   args_info->spacing_given = 0 ;
@@ -121,8 +119,6 @@ void clear_args (struct args_info_rtkfdk *args_info)
   args_info->regexp_orig = NULL;
   args_info->output_arg = NULL;
   args_info->output_orig = NULL;
-  args_info->skip_proj_arg = 0;
-  args_info->skip_proj_orig = NULL;
   args_info->origin_arg = NULL;
   args_info->origin_orig = NULL;
   args_info->dimension_arg = NULL;
@@ -144,14 +140,13 @@ void init_args_info(struct args_info_rtkfdk *args_info)
   args_info->path_help = args_info_rtkfdk_help[4] ;
   args_info->regexp_help = args_info_rtkfdk_help[5] ;
   args_info->output_help = args_info_rtkfdk_help[6] ;
-  args_info->skip_proj_help = args_info_rtkfdk_help[8] ;
-  args_info->origin_help = args_info_rtkfdk_help[9] ;
+  args_info->origin_help = args_info_rtkfdk_help[8] ;
   args_info->origin_min = 0;
   args_info->origin_max = 0;
-  args_info->dimension_help = args_info_rtkfdk_help[10] ;
+  args_info->dimension_help = args_info_rtkfdk_help[9] ;
   args_info->dimension_min = 0;
   args_info->dimension_max = 0;
-  args_info->spacing_help = args_info_rtkfdk_help[11] ;
+  args_info->spacing_help = args_info_rtkfdk_help[10] ;
   args_info->spacing_min = 0;
   args_info->spacing_max = 0;
   
@@ -293,7 +288,6 @@ cmdline_parser_rtkfdk_release (struct args_info_rtkfdk *args_info)
   free_string_field (&(args_info->regexp_orig));
   free_string_field (&(args_info->output_arg));
   free_string_field (&(args_info->output_orig));
-  free_string_field (&(args_info->skip_proj_orig));
   free_multiple_field (args_info->origin_given, (void *)(args_info->origin_arg), &(args_info->origin_orig));
   args_info->origin_arg = 0;
   free_multiple_field (args_info->dimension_given, (void *)(args_info->dimension_arg), &(args_info->dimension_orig));
@@ -357,8 +351,6 @@ cmdline_parser_rtkfdk_dump(FILE *outfile, struct args_info_rtkfdk *args_info)
     write_into_file(outfile, "regexp", args_info->regexp_orig, 0);
   if (args_info->output_given)
     write_into_file(outfile, "output", args_info->output_orig, 0);
-  if (args_info->skip_proj_given)
-    write_into_file(outfile, "skip_proj", args_info->skip_proj_orig, 0);
   write_multiple_into_file(outfile, args_info->origin_given, "origin", args_info->origin_orig, 0);
   write_multiple_into_file(outfile, args_info->dimension_given, "dimension", args_info->dimension_orig, 0);
   write_multiple_into_file(outfile, args_info->spacing_given, "spacing", args_info->spacing_orig, 0);
@@ -1552,7 +1544,6 @@ cmdline_parser_rtkfdk_internal (
         { "path",	1, NULL, 'p' },
         { "regexp",	1, NULL, 'r' },
         { "output",	1, NULL, 'o' },
-        { "skip_proj",	1, NULL, 's' },
         { "origin",	1, NULL, 0 },
         { "dimension",	1, NULL, 0 },
         { "spacing",	1, NULL, 0 },
@@ -1564,7 +1555,7 @@ cmdline_parser_rtkfdk_internal (
       custom_opterr = opterr;
       custom_optopt = optopt;
 
-      c = custom_getopt_long (argc, argv, "hVg:p:r:o:s:", long_options, &option_index);
+      c = custom_getopt_long (argc, argv, "hVg:p:r:o:", long_options, &option_index);
 
       optarg = custom_optarg;
       optind = custom_optind;
@@ -1629,18 +1620,6 @@ cmdline_parser_rtkfdk_internal (
               &(local_args_info.output_given), optarg, 0, 0, ARG_STRING,
               check_ambiguity, override, 0, 0,
               "output", 'o',
-              additional_error))
-            goto failure;
-        
-          break;
-        case 's':	/* Skip projections.  */
-        
-        
-          if (update_arg( (void *)&(args_info->skip_proj_arg), 
-               &(args_info->skip_proj_orig), &(args_info->skip_proj_given),
-              &(local_args_info.skip_proj_given), optarg, 0, "0", ARG_INT,
-              check_ambiguity, override, 0, 0,
-              "skip_proj", 's',
               additional_error))
             goto failure;
         
