@@ -14,7 +14,7 @@ DbfField::DbfField(std::string name, char type, unsigned char length, short recO
 
 DbfFile::DbfFile(std::string fileName)
 {
-  m_Stream.open(fileName, std::ios_base::in | std::ios_base::binary);
+  m_Stream.open(fileName.c_str(), std::ios_base::in | std::ios_base::binary);
   if(!m_Stream.is_open())
     return;
 

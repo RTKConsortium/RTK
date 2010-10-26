@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <stdlib.h>
 
 namespace rtk{
 
