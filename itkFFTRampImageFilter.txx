@@ -5,8 +5,6 @@
 #include <itkConstantPadImageFilter.h>
 #include <itkFFTRealToComplexConjugateImageFilter.h>
 #include <itkFFTComplexConjugateToRealImageFilter.h>
-#include <itkCropImageFilter.h>
-#include <itkPasteImageFilter.h>
 
 namespace itk
 {
@@ -98,7 +96,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   i.Fill(0);
   j.Fill(0);
   kernel->SetPixel(i, 1./(4.*spacing));
-  for(i[0]=1, j[0]=size[0]-1; i[0] < typename IndexType::IndexValueType(size[0]/4); i[0]+=2, j[0]-=2) {
+  for(i[0]=1, j[0]=size[0]-1; i[0] < typename IndexType::IndexValueType(size[0]/2); i[0]+=2, j[0]-=2) {
     double v = i[0] * vnl_math::pi;
     v = -1. / (v * v * spacing);
     kernel->SetPixel(i, v);
