@@ -99,14 +99,14 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 typename BackProjectionImageFilter<TInputImage,TOutputImage>::ProjectionImagePointer
 BackProjectionImageFilter<TInputImage,TOutputImage>
-::GetProjection(const unsigned int iProj)
+::GetProjection(const unsigned int iProj, const InputPixelType multConst)
 {
   typename Superclass::InputImagePointer stack = const_cast< TInputImage * >( this->GetInput(1) );
 
   ProjectionImagePointer projection = ProjectionImageType::New();
-  ProjectionImageType::SizeType size;
-  ProjectionImageType::SpacingType spacing;
-  ProjectionImageType::PointType origin; 
+  typename ProjectionImageType::SizeType size;
+  typename ProjectionImageType::SpacingType spacing;
+  typename ProjectionImageType::PointType origin;
 
   for(unsigned int i=0; i<ProjectionImageType::ImageDimension; i++)
     {
@@ -120,9 +120,11 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   projection->Allocate();
 
   const unsigned int npixels = projection->GetLargestPossibleRegion().GetNumberOfPixels();
-  memcpy(projection->GetBufferPointer(),
-         stack->GetBufferPointer() + iProj*npixels,
-         sizeof(ProjectionImageType::PixelType)*npixels);
+
+  const InputPixelType *pi = stack->GetBufferPointer() + iProj*npixels;
+  InputPixelType *po = projection->GetBufferPointer();
+  for(unsigned int i=0; i<npixels; i++, pi++, po++)
+    *po = multConst * (*pi);
 
   return projection;
 }
@@ -134,12 +136,12 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
 
-  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol  = GetIndexToPhysicalPointMatrix< OutputImageType >(this->GetOutput());
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol  = GetIndexToPhysicalPointMatrix< TOutputImage >(this->GetOutput());
   itk::Matrix<double, Dimension, Dimension> matrixProj = GetPhysicalPointToIndexMatrix< ProjectionImageType >(proj);
 
-  return matrixProj.GetVnlMatrix() *
-         this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
-         matrixVol.GetVnlMatrix();
+  return ProjectionMatrixType(matrixProj.GetVnlMatrix() *
+                              this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
+                              matrixVol.GetVnlMatrix());
 }
 } // end namespace itk
 

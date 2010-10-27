@@ -19,6 +19,7 @@ public:
   typedef SmartPointer<Self>                                        Pointer;
   typedef SmartPointer<const Self>                                  ConstPointer;
   typedef typename TInputImage::PixelType                           InputPixelType;
+  typedef typename TOutputImage::RegionType                         OutputImageRegionType;
 
   typedef rtk::Geometry<TOutputImage::ImageDimension>               GeometryType;
   typedef typename GeometryType::Pointer                            GeometryPointer;
@@ -32,7 +33,8 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(BackProjectionImageFilter, ImageToImageFilter);
 
-  /** Set the geometry containing projection geometry */
+  /** Get / Set the object pointer to projection geometry */
+  itkGetMacro(Geometry, GeometryPointer);
   itkSetMacro(Geometry, GeometryPointer);
 
 protected:
@@ -46,12 +48,12 @@ protected:
 
   /** The input is a stack of projections, we need to interpolate in one projection
       for efficiency during interpolation. Use of itk::ExtractImageFilter is
-      not threadsafe in ThreadedGenerateData, this one is. */
-  typename ProjectionImagePointer GetProjection(const unsigned int iProj);
+      not threadsafe in ThreadedGenerateData, this one is. The output can be multiplied by a constant. */
+  ProjectionImagePointer GetProjection(const unsigned int iProj, const InputPixelType multConst=1);
 
   /** Creates the #iProj index to index projection matrix with current inputs
       instead of the physical point to physical point projection matrix provided by Geometry */
-  typename ProjectionMatrixType GetIndexToIndexProjectionMatrix(const unsigned int iProj, const ProjectionImageType *proj);
+  ProjectionMatrixType GetIndexToIndexProjectionMatrix(const unsigned int iProj, const ProjectionImageType *proj);
 
 private:
   BackProjectionImageFilter(const Self&); //purposely not implemented

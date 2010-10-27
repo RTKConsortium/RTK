@@ -11,7 +11,7 @@ void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::EnlargeOutputRequestedRegion( DataObject *output )
 {
-  TOutputImage::RegionType region = this->GetOutput()->GetRequestedRegion();
+  OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
   for(unsigned int i=0; i<WeightImageType::ImageDimension; i++)
     {
     region.SetIndex(i, 0);
@@ -26,9 +26,9 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   // Compute weights image parameters (== one projection, i.e. one slice of the input)
-  WeightImageType::SizeType size;
-  WeightImageType::SpacingType spacing;
-  WeightImageType::PointType origin;
+  typename WeightImageType::SizeType size;
+  typename WeightImageType::SpacingType spacing;
+  typename WeightImageType::PointType origin;
   for(unsigned int i=0; i<WeightImageType::ImageDimension; i++){
     size[i] = this->GetInput()->GetLargestPossibleRegion().GetSize()[i];
     spacing[i] = this->GetInput()->GetSpacing()[i];
@@ -53,7 +53,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   typedef ImageRegionIteratorWithIndex<WeightImageType> RegionIterator;
   RegionIterator it(m_WeightsImage, m_WeightsImage->GetLargestPossibleRegion());
   double sdd2 = this->m_SourceToDetectorDistance * this->m_SourceToDetectorDistance;
-  WeightImageType::PointType point;
+  typename WeightImageType::PointType point;
   while(!it.IsAtEnd())
     {
     m_WeightsImage->TransformIndexToPhysicalPoint( it.GetIndex(), point );
@@ -75,7 +75,13 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   InputConstIterator itI(this->GetInput(), outputRegionForThread);
 
   typedef ImageRegionConstIterator<WeightImageType> WeightRegionConstIterator;
-  WeightRegionConstIterator itW(m_WeightsImage, m_WeightsImage->GetLargestPossibleRegion());
+  typename WeightImageType::RegionType wr = m_WeightsImage->GetLargestPossibleRegion();
+  for(unsigned int i=0; i<WeightImageType::ImageDimension; i++)
+    {
+    wr.SetIndex(i, outputRegionForThread.GetIndex(i));
+    wr.SetSize(i, outputRegionForThread.GetSize(i));
+    }
+  WeightRegionConstIterator itW(m_WeightsImage, wr);
 
   typedef ImageRegionIterator<OutputImageType> OutputIterator;
   OutputIterator itO(this->GetOutput(), outputRegionForThread);

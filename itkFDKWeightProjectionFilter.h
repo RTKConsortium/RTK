@@ -28,6 +28,7 @@ public:
   /** Some convenient typedefs. */
   typedef TInputImage                                                         InputImageType;
   typedef TOutputImage                                                        OutputImageType;
+  typedef typename OutputImageType::RegionType                                OutputImageRegionType;
   typedef itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension-1> WeightImageType;
 
   /** Standard New method. */
