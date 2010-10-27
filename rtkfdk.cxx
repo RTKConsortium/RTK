@@ -2,10 +2,10 @@
 #include "rtkThreeDCircularGeometryXMLFile.h"
 #include "rtkGgoFunctions.h"
 
-#include "itkBackProjectionImageFilter.h"
 #include "itkProjectionsReader.h"
 #include "itkFFTRampImageFilter.h"
 #include "itkFDKWeightProjectionFilter.h"
+#include "itkFDKBackProjectionImageFilter.h"
 
 #include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
   OutputImageType::Pointer tomography = rtk::CreateImageFromGgo<OutputImageType>(args_info);
 
   // Backprojection
-  typedef itk::BackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
+  typedef itk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
   BackProjectionFilterType::Pointer bpFilter = BackProjectionFilterType::New();
   bpFilter->SetInput( 0, tomography );
   bpFilter->SetInput( 1, streamer->GetOutput() );
