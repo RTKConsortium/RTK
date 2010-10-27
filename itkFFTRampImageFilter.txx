@@ -42,6 +42,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
   this->AllocateOutputs();
 
+  typedef typename itk::Image<TFFTPrecision, ImageDimension > FFTImageType;
+
   // ROI of the image that is processed
   typedef itk::RegionOfInterestImageFilter< InputImageType, InputImageType > RegionOfInterestType;
   typename RegionOfInterestType::Pointer roi = RegionOfInterestType::New();
@@ -63,7 +65,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   padUpperBound =   padSize - inputSize - padLowerBound;
 
   // Pad image
-  typedef itk::ConstantPadImageFilter< InputImageType, InputImageType > ConstantPadType;
+  typedef itk::ConstantPadImageFilter< InputImageType, FFTImageType > ConstantPadType;
   typename ConstantPadType::Pointer pad = ConstantPadType::New();
   pad->SetInput( roi->GetOutput() );
   pad->SetNumberOfThreads( this->GetNumberOfThreads() );
@@ -81,7 +83,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   fftI->Update();
 
   // Allocate kernel
-  InputImagePointer kernel = InputImageType::New();
+  typename FFTImageType::Pointer kernel = FFTImageType::New();
   SizeType size;
   size.Fill(1);
   size[0] = padSize[0];
@@ -136,9 +138,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   //Crop and paste result (combination of itk::CropImageFilter and itk::PasteImageFilter, but the
   //latter is not working properly for a stream)
-  typedef itk::ImageRegionIterator<OutputImageType> OutputIteratorType;
-  OutputIteratorType itS(ifft->GetOutput(), roi->GetOutput()->GetLargestPossibleRegion());
-  OutputIteratorType itD(this->GetOutput(), this->GetOutput()->GetRequestedRegion());
+  itk::ImageRegionIterator<FFTImageType>    itS(ifft->GetOutput(), roi->GetOutput()->GetLargestPossibleRegion());
+  itk::ImageRegionIterator<OutputImageType> itD(this->GetOutput(), this->GetOutput()->GetRequestedRegion());
   itS.GoToBegin();
   itD.GoToBegin();
   while(!itS.IsAtEnd()) {
