@@ -16,7 +16,7 @@ int main(int argc, char * argv[])
 {
   GGO(rtkfdk, args_info);
 
-  typedef double OutputPixelType;
+  typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
