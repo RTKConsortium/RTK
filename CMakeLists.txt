@@ -16,6 +16,12 @@ ENDIF (NOT CMAKE_BUILD_TYPE)
 #=========================================================
 
 #=========================================================
+SET(RTK_VERSION_MAJOR "0")
+SET(RTK_VERSION_MINOR "1")
+SET(RTK_VERSION_PATCH "0")
+#=========================================================
+
+#=========================================================
 # Help function to debug CMake
 MACRO (DD in)
   MESSAGE(${in}=${${in}})
@@ -102,5 +108,14 @@ TARGET_LINK_LIBRARIES(rtkfdk rtkIO ITKAlgorithms)
 WRAP_GGO(rtkamsterdamshroud_GGO_C rtkamsterdamshroud.ggo)
 ADD_EXECUTABLE(rtkamsterdamshroud rtkamsterdamshroud.cxx ${rtkamsterdamshroud_GGO_C})
 TARGET_LINK_LIBRARIES(rtkamsterdamshroud rtkIO)
+#=========================================================
+
+#=========================================================
+# If choose to build documentation, then search for Doxygen executables.
+OPTION(BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
+IF(BUILD_DOXYGEN)
+  FIND_PACKAGE(Doxygen)
+  ADD_SUBDIRECTORY(Doxygen)
+ENDIF(BUILD_DOXYGEN)
 #=========================================================
 
