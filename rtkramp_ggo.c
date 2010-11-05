@@ -37,11 +37,13 @@ const char *args_info_rtkramp_help[] = {
   "  -p, --path=STRING    Path containing projections",
   "  -r, --regexp=STRING  Regular expression to select projection files in path",
   "  -o, --output=STRING  Output file name",
+  "      --pad=DOUBLE     Data padding parameter to correct for truncation  \n                         (default=`0.0')",
     0
 };
 
 typedef enum {ARG_NO
   , ARG_STRING
+  , ARG_DOUBLE
 } cmdline_parser_rtkramp_arg_type;
 
 static
@@ -92,6 +94,7 @@ void clear_given (struct args_info_rtkramp *args_info)
   args_info->path_given = 0 ;
   args_info->regexp_given = 0 ;
   args_info->output_given = 0 ;
+  args_info->pad_given = 0 ;
 }
 
 static
@@ -106,6 +109,8 @@ void clear_args (struct args_info_rtkramp *args_info)
   args_info->regexp_orig = NULL;
   args_info->output_arg = NULL;
   args_info->output_orig = NULL;
+  args_info->pad_arg = 0.0;
+  args_info->pad_orig = NULL;
   
 }
 
@@ -120,6 +125,7 @@ void init_args_info(struct args_info_rtkramp *args_info)
   args_info->path_help = args_info_rtkramp_help[3] ;
   args_info->regexp_help = args_info_rtkramp_help[4] ;
   args_info->output_help = args_info_rtkramp_help[5] ;
+  args_info->pad_help = args_info_rtkramp_help[6] ;
   
 }
 
@@ -211,6 +217,7 @@ cmdline_parser_rtkramp_release (struct args_info_rtkramp *args_info)
   free_string_field (&(args_info->regexp_orig));
   free_string_field (&(args_info->output_arg));
   free_string_field (&(args_info->output_orig));
+  free_string_field (&(args_info->pad_orig));
   
   
   for (i = 0; i < args_info->inputs_num; ++i)
@@ -258,6 +265,8 @@ cmdline_parser_rtkramp_dump(FILE *outfile, struct args_info_rtkramp *args_info)
     write_into_file(outfile, "regexp", args_info->regexp_orig, 0);
   if (args_info->output_given)
     write_into_file(outfile, "output", args_info->output_orig, 0);
+  if (args_info->pad_given)
+    write_into_file(outfile, "pad", args_info->pad_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -1056,6 +1065,9 @@ int update_arg(void *field, char **orig_field,
     val = possible_values[found];
 
   switch(arg_type) {
+  case ARG_DOUBLE:
+    if (val) *((double *)field) = strtod (val, &stop_char);
+    break;
   case ARG_STRING:
     if (val) {
       string_field = (char **)field;
@@ -1068,6 +1080,17 @@ int update_arg(void *field, char **orig_field,
     break;
   };
 
+  /* check numeric conversion */
+  switch(arg_type) {
+  case ARG_DOUBLE:
+    if (val && !(stop_char && *stop_char == '\0')) {
+      fprintf(stderr, "%s: invalid numeric value: %s\n", package_name, val);
+      return 1; /* failure */
+    }
+    break;
+  default:
+    ;
+  };
 
   /* store the original value */
   switch(arg_type) {
@@ -1137,6 +1160,7 @@ cmdline_parser_rtkramp_internal (
         { "path",	1, NULL, 'p' },
         { "regexp",	1, NULL, 'r' },
         { "output",	1, NULL, 'o' },
+        { "pad",	1, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1214,6 +1238,20 @@ cmdline_parser_rtkramp_internal (
                 &(local_args_info.config_given), optarg, 0, 0, ARG_STRING,
                 check_ambiguity, override, 0, 0,
                 "config", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Data padding parameter to correct for truncation.  */
+          else if (strcmp (long_options[option_index].name, "pad") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->pad_arg), 
+                 &(args_info->pad_orig), &(args_info->pad_given),
+                &(local_args_info.pad_given), optarg, 0, "0.0", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "pad", '-',
                 additional_error))
               goto failure;
           

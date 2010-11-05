@@ -1,19 +1,18 @@
 #ifndef __itkFFTRampImageFilter_txx
 #define __itkFFTRampImageFilter_txx
 
-#include <itkRegionOfInterestImageFilter.h>
-#include <itkConstantPadImageFilter.h>
 #include <itkFFTRealToComplexConjugateImageFilter.h>
 #include <itkFFTComplexConjugateToRealImageFilter.h>
+#include <itkImageFileWriter.h>
 
 namespace itk
 {
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::FFTRampImageFilter()
+::FFTRampImageFilter():m_TruncationCorrection(0.), m_GreatestPrimeFactor(2)
 {
-  m_GreatestPrimeFactor = 2;
+  this->SetNumberOfThreads(1);
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -34,59 +33,52 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   input->SetRequestedRegion( inputRegion );
 }
 
+template<class TInputImage, class TOutputImage, class TFFTPrecision>
+int
+FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+::GetTruncationCorrectionExtent()
+{
+  return Math::Floor<TFFTPrecision>(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0));
+}
+
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::GenerateData()
+::BeforeThreadedGenerateData()
 {
-  this->AllocateOutputs();
+  // Pre compute weights for truncation correction in a lookup table. The index
+  // is the distance to the original image border.
+  const long next = this->GetTruncationCorrectionExtent();
+  if ((long)m_TruncationMirrorWeights.size() != next)
+    {
+    m_TruncationMirrorWeights.resize(next);
+    for(unsigned int i=0; i<next; i++)
+      m_TruncationMirrorWeights[i] = pow( sin((next-i)*vnl_math::pi/(2*next-2)), 0.75);
+    }
+}
 
-  typedef typename itk::Image<TFFTPrecision, ImageDimension > FFTImageType;
-
-  // ROI of the image that is processed
-  typedef itk::RegionOfInterestImageFilter< InputImageType, InputImageType > RegionOfInterestType;
-  typename RegionOfInterestType::Pointer roi = RegionOfInterestType::New();
-  roi->SetInput( this->GetInput() );
-  roi->SetNumberOfThreads( this->GetNumberOfThreads() );
-  roi->SetReleaseDataFlag( true );
-  roi->SetRegionOfInterest( this->GetOutput()->GetRequestedRegion() );
-  roi->Update();
-
-  // Compute padding parameters
-  SizeType padSize, inputSize, padLowerBound, padUpperBound;
-  inputSize = this->GetInput()->GetLargestPossibleRegion().GetSize();
-  padSize = inputSize;
-  padSize[0] *= 2;
-  while( GreatestPrimeFactor( padSize[0] ) > m_GreatestPrimeFactor )
-    padSize[0]++;
-  padLowerBound.Fill(0);
-  padLowerBound[0] = ( padSize[0] - inputSize[0] ) / 2;
-  padUpperBound =   padSize - inputSize - padLowerBound;
-
-  // Pad image
-  typedef itk::ConstantPadImageFilter< InputImageType, FFTImageType > ConstantPadType;
-  typename ConstantPadType::Pointer pad = ConstantPadType::New();
-  pad->SetInput( roi->GetOutput() );
-  pad->SetNumberOfThreads( this->GetNumberOfThreads() );
-  pad->SetReleaseDataFlag( true );
-  pad->SetPadLowerBound( padLowerBound );
-  pad->SetPadUpperBound( padUpperBound );
-  pad->Update();
+template<class TInputImage, class TOutputImage, class TFFTPrecision>
+void
+FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+::ThreadedGenerateData( const RegionType& outputRegionForThread, int threadId )
+{
+  // Pad image region
+  FFTImagePointer paddedImage = PadInputImageRegion(outputRegionForThread);
 
   // FFT padded image
   typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
   typename FFTType::Pointer fftI = FFTType::New();
-  fftI->SetInput( pad->GetOutput() );
+  fftI->SetInput( paddedImage );
   fftI->SetNumberOfThreads( this->GetNumberOfThreads() );
   fftI->SetReleaseDataFlag( true );
   fftI->Update();
 
   // Allocate kernel
-  typename FFTImageType::Pointer kernel = FFTImageType::New();
+  FFTImagePointer kernel = FFTImageType::New();
   SizeType size;
   size.Fill(1);
-  size[0] = padSize[0];
+  size[0] = paddedImage->GetLargestPossibleRegion().GetSize(0);
   kernel->SetRegions( size );
   kernel->Allocate();
   kernel->FillBuffer(0.);
@@ -131,15 +123,15 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   typedef itk::FFTComplexConjugateToRealImageFilter< FFTPrecisionType, ImageDimension > IFFTType;
   typename IFFTType::Pointer ifft = IFFTType::New();
   ifft->SetInput( fftI->GetOutput() );
-  ifft->SetActualXDimensionIsOdd( pad->GetOutput()->GetLargestPossibleRegion().GetSize()[0] % 2 );
+  ifft->SetActualXDimensionIsOdd( paddedImage->GetLargestPossibleRegion().GetSize(0) % 2 );
   ifft->SetNumberOfThreads( this->GetNumberOfThreads() );
   ifft->SetReleaseDataFlag( true );
   ifft->Update();
 
   //Crop and paste result (combination of itk::CropImageFilter and itk::PasteImageFilter, but the
   //latter is not working properly for a stream)
-  itk::ImageRegionIterator<FFTImageType>    itS(ifft->GetOutput(), roi->GetOutput()->GetLargestPossibleRegion());
-  itk::ImageRegionIterator<OutputImageType> itD(this->GetOutput(), this->GetOutput()->GetRequestedRegion());
+  itk::ImageRegionConstIterator<FFTImageType> itS(ifft->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIterator<OutputImageType> itD(this->GetOutput(), outputRegionForThread);
   itS.GoToBegin();
   itD.GoToBegin();
   while(!itS.IsAtEnd()) {
@@ -147,6 +139,71 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     ++itS;
     ++itD;
   }
+}
+
+template<class TInputImage, class TOutputImage, class TFFTPrecision>
+typename FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTImagePointer
+FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+::PadInputImageRegion(const RegionType &inputRegion)
+{
+  typename SizeType::SizeValueType xPaddedSize = 2*inputRegion.GetSize(0);
+  while( GreatestPrimeFactor( xPaddedSize ) > m_GreatestPrimeFactor )
+    xPaddedSize++;
+
+  RegionType paddedRegion = inputRegion;
+  paddedRegion.SetSize(0, xPaddedSize);
+  paddedRegion.SetIndex(0, inputRegion.GetIndex(0)+((long)inputRegion.GetSize(0)-(long)xPaddedSize) / 2);
+
+  // Create padded image (spacing and origin do not matter)
+  FFTImagePointer paddedImage = FFTImageType::New();
+  paddedImage->SetRegions(paddedRegion);
+  paddedImage->Allocate();
+  paddedImage->FillBuffer(0);
+
+  const long next = this->GetTruncationCorrectionExtent();
+  if(next)
+    {
+
+    // Mirror left
+    RegionType leftRegion = paddedRegion;
+    leftRegion.SetIndex(0, inputRegion.GetIndex(0)-next+1);
+    leftRegion.SetSize(0, next);
+    itk::ImageRegionIteratorWithIndex<FFTImageType> itLeft(paddedImage, leftRegion);
+    while(!itLeft.IsAtEnd())
+      {
+      typename FFTImageType::IndexType idx = itLeft.GetIndex();
+      idx[0] *= -1;
+      itLeft.Set(m_TruncationMirrorWeights[ idx[0] ] * this->GetInput()->GetPixel(idx));
+      ++itLeft;
+      }
+
+    // Mirror right
+    RegionType rightRegion = paddedRegion;
+    rightRegion.SetIndex(0, inputRegion.GetIndex(0)+inputRegion.GetSize(0));
+    rightRegion.SetSize(0, next);
+    itk::ImageRegionIteratorWithIndex<FFTImageType> itRight(paddedImage, rightRegion);
+    while(!itRight.IsAtEnd())
+      {
+      typename FFTImageType::IndexType idx = itRight.GetIndex();
+      typename FFTImageType::IndexType::IndexValueType borderDist = idx[0]-inputRegion.GetSize(0);
+      idx[0] = inputRegion.GetSize(0)-borderDist-2;
+      itRight.Set(m_TruncationMirrorWeights[ borderDist ] * this->GetInput()->GetPixel(idx));
+      ++itRight;
+      }
+    }
+
+  // Copy central part
+  itk::ImageRegionConstIterator<InputImageType> itS(this->GetInput(), inputRegion);
+  itk::ImageRegionIterator<FFTImageType>   itD(paddedImage, inputRegion);
+  itS.GoToBegin();
+  itD.GoToBegin();
+  while(!itS.IsAtEnd()) {
+    itD.Set(itS.Get());
+    ++itS;
+    ++itD;
+  }
+
+  return paddedImage;
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>

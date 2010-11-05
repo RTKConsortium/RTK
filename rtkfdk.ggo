@@ -6,6 +6,7 @@ option "geometry"	 g	"XML geometry file name"     		                            
 option "path"		 	 p	"Path containing projections"		                            string  	yes
 option "regexp"		 r	"Regular expression to select projection files in path"		  string  	yes
 option "output"    o "Output file name"                                          string    yes
+option "pad"       - "Data padding parameter to correct for truncation"          double    no   default="0.0"
 
 section "Backprojection"
 option "origin"    - "Origin (default=centered)" double multiple no

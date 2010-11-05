@@ -34,6 +34,7 @@ int main(int argc, char * argv[])
   typedef itk::FFTRampImageFilter<OutputImageType> rampFilterType;
   rampFilterType::Pointer rampFilter = rampFilterType::New();
   rampFilter->SetInput( reader->GetOutput() );
+  rampFilter->SetTruncationCorrection(args_info.pad_arg);
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType >  WriterType;

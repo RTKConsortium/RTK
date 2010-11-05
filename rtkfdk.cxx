@@ -49,6 +49,7 @@ int main(int argc, char * argv[])
   typedef itk::FFTRampImageFilter<OutputImageType> RampFilterType;
   RampFilterType::Pointer rampFilter = RampFilterType::New();
   rampFilter->SetInput( weightFilter->GetOutput() );
+  rampFilter->SetTruncationCorrection(args_info.pad_arg);
 
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;

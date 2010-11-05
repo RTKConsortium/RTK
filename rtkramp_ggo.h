@@ -51,6 +51,9 @@ struct args_info_rtkramp
   char * output_arg;	/**< @brief Output file name.  */
   char * output_orig;	/**< @brief Output file name original value given at command line.  */
   const char *output_help; /**< @brief Output file name help description.  */
+  double pad_arg;	/**< @brief Data padding parameter to correct for truncation (default='0.0').  */
+  char * pad_orig;	/**< @brief Data padding parameter to correct for truncation original value given at command line.  */
+  const char *pad_help; /**< @brief Data padding parameter to correct for truncation help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -58,6 +61,7 @@ struct args_info_rtkramp
   unsigned int path_given ;	/**< @brief Whether path was given.  */
   unsigned int regexp_given ;	/**< @brief Whether regexp was given.  */
   unsigned int output_given ;	/**< @brief Whether output was given.  */
+  unsigned int pad_given ;	/**< @brief Whether pad was given.  */
 
   char **inputs ; /**< @brief unamed options (options without names) */
   unsigned inputs_num ; /**< @brief unamed options number */

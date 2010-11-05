@@ -54,6 +54,9 @@ struct args_info_rtkfdk
   char * output_arg;	/**< @brief Output file name.  */
   char * output_orig;	/**< @brief Output file name original value given at command line.  */
   const char *output_help; /**< @brief Output file name help description.  */
+  double pad_arg;	/**< @brief Data padding parameter to correct for truncation (default='0.0').  */
+  char * pad_orig;	/**< @brief Data padding parameter to correct for truncation original value given at command line.  */
+  const char *pad_help; /**< @brief Data padding parameter to correct for truncation help description.  */
   double* origin_arg;	/**< @brief Origin (default=centered).  */
   char ** origin_orig;	/**< @brief Origin (default=centered) original value given at command line.  */
   unsigned int origin_min; /**< @brief Origin (default=centered)'s minimum occurreces */
@@ -77,6 +80,7 @@ struct args_info_rtkfdk
   unsigned int path_given ;	/**< @brief Whether path was given.  */
   unsigned int regexp_given ;	/**< @brief Whether regexp was given.  */
   unsigned int output_given ;	/**< @brief Whether output was given.  */
+  unsigned int pad_given ;	/**< @brief Whether pad was given.  */
   unsigned int origin_given ;	/**< @brief Whether origin was given.  */
   unsigned int dimension_given ;	/**< @brief Whether dimension was given.  */
   unsigned int spacing_given ;	/**< @brief Whether spacing was given.  */

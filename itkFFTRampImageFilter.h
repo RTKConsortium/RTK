@@ -29,18 +29,19 @@ public:
   typedef SmartPointer<const Self>  ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage                              InputImageType;
-  typedef TOutputImage                             OutputImageType;
-  typedef TFFTPrecision                            FFTPrecisionType;
-  typedef typename InputImageType::Pointer         InputImagePointer;
-  typedef typename InputImageType::ConstPointer    InputImageConstPointer;
-  typedef typename InputImageType::PixelType       InputImagePixelType;
-  typedef typename OutputImageType::Pointer        OutputImagePointer;
-  typedef typename OutputImageType::ConstPointer   OutputImageConstPointer;
-  typedef typename OutputImageType::PixelType      OutputImagePixelType;
-  typedef typename InputImageType::RegionType      RegionType;
-  typedef typename InputImageType::IndexType       IndexType;
-  typedef typename InputImageType::SizeType        SizeType;
+  typedef TInputImage                                       InputImageType;
+  typedef TOutputImage                                      OutputImageType;
+  typedef TFFTPrecision                                     FFTPrecisionType;
+  typedef typename InputImageType::Pointer                  InputImagePointer;
+  typedef typename InputImageType::PixelType                InputImagePixelType;
+  typedef typename OutputImageType::Pointer                 OutputImagePointer;
+  typedef typename OutputImageType::PixelType               OutputImagePixelType;
+  typedef typename itk::Image<TFFTPrecision, 
+                              TInputImage::ImageDimension > FFTImageType;
+  typedef typename FFTImageType::Pointer                    FFTImagePointer;
+  typedef typename InputImageType::RegionType               RegionType;
+  typedef typename InputImageType::IndexType                IndexType;
+  typedef typename InputImageType::SizeType                 SizeType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -81,6 +82,11 @@ public:
   /** End concept checking */
 #endif
 
+  /** Set/Get the percentage of the image widthfeathered with data to correct
+    * for truncation.
+    */
+  itkGetConstMacro(TruncationCorrection, double);
+  itkSetMacro(TruncationCorrection, double);
 
 protected:
   FFTRampImageFilter();
@@ -88,9 +94,14 @@ protected:
 
   void GenerateInputRequestedRegion();
 
-  /** Single-threaded version of GenerateData.  This filter delegates
-   * to other filters. */
-  void GenerateData();
+  virtual void BeforeThreadedGenerateData();
+  virtual void ThreadedGenerateData( const RegionType& outputRegionForThread, int threadId );
+
+  /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
+    * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
+    * centralRegion is the region of the returned image which corresponds to inputRegion.
+    */
+  FFTImagePointer PadInputImageRegion(const RegionType &inputRegion);
 
   void PrintSelf(std::ostream& os, Indent indent) const;
 
@@ -101,6 +112,16 @@ private:
   FFTRampImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
+  /** Percentage of the image width which is feathered with data to correct for truncation.
+    * 0 means no correction.
+    */
+  double m_TruncationCorrection;
+  typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
+  int GetTruncationCorrectionExtent();
+
+  /**
+   * Greatest prime factor of the FFT input.
+   */
   int  m_GreatestPrimeFactor;
 }; // end of class
 
