@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>FindCuda.cmake</title>
+  <style type"text/css">
+    blockquote {
+    border : 1px dashed #000;
+    margin: 10px;
+    padding: 10px;
+    background-color: #eee;
+    quotes: "\201C" "\201D";
+    }
+</style>
+</head>
+<body>
+<h1>FindCUDA.cmake</h1>
+For more information about CMake and Cuda:
+<ul>
+  <li><a href="http://www.cmake.org/">http://www.cmake.org</a></li>
+  <li><a href="http://developer.nvidia.com/object/cuda.html">http://developer.nvidia.com/object/cuda.html<br>
+    </a></li>
+</ul>
+<br>
+<span style="font-weight: bold;">There are basically 3 versions of the script.
+  See below for details.<br>
+<br>
+NOTE: The source code is hosted at a new svn server (but the old
+ code.sci.utah.edu server name should alias to the new one) : </span><a
+ href="https://gforge.sci.utah.edu/gf/project/findcuda/scmsvn/?action=browse&path=%2Ftrunk%2F">https://gforge.sci.utah.edu/svn/findcuda/trunk</a><span
+ style="font-weight: bold;"><br>
+</span><br> This web page contains information about an unofficial version of
+the FindCuda.cmake script developed to compile CUDA
+programs.<span style="font-style: italic;"></span> Many individuals have adopted
+the script and suggested improvements, and tested the script on various
+platforms and configurations.  We appreciate all of the feedback and bug fixes
+we have received since the initial release.<br>
+<p>This webpage is updated infrequently- the svn log contains details
+about bug fixes and updates.</p>
+<p>Please send any comments or questions by email. If you use the
+NVIDIA forums, we might not see you question for some time.</p>
+<p>James Bigler<br />
+  <img src="jbigler-email.gif" alt="sorry spam bots"/><br />
+  NVIDIA Research<br />
+</p>
+<p><a href="http://www.sci.utah.edu/%7Eabe/">Abe Stephens</a> <br>
+Scientific Computing and Imaging Institute, University of Utah.<br>
+</p>
+<h2>Features</h2>
+<ul>
+  <li>Works on all CUDA platforms, tested with CUDA 2.2.</li>
+  <li>Will generate visual studio project files.</li>
+  <li>Parses an nvcc generated dependency file into CMake format.
+Targets will be regenerated when dependencies change.</li>
+  <li>Displays kernel register usage during compilation.</li>
+  <li>Support for compilation to executable, shared libary, or PTX.</li>
+</ul>
+<h2>Source Code:</h2>
+
+
+<!--  *************************************** -->
+<h3>Trunk</h3>
+<p>Again many changes have come been implemented.  Some of the changes have been
+  done in preparation of the code moving into the CMake distribution.  The trunk
+  is in a state of flux, but should work barring any unknown bugs.</p>
+
+<p><b>It is necessary to make several
+changes to a project's CMakeLists.txt files in order to use the new
+version.</b></p>
+
+<p>Get the code
+  <blockquote><pre>
+svn co https://gforge.sci.utah.edu/svn/findcuda/trunk FindCUDA
+</pre></blockquote>
+</p>
+
+<h4>Changes</h4>
+
+<ul>
+  <li>Variable name changes
+  <ul><tt>
+    <li>CUDA_NVCC -> CUDA_NVCC_EXECUTABLE</li>
+    <li>CUDA_INSTALL_PREFIX -> CUDA_TOOLKIT_ROOT_DIR</li>
+    <li>CUFFT_LIBRARIES -> CUDA_CUFFT_LIBRARIES</li>
+    <li>CUBLAS_LIBRARIES -> CUDA_CUBLAS_LIBRARIES</li>
+    <li>FOUND_CUDA_NVCC_INCLUDE -> CUDA_TOOLKIT_INCLUDE</li>
+    <li>FOUND_CUDART -> CUDA_CUDART_LIBRARY</li>
+    <li>FOUND_CUDA -> CUDA_CUDA_LIBRARY</li>
+    <li>CUDA_SDK_INSTALL_PREFIX -> CUDA_SDK_ROOT_DIR</li>
+    <li>FOUND_CUT_INCLUDE -> CUDA_CUT_INCLUDE_DIR</li>
+    <li>CUDA_CUT_INCLUDE_DIRS -> CUDA_CUT_INCLUDE_DIR</li>
+    <li>FOUND_CUT -> CUDA_CUT_LIBRARY</li>
+    <li>CUDA_CUT_LIBRARIES -> CUDA_CUT_LIBRARY</li>
+    <li>FOUND_cufftemu -> CUDA_cufftemu_LIBRARY</li>
+    <li>FOUND_cublasemu -> CUDA_cublasemu_LIBRARY</li>
+    <li>FOUND_cufft -> CUDA_cufft_LIBRARY</li>
+    <li>FOUND_cublas -> CUDA_cublas_LIBRARY</li>
+  </ul></tt></li>
+  <li>API Changes
+  <ul>
+    <li>The script now supports checking of the CUDA version using the standard
+      found in <tt>find_package()</tt>.</li>
+    <li><tt>CUDA_COMPILE_PTX</tt> removes the second argument that held the list
+       of source files to match CUDA_COMPILE.</li>
+    <li>If you were using it before <tt>CUDA_add_custom_commands</tt> has been
+      renamed to <tt>CUDA_WRAP_SRCS</tt> and its API has changed.  See docs in
+      FindCUDA.cmake.  This function is now blessed to be used outside of the
+      script.</li>
+    <li>You can now specify extra options to pass into nvcc with the OPTIONS
+      flag to <tt>CUDA_ADD_EXECUTABLE</tt>, <tt>CUDA_ADD_LIBRARY</tt>,
+      <tt>CUDA_COMPILE</tt>, <tt>CUDA_COMPILE_PTX</tt>, and
+      <tt>CUDA_WRAP_SRCS</tt>.</li>
+  </ul></li>
+  <li>include_directories(${CUDA_INCLUDE_DIRS}) is now called for you in
+  CUDA_ADD_EXECUTABLE and CUDA_ADD_LIBRARY.</li>
+  <li>Changed CUDA_BUILD_CUBIN default to OFF.</li>
+  <li>Object files are now generated instead of C files.  This will generate
+  different code for different build types.</li>
+  <li>Compiler definitions (via <tt>add_definitions()</tt>) are automatically
+  added to the host code compilation.</li>
+  <li>CMAKE_C_FLAGS and friends are also automatically added to the host code
+  compilation.</li>
+  <li>Minimum CMake version 2.6.2 is required.</li>
+  <li>Build rules are now attached to the source files by
+  default.  <tt>CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE</tt> was off by default
+  in the last version.  If you want to add the same cuda file to more that one
+  target, you should turn this off.</li>
+  <li><tt>CUDA_GENERATED_OUTPUT_DIR</tt> can now be specified.  If not
+  specified (i.e. it is blank), then the <tt>CMAKE_CURRENT_BINARY_DIR</tt> is
+  used.</li>
+  <li>If you want to build a shared library then you should specify this via the
+  CMake variable <tt>BUILD_SHARED_LIBS</tt>.</li>
+</ul>
+<!--  *************************************** -->
+<h3>2.0</h3>
+<p>We released a major revision to the script in December 2008 at
+approximately the same time as the CUDA 2.1 beta. There are many
+differences in the new version of the script and it has been tested
+extensively on Linux, Mac, and WinXP/Vista.</p>
+
+<p><b>It is necessary to make several
+changes to a project's CMakeLists.txt files in order to use the new
+version.</b></p>
+
+<p>The code is available in an svn repository:
+<blockquote><pre>
+svn co https://gforge.sci.utah.edu/svn/findcuda/tags/2.0 FindCUDA
+</pre></blockquote>
+</p>
+
+<h4>List of partial changes</h4>
+<ul>
+  <li>The capitalization of the script's filename is changed to
+FindCUDA.cmake.</li>
+  <li>The script may be included using FIND_PACKAGE (see example code).</li>
+  <li>Switched to standard CMake package variable names: (e.g. <span
+ style="font-weight: bold;">CUDA_INCLUDE_DIRS</span> instead of
+CUDA_INCLUDE,<span style="font-weight: bold;"> CUDA_LIBRARIES</span>
+instead of CUDA_TARGET_LINK).</li>
+  <li>Selection of Device or Release mode via boolean option <span
+ style="font-weight: bold;">CUDA_BUILD_EMULATION</span> instead
+of a text string.</li>
+  <li>Paths added to INCLUDE_DIRECTORIES are passed to nvcc.</li>
+  <li>Added option to host compilation mode boolean option.</li>
+  <li>Added CUDA_COMPILE_PTX macro for compilation to .ptx.</li>
+  <li>Added a macro generated target to clean all generated
+dependencies.</li>
+  <li>Locates the cuFFT and cuBLAS libraries as well (both in Device
+and Emulation mode).</li>
+</ul>
+
+<h4>Major bug fixes</h4>
+<ul>
+  <li>Fixed problem in Emulation mode which caused targets to
+continuously be rebuilt.</li>
+  <li>Fixed problems associated with incomplete compilation in visual
+studio.</li>
+  <li>Updated default paths for toolkit and SDK on several platforms.<br>
+  </li>
+</ul>
+
+<h4>Notes:</h4>
+<ul>
+  <li>Set the cmake cache variable <span style="font-weight: bold;">CUDA_BUILD_CUBIN</span>
+to enable or disable generation and parsing of .cubin files for kernels
+in Device mode. When enabled the number of registers, memory usage,
+etc. will be printed to the console for each kernel. This information
+can be entered in the <a
+ href="http://developer.nvidia.com/object/cuda.html#downloads">Cuda
+occupancy calculator</a>. </li>
+  <li>The script will output the actual command lines used in verbose
+mode (e.g. make VERBOSE=1).<br>
+  </li>
+  <li>The example code is intended to demonstrate cmake script usage
+only, the .cu files don't do anything illustrative.</li>
+</ul>
+<br>
+
+
+<!--  *************************************** -->
+<h3>1.0</h3>
+You can get the original version of the script by doing
+<blockquote></pre>
+svn co https://code.sci.utah.edu/svn/findcuda/tags/1.0 FindCUDA
+</pre></blockquote>
+<br>
+
+
+
+
+
+<h2>Usage:</h2>
+The script will search for your cuda toolkit and SDK installation using
+several standard paths and the
+environment variables which are created by the installer. <br>
+<br>
+The following example includes the script and shows how to add code in
+an executable. The CUDA_ADD_* commands have the same
+semantics as the standard ADD_* commands.<br>
+<br>
+<blockquote><pre>
+SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake/cuda" ${CMAKE_MODULE_PATH})
+FIND_PACKAGE(CUDA)
+
+CUDA_ADD_EXECUTABLE(test
+  test_bin.cu
+  main.cc
+  )
+</pre></blockquote>
+<br>
+See additional usage in the example project.<br>
+<h2>License</h2>
+<pre>
+For more information, please see: http://software.sci.utah.edu
+
+The MIT License
+
+Copyright (c) 2008-2009
+NVIDIA Corp.
+
+Copyright (c) 2007-2009
+Scientific Computing and Imaging Institute, University of Utah
+
+License for the specific language governing rights and limitations under
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+</pre>
+
+</body>
+</html>
