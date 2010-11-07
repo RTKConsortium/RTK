@@ -54,8 +54,10 @@ CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/RTKconfig.cmake.in
 #=========================================================
 
 #=========================================================
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"  ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(Gengetopt)
+FIND_PACKAGE(OpenCL)
 #=========================================================
 
 #=========================================================
