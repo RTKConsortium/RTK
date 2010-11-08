@@ -1,6 +1,8 @@
 #ifndef RTKGGOFUNCTIONS_H
 #define RTKGGOFUNCTIONS_H
 
+#include "rtkMacro.h"
+
 #include <itkImage.h>
 
 namespace rtk

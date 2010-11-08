@@ -1,7 +1,7 @@
 #include "rtkfdk_ggo.h"
-#include "rtkThreeDCircularGeometryXMLFile.h"
 #include "rtkGgoFunctions.h"
 
+#include "itkThreeDCircularProjectionGeometryXMLFile.h"
 #include "itkProjectionsReader.h"
 #include "itkFFTRampImageFilter.h"
 #include "itkFDKWeightProjectionFilter.h"
@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
   reader->GenerateOutputInformation();
 
   // Geometry
-  rtk::ThreeDCircularGeometryXMLFileReader::Pointer geometryReader = rtk::ThreeDCircularGeometryXMLFileReader::New();
+  itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
   geometryReader->GenerateOutputInformation();
 

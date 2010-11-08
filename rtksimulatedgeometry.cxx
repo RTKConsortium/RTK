@@ -1,5 +1,7 @@
-#include "rtkThreeDCircularGeometryXMLFile.h"
 #include "rtksimulatedgeometry_ggo.h"
+#include "rtkGgoFunctions.h"
+
+#include "itkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkTimeProbe.h>
 
@@ -9,7 +11,7 @@ int main(int argc, char * argv[])
   GGO(rtksimulatedgeometry, args_info);
 
   // RTK geometry object
-  typedef rtk::ThreeDCircularGeometry GeometryType;
+  typedef itk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
 
   // Global parameters
@@ -24,7 +26,7 @@ int main(int argc, char * argv[])
   }
 
   // Write
-  rtk::ThreeDCircularGeometryXMLFileWriter::Pointer xmlWriter = rtk::ThreeDCircularGeometryXMLFileWriter::New();
+  itk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = itk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
   xmlWriter->SetObject(&(*geometry));
   xmlWriter->WriteFile();

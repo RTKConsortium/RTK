@@ -1,7 +1,8 @@
-#include "rtkThreeDCircularGeometryXMLFile.h"
 #include "rtkelektasynergygeometry_ggo.h"
-
 #include "rtkDbf.h"
+#include "rtkGgoFunctions.h"
+
+#include "itkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkTimeProbe.h>
 
@@ -62,7 +63,7 @@ int main(int argc, char * argv[])
   GGO(rtkelektasynergygeometry, args_info);
 
   // RTK geometry object
-  typedef rtk::ThreeDCircularGeometry GeometryType;
+  typedef itk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
 
   // Get information from Synergy database
@@ -80,7 +81,7 @@ int main(int argc, char * argv[])
     }
 
   // Write
-  rtk::ThreeDCircularGeometryXMLFileWriter::Pointer xmlWriter = rtk::ThreeDCircularGeometryXMLFileWriter::New();
+  itk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = itk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
   xmlWriter->SetObject(&(*geometry));
   xmlWriter->WriteFile();

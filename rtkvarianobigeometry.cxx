@@ -1,7 +1,9 @@
-#include "rtkThreeDCircularGeometryXMLFile.h"
 #include "rtkvarianobigeometry_ggo.h"
+#include "rtkGgoFunctions.h"
+
+#include "itkThreeDCircularProjectionGeometryXMLFile.h"
 #include "itkProjectionsReader.h"
-#include "rtkVarianObiXMLFileReader.h"
+#include "itkVarianObiXMLFileReader.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkTimeProbe.h>
@@ -12,12 +14,12 @@ int main(int argc, char * argv[])
   GGO(rtkvarianobigeometry, args_info);
 
   // RTK geometry object
-  typedef rtk::ThreeDCircularGeometry GeometryType;
+  typedef itk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
 
   // Read Varian XML file (for common geometric information)
-  rtk::VarianObiXMLFileReader::Pointer obiXmlReader;
-  obiXmlReader = rtk::VarianObiXMLFileReader::New();
+  itk::VarianObiXMLFileReader::Pointer obiXmlReader;
+  obiXmlReader = itk::VarianObiXMLFileReader::New();
   obiXmlReader->SetFilename(args_info.xml_file_arg);
   obiXmlReader->GenerateOutputInformation();
 
@@ -60,7 +62,7 @@ int main(int argc, char * argv[])
   }
 
   // Write
-  rtk::ThreeDCircularGeometryXMLFileWriter::Pointer xmlWriter = rtk::ThreeDCircularGeometryXMLFileWriter::New();
+  itk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = itk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
   xmlWriter->SetObject(&(*geometry));
   xmlWriter->WriteFile();

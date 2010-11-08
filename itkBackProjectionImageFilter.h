@@ -3,7 +3,7 @@
 
 #include "itkInPlaceImageFilter.h"
 #include "itkConceptChecking.h"
-#include "rtkGeometry.h"
+#include "itkProjectionGeometry.h"
 
 namespace itk
 {
@@ -21,7 +21,7 @@ public:
   typedef typename TInputImage::PixelType                           InputPixelType;
   typedef typename TOutputImage::RegionType                         OutputImageRegionType;
 
-  typedef rtk::Geometry<TOutputImage::ImageDimension>               GeometryType;
+  typedef itk::ProjectionGeometry<TOutputImage::ImageDimension>     GeometryType;
   typedef typename GeometryType::Pointer                            GeometryPointer;
   typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
   typedef itk::Image<InputPixelType, TInputImage::ImageDimension-1> ProjectionImageType;

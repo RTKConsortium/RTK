@@ -69,8 +69,8 @@ ADD_LIBRARY(rtkIO STATIC
             itkHndImageIO.cxx
             itkHndImageIOFactory.cxx
             rtkHomogeneousMatrix.cxx
-            rtkThreeDCircularGeometry.cxx
-            rtkThreeDCircularGeometryXMLFile.cxx)
+            itkThreeDCircularProjectionGeometry.cxx
+            itkThreeDCircularProjectionGeometryXMLFile.cxx)
 TARGET_LINK_LIBRARIES(rtkIO ITKIO)
 #=========================================================
 
@@ -87,10 +87,10 @@ TARGET_LINK_LIBRARIES(rtkramp rtkIO ITKAlgorithms)
 #=========================================================
 
 #=========================================================
-#All the executables below are meant to create RTK ThreeDCircularGeometry files
+#All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 
 WRAP_GGO(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo)
-ADD_EXECUTABLE(rtkvarianobigeometry rtkvarianobigeometry.cxx rtkVarianObiXMLFileReader.cxx ${rtkvarianobigeometry_GGO_C})
+ADD_EXECUTABLE(rtkvarianobigeometry rtkvarianobigeometry.cxx itkVarianObiXMLFileReader.cxx ${rtkvarianobigeometry_GGO_C})
 TARGET_LINK_LIBRARIES(rtkvarianobigeometry rtkIO)
 
 WRAP_GGO(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo)

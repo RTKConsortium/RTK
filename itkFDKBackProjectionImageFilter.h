@@ -2,7 +2,7 @@
 #define __itkFDKBackProjectionImageFilter_h
 
 #include "itkBackProjectionImageFilter.h"
-#include "rtkThreeDCircularGeometry.h"
+#include "itkThreeDCircularProjectionGeometry.h"
 
 namespace itk
 {
@@ -18,7 +18,7 @@ public:
   typedef SmartPointer<Self>                            Pointer;
   typedef SmartPointer<const Self>                      ConstPointer;
 
-  typedef rtk::ThreeDCircularGeometry                   GeometryType;
+  typedef ThreeDCircularProjectionGeometry              GeometryType;
   typedef GeometryType::Pointer                         GeometryPointer;
   typedef GeometryType::MatrixType                      ProjectionMatrixType;
   typedef typename TOutputImage::RegionType             OutputImageRegionType;
