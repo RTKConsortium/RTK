@@ -146,6 +146,16 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 
   //Last projection wraps the angle of the first one
   m_AngularWeights[curr->second] = 0.5 * degreesToRadians * ( angles.begin()->first + 360 - prev->first );
+
+  //Detect short scans, warn the user until implementation of adequate weighting
+  for(unsigned int iProj=0; iProj<nProj; iProj++)
+    {
+    if( m_AngularWeights[iProj] > 10*degreesToRadians )
+      {
+      itkWarningMacro(<<"Short scan detected, current implementation does not account for it"<<std::endl);
+      m_AngularWeights[iProj] = vnl_math_min(m_AngularWeights[(nProj+iProj-1)%nProj], m_AngularWeights[(iProj+1)%nProj]); 
+      }
+    }
 }
 
 } // end namespace itk
