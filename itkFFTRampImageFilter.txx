@@ -1,8 +1,15 @@
 #ifndef __itkFFTRampImageFilter_txx
 #define __itkFFTRampImageFilter_txx
 
+// Use local RTK FFTW files taken from Gaëtan Lehmann's code for
+// thread safety: http://hdl.handle.net/10380/3154
+#if defined(USE_FFTWD) || defined(USE_FFTWF)
+#  include "itkFFTWRealToComplexConjugateImageFilter.h"
+#  include "itkFFTWComplexConjugateToRealImageFilter.h"
+#endif
 #include <itkFFTRealToComplexConjugateImageFilter.h>
 #include <itkFFTComplexConjugateToRealImageFilter.h>
+
 #include <itkImageFileWriter.h>
 
 namespace itk
@@ -12,7 +19,6 @@ template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::FFTRampImageFilter():m_TruncationCorrection(0.), m_GreatestPrimeFactor(2)
 {
-  this->SetNumberOfThreads(1);
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -56,6 +62,18 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     for(unsigned int i=0; i<next; i++)
       m_TruncationMirrorWeights[i] = pow( sin((next-i)*vnl_math::pi/(2*next-2)), 0.75);
     }
+
+  // Force init of fftw library mutex (static class member) before multithreading
+#if defined(USE_FFTWF)
+  fftw::Proxy<float>  dummyf;
+  dummyf.Lock();
+  dummyf.Unlock();
+#endif
+#if defined(USE_FFTWD)
+  fftw::Proxy<double> dummyd;  
+  dummyd.Lock();
+  dummyd.Unlock();
+#endif
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
