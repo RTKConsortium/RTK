@@ -11,7 +11,7 @@
 // NOTE: __device__ function definitions live in
 //       cuda_kernel_util.inc due to nvcc limitations.
 
-#include "plm_config.h"
+#include "rtkConfiguration.h"
 #include <cuda.h>
 
 #define GRID_LIMIT_X 65535
