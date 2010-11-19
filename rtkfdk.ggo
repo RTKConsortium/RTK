@@ -1,12 +1,13 @@
 package "rtk"
 version "Reconstruct a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984]."
 
-option "config"    - "Config file"                                               string    no
-option "geometry"	 g	"XML geometry file name"     		                            string  	yes
-option "path"		 	 p	"Path containing projections"		                            string  	yes
-option "regexp"		 r	"Regular expression to select projection files in path"		  string  	yes
-option "output"    o "Output file name"                                          string    yes
-option "pad"       - "Data padding parameter to correct for truncation"          double    no   default="0.0"
+option "config"    - "Config file"                                               string              no
+option "geometry"  g  "XML geometry file name"                                   string              yes
+option "path"      p  "Path containing projections"                              string              yes
+option "regexp"    r  "Regular expression to select projection files in path"    string              yes
+option "output"    o "Output file name"                                          string              yes
+option "pad"       - "Data padding parameter to correct for truncation"          double              no   default="0.0"
+option "hardware"  h "Hardware used for computation"                             values="cpu","cuda" no   default="cpu"
 
 section "Backprojection"
 option "origin"    - "Origin (default=centered)" double multiple no

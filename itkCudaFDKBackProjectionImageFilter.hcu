@@ -1,0 +1,51 @@
+#ifndef __itkCudaFDKBackProjectionImageFilter_hcu
+#define __itkCudaFDKBackProjectionImageFilter_hcu
+
+#include <vector_types.h>
+
+struct kernel_args_fdk
+{
+    int2 img_dim;
+    int3 vol_dim;
+    float matrix[12];
+    char padding[24]; //for data alignment
+    //padding to 128Bytes
+};
+
+#if defined __cplusplus
+extern "C" {
+#endif
+
+int
+CUDA_reconstruct_conebeam_init (
+  kernel_args_fdk *kargs,
+  kernel_args_fdk *&dev_kargs,
+  float *&dev_vol,
+  float *&dev_img,
+  float *&dev_matrix
+);
+
+int 
+CUDA_reconstruct_conebeam (
+  float *vol,
+  float *proj,
+  kernel_args_fdk *kargs,
+  kernel_args_fdk *dev_kargs,
+  float *dev_vol,
+  float *dev_img,
+  float *dev_matrix
+);
+
+int
+CUDA_reconstruct_conebeam_cleanup (
+  kernel_args_fdk *dev_kargs,
+  float *dev_vol,
+  float *dev_img,
+  float *dev_matrix
+);
+
+#if defined __cplusplus
+}
+#endif
+
+#endif

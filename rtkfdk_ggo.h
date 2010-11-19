@@ -57,6 +57,9 @@ struct args_info_rtkfdk
   double pad_arg;	/**< @brief Data padding parameter to correct for truncation (default='0.0').  */
   char * pad_orig;	/**< @brief Data padding parameter to correct for truncation original value given at command line.  */
   const char *pad_help; /**< @brief Data padding parameter to correct for truncation help description.  */
+  char * hardware_arg;	/**< @brief Hardware used for computation (default='cpu').  */
+  char * hardware_orig;	/**< @brief Hardware used for computation original value given at command line.  */
+  const char *hardware_help; /**< @brief Hardware used for computation help description.  */
   double* origin_arg;	/**< @brief Origin (default=centered).  */
   char ** origin_orig;	/**< @brief Origin (default=centered) original value given at command line.  */
   unsigned int origin_min; /**< @brief Origin (default=centered)'s minimum occurreces */
@@ -81,6 +84,7 @@ struct args_info_rtkfdk
   unsigned int regexp_given ;	/**< @brief Whether regexp was given.  */
   unsigned int output_given ;	/**< @brief Whether output was given.  */
   unsigned int pad_given ;	/**< @brief Whether pad was given.  */
+  unsigned int hardware_given ;	/**< @brief Whether hardware was given.  */
   unsigned int origin_given ;	/**< @brief Whether origin was given.  */
   unsigned int dimension_given ;	/**< @brief Whether dimension was given.  */
   unsigned int spacing_given ;	/**< @brief Whether spacing was given.  */
@@ -232,6 +236,8 @@ int cmdline_parser_rtkfdk_config_file (const char *filename,
  */
 int cmdline_parser_rtkfdk_required (struct args_info_rtkfdk *args_info,
   const char *prog_name);
+
+extern const char *cmdline_parser_rtkfdk_hardware_values[];  /**< @brief Possible values for hardware. */
 
 
 #ifdef __cplusplus

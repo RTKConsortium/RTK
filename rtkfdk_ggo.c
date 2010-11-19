@@ -31,7 +31,7 @@ const char *args_info_rtkfdk_usage = "Usage: rtk [OPTIONS]... [FILES]...";
 const char *args_info_rtkfdk_description = "";
 
 const char *args_info_rtkfdk_help[] = {
-  "  -h, --help             Print help and exit",
+  "      --help             Print help and exit",
   "  -V, --version          Print version and exit",
   "      --config=STRING    Config file",
   "  -g, --geometry=STRING  XML geometry file name",
@@ -39,6 +39,7 @@ const char *args_info_rtkfdk_help[] = {
   "  -r, --regexp=STRING    Regular expression to select projection files in path",
   "  -o, --output=STRING    Output file name",
   "      --pad=DOUBLE       Data padding parameter to correct for truncation  \n                           (default=`0.0')",
+  "  -h, --hardware=STRING  Hardware used for computation  (possible \n                           values=\"cpu\", \"cuda\" default=`cpu')",
   "\nBackprojection:",
   "      --origin=DOUBLE    Origin (default=centered)",
   "      --dimension=INT    Dimension  (default=`256')",
@@ -88,6 +89,8 @@ free_cmd_list(void)
 }
 
 
+const char *cmdline_parser_rtkfdk_hardware_values[] = {"cpu", "cuda", 0}; /*< Possible values for hardware. */
+
 static char *
 gengetopt_strdup (const char *s);
 
@@ -102,6 +105,7 @@ void clear_given (struct args_info_rtkfdk *args_info)
   args_info->regexp_given = 0 ;
   args_info->output_given = 0 ;
   args_info->pad_given = 0 ;
+  args_info->hardware_given = 0 ;
   args_info->origin_given = 0 ;
   args_info->dimension_given = 0 ;
   args_info->spacing_given = 0 ;
@@ -123,6 +127,8 @@ void clear_args (struct args_info_rtkfdk *args_info)
   args_info->output_orig = NULL;
   args_info->pad_arg = 0.0;
   args_info->pad_orig = NULL;
+  args_info->hardware_arg = gengetopt_strdup ("cpu");
+  args_info->hardware_orig = NULL;
   args_info->origin_arg = NULL;
   args_info->origin_orig = NULL;
   args_info->dimension_arg = NULL;
@@ -145,13 +151,14 @@ void init_args_info(struct args_info_rtkfdk *args_info)
   args_info->regexp_help = args_info_rtkfdk_help[5] ;
   args_info->output_help = args_info_rtkfdk_help[6] ;
   args_info->pad_help = args_info_rtkfdk_help[7] ;
-  args_info->origin_help = args_info_rtkfdk_help[9] ;
+  args_info->hardware_help = args_info_rtkfdk_help[8] ;
+  args_info->origin_help = args_info_rtkfdk_help[10] ;
   args_info->origin_min = 0;
   args_info->origin_max = 0;
-  args_info->dimension_help = args_info_rtkfdk_help[10] ;
+  args_info->dimension_help = args_info_rtkfdk_help[11] ;
   args_info->dimension_min = 0;
   args_info->dimension_max = 0;
-  args_info->spacing_help = args_info_rtkfdk_help[11] ;
+  args_info->spacing_help = args_info_rtkfdk_help[12] ;
   args_info->spacing_min = 0;
   args_info->spacing_max = 0;
   
@@ -294,6 +301,8 @@ cmdline_parser_rtkfdk_release (struct args_info_rtkfdk *args_info)
   free_string_field (&(args_info->output_arg));
   free_string_field (&(args_info->output_orig));
   free_string_field (&(args_info->pad_orig));
+  free_string_field (&(args_info->hardware_arg));
+  free_string_field (&(args_info->hardware_orig));
   free_multiple_field (args_info->origin_given, (void *)(args_info->origin_arg), &(args_info->origin_orig));
   args_info->origin_arg = 0;
   free_multiple_field (args_info->dimension_given, (void *)(args_info->dimension_arg), &(args_info->dimension_orig));
@@ -311,13 +320,54 @@ cmdline_parser_rtkfdk_release (struct args_info_rtkfdk *args_info)
   clear_given (args_info);
 }
 
+/**
+ * @param val the value to check
+ * @param values the possible values
+ * @return the index of the matched value:
+ * -1 if no value matched,
+ * -2 if more than one value has matched
+ */
+static int
+check_possible_values(const char *val, const char *values[])
+{
+  int i, found, last;
+  size_t len;
+
+  if (!val)   /* otherwise strlen() crashes below */
+    return -1; /* -1 means no argument for the option */
+
+  found = last = 0;
+
+  for (i = 0, len = strlen(val); values[i]; ++i)
+    {
+      if (strncmp(val, values[i], len) == 0)
+        {
+          ++found;
+          last = i;
+          if (strlen(values[i]) == len)
+            return i; /* exact macth no need to check more */
+        }
+    }
+
+  if (found == 1) /* one match: OK */
+    return last;
+
+  return (found ? -2 : -1); /* return many values or none matched */
+}
+
 
 static void
 write_into_file(FILE *outfile, const char *opt, const char *arg, const char *values[])
 {
-  FIX_UNUSED (values);
+  int found = -1;
   if (arg) {
-    fprintf(outfile, "%s=\"%s\"\n", opt, arg);
+    if (values) {
+      found = check_possible_values(arg, values);      
+    }
+    if (found >= 0)
+      fprintf(outfile, "%s=\"%s\" # %s\n", opt, arg, values[found]);
+    else
+      fprintf(outfile, "%s=\"%s\"\n", opt, arg);
   } else {
     fprintf(outfile, "%s\n", opt);
   }
@@ -359,6 +409,8 @@ cmdline_parser_rtkfdk_dump(FILE *outfile, struct args_info_rtkfdk *args_info)
     write_into_file(outfile, "output", args_info->output_orig, 0);
   if (args_info->pad_given)
     write_into_file(outfile, "pad", args_info->pad_orig, 0);
+  if (args_info->hardware_given)
+    write_into_file(outfile, "hardware", args_info->hardware_orig, cmdline_parser_rtkfdk_hardware_values);
   write_multiple_into_file(outfile, args_info->origin_given, "origin", args_info->origin_orig, 0);
   write_multiple_into_file(outfile, args_info->dimension_given, "dimension", args_info->dimension_orig, 0);
   write_multiple_into_file(outfile, args_info->spacing_given, "spacing", args_info->spacing_orig, 0);
@@ -1297,7 +1349,18 @@ int update_arg(void *field, char **orig_field,
       return 1; /* failure */
     }
 
-  FIX_UNUSED (default_value);
+  if (possible_values && (found = check_possible_values((value ? value : default_value), possible_values)) < 0)
+    {
+      if (short_opt != '-')
+        fprintf (stderr, "%s: %s argument, \"%s\", for option `--%s' (`-%c')%s\n", 
+          package_name, (found == -2) ? "ambiguous" : "invalid", value, long_opt, short_opt,
+          (additional_error ? additional_error : ""));
+      else
+        fprintf (stderr, "%s: %s argument, \"%s\", for option `--%s'%s\n", 
+          package_name, (found == -2) ? "ambiguous" : "invalid", value, long_opt,
+          (additional_error ? additional_error : ""));
+      return 1; /* failure */
+    }
     
   if (field_given && *field_given && ! override)
     return 0;
@@ -1545,7 +1608,7 @@ cmdline_parser_rtkfdk_internal (
       int option_index = 0;
 
       static struct option long_options[] = {
-        { "help",	0, NULL, 'h' },
+        { "help",	0, NULL, 0 },
         { "version",	0, NULL, 'V' },
         { "config",	1, NULL, 0 },
         { "geometry",	1, NULL, 'g' },
@@ -1553,6 +1616,7 @@ cmdline_parser_rtkfdk_internal (
         { "regexp",	1, NULL, 'r' },
         { "output",	1, NULL, 'o' },
         { "pad",	1, NULL, 0 },
+        { "hardware",	1, NULL, 'h' },
         { "origin",	1, NULL, 0 },
         { "dimension",	1, NULL, 0 },
         { "spacing",	1, NULL, 0 },
@@ -1564,7 +1628,7 @@ cmdline_parser_rtkfdk_internal (
       custom_opterr = opterr;
       custom_optopt = optopt;
 
-      c = custom_getopt_long (argc, argv, "hVg:p:r:o:", long_options, &option_index);
+      c = custom_getopt_long (argc, argv, "Vg:p:r:o:h:", long_options, &option_index);
 
       optarg = custom_optarg;
       optind = custom_optind;
@@ -1575,11 +1639,6 @@ cmdline_parser_rtkfdk_internal (
 
       switch (c)
         {
-        case 'h':	/* Print help and exit.  */
-          cmdline_parser_rtkfdk_print_help ();
-          cmdline_parser_rtkfdk_free (&local_args_info);
-          exit (EXIT_SUCCESS);
-
         case 'V':	/* Print version and exit.  */
           cmdline_parser_rtkfdk_print_version ();
           cmdline_parser_rtkfdk_free (&local_args_info);
@@ -1633,8 +1692,26 @@ cmdline_parser_rtkfdk_internal (
             goto failure;
         
           break;
+        case 'h':	/* Hardware used for computation.  */
+        
+        
+          if (update_arg( (void *)&(args_info->hardware_arg), 
+               &(args_info->hardware_orig), &(args_info->hardware_given),
+              &(local_args_info.hardware_given), optarg, cmdline_parser_rtkfdk_hardware_values, "cpu", ARG_STRING,
+              check_ambiguity, override, 0, 0,
+              "hardware", 'h',
+              additional_error))
+            goto failure;
+        
+          break;
 
         case 0:	/* Long option with no short option */
+          if (strcmp (long_options[option_index].name, "help") == 0) {
+            cmdline_parser_rtkfdk_print_help ();
+            cmdline_parser_rtkfdk_free (&local_args_info);
+            exit (EXIT_SUCCESS);
+          }
+
           /* Config file.  */
           if (strcmp (long_options[option_index].name, "config") == 0)
           {

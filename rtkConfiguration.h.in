@@ -1,0 +1,23 @@
+#ifndef __rtkConfiguration_h
+#define __rtkConfiguration_h
+//This file is interpreted by cmake, to define macros based on the cmake configuration options
+//
+
+
+#cmakedefine01 CUDA_FOUND
+#cmakedefine RTK_BUILD_SHARED_LIBS 1
+
+/* This code is for exporting symbols when building DLLs on windows */
+#if (!defined (BUILD_AGAINST_SLICER3) && (defined(_WIN32) || defined(WIN32)) && (defined (BUILD_SHARED_LIBS) || defined (RTK_BUILD_SHARED_LIBS)))
+# ifdef gpuit_EXPORTS
+#  define gpuit_EXPORT __declspec(dllexport)
+# else
+#  define gpuit_EXPORT __declspec(dllimport)
+# endif
+#else
+/* unix needs nothing */
+#define gpuit_EXPORT 
+#endif
+
+
+#endif

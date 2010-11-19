@@ -54,6 +54,13 @@ CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/RTKconfig.cmake.in
 #=========================================================
 
 #=========================================================
+# Propagate cmake options in a header file
+INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
+CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/rtkConfiguration.h)
+#=========================================================
+
+#=========================================================
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"  ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(Gengetopt)
@@ -72,6 +79,22 @@ ADD_LIBRARY(rtkIO STATIC
             itkThreeDCircularProjectionGeometry.cxx
             itkThreeDCircularProjectionGeometryXMLFile.cxx)
 TARGET_LINK_LIBRARIES(rtkIO ITKIO)
+#=========================================================
+
+#=========================================================
+IF (CUDA_FOUND)
+  INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
+  CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS
+                cuda_mem.cu
+                cuda_util.cu
+                cuda_kernel_util.cu
+                itkCudaFDKBackProjectionImageFilter.cu )
+  ADD_LIBRARY(rtkcuda STATIC
+              itkCudaFDKBackProjectionImageFilter.cxx
+	            ${rtkcuda_CUDA_WRAPPERS})
+  SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
+  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES})
+ENDIF (CUDA_FOUND)
 #=========================================================
 
 #=========================================================
@@ -106,6 +129,9 @@ TARGET_LINK_LIBRARIES(rtkelektasynergygeometry rtkIO)
 WRAP_GGO(rtkfdk_GGO_C rtkfdk.ggo)
 ADD_EXECUTABLE(rtkfdk rtkfdk.cxx ${rtkfdk_GGO_C})
 TARGET_LINK_LIBRARIES(rtkfdk rtkIO ITKAlgorithms)
+IF (CUDA_FOUND)
+  TARGET_LINK_LIBRARIES(rtkfdk rtkcuda)
+ENDIF (CUDA_FOUND)
 #=========================================================
 
 #=========================================================

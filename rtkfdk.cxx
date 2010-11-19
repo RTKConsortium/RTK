@@ -1,11 +1,16 @@
 #include "rtkfdk_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "rtkConfiguration.h"
 
 #include "itkThreeDCircularProjectionGeometryXMLFile.h"
 #include "itkProjectionsReader.h"
 #include "itkFFTRampImageFilter.h"
 #include "itkFDKWeightProjectionFilter.h"
+
 #include "itkFDKBackProjectionImageFilter.h"
+#ifdef CUDA_FOUND
+#  include "itkCudaFDKBackProjectionImageFilter.h"
+#endif
 
 #include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -71,7 +76,18 @@ int main(int argc, char * argv[])
 
   // Backprojection
   typedef itk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
-  BackProjectionFilterType::Pointer bpFilter = BackProjectionFilterType::New();
+  BackProjectionFilterType::Pointer bpFilter;
+  if(!strcmp(args_info.hardware_arg, "cpu"))
+    bpFilter = BackProjectionFilterType::New();
+  else if(!strcmp(args_info.hardware_arg, "cuda"))
+    {
+#ifdef CUDA_FOUND
+    bpFilter = itk::CudaFDKBackProjectionImageFilter::New();
+#else
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+#endif
+    }
   bpFilter->SetInput( 0, tomography );
   bpFilter->SetInput( 1, streamer->GetOutput() );
   bpFilter->SetGeometry( geometryReader->GetOutputObject() );
