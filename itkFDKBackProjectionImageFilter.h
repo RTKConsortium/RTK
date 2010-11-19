@@ -30,6 +30,9 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(FDKBackProjectionImageFilter, ImageToImageFilter);
+  
+  /** Get vector of angular weights */
+  itkGetMacro(AngularWeights, std::vector<double>);  
 
 protected:
   FDKBackProjectionImageFilter() {};
