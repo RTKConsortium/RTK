@@ -1,6 +1,9 @@
 #ifndef __itkBackProjectionImageFilter_txx
 #define __itkBackProjectionImageFilter_txx
 
+#include "rtkHomogeneousMatrix.h"
+
+#include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
 
@@ -136,7 +139,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
 
-  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol  = GetIndexToPhysicalPointMatrix< TOutputImage >(this->GetOutput());
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol = GetIndexToPhysicalPointMatrix< TOutputImage >(this->GetOutput());
   itk::Matrix<double, Dimension, Dimension> matrixProj = GetPhysicalPointToIndexMatrix< ProjectionImageType >(proj);
 
   return ProjectionMatrixType(matrixProj.GetVnlMatrix() *
