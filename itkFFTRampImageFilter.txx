@@ -65,14 +65,12 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   // Force init of fftw library mutex (static class member) before multithreading
 #if defined(USE_FFTWF)
-  fftw::Proxy<float>  dummyf;
-  dummyf.Lock();
-  dummyf.Unlock();
+  fftw::Proxy<float>::Lock();
+  fftw::Proxy<float>::Unlock();
 #endif
 #if defined(USE_FFTWD)
-  fftw::Proxy<double> dummyd;  
-  dummyd.Lock();
-  dummyd.Unlock();
+  fftw::Proxy<double>::Lock();
+  fftw::Proxy<double>::Unlock();
 #endif
 }
 
