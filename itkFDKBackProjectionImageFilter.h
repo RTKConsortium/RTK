@@ -32,7 +32,7 @@ public:
   itkTypeMacro(FDKBackProjectionImageFilter, ImageToImageFilter);
   
   /** Get vector of angular weights */
-  itkGetMacro(AngularWeights, std::vector<double>);  
+  std::vector<double> &GetAngularWeights() { return this->m_AngularWeights; }
 
 protected:
   FDKBackProjectionImageFilter() {};
