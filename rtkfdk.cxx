@@ -8,7 +8,7 @@
 #include "itkFDKWeightProjectionFilter.h"
 
 #include "itkFDKBackProjectionImageFilter.h"
-#ifdef CUDA_FOUND
+#if CUDA_FOUND
 #  include "itkCudaFDKBackProjectionImageFilter.h"
 #endif
 
@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
     bpFilter = BackProjectionFilterType::New();
   else if(!strcmp(args_info.hardware_arg, "cuda"))
     {
-#ifdef CUDA_FOUND
+#if CUDA_FOUND
     bpFilter = itk::CudaFDKBackProjectionImageFilter::New();
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
