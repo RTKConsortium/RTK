@@ -21,10 +21,6 @@ CudaFDKBackProjectionImageFilter
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
 
-  // Create interpolator, could be any interpolation
-  typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
-
   // Ramp factor is the correction for ramp filter which did not account for the divergence of the beam
   const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer());
   double rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
@@ -55,7 +51,6 @@ CudaFDKBackProjectionImageFilter
     {
     // Extract the current slice
     ProjectionImagePointer projection = this->GetProjection(iProj, angWeights[iProj] * rampFactor);
-    interpolator->SetInputImage(projection);
 
     // Index to index matrix normalized to have a correct backprojection weight (1 at the isocenter)
     ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
