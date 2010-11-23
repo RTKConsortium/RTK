@@ -39,6 +39,17 @@ int main(int argc, char * argv[])
   reader->SetFileNames( names->GetFileNames() );
   reader->GenerateOutputInformation();
 
+  itk::TimeProbe readerProbe;
+  try {
+    readerProbe.Start();
+    reader->Update();
+    readerProbe.Stop();
+  } catch( itk::ExceptionObject & err ) {
+    std::cerr << "ExceptionObject caught !" << std::endl;
+    std::cerr << err << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // Geometry
   itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
@@ -63,8 +74,11 @@ int main(int argc, char * argv[])
   streamer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
   // Try to do all 2D pre-processing
+  itk::TimeProbe streamerProbe;
   try {
+    streamerProbe.Start();
     streamer->Update();
+    streamerProbe.Stop();
   } catch( itk::ExceptionObject & err ) {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
@@ -93,19 +107,38 @@ int main(int argc, char * argv[])
   bpFilter->SetGeometry( geometryReader->GetOutputObject() );
   bpFilter->SetInPlace( true );
 
+  itk::TimeProbe bpProbe;
+  try {
+    bpProbe.Start();
+    bpFilter->Update();
+    bpProbe.Stop();
+  } catch( itk::ExceptionObject & err ) {
+    std::cerr << "ExceptionObject caught !" << std::endl;
+    std::cerr << err << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // Write
   typedef itk::ImageFileWriter<  OutputImageType >  WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( bpFilter->GetOutput() );
 
+  itk::TimeProbe writerProbe;
   try {
+    writerProbe.Start();
     writer->Update();
+    writerProbe.Stop();
   } catch( itk::ExceptionObject & err ) {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
   }
+
+  std::cout << "Reading took " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl
+            << "2D processing took " << streamerProbe.GetMeanTime() << ' ' << streamerProbe.GetUnit() << std::endl
+            << "backprojection took " << bpProbe.GetMeanTime() << ' ' << bpProbe.GetUnit() << std::endl
+            << "writing took " << writerProbe.GetMeanTime() << ' ' << writerProbe.GetUnit() << std::endl;
 
   return EXIT_SUCCESS;
 }
