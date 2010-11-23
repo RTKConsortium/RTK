@@ -6,7 +6,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
-
+#include "rtkMacro.h"
 namespace itk
 {
 
@@ -117,17 +117,31 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     spacing[i] = stack->GetSpacing()[i];
     size[i] = stack->GetLargestPossibleRegion().GetSize()[i];
     }
+  if(this->GetTranspose())
+    {
+    std::swap(origin[0], origin[1]);
+    std::swap(spacing[0], spacing[1]);
+    std::swap(size[0], size[1]);
+    }
   projection->SetSpacing(spacing);
   projection->SetOrigin(origin);
   projection->SetRegions(size);
   projection->Allocate();
 
   const unsigned int npixels = projection->GetLargestPossibleRegion().GetNumberOfPixels();
-
   const InputPixelType *pi = stack->GetBufferPointer() + iProj*npixels;
   InputPixelType *po = projection->GetBufferPointer();
-  for(unsigned int i=0; i<npixels; i++, pi++, po++)
-    *po = multConst * (*pi);
+
+  // Transpose projection for optimization
+  if(this->GetTranspose())
+    {
+    for(unsigned int j=0; j<size[0]; j++, po-=npixels-1)
+      for(unsigned int i=0; i<size[1]; i++, po+=size[0])
+        *po = multConst * (*pi++);
+    }
+  else
+    for(unsigned int i=0; i<npixels; i++)
+      *po++ = multConst * (*pi++);
 
   return projection;
 }
@@ -142,6 +156,17 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   itk::Matrix<double, Dimension+1, Dimension+1> matrixVol = GetIndexToPhysicalPointMatrix< TOutputImage >(this->GetOutput());
   itk::Matrix<double, Dimension, Dimension> matrixProj = GetPhysicalPointToIndexMatrix< ProjectionImageType >(proj);
 
+  // Transpose projection for optimization
+  if(this->GetTranspose())
+    {
+    for(unsigned int i=0; i<Dimension; i++)
+      {
+      std::swap(matrixProj[i][0], matrixProj[i][1]);
+      std::swap(matrixVol[i][0], matrixVol[i][1]);
+      }
+      std::swap(matrixVol[Dimension][0], matrixVol[Dimension][1]);
+    }
+      
   return ProjectionMatrixType(matrixProj.GetVnlMatrix() *
                               this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
                               matrixVol.GetVnlMatrix());

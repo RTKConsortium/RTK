@@ -37,8 +37,12 @@ public:
   itkGetMacro(Geometry, GeometryPointer);
   itkSetMacro(Geometry, GeometryPointer);
 
+  /** Get / Set the transpose flag for 2D projections (optimization trick) */
+  itkGetMacro(Transpose, bool);
+  itkSetMacro(Transpose, bool);
+
 protected:
-  BackProjectionImageFilter() {this->SetNumberOfRequiredInputs(2); this->SetInPlace( true ); };
+  BackProjectionImageFilter():m_Geometry(NULL), m_Transpose(false) {this->SetNumberOfRequiredInputs(2); this->SetInPlace( true ); };
   virtual ~BackProjectionImageFilter() {};
 
   /** Apply changes to the input image requested region. */
@@ -61,6 +65,9 @@ private:
 
   /** RTK geometry object */
   GeometryPointer m_Geometry;
+
+  /** Flip projection flag: infludences GetProjection and GetIndexToIndexProjectionMatrix for optimization */
+  bool m_Transpose;
 };
 
 } // end namespace itk
