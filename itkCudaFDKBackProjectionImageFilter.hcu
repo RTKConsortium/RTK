@@ -16,7 +16,7 @@ struct kernel_args_fdk
 extern "C" {
 #endif
 
-int
+void
 CUDA_reconstruct_conebeam_init (
   kernel_args_fdk *kargs,
   kernel_args_fdk *&dev_kargs,
@@ -25,20 +25,20 @@ CUDA_reconstruct_conebeam_init (
   float *&dev_matrix
 );
 
-int 
+void
 CUDA_reconstruct_conebeam (
-  float *vol,
   float *proj,
   kernel_args_fdk *kargs,
-  kernel_args_fdk *dev_kargs,
   float *dev_vol,
   float *dev_img,
   float *dev_matrix
 );
 
-int
+void
 CUDA_reconstruct_conebeam_cleanup (
+  kernel_args_fdk *kargs,
   kernel_args_fdk *dev_kargs,
+  float *vol,
   float *dev_vol,
   float *dev_img,
   float *dev_matrix

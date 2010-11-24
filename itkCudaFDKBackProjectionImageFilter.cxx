@@ -59,17 +59,15 @@ CudaFDKBackProjectionImageFilter
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
     matrix /= perspFactor;
 
-    
+
     for (int j = 0; j < 12; j++) {
         m_kargs.matrix[j] = matrix[j/4][j%4];
     }
 
-    CUDA_reconstruct_conebeam(this->GetOutput()->GetBufferPointer(),
-                              projection->GetBufferPointer(),
-                              &m_kargs, dev_kargs, dev_vol, dev_img, dev_matrix);
+    CUDA_reconstruct_conebeam(projection->GetBufferPointer(), &m_kargs, dev_vol, dev_img, dev_matrix);
     }
 
-  CUDA_reconstruct_conebeam_cleanup (dev_kargs, dev_vol, dev_img, dev_matrix);
+  CUDA_reconstruct_conebeam_cleanup (&m_kargs, dev_kargs, this->GetOutput()->GetBufferPointer(), dev_vol, dev_img, dev_matrix);
 }
 
 } // end namespace itk
