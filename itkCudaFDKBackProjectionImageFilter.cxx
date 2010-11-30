@@ -13,6 +13,7 @@ CudaFDKBackProjectionImageFilter
 {
   this->AllocateOutputs();
   this->UpdateAngularWeights();
+  this->SetTranspose(true);
   
   std::vector<double> angWeights = this->GetAngularWeights();
   
@@ -42,7 +43,7 @@ CudaFDKBackProjectionImageFilter
   // Cuda init
   kernel_args_fdk *dev_kargs;
   float *dev_vol;
-  float *dev_img;
+  cudaArray *dev_img;
   float *dev_matrix;
   CUDA_reconstruct_conebeam_init (&m_kargs, dev_kargs, dev_vol, dev_img, dev_matrix);
 

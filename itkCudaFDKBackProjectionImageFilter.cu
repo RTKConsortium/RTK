@@ -1,7 +1,12 @@
 /* -----------------------------------------------------------------------
    See COPYRIGHT.TXT and LICENSE.TXT for copyright and license information
    ----------------------------------------------------------------------- */
+/*****************
+*  rtk #includes *
+*****************/
 #include "rtkConfiguration.h"
+#include "itkCudaFDKBackProjectionImageFilter.hcu"
+#include "itkCudaUtilities.hcu"
 
 /*****************
 *  C   #includes *
@@ -16,18 +21,12 @@
 *****************/
 #include <cuda.h>
 
-/*****************
-* FDK  #includes *
-*****************/
-#include "cuda_util.h"
-#include "itkCudaFDKBackProjectionImageFilter.hcu"
-
 // P R O T O T Y P E S ////////////////////////////////////////////////////
 __global__ void kernel_fdk (float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks_Y, float invBlocks_Y);
 ///////////////////////////////////////////////////////////////////////////
 
 // T E X T U R E S ////////////////////////////////////////////////////////
-texture<float, 1, cudaReadModeElementType> tex_img;
+texture<float, 2, cudaReadModeElementType> tex_img;
 texture<float, 1, cudaReadModeElementType> tex_matrix;
 ///////////////////////////////////////////////////////////////////////////
 
@@ -35,62 +34,6 @@ texture<float, 1, cudaReadModeElementType> tex_matrix;
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_( S T A R T )_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-
-__global__
-void kernel_fdk_gmem (
-    float *dev_vol,
-    float *pimg,
-    float *pmat,
-    int2 img_dim,
-    int3 vol_dim,
-    unsigned int Blocks_Y,
-    float invBlocks_Y)
-{
-  // CUDA 2.0 does not allow for a 3D grid, which severely
-  // limits the manipulation of large 3D arrays of data.  The
-  // following code is a hack to bypass this implementation
-  // limitation.
-  unsigned int blockIdx_z = __float2uint_rd(blockIdx.y * invBlocks_Y);
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
-
-  if (i >= vol_dim.x || j >= vol_dim.y || k >= vol_dim.z) {
-      return; 
-  }
-
-  // Index row major into the volume
-  long int vol_idx = i + ( j*(vol_dim.x) ) + ( k*(vol_dim.x)*(vol_dim.y) );
-
-  float3 ip;
-  int2 ip_r;
-  float voxel_data;
-
-  // matrix multiply
-  ip.x = pmat[0]*i + pmat[1]*j + pmat[2]*k + pmat[3];
-  ip.y = pmat[4]*i + pmat[5]*j + pmat[6]*k + pmat[7];
-  ip.z = pmat[8]*i + pmat[9]*j + pmat[10]*k + pmat[11];
-
-  // Change coordinate systems
-  ip.z = 1 / ip.z;
-  ip.x = ip.x * ip.z;
-  ip.y = ip.y * ip.z;
-
-  // Get pixel from 2D image
-  ip_r.x = __float2int_rd(ip.x);
-  ip_r.y = __float2int_rd(ip.y);
-
-  // Clip against image dimensions
-  if (ip_r.x < 0 || ip_r.x >= img_dim.x || ip_r.y < 0 || ip_r.y >= img_dim.y) {
-      return;
-  }
-  voxel_data = pimg[ip_r.x*img_dim.x + ip_r.y];
-
-  // Place it into the volume
-  dev_vol[vol_idx] += ip.z * ip.z * voxel_data;
-}
-
 
 __global__
 void kernel_fdk (float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks_Y, float invBlocks_Y)
@@ -110,7 +53,7 @@ void kernel_fdk (float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks
   }
 
   // Index row major into the volume
-  long int vol_idx = i + ( j*(vol_dim.x) ) + ( k*(vol_dim.x)*(vol_dim.y) );
+  long int vol_idx = i + (j + k*vol_dim.y)*(vol_dim.x);
 
   float3 ip;
   float voxel_data;
@@ -125,15 +68,8 @@ void kernel_fdk (float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks
   ip.x = ip.x * ip.z;
   ip.y = ip.y * ip.z;
 
-  // Get pixel from 2D image
-  ip.x = __float2int_rd(ip.x);
-  ip.y = __float2int_rd(ip.y);
-
-  // Clip against image dimensions
-  if (ip.x < 0 || ip.x >= img_dim.x || ip.y < 0 || ip.y >= img_dim.y) {
-      return;
-  }
-  voxel_data = tex1Dfetch(tex_img, ip.y*img_dim.x + ip.x);
+  // Get texture point, clip left to GPU
+  voxel_data = tex2D(tex_img, ip.x, ip.y);
 
   // Place it into the volume
   dev_vol[vol_idx] += ip.z * ip.z * voxel_data;
@@ -143,6 +79,7 @@ void kernel_fdk (float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-( E N D )-_-_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
+
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_reconstruct_conebeam_init() /////////////////////////////
 extern "C"
@@ -151,7 +88,7 @@ CUDA_reconstruct_conebeam_init (
   kernel_args_fdk *kargs,
   kernel_args_fdk *&dev_kargs, // Holds kernel parameters on device
   float *&dev_vol,             // Holds voxels on device
-  float *&dev_img,             // Holds image pixels on device
+  cudaArray *&dev_img,         // Holds image pixels on device
   float *&dev_matrix           // Holds matrix on device
 )
 {
@@ -165,8 +102,14 @@ CUDA_reconstruct_conebeam_init (
   cudaMemset( (void *) dev_vol, 0, vol_size_malloc);  
   CUDA_check_error("Unable to allocate data volume");
 
-  // This is just to retrieve the 2D image dimensions
-  cudaMalloc ((void**)&dev_img, kargs->img_dim.x*kargs->img_dim.y*sizeof(float));
+  cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
+  cudaMallocArray( &dev_img, &channelDesc, kargs->img_dim.x, kargs->img_dim.y );
+
+  // set texture parameters
+  tex_img.addressMode[0] = cudaAddressModeClamp;
+  tex_img.addressMode[1] = cudaAddressModeClamp;
+  tex_img.filterMode = cudaFilterModeLinear;
+  tex_img.normalized = false;    // don't access with normalized texture coordinates
 }
 
 
@@ -179,7 +122,7 @@ CUDA_reconstruct_conebeam (
     float *proj,
     kernel_args_fdk *kargs,
     float *dev_vol,
-    float *dev_img,
+    cudaArray *dev_img,
     float *dev_matrix
 )
 {
@@ -197,8 +140,13 @@ CUDA_reconstruct_conebeam (
 
   // Copy image pixel data & projection matrix to device Global Memory
   // and then bind them to the texture hardware.
-  cudaMemcpy (dev_img, proj, kargs->img_dim.x*kargs->img_dim.y*sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTexture (0, tex_img, dev_img, kargs->img_dim.x*kargs->img_dim.y*sizeof(float));
+
+  // copy image data, bind the array to the texture
+  static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
+  cudaMemcpyToArray( dev_img, 0, 0, proj, kargs->img_dim.x*kargs->img_dim.y*sizeof(float), cudaMemcpyHostToDevice);
+  cudaBindTextureToArray( tex_img, dev_img, channelDesc);
+
+  // copy matrix, bind data to the texture
   cudaMemcpy (dev_matrix, kargs->matrix, sizeof(kargs->matrix), cudaMemcpyHostToDevice);
   cudaBindTexture (0, tex_matrix, dev_matrix, sizeof(kargs->matrix));
 
@@ -228,7 +176,7 @@ CUDA_reconstruct_conebeam_cleanup (
   kernel_args_fdk *dev_kargs,
   float *vol,
   float *dev_vol,
-  float *dev_img,
+  cudaArray *dev_img,
   float *dev_matrix
 )
 {

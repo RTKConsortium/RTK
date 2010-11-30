@@ -8,8 +8,7 @@ struct kernel_args_fdk
     int2 img_dim;
     int3 vol_dim;
     float matrix[12];
-    char padding[24]; //for data alignment
-    //padding to 128Bytes
+    char padding[24]; //for data alignment, padding to 128Bytes
 };
 
 #if defined __cplusplus
@@ -21,7 +20,7 @@ CUDA_reconstruct_conebeam_init (
   kernel_args_fdk *kargs,
   kernel_args_fdk *&dev_kargs,
   float *&dev_vol,
-  float *&dev_img,
+  cudaArray *&dev_img,
   float *&dev_matrix
 );
 
@@ -30,7 +29,7 @@ CUDA_reconstruct_conebeam (
   float *proj,
   kernel_args_fdk *kargs,
   float *dev_vol,
-  float *dev_img,
+  cudaArray *dev_img,
   float *dev_matrix
 );
 
@@ -40,7 +39,7 @@ CUDA_reconstruct_conebeam_cleanup (
   kernel_args_fdk *dev_kargs,
   float *vol,
   float *dev_vol,
-  float *dev_img,
+  cudaArray *dev_img,
   float *dev_matrix
 );
 
