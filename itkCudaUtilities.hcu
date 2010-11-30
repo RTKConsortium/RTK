@@ -1,0 +1,9 @@
+#ifndef __itkCudaUtilities_hcu
+#define __itkCudaUtilities_hcu
+
+#include <cuda_runtime_api.h>
+#include <string>
+
+void CUDA_check_error(const std::string &msg);
+
+#endif

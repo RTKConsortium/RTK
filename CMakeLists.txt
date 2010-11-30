@@ -85,9 +85,7 @@ TARGET_LINK_LIBRARIES(rtkIO ITKIO)
 IF (CUDA_FOUND)
   INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS
-                cuda_mem.cu
-                cuda_util.cu
-                cuda_kernel_util.cu
+                itkCudaUtilities.cu
                 itkCudaFDKBackProjectionImageFilter.cu )
   ADD_LIBRARY(rtkcuda STATIC
               itkCudaFDKBackProjectionImageFilter.cxx
