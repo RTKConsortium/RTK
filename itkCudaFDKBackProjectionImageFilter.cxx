@@ -40,11 +40,10 @@ CudaFDKBackProjectionImageFilter
   m_kargs.img_dim.y = this->GetInput(1)->GetLargestPossibleRegion().GetSize()[1];
 
   // Cuda init
-  kernel_args_fdk *dev_kargs;
   float *dev_vol;
   cudaArray *dev_img;
   float *dev_matrix;
-  CUDA_reconstruct_conebeam_init (&m_kargs, dev_kargs, dev_vol, dev_img, dev_matrix);
+  CUDA_reconstruct_conebeam_init (&m_kargs, dev_vol, dev_img, dev_matrix);
 
   // Go over each projection
   for(unsigned int iProj=0; iProj<nProj; iProj++)
@@ -67,7 +66,7 @@ CudaFDKBackProjectionImageFilter
     CUDA_reconstruct_conebeam(projection->GetBufferPointer(), &m_kargs, dev_vol, dev_img, dev_matrix);
     }
 
-  CUDA_reconstruct_conebeam_cleanup (&m_kargs, dev_kargs, this->GetOutput()->GetBufferPointer(), dev_vol, dev_img, dev_matrix);
+  CUDA_reconstruct_conebeam_cleanup (&m_kargs, this->GetOutput()->GetBufferPointer(), dev_vol, dev_img, dev_matrix);
 }
 
 } // end namespace itk

@@ -126,7 +126,6 @@ extern "C"
 void
 CUDA_reconstruct_conebeam_init (
   kernel_args_fdk *kargs,
-  kernel_args_fdk *&dev_kargs, // Holds kernel parameters on device
   float *&dev_vol,             // Holds voxels on device
   cudaArray *&dev_img,         // Holds image pixels on device
   float *&dev_matrix           // Holds matrix on device
@@ -137,7 +136,6 @@ CUDA_reconstruct_conebeam_init (
 
   // CUDA device pointers
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
-  cudaMalloc( (void**)&dev_kargs, sizeof(kernel_args_fdk) );
   cudaMalloc( (void**)&dev_vol, vol_size_malloc);
   cudaMemset( (void *) dev_vol, 0, vol_size_malloc);  
   CUDA_check_error("Unable to allocate data volume");
@@ -224,7 +222,6 @@ extern "C"
 void 
 CUDA_reconstruct_conebeam_cleanup (
   kernel_args_fdk *kargs,
-  kernel_args_fdk *dev_kargs,
   float *vol,
   float *dev_vol,
   cudaArray *dev_img,
@@ -240,7 +237,6 @@ CUDA_reconstruct_conebeam_cleanup (
 
   // Cleanup
   cudaFree (dev_img);
-  cudaFree (dev_kargs);
   cudaFree (dev_matrix);
   cudaFree (dev_vol); 
 }

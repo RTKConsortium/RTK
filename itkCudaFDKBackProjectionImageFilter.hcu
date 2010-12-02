@@ -18,7 +18,6 @@ extern "C" {
 void
 CUDA_reconstruct_conebeam_init (
   kernel_args_fdk *kargs,
-  kernel_args_fdk *&dev_kargs,
   float *&dev_vol,
   cudaArray *&dev_img,
   float *&dev_matrix
@@ -36,7 +35,6 @@ CUDA_reconstruct_conebeam (
 void
 CUDA_reconstruct_conebeam_cleanup (
   kernel_args_fdk *kargs,
-  kernel_args_fdk *dev_kargs,
   float *vol,
   float *dev_vol,
   cudaArray *dev_img,
