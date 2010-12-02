@@ -125,14 +125,15 @@ void kernel_fdk_optim (float *dev_vol, int2 img_dim, int3 vol_dim)
 extern "C"
 void
 CUDA_reconstruct_conebeam_init (
-  kernel_args_fdk *kargs,
+  int2 &img_dim,
+  int3 &vol_dim,
   float *&dev_vol,             // Holds voxels on device
   cudaArray *&dev_img,         // Holds image pixels on device
   float *&dev_matrix           // Holds matrix on device
 )
 {
   // Size of volume Malloc
-  int vol_size_malloc = (kargs->vol_dim.x*kargs->vol_dim.y*kargs->vol_dim.z)*sizeof(float);
+  int vol_size_malloc = (vol_dim.x*vol_dim.y*vol_dim.z)*sizeof(float);
 
   // CUDA device pointers
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
@@ -141,7 +142,7 @@ CUDA_reconstruct_conebeam_init (
   CUDA_check_error("Unable to allocate data volume");
 
   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  cudaMallocArray( &dev_img, &channelDesc, kargs->img_dim.x, kargs->img_dim.y );
+  cudaMallocArray( &dev_img, &channelDesc, img_dim.x, img_dim.y );
 
   // set texture parameters
   tex_img.addressMode[0] = cudaAddressModeClamp;
@@ -155,40 +156,41 @@ CUDA_reconstruct_conebeam_init (
 extern "C"
 void
 CUDA_reconstruct_conebeam (
-    float *proj,
-    kernel_args_fdk *kargs,
-    float *dev_vol,
-    cudaArray *dev_img,
-    float *dev_matrix
-)
-{    
+  int2 &img_dim,
+  int3 &vol_dim,
+  float *proj,
+  float matrix[12],
+  float *dev_vol,
+  cudaArray *dev_img,
+  float *dev_matrix )
+{
   // copy image data, bind the array to the texture
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  cudaMemcpyToArray( dev_img, 0, 0, proj, kargs->img_dim.x*kargs->img_dim.y*sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpyToArray( dev_img, 0, 0, proj, img_dim.x * img_dim.y * sizeof(float), cudaMemcpyHostToDevice);
   cudaBindTextureToArray( tex_img, dev_img, channelDesc);
 
   // copy matrix, bind data to the texture
-  cudaMemcpy (dev_matrix, kargs->matrix, sizeof(kargs->matrix), cudaMemcpyHostToDevice);
-  cudaBindTexture (0, tex_matrix, dev_matrix, sizeof(kargs->matrix));
+  cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
+  cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float));
 
   // The optimized version runs when only one of the axis of the detector is parallel to
   // the y axis of the volume
-  if((kargs->matrix[1]<1e-4 && kargs->matrix[9]<1e-4) ||
-     (kargs->matrix[5]<1e-4 && kargs->matrix[9]<1e-4))
+  if((matrix[1]<1e-4 && matrix[9]<1e-4) ||
+     (matrix[5]<1e-4 && matrix[9]<1e-4))
     {
     // Thread Block Dimensions
     static int tBlock_x = 32;
     static int tBlock_y = 16;
 
     // Each segment gets 1 thread
-    static int blocksInX = kargs->vol_dim.x/tBlock_x;
-    static int blocksInY = kargs->vol_dim.z/tBlock_y;
+    static int blocksInX = vol_dim.x/tBlock_x;
+    static int blocksInY = vol_dim.z/tBlock_y;
     static dim3 dimGrid  = dim3(blocksInX, blocksInY);
     static dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
 
     // Note: cbi->img AND cbi->matrix are passed via texture memory
     //-------------------------------------
-    kernel_fdk_optim <<< dimGrid, dimBlock >>> ( dev_vol, kargs->img_dim, kargs->vol_dim );
+    kernel_fdk_optim <<< dimGrid, dimBlock >>> ( dev_vol, img_dim, vol_dim );
     }
   else
     {
@@ -198,15 +200,15 @@ CUDA_reconstruct_conebeam (
     static int tBlock_z = 4;
 
     // Each element in the volume (each voxel) gets 1 thread
-    static int blocksInX = (kargs->vol_dim.x+tBlock_x-1)/tBlock_x;
-    static int blocksInY = (kargs->vol_dim.y+tBlock_y-1)/tBlock_y;
-    static int blocksInZ = (kargs->vol_dim.z+tBlock_z-1)/tBlock_z;
+    static int blocksInX = (vol_dim.x+tBlock_x-1)/tBlock_x;
+    static int blocksInY = (vol_dim.y+tBlock_y-1)/tBlock_y;
+    static int blocksInZ = (vol_dim.z+tBlock_z-1)/tBlock_z;
     static dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
     static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
     // Note: cbi->img AND cbi->matrix are passed via texture memory
     //-------------------------------------
-    kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol, kargs->img_dim, kargs->vol_dim, blocksInY, 1.0f/(float)blocksInY );
+    kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol, img_dim, vol_dim, blocksInY, 1.0f/(float)blocksInY );
     }
 
   CUDA_check_error("Kernel Panic!");
@@ -221,7 +223,7 @@ CUDA_reconstruct_conebeam (
 extern "C"
 void 
 CUDA_reconstruct_conebeam_cleanup (
-  kernel_args_fdk *kargs,
+  int3 &vol_dim,
   float *vol,
   float *dev_vol,
   cudaArray *dev_img,
@@ -229,7 +231,7 @@ CUDA_reconstruct_conebeam_cleanup (
 )
 {
   // Size of volume Malloc
-  int vol_size_malloc = (kargs->vol_dim.x*kargs->vol_dim.y*kargs->vol_dim.z)*sizeof(float);
+  int vol_size_malloc = (vol_dim.x*vol_dim.y*vol_dim.z)*sizeof(float);
 
   // Copy reconstructed volume from device to host
   cudaMemcpy (vol, dev_vol, vol_size_malloc, cudaMemcpyDeviceToHost);

@@ -32,18 +32,21 @@ CudaFDKBackProjectionImageFilter
   ContinuousIndex<double, Dimension> rotCenterIndex;
   this->GetInput(0)->TransformPhysicalPointToContinuousIndex(rotCenterPoint, rotCenterIndex);
   
-  // Load kernel arguments
-  m_kargs.vol_dim.x = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
-  m_kargs.vol_dim.y = this->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
-  m_kargs.vol_dim.z = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
-  m_kargs.img_dim.x = this->GetInput(1)->GetLargestPossibleRegion().GetSize()[0];
-  m_kargs.img_dim.y = this->GetInput(1)->GetLargestPossibleRegion().GetSize()[1];
+  // Load dimensions arguments
+  int3 vol_dim;
+  vol_dim.x = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
+  vol_dim.y = this->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
+  vol_dim.z = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
+
+  int2 img_dim;
+  img_dim.x = this->GetInput(1)->GetLargestPossibleRegion().GetSize()[0];
+  img_dim.y = this->GetInput(1)->GetLargestPossibleRegion().GetSize()[1];
 
   // Cuda init
   float *dev_vol;
   cudaArray *dev_img;
   float *dev_matrix;
-  CUDA_reconstruct_conebeam_init (&m_kargs, dev_vol, dev_img, dev_matrix);
+  CUDA_reconstruct_conebeam_init (img_dim, vol_dim, dev_vol, dev_img, dev_matrix);
 
   // Go over each projection
   for(unsigned int iProj=0; iProj<nProj; iProj++)
@@ -58,15 +61,14 @@ CudaFDKBackProjectionImageFilter
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
     matrix /= perspFactor;
 
+    float fMatrix[12];
+    for (int j = 0; j < 12; j++)
+      fMatrix[j] = matrix[j/4][j%4];
 
-    for (int j = 0; j < 12; j++) {
-        m_kargs.matrix[j] = matrix[j/4][j%4];
+    CUDA_reconstruct_conebeam(img_dim, vol_dim, projection->GetBufferPointer(), fMatrix, dev_vol, dev_img, dev_matrix);
     }
 
-    CUDA_reconstruct_conebeam(projection->GetBufferPointer(), &m_kargs, dev_vol, dev_img, dev_matrix);
-    }
-
-  CUDA_reconstruct_conebeam_cleanup (&m_kargs, this->GetOutput()->GetBufferPointer(), dev_vol, dev_img, dev_matrix);
+  CUDA_reconstruct_conebeam_cleanup (vol_dim, this->GetOutput()->GetBufferPointer(), dev_vol, dev_img, dev_matrix);
 }
 
 } // end namespace itk

@@ -40,8 +40,6 @@ protected:
 private:
   CudaFDKBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-  
-  kernel_args_fdk m_kargs;
 };
 
 } // end namespace itk
