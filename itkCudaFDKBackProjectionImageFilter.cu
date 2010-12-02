@@ -74,6 +74,46 @@ void kernel_fdk (float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks
   // Place it into the volume
   dev_vol[vol_idx] += ip.z * ip.z * voxel_data;
 }
+
+__global__
+void kernel_fdk_optim (float *dev_vol, int2 img_dim, int3 vol_dim)
+{
+  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+  unsigned int j = 0;
+  unsigned int k = blockIdx.y * blockDim.y + threadIdx.y;
+
+  if (i >= vol_dim.x || k >= vol_dim.z) {
+      return; 
+  }
+
+  // Index row major into the volume
+  long int vol_idx = i + k*vol_dim.y*vol_dim.x;
+
+  float3 ip;
+
+  // matrix multiply
+  ip.x = tex1Dfetch(tex_matrix, 0)*i + tex1Dfetch(tex_matrix, 2)*k + tex1Dfetch(tex_matrix, 3);
+  ip.y = tex1Dfetch(tex_matrix, 4)*i + tex1Dfetch(tex_matrix, 6)*k + tex1Dfetch(tex_matrix, 7);
+  ip.z = tex1Dfetch(tex_matrix, 8)*i + tex1Dfetch(tex_matrix, 10)*k + tex1Dfetch(tex_matrix, 11);
+
+  // Change coordinate systems
+  ip.z = 1 / ip.z;
+  ip.x = ip.x * ip.z;
+  ip.y = ip.y * ip.z;
+  float dx = tex1Dfetch(tex_matrix, 1)*ip.z;
+  float dy = tex1Dfetch(tex_matrix, 5)*ip.z;
+  
+  ip.z*=ip.z;
+  
+  // Place it into the volume segment
+  for(;j<vol_dim.y; j++)
+    {
+    dev_vol[vol_idx] += ip.z * tex2D(tex_img, ip.x, ip.y);
+    vol_idx+=vol_dim.x;
+    ip.x+=dx;
+    ip.y+=dy;
+    }
+}
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-( E N D )-_-_
@@ -112,8 +152,6 @@ CUDA_reconstruct_conebeam_init (
   tex_img.normalized = false;    // don't access with normalized texture coordinates
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_reconstruct_conebeam() //////////////////////////////////
 extern "C"
@@ -125,22 +163,7 @@ CUDA_reconstruct_conebeam (
     cudaArray *dev_img,
     float *dev_matrix
 )
-{
-  // Thread Block Dimensions
-  static int tBlock_x = 16;
-  static int tBlock_y = 4;
-  static int tBlock_z = 4;
-
-  // Each element in the volume (each voxel) gets 1 thread
-  static int blocksInX = (kargs->vol_dim.x+tBlock_x-1)/tBlock_x;
-  static int blocksInY = (kargs->vol_dim.y+tBlock_y-1)/tBlock_y;
-  static int blocksInZ = (kargs->vol_dim.z+tBlock_z-1)/tBlock_z;
-  static dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
-  static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
-
-  // Copy image pixel data & projection matrix to device Global Memory
-  // and then bind them to the texture hardware.
-
+{    
   // copy image data, bind the array to the texture
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
   cudaMemcpyToArray( dev_img, 0, 0, proj, kargs->img_dim.x*kargs->img_dim.y*sizeof(float), cudaMemcpyHostToDevice);
@@ -150,15 +173,43 @@ CUDA_reconstruct_conebeam (
   cudaMemcpy (dev_matrix, kargs->matrix, sizeof(kargs->matrix), cudaMemcpyHostToDevice);
   cudaBindTexture (0, tex_matrix, dev_matrix, sizeof(kargs->matrix));
 
-  // Note: cbi->img AND cbi->matrix are passed via texture memory
-  //-------------------------------------
-  kernel_fdk <<< dimGrid, dimBlock >>> (
-      dev_vol,
-      kargs->img_dim,
-      kargs->vol_dim,
-      blocksInY,
-      1.0f/(float)blocksInY
-  );
+  // The optimized version runs when only one of the axis of the detector is parallel to
+  // the y axis of the volume
+  if((kargs->matrix[1]<1e-4 && kargs->matrix[9]<1e-4) ||
+     (kargs->matrix[5]<1e-4 && kargs->matrix[9]<1e-4))
+    {
+    // Thread Block Dimensions
+    static int tBlock_x = 32;
+    static int tBlock_y = 16;
+
+    // Each segment gets 1 thread
+    static int blocksInX = kargs->vol_dim.x/tBlock_x;
+    static int blocksInY = kargs->vol_dim.z/tBlock_y;
+    static dim3 dimGrid  = dim3(blocksInX, blocksInY);
+    static dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
+
+    // Note: cbi->img AND cbi->matrix are passed via texture memory
+    //-------------------------------------
+    kernel_fdk_optim <<< dimGrid, dimBlock >>> ( dev_vol, kargs->img_dim, kargs->vol_dim );
+    }
+  else
+    {
+    // Thread Block Dimensions
+    static int tBlock_x = 16;
+    static int tBlock_y = 4;
+    static int tBlock_z = 4;
+
+    // Each element in the volume (each voxel) gets 1 thread
+    static int blocksInX = (kargs->vol_dim.x+tBlock_x-1)/tBlock_x;
+    static int blocksInY = (kargs->vol_dim.y+tBlock_y-1)/tBlock_y;
+    static int blocksInZ = (kargs->vol_dim.z+tBlock_z-1)/tBlock_z;
+    static dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
+    static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+
+    // Note: cbi->img AND cbi->matrix are passed via texture memory
+    //-------------------------------------
+    kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol, kargs->img_dim, kargs->vol_dim, blocksInY, 1.0f/(float)blocksInY );
+    }
 
   CUDA_check_error("Kernel Panic!");
 

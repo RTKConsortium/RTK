@@ -13,7 +13,6 @@ CudaFDKBackProjectionImageFilter
 {
   this->AllocateOutputs();
   this->UpdateAngularWeights();
-  this->SetTranspose(true);
   
   std::vector<double> angWeights = this->GetAngularWeights();
   
