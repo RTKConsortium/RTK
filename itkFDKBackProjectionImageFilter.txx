@@ -66,7 +66,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
     matrix /= perspFactor;
     
     // Optimized version
-    if (matrix[1][0]<1e-4 && matrix[2][0]<1e-4)
+    if (abs(matrix[1][0])<1e-10 && abs(matrix[2][0])<1e-10)
       {
       OptimizedBackprojection( outputRegionForThread, matrix, projection);
       continue;
