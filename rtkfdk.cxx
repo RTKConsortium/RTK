@@ -33,6 +33,12 @@ int main(int argc, char * argv[])
   names->SetRegularExpression(args_info.regexp_arg);
   names->SetSubMatch(0);
 
+  if(args_info.verbose_flag)
+    std::cout << "Regular expression matches "
+              << names->GetFileNames().size()
+              << " file(s)..."
+              << std::endl;
+
   // Projections reader
   typedef itk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
@@ -49,6 +55,12 @@ int main(int argc, char * argv[])
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
   }
+
+  if(args_info.verbose_flag)
+    std::cout << "Reading geometry information from "
+              << args_info.geometry_arg
+              << "..."
+              << std::endl;
 
   // Geometry
   itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
@@ -73,6 +85,10 @@ int main(int argc, char * argv[])
   streamer->SetInput( rampFilter->GetOutput() );
   streamer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
+  if(args_info.verbose_flag)
+    std::cout << "Weighting and filtering projections..."
+              << std::endl;
+
   // Try to do all 2D pre-processing
   itk::TimeProbe streamerProbe;
   try {
@@ -87,6 +103,11 @@ int main(int argc, char * argv[])
 
   // Create reconstructed volume
   OutputImageType::Pointer tomography = rtk::CreateImageFromGgo<OutputImageType>(args_info);
+
+  if(args_info.verbose_flag)
+    std::cout << "Backprojecting using "
+              << args_info.hardware_arg
+              << std::endl;
 
   // Backprojection
   typedef itk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
