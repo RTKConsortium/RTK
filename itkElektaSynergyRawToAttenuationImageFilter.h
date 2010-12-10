@@ -2,6 +2,7 @@
 #define __itkElektaSynergyRawToAttenuationImageFilter_h
 
 #include <itkImageToImageFilter.h>
+#include <itkCropImageFilter.h>
 #include "itkElektaSynergyLutImageFilter.h"
 
 /** \class RawToAttenuationImageFilter
@@ -42,6 +43,8 @@ protected:
   ElektaSynergyRawToAttenuationImageFilter();
   ~ElektaSynergyRawToAttenuationImageFilter(){}
 
+  void GenerateOutputInformation();
+
   /** Single-threaded version of GenerateData.  This filter delegates
    * to other filters. */
   void GenerateData();
@@ -51,8 +54,10 @@ private:
   void operator=(const Self&); //purposely not implemented
 
   typedef itk::ElektaSynergyLutImageFilter<InputImageType, OutputImageType> LutFilterType;
+  typedef itk::CropImageFilter<OutputImageType, OutputImageType> CropFilterType;
 
   typename LutFilterType::Pointer m_LutFilter;
+  typename CropFilterType::Pointer m_CropFilter;
 }; // end of class
 
 } // end namespace itk
