@@ -59,11 +59,22 @@ itk::ElektaSynergyLutImageFilter<TInputImage, TOutputImage>::ElektaSynergyLutIma
   OutputImagePixelType logRef = log(OutputImagePixelType(size[0]));
   itk::ImageRegionIteratorWithIndex<LutType>  it( lut, lut->GetBufferedRegion() );
   it.GoToBegin();
+
+  //First value takes value of pixel #1
+  it.Set( log( OutputImagePixelType(1) ) - logRef );
+  ++it;
+
+  //Conventional lookup table for the rest
   while( !it.IsAtEnd() ) {
-    it.Set( log( OutputImagePixelType(it.GetIndex()[0]+1) ) - logRef );
+    it.Set( log( OutputImagePixelType(it.GetIndex()[0]) ) - logRef );
     ++it;
   }
-
+  
+  //Last value takes value of pixel #1
+  --it;
+  it.Set( log( OutputImagePixelType(1) ) - logRef );
+  ++it;
+  
   // Set the lut to member and functor
   this->SetLut(lut);
 }
