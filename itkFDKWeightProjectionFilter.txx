@@ -14,7 +14,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
   for(unsigned int i=0; i<WeightImageType::ImageDimension; i++)
     {
-    region.SetIndex(i, 0);
+    region.SetIndex(i, this->GetOutput()->GetLargestPossibleRegion().GetIndex()[i]);
     region.SetSize(i, this->GetOutput()->GetLargestPossibleRegion().GetSize()[i]);
     }
   this->GetOutput()->SetRequestedRegion(region);
@@ -26,11 +26,12 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   // Compute weights image parameters (== one projection, i.e. one slice of the input)
-  typename WeightImageType::SizeType size;
+  typename WeightImageType::RegionType region;
   typename WeightImageType::SpacingType spacing;
   typename WeightImageType::PointType origin;
   for(unsigned int i=0; i<WeightImageType::ImageDimension; i++){
-    size[i] = this->GetInput()->GetLargestPossibleRegion().GetSize()[i];
+    region.SetSize(i, this->GetInput()->GetLargestPossibleRegion().GetSize()[i]);
+    region.SetIndex(i, this->GetInput()->GetLargestPossibleRegion().GetIndex()[i]);
     spacing[i] = this->GetInput()->GetSpacing()[i];
     origin[i] = this->GetInput()->GetOrigin()[i];
   }
@@ -39,14 +40,14 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   if(m_WeightsImage.GetPointer() != NULL && 
      m_WeightsImage->GetSpacing() == spacing &&
      m_WeightsImage->GetOrigin() == origin &&
-     m_WeightsImage->GetLargestPossibleRegion().GetSize() == size)
+     m_WeightsImage->GetLargestPossibleRegion() == region)
      return;
 
   // Allocate weights image
   m_WeightsImage = WeightImageType::New();
   m_WeightsImage->SetSpacing( spacing );
   m_WeightsImage->SetOrigin( origin );
-  m_WeightsImage->SetRegions( size );
+  m_WeightsImage->SetRegions( region );
   m_WeightsImage->Allocate();
 
   // Compute weights
