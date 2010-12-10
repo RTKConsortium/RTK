@@ -156,10 +156,11 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
-  std::cout << "Reading took " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl
-            << "2D processing took " << streamerProbe.GetMeanTime() << ' ' << streamerProbe.GetUnit() << std::endl
-            << "backprojection took " << bpProbe.GetMeanTime() << ' ' << bpProbe.GetUnit() << std::endl
-            << "writing took " << writerProbe.GetMeanTime() << ' ' << writerProbe.GetUnit() << std::endl;
+  if(args_info.verbose_flag)
+    std::cout << "Reading took " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl
+              << "2D processing took " << streamerProbe.GetMeanTime() << ' ' << streamerProbe.GetUnit() << std::endl
+              << "backprojection took " << bpProbe.GetMeanTime() << ' ' << bpProbe.GetUnit() << std::endl
+              << "writing took " << writerProbe.GetMeanTime() << ' ' << writerProbe.GetUnit() << std::endl;
 
   return EXIT_SUCCESS;
 }
