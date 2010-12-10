@@ -13,7 +13,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   UpdateAngularWeights();
-  this->SetTranspose(true);
+  this->SetTranspose(false);
 }
 
 /**
@@ -64,15 +64,15 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
     for(unsigned int j=0; j<Dimension; j++)
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
     matrix /= perspFactor;
-    
+
+/*
     // Optimized version
     if (abs(matrix[1][0])<1e-10 && abs(matrix[2][0])<1e-10)
       {
       OptimizedBackprojection( outputRegionForThread, matrix, projection);
       continue;
       }
-    if(threadId==0) itkWarningMacro(<<"Non optimized backprojection running"<<std::endl);
-
+*/
     // Go over each voxel
     itIn.GoToBegin();
     itOut.GoToBegin();
