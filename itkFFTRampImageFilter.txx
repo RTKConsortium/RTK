@@ -58,8 +58,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   const long next = this->GetTruncationCorrectionExtent();
   if ((long)m_TruncationMirrorWeights.size() != next)
     {
-    m_TruncationMirrorWeights.resize(next);
-    for(unsigned int i=0; i<next; i++)
+    m_TruncationMirrorWeights.resize(next+1);
+    for(unsigned int i=0; i<next+1; i++)
       m_TruncationMirrorWeights[i] = pow( sin((next-i)*vnl_math::pi/(2*next-2)), 0.75);
     }
 
@@ -86,8 +86,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
   typename FFTType::Pointer fftI = FFTType::New();
   fftI->SetInput( paddedImage );
-  fftI->SetNumberOfThreads( this->GetNumberOfThreads() );
-  fftI->SetReleaseDataFlag( true );
+  fftI->SetNumberOfThreads( 1 );
   fftI->Update();
 
   // Allocate kernel
@@ -117,14 +116,14 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
-  fftK->SetNumberOfThreads( this->GetNumberOfThreads() );
-  fftK->SetReleaseDataFlag( false );
+  fftK->SetNumberOfThreads( 1 );
   fftK->Update();
 
   //Multiply line-by-line
   typedef itk::ImageRegionIterator<typename FFTType::TOutputImageType> IteratorType;
   IteratorType itI(fftI->GetOutput(), fftI->GetOutput()->GetLargestPossibleRegion());
   IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion());
+
   itI.GoToBegin();
   while(!itI.IsAtEnd()) {
     itK.GoToBegin();
@@ -140,7 +139,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   typename IFFTType::Pointer ifft = IFFTType::New();
   ifft->SetInput( fftI->GetOutput() );
   ifft->SetActualXDimensionIsOdd( paddedImage->GetLargestPossibleRegion().GetSize(0) % 2 );
-  ifft->SetNumberOfThreads( this->GetNumberOfThreads() );
+  ifft->SetNumberOfThreads( 1 );
   ifft->SetReleaseDataFlag( true );
   ifft->Update();
 
@@ -168,7 +167,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   RegionType paddedRegion = inputRegion;
   paddedRegion.SetSize(0, xPaddedSize);
-  paddedRegion.SetIndex(0, inputRegion.GetIndex(0)+((long)inputRegion.GetSize(0)-(long)xPaddedSize) / 2);
+  long zeroext = ((long)xPaddedSize - (long)inputRegion.GetSize(0)) / 2;
+  paddedRegion.SetIndex(0, inputRegion.GetIndex(0) - zeroext);
 
   // Create padded image (spacing and origin do not matter)
   FFTImagePointer paddedImage = FFTImageType::New();
@@ -176,21 +176,22 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   paddedImage->Allocate();
   paddedImage->FillBuffer(0);
 
-  const long next = this->GetTruncationCorrectionExtent();
+  const long next = vnl_math_min(zeroext, (long)this->GetTruncationCorrectionExtent());
   if(next)
     {
-
     // Mirror left
     RegionType leftRegion = paddedRegion;
-    leftRegion.SetIndex(0, inputRegion.GetIndex(0)-next+1);
+    leftRegion.SetIndex(0, inputRegion.GetIndex(0)-next);
     leftRegion.SetSize(0, next);
     itk::ImageRegionIteratorWithIndex<FFTImageType> itLeft(paddedImage, leftRegion);
     while(!itLeft.IsAtEnd())
       {
       typename FFTImageType::IndexType idx = itLeft.GetIndex();
-      idx[0] *= -1;
-      itLeft.Set(m_TruncationMirrorWeights[ idx[0] ] * this->GetInput()->GetPixel(idx));
+      typename FFTImageType::IndexType::IndexValueType borderDist = inputRegion.GetIndex(0)-idx[0];
+      idx[0] = inputRegion.GetIndex(0) + borderDist;
+      itLeft.Set(m_TruncationMirrorWeights[ borderDist ] * this->GetInput()->GetPixel(idx));
       ++itLeft;
+    
       }
 
     // Mirror right
@@ -201,8 +202,9 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     while(!itRight.IsAtEnd())
       {
       typename FFTImageType::IndexType idx = itRight.GetIndex();
-      typename FFTImageType::IndexType::IndexValueType borderDist = idx[0]-inputRegion.GetSize(0);
-      idx[0] = inputRegion.GetSize(0)-borderDist-2;
+      typename FFTImageType::IndexType::IndexValueType rightIdx = inputRegion.GetIndex(0)+inputRegion.GetSize(0)-1;
+      typename FFTImageType::IndexType::IndexValueType borderDist = idx[0]-rightIdx;
+      idx[0] = rightIdx - borderDist;
       itRight.Set(m_TruncationMirrorWeights[ borderDist ] * this->GetInput()->GetPixel(idx));
       ++itRight;
       }
@@ -218,6 +220,14 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     ++itS;
     ++itD;
   }
+
+/*
+typedef itk::ImageFileWriter<  FFTImageType >  WriterType;
+typename WriterType::Pointer writer = WriterType::New();
+writer->SetFileName( "padded.mha" );
+writer->SetInput( paddedImage );
+writer->Update();
+*/
 
   return paddedImage;
 }
