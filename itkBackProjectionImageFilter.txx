@@ -120,8 +120,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
   if(this->GetTranspose())
     {
-    typename ProjectionImageType::SizeType size;
-    typename ProjectionImageType::IndexType index;
+    typename ProjectionImageType::SizeType size = region.GetSize();
+    typename ProjectionImageType::IndexType index = region.GetIndex();
     std::swap(size[0], size[1]);
     std::swap(index[0], index[1]);
     std::swap(origin[0], origin[1]);
