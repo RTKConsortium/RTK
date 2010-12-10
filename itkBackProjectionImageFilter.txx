@@ -107,7 +107,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   typename Superclass::InputImagePointer stack = const_cast< TInputImage * >( this->GetInput(1) );
 
   ProjectionImagePointer projection = ProjectionImageType::New();
-  typename ProjectionImageType::SizeType size;
+  typename ProjectionImageType::RegionType region;
   typename ProjectionImageType::SpacingType spacing;
   typename ProjectionImageType::PointType origin;
 
@@ -115,17 +115,23 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     {
     origin[i] = stack->GetOrigin()[i];
     spacing[i] = stack->GetSpacing()[i];
-    size[i] = stack->GetLargestPossibleRegion().GetSize()[i];
+    region.SetSize(i, stack->GetLargestPossibleRegion().GetSize()[i]);
+    region.SetIndex(i, stack->GetLargestPossibleRegion().GetIndex()[i]);
     }
   if(this->GetTranspose())
     {
+    typename ProjectionImageType::SizeType size;
+    typename ProjectionImageType::IndexType index;
+    std::swap(size[0], size[1]);
+    std::swap(index[0], index[1]);
     std::swap(origin[0], origin[1]);
     std::swap(spacing[0], spacing[1]);
-    std::swap(size[0], size[1]);
+    region.SetSize(size);
+    region.SetIndex(index);
     }
   projection->SetSpacing(spacing);
   projection->SetOrigin(origin);
-  projection->SetRegions(size);
+  projection->SetRegions(region);
   projection->Allocate();
 
   const unsigned int npixels = projection->GetLargestPossibleRegion().GetNumberOfPixels();
@@ -135,8 +141,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   // Transpose projection for optimization
   if(this->GetTranspose())
     {
-    for(unsigned int j=0; j<size[0]; j++, po-=npixels-1)
-      for(unsigned int i=0; i<size[1]; i++, po+=size[0])
+    for(unsigned int j=0; j<region.GetSize(0); j++, po-=npixels-1)
+      for(unsigned int i=0; i<region.GetSize(1); i++, po+=region.GetSize(0))
         *po = multConst * (*pi++);
     }
   else
@@ -164,7 +170,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       std::swap(matrixProj[i][0], matrixProj[i][1]);
       std::swap(matrixVol[i][0], matrixVol[i][1]);
       }
-      std::swap(matrixVol[Dimension][0], matrixVol[Dimension][1]);
+    std::swap(matrixVol[Dimension][0], matrixVol[Dimension][1]);
     }
       
   return ProjectionMatrixType(matrixProj.GetVnlMatrix() *
