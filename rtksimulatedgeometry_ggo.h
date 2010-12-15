@@ -60,6 +60,12 @@ struct args_info_rtksimulatedgeometry
   double sid_arg;	/**< @brief Source to isocenter distance (mm) (default='1000').  */
   char * sid_orig;	/**< @brief Source to isocenter distance (mm) original value given at command line.  */
   const char *sid_help; /**< @brief Source to isocenter distance (mm) help description.  */
+  double proj_iso_x_arg;	/**< @brief X coordinate on the projection image of isocenter (default='0').  */
+  char * proj_iso_x_orig;	/**< @brief X coordinate on the projection image of isocenter original value given at command line.  */
+  const char *proj_iso_x_help; /**< @brief X coordinate on the projection image of isocenter help description.  */
+  double proj_iso_y_arg;	/**< @brief Y coordinate on the projection image of isocenter (default='0').  */
+  char * proj_iso_y_orig;	/**< @brief Y coordinate on the projection image of isocenter original value given at command line.  */
+  const char *proj_iso_y_help; /**< @brief Y coordinate on the projection image of isocenter help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -70,6 +76,8 @@ struct args_info_rtksimulatedgeometry
   unsigned int arc_given ;	/**< @brief Whether arc was given.  */
   unsigned int sdd_given ;	/**< @brief Whether sdd was given.  */
   unsigned int sid_given ;	/**< @brief Whether sid was given.  */
+  unsigned int proj_iso_x_given ;	/**< @brief Whether proj_iso_x was given.  */
+  unsigned int proj_iso_y_given ;	/**< @brief Whether proj_iso_y was given.  */
 
   char **inputs ; /**< @brief unamed options (options without names) */
   unsigned inputs_num ; /**< @brief unamed options number */

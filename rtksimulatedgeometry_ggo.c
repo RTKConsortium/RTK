@@ -40,6 +40,8 @@ const char *args_info_rtksimulatedgeometry_help[] = {
   "  -a, --arc=DOUBLE          Angular arc covevered by the acquisition (°)  \n                              (default=`360')",
   "      --sdd=DOUBLE          Source to detector distance (mm)  (default=`1536')",
   "      --sid=DOUBLE          Source to isocenter distance (mm)  (default=`1000')",
+  "      --proj_iso_x=DOUBLE   X coordinate on the projection image of isocenter  \n                              (default=`0')",
+  "      --proj_iso_y=DOUBLE   Y coordinate on the projection image of isocenter  \n                              (default=`0')",
     0
 };
 
@@ -100,6 +102,8 @@ void clear_given (struct args_info_rtksimulatedgeometry *args_info)
   args_info->arc_given = 0 ;
   args_info->sdd_given = 0 ;
   args_info->sid_given = 0 ;
+  args_info->proj_iso_x_given = 0 ;
+  args_info->proj_iso_y_given = 0 ;
 }
 
 static
@@ -119,6 +123,10 @@ void clear_args (struct args_info_rtksimulatedgeometry *args_info)
   args_info->sdd_orig = NULL;
   args_info->sid_arg = 1000;
   args_info->sid_orig = NULL;
+  args_info->proj_iso_x_arg = 0;
+  args_info->proj_iso_x_orig = NULL;
+  args_info->proj_iso_y_arg = 0;
+  args_info->proj_iso_y_orig = NULL;
   
 }
 
@@ -136,6 +144,8 @@ void init_args_info(struct args_info_rtksimulatedgeometry *args_info)
   args_info->arc_help = args_info_rtksimulatedgeometry_help[6] ;
   args_info->sdd_help = args_info_rtksimulatedgeometry_help[7] ;
   args_info->sid_help = args_info_rtksimulatedgeometry_help[8] ;
+  args_info->proj_iso_x_help = args_info_rtksimulatedgeometry_help[9] ;
+  args_info->proj_iso_y_help = args_info_rtksimulatedgeometry_help[10] ;
   
 }
 
@@ -228,6 +238,8 @@ cmdline_parser_rtksimulatedgeometry_release (struct args_info_rtksimulatedgeomet
   free_string_field (&(args_info->arc_orig));
   free_string_field (&(args_info->sdd_orig));
   free_string_field (&(args_info->sid_orig));
+  free_string_field (&(args_info->proj_iso_x_orig));
+  free_string_field (&(args_info->proj_iso_y_orig));
   
   
   for (i = 0; i < args_info->inputs_num; ++i)
@@ -281,6 +293,10 @@ cmdline_parser_rtksimulatedgeometry_dump(FILE *outfile, struct args_info_rtksimu
     write_into_file(outfile, "sdd", args_info->sdd_orig, 0);
   if (args_info->sid_given)
     write_into_file(outfile, "sid", args_info->sid_orig, 0);
+  if (args_info->proj_iso_x_given)
+    write_into_file(outfile, "proj_iso_x", args_info->proj_iso_x_orig, 0);
+  if (args_info->proj_iso_y_given)
+    write_into_file(outfile, "proj_iso_y", args_info->proj_iso_y_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -1175,6 +1191,8 @@ cmdline_parser_rtksimulatedgeometry_internal (
         { "arc",	1, NULL, 'a' },
         { "sdd",	1, NULL, 0 },
         { "sid",	1, NULL, 0 },
+        { "proj_iso_x",	1, NULL, 0 },
+        { "proj_iso_y",	1, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1292,6 +1310,34 @@ cmdline_parser_rtksimulatedgeometry_internal (
                 &(local_args_info.sid_given), optarg, 0, "1000", ARG_DOUBLE,
                 check_ambiguity, override, 0, 0,
                 "sid", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* X coordinate on the projection image of isocenter.  */
+          else if (strcmp (long_options[option_index].name, "proj_iso_x") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->proj_iso_x_arg), 
+                 &(args_info->proj_iso_x_orig), &(args_info->proj_iso_x_given),
+                &(local_args_info.proj_iso_x_given), optarg, 0, "0", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "proj_iso_x", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Y coordinate on the projection image of isocenter.  */
+          else if (strcmp (long_options[option_index].name, "proj_iso_y") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->proj_iso_y_arg), 
+                 &(args_info->proj_iso_y_orig), &(args_info->proj_iso_y_given),
+                &(local_args_info.proj_iso_y_given), optarg, 0, "0", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "proj_iso_y", '-',
                 additional_error))
               goto failure;
           

@@ -9,4 +9,7 @@ option "nproj"       n "Number of projections"                                 i
 option "arc"         a "Angular arc covevered by the acquisition (°)"          double          no  default="360"
 option "sdd"         - "Source to detector distance (mm)"                      double          no  default="1536"
 option "sid"         - "Source to isocenter distance (mm)"                     double          no  default="1000"
+option "proj_iso_x"  - "X coordinate on the projection image of isocenter"     double          no  default="0"
+option "proj_iso_y"  - "Y coordinate on the projection image of isocenter"     double          no  default="0"
+
 

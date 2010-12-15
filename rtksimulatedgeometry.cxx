@@ -22,7 +22,7 @@ int main(int argc, char * argv[])
   for(int noProj=0; noProj<args_info.nproj_arg; noProj++)
   {
     double angle = args_info.first_angle_arg + noProj * args_info.arc_arg / args_info.nproj_arg;
-    geometry->AddProjection(angle, 0.0, 0.0);
+    geometry->AddProjection(angle, args_info.proj_iso_x_arg, args_info.proj_iso_y_arg);
   }
 
   // Write
