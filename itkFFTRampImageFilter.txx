@@ -125,7 +125,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   if(this->GetHannCutFrequency()>0.)
     {
     unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
-    n = Math::Round<double>(n * vnl_math_max(0.0, vnl_math_min(1.0, this->GetHannCutFrequency())));
+    n = Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency()));
 
     itK.GoToBegin();
     for(unsigned int i=0; i<n; i++, ++itK)
