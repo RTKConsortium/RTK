@@ -17,7 +17,7 @@ namespace itk
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::FFTRampImageFilter():m_TruncationCorrection(0.), m_GreatestPrimeFactor(2)
+::FFTRampImageFilter():m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.)
 {
 }
 
@@ -118,12 +118,24 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   fftK->SetInput( kernel );
   fftK->SetNumberOfThreads( 1 );
   fftK->Update();
+  
+  // Windowing (if enabled)
+  typedef itk::ImageRegionIterator<typename FFTType::TOutputImageType> IteratorType;
+  IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion());
+  if(this->GetHannCutFrequency()>0.)
+    {
+    unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
+    n = Math::Round<double>(n * vnl_math_max(0.0, vnl_math_min(1.0, this->GetHannCutFrequency())));
+
+    itK.GoToBegin();
+    for(unsigned int i=0; i<n; i++, ++itK)
+      itK.Set( itK.Get() * 0.5 * ( 1 + vcl_cos( vnl_math::pi * i / n ) ) );
+    for( ; !itK.IsAtEnd(); ++itK)
+      itK.Set( itK.Get() * 0. );
+    }
 
   //Multiply line-by-line
-  typedef itk::ImageRegionIterator<typename FFTType::TOutputImageType> IteratorType;
   IteratorType itI(fftI->GetOutput(), fftI->GetOutput()->GetLargestPossibleRegion());
-  IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion());
-
   itI.GoToBegin();
   while(!itI.IsAtEnd()) {
     itK.GoToBegin();

@@ -39,8 +39,10 @@ const char *args_info_rtkfdk_help[] = {
   "  -p, --path=STRING      Path containing projections",
   "  -r, --regexp=STRING    Regular expression to select projection files in path",
   "  -o, --output=STRING    Output file name",
-  "      --pad=DOUBLE       Data padding parameter to correct for truncation  \n                           (default=`0.0')",
   "  -h, --hardware=STRING  Hardware used for computation  (possible \n                           values=\"cpu\", \"cuda\" default=`cpu')",
+  "\nRamp filter:",
+  "      --pad=DOUBLE       Data padding parameter to correct for truncation  \n                           (default=`0.0')",
+  "      --hann=DOUBLE      Cut frequency for hann window (default is no window)  \n                           (default=`0.0')",
   "\nBackprojection:",
   "      --origin=DOUBLE    Origin (default=centered)",
   "      --dimension=INT    Dimension  (default=`256')",
@@ -107,8 +109,9 @@ void clear_given (struct args_info_rtkfdk *args_info)
   args_info->path_given = 0 ;
   args_info->regexp_given = 0 ;
   args_info->output_given = 0 ;
-  args_info->pad_given = 0 ;
   args_info->hardware_given = 0 ;
+  args_info->pad_given = 0 ;
+  args_info->hann_given = 0 ;
   args_info->origin_given = 0 ;
   args_info->dimension_given = 0 ;
   args_info->spacing_given = 0 ;
@@ -129,10 +132,12 @@ void clear_args (struct args_info_rtkfdk *args_info)
   args_info->regexp_orig = NULL;
   args_info->output_arg = NULL;
   args_info->output_orig = NULL;
-  args_info->pad_arg = 0.0;
-  args_info->pad_orig = NULL;
   args_info->hardware_arg = gengetopt_strdup ("cpu");
   args_info->hardware_orig = NULL;
+  args_info->pad_arg = 0.0;
+  args_info->pad_orig = NULL;
+  args_info->hann_arg = 0.0;
+  args_info->hann_orig = NULL;
   args_info->origin_arg = NULL;
   args_info->origin_orig = NULL;
   args_info->dimension_arg = NULL;
@@ -155,15 +160,16 @@ void init_args_info(struct args_info_rtkfdk *args_info)
   args_info->path_help = args_info_rtkfdk_help[5] ;
   args_info->regexp_help = args_info_rtkfdk_help[6] ;
   args_info->output_help = args_info_rtkfdk_help[7] ;
-  args_info->pad_help = args_info_rtkfdk_help[8] ;
-  args_info->hardware_help = args_info_rtkfdk_help[9] ;
-  args_info->origin_help = args_info_rtkfdk_help[11] ;
+  args_info->hardware_help = args_info_rtkfdk_help[8] ;
+  args_info->pad_help = args_info_rtkfdk_help[10] ;
+  args_info->hann_help = args_info_rtkfdk_help[11] ;
+  args_info->origin_help = args_info_rtkfdk_help[13] ;
   args_info->origin_min = 0;
   args_info->origin_max = 0;
-  args_info->dimension_help = args_info_rtkfdk_help[12] ;
+  args_info->dimension_help = args_info_rtkfdk_help[14] ;
   args_info->dimension_min = 0;
   args_info->dimension_max = 0;
-  args_info->spacing_help = args_info_rtkfdk_help[13] ;
+  args_info->spacing_help = args_info_rtkfdk_help[15] ;
   args_info->spacing_min = 0;
   args_info->spacing_max = 0;
   
@@ -305,9 +311,10 @@ cmdline_parser_rtkfdk_release (struct args_info_rtkfdk *args_info)
   free_string_field (&(args_info->regexp_orig));
   free_string_field (&(args_info->output_arg));
   free_string_field (&(args_info->output_orig));
-  free_string_field (&(args_info->pad_orig));
   free_string_field (&(args_info->hardware_arg));
   free_string_field (&(args_info->hardware_orig));
+  free_string_field (&(args_info->pad_orig));
+  free_string_field (&(args_info->hann_orig));
   free_multiple_field (args_info->origin_given, (void *)(args_info->origin_arg), &(args_info->origin_orig));
   args_info->origin_arg = 0;
   free_multiple_field (args_info->dimension_given, (void *)(args_info->dimension_arg), &(args_info->dimension_orig));
@@ -414,10 +421,12 @@ cmdline_parser_rtkfdk_dump(FILE *outfile, struct args_info_rtkfdk *args_info)
     write_into_file(outfile, "regexp", args_info->regexp_orig, 0);
   if (args_info->output_given)
     write_into_file(outfile, "output", args_info->output_orig, 0);
-  if (args_info->pad_given)
-    write_into_file(outfile, "pad", args_info->pad_orig, 0);
   if (args_info->hardware_given)
     write_into_file(outfile, "hardware", args_info->hardware_orig, cmdline_parser_rtkfdk_hardware_values);
+  if (args_info->pad_given)
+    write_into_file(outfile, "pad", args_info->pad_orig, 0);
+  if (args_info->hann_given)
+    write_into_file(outfile, "hann", args_info->hann_orig, 0);
   write_multiple_into_file(outfile, args_info->origin_given, "origin", args_info->origin_orig, 0);
   write_multiple_into_file(outfile, args_info->dimension_given, "dimension", args_info->dimension_orig, 0);
   write_multiple_into_file(outfile, args_info->spacing_given, "spacing", args_info->spacing_orig, 0);
@@ -1630,8 +1639,9 @@ cmdline_parser_rtkfdk_internal (
         { "path",	1, NULL, 'p' },
         { "regexp",	1, NULL, 'r' },
         { "output",	1, NULL, 'o' },
-        { "pad",	1, NULL, 0 },
         { "hardware",	1, NULL, 'h' },
+        { "pad",	1, NULL, 0 },
+        { "hann",	1, NULL, 0 },
         { "origin",	1, NULL, 0 },
         { "dimension",	1, NULL, 0 },
         { "spacing",	1, NULL, 0 },
@@ -1761,6 +1771,20 @@ cmdline_parser_rtkfdk_internal (
                 &(local_args_info.pad_given), optarg, 0, "0.0", ARG_DOUBLE,
                 check_ambiguity, override, 0, 0,
                 "pad", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Cut frequency for hann window (default is no window).  */
+          else if (strcmp (long_options[option_index].name, "hann") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->hann_arg), 
+                 &(args_info->hann_orig), &(args_info->hann_given),
+                &(local_args_info.hann_given), optarg, 0, "0.0", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "hann", '-',
                 additional_error))
               goto failure;
           

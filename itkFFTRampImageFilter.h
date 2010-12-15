@@ -88,6 +88,10 @@ public:
   itkGetConstMacro(TruncationCorrection, double);
   itkSetMacro(TruncationCorrection, double);
 
+  /** Set/Get the Hann window frequency. 0 (default) disables it */
+  itkGetConstMacro(HannCutFrequency, double);
+  itkSetMacro(HannCutFrequency, double);
+
 protected:
   FFTRampImageFilter();
   ~FFTRampImageFilter(){}
@@ -123,6 +127,9 @@ private:
    * Greatest prime factor of the FFT input.
    */
   int  m_GreatestPrimeFactor;
+  
+  /** Cut frequency of Hann window */
+  double m_HannCutFrequency;
 }; // end of class
 
 } // end namespace itk
