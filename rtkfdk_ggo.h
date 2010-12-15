@@ -62,9 +62,9 @@ struct args_info_rtkfdk
   double pad_arg;	/**< @brief Data padding parameter to correct for truncation (default='0.0').  */
   char * pad_orig;	/**< @brief Data padding parameter to correct for truncation original value given at command line.  */
   const char *pad_help; /**< @brief Data padding parameter to correct for truncation help description.  */
-  double hann_arg;	/**< @brief Cut frequency for hann window (default is no window) (default='0.0').  */
-  char * hann_orig;	/**< @brief Cut frequency for hann window (default is no window) original value given at command line.  */
-  const char *hann_help; /**< @brief Cut frequency for hann window (default is no window) help description.  */
+  double hann_arg;	/**< @brief Cut frequency for hann window in ]0,1] (0.0 disables it) (default='0.0').  */
+  char * hann_orig;	/**< @brief Cut frequency for hann window in ]0,1] (0.0 disables it) original value given at command line.  */
+  const char *hann_help; /**< @brief Cut frequency for hann window in ]0,1] (0.0 disables it) help description.  */
   double* origin_arg;	/**< @brief Origin (default=centered).  */
   char ** origin_orig;	/**< @brief Origin (default=centered) original value given at command line.  */
   unsigned int origin_min; /**< @brief Origin (default=centered)'s minimum occurreces */

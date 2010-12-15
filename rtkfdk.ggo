@@ -11,7 +11,7 @@ option "hardware"  h "Hardware used for computation"                            
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double              no   default="0.0"
-option "hann"      - "Cut frequency for hann window (default is no window)"      double              no   default="0.0"
+option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double              no   default="0.0"
 
 section "Backprojection"
 option "origin"    - "Origin (default=centered)" double multiple no

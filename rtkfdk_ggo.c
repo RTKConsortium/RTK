@@ -42,7 +42,7 @@ const char *args_info_rtkfdk_help[] = {
   "  -h, --hardware=STRING  Hardware used for computation  (possible \n                           values=\"cpu\", \"cuda\" default=`cpu')",
   "\nRamp filter:",
   "      --pad=DOUBLE       Data padding parameter to correct for truncation  \n                           (default=`0.0')",
-  "      --hann=DOUBLE      Cut frequency for hann window (default is no window)  \n                           (default=`0.0')",
+  "      --hann=DOUBLE      Cut frequency for hann window in ]0,1] (0.0 disables \n                           it)  (default=`0.0')",
   "\nBackprojection:",
   "      --origin=DOUBLE    Origin (default=centered)",
   "      --dimension=INT    Dimension  (default=`256')",
@@ -1775,7 +1775,7 @@ cmdline_parser_rtkfdk_internal (
               goto failure;
           
           }
-          /* Cut frequency for hann window (default is no window).  */
+          /* Cut frequency for hann window in ]0,1] (0.0 disables it).  */
           else if (strcmp (long_options[option_index].name, "hann") == 0)
           {
           
