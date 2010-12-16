@@ -175,8 +175,8 @@ CUDA_reconstruct_conebeam (
 
   // The optimized version runs when only one of the axis of the detector is parallel to
   // the y axis of the volume
-  if(fabs(matrix[1]<1e-10 && fabs(matrix[9])<1e-10) ||
-     (fabs(matrix[5])<1e-10 && fabs(matrix[9])<1e-10))
+
+  if(fabs(matrix[5])<1e-10 && fabs(matrix[9])<1e-10)
     {
     // Thread Block Dimensions
     static int tBlock_x = 32;
