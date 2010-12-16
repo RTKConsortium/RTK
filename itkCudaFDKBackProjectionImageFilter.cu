@@ -175,8 +175,8 @@ CUDA_reconstruct_conebeam (
 
   // The optimized version runs when only one of the axis of the detector is parallel to
   // the y axis of the volume
-  if((abs(matrix[1])<1e-10 && abs(matrix[9])<1e-10) ||
-     (abs(matrix[5])<1e-10 && abs(matrix[9])<1e-10))
+  if(fabs(matrix[1]<1e-10 && fabs(matrix[9])<1e-10) ||
+     (fabs(matrix[5])<1e-10 && fabs(matrix[9])<1e-10))
     {
     // Thread Block Dimensions
     static int tBlock_x = 32;
@@ -229,6 +229,7 @@ CUDA_reconstruct_conebeam_cleanup (
   cudaArray *dev_img,
   float *dev_matrix
 )
+
 {
   // Size of volume Malloc
   int vol_size_malloc = (vol_dim.x*vol_dim.y*vol_dim.z)*sizeof(float);

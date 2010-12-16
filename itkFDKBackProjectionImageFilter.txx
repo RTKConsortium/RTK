@@ -65,14 +65,13 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
     matrix /= perspFactor;
 
-/*
     // Optimized version
-    if (abs(matrix[1][0])<1e-10 && abs(matrix[2][0])<1e-10)
+    if (fabs(matrix[1][0])<1e-10 && fabs(matrix[2][0])<1e-10)
       {
       OptimizedBackprojection( outputRegionForThread, matrix, projection);
       continue;
       }
-*/
+
     // Go over each voxel
     itIn.GoToBegin();
     itOut.GoToBegin();
