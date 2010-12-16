@@ -56,6 +56,19 @@ CudaFDKBackProjectionImageFilter
 
     // Index to index matrix normalized to have a correct backprojection weight (1 at the isocenter)
     ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
+
+    // We correct the matrix for non zero indexes
+    itk::Matrix<double, 4, 4> matrixIdxVol;
+    matrixIdxVol.SetIdentity();
+    for(unsigned int i=0; i<3; i++)
+      matrixIdxVol[i][3] = this->GetOutput()->GetLargestPossibleRegion().GetIndex()[i];
+    itk::Matrix<double, 3, 3> matrixIdxProj;
+    matrixIdxProj.SetIdentity();
+    for(unsigned int i=0; i<2; i++)
+      matrixIdxProj[i][2] = -1*(projection->GetLargestPossibleRegion().GetIndex()[i])+0.5; //SR: 0.5 for 2D texture?
+
+    matrix = matrixIdxProj.GetVnlMatrix() * matrix.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
+
     double perspFactor = matrix[Dimension-1][Dimension];
     for(unsigned int j=0; j<Dimension; j++)
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
