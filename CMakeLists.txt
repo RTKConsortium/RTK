@@ -33,6 +33,12 @@ ENDMACRO(DD)
 IF(MSVC)
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)
 ENDIF(MSVC)
+
+# Flag required for shared libraries
+IF ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+  SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ENDIF ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
 #=========================================================
 
 #=========================================================
@@ -43,6 +49,11 @@ IF(ITK_FOUND)
 ELSE(ITK_FOUND)
   MESSAGE(FATAL_ERROR "Cannot build without ITK. Set ITK_DIR.")
 ENDIF(ITK_FOUND)
+#=========================================================
+
+#=========================================================
+# Shared libraries option 
+OPTION(BUILD_SHARED_LIBS "Build RTK with shared libraries." ${ITK_BUILD_SHARED})
 #=========================================================
 
 #=========================================================
@@ -70,7 +81,7 @@ FIND_PACKAGE(OpenCL)
 #=========================================================
 
 #=========================================================
-ADD_LIBRARY(rtkIO STATIC
+ADD_LIBRARY(rtkIO
             itkHisImageIO.cxx
             itkHisImageIOFactory.cxx
             itkHndImageIO.cxx
@@ -87,11 +98,11 @@ IF (CUDA_FOUND)
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS
                 itkCudaUtilities.cu
                 itkCudaFDKBackProjectionImageFilter.cu )
-  ADD_LIBRARY(rtkcuda STATIC
+  ADD_LIBRARY(rtkcuda
               itkCudaFDKBackProjectionImageFilter.cxx
-	            ${rtkcuda_CUDA_WRAPPERS})
+	      ${rtkcuda_CUDA_WRAPPERS})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
-  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES})
+  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} rtkIO)
 ENDIF (CUDA_FOUND)
 #=========================================================
 
@@ -145,5 +156,15 @@ IF(BUILD_DOXYGEN)
   FIND_PACKAGE(Doxygen)
   ADD_SUBDIRECTORY(Doxygen)
 ENDIF(BUILD_DOXYGEN)
+#=========================================================
+
+#=========================================================
+IF(CUDA_FOUND)
+  OPTION(RTK_RABBITCT "Build library for RabbitCT: http://www5.informatik.uni-erlangen.de/research/projects/rabbitct/" OFF)
+  IF(RTK_RABBITCT)
+    ADD_LIBRARY(rtkrabbitct SHARED rtkrabbitct.cpp)
+    TARGET_LINK_LIBRARIES(rtkrabbitct ${CUDA_LIBRARIES} ITKCommon rtkcuda)
+  ENDIF(RTK_RABBITCT)
+ENDIF(CUDA_FOUND)
 #=========================================================
 
