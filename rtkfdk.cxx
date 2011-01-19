@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
   streamer->SetInput( rampFilter->GetOutput() );
-  streamer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
+  streamer->SetNumberOfStreamDivisions( geometryReader->GetOutputObject()->GetMatrices().size() );
 
   // Try to do all 2D pre-processing
   itk::TimeProbe streamerProbe;
