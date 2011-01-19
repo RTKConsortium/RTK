@@ -41,8 +41,15 @@ public:
   itkGetMacro(Transpose, bool);
   itkSetMacro(Transpose, bool);
 
+  /** Get / Set the flag to update one projection at a time during backprojection
+   * instead of requiring for the LargestPossibleRegion. This can decrease the 
+   * amount of memory required but increases the computation time when using multithreading.
+   */
+  itkGetMacro(UpdateProjectionPerProjection, bool);
+  itkSetMacro(UpdateProjectionPerProjection, bool);
+
 protected:
-  BackProjectionImageFilter():m_Geometry(NULL), m_Transpose(false) {this->SetNumberOfRequiredInputs(2); this->SetInPlace( true ); };
+  BackProjectionImageFilter():m_Geometry(NULL), m_Transpose(false) {this->SetNumberOfRequiredInputs(2); this->SetInPlace( true ); m_ProjectionStackLock = FastMutexLock::New();};
   virtual ~BackProjectionImageFilter() {};
 
   /** Apply changes to the input image requested region. */
@@ -68,6 +75,11 @@ private:
 
   /** Flip projection flag: infludences GetProjection and GetIndexToIndexProjectionMatrix for optimization */
   bool m_Transpose;
+
+  /** Update the requested projection in GetProjection instead of asking for the LargestPossibleRegion in 
+   * GenerateInputRequestedRegion. */
+  bool m_UpdateProjectionPerProjection;
+  FastMutexLock::Pointer m_ProjectionStackLock;
 };
 
 } // end namespace itk

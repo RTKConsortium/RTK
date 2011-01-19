@@ -27,7 +27,11 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     const_cast< TInputImage * >( this->GetInput(1) );
   if ( !inputPtr1 )
     return;
-  inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+
+  typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
+  if(this->GetUpdateProjectionPerProjection())
+    reqRegion.SetSize( TInputImage::ImageDimension-1, 1);
+  inputPtr1->SetRequestedRegion( reqRegion );
 }
 
 /**
@@ -104,7 +108,23 @@ typename BackProjectionImageFilter<TInputImage,TOutputImage>::ProjectionImagePoi
 BackProjectionImageFilter<TInputImage,TOutputImage>
 ::GetProjection(const unsigned int iProj, const InputPixelType multConst)
 {
+  
   typename Superclass::InputImagePointer stack = const_cast< TInputImage * >( this->GetInput(1) );
+  
+  if(this->GetUpdateProjectionPerProjection())
+    {
+    // Lock the projection stack to avoid multithreading issues. Unlocked at the
+    // end of this function.
+    m_ProjectionStackLock->Lock();
+
+    typename TInputImage::RegionType buffRegion = stack->GetLargestPossibleRegion();
+    buffRegion.SetIndex(ProjectionImageType::ImageDimension, iProj);
+    buffRegion.SetSize(ProjectionImageType::ImageDimension, 1);
+
+    stack->SetRequestedRegion(buffRegion);
+    stack->Update();
+    }
+  const int iProjBuff = stack->GetBufferedRegion().GetIndex(ProjectionImageType::ImageDimension);
 
   ProjectionImagePointer projection = ProjectionImageType::New();
   typename ProjectionImageType::RegionType region;
@@ -133,9 +153,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   projection->SetOrigin(origin);
   projection->SetRegions(region);
   projection->Allocate();
-
+  
   const unsigned int npixels = projection->GetLargestPossibleRegion().GetNumberOfPixels();
-  const InputPixelType *pi = stack->GetBufferPointer() + iProj*npixels;
+  const InputPixelType *pi = stack->GetBufferPointer() + (iProj-iProjBuff)*npixels;
   InputPixelType *po = projection->GetBufferPointer();
 
   // Transpose projection for optimization
@@ -149,6 +169,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     for(unsigned int i=0; i<npixels; i++)
       *po++ = multConst * (*pi++);
 
+  if(this->GetUpdateProjectionPerProjection())
+    m_ProjectionStackLock->Unlock();
   return projection;
 }
 
