@@ -184,7 +184,9 @@ public:
     }
   static void DestroyPlan(PlanType p)
     {
+    Lock();
     fftwf_destroy_plan(p);
+    Unlock();
     }
 };
 
@@ -336,7 +338,9 @@ public:
     }
   static void DestroyPlan(PlanType p)
     {
+    Lock();
     fftw_destroy_plan(p);
+    Unlock();
     }
 };
 
