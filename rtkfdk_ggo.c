@@ -40,6 +40,7 @@ const char *args_info_rtkfdk_help[] = {
   "  -r, --regexp=STRING    Regular expression to select projection files in path",
   "  -o, --output=STRING    Output file name",
   "  -h, --hardware=STRING  Hardware used for computation  (possible \n                           values=\"cpu\", \"cuda\" default=`cpu')",
+  "  -l, --lowmem           Load only one projection per thread in memory  \n                           (default=off)",
   "\nRamp filter:",
   "      --pad=DOUBLE       Data padding parameter to correct for truncation  \n                           (default=`0.0')",
   "      --hann=DOUBLE      Cut frequency for hann window in ]0,1] (0.0 disables \n                           it)  (default=`0.0')",
@@ -110,6 +111,7 @@ void clear_given (struct args_info_rtkfdk *args_info)
   args_info->regexp_given = 0 ;
   args_info->output_given = 0 ;
   args_info->hardware_given = 0 ;
+  args_info->lowmem_given = 0 ;
   args_info->pad_given = 0 ;
   args_info->hann_given = 0 ;
   args_info->origin_given = 0 ;
@@ -134,6 +136,7 @@ void clear_args (struct args_info_rtkfdk *args_info)
   args_info->output_orig = NULL;
   args_info->hardware_arg = gengetopt_strdup ("cpu");
   args_info->hardware_orig = NULL;
+  args_info->lowmem_flag = 0;
   args_info->pad_arg = 0.0;
   args_info->pad_orig = NULL;
   args_info->hann_arg = 0.0;
@@ -161,15 +164,16 @@ void init_args_info(struct args_info_rtkfdk *args_info)
   args_info->regexp_help = args_info_rtkfdk_help[6] ;
   args_info->output_help = args_info_rtkfdk_help[7] ;
   args_info->hardware_help = args_info_rtkfdk_help[8] ;
-  args_info->pad_help = args_info_rtkfdk_help[10] ;
-  args_info->hann_help = args_info_rtkfdk_help[11] ;
-  args_info->origin_help = args_info_rtkfdk_help[13] ;
+  args_info->lowmem_help = args_info_rtkfdk_help[9] ;
+  args_info->pad_help = args_info_rtkfdk_help[11] ;
+  args_info->hann_help = args_info_rtkfdk_help[12] ;
+  args_info->origin_help = args_info_rtkfdk_help[14] ;
   args_info->origin_min = 0;
   args_info->origin_max = 0;
-  args_info->dimension_help = args_info_rtkfdk_help[14] ;
+  args_info->dimension_help = args_info_rtkfdk_help[15] ;
   args_info->dimension_min = 0;
   args_info->dimension_max = 0;
-  args_info->spacing_help = args_info_rtkfdk_help[15] ;
+  args_info->spacing_help = args_info_rtkfdk_help[16] ;
   args_info->spacing_min = 0;
   args_info->spacing_max = 0;
   
@@ -423,6 +427,8 @@ cmdline_parser_rtkfdk_dump(FILE *outfile, struct args_info_rtkfdk *args_info)
     write_into_file(outfile, "output", args_info->output_orig, 0);
   if (args_info->hardware_given)
     write_into_file(outfile, "hardware", args_info->hardware_orig, cmdline_parser_rtkfdk_hardware_values);
+  if (args_info->lowmem_given)
+    write_into_file(outfile, "lowmem", 0, 0 );
   if (args_info->pad_given)
     write_into_file(outfile, "pad", args_info->pad_orig, 0);
   if (args_info->hann_given)
@@ -1640,6 +1646,7 @@ cmdline_parser_rtkfdk_internal (
         { "regexp",	1, NULL, 'r' },
         { "output",	1, NULL, 'o' },
         { "hardware",	1, NULL, 'h' },
+        { "lowmem",	0, NULL, 'l' },
         { "pad",	1, NULL, 0 },
         { "hann",	1, NULL, 0 },
         { "origin",	1, NULL, 0 },
@@ -1653,7 +1660,7 @@ cmdline_parser_rtkfdk_internal (
       custom_opterr = opterr;
       custom_optopt = optopt;
 
-      c = custom_getopt_long (argc, argv, "Vvg:p:r:o:h:", long_options, &option_index);
+      c = custom_getopt_long (argc, argv, "Vvg:p:r:o:h:l", long_options, &option_index);
 
       optarg = custom_optarg;
       optind = custom_optind;
@@ -1735,6 +1742,16 @@ cmdline_parser_rtkfdk_internal (
               &(local_args_info.hardware_given), optarg, cmdline_parser_rtkfdk_hardware_values, "cpu", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "hardware", 'h',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'l':	/* Load only one projection per thread in memory.  */
+        
+        
+          if (update_arg((void *)&(args_info->lowmem_flag), 0, &(args_info->lowmem_given),
+              &(local_args_info.lowmem_given), optarg, 0, 0, ARG_FLAG,
+              check_ambiguity, override, 1, 0, "lowmem", 'l',
               additional_error))
             goto failure;
         

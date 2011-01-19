@@ -46,23 +46,29 @@ int main(int argc, char * argv[])
   reader->GenerateOutputInformation();
 
   itk::TimeProbe readerProbe;
-  try {
-    readerProbe.Start();
-    reader->Update();
-    readerProbe.Stop();
-  } catch( itk::ExceptionObject & err ) {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-  }
+  if(!args_info.lowmem_flag)
+    {
+    if(args_info.verbose_flag)
+      std::cout << "Reading... " << std::flush;
+    try {
+      readerProbe.Start();
+      reader->Update();
+      readerProbe.Stop();
+    } catch( itk::ExceptionObject & err ) {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+      return EXIT_FAILURE;
+    }
+    if(args_info.verbose_flag)
+      std::cout << "It took " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
+    }
 
+  // Geometry
   if(args_info.verbose_flag)
     std::cout << "Reading geometry information from "
               << args_info.geometry_arg
               << "..."
               << std::endl;
-
-  // Geometry
   itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
   geometryReader->GenerateOutputInformation();
@@ -72,6 +78,7 @@ int main(int argc, char * argv[])
   WeightFilterType::Pointer weightFilter = WeightFilterType::New();
   weightFilter->SetInput( reader->GetOutput() );
   weightFilter->SetSourceToDetectorDistance( geometryReader->GetOutputObject()->GetSourceToDetectorDistance() );
+  weightFilter->SetInPlace(false); //SR: there seems to be a bug in ITK: incompatibility between InPlace and streaming?
 
   // Ramp filter
   typedef itk::FFTRampImageFilter<OutputImageType> RampFilterType;
@@ -79,28 +86,34 @@ int main(int argc, char * argv[])
   rampFilter->SetInput( weightFilter->GetOutput() );
   rampFilter->SetTruncationCorrection(args_info.pad_arg);
   rampFilter->SetHannCutFrequency(args_info.hann_arg);
-
+  
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
   streamer->SetInput( rampFilter->GetOutput() );
   streamer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
-  if(args_info.verbose_flag)
-    std::cout << "Weighting and filtering projections..."
-              << std::endl;
-
   // Try to do all 2D pre-processing
   itk::TimeProbe streamerProbe;
-  try {
-    streamerProbe.Start();
-    streamer->Update();
-    streamerProbe.Stop();
-  } catch( itk::ExceptionObject & err ) {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-  }
+  if(!args_info.lowmem_flag)
+    {
+      try
+      {
+      if(args_info.verbose_flag)
+        std::cout << "Weighting and filtering projections... " << std::flush;
+      streamerProbe.Start();
+      streamer->Update();
+      streamerProbe.Stop();
+      if(args_info.verbose_flag)
+        std::cout << "It took " << streamerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
+      }
+      catch( itk::ExceptionObject & err )
+      {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+      return EXIT_FAILURE;
+      }
+    }
 
   // Create reconstructed volume
   OutputImageType::Pointer tomography = rtk::CreateImageFromGgo<OutputImageType>(args_info);
@@ -108,7 +121,7 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Backprojecting using "
               << args_info.hardware_arg
-              << std::endl;
+              << "... "  << std::flush;
 
   // Backprojection
   typedef itk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
@@ -125,7 +138,10 @@ int main(int argc, char * argv[])
 #endif
     }
   bpFilter->SetInput( 0, tomography );
-  bpFilter->SetInput( 1, streamer->GetOutput() );
+  if(args_info.lowmem_flag)
+    bpFilter->SetInput( 1, rampFilter->GetOutput() );
+  else
+    bpFilter->SetInput( 1, streamer->GetOutput() );
   bpFilter->SetGeometry( geometryReader->GetOutputObject() );
   bpFilter->SetInPlace( true );
 
@@ -139,6 +155,10 @@ int main(int argc, char * argv[])
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
   }
+
+  if(args_info.verbose_flag)
+    std::cout << "It took " << bpProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl
+              << "Writing... " << std::flush;
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType >  WriterType;
@@ -158,10 +178,7 @@ int main(int argc, char * argv[])
   }
 
   if(args_info.verbose_flag)
-    std::cout << "Reading took " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl
-              << "2D processing took " << streamerProbe.GetMeanTime() << ' ' << streamerProbe.GetUnit() << std::endl
-              << "backprojection took " << bpProbe.GetMeanTime() << ' ' << bpProbe.GetUnit() << std::endl
-              << "writing took " << writerProbe.GetMeanTime() << ' ' << writerProbe.GetUnit() << std::endl;
+    std::cout << "It took " << writerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
 
   return EXIT_SUCCESS;
 }

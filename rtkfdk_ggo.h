@@ -59,6 +59,8 @@ struct args_info_rtkfdk
   char * hardware_arg;	/**< @brief Hardware used for computation (default='cpu').  */
   char * hardware_orig;	/**< @brief Hardware used for computation original value given at command line.  */
   const char *hardware_help; /**< @brief Hardware used for computation help description.  */
+  int lowmem_flag;	/**< @brief Load only one projection per thread in memory (default=off).  */
+  const char *lowmem_help; /**< @brief Load only one projection per thread in memory help description.  */
   double pad_arg;	/**< @brief Data padding parameter to correct for truncation (default='0.0').  */
   char * pad_orig;	/**< @brief Data padding parameter to correct for truncation original value given at command line.  */
   const char *pad_help; /**< @brief Data padding parameter to correct for truncation help description.  */
@@ -90,6 +92,7 @@ struct args_info_rtkfdk
   unsigned int regexp_given ;	/**< @brief Whether regexp was given.  */
   unsigned int output_given ;	/**< @brief Whether output was given.  */
   unsigned int hardware_given ;	/**< @brief Whether hardware was given.  */
+  unsigned int lowmem_given ;	/**< @brief Whether lowmem was given.  */
   unsigned int pad_given ;	/**< @brief Whether pad was given.  */
   unsigned int hann_given ;	/**< @brief Whether hann was given.  */
   unsigned int origin_given ;	/**< @brief Whether origin was given.  */

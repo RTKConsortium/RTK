@@ -8,6 +8,7 @@ option "path"      p  "Path containing projections"                             
 option "regexp"    r  "Regular expression to select projection files in path"    string              yes
 option "output"    o "Output file name"                                          string              yes
 option "hardware"  h "Hardware used for computation"                             values="cpu","cuda" no   default="cpu"
+option "lowmem"    l "Load only one projection per thread in memory"             flag                off
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double              no   default="0.0"
