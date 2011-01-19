@@ -25,7 +25,6 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-  const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
 
   // Create interpolator, could be any interpolation
   typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
@@ -35,6 +34,8 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer());
   double rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
   rampFactor *= 0.5; // Factor 1/2 in eq 176, page 106, Kak & Slaney
+
+  const unsigned int nProj = geometry->GetMatrices().size();
 
   // Iterators on volume input and output
   typedef ImageRegionConstIterator<TInputImage> InputRegionIterator;
