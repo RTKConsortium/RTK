@@ -173,14 +173,22 @@ typename FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTImageP
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::PadInputImageRegion(const RegionType &inputRegion)
 {
+  RegionType paddedRegion = inputRegion;
+
+  // Set x padding
   typename SizeType::SizeValueType xPaddedSize = 2*inputRegion.GetSize(0);
   while( GreatestPrimeFactor( xPaddedSize ) > m_GreatestPrimeFactor )
     xPaddedSize++;
-
-  RegionType paddedRegion = inputRegion;
   paddedRegion.SetSize(0, xPaddedSize);
   long zeroext = ((long)xPaddedSize - (long)inputRegion.GetSize(0)) / 2;
   paddedRegion.SetIndex(0, inputRegion.GetIndex(0) - zeroext);
+
+  // Set y padding
+  typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
+  while( GreatestPrimeFactor( yPaddedSize ) > m_GreatestPrimeFactor )
+    yPaddedSize++;
+  paddedRegion.SetSize(1, yPaddedSize);
+  paddedRegion.SetIndex(1, inputRegion.GetIndex(1));
 
   // Create padded image (spacing and origin do not matter)
   FFTImagePointer paddedImage = FFTImageType::New();
