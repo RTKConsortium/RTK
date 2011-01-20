@@ -43,6 +43,9 @@ protected:
   ElektaSynergyRawToAttenuationImageFilter();
   ~ElektaSynergyRawToAttenuationImageFilter(){}
 
+  /** Apply changes to the input image requested region. */
+  virtual void GenerateInputRequestedRegion();
+
   void GenerateOutputInformation();
 
   /** Single-threaded version of GenerateData.  This filter delegates

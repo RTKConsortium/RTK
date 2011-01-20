@@ -6,6 +6,21 @@
 namespace itk
 {
 
+template<class TInputImage, class TOutputImage>
+void
+ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
+::GenerateInputRequestedRegion()
+{
+  typename Superclass::InputImagePointer inputPtr =
+    const_cast< TInputImage * >( this->GetInput() );
+  if ( !inputPtr )
+    return;
+
+  m_LutFilter->SetInput(inputPtr); //SR: this is most likely useless
+  m_CropFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
+  m_CropFilter->GetOutput()->PropagateRequestedRegion();
+}
+
 template <class TInputImage, class TOutputImage>
 ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::ElektaSynergyRawToAttenuationImageFilter()
