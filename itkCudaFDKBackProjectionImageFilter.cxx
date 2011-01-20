@@ -19,13 +19,12 @@ CudaFDKBackProjectionImageFilter
   OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
 
   const unsigned int Dimension = ImageType::ImageDimension;
+  const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
 
   // Ramp factor is the correction for ramp filter which did not account for the divergence of the beam
   const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer());
   double rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
   rampFactor *= 0.5; // Factor 1/2 in eq 176, page 106, Kak & Slaney
-
-  const unsigned int nProj = geometry->GetMatrices().size();
 
   // Rotation center (assumed to be at 0 yet)
   ImageType::PointType rotCenterPoint;
