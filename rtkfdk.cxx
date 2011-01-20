@@ -138,6 +138,7 @@ int main(int argc, char * argv[])
 #endif
     }
   bpFilter->SetInput( 0, tomography );
+  bpFilter->SetUpdateProjectionPerProjection(args_info.lowmem_flag);
   if(args_info.lowmem_flag)
     bpFilter->SetInput( 1, rampFilter->GetOutput() );
   else
