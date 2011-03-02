@@ -4,8 +4,9 @@
 
 #include "itkThreeDCircularProjectionGeometryXMLFile.h"
 #include "itkProjectionsReader.h"
-#include "itkFFTRampImageFilter.h"
+#include "itkDisplacedDetectorImageFilter.h"
 #include "itkFDKWeightProjectionFilter.h"
+#include "itkFFTRampImageFilter.h"
 
 #include "itkFDKBackProjectionImageFilter.h"
 #if CUDA_FOUND
@@ -73,10 +74,16 @@ int main(int argc, char * argv[])
   geometryReader->SetFilename(args_info.geometry_arg);
   geometryReader->GenerateOutputInformation();
 
+  // Displaced detector weighting
+  typedef itk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
+  DDFType::Pointer ddf = DDFType::New();
+  ddf->SetInput( reader->GetOutput() );
+  ddf->SetGeometry( geometryReader->GetOutputObject() );
+
   // Weight projections according to fdk algorithm
   typedef itk::FDKWeightProjectionFilter< OutputImageType > WeightFilterType;
   WeightFilterType::Pointer weightFilter = WeightFilterType::New();
-  weightFilter->SetInput( reader->GetOutput() );
+  weightFilter->SetInput( ddf->GetOutput() );
   weightFilter->SetSourceToDetectorDistance( geometryReader->GetOutputObject()->GetSourceToDetectorDistance() );
   weightFilter->SetInPlace(false); //SR: there seems to be a bug in ITK: incompatibility between InPlace and streaming?
 
@@ -97,7 +104,7 @@ int main(int argc, char * argv[])
   itk::TimeProbe streamerProbe;
   if(!args_info.lowmem_flag)
     {
-      try
+    try
       {
       if(args_info.verbose_flag)
         std::cout << "Weighting and filtering projections... " << std::flush;
@@ -107,7 +114,7 @@ int main(int argc, char * argv[])
       if(args_info.verbose_flag)
         std::cout << "It took " << streamerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
       }
-      catch( itk::ExceptionObject & err )
+    catch( itk::ExceptionObject & err )
       {
       std::cerr << "ExceptionObject caught !" << std::endl;
       std::cerr << err << std::endl;
