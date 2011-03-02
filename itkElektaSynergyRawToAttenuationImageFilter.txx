@@ -44,6 +44,9 @@ ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 {
   m_LutFilter->SetInput(this->GetInput());
   m_CropFilter->UpdateOutputInformation();
+  this->GetOutput()->SetOrigin( m_CropFilter->GetOutput()->GetOrigin() );
+  this->GetOutput()->SetSpacing( m_CropFilter->GetOutput()->GetSpacing() );
+  this->GetOutput()->SetDirection( m_CropFilter->GetOutput()->GetDirection() );
   this->GetOutput()->SetLargestPossibleRegion( m_CropFilter->GetOutput()->GetLargestPossibleRegion() );
 }
   
