@@ -125,11 +125,6 @@ int main(int argc, char * argv[])
   // Create reconstructed volume
   OutputImageType::Pointer tomography = rtk::CreateImageFromGgo<OutputImageType>(args_info);
 
-  if(args_info.verbose_flag)
-    std::cout << "Backprojecting using "
-              << args_info.hardware_arg
-              << "... "  << std::flush;
-
   // Backprojection
   typedef itk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
   BackProjectionFilterType::Pointer bpFilter;
@@ -153,20 +148,31 @@ int main(int argc, char * argv[])
   bpFilter->SetGeometry( geometryReader->GetOutputObject() );
   bpFilter->SetInPlace( true );
 
-  itk::TimeProbe bpProbe;
-  try {
-    bpProbe.Start();
-    bpFilter->Update();
-    bpProbe.Stop();
-  } catch( itk::ExceptionObject & err ) {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-  }
 
-  if(args_info.verbose_flag)
-    std::cout << "It took " << bpProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl
-              << "Writing... " << std::flush;
+  // SR: this appears to trigger 2 updates in cuda mode with the lowmem option
+  //     and an off-centered geometry. No clue why... Disable this update
+  //     until the problem is understood and solved.
+  if(!args_info.lowmem_flag)
+    {
+    if(args_info.verbose_flag)
+      std::cout << "Backprojecting using "
+                << args_info.hardware_arg
+                << "... "  << std::flush;
+
+    itk::TimeProbe bpProbe;
+    try {
+      bpProbe.Start();
+      bpFilter->Update();
+      bpProbe.Stop();
+    } catch( itk::ExceptionObject & err ) {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    if(args_info.verbose_flag)
+      std::cout << "It took " << bpProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
+    }
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType >  WriterType;
@@ -174,6 +180,8 @@ int main(int argc, char * argv[])
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( bpFilter->GetOutput() );
 
+  if(args_info.verbose_flag)
+    std::cout << "Writing... " << std::flush;
   itk::TimeProbe writerProbe;
   try {
     writerProbe.Start();
