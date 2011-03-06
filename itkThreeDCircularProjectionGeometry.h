@@ -54,12 +54,13 @@ public:
     return this->m_ProjOffsetsY;
   }
 
-protected:
+  /** Get the angular gaps for each projection, i.e. half the angular distance
+      between the previous and the next projection. */
+  const std::vector<double> GetAngularGaps();
 
+protected:
   ThreeDCircularProjectionGeometry(): m_SourceToDetectorDistance(-1), m_SourceToIsocenterDistance(-1) {};
   virtual ~ThreeDCircularProjectionGeometry(){};
-
-  virtual void PrintSelf( std::ostream& os, Indent indent ) const;
 
 private:
   ThreeDCircularProjectionGeometry(const Self&); //purposely not implemented
@@ -70,7 +71,7 @@ private:
   double m_SourceToDetectorDistance;
   double m_SourceToIsocenterDistance;
 
-  /** Circular geometry parameters per projection */
+  /** Circular geometry parameters per projection (angles in degrees between 0 and 360). */
   std::vector<double> m_RotationAngles;
   std::vector<double> m_ProjOffsetsX;
   std::vector<double> m_ProjOffsetsY;

@@ -42,10 +42,6 @@ protected:
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, int threadId );
   virtual void OptimizedBackprojection(const OutputImageRegionType& region, const ProjectionMatrixType& matrix, const ProjectionImagePointer projection);
 
-  /** Given the set of unordered projections, this functions computes the angular
-      weights of FDK for each projection */
-  virtual void UpdateAngularWeights();
-
 private:
   FDKBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented

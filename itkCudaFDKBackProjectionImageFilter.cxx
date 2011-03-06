@@ -12,9 +12,7 @@ CudaFDKBackProjectionImageFilter
 ::GenerateData()
 {
   this->AllocateOutputs();
-  this->UpdateAngularWeights();
-  
-  std::vector<double> angWeights = this->GetAngularWeights();
+  std::vector<double> angWeights = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer())->GetAngularGaps();
   
   OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
 

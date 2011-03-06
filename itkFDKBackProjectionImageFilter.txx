@@ -12,7 +12,7 @@ void
 FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  UpdateAngularWeights();
+  m_AngularWeights = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer())->GetAngularGaps();
   this->SetTranspose(false);
 }
 
@@ -176,63 +176,6 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
         }
       } //j
     } //k
-}
-
-template <class TInputImage, class TOutputImage>
-void
-FDKBackProjectionImageFilter<TInputImage,TOutputImage>
-::UpdateAngularWeights()
-{
-  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer());
-  unsigned int nProj = geometry->GetRotationAngles().size();
-  m_AngularWeights.resize(nProj);
-
-  // Special management of single or empty dataset
-  const double degreesToRadians = vcl_atan(1.0) / 45.0;
-  if(nProj==1)
-    m_AngularWeights[0] = 0.5 * degreesToRadians * 360;
-  if(nProj<2)
-    return;
-    
-  // Otherwise we sort the angles in a multimap
-  std::multimap<double,unsigned int> angles;
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
-    {
-    double angle = geometry->GetRotationAngles()[iProj];
-    angle = angle-360*floor(angle/360); // between -360 and 360
-    if(angle<0) angle += 360;           // between 0    and 360
-    angles.insert(std::pair<double, unsigned int>(angle, iProj));
-    }
-
-  // We then go over the sorted angles and deduce the angular weight
-  std::multimap<double,unsigned int>::const_iterator prev = angles.begin(),
-                                                     curr = angles.begin(),
-                                                     next = angles.begin();
-  next++;
-
-  //First projection wraps the angle of the last one
-  m_AngularWeights[curr->second] = 0.5 * degreesToRadians * ( next->first - angles.rbegin()->first + 360 );
-  curr++; next++;
-
-  //Rest of the angles
-  while(next!=angles.end())
-  {
-    m_AngularWeights[curr->second] = 0.5 * degreesToRadians * ( next->first - prev->first );
-    prev++; curr++; next++;
-  }
-
-  //Last projection wraps the angle of the first one
-  m_AngularWeights[curr->second] = 0.5 * degreesToRadians * ( angles.begin()->first + 360 - prev->first );
-
-  //Detect short scans, warn the user until implementation of adequate weighting
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
-    {
-    if( m_AngularWeights[iProj] > 10*degreesToRadians )
-      {
-      itkWarningMacro(<<"Short scan detected, current implementation does not account for it"<<std::endl);
-      m_AngularWeights[iProj] = vnl_math_min(m_AngularWeights[(nProj+iProj-1)%nProj], m_AngularWeights[(iProj+1)%nProj]); 
-      }
-    }
 }
 
 } // end namespace itk
