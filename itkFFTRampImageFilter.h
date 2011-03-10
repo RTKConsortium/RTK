@@ -37,8 +37,11 @@ public:
   typedef typename OutputImageType::Pointer                 OutputImagePointer;
   typedef typename OutputImageType::PixelType               OutputImagePixelType;
   typedef typename itk::Image<TFFTPrecision, 
-                              TInputImage::ImageDimension > FFTImageType;
-  typedef typename FFTImageType::Pointer                    FFTImagePointer;
+                              TInputImage::ImageDimension > FFTInputImageType;
+  typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
+  typedef typename itk::Image<std::complex<TFFTPrecision>, 
+                              TInputImage::ImageDimension > FFTOutputImageType;
+  typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
   typedef typename InputImageType::RegionType               RegionType;
   typedef typename InputImageType::IndexType                IndexType;
   typedef typename InputImageType::SizeType                 SizeType;
@@ -105,12 +108,16 @@ protected:
     * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
     * centralRegion is the region of the returned image which corresponds to inputRegion.
     */
-  FFTImagePointer PadInputImageRegion(const RegionType &inputRegion);
+  FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
 
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   bool IsPrime( int n ) const;
   int GreatestPrimeFactor( int n ) const;
+
+  /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
+   *  Used in generate data functions. */
+  FFTOutputImagePointer GetFFTRampKernel(const int width);
 
 private:
   FFTRampImageFilter(const Self&); //purposely not implemented
