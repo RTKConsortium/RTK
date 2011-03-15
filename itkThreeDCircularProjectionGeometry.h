@@ -54,8 +54,11 @@ public:
     return this->m_ProjOffsetsY;
   }
 
-  /** Get the angular gaps for each projection, i.e. half the angular distance
-      between the previous and the next projection. */
+  /** Get for each projection the angular gaps with next projection. */
+  const std::vector<double> GetAngularGapsWithNext();
+
+  /** Get for each projection half the angular distance between the previous
+   *  and the next projection. */
   const std::vector<double> GetAngularGaps();
 
 protected:

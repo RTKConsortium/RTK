@@ -14,6 +14,45 @@ void itk::ThreeDCircularProjectionGeometry::AddProjection(const double angle, co
   this->AddMatrix(matrix);
 }
 
+const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext()
+{
+  std::vector<double> angularGaps;
+  unsigned int nProj = this->GetRotationAngles().size();
+  angularGaps.resize(nProj);
+
+  // Special management of single or empty dataset
+  const double degreesToRadians = vcl_atan(1.0) / 45.0;
+  if(nProj==1)
+    angularGaps[0] = degreesToRadians * 360;
+  if(nProj<2)
+    return angularGaps;
+    
+  // Otherwise we sort the angles in a multimap
+  std::multimap<double,unsigned int> angles;
+  for(unsigned int iProj=0; iProj<nProj; iProj++)
+    {
+    double angle = this->GetRotationAngles()[iProj];
+    angles.insert(std::pair<double, unsigned int>(angle, iProj));
+    }
+
+  // We then go over the sorted angles and deduce the angular weight
+  std::multimap<double,unsigned int>::const_iterator curr = angles.begin(),
+                                                     next = angles.begin();
+  next++;
+
+  // All but the last projection
+  while(next!=angles.end())
+  {
+    angularGaps[curr->second] = degreesToRadians * ( next->first - curr->first );
+    curr++; next++;
+  }
+
+  //Last projection wraps the angle of the first one
+  angularGaps[curr->second] = 0.5 * degreesToRadians * ( angles.begin()->first + 360 - curr->first );
+
+  return angularGaps;
+}
+
 const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGaps()
 {
   std::vector<double> angularGaps;
@@ -55,14 +94,5 @@ const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGaps(
   //Last projection wraps the angle of the first one
   angularGaps[curr->second] = 0.5 * degreesToRadians * ( angles.begin()->first + 360 - prev->first );
 
-  //Detect short scans, warn the user until implementation of adequate weighting
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
-    {
-    if( angularGaps[iProj] > 10*degreesToRadians )
-      {
-      itkWarningMacro(<<"Short scan detected, current implementation does not account for it"<<std::endl);
-      angularGaps[iProj] = vnl_math_min(angularGaps[(nProj+iProj-1)%nProj], angularGaps[(iProj+1)%nProj]); 
-      }
-    }
   return angularGaps;
 }
