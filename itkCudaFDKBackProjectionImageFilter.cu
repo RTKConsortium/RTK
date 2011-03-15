@@ -139,7 +139,7 @@ CUDA_reconstruct_conebeam_init (
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
   cudaMalloc( (void**)&dev_vol, vol_size_malloc);
   cudaMemset( (void *) dev_vol, 0, vol_size_malloc);  
-  CUDA_check_error("Unable to allocate data volume");
+  CUDA_CHECK_ERROR;
 
   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
   cudaMallocArray( &dev_img, &channelDesc, img_dim.x, img_dim.y );
@@ -200,9 +200,9 @@ CUDA_reconstruct_conebeam (
     static int tBlock_z = 4;
 
     // Each element in the volume (each voxel) gets 1 thread
-    static int blocksInX = (vol_dim.x+tBlock_x-1)/tBlock_x;
-    static int blocksInY = (vol_dim.y+tBlock_y-1)/tBlock_y;
-    static int blocksInZ = (vol_dim.z+tBlock_z-1)/tBlock_z;
+    static int blocksInX = (vol_dim.x-1)/tBlock_x + 1;
+    static int blocksInY = (vol_dim.y-1)/tBlock_y + 1;
+    static int blocksInZ = (vol_dim.z-1)/tBlock_z + 1;
     static dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
     static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
@@ -210,8 +210,7 @@ CUDA_reconstruct_conebeam (
     //-------------------------------------
     kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol, img_dim, vol_dim, blocksInY, 1.0f/(float)blocksInY );
     }
-
-  CUDA_check_error("Kernel Panic!");
+  CUDA_CHECK_ERROR;
 
   // Unbind the image and projection matrix textures
   cudaUnbindTexture (tex_img);
@@ -236,7 +235,7 @@ CUDA_reconstruct_conebeam_cleanup (
 
   // Copy reconstructed volume from device to host
   cudaMemcpy (vol, dev_vol, vol_size_malloc, cudaMemcpyDeviceToHost);
-  CUDA_check_error ("Error: Unable to retrieve data volume.");
+  CUDA_CHECK_ERROR;
 
   // Cleanup
   cudaFree (dev_img);
