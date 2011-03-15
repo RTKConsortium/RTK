@@ -1,8 +1,8 @@
 #ifndef __itkFFTRampImageFilter_h
 #define __itkFFTRampImageFilter_h
 
-#include "itkImageToImageFilter.h"
-#include "itkConceptChecking.h"
+#include <itkImageToImageFilter.h>
+#include <itkConceptChecking.h>
 
 /** \class FFTRampImageFilter
  * \brief Implements the ramp image filter of the filtered backprojection algorithm.
