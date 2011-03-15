@@ -10,7 +10,7 @@
 #include <itkFFTRealToComplexConjugateImageFilter.h>
 #include <itkFFTComplexConjugateToRealImageFilter.h>
 
-#include <itkImageFileWriter.h>
+#include <itkImageRegionIteratorWithIndex.h>
 
 namespace itk
 {
@@ -83,7 +83,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   FFTInputImagePointer paddedImage = PadInputImageRegion(outputRegionForThread);
 
   // FFT padded image
-  typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
+  typedef FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
   typename FFTType::Pointer fftI = FFTType::New();
   fftI->SetInput( paddedImage );
   fftI->SetNumberOfThreads( 1 );
@@ -93,8 +93,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   FFTOutputImagePointer fftK = this->GetFFTRampKernel(paddedImage->GetLargestPossibleRegion().GetSize(0));
   
   //Multiply line-by-line
-  itk::ImageRegionIterator<typename FFTType::TOutputImageType> itI(fftI->GetOutput(), fftI->GetOutput()->GetLargestPossibleRegion());
-  itk::ImageRegionConstIterator<FFTOutputImageType> itK(fftK, fftK->GetLargestPossibleRegion());
+  ImageRegionIterator<typename FFTType::TOutputImageType> itI(fftI->GetOutput(), fftI->GetOutput()->GetLargestPossibleRegion());
+  ImageRegionConstIterator<FFTOutputImageType> itK(fftK, fftK->GetLargestPossibleRegion());
   itI.GoToBegin();
   while(!itI.IsAtEnd()) {
     itK.GoToBegin();
@@ -106,7 +106,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   }
 
   //Inverse FFT image
-  typedef itk::FFTComplexConjugateToRealImageFilter< FFTPrecisionType, ImageDimension > IFFTType;
+  typedef FFTComplexConjugateToRealImageFilter< FFTPrecisionType, ImageDimension > IFFTType;
   typename IFFTType::Pointer ifft = IFFTType::New();
   ifft->SetInput( fftI->GetOutput() );
   ifft->SetActualXDimensionIsOdd( paddedImage->GetLargestPossibleRegion().GetSize(0) % 2 );
@@ -116,8 +116,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   //Crop and paste result (combination of itk::CropImageFilter and itk::PasteImageFilter, but the
   //latter is not working properly for a stream)
-  itk::ImageRegionConstIterator<FFTInputImageType> itS(ifft->GetOutput(), outputRegionForThread);
-  itk::ImageRegionIterator<OutputImageType> itD(this->GetOutput(), outputRegionForThread);
+  ImageRegionConstIterator<FFTInputImageType> itS(ifft->GetOutput(), outputRegionForThread);
+  ImageRegionIterator<OutputImageType> itD(this->GetOutput(), outputRegionForThread);
   itS.GoToBegin();
   itD.GoToBegin();
   while(!itS.IsAtEnd()) {
@@ -162,7 +162,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     RegionType leftRegion = paddedRegion;
     leftRegion.SetIndex(0, inputRegion.GetIndex(0)-next);
     leftRegion.SetSize(0, next);
-    itk::ImageRegionIteratorWithIndex<FFTInputImageType> itLeft(paddedImage, leftRegion);
+    ImageRegionIteratorWithIndex<FFTInputImageType> itLeft(paddedImage, leftRegion);
     while(!itLeft.IsAtEnd())
       {
       typename FFTInputImageType::IndexType idx = itLeft.GetIndex();
@@ -177,7 +177,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     RegionType rightRegion = paddedRegion;
     rightRegion.SetIndex(0, inputRegion.GetIndex(0)+inputRegion.GetSize(0));
     rightRegion.SetSize(0, next);
-    itk::ImageRegionIteratorWithIndex<FFTInputImageType> itRight(paddedImage, rightRegion);
+    ImageRegionIteratorWithIndex<FFTInputImageType> itRight(paddedImage, rightRegion);
     while(!itRight.IsAtEnd())
       {
       typename FFTInputImageType::IndexType idx = itRight.GetIndex();
@@ -190,8 +190,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   // Copy central part
-  itk::ImageRegionConstIterator<InputImageType> itS(this->GetInput(), inputRegion);
-  itk::ImageRegionIterator<FFTInputImageType>   itD(paddedImage, inputRegion);
+  ImageRegionConstIterator<InputImageType> itS(this->GetInput(), inputRegion);
+  ImageRegionIterator<FFTInputImageType>   itD(paddedImage, inputRegion);
   itS.GoToBegin();
   itD.GoToBegin();
   while(!itS.IsAtEnd()) {
@@ -267,14 +267,14 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   }
 
   // FFT kernel
-  typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
+  typedef FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
   fftK->SetNumberOfThreads( 1 );
   fftK->Update();
   
   // Windowing (if enabled)
-  typedef itk::ImageRegionIterator<typename FFTType::TOutputImageType> IteratorType;
+  typedef ImageRegionIterator<typename FFTType::TOutputImageType> IteratorType;
   IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion());
   if(this->GetHannCutFrequency()>0.)
     {
@@ -283,9 +283,9 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
     itK.GoToBegin();
     for(unsigned int i=0; i<n; i++, ++itK)
-      itK.Set( itK.Get() * 0.5 * ( 1 + vcl_cos( vnl_math::pi * i / n ) ) );
+      itK.Set( itK.Get() * TFFTPrecision(0.5 * ( 1 + vcl_cos( vnl_math::pi * i / n ) ) ) );
     for( ; !itK.IsAtEnd(); ++itK)
-      itK.Set( itK.Get() * 0. );
+      itK.Set( itK.Get() * TFFTPrecision(0.) );
     }
   
   return fftK->GetOutput();
