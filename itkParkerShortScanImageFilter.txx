@@ -61,7 +61,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   const double invsdd = 1/m_Geometry->GetSourceToDetectorDistance();
   const double detectorWidth = this->GetInput()->GetSpacing()[0] *
                                this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
-  const double delta = 0.5 * atan( detectorWidth * invsdd );
+  const double delta = atan( 0.5 * detectorWidth * invsdd );
 
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
