@@ -17,6 +17,8 @@
 #ifndef __itkFFTWCommon_h
 #define __itkFFTWCommon_h
 
+#include <itkConfigure.h>
+
 #if defined(USE_FFTWF) || defined(USE_FFTWD)
 #include "fftw3.h"
 #endif
