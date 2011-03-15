@@ -88,7 +88,8 @@ ADD_LIBRARY(rtkIO
             itkHndImageIOFactory.cxx
             rtkHomogeneousMatrix.cxx
             itkThreeDCircularProjectionGeometry.cxx
-            itkThreeDCircularProjectionGeometryXMLFile.cxx)
+            itkThreeDCircularProjectionGeometryXMLFile.cxx
+            itkFFTWCommon.cxx)
 TARGET_LINK_LIBRARIES(rtkIO ITKIO)
 #=========================================================
 

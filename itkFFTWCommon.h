@@ -190,8 +190,6 @@ public:
     }
 };
 
-itk::FastMutexLock::Pointer Proxy<float>::lock = NULL;
-   
 #endif // USE_FFTWF
 
 
@@ -343,9 +341,6 @@ public:
     Unlock();
     }
 };
-
-itk::FastMutexLock::Pointer Proxy<double>::lock = NULL;
-   
 #endif
 }
 }
