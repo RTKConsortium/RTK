@@ -133,6 +133,10 @@ TARGET_LINK_LIBRARIES(rtksimulatedgeometry rtkIO)
 WRAP_GGO(rtkelektasynergygeometry_GGO_C rtkelektasynergygeometry.ggo)
 ADD_EXECUTABLE(rtkelektasynergygeometry rtkelektasynergygeometry.cxx rtkDbf.cxx ${rtkelektasynergygeometry_GGO_C})
 TARGET_LINK_LIBRARIES(rtkelektasynergygeometry rtkIO)
+
+WRAP_GGO(rtkdigisensgeometry_GGO_C rtkdigisensgeometry.ggo)
+ADD_EXECUTABLE(rtkdigisensgeometry rtkdigisensgeometry.cxx itkDigisensGeometryXMLFileReader.cxx ${rtkdigisensgeometry_GGO_C})
+TARGET_LINK_LIBRARIES(rtkdigisensgeometry rtkIO)
 #=========================================================
 
 #=========================================================
