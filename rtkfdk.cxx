@@ -5,6 +5,7 @@
 #include "itkThreeDCircularProjectionGeometryXMLFile.h"
 #include "itkProjectionsReader.h"
 #include "itkDisplacedDetectorImageFilter.h"
+#include "itkParkerShortScanImageFilter.h"
 #include "itkFDKWeightProjectionFilter.h"
 #include "itkFFTRampImageFilter.h"
 
@@ -79,11 +80,20 @@ int main(int argc, char * argv[])
   DDFType::Pointer ddf = DDFType::New();
   ddf->SetInput( reader->GetOutput() );
   ddf->SetGeometry( geometryReader->GetOutputObject() );
+  ddf->InPlaceOff();
+
+  // Short scan image filter
+  typedef itk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
+  PSSFType::Pointer pssf = PSSFType::New();
+  pssf->SetInput( ddf->GetOutput() );
+  pssf->SetGeometry( geometryReader->GetOutputObject() );
+  pssf->SetNumberOfThreads(1);
+  pssf->InPlaceOff();
 
   // Weight projections according to fdk algorithm
   typedef itk::FDKWeightProjectionFilter< OutputImageType > WeightFilterType;
   WeightFilterType::Pointer weightFilter = WeightFilterType::New();
-  weightFilter->SetInput( ddf->GetOutput() );
+  weightFilter->SetInput( pssf->GetOutput() );
   weightFilter->SetSourceToDetectorDistance( geometryReader->GetOutputObject()->GetSourceToDetectorDistance() );
   weightFilter->SetInPlace(false); //SR: there seems to be a bug in ITK: incompatibility between InPlace and streaming?
 
