@@ -53,6 +53,28 @@ EndElement(const char *name)
   if(itksys::SystemTools::Strucmp(name, "SourceToIsocenterDistance") == 0)
     this->m_OutputObject->SetSourceToIsocenterDistance(atof(this->m_CurCharacterData.c_str()));
 
+  if(itksys::SystemTools::Strucmp(name, "ProjectionScalingX") == 0)
+    this->m_OutputObject->SetProjectionScalingX(atof(this->m_CurCharacterData.c_str()));
+
+  if(itksys::SystemTools::Strucmp(name, "ProjectionScalingY") == 0)
+    this->m_OutputObject->SetProjectionScalingY(atof(this->m_CurCharacterData.c_str()));
+
+  if(itksys::SystemTools::Strucmp(name, "RotationCenter") == 0)
+    {
+    ThreeDCircularProjectionGeometry::VectorType vec;
+    std::istringstream iss(m_CurCharacterData);
+    iss >> vec;
+    this->m_OutputObject->SetRotationCenter(vec);
+    }
+
+  if(itksys::SystemTools::Strucmp(name, "RotationAxis") == 0)
+    {
+    ThreeDCircularProjectionGeometry::VectorType vec;
+    std::istringstream iss(m_CurCharacterData);
+    iss >> vec;
+    this->m_OutputObject->SetRotationAxis(vec);
+    }
+
   if(itksys::SystemTools::Strucmp(name, "Angle") == 0)
     m_RotationAngle = atof(this->m_CurCharacterData.c_str());
 
@@ -110,6 +132,40 @@ WriteFile()
   this->WriteStartElement("SourceToIsocenterDistance",output);
   output << this->m_InputObject->GetSourceToIsocenterDistance();
   this->WriteEndElement("SourceToIsocenterDistance",output);
+  output << std::endl;
+
+  if(this->m_InputObject->GetProjectionScalingX() != 1.)
+    {
+    output << indent;
+    this->WriteStartElement("ProjectionScalingX",output);
+    output << this->m_InputObject->GetProjectionScalingX();
+    this->WriteEndElement("ProjectionScalingX",output);
+    output << std::endl;
+    }
+
+  if(this->m_InputObject->GetProjectionScalingY() != 1.)
+    {
+    output << indent;
+    this->WriteStartElement("ProjectionScalingY",output);
+    output << this->m_InputObject->GetProjectionScalingX();
+    this->WriteEndElement("ProjectionScalingY",output);
+    output << std::endl;
+    }
+
+  output << indent;
+  this->WriteStartElement("RotationCenter",output);
+  output << this->m_InputObject->GetRotationCenter()[0] << ' '
+         << this->m_InputObject->GetRotationCenter()[1] << ' '
+         << this->m_InputObject->GetRotationCenter()[2];
+  this->WriteEndElement("RotationCenter",output);
+  output << std::endl;
+
+  output << indent;
+  this->WriteStartElement("RotationAxis",output);
+  output << this->m_InputObject->GetRotationAxis()[0] << ' '
+         << this->m_InputObject->GetRotationAxis()[1] << ' '
+         << this->m_InputObject->GetRotationAxis()[2];
+  this->WriteEndElement("RotationAxis",output);
   output << std::endl;
 
   for(unsigned int i = 0; i<this->m_InputObject->GetMatrices().size(); i++)

@@ -1,5 +1,16 @@
 #include "itkThreeDCircularProjectionGeometry.h"
 
+itk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry():
+  m_SourceToDetectorDistance(-1),
+  m_SourceToIsocenterDistance(-1),
+  m_ProjectionScalingX(1),
+  m_ProjectionScalingY(1)
+{ 
+  m_RotationCenter.Fill(0.);
+  m_RotationAxis.Fill(0.);
+  m_RotationAxis[1] = 1.;
+};
+
 void itk::ThreeDCircularProjectionGeometry::AddProjection(const double angle, const double offsetX, const double offsetY)
 {
   Superclass::MatrixType matrix;
@@ -8,9 +19,11 @@ void itk::ThreeDCircularProjectionGeometry::AddProjection(const double angle, co
   m_RotationAngles.push_back(storedAngle);
   m_ProjOffsetsX.push_back(offsetX);
   m_ProjOffsetsY.push_back(offsetY);
-  matrix = Get2DRigidTransformationHomogeneousMatrix(0, offsetX, offsetY).GetVnlMatrix() *
+  matrix = Get2DScalingHomogeneousMatrix(m_ProjectionScalingX, m_ProjectionScalingY).GetVnlMatrix() *
+           Get2DRigidTransformationHomogeneousMatrix(0, offsetX, offsetY).GetVnlMatrix() *
            GetProjectionMagnificationMatrix<3>(m_SourceToDetectorDistance, m_SourceToIsocenterDistance).GetVnlMatrix() *
-           Get3DRigidTransformationHomogeneousMatrix(0, angle, 0, 0, 0, 0).GetVnlMatrix();
+           Get3DTranslationHomogeneousMatrix(m_RotationCenter[0], m_RotationCenter[1], m_RotationCenter[2]).GetVnlMatrix() *
+           Get3DRotationHomogeneousMatrix(m_RotationAxis, storedAngle).GetVnlMatrix();
   this->AddMatrix(matrix);
 }
 

@@ -24,6 +24,8 @@ public:
   typedef SmartPointer< Self >                Pointer;
   typedef SmartPointer< const Self >          ConstPointer;
 
+  typedef Vector<double, 3>                   VectorType;
+
   /** Method for creation through the object factory. */
   itkNewMacro( Self );
 
@@ -34,10 +36,24 @@ public:
   itkGetMacro(SourceToDetectorDistance, double);
   itkSetMacro(SourceToIsocenterDistance, double);
   itkGetMacro(SourceToIsocenterDistance, double);
+  
+  /** Get / Set projection scaling to account for missing spacing in projections information. */
+  itkSetMacro(ProjectionScalingX, double);
+  itkGetMacro(ProjectionScalingX, double);
+  itkSetMacro(ProjectionScalingY, double);
+  itkGetMacro(ProjectionScalingY, double);
+  
+  /** Get / Set rotation axis, default is (0,1,0). */
+  itkSetMacro(RotationCenter, VectorType);
+  itkGetMacro(RotationCenter, VectorType);
+
+  /** Get / Set rotation axis, default is (0,1,0). */
+  itkSetMacro(RotationAxis, VectorType);
+  itkGetMacro(RotationAxis, VectorType);
 
   /** Add projection to geometry. One projection is defined with the rotation
    * angle in degrees and the in-plane translation of the detector in physical
-   * units (e.g. mm).
+   * units (e.g. mm). The rotation axis is assumed to be (0,1,0).
    */
   void AddProjection(const double angle, const double offsetX, const double offsetY);
 
@@ -62,7 +78,7 @@ public:
   const std::vector<double> GetAngularGaps();
 
 protected:
-  ThreeDCircularProjectionGeometry(): m_SourceToDetectorDistance(-1), m_SourceToIsocenterDistance(-1) {};
+  ThreeDCircularProjectionGeometry();
   virtual ~ThreeDCircularProjectionGeometry(){};
 
 private:
@@ -73,6 +89,10 @@ private:
   /** Circular geometry global parameters */
   double m_SourceToDetectorDistance;
   double m_SourceToIsocenterDistance;
+  double m_ProjectionScalingX;
+  double m_ProjectionScalingY;
+  VectorType m_RotationCenter;
+  VectorType m_RotationAxis;
 
   /** Circular geometry parameters per projection (angles in degrees between 0 and 360). */
   std::vector<double> m_RotationAngles;
