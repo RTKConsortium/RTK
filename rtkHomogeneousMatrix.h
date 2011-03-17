@@ -6,12 +6,24 @@
 
 //--------------------------------------------------------------------
 itk::Matrix< double, 3, 3 >
+Get2DScalingHomogeneousMatrix( double scalingX, double scalingY );
+
+//--------------------------------------------------------------------
+itk::Matrix< double, 3, 3 >
 Get2DRigidTransformationHomogeneousMatrix( double angleX, double transX, double transY );
+
+//--------------------------------------------------------------------
+itk::Matrix< double, 4, 4 >
+Get3DTranslationHomogeneousMatrix( double transX, double transY, double transZ );
 
 //--------------------------------------------------------------------
 itk::Matrix< double, 4, 4 >
 Get3DRigidTransformationHomogeneousMatrix( double angleX, double angleY, double angleZ,
                                            double transX, double transY, double transZ );
+
+//--------------------------------------------------------------------
+itk::Matrix< double, 4, 4 >
+Get3DRotationHomogeneousMatrix( itk::Vector<double, 3> axis, double angle );
 
 //--------------------------------------------------------------------
 template< unsigned int TDimension >
