@@ -11,7 +11,10 @@
  *
  * Note that the filter does nothing if the panel shift is less than 10%
  * of its size. Otherwise, it does the weighting described in the publication
- * and zero pad the data on the nearest side to the center.
+ * and zero pads the data on the nearest side to the center.
+ * Therefore, the InPlace capability depends on the displacement.
+ * It can only be inplace if there is no displacement, it can not otherwise.
+ * The GenerateOutputInformation method takes care of properly setting this up.
  *
  * \author Simon Rit
  */
