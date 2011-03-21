@@ -7,10 +7,11 @@
 #include "itkDisplacedDetectorImageFilter.h"
 #include "itkParkerShortScanImageFilter.h"
 #include "itkFDKWeightProjectionFilter.h"
-#include "itkFFTRampImageFilter.h"
 
+#include "itkFFTRampImageFilter.h"
 #include "itkFDKBackProjectionImageFilter.h"
 #if CUDA_FOUND
+#  include "itkCudaFFTRampImageFilter.h"
 #  include "itkCudaFDKBackProjectionImageFilter.h"
 #endif
 
@@ -80,7 +81,6 @@ int main(int argc, char * argv[])
   DDFType::Pointer ddf = DDFType::New();
   ddf->SetInput( reader->GetOutput() );
   ddf->SetGeometry( geometryReader->GetOutputObject() );
-  ddf->InPlaceOff();
 
   // Short scan image filter
   typedef itk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
@@ -98,11 +98,30 @@ int main(int argc, char * argv[])
   weightFilter->SetInPlace(false); //SR: there seems to be a bug in ITK: incompatibility between InPlace and streaming?
 
   // Ramp filter
-  typedef itk::FFTRampImageFilter<OutputImageType> RampFilterType;
-  RampFilterType::Pointer rampFilter = RampFilterType::New();
-  rampFilter->SetInput( weightFilter->GetOutput() );
-  rampFilter->SetTruncationCorrection(args_info.pad_arg);
-  rampFilter->SetHannCutFrequency(args_info.hann_arg);
+  itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer rampFilter;
+  if(!strcmp(args_info.hardware_arg, "cuda"))
+    {
+#if !CUDA_FOUND
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+#else
+    typedef itk::CudaFFTRampImageFilter CUDARampFilterType;
+    CUDARampFilterType::Pointer cudaRampFilter = CUDARampFilterType::New();
+    cudaRampFilter->SetInput( weightFilter->GetOutput() );
+    cudaRampFilter->SetTruncationCorrection(args_info.pad_arg);
+    cudaRampFilter->SetHannCutFrequency(args_info.hann_arg);
+    rampFilter = cudaRampFilter;
+#endif
+    }
+  else
+    {
+    typedef itk::FFTRampImageFilter<OutputImageType> CPURampFilterType;
+    CPURampFilterType::Pointer cpuRampFilter = CPURampFilterType::New();
+    cpuRampFilter->SetInput( weightFilter->GetOutput() );
+    cpuRampFilter->SetTruncationCorrection(args_info.pad_arg);
+    cpuRampFilter->SetHannCutFrequency(args_info.hann_arg);
+    rampFilter = cpuRampFilter;
+    }
   
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;

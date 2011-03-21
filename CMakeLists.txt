@@ -98,12 +98,14 @@ IF (CUDA_FOUND)
   INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS
                 itkCudaUtilities.cu
-                itkCudaFDKBackProjectionImageFilter.cu )
+                itkCudaFDKBackProjectionImageFilter.cu
+                itkCudaFFTRampImageFilter.cu )
   ADD_LIBRARY(rtkcuda
               itkCudaFDKBackProjectionImageFilter.cxx
-	      ${rtkcuda_CUDA_WRAPPERS})
+              itkCudaFFTRampImageFilter.cxx
+              ${rtkcuda_CUDA_WRAPPERS})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
-  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} rtkIO)
+  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} rtkIO)
 ENDIF (CUDA_FOUND)
 #=========================================================
 
