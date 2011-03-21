@@ -1,7 +1,7 @@
 #ifndef __itkParkerShortScanImageFilter_h
 #define __itkParkerShortScanImageFilter_h
 
-#include "itkInPlaceImageFilter.h"
+#include <itkInPlaceImageFilter.h>
 #include "itkThreeDCircularProjectionGeometry.h"
 
 /** \class ParkerShortScanImageFilter
@@ -11,7 +11,7 @@
  *
  * Note that the filter does nothing if the panel shift is less than 10%
  * of its size. Otherwise, it does the weighting described in the publication
- * and zero pad the data on the nearest side to the center.
+ * and zero pads the data on the nearest side to the center.
  *
  * \author Simon Rit
  */
