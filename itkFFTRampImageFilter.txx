@@ -17,8 +17,17 @@ namespace itk
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::FFTRampImageFilter():m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.)
+::FFTRampImageFilter():
+m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.)
 {
+#if defined(USE_FFTWD)
+  if(typeid(TFFTPrecision).name() == std::string("double"))
+    m_GreatestPrimeFactor = 13;
+#endif
+#if defined(USE_FFTWF)
+  if(typeid(TFFTPrecision).name() == std::string("float"))
+    m_GreatestPrimeFactor = 13;
+#endif
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
