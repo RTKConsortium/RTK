@@ -138,8 +138,8 @@ CUDA_reconstruct_conebeam_init (
   // CUDA device pointers
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
   cudaMalloc( (void**)&dev_vol, vol_size_malloc);
-  cudaMemset( (void *) dev_vol, 0, vol_size_malloc);  
   CUDA_CHECK_ERROR;
+  cudaMemset( (void *) dev_vol, 0, vol_size_malloc);  
 
   cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
   cudaMallocArray( &dev_img, &channelDesc, img_dim.x, img_dim.y );
