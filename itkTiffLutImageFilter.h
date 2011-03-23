@@ -56,7 +56,7 @@ itk::TiffLutImageFilter<TInputImage, TOutputImage>::TiffLutImageFilter()
   lut->Allocate();
 
   // Iterate and set lut
-  OutputImagePixelType logRef = log(OutputImagePixelType(size[0]));
+  OutputImagePixelType logRef = log(OutputImagePixelType(size[0]+1));
   itk::ImageRegionIteratorWithIndex<LutType>  it( lut, lut->GetBufferedRegion() );
   it.GoToBegin();
   
@@ -66,7 +66,7 @@ itk::TiffLutImageFilter<TInputImage, TOutputImage>::TiffLutImageFilter()
 
   //Conventional lookup table for the rest
   while( !it.IsAtEnd() ) {
-    it.Set( logRef - log( OutputImagePixelType(it.GetIndex()[0]) ) );
+    it.Set( logRef - log( OutputImagePixelType(it.GetIndex()[0]+1) ) );
     ++it;
   }
   // Set the lut to member and functor
