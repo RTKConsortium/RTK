@@ -30,7 +30,7 @@ public:
   itkTypeMacro(CudaFFTRampImageFilter, ImageToImageFilter);
 
 protected:
-  CudaFFTRampImageFilter(){this->SetGreatestPrimeFactor(13);}
+  CudaFFTRampImageFilter();
   ~CudaFFTRampImageFilter(){}
 
   virtual void GenerateData( );
