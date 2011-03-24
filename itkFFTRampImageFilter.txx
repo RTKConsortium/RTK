@@ -62,16 +62,8 @@ void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::BeforeThreadedGenerateData()
 {
-  // Pre compute weights for truncation correction in a lookup table. The index
-  // is the distance to the original image border.
-  const long next = this->GetTruncationCorrectionExtent();
-  if ((long)m_TruncationMirrorWeights.size() != next)
-    {
-    m_TruncationMirrorWeights.resize(next+1);
-    for(unsigned int i=0; i<next+1; i++)
-      m_TruncationMirrorWeights[i] = pow( sin((next-i)*vnl_math::pi/(2*next-2)), 0.75);
-    }
-
+  UpdateTruncationMirrorWeights();
+  
   // Force init of fftw library mutex (static class member) before multithreading
 #if defined(USE_FFTWF)
   fftw::Proxy<float>::Lock();
@@ -141,6 +133,8 @@ typename FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTInputI
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::PadInputImageRegion(const RegionType &inputRegion)
 {
+  UpdateTruncationMirrorWeights();
+  
   RegionType paddedRegion = inputRegion;
 
   // Set x padding
@@ -298,6 +292,20 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
   
   return fftK->GetOutput();
+}
+
+template<class TInputImage, class TOutputImage, class TFFTPrecision>
+void
+FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+::UpdateTruncationMirrorWeights()
+{
+  const long next = this->GetTruncationCorrectionExtent();
+  if ((long)m_TruncationMirrorWeights.size() != next)
+    {
+    m_TruncationMirrorWeights.resize(next+1);
+    for(unsigned int i=0; i<next+1; i++)
+      m_TruncationMirrorWeights[i] = pow( sin((next-i)*vnl_math::pi/(2*next-2)), 0.75);
+    }
 }
 
 } // end namespace itk

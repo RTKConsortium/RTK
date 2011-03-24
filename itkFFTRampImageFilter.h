@@ -118,6 +118,13 @@ protected:
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions. */
   FFTOutputImagePointer GetFFTRampKernel(const int width);
+  
+  /** Pre compute weights for truncation correction in a lookup table. The index
+    * is the distance to the original image border.
+    * Careful: the function is not thread safe but it does nothing if the weights have
+    * already been computed.
+    */
+  void UpdateTruncationMirrorWeights();
 
 private:
   FFTRampImageFilter(const Self&); //purposely not implemented
