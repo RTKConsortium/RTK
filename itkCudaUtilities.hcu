@@ -3,6 +3,7 @@
 
 #include <cuda_runtime_api.h>
 #include <string>
+#include <vector>
 #include <itkMacro.h>
 
 #define CUDA_CHECK_ERROR \
@@ -17,5 +18,7 @@
   if (result) \
     itkGenericExceptionMacro(<< "CUFFT ERROR #" << result << std::endl); \
 }
+
+std::vector<int> GetListOfCudaDevices();
 
 #endif
