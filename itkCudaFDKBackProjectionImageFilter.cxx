@@ -57,23 +57,8 @@ CudaFDKBackProjectionImageFilter
   // Go over each projection
   for(unsigned int iProj=0; iProj<nProj; iProj++)
     {
-    // If we have 2 cuda devices, we do the filtering on one and the rest on the other
-    if(devices.size()>1)
-      {
-      cudaThreadExit();
-      cudaSetDevice(devices[1]);
-      CUDA_CHECK_ERROR;
-      }
-
     // Extract the current slice
     ProjectionImagePointer projection = this->GetProjection(iProj, angWeights[iProj] * rampFactor);
-
-    if(devices.size()>1)
-      {
-      cudaThreadExit();
-      cudaSetDevice(devices[0]);
-      CUDA_CHECK_ERROR;
-      }
 
     // Index to index matrix normalized to have a correct backprojection weight (1 at the isocenter)
     ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
