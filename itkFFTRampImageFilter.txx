@@ -10,6 +10,7 @@
 #include <itkFFTRealToComplexConjugateImageFilter.h>
 #include <itkFFTComplexConjugateToRealImageFilter.h>
 
+#include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 
 namespace itk
