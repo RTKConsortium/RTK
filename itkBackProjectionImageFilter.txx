@@ -186,14 +186,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
   // Transpose projection for optimization
   if(this->GetTranspose())
-    {
     for(unsigned int i=0; i<Dimension; i++)
-      {
       std::swap(matrixProj[i][0], matrixProj[i][1]);
-      std::swap(matrixVol[i][0], matrixVol[i][1]);
-      }
-    std::swap(matrixVol[Dimension][0], matrixVol[Dimension][1]);
-    }
       
   return ProjectionMatrixType(matrixProj.GetVnlMatrix() *
                               this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
