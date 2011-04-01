@@ -33,13 +33,13 @@ CudaFDKBackProjectionImageFilter
   
   // Load dimensions arguments
   int3 vol_dim;
-  vol_dim.x = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
-  vol_dim.y = this->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
-  vol_dim.z = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
+  vol_dim.x = this->GetOutput()->GetBufferedRegion().GetSize()[0];
+  vol_dim.y = this->GetOutput()->GetBufferedRegion().GetSize()[1];
+  vol_dim.z = region.GetSize()[2];
 
   int2 img_dim;
-  img_dim.x = this->GetInput(1)->GetLargestPossibleRegion().GetSize()[0];
-  img_dim.y = this->GetInput(1)->GetLargestPossibleRegion().GetSize()[1];
+  img_dim.x = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
+  img_dim.y = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
 
   // Cuda init
   std::vector<int> devices = GetListOfCudaDevices();
@@ -66,12 +66,14 @@ CudaFDKBackProjectionImageFilter
     // We correct the matrix for non zero indexes
     itk::Matrix<double, 4, 4> matrixIdxVol;
     matrixIdxVol.SetIdentity();
-    for(unsigned int i=0; i<3; i++)
-      matrixIdxVol[i][3] = this->GetOutput()->GetLargestPossibleRegion().GetIndex()[i];
+    for(unsigned int i=0; i<2; i++)
+      matrixIdxVol[i][3] = this->GetOutput()->GetBufferedRegion().GetIndex()[i];
+    matrixIdxVol[2][3] = region.GetIndex()[2];
+    
     itk::Matrix<double, 3, 3> matrixIdxProj;
     matrixIdxProj.SetIdentity();
     for(unsigned int i=0; i<2; i++)
-      matrixIdxProj[i][2] = -1*(projection->GetLargestPossibleRegion().GetIndex()[i])+0.5; //SR: 0.5 for 2D texture?
+      matrixIdxProj[i][2] = -1*(projection->GetBufferedRegion().GetIndex()[i])+0.5; //SR: 0.5 for 2D texture?
 
     matrix = matrixIdxProj.GetVnlMatrix() * matrix.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
 
