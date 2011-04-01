@@ -181,7 +181,7 @@ int main(int argc, char * argv[])
   // SR: this appears to trigger 2 updates in cuda mode with the lowmem option
   //     and an off-centered geometry. No clue why... Disable this update
   //     until the problem is understood and solved.
-  if(!args_info.lowmem_flag)
+  if(!args_info.lowmem_flag && args_info.divisions_arg==1)
     {
     if(args_info.verbose_flag)
       std::cout << "Backprojecting using "
@@ -208,6 +208,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( bpFilter->GetOutput() );
+  writer->SetNumberOfStreamDivisions( args_info.divisions_arg );
 
   if(args_info.verbose_flag)
     std::cout << "Writing... " << std::flush;

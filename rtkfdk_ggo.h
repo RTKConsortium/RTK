@@ -61,6 +61,9 @@ struct args_info_rtkfdk
   const char *hardware_help; /**< @brief Hardware used for computation help description.  */
   int lowmem_flag;	/**< @brief Load only one projection per thread in memory (default=off).  */
   const char *lowmem_help; /**< @brief Load only one projection per thread in memory help description.  */
+  int divisions_arg;	/**< @brief Number of stream divisions to cope with large CTs (default='1').  */
+  char * divisions_orig;	/**< @brief Number of stream divisions to cope with large CTs original value given at command line.  */
+  const char *divisions_help; /**< @brief Number of stream divisions to cope with large CTs help description.  */
   double pad_arg;	/**< @brief Data padding parameter to correct for truncation (default='0.0').  */
   char * pad_orig;	/**< @brief Data padding parameter to correct for truncation original value given at command line.  */
   const char *pad_help; /**< @brief Data padding parameter to correct for truncation help description.  */
@@ -93,6 +96,7 @@ struct args_info_rtkfdk
   unsigned int output_given ;	/**< @brief Whether output was given.  */
   unsigned int hardware_given ;	/**< @brief Whether hardware was given.  */
   unsigned int lowmem_given ;	/**< @brief Whether lowmem was given.  */
+  unsigned int divisions_given ;	/**< @brief Whether divisions was given.  */
   unsigned int pad_given ;	/**< @brief Whether pad was given.  */
   unsigned int hann_given ;	/**< @brief Whether hann was given.  */
   unsigned int origin_given ;	/**< @brief Whether origin was given.  */

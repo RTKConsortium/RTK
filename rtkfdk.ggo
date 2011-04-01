@@ -9,6 +9,7 @@ option "regexp"    r  "Regular expression to select projection files in path"   
 option "output"    o "Output file name"                                          string              yes
 option "hardware"  h "Hardware used for computation"                             values="cpu","cuda" no   default="cpu"
 option "lowmem"    l "Load only one projection per thread in memory"             flag                off
+option "divisions" d "Number of stream divisions to cope with large CTs"         int                 no   default="1"
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double              no   default="0.0"
