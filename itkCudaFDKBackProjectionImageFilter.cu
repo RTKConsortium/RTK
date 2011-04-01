@@ -133,7 +133,7 @@ CUDA_reconstruct_conebeam_init (
 )
 {
   // Size of volume Malloc
-  int vol_size_malloc = (vol_dim.x*vol_dim.y*vol_dim.z)*sizeof(float);
+  size_t vol_size_malloc = (vol_dim.x*vol_dim.y*vol_dim.z)*sizeof(float);
 
   // CUDA device pointers
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
@@ -231,7 +231,7 @@ CUDA_reconstruct_conebeam_cleanup (
 
 {
   // Size of volume Malloc
-  int vol_size_malloc = (vol_dim.x*vol_dim.y*vol_dim.z)*sizeof(float);
+  size_t vol_size_malloc = (vol_dim.x*vol_dim.y*vol_dim.z)*sizeof(float);
 
   // Copy reconstructed volume from device to host
   cudaMemcpy (vol, dev_vol, vol_size_malloc, cudaMemcpyDeviceToHost);
