@@ -175,7 +175,7 @@ int main(int argc, char * argv[])
   else
     bpFilter->SetInput( 1, streamer->GetOutput() );
   bpFilter->SetGeometry( geometryReader->GetOutputObject() );
-  bpFilter->SetInPlace( true );
+  bpFilter->SetInPlace(false);
 
 
   // SR: this appears to trigger 2 updates in cuda mode with the lowmem option
@@ -183,6 +183,7 @@ int main(int argc, char * argv[])
   //     until the problem is understood and solved.
   if(!args_info.lowmem_flag && args_info.divisions_arg==1)
     {
+    bpFilter->SetInPlace( true );
     if(args_info.verbose_flag)
       std::cout << "Backprojecting using "
                 << args_info.hardware_arg
