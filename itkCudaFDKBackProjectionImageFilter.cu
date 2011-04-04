@@ -137,6 +137,7 @@ CUDA_reconstruct_conebeam_init (
 
   // CUDA device pointers
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
+  CUDA_CHECK_ERROR;
   cudaMalloc( (void**)&dev_vol, vol_size_malloc);
   CUDA_CHECK_ERROR;
   cudaMemset( (void *) dev_vol, 0, vol_size_malloc);  
@@ -238,7 +239,10 @@ CUDA_reconstruct_conebeam_cleanup (
   CUDA_CHECK_ERROR;
 
   // Cleanup
-  cudaFree (dev_img);
+  cudaFreeArray (dev_img);
+  CUDA_CHECK_ERROR;
   cudaFree (dev_matrix);
+  CUDA_CHECK_ERROR;
   cudaFree (dev_vol); 
+  CUDA_CHECK_ERROR;
 }
