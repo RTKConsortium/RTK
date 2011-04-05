@@ -43,6 +43,18 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
   typedef ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
+  
+  // Initialize output region with input region in case the filter is not in place
+  if(this->GetInput() != this->GetOutput())
+    {
+    itIn.GoToBegin();
+    while(!itIn.IsAtEnd())
+      {
+      itOut.Set(itIn.Get());
+      ++itIn;
+      ++itOut;
+      }
+    }
 
   // Rotation center (assumed to be at 0 yet)
   typename TInputImage::PointType rotCenterPoint;
@@ -80,9 +92,8 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
       }
 
     // Go over each voxel
-    itIn.GoToBegin();
     itOut.GoToBegin();
-    while(!itIn.IsAtEnd())
+    while(!itOut.IsAtEnd())
       {
       // Compute projection index
       for(unsigned int i=0; i<Dimension-1; i++)
@@ -103,13 +114,9 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
       // Interpolate if in projection
       if( interpolator->IsInsideBuffer(pointProj) )
         {
-        if (iProj)
-          itOut.Set( itOut.Get() + perspFactor*perspFactor*interpolator->EvaluateAtContinuousIndex(pointProj) );
-        else
-          itOut.Set( itIn.Get() + perspFactor*perspFactor*interpolator->EvaluateAtContinuousIndex(pointProj) );
+        itOut.Set( itOut.Get() + perspFactor*perspFactor*interpolator->EvaluateAtContinuousIndex(pointProj) );
         }
 
-      ++itIn;
       ++itOut;
       }
     }
