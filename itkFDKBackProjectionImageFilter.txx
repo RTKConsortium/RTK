@@ -129,6 +129,14 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 {
   typename ProjectionImageType::SizeType pSize = projection->GetBufferedRegion().GetSize();
   typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
+  typename TOutputImage::SizeType vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
+  typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
+  typename TInputImage::PixelType *pProj;
+  typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
+
+  // Pointers in memory to index (0,0,0) which do not necessarily exist
+  pVolZeroPointer = this->GetOutput()->GetBufferPointer();
+  pVolZeroPointer -= vBufferIndex[0] + vBufferSize[0] * (vBufferIndex[1] + vBufferSize[1] * vBufferIndex[2]);
 
   // Continuous index at which we interpolate
   double u, v, w;
@@ -164,11 +172,11 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
         {
 #endif
 
-        typename TInputImage::PixelType * in = projection->GetBufferPointer() + vi * pSize[0];
-        typename TOutputImage::PixelType * out = this->GetOutput()->GetBufferPointer() + i + region.GetSize(0) * (j + k * region.GetSize(1) );
+        pProj = projection->GetBufferPointer() + vi * pSize[0];
+        pVol = pVolZeroPointer + i + vBufferSize[0] * (j + k * vBufferSize[1] );
 
         // Innermost loop
-        for( ; i<region.GetIndex(0)+(int)region.GetSize(0); i++, u+=du, out++)
+        for( ; i<region.GetIndex(0)+(int)region.GetSize(0); i++, u+=du, pVol++)
           {
 #ifdef BILINEAR_BACKPROJECTION
           ui = Math::Floor<double>(u);          
@@ -176,14 +184,14 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
             {
             u1 = u-ui;
             u2 = 1.0-u1;
-            *out += w * (v2 * (u2 * *(in+ui)          + u1 * *(in+ui+1)) +
-                         v1 * (u2 * *(in+ui+pSize[0]) + u1 * *(in+ui+pSize[0]+1)));
+            *pVol += w * (v2 * (u2 * *(pProj+ui)          + u1 * *(pProj+ui+1)) +
+                          v1 * (u2 * *(pProj+ui+pSize[0]) + u1 * *(pProj+ui+pSize[0]+1)));
             }
 #else
           ui = Math::Round<double>(u);
           if(ui>=0 && ui<(int)pSize[0])
             {
-            *out += w * *(in+ui);
+            *pVol += w * *(pProj+ui);
             }
 #endif
           } //i
@@ -199,6 +207,14 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 {
   typename ProjectionImageType::SizeType pSize = projection->GetBufferedRegion().GetSize();
   typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
+  typename TOutputImage::SizeType vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
+  typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
+  typename TInputImage::PixelType *pProj;
+  typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
+  
+  // Pointers in memory to index (0,0,0) which do not necessarily exist
+  pVolZeroPointer = this->GetOutput()->GetBufferPointer();
+  pVolZeroPointer -= vBufferIndex[0] + vBufferSize[0] * (vBufferIndex[1] + vBufferSize[1] * vBufferIndex[2]);
 
   // Continuous index at which we interpolate
   double u, v, w;
@@ -230,29 +246,28 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
       if(vi>=0 && vi<(int)pSize[1])
         {
 #endif
-        typename TOutputImage::PixelType * out = this->GetOutput()->GetBufferPointer() + i + region.GetSize(0) * (j + k * region.GetSize(1) );
-        for( ; j<region.GetIndex(1)+(int)region.GetSize(1); j++, out+=region.GetSize(0), u+=du)
+        pVol = pVolZeroPointer + i + vBufferSize[0] * (j + k * vBufferSize[1] );
+        for( ; j<region.GetIndex(1)+(int)region.GetSize(1); j++, pVol+=vBufferSize[0], u+=du)
           {
 #ifdef BILINEAR_BACKPROJECTION
           ui = Math::Floor<double>(u);          
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
             double u1, u2, v1, v2;
-            typename TInputImage::PixelType * in = projection->GetBufferPointer() + vi * pSize[0] + ui;
+            pProj = projection->GetBufferPointer() + vi * pSize[0] + ui;
             v1 = v-vi;
             v2 = 1.0-v1;
             u1 = u-ui;
             u2 = 1.0-u1;
-            *out += w * (v2 * (u2 * *(in)          + u1 * *(in+1)) +
-                         v1 * (u2 * *(in+pSize[0]) + u1 * *(in+pSize[0]+1)));
+            *pVol += w * (v2 * (u2 * *(pProj)          + u1 * *(pProj+1)) +
+                          v1 * (u2 * *(pProj+pSize[0]) + u1 * *(pProj+pSize[0]+1)));
             }
 #else
           ui = Math::Round<double>(u);          
           if(ui>=0 && ui<(int)pSize[0])
             {
-            typename TInputImage::PixelType * in = projection->GetBufferPointer() + vi * pSize[0];
-            typename TOutputImage::PixelType * out = this->GetOutput()->GetBufferPointer() + i + region.GetSize(0) * (j + k * region.GetSize(1) );
-            *out += w * *(in+ui);
+            pProj = projection->GetBufferPointer() + vi * pSize[0];
+            *pVol += w * *(pProj+ui);
             }
 #endif
           } //j
