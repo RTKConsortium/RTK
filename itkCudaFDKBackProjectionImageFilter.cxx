@@ -4,6 +4,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
+#include <itkMacro.h>
 
 namespace itk
 {
@@ -17,6 +18,11 @@ CudaFDKBackProjectionImageFilter
   
   OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
 
+  if(region != this->GetOutput()->GetBufferedRegion())
+    itkExceptionMacro(<< "Can't handle different requested and buffered regions "
+                      << region
+                      << this->GetOutput()->GetBufferedRegion());
+  
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
 
@@ -30,11 +36,20 @@ CudaFDKBackProjectionImageFilter
   rotCenterPoint.Fill(0.0);
   ContinuousIndex<double, Dimension> rotCenterIndex;
   this->GetInput(0)->TransformPhysicalPointToContinuousIndex(rotCenterPoint, rotCenterIndex);
-  
+
+  // Include non-zero index in matrix
+  itk::Matrix<double, 4, 4> matrixIdxVol;
+  matrixIdxVol.SetIdentity();
+  for(unsigned int i=0; i<3; i++)
+    {
+    matrixIdxVol[i][3] = region.GetIndex()[i];
+    rotCenterIndex[i] -= region.GetIndex()[i];
+    }
+    
   // Load dimensions arguments
   int3 vol_dim;
-  vol_dim.x = this->GetOutput()->GetBufferedRegion().GetSize()[0];
-  vol_dim.y = this->GetOutput()->GetBufferedRegion().GetSize()[1];
+  vol_dim.x = region.GetSize()[0];
+  vol_dim.y = region.GetSize()[1];
   vol_dim.z = region.GetSize()[2];
 
   int2 img_dim;
@@ -64,12 +79,6 @@ CudaFDKBackProjectionImageFilter
     ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
 
     // We correct the matrix for non zero indexes
-    itk::Matrix<double, 4, 4> matrixIdxVol;
-    matrixIdxVol.SetIdentity();
-    for(unsigned int i=0; i<2; i++)
-      matrixIdxVol[i][3] = this->GetOutput()->GetBufferedRegion().GetIndex()[i];
-    matrixIdxVol[2][3] = region.GetIndex()[2];
-    
     itk::Matrix<double, 3, 3> matrixIdxProj;
     matrixIdxProj.SetIdentity();
     for(unsigned int i=0; i<2; i++)
