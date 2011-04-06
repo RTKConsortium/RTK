@@ -54,6 +54,9 @@ struct args_info_rtkramp
   double pad_arg;	/**< @brief Data padding parameter to correct for truncation (default='0.0').  */
   char * pad_orig;	/**< @brief Data padding parameter to correct for truncation original value given at command line.  */
   const char *pad_help; /**< @brief Data padding parameter to correct for truncation help description.  */
+  double hann_arg;	/**< @brief Cut frequency for hann window in ]0,1] (0.0 disables it) (default='0.0').  */
+  char * hann_orig;	/**< @brief Cut frequency for hann window in ]0,1] (0.0 disables it) original value given at command line.  */
+  const char *hann_help; /**< @brief Cut frequency for hann window in ]0,1] (0.0 disables it) help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -62,6 +65,7 @@ struct args_info_rtkramp
   unsigned int regexp_given ;	/**< @brief Whether regexp was given.  */
   unsigned int output_given ;	/**< @brief Whether output was given.  */
   unsigned int pad_given ;	/**< @brief Whether pad was given.  */
+  unsigned int hann_given ;	/**< @brief Whether hann was given.  */
 
   char **inputs ; /**< @brief unamed options (options without names) */
   unsigned inputs_num ; /**< @brief unamed options number */
