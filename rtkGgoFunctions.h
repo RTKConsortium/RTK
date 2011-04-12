@@ -2,49 +2,47 @@
 #define RTKGGOFUNCTIONS_H
 
 #include "rtkMacro.h"
-
-#include <itkImage.h>
+#include "itkConstantImageSource.h"
 
 namespace rtk
 {
 
-/** This function creates an image from command line options stored in the parameter.
-    The image is filled with zeros.
-    The required options are:
+/** This function set a ConstantImageSource object from command line options stored in ggo struct.
+    The image is not buffered to allow streaming. The image is filled with zeros.
+    The required options in the ggo struct are:
       - dimension: image size in pixels
       - spacing: image spacing in coordinate units
       - origin: image origin in coordinate units
 */
-template< class TImageType, class TArgsInfo >
-typename TImageType::Pointer
-CreateImageFromGgo(const TArgsInfo &args_info)
+template< class TConstantImageSourceType, class TArgsInfo >
+void
+SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source, const TArgsInfo &args_info)
 {
-  const unsigned int Dimension = TImageType::GetImageDimension();
+  typedef typename TConstantImageSourceType::OutputImageType ImageType;
+  
+  const unsigned int Dimension = ImageType::GetImageDimension();
 
-  typename TImageType::SizeType imageDimension;
+  typename ImageType::SizeType imageDimension;
   imageDimension.Fill(args_info.dimension_arg[0]);
   for(unsigned int i=0; i<vnl_math_min(args_info.dimension_given, Dimension); i++)
     imageDimension[i] = args_info.dimension_arg[i];
 
-  typename TImageType::SpacingType imageSpacing;
+  typename ImageType::SpacingType imageSpacing;
   imageSpacing.Fill(args_info.spacing_arg[0]);
   for(unsigned int i=0; i<vnl_math_min(args_info.spacing_given, Dimension); i++)
     imageSpacing[i] = args_info.spacing_arg[i];
 
-  typename TImageType::PointType imageOrigin;
+  typename ImageType::PointType imageOrigin;
   for(unsigned int i=0; i<Dimension; i++)
     imageOrigin[i] = imageSpacing[i] * (imageDimension[i]-1) * -0.5;
   for(unsigned int i=0; i<vnl_math_min(args_info.origin_given, Dimension); i++)
     imageOrigin[i] = args_info.origin_arg[i];
 
-  typename TImageType::Pointer image = TImageType::New();
-  image->SetRegions( imageDimension );
-  image->SetOrigin(imageOrigin);
-  image->SetSpacing(imageSpacing);
-  image->Allocate();
-  image->FillBuffer(0.);
-
-  return image;
+  source->SetOrigin( imageOrigin );
+  source->SetSpacing( imageSpacing );
+  source->SetSize( imageDimension );
+  source->SetConstant( 0. );
+  source->UpdateOutputInformation();
 }
 
 }

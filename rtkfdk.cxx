@@ -53,15 +53,18 @@ int main(int argc, char * argv[])
     {
     if(args_info.verbose_flag)
       std::cout << "Reading... " << std::flush;
-    try {
+    try
+      {
       readerProbe.Start();
       reader->Update();
       readerProbe.Stop();
-    } catch( itk::ExceptionObject & err ) {
+      }
+    catch( itk::ExceptionObject & err )
+      {
       std::cerr << "ExceptionObject caught !" << std::endl;
       std::cerr << err << std::endl;
       return EXIT_FAILURE;
-    }
+      }
     if(args_info.verbose_flag)
       std::cout << "It took " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
     }
@@ -72,7 +75,8 @@ int main(int argc, char * argv[])
               << args_info.geometry_arg
               << "..."
               << std::endl;
-  itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+  itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
+  geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
   geometryReader->GenerateOutputInformation();
 
@@ -95,11 +99,13 @@ int main(int argc, char * argv[])
   WeightFilterType::Pointer weightFilter = WeightFilterType::New();
   weightFilter->SetInput( pssf->GetOutput() );
   weightFilter->SetSourceToDetectorDistance( geometryReader->GetOutputObject()->GetSourceToDetectorDistance() );
-  weightFilter->SetInPlace(false); //SR: there seems to be a bug in ITK: incompatibility between InPlace and streaming?
+  weightFilter->SetInPlace(false); //SR: there seems to be a bug in ITK:
+                                   // incompatibility between InPlace and
+                                   // streaming?
 
   // Ramp filter
   itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer rampFilter;
-  if(!strcmp(args_info.hardware_arg, "cuda"))
+  if(!strcmp(args_info.hardware_arg, "cuda") )
     {
 #if !CUDA_FOUND
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -122,7 +128,7 @@ int main(int argc, char * argv[])
     cpuRampFilter->SetHannCutFrequency(args_info.hann_arg);
     rampFilter = cpuRampFilter;
     }
-  
+
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
@@ -151,15 +157,17 @@ int main(int argc, char * argv[])
       }
     }
 
-  // Create reconstructed volume
-  OutputImageType::Pointer tomography = rtk::CreateImageFromGgo<OutputImageType>(args_info);
+  // Create reconstructed image
+  typedef itk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  typename ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfdk>(constantImageSource, args_info);
 
   // Backprojection
   typedef itk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
   BackProjectionFilterType::Pointer bpFilter;
-  if(!strcmp(args_info.hardware_arg, "cpu"))
+  if(!strcmp(args_info.hardware_arg, "cpu") )
     bpFilter = BackProjectionFilterType::New();
-  else if(!strcmp(args_info.hardware_arg, "cuda"))
+  else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
 #if CUDA_FOUND
     bpFilter = itk::CudaFDKBackProjectionImageFilter::New();
@@ -168,7 +176,7 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
 #endif
     }
-  bpFilter->SetInput( 0, tomography );
+  bpFilter->SetInput( 0, constantImageSource->GetOutput() );
   bpFilter->SetUpdateProjectionPerProjection(args_info.lowmem_flag);
   if(args_info.lowmem_flag)
     bpFilter->SetInput( 1, rampFilter->GetOutput() );
@@ -176,7 +184,6 @@ int main(int argc, char * argv[])
     bpFilter->SetInput( 1, streamer->GetOutput() );
   bpFilter->SetGeometry( geometryReader->GetOutputObject() );
   bpFilter->SetInPlace(false);
-
 
   // SR: this appears to trigger 2 updates in cuda mode with the lowmem option
   //     and an off-centered geometry. No clue why... Disable this update
@@ -190,22 +197,25 @@ int main(int argc, char * argv[])
                 << "... "  << std::flush;
 
     itk::TimeProbe bpProbe;
-    try {
+    try
+      {
       bpProbe.Start();
       bpFilter->Update();
       bpProbe.Stop();
-    } catch( itk::ExceptionObject & err ) {
+      }
+    catch( itk::ExceptionObject & err )
+      {
       std::cerr << "ExceptionObject caught !" << std::endl;
       std::cerr << err << std::endl;
       return EXIT_FAILURE;
-    }
+      }
 
     if(args_info.verbose_flag)
       std::cout << "It took " << bpProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType >  WriterType;
+  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( bpFilter->GetOutput() );
@@ -214,15 +224,18 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Writing... " << std::flush;
   itk::TimeProbe writerProbe;
-  try {
+  try
+    {
     writerProbe.Start();
     writer->Update();
     writerProbe.Stop();
-  } catch( itk::ExceptionObject & err ) {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   if(args_info.verbose_flag)
     std::cout << "It took " << writerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
