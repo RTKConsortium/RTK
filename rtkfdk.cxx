@@ -159,7 +159,7 @@ int main(int argc, char * argv[])
 
   // Create reconstructed image
   typedef itk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
-  typename ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfdk>(constantImageSource, args_info);
 
   // Backprojection
