@@ -7,19 +7,19 @@
 
 namespace itk
 {
-  
+
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT BackProjectionImageFilter :
   public InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef BackProjectionImageFilter                                 Self;
-  typedef ImageToImageFilter<TInputImage,TOutputImage>              Superclass;
-  typedef SmartPointer<Self>                                        Pointer;
-  typedef SmartPointer<const Self>                                  ConstPointer;
-  typedef typename TInputImage::PixelType                           InputPixelType;
-  typedef typename TOutputImage::RegionType                         OutputImageRegionType;
+  typedef BackProjectionImageFilter                    Self;
+  typedef ImageToImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef SmartPointer<Self>                           Pointer;
+  typedef SmartPointer<const Self>                     ConstPointer;
+  typedef typename TInputImage::PixelType              InputPixelType;
+  typedef typename TOutputImage::RegionType            OutputImageRegionType;
 
   typedef itk::ProjectionGeometry<TOutputImage::ImageDimension>     GeometryType;
   typedef typename GeometryType::Pointer                            GeometryPointer;
@@ -42,15 +42,17 @@ public:
   itkSetMacro(Transpose, bool);
 
   /** Get / Set the flag to update one projection at a time during backprojection
-   * instead of requiring for the LargestPossibleRegion. This can decrease the 
+   * instead of requiring for the LargestPossibleRegion. This can decrease the
    * amount of memory required but increases the computation time when using multithreading.
    */
   itkGetMacro(UpdateProjectionPerProjection, bool);
   itkSetMacro(UpdateProjectionPerProjection, bool);
-
 protected:
-  BackProjectionImageFilter():m_Geometry(NULL), m_Transpose(false) {this->SetNumberOfRequiredInputs(2); this->SetInPlace( true ); m_ProjectionStackLock = FastMutexLock::New();};
-  virtual ~BackProjectionImageFilter() {};
+  BackProjectionImageFilter() : m_Geometry(NULL), m_Transpose(false) {
+    this->SetNumberOfRequiredInputs(2); this->SetInPlace( true ); m_ProjectionStackLock = FastMutexLock::New();
+  };
+  virtual ~BackProjectionImageFilter() {
+  };
 
   /** Apply changes to the input image requested region. */
   virtual void GenerateInputRequestedRegion();
@@ -68,17 +70,18 @@ protected:
 
 private:
   BackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);            //purposely not implemented
 
   /** RTK geometry object */
   GeometryPointer m_Geometry;
 
-  /** Flip projection flag: infludences GetProjection and GetIndexToIndexProjectionMatrix for optimization */
+  /** Flip projection flag: infludences GetProjection and
+    GetIndexToIndexProjectionMatrix for optimization */
   bool m_Transpose;
 
-  /** Update the requested projection in GetProjection instead of asking for the LargestPossibleRegion in 
+  /** Update the requested projection in GetProjection instead of asking for the LargestPossibleRegion in
    * GenerateInputRequestedRegion. */
-  bool m_UpdateProjectionPerProjection;
+  bool                   m_UpdateProjectionPerProjection;
   FastMutexLock::Pointer m_ProjectionStackLock;
 };
 

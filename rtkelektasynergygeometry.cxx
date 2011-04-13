@@ -10,17 +10,18 @@ std::string GetImageIDFromDicomUID(const args_info_rtkelektasynergygeometry &arg
 {
   // Open image database file
   rtk::DbfFile dbImage(args_info.image_db_arg);
-  if (!dbImage.is_open()){
+
+  if (!dbImage.is_open() ) {
     std::cerr << "Couldn't open " << args_info.image_db_arg << std::endl;
     exit(EXIT_FAILURE);
-  }
+    }
 
   // Search for correct record
   bool bReadOk;
   do {
     bReadOk = dbImage.ReadNextRecord();
-  }
-  while(bReadOk && std::string(args_info.dicom_uid_arg) != dbImage.GetFieldAsString("DICOM_UID"));
+    }
+  while(bReadOk && std::string(args_info.dicom_uid_arg) != dbImage.GetFieldAsString("DICOM_UID") );
 
   // Error message if not found
   if(!bReadOk)
@@ -41,19 +42,20 @@ void GetProjInfoFromDB(const std::string &imageID,
 {
   // Open frame database file
   rtk::DbfFile dbFrame(args_info.frame_db_arg);
-  if (!dbFrame.is_open()){
+
+  if (!dbFrame.is_open() ) {
     std::cerr << "Couldn't open " << args_info.frame_db_arg << std::endl;
     exit(EXIT_FAILURE);
-  }
+    }
 
   // Go through the database, select correct records and get data
   while( dbFrame.ReadNextRecord() )
     {
     if(dbFrame.GetFieldAsString("IMA_DBID") == imageID)
       {
-      projAngle.push_back(dbFrame.GetFieldAsDouble("PROJ_ANG"));
-      projFlexX.push_back(dbFrame.GetFieldAsDouble("U_CENTRE"));
-      projFlexY.push_back(dbFrame.GetFieldAsDouble("V_CENTRE"));
+      projAngle.push_back(dbFrame.GetFieldAsDouble("PROJ_ANG") );
+      projFlexX.push_back(dbFrame.GetFieldAsDouble("U_CENTRE") );
+      projFlexY.push_back(dbFrame.GetFieldAsDouble("V_CENTRE") );
       }
     }
 }
@@ -81,9 +83,10 @@ int main(int argc, char * argv[])
     }
 
   // Write
-  itk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = itk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
+  itk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
+    itk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject(&(*geometry));
+  xmlWriter->SetObject(&(*geometry) );
   xmlWriter->WriteFile();
 
   return EXIT_SUCCESS;

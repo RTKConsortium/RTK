@@ -17,7 +17,7 @@ namespace itk
  */
 
 template< unsigned int TDimension = 3 >
-class ProjectionGeometry: public itk::DataObject
+class ProjectionGeometry : public itk::DataObject
 {
 public:
   typedef ProjectionGeometry<TDimension>  Self;
@@ -29,9 +29,9 @@ public:
   itkNewMacro( Self );
 
   /** Convenient typedefs */
-  typedef typename itk::ImageBase<TDimension>::SizeType            SizeType;
-  typedef typename itk::ImageBase<TDimension>::PointType           PointType;
-  typedef typename itk::ImageBase<TDimension>::SpacingType         SpacingType;
+  typedef typename itk::ImageBase<TDimension>::SizeType    SizeType;
+  typedef typename itk::ImageBase<TDimension>::PointType   PointType;
+  typedef typename itk::ImageBase<TDimension>::SpacingType SpacingType;
 
   typedef typename itk::Matrix< double, TDimension, TDimension+1 > MatrixType;
 
@@ -60,7 +60,7 @@ protected:
 
 private:
   ProjectionGeometry(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);     //purposely not implemented
 
 private:
   /** Projection matrices */

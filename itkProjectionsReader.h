@@ -23,10 +23,10 @@ class ITK_EXPORT ProjectionsReader : public ImageSource<TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef ProjectionsReader          Self;
-  typedef ImageSource<TOutputImage>  Superclass;
-  typedef SmartPointer<Self>         Pointer;
-  
+  typedef ProjectionsReader         Self;
+  typedef ImageSource<TOutputImage> Superclass;
+  typedef SmartPointer<Self>        Pointer;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -39,9 +39,9 @@ public:
   typedef typename OutputImageType::RegionType OutputImageRegionType;
   typedef typename OutputImageType::PixelType  OutputImagePixelType;
 
-  typedef  std::vector<std::string>            FileNamesContainer;
+  typedef  std::vector<std::string> FileNamesContainer;
 
-   /** ImageDimension constant */
+  /** ImageDimension constant */
   itkStaticConstMacro(OutputImageDimension, unsigned int,
                       TOutputImage::ImageDimension);
 
@@ -68,7 +68,7 @@ protected:
   ProjectionsReader():m_ImageIO(NULL) {};
   ~ProjectionsReader() {};
   void PrintSelf(std::ostream& os, Indent indent) const;
-  
+
   /** Does the real work. */
   virtual void GenerateData();
 
@@ -77,7 +77,7 @@ protected:
 
 private:
   ProjectionsReader(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);    //purposely not implemented
 
   /** The projections reader which template depends on the scanner.
    * It is not typed because we want to keep the data as on disk.

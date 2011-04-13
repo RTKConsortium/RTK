@@ -47,10 +47,11 @@ itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension +
 GetIndexToPhysicalPointMatrix(const TImageType *image)
 {
   const unsigned int Dimension = TImageType::ImageDimension;
+
   itk::Matrix<double, Dimension + 1, Dimension + 1> matrix;
   matrix.Fill(0.0);
 
-  itk::Index<Dimension> index;
+  itk::Index<Dimension>                                 index;
   itk::Point<typename TImageType::PixelType, Dimension> point;
 
   for(unsigned int j=0; j<Dimension; j++)
@@ -76,7 +77,7 @@ itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension +
 GetPhysicalPointToIndexMatrix(const TImageType *image)
 {
   typedef itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1> MatrixType;
-  return MatrixType(GetIndexToPhysicalPointMatrix<TImageType>(image).GetInverse());
+  return MatrixType(GetIndexToPhysicalPointMatrix<TImageType>(image).GetInverse() );
 }
 
 #endif // RTKHOMOGENEOUSMATRIX_H

@@ -36,18 +36,18 @@ int main(int argc, char * argv[])
   shroudFilter->UpdateOutputInformation();
 
   // Write
-  typedef itk::ImageFileWriter< shroudFilterType::OutputImageType >  WriterType;
+  typedef itk::ImageFileWriter< shroudFilterType::OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( shroudFilter->GetOutput() );
 
   try {
     writer->Update();
-  } catch( itk::ExceptionObject & err ) {
+    } catch( itk::ExceptionObject & err ) {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

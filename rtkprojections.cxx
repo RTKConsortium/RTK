@@ -28,20 +28,23 @@ int main(int argc, char * argv[])
   reader->SetFileNames( names->GetFileNames() );
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType >  WriterType;
+  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( reader->GetOutput() );
   writer->UpdateOutputInformation();
   writer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
-  try {
+  try
+    {
     writer->Update();
-  } catch( itk::ExceptionObject & err ) {
+    }
+  catch( itk::ExceptionObject & err )
+    {
     std::cerr << "ExceptionObject caught !" << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

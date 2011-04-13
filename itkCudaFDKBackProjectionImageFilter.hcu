@@ -8,13 +8,13 @@ extern "C" {
 #endif
 
 void
-CUDA_reconstruct_conebeam_init (
+CUDA_reconstruct_conebeam_init(
   int2 &img_dim,
   int3 &vol_dim,
   float *&dev_vol,
   cudaArray *&dev_img,
   float *&dev_matrix
-);
+  );
 
 void
 CUDA_reconstruct_conebeam (
@@ -25,16 +25,16 @@ CUDA_reconstruct_conebeam (
   float *dev_vol,
   cudaArray *dev_img,
   float *dev_matrix
-);
+  );
 
 void
-CUDA_reconstruct_conebeam_cleanup (
+CUDA_reconstruct_conebeam_cleanup(
   int3 &vol_dim,
   float *vol,
   float *dev_vol,
   cudaArray *dev_img,
   float *dev_matrix
-);
+  );
 
 #if defined __cplusplus
 }

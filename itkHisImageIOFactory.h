@@ -14,14 +14,14 @@ namespace itk
 
 //====================================================================
 // Factory for reading His Image file format
-class HisImageIOFactory: public itk::ObjectFactoryBase
+class HisImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */
-  typedef HisImageIOFactory              Self;
-  typedef itk::ObjectFactoryBase         Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  typedef HisImageIOFactory             Self;
+  typedef itk::ObjectFactoryBase        Superclass;
+  typedef itk::SmartPointer<Self>       Pointer;
+  typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
   const char* GetITKSourceVersion(void) const {
@@ -51,10 +51,10 @@ protected:
 
 private:
   HisImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);    //purposely not implemented
+
 };
 
 } // end namespace
 
 #endif /* end #define ITKHISIMAGEIOFACTORY_H */
-

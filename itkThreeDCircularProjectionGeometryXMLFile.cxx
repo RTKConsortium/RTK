@@ -36,11 +36,11 @@ ThreeDCircularProjectionGeometryXMLFileReader::
 StartElement(const char * name)
 {
   if(itksys::SystemTools::Strucmp(name, "Projection") == 0)
-  {
+    {
     m_RotationAngle = 0.0;
     m_ProjectionOffsetX = 0.0;
     m_ProjectionOffsetY = 0.0;
-  }
+    }
 }
 
 void
@@ -48,21 +48,21 @@ ThreeDCircularProjectionGeometryXMLFileReader::
 EndElement(const char *name)
 {
   if(itksys::SystemTools::Strucmp(name, "SourceToDetectorDistance") == 0)
-    this->m_OutputObject->SetSourceToDetectorDistance(atof(this->m_CurCharacterData.c_str()));
+    this->m_OutputObject->SetSourceToDetectorDistance(atof(this->m_CurCharacterData.c_str() ) );
 
   if(itksys::SystemTools::Strucmp(name, "SourceToIsocenterDistance") == 0)
-    this->m_OutputObject->SetSourceToIsocenterDistance(atof(this->m_CurCharacterData.c_str()));
+    this->m_OutputObject->SetSourceToIsocenterDistance(atof(this->m_CurCharacterData.c_str() ) );
 
   if(itksys::SystemTools::Strucmp(name, "ProjectionScalingX") == 0)
-    this->m_OutputObject->SetProjectionScalingX(atof(this->m_CurCharacterData.c_str()));
+    this->m_OutputObject->SetProjectionScalingX(atof(this->m_CurCharacterData.c_str() ) );
 
   if(itksys::SystemTools::Strucmp(name, "ProjectionScalingY") == 0)
-    this->m_OutputObject->SetProjectionScalingY(atof(this->m_CurCharacterData.c_str()));
+    this->m_OutputObject->SetProjectionScalingY(atof(this->m_CurCharacterData.c_str() ) );
 
   if(itksys::SystemTools::Strucmp(name, "RotationCenter") == 0)
     {
     ThreeDCircularProjectionGeometry::VectorType vec;
-    std::istringstream iss(m_CurCharacterData);
+    std::istringstream                           iss(m_CurCharacterData);
     iss >> vec;
     this->m_OutputObject->SetRotationCenter(vec);
     }
@@ -70,19 +70,19 @@ EndElement(const char *name)
   if(itksys::SystemTools::Strucmp(name, "RotationAxis") == 0)
     {
     ThreeDCircularProjectionGeometry::VectorType vec;
-    std::istringstream iss(m_CurCharacterData);
+    std::istringstream                           iss(m_CurCharacterData);
     iss >> vec;
     this->m_OutputObject->SetRotationAxis(vec);
     }
 
   if(itksys::SystemTools::Strucmp(name, "Angle") == 0)
-    m_RotationAngle = atof(this->m_CurCharacterData.c_str());
+    m_RotationAngle = atof(this->m_CurCharacterData.c_str() );
 
   if(itksys::SystemTools::Strucmp(name, "ProjectionOffsetX") == 0)
-    m_ProjectionOffsetX = atof(this->m_CurCharacterData.c_str());
+    m_ProjectionOffsetX = atof(this->m_CurCharacterData.c_str() );
 
   if(itksys::SystemTools::Strucmp(name, "ProjectionOffsetY") == 0)
-    m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str());
+    m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str() );
 
   if(itksys::SystemTools::Strucmp(name, "Projection") == 0)
     this->m_OutputObject->AddProjection(m_RotationAngle, m_ProjectionOffsetX, m_ProjectionOffsetY);
@@ -101,7 +101,8 @@ ThreeDCircularProjectionGeometryXMLFileWriter::
 CanWriteFile(const char * name)
 {
   std::ofstream output(name);
-  if(output.fail())
+
+  if(output.fail() )
     return false;
   return true;
 }
@@ -110,8 +111,9 @@ int
 ThreeDCircularProjectionGeometryXMLFileWriter::
 WriteFile()
 {
-  std::ofstream output(this->m_Filename.c_str());
-  const int maxDigits = 15;
+  std::ofstream output(this->m_Filename.c_str() );
+  const int     maxDigits = 15;
+
   output.precision(maxDigits);
   std::string indent("  ");
 

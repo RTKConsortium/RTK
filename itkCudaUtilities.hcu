@@ -7,17 +7,17 @@
 #include <itkMacro.h>
 
 #define CUDA_CHECK_ERROR \
-{ \
-  cudaError_t err = cudaGetLastError(); \
-  if (cudaSuccess != err) \
-    itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) << std::endl); \
-}
+    { \
+    cudaError_t err = cudaGetLastError(); \
+    if (cudaSuccess != err) \
+      itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) << std::endl); \
+    }
 
 #define CUFFT_CHECK_ERROR(result) \
-{ \
-  if (result) \
-    itkGenericExceptionMacro(<< "CUFFT ERROR #" << result << std::endl); \
-}
+    { \
+    if (result) \
+      itkGenericExceptionMacro(<< "CUFFT ERROR #" << result << std::endl); \
+    }
 
 std::vector<int> GetListOfCudaDevices();
 

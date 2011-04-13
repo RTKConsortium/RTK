@@ -9,8 +9,8 @@
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -19,7 +19,6 @@
 
 #include "itkFFTRealToComplexConjugateImageFilter.h"
 #include "itkFFTWCommon.h"
-
 
 namespace itk
 {
@@ -31,7 +30,7 @@ namespace itk
 
 template <class TPixel, unsigned int VDimension = 3>
 class ITK_EXPORT FFTWRealToComplexConjugateImageFilter :
-    public FFTRealToComplexConjugateImageFilter<TPixel,VDimension>
+  public FFTRealToComplexConjugateImageFilter<TPixel,VDimension>
 {
 public:
   typedef FFTWRealToComplexConjugateImageFilter                   Self;
@@ -47,7 +46,7 @@ public:
    * the proxy type is a wrapper for the fftw API
    * since the proxy is only defined over double and float,
    * trying to use any other pixel type is inoperative, as
-   * is trying to use double if only the float FFTW version is 
+   * is trying to use double if only the float FFTW version is
    * configured in, or float if only double is configured.
    */
   typedef typename fftw::Proxy<TPixel> FFTWProxyType;
@@ -64,21 +63,18 @@ public:
   virtual void GenerateData();  // generates output from input
 
 protected:
-  FFTWRealToComplexConjugateImageFilter()
-    {
-    }
-  ~FFTWRealToComplexConjugateImageFilter()
-    {
-    }
+  FFTWRealToComplexConjugateImageFilter() {}
+  ~FFTWRealToComplexConjugateImageFilter() {}
 
   virtual bool FullMatrix();
-   
+
   virtual void UpdateOutputData(DataObject *output);
-  
+
 private:
-  FFTWRealToComplexConjugateImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
-  
+   //purposely not implemented
+  FFTWRealToComplexConjugateImageFilter(const Self&);
+  void operator=(const Self&);
+
   bool m_CanUseDestructiveAlgorithm;
 
 };

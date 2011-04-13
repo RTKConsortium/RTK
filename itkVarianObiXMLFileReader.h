@@ -14,11 +14,11 @@ namespace itk
 {
 
 /** \class itkVarianObiXMLFileReader
- * 
+ *
  * Reads the XML-format file written by a Varian OBI
  * machine for every acquisition
  */
-class VarianObiXMLFileReader: public XMLReader<MetaDataDictionary>
+class VarianObiXMLFileReader : public XMLReader<MetaDataDictionary>
 {
 public:
   /** Standard typedefs */
@@ -40,6 +40,7 @@ protected:
   virtual ~VarianObiXMLFileReader() {};
 
   virtual void StartElement(const char * name,const char **atts);
+
   virtual void EndElement(const char *name);
 
   void CharacterDataHandler(const char *inData, int inLength);
@@ -49,7 +50,7 @@ private:
   void operator=(const Self&);         //purposely not implemented
 
   MetaDataDictionary m_Dictionary;
-  std::string m_CurCharacterData;
+  std::string        m_CurCharacterData;
 };
 
 }

@@ -9,7 +9,7 @@ namespace itk
 
 //====================================================================
 // Class for reading His Image file format
-class HisImageIO: public itk::ImageIOBase
+class HisImageIO : public itk::ImageIOBase
 {
 public:
   /** Standard class typedefs. */
@@ -18,7 +18,7 @@ public:
   typedef itk::SmartPointer<Self> Pointer;
   typedef signed short int        PixelType;
 
-  HisImageIO():Superclass() {
+  HisImageIO() : Superclass() {
     ;
   }
 
@@ -30,17 +30,22 @@ public:
 
   /*-------- This part of the interface deals with reading data. ------ */
   virtual void ReadImageInformation();
+
   virtual bool CanReadFile( const char* FileNameToRead );
+
   virtual void Read(void * buffer);
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void WriteImageInformation(bool keepOfStream) {
     ;
   }
+
   virtual void WriteImageInformation() {
     WriteImageInformation(false);
   }
+
   virtual bool CanWriteFile(const char* filename);
+
   virtual void Write(const void* buffer);
 
 protected:
@@ -50,4 +55,3 @@ protected:
 } // end namespace
 
 #endif /* end #define ITKHISIMAGEIO_H */
-

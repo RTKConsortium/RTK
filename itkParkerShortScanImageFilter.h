@@ -28,8 +28,8 @@ public:
 
   typedef ImageToImageFilter<TInputImage, TOutputImage> Superclass;
 
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Some convenient typedefs. */
   typedef TInputImage                                     InputImageType;
@@ -37,8 +37,8 @@ public:
   typedef typename OutputImageType::RegionType            OutputImageRegionType;
   typedef itk::Image<typename TOutputImage::PixelType, 1> WeightImageType;
 
-  typedef ThreeDCircularProjectionGeometry                GeometryType;
-  typedef GeometryType::Pointer                           GeometryPointer;
+  typedef ThreeDCircularProjectionGeometry GeometryType;
+  typedef GeometryType::Pointer            GeometryPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -58,11 +58,11 @@ protected:
 
 private:
   ParkerShortScanImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);             //purposely not implemented
 
   /** RTK geometry object */
   GeometryPointer m_Geometry;
-  
+
   /** Superior and inferior position of the detector along the weighting direction, i.e. x.
    * The computed value account for the x projection offset of the geometry.
    */

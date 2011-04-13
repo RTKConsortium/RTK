@@ -14,18 +14,18 @@ namespace itk
  *
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT TiffLutImageFilter: public LutImageFilter<TInputImage, TOutputImage>
+class ITK_EXPORT TiffLutImageFilter : public LutImageFilter<TInputImage, TOutputImage>
 {
 
 public:
   /** Standard class typedefs. */
-  typedef TiffLutImageFilter Self;
+  typedef TiffLutImageFilter                        Self;
   typedef LutImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>                        Pointer;
+  typedef SmartPointer<const Self>                  ConstPointer;
 
-  typedef typename TInputImage::PixelType InputImagePixelType;
-  typedef typename TOutputImage::PixelType OutputImagePixelType;
+  typedef typename TInputImage::PixelType           InputImagePixelType;
+  typedef typename TOutputImage::PixelType          OutputImagePixelType;
   typedef typename Superclass::FunctorType::LutType LutType;
 
   /** Method for creation through the object factory. */
@@ -33,14 +33,14 @@ public:
 
   /** Runtime information support. */
   itkTypeMacro(TiffLutImageFilter, LutImageFilter);
-
 protected:
   TiffLutImageFilter();
   virtual ~TiffLutImageFilter() {}
 
 private:
   TiffLutImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);        //purposely not implemented
+  void operator=(const Self&);     //purposely not implemented
+
 };
 
 } // end namespace itk
@@ -56,10 +56,10 @@ itk::TiffLutImageFilter<TInputImage, TOutputImage>::TiffLutImageFilter()
   lut->Allocate();
 
   // Iterate and set lut
-  OutputImagePixelType logRef = log(OutputImagePixelType(size[0]+1));
-  itk::ImageRegionIteratorWithIndex<LutType>  it( lut, lut->GetBufferedRegion() );
+  OutputImagePixelType logRef = log(OutputImagePixelType(size[0]+1) );
+  itk::ImageRegionIteratorWithIndex<LutType> it( lut, lut->GetBufferedRegion() );
   it.GoToBegin();
-  
+
   // 0 value is assumed to correspond to no attenuation
   it.Set(0.);
   ++it;
@@ -68,7 +68,7 @@ itk::TiffLutImageFilter<TInputImage, TOutputImage>::TiffLutImageFilter()
   while( !it.IsAtEnd() ) {
     it.Set( logRef - log( OutputImagePixelType(it.GetIndex()[0]+1) ) );
     ++it;
-  }
+    }
   // Set the lut to member and functor
   this->SetLut(lut);
 }

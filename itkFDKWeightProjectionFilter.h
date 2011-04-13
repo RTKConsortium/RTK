@@ -22,13 +22,13 @@ public:
 
   typedef ImageToImageFilter<TInputImage, TOutputImage> Superclass;
 
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage                                                         InputImageType;
-  typedef TOutputImage                                                        OutputImageType;
-  typedef typename OutputImageType::RegionType                                OutputImageRegionType;
+  typedef TInputImage                                                                  InputImageType;
+  typedef TOutputImage                                                                 OutputImageType;
+  typedef typename OutputImageType::RegionType                                         OutputImageRegionType;
   typedef itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension-1> WeightImageType;
 
   /** Standard New method. */
@@ -46,12 +46,14 @@ protected:
   ~FDKWeightProjectionFilter(){}
 
   virtual void EnlargeOutputRequestedRegion( DataObject *output );
+
   virtual void BeforeThreadedGenerateData();
+
   virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId);
 
 private:
   FDKWeightProjectionFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);            //purposely not implemented
 
   typename WeightImageType::Pointer m_WeightsImage;
   double m_SourceToDetectorDistance;

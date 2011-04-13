@@ -29,7 +29,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     return;
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if(this->GetUpdateProjectionPerProjection())
+  if(this->GetUpdateProjectionPerProjection() )
     reqRegion.SetSize( TInputImage::ImageDimension-1, 1);
   inputPtr1->SetRequestedRegion( reqRegion );
 }
@@ -40,7 +40,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 BackProjectionImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, 
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        int threadId )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
@@ -64,13 +64,13 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     {
     // Extract the current slice
     ProjectionImagePointer projection = GetProjection(iProj);
-    ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
+    ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
     interpolator->SetInputImage(projection);
 
     // Go over each voxel
     itIn.GoToBegin();
     itOut.GoToBegin();
-    while(!itIn.IsAtEnd())
+    while(!itIn.IsAtEnd() )
       {
       // Compute projection index
       for(unsigned int i=0; i<Dimension-1; i++)
@@ -108,10 +108,10 @@ typename BackProjectionImageFilter<TInputImage,TOutputImage>::ProjectionImagePoi
 BackProjectionImageFilter<TInputImage,TOutputImage>
 ::GetProjection(const unsigned int iProj, const InputPixelType multConst)
 {
-  
+
   typename Superclass::InputImagePointer stack = const_cast< TInputImage * >( this->GetInput(1) );
-  
-  if(this->GetUpdateProjectionPerProjection())
+
+  if(this->GetUpdateProjectionPerProjection() )
     {
     // Lock the projection stack to avoid multithreading issues. Unlocked at the
     // end of this function.
@@ -138,7 +138,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     region.SetSize(i, stack->GetLargestPossibleRegion().GetSize()[i]);
     region.SetIndex(i, stack->GetLargestPossibleRegion().GetIndex()[i]);
     }
-  if(this->GetTranspose())
+  if(this->GetTranspose() )
     {
     typename ProjectionImageType::SizeType size = region.GetSize();
     typename ProjectionImageType::IndexType index = region.GetIndex();
@@ -153,23 +153,23 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   projection->SetOrigin(origin);
   projection->SetRegions(region);
   projection->Allocate();
-  
-  const unsigned int npixels = projection->GetLargestPossibleRegion().GetNumberOfPixels();
+
+  const unsigned int    npixels = projection->GetLargestPossibleRegion().GetNumberOfPixels();
   const InputPixelType *pi = stack->GetBufferPointer() + (iProj-iProjBuff)*npixels;
-  InputPixelType *po = projection->GetBufferPointer();
+  InputPixelType *      po = projection->GetBufferPointer();
 
   // Transpose projection for optimization
-  if(this->GetTranspose())
+  if(this->GetTranspose() )
     {
     for(unsigned int j=0; j<region.GetSize(0); j++, po-=npixels-1)
-      for(unsigned int i=0; i<region.GetSize(1); i++, po+=region.GetSize(0))
+      for(unsigned int i=0; i<region.GetSize(1); i++, po+=region.GetSize(0) )
         *po = multConst * (*pi++);
     }
   else
     for(unsigned int i=0; i<npixels; i++)
       *po++ = multConst * (*pi++);
 
-  if(this->GetUpdateProjectionPerProjection())
+  if(this->GetUpdateProjectionPerProjection() )
     m_ProjectionStackLock->Unlock();
   return projection;
 }
@@ -181,19 +181,20 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
 
-  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol = GetIndexToPhysicalPointMatrix< TOutputImage >(this->GetOutput());
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol = GetIndexToPhysicalPointMatrix< TOutputImage >(
+      this->GetOutput() );
   itk::Matrix<double, Dimension, Dimension> matrixProj = GetPhysicalPointToIndexMatrix< ProjectionImageType >(proj);
 
   // Transpose projection for optimization
-  if(this->GetTranspose())
+  if(this->GetTranspose() )
     for(unsigned int i=0; i<Dimension; i++)
       std::swap(matrixProj[i][0], matrixProj[i][1]);
-      
+
   return ProjectionMatrixType(matrixProj.GetVnlMatrix() *
                               this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
-                              matrixVol.GetVnlMatrix());
+                              matrixVol.GetVnlMatrix() );
 }
-} // end namespace itk
 
+} // end namespace itk
 
 #endif

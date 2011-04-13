@@ -7,4 +7,3 @@ itk::FastMutexLock::Pointer itk::fftw::Proxy<float>::lock = NULL;
 #if defined(USE_FFTWD)
 itk::FastMutexLock::Pointer itk::fftw::Proxy<double>::lock = NULL;
 #endif
-   

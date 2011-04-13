@@ -14,21 +14,22 @@ CudaFDKBackProjectionImageFilter
 ::GenerateData()
 {
   this->AllocateOutputs();
-  std::vector<double> angWeights = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer())->GetAngularGaps();
-  
+  std::vector<double> angWeights = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() )->GetAngularGaps();
+
   OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
 
-  if(region != this->GetOutput()->GetBufferedRegion())
+  if(region != this->GetOutput()->GetBufferedRegion() )
     itkExceptionMacro(<< "Can't handle different requested and buffered regions "
                       << region
-                      << this->GetOutput()->GetBufferedRegion());
-  
+                      << this->GetOutput()->GetBufferedRegion() );
+
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
 
-  // Ramp factor is the correction for ramp filter which did not account for the divergence of the beam
-  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer());
-  double rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
+  // Ramp factor is the correction for ramp filter which did not account for the
+  // divergence of the beam
+  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() );
+  double                rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
   rampFactor *= 0.5; // Factor 1/2 in eq 176, page 106, Kak & Slaney
 
   // Rotation center (assumed to be at 0 yet)
@@ -45,7 +46,7 @@ CudaFDKBackProjectionImageFilter
     matrixIdxVol[i][3] = region.GetIndex()[i];
     rotCenterIndex[i] -= region.GetIndex()[i];
     }
-    
+
   // Load dimensions arguments
   int3 vol_dim;
   vol_dim.x = region.GetSize()[0];
@@ -64,9 +65,9 @@ CudaFDKBackProjectionImageFilter
     cudaSetDevice(devices[0]);
     }
 
-  float *dev_vol;
+  float *    dev_vol;
   cudaArray *dev_img;
-  float *dev_matrix;
+  float *    dev_matrix;
   CUDA_reconstruct_conebeam_init (img_dim, vol_dim, dev_vol, dev_img, dev_matrix);
 
   // Go over each projection
@@ -75,14 +76,16 @@ CudaFDKBackProjectionImageFilter
     // Extract the current slice
     ProjectionImagePointer projection = this->GetProjection(iProj, angWeights[iProj] * rampFactor);
 
-    // Index to index matrix normalized to have a correct backprojection weight (1 at the isocenter)
+    // Index to index matrix normalized to have a correct backprojection weight
+    // (1 at the isocenter)
     ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
 
     // We correct the matrix for non zero indexes
     itk::Matrix<double, 3, 3> matrixIdxProj;
     matrixIdxProj.SetIdentity();
     for(unsigned int i=0; i<2; i++)
-      matrixIdxProj[i][2] = -1*(projection->GetBufferedRegion().GetIndex()[i])+0.5; //SR: 0.5 for 2D texture?
+       //SR: 0.5 for 2D texture
+      matrixIdxProj[i][2] = -1*(projection->GetBufferedRegion().GetIndex()[i])+0.5;
 
     matrix = matrixIdxProj.GetVnlMatrix() * matrix.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
 

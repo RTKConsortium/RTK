@@ -12,16 +12,16 @@ template< class TInput, class TOutput >
 class LUT
 {
 public:
-  typedef itk::Image<TOutput,1> LutType;
+  typedef itk::Image<TOutput,1>        LutType;
   typedef typename LutType::PixelType* LutDataPointerType;
 
   LUT() {};
   ~LUT() {};
 
-  LutDataPointerType GetLutDataPointer () {
+  LutDataPointerType GetLutDataPointer() {
     return m_LutDataPointer;
   }
-  void SetLutDataPointer (LutDataPointerType lut) {
+  void SetLutDataPointer(LutDataPointerType lut) {
     m_LutDataPointer = lut;
   }
 
@@ -41,25 +41,24 @@ private:
 };
 } // end namespace Functor
 
-
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT LutImageFilter: public
+class ITK_EXPORT LutImageFilter : public
   UnaryFunctorImageFilter< TInputImage,
-  TOutputImage,
-  Functor::LUT< typename TInputImage::PixelType,
-  typename TOutputImage::PixelType> >
+                           TOutputImage,
+                           Functor::LUT< typename TInputImage::PixelType,
+                                         typename TOutputImage::PixelType> >
 {
 
 public:
   /** Lookup table type definition. */
   typedef Functor::LUT< typename TInputImage::PixelType, typename TOutputImage::PixelType > FunctorType;
-  typedef typename FunctorType::LutType LutType;
+  typedef typename FunctorType::LutType                                                     LutType;
 
   /** Standard class typedefs. */
-  typedef LutImageFilter Self;
+  typedef LutImageFilter                                                   Self;
   typedef UnaryFunctorImageFilter<TInputImage, TOutputImage, FunctorType > Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>                                               Pointer;
+  typedef SmartPointer<const Self>                                         ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -68,13 +67,14 @@ public:
   itkTypeMacro(LutImageFilter, UnaryFunctorImageFilter);
 
   /** Set lookup table. */
-  virtual void SetLut (LutType* _arg) { //Idem as itkSetObjectMacro + call to functor SetLutDataPointer
+  virtual void SetLut(LutType* _arg) {
+    //Idem as itkSetObjectMacro + call to functor SetLutDataPointer
     itkDebugMacro("setting " << "Lut" " to " << _arg );
     if (this->m_Lut != _arg) {
       this->m_Lut = _arg;
       this->Modified();
-      this->GetFunctor().SetLutDataPointer(_arg->GetBufferPointer());
-    }
+      this->GetFunctor().SetLutDataPointer(_arg->GetBufferPointer() );
+      }
   }
 
   /** Get lookup table. */
@@ -88,9 +88,9 @@ protected:
 private:
   LutImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
+
 };
 
 } // end namespace itk
-
 
 #endif

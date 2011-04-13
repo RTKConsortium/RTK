@@ -25,26 +25,26 @@ public:
 
   typedef ImageToImageFilter<TInputImage, TOutputImage> Superclass;
 
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage                                       InputImageType;
-  typedef TOutputImage                                      OutputImageType;
-  typedef TFFTPrecision                                     FFTPrecisionType;
-  typedef typename InputImageType::Pointer                  InputImagePointer;
-  typedef typename InputImageType::PixelType                InputImagePixelType;
-  typedef typename OutputImageType::Pointer                 OutputImagePointer;
-  typedef typename OutputImageType::PixelType               OutputImagePixelType;
-  typedef typename itk::Image<TFFTPrecision, 
+  typedef TInputImage                         InputImageType;
+  typedef TOutputImage                        OutputImageType;
+  typedef TFFTPrecision                       FFTPrecisionType;
+  typedef typename InputImageType::Pointer    InputImagePointer;
+  typedef typename InputImageType::PixelType  InputImagePixelType;
+  typedef typename OutputImageType::Pointer   OutputImagePointer;
+  typedef typename OutputImageType::PixelType OutputImagePixelType;
+  typedef typename itk::Image<TFFTPrecision,
                               TInputImage::ImageDimension > FFTInputImageType;
-  typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
-  typedef typename itk::Image<std::complex<TFFTPrecision>, 
+  typedef typename FFTInputImageType::Pointer FFTInputImagePointer;
+  typedef typename itk::Image<std::complex<TFFTPrecision>,
                               TInputImage::ImageDimension > FFTOutputImageType;
-  typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
-  typedef typename InputImageType::RegionType               RegionType;
-  typedef typename InputImageType::IndexType                IndexType;
-  typedef typename InputImageType::SizeType                 SizeType;
+  typedef typename FFTOutputImageType::Pointer FFTOutputImagePointer;
+  typedef typename InputImageType::RegionType  RegionType;
+  typedef typename InputImageType::IndexType   IndexType;
+  typedef typename InputImageType::SizeType    SizeType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -79,9 +79,9 @@ public:
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(InputHasPixelTraitsCheck,
-                  (Concept::HasPixelTraits<InputImagePixelType>));
+                  (Concept::HasPixelTraits<InputImagePixelType>) );
   itkConceptMacro(InputHasNumericTraitsCheck,
-                  (Concept::HasNumericTraits<InputImagePixelType>));
+                  (Concept::HasNumericTraits<InputImagePixelType>) );
   /** End concept checking */
 #endif
 
@@ -102,6 +102,7 @@ protected:
   void GenerateInputRequestedRegion();
 
   virtual void BeforeThreadedGenerateData();
+
   virtual void ThreadedGenerateData( const RegionType& outputRegionForThread, int threadId );
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
@@ -113,12 +114,13 @@ protected:
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   bool IsPrime( int n ) const;
+
   int GreatestPrimeFactor( int n ) const;
 
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions. */
   FFTOutputImagePointer GetFFTRampKernel(const int width);
-  
+
   /** Pre compute weights for truncation correction in a lookup table. The index
     * is the distance to the original image border.
     * Careful: the function is not thread safe but it does nothing if the weights have
@@ -128,7 +130,7 @@ protected:
 
 private:
   FFTRampImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);     //purposely not implemented
 
   /** Percentage of the image width which is feathered with data to correct for truncation.
     * 0 means no correction.
@@ -140,8 +142,8 @@ private:
   /**
    * Greatest prime factor of the FFT input.
    */
-  int  m_GreatestPrimeFactor;
-  
+  int m_GreatestPrimeFactor;
+
   /** Cut frequency of Hann window */
   double m_HannCutFrequency;
 }; // end of class

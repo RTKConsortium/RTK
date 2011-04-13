@@ -14,7 +14,7 @@ void
 FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  m_AngularWeights = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer())->GetAngularGaps();
+  m_AngularWeights = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() )->GetAngularGaps();
   this->SetTranspose(true);
 }
 
@@ -33,9 +33,10 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
 
-  // Ramp factor is the correction for ramp filter which did not account for the divergence of the beam
-  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer());
-  double rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
+  // Ramp factor is the correction for ramp filter which did not account for the
+  // divergence of the beam
+  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() );
+  double                rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
   rampFactor *= 0.5; // Factor 1/2 in eq 176, page 106, Kak & Slaney
 
   // Iterators on volume input and output
@@ -43,14 +44,15 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
   typedef ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
-  
-  // Initialize output region with input region in case the filter is not in place
-  if(this->GetInput() != this->GetOutput())
+
+  // Initialize output region with input region in case the filter is not in
+  // place
+  if(this->GetInput() != this->GetOutput() )
     {
     itIn.GoToBegin();
-    while(!itIn.IsAtEnd())
+    while(!itIn.IsAtEnd() )
       {
-      itOut.Set(itIn.Get());
+      itOut.Set(itIn.Get() );
       ++itIn;
       ++itOut;
       }
@@ -72,9 +74,10 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
     ProjectionImagePointer projection = this->GetProjection(iProj, m_AngularWeights[iProj] * rampFactor);
     interpolator->SetInputImage(projection);
 
-    // Index to index matrix normalized to have a correct backprojection weight (1 at the isocenter)
+    // Index to index matrix normalized to have a correct backprojection weight
+    // (1 at the isocenter)
     ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
-    double perspFactor = matrix[Dimension-1][Dimension];
+    double               perspFactor = matrix[Dimension-1][Dimension];
     for(unsigned int j=0; j<Dimension; j++)
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
     matrix /= perspFactor;
@@ -93,7 +96,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 
     // Go over each voxel
     itOut.GoToBegin();
-    while(!itOut.IsAtEnd())
+    while(!itOut.IsAtEnd() )
       {
       // Compute projection index
       for(unsigned int i=0; i<Dimension-1; i++)
@@ -125,7 +128,8 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 FDKBackProjectionImageFilter<TInputImage,TOutputImage>
-::OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix, const ProjectionImagePointer projection)
+::OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
+                           const ProjectionImagePointer projection)
 {
   typename ProjectionImageType::SizeType pSize = projection->GetBufferedRegion().GetSize();
   typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
@@ -140,7 +144,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 
   // Continuous index at which we interpolate
   double u, v, w;
-  int ui, vi;
+  int    ui, vi;
   double du;
 
   for(int k=region.GetIndex(2); k<region.GetIndex(2)+(int)region.GetSize(2); k++)
@@ -155,7 +159,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
       //Apply perspective
       w = 1/w;
       u = u*w-pIndex[0];
-      v = v*w-pIndex[1];        
+      v = v*w-pIndex[1];
       du = w * matrix[0][0];
       w *= w;
 
@@ -179,13 +183,13 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
         for( ; i<region.GetIndex(0)+(int)region.GetSize(0); i++, u+=du, pVol++)
           {
 #ifdef BILINEAR_BACKPROJECTION
-          ui = Math::Floor<double>(u);          
+          ui = Math::Floor<double>(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
             u1 = u-ui;
             u2 = 1.0-u1;
-            *pVol += w * (v2 * (u2 * *(pProj+ui)          + u1 * *(pProj+ui+1)) +
-                          v1 * (u2 * *(pProj+ui+pSize[0]) + u1 * *(pProj+ui+pSize[0]+1)));
+            *pVol += w * (v2 * (u2 * *(pProj+ui)          + u1 * *(pProj+ui+1) ) +
+                          v1 * (u2 * *(pProj+ui+pSize[0]) + u1 * *(pProj+ui+pSize[0]+1) ) );
             }
 #else
           ui = Math::Round<double>(u);
@@ -203,7 +207,8 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 FDKBackProjectionImageFilter<TInputImage,TOutputImage>
-::OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix, const ProjectionImagePointer projection)
+::OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
+                           const ProjectionImagePointer projection)
 {
   typename ProjectionImageType::SizeType pSize = projection->GetBufferedRegion().GetSize();
   typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
@@ -211,14 +216,14 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
   typename TInputImage::PixelType *pProj;
   typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
-  
+
   // Pointers in memory to index (0,0,0) which do not necessarily exist
   pVolZeroPointer = this->GetOutput()->GetBufferPointer();
   pVolZeroPointer -= vBufferIndex[0] + vBufferSize[0] * (vBufferIndex[1] + vBufferSize[1] * vBufferIndex[2]);
 
   // Continuous index at which we interpolate
   double u, v, w;
-  int ui, vi;
+  int    ui, vi;
   double du;
 
   for(int k=region.GetIndex(2); k<region.GetIndex(2)+(int)region.GetSize(2); k++)
@@ -233,7 +238,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
       //Apply perspective
       w = 1/w;
       u = u*w-pIndex[0];
-      v = v*w-pIndex[1];        
+      v = v*w-pIndex[1];
       du = w * matrix[0][1];
       w *= w;
 
@@ -250,7 +255,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
         for( ; j<region.GetIndex(1)+(int)region.GetSize(1); j++, pVol+=vBufferSize[0], u+=du)
           {
 #ifdef BILINEAR_BACKPROJECTION
-          ui = Math::Floor<double>(u);          
+          ui = Math::Floor<double>(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
             double u1, u2, v1, v2;
@@ -259,11 +264,11 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
             v2 = 1.0-v1;
             u1 = u-ui;
             u2 = 1.0-u1;
-            *pVol += w * (v2 * (u2 * *(pProj)          + u1 * *(pProj+1)) +
-                          v1 * (u2 * *(pProj+pSize[0]) + u1 * *(pProj+pSize[0]+1)));
+            *pVol += w * (v2 * (u2 * *(pProj)          + u1 * *(pProj+1) ) +
+                          v1 * (u2 * *(pProj+pSize[0]) + u1 * *(pProj+pSize[0]+1) ) );
             }
 #else
-          ui = Math::Round<double>(u);          
+          ui = Math::Round<double>(u);
           if(ui>=0 && ui<(int)pSize[0])
             {
             pProj = projection->GetBufferPointer() + vi * pSize[0];
@@ -277,6 +282,5 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 }
 
 } // end namespace itk
-
 
 #endif

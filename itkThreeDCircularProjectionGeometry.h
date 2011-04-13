@@ -16,15 +16,15 @@ namespace itk
  * and the ProjectionOffsetsY.
  */
 
-class ThreeDCircularProjectionGeometry: public ProjectionGeometry<3>
+class ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
-  typedef ThreeDCircularProjectionGeometry    Self;
-  typedef ProjectionGeometry<3>               Superclass;
-  typedef SmartPointer< Self >                Pointer;
-  typedef SmartPointer< const Self >          ConstPointer;
+  typedef ThreeDCircularProjectionGeometry Self;
+  typedef ProjectionGeometry<3>            Superclass;
+  typedef SmartPointer< Self >             Pointer;
+  typedef SmartPointer< const Self >       ConstPointer;
 
-  typedef Vector<double, 3>                   VectorType;
+  typedef Vector<double, 3> VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro( Self );
@@ -36,13 +36,14 @@ public:
   itkGetMacro(SourceToDetectorDistance, double);
   itkSetMacro(SourceToIsocenterDistance, double);
   itkGetMacro(SourceToIsocenterDistance, double);
-  
-  /** Get / Set projection scaling to account for missing spacing in projections information. */
+
+  /** Get / Set projection scaling to account for missing spacing in projections
+    information. */
   itkSetMacro(ProjectionScalingX, double);
   itkGetMacro(ProjectionScalingX, double);
   itkSetMacro(ProjectionScalingY, double);
   itkGetMacro(ProjectionScalingY, double);
-  
+
   /** Get / Set rotation axis, default is (0,1,0). */
   itkSetMacro(RotationCenter, VectorType);
   itkGetMacro(RotationCenter, VectorType);
@@ -66,6 +67,7 @@ public:
   const std::vector<double> &GetProjectionOffsetsX(){
     return this->m_ProjOffsetsX;
   }
+
   const std::vector<double> &GetProjectionOffsetsY(){
     return this->m_ProjOffsetsY;
   }
@@ -83,18 +85,19 @@ protected:
 
 private:
   ThreeDCircularProjectionGeometry(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);                   //purposely not implemented
 
 private:
   /** Circular geometry global parameters */
-  double m_SourceToDetectorDistance;
-  double m_SourceToIsocenterDistance;
-  double m_ProjectionScalingX;
-  double m_ProjectionScalingY;
+  double     m_SourceToDetectorDistance;
+  double     m_SourceToIsocenterDistance;
+  double     m_ProjectionScalingX;
+  double     m_ProjectionScalingY;
   VectorType m_RotationCenter;
   VectorType m_RotationAxis;
 
-  /** Circular geometry parameters per projection (angles in degrees between 0 and 360). */
+  /** Circular geometry parameters per projection (angles in degrees between 0
+    and 360). */
   std::vector<double> m_RotationAngles;
   std::vector<double> m_ProjOffsetsX;
   std::vector<double> m_ProjOffsetsY;

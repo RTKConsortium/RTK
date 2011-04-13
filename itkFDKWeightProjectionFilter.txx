@@ -12,6 +12,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::EnlargeOutputRequestedRegion( DataObject *output )
 {
   OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
+
   for(unsigned int i=0; i<WeightImageType::ImageDimension; i++)
     {
     region.SetIndex(i, this->GetOutput()->GetLargestPossibleRegion().GetIndex()[i]);
@@ -25,23 +26,25 @@ void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  // Compute weights image parameters (== one projection, i.e. one slice of the input)
+  // Compute weights image parameters (== one projection, i.e. one slice of the
+  // input)
   typename WeightImageType::RegionType region;
   typename WeightImageType::SpacingType spacing;
   typename WeightImageType::PointType origin;
-  for(unsigned int i=0; i<WeightImageType::ImageDimension; i++){
+  for(unsigned int i=0; i<WeightImageType::ImageDimension; i++)
+    {
     region.SetSize(i, this->GetInput()->GetLargestPossibleRegion().GetSize()[i]);
     region.SetIndex(i, this->GetInput()->GetLargestPossibleRegion().GetIndex()[i]);
     spacing[i] = this->GetInput()->GetSpacing()[i];
     origin[i] = this->GetInput()->GetOrigin()[i];
-  }
+    }
 
   // Test if necessary to recompute the weights image
-  if(m_WeightsImage.GetPointer() != NULL && 
+  if(m_WeightsImage.GetPointer() != NULL &&
      m_WeightsImage->GetSpacing() == spacing &&
      m_WeightsImage->GetOrigin() == origin &&
      m_WeightsImage->GetLargestPossibleRegion() == region)
-     return;
+    return;
 
   // Allocate weights image
   m_WeightsImage = WeightImageType::New();
@@ -52,10 +55,10 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
 
   // Compute weights
   typedef ImageRegionIteratorWithIndex<WeightImageType> RegionIterator;
-  RegionIterator it(m_WeightsImage, m_WeightsImage->GetLargestPossibleRegion());
-  double sdd2 = this->m_SourceToDetectorDistance * this->m_SourceToDetectorDistance;
+  RegionIterator it(m_WeightsImage, m_WeightsImage->GetLargestPossibleRegion() );
+  double         sdd2 = this->m_SourceToDetectorDistance * this->m_SourceToDetectorDistance;
   typename WeightImageType::PointType point;
-  while(!it.IsAtEnd())
+  while(!it.IsAtEnd() )
     {
     m_WeightsImage->TransformIndexToPhysicalPoint( it.GetIndex(), point );
     double sourceToPointDistance = sdd2;
@@ -79,8 +82,8 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   typename WeightImageType::RegionType wr = m_WeightsImage->GetLargestPossibleRegion();
   for(unsigned int i=0; i<WeightImageType::ImageDimension; i++)
     {
-    wr.SetIndex(i, outputRegionForThread.GetIndex(i));
-    wr.SetSize(i, outputRegionForThread.GetSize(i));
+    wr.SetIndex(i, outputRegionForThread.GetIndex(i) );
+    wr.SetSize(i, outputRegionForThread.GetSize(i) );
     }
   WeightRegionConstIterator itW(m_WeightsImage, wr);
 
@@ -90,15 +93,17 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   // Multiply slice-by-slice
   itI.GoToBegin();
   itO.GoToBegin();
-  while(!itI.IsAtEnd()) {
+  while(!itI.IsAtEnd() )
+    {
     itW.GoToBegin();
-    while(!itW.IsAtEnd()) {
-      itO.Set(itI.Get() * itW.Get());
+    while(!itW.IsAtEnd() )
+      {
+      itO.Set(itI.Get() * itW.Get() );
       ++itI;
       ++itW;
       ++itO;
+      }
     }
-  }
 }
 
 } // end namespace itk

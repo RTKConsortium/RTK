@@ -9,6 +9,5 @@ itk::HisImageIOFactory::HisImageIOFactory()
                          "HisImageIO",
                          "His Image IO",
                          1,
-                         itk::CreateObjectFunction<HisImageIO>::New());
+                         itk::CreateObjectFunction<HisImageIO>::New() );
 }
-

@@ -14,18 +14,18 @@ namespace itk
  *
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT ElektaSynergyLutImageFilter: public LutImageFilter<TInputImage, TOutputImage>
+class ITK_EXPORT ElektaSynergyLutImageFilter : public LutImageFilter<TInputImage, TOutputImage>
 {
 
 public:
   /** Standard class typedefs. */
-  typedef ElektaSynergyLutImageFilter Self;
+  typedef ElektaSynergyLutImageFilter               Self;
   typedef LutImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>                        Pointer;
+  typedef SmartPointer<const Self>                  ConstPointer;
 
-  typedef typename TInputImage::PixelType InputImagePixelType;
-  typedef typename TOutputImage::PixelType OutputImagePixelType;
+  typedef typename TInputImage::PixelType           InputImagePixelType;
+  typedef typename TOutputImage::PixelType          OutputImagePixelType;
   typedef typename Superclass::FunctorType::LutType LutType;
 
   /** Method for creation through the object factory. */
@@ -36,11 +36,13 @@ public:
 
 protected:
   ElektaSynergyLutImageFilter();
-  virtual ~ElektaSynergyLutImageFilter() {}
+  virtual ~ElektaSynergyLutImageFilter() {
+  }
 
 private:
   ElektaSynergyLutImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);        //purposely not implemented
+  void operator=(const Self&);              //purposely not implemented
+
 };
 
 } // end namespace itk
@@ -56,8 +58,8 @@ itk::ElektaSynergyLutImageFilter<TInputImage, TOutputImage>::ElektaSynergyLutIma
   lut->Allocate();
 
   // Iterate and set lut
-  OutputImagePixelType logRef = log(OutputImagePixelType(size[0]));
-  itk::ImageRegionIteratorWithIndex<LutType>  it( lut, lut->GetBufferedRegion() );
+  OutputImagePixelType                       logRef = log(OutputImagePixelType(size[0]) );
+  itk::ImageRegionIteratorWithIndex<LutType> it( lut, lut->GetBufferedRegion() );
   it.GoToBegin();
 
   //First value takes value of pixel #1
@@ -68,13 +70,13 @@ itk::ElektaSynergyLutImageFilter<TInputImage, TOutputImage>::ElektaSynergyLutIma
   while( !it.IsAtEnd() ) {
     it.Set( logRef - log( OutputImagePixelType(-it.GetIndex()[0]+size[0]) ) );
     ++it;
-  }
-  
+    }
+
   //Last value takes value of pixel #1
   --it;
   it.Set( logRef - log( OutputImagePixelType(-1+size[0]) ) );
   ++it;
-  
+
   // Set the lut to member and functor
   this->SetLut(lut);
 }

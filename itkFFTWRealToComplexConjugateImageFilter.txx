@@ -9,8 +9,8 @@
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -59,8 +59,8 @@ GenerateData()
     = outputPtr->GetLargestPossibleRegion().GetSize();
 
   // figure out sizes
-  // size of input and output aren't the same which is handled in the superclass,
-  // sort of.
+  // size of input and output aren't the same which is handled in the
+  // superclass, sort of.
   // the input size and output size only differ in the fastest moving dimension
   unsigned int total_inputSize = 1;
   unsigned int total_outputSize = 1;
@@ -72,8 +72,8 @@ GenerateData()
     }
 
   typename FFTWProxyType::PlanType plan;
-  TPixel * in = const_cast<TPixel*>(inputPtr->GetBufferPointer());
-  typename FFTWProxyType::ComplexType * out = (typename FFTWProxyType::ComplexType*) outputPtr->GetBufferPointer();
+  TPixel * in = const_cast<TPixel*>(inputPtr->GetBufferPointer() );
+  typename FFTWProxyType::ComplexType * out = (typename FFTWProxyType::ComplexType*)outputPtr->GetBufferPointer();
   int flags = FFTW_ESTIMATE;
   if( !m_CanUseDestructiveAlgorithm )
     {
@@ -86,27 +86,27 @@ GenerateData()
     {
     case 1:
       plan = FFTWProxyType::Plan_dft_r2c_1d(inputSize[0],
-                                           in,
-                                           out,
-                                           flags,
-                                           this->GetNumberOfThreads());
+                                            in,
+                                            out,
+                                            flags,
+                                            this->GetNumberOfThreads() );
       break;
     case 2:
       plan = FFTWProxyType::Plan_dft_r2c_2d(inputSize[1],
-                                           inputSize[0],
-                                           in,
-                                           out,
-                                           flags,
-                                           this->GetNumberOfThreads());
+                                            inputSize[0],
+                                            in,
+                                            out,
+                                            flags,
+                                            this->GetNumberOfThreads() );
       break;
     case 3:
       plan = FFTWProxyType::Plan_dft_r2c_3d(inputSize[2],
-                                           inputSize[1],
-                                           inputSize[0],
-                                           in,
-                                           out,
-                                           flags,
-                                           this->GetNumberOfThreads());
+                                            inputSize[1],
+                                            inputSize[0],
+                                            in,
+                                            out,
+                                            flags,
+                                            this->GetNumberOfThreads() );
       break;
     default:
       int *sizes = new int[VDimension];
@@ -116,10 +116,10 @@ GenerateData()
         }
 
       plan = FFTWProxyType::Plan_dft_r2c(VDimension,sizes,
-                                        in,
-                                        out,
-                                        flags,
-                                        this->GetNumberOfThreads());
+                                         in,
+                                         out,
+                                         flags,
+                                         this->GetNumberOfThreads() );
       delete [] sizes;
     }
   FFTWProxyType::Execute(plan);

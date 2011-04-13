@@ -1,6 +1,7 @@
 #define HEADER_INFO_SIZE 68
 
-// Based on a true story by the Nederlands Kanker Instituut (AVS_HEIMANN.CPP from the 20090608)
+// Based on a true story by the Nederlands Kanker Instituut (AVS_HEIMANN.CPP
+// from the 20090608)
 
 // Includes
 #include <fstream>
@@ -12,20 +13,21 @@ void itk::HisImageIO::ReadImageInformation()
 {
   // open file
   std::ifstream file(m_FileName.c_str(), std::ios::in | std::ios::binary);
+
   if ( file.fail() )
     itkGenericExceptionMacro(<< "Could not open file (for reading): "
-		             << m_FileName);
+                             << m_FileName);
 
   // read header
   char header[HEADER_INFO_SIZE];
   file.read(header, HEADER_INFO_SIZE);
 
   if (header[0]!=0 || header[1]!=112 || header[2]!=68 || header[3]!=0) {
-    itkExceptionMacro(<< "itk::HisImageIO::ReadImageInformation: file " 
-		      << m_FileName 
-		      << " not in Heimann HIS format version 100");
+    itkExceptionMacro(<< "itk::HisImageIO::ReadImageInformation: file "
+                      << m_FileName
+                      << " not in Heimann HIS format version 100");
     return;
-  }
+    }
 
   int nrframes, type, ulx, uly, brx, bry;
   m_HeaderSize  = header[10] + (header[11]<<8);
@@ -36,47 +38,50 @@ void itk::HisImageIO::ReadImageInformation()
   nrframes      = header[20] + (header[21]<<8);
   type          = header[32] + (header[34]<<8);
 
-  switch(type) {
-  case  4:
-    SetComponentType(itk::ImageIOBase::USHORT);
-    break;
+  switch(type)
+    {
+    case  4:
+      SetComponentType(itk::ImageIOBase::USHORT);
+      break;
 //    case  8: SetComponentType(itk::ImageIOBase::INT);   break;
 //    case 16: SetComponentType(itk::ImageIOBase::FLOAT); break;
 //    case 32: SetComponentType(itk::ImageIOBase::INT);   break;
-  default:
-    SetComponentType(itk::ImageIOBase::USHORT);
-    break;
-  }
+    default:
+      SetComponentType(itk::ImageIOBase::USHORT);
+      break;
+    }
 
-  switch(nrframes) {
-  case 1:
-    SetNumberOfDimensions(2);
-    break;
-  default:
-    SetNumberOfDimensions(3);
-    break;
-  }
+  switch(nrframes)
+    {
+    case 1:
+      SetNumberOfDimensions(2);
+      break;
+    default:
+      SetNumberOfDimensions(3);
+      break;
+    }
 
   SetDimensions(0, bry-uly+1);
   SetDimensions(1, brx-ulx+1);
   if (nrframes>1)
     SetDimensions(2, nrframes);
 
-  SetSpacing(0, 409.6/GetDimensions(0));
-  SetSpacing(1, 409.6/GetDimensions(1));
+  SetSpacing(0, 409.6/GetDimensions(0) );
+  SetSpacing(1, 409.6/GetDimensions(1) );
 
-  SetOrigin(0, -0.5*(GetDimensions(0)-1)*GetSpacing(0));
-  SetOrigin(1, -0.5*(GetDimensions(1)-1)*GetSpacing(1));
+  SetOrigin(0, -0.5*(GetDimensions(0)-1)*GetSpacing(0) );
+  SetOrigin(1, -0.5*(GetDimensions(1)-1)*GetSpacing(1) );
 } ////
 
 //--------------------------------------------------------------------
 // Read Image Information
 bool itk::HisImageIO::CanReadFile(const char* FileNameToRead)
 {
-  std::string filename(FileNameToRead);
+  std::string                  filename(FileNameToRead);
   const std::string::size_type it = filename.find_last_of( "." );
-  std::string fileExt( filename, it+1, filename.length() );
-  if (fileExt != std::string("his"))
+  std::string                  fileExt( filename, it+1, filename.length() );
+
+  if (fileExt != std::string("his") )
     return false;
   return true;
 } ////
@@ -87,22 +92,21 @@ void itk::HisImageIO::Read(void * buffer)
 {
   // open file
   std::ifstream file(m_FileName.c_str(), std::ios::in | std::ios::binary);
+
   if ( file.fail() )
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
-
 
   file.seekg(m_HeaderSize+HEADER_INFO_SIZE, std::ios::beg);
   if ( file.fail() )
     itkExceptionMacro(<<"File seek failed (His Read)");
 
-
-  file.read((char*)buffer, GetImageSizeInBytes());
+  file.read( (char*)buffer, GetImageSizeInBytes() );
   if ( file.fail() )
     itkExceptionMacro(<<"Read failed: Wanted "
                       << GetImageSizeInBytes()
                       << " bytes, but read "
                       << file.gcount() << " bytes. The current state is: "
-                      << file.rdstate());
+                      << file.rdstate() );
 }
 
 //--------------------------------------------------------------------
@@ -116,6 +120,7 @@ bool itk::HisImageIO::CanWriteFile(const char* FileNameToWrite)
 void itk::HisImageIO::Write(const void* buffer)
 {
   std::ofstream file(m_FileName.c_str(), std::ios::out | std::ios::binary);
+
   if ( file.fail() )
     itkGenericExceptionMacro(<< "Could not open file (for writing): " << m_FileName);
 
@@ -128,7 +133,7 @@ void itk::HisImageIO::Write(const void* buffer)
     0xFE, 0x2A, 0x49, 0x5F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00
-  };
+    };
 
   /* Fill into the header the essentials
      The 'iheader' in previous module is fixed to 0x20, and is included in szHeader.
@@ -136,34 +141,35 @@ void itk::HisImageIO::Write(const void* buffer)
      the image.
   */
   const unsigned int ndim = GetNumberOfDimensions();
-  if ((ndim < 2) || (ndim > 3))
+  if ( (ndim < 2) || (ndim > 3) )
     itkExceptionMacro( <<"Only 2D or 3D support");
 
-  szHeader[16] = (char)(GetDimensions(0) % 256);	// X-size	lsb
-  szHeader[17] = (char)(GetDimensions(0) / 256);	// X-size	msb
-  szHeader[18] = (char)(GetDimensions(1) % 256);	// Y-size	lsb
-  szHeader[19] = (char)(GetDimensions(1) / 256);	// Y-size	msb
+  szHeader[16] = (char)(GetDimensions(0) % 256);  // X-size	lsb
+  szHeader[17] = (char)(GetDimensions(0) / 256);  // X-size	msb
+  szHeader[18] = (char)(GetDimensions(1) % 256);  // Y-size	lsb
+  szHeader[19] = (char)(GetDimensions(1) / 256);  // Y-size	msb
   if (ndim == 3) {
-    szHeader[20] = (char)(GetDimensions(0) % 256);	// NbFrames	lsb
-    szHeader[21] = (char)(GetDimensions(0) / 256);	// NbFrames	msb
-  }
+    szHeader[20] = (char)(GetDimensions(0) % 256);  // NbFrames	lsb
+    szHeader[21] = (char)(GetDimensions(0) / 256);  // NbFrames	msb
+    }
 
-  switch (GetComponentType()) {
-  case itk::ImageIOBase::USHORT:
-    szHeader[32] = 4;
-    break;
+  switch (GetComponentType())
+    {
+    case itk::ImageIOBase::USHORT:
+      szHeader[32] = 4;
+      break;
     //case AVS_TYPE_INTEGER:
     //  szHeader[32] = 8;
     //  break;
     //case AVS_TYPE_REAL:
     //  szHeader[32] = 16;
     //  break;
-  default:
-    itkExceptionMacro(<< "Unsupported field type");
-    break;
-  }
+    default:
+      itkExceptionMacro(<< "Unsupported field type");
+      break;
+    }
 
   file.write(szHeader, m_HeaderSize);
-  file.write((const char *)buffer, GetImageSizeInBytes());
+  file.write( (const char *)buffer, GetImageSizeInBytes() );
   file.close();
 } ////

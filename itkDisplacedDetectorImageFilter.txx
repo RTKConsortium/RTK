@@ -6,7 +6,7 @@
 namespace itk
 {
 
-/** 
+/**
  * Account for the padding computed in GenerateOutputInformation to propagate the
  * requested region.
  */
@@ -27,7 +27,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   inputPtr->SetRequestedRegion( inputRequestedRegion );
 }
 
-/** 
+/**
  * When the detector is displaced, one needs to zero pad the input data on the
  * nearest side to the center.
  */
@@ -38,7 +38,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 {
   // call the superclass' implementation of this method
   Superclass::GenerateOutputInformation();
-  
+
   // get pointers to the input and output
   typename Superclass::InputImagePointer  inputPtr  = const_cast< TInputImage * >( this->GetInput() );
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
@@ -56,7 +56,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   if (inputPtr->GetSpacing()[0]<0.)
     m_InferiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0)-1);
   else
-    m_SuperiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0)-1); 
+    m_SuperiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0)-1);
 
   // Account for projections offsets
   double minOffset = NumericTraits<double>::max();
@@ -70,18 +70,21 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   m_SuperiorCorner -= maxOffset;
 
   // 4 cases depending on the position of the two corners
-  if(m_InferiorCorner>0. || m_SuperiorCorner<0.) // Impossible to account for too large displacements
+  // Case 1: Impossible to account for too large displacements
+  if(m_InferiorCorner>0. || m_SuperiorCorner<0.)
     {
     itkGenericExceptionMacro(<< "Can not account for detector displacement larger than 50% of panel size.");
     }
-  else if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) ) // Not dispaced, nothing to do
+  // Case 2: Not dispaced, nothing to do
+  else if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
     {
     this->SetInPlace( true );
     }
   else if( m_SuperiorCorner+m_InferiorCorner > 0. )
     {
     this->SetInPlace( false );
-    outputLargestPossibleRegion.SetIndex( 0, outputLargestPossibleRegion.GetIndex()[0]-outputLargestPossibleRegion.GetSize()[0] );
+    Index<3>::IndexValueType index = outputLargestPossibleRegion.GetIndex()[0] - outputLargestPossibleRegion.GetSize()[0];
+    outputLargestPossibleRegion.SetIndex( 0, index );
     outputLargestPossibleRegion.SetSize( 0, outputLargestPossibleRegion.GetSize()[0]*2 );
     }
   else
@@ -93,7 +96,6 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   outputPtr->SetLargestPossibleRegion( outputLargestPossibleRegion );
 }
 
-
 template <class TInputImage, class TOutputImage>
 void
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>
@@ -101,20 +103,22 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 {
   // Compute overlap between input and output
   OutputImageRegionType overlapRegion = outputRegionForThread;
-  overlapRegion.Crop(this->GetInput()->GetLargestPossibleRegion());
-  
+
+  overlapRegion.Crop(this->GetInput()->GetLargestPossibleRegion() );
+
   // Input / ouput iterators
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), overlapRegion);
-  itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIterator<OutputImageType>     itOut(this->GetOutput(), outputRegionForThread);
   itIn.GoToBegin();
   itOut.GoToBegin();
 
   // Not dispaced, nothing to do
   if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
     {
-    if(this->GetInput() != this->GetOutput()) // If not in place, copy is required
+    if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
+                                               // required
       {
-      while(!itIn.IsAtEnd())
+      while(!itIn.IsAtEnd() )
         {
         itOut.Set( itIn.Get() );
         ++itIn;
@@ -127,9 +131,9 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   // Weight image parameters
   typename WeightImageType::RegionType region;
   typename WeightImageType::SpacingType spacing;
-  typename WeightImageType::PointType origin;  
-  region.SetSize(0, overlapRegion.GetSize(0));
-  region.SetIndex(0, overlapRegion.GetIndex(0));
+  typename WeightImageType::PointType origin;
+  region.SetSize(0, overlapRegion.GetSize(0) );
+  region.SetIndex(0, overlapRegion.GetIndex(0) );
   spacing[0] = this->GetInput()->GetSpacing()[0];
   origin[0] = this->GetInput()->GetOrigin()[0];
 
@@ -139,11 +143,11 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   weights->SetOrigin( origin );
   weights->SetRegions( region );
   weights->Allocate();
-  typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion());
-  
-  double theta = vnl_math_min(-1*m_InferiorCorner, m_SuperiorCorner);
+  typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
+
+  double       theta = vnl_math_min(-1*m_InferiorCorner, m_SuperiorCorner);
   const double invsdd = 1/m_Geometry->GetSourceToDetectorDistance();
-  const double invden = 1/(2 * vcl_atan( theta * invsdd ));
+  const double invden = 1/(2 * vcl_atan( theta * invsdd ) );
 
   for(unsigned int k=0; k<overlapRegion.GetSize(2); k++)
     {
@@ -153,7 +157,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     point[0] -= m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
     if( m_SuperiorCorner+m_InferiorCorner > 0. )
       {
-      while(!itWeights.IsAtEnd())
+      while(!itWeights.IsAtEnd() )
         {
         if(point[0] <= -1*theta)
           itWeights.Set(0.0);
@@ -167,7 +171,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       }
     else
       {
-      while(!itWeights.IsAtEnd())
+      while(!itWeights.IsAtEnd() )
         {
         if(point[0] <= -1*theta)
           itWeights.Set(2.0);
@@ -179,7 +183,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
         point[0] += spacing[0];
         }
       }
-      
+
     // Multiply each line of the current slice
     for(unsigned int j=0; j<overlapRegion.GetSize(1); j++)
       {
@@ -191,7 +195,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
         }
 
       itWeights.GoToBegin();
-      while(!itWeights.IsAtEnd())
+      while(!itWeights.IsAtEnd() )
         {
         itOut.Set( itIn.Get() * itWeights.Get() );
         ++itWeights;

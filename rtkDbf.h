@@ -53,12 +53,14 @@ public:
   /** Number of records contained in the tabe */
   size_t GetNumberOfRecords()      { return m_Fields.size(); }
 
-  /** Read in memory the next record. Return true if successful and false oftherwise. */
+  /** Read in memory the next record. Return true if successful and false
+    oftherwise. */
   bool ReadNextRecord();
 
   /** Access to field value of field named fldName */
   std::string GetFieldAsString(std::string fldName);
-  double GetFieldAsDouble(std::string fldName) { return atof(GetFieldAsString(fldName).c_str()); }
+
+  double GetFieldAsDouble(std::string fldName) { return atof(GetFieldAsString(fldName).c_str() ); }
 
 private:
   /** File stream. AFter constructor, positionned to next record to read. */

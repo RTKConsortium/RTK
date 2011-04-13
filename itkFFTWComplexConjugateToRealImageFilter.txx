@@ -9,8 +9,8 @@
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -56,8 +56,8 @@ BeforeThreadedGenerateData()
     = inputPtr->GetLargestPossibleRegion().GetSize();
 
   // figure out sizes
-  // size of input and output aren't the same which is handled in the superclass,
-  // sort of.
+  // size of input and output aren't the same which is handled in the
+  // superclass, sort of.
   // the input size and output size only differ in the fastest moving dimension
   unsigned int total_outputSize = 1;
   unsigned int total_inputSize = 1;
@@ -69,9 +69,9 @@ BeforeThreadedGenerateData()
     }
 
   typename FFTWProxyType::ComplexType * in;
-  // complex to real transform don't have any algorithm which support the FFTW_PRESERVE_INPUT at this time.
-  // So if the input can't be destroyed, we have to copy the input data to a buffer before running
-  // the ifft.
+  // complex to real transform don't have any algorithm which support the
+  // FFTW_PRESERVE_INPUT at this time. So if the input can't be destroyed,
+  // we have to copy the input data to a buffer before running the ifft.
   if( m_CanUseDestructiveAlgorithm )
     {
     // ok, so lets use the input buffer directly, to save some memory
@@ -81,37 +81,37 @@ BeforeThreadedGenerateData()
     {
     // we must use a buffer where fftw can work and destroy what it wants
     in = new typename FFTWProxyType::ComplexType[total_inputSize];
-    // no need to copy the data after the plan creation: FFTW_ESTIMATE ensure that the input
-    // in not destroyed during this step
+    // no need to copy the data after the plan creation: FFTW_ESTIMATE ensure
+    // that the input in not destroyed during this step
     memcpy(in,
            inputPtr->GetBufferPointer(),
-           total_inputSize * sizeof(typename FFTWProxyType::ComplexType));
+           total_inputSize * sizeof(typename FFTWProxyType::ComplexType) );
     }
   TPixel * out = outputPtr->GetBufferPointer();
   typename FFTWProxyType::PlanType plan;
-  
+
   switch(VDimension)
     {
     case 1:
       plan = FFTWProxyType::Plan_dft_c2r_1d(outputSize[0],
-                                     in,
-                                     out,
-                                     FFTW_ESTIMATE,
-                                     this->GetNumberOfThreads());
+                                            in,
+                                            out,
+                                            FFTW_ESTIMATE,
+                                            this->GetNumberOfThreads() );
       break;
     case 2:
       plan = FFTWProxyType::Plan_dft_c2r_2d(outputSize[1],outputSize[0],
-                                     in,
-                                     out,
-                                     FFTW_ESTIMATE,
-                                     this->GetNumberOfThreads());
+                                            in,
+                                            out,
+                                            FFTW_ESTIMATE,
+                                            this->GetNumberOfThreads() );
       break;
     case 3:
       plan = FFTWProxyType::Plan_dft_c2r_3d(outputSize[2],outputSize[1],outputSize[0],
-                                     in,
-                                     out,
-                                     FFTW_ESTIMATE,
-                                     this->GetNumberOfThreads());
+                                            in,
+                                            out,
+                                            FFTW_ESTIMATE,
+                                            this->GetNumberOfThreads() );
       break;
     default:
       int *sizes = new int[VDimension];
@@ -120,14 +120,14 @@ BeforeThreadedGenerateData()
         sizes[(VDimension - 1) - i] = outputSize[i];
         }
       plan = FFTWProxyType::Plan_dft_c2r(VDimension,sizes,
-                                  in,
-                                  out,
-                                  FFTW_ESTIMATE,
-                                  this->GetNumberOfThreads());
+                                         in,
+                                         out,
+                                         FFTW_ESTIMATE,
+                                         this->GetNumberOfThreads() );
       delete [] sizes;
     }
   fftw::Proxy<TPixel>::Execute(plan);
-  
+
   // some cleanup
   FFTWProxyType::DestroyPlan(plan);
   if( !m_CanUseDestructiveAlgorithm )
@@ -141,9 +141,9 @@ void
 FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
 ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId )
 {
-  typedef ImageRegionIterator< TOutputImageType >   IteratorType;
+  typedef ImageRegionIterator< TOutputImageType > IteratorType;
   unsigned long total_outputSize = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
-  IteratorType it(this->GetOutput(), outputRegionForThread);
+  IteratorType  it(this->GetOutput(), outputRegionForThread);
   while( !it.IsAtEnd() )
     {
     it.Set( it.Value() / total_outputSize );
@@ -159,7 +159,6 @@ FullMatrix()
   return false;
 }
 
-
 template <typename TPixel,unsigned int VDimension>
 void
 FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
@@ -171,5 +170,6 @@ UpdateOutputData(DataObject * output)
   m_CanUseDestructiveAlgorithm = this->GetInput()->GetReleaseDataFlag();
   Superclass::UpdateOutputData( output );
 }
-}// namespace itk
+
+} // namespace itk
 #endif // _itkFFTWComplexConjugateToRealImageFilter_txx

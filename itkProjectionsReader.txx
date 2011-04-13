@@ -29,7 +29,6 @@ void ProjectionsReader<TOutputImage>
   os << indent << "RawToProjectionsFilter: " << m_RawToProjectionsFilter->GetNameOfClass() << std::endl;
 }
 
-
 //--------------------------------------------------------------------
 template <class TOutputImage>
 void ProjectionsReader<TOutputImage>
@@ -54,11 +53,11 @@ void ProjectionsReader<TOutputImage>
     if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
       {
       /////////// Varian OBI
-      typedef unsigned int InputPixelType;
+      typedef unsigned int                                       InputPixelType;
       typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
 
       // Reader
-      typedef itk::ImageSeriesReader< InputImageType >  ReaderType;
+      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
       reader->SetImageIO( imageIO );
       reader->SetFileNames( this->GetFileNames() );
@@ -73,11 +72,11 @@ void ProjectionsReader<TOutputImage>
     else if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") )
       {
       /////////// Elekta synergy
-      typedef unsigned short InputPixelType;
+      typedef unsigned short                                     InputPixelType;
       typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
 
       // Reader
-      typedef itk::ImageSeriesReader< InputImageType >  ReaderType;
+      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
       reader->SetImageIO( imageIO );
       reader->SetFileNames( this->GetFileNames() );
@@ -88,14 +87,14 @@ void ProjectionsReader<TOutputImage>
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;
-    }
+      }
     else if( !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
       {
-      typedef unsigned short InputPixelType;
+      typedef unsigned short                                     InputPixelType;
       typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
 
       // Reader
-      typedef itk::ImageSeriesReader< InputImageType >  ReaderType;
+      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
       reader->SetImageIO( imageIO );
       reader->SetFileNames( this->GetFileNames() );
@@ -106,11 +105,12 @@ void ProjectionsReader<TOutputImage>
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;
-    }
+      }
     else
       {
-      ///////////// Default: whatever the format, we assume that we directly read the Projections
-      typedef itk::ImageSeriesReader< OutputImageType >  ReaderType;
+      ///////////// Default: whatever the format, we assume that we directly
+      // read the Projections
+      typedef itk::ImageSeriesReader< OutputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
       reader->SetImageIO( imageIO );
       reader->SetFileNames( this->GetFileNames() );
@@ -137,11 +137,11 @@ void ProjectionsReader<TOutputImage>
 ::GenerateData()
 {
   TOutputImage * output = this->GetOutput();
+
   m_RawToProjectionsFilter->GetOutput()->SetRequestedRegion( output->GetRequestedRegion() );
   m_RawToProjectionsFilter->Update();
   this->GraftOutput( m_RawToProjectionsFilter->GetOutput() );
 }
-
 
 } //namespace ITK
 

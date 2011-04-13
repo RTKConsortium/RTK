@@ -19,9 +19,10 @@ template< class TInput, class TOutput>
 class SynergyAttenuation
 {
 public:
-  SynergyAttenuation() {
+  SynergyAttenuation()
+    {
     logRef = log(TOutput(NumericTraits<TInput>::max()-NumericTraits<TInput>::min()+1));
-  }
+    }
   ~SynergyAttenuation() {}
   bool operator!=( const SynergyAttenuation & ) const
     {

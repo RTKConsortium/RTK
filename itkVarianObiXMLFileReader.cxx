@@ -25,15 +25,15 @@ StartElement(const char * name,const char **atts)
   m_CurCharacterData = "";
 }
 
-void 
+void
 VarianObiXMLFileReader::
 EndElement(const char *name)
 {
 #define ENCAPLULATE_META_DATA_DOUBLE(metaName) \
   if(itksys::SystemTools::Strucmp(name, metaName) == 0) { \
-    double d = atof(m_CurCharacterData.c_str()); \
+    double d = atof(m_CurCharacterData.c_str() ); \
     itk::EncapsulateMetaData<double>(m_Dictionary, metaName, d); \
-  }
+    }
 
   ENCAPLULATE_META_DATA_DOUBLE("GantryRtnSpeed");
   ENCAPLULATE_META_DATA_DOUBLE("CalibratedSAD");

@@ -9,7 +9,7 @@
  * \brief Convert raw Elekta Synergy data to attenuation images
  *
  * This composite filter composes the operations required to convert
- * a raw image from the Elekta Synergy cone-beam CT scanner to 
+ * a raw image from the Elekta Synergy cone-beam CT scanner to
  * attenuation images usable in standard reconstruction algorithms,*
  * e.g. Feldkamp algorithm.
  *
@@ -19,7 +19,7 @@ namespace itk
 {
 
 template<class TInputImage, class TOutputImage=TInputImage>
-class ITK_EXPORT ElektaSynergyRawToAttenuationImageFilter:
+class ITK_EXPORT ElektaSynergyRawToAttenuationImageFilter :
   public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
@@ -30,8 +30,8 @@ public:
   typedef SmartPointer<const Self>                      ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage                                   InputImageType;
-  typedef TOutputImage                                  OutputImageType;
+  typedef TInputImage  InputImageType;
+  typedef TOutputImage OutputImageType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -41,7 +41,8 @@ public:
 
 protected:
   ElektaSynergyRawToAttenuationImageFilter();
-  ~ElektaSynergyRawToAttenuationImageFilter(){}
+  ~ElektaSynergyRawToAttenuationImageFilter(){
+  }
 
   /** Apply changes to the input image requested region. */
   virtual void GenerateInputRequestedRegion();
@@ -53,11 +54,12 @@ protected:
   void GenerateData();
 
 private:
-  ElektaSynergyRawToAttenuationImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  //purposely not implemented
+  ElektaSynergyRawToAttenuationImageFilter(const Self&);
+  void operator=(const Self&);
 
   typedef itk::ElektaSynergyLutImageFilter<InputImageType, OutputImageType> LutFilterType;
-  typedef itk::CropImageFilter<OutputImageType, OutputImageType> CropFilterType;
+  typedef itk::CropImageFilter<OutputImageType, OutputImageType>            CropFilterType;
 
   typename LutFilterType::Pointer m_LutFilter;
   typename CropFilterType::Pointer m_CropFilter;

@@ -44,31 +44,34 @@ StartElement(const char * name,const char **atts)
   m_TreeLevel++;
 }
 
-void 
+void
 DigisensGeometryXMLFileReader::
 EndElement(const char *name)
 {
   typedef itk::Vector<double, 3> VectorThreeDType;
 
 #define ENCAPLULATE_META_DATA_3D(section, metaName) \
-  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) { \
+  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
+    { \
     VectorThreeDType vec; \
     std::istringstream iss(m_CurCharacterData); \
     iss >> vec; \
     itk::EncapsulateMetaData<VectorThreeDType>(m_Dictionary, #section metaName, vec); \
-  }
+    }
 
 #define ENCAPLULATE_META_DATA_INTEGER(section, metaName) \
-  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) { \
-    int i = atoi(m_CurCharacterData.c_str()); \
+  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
+    { \
+    int i = atoi(m_CurCharacterData.c_str() ); \
     itk::EncapsulateMetaData<int>(m_Dictionary, #section metaName, i); \
-  }
+    }
 
 #define ENCAPLULATE_META_DATA_DOUBLE(section, metaName) \
-  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) { \
-    double d = atof(m_CurCharacterData.c_str()); \
+  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
+    { \
+    double d = atof(m_CurCharacterData.c_str() ); \
     itk::EncapsulateMetaData<double>(m_Dictionary, #section metaName, d); \
-  }
+    }
 
   ENCAPLULATE_META_DATA_3D(ROTATION, "axis");
   ENCAPLULATE_META_DATA_3D(ROTATION, "center");
@@ -77,7 +80,7 @@ EndElement(const char *name)
   ENCAPLULATE_META_DATA_3D(CAMERA, "normal");
   ENCAPLULATE_META_DATA_3D(CAMERA, "horizontal");
   ENCAPLULATE_META_DATA_3D(CAMERA, "vertical");
-  
+
   ENCAPLULATE_META_DATA_INTEGER(CAMERA, "pixelWidth");
   ENCAPLULATE_META_DATA_INTEGER(CAMERA, "pixelHeight");
 
@@ -85,7 +88,7 @@ EndElement(const char *name)
   ENCAPLULATE_META_DATA_DOUBLE(CAMERA, "totalHeight");
   ENCAPLULATE_META_DATA_DOUBLE(RADIOS, "angularRange");
   ENCAPLULATE_META_DATA_DOUBLE(RADIOS, "startAngle");
-  
+
   if(m_CurrentSection == RADIOS && itksys::SystemTools::Strucmp(name, "files") == 0)
     itk::EncapsulateMetaData<int>(m_Dictionary, "RADIOSNumberOfFiles", m_NumberOfFiles);
 

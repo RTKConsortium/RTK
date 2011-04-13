@@ -18,8 +18,9 @@
 namespace itk
 {
 
-template<class TInputImage, class TOutputImage=itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension-1> >
-class ITK_EXPORT AmsterdamShroudImageFilter:
+template<class TInputImage, class TOutputImage=
+           itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension-1> >
+class ITK_EXPORT AmsterdamShroudImageFilter :
   public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
@@ -28,21 +29,21 @@ public:
 
   typedef ImageToImageFilter<TInputImage, TOutputImage> Superclass;
 
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage                              InputImageType;
-  typedef TOutputImage                             OutputImageType;
-  typedef typename InputImageType::Pointer         InputImagePointer;
-  typedef typename InputImageType::ConstPointer    InputImageConstPointer;
-  typedef typename InputImageType::PixelType       InputImagePixelType;
-  typedef typename OutputImageType::Pointer        OutputImagePointer;
-  typedef typename OutputImageType::ConstPointer   OutputImageConstPointer;
-  typedef typename OutputImageType::PixelType      OutputImagePixelType;
-  typedef typename InputImageType::RegionType      RegionType;
-  typedef typename InputImageType::IndexType       IndexType;
-  typedef typename InputImageType::SizeType        SizeType;
+  typedef TInputImage                            InputImageType;
+  typedef TOutputImage                           OutputImageType;
+  typedef typename InputImageType::Pointer       InputImagePointer;
+  typedef typename InputImageType::ConstPointer  InputImageConstPointer;
+  typedef typename InputImageType::PixelType     InputImagePixelType;
+  typedef typename OutputImageType::Pointer      OutputImagePointer;
+  typedef typename OutputImageType::ConstPointer OutputImageConstPointer;
+  typedef typename OutputImageType::PixelType    OutputImagePixelType;
+  typedef typename InputImageType::RegionType    RegionType;
+  typedef typename InputImageType::IndexType     IndexType;
+  typedef typename InputImageType::SizeType      SizeType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -57,12 +58,12 @@ public:
 
   /** Runtime information support. */
   itkTypeMacro(AmsterdamShroudImageFilter, ImageToImageFilter);
-
 protected:
   AmsterdamShroudImageFilter();
   ~AmsterdamShroudImageFilter(){}
 
   void GenerateOutputInformation();
+
   void GenerateInputRequestedRegion();
 
   /** Single-threaded version of GenerateData.  This filter delegates
@@ -71,14 +72,14 @@ protected:
 
 private:
   AmsterdamShroudImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);             //purposely not implemented
 
-  typedef RecursiveGaussianImageFilter< TInputImage, TInputImage > DerivativeType;
+  typedef RecursiveGaussianImageFilter< TInputImage, TInputImage >          DerivativeType;
   typedef MultiplyByConstantImageFilter< TInputImage, double, TInputImage > NegativeType;
-  typedef ThresholdImageFilter< TInputImage > ThresholdType;
-  typedef SumProjectionImageFilter< TInputImage, TOutputImage > SumType;
-  typedef RecursiveGaussianImageFilter< TOutputImage, TOutputImage > SmoothType;
-  typedef SubtractImageFilter< TOutputImage, TOutputImage > SubtractType;
+  typedef ThresholdImageFilter< TInputImage >                               ThresholdType;
+  typedef SumProjectionImageFilter< TInputImage, TOutputImage >             SumType;
+  typedef RecursiveGaussianImageFilter< TOutputImage, TOutputImage >        SmoothType;
+  typedef SubtractImageFilter< TOutputImage, TOutputImage >                 SubtractType;
 
   typename DerivativeType::Pointer m_DerivativeFilter;
   typename NegativeType::Pointer m_NegativeFilter;

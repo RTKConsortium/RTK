@@ -43,7 +43,8 @@ Get2DRigidTransformationHomogeneousMatrix( double angleX, double transX, double 
 
 //--------------------------------------------------------------------
 itk::Matrix< double, 4, 4 >
-Get3DRigidTransformationHomogeneousMatrix( double angleX, double angleY, double angleZ, double transX, double transY, double transZ )
+Get3DRigidTransformationHomogeneousMatrix( double angleX, double angleY, double angleZ, double transX, double transY,
+                                           double transZ )
 {
   const double degreesToRadians = vcl_atan(1.0) / 45.0;
 
@@ -59,7 +60,7 @@ Get3DRigidTransformationHomogeneousMatrix( double angleX, double angleY, double 
       matrix[i][j] = xfm3D->GetMatrix()[i][j];
 
   itk::Matrix< double, 4, 4 > translation = Get3DTranslationHomogeneousMatrix(transX, transY, transZ);
-  return itk::Matrix< double, 4, 4 >(translation.GetVnlMatrix() * matrix.GetVnlMatrix());
+  return itk::Matrix< double, 4, 4 >(translation.GetVnlMatrix() * matrix.GetVnlMatrix() );
 }
 
 //--------------------------------------------------------------------
@@ -71,7 +72,7 @@ Get3DTranslationHomogeneousMatrix( double transX, double transY, double transZ )
   matrix[0][3] = transX;
   matrix[1][3] = transY;
   matrix[2][3] = transZ;
-  return matrix;  
+  return matrix;
 }
 
 //--------------------------------------------------------------------
@@ -82,7 +83,7 @@ Get3DRotationHomogeneousMatrix( itk::Vector<double, 3> axis, double angle )
 
   itk::Versor<double> xfm3D;
   xfm3D.Set(axis, angle*degreesToRadians);
-  
+
   itk::Matrix< double, 4, 4 > matrix;
   matrix.SetIdentity();
   for(int i=0; i<3; i++)
@@ -91,4 +92,3 @@ Get3DRotationHomogeneousMatrix( itk::Vector<double, 3> axis, double angle )
 
   return matrix;
 }
-

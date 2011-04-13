@@ -43,7 +43,7 @@ AmsterdamShroudImageFilter<TInputImage, TOutputImage>
   typename Superclass::InputImageConstPointer inputPtr  = this->GetInput();
   typename Superclass::OutputImagePointer     outputPtr = this->GetOutput();
 
-    if ( !outputPtr || !inputPtr)
+  if ( !outputPtr || !inputPtr)
     {
     return;
     }

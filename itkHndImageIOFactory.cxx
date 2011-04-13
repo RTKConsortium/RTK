@@ -9,5 +9,5 @@ itk::HndImageIOFactory::HndImageIOFactory()
                          "HndImageIO",
                          "Hnd Image IO",
                          1,
-                         itk::CreateObjectFunction<HndImageIO>::New());
+                         itk::CreateObjectFunction<HndImageIO>::New() );
 }
