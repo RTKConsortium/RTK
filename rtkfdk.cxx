@@ -91,14 +91,13 @@ int main(int argc, char * argv[])
   PSSFType::Pointer pssf = PSSFType::New();
   pssf->SetInput( ddf->GetOutput() );
   pssf->SetGeometry( geometryReader->GetOutputObject() );
-  pssf->SetNumberOfThreads(1);
   pssf->InPlaceOff();
 
   // Weight projections according to fdk algorithm
   typedef itk::FDKWeightProjectionFilter< OutputImageType > WeightFilterType;
   WeightFilterType::Pointer weightFilter = WeightFilterType::New();
   weightFilter->SetInput( pssf->GetOutput() );
-  weightFilter->SetSourceToDetectorDistance( geometryReader->GetOutputObject()->GetSourceToDetectorDistance() );
+  weightFilter->SetGeometry( geometryReader->GetOutputObject() );
   weightFilter->SetInPlace(false); //SR: there seems to be a bug in ITK:
                                    // incompatibility between InPlace and
                                    // streaming?

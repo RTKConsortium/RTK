@@ -2,7 +2,6 @@
 #define __itkFDKBackProjectionImageFilter_h
 
 #include "itkBackProjectionImageFilter.h"
-#include "itkThreeDCircularProjectionGeometry.h"
 
 namespace itk
 {
@@ -13,15 +12,12 @@ class ITK_EXPORT FDKBackProjectionImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef FDKBackProjectionImageFilter                 Self;
-  typedef ImageToImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef SmartPointer<Self>                           Pointer;
-  typedef SmartPointer<const Self>                     ConstPointer;
+  typedef FDKBackProjectionImageFilter                        Self;
+  typedef BackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef SmartPointer<Self>                                  Pointer;
+  typedef SmartPointer<const Self>                            ConstPointer;
 
-  typedef ThreeDCircularProjectionGeometry                                           GeometryType;
-  typedef GeometryType::Pointer                                                      GeometryPointer;
-  typedef GeometryType::MatrixType                                                   ProjectionMatrixType;
-  typedef typename TOutputImage::RegionType                                          OutputImageRegionType;
+  typedef typename Superclass::ProjectionMatrixType                                  ProjectionMatrixType;                                                                                                      typedef typename TOutputImage::RegionType                                          OutputImageRegionType;
   typedef itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension-1> ProjectionImageType;
   typedef typename ProjectionImageType::Pointer                                      ProjectionImagePointer;
 
@@ -30,11 +26,6 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(FDKBackProjectionImageFilter, ImageToImageFilter);
-
-  /** Get vector of angular weights */
-  std::vector<double> &GetAngularWeights() {
-    return this->m_AngularWeights;
-  }
 
 protected:
   FDKBackProjectionImageFilter() {};
@@ -57,9 +48,6 @@ protected:
 private:
   FDKBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);               //purposely not implemented
-
-  /** Angular weights for each projection */
-  std::vector<double> m_AngularWeights;
 };
 
 } // end namespace itk

@@ -14,7 +14,6 @@ void
 FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  m_AngularWeights = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() )->GetAngularGaps();
   this->SetTranspose(true);
 }
 
@@ -32,12 +31,6 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   // Create interpolator, could be any interpolation
   typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
-
-  // Ramp factor is the correction for ramp filter which did not account for the
-  // divergence of the beam
-  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() );
-  double                rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
-  rampFactor *= 0.5; // Factor 1/2 in eq 176, page 106, Kak & Slaney
 
   // Iterators on volume input and output
   typedef ImageRegionConstIterator<TInputImage> InputRegionIterator;
@@ -71,13 +64,13 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   for(unsigned int iProj=0; iProj<nProj; iProj++)
     {
     // Extract the current slice
-    ProjectionImagePointer projection = this->GetProjection(iProj, m_AngularWeights[iProj] * rampFactor);
+    ProjectionImagePointer projection = this->GetProjection(iProj);
     interpolator->SetInputImage(projection);
 
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)
     ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
-    double               perspFactor = matrix[Dimension-1][Dimension];
+    double perspFactor = matrix[Dimension-1][Dimension];
     for(unsigned int j=0; j<Dimension; j++)
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
     matrix /= perspFactor;

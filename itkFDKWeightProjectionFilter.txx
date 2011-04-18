@@ -53,10 +53,14 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   m_WeightsImage->SetRegions( region );
   m_WeightsImage->Allocate();
 
+  // Correction factor for ramp filter
+  double rampFactor = m_Geometry->GetSourceToDetectorDistance() / m_Geometry->GetSourceToIsocenterDistance();
+  rampFactor *= 0.5; // Factor 1/2 in eq 176, page 106, Kak & Slaney
+
   // Compute weights
   typedef ImageRegionIteratorWithIndex<WeightImageType> RegionIterator;
   RegionIterator it(m_WeightsImage, m_WeightsImage->GetLargestPossibleRegion() );
-  double         sdd2 = this->m_SourceToDetectorDistance * this->m_SourceToDetectorDistance;
+  double sdd2 = pow( m_Geometry->GetSourceToDetectorDistance(), 2);
   typename WeightImageType::PointType point;
   while(!it.IsAtEnd() )
     {
@@ -64,9 +68,12 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
     double sourceToPointDistance = sdd2;
     for(unsigned int i=0; i<WeightImageType::ImageDimension; i++)
       sourceToPointDistance += point[i] * point[i];
-    it.Set( this->m_SourceToDetectorDistance / sqrt( sourceToPointDistance ) );
+    it.Set( rampFactor * m_Geometry->GetSourceToDetectorDistance() / sqrt( sourceToPointDistance ) );
     ++it;
     }
+
+  // Get angular weights from geometry
+  m_AngularWeights = this->GetGeometry()->GetAngularGaps();
 }
 
 template <class TInputImage, class TOutputImage>
@@ -75,7 +82,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId)
 {
   // Prepare iterators
-  typedef ImageRegionConstIterator<InputImageType> InputConstIterator;
+  typedef ImageRegionConstIteratorWithIndex<InputImageType> InputConstIterator;
   InputConstIterator itI(this->GetInput(), outputRegionForThread);
 
   typedef ImageRegionConstIterator<WeightImageType> WeightRegionConstIterator;
@@ -98,7 +105,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
     itW.GoToBegin();
     while(!itW.IsAtEnd() )
       {
-      itO.Set(itI.Get() * itW.Get() );
+      itO.Set(itI.Get() * itW.Get() * m_AngularWeights[ itI.GetIndex()[2] ] );
       ++itI;
       ++itW;
       ++itO;

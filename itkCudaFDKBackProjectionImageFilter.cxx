@@ -14,7 +14,6 @@ CudaFDKBackProjectionImageFilter
 ::GenerateData()
 {
   this->AllocateOutputs();
-  std::vector<double> angWeights = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() )->GetAngularGaps();
 
   OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
 
@@ -29,8 +28,6 @@ CudaFDKBackProjectionImageFilter
   // Ramp factor is the correction for ramp filter which did not account for the
   // divergence of the beam
   const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() );
-  double                rampFactor = geometry->GetSourceToDetectorDistance() / geometry->GetSourceToIsocenterDistance();
-  rampFactor *= 0.5; // Factor 1/2 in eq 176, page 106, Kak & Slaney
 
   // Rotation center (assumed to be at 0 yet)
   ImageType::PointType rotCenterPoint;
@@ -74,7 +71,7 @@ CudaFDKBackProjectionImageFilter
   for(unsigned int iProj=0; iProj<nProj; iProj++)
     {
     // Extract the current slice
-    ProjectionImagePointer projection = this->GetProjection(iProj, angWeights[iProj] * rampFactor);
+    ProjectionImagePointer projection = this->GetProjection(iProj);
 
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)

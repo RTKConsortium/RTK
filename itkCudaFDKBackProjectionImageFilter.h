@@ -18,9 +18,6 @@ public:
   typedef SmartPointer<Self>                                 Pointer;
   typedef SmartPointer<const Self>                           ConstPointer;
 
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::Pointer            GeometryPointer;
-  typedef GeometryType::MatrixType         ProjectionMatrixType;
   typedef ImageType::RegionType            OutputImageRegionType;
   typedef itk::Image<float, 2>             ProjectionImageType;
   typedef ProjectionImageType::Pointer     ProjectionImagePointer;
