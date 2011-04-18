@@ -106,7 +106,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 typename BackProjectionImageFilter<TInputImage,TOutputImage>::ProjectionImagePointer
 BackProjectionImageFilter<TInputImage,TOutputImage>
-::GetProjection(const unsigned int iProj, const InputPixelType multConst)
+::GetProjection(const unsigned int iProj)
 {
 
   typename Superclass::InputImagePointer stack = const_cast< TInputImage * >( this->GetInput(1) );
@@ -163,11 +163,11 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     {
     for(unsigned int j=0; j<region.GetSize(0); j++, po-=npixels-1)
       for(unsigned int i=0; i<region.GetSize(1); i++, po+=region.GetSize(0) )
-        *po = multConst * (*pi++);
+        *po = *pi++;
     }
   else
     for(unsigned int i=0; i<npixels; i++)
-      *po++ = multConst * (*pi++);
+      *po++ = *pi++;
 
   if(this->GetUpdateProjectionPerProjection() )
     m_ProjectionStackLock->Unlock();

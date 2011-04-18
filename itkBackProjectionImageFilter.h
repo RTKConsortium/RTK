@@ -62,7 +62,7 @@ protected:
   /** The input is a stack of projections, we need to interpolate in one projection
       for efficiency during interpolation. Use of itk::ExtractImageFilter is
       not threadsafe in ThreadedGenerateData, this one is. The output can be multiplied by a constant. */
-  ProjectionImagePointer GetProjection(const unsigned int iProj, const InputPixelType multConst=1);
+  ProjectionImagePointer GetProjection(const unsigned int iProj);
 
   /** Creates the #iProj index to index projection matrix with current inputs
       instead of the physical point to physical point projection matrix provided by Geometry */
