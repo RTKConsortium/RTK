@@ -15,10 +15,10 @@
 #  include "itkCudaFDKBackProjectionImageFilter.h"
 #endif
 
-#include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkTimeProbe.h>
 #include <itkStreamingImageFilter.h>
+#include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])
 {
@@ -213,13 +213,18 @@ int main(int argc, char * argv[])
       std::cout << "It took " << bpProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
+  // Streaming depending on streaming capability of writer
+  StreamerType::Pointer streamerBP = StreamerType::New();
+  itk::ImageIOBase::Pointer imageIOBase;
+  streamerBP->SetInput( bpFilter->GetOutput() );
+  streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
+
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( bpFilter->GetOutput() );
-  writer->SetNumberOfStreamDivisions( args_info.divisions_arg );
-
+  writer->SetInput( streamerBP->GetOutput() );
+  
   if(args_info.verbose_flag)
     std::cout << "Writing... " << std::flush;
   itk::TimeProbe writerProbe;
