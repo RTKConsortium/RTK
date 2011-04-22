@@ -2,6 +2,7 @@
 #define __itkParkerShortScanImageFilter_txx
 
 #include <itkImageRegionIteratorWithIndex.h>
+#include <itkMacro.h>
 
 namespace itk
 {
@@ -59,10 +60,20 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
   const std::vector<double> rotationAngles = m_Geometry->GetRotationAngles();
-  const double              invsdd = 1/m_Geometry->GetSourceToDetectorDistance();
-  const double              detectorWidth = this->GetInput()->GetSpacing()[0] *
-    this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
-  const double delta = atan( 0.5 * detectorWidth * invsdd );
+  const double invsdd = 1/m_Geometry->GetSourceToDetectorDistance();
+  const double detectorWidth = this->GetInput()->GetSpacing()[0] *
+                               this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
+
+  // Compute delta angle where there is weighting required
+  const double firstAngle = rotationAngles[(maxAngularGapPos+2) % rotationAngles.size()];
+  const double lastAngle = rotationAngles[(maxAngularGapPos+rotationAngles.size()-1) % rotationAngles.size()];
+  double delta = 0.5 * (lastAngle - firstAngle - 180);
+  delta = delta-360*floor(delta/360); // between -360 and 360
+  if(delta<0) delta += 360;           // between 0    and 360
+  delta *= Math::pi / 180;            // degreees to radians
+
+  if( delta < atan(0.5 * detectorWidth * invsdd) )
+    itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)");
 
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
@@ -74,7 +85,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     // Parker's article assumes that the scan starts at 0, convert projection
     // angle accordingly
     double beta = rotationAngles[ itIn.GetIndex()[2] ];
-    beta = beta - rotationAngles[ (maxAngularGapPos+2) % rotationAngles.size() ];
+    beta = beta - firstAngle;
     if (beta<0)
       beta += 360;
     beta *= Math::pi / 180;
