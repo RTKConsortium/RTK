@@ -6,7 +6,9 @@
 #include <itkMultiplyByConstantImageFilter.h>
 #include <itkThresholdImageFilter.h>
 #include <itkSumProjectionImageFilter.h>
+#include <itkConvolutionImageFilter.h>
 #include <itkSubtractImageFilter.h>
+#include <itkPermuteAxesImageFilter.h>
 
 /** \class AmsterdamShroudImageFilter
  * \brief TODO
@@ -26,24 +28,9 @@ class ITK_EXPORT AmsterdamShroudImageFilter :
 public:
   /** Standard class typedefs. */
   typedef AmsterdamShroudImageFilter Self;
-
   typedef ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-
   typedef SmartPointer<Self>       Pointer;
   typedef SmartPointer<const Self> ConstPointer;
-
-  /** Some convenient typedefs. */
-  typedef TInputImage                            InputImageType;
-  typedef TOutputImage                           OutputImageType;
-  typedef typename InputImageType::Pointer       InputImagePointer;
-  typedef typename InputImageType::ConstPointer  InputImageConstPointer;
-  typedef typename InputImageType::PixelType     InputImagePixelType;
-  typedef typename OutputImageType::Pointer      OutputImagePointer;
-  typedef typename OutputImageType::ConstPointer OutputImageConstPointer;
-  typedef typename OutputImageType::PixelType    OutputImagePixelType;
-  typedef typename InputImageType::RegionType    RegionType;
-  typedef typename InputImageType::IndexType     IndexType;
-  typedef typename InputImageType::SizeType      SizeType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -63,7 +50,6 @@ protected:
   ~AmsterdamShroudImageFilter(){}
 
   void GenerateOutputInformation();
-
   void GenerateInputRequestedRegion();
 
   /** Single-threaded version of GenerateData.  This filter delegates
@@ -78,15 +64,17 @@ private:
   typedef MultiplyByConstantImageFilter< TInputImage, double, TInputImage > NegativeType;
   typedef ThresholdImageFilter< TInputImage >                               ThresholdType;
   typedef SumProjectionImageFilter< TInputImage, TOutputImage >             SumType;
-  typedef RecursiveGaussianImageFilter< TOutputImage, TOutputImage >        SmoothType;
+  typedef ConvolutionImageFilter< TOutputImage, TOutputImage >              ConvolutionType;
   typedef SubtractImageFilter< TOutputImage, TOutputImage >                 SubtractType;
+  typedef PermuteAxesImageFilter< TOutputImage >                            PermuteType;
 
   typename DerivativeType::Pointer m_DerivativeFilter;
   typename NegativeType::Pointer m_NegativeFilter;
   typename ThresholdType::Pointer m_ThresholdFilter;
   typename SumType::Pointer m_SumFilter;
-  typename SmoothType::Pointer m_SmoothFilter;
+  typename ConvolutionType::Pointer m_ConvolutionFilter;
   typename SubtractType::Pointer m_SubtractFilter;
+  typename PermuteType::Pointer m_PermuteFilter;
 }; // end of class
 
 } // end namespace itk
