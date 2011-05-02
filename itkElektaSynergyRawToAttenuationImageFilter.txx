@@ -55,7 +55,6 @@ void
 ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::GenerateData()
 {
-  this->AllocateOutputs();
   m_LutFilter->SetInput(this->GetInput() );
   m_CropFilter->Update();
   this->GraftOutput( m_CropFilter->GetOutput() );
