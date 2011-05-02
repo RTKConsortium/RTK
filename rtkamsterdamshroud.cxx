@@ -28,7 +28,7 @@ int main(int argc, char * argv[])
   typedef itk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
-
+  
   // Amsterdam shroud
   typedef itk::AmsterdamShroudImageFilter<OutputImageType> shroudFilterType;
   shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
@@ -40,6 +40,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( shroudFilter->GetOutput() );
+  writer->SetNumberOfStreamDivisions(names->GetFileNames().size());
 
   try {
     writer->Update();
