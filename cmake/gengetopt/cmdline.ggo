@@ -1,0 +1,147 @@
+# Copyright (C) 1999-2010  Free Software Foundation, Inc.
+#
+# This file is part of GNU gengetopt
+#
+# GNU gengetopt is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# GNU gengetopt is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with gengetopt; see the file COPYING. If not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+
+# Specification file format:
+#
+# This file consist in lines of sentences with the following format:
+#
+#         package <packname>
+#         version <version>
+#         purpose <string>
+#         option <long> <short> <desc> <argtype> <required>
+#         option <long> <short> <desc> flag      <onoff>
+#         option <long> <short> <desc> <required>
+#         ... # ...
+#
+# Where:
+#
+# <packname> = Double quoted string.
+# <version>  = Double quoted string.
+# <purpose>  = What the program does
+#              Double quoted string (even on more than one line)
+# <long>     = Double quoted string with upper and lower case chars, digits,
+#              '-' and '.'.  No spaces allowed.
+# <short>    = A single upper or lower case char, or a digit.
+# <desc>     = String with upper and lower case chars, digits, '-', '.' and
+#              spaces.
+# <argtype>  = string, int, short, long, float, double, longdouble or longlong.
+# <required> = required or optional.
+# <onoff>    = on or off.
+# Comments begins with '#' in any place of the line and ends in the
+# end of line.
+# The third form of option is used if the option does not take an argument;
+# it must not be required.
+
+
+# Name of our program
+#package "gengetopt"       # we don't use it: we're using automake
+# Version of our program
+#version "1.0.1"           # we don't use it: we're using automake
+
+purpose "This program generates a C function that uses getopt_long function
+to parse the command line options, validate them and fill a struct."
+
+# options that will be added to command line options of gengetopt
+args "--no-handle-version --no-handle-help --no-handle-error --string-parser"
+
+# Options
+
+section "Main options"
+
+text ""
+
+option  "input"         i "input file (default std input)"  string typestr="filename"     optional
+option  "func-name"     f "name of generated function" string typestr="name"  default="cmdline_parser"   optional
+option  "arg-struct-name" a "name of generated args info struct" string typestr="name"  default="gengetopt_args_info"   optional
+option  "file-name"     F "name of generated file"  string typestr="name"  default="cmdline"     optional
+option  "output-dir"     - "output directory"  string typestr="path"  optional
+	details="\nif this option is not specified, the \
+files are generated in the current directory.\n"
+option  "header-output-dir"     - "header output directory"  string typestr="path" optional
+option  "src-output-dir"     - "source output directory"  string typestr="path" optional
+option  "c-extension"   c "extension of c file" string typestr="ext" default="c" optional
+option  "header-extension"   H "extension of header file" string typestr="ext" default="h" optional
+option  "long-help"     l "long usage line in help" optional
+	details="\nThe usage line will print all the options, e.g.,
+
+sample1 -iINT|--int-opt=INT [-h|--help]\n"
+option  "default-optional"     - "by default, an option is considered optional if not specified otherwise" optional
+option  "unamed-opts"   u "accept options without names (e.g., file names)" string default="FILES" optional argoptional
+
+text "\nThe parser generated is thought to be used to parse the command line arguments. "
+text "However, you can also generate parsers for configuration files, or strings "
+text "that contain the arguments to parse, by using the following two options.\n"
+
+option  "conf-parser" C "generate a config file parser" optional
+option  "string-parser" S "generate a string parser (the string contains the command line)" optional
+
+text ""
+
+section "Additional options"
+
+option  "include-getopt" G "adds the code for getopt_long in the generated C file" optional
+
+option  "no-handle-help"   n "do not handle --help|-h automatically" optional
+	details="\nIf --no-handle-help is specified, the command line option \
+--help|-h will not be handled automatically, so the programmer will be able \
+to print some \
+other information; then the function for printing the standard help \
+output can be used; this function is called \
+<parser-name>_print_help.\n\nNotice \
+that, although the programmer can handle --help|-h manually, the \
+parser will return after finding such option: the other command \
+line options, if any, will be ignored.  In case you want to have full \
+control on --help|-h, you should use --ho-help.\n"
+	
+option  "no-help"   - "do not add --help|-h automatically" optional
+	details="\nWith this option you can disable the \
+automatic addition of options --help|-h. The programmer \ 
+will then be able to add this option in \
+the input file and handle it as he sees fit.  Notice that \
+--no-help will also disable the automatic options \
+--detailed-help and --full-help.
+
+The programmer can still \
+define options with short character h as he wants, \
+but he cannot define options help, unless he \
+specifies --no-help \
+(otherwise an error will be printed).\n"
+
+option  "no-handle-version"  N  "do not handle --version|-V automatically" optional
+option  "no-version"  -  "do not add --version|-V automatically" optional
+	details="\nSee above the details about \
+--no-handle-help and --no-help, respectively.\n"
+
+option  "no-handle-error" e "do not exit on errors" optional
+	details="\nWith this option, if the generated parser encounters an error \
+(e.g., an unknown option) it does not make the main program exit; instead, the parser \
+function returns a value different 0, and the main program can print a help message.\n"
+
+option  "show-required"   - "in the output of help will specify which options are mandatory, \
+by using the optional passed string" string default="(mandatory)" optional argoptional
+
+option  "gen-version" g "put gengetopt version in the generated file" flag on
+option  "set-package" - "set the package name (override package defined in the .ggo file)" string optional
+option  "set-version" - "set the version number (override version defined in the .ggo file)" string optional
+option  "show-help" - "show the output of --help instead of generating code" optional
+option  "show-full-help" - "show the output of --full-help (i.e., including hidden options) instead of generating code" optional
+option  "show-detailed-help" - "show the output of --detailed-help (i.e., including details and hidden options) instead of generating code" optional
+option  "show-version" - "show the output of --version instead of generating code" optional
+
+text "\nPlease refer to the info manual for further explanations."
