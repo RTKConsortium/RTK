@@ -4,7 +4,7 @@ PROJECT(RTK)
 #=========================================================
 
 #=========================================================
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6.0)
+CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
 ## Tell CMake to be quiet
 CMAKE_POLICY (SET CMP0003 NEW)
@@ -72,11 +72,10 @@ CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
 #=========================================================
 
 #=========================================================
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"  ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(Gengetopt)
 FIND_PACKAGE(OpenMP)
-FIND_PACKAGE(CUDA_wrap)
+FIND_PACKAGE(CUDA)
 FIND_PACKAGE(OpenCL)
 #=========================================================
 
