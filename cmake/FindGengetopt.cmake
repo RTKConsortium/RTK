@@ -1,9 +1,11 @@
+
+# Attempt to find gengetopt. If not found, compile it.
 FIND_PROGRAM(GENGETOPT gengetopt)
 IF (GENGETOPT STREQUAL "GENGETOPT-NOTFOUND")
   ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/cmake/gengetopt)
-  GET_TARGET_PROPERTY(GENGETOPT gengetopt OUTPUT_NAME)
 ELSE(GENGETOPT STREQUAL "GENGETOPT-NOTFOUND")
-  ADD_CUSTOM_TARGET(gengetopt DEPENDS ${GENGETOPT})
+  ADD_EXECUTABLE(gengetopt IMPORTED)
+  SET_PROPERTY(TARGET gengetopt PROPERTY IMPORTED_LOCATION ${GENGETOPT})
 ENDIF(GENGETOPT STREQUAL "GENGETOPT-NOTFOUND")
 
 MACRO (WRAP_GGO GGO_SRCS)
@@ -14,7 +16,7 @@ MACRO (WRAP_GGO GGO_SRCS)
     SET(GGO_C ${GGO_BASEFILENAME}_ggo.c)
     SET(GGO_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${GGO_H} ${CMAKE_CURRENT_BINARY_DIR}/${GGO_C})
     ADD_CUSTOM_COMMAND(OUTPUT ${GGO_OUTPUT}
-                       COMMAND ${GENGETOPT}
+                       COMMAND gengetopt
                        ARGS < ${GGO_FILE_ABS}
                               --output-dir=${CMAKE_CURRENT_BINARY_DIR}
                               --arg-struct-name=args_info_${GGO_BASEFILENAME}
@@ -23,7 +25,7 @@ MACRO (WRAP_GGO GGO_SRCS)
                               --unamed-opts
                               --conf-parser
                               --include-getopt
-                       DEPENDS ${GGO_FILE} ${GENGETOPT}
+                       DEPENDS ${GGO_FILE_ABS}
                       )
     SET(${GGO_SRCS} ${${GGO_SRCS}} ${GGO_OUTPUT})
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
