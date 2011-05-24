@@ -124,3 +124,45 @@ distribute or use the Software.
    intellectual property owned by MGH or any Contributor except those
    rights expressly granted hereunder.
 
+------------------------------------------------------------------------
+gengetopt code has been taken from git://git.sv.gnu.org/gengetopt.git 
+tag rel_2_22_4
+
+
+gengetopt - generate a C function that uses getopt_long
+to parse command line arguments
+
+Copyright (C) 1999, 2011-2007, Free Software Foundation, Inc.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+Use of gengetopt does not impose any particular license on the
+generated code.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The included file 'COPYING' is a copy of the GNU General Public License.
+
+------------------------------------------------------------------------
+include_cygwin contains headers taken from http://cygwin.com/
+
+Cygwin™ is free software. Red Hat, Inc. licenses Cygwin to you under the 
+terms of the GNU General Public License as published by the Free Software 
+Foundation; you can redistribute it and/or modify it under the terms of the 
+GNU General Public License either version 3 of the license, or (at your 
+option) any later version (GPLv3+), along with the additional permissions 
+given below.
+
+There is NO WARRANTY for this software, express or implied, including the 
+implied warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with 
+this program. If not, see <http://gnu.org/licenses/>.
+
