@@ -1,0 +1,149 @@
+\documentclass{article}
+\usepackage[textwidth=16cm,textheight=24.7cm,top=2.5cm,headheight=15pt]{geometry}
+
+\usepackage{color}
+
+\newcommand{\question}[1]{\textcolor{red}{--- #1 ---}}
+
+\newcommand{\biec}{\begin{quote}\begin{small}}
+\newcommand{\eiec}{\end{small}\end{quote}}
+
+\usepackage{amsmath}
+\usepackage{bm}
+\newcommand{\degree}{\ensuremath{^\circ}}
+
+\begin{document}
+
+\title{RTK geometry}
+\author{Simon Rit}
+
+\maketitle
+
+\section{Units}
+
+\begin{itemize}
+ \item Degrees are used to store angles in the geometry objects.
+ \item No unit is enforced for distances but it is the responsibility of the user to have a consistent unit for all distances (pixel and voxel spacings, geometry parameters...). Millimeters are typically used in ITK and DICOM. Voxel coordinates are not used in RTK except for internal computation.
+\end{itemize}
+
+\section{Fixed coordinate system}
+
+The fixed coordinate system $(x,y,z)$ in RTK is the coordinate system of the reconstructed tomography with the origin/isocenter at $(0,0,0)$. It is not necessarily the origin of the reconstructed tomography since \verb+itk::Image.m_Origin+ is accounted for. It is not necessarily the directions of the voxels grid since \verb+itk::Image.m_Direction+ is also accounted for.
+
+\section{ProjectionGeometry$<$TDimension$>$}
+
+This is the mother class for relating a TDimension-D tomography to a (TDimension-1)-D projection image. It holds a vector of (TDimension)x(TDimension+1) projection matrices accessible via \verb+GetMatrices+. The construction of those matrices is geometry dependent.
+
+\section{ThreeDCircularProjectionGeometry}
+
+This class is meant to define a circular rotation of a 2D flat panel around a 3D tomography although the trajectory does not have to be strictly circular. The geometry is based on the international standard IEC 61217 because it has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
+
+\subsection{Detector orientation}
+
+\paragraph{Initial detector orientation}
+
+With all parameters set to 0, the detector is normal to the z direction of the fixed coordinate system, similarly to the x-ray image receptor in the IEC 61217.
+
+\paragraph{Rotation order} Three rotation angles are used to define the orientation of the detector. The ZXY convention of Euler angles is used for detector orientation where GantryAngle is the rotation around y, OutOfPlaneAngle the rotation around x and InPlaneAngle the rotation around z. These three angles are detailed in the following.
+
+\paragraph{GantryAngle}
+
+Gantry angle of the scanner. It corresponds to $\phi g$ in Section 2.3 of IEC 61217:
+
+\biec
+The rotation of the "g" system is defined by the rotation of coordinate axes Xg, Zg by an angle $\phi g$ about axis Yg (therefore about Yf of the "f" system).
+
+An increase in the value of $\phi g$ corresponds to a clockwise rotation of the GANTRY as viewed along the horizontal axis Yf from the ISOCENTRE towards the GANTRY.
+\eiec
+
+\paragraph{OutOfPlaneAngle}
+
+Out of plane rotation of the flat panel complementary to the GantryAngle rotation, i.e. with a rotation axis perpendicular to the gantry rotation axis and parallel to the flat panel. It is optional with a default value equals to 0. There is no corresponding rotation in IEC 61217. After gantry rotation, the rotation is defined by the rotation of the coordinate axes y and z about x. An increase in the value of OutOfPlaneAngle corresponds to a counter-clockwise rotation of the flat panel as viewed from a positive value along the x axis.
+
+\question{TODO: not implemented, must replace rotationaxis/rotationcenter}
+
+\paragraph{InPlaneAngle} 
+
+In plane rotation of the 2D projection. It is optional with a default value equal to 0. If OutOfPlaneAngle equals 0, it corresponds to $\theta r$ in Section 2.6 of IEC 61217:
+
+
+\biec
+The rotation of the "r" system is defined by the rotation of the coordinate axes Xr, Yr about Zr (parallel to axis Zg) by an angle $\theta r$.
+
+An increase in the value of angle $\theta r$ corresponds to a counter-clockwise rotation of the X- RAY IMAGE RECEPTOR as viewed from the RADIATION SOURCE.
+\eiec
+
+\question{TODO: not implemented, must replace rotationaxis/rotationcenter}
+
+\paragraph{Rotation matrix}
+
+The rotation matrix in homogeneous coordinate is then (constructed with\\ \verb+itk::Euler3DTransform<double>::ComputeMatrix()+):
+
+$$
+\begin{array}{lcll}
+  M_R & = & & %
+  \begin{pmatrix}
+    \cos(InPlaneAngle) & -\sin(InPlaneAngle) & 0 & 0\\
+    \sin(InPlaneAngle) & \cos(InPlaneAngle) & 0 & 0\\
+    0 & 0 & 1 & 0\\
+    0 & 0 & 0 & 1
+  \end{pmatrix} \\
+  \\ & & \times & %
+  \begin{pmatrix}
+    1 & 0 & 0 & 0\\
+    0 & \cos(OutOfPlaneAngle) & -\sin(OutOfPlaneAngle) & 0\\
+    0 & \sin(OutOfPlaneAngle) & \cos(OutOfPlaneAngle) & 0\\
+    0 & 0 & 0 & 1 
+  \end{pmatrix} \\
+  \\ & & \times & %
+  \begin{pmatrix}
+    \cos(GantryAngle) & 0 & \sin(GantryAngle) & 0 \\
+    0 & 1 & 0 & 0 \\
+    -\sin(GantryAngle) & 0 & \cos(GantryAngle) & 0 \\
+    0 & 0 & 0 & 1
+  \end{pmatrix}
+\end{array}
+$$
+
+\subsection{Detector position}
+
+The detector position is defined with respect to the isocenter with three parameters: ProjectionOffsetX, ProjectionOffsetY and IsocenterToDetectorDistance where X and Y refers to the coordinate system of the detector and IsocenterToDetectorDistance is self explanatory. ProjectionOffsetX and ProjectionOffsetY are optional and zero by default.
+
+\question{TODO: replace SourceToIsocenterDistance with IsocenterToDetectorDistance, implement one value per projection}
+
+\subsection{Source position}
+
+The source position is defined with respect to the detector with three parameters: SourceOffsetX, SourceOffsetY and SourceToDetectorDistance where X and Y refers to the coordinate system of the detector and SourceToDetectorDistance is self explanatory. SourceOffsetX and SourceOffsetY are optional and zero by default.
+
+\question{TODO: SourceOffsetX and SourceOffsetY have not been implemented yet}
+
+%\subsection{Parallel geometry}
+%
+%If SourceToDetectorDistance or SourceToIsocenterDistance is set to 0, then a parallel geometry is assumed. The projection matrix is then:
+$$
+\begin{array}{lcll}
+  M_P & = & & %
+  \begin{pmatrix}
+    1 & 0 & ProjectionOffsetX-SourceOffsetX  \\
+    0 & 1 & ProjectionOffsetY-SourceOffsetY  \\
+    0 & 0 & 1
+  \end{pmatrix} %
+  \\ \\ & & \times & %
+  \begin{pmatrix}
+    SDD & 0 & 0 & 0  \\
+    0 & SDD & 0 & 0  \\
+    0 & 0 & 1 & SDD-IDD
+  \end{pmatrix} %
+  \\ \\ & & \times & %
+  \begin{pmatrix}
+    1 & 0 & 0 & SourceOffsetX  \\
+    0 & 1 & 0 & SourceOffsetY  \\
+    0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 1
+  \end{pmatrix} %
+  \\ \\ & & \times & %
+  M_R
+\end{array}
+$$
+
+\end{document}
