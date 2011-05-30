@@ -46,7 +46,6 @@ public:
   }
 
 protected:
-
   ProjectionGeometry(){};
   virtual ~ProjectionGeometry(){};
 
@@ -62,7 +61,6 @@ private:
   ProjectionGeometry(const Self&); //purposely not implemented
   void operator=(const Self&);     //purposely not implemented
 
-private:
   /** Projection matrices */
   std::vector<MatrixType> m_Matrices;
 };
