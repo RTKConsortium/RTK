@@ -7,7 +7,7 @@ option "geometry"  g  "XML geometry file name"                                  
 option "path"      p  "Path containing projections"                              string              yes
 option "regexp"    r  "Regular expression to select projection files in path"    string              yes
 option "output"    o "Output file name"                                          string              yes
-option "hardware"  h "Hardware used for computation"                             values="cpu","cuda" no   default="cpu"
+option "hardware"  - "Hardware used for computation"                             values="cpu","cuda" no   default="cpu"
 option "lowmem"    l "Load only one projection per thread in memory"             flag                off
 option "divisions" d "Number of stream divisions to cope with large CTs"         int                 no   default="1"
 
