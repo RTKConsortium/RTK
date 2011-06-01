@@ -22,13 +22,13 @@
 \section{Units}
 
 \begin{itemize}
- \item Degrees are used to store angles in the geometry objects.
+ \item Degrees are used to store angles in the geometry objects. Angles are wrapped between 0\degree and 360\degree.
  \item No unit is enforced for distances but it is the responsibility of the user to have a consistent unit for all distances (pixel and voxel spacings, geometry parameters...). Millimeters are typically used in ITK and DICOM. Voxel coordinates are not used in RTK except for internal computation.
 \end{itemize}
 
 \section{Fixed coordinate system}
 
-The fixed coordinate system $(x,y,z)$ in RTK is the coordinate system of the reconstructed tomography with the origin/isocenter at $(0,0,0)$. It is not necessarily the origin of the reconstructed tomography since \verb+itk::Image.m_Origin+ is accounted for. It is not necessarily the directions of the voxels grid since \verb+itk::Image.m_Direction+ is also accounted for.
+The fixed coordinate system $(x,y,z)$ in RTK is the coordinate system of the reconstructed tomography with the origin/isocenter at $(0,0,0)$. It is not necessarily the origin of the reconstructed tomography, because \verb+itk::Image.m_Origin+ is accounted for, nor the directions of the voxels grid, because \verb+itk::Image.m_Direction+ is also accounted for.
 
 \section{ProjectionGeometry$<$TDimension$>$}
 
@@ -36,7 +36,9 @@ This is the mother class for relating a TDimension-D tomography to a (TDimension
 
 \section{ThreeDCircularProjectionGeometry}
 
-This class is meant to define a circular rotation of a 2D flat panel around a 3D tomography although the trajectory does not have to be strictly circular. The geometry is based on the international standard IEC 61217 because it has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
+This class is meant to define a circular rotation of a 2D flat panel around a 3D tomography although the trajectory does not have to be strictly circular. The description of the geometry is based on the international standard IEC 61217 because it has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
+
+9 parameters are used per projection to define the position of the source and the detector relatively to the fixed coordinate system. The 9 parameters are set with the method \verb+AddProjection+. Default values are provided for the parameters which are not mandatory.
 
 \subsection{Detector orientation}
 
@@ -60,8 +62,6 @@ An increase in the value of $\phi g$ corresponds to a clockwise rotation of the 
 
 Out of plane rotation of the flat panel complementary to the GantryAngle rotation, i.e. with a rotation axis perpendicular to the gantry rotation axis and parallel to the flat panel. It is optional with a default value equals to 0. There is no corresponding rotation in IEC 61217. After gantry rotation, the rotation is defined by the rotation of the coordinate axes y and z about x. An increase in the value of OutOfPlaneAngle corresponds to a counter-clockwise rotation of the flat panel as viewed from a positive value along the x axis.
 
-\question{TODO: not implemented, must replace rotationaxis/rotationcenter}
-
 \paragraph{InPlaneAngle} 
 
 In plane rotation of the 2D projection. It is optional with a default value equal to 0. If OutOfPlaneAngle equals 0, it corresponds to $\theta r$ in Section 2.6 of IEC 61217:
@@ -72,8 +72,6 @@ The rotation of the "r" system is defined by the rotation of the coordinate axes
 
 An increase in the value of angle $\theta r$ corresponds to a counter-clockwise rotation of the X- RAY IMAGE RECEPTOR as viewed from the RADIATION SOURCE.
 \eiec
-
-\question{TODO: not implemented, must replace rotationaxis/rotationcenter}
 
 \paragraph{Rotation matrix}
 
@@ -105,21 +103,18 @@ $$
 \end{array}
 $$
 
-\subsection{Detector position}
-
-The detector position is defined with respect to the isocenter with three parameters: ProjectionOffsetX, ProjectionOffsetY and IsocenterToDetectorDistance where X and Y refers to the coordinate system of the detector and IsocenterToDetectorDistance is self explanatory. ProjectionOffsetX and ProjectionOffsetY are optional and zero by default.
-
-\question{TODO: replace SourceToIsocenterDistance with IsocenterToDetectorDistance, implement one value per projection}
-
 \subsection{Source position}
 
-The source position is defined with respect to the detector with three parameters: SourceOffsetX, SourceOffsetY and SourceToDetectorDistance where X and Y refers to the coordinate system of the detector and SourceToDetectorDistance is self explanatory. SourceOffsetX and SourceOffsetY are optional and zero by default.
+The source position is defined with respect to the isocenter with three parameters: SourceOffsetX, SourceOffsetY and SourceToIsocenterDistance where X and Y refers to the coordinate system of the detector and SourceToIsocenterDistance is self explanatory (in IEC 61217, it is the RADIATION SOURCE axis distance, SAD). SourceOffsetX and SourceOffsetY are optional and zero by default.
 
-\question{TODO: SourceOffsetX and SourceOffsetY have not been implemented yet}
+\subsection{Detector position}
 
-%\subsection{Parallel geometry}
-%
-%If SourceToDetectorDistance or SourceToIsocenterDistance is set to 0, then a parallel geometry is assumed. The projection matrix is then:
+The detector position is defined with respect to the source with three parameters: ProjectionOffsetX, ProjectionOffsetY and SourceToDetectorDistance where X and Y refers to the coordinate system of the detector and SourceToDetectorDistance is self explanatory (in IEC 61217, it is the RADIATION SOURCE to IMAGE RECEPTION AREA distance, SID). ProjectionOffsetX and ProjectionOffsetY are optional and zero by default.
+
+\subsection{Final matrix}
+
+Each matrix accessible via \verb+GetMatrices+ is constructed with:
+
 $$
 \begin{array}{lcll}
   M_P & = & & %
@@ -130,9 +125,9 @@ $$
   \end{pmatrix} %
   \\ \\ & & \times & %
   \begin{pmatrix}
-    SDD & 0 & 0 & 0  \\
-    0 & SDD & 0 & 0  \\
-    0 & 0 & 1 & SDD-IDD
+    SourceToDetectorDistance & 0 & 0 & 0  \\
+    0 & SourceToDetectorDistance & 0 & 0  \\
+    0 & 0 & 1 & SourceToIsocenterDistance
   \end{pmatrix} %
   \\ \\ & & \times & %
   \begin{pmatrix}
@@ -145,5 +140,43 @@ $$
   M_R
 \end{array}
 $$
+
+\subsection{XML file}
+
+ThreeDCircularProjectionGeometry can be saved and loaded from an XML file. If the parameter is equal to the default value for all projections, it is not stored in the file. If it is equal for all projections but different from the default value, it is stored once. Otherwise, it is stored for each projection. The matrix is given for information. It is read and checked to be consistent with the parameters but a manual modification of the file must consistently modify both the parameters and the matrix. An example is given hereafter:
+
+\begin{verbatim}
+<?xml version="1.0"?>
+<!DOCTYPE RTKGEOMETRY>
+<RTKThreeDCircularGeometry>
+  <SourceToIsocenterDistance>277.805</SourceToIsocenterDistance>
+  <SourceToDetectorDistance>349.9997</SourceToDetectorDistance>
+  <SourceOffsetX>6.72917</SourceOffsetX>
+  <SourceOffsetY>19.9813</SourceOffsetY>
+  <ProjectionOffsetX>143.52</ProjectionOffsetX>
+  <ProjectionOffsetY>132.48</ProjectionOffsetY>
+  <Projection>
+    <GantryAngle>0</GantryAngle>
+    <InPlaneAngle>0</InPlaneAngle>
+    <OutOfPlaneAngle>0</OutOfPlaneAngle>
+    <Matrix>
+          1900.9529414019                   0    742.951867231048    219187.578980815
+                        0     1900.9529414019    611.014051351728    207726.269543801
+                        0                   0                   1             277.805
+    </Matrix>
+  </Projection>
+  <Projection>
+    <GantryAngle>0.0104719103641872</GantryAngle>
+    <InPlaneAngle>1.9341326876952e-07</InPlaneAngle>
+    <OutOfPlaneAngle>359.999963060894</OutOfPlaneAngle>
+    <Matrix>
+         1900.81712084862 -0.000485404810248702    743.299290686564    219187.578980815
+       -0.111668425845971    1900.95254747523    611.015266708905    207726.269543801
+      -0.000182769313811191 -6.44709015016959e-07   0.999999983297481             277.805
+    </Matrix>
+  </Projection>
+</RTKThreeDCircularGeometry>
+\end{verbatim}
+
 
 \end{document}
