@@ -59,8 +59,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   weights->Allocate();
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
-  const std::vector<double> rotationAngles = m_Geometry->GetRotationAngles();
-  const double invsdd = 1/m_Geometry->GetSourceToDetectorDistance();
+  const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
   const double detectorWidth = this->GetInput()->GetSpacing()[0] *
                                this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
 
@@ -72,11 +71,14 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   if(delta<0) delta += 360;           // between 0    and 360
   delta *= Math::pi / 180;            // degreees to radians
 
+  double invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
   if( delta < atan(0.5 * detectorWidth * invsdd) )
     itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)");
 
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
+    invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
+
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
