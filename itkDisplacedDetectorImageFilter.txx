@@ -146,15 +146,16 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
   double       theta = vnl_math_min(-1*m_InferiorCorner, m_SuperiorCorner);
-  const double invsdd = 1/m_Geometry->GetSourceToDetectorDistance();
-  const double invden = 1/(2 * vcl_atan( theta * invsdd ) );
 
   for(unsigned int k=0; k<overlapRegion.GetSize(2); k++)
     {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
+    const double invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
+    const double invden = 1/(2 * vcl_atan( theta * invsdd ) );
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
     point[0] -= m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
+
     if( m_SuperiorCorner+m_InferiorCorner > 0. )
       {
       while(!itWeights.IsAtEnd() )
