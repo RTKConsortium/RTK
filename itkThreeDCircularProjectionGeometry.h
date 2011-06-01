@@ -29,47 +29,42 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro( Self );
 
-  /** Get / Set radius for the circular trajectory of the source
-   * and the detector in physical units (e.g. mm).
-   */
-  itkSetMacro(SourceToDetectorDistance, double);
-  itkGetMacro(SourceToDetectorDistance, double);
-  itkSetMacro(SourceToIsocenterDistance, double);
-  itkGetMacro(SourceToIsocenterDistance, double);
-
-  /** Get / Set projection scaling to account for missing spacing in projections
-    information. */
-  itkSetMacro(ProjectionScalingX, double);
-  itkGetMacro(ProjectionScalingX, double);
-  itkSetMacro(ProjectionScalingY, double);
-  itkGetMacro(ProjectionScalingY, double);
-
-  /** Get / Set rotation axis, default is (0,1,0). */
-  itkSetMacro(RotationCenter, VectorType);
-  itkGetMacro(RotationCenter, VectorType);
-
-  /** Get / Set rotation axis, default is (0,1,0). */
-  itkSetMacro(RotationAxis, VectorType);
-  itkGetMacro(RotationAxis, VectorType);
-
   /** Add projection to geometry. One projection is defined with the rotation
    * angle in degrees and the in-plane translation of the detector in physical
    * units (e.g. mm). The rotation axis is assumed to be (0,1,0).
    */
-  void AddProjection(const double angle, const double offsetX, const double offsetY);
+  void AddProjection(const double sid, const double sdd, const double gantryAngle,
+                     const double projOffsetX=0., const double projOffsetY=0.,
+                     const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
+                     const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
-  /** Get the vector of rotation angles */
-  const std::vector<double> &GetRotationAngles(){
-    return this->m_RotationAngles;
+  /** Get the vector of geometry parameters (one per projection) */
+  const std::vector<double> &GetGantryAngles() {
+    return this->m_GantryAngles;
   }
-
-  /** Get the vector of projection offsets */
-  const std::vector<double> &GetProjectionOffsetsX(){
-    return this->m_ProjOffsetsX;
+  const std::vector<double> &GetOutOfPlaneAngles() {
+    return this->m_OutOfPlaneAngles;
   }
-
-  const std::vector<double> &GetProjectionOffsetsY(){
-    return this->m_ProjOffsetsY;
+  const std::vector<double> &GetInPlaneAngles() {
+    return this->m_InPlaneAngles;
+  }
+  const std::vector<double> &GetSourceToIsocenterDistances() {
+    return this->m_SourceToIsocenterDistances;
+  }
+  const std::vector<double> &GetSourceOffsetsX() {
+    return this->m_SourceOffsetsX;
+  }
+  const std::vector<double> &GetSourceOffsetsY() {
+    return this->m_SourceOffsetsY;
+  }
+  const std::vector<double> &GetSourceToDetectorDistances() {
+    return this->m_SourceToDetectorDistances;
+  }
+  const std::vector<double> &GetProjectionOffsetsX() {
+    return this->m_ProjectionOffsetsX;
+  }
+  const std::vector<double> &GetProjectionOffsetsY() {
+    return this->m_ProjectionOffsetsY;
   }
 
   /** Get for each projection the angular gaps with next projection. */
@@ -80,27 +75,26 @@ public:
   const std::vector<double> GetAngularGaps();
 
 protected:
-  ThreeDCircularProjectionGeometry();
-  virtual ~ThreeDCircularProjectionGeometry(){};
+  ThreeDCircularProjectionGeometry() {};
+  virtual ~ThreeDCircularProjectionGeometry() {};
+
+  double ConvertAngleBetween0And360Degrees(const double a);
+
+  /** Circular geometry parameters per projection (angles in degrees between 0
+    and 360). */
+  std::vector<double> m_GantryAngles;
+  std::vector<double> m_OutOfPlaneAngles;
+  std::vector<double> m_InPlaneAngles;
+  std::vector<double> m_SourceToIsocenterDistances;
+  std::vector<double> m_SourceOffsetsX;
+  std::vector<double> m_SourceOffsetsY;
+  std::vector<double> m_SourceToDetectorDistances;
+  std::vector<double> m_ProjectionOffsetsX;
+  std::vector<double> m_ProjectionOffsetsY;
 
 private:
   ThreeDCircularProjectionGeometry(const Self&); //purposely not implemented
   void operator=(const Self&);                   //purposely not implemented
-
-private:
-  /** Circular geometry global parameters */
-  double     m_SourceToDetectorDistance;
-  double     m_SourceToIsocenterDistance;
-  double     m_ProjectionScalingX;
-  double     m_ProjectionScalingY;
-  VectorType m_RotationCenter;
-  VectorType m_RotationAxis;
-
-  /** Circular geometry parameters per projection (angles in degrees between 0
-    and 360). */
-  std::vector<double> m_RotationAngles;
-  std::vector<double> m_ProjOffsetsX;
-  std::vector<double> m_ProjOffsetsY;
 };
 }
 

@@ -37,11 +37,8 @@ public:
   int CanReadFile(const char* name);
 
 protected:
-  ThreeDCircularProjectionGeometryXMLFileReader() :  m_Geometry(GeometryType::New() ) {
-    this->m_OutputObject = &(*m_Geometry);
-  };
-  ~ThreeDCircularProjectionGeometryXMLFileReader() {
-  };
+  ThreeDCircularProjectionGeometryXMLFileReader();
+  ~ThreeDCircularProjectionGeometryXMLFileReader() { };
 
   /** Callback function -- called from XML parser with start-of-element
    * information.
@@ -62,7 +59,11 @@ private:
   GeometryType::Pointer m_Geometry;
 
   std::string m_CurCharacterData;
-  double      m_RotationAngle, m_ProjectionOffsetX, m_ProjectionOffsetY;
+  
+  /** Projection parameters */
+  double m_InPlaneAngle, m_OutOfPlaneAngle, m_GantryAngle;
+  double m_SourceToIsocenterDistance, m_SourceOffsetX, m_SourceOffsetY;
+  double m_SourceToDetectorDistance, m_ProjectionOffsetX, m_ProjectionOffsetY;
 };
 
 /** \class ThreeDCircularProjectionGeometryXMLFileWriter
@@ -93,6 +94,17 @@ public:
 protected:
   ThreeDCircularProjectionGeometryXMLFileWriter() {};
   ~ThreeDCircularProjectionGeometryXMLFileWriter() {};
+  
+  /** If all values are equal in v, write first value (if not 0.) in
+      output file with parameter value s and return true. Return false
+      otherwise.
+   */
+  bool WriteGlobalParameter(std::ofstream &output, const std::string &indent,
+                            const std::vector<double> &v, const std::string &s);
+
+  /** Write projection specific parameter with name s. */
+  void WriteLocalParameter(std::ofstream &output, const std::string &indent,
+                           const double &v, const std::string &s);
 
 private:
    //purposely not implemented

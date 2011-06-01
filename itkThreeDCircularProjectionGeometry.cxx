@@ -1,38 +1,47 @@
 #include "itkThreeDCircularProjectionGeometry.h"
 
-itk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry() :
-  m_SourceToDetectorDistance(-1),
-  m_SourceToIsocenterDistance(-1),
-  m_ProjectionScalingX(1),
-  m_ProjectionScalingY(1)
+double itk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
-  m_RotationCenter.Fill(0.);
-  m_RotationAxis.Fill(0.);
-  m_RotationAxis[1] = 1.;
-};
+  double result = a-360*floor(a/360); // between -360 and 360
+  if(result<0) result += 360;         // between 0    and 360
+  return result;
+}
 
-void itk::ThreeDCircularProjectionGeometry::AddProjection(const double angle, const double offsetX,
-                                                          const double offsetY)
+void itk::ThreeDCircularProjectionGeometry::AddProjection(
+  const double sid, const double sdd, const double gantryAngle,
+  const double projOffsetX, const double projOffsetY,
+  const double outOfPlaneAngle, const double inPlaneAngle,
+  const double sourceOffsetX, const double sourceOffsetY)
 {
+  // Detector orientation parameters
+  m_GantryAngles.push_back( ConvertAngleBetween0And360Degrees(gantryAngle) );
+  m_OutOfPlaneAngles.push_back( ConvertAngleBetween0And360Degrees(outOfPlaneAngle) );
+  m_InPlaneAngles.push_back( ConvertAngleBetween0And360Degrees(inPlaneAngle) );
+
+  // Source position parameters
+  m_SourceToIsocenterDistances.push_back( sid );
+  m_SourceOffsetsX.push_back( sourceOffsetX );
+  m_SourceOffsetsY.push_back( sourceOffsetY );
+
+  // Detector position parameters
+  m_SourceToDetectorDistances.push_back( sdd );
+  m_ProjectionOffsetsX.push_back( projOffsetX );
+  m_ProjectionOffsetsY.push_back( projOffsetY );
+  
   Superclass::MatrixType matrix;
-  double storedAngle = angle-360*floor(angle/360); // between -360 and 360
-  if(storedAngle<0) storedAngle += 360;            // between 0    and 360
-  m_RotationAngles.push_back(storedAngle);
-  m_ProjOffsetsX.push_back(offsetX);
-  m_ProjOffsetsY.push_back(offsetY);
   matrix =
-    Get2DScalingHomogeneousMatrix(m_ProjectionScalingX, m_ProjectionScalingY).GetVnlMatrix() *
-    Get2DRigidTransformationHomogeneousMatrix(0, offsetX, offsetY).GetVnlMatrix() *
-    GetProjectionMagnificationMatrix<3>(m_SourceToDetectorDistance, m_SourceToIsocenterDistance).GetVnlMatrix() *
-    Get3DTranslationHomogeneousMatrix(m_RotationCenter[0], m_RotationCenter[1], m_RotationCenter[2]).GetVnlMatrix() *
-    Get3DRotationHomogeneousMatrix(m_RotationAxis, storedAngle).GetVnlMatrix();
+    Get2DScalingHomogeneousMatrix(0.184118024374599, 0.184118024374599).GetVnlMatrix() *
+    Get2DRigidTransformationHomogeneousMatrix(0, projOffsetX-sourceOffsetX, projOffsetY-sourceOffsetY).GetVnlMatrix() *
+    GetProjectionMagnificationMatrix<3>(sdd, sid).GetVnlMatrix() *
+    Get3DRigidTransformationHomogeneousMatrix(outOfPlaneAngle, gantryAngle, inPlaneAngle,
+                                              sourceOffsetX, sourceOffsetY, 0.).GetVnlMatrix();
   this->AddMatrix(matrix);
 }
 
 const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext()
 {
   std::vector<double> angularGaps;
-  unsigned int        nProj = this->GetRotationAngles().size();
+  unsigned int        nProj = this->GetGantryAngles().size();
   angularGaps.resize(nProj);
 
   // Special management of single or empty dataset
@@ -46,7 +55,7 @@ const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGapsW
   std::multimap<double,unsigned int> angles;
   for(unsigned int iProj=0; iProj<nProj; iProj++)
     {
-    double angle = this->GetRotationAngles()[iProj];
+    double angle = this->GetGantryAngles()[iProj];
     angles.insert(std::pair<double, unsigned int>(angle, iProj) );
     }
 
@@ -70,7 +79,7 @@ const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGapsW
 const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGaps()
 {
   std::vector<double> angularGaps;
-  unsigned int        nProj = this->GetRotationAngles().size();
+  unsigned int        nProj = this->GetGantryAngles().size();
   angularGaps.resize(nProj);
 
   // Special management of single or empty dataset
@@ -84,7 +93,7 @@ const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGaps(
   std::multimap<double,unsigned int> angles;
   for(unsigned int iProj=0; iProj<nProj; iProj++)
     {
-    double angle = this->GetRotationAngles()[iProj];
+    double angle = this->GetGantryAngles()[iProj];
     angles.insert(std::pair<double, unsigned int>(angle, iProj) );
     }
 

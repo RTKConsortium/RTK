@@ -8,9 +8,28 @@
 #include <itkIOCommon.h>
 
 #include <iomanip>
+#include "rtkMacro.h"
 
 namespace itk
 {
+
+ThreeDCircularProjectionGeometryXMLFileReader::
+ThreeDCircularProjectionGeometryXMLFileReader():
+  m_Geometry(GeometryType::New() ),
+  m_CurCharacterData(""),
+  m_InPlaneAngle(0.),
+  m_OutOfPlaneAngle(0.),
+  m_GantryAngle(0.),
+  m_SourceToIsocenterDistance(0.),
+  m_SourceOffsetX(0.),
+  m_SourceOffsetY(0.),
+  m_SourceToDetectorDistance(0.),
+  m_ProjectionOffsetX(0.),
+  m_ProjectionOffsetY(0.)
+  
+{
+  this->m_OutputObject = &(*m_Geometry);
+}
 
 int
 ThreeDCircularProjectionGeometryXMLFileReader::
@@ -35,48 +54,33 @@ void
 ThreeDCircularProjectionGeometryXMLFileReader::
 StartElement(const char * name)
 {
-  if(itksys::SystemTools::Strucmp(name, "Projection") == 0)
-    {
-    m_RotationAngle = 0.0;
-    m_ProjectionOffsetX = 0.0;
-    m_ProjectionOffsetY = 0.0;
-    }
 }
 
 void
 ThreeDCircularProjectionGeometryXMLFileReader::
 EndElement(const char *name)
 {
-  if(itksys::SystemTools::Strucmp(name, "SourceToDetectorDistance") == 0)
-    this->m_OutputObject->SetSourceToDetectorDistance(atof(this->m_CurCharacterData.c_str() ) );
+  if(itksys::SystemTools::Strucmp(name, "InPlaneAngle") == 0)
+    m_InPlaneAngle = atof(this->m_CurCharacterData.c_str() );
+
+  if(itksys::SystemTools::Strucmp(name, "GantryAngle") == 0 ||
+     itksys::SystemTools::Strucmp(name, "Angle") == 0) // Second one for backward compatibility
+    m_GantryAngle = atof(this->m_CurCharacterData.c_str() );
+
+  if(itksys::SystemTools::Strucmp(name, "OutOfPlaneAngle") == 0)
+    m_OutOfPlaneAngle = atof(this->m_CurCharacterData.c_str() );
 
   if(itksys::SystemTools::Strucmp(name, "SourceToIsocenterDistance") == 0)
-    this->m_OutputObject->SetSourceToIsocenterDistance(atof(this->m_CurCharacterData.c_str() ) );
+    m_SourceToIsocenterDistance = atof(this->m_CurCharacterData.c_str() );
 
-  if(itksys::SystemTools::Strucmp(name, "ProjectionScalingX") == 0)
-    this->m_OutputObject->SetProjectionScalingX(atof(this->m_CurCharacterData.c_str() ) );
+  if(itksys::SystemTools::Strucmp(name, "SourceOffsetX") == 0)
+    m_SourceOffsetX = atof(this->m_CurCharacterData.c_str() );
 
-  if(itksys::SystemTools::Strucmp(name, "ProjectionScalingY") == 0)
-    this->m_OutputObject->SetProjectionScalingY(atof(this->m_CurCharacterData.c_str() ) );
+  if(itksys::SystemTools::Strucmp(name, "SourceOffsetY") == 0)
+    m_SourceOffsetY = atof(this->m_CurCharacterData.c_str() );
 
-  if(itksys::SystemTools::Strucmp(name, "RotationCenter") == 0)
-    {
-    ThreeDCircularProjectionGeometry::VectorType vec;
-    std::istringstream                           iss(m_CurCharacterData);
-    iss >> vec;
-    this->m_OutputObject->SetRotationCenter(vec);
-    }
-
-  if(itksys::SystemTools::Strucmp(name, "RotationAxis") == 0)
-    {
-    ThreeDCircularProjectionGeometry::VectorType vec;
-    std::istringstream                           iss(m_CurCharacterData);
-    iss >> vec;
-    this->m_OutputObject->SetRotationAxis(vec);
-    }
-
-  if(itksys::SystemTools::Strucmp(name, "Angle") == 0)
-    m_RotationAngle = atof(this->m_CurCharacterData.c_str() );
+  if(itksys::SystemTools::Strucmp(name, "SourceToDetectorDistance") == 0)
+    m_SourceToDetectorDistance = atof(this->m_CurCharacterData.c_str() );
 
   if(itksys::SystemTools::Strucmp(name, "ProjectionOffsetX") == 0)
     m_ProjectionOffsetX = atof(this->m_CurCharacterData.c_str() );
@@ -85,7 +89,15 @@ EndElement(const char *name)
     m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str() );
 
   if(itksys::SystemTools::Strucmp(name, "Projection") == 0)
-    this->m_OutputObject->AddProjection(m_RotationAngle, m_ProjectionOffsetX, m_ProjectionOffsetY);
+    this->m_OutputObject->AddProjection(m_SourceToIsocenterDistance,
+                                        m_SourceToDetectorDistance,
+                                        m_GantryAngle,
+                                        m_ProjectionOffsetX,
+                                        m_ProjectionOffsetY,
+                                        m_OutOfPlaneAngle,
+                                        m_InPlaneAngle,
+                                        m_SourceOffsetX,
+                                        m_SourceOffsetY);
 }
 
 void
@@ -123,77 +135,87 @@ WriteFile()
   output << std::endl;
   this->WriteStartElement("RTKThreeDCircularGeometry",output);
   output << std::endl;
+  
+  // First, we test for each of the 9 parameters per projection if it's constant
+  // over all projection images except GantryAngle which is supposed to be different
+  // for all projections. If 0. for OutOfPlaneAngle, InPlaneAngle, projection and source
+  // offsets X and Y, it is not written (default value).
+  bool bSIDGlobal =
+          WriteGlobalParameter(output, indent,
+                               this->m_InputObject->GetSourceToIsocenterDistances(),
+                               "SourceToIsocenterDistance");
+  bool bSDDGlobal =
+          WriteGlobalParameter(output, indent,
+                               this->m_InputObject->GetSourceToDetectorDistances(),
+                               "SourceToDetectorDistance");
+  bool bSourceXGlobal =
+          WriteGlobalParameter(output, indent,
+                               this->m_InputObject->GetSourceOffsetsX(),
+                               "SourceOffsetX");
+  bool bSourceYGlobal =
+          WriteGlobalParameter(output, indent,
+                               this->m_InputObject->GetSourceOffsetsY(),
+                               "SourceOffsetY");
+  bool bProjXGlobal =
+          WriteGlobalParameter(output, indent,
+                               this->m_InputObject->GetProjectionOffsetsX(),
+                               "ProjectionOffsetX");
+  bool bProjYGlobal =
+          WriteGlobalParameter(output, indent,
+                               this->m_InputObject->GetProjectionOffsetsY(),
+                               "ProjectionOffsetY");
+  bool bInPlaneGlobal =
+          WriteGlobalParameter(output, indent,
+                               this->m_InputObject->GetInPlaneAngles(),
+                               "InPlaneAngle");
+  bool bOutOfPlaneGlobal =
+          WriteGlobalParameter(output, indent,
+                               this->m_InputObject->GetOutOfPlaneAngles(),
+                               "OutOfPlaneAngle");
 
-  output << indent;
-  this->WriteStartElement("SourceToDetectorDistance",output);
-  output << this->m_InputObject->GetSourceToDetectorDistance();
-  this->WriteEndElement("SourceToDetectorDistance",output);
-  output << std::endl;
-
-  output << indent;
-  this->WriteStartElement("SourceToIsocenterDistance",output);
-  output << this->m_InputObject->GetSourceToIsocenterDistance();
-  this->WriteEndElement("SourceToIsocenterDistance",output);
-  output << std::endl;
-
-  if(this->m_InputObject->GetProjectionScalingX() != 1.)
-    {
-    output << indent;
-    this->WriteStartElement("ProjectionScalingX",output);
-    output << this->m_InputObject->GetProjectionScalingX();
-    this->WriteEndElement("ProjectionScalingX",output);
-    output << std::endl;
-    }
-
-  if(this->m_InputObject->GetProjectionScalingY() != 1.)
-    {
-    output << indent;
-    this->WriteStartElement("ProjectionScalingY",output);
-    output << this->m_InputObject->GetProjectionScalingX();
-    this->WriteEndElement("ProjectionScalingY",output);
-    output << std::endl;
-    }
-
-  output << indent;
-  this->WriteStartElement("RotationCenter",output);
-  output << this->m_InputObject->GetRotationCenter()[0] << ' '
-         << this->m_InputObject->GetRotationCenter()[1] << ' '
-         << this->m_InputObject->GetRotationCenter()[2];
-  this->WriteEndElement("RotationCenter",output);
-  output << std::endl;
-
-  output << indent;
-  this->WriteStartElement("RotationAxis",output);
-  output << this->m_InputObject->GetRotationAxis()[0] << ' '
-         << this->m_InputObject->GetRotationAxis()[1] << ' '
-         << this->m_InputObject->GetRotationAxis()[2];
-  this->WriteEndElement("RotationAxis",output);
-  output << std::endl;
-
+  // Second, write per projection parameters (if corresponding parameter is not global)
   for(unsigned int i = 0; i<this->m_InputObject->GetMatrices().size(); i++)
     {
     output << indent;
     this->WriteStartElement("Projection",output);
     output << std::endl;
 
-    //Angle
-    output << indent << indent;
-    this->WriteStartElement("Angle",output);
-    output << this->m_InputObject->GetRotationAngles()[i];
-    this->WriteEndElement("Angle",output);
-    output << std::endl;
-
-    //Projection offset
-    output << indent << indent;
-    this->WriteStartElement("ProjectionOffsetX",output);
-    output << this->m_InputObject->GetProjectionOffsetsX()[i];
-    this->WriteEndElement("ProjectionOffsetX",output);
-    output << std::endl;
-    output << indent << indent;
-    this->WriteStartElement("ProjectionOffsetY",output);
-    output << this->m_InputObject->GetProjectionOffsetsY()[i];
-    this->WriteEndElement("ProjectionOffsetY",output);
-    output << std::endl;
+    // Only the GantryAngle is necessarily projection specific
+    WriteLocalParameter(output, indent,
+                        this->m_InputObject->GetGantryAngles()[i],
+                        "GantryAngle");
+    if(!bSIDGlobal)
+      WriteLocalParameter(output, indent,
+                          this->m_InputObject->GetSourceToDetectorDistances()[i],
+                          "SourceToIsocenterDistance");
+    if(!bSDDGlobal)
+      WriteLocalParameter(output, indent,
+                          this->m_InputObject->GetSourceToDetectorDistances()[i],
+                          "SourceToDetectorDistance");
+    if(!bSourceXGlobal)
+      WriteLocalParameter(output, indent,
+                          this->m_InputObject->GetSourceOffsetsX()[i],
+                          "SourceOffsetX");
+    if(!bSourceYGlobal)
+      WriteLocalParameter(output, indent,
+                          this->m_InputObject->GetSourceOffsetsY()[i],
+                          "SourceOffsetY");
+    if(!bProjXGlobal)
+      WriteLocalParameter(output, indent,
+                          this->m_InputObject->GetProjectionOffsetsX()[i],
+                          "ProjectionOffsetX");
+    if(!bProjYGlobal)
+      WriteLocalParameter(output, indent,
+                          this->m_InputObject->GetProjectionOffsetsY()[i],
+                          "ProjectionOffsetY");
+    if(!bInPlaneGlobal)
+      WriteLocalParameter(output, indent,
+                          this->m_InputObject->GetInPlaneAngles()[i],
+                          "InPlaneAngle");
+    if(!bOutOfPlaneGlobal)
+      WriteLocalParameter(output, indent,
+                          this->m_InputObject->GetOutOfPlaneAngles()[i],
+                          "OutOfPlaneAngle");
 
     //Matrix
     output << indent << indent;
@@ -224,6 +246,39 @@ WriteFile()
   return 0;
 }
 
+bool
+ThreeDCircularProjectionGeometryXMLFileWriter::
+WriteGlobalParameter(std::ofstream &output, const std::string &indent, const std::vector<double> &v, const std::string &s)
+{
+  // Test if all values in vector v are equal. Return false if not.
+  for(size_t i=0; i<v.size(); i++)
+    if(v[i] != v[0])
+      return false;
+
+  // Write value in file if not 0.
+  if (0. != v[0])
+    {
+    std::string ss(s);
+    output << indent;
+    this->WriteStartElement(ss, output);
+    output << v[0];
+    this->WriteEndElement(ss,output);
+    output << std::endl;
+    }
+  return true;
 }
 
+void
+ThreeDCircularProjectionGeometryXMLFileWriter::
+WriteLocalParameter(std::ofstream &output, const std::string &indent, const double &v, const std::string &s)
+{
+  std::string ss(s);
+  output << indent << indent;
+  this->WriteStartElement(ss, output);
+  output << v;
+  this->WriteEndElement(ss, output);
+  output << std::endl;
+}
+
+}
 #endif
