@@ -13,15 +13,15 @@ int main(int argc, char * argv[])
   typedef itk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
 
-  // Global parameters
-  geometry->SetSourceToDetectorDistance(args_info.sdd_arg);
-  geometry->SetSourceToIsocenterDistance(args_info.sid_arg);
-
   // Projection matrices
   for(int noProj=0; noProj<args_info.nproj_arg; noProj++)
     {
     double angle = args_info.first_angle_arg + noProj * args_info.arc_arg / args_info.nproj_arg;
-    geometry->AddProjection(angle, args_info.proj_iso_x_arg, args_info.proj_iso_y_arg);
+    geometry->AddProjection(args_info.sid_arg,
+                            args_info.sdd_arg,
+                            angle,
+                            args_info.proj_iso_x_arg,
+                            args_info.proj_iso_y_arg);
     }
 
   // Write

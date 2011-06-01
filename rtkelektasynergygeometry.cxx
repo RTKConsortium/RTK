@@ -72,14 +72,14 @@ int main(int argc, char * argv[])
   std::vector<float> projAngle, projFlexX, projFlexY;
   GetProjInfoFromDB(GetImageIDFromDicomUID(args_info), args_info, projAngle, projFlexX, projFlexY);
 
-  // Global parameters
-  geometry->SetSourceToDetectorDistance(args_info.sdd_arg);
-  geometry->SetSourceToIsocenterDistance(args_info.sid_arg);
-
   // Projection matrices
   for(unsigned int noProj=0; noProj<projAngle.size(); noProj++)
     {
-    geometry->AddProjection(projAngle[noProj], projFlexX[noProj], projFlexY[noProj]);
+    geometry->AddProjection(args_info.sid_arg,
+                            args_info.sdd_arg,
+                            projAngle[noProj],
+                            projFlexX[noProj],
+                            projFlexY[noProj]);
     }
 
   // Write
