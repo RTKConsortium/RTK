@@ -88,7 +88,20 @@ EndElement(const char *name)
   if(itksys::SystemTools::Strucmp(name, "ProjectionOffsetY") == 0)
     m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str() );
 
+  if(itksys::SystemTools::Strucmp(name, "Matrix") == 0)
+    {
+    std::istringstream iss(this->m_CurCharacterData);
+    double value = 0.;
+    for(unsigned int i=0; i<m_Matrix.RowDimensions; i++)
+      for(unsigned int j=0; j<m_Matrix.ColumnDimensions; j++)
+        {
+        iss >> value;
+        m_Matrix[i][j] = value;
+        }
+    }
+
   if(itksys::SystemTools::Strucmp(name, "Projection") == 0)
+    {
     this->m_OutputObject->AddProjection(m_SourceToIsocenterDistance,
                                         m_SourceToDetectorDistance,
                                         m_GantryAngle,
@@ -98,6 +111,17 @@ EndElement(const char *name)
                                         m_InPlaneAngle,
                                         m_SourceOffsetX,
                                         m_SourceOffsetY);
+    for(unsigned int i=0; i<m_Matrix.RowDimensions; i++)
+      for(unsigned int j=0; j<m_Matrix.ColumnDimensions; j++)
+        {
+        // Tolerance can not be vcl_numeric_limits<double>::epsilon(), too strict
+        // 0.001 is a random choice to catch "large" inconsistencies
+        if( fabs(m_Matrix[i][j]-m_OutputObject->GetMatrices().back()[i][j]) > 0.001 )
+          {
+          itkGenericExceptionMacro(<< "Matrix and parameters are not consistent.");
+          }
+        }
+    }
 }
 
 void

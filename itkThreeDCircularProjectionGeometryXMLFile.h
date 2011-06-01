@@ -64,6 +64,9 @@ private:
   double m_InPlaneAngle, m_OutOfPlaneAngle, m_GantryAngle;
   double m_SourceToIsocenterDistance, m_SourceOffsetX, m_SourceOffsetY;
   double m_SourceToDetectorDistance, m_ProjectionOffsetX, m_ProjectionOffsetY;
+
+  /** Projection matrix */
+  ThreeDCircularProjectionGeometry::MatrixType m_Matrix;
 };
 
 /** \class ThreeDCircularProjectionGeometryXMLFileWriter

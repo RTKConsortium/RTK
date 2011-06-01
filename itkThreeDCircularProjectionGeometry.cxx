@@ -28,11 +28,15 @@ void itk::ThreeDCircularProjectionGeometry::AddProjection(
   m_ProjectionOffsetsX.push_back( projOffsetX );
   m_ProjectionOffsetsY.push_back( projOffsetY );
   
+  // Projection on the detector normal of SourceToIsocenterDistance
+  double sidn = sid;
+  if(sourceOffsetX != 0. || sourceOffsetY != 0.)
+    sidn = sqrt( sid * sid - sourceOffsetX * sourceOffsetX - sourceOffsetY * sourceOffsetY );
+
   Superclass::MatrixType matrix;
   matrix =
-    Get2DScalingHomogeneousMatrix(0.184118024374599, 0.184118024374599).GetVnlMatrix() *
     Get2DRigidTransformationHomogeneousMatrix(0, projOffsetX-sourceOffsetX, projOffsetY-sourceOffsetY).GetVnlMatrix() *
-    GetProjectionMagnificationMatrix<3>(sdd, sid).GetVnlMatrix() *
+    GetProjectionMagnificationMatrix<3>(sdd, sidn).GetVnlMatrix() *
     Get3DRigidTransformationHomogeneousMatrix(outOfPlaneAngle, gantryAngle, inPlaneAngle,
                                               sourceOffsetX, sourceOffsetY, 0.).GetVnlMatrix();
   this->AddMatrix(matrix);
