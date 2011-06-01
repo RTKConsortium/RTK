@@ -30,16 +30,7 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
 
-  try
-    {
-    reader->Update();
-    }
-  catch( itk::ExceptionObject & err )
-    {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-    }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Ramp filter
   typedef itk::FFTRampImageFilter<OutputImageType> rampFilterType;
@@ -55,22 +46,13 @@ int main(int argc, char * argv[])
   streamer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
   itk::TimeProbe probe;
-  try
-    {
-    probe.Start();
-    streamer->Update();
-    probe.Stop();
-    std::cout << "The streamed ramp filter update took "
-              << probe.GetMeanTime()
-              << probe.GetUnit()
-              << std::endl;
-    }
-  catch( itk::ExceptionObject & err )
-    {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-    }
+  probe.Start();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() )
+  probe.Stop();
+  std::cout << "The streamed ramp filter update took "
+            << probe.GetMeanTime()
+            << probe.GetUnit()
+            << std::endl;
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
@@ -79,16 +61,7 @@ int main(int argc, char * argv[])
   writer->SetInput( streamer->GetOutput() );
   writer->UpdateOutputInformation();
 
-  try
-    {
-    writer->Update();
-    }
-  catch( itk::ExceptionObject & err )
-    {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-    }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

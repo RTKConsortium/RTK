@@ -87,7 +87,7 @@ int main(int argc, char * argv[])
     itk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
   xmlWriter->SetObject(&(*geometry) );
-  xmlWriter->WriteFile();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
 
   return EXIT_SUCCESS;
 }

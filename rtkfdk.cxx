@@ -46,25 +46,16 @@ int main(int argc, char * argv[])
   typedef itk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
-  reader->GenerateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->GenerateOutputInformation() );
 
   itk::TimeProbe readerProbe;
   if(!args_info.lowmem_flag)
     {
     if(args_info.verbose_flag)
       std::cout << "Reading... " << std::flush;
-    try
-      {
-      readerProbe.Start();
-      reader->Update();
-      readerProbe.Stop();
-      }
-    catch( itk::ExceptionObject & err )
-      {
-      std::cerr << "ExceptionObject caught !" << std::endl;
-      std::cerr << err << std::endl;
-      return EXIT_FAILURE;
-      }
+    readerProbe.Start();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
+    readerProbe.Stop();
     if(args_info.verbose_flag)
       std::cout << "It took " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
     }
@@ -78,7 +69,7 @@ int main(int argc, char * argv[])
   itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  geometryReader->GenerateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Displaced detector weighting
   typedef itk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
@@ -138,22 +129,13 @@ int main(int argc, char * argv[])
   itk::TimeProbe streamerProbe;
   if(!args_info.lowmem_flag)
     {
-    try
-      {
-      if(args_info.verbose_flag)
-        std::cout << "Weighting and filtering projections... " << std::flush;
-      streamerProbe.Start();
-      streamer->Update();
-      streamerProbe.Stop();
-      if(args_info.verbose_flag)
-        std::cout << "It took " << streamerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
-      }
-    catch( itk::ExceptionObject & err )
-      {
-      std::cerr << "ExceptionObject caught !" << std::endl;
-      std::cerr << err << std::endl;
-      return EXIT_FAILURE;
-      }
+    if(args_info.verbose_flag)
+      std::cout << "Weighting and filtering projections... " << std::flush;
+    streamerProbe.Start();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() );
+    streamerProbe.Stop();
+    if(args_info.verbose_flag)
+      std::cout << "It took " << streamerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
   // Create reconstructed image
@@ -196,18 +178,9 @@ int main(int argc, char * argv[])
                 << "... "  << std::flush;
 
     itk::TimeProbe bpProbe;
-    try
-      {
-      bpProbe.Start();
-      bpFilter->Update();
-      bpProbe.Stop();
-      }
-    catch( itk::ExceptionObject & err )
-      {
-      std::cerr << "ExceptionObject caught !" << std::endl;
-      std::cerr << err << std::endl;
-      return EXIT_FAILURE;
-      }
+    bpProbe.Start();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( bpFilter->Update() );
+    bpProbe.Stop();
 
     if(args_info.verbose_flag)
       std::cout << "It took " << bpProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
@@ -228,18 +201,10 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Writing... " << std::flush;
   itk::TimeProbe writerProbe;
-  try
-    {
-    writerProbe.Start();
-    writer->Update();
-    writerProbe.Stop();
-    }
-  catch( itk::ExceptionObject & err )
-    {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-    }
+
+  writerProbe.Start();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  writerProbe.Stop();
 
   if(args_info.verbose_flag)
     std::cout << "It took " << writerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;

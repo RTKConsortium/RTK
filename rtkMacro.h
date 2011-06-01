@@ -16,4 +16,18 @@
   else cmdline_parser_##ggo_filename(argc, argv, &args_info);
 //--------------------------------------------------------------------
 
+//--------------------------------------------------------------------
+#define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                         \
+  try                                                                   \
+    {                                                                   \
+    execFunc ;                                                          \
+    }                                                                   \
+  catch( itk::ExceptionObject & err )                                   \
+    {                                                                   \
+    std::cerr << "ExceptionObject caught with " #execFunc << std::endl; \
+    std::cerr << err << std::endl;                                      \
+    return EXIT_FAILURE;                                                \
+    }
+//--------------------------------------------------------------------
+
 #endif // RTKMACRO_H

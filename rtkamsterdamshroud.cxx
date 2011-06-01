@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
   typedef itk::AmsterdamShroudImageFilter<OutputImageType> shroudFilterType;
   shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
   shroudFilter->SetInput( reader->GetOutput() );
-  shroudFilter->UpdateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->UpdateOutputInformation() )
 
   // Write
   typedef itk::ImageFileWriter< shroudFilterType::OutputImageType > WriterType;
@@ -42,13 +42,7 @@ int main(int argc, char * argv[])
   writer->SetInput( shroudFilter->GetOutput() );
   writer->SetNumberOfStreamDivisions(names->GetFileNames().size());
 
-  try {
-    writer->Update();
-    } catch( itk::ExceptionObject & err ) {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-    }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

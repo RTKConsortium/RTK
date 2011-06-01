@@ -34,7 +34,7 @@ int main(int argc, char * argv[])
   typedef itk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
-  reader->GenerateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->GenerateOutputInformation() )
 
   // Geometry
   if(args_info.verbose_flag)
@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
   itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  geometryReader->GenerateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Short scan image filter
   typedef itk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( pssf->GetOutput() );
   writer->SetNumberOfStreamDivisions( args_info.divisions_arg );
-  writer->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

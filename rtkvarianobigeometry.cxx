@@ -20,7 +20,7 @@ int main(int argc, char * argv[])
   itk::VarianObiXMLFileReader::Pointer obiXmlReader;
   obiXmlReader = itk::VarianObiXMLFileReader::New();
   obiXmlReader->SetFilename(args_info.xml_file_arg);
-  obiXmlReader->GenerateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( obiXmlReader->GenerateOutputInformation() )
 
   // Generate file names of projections
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
     typedef itk::ImageFileReader< InputImageType > ReaderType;
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName( names->GetFileNames()[noProj] );
-    reader->UpdateOutputInformation();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
     const double angle =
       dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
@@ -64,7 +64,7 @@ int main(int argc, char * argv[])
   xmlWriter = itk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
   xmlWriter->SetObject(&(*geometry) );
-  xmlWriter->WriteFile();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
 
   return EXIT_SUCCESS;
 }
