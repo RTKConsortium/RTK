@@ -127,6 +127,12 @@ TARGET_LINK_LIBRARIES(rtkwangdisplaceddetectorweighting rtkIO ITKAlgorithms)
 #=========================================================
 
 #=========================================================
+WRAP_GGO(rtkfdktwodweights_GGO_C rtkfdktwodweights.ggo)
+ADD_EXECUTABLE(rtkfdktwodweights rtkfdktwodweights.cxx ${rtkfdktwodweights_GGO_C})
+TARGET_LINK_LIBRARIES(rtkfdktwodweights rtkIO ITKAlgorithms)
+#=========================================================
+
+#=========================================================
 WRAP_GGO(rtkramp_GGO_C rtkramp.ggo)
 ADD_EXECUTABLE(rtkramp rtkramp.cxx ${rtkramp_GGO_C})
 TARGET_LINK_LIBRARIES(rtkramp rtkIO ITKAlgorithms)
