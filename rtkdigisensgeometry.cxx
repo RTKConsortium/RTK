@@ -70,6 +70,8 @@ int main(int argc, char * argv[])
     dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue();
   double projectionScalingX = detectorHorizontal[0] * totalWidth / (pixelWidth-1);
   double projectionScalingY = detectorVertical[1] * totalHeight / (pixelHeight-1);
+  DD(projectionScalingX)
+  DD(projectionScalingY)
 
   // Projection offset: the offset is given in the volume coordinate system =>
   // convert to
