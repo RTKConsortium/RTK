@@ -20,6 +20,7 @@ template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::FFTRampImageFilter() :
   m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.)
+  ,m_CosineCutFrequency(0.),m_HammingFrequancy(0.)
 {
 #if defined(USE_FFTWD)
   if(typeid(TFFTPrecision).name() == std::string("double") )
@@ -117,7 +118,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   ifft->SetReleaseDataFlag( true );
   ifft->Update();
 
-  // Crop and paste result 
+  // Crop and paste result
   ImageRegionConstIterator<FFTInputImageType> itS(ifft->GetOutput(), outputRegionForThread);
   ImageRegionIterator<OutputImageType>        itD(this->GetOutput(), outputRegionForThread);
   itS.GoToBegin();
@@ -283,17 +284,31 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // Windowing (if enabled)
   typedef ImageRegionIterator<typename FFTType::TOutputImageType> IteratorType;
   IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion() );
+
+  unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
+  n = Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency() ) );
+
+  itK.GoToBegin();
   if(this->GetHannCutFrequency()>0.)
     {
-    unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
-    n = Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency() ) );
-
-    itK.GoToBegin();
     for(unsigned int i=0; i<n; i++, ++itK)
-      itK.Set( itK.Get() * TFFTPrecision(0.5 * ( 1 + vcl_cos( vnl_math::pi * i / n ) ) ) );
-    for( ; !itK.IsAtEnd(); ++itK)
-      itK.Set( itK.Get() * TFFTPrecision(0.) );
+      itK.Set( itK.Get() * TFFTPrecision(0.5*(1+vcl_cos(vnl_math::pi*i/n))));
     }
+  else if(this->GetCosineCutFrequency() > 0.)
+    {
+    for(unsigned int i=0; i<n; i++, ++itK)
+      itK.Set( itK.Get() * TFFTPrecision(vcl_cos(0.5*vnl_math::pi*i/n)));
+    }
+  else if(this->GetHammingFrequancy() > 0.)
+    {
+    for(unsigned int i=0; i<n; i++, ++itK)
+      itK.Set( itK.Get() * TFFTPrecision(0.54+0.46*(vcl_cos(vnl_math::pi*i/n))));
+    }
+  else
+    itK.GoToEnd();
+
+  for( ; !itK.IsAtEnd(); ++itK)
+    itK.Set( itK.Get() * TFFTPrecision(0.) );
 
   return fftK->GetOutput();
 }

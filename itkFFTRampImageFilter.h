@@ -95,6 +95,13 @@ public:
   itkGetConstMacro(HannCutFrequency, double);
   itkSetMacro(HannCutFrequency, double);
 
+  /** Set/Get the Cosine Cut window frequency. 0 (default) disables it */
+  itkGetConstMacro(CosineCutFrequency, double);
+  itkSetMacro(CosineCutFrequency, double);
+
+  /** Set/Get the Hamming window frequency. 0 (default) disables it */
+  itkGetConstMacro(HammingFrequancy, double);
+  itkSetMacro(HammingFrequancy, double);
 protected:
   FFTRampImageFilter();
   ~FFTRampImageFilter(){}
@@ -144,8 +151,14 @@ private:
    */
   int m_GreatestPrimeFactor;
 
-  /** Cut frequency of Hann window */
+  /**
+   * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
+   * non-zero is used.
+   */
   double m_HannCutFrequency;
+  double m_CosineCutFrequency;
+  double m_HammingFrequancy;
+
 }; // end of class
 
 } // end namespace itk
