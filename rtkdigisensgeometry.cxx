@@ -5,6 +5,9 @@
 #include "itkDigisensGeometryXMLFileReader.h"
 
 #include <itkMetaDataObject.h>
+#include <itkCenteredEuler3DTransform.h>
+
+#include <iomanip>
 
 int main(int argc, char * argv[])
 {
@@ -56,8 +59,6 @@ int main(int argc, char * argv[])
   // Source / Detector / Center distances
   double sdd = fabs(sourcePosition[2] - detectorPosition[2]);
   double sid = fabs(sourcePosition[2] - rotationCenter[2]);
-  geometry->SetSourceToDetectorDistance(sdd);
-  geometry->SetSourceToIsocenterDistance(sid);
 
   // Scaling
   typedef itk::MetaDataObject< int > MetaDataIntegerType;
@@ -69,17 +70,11 @@ int main(int argc, char * argv[])
     dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue();
   double projectionScalingX = detectorHorizontal[0] * totalWidth / (pixelWidth-1);
   double projectionScalingY = detectorVertical[1] * totalHeight / (pixelHeight-1);
-  geometry->SetProjectionScalingX(projectionScalingX);
-  geometry->SetProjectionScalingY(projectionScalingY);
 
   // Projection offset: the offset is given in the volume coordinate system =>
   // convert to
   double projectionOffsetX = -detectorPosition[0] * detectorHorizontal[0];
   double projectionOffsetY = -detectorPosition[1] * detectorVertical[1];
-
-  // Rotation parameters
-  geometry->SetRotationCenter(rotationCenter);
-  geometry->SetRotationAxis(rotationAxis);
 
   // Rotation
   double startAngle =
@@ -88,14 +83,35 @@ int main(int argc, char * argv[])
     dynamic_cast<MetaDataDoubleType *>(dic["RADIOSangularRange"].GetPointer() )->GetMetaDataObjectValue();
   int nProj = dynamic_cast<MetaDataIntegerType *>(dic["RADIOSNumberOfFiles"].GetPointer() )->GetMetaDataObjectValue();
   for(int i=0; i<nProj; i++ )
-    geometry->AddProjection(- startAngle - i * angularRange / nProj, projectionOffsetX, projectionOffsetY);
+    {
+    // Convert rotation center and rotation axis parameterization to euler angles
+    double angle = - startAngle - i * angularRange / nProj;
+
+    const double degreesToRadians = vcl_atan(1.0) / 45.0;
+    itk::Versor<double> xfm3DVersor;
+    xfm3DVersor.Set(rotationAxis, angle*degreesToRadians);
+
+    typedef itk::CenteredEuler3DTransform<double> ThreeDTransformType;
+    ThreeDTransformType::Pointer xfm3D = ThreeDTransformType::New();
+    xfm3D->SetMatrix(xfm3DVersor.GetMatrix());
+
+    geometry->AddProjection( sid,
+                             sdd,
+                             xfm3D->GetAngleY(),
+                             projectionOffsetX,
+                             projectionOffsetY,
+                             xfm3D->GetAngleX(),
+                             xfm3D->GetAngleZ(),
+                             rotationCenter[0],
+                             rotationCenter[1]);
+    }
 
   // Write
   itk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
     itk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
   xmlWriter->SetObject(&(*geometry) );
-  xmlWriter->WriteFile();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
 
   return EXIT_SUCCESS;
 }
