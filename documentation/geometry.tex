@@ -36,7 +36,7 @@ This is the mother class for relating a TDimension-D tomography to a (TDimension
 
 \section{ThreeDCircularProjectionGeometry}
 
-This class is meant to define a circular rotation of a 2D flat panel around a 3D tomography although the trajectory does not have to be strictly circular. The description of the geometry is based on the international standard IEC 61217 because it has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
+This class is meant to define a circular rotation of a 2D flat panel around a 3D tomography although the trajectory does not have to be strictly circular. The description of the geometry is based on the international standard IEC 61217 which has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
 
 9 parameters are used per projection to define the position of the source and the detector relatively to the fixed coordinate system. The 9 parameters are set with the method \verb+AddProjection+. Default values are provided for the parameters which are not mandatory.
 
@@ -60,11 +60,11 @@ An increase in the value of $\phi g$ corresponds to a clockwise rotation of the 
 
 \paragraph{OutOfPlaneAngle}
 
-Out of plane rotation of the flat panel complementary to the GantryAngle rotation, i.e. with a rotation axis perpendicular to the gantry rotation axis and parallel to the flat panel. It is optional with a default value equals to 0. There is no corresponding rotation in IEC 61217. After gantry rotation, the rotation is defined by the rotation of the coordinate axes y and z about x. An increase in the value of OutOfPlaneAngle corresponds to a counter-clockwise rotation of the flat panel as viewed from a positive value along the x axis.
+Out of plane rotation of the flat panel complementary to the GantryAngle rotation, i.e. with a rotation axis perpendicular to the gantry rotation axis and parallel to the flat panel. It is optional with a default value equals to 0. There is no corresponding rotation in IEC 61217. After gantry rotation, the rotation is defined by the rotation of the coordinate axes y and z about x. An increase in the value of OutOfPlaneAngle corresponds to a counter-clockwise rotation of the flat panel as viewed from a positive value along the x axis towards the isocenter.
 
 \paragraph{InPlaneAngle} 
 
-In plane rotation of the 2D projection. It is optional with a default value equal to 0. If OutOfPlaneAngle equals 0, it corresponds to $\theta r$ in Section 2.6 of IEC 61217:
+In plane rotation of the 2D projection. It is optional with 0 as default value. If OutOfPlaneAngle equals 0, it corresponds to $\theta r$ in Section 2.6 of IEC 61217:
 
 
 \biec
@@ -91,7 +91,7 @@ $$
     1 & 0 & 0 & 0\\
     0 & \cos(OutOfPlaneAngle) & -\sin(OutOfPlaneAngle) & 0\\
     0 & \sin(OutOfPlaneAngle) & \cos(OutOfPlaneAngle) & 0\\
-    0 & 0 & 0 & 1 
+    0 & 0 & 0 & 1
   \end{pmatrix} \\
   \\ & & \times & %
   \begin{pmatrix}
@@ -113,7 +113,7 @@ The detector position is defined with respect to the source with three parameter
 
 \subsection{Final matrix}
 
-Each matrix accessible via \verb+GetMatrices+ is constructed with:
+Each matrix, accessible via \verb+GetMatrices+, is constructed with:
 
 $$
 \begin{array}{lcll}
@@ -160,9 +160,9 @@ ThreeDCircularProjectionGeometry can be saved and loaded from an XML file. If th
     <InPlaneAngle>0</InPlaneAngle>
     <OutOfPlaneAngle>0</OutOfPlaneAngle>
     <Matrix>
-          1900.9529414019                   0    742.951867231048    219187.578980815
-                        0     1900.9529414019    611.014051351728    207726.269543801
-                        0                   0                   1             277.805
+                 349.9997                   0           136.79083    40246.7819450849
+                        0            349.9997            112.4987    38156.0120819122
+                        0                   0                   1    277.003761610598
     </Matrix>
   </Projection>
   <Projection>
@@ -170,9 +170,9 @@ ThreeDCircularProjectionGeometry can be saved and loaded from an XML file. If th
     <InPlaneAngle>1.9341326876952e-07</InPlaneAngle>
     <OutOfPlaneAngle>359.999963060894</OutOfPlaneAngle>
     <Matrix>
-         1900.81712084862 -0.000485404810248702    743.299290686564    219187.578980815
-       -0.111668425845971    1900.95254747523    611.015266708905    207726.269543801
-      -0.000182769313811191 -6.44709015016959e-07   0.999999983297481             277.805
+         349.974692988061 -8.93717746849181e-05    136.854796920251    40246.7819450849
+      -0.0205601699517817    349.999627471001    112.498923769162    38156.0120819122
+      -0.000182769313811191 -6.44709015016959e-07   0.999999983297481    277.003761610598
     </Matrix>
   </Projection>
 </RTKThreeDCircularGeometry>
