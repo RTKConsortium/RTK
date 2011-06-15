@@ -75,7 +75,7 @@ CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"  ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(Gengetopt)
 FIND_PACKAGE(OpenMP)
-FIND_PACKAGE(CUDA)
+FIND_PACKAGE(CUDA_wrap)
 FIND_PACKAGE(OpenCL)
 #=========================================================
 
