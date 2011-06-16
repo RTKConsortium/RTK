@@ -117,19 +117,19 @@ TARGET_LINK_LIBRARIES(rtkprojections rtkIO)
 #=========================================================
 WRAP_GGO(rtkparkershortscanweighting_GGO_C rtkparkershortscanweighting.ggo)
 ADD_EXECUTABLE(rtkparkershortscanweighting rtkparkershortscanweighting.cxx ${rtkparkershortscanweighting_GGO_C})
-TARGET_LINK_LIBRARIES(rtkparkershortscanweighting rtkIO ITKAlgorithms)
+TARGET_LINK_LIBRARIES(rtkparkershortscanweighting rtkIO)
 #=========================================================
 
 #=========================================================
 WRAP_GGO(rtkwangdisplaceddetectorweighting_GGO_C rtkwangdisplaceddetectorweighting.ggo)
 ADD_EXECUTABLE(rtkwangdisplaceddetectorweighting rtkwangdisplaceddetectorweighting.cxx ${rtkwangdisplaceddetectorweighting_GGO_C})
-TARGET_LINK_LIBRARIES(rtkwangdisplaceddetectorweighting rtkIO ITKAlgorithms)
+TARGET_LINK_LIBRARIES(rtkwangdisplaceddetectorweighting rtkIO)
 #=========================================================
 
 #=========================================================
 WRAP_GGO(rtkfdktwodweights_GGO_C rtkfdktwodweights.ggo)
 ADD_EXECUTABLE(rtkfdktwodweights rtkfdktwodweights.cxx ${rtkfdktwodweights_GGO_C})
-TARGET_LINK_LIBRARIES(rtkfdktwodweights rtkIO ITKAlgorithms)
+TARGET_LINK_LIBRARIES(rtkfdktwodweights rtkIO)
 #=========================================================
 
 #=========================================================
