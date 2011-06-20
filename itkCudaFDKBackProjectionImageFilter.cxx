@@ -24,6 +24,7 @@ CudaFDKBackProjectionImageFilter
 
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
+  const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
   // Ramp factor is the correction for ramp filter which did not account for the
   // divergence of the beam
@@ -68,7 +69,7 @@ CudaFDKBackProjectionImageFilter
   CUDA_reconstruct_conebeam_init (img_dim, vol_dim, dev_vol, dev_img, dev_matrix);
 
   // Go over each projection
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
+  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Extract the current slice
     ProjectionImagePointer projection = this->GetProjection(iProj);

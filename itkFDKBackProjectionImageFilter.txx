@@ -27,6 +27,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
+  const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
   // Create interpolator, could be any interpolation
   typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
@@ -61,7 +62,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   ContinuousIndex<double, Dimension-1> pointProj;
 
   // Go over each projection
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
+  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Extract the current slice
     ProjectionImagePointer projection = this->GetProjection(iProj);
