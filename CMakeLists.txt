@@ -109,68 +109,32 @@ ENDIF (CUDA_FOUND)
 #=========================================================
 
 #=========================================================
-WRAP_GGO(rtkprojections_GGO_C rtkprojections.ggo)
-ADD_EXECUTABLE(rtkprojections rtkprojections.cxx ${rtkprojections_GGO_C})
-TARGET_LINK_LIBRARIES(rtkprojections rtkIO)
-#=========================================================
+# Executables
+MACRO (ADD_RTK_EXECUTABLE EXE_NAME)
+  WRAP_GGO(${EXE_NAME}_GGO_C ${EXE_NAME}.ggo)
+  ADD_EXECUTABLE(${EXE_NAME} ${EXE_NAME}.cxx ${${EXE_NAME}_GGO_C} ${ARGN})
+  TARGET_LINK_LIBRARIES(${EXE_NAME} rtkIO)
+  SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} ${EXE_NAME})
+ENDMACRO (ADD_RTK_EXECUTABLE)
 
-#=========================================================
-WRAP_GGO(rtkparkershortscanweighting_GGO_C rtkparkershortscanweighting.ggo)
-ADD_EXECUTABLE(rtkparkershortscanweighting rtkparkershortscanweighting.cxx ${rtkparkershortscanweighting_GGO_C})
-TARGET_LINK_LIBRARIES(rtkparkershortscanweighting rtkIO)
-#=========================================================
-
-#=========================================================
-WRAP_GGO(rtkwangdisplaceddetectorweighting_GGO_C rtkwangdisplaceddetectorweighting.ggo)
-ADD_EXECUTABLE(rtkwangdisplaceddetectorweighting rtkwangdisplaceddetectorweighting.cxx ${rtkwangdisplaceddetectorweighting_GGO_C})
-TARGET_LINK_LIBRARIES(rtkwangdisplaceddetectorweighting rtkIO)
-#=========================================================
-
-#=========================================================
-WRAP_GGO(rtkfdktwodweights_GGO_C rtkfdktwodweights.ggo)
-ADD_EXECUTABLE(rtkfdktwodweights rtkfdktwodweights.cxx ${rtkfdktwodweights_GGO_C})
-TARGET_LINK_LIBRARIES(rtkfdktwodweights rtkIO)
-#=========================================================
-
-#=========================================================
-WRAP_GGO(rtkramp_GGO_C rtkramp.ggo)
-ADD_EXECUTABLE(rtkramp rtkramp.cxx ${rtkramp_GGO_C})
-TARGET_LINK_LIBRARIES(rtkramp rtkIO ITKAlgorithms)
-#=========================================================
-
-#=========================================================
-#All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
-
-WRAP_GGO(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo)
-ADD_EXECUTABLE(rtkvarianobigeometry rtkvarianobigeometry.cxx itkVarianObiXMLFileReader.cxx ${rtkvarianobigeometry_GGO_C})
-TARGET_LINK_LIBRARIES(rtkvarianobigeometry rtkIO)
-
-WRAP_GGO(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo)
-ADD_EXECUTABLE(rtksimulatedgeometry rtksimulatedgeometry.cxx ${rtksimulatedgeometry_GGO_C})
-TARGET_LINK_LIBRARIES(rtksimulatedgeometry rtkIO)
-
-WRAP_GGO(rtkelektasynergygeometry_GGO_C rtkelektasynergygeometry.ggo)
-ADD_EXECUTABLE(rtkelektasynergygeometry rtkelektasynergygeometry.cxx rtkDbf.cxx ${rtkelektasynergygeometry_GGO_C})
-TARGET_LINK_LIBRARIES(rtkelektasynergygeometry rtkIO)
-
-WRAP_GGO(rtkdigisensgeometry_GGO_C rtkdigisensgeometry.ggo)
-ADD_EXECUTABLE(rtkdigisensgeometry rtkdigisensgeometry.cxx itkDigisensGeometryXMLFileReader.cxx ${rtkdigisensgeometry_GGO_C})
-TARGET_LINK_LIBRARIES(rtkdigisensgeometry rtkIO)
-#=========================================================
-
-#=========================================================
-WRAP_GGO(rtkfdk_GGO_C rtkfdk.ggo)
-ADD_EXECUTABLE(rtkfdk rtkfdk.cxx ${rtkfdk_GGO_C})
+ADD_RTK_EXECUTABLE(rtkprojections)
+ADD_RTK_EXECUTABLE(rtkparkershortscanweighting)
+ADD_RTK_EXECUTABLE(rtkwangdisplaceddetectorweighting)
+ADD_RTK_EXECUTABLE(rtkfdktwodweights)
+ADD_RTK_EXECUTABLE(rtkramp)
+TARGET_LINK_LIBRARIES(rtkramp ITKAlgorithms)
+ADD_RTK_EXECUTABLE(rtkfdk)
 TARGET_LINK_LIBRARIES(rtkfdk rtkIO ITKAlgorithms)
 IF (CUDA_FOUND)
   TARGET_LINK_LIBRARIES(rtkfdk rtkcuda)
 ENDIF (CUDA_FOUND)
-#=========================================================
+ADD_RTK_EXECUTABLE(rtkamsterdamshroud)
 
-#=========================================================
-WRAP_GGO(rtkamsterdamshroud_GGO_C rtkamsterdamshroud.ggo)
-ADD_EXECUTABLE(rtkamsterdamshroud rtkamsterdamshroud.cxx ${rtkamsterdamshroud_GGO_C})
-TARGET_LINK_LIBRARIES(rtkamsterdamshroud rtkIO)
+#All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
+ADD_RTK_EXECUTABLE(rtkvarianobigeometry itkVarianObiXMLFileReader.cxx)
+ADD_RTK_EXECUTABLE(rtksimulatedgeometry)
+ADD_RTK_EXECUTABLE(rtkelektasynergygeometry rtkDbf.cxx)
+ADD_RTK_EXECUTABLE(rtkdigisensgeometry itkDigisensGeometryXMLFileReader.cxx)
 #=========================================================
 
 #=========================================================
@@ -190,5 +154,52 @@ IF(CUDA_FOUND)
     TARGET_LINK_LIBRARIES(rtkrabbitct ${CUDA_LIBRARIES} ITKCommon rtkcuda)
   ENDIF(RTK_RABBITCT)
 ENDIF(CUDA_FOUND)
+#=========================================================
+
+#=========================================================
+# Installation code
+if(NOT RTK_INSTALL_RUNTIME_DIR)
+  set(RTK_INSTALL_RUNTIME_DIR bin)
+endif()
+if(NOT RTK_INSTALL_LIB_DIR)
+  set(RTK_INSTALL_LIB_DIR lib)
+endif()
+if(NOT RTK_INSTALL_ARCHIVE_DIR)
+  set(RTK_INSTALL_ARCHIVE_DIR lib)
+endif()
+if(NOT RTK_INSTALL_INCLUDE_DIR)
+  set(RTK_INSTALL_INCLUDE_DIR include/RTK-${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR})
+endif()
+
+IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
+  FILE(GLOB __files1 "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+  FILE(GLOB __files2 "${CMAKE_CURRENT_SOURCE_DIR}/*.txx")
+  INSTALL(FILES ${__files1} ${__files2}
+    DESTINATION ${RTK_INSTALL_INCLUDE_DIR}
+    COMPONENT Development)
+ENDIF(NOT RTK_INSTALL_NO_DEVELOPMENT)
+
+IF(NOT RTK_INSTALL_NO_LIBRARIES)
+  INSTALL(TARGETS rtkIO
+    RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
+    LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
+    ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
+
+  IF(CUDA_FOUND)
+    INSTALL(TARGETS rtkcuda
+      RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
+      LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
+      ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
+  ENDIF(CUDA_FOUND)
+ENDIF(NOT RTK_INSTALL_NO_LIBRARIES)
+
+IF(NOT RTK_INSTALL_NO_EXECUTABLES)
+  FOREACH(EXE_NAME ${RTK_EXECUTABLE_TARGETS}) 
+    INSTALL(TARGETS ${EXE_NAME}
+      RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
+      LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
+      ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
+  ENDFOREACH(EXE_NAME) 
+ENDIF(NOT RTK_INSTALL_NO_EXECUTABLES)
 #=========================================================
 
