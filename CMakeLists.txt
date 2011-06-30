@@ -57,14 +57,6 @@ OPTION(BUILD_SHARED_LIBS "Build RTK with shared libraries." ${ITK_BUILD_SHARED})
 #=========================================================
 
 #=========================================================
-SET (RTK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
-SET (RTK_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR})
-SET (RTK_LIBRARIES rtkIO)
-CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/RTKconfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/RTKconfig.cmake)
-#=========================================================
-
-#=========================================================
 # Propagate cmake options in a header file
 INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
 CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
@@ -77,6 +69,17 @@ FIND_PACKAGE(Gengetopt)
 FIND_PACKAGE(OpenMP)
 FIND_PACKAGE(CUDA_wrap)
 FIND_PACKAGE(OpenCL)
+#=========================================================
+
+#=========================================================
+SET (RTK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+SET (RTK_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR})
+SET (RTK_LIBRARIES rtkIO)
+IF(CUDA_FOUND)
+  SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
+ENDIF(CUDA_FOUND)
+CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/RTKConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/RTKConfig.cmake)
 #=========================================================
 
 #=========================================================
