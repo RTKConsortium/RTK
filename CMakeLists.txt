@@ -72,14 +72,16 @@ FIND_PACKAGE(OpenCL)
 #=========================================================
 
 #=========================================================
-SET (RTK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
-SET (RTK_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR})
+SET (RTK_INCLUDE_DIRS ${RTK_SOURCE_DIR})
+SET (RTK_LIBRARY_DIRS ${RTK_BINARY_DIR})
 SET (RTK_LIBRARIES rtkIO)
 IF(CUDA_FOUND)
   SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
 ENDIF(CUDA_FOUND)
-CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/RTKConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/RTKConfig.cmake)
+
+# Generate RTKConfig.cmake for the build tree.
+SET (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
+CONFIGURE_FILE (cmake/RTKConfig.cmake.in CMake/RTKConfig.cmake @ONLY)
 #=========================================================
 
 #=========================================================
@@ -173,8 +175,22 @@ endif()
 if(NOT RTK_INSTALL_INCLUDE_DIR)
   set(RTK_INSTALL_INCLUDE_DIR include/RTK-${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR})
 endif()
+if(NOT RTK_INSTALL_PACKAGE_DIR)
+  set(RTK_INSTALL_PACKAGE_DIR "lib/cmake/RTK-${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}")
+endif()
+
 
 IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
+  # Generate RTKConfig.cmake for the install tree.
+  SET (RTK_USE_FILE "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_PACKAGE_DIR}/UseRTK.cmake")
+  SET (RTK_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR}")
+  SET (RTK_LIBRARY_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
+  CONFIGURE_FILE (cmake/RTKConfig.cmake.in CMakeFiles/RTKConfig.cmake @ONLY)
+  INSTALL(FILES ${RTK_BINARY_DIR}/CMakeFiles/RTKConfig.cmake
+                cmake/UseRTK.cmake
+          DESTINATION ${RTK_INSTALL_PACKAGE_DIR})
+
+  # Include .h and .txx files
   FILE(GLOB __files1 "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
   FILE(GLOB __files2 "${CMAKE_CURRENT_SOURCE_DIR}/*.txx")
   INSTALL(FILES ${__files1} ${__files2}
