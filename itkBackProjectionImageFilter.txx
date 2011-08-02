@@ -29,8 +29,6 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     return;
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if(this->GetUpdateProjectionPerProjection() )
-    reqRegion.SetSize( TInputImage::ImageDimension-1, 1);
   inputPtr1->SetRequestedRegion( reqRegion );
 }
 
@@ -112,19 +110,6 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
   typename Superclass::InputImagePointer stack = const_cast< TInputImage * >( this->GetInput(1) );
 
-  if(this->GetUpdateProjectionPerProjection() )
-    {
-    // Lock the projection stack to avoid multithreading issues. Unlocked at the
-    // end of this function.
-    m_ProjectionStackLock->Lock();
-
-    typename TInputImage::RegionType buffRegion = stack->GetLargestPossibleRegion();
-    buffRegion.SetIndex(ProjectionImageType::ImageDimension, iProj);
-    buffRegion.SetSize(ProjectionImageType::ImageDimension, 1);
-
-    stack->SetRequestedRegion(buffRegion);
-    stack->Update();
-    }
   const int iProjBuff = stack->GetBufferedRegion().GetIndex(ProjectionImageType::ImageDimension);
 
   ProjectionImagePointer projection = ProjectionImageType::New();
@@ -170,8 +155,6 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     for(unsigned int i=0; i<npixels; i++)
       *po++ = *pi++;
 
-  if(this->GetUpdateProjectionPerProjection() )
-    m_ProjectionStackLock->Unlock();
   return projection;
 }
 
