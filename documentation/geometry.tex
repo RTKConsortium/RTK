@@ -19,16 +19,24 @@
 
 \maketitle
 
+\section{Context}
+
+The purpose of this document is to describe the geometry format used in RTK to relate a tomography to projection images. There is currently only one geometry format, ThreeDCircularProjectionGeometry.
+
 \section{Units}
 
 \begin{itemize}
  \item Degrees are used to store angles in the geometry objects. Angles are wrapped between 0\degree and 360\degree.
- \item No unit is enforced for distances but it is the responsibility of the user to have a consistent unit for all distances (pixel and voxel spacings, geometry parameters...). Millimeters are typically used in ITK and DICOM. Voxel coordinates are not used in RTK except for internal computation.
+ \item No unit is enforced for distances but it is the responsibility of the user to have a consistent unit for all distances (pixel and voxel spacings, geometry parameters...). Millimeters are typically used in ITK and DICOM.
 \end{itemize}
+
+\section{Image coordinate system}
+
+An \verb+itk::Image<>+ contains information to convert voxel indices to physical coordinates using \verb+itk::Image.m_Origin+, \verb+itk::Image.m_Spacing+ and \verb+itk::Image.m_Direction+. Voxel coordinates are not used in RTK except for internal computation. The conversion from voxel index coordinates to physical coordinates and the dimensions of the images are out of the scope of this document.
 
 \section{Fixed coordinate system}
 
-The fixed coordinate system $(x,y,z)$ in RTK is the coordinate system of the reconstructed tomography with the origin/isocenter at $(0,0,0)$. It is not necessarily the origin of the reconstructed tomography, because \verb+itk::Image.m_Origin+ is accounted for, nor the directions of the voxels grid, because \verb+itk::Image.m_Direction+ is also accounted for.
+The fixed coordinate system $(x,y,z)$ in RTK is the coordinate system of the tomography with the isocenter at the origin $(0,0,0)$.
 
 \section{ProjectionGeometry$<$TDimension$>$}
 
@@ -36,9 +44,9 @@ This is the mother class for relating a TDimension-D tomography to a (TDimension
 
 \section{ThreeDCircularProjectionGeometry}
 
-This class is meant to define a circular rotation of a 2D flat panel around a 3D tomography although the trajectory does not have to be strictly circular. The description of the geometry is based on the international standard IEC 61217 which has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
+This class is meant to define a circular rotation of a 2D projection image, acquired with a flat panel, around a 3D tomography. The trajectory does not have to be strictly circular but it is assumed in some reconstruction algorithms that the rotation axis is y. The description of the geometry is based on the international standard IEC 61217 which has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
 
-9 parameters are used per projection to define the position of the source and the detector relatively to the fixed coordinate system. The 9 parameters are set with the method \verb+AddProjection+. Default values are provided for the parameters which are not mandatory.
+9 parameters are used per projection to define the position of the source and the detector relatively to the fixed coordinate system. The 9 parameters are set with the method \verb+AddProjection+. Default values are provided for the parameters which are not mandatory. Note that explicit names have been used but this does not necessarily correspond to the value returned by the scanner which can use its own parameterization.
 
 \subsection{Detector orientation}
 
