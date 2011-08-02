@@ -1,5 +1,3 @@
-#include <itkImageFileWriter.h>
-
 namespace itk
 {
 
