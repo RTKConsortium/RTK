@@ -19,10 +19,9 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
   m_BackProjectionFilter->SetInput( 1, m_RampFilter->GetOutput() );
 
   // Default parameters
+  m_WeightFilter->InPlaceOn();
   m_BackProjectionFilter->InPlaceOn();
   m_BackProjectionFilter->SetTranspose(true);
-  //ITK bug: http://public.kitware.com/Bug/view.php?id=11993
-  m_WeightFilter->InPlaceOff();
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>

@@ -88,7 +88,7 @@ int main(int argc, char * argv[])
   // because TFFTPrecision is not the same, e.g. for CPU and CUDA (SR)
 #define SET_FELDKAMP_OPTIONS(f) \
     f->SetInput( 0, constantImageSource->GetOutput() ); \
-    f->SetInput( 1, reader->GetOutput() ); \
+    f->SetInput( 1, pssf->GetOutput() ); \
     f->SetGeometry( geometryReader->GetOutputObject() ); \
     f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
     f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);
