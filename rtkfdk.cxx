@@ -6,17 +6,12 @@
 #include "itkProjectionsReader.h"
 #include "itkDisplacedDetectorImageFilter.h"
 #include "itkParkerShortScanImageFilter.h"
-#include "itkFDKWeightProjectionFilter.h"
-
-#include "itkFFTRampImageFilter.h"
-#include "itkFDKBackProjectionImageFilter.h"
+#include "itkFDKConeBeamReconstructionFilter.h"
 #if CUDA_FOUND
-#  include "itkCudaFFTRampImageFilter.h"
-#  include "itkCudaFDKBackProjectionImageFilter.h"
+# include "itkCudaFDKConeBeamReconstructionFilter.h"
 #endif
 
 #include <itkRegularExpressionSeriesFileNames.h>
-#include <itkTimeProbe.h>
 #include <itkStreamingImageFilter.h>
 #include <itkImageFileWriter.h>
 
@@ -84,112 +79,45 @@ int main(int argc, char * argv[])
   pssf->SetGeometry( geometryReader->GetOutputObject() );
   pssf->InPlaceOff();
 
-  // Weight projections according to fdk algorithm
-  typedef itk::FDKWeightProjectionFilter< OutputImageType > WeightFilterType;
-  WeightFilterType::Pointer weightFilter = WeightFilterType::New();
-  weightFilter->SetInput( pssf->GetOutput() );
-  weightFilter->SetGeometry( geometryReader->GetOutputObject() );
-  weightFilter->SetInPlace(false); //SR: there seems to be a bug in ITK:
-                                   // incompatibility between InPlace and
-                                   // streaming?
-
-  // Ramp filter
-  itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer rampFilter;
-  if(!strcmp(args_info.hardware_arg, "cuda") )
-    {
-#if !CUDA_FOUND
-    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    return EXIT_FAILURE;
-#else
-    typedef itk::CudaFFTRampImageFilter CUDARampFilterType;
-    CUDARampFilterType::Pointer cudaRampFilter = CUDARampFilterType::New();
-    cudaRampFilter->SetInput( weightFilter->GetOutput() );
-    cudaRampFilter->SetTruncationCorrection(args_info.pad_arg);
-    cudaRampFilter->SetHannCutFrequency(args_info.hann_arg);
-    rampFilter = cudaRampFilter;
-#endif
-    }
-  else
-    {
-    typedef itk::FFTRampImageFilter<OutputImageType> CPURampFilterType;
-    CPURampFilterType::Pointer cpuRampFilter = CPURampFilterType::New();
-    cpuRampFilter->SetInput( weightFilter->GetOutput() );
-    cpuRampFilter->SetTruncationCorrection(args_info.pad_arg);
-    cpuRampFilter->SetHannCutFrequency(args_info.hann_arg);
-    rampFilter = cpuRampFilter;
-    }
-
-  // Streaming filter
-  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
-  StreamerType::Pointer streamer = StreamerType::New();
-  streamer->SetInput( rampFilter->GetOutput() );
-  streamer->SetNumberOfStreamDivisions( geometryReader->GetOutputObject()->GetMatrices().size() );
-
-  // Try to do all 2D pre-processing
-  itk::TimeProbe streamerProbe;
-  if(!args_info.lowmem_flag)
-    {
-    if(args_info.verbose_flag)
-      std::cout << "Weighting and filtering projections... " << std::flush;
-    streamerProbe.Start();
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() );
-    streamerProbe.Stop();
-    if(args_info.verbose_flag)
-      std::cout << "It took " << streamerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
-
   // Create reconstructed image
   typedef itk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfdk>(constantImageSource, args_info);
 
-  // Backprojection
-  typedef itk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType> BackProjectionFilterType;
-  BackProjectionFilterType::Pointer bpFilter;
+  // This macro sets options for fdk filter which I can not see how to do better
+  // because TFFTPrecision is not the same, e.g. for CPU and CUDA (SR)
+#define SET_FELDKAMP_OPTIONS(f) \
+    f->SetInput( 0, constantImageSource->GetOutput() ); \
+    f->SetInput( 1, reader->GetOutput() ); \
+    f->SetGeometry( geometryReader->GetOutputObject() ); \
+    f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
+    f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);
+
+  // FDK reconstruction filtering
+  itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer feldkamp;
+  typedef itk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
+  typedef itk::CudaFDKConeBeamReconstructionFilter                FDKCUDAType;
   if(!strcmp(args_info.hardware_arg, "cpu") )
-    bpFilter = BackProjectionFilterType::New();
+    {
+    feldkamp = FDKCPUType::New();
+    SET_FELDKAMP_OPTIONS( static_cast<FDKCPUType*>(feldkamp.GetPointer()) );
+    }
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
 #if CUDA_FOUND
-    bpFilter = itk::CudaFDKBackProjectionImageFilter::New();
+    feldkamp = FDKCUDAType::New();
+    SET_FELDKAMP_OPTIONS( static_cast<FDKCUDAType*>(feldkamp.GetPointer()) );
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
 #endif
     }
-  bpFilter->SetInput( 0, constantImageSource->GetOutput() );
-  bpFilter->SetUpdateProjectionPerProjection(args_info.lowmem_flag);
-  if(args_info.lowmem_flag)
-    bpFilter->SetInput( 1, rampFilter->GetOutput() );
-  else
-    bpFilter->SetInput( 1, streamer->GetOutput() );
-  bpFilter->SetGeometry( geometryReader->GetOutputObject() );
-  bpFilter->SetInPlace(false);
-
-  // SR: this appears to trigger 2 updates in cuda mode with the lowmem option
-  //     and an off-centered geometry. No clue why... Disable this update
-  //     until the problem is understood and solved.
-  if(!args_info.lowmem_flag && args_info.divisions_arg==1)
-    {
-    bpFilter->SetInPlace( true );
-    if(args_info.verbose_flag)
-      std::cout << "Backprojecting using "
-                << args_info.hardware_arg
-                << "... "  << std::flush;
-
-    itk::TimeProbe bpProbe;
-    bpProbe.Start();
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( bpFilter->Update() );
-    bpProbe.Stop();
-
-    if(args_info.verbose_flag)
-      std::cout << "It took " << bpProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
 
   // Streaming depending on streaming capability of writer
+  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamerBP = StreamerType::New();
   itk::ImageIOBase::Pointer imageIOBase;
-  streamerBP->SetInput( bpFilter->GetOutput() );
+  streamerBP->SetInput( feldkamp->GetOutput() );
   streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
 
   // Write
@@ -197,9 +125,9 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( streamerBP->GetOutput() );
-  
+
   if(args_info.verbose_flag)
-    std::cout << "Writing... " << std::flush;
+    std::cout << "Reconstructing and writing... " << std::flush;
   itk::TimeProbe writerProbe;
 
   writerProbe.Start();
@@ -207,7 +135,13 @@ int main(int argc, char * argv[])
   writerProbe.Stop();
 
   if(args_info.verbose_flag)
+    {
     std::cout << "It took " << writerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
+    if(!strcmp(args_info.hardware_arg, "cpu") )
+      static_cast<FDKCPUType* >(feldkamp.GetPointer())->PrintTiming(std::cout);
+    else if(!strcmp(args_info.hardware_arg, "cuda") )
+      static_cast<FDKCUDAType*>(feldkamp.GetPointer())->PrintTiming(std::cout);
+    }
 
   return EXIT_SUCCESS;
 }
