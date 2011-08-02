@@ -96,7 +96,9 @@ int main(int argc, char * argv[])
   // FDK reconstruction filtering
   itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer feldkamp;
   typedef itk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
+#if CUDA_FOUND
   typedef itk::CudaFDKConeBeamReconstructionFilter                FDKCUDAType;
+#endif
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
     feldkamp = FDKCPUType::New();
@@ -139,8 +141,10 @@ int main(int argc, char * argv[])
     std::cout << "It took " << writerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
     if(!strcmp(args_info.hardware_arg, "cpu") )
       static_cast<FDKCPUType* >(feldkamp.GetPointer())->PrintTiming(std::cout);
+#if CUDA_FOUND
     else if(!strcmp(args_info.hardware_arg, "cuda") )
       static_cast<FDKCUDAType*>(feldkamp.GetPointer())->PrintTiming(std::cout);
+#endif
     }
 
   return EXIT_SUCCESS;
