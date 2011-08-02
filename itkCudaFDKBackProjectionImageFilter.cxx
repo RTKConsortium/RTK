@@ -9,18 +9,62 @@
 namespace itk
 {
 
+CudaFDKBackProjectionImageFilter
+::CudaFDKBackProjectionImageFilter()
+{
+  m_DeviceVolume     = NULL;
+  m_DeviceProjection = NULL;
+  m_DeviceMatrix     = NULL;
+}
+
+void
+CudaFDKBackProjectionImageFilter
+::InitDevice()
+{
+  // Dimension arguments in CUDA format
+  m_VolumeDimension.x = this->GetOutput()->GetRequestedRegion().GetSize()[0];
+  m_VolumeDimension.y = this->GetOutput()->GetRequestedRegion().GetSize()[1];
+  m_VolumeDimension.z = this->GetOutput()->GetRequestedRegion().GetSize()[2];
+
+  m_ProjectionDimension.x = this->GetInput(1)->GetRequestedRegion().GetSize()[0];
+  m_ProjectionDimension.y = this->GetInput(1)->GetRequestedRegion().GetSize()[1];
+
+  // Cuda init
+  std::vector<int> devices = GetListOfCudaDevices();
+  if(devices.size()>1)
+    {
+    cudaThreadExit();
+    cudaSetDevice(devices[0]);
+    }
+
+  CUDA_reconstruct_conebeam_init (m_ProjectionDimension, m_VolumeDimension,
+                                  m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix);
+}
+
+void
+CudaFDKBackProjectionImageFilter
+::CleanUpDevice()
+{
+  if(this->GetOutput()->GetRequestedRegion() != this->GetOutput()->GetBufferedRegion() )
+    itkExceptionMacro(<< "Can't handle different requested and buffered regions "
+                      << this->GetOutput()->GetRequestedRegion()
+                      << this->GetOutput()->GetBufferedRegion() );
+
+  CUDA_reconstruct_conebeam_cleanup (m_VolumeDimension,
+                                     this->GetOutput()->GetBufferPointer(),
+                                     m_DeviceVolume,
+                                     m_DeviceProjection,
+                                     m_DeviceMatrix);
+  m_DeviceVolume     = NULL;
+  m_DeviceProjection = NULL;
+  m_DeviceMatrix     = NULL;
+}
+
 void
 CudaFDKBackProjectionImageFilter
 ::GenerateData()
 {
   this->AllocateOutputs();
-
-  OutputImageRegionType region = this->GetOutput()->GetRequestedRegion();
-
-  if(region != this->GetOutput()->GetBufferedRegion() )
-    itkExceptionMacro(<< "Can't handle different requested and buffered regions "
-                      << region
-                      << this->GetOutput()->GetBufferedRegion() );
 
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
@@ -41,32 +85,9 @@ CudaFDKBackProjectionImageFilter
   matrixIdxVol.SetIdentity();
   for(unsigned int i=0; i<3; i++)
     {
-    matrixIdxVol[i][3] = region.GetIndex()[i];
-    rotCenterIndex[i] -= region.GetIndex()[i];
+    matrixIdxVol[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
+    rotCenterIndex[i] -= this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     }
-
-  // Load dimensions arguments
-  int3 vol_dim;
-  vol_dim.x = region.GetSize()[0];
-  vol_dim.y = region.GetSize()[1];
-  vol_dim.z = region.GetSize()[2];
-
-  int2 img_dim;
-  img_dim.x = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
-  img_dim.y = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
-
-  // Cuda init
-  std::vector<int> devices = GetListOfCudaDevices();
-  if(devices.size()>1)
-    {
-    cudaThreadExit();
-    cudaSetDevice(devices[0]);
-    }
-
-  float *    dev_vol;
-  cudaArray *dev_img;
-  float *    dev_matrix;
-  CUDA_reconstruct_conebeam_init (img_dim, vol_dim, dev_vol, dev_img, dev_matrix);
 
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
@@ -82,7 +103,7 @@ CudaFDKBackProjectionImageFilter
     itk::Matrix<double, 3, 3> matrixIdxProj;
     matrixIdxProj.SetIdentity();
     for(unsigned int i=0; i<2; i++)
-       //SR: 0.5 for 2D texture
+      //SR: 0.5 for 2D texture
       matrixIdxProj[i][2] = -1*(projection->GetBufferedRegion().GetIndex()[i])+0.5;
 
     matrix = matrixIdxProj.GetVnlMatrix() * matrix.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
@@ -96,10 +117,9 @@ CudaFDKBackProjectionImageFilter
     for (int j = 0; j < 12; j++)
       fMatrix[j] = matrix[j/4][j%4];
 
-    CUDA_reconstruct_conebeam(img_dim, vol_dim, projection->GetBufferPointer(), fMatrix, dev_vol, dev_img, dev_matrix);
+    CUDA_reconstruct_conebeam(m_ProjectionDimension, m_VolumeDimension, projection->GetBufferPointer(), fMatrix,
+                              m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix);
     }
-
-  CUDA_reconstruct_conebeam_cleanup (vol_dim, this->GetOutput()->GetBufferPointer(), dev_vol, dev_img, dev_matrix);
 }
 
 } // end namespace itk

@@ -27,8 +27,15 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaFDKBackProjectionImageFilter, ImageToImageFilter);
+
+  /** Function to allocate memory on device */
+  void InitDevice();
+
+  /** Function to synchronize memory from device to host and free device memory */
+  void CleanUpDevice();
+
 protected:
-  CudaFDKBackProjectionImageFilter() {};
+  CudaFDKBackProjectionImageFilter();
   virtual ~CudaFDKBackProjectionImageFilter() {};
 
   void GenerateData();
@@ -37,6 +44,11 @@ private:
   CudaFDKBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                   //purposely not implemented
 
+  int3       m_VolumeDimension;
+  int2       m_ProjectionDimension;
+  float *    m_DeviceVolume;
+  cudaArray *m_DeviceProjection;
+  float *    m_DeviceMatrix;
 };
 
 } // end namespace itk
