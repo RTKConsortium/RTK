@@ -1,5 +1,6 @@
 #include "itkCudaFDKBackProjectionImageFilter.h"
 #include "itkCudaUtilities.hcu"
+#include "itkCudaFDKBackProjectionImageFilter.hcu"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -22,12 +23,12 @@ CudaFDKBackProjectionImageFilter
 ::InitDevice()
 {
   // Dimension arguments in CUDA format
-  m_VolumeDimension.x = this->GetOutput()->GetRequestedRegion().GetSize()[0];
-  m_VolumeDimension.y = this->GetOutput()->GetRequestedRegion().GetSize()[1];
-  m_VolumeDimension.z = this->GetOutput()->GetRequestedRegion().GetSize()[2];
+  m_VolumeDimension[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
+  m_VolumeDimension[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
+  m_VolumeDimension[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
-  m_ProjectionDimension.x = this->GetInput(1)->GetRequestedRegion().GetSize()[0];
-  m_ProjectionDimension.y = this->GetInput(1)->GetRequestedRegion().GetSize()[1];
+  m_ProjectionDimension[0] = this->GetInput(1)->GetRequestedRegion().GetSize()[0];
+  m_ProjectionDimension[1] = this->GetInput(1)->GetRequestedRegion().GetSize()[1];
 
   // Cuda init
   std::vector<int> devices = GetListOfCudaDevices();
@@ -117,7 +118,8 @@ CudaFDKBackProjectionImageFilter
     for (int j = 0; j < 12; j++)
       fMatrix[j] = matrix[j/4][j%4];
 
-    CUDA_reconstruct_conebeam(m_ProjectionDimension, m_VolumeDimension, projection->GetBufferPointer(), fMatrix,
+    CUDA_reconstruct_conebeam(m_ProjectionDimension, m_VolumeDimension,
+                              projection->GetBufferPointer(), fMatrix,
                               m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix);
     }
 }

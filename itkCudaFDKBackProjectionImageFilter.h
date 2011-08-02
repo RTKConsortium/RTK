@@ -2,7 +2,6 @@
 #define __itkCudaFDKBackProjectionImageFilter_h
 
 #include "itkFDKBackProjectionImageFilter.h"
-#include "itkCudaFDKBackProjectionImageFilter.hcu"
 
 namespace itk
 {
@@ -44,10 +43,10 @@ private:
   CudaFDKBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                   //purposely not implemented
 
-  int3       m_VolumeDimension;
-  int2       m_ProjectionDimension;
+  int        m_VolumeDimension[3];
+  int        m_ProjectionDimension[2];
   float *    m_DeviceVolume;
-  cudaArray *m_DeviceProjection;
+  float *    m_DeviceProjection;
   float *    m_DeviceMatrix;
 };
 
