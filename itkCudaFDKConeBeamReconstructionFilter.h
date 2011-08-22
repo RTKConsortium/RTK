@@ -24,10 +24,10 @@ class ITK_EXPORT CudaFDKConeBeamReconstructionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef CudaFDKConeBeamReconstructionFilter                                         Self;
-  typedef FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3> > Superclass;
-  typedef SmartPointer<Self>                                                          Pointer;
-  typedef SmartPointer<const Self>                                                    ConstPointer;
+  typedef CudaFDKConeBeamReconstructionFilter                                                Self;
+  typedef FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float > Superclass;
+  typedef SmartPointer<Self>                                                                 Pointer;
+  typedef SmartPointer<const Self>                                                           ConstPointer;
 
   /** Typedefs of subfilters which have been implemented with CUDA */
   typedef itk::CudaFFTRampImageFilter           RampFilterType;

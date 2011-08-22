@@ -2,8 +2,7 @@ namespace itk
 {
 
 CudaFDKConeBeamReconstructionFilter
-::CudaFDKConeBeamReconstructionFilter():
-    FDKConeBeamReconstructionFilter()
+::CudaFDKConeBeamReconstructionFilter()
 {
   // Create each filter which are specific for cuda
   m_RampFilter = RampFilterType::New();
@@ -27,7 +26,7 @@ CudaFDKConeBeamReconstructionFilter
   cudabp->InitDevice();
 
   // Run reconstruction
-  FDKConeBeamReconstructionFilter::GenerateData();
+  this->Superclass::GenerateData();
 
   // Transfer result to CPU image
   cudabp->CleanUpDevice();
