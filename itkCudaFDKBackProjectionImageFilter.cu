@@ -22,7 +22,7 @@
 #include <cuda.h>
 
 // P R O T O T Y P E S ////////////////////////////////////////////////////
-__global__ void kernel_fdk(float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks_Y, float invBlocks_Y);
+__global__ void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y, float invBlocks_Y);
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,7 @@ texture<float, 1, cudaReadModeElementType> tex_matrix;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__
-void kernel_fdk(float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks_Y, float invBlocks_Y)
+void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y, float invBlocks_Y)
 {
   // CUDA 2.0 does not allow for a 3D grid, which severely
   // limits the manipulation of large 3D arrays of data.  The
@@ -81,7 +81,7 @@ void kernel_fdk(float *dev_vol, int2 img_dim, int3 vol_dim, unsigned int Blocks_
 }
 
 __global__
-void kernel_fdk_optim(float *dev_vol, int2 img_dim, int3 vol_dim)
+void kernel_fdk_optim(float *dev_vol, int3 vol_dim)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = 0;
@@ -133,9 +133,9 @@ void
 CUDA_reconstruct_conebeam_init(
   int img_dim[2],
   int vol_dim[3],
-  float *&dev_vol,             // Holds voxels on device
+  float *&dev_vol,         // Holds voxels on device
   float *&dev_img,         // Holds image pixels on device
-  float *&dev_matrix           // Holds matrix on device
+  float *&dev_matrix       // Holds matrix on device
   )
 {
   // Size of volume Malloc
@@ -199,7 +199,6 @@ CUDA_reconstruct_conebeam(
     // Note: cbi->img AND cbi->matrix are passed via texture memory
     //-------------------------------------
     kernel_fdk_optim <<< dimGrid, dimBlock >>> ( dev_vol,
-                                                 make_int2(img_dim[0], img_dim[1]),
                                                  make_int3(vol_dim[0], vol_dim[1], vol_dim[2]) );
     }
   else
@@ -219,7 +218,6 @@ CUDA_reconstruct_conebeam(
     // Note: cbi->img AND cbi->matrix are passed via texture memory
     //-------------------------------------
     kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol,
-                                           make_int2(img_dim[0], img_dim[1]),
                                            make_int3(vol_dim[0], vol_dim[1], vol_dim[2]),
                                            blocksInY, 1.0f/(float)blocksInY );
     }
