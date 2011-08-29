@@ -5,6 +5,7 @@
 
 
 #cmakedefine01 CUDA_FOUND
+#cmakedefine01 OPENCL_FOUND
 #cmakedefine RTK_BUILD_SHARED_LIBS 1
 
 /* This code is for exporting symbols when building DLLs on windows */
@@ -19,5 +20,6 @@
 #define gpuit_EXPORT 
 #endif
 
+#define RTK_BINARY_DIR "@RTK_BINARY_DIR@"
 
 #endif

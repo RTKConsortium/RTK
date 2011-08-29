@@ -62,6 +62,14 @@ OPTION(BUILD_SHARED_LIBS "Build RTK with shared libraries." ${ITK_BUILD_SHARED})
 #=========================================================
 
 #=========================================================
+SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"  ${CMAKE_MODULE_PATH})
+FIND_PACKAGE(Gengetopt)
+FIND_PACKAGE(OpenCL)
+FIND_PACKAGE(CUDA_wrap)
+FIND_PACKAGE(OpenMP)
+#=========================================================
+
+#=========================================================
 # Propagate cmake options in a header file
 INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
 CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
@@ -69,20 +77,9 @@ CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
 #=========================================================
 
 #=========================================================
-SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"  ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(Gengetopt)
-FIND_PACKAGE(OpenMP)
-FIND_PACKAGE(CUDA_wrap)
-FIND_PACKAGE(OpenCL)
-#=========================================================
-
-#=========================================================
 SET (RTK_INCLUDE_DIRS ${RTK_SOURCE_DIR})
 SET (RTK_LIBRARY_DIRS ${RTK_BINARY_DIR})
 SET (RTK_LIBRARIES rtkIO)
-IF(CUDA_FOUND)
-  SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
-ENDIF(CUDA_FOUND)
 
 # Generate RTKConfig.cmake for the build tree.
 SET (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
@@ -103,7 +100,36 @@ TARGET_LINK_LIBRARIES(rtkIO ITKIO)
 #=========================================================
 
 #=========================================================
+# OpenCL library stuff
+IF(OPENCL_LIBRARIES AND OPENCL_INCLUDE_DIRS)
+  SET(OPENCL_FOUND TRUE)
+ELSE(OPENCL_LIBRARIES AND OPENCL_INCLUDE_DIRS)
+  SET(OPENCL_FOUND FALSE)
+ENDIF(OPENCL_LIBRARIES AND OPENCL_INCLUDE_DIRS)
+
+IF(OPENCL_FOUND)
+  SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkopencl)
+  INCLUDE_DIRECTORIES(${OPENCL_INCLUDE_DIRS})
+  ADD_LIBRARY(rtkopencl
+              itkOpenCLUtilities.cxx
+              itkOpenCLFDKBackProjectionImageFilter.cxx)
+  TARGET_LINK_LIBRARIES(rtkopencl ${OPENCL_LIBRARIES})
+
+  FILE(GLOB openclSRCs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cl)
+  ADD_CUSTOM_TARGET(openclSRCCopy ALL COMMENT "Copying OpenCL source files")
+  FOREACH(openclSRC ${openclSRCs})
+    ADD_CUSTOM_COMMAND(TARGET openclSRCCopy
+                       COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${openclSRC}
+                                                        ${RTK_BINARY_DIR}/${openclSRC})
+  ENDFOREACH(openclSRC)
+  ADD_DEPENDENCIES(rtkopencl openclSRCCopy)
+ENDIF(OPENCL_FOUND)
+#=========================================================
+
+#=========================================================
+# Cuda library stuff
 IF (CUDA_FOUND)
+  SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
   INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS
                 itkCudaUtilities.cu
@@ -135,6 +161,9 @@ ADD_RTK_EXECUTABLE(rtkramp)
 TARGET_LINK_LIBRARIES(rtkramp ITKAlgorithms)
 ADD_RTK_EXECUTABLE(rtkfdk)
 TARGET_LINK_LIBRARIES(rtkfdk rtkIO ITKAlgorithms)
+IF (OPENCL_FOUND)
+  TARGET_LINK_LIBRARIES(rtkfdk rtkopencl)
+ENDIF (OPENCL_FOUND)
 IF (CUDA_FOUND)
   TARGET_LINK_LIBRARIES(rtkfdk rtkcuda)
 ENDIF (CUDA_FOUND)

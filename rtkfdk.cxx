@@ -10,6 +10,9 @@
 #if CUDA_FOUND
 # include "itkCudaFDKConeBeamReconstructionFilter.h"
 #endif
+#if OPENCL_FOUND
+# include "itkOpenCLFDKConeBeamReconstructionFilter.h"
+#endif
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkStreamingImageFilter.h>
@@ -99,6 +102,9 @@ int main(int argc, char * argv[])
 #if CUDA_FOUND
   typedef itk::CudaFDKConeBeamReconstructionFilter                FDKCUDAType;
 #endif
+#if OPENCL_FOUND
+  typedef itk::OpenCLFDKConeBeamReconstructionFilter              FDKOPENCLType;
+#endif
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
     feldkamp = FDKCPUType::New();
@@ -114,6 +120,17 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
 #endif
     }
+  else if(!strcmp(args_info.hardware_arg, "opencl") )
+    {
+#if OPENCL_FOUND
+    feldkamp = FDKOPENCLType::New();
+    SET_FELDKAMP_OPTIONS( static_cast<FDKOPENCLType*>(feldkamp.GetPointer()) );
+#else
+    std::cerr << "The program has not been compiled with opencl option" << std::endl;
+    return EXIT_FAILURE;
+#endif
+    }
+
 
   // Streaming depending on streaming capability of writer
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
@@ -144,6 +161,10 @@ int main(int argc, char * argv[])
 #if CUDA_FOUND
     else if(!strcmp(args_info.hardware_arg, "cuda") )
       static_cast<FDKCUDAType*>(feldkamp.GetPointer())->PrintTiming(std::cout);
+#endif
+#if OPENCL_FOUND
+    else if(!strcmp(args_info.hardware_arg, "opencl") )
+      static_cast<FDKOPENCLType*>(feldkamp.GetPointer())->PrintTiming(std::cout);
 #endif
     }
 

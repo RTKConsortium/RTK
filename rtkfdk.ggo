@@ -1,19 +1,19 @@
 package "rtk"
 version "Reconstruct a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984]."
 
-option "verbose"   v "Verbose execution"                                         flag                off
-option "config"    - "Config file"                                               string              no
-option "geometry"  g  "XML geometry file name"                                   string              yes
-option "path"      p  "Path containing projections"                              string              yes
-option "regexp"    r  "Regular expression to select projection files in path"    string              yes
-option "output"    o "Output file name"                                          string              yes
-option "hardware"  - "Hardware used for computation"                             values="cpu","cuda" no   default="cpu"
-option "lowmem"    l "Load only one projection per thread in memory"             flag                off
-option "divisions" d "Number of stream divisions to cope with large CTs"         int                 no   default="1"
+option "verbose"   v "Verbose execution"                                         flag                         off
+option "config"    - "Config file"                                               string                       no
+option "geometry"  g  "XML geometry file name"                                   string                       yes
+option "path"      p  "Path containing projections"                              string                       yes
+option "regexp"    r  "Regular expression to select projection files in path"    string                       yes
+option "output"    o "Output file name"                                          string                       yes
+option "hardware"  - "Hardware used for computation"                             values="cpu","cuda","opencl" no   default="cpu"
+option "lowmem"    l "Load only one projection per thread in memory"             flag                         off
+option "divisions" d "Number of stream divisions to cope with large CTs"         int                          no   default="1"
 
 section "Ramp filter"
-option "pad"       - "Data padding parameter to correct for truncation"          double              no   default="0.0"
-option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double              no   default="0.0"
+option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"
+option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
 
 section "Backprojection"
 option "origin"    - "Origin (default=centered)" double multiple no
