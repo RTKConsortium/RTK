@@ -19,6 +19,9 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
   m_BackProjectionFilter->SetInput( 1, m_RampFilter->GetOutput() );
 
   // Default parameters
+#if ITK_VERSION_MAJOR >= 4
+  m_ExtractFilter->SetDirectionCollapseToSubmatrix();
+#endif
   m_WeightFilter->InPlaceOn();
   m_BackProjectionFilter->InPlaceOn();
   m_BackProjectionFilter->SetTranspose(true);

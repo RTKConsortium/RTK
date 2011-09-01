@@ -3,6 +3,7 @@
 
 #include <itkImageToImageFilter.h>
 #include <itkConceptChecking.h>
+#include "rtkConfiguration.h"
 
 /** \class FFTRampImageFilter
  * \brief Implements the ramp image filter of the filtered backprojection algorithm.
@@ -110,7 +111,7 @@ protected:
 
   virtual void BeforeThreadedGenerateData();
 
-  virtual void ThreadedGenerateData( const RegionType& outputRegionForThread, int threadId );
+  virtual void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId );
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
     * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].

@@ -1,6 +1,8 @@
 #ifndef __itkBackProjectionImageFilter_h
 #define __itkBackProjectionImageFilter_h
 
+#include "rtkConfiguration.h"
+
 #include "itkInPlaceImageFilter.h"
 #include "itkConceptChecking.h"
 #include "itkProjectionGeometry.h"
@@ -51,7 +53,11 @@ protected:
   /** Apply changes to the input image requested region. */
   virtual void GenerateInputRequestedRegion();
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, int threadId );
+  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+
+  /** The two inputs should not be in the same space so there is nothing
+   * to verify. */
+  virtual void VerifyInputInformation() {}
 
   /** The input is a stack of projections, we need to interpolate in one projection
       for efficiency during interpolation. Use of itk::ExtractImageFilter is

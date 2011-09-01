@@ -3,6 +3,7 @@
 
 // ITK
 #include <itkImageSeriesReader.h>
+#include <itkConfigure.h>
 
 // Varian Obi includes
 #include "itkHndImageIOFactory.h"
@@ -42,7 +43,9 @@ void ProjectionsReader<TOutputImage>
     {
     itk::HndImageIOFactory::RegisterOneFactory();
     itk::HisImageIOFactory::RegisterOneFactory();
+#if ITK_VERSION_MAJOR <= 3
     itk::ImageIOFactory::RegisterBuiltInFactories();
+#endif
     firstTime = false;
     }
   itk::ImageIOBase::Pointer imageIO = ImageIOFactory::CreateImageIO( m_FileNames[0].c_str(), ImageIOFactory::ReadMode );

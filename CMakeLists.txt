@@ -96,7 +96,7 @@ ADD_LIBRARY(rtkIO
             itkThreeDCircularProjectionGeometry.cxx
             itkThreeDCircularProjectionGeometryXMLFile.cxx
             itkFFTWCommon.cxx)
-TARGET_LINK_LIBRARIES(rtkIO ITKIO)
+TARGET_LINK_LIBRARIES(rtkIO ${ITK_LIBRARIES})
 #=========================================================
 
 #=========================================================
@@ -158,9 +158,7 @@ ADD_RTK_EXECUTABLE(rtkparkershortscanweighting)
 ADD_RTK_EXECUTABLE(rtkwangdisplaceddetectorweighting)
 ADD_RTK_EXECUTABLE(rtkfdktwodweights)
 ADD_RTK_EXECUTABLE(rtkramp)
-TARGET_LINK_LIBRARIES(rtkramp ITKAlgorithms)
 ADD_RTK_EXECUTABLE(rtkfdk)
-TARGET_LINK_LIBRARIES(rtkfdk rtkIO ITKAlgorithms)
 IF (OPENCL_FOUND)
   TARGET_LINK_LIBRARIES(rtkfdk rtkopencl)
 ENDIF (OPENCL_FOUND)

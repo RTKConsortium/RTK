@@ -18,7 +18,11 @@
 #define __itkFFTWComplexConjugateToRealImageFilter_txx
 
 #include "itkFFTWComplexConjugateToRealImageFilter.h"
-#include "itkFFTComplexConjugateToRealImageFilter.txx"
+#if ITK_VERSION_MAJOR <= 3
+#  include "itkFFTComplexConjugateToRealImageFilter.txx"
+#else
+#  include "itkFFTComplexConjugateToRealImageFilter.hxx"
+#endif
 #include <iostream>
 #include "itkIndent.h"
 #include "itkMetaDataObject.h"
@@ -28,14 +32,22 @@
 namespace itk
 {
 
-template <typename TPixel, unsigned int VDimension>
-void
-FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
+#if ITK_VERSION_MAJOR >= 4
+  template< class TInputImage, class TOutputImage >
+  void
+  FFTWComplexConjugateToRealImageFilter<TInputImage,TOutputImage>::
+#else
+  template <typename TPixel, unsigned int VDimension>
+  void
+  FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
+#endif
 BeforeThreadedGenerateData()
 {
+  unsigned int ImageDimension = InputImageType::ImageDimension;
+
   // get pointers to the input and output
-  typename TInputImageType::ConstPointer  inputPtr  = this->GetInput();
-  typename TOutputImageType::Pointer      outputPtr = this->GetOutput();
+  typename InputImageType::ConstPointer  inputPtr  = this->GetInput();
+  typename OutputImageType::Pointer      outputPtr = this->GetOutput();
 
   if ( !inputPtr || !outputPtr )
     {
@@ -50,9 +62,9 @@ BeforeThreadedGenerateData()
   outputPtr->SetBufferedRegion( outputPtr->GetRequestedRegion() );
   outputPtr->Allocate();
 
-  const typename TInputImageType::SizeType&   outputSize
+  const typename InputImageType::SizeType&   outputSize
     = outputPtr->GetLargestPossibleRegion().GetSize();
-  const typename TOutputImageType::SizeType& inputSize
+  const typename OutputImageType::SizeType& inputSize
     = inputPtr->GetLargestPossibleRegion().GetSize();
 
   // figure out sizes
@@ -62,7 +74,7 @@ BeforeThreadedGenerateData()
   unsigned int total_outputSize = 1;
   unsigned int total_inputSize = 1;
 
-  for(unsigned i = 0; i < VDimension; i++)
+  for(unsigned i = 0; i <ImageDimension; i++)
     {
     total_outputSize *= outputSize[i];
     total_inputSize *= inputSize[i];
@@ -87,10 +99,10 @@ BeforeThreadedGenerateData()
            inputPtr->GetBufferPointer(),
            total_inputSize * sizeof(typename FFTWProxyType::ComplexType) );
     }
-  TPixel * out = outputPtr->GetBufferPointer();
+  OutputPixelType * out = outputPtr->GetBufferPointer();
   typename FFTWProxyType::PlanType plan;
 
-  switch(VDimension)
+  switch(ImageDimension)
     {
     case 1:
       plan = FFTWProxyType::Plan_dft_c2r_1d(outputSize[0],
@@ -114,19 +126,19 @@ BeforeThreadedGenerateData()
                                             this->GetNumberOfThreads() );
       break;
     default:
-      int *sizes = new int[VDimension];
-      for(unsigned int i = 0; i < VDimension; i++)
+      int *sizes = new int[ImageDimension];
+      for(unsigned int i = 0; i < ImageDimension; i++)
         {
-        sizes[(VDimension - 1) - i] = outputSize[i];
+        sizes[(ImageDimension - 1) - i] = outputSize[i];
         }
-      plan = FFTWProxyType::Plan_dft_c2r(VDimension,sizes,
+      plan = FFTWProxyType::Plan_dft_c2r(ImageDimension,sizes,
                                          in,
                                          out,
                                          FFTW_ESTIMATE,
                                          this->GetNumberOfThreads() );
       delete [] sizes;
     }
-  fftw::Proxy<TPixel>::Execute(plan);
+  FFTWProxyType::Execute(plan);
 
   // some cleanup
   FFTWProxyType::DestroyPlan(plan);
@@ -136,12 +148,18 @@ BeforeThreadedGenerateData()
     }
 }
 
-template <typename TPixel, unsigned int VDimension>
-void
-FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
-ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId )
+#if ITK_VERSION_MAJOR >= 4
+  template< class TInputImage, class TOutputImage >
+  void
+  FFTWComplexConjugateToRealImageFilter<TInputImage,TOutputImage>::
+#else
+  template <typename TPixel, unsigned int VDimension>
+  void
+  FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
+#endif
+ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId )
 {
-  typedef ImageRegionIterator< TOutputImageType > IteratorType;
+  typedef ImageRegionIterator< OutputImageType > IteratorType;
   unsigned long total_outputSize = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
   IteratorType  it(this->GetOutput(), outputRegionForThread);
   while( !it.IsAtEnd() )
@@ -151,17 +169,29 @@ ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int thr
     }
 }
 
-template <typename TPixel,unsigned int VDimension>
-bool
-FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
+#if ITK_VERSION_MAJOR >= 4
+  template< class TInputImage, class TOutputImage >
+  bool
+  FFTWComplexConjugateToRealImageFilter<TInputImage,TOutputImage>::
+#else
+  template <typename TPixel,unsigned int VDimension>
+  bool
+  FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
+#endif
 FullMatrix()
 {
   return false;
 }
 
-template <typename TPixel,unsigned int VDimension>
-void
-FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
+#if ITK_VERSION_MAJOR >= 4
+  template< class TInputImage, class TOutputImage >
+  void
+  FFTWComplexConjugateToRealImageFilter<TInputImage,TOutputImage>::
+#else
+  template <typename TPixel,unsigned int VDimension>
+  void
+  FFTWComplexConjugateToRealImageFilter<TPixel,VDimension>::
+#endif
 UpdateOutputData(DataObject * output)
 {
   // we need to catch that information now, because it is changed later

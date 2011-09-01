@@ -76,6 +76,10 @@ protected:
 
   void GenerateData();
 
+  /** The two inputs should not be in the same space so there is nothing
+   * to verify. */
+  virtual void VerifyInputInformation() {}
+
   /** Pointers to each subfilter of this composite filter */
   typename ExtractFilterType::Pointer m_ExtractFilter;
   typename WeightFilterType::Pointer m_WeightFilter;

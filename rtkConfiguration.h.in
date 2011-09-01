@@ -3,6 +3,11 @@
 //This file is interpreted by cmake, to define macros based on the cmake configuration options
 //
 
+/* Solves compatibility issue between ITKv3 and ITKv4 */
+#include <itkConfigure.h>
+#if ITK_VERSION_MAJOR <= 3
+#  define ThreadIdType int
+#endif
 
 #cmakedefine01 CUDA_FOUND
 #cmakedefine01 OPENCL_FOUND
@@ -17,7 +22,7 @@
 # endif
 #else
 /* unix needs nothing */
-#define gpuit_EXPORT 
+#define gpuit_EXPORT
 #endif
 
 #define RTK_BINARY_DIR "@RTK_BINARY_DIR@"

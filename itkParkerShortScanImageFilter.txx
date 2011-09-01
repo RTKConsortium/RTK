@@ -10,7 +10,7 @@ namespace itk
 template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId)
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId)
 {
   // Get angular gaps and max gap
   std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext();

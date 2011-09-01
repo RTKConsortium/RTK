@@ -28,19 +28,30 @@ namespace itk
  * \ingroup
  */
 
-template <class TPixel, unsigned int VDimension = 3>
-class ITK_EXPORT FFTWRealToComplexConjugateImageFilter :
-  public FFTRealToComplexConjugateImageFilter<TPixel,VDimension>
+#if ITK_VERSION_MAJOR >= 4
+  template< class TInputImage, class TOutputImage=Image< std::complex<typename TInputImage::PixelType>, TInputImage::ImageDimension> >
+  class ITK_EXPORT FFTWRealToComplexConjugateImageFilter :
+    public FFTRealToComplexConjugateImageFilter<TInputImage,TOutputImage>
+#else
+  template <class TPixel, unsigned int VDimension = 3>
+  class ITK_EXPORT FFTWRealToComplexConjugateImageFilter :
+    public FFTRealToComplexConjugateImageFilter<TPixel,VDimension>
+#endif
 {
 public:
   typedef FFTWRealToComplexConjugateImageFilter                   Self;
+#if ITK_VERSION_MAJOR >= 4
+  typedef FFTRealToComplexConjugateImageFilter<TInputImage,TOutputImage>  Superclass;
+#else
   typedef FFTRealToComplexConjugateImageFilter<TPixel,VDimension> Superclass;
+#endif
   typedef SmartPointer<Self>                                      Pointer;
   typedef SmartPointer<const Self>                                ConstPointer;
 
   /** Standard class typedefs. */
-  typedef typename Superclass::TInputImageType  TInputImageType;
-  typedef typename Superclass::TOutputImageType TOutputImageType;
+  typedef typename Superclass::TInputImageType  InputImageType;
+  typedef typename InputImageType::PixelType    InputPixelType;
+  typedef typename Superclass::TOutputImageType OutputImageType;
 
   /**
    * the proxy type is a wrapper for the fftw API
@@ -49,7 +60,7 @@ public:
    * is trying to use double if only the float FFTW version is
    * configured in, or float if only double is configured.
    */
-  typedef typename fftw::Proxy<TPixel> FFTWProxyType;
+  typedef typename fftw::Proxy<typename InputImageType::PixelType> FFTWProxyType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

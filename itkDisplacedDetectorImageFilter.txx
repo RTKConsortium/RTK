@@ -99,7 +99,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId)
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId )
 {
   // Compute overlap between input and output
   OutputImageRegionType overlapRegion = outputRegionForThread;

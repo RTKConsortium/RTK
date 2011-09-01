@@ -1,8 +1,10 @@
 #ifndef __itkConstantImageSource_h
 #define __itkConstantImageSource_h
 
-#include "itkImageSource.h"
-#include "itkNumericTraits.h"
+#include "rtkConfiguration.h"
+
+#include <itkImageSource.h>
+#include <itkNumericTraits.h>
 
 namespace itk
 {
@@ -74,8 +76,9 @@ protected:
   ConstantImageSource();
   ~ConstantImageSource();
   void PrintSelf(std::ostream& os, Indent indent) const;
-  
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId );
+
+  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+
   virtual void GenerateOutputInformation();
 
 private:

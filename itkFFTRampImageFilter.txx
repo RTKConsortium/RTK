@@ -80,13 +80,17 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::ThreadedGenerateData( const RegionType& outputRegionForThread, int threadId )
+::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId )
 {
   // Pad image region
   FFTInputImagePointer paddedImage = PadInputImageRegion(outputRegionForThread);
 
   // FFT padded image
+#if ITK_VERSION_MAJOR <= 3
   typedef FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
+#else
+  typedef FFTRealToComplexConjugateImageFilter< FFTInputImageType > FFTType;
+#endif
   typename FFTType::Pointer fftI = FFTType::New();
   fftI->SetInput( paddedImage );
   fftI->SetNumberOfThreads( 1 );
@@ -96,7 +100,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   FFTOutputImagePointer fftK = this->GetFFTRampKernel(paddedImage->GetLargestPossibleRegion().GetSize(0) );
 
   //Multiply line-by-line
-  ImageRegionIterator<typename FFTType::TOutputImageType> itI(fftI->GetOutput(),
+  ImageRegionIterator<typename FFTType::OutputImageType> itI(fftI->GetOutput(),
                                                               fftI->GetOutput()->GetLargestPossibleRegion() );
   ImageRegionConstIterator<FFTOutputImageType> itK(fftK, fftK->GetLargestPossibleRegion() );
   itI.GoToBegin();
@@ -110,7 +114,11 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   //Inverse FFT image
+#if ITK_VERSION_MAJOR <= 3
   typedef FFTComplexConjugateToRealImageFilter< FFTPrecisionType, ImageDimension > IFFTType;
+#else
+  typedef FFTComplexConjugateToRealImageFilter< typename FFTType::OutputImageType > IFFTType;
+#endif
   typename IFFTType::Pointer ifft = IFFTType::New();
   ifft->SetInput( fftI->GetOutput() );
   ifft->SetActualXDimensionIsOdd( paddedImage->GetLargestPossibleRegion().GetSize(0) % 2 );
@@ -275,14 +283,18 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   // FFT kernel
+#if ITK_VERSION_MAJOR <= 3
   typedef FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
+#else
+  typedef FFTRealToComplexConjugateImageFilter< FFTInputImageType > FFTType;
+#endif
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
   fftK->SetNumberOfThreads( 1 );
   fftK->Update();
 
   // Windowing (if enabled)
-  typedef ImageRegionIterator<typename FFTType::TOutputImageType> IteratorType;
+  typedef ImageRegionIterator<typename FFTType::OutputImageType> IteratorType;
   IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion() );
 
   unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
