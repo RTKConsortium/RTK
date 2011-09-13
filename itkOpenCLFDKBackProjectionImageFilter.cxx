@@ -73,10 +73,10 @@ OpenCLFDKBackProjectionImageFilter
 
   // Set kernel parameters
   cl_uint4 volumeDim;
-  volumeDim.x = this->GetOutput()->GetRequestedRegion().GetSize()[0];
-  volumeDim.y = this->GetOutput()->GetRequestedRegion().GetSize()[1];
-  volumeDim.z = this->GetOutput()->GetRequestedRegion().GetSize()[2];
-  volumeDim.w = 1;
+  volumeDim.s[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
+  volumeDim.s[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
+  volumeDim.s[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
+  volumeDim.s[3] = 1;
   OPENCL_CHECK_ERROR( clSetKernelArg(m_Kernel, 0, sizeof(cl_mem), &m_DeviceVolume) );
   OPENCL_CHECK_ERROR( clSetKernelArg(m_Kernel, 1, sizeof(cl_mem), &m_DeviceMatrix) );
   OPENCL_CHECK_ERROR( clSetKernelArg(m_Kernel, 2, sizeof(cl_mem), &m_DeviceProjection) );
