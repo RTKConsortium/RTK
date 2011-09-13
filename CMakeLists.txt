@@ -166,6 +166,7 @@ IF (CUDA_FOUND)
   TARGET_LINK_LIBRARIES(rtkfdk rtkcuda)
 ENDIF (CUDA_FOUND)
 ADD_RTK_EXECUTABLE(rtkamsterdamshroud)
+ADD_RTK_EXECUTABLE(rtkforwardprojections)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 ADD_RTK_EXECUTABLE(rtkvarianobigeometry itkVarianObiXMLFileReader.cxx)
