@@ -3,6 +3,7 @@
 
 #include "itkInPlaceImageFilter.h"
 #include "itkThreeDCircularProjectionGeometry.h"
+#include "rtkConfiguration.h"
 
 /** \class DisplacedDetectorImageFilter
  *
