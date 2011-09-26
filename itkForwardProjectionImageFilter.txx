@@ -107,7 +107,7 @@ ForwardProjectionImageFilter<TInputImage,TOutputImage>
     itk::Matrix<double, Dimension+1, Dimension+1> matrix;
     matrix = GetIndexToPhysicalPointMatrix< TOutputImage >( this->GetOutput() );
     matrix[0][3] -= this->m_Geometry->GetProjectionOffsetsX()[iProj] - this->m_Geometry->GetSourceOffsetsX()[iProj];
-    matrix[1][3] -= this->m_Geometry->GetProjectionOffsetsX()[iProj] - this->m_Geometry->GetSourceOffsetsY()[iProj];
+    matrix[1][3] -= this->m_Geometry->GetProjectionOffsetsY()[iProj] - this->m_Geometry->GetSourceOffsetsY()[iProj];
     matrix[2][3] = this->m_Geometry->GetSourceToIsocenterDistances()[iProj] -
                    this->m_Geometry->GetSourceToDetectorDistances()[iProj];
     matrix[2][2] = 0.; // Force z to axis to detector distance
