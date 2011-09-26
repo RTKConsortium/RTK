@@ -15,7 +15,7 @@ section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"
 option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
 
-section "Backprojection"
+section "Volume properties"
 option "origin"    - "Origin (default=centered)" double multiple no
 option "dimension" - "Dimension"                 int    multiple no  default="256"
 option "spacing"   - "Spacing"                   double multiple no  default="1"
