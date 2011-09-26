@@ -226,7 +226,7 @@ IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
   # Include .h and .txx files
   FILE(GLOB __files1 "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
   FILE(GLOB __files2 "${CMAKE_CURRENT_SOURCE_DIR}/*.txx")
-  INSTALL(FILES ${__files1} ${__files2}
+  INSTALL(FILES ${__files1} ${__files2} ${CMAKE_CURRENT_BINARY_DIR}/rtkConfiguration.h
     DESTINATION ${RTK_INSTALL_INCLUDE_DIR}
     COMPONENT Development)
 ENDIF(NOT RTK_INSTALL_NO_DEVELOPMENT)
