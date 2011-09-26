@@ -130,7 +130,7 @@ void
 FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
 {
-  itkDebugMacro("setting " GeometryPointer " to " << _arg);
+  itkDebugMacro("setting GeometryPointer to " << _arg);
   if (this->GetGeometry() != _arg)
     {
     m_WeightFilter->SetGeometry(_arg);
