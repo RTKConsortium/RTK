@@ -92,13 +92,13 @@ ForwardProjectionImageFilter<TInputImage,TOutputImage>
                                                            m_Geometry->GetGantryAngles()[iProj],
                                                            m_Geometry->GetInPlaneAngles()[iProj],
                                                            0.,0.,0.);
-    rotMatrix = volMatrix * rotMatrix;
+    rotMatrix = volMatrix * rotMatrix.GetInverse();
 
     // Compute source position an change coordinate system
     itk::Vector<double, 4> sourcePosition;
     sourcePosition[0] = this->m_Geometry->GetSourceOffsetsX()[iProj];
     sourcePosition[1] = this->m_Geometry->GetSourceOffsetsY()[iProj];
-    sourcePosition[2] = this->m_Geometry->GetSourceToIsocenterDistances()[iProj];
+    sourcePosition[2] = -this->m_Geometry->GetSourceToIsocenterDistances()[iProj];
     sourcePosition[3] = 1.;
     sourcePosition = rotMatrix * sourcePosition;
     interpolator->SetFocalPoint( typename InterpolatorType::InputPointType(&sourcePosition[0]) );
@@ -108,8 +108,8 @@ ForwardProjectionImageFilter<TInputImage,TOutputImage>
     matrix = GetIndexToPhysicalPointMatrix< TOutputImage >( this->GetOutput() );
     matrix[0][3] -= this->m_Geometry->GetProjectionOffsetsX()[iProj] - this->m_Geometry->GetSourceOffsetsX()[iProj];
     matrix[1][3] -= this->m_Geometry->GetProjectionOffsetsY()[iProj] - this->m_Geometry->GetSourceOffsetsY()[iProj];
-    matrix[2][3] = this->m_Geometry->GetSourceToIsocenterDistances()[iProj] -
-                   this->m_Geometry->GetSourceToDetectorDistances()[iProj];
+    matrix[2][3] = this->m_Geometry->GetSourceToDetectorDistances()[iProj] -
+                   this->m_Geometry->GetSourceToIsocenterDistances()[iProj];
     matrix[2][2] = 0.; // Force z to axis to detector distance
     matrix = rotMatrix * matrix;
 
