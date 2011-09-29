@@ -14,6 +14,7 @@ CudaFDKConeBeamReconstructionFilter
 
   // Default parameters
   m_BackProjectionFilter->InPlaceOn();
+  m_BackProjectionFilter->SetTranspose(false);
 }
 
 void
