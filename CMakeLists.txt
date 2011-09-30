@@ -167,6 +167,7 @@ IF (CUDA_FOUND)
 ENDIF (CUDA_FOUND)
 ADD_RTK_EXECUTABLE(rtkamsterdamshroud)
 ADD_RTK_EXECUTABLE(rtkforwardprojections)
+ADD_RTK_EXECUTABLE(rtksart)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 ADD_RTK_EXECUTABLE(rtkvarianobigeometry itkVarianObiXMLFileReader.cxx)
