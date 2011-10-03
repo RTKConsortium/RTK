@@ -113,7 +113,7 @@ IF(OPENCL_FOUND)
   ADD_LIBRARY(rtkopencl
               itkOpenCLUtilities.cxx
               itkOpenCLFDKBackProjectionImageFilter.cxx)
-  TARGET_LINK_LIBRARIES(rtkopencl ${OPENCL_LIBRARIES})
+  TARGET_LINK_LIBRARIES(rtkopencl ${OPENCL_LIBRARIES} ${ITK_LIBRARIES})
 
   FILE(GLOB openclSRCs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cl)
   ADD_CUSTOM_TARGET(openclSRCCopy ALL COMMENT "Copying OpenCL source files")
