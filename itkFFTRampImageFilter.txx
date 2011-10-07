@@ -171,31 +171,33 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   const long next = vnl_math_min(zeroext, (long)this->GetTruncationCorrectionExtent() );
   if(next)
     {
+    typename FFTInputImageType::IndexType idx;
+    typename FFTInputImageType::IndexType::IndexValueType borderDist=0, rightIdx=0;
+
     // Mirror left
-    RegionType leftRegion = paddedRegion;
+    RegionType leftRegion = inputRegion;
     leftRegion.SetIndex(0, inputRegion.GetIndex(0)-next);
     leftRegion.SetSize(0, next);
     ImageRegionIteratorWithIndex<FFTInputImageType> itLeft(paddedImage, leftRegion);
     while(!itLeft.IsAtEnd() )
       {
-      typename FFTInputImageType::IndexType idx = itLeft.GetIndex();
-      typename FFTInputImageType::IndexType::IndexValueType borderDist = inputRegion.GetIndex(0)-idx[0];
+      idx = itLeft.GetIndex();
+      borderDist = inputRegion.GetIndex(0)-idx[0];
       idx[0] = inputRegion.GetIndex(0) + borderDist;
       itLeft.Set(m_TruncationMirrorWeights[ borderDist ] * this->GetInput()->GetPixel(idx) );
       ++itLeft;
-
       }
 
     // Mirror right
-    RegionType rightRegion = paddedRegion;
+    RegionType rightRegion = inputRegion;
     rightRegion.SetIndex(0, inputRegion.GetIndex(0)+inputRegion.GetSize(0) );
     rightRegion.SetSize(0, next);
     ImageRegionIteratorWithIndex<FFTInputImageType> itRight(paddedImage, rightRegion);
     while(!itRight.IsAtEnd() )
       {
-      typename FFTInputImageType::IndexType idx = itRight.GetIndex();
-      typename FFTInputImageType::IndexType::IndexValueType rightIdx = inputRegion.GetIndex(0)+inputRegion.GetSize(0)-1;
-      typename FFTInputImageType::IndexType::IndexValueType borderDist = idx[0]-rightIdx;
+      idx = itRight.GetIndex();
+      rightIdx = inputRegion.GetIndex(0)+inputRegion.GetSize(0)-1;
+      borderDist = idx[0]-rightIdx;
       idx[0] = rightIdx - borderDist;
       itRight.Set(m_TruncationMirrorWeights[ borderDist ] * this->GetInput()->GetPixel(idx) );
       ++itRight;
