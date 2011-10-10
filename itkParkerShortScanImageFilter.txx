@@ -65,11 +65,12 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
 
   // Compute delta angle where there is weighting required
   const double firstAngle = rotationAngles[(maxAngularGapPos+2) % rotationAngles.size()];
-  const double lastAngle = rotationAngles[(maxAngularGapPos+rotationAngles.size()-1) % rotationAngles.size()];
+  double lastAngle = rotationAngles[(maxAngularGapPos+rotationAngles.size()-1) % rotationAngles.size()];
+  if(lastAngle<firstAngle)
+    lastAngle += 360;
   double delta = 0.5 * (lastAngle - firstAngle - 180);
   delta = delta-360*floor(delta/360); // between -360 and 360
-  if(delta<0) delta += 360;           // between 0    and 360
-  delta *= Math::pi / 180;            // degreees to radians
+  delta *= Math::pi / 180;            // degrees to radians
 
   double invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
   if( delta < atan(0.5 * detectorWidth * invsdd) )
