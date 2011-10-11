@@ -2,11 +2,11 @@
 #define __itkForwardProjectionImageFilter_txx
 
 #include "rtkHomogeneousMatrix.h"
+#include "itkRayCastInterpolateImageFunction.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkIdentityTransform.h>
-#include <itkRayCastInterpolateImageFunction.h>
 
 namespace itk
 {
