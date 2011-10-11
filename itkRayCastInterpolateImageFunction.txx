@@ -489,7 +489,7 @@ RayCastHelper<TInputImage, TCoordRep>
 ::CalcRayIntercepts()
 {
   double maxInterDist, interDist;
-  double cornerVect[4][3];
+  double cornerVect[4][3] = {{0.,0.,0.},{0.,0.,0.},{0.,0.,0.},{0.,0.,0.}};
   int cross[4][3], noInterFlag[6];
   int nSidesCrossed, crossFlag, c[4];
   double ax, ay, az, bx, by, bz;
