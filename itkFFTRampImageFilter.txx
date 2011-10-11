@@ -332,9 +332,9 @@ void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::UpdateTruncationMirrorWeights()
 {
-  const long next = this->GetTruncationCorrectionExtent();
+  const unsigned int next = this->GetTruncationCorrectionExtent();
 
-  if ( (long)m_TruncationMirrorWeights.size() != next)
+  if ( (unsigned int) m_TruncationMirrorWeights.size() != next)
     {
     m_TruncationMirrorWeights.resize(next+1);
     for(unsigned int i=0; i<next+1; i++)
