@@ -7,6 +7,8 @@ elseif (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.8)
   # FindCuda is included with CMake 2.8
   set (CUDA_FOUND FALSE)
 else ()
+  find_package (CUDA QUIET)
+
   # GCS 2011.03.16
   # Make nvcc less whiny
   if (CMAKE_COMPILER_IS_GNUCC)
@@ -15,8 +17,6 @@ else ()
       set (CUDA_NVCC_FLAGS --compiler-options ${CMAKE_C_FLAGS})
     endif ()
   endif ()
-
-  find_package (CUDA QUIET)
 endif ()
 
 set (CUDA_FOUND ${CUDA_FOUND} CACHE BOOL "Did we find cuda?")
