@@ -7,7 +7,7 @@
 # "c:/Dashboards/Scripts".  Create a file next to this script, say
 # 'my_dashboard.cmake', with code of the following form:
 #
-#   # client maintainer: me@mydomain.net
+#   # client maintainer: simon.rit@creatis.insa-lyon.fr
 #   set(ctest_site "machine.site")
 #   set(ctest_build_name "platform-compiler")
 #   set(ctest_build_configuration debug)

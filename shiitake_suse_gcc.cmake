@@ -1,4 +1,4 @@
-# client maintainer: me@mydomain.net
+# client maintainer: simon.rit@creatis.insa-lyon.fr
 set(CTEST_SITE "shiitake.clb")
 set(CTEST_BUILD_NAME "Linux-64bit-gcc")
 set(CTEST_BUILD_CONFIGURATION Release)
