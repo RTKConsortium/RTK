@@ -24,6 +24,7 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
   // Create interpolator
   typedef typename itk::RayCastInterpolateImageFunction< TInputImage, double > InterpolatorType;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  interpolator->SetThreshold( 0. );
   interpolator->SetInputImage( this->GetInput(1) );
   interpolator->SetTransform(itk::IdentityTransform<double,3>::New());
 
@@ -94,7 +95,7 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
 
     // Go over each pixel of the projection
     typename TInputImage::PointType point;
-    for(unsigned int pix=0; pix<nPixelPerProj; pix++)
+    for(unsigned int pix=0; pix<nPixelPerProj; pix++, ++itIn, ++itOut)
       {
       // Compute point coordinate in volume depending on projection index
       for(unsigned int i=0; i<Dimension; i++)
@@ -105,8 +106,6 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
         }
 
       itOut.Set( itIn.Get() + interpolator->Evaluate(point) );
-      ++itIn;
-      ++itOut;
       }
     }
 }
