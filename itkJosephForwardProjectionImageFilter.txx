@@ -116,7 +116,10 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         nearest [mainDir] = vnl_math_max(nearest[mainDir]-1e-10, boxMin[mainDir]);
         nearestMainSlice  = vnl_math_ceil ( nearest [mainDir] );
         farthestMainSlice = vnl_math_floor( farthest[mainDir] );
-        const typename TInputImage::PixelType *dataSlice = beginBuffer + nearestMainSlice * offsets[mainDir];
+        const typename TInputImage::PixelType *dataSlice1 = beginBuffer + nearestMainSlice * offsets[mainDir];
+        const typename TInputImage::PixelType *dataSlice2 = dataSlice1 + offsets[notMainDirInf];
+        const typename TInputImage::PixelType *dataSlice3 = dataSlice1 + offsets[notMainDirSup];
+        const typename TInputImage::PixelType *dataSlice4 = dataSlice2 + offsets[notMainDirSup];
         double residual = nearestMainSlice-nearest[mainDir];
         step = dirVox * ( residual/dirVox[mainDir] );
         current = nearest + step;
@@ -127,7 +130,10 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
           }
 
         typename TOutputImage::PixelType value = (residual+0.5) *
-                                                 BilinearInterpolation(dataSlice,
+                                                 BilinearInterpolation(dataSlice1,
+                                                                       dataSlice2,
+                                                                       dataSlice3,
+                                                                       dataSlice4,
                                                                        current[notMainDirInf],
                                                                        current[notMainDirSup],
                                                                        offsets[notMainDirInf],
@@ -137,11 +143,17 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         // Middle steps
         step = dirVox * ( 1/dirVox[mainDir] );
         for(unsigned int i=nearestMainSlice+1; i<farthestMainSlice; i++,
-                                                                    dataSlice+=offsets[mainDir],
+                                                                    dataSlice1+=offsets[mainDir],
+                                                                    dataSlice2+=offsets[mainDir],
+                                                                    dataSlice3+=offsets[mainDir],
+                                                                    dataSlice4+=offsets[mainDir],
                                                                     current+=step)
           {
 
-          value = BilinearInterpolation(dataSlice,
+          value = BilinearInterpolation(dataSlice1,
+                                        dataSlice2,
+                                        dataSlice3,
+                                        dataSlice4,
                                         current[notMainDirInf],
                                         current[notMainDirSup],
                                         offsets[notMainDirInf],
@@ -165,20 +177,26 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 typename JosephForwardProjectionImageFilter<TInputImage,TOutputImage>::OutputPixelType
 JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
-::BilinearInterpolation(const InputPixelType *data, double x, double y, unsigned int ox, unsigned int oy) const
+::BilinearInterpolation(const InputPixelType *p1,
+                        const InputPixelType *p2,
+                        const InputPixelType *p3,
+                        const InputPixelType *p4,
+                        const double x,
+                        const double y,
+                        const unsigned int ox,
+                        const unsigned int oy) const
 {
   unsigned int ix = itk::Math::Floor(x);
   unsigned int iy = itk::Math::Floor(y);
-  unsigned int idxX = ix*ox;
-  unsigned int idxY = iy*oy;
+  unsigned int idx = ix*ox + iy*oy;
   double lx = x - ix;
   double ly = y - iy;
   double lxc = 1.-lx;
   double lyc = 1.-ly;
-  return lx  * ly  * data[ idxX+ox + idxY+oy ] +
-         lxc * ly  * data[ idxX    + idxY+oy ] +
-         lx  * lyc * data[ idxX+ox + idxY ] +
-         lxc * lyc * data[ idxX    + idxY ];
+  return lxc * lyc * p1[ idx ] +
+         lx  * lyc * p2[ idx ] +
+         lxc * ly  * p3[ idx ] +
+         lx  * ly  * p4[ idx ];
 }
 
 } // end namespace itk

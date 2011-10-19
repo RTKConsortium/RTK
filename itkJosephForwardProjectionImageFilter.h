@@ -42,7 +42,14 @@ protected:
    * to verify. */
   virtual void VerifyInputInformation() {}
 
-  inline OutputPixelType BilinearInterpolation(const InputPixelType *data, double x, double y, unsigned int ox, unsigned int oy) const;
+  inline OutputPixelType BilinearInterpolation(const InputPixelType *p1,
+                                               const InputPixelType *p2,
+                                               const InputPixelType *p3,
+                                               const InputPixelType *p4,
+                                               const double x,
+                                               const double y,
+                                               const unsigned int ox,
+                                               const unsigned int oy) const;
 
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
