@@ -197,6 +197,18 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
          lx  * lyc * p2[ idx ] +
          lxc * ly  * p3[ idx ] +
          lx  * ly  * p4[ idx ];
+/* Alternative slower solution
+  const unsigned int ix = itk::Math::Floor(x);
+  const unsigned int iy = itk::Math::Floor(y);
+  const unsigned int idx = ix*ox + iy*oy;
+  const double a = p1[idx];
+  const double b = p2[idx] - a;
+  const double c = p3[idx] - a;
+  const double lx = x-ix;
+  const double ly = y-iy;
+  const double d = p4[idx] - a - b - c;
+  return a + b*lx + c*ly + d*lx*ly;
+*/
 }
 
 } // end namespace itk
