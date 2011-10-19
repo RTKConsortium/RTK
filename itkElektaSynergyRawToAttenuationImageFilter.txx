@@ -16,24 +16,27 @@ ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
   if ( !inputPtr )
     return;
 
-  m_LutFilter->SetInput(inputPtr); //SR: this is most likely useless
-  m_CropFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
-  m_CropFilter->GetOutput()->PropagateRequestedRegion();
+  m_CropFilter->SetInput(inputPtr); //SR: this is most likely useless
+  m_LutFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
+  m_LutFilter->GetOutput()->PropagateRequestedRegion();
 }
 
 template <class TInputImage, class TOutputImage>
 ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::ElektaSynergyRawToAttenuationImageFilter()
 {
-  m_LutFilter = LutFilterType::New();
   m_CropFilter = CropFilterType::New();
+  m_ScatterFilter = ScatterFilterType::New();
+  m_LutFilter = LutFilterType::New();
 
   //Permanent internal connections
-  m_CropFilter->SetInput(m_LutFilter->GetOutput() );
+  m_ScatterFilter->SetInput( m_CropFilter->GetOutput() );
+  m_LutFilter->SetInput( m_ScatterFilter->GetOutput() );
 
   //Default filter parameters
   typename CropFilterType::SizeType border = m_CropFilter->GetLowerBoundaryCropSize();
   border[0] = 4;
+  border[1] = 4;
   m_CropFilter->SetBoundaryCropSize(border);
 }
 
@@ -42,12 +45,12 @@ void
 ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
-  m_LutFilter->SetInput(this->GetInput() );
-  m_CropFilter->UpdateOutputInformation();
-  this->GetOutput()->SetOrigin( m_CropFilter->GetOutput()->GetOrigin() );
-  this->GetOutput()->SetSpacing( m_CropFilter->GetOutput()->GetSpacing() );
-  this->GetOutput()->SetDirection( m_CropFilter->GetOutput()->GetDirection() );
-  this->GetOutput()->SetLargestPossibleRegion( m_CropFilter->GetOutput()->GetLargestPossibleRegion() );
+  m_CropFilter->SetInput(this->GetInput() );
+  m_LutFilter->UpdateOutputInformation();
+  this->GetOutput()->SetOrigin( m_LutFilter->GetOutput()->GetOrigin() );
+  this->GetOutput()->SetSpacing( m_LutFilter->GetOutput()->GetSpacing() );
+  this->GetOutput()->SetDirection( m_LutFilter->GetOutput()->GetDirection() );
+  this->GetOutput()->SetLargestPossibleRegion( m_LutFilter->GetOutput()->GetLargestPossibleRegion() );
 }
 
 template<class TInputImage, class TOutputImage>
@@ -55,9 +58,9 @@ void
 ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::GenerateData()
 {
-  m_LutFilter->SetInput(this->GetInput() );
-  m_CropFilter->Update();
-  this->GraftOutput( m_CropFilter->GetOutput() );
+  m_CropFilter->SetInput(this->GetInput() );
+  m_LutFilter->Update();
+  this->GraftOutput( m_LutFilter->GetOutput() );
 }
 
 } // end namespace itk

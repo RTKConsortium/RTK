@@ -4,6 +4,7 @@
 #include <itkImageToImageFilter.h>
 #include <itkCropImageFilter.h>
 #include "itkElektaSynergyLutImageFilter.h"
+#include "itkBoellaardScatterCorrectionImageFilter.h"
 
 /** \class RawToAttenuationImageFilter
  * \brief Convert raw Elekta Synergy data to attenuation images
@@ -58,11 +59,13 @@ private:
   ElektaSynergyRawToAttenuationImageFilter(const Self&);
   void operator=(const Self&);
 
-  typedef itk::ElektaSynergyLutImageFilter<InputImageType, OutputImageType> LutFilterType;
-  typedef itk::CropImageFilter<OutputImageType, OutputImageType>            CropFilterType;
+  typedef itk::CropImageFilter<InputImageType, InputImageType>                       CropFilterType;
+  typedef itk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
+  typedef itk::ElektaSynergyLutImageFilter<InputImageType, OutputImageType>          LutFilterType;
 
   typename LutFilterType::Pointer m_LutFilter;
   typename CropFilterType::Pointer m_CropFilter;
+  typename ScatterFilterType::Pointer m_ScatterFilter;
 }; // end of class
 
 } // end namespace itk
