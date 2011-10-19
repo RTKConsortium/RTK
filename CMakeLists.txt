@@ -57,6 +57,18 @@ ENDIF(ITK_FOUND)
 #=========================================================
 
 #=========================================================
+# Remove some Intel compiler warnings
+IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+  STRING(REPLACE "-Wno-unused-parameter" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+  IF(WIN32)
+    SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qwd1268")
+  ELSE(WIN32)
+    SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd1268")
+  ENDIF(WIN32)
+ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+#=========================================================
+
+#=========================================================
 # Shared libraries option 
 OPTION(BUILD_SHARED_LIBS "Build RTK with shared libraries." ${ITK_BUILD_SHARED})
 #=========================================================

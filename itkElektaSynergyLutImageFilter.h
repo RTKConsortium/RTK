@@ -63,18 +63,18 @@ itk::ElektaSynergyLutImageFilter<TInputImage, TOutputImage>::ElektaSynergyLutIma
   it.GoToBegin();
 
   //First value takes value of pixel #1
-  it.Set( logRef - log( OutputImagePixelType(-1+size[0]) ) );
+  it.Set( logRef - log( OutputImagePixelType(size[0]-1) ) );
   ++it;
 
   //Conventional lookup table for the rest
   while( !it.IsAtEnd() ) {
-    it.Set( logRef - log( OutputImagePixelType(-it.GetIndex()[0]+size[0]) ) );
+    it.Set( logRef - log( OutputImagePixelType(size[0]-it.GetIndex()[0]) ) );
     ++it;
     }
 
   //Last value takes value of pixel #1
   --it;
-  it.Set( logRef - log( OutputImagePixelType(-1+size[0]) ) );
+  it.Set( logRef - log( OutputImagePixelType(size[0]-1) ) );
   ++it;
 
   // Set the lut to member and functor
