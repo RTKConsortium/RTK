@@ -6,7 +6,6 @@ option "config"    - "Config file"                                              
 option "geometry"  g  "XML geometry file name"                                   string   yes
 option "input"     i "Input volume file name"                                    string   yes
 option "output"    o "Output projections file name"                              string   yes
-option "divisions" d "Number of stream divisions to cope with large datasets"    int      no   default="1"
 
 section "Projections parameters"
 option "origin"    - "Origin (default=centered)" double multiple no

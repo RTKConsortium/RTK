@@ -4,9 +4,9 @@
 #include "itkThreeDCircularProjectionGeometryXMLFile.h"
 #include "itkForwardProjectionImageFilter.h"
 
-#include <itkStreamingImageFilter.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
+#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -22,11 +22,13 @@ int main(int argc, char * argv[])
     std::cout << "Reading geometry information from "
               << args_info.geometry_arg
               << "..."
-              << std::endl;
+              << std::flush;
   itk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = itk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
+  if(args_info.verbose_flag)
+    std::cout << " done." << std::endl;
 
   // Create a stack of empty projection images
   typedef itk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
@@ -41,29 +43,45 @@ int main(int argc, char * argv[])
   constantImageSource->SetSize( sizeOutput );
 
   // Input reader
+  if(args_info.verbose_flag)
+    std::cout << "Reading input volume "
+              << args_info.input_arg
+              << "..."
+              << std::flush;
+  itk::TimeProbe readerProbe;
   typedef itk::ImageFileReader<  OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
+  readerProbe.Start();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
+  readerProbe.Stop();
+  if(args_info.verbose_flag)
+    std::cout << " done in "
+              << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit()
+              << '.' << std::endl;
 
   // Create forward projection image filter
-  typedef itk::ForwardProjectionImageFilter<OutputImageType, OutputImageType> ForwardProjectionType;
+  if(args_info.verbose_flag)
+    std::cout << "Projecting volume..." << std::flush;
+  itk::TimeProbe projProbe;
+  typedef itk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType> ForwardProjectionType;
   ForwardProjectionType::Pointer forwardProjection = ForwardProjectionType::New();
   forwardProjection->SetInput( constantImageSource->GetOutput() );
   forwardProjection->SetInput( 1, reader->GetOutput() );
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
-
-  // Streaming depending on streaming capability of writer
-  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
-  StreamerType::Pointer streamerBP = StreamerType::New();
-  itk::ImageIOBase::Pointer imageIOBase;
-  streamerBP->SetInput( forwardProjection->GetOutput() );
-  streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
+  projProbe.Start();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() )
+  projProbe.Stop();
+  if(args_info.verbose_flag)
+    std::cout << " done in "
+              << projProbe.GetMeanTime() << ' ' << projProbe.GetUnit()
+              << '.' << std::endl;
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( streamerBP->GetOutput() );
+  writer->SetInput( forwardProjection->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
