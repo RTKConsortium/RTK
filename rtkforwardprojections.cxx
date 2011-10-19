@@ -2,6 +2,7 @@
 #include "rtkGgoFunctions.h"
 
 #include "itkThreeDCircularProjectionGeometryXMLFile.h"
+#include "itkJosephForwardProjectionImageFilter.h"
 #include "itkRayCastInterpolatorForwardProjectionImageFilter.h"
 
 #include <itkImageFileReader.h>
@@ -64,8 +65,16 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Projecting volume..." << std::flush;
   itk::TimeProbe projProbe;
-  typedef itk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType> ForwardProjectionType;
-  ForwardProjectionType::Pointer forwardProjection = ForwardProjectionType::New();
+  itk::ForwardProjectionImageFilter<OutputImageType, OutputImageType>::Pointer forwardProjection;
+  switch(args_info.method_arg)
+  {
+  case(method_arg_Joseph):
+    forwardProjection = itk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    break;
+  case(method_arg_RayCastInterpolator):
+    forwardProjection = itk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    break;
+  }
   forwardProjection->SetInput( constantImageSource->GetOutput() );
   forwardProjection->SetInput( 1, reader->GetOutput() );
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
