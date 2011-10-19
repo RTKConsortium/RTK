@@ -1,3 +1,5 @@
+#include "itkRayCastInterpolatorForwardProjectionImageFilter.h"
+
 namespace itk
 {
 
@@ -7,12 +9,13 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_NumberOfIterations(3),
   m_Lambda(0.3)
 {
+  typedef RayCastInterpolatorForwardProjectionImageFilter<TInputImage, TOutputImage> DefaultForwardType;
   this->SetNumberOfRequiredInputs(2);
 
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
-  m_ForwardProjectionFilter = ForwardProjectionFilterType::New();
+  m_ForwardProjectionFilter = DefaultForwardType::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   m_BackProjectionFilter = BackProjectionFilterType::New();

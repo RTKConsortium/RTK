@@ -1,16 +1,14 @@
 #ifndef __itkForwardProjectionImageFilter_h
 #define __itkForwardProjectionImageFilter_h
 
-#include "itkInPlaceImageFilter.h"
+#include <itkInPlaceImageFilter.h>
 #include "itkThreeDCircularProjectionGeometry.h"
 
 namespace itk
 {
 
 /** \class ForwardProjectionImageFilter
- * \brief Performs a forward projection, i.e. accumulation along x-ray lines,
- * using RayCastInterpolateFunction. RayCastInterpolateFunction does not handle
- * ITK geometry correctly but this is corrected by this class.
+ * \brief Base class for forward projection, i.e. accumulation along x-ray lines.
  */
 
 template <class TInputImage, class TOutputImage>
@@ -23,14 +21,9 @@ public:
   typedef InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef SmartPointer<Self>                           Pointer;
   typedef SmartPointer<const Self>                     ConstPointer;
-  typedef typename TInputImage::PixelType              InputPixelType;
-  typedef typename TOutputImage::RegionType            OutputImageRegionType;
 
-  typedef itk::ThreeDCircularProjectionGeometry                     GeometryType;
-  typedef typename GeometryType::Pointer                            GeometryPointer;
-
-  /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  typedef itk::ThreeDCircularProjectionGeometry        GeometryType;
+  typedef typename GeometryType::Pointer               GeometryPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ForwardProjectionImageFilter, ImageToImageFilter);
@@ -48,8 +41,6 @@ protected:
 
   /** Apply changes to the input image requested region. */
   virtual void GenerateInputRequestedRegion();
-
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */

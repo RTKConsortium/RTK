@@ -2,7 +2,7 @@
 #include "rtkGgoFunctions.h"
 
 #include "itkThreeDCircularProjectionGeometryXMLFile.h"
-#include "itkForwardProjectionImageFilter.h"
+#include "itkRayCastInterpolatorForwardProjectionImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
