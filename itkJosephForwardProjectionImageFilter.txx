@@ -78,7 +78,7 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
 
     // Go over each pixel of the projection
     typename TInputImage::SpacingType dirVox, step, stepMM, dirVoxAbs, current, nearest, farthest;
-    for(unsigned int pix=0; pix<nPixelPerProj; pix++)
+    for(unsigned int pix=0; pix<nPixelPerProj; pix++, ++itIn, ++itOut)
       {
       // Compute point coordinate in volume depending on projection index
       for(unsigned int i=0; i<Dimension; i++)
@@ -123,8 +123,6 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         if( boxMax[notMainDirInf]<current[notMainDirInf] || current[notMainDirInf]<boxMin[notMainDirInf] ||
             boxMax[notMainDirSup]<current[notMainDirSup] || current[notMainDirSup]<boxMin[notMainDirSup] )
           {
-          ++itIn;
-          ++itOut;
           continue; // Corner, skip
           }
 
@@ -160,8 +158,6 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         sum *= stepMM.GetNorm();
         itOut.Set( itIn.Get() + sum );
         }
-      ++itIn;
-      ++itOut;
       }
     }
 }
