@@ -42,7 +42,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
                        ThreadIdType threadId )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-  const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
+  const unsigned int nProj = this->GetGeometry()->GetMatrices().size();
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
   // Create interpolator, could be any interpolation
