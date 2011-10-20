@@ -90,13 +90,20 @@ int main(int argc, char * argv[])
               << '.' << std::endl;
 
   // Write
+  if(args_info.verbose_flag)
+    std::cout << "Writing... " << std::flush;
+  itk::TimeProbe writeProbe;
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( forwardProjection->GetOutput() );
-  if(args_info.verbose_flag)
-    std::cout << "Projecting and writing... " << std::flush;
+  writeProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  writeProbe.Stop();
+  if(args_info.verbose_flag)
+    std::cout << " done in "
+              << writeProbe.GetMeanTime() << ' ' << projProbe.GetUnit()
+              << '.' << std::endl;
 
   return EXIT_SUCCESS;
 }
