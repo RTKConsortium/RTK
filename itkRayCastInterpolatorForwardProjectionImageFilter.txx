@@ -24,6 +24,7 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
   // Create interpolator
   typedef typename itk::RayCastInterpolateImageFunction< TInputImage, double > InterpolatorType;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  interpolator->SetThreshold( 0. );
   interpolator->SetInputImage( this->GetInput(1) );
   interpolator->SetTransform(itk::IdentityTransform<double,3>::New());
 
