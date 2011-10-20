@@ -34,15 +34,24 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
 
   // Create intersection function
   typedef itk::RayBoxIntersectionFunction<double, Dimension> RBIFunctionType;
-  typename RBIFunctionType::Pointer rbi = RBIFunctionType::New();
-  typename RBIFunctionType::VectorType boxMin, boxMax;
-  for(unsigned int i=0; i<Dimension; i++)
+  typename RBIFunctionType::Pointer rbi[Dimension];
+  for(unsigned int j=0; j<Dimension; j++)
     {
-    boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
-    boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i]-1;
+    rbi[j] = RBIFunctionType::New();
+    typename RBIFunctionType::VectorType boxMin, boxMax;
+    for(unsigned int i=0; i<Dimension; i++)
+      {
+      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
+      boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i]-1;
+      if(i==j)
+        {
+        boxMin[i] -= 0.5;
+        boxMax[i] += 0.5;
+        }
+      }
+    rbi[j]->SetBoxMin(boxMin);
+    rbi[j]->SetBoxMax(boxMax);
     }
-  rbi->SetBoxMin(boxMin);
-  rbi->SetBoxMax(boxMax);
 
   // Go over each projection
   for(unsigned int iProj=outputRegionForThread.GetIndex(2);
@@ -64,7 +73,8 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     sourcePosition[2] = -geometry->GetSourceToIsocenterDistances()[iProj];
     sourcePosition[3] = 1.;
     sourcePosition = rotMatrix * sourcePosition;
-    rbi->SetRayOrigin( &sourcePosition[0] );
+    for(unsigned int i=0; i<Dimension; i++)
+      rbi[i]->SetRayOrigin( &sourcePosition[0] );
 
     // Compute matrix to transform projection index to volume coordinates
     itk::Matrix<double, Dimension+1, Dimension+1> matrix;
@@ -92,42 +102,41 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         }
       dirVox.Normalize();
 
-      if( rbi->Evaluate(&dirVox[0]) )
+      // Select main direction
+      unsigned int mainDir = 0;
+      for(unsigned int i=0; i<Dimension; i++)
         {
-        // Select main direction
-        unsigned int mainDir = 0;
-        for(unsigned int i=0; i<Dimension; i++)
-          {
-          dirVoxAbs[i] = vnl_math_abs( dirVox[i] );
-          if(dirVoxAbs[i]>dirVoxAbs[mainDir])
-            mainDir = i;
-          }
+        dirVoxAbs[i] = vnl_math_abs( dirVox[i] );
+        if(dirVoxAbs[i]>dirVoxAbs[mainDir])
+          mainDir = i;
+        }
+      if( rbi[mainDir]->Evaluate(&dirVox[0]) )
+        {
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
         unsigned int notMainDirSup = (mainDir+2)%Dimension;
         if(notMainDirInf>notMainDirSup)
           std::swap(notMainDirInf, notMainDirSup);
 
         // Compute main slice indices
-        nearest  = rbi->GetNearestPoint();
-        farthest = rbi->GetFarthestPoint();
+        nearest  = rbi[mainDir]->GetNearestPoint();
+        farthest = rbi[mainDir]->GetFarthestPoint();
         if(nearest[mainDir]>farthest[mainDir])
           std::swap(nearest, farthest);
-        unsigned int nearestMainSlice, farthestMainSlice;
-        nearest [mainDir] = vnl_math_max(nearest[mainDir]-1e-10, boxMin[mainDir]);
+        int nearestMainSlice, farthestMainSlice;
         nearestMainSlice  = vnl_math_ceil ( nearest [mainDir] );
         farthestMainSlice = vnl_math_floor( farthest[mainDir] );
         const typename TInputImage::PixelType *dataSlice1 = beginBuffer + nearestMainSlice * offsets[mainDir];
         const typename TInputImage::PixelType *dataSlice2 = dataSlice1 + offsets[notMainDirInf];
         const typename TInputImage::PixelType *dataSlice3 = dataSlice1 + offsets[notMainDirSup];
         const typename TInputImage::PixelType *dataSlice4 = dataSlice2 + offsets[notMainDirSup];
-        double residual = nearestMainSlice-nearest[mainDir];
-        step = dirVox * ( residual/dirVox[mainDir] );
-        current = nearest + step;
-        if( boxMax[notMainDirInf]<current[notMainDirInf] || current[notMainDirInf]<boxMin[notMainDirInf] ||
-            boxMax[notMainDirSup]<current[notMainDirSup] || current[notMainDirSup]<boxMin[notMainDirSup] )
+        const double residual = nearestMainSlice-nearest[mainDir];
+
+        if( farthestMainSlice<nearestMainSlice )
           {
           continue; // Corner, skip
           }
+        step = dirVox * ( residual/dirVox[mainDir] );
+        current = nearest + step;
 
         typename TOutputImage::PixelType value = (residual+0.5) *
                                                  BilinearInterpolation(dataSlice1,
@@ -140,14 +149,20 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
                                                                        offsets[notMainDirSup]);
         typename TOutputImage::PixelType sum = value;
 
+        dataSlice1+=offsets[mainDir];
+        dataSlice2+=offsets[mainDir];
+        dataSlice3+=offsets[mainDir];
+        dataSlice4+=offsets[mainDir];
+        current+=step;
+
         // Middle steps
         step = dirVox * ( 1/dirVox[mainDir] );
-        for(unsigned int i=nearestMainSlice+1; i<farthestMainSlice; i++,
-                                                                    dataSlice1+=offsets[mainDir],
-                                                                    dataSlice2+=offsets[mainDir],
-                                                                    dataSlice3+=offsets[mainDir],
-                                                                    dataSlice4+=offsets[mainDir],
-                                                                    current+=step)
+        for(int i=nearestMainSlice; i<farthestMainSlice; i++,
+                                                         dataSlice1+=offsets[mainDir],
+                                                         dataSlice2+=offsets[mainDir],
+                                                         dataSlice3+=offsets[mainDir],
+                                                         dataSlice4+=offsets[mainDir],
+                                                         current+=step)
           {
 
           value = BilinearInterpolation(dataSlice1,
