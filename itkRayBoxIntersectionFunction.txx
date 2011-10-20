@@ -4,7 +4,7 @@ namespace itk
 template < class TCoordRep, unsigned int VBoxDimension >
 bool
 RayBoxIntersectionFunction<TCoordRep, VBoxDimension>
-::Evaluate( const PointType& rayDirection )
+::Evaluate( const VectorType& rayDirection )
 {
   // http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
   // BI <-> m_BoxMin
@@ -44,7 +44,7 @@ RayBoxIntersectionFunction<TCoordRep, VBoxDimension>
     itkGenericExceptionMacro(<< "Box and image dimensions must agree");
 
   // Box corner 1
-  m_BoxMin = img->GetOrigin();
+  m_BoxMin = img->GetOrigin().GetVectorFromOrigin();
   m_BoxMin -= img->GetSpacing() * 0.5;
 
   // Box corner 2

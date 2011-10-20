@@ -56,7 +56,7 @@ RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
     sourcePosition[2] = -this->m_Geometry->GetSourceToIsocenterDistances()[iProj];
     sourcePosition[3] = 1.;
     sourcePosition = rotMatrix * sourcePosition;
-    RBIFunctionType::PointType p;
+    RBIFunctionType::VectorType p;
     p[0] = sourcePosition[0];
     p[1] = sourcePosition[1];
     p[2] = sourcePosition[2];
@@ -73,23 +73,23 @@ RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
     matrix = rotMatrix * matrix;
 
     // Go over each pixel of the projection
-    typename TInputImage::PointType point;
+    typename RBIFunctionType::VectorType direction;
     for(unsigned int pix=0; pix<nPixelPerProj; pix++)
       {
       // Compute point coordinate in volume depending on projection index
       for(unsigned int i=0; i<Dimension; i++)
         {
-        point[i] = matrix[i][Dimension];
+        direction[i] = matrix[i][Dimension];
         for(unsigned int j=0; j<Dimension; j++)
-          point[i] += matrix[i][j] * itOut.GetIndex()[j];
+          direction[i] += matrix[i][j] * itOut.GetIndex()[j];
 
         // Direction
-        point[i] -= sourcePosition[i];
+        direction[i] -= sourcePosition[i];
         }
-      double invNorm = 1/point.GetVectorFromOrigin().GetNorm();
+      double invNorm = 1/direction.GetNorm();
       for(unsigned int i=0; i<Dimension; i++)
-        point[i] *= invNorm;
-      if( rbiFunctor->Evaluate(point) )
+        direction[i] *= invNorm;
+      if( rbiFunctor->Evaluate(direction) )
         itOut.Set( itIn.Get() + rbiFunctor->GetFarthestDistance() - rbiFunctor->GetNearestDistance() );
       ++itIn;
       ++itOut;

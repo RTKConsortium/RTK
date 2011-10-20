@@ -35,7 +35,7 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
   // Create intersection function
   typedef itk::RayBoxIntersectionFunction<double, Dimension> RBIFunctionType;
   typename RBIFunctionType::Pointer rbi = RBIFunctionType::New();
-  typename RBIFunctionType::PointType boxMin, boxMax;
+  typename RBIFunctionType::VectorType boxMin, boxMax;
   for(unsigned int i=0; i<Dimension; i++)
     {
     boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
@@ -64,7 +64,7 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     sourcePosition[2] = -geometry->GetSourceToIsocenterDistances()[iProj];
     sourcePosition[3] = 1.;
     sourcePosition = rotMatrix * sourcePosition;
-    rbi->SetRayOrigin( typename RBIFunctionType::PointType(&sourcePosition[0]) );
+    rbi->SetRayOrigin( &sourcePosition[0] );
 
     // Compute matrix to transform projection index to volume coordinates
     itk::Matrix<double, Dimension+1, Dimension+1> matrix;
@@ -77,7 +77,7 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     matrix = rotMatrix * matrix;
 
     // Go over each pixel of the projection
-    typename TInputImage::SpacingType dirVox, step, stepMM, dirVoxAbs, current, nearest, farthest;
+    typename RBIFunctionType::VectorType dirVox, step, stepMM, dirVoxAbs, current, nearest, farthest;
     for(unsigned int pix=0; pix<nPixelPerProj; pix++, ++itIn, ++itOut)
       {
       // Compute point coordinate in volume depending on projection index
@@ -108,8 +108,8 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
           std::swap(notMainDirInf, notMainDirSup);
 
         // Compute main slice indices
-        nearest  = rbi->GetNearestPoint().GetVectorFromOrigin();
-        farthest = rbi->GetFarthestPoint().GetVectorFromOrigin();
+        nearest  = rbi->GetNearestPoint();
+        farthest = rbi->GetFarthestPoint();
         if(nearest[mainDir]>farthest[mainDir])
           std::swap(nearest, farthest);
         unsigned int nearestMainSlice, farthestMainSlice;

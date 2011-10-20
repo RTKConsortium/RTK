@@ -34,10 +34,10 @@ public:
   itkNewMacro(Self);
 
   /** Useful defines. */
-  typedef Point<TCoordRep, VBoxDimension> PointType;
+  typedef Vector<TCoordRep, VBoxDimension> VectorType;
 
   /** Evaluate the intersection points */
-  bool Evaluate( const PointType& input );
+  bool Evaluate( const VectorType& input );
 
   /** Set the box information (Min/Max corners) from an itk image.
    * \warning this method caches image information.
@@ -47,17 +47,17 @@ public:
 
   /** Get / Set the box inferior corner. Every coordinate must be inferior to
    * those of the superior corner. */
-  itkGetMacro(BoxMin, PointType);
-  itkSetMacro(BoxMin, PointType);
+  itkGetMacro(BoxMin, VectorType);
+  itkSetMacro(BoxMin, VectorType);
 
   /** Get / Set the box superior corner. Every coordinate must be superior to
    * those of the inferior corner. */
-  itkGetMacro(BoxMax, PointType);
-  itkSetMacro(BoxMax, PointType);
+  itkGetMacro(BoxMax, VectorType);
+  itkSetMacro(BoxMax, VectorType);
 
   /** Get / Set the ray origin. */
-  itkGetMacro(RayOrigin, PointType);
-  itkSetMacro(RayOrigin, PointType);
+  itkGetMacro(RayOrigin, VectorType);
+  itkSetMacro(RayOrigin, VectorType);
 
   /** Get the distance with the nearest intersection.
     * \warning Only relevant if called after Evaluate. */
@@ -69,22 +69,16 @@ public:
 
   /** Get the nearest point coordinates.
     * \warning Only relevant if called after Evaluate. */
-  virtual PointType GetNearestPoint()
+  virtual VectorType GetNearestPoint()
   {
-    PointType result;
-    for(unsigned int i=0; i<VBoxDimension; i++)
-      result[i] = m_RayOrigin[i] + m_NearestDistance * m_RayDirection[i];
-    return result;
+    return m_RayOrigin + m_NearestDistance * m_RayDirection;
   }
 
   /** Get the farthest point coordinates.
     * \warning Only relevant if called after Evaluate. */
-  virtual PointType GetFarthestPoint()
+  virtual VectorType GetFarthestPoint()
   {
-    PointType result;
-    for(unsigned int i=0; i<VBoxDimension; i++)
-      result[i] = m_RayOrigin[i] + m_FarthestDistance * m_RayDirection[i];
-    return result;
+    return m_RayOrigin + m_FarthestDistance * m_RayDirection;
   }
 
 protected:
@@ -96,15 +90,15 @@ protected:
   ~RayBoxIntersectionFunction(){};
 
   /// The focal point or position of the ray source
-  PointType m_FocalPoint;
+  VectorType m_FocalPoint;
 
   /** Corners of the image box */
-  PointType m_BoxMin;
-  PointType m_BoxMax;
-  PointType m_RayOrigin;
-  PointType m_RayDirection;
-  TCoordRep m_NearestDistance;
-  TCoordRep m_FarthestDistance;
+  VectorType m_BoxMin;
+  VectorType m_BoxMax;
+  VectorType m_RayOrigin;
+  VectorType m_RayDirection;
+  TCoordRep  m_NearestDistance;
+  TCoordRep  m_FarthestDistance;
 
 private:
   RayBoxIntersectionFunction( const Self& ); //purposely not implemented
