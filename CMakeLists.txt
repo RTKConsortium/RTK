@@ -179,6 +179,7 @@ IF (CUDA_FOUND)
 ENDIF (CUDA_FOUND)
 ADD_RTK_EXECUTABLE(rtkamsterdamshroud)
 ADD_RTK_EXECUTABLE(rtkforwardprojections)
+ADD_RTK_EXECUTABLE(rtkbackprojections)
 ADD_RTK_EXECUTABLE(rtkrayboxintersection)
 ADD_RTK_EXECUTABLE(rtksart)
 
