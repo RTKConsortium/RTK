@@ -74,6 +74,9 @@ int main(int argc, char * argv[])
   case(method_arg_RayCastInterpolator):
     forwardProjection = itk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
+  default:
+    std::cerr << "Unhandled --method value." << std::endl;
+    return EXIT_FAILURE;
   }
   forwardProjection->SetInput( constantImageSource->GetOutput() );
   forwardProjection->SetInput( 1, reader->GetOutput() );
