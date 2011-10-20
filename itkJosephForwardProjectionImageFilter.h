@@ -25,6 +25,8 @@ public:
   typedef typename TInputImage::PixelType                        InputPixelType;
   typedef typename TOutputImage::PixelType                       OutputPixelType;
   typedef typename TOutputImage::RegionType                      OutputImageRegionType;
+  typedef double                                                 CoordRepType;
+  typedef Vector<CoordRepType, TInputImage::ImageDimension>      VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -42,10 +44,10 @@ protected:
    * to verify. */
   virtual void VerifyInputInformation() {}
 
-  inline OutputPixelType BilinearInterpolation(const InputPixelType *p1,
-                                               const InputPixelType *p2,
-                                               const InputPixelType *p3,
-                                               const InputPixelType *p4,
+  inline OutputPixelType BilinearInterpolation(const InputPixelType *pxiyi,
+                                               const InputPixelType *pxsyi,
+                                               const InputPixelType *pxiys,
+                                               const InputPixelType *pxsys,
                                                const double x,
                                                const double y,
                                                const unsigned int ox,

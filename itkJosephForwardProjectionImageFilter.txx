@@ -33,7 +33,7 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Create intersection function
-  typedef itk::RayBoxIntersectionFunction<double, Dimension> RBIFunctionType;
+  typedef itk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
   typename RBIFunctionType::Pointer rbi[Dimension];
   for(unsigned int j=0; j<Dimension; j++)
     {
@@ -59,7 +59,7 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
                    iProj++)
     {
     // Account for system rotations
-    itk::Matrix<double, Dimension+1, Dimension+1> rotMatrix;
+    itk::Matrix<CoordRepType, Dimension+1, Dimension+1> rotMatrix;
     rotMatrix = Get3DRigidTransformationHomogeneousMatrix( geometry->GetOutOfPlaneAngles()[iProj],
                                                            geometry->GetGantryAngles()[iProj],
                                                            geometry->GetInPlaneAngles()[iProj],
@@ -67,17 +67,18 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     rotMatrix = GetPhysicalPointToIndexMatrix< TOutputImage >( this->GetInput(1) ) * rotMatrix.GetInverse();
 
     // Compute source position an change coordinate system
-    itk::Vector<double, 4> sourcePosition;
+    itk::Vector<CoordRepType, 4> sourcePosition;
     sourcePosition[0] = geometry->GetSourceOffsetsX()[iProj];
     sourcePosition[1] = geometry->GetSourceOffsetsY()[iProj];
     sourcePosition[2] = -geometry->GetSourceToIsocenterDistances()[iProj];
     sourcePosition[3] = 1.;
     sourcePosition = rotMatrix * sourcePosition;
+    const VectorType origin(&sourcePosition[0]);
     for(unsigned int i=0; i<Dimension; i++)
-      rbi[i]->SetRayOrigin( &sourcePosition[0] );
+      rbi[i]->SetRayOrigin(origin);
 
     // Compute matrix to transform projection index to volume coordinates
-    itk::Matrix<double, Dimension+1, Dimension+1> matrix;
+    itk::Matrix<CoordRepType, Dimension+1, Dimension+1> matrix;
     matrix = GetIndexToPhysicalPointMatrix< TOutputImage >( this->GetOutput() );
     matrix[0][3] -= geometry->GetProjectionOffsetsX()[iProj] - geometry->GetSourceOffsetsX()[iProj];
     matrix[1][3] -= geometry->GetProjectionOffsetsY()[iProj] - geometry->GetSourceOffsetsY()[iProj];
@@ -87,7 +88,7 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     matrix = rotMatrix * matrix;
 
     // Go over each pixel of the projection
-    typename RBIFunctionType::VectorType dirVox, step, stepMM, dirVoxAbs, current, nearest, farthest;
+    typename RBIFunctionType::VectorType dirVox, stepMM, dirVoxAbs, np, fp;
     for(unsigned int pix=0; pix<nPixelPerProj; pix++, ++itIn, ++itOut)
       {
       // Compute point coordinate in volume depending on projection index
@@ -100,7 +101,6 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         // Direction
         dirVox[i] -= sourcePosition[i];
         }
-      dirVox.Normalize();
 
       // Select main direction
       unsigned int mainDir = 0;
@@ -110,79 +110,85 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         if(dirVoxAbs[i]>dirVoxAbs[mainDir])
           mainDir = i;
         }
-      if( rbi[mainDir]->Evaluate(&dirVox[0]) )
+
+      // Test if there is an intersection
+      if( rbi[mainDir]->Evaluate(dirVox) )
         {
+        dirVox.Normalize();
+
+        // Compute and sort intersections: (n)earest and (f)arthest (p)points
+        np = rbi[mainDir]->GetNearestPoint();
+        fp = rbi[mainDir]->GetFarthestPoint();
+        if(np[mainDir]>fp[mainDir])
+          std::swap(np, fp);
+
+        // Compute main nearest and farthest slice indices
+        const int ns = vnl_math_ceil ( np[mainDir] );
+        const int fs = vnl_math_floor( fp[mainDir] );
+
+        // If its a corner, we can skip
+        if( fs<ns )
+          continue;
+
+        // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
         unsigned int notMainDirSup = (mainDir+2)%Dimension;
         if(notMainDirInf>notMainDirSup)
           std::swap(notMainDirInf, notMainDirSup);
 
-        // Compute main slice indices
-        nearest  = rbi[mainDir]->GetNearestPoint();
-        farthest = rbi[mainDir]->GetFarthestPoint();
-        if(nearest[mainDir]>farthest[mainDir])
-          std::swap(nearest, farthest);
-        int nearestMainSlice, farthestMainSlice;
-        nearestMainSlice  = vnl_math_ceil ( nearest [mainDir] );
-        farthestMainSlice = vnl_math_floor( farthest[mainDir] );
-        const typename TInputImage::PixelType *dataSlice1 = beginBuffer + nearestMainSlice * offsets[mainDir];
-        const typename TInputImage::PixelType *dataSlice2 = dataSlice1 + offsets[notMainDirInf];
-        const typename TInputImage::PixelType *dataSlice3 = dataSlice1 + offsets[notMainDirSup];
-        const typename TInputImage::PixelType *dataSlice4 = dataSlice2 + offsets[notMainDirSup];
-        const double residual = nearestMainSlice-nearest[mainDir];
+        // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
+        const unsigned int offsetx = offsets[notMainDirInf];
+        const unsigned int offsety = offsets[notMainDirSup];
+        const unsigned int offsetz = offsets[mainDir];
+        const typename TInputImage::PixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
+        pxiyi = beginBuffer + ns * offsetz;
+        pxsyi = pxiyi + offsetx;
+        pxiys = pxiyi + offsety;
+        pxsys = pxsyi + offsety;
 
-        if( farthestMainSlice<nearestMainSlice )
-          {
-          continue; // Corner, skip
-          }
-        step = dirVox * ( residual/dirVox[mainDir] );
-        current = nearest + step;
+        // Compute step size and go to first voxel
+        const CoordRepType residual = ns-np[mainDir];
+        const CoordRepType norm = 1/dirVox[mainDir];
+        const CoordRepType stepx = dirVox[notMainDirInf] * norm;
+        const CoordRepType stepy = dirVox[notMainDirSup] * norm;
+        CoordRepType currentx = np[notMainDirInf] + residual*stepx;
+        CoordRepType currenty = np[notMainDirSup] + residual*stepy;
 
-        typename TOutputImage::PixelType value = (residual+0.5) *
-                                                 BilinearInterpolation(dataSlice1,
-                                                                       dataSlice2,
-                                                                       dataSlice3,
-                                                                       dataSlice4,
-                                                                       current[notMainDirInf],
-                                                                       current[notMainDirSup],
-                                                                       offsets[notMainDirInf],
-                                                                       offsets[notMainDirSup]);
+        typename TOutputImage::PixelType value = (residual+0.5) * BilinearInterpolation(pxiyi, pxsyi, pxiys, pxsys,
+                                                                                        currentx, currenty,
+                                                                                        offsetx, offsety);
         typename TOutputImage::PixelType sum = value;
-
-        dataSlice1+=offsets[mainDir];
-        dataSlice2+=offsets[mainDir];
-        dataSlice3+=offsets[mainDir];
-        dataSlice4+=offsets[mainDir];
-        current+=step;
+        pxiyi    += offsetz;
+        pxsyi    += offsetz;
+        pxiys    += offsetz;
+        pxsys    += offsetz;
+        currentx += stepx;
+        currenty += stepy;
 
         // Middle steps
-        step = dirVox * ( 1/dirVox[mainDir] );
-        for(int i=nearestMainSlice; i<farthestMainSlice; i++,
-                                                         dataSlice1+=offsets[mainDir],
-                                                         dataSlice2+=offsets[mainDir],
-                                                         dataSlice3+=offsets[mainDir],
-                                                         dataSlice4+=offsets[mainDir],
-                                                         current+=step)
+        for(int i=ns; i<fs; i++)
           {
-
-          value = BilinearInterpolation(dataSlice1,
-                                        dataSlice2,
-                                        dataSlice3,
-                                        dataSlice4,
-                                        current[notMainDirInf],
-                                        current[notMainDirSup],
-                                        offsets[notMainDirInf],
-                                        offsets[notMainDirSup]);
-          sum += value;
+          value = BilinearInterpolation(pxiyi, pxsyi, pxiys, pxsys,
+                                        currentx, currenty, offsetx, offsety);
+          sum      += value;
+          pxiyi    += offsetz;
+          pxsyi    += offsetz;
+          pxiys    += offsetz;
+          pxsys    += offsetz;
+          currentx += stepx;
+          currenty += stepy;
           }
 
         // Last step was too long, remove extra
-        sum -= (0.5-farthest[mainDir]+farthestMainSlice) * value;
+        sum -= (0.5-fp[mainDir]+fs) * value;
 
         // Convert voxel to millimeters
-        for(unsigned int i=0; i<Dimension; i++)
-          stepMM[i] = this->GetInput(1)->GetSpacing()[i] * step[i];
+        stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
+        stepMM[notMainDirSup] = this->GetInput(1)->GetSpacing()[notMainDirSup] * stepy;
+        stepMM[mainDir]       = this->GetInput(1)->GetSpacing()[mainDir];
         sum *= stepMM.GetNorm();
+
+        // Accumulate
         itOut.Set( itIn.Get() + sum );
         }
       }
@@ -192,36 +198,36 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 typename JosephForwardProjectionImageFilter<TInputImage,TOutputImage>::OutputPixelType
 JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
-::BilinearInterpolation(const InputPixelType *p1,
-                        const InputPixelType *p2,
-                        const InputPixelType *p3,
-                        const InputPixelType *p4,
-                        const double x,
-                        const double y,
+::BilinearInterpolation(const InputPixelType *pxiyi,
+                        const InputPixelType *pxsyi,
+                        const InputPixelType *pxiys,
+                        const InputPixelType *pxsys,
+                        const CoordRepType x,
+                        const CoordRepType y,
                         const unsigned int ox,
                         const unsigned int oy) const
 {
   unsigned int ix = itk::Math::Floor(x);
   unsigned int iy = itk::Math::Floor(y);
   unsigned int idx = ix*ox + iy*oy;
-  double lx = x - ix;
-  double ly = y - iy;
-  double lxc = 1.-lx;
-  double lyc = 1.-ly;
-  return lxc * lyc * p1[ idx ] +
-         lx  * lyc * p2[ idx ] +
-         lxc * ly  * p3[ idx ] +
-         lx  * ly  * p4[ idx ];
+  CoordRepType lx = x - ix;
+  CoordRepType ly = y - iy;
+  CoordRepType lxc = 1.-lx;
+  CoordRepType lyc = 1.-ly;
+  return lxc * lyc * pxiyi[ idx ] +
+         lx  * lyc * pxsyi[ idx ] +
+         lxc * ly  * pxiys[ idx ] +
+         lx  * ly  * pxsys[ idx ];
 /* Alternative slower solution
   const unsigned int ix = itk::Math::Floor(x);
   const unsigned int iy = itk::Math::Floor(y);
   const unsigned int idx = ix*ox + iy*oy;
-  const double a = p1[idx];
-  const double b = p2[idx] - a;
-  const double c = p3[idx] - a;
-  const double lx = x-ix;
-  const double ly = y-iy;
-  const double d = p4[idx] - a - b - c;
+  const CoordRepType a = p1[idx];
+  const CoordRepType b = p2[idx] - a;
+  const CoordRepType c = p3[idx] - a;
+  const CoordRepType lx = x-ix;
+  const CoordRepType ly = y-iy;
+  const CoordRepType d = p4[idx] - a - b - c;
   return a + b*lx + c*ly + d*lx*ly;
 */
 }
