@@ -10,16 +10,15 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_NumberOfIterations(3),
   m_Lambda(0.3)
 {
-  typedef RayCastInterpolatorForwardProjectionImageFilter<TInputImage, TOutputImage> DefaultForwardType;
   this->SetNumberOfRequiredInputs(2);
 
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
-  m_ForwardProjectionFilter = DefaultForwardType::New();
+  m_ForwardProjectionFilter = JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
-  m_BackProjectionFilter = JosephBackProjectionImageFilter::New();
+  m_BackProjectionFilter = JosephBackProjectionImageFilter<TInputImage, TOutputImage>::New();
 
   //Permanent internal connections
   m_ZeroMultiplyFilter->SetInput( m_ExtractFilter->GetOutput() );
@@ -34,7 +33,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
 #endif
   m_ZeroMultiplyFilter->SetConstant( 0. );
-  m_BackProjectionFilter->InPlaceOn();
+  //m_BackProjectionFilter->InPlaceOn();
   m_BackProjectionFilter->SetTranspose(true);
 }
 
