@@ -1,4 +1,4 @@
-#include "itkRayCastInterpolatorForwardProjectionImageFilter.h"
+#include "itkJosephForwardProjectionImageFilter.h"
 
 namespace itk
 {
@@ -9,7 +9,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_NumberOfIterations(3),
   m_Lambda(0.3)
 {
-  typedef RayCastInterpolatorForwardProjectionImageFilter<TInputImage, TOutputImage> DefaultForwardType;
+  typedef JosephForwardProjectionImageFilter<TInputImage, TOutputImage> DefaultForwardType;
   this->SetNumberOfRequiredInputs(2);
 
   // Create each filter of the composite filter
