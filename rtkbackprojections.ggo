@@ -7,7 +7,7 @@ option "geometry"  g  "XML geometry file name"                                  
 option "path"      p  "Path containing projections"                              string   yes
 option "regexp"    r  "Regular expression to select projection files in path"    string   yes
 option "output"    o "Output projections file name"                              string   yes
-option "method"    m "Forward projection method" values="VoxelBasedBackProjection","FDKBackProjection" enum no default="VoxelBasedBackProjection"
+option "method"    m "Forward projection method" values="VoxelBasedBackProjection","FDKBackProjection","Joseph" enum no default="VoxelBasedBackProjection"
 
 section "Volume properties"
 option "origin"    - "Origin (default=centered)" double multiple no

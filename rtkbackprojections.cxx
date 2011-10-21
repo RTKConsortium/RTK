@@ -4,6 +4,7 @@
 #include "itkProjectionsReader.h"
 #include "itkThreeDCircularProjectionGeometryXMLFile.h"
 #include "itkFDKBackProjectionImageFilter.h"
+#include "itkJosephBackProjectionImageFilter.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileReader.h>
@@ -75,6 +76,9 @@ int main(int argc, char * argv[])
     break;
   case(method_arg_FDKBackProjection):
     bp = itk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    break;
+  case(method_arg_Joseph):
+    bp = itk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   default:
     std::cerr << "Unhandled --method value." << std::endl;
