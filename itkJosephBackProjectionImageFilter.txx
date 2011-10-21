@@ -67,7 +67,7 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
 
   // Go over each projection
   for(unsigned int iProj=outputRegionForThread.GetIndex(2);
-                   iProj<geometry->GetMatrices().size();
+                   iProj<outputRegionForThread.GetSize(2);
                    iProj++)
     {
     // Account for system rotations
