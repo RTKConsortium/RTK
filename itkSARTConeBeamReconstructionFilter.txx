@@ -1,4 +1,5 @@
-#include "itkRayCastInterpolatorForwardProjectionImageFilter.h"
+#include "itkJosephForwardProjectionImageFilter.h"
+#include "itkJosephBackProjectionImageFilter.h"
 
 namespace itk
 {
@@ -18,7 +19,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ForwardProjectionFilter = DefaultForwardType::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
-  m_BackProjectionFilter = BackProjectionFilterType::New();
+  m_BackProjectionFilter = JosephBackProjectionImageFilter::New();
 
   //Permanent internal connections
   m_ZeroMultiplyFilter->SetInput( m_ExtractFilter->GetOutput() );
@@ -142,14 +143,14 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
         m_MultiplyFilter->Update();
         m_BackProjectionFilter->Update();
 
-//if(i%32==0)
-//  {
-//  typedef typename itk::ImageFileWriter<TOutputImage> WriterType;
-//  typename WriterType::Pointer writer = WriterType::New();
-//  writer->SetFileName("sart.mha");
-//  writer->SetInput( m_BackProjectionFilter->GetOutput() );
-//  writer->Update();
-//  }
+if(i%32==0)
+  {
+  typedef typename itk::ImageFileWriter<TOutputImage> WriterType;
+  typename WriterType::Pointer writer = WriterType::New();
+  writer->SetFileName("sart.mha");
+  writer->SetInput( m_BackProjectionFilter->GetOutput() );
+  writer->Update();
+  }
       }
     }
   GraftOutput( m_BackProjectionFilter->GetOutput() );
