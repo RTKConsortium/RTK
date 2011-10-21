@@ -22,6 +22,10 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
     {
     itkGenericExceptionMacro(<< "Largest and buffered region must be similar");
     }
+  if( this->GetInPlace() )
+    {
+    itkGenericExceptionMacro(<< "Error, cannot be in place yet");
+    }
 
   this->AllocateOutputs();
   this->GetOutput()->FillBuffer(0.);
@@ -67,7 +71,7 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
 
   // Go over each projection
   for(unsigned int iProj=outputRegionForThread.GetIndex(2);
-                   iProj<outputRegionForThread.GetSize(2);
+                   iProj<outputRegionForThread.GetIndex(2)+outputRegionForThread.GetSize(2);
                    iProj++)
     {
     // Account for system rotations
