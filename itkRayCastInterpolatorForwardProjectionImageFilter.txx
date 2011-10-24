@@ -19,7 +19,7 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
-  const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const typename Superclass::GeometryPointer geometry = this->GetGeometry();
 
   // Create interpolator
   typedef typename itk::RayCastInterpolateImageFunction< TInputImage, double > InterpolatorType;
@@ -44,21 +44,22 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
       volDirectionInv[i][j] = volDirInvNotHom[i][j];
 
   // Get inverse origin in an homogeneous matrix
-  itk::Matrix<double, Dimension+1, Dimension+1> volOriginInv;
-  volOriginInv = Get3DTranslationHomogeneousMatrix(-this->GetInput(1)->GetOrigin()[0],
-                                                   -this->GetInput(1)->GetOrigin()[1],
-                                                   -this->GetInput(1)->GetOrigin()[2]);
+  typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volOriginInv;
+  volOriginInv = Superclass::GeometryType::
+                 ComputeTranslationHomogeneousMatrix(-this->GetInput(1)->GetOrigin()[0],
+                                                     -this->GetInput(1)->GetOrigin()[1],
+                                                     -this->GetInput(1)->GetOrigin()[2]);
 
   // Translations are meant to overcome the fact that itk::RayCastInterpolateFunction
   // forces the origin of the volume at the volume center
-  itk::Matrix<double, Dimension+1, Dimension+1> volRayCastOrigin;
+  typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volRayCastOrigin;
   volRayCastOrigin.SetIdentity();
   for(unsigned int i=0; i<3; i++)
     volRayCastOrigin[i][3] = -0.5 * this->GetInput(1)->GetSpacing()[i] *
                              (this->GetInput(1)->GetLargestPossibleRegion().GetSize()[i]-1);
 
   // Combine volume related matrices
-  itk::Matrix<double, Dimension+1, Dimension+1> volMatrix;
+  typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volMatrix;
   volMatrix = volRayCastOrigin * volDirectionInv * volOriginInv;
 
   // Go over each projection
@@ -66,32 +67,16 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
                    iProj<outputRegionForThread.GetIndex(2)+outputRegionForThread.GetSize(2);
                    iProj++)
     {
-    // Account for system rotations
-    itk::Matrix<double, Dimension+1, Dimension+1> rotMatrix;
-    rotMatrix = Get3DRigidTransformationHomogeneousMatrix( geometry->GetOutOfPlaneAngles()[iProj],
-                                                           geometry->GetGantryAngles()[iProj],
-                                                           geometry->GetInPlaneAngles()[iProj],
-                                                           0.,0.,0.);
-    rotMatrix = volMatrix * rotMatrix.GetInverse();
-
-    // Compute source position an change coordinate system
-    itk::Vector<double, 4> sourcePosition;
-    sourcePosition[0] = geometry->GetSourceOffsetsX()[iProj];
-    sourcePosition[1] = geometry->GetSourceOffsetsY()[iProj];
-    sourcePosition[2] = -geometry->GetSourceToIsocenterDistances()[iProj];
-    sourcePosition[3] = 1.;
-    sourcePosition = rotMatrix * sourcePosition;
-    interpolator->SetFocalPoint( typename InterpolatorType::InputPointType(&sourcePosition[0]) );
+    // Compute source position and change coordinate system
+    typename Superclass::GeometryType::HomogeneousVectorType sourcePosition;
+    sourcePosition = volMatrix * geometry->GetSourcePosition(iProj);
+    interpolator->SetFocalPoint( &sourcePosition[0] );
 
     // Compute matrix to transform projection index to volume coordinates
-    itk::Matrix<double, Dimension+1, Dimension+1> matrix;
-    matrix = GetIndexToPhysicalPointMatrix< TOutputImage >( this->GetOutput() );
-    matrix[0][3] -= geometry->GetProjectionOffsetsX()[iProj] - geometry->GetSourceOffsetsX()[iProj];
-    matrix[1][3] -= geometry->GetProjectionOffsetsY()[iProj] - geometry->GetSourceOffsetsY()[iProj];
-    matrix[2][3] = geometry->GetSourceToDetectorDistances()[iProj] -
-                   geometry->GetSourceToIsocenterDistances()[iProj];
-    matrix[2][2] = 0.; // Force z to axis to detector distance
-    matrix = rotMatrix * matrix;
+    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType matrix;
+    matrix = volMatrix.GetVnlMatrix() *
+             geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
+             GetIndexToPhysicalPointMatrix( this->GetOutput() ).GetVnlMatrix();
 
     // Go over each pixel of the projection
     typename TInputImage::PointType point;

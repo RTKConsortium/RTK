@@ -22,6 +22,8 @@ public:
   typedef ForwardProjectionImageFilter<TInputImage,TOutputImage> Superclass;
   typedef SmartPointer<Self>                                     Pointer;
   typedef SmartPointer<const Self>                               ConstPointer;
+
+  /** Useful typedefs. */
   typedef typename TInputImage::PixelType                        InputPixelType;
   typedef typename TOutputImage::RegionType                      OutputImageRegionType;
 

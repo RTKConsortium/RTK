@@ -1,4 +1,5 @@
 #include "itkThreeDCircularProjectionGeometry.h"
+#include <itkCenteredEuler3DTransform.h>
 
 double itk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
@@ -33,12 +34,19 @@ void itk::ThreeDCircularProjectionGeometry::AddProjection(
   if(sourceOffsetX != 0. || sourceOffsetY != 0.)
     sidn = sqrt( sid * sid - sourceOffsetX * sourceOffsetX - sourceOffsetY * sourceOffsetY );
 
+  // Compute sub-matrices
+  AddProjectionTranslationMatrix( ComputeTranslationHomogeneousMatrix(projOffsetX-sourceOffsetX, projOffsetY-sourceOffsetY) );
+  AddMagnificationMatrix( ComputeProjectionMagnificationMatrix(sdd, sidn) );
+  AddRotationMatrix( ComputeRotationHomogeneousMatrix(outOfPlaneAngle, gantryAngle, inPlaneAngle) );
+  AddSourceTranslationMatrix( ComputeTranslationHomogeneousMatrix(sourceOffsetX, sourceOffsetY, 0.) );
+
   Superclass::MatrixType matrix;
   matrix =
-    Get2DRigidTransformationHomogeneousMatrix(0, projOffsetX-sourceOffsetX, projOffsetY-sourceOffsetY).GetVnlMatrix() *
-    GetProjectionMagnificationMatrix<3>(sdd, sidn).GetVnlMatrix() *
-    Get3DRigidTransformationHomogeneousMatrix(outOfPlaneAngle, gantryAngle, inPlaneAngle,
-                                              sourceOffsetX, sourceOffsetY, 0.).GetVnlMatrix();
+    this->GetProjectionTranslationMatrices().back().GetVnlMatrix() *
+    this->GetMagnificationMatrices().back().GetVnlMatrix() *
+    this->GetRotationMatrices().back().GetVnlMatrix() *
+    this->GetSourceTranslationMatrices().back().GetVnlMatrix();
+
   this->AddMatrix(matrix);
 }
 
@@ -123,3 +131,99 @@ const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGaps(
 
   return angularGaps;
 }
+
+itk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+itk::ThreeDCircularProjectionGeometry::
+ComputeRotationHomogeneousMatrix(double angleX,
+                                 double angleY,
+                                 double angleZ)
+{
+  const double degreesToRadians = vcl_atan(1.0) / 45.0;
+
+  typedef itk::CenteredEuler3DTransform<double> ThreeDTransformType;
+  ThreeDTransformType::Pointer xfm = ThreeDTransformType::New();
+  xfm->SetIdentity();
+  xfm->SetRotation( angleX*degreesToRadians, angleY*degreesToRadians, angleZ*degreesToRadians );
+
+  ThreeDHomogeneousMatrixType matrix;
+  matrix.SetIdentity();
+  for(int i=0; i<3; i++)
+    for(int j=0; j<3; j++)
+      matrix[i][j] = xfm->GetMatrix()[i][j];
+
+  return matrix;
+}
+
+itk::ThreeDCircularProjectionGeometry::TwoDHomogeneousMatrixType
+itk::ThreeDCircularProjectionGeometry::
+ComputeTranslationHomogeneousMatrix(double transX,
+                                    double transY)
+{
+  TwoDHomogeneousMatrixType matrix;
+  matrix.SetIdentity();
+  matrix[0][3] = transX;
+  matrix[1][3] = transY;
+  return matrix;
+}
+
+itk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+itk::ThreeDCircularProjectionGeometry::
+ComputeTranslationHomogeneousMatrix(double transX,
+                                    double transY,
+                                    double transZ)
+{
+  ThreeDHomogeneousMatrixType matrix;
+  matrix.SetIdentity();
+  matrix[0][3] = transX;
+  matrix[1][3] = transY;
+  matrix[2][3] = transZ;
+  return matrix;
+}
+
+itk::ThreeDCircularProjectionGeometry::Superclass::MatrixType
+itk::ThreeDCircularProjectionGeometry::
+ComputeProjectionMagnificationMatrix(double sdd, const double sid)
+{
+  Superclass::MatrixType matrix;
+  matrix.Fill(0.0);
+  for(unsigned int i=0; i<3; i++)
+    matrix[i][i] = sdd;
+  matrix[2][2] = 1.0;
+  matrix[2][3] = sid;
+  return matrix;
+}
+
+const itk::ThreeDCircularProjectionGeometry::HomogeneousVectorType
+itk::ThreeDCircularProjectionGeometry::
+GetSourcePosition(const unsigned int i) const
+{
+  HomogeneousVectorType sourcePosition;
+  sourcePosition[0] = this->GetSourceOffsetsX()[i];
+  sourcePosition[1] = this->GetSourceOffsetsY()[i];
+  sourcePosition[2] = -this->GetSourceToIsocenterDistances()[i];
+  sourcePosition[3] = 1.;
+
+  // Rotate
+  sourcePosition = GetRotationMatrices()[i] * sourcePosition;
+
+  return sourcePosition;
+}
+
+const itk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+itk::ThreeDCircularProjectionGeometry::
+GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
+{
+  // Compute projection inverse and distance to source
+  ThreeDHomogeneousMatrixType matrix;
+  matrix.SetIdentity();
+  matrix[0][3] = -this->GetProjectionTranslationMatrices()[i][0][3];
+  matrix[1][3] = -this->GetProjectionTranslationMatrices()[i][1][3];
+  matrix[2][3] = this->GetSourceToDetectorDistances()[i] -
+                 this->GetSourceToIsocenterDistances()[i];
+  matrix[2][2] = 0.; // Force z to axis to detector distance
+
+  // Rotate
+  matrix = this->GetRotationMatrices()[i].GetVnlMatrix() * matrix.GetVnlMatrix();
+  return matrix;
+}
+
