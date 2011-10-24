@@ -89,7 +89,7 @@ CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
 #=========================================================
 
 #=========================================================
-SET (RTK_INCLUDE_DIRS ${RTK_SOURCE_DIR})
+SET (RTK_INCLUDE_DIRS ${RTK_SOURCE_DIR} ${RTK_BINARY_DIR})
 SET (RTK_LIBRARY_DIRS ${RTK_BINARY_DIR})
 SET (RTK_LIBRARIES rtkIO)
 
