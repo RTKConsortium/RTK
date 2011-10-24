@@ -75,34 +75,20 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
                    iProj++)
     {
     // Account for system rotations
-    itk::Matrix<CoordRepType, Dimension+1, Dimension+1> rotMatrix;
-    rotMatrix = Get3DRigidTransformationHomogeneousMatrix( geometry->GetOutOfPlaneAngles()[iProj],
-                                                           geometry->GetGantryAngles()[iProj],
-                                                           geometry->GetInPlaneAngles()[iProj],
-                                                           0.,0.,0.);
-    rotMatrix = GetPhysicalPointToIndexMatrix( this->GetInput(0) ) * rotMatrix.GetInverse();
+    typename GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
+    volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(0) );
 
-    // Compute source position an change coordinate system
-    itk::Vector<CoordRepType, 4> sourcePosition;
-    sourcePosition[0] = geometry->GetSourceOffsetsX()[iProj];
-    sourcePosition[1] = geometry->GetSourceOffsetsY()[iProj];
-    sourcePosition[2] = -geometry->GetSourceToIsocenterDistances()[iProj];
-    sourcePosition[3] = 1.;
-    sourcePosition = rotMatrix * sourcePosition;
-    const VectorType origin(&sourcePosition[0]);
+    // Set source position in volume indices
+    typename GeometryType::HomogeneousVectorType sourcePosition;
+    sourcePosition = volPPToIndex * geometry->GetSourcePosition(iProj);
     for(unsigned int i=0; i<Dimension; i++)
-      rbi[i]->SetRayOrigin(origin);
+      rbi[i]->SetRayOrigin( &(sourcePosition[0]) );
 
-    // Compute matrix to transform projection index to volume coordinates
-    itk::Matrix<CoordRepType, Dimension+1, Dimension+1> matrix;
-    matrix = GetIndexToPhysicalPointMatrix( this->GetInput(1) );
-
-    matrix[0][3] -= geometry->GetProjectionOffsetsX()[iProj] - geometry->GetSourceOffsetsX()[iProj];
-    matrix[1][3] -= geometry->GetProjectionOffsetsY()[iProj] - geometry->GetSourceOffsetsY()[iProj];
-    matrix[2][3] = geometry->GetSourceToDetectorDistances()[iProj] -
-                   geometry->GetSourceToIsocenterDistances()[iProj];
-    matrix[2][2] = 0.; // Force z to axis to detector distance
-    matrix = rotMatrix * matrix;
+    // Compute matrix to transform projection index to volume index
+    typename GeometryType::ThreeDHomogeneousMatrixType matrix;
+    matrix = volPPToIndex.GetVnlMatrix() *
+             geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
+             GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix();
 
     // Go over each pixel of the projection
     typename RBIFunctionType::VectorType dirVox, stepMM, dirVoxAbs, np, fp;
