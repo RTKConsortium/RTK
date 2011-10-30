@@ -26,7 +26,7 @@
     {                                                                   \
     std::cerr << "ExceptionObject caught with " #execFunc << std::endl; \
     std::cerr << err << std::endl;                                      \
-    return EXIT_FAILURE;                                                \
+    exit(EXIT_FAILURE);                                                 \
     }
 //--------------------------------------------------------------------
 
