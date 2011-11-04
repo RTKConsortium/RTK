@@ -39,8 +39,8 @@ struct ThreadInfoStruct
   std::string fileName;
   };
 
-void *AcquisitionCallback(void *arg);
-void *InlineThreadCallback(void *arg);
+static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg);
+static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg);
 
 int main(int argc, char * argv[])
 {
@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
 
 // This thread reads in a geometry file and a sequence of projection file names
 // and communicates them one by one to the other thread via a ThreadinfoStruct.
-void *AcquisitionCallback(void *arg)
+static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
 {
   ThreadInfoStruct *threadInfo = (ThreadInfoStruct *)(((itk::MultiThreader::ThreadInfoStruct *)(arg))->UserData);
 
@@ -130,7 +130,7 @@ void *AcquisitionCallback(void *arg)
 // scans have not been implemented yet because these filters currently require
 // the full geometry of the acquisition. Management with a mock geometry file
 // would be possible but it is still to be implemented.
-void *InlineThreadCallback(void *arg)
+static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
 {
   ThreadInfoStruct *threadInfo = (ThreadInfoStruct *)(((itk::MultiThreader::ThreadInfoStruct *)(arg))->UserData);
   threadInfo->mutex.Lock();
