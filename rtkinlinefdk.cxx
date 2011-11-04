@@ -119,7 +119,7 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
     itksys::SystemTools::Delay(200);
     }
 
-  return NULL;
+  return ITK_THREAD_RETURN_VALUE;
 }
 
 // This thread receives information of each projection (one-by-one) and process
@@ -295,5 +295,5 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
       }
     threadInfo->mutex.Unlock();
     }
-  return NULL;
+  return ITK_THREAD_RETURN_VALUE;
 }
