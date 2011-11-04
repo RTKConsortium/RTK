@@ -39,8 +39,8 @@ struct ThreadInfoStruct
   std::string fileName;
   };
 
-void *AcquisitionCallback(void *arg);
-void *InlineThreadCallback(void *arg);
+static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg);
+static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg);
 
 int main(int argc, char * argv[])
 {
