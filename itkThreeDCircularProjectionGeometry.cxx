@@ -50,6 +50,18 @@ void itk::ThreeDCircularProjectionGeometry::AddProjection(
   this->AddMatrix(matrix);
 }
 
+const std::multimap<double,unsigned int> itk::ThreeDCircularProjectionGeometry::GetSortedAngles()
+{
+  unsigned int nProj = this->GetGantryAngles().size();
+  std::multimap<double,unsigned int> angles;
+  for(unsigned int iProj=0; iProj<nProj; iProj++)
+    {
+    double angle = this->GetGantryAngles()[iProj];
+    angles.insert(std::pair<double, unsigned int>(angle, iProj) );
+    }
+  return angles;
+}
+
 const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext()
 {
   std::vector<double> angularGaps;
@@ -64,12 +76,7 @@ const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGapsW
     return angularGaps;
 
   // Otherwise we sort the angles in a multimap
-  std::multimap<double,unsigned int> angles;
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
-    {
-    double angle = this->GetGantryAngles()[iProj];
-    angles.insert(std::pair<double, unsigned int>(angle, iProj) );
-    }
+  std::multimap<double,unsigned int> angles = this->GetSortedAngles();
 
   // We then go over the sorted angles and deduce the angular weight
   std::multimap<double,unsigned int>::const_iterator curr = angles.begin(), next = angles.begin();
@@ -102,12 +109,7 @@ const std::vector<double> itk::ThreeDCircularProjectionGeometry::GetAngularGaps(
     return angularGaps;
 
   // Otherwise we sort the angles in a multimap
-  std::multimap<double,unsigned int> angles;
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
-    {
-    double angle = this->GetGantryAngles()[iProj];
-    angles.insert(std::pair<double, unsigned int>(angle, iProj) );
-    }
+  std::multimap<double,unsigned int> angles = this->GetSortedAngles();
 
   // We then go over the sorted angles and deduce the angular weight
   std::multimap<double,unsigned int>::const_iterator prev = angles.begin(),

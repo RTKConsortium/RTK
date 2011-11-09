@@ -69,6 +69,9 @@ public:
     return this->m_ProjectionOffsetsY;
   }
 
+  /** Get a multimap containing all sorted angles and corresponding index. */
+  const std::multimap<double,unsigned int> GetSortedAngles();
+
   /** Get for each projection the angular gaps with next projection. */
   const std::vector<double> GetAngularGapsWithNext();
 
