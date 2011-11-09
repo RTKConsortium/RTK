@@ -28,7 +28,7 @@ void itk::ThreeDCircularProjectionGeometry::AddProjection(
   m_SourceToDetectorDistances.push_back( sdd );
   m_ProjectionOffsetsX.push_back( projOffsetX );
   m_ProjectionOffsetsY.push_back( projOffsetY );
-  
+
   // Projection on the detector normal of SourceToIsocenterDistance
   double sidn = sid;
   if(sourceOffsetX != 0. || sourceOffsetY != 0.)
@@ -161,8 +161,8 @@ ComputeTranslationHomogeneousMatrix(double transX,
 {
   TwoDHomogeneousMatrixType matrix;
   matrix.SetIdentity();
-  matrix[0][3] = transX;
-  matrix[1][3] = transY;
+  matrix[0][2] = transX;
+  matrix[1][2] = transY;
   return matrix;
 }
 
