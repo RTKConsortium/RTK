@@ -60,14 +60,26 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
   const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
+  const std::multimap<double,unsigned int> sortedAngles = m_Geometry->GetSortedAngles();
   const double detectorWidth = this->GetInput()->GetSpacing()[0] *
                                this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
 
-  // Compute delta angle where there is weighting required
-  const double firstAngle = rotationAngles[(maxAngularGapPos+2) % rotationAngles.size()];
-  double lastAngle = rotationAngles[(maxAngularGapPos+rotationAngles.size()-1) % rotationAngles.size()];
+
+  // Compute delta between first and last angle where there is weighting required
+  // First angle
+  std::multimap<double,unsigned int>::const_iterator itFirstAngle;
+  itFirstAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
+  itFirstAngle = (++itFirstAngle==sortedAngles.end())?sortedAngles.begin():itFirstAngle;
+  itFirstAngle = (++itFirstAngle==sortedAngles.end())?sortedAngles.begin():itFirstAngle;
+  const double firstAngle = itFirstAngle->first;
+  // Last angle
+  std::multimap<double,unsigned int>::const_iterator itLastAngle;
+  itLastAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
+  itLastAngle = (itLastAngle==sortedAngles.begin())?--sortedAngles.end():--itLastAngle;
+  double lastAngle = itLastAngle->first;
   if(lastAngle<firstAngle)
     lastAngle += 360;
+  //Delta
   double delta = 0.5 * (lastAngle - firstAngle - 180);
   delta = delta-360*floor(delta/360); // between -360 and 360
   delta *= Math::pi / 180;            // degrees to radians
