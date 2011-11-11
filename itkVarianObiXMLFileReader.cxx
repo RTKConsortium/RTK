@@ -35,6 +35,11 @@ EndElement(const char *name)
     itk::EncapsulateMetaData<double>(m_Dictionary, metaName, d); \
     }
 
+#define ENCAPLULATE_META_DATA_STRING(metaName) \
+  if(itksys::SystemTools::Strucmp(name, metaName) == 0) { \
+    itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, m_CurCharacterData); \
+    }
+
   ENCAPLULATE_META_DATA_DOUBLE("GantryRtnSpeed");
   ENCAPLULATE_META_DATA_DOUBLE("CalibratedSAD");
   ENCAPLULATE_META_DATA_DOUBLE("CalibratedSID");
@@ -42,6 +47,8 @@ EndElement(const char *name)
   ENCAPLULATE_META_DATA_DOUBLE("CalibratedDetectorOffsetY");
   ENCAPLULATE_META_DATA_DOUBLE("DetectorSizeX");
   ENCAPLULATE_META_DATA_DOUBLE("DetectorSizeY");
+  ENCAPLULATE_META_DATA_DOUBLE("DetectorPosLat");
+  ENCAPLULATE_META_DATA_STRING("FanType");
 }
 
 void

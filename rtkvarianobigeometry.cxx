@@ -34,8 +34,23 @@ int main(int argc, char * argv[])
   typedef itk::MetaDataObject< double > MetaDataDoubleType;
   const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSID"].GetPointer() )->GetMetaDataObjectValue();
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSAD"].GetPointer() )->GetMetaDataObjectValue();
-  const double offsetx =
-    dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer() )->GetMetaDataObjectValue();
+
+  typedef itk::MetaDataObject< std::string > MetaDataStringType;
+  double offsetx;
+  std::string fanType = dynamic_cast<const MetaDataStringType *>(dic["FanType"].GetPointer() )->GetMetaDataObjectValue();
+  if(itksys::SystemTools::Strucmp(fanType.c_str(), "HalfFan") == 0)
+    {
+    // Half Fan (offset detector), get lateral offset from XML file
+    offsetx =
+      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer() )->GetMetaDataObjectValue() +
+	   dynamic_cast<MetaDataDoubleType *>(dic["DetectorPosLat"].GetPointer() )->GetMetaDataObjectValue();
+    }
+  else
+    {
+    // Full Fan (centered detector)
+    offsetx =
+      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer() )->GetMetaDataObjectValue();
+    }
   const double offsety =
     dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetY"].GetPointer() )->GetMetaDataObjectValue();
 
