@@ -16,11 +16,13 @@
 # Return the result in argument 1, empty if not found
 FUNCTION(FIND_GCC GCC_PATH GCC_MAJOR GCC_MINOR)
   # Search for gcc-x.y
+  UNSET(EXACT_GCC)
   FIND_PROGRAM(EXACT_GCC "gcc-${GCC_MAJOR}.${GCC_MINOR}")
   IF(EXACT_GCC)
     SET(GCC_PATH "${EXACT_GCC}" PARENT_SCOPE)
   ELSE(EXACT_GCC)
     # gcc-x.y not found, check default gcc
+    UNSET(DEFAULT_GCC)
     FIND_PROGRAM(DEFAULT_GCC gcc)
     EXEC_PROGRAM(${DEFAULT_GCC} ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
 
