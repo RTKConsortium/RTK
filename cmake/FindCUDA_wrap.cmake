@@ -17,20 +17,18 @@ else ()
       set (CUDA_NVCC_FLAGS --compiler-options ${CMAKE_C_FLAGS})
     endif ()
   endif ()
+
+  # JAS 08.25.2010
+  #   Check to make sure nvcc has gcc-4.3 for compiling.
+  #   This script will modify CUDA_NVCC_FLAGS if system default is not gcc-4.3
+  include (nvcc-check)
 endif ()
 
 set (CUDA_FOUND ${CUDA_FOUND} CACHE BOOL "Did we find cuda?")
 
 if (CUDA_FOUND)
-  cuda_include_directories (
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    )
+  cuda_include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
-
-# JAS 08.25.2010
-#   Check to make sure nvcc has gcc-4.3 for compiling.
-#   This script will modify CUDA_NVCC_FLAGS if system default is not gcc-4.3
-include (nvcc-check)
 
 message (STATUS "CUDA Build Level: ALL Compute Capabilities")
 set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
