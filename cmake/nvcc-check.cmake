@@ -1,52 +1,56 @@
-# James Shackleford
-# Date: 08.24.2010
-# File: PLM_nvcc-check.cmake
+######################################################################
+# Based on a script by James Shackleford in Plastimatch.org
+# Modified by Simon Rit
 #
-# Currently, nvcc only works with gcc-4.3
+# Currently, nvcc works with gcc-4.3 and gcc-4.4 for CUDA 4.x
 #
 # This script:
 #   * Checks the version of default gcc
-#   * If not 4.3, we look for gcc-4.3 on the system
+#   * If CUDA 4.x, we look for gcc-4.4
+#   * If not found or CUDA<4, we look for gcc-4.3 on the system
 #   * If found we tell nvcc to use it
-#   * If not found, we kill CMake and tell user to install gcc-4.3
-# 
-# NOTE: If nvcc tries to use gcc-4.4 (for example) the build simply
-#       fails.  Ending things at CMake with a request for gcc-4.3
-#       is the most graceful failure I could provide.
+#   * If not found, fatal error
 ######################################################################
-IF(CUDA_FOUND)
-    IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-        IF(CMAKE_COMPILER_IS_GNUCC)
 
-            # Get the gcc version number
-            EXEC_PROGRAM(gcc ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
+# This function searches for gcc version x.y (arguments 2 and 3 of the macro)
+# Return the result in argument 1, empty if not found
+FUNCTION(FIND_GCC GCC_PATH GCC_MAJOR GCC_MINOR)
+  # Search for gcc-x.y
+  FIND_PROGRAM(EXACT_GCC "gcc-${GCC_MAJOR}.${GCC_MINOR}")
+  IF(EXACT_GCC)
+    SET(GCC_PATH "${EXACT_GCC}" PARENT_SCOPE)
+  ELSE(EXACT_GCC)
+    # gcc-x.y not found, check default gcc
+    FIND_PROGRAM(DEFAULT_GCC gcc)
+    EXEC_PROGRAM(${DEFAULT_GCC} ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
 
-            # Get major and minor revs
-            STRING(REGEX REPLACE "([0-9]+).[0-9]+.[0-9]+" "\\1" GCCVER_MAJOR "${GCCVER}")
-            STRING(REGEX REPLACE "[0-9]+.([0-9]+).[0-9]+" "\\1" GCCVER_MINOR "${GCCVER}")
-            STRING(REGEX REPLACE "[0-9]+.[0-9]+.([0-9]+)" "\\1" GCCVER_PATCH "${GCCVER}")
+    # Get major and minor revs
+    STRING(REGEX REPLACE "([0-9]+).[0-9]+.[0-9]+" "\\1" GCCVER_MAJOR "${GCCVER}")
+    STRING(REGEX REPLACE "[0-9]+.([0-9]+).[0-9]+" "\\1" GCCVER_MINOR "${GCCVER}")
+    STRING(REGEX REPLACE "[0-9]+.[0-9]+.([0-9]+)" "\\1" GCCVER_PATCH "${GCCVER}")
 
-#            MESSAGE(STATUS "nvcc-check: GCC Version is ${GCCVER_MAJOR}.${GCCVER_MINOR}.${GCCVER_PATCH}")
+    # Check that adequate
+    IF(GCCVER_MAJOR MATCHES "${GCC_MAJOR}" AND GCCVER_MINOR MATCHES "${GCC_MINOR}")
+        SET(GCC_PATH ${DEFAULT_GCC} PARENT_SCOPE)
+    ENDIF(GCCVER_MAJOR MATCHES "${GCC_MAJOR}" AND GCCVER_MINOR MATCHES "${GCC_MINOR}")
+  ENDIF(EXACT_GCC)
+ENDFUNCTION(FIND_GCC)
 
-            IF(GCCVER_MAJOR MATCHES "4")
-                IF(GCCVER_MINOR MATCHES "3")
-                    MESSAGE(STATUS "nvcc-check: Found gcc-${GCCVER_MAJOR}.${GCCVER_MINOR}... success.")
-                ELSE(GCCVER_MINOR MATCHES "3")
-                    MESSAGE(STATUS "nvcc-check: Found gcc-${GCCVER_MAJOR}.${GCCVER_MINOR}... searching for gcc-4.3")
-                    EXEC_PROGRAM(which ARGS "gcc-4.3" OUTPUT_VARIABLE GCC43)
+# Main code dealing with each version of cuda
+IF(CUDA_FOUND AND CMAKE_SYSTEM_NAME MATCHES "Linux" AND CMAKE_COMPILER_IS_GNUCC)
+  SET(GCC_PATH "")
+  IF(CUDA_VERSION_MAJOR MATCHES "4")
+    FIND_GCC(GCC_PATH "4" "4")
+  ENDIF(CUDA_VERSION_MAJOR MATCHES "4")
+  IF(NOT GCC_PATH OR CUDA_VERSION_MAJOR LESS "3")
+    FIND_GCC(GCC_PATH "4" "3")
+  ENDIF(NOT GCC_PATH OR CUDA_VERSION_MAJOR LESS "3")
 
-                    IF(GCC43 STREQUAL "")
-                        MESSAGE(FATAL_ERROR "nvcc-check: Please install gcc-4.3, it is needed by nvcc \(CUDA\).\nNote that gcc-4.3 can be installed side-by-side with your current version of gcc (${GCCVER_MAJOR}.${GCCVER_MINOR}.${GCCVER_PATCH}).\nYou need not replace your current version of gcc; just make gcc-4.3 available as well so that nvcc can use it.\nDebian/Ubuntu users with root privilages may simply enter the following at a terminal prompt:\n  sudo apt-get install gcc-4.3 g++-4.3\n")
-                    ELSE(GCC43 STREQUAL "")
-                        MESSAGE(STATUS "nvcc-check: Found gcc-4.3... telling nvcc to use it!")
-                        MESSAGE(STATUS "nvcc-check: CUDA_NVCC_FLAGS set to \"${CUDA_NVCC_FLAGS} --compiler-bindir=${GCC43}\"")
-                        SET (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --compiler-bindir=${GCC43})
-                    ENDIF(GCC43 STREQUAL "")
+  IF(GCC_PATH)
+    MESSAGE(STATUS "nvcc-check: Found adequate gcc (${GCC_PATH})... telling nvcc to use it!")
+    SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --compiler-bindir=${GCC_PATH})
+  ELSE(GCC_PATH)
+    MESSAGE(FATAL_ERROR "nvcc-check: Please install adequate gcc for cuda (gcc-4.3 or gcc-4.4 for Cuda 4).\nNote that gcc-4.x can be installed side-by-side with your current version of gcc.\n")
+  ENDIF(GCC_PATH)
+ENDIF(CUDA_FOUND AND CMAKE_SYSTEM_NAME MATCHES "Linux" AND CMAKE_COMPILER_IS_GNUCC)
 
-                ENDIF(GCCVER_MINOR MATCHES "3")
-            ENDIF(GCCVER_MAJOR MATCHES "4")
-
-
-        ENDIF(CMAKE_COMPILER_IS_GNUCC)
-    ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
-ENDIF(CUDA_FOUND)
