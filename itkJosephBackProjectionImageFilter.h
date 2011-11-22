@@ -1,6 +1,7 @@
 #ifndef __itkJosephBackProjectionImageFilter_h
 #define __itkJosephBackProjectionImageFilter_h
 
+#include "rtkConfiguration.h"
 #include "itkBackProjectionImageFilter.h"
 
 namespace itk

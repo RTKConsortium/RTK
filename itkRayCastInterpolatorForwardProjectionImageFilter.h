@@ -1,6 +1,7 @@
 #ifndef __itkRayCastInterpolatorForwardProjectionImageFilter_h
 #define __itkRayCastInterpolatorForwardProjectionImageFilter_h
 
+#include "rtkConfiguration.h"
 #include "itkForwardProjectionImageFilter.h"
 
 namespace itk
