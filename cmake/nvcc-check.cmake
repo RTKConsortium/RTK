@@ -15,6 +15,7 @@
 # This function searches for gcc version x.y (arguments 2 and 3 of the macro)
 # Return the result in argument 1, empty if not found
 FUNCTION(FIND_GCC GCC_PATH GCC_MAJOR GCC_MINOR)
+
   # Search for gcc-x.y
   FIND_PROGRAM(EXACT_GCC "gcc-${GCC_MAJOR}.${GCC_MINOR}")
   IF(EXACT_GCC)
@@ -30,10 +31,11 @@ FUNCTION(FIND_GCC GCC_PATH GCC_MAJOR GCC_MINOR)
     STRING(REGEX REPLACE "[0-9]+.[0-9]+.([0-9]+)" "\\1" GCCVER_PATCH "${GCCVER}")
 
     # Check that adequate
-    IF(GCCVER_MAJOR MATCHES GCC_MAJOR AND GCCVER_MINOR MATCHES GCC_MINOR)
+    IF("${GCCVER_MAJOR}" MATCHES "${GCC_MAJOR}" AND "${GCCVER_MINOR}" MATCHES "${GCC_MINOR}")
         SET(GCC_PATH ${DEFAULT_GCC} PARENT_SCOPE)
     ENDIF(GCCVER_MAJOR MATCHES GCC_MAJOR AND GCCVER_MINOR MATCHES GCC_MINOR)
   ENDIF(EXACT_GCC)
+
 ENDFUNCTION(FIND_GCC)
 
 # Main code dealing with each version of cuda
