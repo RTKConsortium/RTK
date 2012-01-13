@@ -10,7 +10,7 @@ template <class TInputImage, class TOutputImage>
 BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
 ::BoellaardScatterCorrectionImageFilter():
 m_AirThreshold(32000),
-m_ScatterToPrimaryRatio(0.2),
+m_ScatterToPrimaryRatio(0.),
 m_NonNegativityConstraintThreshold(20)
 {
 }
