@@ -3,6 +3,7 @@
 
 #include "itkInPlaceImageFilter.h"
 #include "itkThreeDCircularProjectionGeometry.h"
+#include "rtkConfiguration.h"
 
 /** \class FDKWeightProjectionFilter
  * \brief Weighting of projections to correct for the divergence in

@@ -1,7 +1,6 @@
-namespace itk
-{
+#include "itkCudaFDKConeBeamReconstructionFilter.h"
 
-CudaFDKConeBeamReconstructionFilter
+itk::CudaFDKConeBeamReconstructionFilter
 ::CudaFDKConeBeamReconstructionFilter()
 {
   // Create each filter which are specific for cuda
@@ -18,7 +17,7 @@ CudaFDKConeBeamReconstructionFilter
 }
 
 void
-CudaFDKConeBeamReconstructionFilter
+itk::CudaFDKConeBeamReconstructionFilter
 ::GenerateData()
 {
   BackProjectionFilterType* cudabp = dynamic_cast<BackProjectionFilterType*>( m_BackProjectionFilter.GetPointer() );
@@ -32,5 +31,3 @@ CudaFDKConeBeamReconstructionFilter
   // Transfer result to CPU image
   cudabp->CleanUpDevice();
 }
-
-} // end namespace itk

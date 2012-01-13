@@ -106,7 +106,8 @@ ADD_LIBRARY(rtkIO
             itkHndImageIOFactory.cxx
             itkThreeDCircularProjectionGeometry.cxx
             itkThreeDCircularProjectionGeometryXMLFile.cxx
-            itkFFTWCommon.cxx)
+            itkFFTWCommon.cxx
+            itkCudaFDKConeBeamReconstructionFilter.cxx)
 TARGET_LINK_LIBRARIES(rtkIO ${ITK_LIBRARIES})
 #=========================================================
 
