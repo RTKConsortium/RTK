@@ -95,9 +95,9 @@ private:
   unsigned int m_ProjectionSubsetSize;
 
   /** Probes to time reconstruction */
-  itk::TimeProbe m_PreFilterProbe;
-  itk::TimeProbe m_FilterProbe;
-  itk::TimeProbe m_BackProjectionProbe;
+  TimeProbe m_PreFilterProbe;
+  TimeProbe m_FilterProbe;
+  TimeProbe m_BackProjectionProbe;
 }; // end of class
 
 } // end namespace itk
