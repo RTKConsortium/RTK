@@ -106,8 +106,7 @@ ADD_LIBRARY(rtkIO
             itkHndImageIOFactory.cxx
             itkThreeDCircularProjectionGeometry.cxx
             itkThreeDCircularProjectionGeometryXMLFile.cxx
-            itkFFTWCommon.cxx
-            itkCudaFDKConeBeamReconstructionFilter.cxx)
+            itkFFTWCommon.cxx)
 TARGET_LINK_LIBRARIES(rtkIO ${ITK_LIBRARIES})
 #=========================================================
 
@@ -150,6 +149,7 @@ IF (CUDA_FOUND)
   ADD_LIBRARY(rtkcuda
               itkCudaFDKBackProjectionImageFilter.cxx
               itkCudaFFTRampImageFilter.cxx
+              itkCudaFDKConeBeamReconstructionFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
   TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} rtkIO)
