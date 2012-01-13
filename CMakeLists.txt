@@ -177,6 +177,7 @@ ADD_RTK_EXECUTABLE(rtkforwardprojections)
 ADD_RTK_EXECUTABLE(rtkbackprojections)
 ADD_RTK_EXECUTABLE(rtkrayboxintersection)
 ADD_RTK_EXECUTABLE(rtksart)
+ADD_RTK_EXECUTABLE(rtkrayquadricintersection)
 
 IF (OPENCL_FOUND)
   TARGET_LINK_LIBRARIES(rtkfdk rtkopencl)
