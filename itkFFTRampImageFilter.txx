@@ -20,7 +20,7 @@ template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::FFTRampImageFilter() :
   m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.)
-  ,m_CosineCutFrequency(0.),m_HammingFrequancy(0.)
+  ,m_CosineCutFrequency(0.),m_HammingFrequency(0.)
 {
 #if defined(USE_FFTWD)
   if(typeid(TFFTPrecision).name() == std::string("double") )
@@ -313,7 +313,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     for(unsigned int i=0; i<n; i++, ++itK)
       itK.Set( itK.Get() * TFFTPrecision(vcl_cos(0.5*vnl_math::pi*i/n)));
     }
-  else if(this->GetHammingFrequancy() > 0.)
+  else if(this->GetHammingFrequency() > 0.)
     {
     for(unsigned int i=0; i<n; i++, ++itK)
       itK.Set( itK.Get() * TFFTPrecision(0.54+0.46*(vcl_cos(vnl_math::pi*i/n))));
