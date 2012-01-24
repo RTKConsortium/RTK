@@ -86,7 +86,10 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
 
   double invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
   if( delta < atan(0.5 * detectorWidth * invsdd) )
-    itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)");
+    itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
+                    << "Delta is " << delta*180./M_PI
+                    << "° and should be more than half the beam angle, i.e. "
+                    << atan(0.5 * detectorWidth * invsdd)*180./M_PI << "°.");
 
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
