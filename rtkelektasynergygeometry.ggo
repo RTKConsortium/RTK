@@ -1,10 +1,10 @@
 package "rtk"
 version "Creates an RTK geometry file from an Elekta Synergy acquisition."
 
-option "config"    - "Config file"                                           string          no
-option "image_db"  i "Image table filename"                                  string          yes
-option "frame_db"  f "Frame table filename"                                  string          yes
-option "dicom_uid" u "Dicom uid of the acquisition"                          string          yes
-option "output"    o "Output file name"                                      string          yes
-option "sdd"       - "Source to detector distance (mm)"                      double          no  default="1536"
-option "sid"       - "Source to isocenter distance (mm)"                     double          no  default="1000"
+option "config"    - "Config file"                       string no
+option "image_db"  i "Image table filename"              string yes
+option "frame_db"  f "Frame table filename"              string yes
+option "dicom_uid" u "Dicom uid of the acquisition"      string yes
+option "output"    o "Output file name"                  string yes
+option "sdd"       - "Source to detector distance (mm)"  double no  default="1536"
+option "sid"       - "Source to isocenter distance (mm)" double no  default="1000"
