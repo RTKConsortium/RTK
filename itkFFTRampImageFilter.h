@@ -101,8 +101,8 @@ public:
   itkSetMacro(CosineCutFrequency, double);
 
   /** Set/Get the Hamming window frequency. 0 (default) disables it */
-  itkGetConstMacro(HammingFrequancy, double);
-  itkSetMacro(HammingFrequancy, double);
+  itkGetConstMacro(HammingFrequency, double);
+  itkSetMacro(HammingFrequency, double);
 protected:
   FFTRampImageFilter();
   ~FFTRampImageFilter(){}
@@ -158,7 +158,7 @@ private:
    */
   double m_HannCutFrequency;
   double m_CosineCutFrequency;
-  double m_HammingFrequancy;
+  double m_HammingFrequency;
 
 }; // end of class
 

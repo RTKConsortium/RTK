@@ -3,8 +3,39 @@
 
 #include <itkImageRegionIteratorWithIndex.h>
 
+#include  <iostream>
+
+using namespace std;
+
 namespace itk
 {
+
+template <class TInputImage, class TOutputImage>
+DisplacedDetectorImageFilter<TInputImage, TOutputImage>
+::DisplacedDetectorImageFilter()
+    : m_MinimumOffset(0.), m_MaximumOffset(0.), m_OffsetsSet(false), m_InferiorCorner(0.), m_SuperiorCorner(0.)
+{
+}
+
+template <class TInputImage, class TOutputImage>
+void DisplacedDetectorImageFilter<TInputImage, TOutputImage>::SetOffsets(double minOffset, double maxOffset)
+{
+    m_MinimumOffset = minOffset;
+    m_MaximumOffset = maxOffset;
+    m_OffsetsSet = true;
+}
+
+template <class TInputImage, class TOutputImage>
+double DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GetMininumOffset()
+{
+    return m_MinimumOffset;
+}
+
+template <class TInputImage, class TOutputImage>
+double DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GetMaximumOffset()
+{
+    return m_MaximumOffset;
+}
 
 /**
  * Account for the padding computed in GenerateOutputInformation to propagate the
@@ -58,16 +89,22 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   else
     m_SuperiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0)-1);
 
-  // Account for projections offsets
-  double minOffset = NumericTraits<double>::max();
-  double maxOffset = NumericTraits<double>::min();
-  for(unsigned int i=0; i<m_Geometry->GetProjectionOffsetsX().size(); i++)
-    {
-    minOffset = vnl_math_min(minOffset, m_Geometry->GetProjectionOffsetsX()[i]);
-    maxOffset = vnl_math_max(maxOffset, m_Geometry->GetProjectionOffsetsX()[i]);
-    }
-  m_InferiorCorner -= minOffset;
-  m_SuperiorCorner -= maxOffset;
+  if(!m_OffsetsSet)  {
+      // Account for projections offsets
+      double minOffset = NumericTraits<double>::max();
+      double maxOffset = NumericTraits<double>::min();
+      for(unsigned int i=0; i<m_Geometry->GetProjectionOffsetsX().size(); i++)
+        {
+        minOffset = vnl_math_min(minOffset, m_Geometry->GetProjectionOffsetsX()[i]);
+        maxOffset = vnl_math_max(maxOffset, m_Geometry->GetProjectionOffsetsX()[i]);
+        }
+      m_InferiorCorner -= minOffset;
+      m_SuperiorCorner -= maxOffset;
+  }
+  else {
+      m_InferiorCorner -= m_MinimumOffset;
+      m_SuperiorCorner -= m_MaximumOffset;
+  }
 
   // 4 cases depending on the position of the two corners
   // Case 1: Impossible to account for too large displacements

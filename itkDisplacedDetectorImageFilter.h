@@ -17,6 +17,10 @@
  * It can only be inplace if there is no displacement, it can not otherwise.
  * The GenerateOutputInformation method takes care of properly setting this up.
  *
+ * By default, it computes the minimum and maximum offsets from the complete geometry object.
+ * When an independent projection has to be processed, these values have to be set by the user from
+ * a priori knowledge of the detector displacements.
+ *
  * \author Simon Rit
  */
 namespace itk
@@ -54,9 +58,16 @@ public:
   itkGetMacro(Geometry, GeometryPointer);
   itkSetMacro(Geometry, GeometryPointer);
 
+  /**
+   * Get / Set the minimum and maximum offsets of the detector along the weighting direction.
+   */
+  void SetOffsets(double minOffset, double maxOffset);
+  double GetMininumOffset();
+  double GetMaximumOffset();
+
 protected:
-  DisplacedDetectorImageFilter(){
-  }
+  DisplacedDetectorImageFilter();
+
   ~DisplacedDetectorImageFilter(){
   }
 
@@ -73,11 +84,25 @@ private:
   /** RTK geometry object */
   GeometryPointer m_Geometry;
 
+  /**
+   * Minimum and maximum offsets of the detector along the weighting direction, i.e. x.
+   * If a priori known, these values can be given as input. Otherwise, they are computed from the
+   * complete geometry.
+   */
+  double m_MinimumOffset;
+  double m_MaximumOffset;
+
+  /**
+   * Flag used to know if the user has entered the min/max values of the detector offset.
+   */
+  bool m_OffsetsSet;
+
   /** Superior and inferior position of the detector along the weighting direction, i.e. x.
    * The computed value account for the x projection offset of the geometry.
    */
   double m_InferiorCorner;
   double m_SuperiorCorner;
+
 }; // end of class
 
 } // end namespace itk

@@ -50,6 +50,7 @@ int main(int argc, char * argv[])
   // Displaced detector weighting
   typedef itk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
   DDFType::Pointer ddf = DDFType::New();
+  ddf->SetOffsets( 0.0, 2.0);  // Remove if offsets are to be computed from the geometry.
   ddf->SetInput( reader->GetOutput() );
   ddf->SetGeometry( geometryReader->GetOutputObject() );
 
