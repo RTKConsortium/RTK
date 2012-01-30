@@ -43,7 +43,9 @@ struct ThreadInfoStruct
   std::string fileName;
   };
 
-void computeOffsetsFromGeometry(itk::ThreeDCircularProjectionGeometry::Pointer geometry, double *minOffset, double *maxOffset);
+void computeOffsetsFromGeometry(itk::ThreeDCircularProjectionGeometry::Pointer geometry, double *minOffset,
+                                double *maxOffset);
+
 static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg);
 static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg);
 
@@ -51,7 +53,8 @@ int main(int argc, char * argv[])
 {
   GGO(rtkinlinefdk, args_info);
 
-  // Launch threads, one for acquisition, one for reconstruction with inline processing
+  // Launch threads, one for acquisition, one for reconstruction with inline
+  // processing
   ThreadInfoStruct threadInfo;
   threadInfo.args_info = &args_info;
   threadInfo.nproj = 0;
@@ -141,9 +144,10 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
 // directly the projections for which it has enough information. This thread
 // currently assumes that the projections are sequentially sent with increasing
 // gantry angles. Specific management with a queue must be implemented if the
-// projections are not exactly sequential. Short scans has not been implemented yet because this filter
-// currently require the full geometry of the acquisition. Management with a mock geometry file
-// would be possible but it is still to be implemented.
+// projections are not exactly sequential. Short scans has not been implemented
+// yet because this filter currently require the full geometry of the
+// acquisition. Management with a mock geometry file would be possible but it is
+// still to be implemented.
 static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
 {
   ThreadInfoStruct *threadInfo = (ThreadInfoStruct *)(((itk::MultiThreader::ThreadInfoStruct *)(arg))->UserData);
@@ -153,7 +157,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
   itk::ThreeDCircularProjectionGeometry::Pointer geometry = itk::ThreeDCircularProjectionGeometry::New();
-  std::vector< std::string > fileNames;
+  std::vector< std::string >                     fileNames;
 
   // Projections reader
   typedef itk::ProjectionsReader< OutputImageType > ReaderType;
@@ -186,31 +190,31 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   // This macro sets options for fdk filter which I can not see how to do better
   // because TFFTPrecision is not the same, e.g. for CPU and CUDA (SR)
 #define SET_FELDKAMP_OPTIONS(f) \
-    f->SetInput( 0, constantImageSource->GetOutput() ); \
-    f->SetInput( 1, ddf->GetOutput() ); \
-    f->SetGeometry( geometry ); \
-    f->GetRampFilter()->SetTruncationCorrection(threadInfo->args_info->pad_arg); \
-    f->GetRampFilter()->SetHannCutFrequency(threadInfo->args_info->hann_arg);
+  f->SetInput( 0, constantImageSource->GetOutput() ); \
+  f->SetInput( 1, ddf->GetOutput() ); \
+  f->SetGeometry( geometry ); \
+  f->GetRampFilter()->SetTruncationCorrection(threadInfo->args_info->pad_arg); \
+  f->GetRampFilter()->SetHannCutFrequency(threadInfo->args_info->hann_arg);
 
   // FDK reconstruction filtering
   itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer feldkamp;
   typedef itk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
 #if CUDA_FOUND
-  typedef itk::CudaFDKConeBeamReconstructionFilter                FDKCUDAType;
+  typedef itk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
 #endif
 #if OPENCL_FOUND
-  typedef itk::OpenCLFDKConeBeamReconstructionFilter              FDKOPENCLType;
+  typedef itk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
 #endif
   if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
     {
     feldkamp = FDKCPUType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKCPUType*>(feldkamp.GetPointer()) );
+    SET_FELDKAMP_OPTIONS( static_cast<FDKCPUType*>(feldkamp.GetPointer() ) );
     }
   else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
     {
 #if CUDA_FOUND
     feldkamp = FDKCUDAType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKCUDAType*>(feldkamp.GetPointer()) );
+    SET_FELDKAMP_OPTIONS( static_cast<FDKCUDAType*>(feldkamp.GetPointer() ) );
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     exit(EXIT_FAILURE);
@@ -220,7 +224,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
     {
 #if OPENCL_FOUND
     feldkamp = FDKOPENCLType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKOPENCLType*>(feldkamp.GetPointer()) );
+    SET_FELDKAMP_OPTIONS( static_cast<FDKOPENCLType*>(feldkamp.GetPointer() ) );
 #else
     std::cerr << "The program has not been compiled with opencl option" << std::endl;
     exit(EXIT_FAILURE);
@@ -237,82 +241,82 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   // Inline loop
   std::cout << "Reconstruction thread has entered in the processing loop" << std::endl;
   for(;;)
-  {
-      threadInfo->mutex.Lock();
+    {
+    threadInfo->mutex.Lock();
 
-      if(geometry->GetMatrices().size()<threadInfo->nproj)
+    if(geometry->GetMatrices().size()<threadInfo->nproj)
       {
-          if(threadInfo->args_info->verbose_flag)
-              std::cerr << "InlineThreadCallback has received projection #" << threadInfo->nproj-1 << std::endl;
+      if(threadInfo->args_info->verbose_flag)
+        std::cerr << "InlineThreadCallback has received projection #" << threadInfo->nproj-1 << std::endl;
 
-          if(threadInfo->fileName != "" && (fileNames.size()==0 || fileNames.back() != threadInfo->fileName))
-              fileNames.push_back(threadInfo->fileName);
+      if(threadInfo->fileName != "" && (fileNames.size()==0 || fileNames.back() != threadInfo->fileName) )
+        fileNames.push_back(threadInfo->fileName);
 
-          geometry->AddProjection(threadInfo->sid, threadInfo->sdd, threadInfo->gantryAngle,
-                                  threadInfo->projOffsetX, threadInfo->projOffsetY,
-                                  threadInfo->outOfPlaneAngle, threadInfo->inPlaneAngle,
-                                  threadInfo->sourceOffsetX, threadInfo->sourceOffsetY);
+      geometry->AddProjection(threadInfo->sid, threadInfo->sdd, threadInfo->gantryAngle,
+                              threadInfo->projOffsetX, threadInfo->projOffsetY,
+                              threadInfo->outOfPlaneAngle, threadInfo->inPlaneAngle,
+                              threadInfo->sourceOffsetX, threadInfo->sourceOffsetY);
 
-          if(geometry->GetMatrices().size()!=threadInfo->nproj)
-          {
-              std::cerr << "Missed one projection in InlineThreadCallback" << std::endl;
-              exit(EXIT_FAILURE);
-          }
-          if(geometry->GetMatrices().size()<3)
-          {
-              threadInfo->mutex.Unlock();
-              continue;
-          }
+      if(geometry->GetMatrices().size()!=threadInfo->nproj)
+        {
+        std::cerr << "Missed one projection in InlineThreadCallback" << std::endl;
+        exit(EXIT_FAILURE);
+        }
+      if(geometry->GetMatrices().size()<3)
+        {
+        threadInfo->mutex.Unlock();
+        continue;
+        }
 
-          reader->SetFileNames( fileNames );
-          reader->UpdateOutputInformation();
-          subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
-          subsetRegion.SetIndex(Dimension-1, geometry->GetMatrices().size()-2);
-          subsetRegion.SetSize(Dimension-1, 1);
-          extract->SetExtractionRegion(subsetRegion);
+      reader->SetFileNames( fileNames );
+      reader->UpdateOutputInformation();
+      subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
+      subsetRegion.SetIndex(Dimension-1, geometry->GetMatrices().size()-2);
+      subsetRegion.SetSize(Dimension-1, 1);
+      extract->SetExtractionRegion(subsetRegion);
 
-          ddf->SetOffsets(threadInfo->minimumOffsetX, threadInfo->maximumOffsetX);
+      ddf->SetOffsets(threadInfo->minimumOffsetX, threadInfo->maximumOffsetX);
 
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
 
-          if(threadInfo->args_info->verbose_flag)
-              std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
-                        << " has been processed in reconstruction." << std::endl;
+      if(threadInfo->args_info->verbose_flag)
+        std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
+                  << " has been processed in reconstruction." << std::endl;
 
-          OutputImageType::Pointer pimg = feldkamp->GetOutput();
-          pimg->DisconnectPipeline();
-          feldkamp->SetInput( pimg );
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
+      OutputImageType::Pointer pimg = feldkamp->GetOutput();
+      pimg->DisconnectPipeline();
+      feldkamp->SetInput( pimg );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
 
-          if(threadInfo->stop)
-          {
-              // Process first projection
-              subsetRegion.SetIndex(Dimension-1, 0);
-              extract->SetExtractionRegion(subsetRegion);
-              TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-              if(threadInfo->args_info->verbose_flag)
-                  std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
-                            << " has been processed in reconstruction." << std::endl;
-              pimg = feldkamp->GetOutput();
-              pimg->DisconnectPipeline();
-              feldkamp->SetInput( pimg );
-              TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
-              TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
+      if(threadInfo->stop)
+        {
+        // Process first projection
+        subsetRegion.SetIndex(Dimension-1, 0);
+        extract->SetExtractionRegion(subsetRegion);
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+        if(threadInfo->args_info->verbose_flag)
+          std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
+                    << " has been processed in reconstruction." << std::endl;
+        pimg = feldkamp->GetOutput();
+        pimg->DisconnectPipeline();
+        feldkamp->SetInput( pimg );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
 
-              // Process last projection
-              subsetRegion.SetIndex(Dimension-1, geometry->GetMatrices().size()-1);
-              extract->SetExtractionRegion(subsetRegion);
-              TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-              if(threadInfo->args_info->verbose_flag)
-                  std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
-                            << " has been processed in reconstruction." << std::endl;
+        // Process last projection
+        subsetRegion.SetIndex(Dimension-1, geometry->GetMatrices().size()-1);
+        extract->SetExtractionRegion(subsetRegion);
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+        if(threadInfo->args_info->verbose_flag)
+          std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
+                    << " has been processed in reconstruction." << std::endl;
 
-              //Write to disk and exit
-              writer->SetInput( feldkamp->GetOutput() );
-              TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
-              exit(EXIT_SUCCESS);
-          }
+        //Write to disk and exit
+        writer->SetInput( feldkamp->GetOutput() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+        exit(EXIT_SUCCESS);
+        }
       }
 
     threadInfo->mutex.Unlock();
@@ -320,20 +324,18 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   return ITK_THREAD_RETURN_VALUE;
 }
 
-void computeOffsetsFromGeometry(itk::ThreeDCircularProjectionGeometry::Pointer geometry, double *minOffset, double *maxOffset)
+void computeOffsetsFromGeometry(itk::ThreeDCircularProjectionGeometry::Pointer geometry, double *minOffset,
+                                double *maxOffset)
 {
-    double min = itk::NumericTraits<double>::max();
-    double max = itk::NumericTraits<double>::min();
-    for(unsigned int i=0; i<geometry->GetProjectionOffsetsX().size(); i++)
-      {
-      min = vnl_math_min(min, geometry->GetProjectionOffsetsX()[i]);
-      max = vnl_math_max(max, geometry->GetProjectionOffsetsX()[i]);
-      }
-    *minOffset = min;
-    *maxOffset = max;
+  double min = itk::NumericTraits<double>::max();
+  double max = itk::NumericTraits<double>::min();
+
+  for(unsigned int i=0; i<geometry->GetProjectionOffsetsX().size(); i++)
+    {
+    min = vnl_math_min(min, geometry->GetProjectionOffsetsX()[i]);
+    max = vnl_math_max(max, geometry->GetProjectionOffsetsX()[i]);
+    }
+  *minOffset = min;
+  *maxOffset = max;
 }
-
-
-
-
 
