@@ -3,10 +3,6 @@
 
 #include <itkImageRegionIteratorWithIndex.h>
 
-#include  <iostream>
-
-using namespace std;
-
 namespace itk
 {
 
