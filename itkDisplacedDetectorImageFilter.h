@@ -62,8 +62,8 @@ public:
    * Get / Set the minimum and maximum offsets of the detector along the weighting direction.
    */
   void SetOffsets(double minOffset, double maxOffset);
-  double GetMininumOffset();
-  double GetMaximumOffset();
+  itkGetMacro(MinimumOffset, double);
+  itkGetMacro(MaximumOffset, double);
 
 protected:
   DisplacedDetectorImageFilter();
