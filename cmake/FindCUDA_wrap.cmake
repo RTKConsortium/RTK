@@ -14,7 +14,7 @@ else ()
   if (CMAKE_COMPILER_IS_GNUCC)
     set (CUDA_PROPAGATE_HOST_FLAGS OFF)
     if (CMAKE_C_FLAGS)
-      set (CUDA_NVCC_FLAGS --compiler-options ${CMAKE_C_FLAGS})
+      set (CUDA_NVCC_FLAGS "--compiler-options \"${CMAKE_C_FLAGS}\"")
     endif ()
   endif ()
 
