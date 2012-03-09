@@ -25,8 +25,8 @@ ThreeDCircularProjectionGeometryXMLFileReader():
   m_SourceOffsetY(0.),
   m_SourceToDetectorDistance(0.),
   m_ProjectionOffsetX(0.),
-  m_ProjectionOffsetY(0.)
-  
+  m_ProjectionOffsetY(0.),
+  m_Version(0)
 {
   this->m_OutputObject = &(*m_Geometry);
 }
@@ -48,6 +48,21 @@ StartElement(const char * name,const char **atts)
 {
   m_CurCharacterData = "";
   this->StartElement(name);
+
+  // Check on last version of file format. Warning if not.
+  if( std::string(name)=="RTKThreeDCircularGeometry" )
+    {
+    while( (*atts)!=NULL )
+      {
+      if( std::string(atts[0])=="version")
+        m_Version = atoi(atts[1]);
+      atts+=2;
+      }
+    if(m_Version != this->CurrentVersion)
+      itkGenericExceptionMacro(<< "Incompatible version of input geometry (v" << m_Version
+                               << ") with current geometry (v" << this->CurrentVersion
+                               << "). You must re-generate your geometry file again.");
+    }
 }
 
 void
@@ -161,7 +176,11 @@ WriteFile()
   output << std::endl;
   this->WriteStartElement("!DOCTYPE RTKGEOMETRY",output);
   output << std::endl;
-  this->WriteStartElement("RTKThreeDCircularGeometry",output);
+  std::ostringstream startWithVersion;
+  startWithVersion << "RTKThreeDCircularGeometry version=\""
+                   << ThreeDCircularProjectionGeometryXMLFileReader::CurrentVersion
+                   << '"';
+  this->WriteStartElement(startWithVersion.str().c_str(),output);
   output << std::endl;
   
   // First, we test for each of the 9 parameters per projection if it's constant

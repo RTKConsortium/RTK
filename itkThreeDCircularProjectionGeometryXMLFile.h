@@ -27,6 +27,9 @@ public:
   /** Convenient typedefs */
   typedef ThreeDCircularProjectionGeometry GeometryType;
 
+  /** Latest version */
+  static const unsigned int CurrentVersion = 0;
+
   /** Run-time type information (and related methods). */
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileReader, XMLFileReader);
 
@@ -59,7 +62,7 @@ private:
   GeometryType::Pointer m_Geometry;
 
   std::string m_CurCharacterData;
-  
+
   /** Projection parameters */
   double m_InPlaneAngle, m_OutOfPlaneAngle, m_GantryAngle;
   double m_SourceToIsocenterDistance, m_SourceOffsetX, m_SourceOffsetY;
@@ -67,6 +70,9 @@ private:
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;
+
+  /** File format version */
+  unsigned int m_Version;
 };
 
 /** \class ThreeDCircularProjectionGeometryXMLFileWriter
