@@ -214,7 +214,9 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
     {
 #if CUDA_FOUND
     feldkamp = FDKCUDAType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKCUDAType*>(feldkamp.GetPointer() ) );
+    FDKCUDAType* fdkcuda = static_cast<FDKCUDAType*>(feldkamp.GetPointer() );
+    SET_FELDKAMP_OPTIONS( fdkcuda );
+    fdkcuda->SetExplicitGPUMemoryManagementFlag(true);
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     exit(EXIT_FAILURE);
@@ -257,6 +259,8 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
                               threadInfo->outOfPlaneAngle, threadInfo->inPlaneAngle,
                               threadInfo->sourceOffsetX, threadInfo->sourceOffsetY);
 
+      std::cout << "Geometry size : "<<geometry->GetMatrices().size() << std::endl;
+
       if(geometry->GetMatrices().size()!=threadInfo->nproj)
         {
         std::cerr << "Missed one projection in InlineThreadCallback" << std::endl;
@@ -268,6 +272,13 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         continue;
         }
 
+      OutputImageType::RegionType region = reader->GetOutput()->GetLargestPossibleRegion();
+      std::cout<<"Reader size : " << region.GetSize()[0]<<" "
+               << region.GetSize()[1]<<" "<< region.GetSize()[2]<<std::endl;
+      std::cout << "Reader index : "<<region.GetIndex()[0]<< " "
+                << region.GetIndex()[1]<< " "
+                << region.GetIndex()[2]<<std::endl;
+
       reader->SetFileNames( fileNames );
       reader->UpdateOutputInformation();
       subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
@@ -275,8 +286,33 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
       subsetRegion.SetSize(Dimension-1, 1);
       extract->SetExtractionRegion(subsetRegion);
 
+      std::cout << "Region size : "<<subsetRegion.GetSize()[0]<< " "
+                << subsetRegion.GetSize()[1]<< " "
+                << subsetRegion.GetSize()[2]<<std::endl;
+      std::cout << "Region index : "<<subsetRegion.GetIndex()[0]<< " "
+                << subsetRegion.GetIndex()[1]<< " "
+                << subsetRegion.GetIndex()[2]<<std::endl;
+
+      ExtractFilterType::InputImageRegionType extractRegion = extract->GetOutput()->GetLargestPossibleRegion();
+
+      std::cout << "Extract region size : "<<extractRegion.GetSize()[0]<< " "
+                << extractRegion.GetSize()[1]<< " "
+                << extractRegion.GetSize()[2]<<std::endl;
+      std::cout << "Extract region index : "<<extractRegion.GetIndex()[0]<< " "
+                << extractRegion.GetIndex()[1]<< " "
+                << extractRegion.GetIndex()[2]<<std::endl;
+
       ddf->SetOffsets(threadInfo->minimumOffsetX, threadInfo->maximumOffsetX);
 
+#if CUDA_FOUND
+      if(geometry->GetMatrices().size()==3)
+        {
+        FDKCUDAType* fdkcuda = static_cast<FDKCUDAType*>( feldkamp.GetPointer() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
+        fdkcuda->InitDevice();
+        }
+#endif
       TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
 
       if(threadInfo->args_info->verbose_flag)
@@ -309,8 +345,15 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         extract->SetExtractionRegion(subsetRegion);
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
         if(threadInfo->args_info->verbose_flag)
-          std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
+              std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                     << " has been processed in reconstruction." << std::endl;
+
+#if CUDA_FOUND
+        FDKCUDAType* fdkcuda = static_cast<FDKCUDAType*>(feldkamp.GetPointer() );
+        if(fdkcuda)
+          fdkcuda->CleanUpDevice();
+#endif
+
 
         //Write to disk and exit
         writer->SetInput( feldkamp->GetOutput() );
