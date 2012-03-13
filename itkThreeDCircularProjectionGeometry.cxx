@@ -29,16 +29,11 @@ void itk::ThreeDCircularProjectionGeometry::AddProjection(
   m_ProjectionOffsetsX.push_back( projOffsetX );
   m_ProjectionOffsetsY.push_back( projOffsetY );
 
-  // Projection on the detector normal of SourceToIsocenterDistance
-  double sidn = sid;
-  if(sourceOffsetX != 0. || sourceOffsetY != 0.)
-    sidn = sqrt( sid * sid - sourceOffsetX * sourceOffsetX - sourceOffsetY * sourceOffsetY );
-
   // Compute sub-matrices
-  AddProjectionTranslationMatrix( ComputeTranslationHomogeneousMatrix(projOffsetX-sourceOffsetX, projOffsetY-sourceOffsetY) );
-  AddMagnificationMatrix( ComputeProjectionMagnificationMatrix(sdd, sidn) );
-  AddRotationMatrix( ComputeRotationHomogeneousMatrix(outOfPlaneAngle, gantryAngle, inPlaneAngle) );
-  AddSourceTranslationMatrix( ComputeTranslationHomogeneousMatrix(sourceOffsetX, sourceOffsetY, 0.) );
+  AddProjectionTranslationMatrix( ComputeTranslationHomogeneousMatrix(sourceOffsetX-projOffsetX, sourceOffsetY-projOffsetY) );
+  AddMagnificationMatrix( ComputeProjectionMagnificationMatrix(-sdd, -sid) );
+  AddRotationMatrix( ComputeRotationHomogeneousMatrix(-outOfPlaneAngle, -gantryAngle, -inPlaneAngle) );
+  AddSourceTranslationMatrix( ComputeTranslationHomogeneousMatrix(-sourceOffsetX, -sourceOffsetY, 0.) );
 
   Superclass::MatrixType matrix;
   matrix =
@@ -188,7 +183,7 @@ ComputeProjectionMagnificationMatrix(double sdd, const double sid)
 {
   Superclass::MatrixType matrix;
   matrix.Fill(0.0);
-  for(unsigned int i=0; i<3; i++)
+  for(unsigned int i=0; i<2; i++)
     matrix[i][i] = sdd;
   matrix[2][2] = 1.0;
   matrix[2][3] = sid;

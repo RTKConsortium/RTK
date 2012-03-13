@@ -28,7 +28,7 @@ public:
   typedef ThreeDCircularProjectionGeometry GeometryType;
 
   /** Latest version */
-  static const unsigned int CurrentVersion = 0;
+  static const unsigned int CurrentVersion = 1;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileReader, XMLFileReader);
