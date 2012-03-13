@@ -217,7 +217,7 @@ if(EXISTS \"${CTEST_SOURCE_DIRECTORY}/.git\")
 endif()
 ")
   set(CTEST_CHECKOUT_COMMAND "\"${CMAKE_COMMAND}\" -P \"${ctest_checkout_script}\"")
-endif()
+
   # CTest delayed initialization is broken, so we put the
   # CTestConfig.cmake info here.
   set(CTEST_NIGHTLY_START_TIME "21:00:00 UTC")
@@ -225,6 +225,7 @@ endif()
   set(CTEST_DROP_SITE "my.cdash.org")
   set(CTEST_DROP_LOCATION "/submit.php?project=RTK")
   set(CTEST_DROP_SITE_CDASH TRUE)
+endif()
 
 #-----------------------------------------------------------------------------
 
