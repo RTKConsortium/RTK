@@ -13,6 +13,10 @@ set( ENV{Lib} "C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/Lib/amd64;C
 set( ENV{Include} "C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/Include;C:/Program Files/Microsoft SDKs/Windows/v7.0/Include;C:/Program Files/Microsoft SDKs/Windows/v7.0/Include/gl;" )
 set( ENV{CPU} "AMD64" )
 set( ENV{APPVER} "6.1" )
-
+set( FLAGS_DEBUG "/D_DEBUG /MTd /Zi  /Ob0 /Od /RTC1" )
+set(CONFIGURE_OPTIONS
+  -DCMAKE_CXX_FLAGS_DEBUG=${FLAGS_DEBUG}
+  -DCMAKE_C_FLAGS_DEBUG=${FLAGS_DEBUG}
+)
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 

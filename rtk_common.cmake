@@ -217,14 +217,14 @@ if(EXISTS \"${CTEST_SOURCE_DIRECTORY}/.git\")
 endif()
 ")
   set(CTEST_CHECKOUT_COMMAND "\"${CMAKE_COMMAND}\" -P \"${ctest_checkout_script}\"")
+endif()
   # CTest delayed initialization is broken, so we put the
   # CTestConfig.cmake info here.
-  set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
+  set(CTEST_NIGHTLY_START_TIME "21:00:00 UTC")
   set(CTEST_DROP_METHOD "http")
   set(CTEST_DROP_SITE "my.cdash.org")
   set(CTEST_DROP_LOCATION "/submit.php?project=RTK")
   set(CTEST_DROP_SITE_CDASH TRUE)
-endif()
 
 #-----------------------------------------------------------------------------
 
@@ -363,7 +363,12 @@ while(NOT dashboard_done)
   safe_message("Found ${count} changed files")
 
   if(dashboard_fresh OR NOT dashboard_continuous OR count GREATER 0)
-    ctest_configure()
+    ctest_configure(
+ BUILD        ${CTEST_BINARY_DIRECTORY}
+ SOURCE       ${CTEST_SOURCE_DIRECTORY}
+ OPTIONS      "${CONFIGURE_OPTIONS}"
+ RETURN_VALUE config_result
+     ) 
     ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
 
     if(COMMAND dashboard_hook_build)
