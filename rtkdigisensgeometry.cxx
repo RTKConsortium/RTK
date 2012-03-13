@@ -75,8 +75,8 @@ int main(int argc, char * argv[])
 
   // Projection offset: the offset is given in the volume coordinate system =>
   // convert to
-  double projectionOffsetX = -detectorPosition[0] * detectorHorizontal[0];
-  double projectionOffsetY = -detectorPosition[1] * detectorVertical[1];
+  double projectionOffsetX = detectorPosition[0] * detectorHorizontal[0];
+  double projectionOffsetY = detectorPosition[1] * detectorVertical[1];
 
   // Rotation
   double startAngle =

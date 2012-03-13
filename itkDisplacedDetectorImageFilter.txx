@@ -97,13 +97,13 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       minOffset = vnl_math_min(minOffset, m_Geometry->GetProjectionOffsetsX()[i]);
       maxOffset = vnl_math_max(maxOffset, m_Geometry->GetProjectionOffsetsX()[i]);
       }
-    m_InferiorCorner -= minOffset;
-    m_SuperiorCorner -= maxOffset;
+    m_InferiorCorner += maxOffset;
+    m_SuperiorCorner += minOffset;
     }
   else
     {
-    m_InferiorCorner -= m_MinimumOffset;
-    m_SuperiorCorner -= m_MaximumOffset;
+    m_InferiorCorner += m_MaximumOffset;
+    m_SuperiorCorner += m_MinimumOffset;
     }
 
   // 4 cases depending on the position of the two corners
@@ -191,7 +191,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     const double invden = 1/(2 * vcl_atan( theta * invsdd ) );
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
-    point[0] -= m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
+    point[0] += m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
 
     if( m_SuperiorCorner+m_InferiorCorner > 0. )
       {

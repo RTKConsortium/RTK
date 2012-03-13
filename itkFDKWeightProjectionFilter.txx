@@ -56,8 +56,8 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
     {
     typename InputImageType::PointType point = pointBase;
     point[1] = pointBase[1]
-               + m_Geometry->GetSourceOffsetsY()[k]
-               - m_Geometry->GetProjectionOffsetsY()[k];
+               + m_Geometry->GetProjectionOffsetsY()[k]
+               - m_Geometry->GetSourceOffsetsY()[k];
     const double sdd  = m_Geometry->GetSourceToDetectorDistances()[k];
     const double sdd2 = sdd * sdd;
     double weight = sdd  * m_AngularWeightsAndRampFactor[k];
@@ -67,8 +67,8 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
                      j++, point[1] += pointIncrement[1])
       {
       point[0] = pointBase[0]
-                 + m_Geometry->GetSourceOffsetsX()[k]
-                 - m_Geometry->GetProjectionOffsetsX()[k];
+                 + m_Geometry->GetProjectionOffsetsX()[k]
+                 - m_Geometry->GetSourceOffsetsX()[k];
       const double sdd2y2 = sdd2 + point[1]*point[1];
       for(unsigned int i=outputRegionForThread.GetIndex(0);
                        i<outputRegionForThread.GetIndex(0)+outputRegionForThread.GetSize(0);

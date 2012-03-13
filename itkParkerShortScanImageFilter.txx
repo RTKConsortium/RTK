@@ -98,7 +98,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
-    point[0] -= m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
+    point[0] += m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
 
     // Parker's article assumes that the scan starts at 0, convert projection
     // angle accordingly
