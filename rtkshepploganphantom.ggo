@@ -1,0 +1,18 @@
+package "rtk"
+version "Computes the intersection length between rays of 2D projections and a 3D volume."
+
+option "verbose"    v "Verbose execution"                                         flag     off
+option "config"     - "Config file"                                               string   no
+option "geometry"   g  "XML geometry file name"                                   string   yes
+option "output"     o "Output projections file name"                              string   yes
+option "axes"       a "x,y,z.  See http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm." double multiple no
+option "center"     c "x_0,y_0,z_0 Defines the center of the ellipsoid"           double multiple no
+option "grayscale"  s "Multiplier for the grayscale value"                        double multiple no
+option "rotation"   r "Rotation applied to the volume"                            double multiple no
+option "number"     n "Number of elliposoids in the phantom"                      int no
+option "phantomfile" h "Configuration parameteres for the phantom"                string no
+
+section "Projections parameters"
+option "origin"    p "Projections Origin (default=centered)" double multiple no
+option "dimension" - "Dimension"                 int    multiple no  default="256"
+option "spacing"   - "Spacing"                   double multiple no  default="1"
