@@ -14,12 +14,12 @@
 
 \begin{document}
 
-\title{RTK geometry}
+\title{RTK geometry v1}
 \author{Simon Rit}
 
 \maketitle
 
-\section{Context}
+\section{Purpose}
 
 The purpose of this document is to describe the geometry format used in RTK to relate a tomography to projection images. There is currently only one geometry format, ThreeDCircularProjectionGeometry.
 
@@ -32,7 +32,7 @@ The purpose of this document is to describe the geometry format used in RTK to r
 
 \section{Image coordinate system}
 
-An \verb+itk::Image<>+ contains information to convert voxel indices to physical coordinates using \verb+itk::Image.m_Origin+, \verb+itk::Image.m_Spacing+ and \verb+itk::Image.m_Direction+. Voxel coordinates are not used in RTK except for internal computation. The conversion from voxel index coordinates to physical coordinates and the dimensions of the images are out of the scope of this document.
+An \verb+itk::Image<>+ contains information to convert voxel indices to physical coordinates using its members \verb+m_Origin+, \verb+m_Spacing+ and \verb+m_Direction+. Voxel coordinates are not used in RTK except for internal computation. The conversion from voxel index coordinates to physical coordinates and the dimensions of the images are out of the scope of this document.
 
 \section{Fixed coordinate system}
 
@@ -44,7 +44,7 @@ This is the mother class for relating a TDimension-D tomography to a (TDimension
 
 \section{ThreeDCircularProjectionGeometry}
 
-This class is meant to define a circular rotation of a 2D projection image, acquired with a flat panel, around a 3D tomography. The trajectory does not have to be strictly circular but it is assumed in some reconstruction algorithms that the rotation axis is y. The description of the geometry is based on the international standard IEC 61217 which has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
+This class is meant to define a set of 2D projection images, acquired with a flat panel along a circular trajectory, around a 3D tomography. The trajectory does not have to be strictly circular but it is assumed in some reconstruction algorithms that the rotation axis is y. The description of the geometry is based on the international standard IEC 61217 which has been designed for cone-beam imagers on isocentric radiotherapy systems but it can be used for any 3D circular trajectory. The fixed coordinate system of RTK and the fixed coordinate system of IEC 61217 are the same.
 
 9 parameters are used per projection to define the position of the source and the detector relatively to the fixed coordinate system. The 9 parameters are set with the method \verb+AddProjection+. Default values are provided for the parameters which are not mandatory. Note that explicit names have been used but this does not necessarily correspond to the value returned by the scanner which can use its own parameterization.
 
@@ -83,29 +83,29 @@ An increase in the value of angle $\theta r$ corresponds to a counter-clockwise 
 
 \paragraph{Rotation matrix}
 
-The rotation matrix in homogeneous coordinate is then (constructed with\\ \verb+itk::Euler3DTransform<double>::ComputeMatrix()+):
+The rotation matrix in homogeneous coordinate is then (constructed with\\ \verb+itk::Euler3DTransform<double>::ComputeMatrix()+ with opposite angles because we rotate the volume coordinates instead of the scanner):
 
 $$
 \begin{array}{lcll}
   M_R & = & & %
   \begin{pmatrix}
-    \cos(InPlaneAngle) & -\sin(InPlaneAngle) & 0 & 0\\
-    \sin(InPlaneAngle) & \cos(InPlaneAngle) & 0 & 0\\
+    \cos(-InPlaneAngle) & -\sin(-InPlaneAngle) & 0 & 0\\
+    \sin(-InPlaneAngle) & \cos(-InPlaneAngle) & 0 & 0\\
     0 & 0 & 1 & 0\\
     0 & 0 & 0 & 1
   \end{pmatrix} \\
   \\ & & \times & %
   \begin{pmatrix}
     1 & 0 & 0 & 0\\
-    0 & \cos(OutOfPlaneAngle) & -\sin(OutOfPlaneAngle) & 0\\
-    0 & \sin(OutOfPlaneAngle) & \cos(OutOfPlaneAngle) & 0\\
+    0 & \cos(-OutOfPlaneAngle) & -\sin(-OutOfPlaneAngle) & 0\\
+    0 & \sin(-OutOfPlaneAngle) & \cos(-OutOfPlaneAngle) & 0\\
     0 & 0 & 0 & 1
   \end{pmatrix} \\
   \\ & & \times & %
   \begin{pmatrix}
-    \cos(GantryAngle) & 0 & \sin(GantryAngle) & 0 \\
+    \cos(-GantryAngle) & 0 & \sin(-GantryAngle) & 0 \\
     0 & 1 & 0 & 0 \\
-    -\sin(GantryAngle) & 0 & \cos(GantryAngle) & 0 \\
+    -\sin(-GantryAngle) & 0 & \cos(-GantryAngle) & 0 \\
     0 & 0 & 0 & 1
   \end{pmatrix}
 \end{array}
@@ -113,11 +113,11 @@ $$
 
 \subsection{Source position}
 
-The source position is defined with respect to the isocenter with three parameters: SourceOffsetX, SourceOffsetY and SourceToIsocenterDistance where X and Y refers to the coordinate system of the detector and SourceToIsocenterDistance is self explanatory (in IEC 61217, it is the RADIATION SOURCE axis distance, SAD). SourceOffsetX and SourceOffsetY are optional and zero by default.
+The source position is defined with respect to the isocenter with three parameters, SourceOffsetX, SourceOffsetY and SourceToIsocenterDistance. (SourceOffsetX,SourceOffsetY,-SourceToIsocenterDistance) are the coordinates of the source in the rotated coordinated system. In IEC 61217, SourceToIsocenterDistance is the RADIATION SOURCE axis distance, SAD. SourceOffsetX and SourceOffsetY are optional and zero by default.
 
 \subsection{Detector position}
 
-The detector position is defined with respect to the source with three parameters: ProjectionOffsetX, ProjectionOffsetY and SourceToDetectorDistance where X and Y refers to the coordinate system of the detector and SourceToDetectorDistance is self explanatory (in IEC 61217, it is the RADIATION SOURCE to IMAGE RECEPTION AREA distance, SID). ProjectionOffsetX and ProjectionOffsetY are optional and zero by default.
+The detector position is defined with respect to the source with three parameters: ProjectionOffsetX, ProjectionOffsetY and SourceToDetectorDistance. (ProjectionOffsetX,ProjectionOffsetY,SourceToIsocenterDistance-SourceToDetectorDistance) are the of the coordinates of the detector origin in the rotated coordinated system. In IEC 61217, SourceToDetectorDistance is the RADIATION SOURCE to IMAGE RECEPTION AREA distance, SID. ProjectionOffsetX and ProjectionOffsetY are optional and zero by default.
 
 \subsection{Final matrix}
 
@@ -127,20 +127,20 @@ $$
 \begin{array}{lcll}
   M_P & = & & %
   \begin{pmatrix}
-    1 & 0 & ProjectionOffsetX-SourceOffsetX  \\
-    0 & 1 & ProjectionOffsetY-SourceOffsetY  \\
+    1 & 0 & SourceOffsetX-ProjectionOffsetX  \\
+    0 & 1 & SourceOffsetY-ProjectionOffsetY  \\
     0 & 0 & 1
   \end{pmatrix} %
   \\ \\ & & \times & %
   \begin{pmatrix}
-    SourceToDetectorDistance & 0 & 0 & 0  \\
-    0 & SourceToDetectorDistance & 0 & 0  \\
-    0 & 0 & 1 & SourceToIsocenterDistance
+    -SourceToDetectorDistance & 0 & 0 & 0  \\
+    0 & -SourceToDetectorDistance & 0 & 0  \\
+    0 & 0 & 1 & -SourceToIsocenterDistance
   \end{pmatrix} %
   \\ \\ & & \times & %
   \begin{pmatrix}
-    1 & 0 & 0 & SourceOffsetX  \\
-    0 & 1 & 0 & SourceOffsetY  \\
+    1 & 0 & 0 & -SourceOffsetX  \\
+    0 & 1 & 0 & -SourceOffsetY  \\
     0 & 0 & 1 & 0 \\
     0 & 0 & 0 & 1
   \end{pmatrix} %
@@ -156,31 +156,27 @@ ThreeDCircularProjectionGeometry can be saved and loaded from an XML file. If th
 \begin{verbatim}
 <?xml version="1.0"?>
 <!DOCTYPE RTKGEOMETRY>
-<RTKThreeDCircularGeometry>
-  <SourceToIsocenterDistance>277.805</SourceToIsocenterDistance>
-  <SourceToDetectorDistance>349.9997</SourceToDetectorDistance>
-  <SourceOffsetX>6.72917</SourceOffsetX>
-  <SourceOffsetY>19.9813</SourceOffsetY>
-  <ProjectionOffsetX>143.52</ProjectionOffsetX>
-  <ProjectionOffsetY>132.48</ProjectionOffsetY>
+<RTKThreeDCircularGeometry version="0">
+  <SourceToIsocenterDistance>1000</SourceToIsocenterDistance>
+  <SourceToDetectorDistance>1536</SourceToDetectorDistance>
   <Projection>
-    <GantryAngle>0</GantryAngle>
-    <InPlaneAngle>0</InPlaneAngle>
-    <OutOfPlaneAngle>0</OutOfPlaneAngle>
+    <GantryAngle>271.847274780273</GantryAngle>
+    <ProjectionOffsetX>-117.056503295898</ProjectionOffsetX>
+    <ProjectionOffsetY>-1.01195001602173</ProjectionOffsetY>
     <Matrix>
-                 349.9997                   0           136.79083    40246.7819450849
-                        0            349.9997            112.4987    38156.0120819122
-                        0                   0                   1    277.003761610598
+          -166.5093078829                   0   -1531.42837748039   -117056.503295898
+        -1.01142410874151               -1536  0.0326206557691505   -1011.95001602173
+       -0.999480303105996                   0  0.0322354417240802               -1000
     </Matrix>
   </Projection>
   <Projection>
-    <GantryAngle>0.0104719103641872</GantryAngle>
-    <InPlaneAngle>1.9341326876952e-07</InPlaneAngle>
-    <OutOfPlaneAngle>359.999963060894</OutOfPlaneAngle>
+    <GantryAngle>271.852905273438</GantryAngle>
+    <ProjectionOffsetX>-117.056831359863</ProjectionOffsetX>
+    <ProjectionOffsetY>-1.01187002658844</ProjectionOffsetY>
     <Matrix>
-         349.974692988061 -8.93717746849181e-05    136.854796920251    40246.7819450849
-      -0.0205601699517817    349.999627471001    112.498923769162    38156.0120819122
-      -0.000182769313811191 -6.44709015016959e-07   0.999999983297481    277.003761610598
+        -166.660129424325                   0   -1531.41199650136   -117056.831359863
+        -1.01134095059569               -1536  0.0327174625589984   -1011.87002658844
+       -0.999477130482326                   0  0.0323336611415466               -1000
     </Matrix>
   </Projection>
 </RTKThreeDCircularGeometry>

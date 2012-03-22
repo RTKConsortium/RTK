@@ -21,7 +21,7 @@ m_NonNegativityConstraintThreshold(20)
 template <class TInputImage, class TOutputImage>
 void
 BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
-::EnlargeOutputRequestedRegion()
+::EnlargeOutputRequestedRegion(DataObject *)
 {
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
   if ( !outputPtr )

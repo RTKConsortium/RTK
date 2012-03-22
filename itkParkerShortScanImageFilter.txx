@@ -88,8 +88,8 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   if( delta < atan(0.5 * detectorWidth * invsdd) )
     itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
                     << "Delta is " << delta*180./Math::pi
-                    << "° and should be more than half the beam angle, i.e. "
-                    << atan(0.5 * detectorWidth * invsdd)*180./Math::pi << "°.");
+                    << " degrees and should be more than half the beam angle, i.e. "
+                    << atan(0.5 * detectorWidth * invsdd)*180./Math::pi << " degrees.");
 
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
@@ -98,7 +98,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
-    point[0] -= m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
+    point[0] += m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
 
     // Parker's article assumes that the scan starts at 0, convert projection
     // angle accordingly

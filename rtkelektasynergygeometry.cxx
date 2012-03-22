@@ -78,8 +78,8 @@ int main(int argc, char * argv[])
     geometry->AddProjection(args_info.sid_arg,
                             args_info.sdd_arg,
                             projAngle[noProj],
-                            projFlexX[noProj],
-                            projFlexY[noProj]);
+                            -projFlexX[noProj],
+                            -projFlexY[noProj]);
     }
 
   // Write

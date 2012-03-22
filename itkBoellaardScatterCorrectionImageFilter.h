@@ -53,7 +53,7 @@ protected:
   ~BoellaardScatterCorrectionImageFilter(){}
 
   /** Requires full projection images to estimate scatter */
-  virtual void EnlargeOutputRequestedRegion();
+  virtual void EnlargeOutputRequestedRegion(DataObject *itkNotUsed(output));
   virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
 
   /** Split the output's RequestedRegion into "num" pieces, returning

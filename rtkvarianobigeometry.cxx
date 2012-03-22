@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
     const double angle =
       dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
 
-    geometry->AddProjection(sid, sdd, angle, -1*offsetx, -1*offsety);
+    geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
     }
 
   // Write
