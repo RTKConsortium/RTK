@@ -197,12 +197,11 @@ GetSourcePosition(const unsigned int i) const
   HomogeneousVectorType sourcePosition;
   sourcePosition[0] = this->GetSourceOffsetsX()[i];
   sourcePosition[1] = this->GetSourceOffsetsY()[i];
-  sourcePosition[2] = -this->GetSourceToIsocenterDistances()[i];
+  sourcePosition[2] = this->GetSourceToIsocenterDistances()[i];
   sourcePosition[3] = 1.;
 
   // Rotate
-  sourcePosition = GetRotationMatrices()[i] * sourcePosition;
-
+  sourcePosition.SetVnlVector(GetRotationMatrices()[i].GetInverse() * sourcePosition.GetVnlVector());
   return sourcePosition;
 }
 
@@ -213,14 +212,13 @@ GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
   // Compute projection inverse and distance to source
   ThreeDHomogeneousMatrixType matrix;
   matrix.SetIdentity();
-  matrix[0][3] = -this->GetProjectionTranslationMatrices()[i][0][3];
-  matrix[1][3] = -this->GetProjectionTranslationMatrices()[i][1][3];
-  matrix[2][3] = this->GetSourceToDetectorDistances()[i] -
-                 this->GetSourceToIsocenterDistances()[i];
+  matrix[0][3] = this->GetProjectionOffsetsX()[i];
+  matrix[1][3] = this->GetProjectionOffsetsY()[i];
+  matrix[2][3] = this->GetSourceToIsocenterDistances()[i]-this->GetSourceToDetectorDistances()[i];
   matrix[2][2] = 0.; // Force z to axis to detector distance
 
   // Rotate
-  matrix = this->GetRotationMatrices()[i].GetVnlMatrix() * matrix.GetVnlMatrix();
+  matrix = this->GetRotationMatrices()[i].GetInverse() * matrix.GetVnlMatrix();
   return matrix;
 }
 
