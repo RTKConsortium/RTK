@@ -53,6 +53,7 @@ int main(int argc, char * argv[])
   if(args_info.parameters_given>7) rbi->GetRQIFunctor()->SetH(args_info.parameters_arg[7]);
   if(args_info.parameters_given>8) rbi->GetRQIFunctor()->SetI(args_info.parameters_arg[8]);
   if(args_info.parameters_given>9) rbi->GetRQIFunctor()->SetJ(args_info.parameters_arg[9]);
+  rbi->SetMultiplicativeConstant(args_info.mult_arg);
   rbi->SetGeometry( geometryReader->GetOutputObject() );
   rbi->Update();
 

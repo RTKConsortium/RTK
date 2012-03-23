@@ -6,6 +6,7 @@ option "config"     - "Config file"                                             
 option "geometry"   g  "XML geometry file name"                                   string   yes
 option "output"     o "Output projections file name"                              string   yes
 option "parameters" p "A,B,C,D,E,F,G,H,I,J.  See http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm." double multiple yes
+option "mult"       m "Multiplier for the intersection"                           double   no default="1"
 
 section "Projections parameters"
 option "origin"    - "Origin (default=centered)" double multiple no
