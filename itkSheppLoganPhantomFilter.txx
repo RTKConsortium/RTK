@@ -19,13 +19,10 @@ namespace itk
 template< class TInputImage, class TOutputImage >
 void SheppLoganPhantomFilter< TInputImage, TOutputImage >::Config()
 {
-  const char *      search_fig = "Ellipsoid"; // Set search pattern
-  int               offset = 0;
-  std::string       line;
-  std::ifstream     Myfile;
-  //std::stringstream ss(std::stringstream::in | std::stringstream::out);
-  std::string       temp, temp_ellip;
-  std::string       parameters[8] = { "x", "y", "z", "A", "B", "C", "beta", "gray" };
+  const char *       search_fig = "Ellipsoid"; // Set search pattern
+  int                offset = 0;
+  std::string        line;
+  std::ifstream      Myfile;
 
   Myfile.open( m_ConfigFile.c_str() );
   if ( !Myfile.is_open() )
@@ -40,29 +37,22 @@ void SheppLoganPhantomFilter< TInputImage, TOutputImage >::Config()
     if ( ( offset = line.find(search_fig, 0) ) != std::string::npos ) //Ellipsoid
                                                                       // found
       {
-      std::vector<double> params;
+      const std::string parameterNames[8] = { "x", "y", "z", "A", "B", "C", "beta", "gray" };
+      std::vector<double> parameters;
       for ( int j = 0; j < 8; j++ )
         {
-        temp_ellip = "\0";
-        if ( ( offset = line.find(parameters[j], 0) ) != std::string::npos )
+        double val = 0.;
+        if ( ( offset = line.find(parameterNames[j], 0) ) != std::string::npos )
           {
-          for ( int k = offset; k < offset + 10; k++ )
-            {
-            if ( isdigit(line[k]) || line[k] == '-' )
-              {
-              for ( int b = k; b < offset + 10; b++ )
-                {
-                temp_ellip += line[b];
-                }
-              break;
-              }
-            }
-          double param_temp = atof( temp_ellip.c_str() );
+          offset += parameterNames[j].length()+1;
+          std::string s = line.substr(offset,line.length()-offset);
+          std::istringstream ss(s);
+          ss >> val;
           //Saving all parameters for each ellipsoid
-          params.push_back(param_temp);
           }
+        parameters.push_back(val);
         }
-      m_Fig.push_back(params);
+      m_Fig.push_back(parameters);
       }
     }
   Myfile.close();
