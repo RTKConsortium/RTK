@@ -47,8 +47,6 @@ public:
   itkTypeMacro(SheppLoganPhantomFilter, RayEllipsoidIntersectionImageFilter);
 
   /** Get/Set Number of Figures.*/
-  itkSetMacro(NumberArg, int);
-  itkGetMacro(NumberArg, int);
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
@@ -67,8 +65,7 @@ private:
   SheppLoganPhantomFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  double m_Fig[50][8];
-  int m_NumberArg;
+  std::vector< std::vector<double> > m_Fig;
   StringType m_ConfigFile;
 };
 
