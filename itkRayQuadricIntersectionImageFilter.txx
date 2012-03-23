@@ -10,6 +10,15 @@ namespace itk
 {
 
 template <class TInputImage, class TOutputImage>
+RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
+::RayQuadricIntersectionImageFilter():
+  m_RQIFunctor( RQIFunctionType::New() ),
+  m_Geometry(NULL),
+  m_MultiplicativeConstant(1.)
+{
+}
+
+template <class TInputImage, class TOutputImage>
 RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>::RQIFunctionType::Pointer
 RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 ::GetRQIFunctor()
@@ -82,7 +91,7 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 
       // Compute ray intersection length
       if( rqiFunctor->Evaluate(direction) )
-        itOut.Set( itIn.Get() + rqiFunctor->GetFarthestDistance() - rqiFunctor->GetNearestDistance() );
+        itOut.Set( itIn.Get() + m_MultiplicativeConstant*(rqiFunctor->GetFarthestDistance() - rqiFunctor->GetNearestDistance() ));
       }
     }
 }

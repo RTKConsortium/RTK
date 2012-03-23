@@ -42,12 +42,15 @@ public:
   itkGetMacro(Geometry, GeometryPointer);
   itkSetMacro(Geometry, GeometryPointer);
 
+  itkGetMacro(MultiplicativeConstant, double);
+  itkSetMacro(MultiplicativeConstant, double);
+
   /** Get the RayQuadricIntersectionFunction to set its parameters.
     * A call to this function will assume modification of the function.*/
   RQIFunctionType::Pointer GetRQIFunctor();
 
 protected:
-  RayQuadricIntersectionImageFilter() : m_RQIFunctor( RQIFunctionType::New() ), m_Geometry(NULL) {}
+  RayQuadricIntersectionImageFilter();
   virtual ~RayQuadricIntersectionImageFilter() {};
 
   /** Apply changes to the input image requested region. */
@@ -66,6 +69,9 @@ private:
 
   /** RTK geometry object */
   GeometryPointer m_Geometry;
+
+  /** Multiplicative factor of intersection length */
+  double m_MultiplicativeConstant;
 };
 
 } // end namespace itk
