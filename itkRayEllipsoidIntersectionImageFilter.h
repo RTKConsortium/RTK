@@ -15,9 +15,8 @@ namespace itk
 {
 
 /** \class RayEllipsoidIntersectionImageFilter
- * \brief Computes intersection of projection rays with quadric objects.
- * (ellipsoid, cone, cylinder...). See
- * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
+ * \brief Computes intersection of projection rays with ellipsoids.
+ * See http://en.wikipedia.org/wiki/Ellipsoid
  * for more information.
  */
 
@@ -45,22 +44,26 @@ public:
   itkSetMacro(SemiPrincipalAxisY, double);
   itkGetMacro(SemiPrincipalAxisZ, double);
   itkSetMacro(SemiPrincipalAxisZ, double);
-  itkGetMacro(CenterEllipsoidX_0, double);
-  itkSetMacro(CenterEllipsoidX_0, double);
-  itkGetMacro(CenterEllipsoidY_0, double);
-  itkSetMacro(CenterEllipsoidY_0, double);
-  itkGetMacro(CenterEllipsoidZ_0, double);
-  itkSetMacro(CenterEllipsoidZ_0, double);
+  itkGetMacro(CenterX, double);
+  itkSetMacro(CenterX, double);
+  itkGetMacro(CenterY, double);
+  itkSetMacro(CenterY, double);
+  itkGetMacro(CenterZ, double);
+  itkSetMacro(CenterZ, double);
+
+  itkGetMacro(RotationAngle, double);
+  itkSetMacro(RotationAngle, double);
 
 protected:
-  RayEllipsoidIntersectionImageFilter() {}
+  RayEllipsoidIntersectionImageFilter();
   virtual ~RayEllipsoidIntersectionImageFilter() {};
 
   virtual void BeforeThreadedGenerateData();
 
-  /** Get the RayQuadricIntersectionFunction to set its parameters.
+  /** Translate user parameteres to quadric parameters.
    * A call to this function will assume modification of the function.*/
   void Translate();
+  void Rotate();
 
 private:
   RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented
@@ -69,9 +72,10 @@ private:
   double m_SemiPrincipalAxisX;
   double m_SemiPrincipalAxisY;
   double m_SemiPrincipalAxisZ;
-  double m_CenterEllipsoidX_0;
-  double m_CenterEllipsoidY_0;
-  double m_CenterEllipsoidZ_0;
+  double m_CenterX;
+  double m_CenterY;
+  double m_CenterZ;
+  double m_RotationAngle;
 };
 
 } // end namespace itk
