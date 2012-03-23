@@ -7,6 +7,8 @@ option "geometry"   g  "XML geometry file name"                                 
 option "output"     o "Output projections file name"                              string   yes
 option "axes"       a "x,y,z.  See http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm." double multiple yes
 option "center"     c "x_0,y_0,z_0 Defines the center of the ellipsoid"           double multiple no
+option "mult"       m "Multiplier for the intersection"                           double   no default="1"
+option "rotation"   r "Rotation applied to the volume"                            double multiple no default="0"
 
 section "Projections parameters"
 option "origin"    p "Projections Origin (default=centered)" double multiple no
