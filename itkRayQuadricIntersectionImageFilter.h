@@ -47,7 +47,7 @@ public:
   RQIFunctionType::Pointer GetRQIFunctor();
 
 protected:
-  RayQuadricIntersectionImageFilter() : m_RQIFunctor( RQIFunctionType::New() ), m_Geometry(NULL) { this->SetNumberOfThreads(1);}
+  RayQuadricIntersectionImageFilter() : m_RQIFunctor( RQIFunctionType::New() ), m_Geometry(NULL) {}
   virtual ~RayQuadricIntersectionImageFilter() {};
 
   /** Apply changes to the input image requested region. */

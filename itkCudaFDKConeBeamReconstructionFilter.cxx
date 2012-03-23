@@ -1,7 +1,8 @@
 #include "itkCudaFDKConeBeamReconstructionFilter.h"
 
 itk::CudaFDKConeBeamReconstructionFilter
-::CudaFDKConeBeamReconstructionFilter()
+::CudaFDKConeBeamReconstructionFilter():
+    m_ExplicitGPUMemoryManagementFlag(false)
 {
   // Create each filter which are specific for cuda
   m_RampFilter = RampFilterType::New();
@@ -20,14 +21,32 @@ void
 itk::CudaFDKConeBeamReconstructionFilter
 ::GenerateData()
 {
-  BackProjectionFilterType* cudabp = dynamic_cast<BackProjectionFilterType*>( m_BackProjectionFilter.GetPointer() );
-
   // Init GPU memory
-  cudabp->InitDevice();
+  if(!m_ExplicitGPUMemoryManagementFlag)
+    this->InitDevice();
 
   // Run reconstruction
   this->Superclass::GenerateData();
 
   // Transfer result to CPU image
+  if(!m_ExplicitGPUMemoryManagementFlag)
+    this->CleanUpDevice();
+}
+
+void
+itk::CudaFDKConeBeamReconstructionFilter
+::InitDevice()
+{
+    DD("InitDevice")
+  BackProjectionFilterType* cudabp = dynamic_cast<BackProjectionFilterType*>( m_BackProjectionFilter.GetPointer() );
+  cudabp->InitDevice();
+}
+
+void
+itk::CudaFDKConeBeamReconstructionFilter
+::CleanUpDevice()
+{
+    DD("Cleanup")
+  BackProjectionFilterType* cudabp = dynamic_cast<BackProjectionFilterType*>( m_BackProjectionFilter.GetPointer() );
   cudabp->CleanUpDevice();
 }
