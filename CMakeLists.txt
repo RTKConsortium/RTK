@@ -29,7 +29,7 @@ SET(RTK_VERSION_PATCH "0")
 #=========================================================
 # Help function to debug CMake
 MACRO (DD in)
-  MESSAGE(${in}=${${in}})
+  MESSAGE(${in}=[${${in}}])
 ENDMACRO(DD)
 #=========================================================
 
