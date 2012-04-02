@@ -37,7 +37,6 @@ void
 itk::CudaFDKConeBeamReconstructionFilter
 ::InitDevice()
 {
-    DD("InitDevice")
   BackProjectionFilterType* cudabp = dynamic_cast<BackProjectionFilterType*>( m_BackProjectionFilter.GetPointer() );
   cudabp->InitDevice();
 }
@@ -46,7 +45,6 @@ void
 itk::CudaFDKConeBeamReconstructionFilter
 ::CleanUpDevice()
 {
-    DD("Cleanup")
   BackProjectionFilterType* cudabp = dynamic_cast<BackProjectionFilterType*>( m_BackProjectionFilter.GetPointer() );
   cudabp->CleanUpDevice();
 }
