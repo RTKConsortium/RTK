@@ -7,6 +7,7 @@
 
 #include "itkThreeDCircularProjectionGeometryXMLFile.h"
 #include "itkRayEllipsoidIntersectionImageFilter.h"
+#include "itkSetQuadricParamFromRegularParamFunction.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -31,6 +32,7 @@ public:
   typedef SmartPointer<Self>                                          Pointer;
   typedef SmartPointer<const Self>                                    ConstPointer;
 
+  typedef SetQuadricParamFromRegularParamFunction                     SQPFunctionType;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -60,11 +62,6 @@ protected:
 
   virtual void BeforeThreadedGenerateData();
 
-  /** Translate user parameteres to quadric parameters.
-   * A call to this function will assume modification of the function.*/
-  void Translate();
-  void Rotate();
-
 private:
   RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
@@ -76,6 +73,7 @@ private:
   double m_CenterY;
   double m_CenterZ;
   double m_RotationAngle;
+  SQPFunctionType::Pointer m_SQPFunctor;
 };
 
 } // end namespace itk
