@@ -40,6 +40,8 @@ public:
   typedef std::vector<double> VectorType;
   typedef std::string StringType;
 
+  typedef SetQuadricParamFromRegularParamFunction                     SQPFunctionType;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -50,12 +52,15 @@ public:
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
+  itkSetMacro(Fig, std::vector< std::vector<double> >);
+  itkGetMacro(Fig, std::vector< std::vector<double> >);
+
 protected:
   SheppLoganPhantomFilter() {}
   virtual ~SheppLoganPhantomFilter() {};
 
   virtual void GenerateData();
-  void Config();
+  //void Config();
 
   /** Translate user parameteres to quadric parameters.
    * A call to this function will assume modification of the function.*/
@@ -67,6 +72,7 @@ private:
 
   std::vector< std::vector<double> > m_Fig;
   StringType m_ConfigFile;
+  SQPFunctionType::Pointer m_SQPFunctor;
 };
 
 } // end namespace itk
