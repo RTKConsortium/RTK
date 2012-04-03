@@ -18,7 +18,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ForwardProjectionFilter = JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
-  m_BackProjectionFilter = JosephBackProjectionImageFilter<TInputImage, TOutputImage>::New();
+  SetBackProjectionFilter(itk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New());
 
   //Permanent internal connections
   m_ZeroMultiplyFilter->SetInput( m_ExtractFilter->GetOutput() );
@@ -26,15 +26,27 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_SubtractFilter->SetInput(0, m_ExtractFilter->GetOutput() );
   m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput() );
   m_MultiplyFilter->SetInput( m_SubtractFilter->GetOutput() );
-  m_BackProjectionFilter->SetInput(1, m_MultiplyFilter->GetOutput() );
 
   // Default parameters
 #if ITK_VERSION_MAJOR >= 4
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
 #endif
   m_ZeroMultiplyFilter->SetConstant( 0. );
-  //m_BackProjectionFilter->InPlaceOn();
-  m_BackProjectionFilter->SetTranspose(true);
+}
+
+template<class TInputImage, class TOutputImage>
+void
+SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+::SetBackProjectionFilter (const BackProjectionFilterPointer _arg)
+{
+  itkDebugMacro("setting BackProjectionFilter to " << _arg);
+  if (this->m_BackProjectionFilter != _arg)
+    {
+    this->m_BackProjectionFilter = _arg;
+    m_BackProjectionFilter->SetInput(1, m_MultiplyFilter->GetOutput() );
+    m_BackProjectionFilter->SetTranspose(false);
+    this->Modified();
+    }
 }
 
 template<class TInputImage, class TOutputImage>
@@ -53,7 +65,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilter->SetInput( this->GetInput(1) );
   m_BackProjectionFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
   m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
-  m_BackProjectionFilter->SetTranspose(false);
 }
 
 template<class TInputImage, class TOutputImage>

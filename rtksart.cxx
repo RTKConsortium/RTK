@@ -66,6 +66,21 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
+  // Construct selected backprojection filter
+  itk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
+  switch(args_info.bp_arg)
+  {
+  case(bp_arg_VoxelBasedBackProjection):
+    bp = itk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    break;
+  case(bp_arg_Joseph):
+    bp = itk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    break;
+  default:
+    std::cerr << "Unhandled --bp value." << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // SART reconstruction filter
   typedef itk::SARTConeBeamReconstructionFilter< OutputImageType > SARTType;
   SARTType::Pointer sart = SARTType::New();
@@ -74,6 +89,7 @@ int main(int argc, char * argv[])
   sart->SetGeometry( geometryReader->GetOutputObject() );
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetLambda( args_info.lambda_arg );
+  sart->SetBackProjectionFilter( bp );
   sart->Update();
 
   // Write

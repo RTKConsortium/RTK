@@ -48,6 +48,7 @@ public:
   typedef itk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >          ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                   SubtractFilterType;
   typedef itk::BackProjectionImageFilter< OutputImageType, OutputImageType >             BackProjectionFilterType;
+  typedef typename BackProjectionFilterType::Pointer                                     BackProjectionFilterPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -68,6 +69,9 @@ public:
   /** Get / Set the convergence factor. Default is 0.3. */
   itkGetMacro(Lambda, double);
   itkSetMacro(Lambda, double);
+
+  /** Set and init the backprojection filter. Default is voxel based backprojection. */
+  virtual void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
 
 protected:
   SARTConeBeamReconstructionFilter();
