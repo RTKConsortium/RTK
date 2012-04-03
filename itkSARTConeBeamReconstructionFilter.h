@@ -57,8 +57,8 @@ public:
   itkTypeMacro(SARTConeBeamReconstructionFilter, ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  virtual ThreeDCircularProjectionGeometry::Pointer GetGeometry();
-  virtual void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+  itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
+  itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
 
   void PrintTiming(std::ostream& os) const;
 
@@ -99,6 +99,9 @@ private:
   //purposely not implemented
   SARTConeBeamReconstructionFilter(const Self&);
   void operator=(const Self&);
+
+  /** Geometry object */
+  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
   /** Number of projections processed at a time. */
   unsigned int m_NumberOfIterations;
