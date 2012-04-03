@@ -117,39 +117,40 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   // For each iteration, go over each projection
   for(unsigned int iter=0; iter<m_NumberOfIterations; iter++)
     {
-      for(unsigned int i=0; i<nProj; i++)
+    for(unsigned int i=0; i<nProj; i++)
+      {
+      // After the first bp update, we need to use its output as input.
+      if(iter+i)
         {
-        // After the first bp update, we need to use its output as input.
-        if(iter+i)
-          {
-          typename TInputImage::Pointer pimg = m_BackProjectionFilter->GetOutput();
-          pimg->DisconnectPipeline();
-          m_BackProjectionFilter->SetInput( pimg );
-          m_ForwardProjectionFilter->SetInput(1, pimg );
-          }
+        typename TInputImage::Pointer pimg = m_BackProjectionFilter->GetOutput();
+        pimg->DisconnectPipeline();
+        m_BackProjectionFilter->SetInput( pimg );
+        m_ForwardProjectionFilter->SetInput(1, pimg );
+        }
 
-        // Change projection subset
-        subsetRegion.SetIndex( Dimension-1, projOrder[i] );
-        m_ExtractFilter->SetExtractionRegion(subsetRegion);
-        // This is required to reset the full pipeline
-        m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
-        m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
+      // Change projection subset
+      subsetRegion.SetIndex( Dimension-1, projOrder[i] );
+      m_ExtractFilter->SetExtractionRegion(subsetRegion);
+      // This is required to reset the full pipeline
+      m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
+      m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
 
-        m_ExtractFilter->Update();
-        m_ZeroMultiplyFilter->Update();
-        m_ForwardProjectionFilter->Update();
-        m_SubtractFilter->Update();
-        m_MultiplyFilter->Update();
-        m_BackProjectionFilter->Update();
+      m_ExtractFilter->Update();
+      m_ZeroMultiplyFilter->Update();
+      m_ForwardProjectionFilter->Update();
+      m_SubtractFilter->Update();
+      m_MultiplyFilter->Update();
+      m_BackProjectionFilter->Update();
 
-if(i%32==0)
-  {
-  typedef typename itk::ImageFileWriter<TOutputImage> WriterType;
-  typename WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName("sart.mha");
-  writer->SetInput( m_BackProjectionFilter->GetOutput() );
-  writer->Update();
-  }
+//if(i%32==0)
+//  {
+//  typedef typename itk::ImageFileWriter<TOutputImage> WriterType;
+//  typename WriterType::Pointer writer = WriterType::New();
+//  writer->SetFileName("sart.mha");
+//  writer->SetInput( m_BackProjectionFilter->GetOutput() );
+//  writer->Update();
+//  }
+
       }
     }
   GraftOutput( m_BackProjectionFilter->GetOutput() );
