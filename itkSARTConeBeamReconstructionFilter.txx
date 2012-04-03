@@ -101,8 +101,11 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
   const unsigned int Dimension = this->InputImageDimension;
 
+  // Check and set geometry
   if(this->GetGeometry().GetPointer() == NULL)
     itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry().GetPointer());
+  m_BackProjectionFilter   ->SetGeometry(this->GetGeometry().GetPointer());
 
   // The backprojection works on one projection at a time
   typename ExtractFilterType::InputImageRegionType subsetRegion;
@@ -165,28 +168,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       }
     }
   GraftOutput( m_BackProjectionFilter->GetOutput() );
-}
-
-template<class TInputImage, class TOutputImage>
-ThreeDCircularProjectionGeometry::Pointer
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
-::GetGeometry()
-{
-  return this->m_ForwardProjectionFilter->GetGeometry();
-}
-
-template<class TInputImage, class TOutputImage>
-void
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
-{
-  itkDebugMacro("setting GeometryPointer to " << _arg);
-  if (this->GetGeometry() != _arg)
-    {
-    m_ForwardProjectionFilter->SetGeometry(_arg);
-    m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
-    this->Modified();
-    }
 }
 
 template<class TInputImage, class TOutputImage>
