@@ -48,6 +48,7 @@ public:
   typedef itk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >          ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                   SubtractFilterType;
   typedef itk::BackProjectionImageFilter< OutputImageType, OutputImageType >             BackProjectionFilterType;
+  typedef typename BackProjectionFilterType::Pointer                                     BackProjectionFilterPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -56,8 +57,8 @@ public:
   itkTypeMacro(SARTConeBeamReconstructionFilter, ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  virtual ThreeDCircularProjectionGeometry::Pointer GetGeometry();
-  virtual void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+  itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
+  itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
 
   void PrintTiming(std::ostream& os) const;
 
@@ -68,6 +69,9 @@ public:
   /** Get / Set the convergence factor. Default is 0.3. */
   itkGetMacro(Lambda, double);
   itkSetMacro(Lambda, double);
+
+  /** Set and init the backprojection filter. Default is voxel based backprojection. */
+  virtual void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
 
 protected:
   SARTConeBeamReconstructionFilter();
@@ -95,6 +99,9 @@ private:
   //purposely not implemented
   SARTConeBeamReconstructionFilter(const Self&);
   void operator=(const Self&);
+
+  /** Geometry object */
+  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
   /** Number of projections processed at a time. */
   unsigned int m_NumberOfIterations;

@@ -43,7 +43,7 @@ public:
   void SetBoxFromImage(OutputImageBaseConstPointer _arg);
 
 protected:
-  RayBoxIntersectionImageFilter() : m_RBIFunctor( RBIFunctionType::New() ), m_Geometry(NULL) { this->SetNumberOfThreads(1);}
+  RayBoxIntersectionImageFilter() : m_RBIFunctor( RBIFunctionType::New() ), m_Geometry(NULL) { }
   virtual ~RayBoxIntersectionImageFilter() {};
 
   /** Apply changes to the input image requested region. */

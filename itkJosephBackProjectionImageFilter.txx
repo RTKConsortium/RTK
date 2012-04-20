@@ -88,7 +88,7 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
     typename GeometryType::ThreeDHomogeneousMatrixType matrix;
     matrix = volPPToIndex.GetVnlMatrix() *
              geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-             GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix();
+             GetIndexToPhysicalPointMatrix( this->GetInput(1) ).GetVnlMatrix();
 
     // Go over each pixel of the projection
     typename RBIFunctionType::VectorType dirVox, stepMM, dirVoxAbs, np, fp;
