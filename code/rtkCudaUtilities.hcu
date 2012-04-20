@@ -1,0 +1,24 @@
+#ifndef __rtkCudaUtilities_hcu
+#define __rtkCudaUtilities_hcu
+
+#include <cuda_runtime_api.h>
+#include <string>
+#include <vector>
+#include <itkMacro.h>
+
+#define CUDA_CHECK_ERROR \
+    { \
+    cudaError_t err = cudaGetLastError(); \
+    if (cudaSuccess != err) \
+      itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) << std::endl); \
+    }
+
+#define CUFFT_CHECK_ERROR(result) \
+    { \
+    if (result) \
+      itkGenericExceptionMacro(<< "CUFFT ERROR #" << result << std::endl); \
+    }
+
+std::vector<int> GetListOfCudaDevices();
+
+#endif
