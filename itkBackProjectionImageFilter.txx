@@ -90,7 +90,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       // Interpolate if in projection
       if( interpolator->IsInsideBuffer(pointProj) )
         {
-        if (iProj)
+        if (iProj!=iFirstProj)
           itOut.Set( itOut.Get() + interpolator->EvaluateAtContinuousIndex(pointProj) );
         else
           itOut.Set( itIn.Get() + interpolator->EvaluateAtContinuousIndex(pointProj) );

@@ -9,6 +9,7 @@ option "regexp"      r "Regular expression to select projection files in path" s
 option "output"      o "Output file name"                                      string yes
 option "niterations" n "Number of iterations"                                  int    no   default="5"
 option "lambda"      l "Convergence factor"                                    double no   default="0.3"
+option "bp"          b "Backprojection method" values="VoxelBasedBackProjection","Joseph" enum no default="VoxelBasedBackProjection"
 
 section "Volume properties"
 option "input"       i "Input volume"              string          no
