@@ -30,6 +30,7 @@ public:
 
   /** Useful defines. */
   typedef std::vector<double> VectorType;
+  typedef std::vector< std::vector<double> > VectorOfVectorType;
 
   bool Translate( const VectorType& input );
   bool Rotate( const double input1, const VectorType& input2 );
@@ -71,10 +72,13 @@ public:
   itkSetMacro(CenterZ, double);
 
   itkGetMacro(RotationAngle, double);
-  itkSetMacro(RotationAngle, double);
+  itkSetMacro(RotationAngle, double);  
 
-  itkSetMacro(Fig, std::vector< std::vector<double> >);
-  itkGetMacro(Fig, std::vector< std::vector<double> >);
+  rtkSetMacro(Fig, VectorOfVectorType);
+  rtkGetMacro(Fig, VectorOfVectorType);
+
+
+
 
 protected:
 
@@ -96,7 +100,7 @@ protected:
   double m_CenterZ;
   double m_RotationAngle;
   double m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J;
-  std::vector< std::vector<double> > m_Fig;
+  VectorOfVectorType m_Fig;
 
 private:
   SetQuadricParamFromRegularParamFunction( const Self& ); //purposely not implemented
