@@ -30,4 +30,26 @@
     }
 //--------------------------------------------------------------------
 
+//--------------------------------------------------------------------
+/** Set built-in type. Creates member Set"name"() ;                     */
+#define rtkSetMacro(name,type)                                          \
+  virtual void Set##name (const type _arg)                              \
+  {                                                                     \
+    if (this->m_##name != _arg)                                         \
+      {                                                                 \
+      this->m_##name = _arg;                                            \
+      this->Modified();                                                 \
+      }                                                                 \
+  }
+//--------------------------------------------------------------------
+
+//--------------------------------------------------------------------
+/** Get built-in type.  Creates member Get"name"() (e.g., GetVisibility()); */
+#define rtkGetMacro(name,type)                                          \
+  virtual type Get##name ()                                             \
+  {                                                                     \
+    return this->m_##name;                                              \
+  }
+//--------------------------------------------------------------------
+
 #endif // RTKMACRO_H
