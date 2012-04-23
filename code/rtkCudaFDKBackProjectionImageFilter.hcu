@@ -1,0 +1,41 @@
+#ifndef __rtkCudaFDKBackProjectionImageFilter_hcu
+#define __rtkCudaFDKBackProjectionImageFilter_hcu
+
+#if defined __cplusplus
+extern "C" {
+#endif
+
+void
+CUDA_reconstruct_conebeam_init(
+  int img_dim[2],
+  int vol_dim[3],
+  float *&dev_vol,
+  float *&dev_img,
+  float *&dev_matrix
+  );
+
+void
+CUDA_reconstruct_conebeam (
+  int img_dim[2],
+  int vol_dim[3],
+  float *proj,
+  float matrix[12],
+  float *dev_vol,
+  float *dev_img,
+  float *dev_matrix
+  );
+
+void
+CUDA_reconstruct_conebeam_cleanup(
+  int vol_dim[3],
+  float *vol,
+  float *dev_vol,
+  float *dev_img,
+  float *dev_matrix
+  );
+
+#if defined __cplusplus
+}
+#endif
+
+#endif
