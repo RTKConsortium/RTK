@@ -25,8 +25,8 @@ public:
   /** Standard class typedefs. */
   typedef DrawQuadricFunctor                                        Self;
   typedef InPlaceImageFilter<TInputImage,TOutputImage>              Superclass;
-  typedef itk::SmartPointer<Self>                                        Pointer;
-  typedef itk::SmartPointer<const Self>                                  ConstPointer;
+  typedef itk::SmartPointer<Self>                                   Pointer;
+  typedef itk::SmartPointer<const Self>                             ConstPointer;
   typedef typename TOutputImage::RegionType                         OutputImageRegionType;
   typedef typename TOutputImage::Superclass::ConstPointer           OutputImageBaseConstPointer;
 
