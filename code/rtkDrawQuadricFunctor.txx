@@ -21,7 +21,6 @@ template <class TInputImage, class TOutputImage>
 void DrawQuadricFunctor<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                                                                                    ThreadIdType threadId )
 {
-  std::cout << "Creating Phantom...\n"<< std::endl;
   std::vector< std::vector<double> > Fig;
   //Getting phantom parameters
   m_SQPFunctor = SQPFunctionType::New();
@@ -75,7 +74,6 @@ void DrawQuadricFunctor<TInputImage, TOutputImage>::ThreadedGenerateData(const O
   center.erase(center.begin(), center.end());
   itOut.GoToBegin();
   }
-  //Update
 }
 }// end namespace rtk
 

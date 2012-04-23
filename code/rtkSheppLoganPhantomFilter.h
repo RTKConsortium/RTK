@@ -33,12 +33,12 @@ public:
 
   typedef float OutputPixelType;
 
-  typedef itk::Image< OutputPixelType, 3 > OutputImageType;
+  typedef itk::Image< OutputPixelType, 3 >                                           OutputImageType;
   typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
-  typedef std::vector<double> VectorType;
-  typedef std::string StringType;
-
-  typedef SetQuadricParamFromRegularParamFunction                     SQPFunctionType;
+  typedef std::vector<double>                                                        VectorType;
+  typedef std::string                                                                StringType;
+  typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
+  typedef SetQuadricParamFromRegularParamFunction                                    SQPFunctionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -50,8 +50,8 @@ public:
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
-  itkSetMacro(Fig, std::vector< std::vector<double> >);
-  itkGetMacro(Fig, std::vector< std::vector<double> >);
+  rtkSetMacro(Fig, VectorOfVectorType);
+  rtkGetMacro(Fig, VectorOfVectorType);
 
 protected:
   SheppLoganPhantomFilter() {}
@@ -68,8 +68,8 @@ private:
   SheppLoganPhantomFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  std::vector< std::vector<double> > m_Fig;
-  StringType m_ConfigFile;
+  VectorOfVectorType       m_Fig;
+  StringType               m_ConfigFile;
   SQPFunctionType::Pointer m_SQPFunctor;
 };
 
