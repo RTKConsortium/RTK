@@ -1,0 +1,14 @@
+package "rtk"
+version "Functional test of rtkthreedphantomreference."
+
+option "verbose"     v "Verbose execution"                                         flag     off
+option "config"      - "Config file"                                               string   no
+option "geometry"    g "XML geometry file name"                                    string   yes
+option "output"      o "Output projections file name"                              string multiple  yes
+option "phantomfile" - "Configuration parameteres for the phantom"                 string   yes
+option "test"        t "Test file"                                                 string   yes
+
+section "Projections parameters"
+option  "origin"    p "Projections Origin (default=centered)" double multiple no
+option  "dimension" - "Dimension"                 int    multiple no  default="256"
+option  "spacing"   - "Spacing"                   double multiple no  default="1"
