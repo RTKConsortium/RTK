@@ -1,0 +1,9 @@
+#ifndef __rtkCudaFFTRampImageFilter_hcu
+#define __rtkCudaFFTRampImageFilter_hcu
+
+#include <vector_types.h>
+
+void
+CUDA_fft_convolution(const int3 &inputDimension, float *projection, float2 *kernelFFT);
+
+#endif

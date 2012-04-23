@@ -1,0 +1,46 @@
+#ifndef __rtkCudaFFTRampImageFilter_h
+#define __rtkCudaFFTRampImageFilter_h
+
+#include "rtkFFTRampImageFilter.h"
+
+/** \class CudaFFTRampImageFilter
+ * \brief Implements the ramp image filter of the filtered backprojection algorithm.
+ * uses CUFFT for the projection fft and ifft.
+ *
+ * \author Simon Rit
+ */
+namespace rtk
+{
+
+class ITK_EXPORT CudaFFTRampImageFilter :
+  public FFTRampImageFilter< itk::Image<float,3>, itk::Image<float,3>, float >
+{
+public:
+  /** Standard class typedefs. */
+  typedef itk::Image<float,3>                                ImageType;
+  typedef CudaFFTRampImageFilter                             Self;
+  typedef FFTRampImageFilter< ImageType, ImageType, double > Superclass;
+  typedef itk::SmartPointer<Self>                                 Pointer;
+  typedef itk::SmartPointer<const Self>                           ConstPointer;
+
+  /** Standard New method. */
+  itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
+protected:
+  CudaFFTRampImageFilter();
+  ~CudaFFTRampImageFilter(){
+  }
+
+  virtual void GenerateData();
+
+private:
+  CudaFFTRampImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);         //purposely not implemented
+
+}; // end of class
+
+} // end namespace rtk
+
+#endif
