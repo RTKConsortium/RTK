@@ -14,13 +14,13 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __rtkFFTWRealToComplexConjugateImageFilter_h
-#define __rtkFFTWRealToComplexConjugateImageFilter_h
+#ifndef __itkFFTWRealToComplexConjugateImageFilter_h
+#define __itkFFTWRealToComplexConjugateImageFilter_h
 
 #include <itkFFTRealToComplexConjugateImageFilter.h>
-#include "rtkFFTWCommon.h"
+#include "itkFFTWCommon.h"
 
-namespace rtk
+namespace itk
 {
 /** \class FFTWRealToComplexConjugateImageFilter
  * \brief
@@ -89,10 +89,10 @@ private:
   bool m_CanUseDestructiveAlgorithm;
 
 };
-} // namespace rtk
+} // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFFTWRealToComplexConjugateImageFilter.txx"
+#include "itkFFTWRealToComplexConjugateImageFilter.txx"
 #endif
 
-#endif //__rtkFFTWRealToComplexConjugateImageFilter_h
+#endif //__itkFFTWRealToComplexConjugateImageFilter_h
