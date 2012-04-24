@@ -4,8 +4,8 @@
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154
 #if defined(USE_FFTWD) || defined(USE_FFTWF)
-#  include "rtkFFTWRealToComplexConjugateImageFilter.h"
-#  include "rtkFFTWComplexConjugateToRealImageFilter.h"
+#  include "itkFFTWRealToComplexConjugateImageFilter.h"
+#  include "itkFFTWComplexConjugateToRealImageFilter.h"
 #endif
 #include <itkFFTRealToComplexConjugateImageFilter.h>
 #include <itkFFTComplexConjugateToRealImageFilter.h>
@@ -68,12 +68,12 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // Force init of fftw library mutex (static class member) before
   // multithreading
 #if defined(USE_FFTWF)
-  fftw::Proxy<float>::Lock();
-  fftw::Proxy<float>::Unlock();
+  itk::fftw::Proxy<float>::Lock();
+  itk::fftw::Proxy<float>::Unlock();
 #endif
 #if defined(USE_FFTWD)
-  fftw::Proxy<double>::Lock();
-  fftw::Proxy<double>::Unlock();
+  itk::fftw::Proxy<double>::Lock();
+  itk::fftw::Proxy<double>::Unlock();
 #endif
 }
 

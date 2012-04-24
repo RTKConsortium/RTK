@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __rtkFFTWCommon_h
-#define __rtkFFTWCommon_h
+#ifndef __itkFFTWCommon_h
+#define __itkFFTWCommon_h
 
 #include <itkConfigure.h>
 
@@ -24,7 +24,7 @@
 #endif
 #include <itkFastMutexLock.h>
 
-namespace rtk
+namespace itk
 {
 namespace fftw
 {

@@ -14,10 +14,10 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __rtkFFTWRealToComplexConjugateImageFilter_txx
-#define __rtkFFTWRealToComplexConjugateImageFilter_txx
+#ifndef __itkFFTWRealToComplexConjugateImageFilter_txx
+#define __itkFFTWRealToComplexConjugateImageFilter_txx
 
-#include "rtkFFTWRealToComplexConjugateImageFilter.h"
+#include "itkFFTWRealToComplexConjugateImageFilter.h"
 #if ITK_VERSION_MAJOR <= 3
 #  include <itkFFTRealToComplexConjugateImageFilter.txx>
 #else
@@ -28,7 +28,7 @@
 #include <itkMetaDataObject.h>
 #include <itkProgressReporter.h>
 
-namespace rtk
+namespace itk
 {
 /** TODO:  There should be compile time type checks so that
            if only USE_FFTWF is defined, then only floats are valid.
@@ -170,6 +170,6 @@ namespace rtk
   Superclass::UpdateOutputData( output );
 }
 
-} // namespace rtk
+} // namespace itk
 
-#endif //_rtkFFTWRealToComplexConjugateImageFilter_txx
+#endif //_itkFFTWRealToComplexConjugateImageFilter_txx
