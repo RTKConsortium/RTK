@@ -128,7 +128,6 @@ void kernel_fdk_optim(float *dev_vol, int3 vol_dim)
 
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_reconstruct_conebeam_init() /////////////////////////////
-extern "C"
 void
 CUDA_reconstruct_conebeam_init(
   int img_dim[2],
@@ -160,7 +159,6 @@ CUDA_reconstruct_conebeam_init(
 
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_reconstruct_conebeam() //////////////////////////////////
-extern "C"
 void
 CUDA_reconstruct_conebeam(
   int img_dim[2],
@@ -230,7 +228,6 @@ CUDA_reconstruct_conebeam(
 
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_reconstruct_conebeam_cleanup() //////////////////////////
-extern "C"
 void
 CUDA_reconstruct_conebeam_cleanup(
   int vol_dim[3],
