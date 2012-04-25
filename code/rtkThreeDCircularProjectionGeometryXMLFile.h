@@ -20,9 +20,9 @@ class ThreeDCircularProjectionGeometryXMLFileReader :
 {
 public:
   /** Standard typedefs */
-  typedef ThreeDCircularProjectionGeometryXMLFileReader Self;
-  typedef XMLReader< ThreeDCircularProjectionGeometry > Superclass;
-  typedef itk::SmartPointer<Self>                       Pointer;
+  typedef ThreeDCircularProjectionGeometryXMLFileReader      Self;
+  typedef itk::XMLReader< ThreeDCircularProjectionGeometry > Superclass;
+  typedef itk::SmartPointer<Self>                            Pointer;
 
   /** Convenient typedefs */
   typedef ThreeDCircularProjectionGeometry GeometryType;
