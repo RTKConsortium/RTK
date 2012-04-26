@@ -1,0 +1,13 @@
+The software system known as the Reconstruction Toolkit, hereafter referred to as RTK, is an open-source platform for tomographic reconstruction. RTK consists of source code, data, tests, examples and documentation.
+
+Members of the RTK collaboration are bound by a gentleman's agreement. In this agreement, all partners agree to work together to the development, validation and support of RTK. A member can either be a person or an institute.
+
+Each RTK member provides an on-going contribution to the development, validation and support of RTK as approved by the Steering Committee of the collaboration. Examples of contributions are the design of the software architecture, the development of new features, the writing of the documentation, and so on.
+
+Each RTK member also agrees upon a common review process of any presentation and publication related to the development of new RTK features. Any RTK presentation and publication must circulate through the mailing list of the steering committee for approval.
+
+Every member should identify one technical contact person the technical coordinator of the RTK collaboration can address specific requests to. An elected technical coordinator organizes technical meetings, and attends the meetings of the Steering Committee. The technical coordinator is in charge of the smoothness of the collaborative developments, i.e., good communication between contributors to ensure that RTK is consistent.
+
+Every member must also be represented by one representative in the Steering Committee of the collaboration at least once a year. This Steering Committee decides the development strategy of RTK. The elected spokesman of the collaboration chairs this Steering Committee. The elected spokesperson and the elected technical coordinator will be confirmed in their functions or elected every other year by a simple majority of votes cast by the members of the Steering Committee.
+
+The RTK collaboration is open to new memberships. If you wish to join the collaboration, please contact Simon RIT, CREATIS CNRS UMR 5220 - INSERM U1044 - Université Lyon 1 - INSA Lyon, France. Membership is confirmed or granted by the Steering Committe every other year by a simple majority of votes cast by the members of the Steering Committee.
