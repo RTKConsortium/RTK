@@ -1,11 +1,29 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 #ifndef __rtkFFTRampImageFilter_txx
 #define __rtkFFTRampImageFilter_txx
 
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154
 #if defined(USE_FFTWD) || defined(USE_FFTWF)
-#  include "rtkFFTWRealToComplexConjugateImageFilter.h"
-#  include "rtkFFTWComplexConjugateToRealImageFilter.h"
+#  include "itkFFTWRealToComplexConjugateImageFilter.h"
+#  include "itkFFTWComplexConjugateToRealImageFilter.h"
 #endif
 #include <itkFFTRealToComplexConjugateImageFilter.h>
 #include <itkFFTComplexConjugateToRealImageFilter.h>
@@ -68,12 +86,12 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // Force init of fftw library mutex (static class member) before
   // multithreading
 #if defined(USE_FFTWF)
-  fftw::Proxy<float>::Lock();
-  fftw::Proxy<float>::Unlock();
+  itk::fftw::Proxy<float>::Lock();
+  itk::fftw::Proxy<float>::Unlock();
 #endif
 #if defined(USE_FFTWD)
-  fftw::Proxy<double>::Lock();
-  fftw::Proxy<double>::Unlock();
+  itk::fftw::Proxy<double>::Lock();
+  itk::fftw::Proxy<double>::Unlock();
 #endif
 }
 
