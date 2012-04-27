@@ -1,5 +1,5 @@
 #=========================================================
-# RTK = Reconstruction toolkit
+#RTK = Reconstruction toolkit
 PROJECT(RTK)
 #=========================================================
 
@@ -18,6 +18,10 @@ CMAKE_POLICY (SET CMP0003 NEW)
 IF (NOT CMAKE_BUILD_TYPE)
   SET (CMAKE_BUILD_TYPE Release)
 ENDIF (NOT CMAKE_BUILD_TYPE)
+
+IF(BUILD_TESTING)
+    ENABLE_TESTING()
+ENDIF(BUILD_TESTING)
 #=========================================================
 
 #=========================================================
@@ -34,7 +38,7 @@ MACRO (DD in)
   MESSAGE(${in}=[${${in}}])
 ENDMACRO(DD)
 #=========================================================
-
+DD(BUILD_TESTING)
 #=========================================================
 # Remove some MS Visual c++ flags
 IF(MSVC)
@@ -58,7 +62,7 @@ ELSE(ITK_FOUND)
 ENDIF(ITK_FOUND)
 
 # GPU optional dependencies
-SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"  ${CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 FIND_PACKAGE(OpenCL)
 IF(OPENCL_LIBRARIES AND OPENCL_INCLUDE_DIRS)
@@ -87,7 +91,7 @@ ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 #=========================================================
 
 #=========================================================
-# Shared libraries option 
+# Shared libraries option
 OPTION(BUILD_SHARED_LIBS "Build RTK with shared libraries." ${ITK_BUILD_SHARED})
 #=========================================================
 
@@ -119,11 +123,22 @@ if(NOT RTK_INSTALL_PACKAGE_DIR)
 endif()
 #=========================================================
 
+#=========================================================
+# Executable macro
+MACRO (ADD_RTK_EXECUTABLE EXE_NAME)
+  WRAP_GGO(${EXE_NAME}_GGO_C ${EXE_NAME}.ggo)
+  ADD_EXECUTABLE(${EXE_NAME} ${EXE_NAME}.cxx ${${EXE_NAME}_GGO_C} ${ARGN})
+  TARGET_LINK_LIBRARIES(${EXE_NAME} rtkIO)
+  SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} ${EXE_NAME})
+ENDMACRO (ADD_RTK_EXECUTABLE)
+#=========================================================
+
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/code")
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_BINARY_DIR}")
 INCLUDE_DIRECTORIES(${RTK_INCLUDE_DIRS})
 ADD_SUBDIRECTORY(code)
 ADD_SUBDIRECTORY(applications)
+ADD_SUBDIRECTORY(testing)
 
 #=========================================================
 # Generate RTKConfig.cmake for the build tree.
@@ -131,5 +146,3 @@ SET (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 SET (RTK_LIBRARY_DIRS ${RTK_BINARY_DIR})
 CONFIGURE_FILE (cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 #=========================================================
-
-
