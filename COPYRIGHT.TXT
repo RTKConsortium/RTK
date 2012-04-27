@@ -1,9 +1,9 @@
 RTK is copyrighted software.
 
-  Copyright (c) 2010 RTK consortium
+  Copyright (c) 2010-2012 RTK consortium
   All rights reserved
 
-  You can freely use and distribute plastimatch under a BSD-style license.
+  You can freely use and distribute RTK under an Apache 2.0 license.
   See LICENSE.TXT for details
 
 ------------------------------------------------------------------------
@@ -132,7 +132,7 @@ tag rel_2_22_4
 gengetopt - generate a C function that uses getopt_long
 to parse command line arguments
 
-Copyright (C) 1999, 2011-2007, Free Software Foundation, Inc.
+Copyright (C) 1999, 2011, 2012-2007, Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

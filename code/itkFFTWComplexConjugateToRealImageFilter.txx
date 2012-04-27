@@ -14,10 +14,10 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __rtkFFTWComplexConjugateToRealImageFilter_txx
-#define __rtkFFTWComplexConjugateToRealImageFilter_txx
+#ifndef __itkFFTWComplexConjugateToRealImageFilter_txx
+#define __itkFFTWComplexConjugateToRealImageFilter_txx
 
-#include "rtkFFTWComplexConjugateToRealImageFilter.h"
+#include "itkFFTWComplexConjugateToRealImageFilter.h"
 #if ITK_VERSION_MAJOR <= 3
 #  include "itkFFTComplexConjugateToRealImageFilter.txx"
 #else
@@ -29,7 +29,7 @@
 #include <itkImageRegionIterator.h>
 #include <itkProgressReporter.h>
 
-namespace rtk
+namespace itk
 {
 
 #if ITK_VERSION_MAJOR >= 4
@@ -201,5 +201,5 @@ UpdateOutputData(itk::DataObject * output)
   Superclass::UpdateOutputData( output );
 }
 
-} // namespace rtk
-#endif // _rtkFFTWComplexConjugateToRealImageFilter_txx
+} // namespace itk
+#endif // _itkFFTWComplexConjugateToRealImageFilter_txx

@@ -14,18 +14,18 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __rtkFFTWComplexConjugateToRealImageFilter_h
-#define __rtkFFTWComplexConjugateToRealImageFilter_h
+#ifndef __itkFFTWComplexConjugateToRealImageFilter_h
+#define __itkFFTWComplexConjugateToRealImageFilter_h
 
 #include <itkFFTComplexConjugateToRealImageFilter.h>
 #include "rtkConfiguration.h"
 
 //
 // FFTWCommon defines proxy classes based on data types
-#include "rtkFFTWCommon.h"
+#include "itkFFTWCommon.h"
 
 
-namespace rtk
+namespace itk
 {
 
 #if ITK_VERSION_MAJOR >= 4
@@ -99,10 +99,10 @@ private:
 };
 
 
-} // namespace rtk
+} // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFFTWComplexConjugateToRealImageFilter.txx"
+#include "itkFFTWComplexConjugateToRealImageFilter.txx"
 #endif
 
-#endif //__rtkFFTWComplexConjugateToRealImageFilter_h
+#endif //__itkFFTWComplexConjugateToRealImageFilter_h
