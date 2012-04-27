@@ -41,9 +41,9 @@ void DrawQuadricFunctor<TInputImage, TOutputImage>::ThreadedGenerateData(const O
 {
   std::vector< std::vector<double> > Fig;
   //Getting phantom parameters
-  m_SQPFunctor = SQPFunctionType::New();
-  m_SQPFunctor->Config(m_ConfigFile);
-  Fig = m_SQPFunctor->GetFig();
+  SQPFunctionType::Pointer sqpFunctor = SQPFunctionType::New();
+  sqpFunctor->Config(m_ConfigFile);
+  Fig = sqpFunctor->GetFig();
   VectorType semiprincipalaxis;
   VectorType center;
   //Creating 3D Image and Point
@@ -64,21 +64,21 @@ void DrawQuadricFunctor<TInputImage, TOutputImage>::ThreadedGenerateData(const O
     center.push_back(Fig[i][4]);
     center.push_back(Fig[i][5]);
     //Translate from regular expression to quadric
-    m_SQPFunctor->Translate(semiprincipalaxis);
+    sqpFunctor->Translate(semiprincipalaxis);
     //Applies rotation and translation if necessary
-    m_SQPFunctor->Rotate(Fig[i][6], center);
+    sqpFunctor->Rotate(Fig[i][6], center);
     while( !itOut.IsAtEnd() )
     {
     this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
 
-    double QuadricEllip = m_SQPFunctor->GetA()*point[0]*point[0]   +
-                 m_SQPFunctor->GetB()*point[1]*point[1]   +
-                 m_SQPFunctor->GetC()*point[2]*point[2]   +
-                 m_SQPFunctor->GetD()*point[0]*point[1]   +
-                 m_SQPFunctor->GetE()*point[0]*point[2]   +
-                 m_SQPFunctor->GetF()*point[1]*point[2]   +
-                 m_SQPFunctor->GetG()*point[0] + m_SQPFunctor->GetH()*point[1] +
-                 m_SQPFunctor->GetI()*point[2] + m_SQPFunctor->GetJ();
+    double QuadricEllip = sqpFunctor->GetA()*point[0]*point[0]   +
+                 sqpFunctor->GetB()*point[1]*point[1]   +
+                 sqpFunctor->GetC()*point[2]*point[2]   +
+                 sqpFunctor->GetD()*point[0]*point[1]   +
+                 sqpFunctor->GetE()*point[0]*point[2]   +
+                 sqpFunctor->GetF()*point[1]*point[2]   +
+                 sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
+                 sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
     if(QuadricEllip<0)
       itOut.Set(Fig[i][7] + itOut.Get());
     else

@@ -79,7 +79,6 @@ protected:
 private:
   DrawQuadricFunctor(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
-  SQPFunctionType::Pointer m_SQPFunctor;
   StringType m_ConfigFile;
 
 };

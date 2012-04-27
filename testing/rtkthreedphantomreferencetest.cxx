@@ -83,7 +83,6 @@ int main(int argc, char* argv[])
 
   // Create a reference object (in this case a 3D phantom reference).
   DQType::Pointer dq = DQType::New();
-  dq->SetNumberOfThreads(1);
   dq->SetInput(constantImageSourceRef->GetOutput());
   dq->SetConfigFile(args_info.phantomfile_arg);
 
