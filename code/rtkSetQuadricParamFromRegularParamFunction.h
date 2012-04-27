@@ -28,13 +28,14 @@ namespace rtk
 {
 
 /** \class SetQuadricParamFromRegularParamFunction
- * \brief Test if a ray intersects with a Quadric.
- * Return intersection points if there are some. See
- * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
- * for information on how this is implemented.
+ * \brief Translates quadric parameters to regular
+ * expressions. It also rotates a quadric with a certain
+ * given angle and reads the config file in order
+ * to create the desired figure.
+ *
  * \ingroup Functions
  */
-class ITK_EXPORT SetQuadricParamFromRegularParamFunction :
+class SetQuadricParamFromRegularParamFunction :
     public itk::Object
 {
 public:
@@ -45,6 +46,9 @@ public:
   typedef itk::SmartPointer<const Self>            ConstPointer;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(SetQuadricParamFromRegularParamFunction, itk::Object);
 
   /** Useful defines. */
   typedef std::vector<double> VectorType;
@@ -104,7 +108,7 @@ protected:
   SetQuadricParamFromRegularParamFunction();
 
   /// Destructor
-  ~SetQuadricParamFromRegularParamFunction(){};
+  ~SetQuadricParamFromRegularParamFunction() {};
 
   /// The focal point or position of the ray source
   VectorType m_FocalPoint;
@@ -125,7 +129,7 @@ private:
   void operator=( const Self& ); //purposely not implemented
 };
 
-} // namespace rtk
+} // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkSetQuadricParamFromRegularParamFunction.txx"

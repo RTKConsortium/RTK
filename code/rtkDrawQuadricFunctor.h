@@ -25,6 +25,7 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkRayQuadricIntersectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkSheppLoganPhantomFilter.h"
 
 #include <vector>
 
@@ -37,12 +38,12 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT DrawQuadricFunctor :
-  public InPlaceImageFilter<TInputImage,TOutputImage>
+  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
   typedef DrawQuadricFunctor                                        Self;
-  typedef InPlaceImageFilter<TInputImage,TOutputImage>              Superclass;
+  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage>              Superclass;
   typedef itk::SmartPointer<Self>                                   Pointer;
   typedef itk::SmartPointer<const Self>                             ConstPointer;
   typedef typename TOutputImage::RegionType                         OutputImageRegionType;
@@ -54,7 +55,7 @@ public:
   typedef std::vector<double>                                       VectorType;
   typedef std::string                                               StringType;
 
-  typedef SetQuadricParamFromRegularParamFunction                   SQPFunctionType;
+  typedef rtk::SetQuadricParamFromRegularParamFunction              SQPFunctionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
