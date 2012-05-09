@@ -1,108 +1,95 @@
-#if defined(_MSC_VER)
-#pragma warning ( disable : 4786 )
-#endif
-//#include <iostream>
-#include "rtkthreedphantomreferencetest_ggo.h"
-#include "rtkGgoFunctions.h"
-#include <fstream>
-#include "itkRandomImageSource.h"
-#include "itkImageFileWriter.h"
-#include "itkImageFileReader.h"
-#include "itkRawImageIO.h"
-#include "itkImageRegionConstIterator.h"
+#include <itkImageFileWriter.h>
+#include <itkImageFileReader.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkRegularExpressionSeriesFileNames.h>
+
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawQuadricFunctor.h"
-
-#include "rtkProjectionsReader.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
-#include <itkRegularExpressionSeriesFileNames.h>
+#include "rtkConstantImageSource.h"
 
 int main(int argc, char* argv[])
 {
-  GGO(rtkthreedphantomreferencetest, args_info);
   const unsigned int Dimension = 3;
-  typedef bool                                                           BooleanType;
-  typedef float                                                          OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension >                       OutputImageType;
-  typedef OutputImageType::PixelType                                     PixelType;
-  typedef double                                                         ErrorType;
-  typedef rtk::DrawQuadricFunctor<OutputImageType, OutputImageType>      DQType;
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
-  typedef itk::ImageRegionConstIterator<OutputImageType>                 ImageIteratorType;
-  typedef rtk::ConstantImageSource< OutputImageType >                    ConstantImageSourceType;
+  typedef float                                    OutputPixelType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Geometry
   // RTK geometry object
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
-
-  // Projection matrices
   for(int noProj=0; noProj<360; noProj++)
     {
-    double angle = 0. + noProj * 360. / 360;
     geometry->AddProjection(1000.,
                             1536.,
-                            angle,
+                            noProj,
                             0.,
                             0.);
     }
   geometry->Update();
 
-  // Constant Image Sources whether for the reference and test objects
-  ConstantImageSourceType::Pointer constantImageSourceRef = ConstantImageSourceType::New();
-  // Constant Image Source for the reference object, using ggo parameters
-  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkthreedphantomreferencetest>(constantImageSourceRef, args_info);
-
-  ConstantImageSourceType::SizeType sizeOutput;
-  sizeOutput[0] = constantImageSourceRef->GetSize()[0];
-  sizeOutput[1] = constantImageSourceRef->GetSize()[1];
-  sizeOutput[2] = geometry->GetGantryAngles().size();
-  constantImageSourceRef->SetSize( sizeOutput );
+  // Constant image sources
+  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  ConstantImageSourceType::PointType origin;
+  origin.Fill(-127.5);
+  ConstantImageSourceType::SizeType size;
+  size.Fill(256);
+  ConstantImageSourceType::SpacingType spacing;
+  spacing.Fill(1.);
+  tomographySource->SetOrigin( origin );
+  tomographySource->SetSpacing( spacing );
+  tomographySource->SetSize( size );
+  tomographySource->SetConstant( 0. );
+  tomographySource->UpdateOutputInformation();
+  size[2]=360;
+  projectionsSource->SetOrigin( origin );
+  projectionsSource->SetSpacing( spacing );
+  projectionsSource->SetSize( size );
+  projectionsSource->SetConstant( 0. );
+  projectionsSource->UpdateOutputInformation();
 
   typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
   SLPType::Pointer slp=SLPType::New();
-  slp->SetInput(constantImageSourceRef->GetOutput());
+  slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
-  slp->SetConfigFile(args_info.phantomfile_arg);
+  slp->SetConfigFile( "Phantom_Conf.xml" );
   slp->Update();
 
-#define SET_FELDKAMP_OPTIONS(f) \
-    f->SetInput( 0, constantImageSourceRef->GetOutput() ); \
-    f->SetInput( 1, slp->GetOutput() ); \
-    f->SetGeometry( geometry ); \
-    f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
-    f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);
-
   // FDK reconstruction filtering
-  itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer feldkamp;
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
-  feldkamp = FDKCPUType::New();
-  SET_FELDKAMP_OPTIONS( static_cast<FDKCPUType*>(feldkamp.GetPointer()) );
-
+  FDKCPUType::Pointer feldkamp = FDKCPUType::New();
+  feldkamp->SetInput( 0, tomographySource->GetOutput() );
+  feldkamp->SetInput( 1, slp->GetOutput() );
+  feldkamp->SetGeometry( geometry );
+  feldkamp->GetRampFilter()->SetTruncationCorrection(0.);
+  feldkamp->GetRampFilter()->SetHannCutFrequency(0.);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() )
 
   // Create a reference object (in this case a 3D phantom reference).
+  typedef rtk::DrawQuadricFunctor<OutputImageType, OutputImageType> DQType;
   DQType::Pointer dq = DQType::New();
-  dq->SetInput(constantImageSourceRef->GetOutput());
-  dq->SetConfigFile(args_info.phantomfile_arg);
-
+  dq->SetInput( tomographySource->GetOutput() );
+  dq->SetConfigFile( "Phantom_Conf.xml" );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dq->Update() )
 
+  typedef itk::ImageRegionConstIterator<OutputImageType> ImageIteratorType;
   ImageIteratorType itTest( feldkamp->GetOutput(), feldkamp->GetOutput()->GetBufferedRegion() );
   ImageIteratorType itRef( dq->GetOutput(), dq->GetOutput()->GetBufferedRegion() );
 
+  typedef double ErrorType;
   ErrorType TestError     = 0.;
   ErrorType TestTolerance = 0.005;
   ErrorType EnerError     = 0.;
-  BooleanType Exit        = true;
+  bool Exit               = true;
 
   itTest.GoToBegin();
   itRef.GoToBegin();
 
   while( !itRef.IsAtEnd() )
     {
-    PixelType TestVal = itTest.Get();
-    PixelType RefVal = itRef.Get();
+    OutputPixelType TestVal = itTest.Get();
+    OutputPixelType RefVal = itRef.Get();
     if( TestVal != RefVal )
       {
         TestError += abs(RefVal - TestVal);
@@ -112,10 +99,10 @@ int main(int argc, char* argv[])
     ++itRef;
     }
   // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/pow(args_info.dimension_arg[0], 3.0);
+  ErrorType ErrorPerPixel = TestError/(size[0]*size[1]*size[2]);
   std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
   // MSE
-  ErrorType MSE = EnerError/pow(args_info.dimension_arg[0], 3.0);
+  ErrorType MSE = EnerError/(size[0]*size[1]*size[2]);
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
   ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
@@ -142,23 +129,18 @@ int main(int argc, char* argv[])
   }
   else
   {
-    // Write out the TEST object
+    // Write out the reconstructed image
     typedef itk::ImageFileWriter<  OutputImageType > WriterType;
     WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName( args_info.output_arg[1] );
+    writer->SetFileName( "reconstruction.mha" );
     writer->SetInput( feldkamp->GetOutput() );
-
     TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
-    // Write out the REFERENCE object
+    // Write out the reference image
     writer->SetInput(dq->GetOutput());
-    writer->SetFileName(args_info.output_arg[0]);
-
+    writer->SetFileName("reference.mha");
     TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+
     return EXIT_FAILURE;
   }
 }
-
-
-
-
