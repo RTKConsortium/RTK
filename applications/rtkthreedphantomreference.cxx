@@ -18,13 +18,8 @@
 
 #include "rtkthreedphantomreference_ggo.h"
 #include "rtkGgoFunctions.h"
-
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawQuadricImageFilter.h"
 
-#include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
 
@@ -34,8 +29,7 @@ int main(int argc, char * argv[])
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
-
-  typedef itk::Image< OutputPixelType, Dimension >                  OutputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >  OutputImageType;
 
   // Empty projection images
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
@@ -47,8 +41,7 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Creating reference... " << std::flush;
   DQType::Pointer dq = DQType::New();
-  dq->SetNumberOfThreads(1);
-  dq->SetInput(constantImageSource->GetOutput());
+  dq->SetInput( constantImageSource->GetOutput() );
   dq->SetConfigFile(args_info.phantomfile_arg);
   dq->Update();
 
