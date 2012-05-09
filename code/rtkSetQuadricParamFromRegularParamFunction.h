@@ -23,6 +23,7 @@
 #include <vector>
 #include <itkImageBase.h>
 #include "rtkRayQuadricIntersectionFunction.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -98,9 +99,6 @@ public:
 
   rtkSetMacro(Fig, VectorOfVectorType);
   rtkGetMacro(Fig, VectorOfVectorType);
-
-
-
 
 protected:
 
