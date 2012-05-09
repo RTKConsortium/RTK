@@ -4,7 +4,7 @@
 #include <itkRegularExpressionSeriesFileNames.h>
 
 #include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawQuadricFunctor.h"
+#include "rtkDrawQuadricImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
 
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() )
 
   // Create a reference object (in this case a 3D phantom reference).
-  typedef rtk::DrawQuadricFunctor<OutputImageType, OutputImageType> DQType;
+  typedef rtk::DrawQuadricImageFilter<OutputImageType, OutputImageType> DQType;
   DQType::Pointer dq = DQType::New();
   dq->SetInput( tomographySource->GetOutput() );
   dq->SetConfigFile( "Phantom_Conf.xml" );

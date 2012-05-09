@@ -16,34 +16,30 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricFunctor_h
-#define __rtkDrawQuadricFunctor_h
+#ifndef __rtkDrawQuadricImageFilter_h
+#define __rtkDrawQuadricImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
-#include <itkImageFileWriter.h>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkRayQuadricIntersectionImageFilter.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkSheppLoganPhantomFilter.h"
 
 #include <vector>
 
 namespace rtk
 {
 
-/** \class DrawQuadricFunctor
- * \brief Computes the 3D reference of an specefic quadric surface.
+/** \class DrawQuadricImageFilter
+ * \brief Draws a quadric in an input image.
  */
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT DrawQuadricFunctor :
+class ITK_EXPORT DrawQuadricImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawQuadricFunctor                                        Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage>              Superclass;
+  typedef DrawQuadricImageFilter                                    Self;
+  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage>         Superclass;
   typedef itk::SmartPointer<Self>                                   Pointer;
   typedef itk::SmartPointer<const Self>                             ConstPointer;
   typedef typename TOutputImage::RegionType                         OutputImageRegionType;
@@ -61,15 +57,15 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawQuadricFunctor, InPlaceImageFilter);
+  itkTypeMacro(DrawQuadricImageFilter, InPlaceImageFilter);
 
   /** Get/Set ConfigFile*/
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
 protected:
-  DrawQuadricFunctor() {}
-  virtual ~DrawQuadricFunctor() {};
+  DrawQuadricImageFilter() {}
+  virtual ~DrawQuadricImageFilter() {};
 
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
   /** Translate user parameteres to quadric parameters.
@@ -77,7 +73,7 @@ protected:
 
 
 private:
-  DrawQuadricFunctor(const Self&); //purposely not implemented
+  DrawQuadricImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
   StringType m_ConfigFile;
 
@@ -86,7 +82,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawQuadricFunctor.txx"
+#include "rtkDrawQuadricImageFilter.txx"
 #endif
 
 #endif

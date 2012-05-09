@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricFunctor_txx
-#define __rtkDrawQuadricFunctor_txx
+#ifndef __rtkDrawQuadricImageFilter_txx
+#define __rtkDrawQuadricImageFilter_txx
 
 #include <iostream>
 #include <fstream>
@@ -36,8 +36,8 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-void DrawQuadricFunctor<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                                   ThreadIdType threadId )
+void DrawQuadricImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
+                                                                             ThreadIdType threadId )
 {
   std::vector< std::vector<double> > Fig;
   //Getting phantom parameters
