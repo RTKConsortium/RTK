@@ -20,6 +20,7 @@
 #define __rtkRayQuadricIntersectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
+#include "rtkConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkRayQuadricIntersectionFunction.h"
 
