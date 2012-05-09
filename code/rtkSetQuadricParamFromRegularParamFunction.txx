@@ -16,6 +16,8 @@
  *
  *=========================================================================*/
 
+#include <fstream>
+
 namespace rtk
 {
 SetQuadricParamFromRegularParamFunction
@@ -115,18 +117,18 @@ bool SetQuadricParamFromRegularParamFunction::Config(const std::string ConfigFil
   const char *       search_fig = "Ellipsoid"; // Set search pattern
   int                offset = 0;
   std::string        line;
-  std::ifstream      Myfile;
+  std::ifstream      myFile;
 
-  Myfile.open( ConfigFile.c_str() );
-  if ( !Myfile.is_open() )
+  myFile.open( ConfigFile.c_str() );
+  if ( !myFile.is_open() )
     {
     itkGenericExceptionMacro("Error opening File");
     return false;
     }
 
-  while ( !Myfile.eof() )
+  while ( !myFile.eof() )
     {
-    getline(Myfile, line);
+    getline(myFile, line);
     if ( ( offset = line.find(search_fig, 0) ) != std::string::npos ) //Ellipsoid
                                                                       // found
       {
@@ -148,7 +150,7 @@ bool SetQuadricParamFromRegularParamFunction::Config(const std::string ConfigFil
       m_Fig.push_back(parameters);
       }
     }
-  Myfile.close();
+  myFile.close();
   return true;
 }
 
