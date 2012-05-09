@@ -22,6 +22,7 @@
 #include <itkInPlaceImageFilter.h>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkSetQuadricParamFromRegularParamFunction.h"
 
 #include <vector>
 
@@ -43,11 +44,7 @@ public:
   typedef itk::SmartPointer<Self>                                   Pointer;
   typedef itk::SmartPointer<const Self>                             ConstPointer;
   typedef typename TOutputImage::RegionType                         OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer           OutputImageBaseConstPointer;
 
-  typedef float OutputPixelType;
-
-  typedef itk::Image< OutputPixelType, 3 >                          OutputImageType;
   typedef std::vector<double>                                       VectorType;
   typedef std::string                                               StringType;
 
