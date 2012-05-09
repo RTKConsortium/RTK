@@ -1,6 +1,16 @@
 FIND_PACKAGE(Gengetopt)
 
 #=========================================================
+# Executable macro
+MACRO (ADD_RTK_EXECUTABLE EXE_NAME)
+  WRAP_GGO(${EXE_NAME}_GGO_C ${EXE_NAME}.ggo)
+  ADD_EXECUTABLE(${EXE_NAME} ${EXE_NAME}.cxx ${${EXE_NAME}_GGO_C} ${ARGN})
+  TARGET_LINK_LIBRARIES(${EXE_NAME} rtkIO)
+  SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} ${EXE_NAME})
+ENDMACRO (ADD_RTK_EXECUTABLE)
+#=========================================================
+
+#=========================================================
 # Executables
 ADD_RTK_EXECUTABLE(rtkprojections)
 ADD_RTK_EXECUTABLE(rtkparkershortscanweighting)

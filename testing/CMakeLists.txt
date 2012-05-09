@@ -1,4 +1,4 @@
 
-ADD_RTK_EXECUTABLE(rtkthreedphantomreferencetest rtkthreedphantomreferencetest.cxx)
-ADD_TEST(rtkthreedphantomreferencetest ${EXECUTABLE_OUTPUT_PATH}/rtkthreedphantomreferencetest --phantomfile ${EXECUTABLE_OUTPUT_PATH}/Phantom_Conf.xml)
-
+ADD_EXECUTABLE(rtkthreedphantomreferencetest rtkthreedphantomreferencetest.cxx)
+TARGET_LINK_LIBRARIES(rtkthreedphantomreferencetest rtkIO)
+ADD_TEST(rtkthreedphantomreferencetest ${EXECUTABLE_OUTPUT_PATH}/rtkthreedphantomreferencetest)
