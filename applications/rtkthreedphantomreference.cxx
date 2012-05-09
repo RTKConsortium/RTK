@@ -22,7 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawQuadricFunctor.h"
+#include "rtkDrawQuadricImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -37,13 +37,13 @@ int main(int argc, char * argv[])
 
   typedef itk::Image< OutputPixelType, Dimension >                  OutputImageType;
 
-  // Create a stack of empty projection images
+  // Empty projection images
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkthreedphantomreference>(constantImageSource, args_info);
 
-  //We create the reference
-  typedef rtk::DrawQuadricFunctor<OutputImageType, OutputImageType> DQType;
+  // Reference
+  typedef rtk::DrawQuadricImageFilter<OutputImageType, OutputImageType> DQType;
   if(args_info.verbose_flag)
     std::cout << "Creating reference... " << std::flush;
   DQType::Pointer dq = DQType::New();
