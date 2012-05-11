@@ -5,6 +5,7 @@
 
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawQuadricImageFilter.h"
+#include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
 
@@ -53,7 +54,7 @@ int main(int argc, char* argv[])
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
-  slp->SetConfigFile( "Phantom_Conf.xml" );
+  //slp->SetConfigFile( "Phantom_Conf.xml" );
   slp->Update();
 
   // FDK reconstruction filtering
@@ -67,15 +68,15 @@ int main(int argc, char* argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() )
 
   // Create a reference object (in this case a 3D phantom reference).
-  typedef rtk::DrawQuadricImageFilter<OutputImageType, OutputImageType> DQType;
-  DQType::Pointer dq = DQType::New();
-  dq->SetInput( tomographySource->GetOutput() );
-  dq->SetConfigFile( "Phantom_Conf.xml" );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dq->Update() )
+  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  DSLType::Pointer dsl = DSLType::New();
+  dsl->SetInput( tomographySource->GetOutput() );
+  //dsl->SetConfigFile( "Phantom_Conf.xml" );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   typedef itk::ImageRegionConstIterator<OutputImageType> ImageIteratorType;
   ImageIteratorType itTest( feldkamp->GetOutput(), feldkamp->GetOutput()->GetBufferedRegion() );
-  ImageIteratorType itRef( dq->GetOutput(), dq->GetOutput()->GetBufferedRegion() );
+  ImageIteratorType itRef( dsl->GetOutput(), dsl->GetOutput()->GetBufferedRegion() );
 
   typedef double ErrorType;
   ErrorType TestError     = 0.;
@@ -137,7 +138,7 @@ int main(int argc, char* argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
     // Write out the reference image
-    writer->SetInput(dq->GetOutput());
+    writer->SetInput(dsl->GetOutput());
     writer->SetFileName("reference.mha");
     TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
