@@ -63,10 +63,6 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(DrawSheppLoganFilter, InPlaceImageFilter);
 
-  /** Get/Set ConfigFile*/
-  itkSetMacro(ConfigFile, StringType);
-  itkGetMacro(ConfigFile, StringType);
-
 protected:
   DrawSheppLoganFilter() {}
   virtual ~DrawSheppLoganFilter() {};
@@ -79,7 +75,6 @@ protected:
 private:
   DrawSheppLoganFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
-  StringType m_ConfigFile;
 
 };
 
