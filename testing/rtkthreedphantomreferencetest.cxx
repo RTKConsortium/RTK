@@ -54,7 +54,6 @@ int main(int argc, char* argv[])
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
-  //slp->SetConfigFile( "Phantom_Conf.xml" );
   slp->Update();
 
   // FDK reconstruction filtering
@@ -71,7 +70,6 @@ int main(int argc, char* argv[])
   typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
   DSLType::Pointer dsl = DSLType::New();
   dsl->SetInput( tomographySource->GetOutput() );
-  //dsl->SetConfigFile( "Phantom_Conf.xml" );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   typedef itk::ImageRegionConstIterator<OutputImageType> ImageIteratorType;
