@@ -32,11 +32,13 @@ template <class TInputImage, class TOutputImage>
 void DrawQuadricImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                                                                              ThreadIdType threadId )
 {
-  std::vector< std::vector<double> > figParam;
+  VectorOfVectorType figParam;
   //Getting phantom parameters
   SQPFunctionType::Pointer sqpFunctor = SQPFunctionType::New();
-  sqpFunctor->Config(m_ConfigFile);
-  figParam = sqpFunctor->GetFig();
+  //Config File Reader, cfr
+  CFRType::Pointer cfr = CFRType::New();
+  cfr->Config(m_ConfigFile);
+  figParam = cfr->GetFig();
   VectorType semiprincipalaxis;
   VectorType center;
 
