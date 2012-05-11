@@ -32,7 +32,7 @@ namespace rtk
 {
 
 /** \class SheppLoganPhantomFilter
- * \brief Computes intersection of projection rays with ellipsoids.
+ * \brief Computes intersection of projection rays with ellipsoids
  * in order to create a Shepp-Logan phantom projections.
  */
 
@@ -57,16 +57,18 @@ public:
   typedef std::string                                                                StringType;
   typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
   typedef SetQuadricParamFromRegularParamFunction                                    SQPFunctionType;
-
+  struct figure
+  {
+    VectorType semiprincipalaxis;
+    VectorType center;
+    double angle;
+    double attenuation;
+    };
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SheppLoganPhantomFilter, RayEllipsoidIntersectionImageFilter);
-
-  /** Get/Set Number of Figures.*/
-  itkSetMacro(ConfigFile, StringType);
-  itkGetMacro(ConfigFile, StringType);
 
   rtkSetMacro(Fig, VectorOfVectorType);
   rtkGetMacro(Fig, VectorOfVectorType);
@@ -76,7 +78,6 @@ protected:
   virtual ~SheppLoganPhantomFilter() {};
 
   virtual void GenerateData();
-  //void Config();
 
   /** Translate user parameteres to quadric parameters.
    * A call to this function will assume modification of the function.*/
@@ -87,7 +88,6 @@ private:
   void operator=(const Self&);            //purposely not implemented
 
   VectorOfVectorType       m_Fig;
-  StringType               m_ConfigFile;
   SQPFunctionType::Pointer m_SQPFunctor;
 };
 
