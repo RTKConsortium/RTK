@@ -1,4 +1,12 @@
-
 ADD_EXECUTABLE(rtkthreedphantomreferencetest rtkthreedphantomreferencetest.cxx)
 TARGET_LINK_LIBRARIES(rtkthreedphantomreferencetest rtkIO)
 ADD_TEST(rtkthreedphantomreferencetest ${EXECUTABLE_OUTPUT_PATH}/rtkthreedphantomreferencetest)
+
+ADD_EXECUTABLE(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
+TARGET_LINK_LIBRARIES(rtkdisplaceddetectortest rtkIO)
+ADD_TEST(rtkdisplaceddetectortest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetectortest)
+
+ADD_EXECUTABLE(rtkshortscantest rtkshortscantest.cxx)
+TARGET_LINK_LIBRARIES(rtkshortscantest rtkIO)
+ADD_TEST(rtkshortscantest ${EXECUTABLE_OUTPUT_PATH}/rtkshortscantest)
+
