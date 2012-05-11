@@ -19,7 +19,6 @@
 #include "rtkthreedphantomreference_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkDrawQuadricImageFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
 #include <itkImageFileWriter.h>
 
 
@@ -37,18 +36,19 @@ int main(int argc, char * argv[])
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkthreedphantomreference>(constantImageSource, args_info);
 
   // Reference
-  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  typedef rtk::DrawQuadricImageFilter<OutputImageType, OutputImageType> DQType;
   if(args_info.verbose_flag)
     std::cout << "Creating reference... " << std::flush;
-  DSLType::Pointer dsl = DSLType::New();
-  dsl->SetInput( constantImageSource->GetOutput() );
-  dsl->Update();
+  DQType::Pointer dq = DQType::New();
+  dq->SetInput( constantImageSource->GetOutput() );
+  dq->SetConfigFile(args_info.phantomfile_arg);
+  dq->Update();
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( dsl->GetOutput() );
+  writer->SetInput( dq->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Writing reference... " << std::flush;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
