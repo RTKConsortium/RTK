@@ -38,26 +38,107 @@ template< class TInputImage, class TOutputImage >
 void SheppLoganPhantomFilter< TInputImage, TOutputImage >::GenerateData()
 {
   m_SQPFunctor = SQPFunctionType::New();
-  m_SQPFunctor->Config(m_ConfigFile);
-  m_Fig = m_SQPFunctor->GetFig();
+  std::vector< REIType::Pointer > rei(10);
+  unsigned int NumberOfFig = 10;
 
-  std::vector< REIType::Pointer > rei( m_Fig.size() );
-  for ( unsigned int i = 0; i < m_Fig.size(); i++ )
+  for ( unsigned int j = 0; j < NumberOfFig; j++ )
     {
-    rei[i] = REIType::New();
-    //Set GrayScale value, axes, center...
-    rei[i]->SetMultiplicativeConstant(m_Fig[i][7]);
-    rei[i]->SetSemiPrincipalAxisX(m_Fig[i][0]);
-    rei[i]->SetSemiPrincipalAxisY(m_Fig[i][1]);
-    rei[i]->SetSemiPrincipalAxisZ(m_Fig[i][2]);
+      rei[j] = REIType::New();
+    }
+  rei[0]->SetSemiPrincipalAxisX(88.32*0.7);
+  rei[0]->SetSemiPrincipalAxisY(117.76*0.7);
+  rei[0]->SetSemiPrincipalAxisZ(115.6*0.7);
+  rei[0]->SetCenterX(0.);
+  rei[0]->SetCenterY(0.);
+  rei[0]->SetCenterZ(0.);
+  rei[0]->SetRotationAngle(0.);
+  rei[0]->SetMultiplicativeConstant(2.);
 
-    rei[i]->SetCenterX(m_Fig[i][3]);
-    rei[i]->SetCenterY(m_Fig[i][4]);
-    rei[i]->SetCenterZ(m_Fig[i][5]);
+  rei[1]->SetSemiPrincipalAxisX(84.7872*0.7);
+  rei[1]->SetSemiPrincipalAxisY(111.872*0.7);
+  rei[1]->SetSemiPrincipalAxisZ(112.64*0.7);
+  rei[1]->SetCenterX(0.);
+  rei[1]->SetCenterY(0.);
+  rei[1]->SetCenterZ(0.);
+  rei[1]->SetRotationAngle(0.);
+  rei[1]->SetMultiplicativeConstant(-0.98);
 
-    rei[i]->SetRotationAngle(m_Fig[i][6]);
+  rei[2]->SetSemiPrincipalAxisX(52.48*0.7);
+  rei[2]->SetSemiPrincipalAxisY(20.48*0.7);
+  rei[2]->SetSemiPrincipalAxisZ(26.88*0.7);
+  rei[2]->SetCenterX(-28.16*0.7);
+  rei[2]->SetCenterY(0.);
+  rei[2]->SetCenterZ(-32.*0.7);
+  rei[2]->SetRotationAngle(108.);
+  rei[2]->SetMultiplicativeConstant(-0.02);
 
-    if ( i == ( m_Fig.size() - 1 ) ) //last case
+  rei[3]->SetSemiPrincipalAxisX(39.68*0.7);
+  rei[3]->SetSemiPrincipalAxisY(14.08*0.7);
+  rei[3]->SetSemiPrincipalAxisZ(28.16*0.7);
+  rei[3]->SetCenterX(28.16*0.7);
+  rei[3]->SetCenterY(0.);
+  rei[3]->SetCenterZ(-32*0.7);
+  rei[3]->SetRotationAngle(72.);
+  rei[3]->SetMultiplicativeConstant(-0.02);
+
+  rei[4]->SetSemiPrincipalAxisX(26.88*0.7);
+  rei[4]->SetSemiPrincipalAxisY(32*0.7);
+  rei[4]->SetSemiPrincipalAxisZ(64*0.7);
+  rei[4]->SetCenterX(0.);
+  rei[4]->SetCenterY(-44.8*0.7);
+  rei[4]->SetCenterZ(-32*0.7);
+  rei[4]->SetRotationAngle(0.);
+  rei[4]->SetMultiplicativeConstant(0.02);
+
+  rei[5]->SetSemiPrincipalAxisX(5.888*0.7);
+  rei[5]->SetSemiPrincipalAxisY(5.888*0.7);
+  rei[5]->SetSemiPrincipalAxisZ(5.888*0.7);
+  rei[5]->SetCenterX(0.);
+  rei[5]->SetCenterY(-12.8*0.7);
+  rei[5]->SetCenterZ(-32*0.7);
+  rei[5]->SetRotationAngle(0.);
+  rei[5]->SetMultiplicativeConstant(0.02);
+
+  rei[6]->SetSemiPrincipalAxisX(5.888*0.7);
+  rei[6]->SetSemiPrincipalAxisY(2.944*0.7);
+  rei[6]->SetSemiPrincipalAxisZ(2.56*0.7);
+  rei[6]->SetCenterX(-10.24*0.7);
+  rei[6]->SetCenterY(83.2*0.7);
+  rei[6]->SetCenterZ(-32*0.7);
+  rei[6]->SetRotationAngle(0.);
+  rei[6]->SetMultiplicativeConstant(0.01);
+
+  rei[7]->SetSemiPrincipalAxisX(5.888*0.7);
+  rei[7]->SetSemiPrincipalAxisY(2.944*0.7);
+  rei[7]->SetSemiPrincipalAxisZ(2.56*0.7);
+  rei[7]->SetCenterX(7.68*0.7);
+  rei[7]->SetCenterY(83.2*0.7);
+  rei[7]->SetCenterZ(-32*0.7);
+  rei[7]->SetRotationAngle(90.);
+  rei[7]->SetMultiplicativeConstant(0.01);
+
+  rei[8]->SetSemiPrincipalAxisX(7.168*0.7);
+  rei[8]->SetSemiPrincipalAxisY(5.12*0.7);
+  rei[8]->SetSemiPrincipalAxisZ(12.8*0.7);
+  rei[8]->SetCenterX(7.68*0.7);
+  rei[8]->SetCenterY(13.44*0.7);
+  rei[8]->SetCenterZ(80.*0.7);
+  rei[8]->SetRotationAngle(90.);
+  rei[8]->SetMultiplicativeConstant(0.02);
+
+  rei[9]->SetSemiPrincipalAxisX(7.168*0.7);
+  rei[9]->SetSemiPrincipalAxisY(7.168*0.7);
+  rei[9]->SetSemiPrincipalAxisZ(12.8*0.7);
+  rei[9]->SetCenterX(0.);
+  rei[9]->SetCenterY(-12.8*0.7);
+  rei[9]->SetCenterZ(80.*0.7);
+  rei[9]->SetRotationAngle(0.);
+  rei[9]->SetMultiplicativeConstant(-0.02);
+
+
+  for ( unsigned int i = 0; i < NumberOfFig; i++ )
+    {
+    if ( i == ( NumberOfFig - 1 ) ) //last case
       {
       if(i==0) //just one ellipsoid
         rei[i]->SetInput( rei[i]->GetOutput() );
@@ -79,8 +160,8 @@ void SheppLoganPhantomFilter< TInputImage, TOutputImage >::GenerateData()
       }
     }
   //Update
-  rei[ m_Fig.size() - 1]->Update();
-  this->GraftOutput( rei[m_Fig.size()-1]->GetOutput() );
+  rei[NumberOfFig - 1]->Update();
+  this->GraftOutput( rei[NumberOfFig - 1]->GetOutput() );
 }
 } // end namespace rtk
 
