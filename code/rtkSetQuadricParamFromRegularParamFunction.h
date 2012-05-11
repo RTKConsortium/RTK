@@ -31,8 +31,7 @@ namespace rtk
 /** \class SetQuadricParamFromRegularParamFunction
  * \brief Translates quadric parameters to regular
  * expressions. It also rotates a quadric with a certain
- * given angle and reads the config file in order
- * to create the desired figure.
+ * given angle in order to create the desired figure.
  *
  * \ingroup Functions
  */
@@ -57,7 +56,6 @@ public:
 
   bool Translate( const VectorType& input );
   bool Rotate( const double input1, const VectorType& input2 );
-  bool Config( const std::string input);
 
   /** Get / Set the quadric parameters. */
   itkGetMacro(A, double);
@@ -97,9 +95,6 @@ public:
   itkGetMacro(RotationAngle, double);
   itkSetMacro(RotationAngle, double);  
 
-  rtkSetMacro(Fig, VectorOfVectorType);
-  rtkGetMacro(Fig, VectorOfVectorType);
-
 protected:
 
   /// Constructor
@@ -120,7 +115,6 @@ protected:
   double m_CenterZ;
   double m_RotationAngle;
   double m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J;
-  VectorOfVectorType m_Fig;
 
 private:
   SetQuadricParamFromRegularParamFunction( const Self& ); //purposely not implemented
