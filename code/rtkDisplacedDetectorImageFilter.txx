@@ -130,7 +130,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     {
     itkGenericExceptionMacro(<< "Can not account for detector displacement larger than 50% of panel size.");
     }
-  // Case 2: Not dispaced, nothing to do
+  // Case 2: Not displaced, nothing to do
   else if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
     {
     this->SetInPlace( true );
@@ -167,7 +167,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   itIn.GoToBegin();
   itOut.GoToBegin();
 
-  // Not dispaced, nothing to do
+  // Not displaced, nothing to do
   if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
     {
     if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
