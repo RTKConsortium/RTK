@@ -64,7 +64,6 @@ int main(int argc, char * argv[])
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput(constantImageSource->GetOutput());
   slp->SetGeometry(geometryReader->GetOutputObject());
-  slp->SetConfigFile(args_info.phantomfile_arg);
   slp->Update();
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
