@@ -23,6 +23,7 @@
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkSetQuadricParamFromRegularParamFunction.h"
+#include "rtkConfigFileReader.h"
 
 #include <vector>
 
@@ -46,9 +47,11 @@ public:
   typedef typename TOutputImage::RegionType                         OutputImageRegionType;
 
   typedef std::vector<double>                                       VectorType;
+  typedef std::vector< std::vector<double> >                        VectorOfVectorType;
   typedef std::string                                               StringType;
 
   typedef rtk::SetQuadricParamFromRegularParamFunction              SQPFunctionType;
+  typedef rtk::ConfigFileReader                                     CFRType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
