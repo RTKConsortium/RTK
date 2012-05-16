@@ -70,11 +70,13 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(SheppLoganPhantomFilter, RayEllipsoidIntersectionImageFilter);
 
-  rtkSetMacro(Fig, VectorOfVectorType);
-  rtkGetMacro(Fig, VectorOfVectorType);
+  rtkSetMacro(PhantomScale, double);
+  rtkGetMacro(PhantomScale, double);
+  rtkSetMacro(PhantomOriginOffsetX, double);
+  rtkGetMacro(PhantomOriginOffsetX, double);
 
 protected:
-  SheppLoganPhantomFilter() {}
+  SheppLoganPhantomFilter();
   virtual ~SheppLoganPhantomFilter() {};
 
   virtual void GenerateData();
@@ -87,8 +89,9 @@ private:
   SheppLoganPhantomFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  VectorOfVectorType       m_Fig;
   SQPFunctionType::Pointer m_SQPFunctor;
+  double                   m_PhantomScale;
+  double                   m_PhantomOriginOffsetX;
 };
 
 } // end namespace rtk

@@ -63,8 +63,14 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(DrawSheppLoganFilter, InPlaceImageFilter);
 
+  /** Set/Get functions for members. */
+  rtkSetMacro(PhantomScale, double);
+  rtkGetMacro(PhantomScale, double);
+  rtkSetMacro(PhantomOriginOffsetX, double);
+  rtkGetMacro(PhantomOriginOffsetX, double);
+
 protected:
-  DrawSheppLoganFilter() {}
+  DrawSheppLoganFilter();
   virtual ~DrawSheppLoganFilter() {};
 
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
@@ -76,6 +82,8 @@ private:
   DrawSheppLoganFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
+  double                   m_PhantomScale;
+  double                   m_PhantomOriginOffsetX;
 };
 
 } // end namespace rtk
