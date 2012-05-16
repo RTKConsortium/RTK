@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include <fstream>
+#include <vcl_cmath.h>
 
 namespace rtk
 {
@@ -41,9 +42,9 @@ bool SetQuadricParamFromRegularParamFunction
   m_SemiPrincipalAxisZ = SemiPrincipalAxis[2];
 
   //Regular Ellipsoid Expression (No rotation, No Translation)
-  m_A = 1/pow(m_SemiPrincipalAxisX,2.0);
-  m_B = 1/pow(m_SemiPrincipalAxisY,2.0);
-  m_C = 1/pow(m_SemiPrincipalAxisZ,2.0);
+  m_A = 1/vcl_pow(m_SemiPrincipalAxisX,2.0);
+  m_B = 1/vcl_pow(m_SemiPrincipalAxisY,2.0);
+  m_C = 1/vcl_pow(m_SemiPrincipalAxisZ,2.0);
   m_D = 0.;
   m_E = 0.;
   m_F = 0.;
@@ -75,8 +76,8 @@ bool SetQuadricParamFromRegularParamFunction
   double TempJ = m_J;
 
   //Applying Rotation
-  m_A = TempA*pow(cos(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*pow(sin(m_RotationAngle*(itk::Math::pi/180)),2.0);
-  m_B = TempA*pow(sin(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*pow(cos(m_RotationAngle*(itk::Math::pi/180)),2.0);
+  m_A = TempA*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)),2.0);
+  m_B = TempA*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)),2.0);
   m_C = TempC;
   m_D = 2*cos(m_RotationAngle*(itk::Math::pi/180))*sin(m_RotationAngle*(itk::Math::pi/180))*(TempB - TempA);
   m_E = 0.;
@@ -102,7 +103,7 @@ bool SetQuadricParamFromRegularParamFunction
   double TransG = -2*TempA*m_CenterX - TempD*m_CenterY - TempE*m_CenterZ;
   double TransH = -2*TempB*m_CenterY - TempD*m_CenterX - TempF*m_CenterZ;
   double TransI = -2*TempC*m_CenterZ - TempE*m_CenterX - TempF*m_CenterY;
-  double TransJ = TempA*pow(m_CenterX,2.0) + TempB*pow(m_CenterY,2.0) + TempC*pow(m_CenterZ,2.0) + TempD*m_CenterX*m_CenterY + TempE*m_CenterX*m_CenterZ + TempF*m_CenterY*m_CenterZ - TempG*m_CenterX - TempH*m_CenterY - TempI*m_CenterZ;
+  double TransJ = TempA*vcl_pow(m_CenterX,2.0) + TempB*vcl_pow(m_CenterY,2.0) + TempC*vcl_pow(m_CenterZ,2.0) + TempD*m_CenterX*m_CenterY + TempE*m_CenterX*m_CenterZ + TempF*m_CenterY*m_CenterZ - TempG*m_CenterX - TempH*m_CenterY - TempI*m_CenterZ;
 
   //Applying Translation
   m_G += TransG;

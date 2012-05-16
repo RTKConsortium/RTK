@@ -2,6 +2,7 @@
 #include <itkImageFileReader.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkRegularExpressionSeriesFileNames.h>
+#include <vcl_cmath.h>
 
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawQuadricImageFilter.h"
@@ -33,9 +34,9 @@ int main(int argc, char* argv[])
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   ConstantImageSourceType::PointType origin;
-  origin.Fill(-127.5);
+  origin.Fill(-183.);
   ConstantImageSourceType::SizeType size;
-  size.Fill(256);
+  size.Fill(366);
   ConstantImageSourceType::SpacingType spacing;
   spacing.Fill(1.);
   tomographySource->SetOrigin( origin );
@@ -92,7 +93,7 @@ int main(int argc, char* argv[])
     if( TestVal != RefVal )
       {
         TestError += abs(RefVal - TestVal);
-        EnerError += pow((RefVal - TestVal), 2.0);
+        EnerError += vcl_pow((RefVal - TestVal), 2.0);
       }
     ++itTest;
     ++itRef;
@@ -115,7 +116,7 @@ int main(int argc, char* argv[])
     std::cerr << "Test Failed, Error per pixel not valid!" << std::endl;
     Exit = false;
   }
-  if (PSNR < 25.0)
+  if (PSNR < 35.0)
   {
     std::cerr << "Test Failed, PSNR not valid!" << std::endl;
     Exit = false;
