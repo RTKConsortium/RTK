@@ -2,6 +2,7 @@
 #include <itkImageFileReader.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkRegularExpressionSeriesFileNames.h>
+#include <vcl_cmath.h>
 
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawQuadricImageFilter.h"
@@ -99,7 +100,7 @@ int main(int argc, char* argv[])
     if( TestVal != RefVal )
       {
         TestError += abs(RefVal - TestVal);
-        EnerError += pow((RefVal - TestVal), 2.0);
+        EnerError += vcl_pow((RefVal - TestVal), 2.0);
       }
     ++itTest;
     ++itRef;
