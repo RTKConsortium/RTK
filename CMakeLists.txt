@@ -38,7 +38,7 @@ MACRO (DD in)
   MESSAGE(${in}=[${${in}}])
 ENDMACRO(DD)
 #=========================================================
-DD(BUILD_TESTING)
+
 #=========================================================
 # Remove some MS Visual c++ flags
 IF(MSVC)
