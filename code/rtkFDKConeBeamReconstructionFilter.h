@@ -45,7 +45,7 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
 class ITK_EXPORT FDKConeBeamReconstructionFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+  public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
