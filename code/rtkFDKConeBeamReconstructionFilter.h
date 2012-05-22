@@ -74,6 +74,9 @@ public:
   virtual ThreeDCircularProjectionGeometry::Pointer GetGeometry();
   virtual void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
 
+  /** Get pointer to the weighting filter used by the feldkamp reconstruction */
+  typename WeightFilterType::Pointer GetWeightFilter() { return m_WeightFilter; }
+
   /** Get pointer to the ramp filter used by the feldkamp reconstruction */
   typename RampFilterType::Pointer GetRampFilter() { return m_RampFilter; }
 
