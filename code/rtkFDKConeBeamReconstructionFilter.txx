@@ -40,8 +40,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 #if ITK_VERSION_MAJOR >= 4
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
 #endif
-  m_WeightFilter->InPlaceOn();
-  m_BackProjectionFilter->InPlaceOn();
+  m_WeightFilter->InPlaceOff();
   m_BackProjectionFilter->SetTranspose(true);
 }
 
@@ -57,6 +56,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   //SR: is this useful?
   m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
+  m_BackProjectionFilter->SetInPlace( this->GetInPlace() );
   m_ExtractFilter->SetInput( this->GetInput(1) );
   m_BackProjectionFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
   m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
@@ -79,6 +79,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
   
   // Run composite filter update
   m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
+  m_BackProjectionFilter->SetInPlace( this->GetInPlace() );
   m_ExtractFilter->SetInput( this->GetInput(1) );
   m_BackProjectionFilter->UpdateOutputInformation();
 
