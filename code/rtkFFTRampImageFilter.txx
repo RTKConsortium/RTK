@@ -41,11 +41,11 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   ,m_CosineCutFrequency(0.),m_HammingFrequency(0.)
 {
 #if defined(USE_FFTWD)
-  if(typeid(TFFTPrecision).name() == std::string("double") )
+  if(typeid(TFFTPrecision).name() == typeid(double).name() )
     m_GreatestPrimeFactor = 13;
 #endif
 #if defined(USE_FFTWF)
-  if(typeid(TFFTPrecision).name() == std::string("float") )
+  if(typeid(TFFTPrecision).name() == typeid(float).name() )
     m_GreatestPrimeFactor = 13;
 #endif
 }
@@ -314,33 +314,62 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   fftK->Update();
 
   // Windowing (if enabled)
-  typedef itk::ImageRegionIterator<typename FFTType::OutputImageType> IteratorType;
+  typedef itk::ImageRegionIteratorWithIndex<typename FFTType::OutputImageType> IteratorType;
   IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion() );
 
   unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
-  n = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency() ) );
+#if !defined(USE_FFTWD)
+  if( typeid(TFFTPrecision).name() == typeid(double).name() )
+    n = n/2+1;
+#endif
+#if !defined(USE_FFTWF)
+  if( typeid(TFFTPrecision).name() == typeid(float).name() )
+    n = n/2+1;
+#endif
+  const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency() ) );
 
   itK.GoToBegin();
   if(this->GetHannCutFrequency()>0.)
     {
-    for(unsigned int i=0; i<n; i++, ++itK)
-      itK.Set( itK.Get() * TFFTPrecision(0.5*(1+vcl_cos(vnl_math::pi*i/n))));
+    for(unsigned int i=0; i<ncut; i++, ++itK)
+      itK.Set( itK.Get() * TFFTPrecision(0.5*(1+vcl_cos(vnl_math::pi*i/ncut))));
     }
   else if(this->GetCosineCutFrequency() > 0.)
     {
-    for(unsigned int i=0; i<n; i++, ++itK)
-      itK.Set( itK.Get() * TFFTPrecision(vcl_cos(0.5*vnl_math::pi*i/n)));
+    for(unsigned int i=0; i<ncut; i++, ++itK)
+      itK.Set( itK.Get() * TFFTPrecision(vcl_cos(0.5*vnl_math::pi*i/ncut)));
     }
   else if(this->GetHammingFrequency() > 0.)
     {
-    for(unsigned int i=0; i<n; i++, ++itK)
-      itK.Set( itK.Get() * TFFTPrecision(0.54+0.46*(vcl_cos(vnl_math::pi*i/n))));
+    for(unsigned int i=0; i<ncut; i++, ++itK)
+      itK.Set( itK.Get() * TFFTPrecision(0.54+0.46*(vcl_cos(vnl_math::pi*i/ncut))));
     }
   else
-    itK.GoToEnd();
+    return fftK->GetOutput();
 
   for( ; !itK.IsAtEnd(); ++itK)
+    {
+    // FFTW returns only the first half whereas vnl return the mirrored fft
+#if !defined(USE_FFTWD)
+    if(typeid(TFFTPrecision).name() == typeid(double).name() && itK.GetIndex()[0]>n)
+      {
+      typename FFTType::OutputImageType::IndexType mirroredIndex = itK.GetIndex();
+      mirroredIndex[0] = fftK->GetOutput()->GetLargestPossibleRegion().GetSize()[0] - mirroredIndex[0];
+      itK.Set( fftK->GetOutput()->GetPixel(mirroredIndex) );
+      }
+    else
+#endif
+#if !defined(USE_FFTWF)
+    if(typeid(TFFTPrecision).name() == typeid(float).name() && itK.GetIndex()[0]>n)
+      {
+      typename FFTType::OutputImageType::IndexType mirroredIndex = itK.GetIndex();
+      mirroredIndex[0] = fftK->GetOutput()->GetLargestPossibleRegion().GetSize()[0] - mirroredIndex[0];
+      itK.Set( fftK->GetOutput()->GetPixel(mirroredIndex) );
+      }
+    else
+#endif
     itK.Set( itK.Get() * TFFTPrecision(0.) );
+    }
 
   return fftK->GetOutput();
 }
