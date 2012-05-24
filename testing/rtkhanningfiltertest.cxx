@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
     if( TestVal != RefVal && ( RefVal>=1.0 && RefVal<=1.06 ) )
       {
         TestError += abs(RefVal - TestVal);
-        EnerError += vcl_pow((RefVal - TestVal), 2.0);
+        EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.0);
         pixelCounter++;
       }
     ++itTest;

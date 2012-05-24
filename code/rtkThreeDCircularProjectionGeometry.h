@@ -58,6 +58,9 @@ public:
                      const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
                      const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
+  /** Empty the geometry object. */
+  void Clear();
+
   /** Get the vector of geometry parameters (one per projection) */
   const std::vector<double> &GetGantryAngles() const {
     return this->m_GantryAngles;
