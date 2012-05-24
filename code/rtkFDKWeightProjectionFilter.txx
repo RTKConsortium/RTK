@@ -68,9 +68,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   itO.GoToBegin();
 
   // Go over output, compute weights and avoid redundant computation
-  for(unsigned int k=outputRegionForThread.GetIndex(2);
-                   k<outputRegionForThread.GetIndex(2)+outputRegionForThread.GetSize(2);
-                   k++)
+  for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
     typename InputImageType::PointType point = pointBase;
     point[1] = pointBase[1]
@@ -80,16 +78,16 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
     const double sdd2 = sdd * sdd;
     double weight = sdd  * m_AngularWeightsAndRampFactor[k];
 
-    for(unsigned int j=outputRegionForThread.GetIndex(1);
-                     j<outputRegionForThread.GetIndex(1)+outputRegionForThread.GetSize(1);
+    for(unsigned int j=0;
+                     j<outputRegionForThread.GetSize(1);
                      j++, point[1] += pointIncrement[1])
       {
       point[0] = pointBase[0]
                  + m_Geometry->GetProjectionOffsetsX()[k]
                  - m_Geometry->GetSourceOffsetsX()[k];
       const double sdd2y2 = sdd2 + point[1]*point[1];
-      for(unsigned int i=outputRegionForThread.GetIndex(0);
-                       i<outputRegionForThread.GetIndex(0)+outputRegionForThread.GetSize(0);
+      for(unsigned int i=0;
+                       i<outputRegionForThread.GetSize(0);
                        i++, ++itI, ++itO, point[0] += pointIncrement[0])
         {
         itO.Set( itI.Get() * weight / sqrt( sdd2y2 + point[0]*point[0]) );

@@ -45,7 +45,7 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
 class ITK_EXPORT FDKConeBeamReconstructionFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+  public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
@@ -73,6 +73,9 @@ public:
   /** Get / Set the object pointer to projection geometry */
   virtual ThreeDCircularProjectionGeometry::Pointer GetGeometry();
   virtual void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+
+  /** Get pointer to the weighting filter used by the feldkamp reconstruction */
+  typename WeightFilterType::Pointer GetWeightFilter() { return m_WeightFilter; }
 
   /** Get pointer to the ramp filter used by the feldkamp reconstruction */
   typename RampFilterType::Pointer GetRampFilter() { return m_RampFilter; }

@@ -62,7 +62,28 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjection(
     this->GetSourceTranslationMatrices().back().GetVnlMatrix();
 
   this->AddMatrix(matrix);
+  this->Modified();
 }
+
+void rtk::ThreeDCircularProjectionGeometry::Clear()
+{
+  m_GantryAngles.clear();
+  m_OutOfPlaneAngles.clear();
+  m_InPlaneAngles.clear();
+  m_SourceToIsocenterDistances.clear();
+  m_SourceOffsetsX.clear();
+  m_SourceOffsetsY.clear();
+  m_SourceToDetectorDistances.clear();
+  m_ProjectionOffsetsX.clear();
+  m_ProjectionOffsetsY.clear();
+
+  m_ProjectionTranslationMatrices.clear();
+  m_MagnificationMatrices.clear();
+  m_RotationMatrices.clear();
+  m_SourceTranslationMatrices.clear();
+  this->Modified();
+}
+
 
 const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetSortedAngles()
 {
