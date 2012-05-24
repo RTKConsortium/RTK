@@ -21,7 +21,7 @@
 
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIteratorWithIndex.h>
+#include <itkImageRegionIterator.h>
 
 #include "rtkHomogeneousMatrix.h"
 
