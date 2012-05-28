@@ -40,7 +40,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 #if ITK_VERSION_MAJOR >= 4
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
 #endif
-  m_WeightFilter->InPlaceOff();
+  m_WeightFilter->InPlaceOn();
   m_BackProjectionFilter->SetTranspose(true);
 }
 
