@@ -17,7 +17,6 @@ PURPOSE. See the above copyright notices for more information.
 =========================================================================*/
 
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
-#include "itkMultiThreader.h"
 
 namespace rtk
 {
@@ -46,7 +45,6 @@ AdditiveGaussianNoiseImageFilter<TInputImage>
 
   // Setup grafted pipeline for composite filter
   m_NoiseFilter->SetInput( this->GetInput() );
-  m_NoiseFilter->GraftOutput( this->GetOutput() );
   m_NoiseFilter->Update();
   this->GraftOutput( m_NoiseFilter->GetOutput() );
 }
