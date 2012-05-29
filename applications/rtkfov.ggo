@@ -1,5 +1,5 @@
 package "rtk"
-version "Computes the intersection length between rays of 2D projections and a 3D volume."
+version "Computes the field of view of a reconstruction."
 
 option "verbose"        v "Verbose execution"                                         flag     off
 option "mask"           m "ON - the mask as output. OFF - masked reconstruction"      flag     off
