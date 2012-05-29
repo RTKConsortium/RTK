@@ -16,12 +16,12 @@
  *
  *=========================================================================*/
 
-#include "rtkfovfilter_ggo.h"
+#include "rtkfov_ggo.h"
 #include "rtkGgoFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkFOVFilter.h"
+#include "rtkFieldOfViewImageFilter.h"
 #include "rtkProjectionsReader.h"
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -30,7 +30,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkfovfilter, args_info);
+  GGO(rtkfov, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
@@ -64,12 +64,11 @@ int main(int argc, char * argv[])
   ReaderType::Pointer projections = ReaderType::New();
   projections->SetFileNames( names->GetFileNames() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( projections->GenerateOutputInformation() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( projections->Update() );
   //FOV filter
-  typedef rtk::FOVFilter<OutputImageType, OutputImageType> FOVFilterType;
+  typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
   FOVFilterType::Pointer fov=FOVFilterType::New();
   fov->SetInput(0, unmasked_reconstruction->GetOutput());
-  fov->SetInput(1, projections->GetOutput());
+  fov->SetProjectionsStack(projections->GetOutput());
   fov->SetGeometry(geometryReader->GetOutputObject());
   fov->Update();
   // Write

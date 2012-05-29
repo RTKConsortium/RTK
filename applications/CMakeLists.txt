@@ -23,7 +23,7 @@ ADD_RTK_EXECUTABLE(rtkrayboxintersection)
 ADD_RTK_EXECUTABLE(rtksart)
 ADD_RTK_EXECUTABLE(rtkrayquadricintersection)
 ADD_RTK_EXECUTABLE(rtkshepploganphantom)
-ADD_RTK_EXECUTABLE(rtkfovfilter)
+ADD_RTK_EXECUTABLE(rtkfov)
 
 IF (OPENCL_FOUND)
   TARGET_LINK_LIBRARIES(rtkfdk rtkopencl)
