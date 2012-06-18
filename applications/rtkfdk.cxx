@@ -153,7 +153,6 @@ int main(int argc, char * argv[])
   // Streaming depending on streaming capability of writer
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamerBP = StreamerType::New();
-  itk::ImageIOBase::Pointer imageIOBase;
   streamerBP->SetInput( feldkamp->GetOutput() );
   streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
 
