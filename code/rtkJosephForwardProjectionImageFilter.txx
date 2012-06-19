@@ -59,8 +59,10 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
-      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
-      boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i]-1;
+      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i]
+                + itk::NumericTraits<double>::min(); // To avoid numerical errors
+      boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i]-1
+                - itk::NumericTraits<double>::min(); // To avoid numerical errors
       if(i==j)
         {
         boxMin[i] -= 0.5;
@@ -72,9 +74,7 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     }
 
   // Go over each projection
-  for(unsigned int iProj=outputRegionForThread.GetIndex(2);
-                   iProj<outputRegionForThread.GetIndex(2)+outputRegionForThread.GetSize(2);
-                   iProj++)
+  for(unsigned int iProj=0; iProj<outputRegionForThread.GetSize(2); iProj++)
     {
     // Account for system rotations
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
