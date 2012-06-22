@@ -10,9 +10,14 @@ ADD_EXECUTABLE(rtkshortscantest rtkshortscantest.cxx)
 TARGET_LINK_LIBRARIES(rtkshortscantest rtkIO)
 ADD_TEST(rtkshortscantest ${EXECUTABLE_OUTPUT_PATH}/rtkshortscantest)
 
-ADD_EXECUTABLE(rtkhanningfiltertest rtkhanningfiltertest.cxx)
-TARGET_LINK_LIBRARIES(rtkhanningfiltertest rtkIO)
-ADD_TEST(rtkhanningfiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkhanningfiltertest)
+ADD_EXECUTABLE(rtkrampfiltertest rtkrampfiltertest.cxx)
+TARGET_LINK_LIBRARIES(rtkrampfiltertest rtkIO)
+ADD_TEST(rtkrampfiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfiltertest)
+
+ADD_EXECUTABLE(rtkrampfilternofftwtest rtkrampfiltertest.cxx)
+SET_TARGET_PROPERTIES(rtkrampfilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
+TARGET_LINK_LIBRARIES(rtkrampfilternofftwtest rtkIO)
+ADD_TEST(rtkrampfiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfiltertest)
 
 ADD_EXECUTABLE(rtkpaddingtest rtkpaddingtest.cxx)
 TARGET_LINK_LIBRARIES(rtkpaddingtest rtkIO)
