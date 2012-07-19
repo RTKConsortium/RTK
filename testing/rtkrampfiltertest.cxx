@@ -20,7 +20,12 @@
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 template<class TImage>
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
+void CheckImageQuality(typename TImage::Pointer recon,
+                       typename TImage::Pointer ref,
+                       double refLowerThreshold,
+                       double refUpperThreshold,
+                       double snrThreshold,
+                       double errorPerPixelThreshold)
 {
   typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
@@ -33,42 +38,41 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   itTest.GoToBegin();
   itRef.GoToBegin();
 
+  unsigned int npix=0;
   while( !itRef.IsAtEnd() )
     {
-    typename TImage::PixelType TestVal = itTest.Get();
-    typename TImage::PixelType RefVal = itRef.Get();
-    if( TestVal != RefVal && (RefVal>=1.05 && RefVal<=1.06) )
+    typename TImage::PixelType testVal = itTest.Get();
+    typename TImage::PixelType refVal = itRef.Get();
+    if( testVal != refVal && (refVal>=refLowerThreshold && refVal<=refUpperThreshold) )
       {
-        TestError += vcl_abs(RefVal - TestVal);
-        EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
+        TestError += vcl_abs(refVal - testVal);
+        EnerError += vcl_pow(ErrorType(refVal - testVal), 2.);
+        npix++;
       }
     ++itTest;
     ++itRef;
     }
   // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
+  ErrorType ErrorPerPixel = TestError/npix;
   std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
   // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
+  ErrorType MSE = EnerError/npix;
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
   ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
-  std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 3.e-7)
+  if (ErrorPerPixel > errorPerPixelThreshold)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.06." << std::endl;
+              << ErrorPerPixel << " instead of " << errorPerPixelThreshold << std::endl;
     exit( EXIT_FAILURE);
   }
-  if (PSNR < 90)
+  if (PSNR < snrThreshold)
   {
     std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 90" << std::endl;
+              << PSNR << " instead of " << snrThreshold << std::endl;
     exit( EXIT_FAILURE);
   }
 }
@@ -129,6 +133,8 @@ int main(int argc, char* argv[])
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
 
+  std::cout << "\n\n****** Test 1: add noise and test Hann window ******" << std::endl;
+
   // Add noise
   typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
   NIFType::Pointer noisy=NIFType::New();
@@ -151,7 +157,24 @@ int main(int argc, char* argv[])
   feldkamp->GetRampFilter()->SetHannCutFrequency(0.8);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
 
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 1.05, 1.06, 40, 0.13);
+
+  std::cout << "\n\n****** Test 2: smaller detector and test data padding for truncation ******" << std::endl;
+
+  size[0] = 114;
+  projectionsSource->SetSize( size );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->UpdateLargestPossibleRegion() );
+
+  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
+  FDKCPUType::Pointer feldkampCropped = FDKCPUType::New();
+  feldkampCropped->SetInput( 0, tomographySource->GetOutput() );
+  feldkampCropped->SetInput( 1, slp->GetOutput() );
+  feldkampCropped->SetGeometry( geometry );
+  feldkampCropped->GetRampFilter()->SetTruncationCorrection(0.1);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCropped->Update() );
+
+  CheckImageQuality<OutputImageType>(feldkampCropped->GetOutput(), dsl->GetOutput(), 1.015, 1.025, 26, 0.05);
+
   std::cout << "\n\nTest PASSED! " << std::endl;
   exit(EXIT_SUCCESS);
 }
