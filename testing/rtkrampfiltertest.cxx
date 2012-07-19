@@ -14,7 +14,6 @@
 #include <itkImageRegionConstIterator.h>
 
 #include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawQuadricImageFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
@@ -40,7 +39,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
     typename TImage::PixelType RefVal = itRef.Get();
     if( TestVal != RefVal && (RefVal>=1.05 && RefVal<=1.06) )
       {
-        TestError += abs(RefVal - TestVal);
+        TestError += vcl_abs(RefVal - TestVal);
         EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
       }
     ++itTest;
@@ -60,26 +59,27 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.0005)
+  if (ErrorPerPixel > 3.e-7)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.005." << std::endl;
+              << ErrorPerPixel << " instead of 0.06." << std::endl;
     exit( EXIT_FAILURE);
   }
-  if (PSNR < 23.)
+  if (PSNR < 90)
   {
     std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 23." << std::endl;
+              << PSNR << " instead of 90" << std::endl;
     exit( EXIT_FAILURE);
   }
 }
+
 
 int main(int argc, char* argv[])
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-  const unsigned int NumberOfProjectionImages = 360;
+  const unsigned int NumberOfProjectionImages = 180;
 
   // Constant image sources
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
@@ -88,54 +88,53 @@ int main(int argc, char* argv[])
   ConstantImageSourceType::SpacingType spacing;
 
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
-  origin[0] = -127.5;
-  origin[1] = -127.5;
-  origin[2] = -127.5;
-  size[0] = 256;
-  size[1] = 256;
-  size[2] = 256;
-  spacing[0] = 1.;
-  spacing[1] = 1.;
-  spacing[2] = 1.;
+  origin[0] = -127.;
+  origin[1] = -127.;
+  origin[2] = -127.;
+  size[0] = 128;
+  size[1] = 128;
+  size[2] = 128;
+  spacing[0] = 2.;
+  spacing[1] = 2.;
+  spacing[2] = 2.;
   tomographySource->SetOrigin( origin );
   tomographySource->SetSpacing( spacing );
   tomographySource->SetSize( size );
   tomographySource->SetConstant( 0. );
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -255;
-  origin[1] = -255;
-  origin[2] = -255;
-  size[0] = 256;
-  size[1] = 256;
+  origin[0] = -254.;
+  origin[1] = -254.;
+  origin[2] = -254.;
+  size[0] = 128;
+  size[1] = 128;
   size[2] = NumberOfProjectionImages;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  spacing[0] = 4.;
+  spacing[1] = 4.;
+  spacing[2] = 4.;
   projectionsSource->SetOrigin( origin );
   projectionsSource->SetSpacing( spacing );
   projectionsSource->SetSize( size );
   projectionsSource->SetConstant( 0. );
 
-  // Geometry
+  // Geometry object
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj);
+    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   // Shepp Logan projections filter
   typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
-  slp->InPlaceOff();
 
   // Add noise
   typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
   NIFType::Pointer noisy=NIFType::New();
   noisy->SetInput( slp->GetOutput() );
   noisy->SetMean( 0.0 );
-  noisy->SetStandardDeviation( 0.5 );
+  noisy->SetStandardDeviation( 1. );
 
   // Create a reference object (in this case a 3D phantom reference).
   typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
@@ -154,6 +153,5 @@ int main(int argc, char* argv[])
 
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
-
   exit(EXIT_SUCCESS);
 }
