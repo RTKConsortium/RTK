@@ -24,11 +24,8 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
     {
     typename TImage::PixelType TestVal = itTest.Get();
     typename TImage::PixelType RefVal = itRef.Get();
-    if( TestVal != RefVal )
-      {
-        TestError += abs(RefVal - TestVal);
-        EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-      }
+    TestError += vcl_abs(RefVal - TestVal);
+    EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
     ++itTest;
     ++itRef;
     }
@@ -46,16 +43,16 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.0005)
+  if (ErrorPerPixel > 0.06)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.005." << std::endl;
+              << ErrorPerPixel << " instead of 0.06." << std::endl;
     exit( EXIT_FAILURE);
   }
-  if (PSNR < 25.)
+  if (PSNR < 24.)
   {
     std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 26." << std::endl;
+              << PSNR << " instead of 24." << std::endl;
     exit( EXIT_FAILURE);
   }
 }
@@ -65,7 +62,7 @@ int main(int argc, char* argv[])
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-  const unsigned int NumberOfProjectionImages = 360;
+  const unsigned int NumberOfProjectionImages = 180;
 
   // Constant image sources
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
@@ -74,30 +71,30 @@ int main(int argc, char* argv[])
   ConstantImageSourceType::SpacingType spacing;
 
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
-  origin[0] = -127.5;
-  origin[1] = -127.5;
-  origin[2] = -127.5;
-  size[0] = 256;
-  size[1] = 256;
-  size[2] = 256;
-  spacing[0] = 1.;
-  spacing[1] = 1.;
-  spacing[2] = 1.;
+  origin[0] = -127.;
+  origin[1] = -127.;
+  origin[2] = -127.;
+  size[0] = 128;
+  size[1] = 128;
+  size[2] = 128;
+  spacing[0] = 2.;
+  spacing[1] = 2.;
+  spacing[2] = 2.;
   tomographySource->SetOrigin( origin );
   tomographySource->SetSpacing( spacing );
   tomographySource->SetSize( size );
   tomographySource->SetConstant( 0. );
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -255;
-  origin[1] = -255;
-  origin[2] = -255;
-  size[0] = 256;
-  size[1] = 256;
+  origin[0] = -254.;
+  origin[1] = -254.;
+  origin[2] = -254.;
+  size[0] = 128;
+  size[1] = 128;
   size[2] = NumberOfProjectionImages;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  spacing[0] = 4.;
+  spacing[1] = 4.;
+  spacing[2] = 4.;
   projectionsSource->SetOrigin( origin );
   projectionsSource->SetSpacing( spacing );
   projectionsSource->SetSize( size );
@@ -132,7 +129,7 @@ int main(int argc, char* argv[])
   ddf->SetGeometry( geometry );
   feldkamp->SetGeometry( geometry );
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj, 120., 0.);
+    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 120., 0.);
   slp->Update();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
@@ -143,7 +140,7 @@ int main(int argc, char* argv[])
   ddf->SetGeometry( geometry );
   feldkamp->SetGeometry( geometry );
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj, -120., 0.);
+    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, -120., 0.);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
 
@@ -153,7 +150,7 @@ int main(int argc, char* argv[])
   ddf->SetGeometry( geometry );
   feldkamp->SetGeometry( geometry );
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj);
+    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
   projectionsSource->SetOrigin(origin);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
@@ -164,7 +161,7 @@ int main(int argc, char* argv[])
   ddf->SetGeometry( geometry );
   feldkamp->SetGeometry( geometry );
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj);
+    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
   origin[0] = -400;
   projectionsSource->SetOrigin(origin);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
