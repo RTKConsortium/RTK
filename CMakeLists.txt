@@ -102,6 +102,12 @@ OPTION(BUILD_SHARED_LIBS "Build RTK with shared libraries." ${ITK_BUILD_SHARED})
 #=========================================================
 
 #=========================================================
+# RTK uses KWStyle for checking the coding style
+INCLUDE(${RTK_SOURCE_DIR}/cmake/KWStyle/KWStyle.cmake)
+#=========================================================
+
+
+#=========================================================
 # If choose to build documentation, then search for Doxygen executables.
 OPTION(BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
 IF(BUILD_DOXYGEN)

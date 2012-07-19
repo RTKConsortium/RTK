@@ -15,6 +15,7 @@ ADD_LIBRARY(rtkIO
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
             itkFFTWCommon.cxx)
 TARGET_LINK_LIBRARIES(rtkIO ${ITK_LIBRARIES})
+
 #=========================================================
 
 #=========================================================
@@ -41,15 +42,18 @@ ENDIF(OPENCL_FOUND)
 # Cuda library stuff
 IF (CUDA_FOUND)
   SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
-  CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS
-                rtkCudaUtilities.cu
-                rtkCudaFDKBackProjectionImageFilter.cu
-                rtkCudaFFTRampImageFilter.cu )
+  SET (rtkcuda_CUDA_FILES
+       rtkCudaUtilities.cu
+       rtkCudaFDKBackProjectionImageFilter.cu
+       rtkCudaFFTRampImageFilter.cu )
+
+  CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS ${rtkcuda_CUDA_FILES})
   ADD_LIBRARY(rtkcuda
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
-              ${rtkcuda_CUDA_WRAPPERS})
+			  ${rtkcuda_CUDA_WRAPPERS}
+              ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
   TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} rtkIO)
 ENDIF (CUDA_FOUND)
