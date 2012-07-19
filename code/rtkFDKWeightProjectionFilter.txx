@@ -68,7 +68,9 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   itO.GoToBegin();
 
   // Go over output, compute weights and avoid redundant computation
-  for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
+  for(int k=outputRegionForThread.GetIndex(2);
+          k<outputRegionForThread.GetIndex(2)+(int)outputRegionForThread.GetSize(2);
+          k++)
     {
     typename InputImageType::PointType point = pointBase;
     point[1] = pointBase[1]
