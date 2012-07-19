@@ -11,7 +11,7 @@ option "grayscale"   s "Multiplier for the grayscale value"                     
 option "rotation"    r "Rotation applied to the volume"                            double multiple no
 option "number"      n "Number of elliposoids in the phantom"                      int no
 option "phantomfile" - "Configuration parameteres for the phantom"                 string no
-option "phantomscale"- "Scaling factor for the phantom dimensions"                 int no
+option "phantomscale"- "Scaling factor for the phantom dimensions"                 int no default="128"
 
 section "Projections parameters"
 option "origin"    p "Projections Origin (default=centered)" double multiple no
