@@ -42,6 +42,7 @@ SheppLoganPhantomFilter<TInputImage, TOutputImage>
  m_PhantomOriginOffsetX(0.)
 {
 }
+
 template< class TInputImage, class TOutputImage >
 void SheppLoganPhantomFilter< TInputImage, TOutputImage >::GenerateData()
 {
@@ -146,6 +147,7 @@ void SheppLoganPhantomFilter< TInputImage, TOutputImage >::GenerateData()
 
   for ( unsigned int i = 0; i < NumberOfFig; i++ )
     {
+    rei[i]->SetNumberOfThreads(this->GetNumberOfThreads());
     if ( i == ( NumberOfFig - 1 ) ) //last case
       {
       if(i==0) //just one ellipsoid
