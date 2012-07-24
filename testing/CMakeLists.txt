@@ -1,20 +1,20 @@
 ADD_EXECUTABLE(rtkfdktest rtkfdktest.cxx)
-TARGET_LINK_LIBRARIES(rtkfdktest rtkIO)
+TARGET_LINK_LIBRARIES(rtkfdktest RTK)
 ADD_TEST(rtkfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdktest)
 
 ADD_EXECUTABLE(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
-TARGET_LINK_LIBRARIES(rtkdisplaceddetectortest rtkIO)
+TARGET_LINK_LIBRARIES(rtkdisplaceddetectortest RTK)
 ADD_TEST(rtkdisplaceddetectortest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetectortest)
 
 ADD_EXECUTABLE(rtkshortscantest rtkshortscantest.cxx)
-TARGET_LINK_LIBRARIES(rtkshortscantest rtkIO)
+TARGET_LINK_LIBRARIES(rtkshortscantest RTK)
 ADD_TEST(rtkshortscantest ${EXECUTABLE_OUTPUT_PATH}/rtkshortscantest)
 
 ADD_EXECUTABLE(rtkrampfiltertest rtkrampfiltertest.cxx)
-TARGET_LINK_LIBRARIES(rtkrampfiltertest rtkIO)
+TARGET_LINK_LIBRARIES(rtkrampfiltertest RTK)
 ADD_TEST(rtkrampfiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfiltertest)
 
 ADD_EXECUTABLE(rtkrampfilternofftwtest rtkrampfiltertest.cxx)
 SET_TARGET_PROPERTIES(rtkrampfilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
-TARGET_LINK_LIBRARIES(rtkrampfilternofftwtest rtkIO)
+TARGET_LINK_LIBRARIES(rtkrampfilternofftwtest RTK)
 ADD_TEST(rtkrampfiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfiltertest)
