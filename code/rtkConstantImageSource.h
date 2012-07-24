@@ -58,7 +58,7 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
-  
+
   /** Basic types from the OutputImageType */
   typedef typename TOutputImage::SizeType         SizeType;
   typedef typename TOutputImage::IndexType        IndexType;
@@ -78,14 +78,12 @@ public:
 
   /** Set/Get spacing of the output image */
   itkSetMacro( Spacing, SpacingType );
-  virtual void SetSpacing( SpacingValueArrayType spacingArray );
-  virtual const SpacingValueType * GetSpacing() const;
+  itkGetMacro( Spacing, SpacingType );
 
   /** Set/Get origin of the output image */
   itkSetMacro( Origin, PointType );
-  virtual void SetOrigin( PointValueArrayType originArray );
-  virtual const PointValueType * GetOrigin() const;
-  
+  itkGetMacro( Origin, PointType );
+
   /** Set/Get the pixel value of output */
   itkSetMacro(Constant, OutputImagePixelType);
   itkGetConstMacro(Constant, OutputImagePixelType);
@@ -108,12 +106,6 @@ private:
   PointType      m_Origin;  //origin
 
   typename TOutputImage::PixelType m_Constant;
-
-  // The following variables are deprecated, and provided here just for
-  // backward compatibility. It use is discouraged.
-  mutable  PointValueArrayType      m_OriginArray;
-  mutable  SpacingValueArrayType    m_SpacingArray;
-
 };
 
 } // end namespace rtk
