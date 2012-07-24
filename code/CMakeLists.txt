@@ -13,7 +13,8 @@ ADD_LIBRARY(RTK
             rtkHndImageIOFactory.cxx
             rtkThreeDCircularProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
-            itkFFTWCommon.cxx)
+            itkFFTWCommon.cxx
+            rtkGeometricPhantomFileReader.cxx)
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 
 #=========================================================

@@ -23,7 +23,7 @@
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkSetQuadricParamFromRegularParamFunction.h"
-#include "rtkConfigFileReader.h"
+#include "rtkGeometricPhantomFileReader.h"
 
 #include <vector>
 
@@ -51,7 +51,7 @@ public:
   typedef std::string                                               StringType;
 
   typedef rtk::SetQuadricParamFromRegularParamFunction              SQPFunctionType;
-  typedef rtk::ConfigFileReader                                     CFRType;
+  typedef rtk::GeometricPhantomFileReader                           CFRType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

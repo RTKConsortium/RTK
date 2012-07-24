@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConfigFileReader_h
-#define __rtkConfigFileReader_h
+#ifndef __rtkGeometricPhantomFileReader_h
+#define __rtkGeometricPhantomFileReader_h
 
 #include <itkNumericTraits.h>
 #include <vector>
@@ -28,17 +28,17 @@
 namespace rtk
 {
 
-/** \class ConfigFileReader
+/** \class GeometricPhantomFileReader
  * \brief Reads configuration file which contains
  * the specifications for a specific phantom figure.
  * \ingroup Functions
  */
-class ConfigFileReader :
+class GeometricPhantomFileReader :
     public itk::Object
 {
 public:
   /** Standard class typedefs. */
-  typedef ConfigFileReader  Self;
+  typedef GeometricPhantomFileReader               Self;
   typedef itk::Object                              Superclass;
   typedef itk::SmartPointer<Self>                  Pointer;
   typedef itk::SmartPointer<const Self>            ConstPointer;
@@ -46,7 +46,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ConfigFileReader, itk::Object);
+  itkTypeMacro(GeometricPhantomFileReader, itk::Object);
 
   /** Useful defines. */
   typedef std::vector<double> VectorType;
@@ -60,23 +60,19 @@ public:
 protected:
 
   /// Constructor
-  ConfigFileReader() {};
+  GeometricPhantomFileReader() {};
 
   /// Destructor
-  ~ConfigFileReader() {};
+  ~GeometricPhantomFileReader() {};
 
   /** Corners of the image Quadric */
   VectorOfVectorType m_Fig;
 
 private:
-  ConfigFileReader( const Self& ); //purposely not implemented
+  GeometricPhantomFileReader( const Self& ); //purposely not implemented
   void operator=( const Self& ); //purposely not implemented
 };
 
 } // end namespace rtk
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConfigFileReader.txx"
-#endif
 
 #endif
