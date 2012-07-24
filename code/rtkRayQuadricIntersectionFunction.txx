@@ -45,8 +45,8 @@ RayQuadricIntersectionFunction<TCoordRep, VBoxDimension>
                     m_B*m_RayOrigin[1]*rayDirection[1] +
                     m_C*m_RayOrigin[2]*rayDirection[2]) +
                  m_D*(m_RayOrigin[0]*rayDirection[1] + m_RayOrigin[1]*rayDirection[0]) +
-                 m_E*m_RayOrigin[0]*rayDirection[2] +
-                 m_F*(m_RayOrigin[1]*rayDirection[2] + rayDirection[1]*m_RayOrigin[2]) +
+                 m_E*(m_RayOrigin[0]*rayDirection[2] + m_RayOrigin[2]*rayDirection[0]) +
+                 m_F*(m_RayOrigin[1]*rayDirection[2] + m_RayOrigin[2]*rayDirection[1]) +
                  m_G*rayDirection[0] +
                  m_H*rayDirection[1] +
                  m_I*rayDirection[2];
