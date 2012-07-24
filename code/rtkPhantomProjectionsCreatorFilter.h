@@ -22,7 +22,7 @@
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkRayQuadricIntersectionImageFilter.h"
-#include "rtkConfigFileReader.h"
+#include "rtkGeometricPhantomFileReader.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
@@ -57,7 +57,7 @@ public:
   typedef std::vector<double>                                                        VectorType;
   typedef std::string                                                                StringType;
   typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
-  typedef rtk::ConfigFileReader                                                      CFRType;
+  typedef rtk::GeometricPhantomFileReader                                            CFRType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

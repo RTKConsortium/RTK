@@ -17,10 +17,11 @@
  *=========================================================================*/
 
 #include <fstream>
+#include "rtkGeometricPhantomFileReader.h"
 
 namespace rtk
 {
-bool ConfigFileReader::Config(const std::string ConfigFile )
+bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
 {
   const char *       search_fig = "Ellipsoid"; // Set search pattern
   int                offset = 0;
