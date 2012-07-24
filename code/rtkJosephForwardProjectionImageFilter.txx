@@ -127,6 +127,28 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         if(np[mainDir]>fp[mainDir])
           std::swap(np, fp);
 
+        // If the source is in the volume, use source as one of the intersection points
+        if(dirVox[mainDir]>0)
+          {
+          if(np[mainDir]<sourcePosition[mainDir])
+            {
+            // Source is in volume
+            np[0]=sourcePosition[0];
+            np[1]=sourcePosition[1];
+            np[2]=sourcePosition[2];
+            }
+          }
+        else
+          {
+          if(fp[mainDir]>sourcePosition[mainDir])
+            {
+            // Source is in volume
+            fp[0]=sourcePosition[0];
+            fp[1]=sourcePosition[1];
+            fp[2]=sourcePosition[2];
+            }
+          }
+
         // Compute main nearest and farthest slice indices
         const int ns = vnl_math_ceil ( np[mainDir] );
         const int fs = vnl_math_floor( fp[mainDir] );
