@@ -47,8 +47,8 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   unsigned int NumberOfFig = 10;
 
   shepplogan[0].semiprincipalaxis.push_back(0.69*m_PhantomScale);
-  shepplogan[0].semiprincipalaxis.push_back(0.92*m_PhantomScale);
   shepplogan[0].semiprincipalaxis.push_back(0.90*m_PhantomScale);
+  shepplogan[0].semiprincipalaxis.push_back(0.92*m_PhantomScale);
   shepplogan[0].center.push_back(m_PhantomOriginOffsetX);
   shepplogan[0].center.push_back(0.);
   shepplogan[0].center.push_back(0.);
@@ -56,38 +56,47 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[0].attenuation = 2.;
 
   shepplogan[1].semiprincipalaxis.push_back(0.6624*m_PhantomScale);
-  shepplogan[1].semiprincipalaxis.push_back(0.874*m_PhantomScale);
   shepplogan[1].semiprincipalaxis.push_back(0.880*m_PhantomScale);
+  shepplogan[1].semiprincipalaxis.push_back(0.874*m_PhantomScale);
   shepplogan[1].center.push_back(m_PhantomOriginOffsetX);
   shepplogan[1].center.push_back(0.);
   shepplogan[1].center.push_back(0.);
   shepplogan[1].angle = 0.;
   shepplogan[1].attenuation = -0.98;
 
+//  shepplogan[2].semiprincipalaxis.push_back(0.21*m_PhantomScale);
+//  shepplogan[2].semiprincipalaxis.push_back(0.56*m_PhantomScale);
+//  shepplogan[2].semiprincipalaxis.push_back(0.1*m_PhantomScale);
+//  shepplogan[2].center.push_back(0.);
+//  shepplogan[2].center.push_back(0.);
+//  shepplogan[2].center.push_back(0.);
+//  shepplogan[2].angle = 108.;
+//  shepplogan[2].attenuation = -0.02;
+
   shepplogan[2].semiprincipalaxis.push_back(0.41*m_PhantomScale);
-  shepplogan[2].semiprincipalaxis.push_back(0.16*m_PhantomScale);
   shepplogan[2].semiprincipalaxis.push_back(0.21*m_PhantomScale);
+  shepplogan[2].semiprincipalaxis.push_back(0.16*m_PhantomScale);
   shepplogan[2].center.push_back(-0.22*m_PhantomScale + m_PhantomOriginOffsetX);
-  shepplogan[2].center.push_back(0.);
   shepplogan[2].center.push_back(-0.25*m_PhantomScale);
+  shepplogan[2].center.push_back(0.);
   shepplogan[2].angle = 108.;
   shepplogan[2].attenuation = -0.02;
 
   shepplogan[3].semiprincipalaxis.push_back(0.31*m_PhantomScale);
-  shepplogan[3].semiprincipalaxis.push_back(0.11*m_PhantomScale);
   shepplogan[3].semiprincipalaxis.push_back(0.22*m_PhantomScale);
+  shepplogan[3].semiprincipalaxis.push_back(0.11*m_PhantomScale);
   shepplogan[3].center.push_back(0.22*m_PhantomScale + m_PhantomOriginOffsetX);
-  shepplogan[3].center.push_back(0.);
   shepplogan[3].center.push_back(-0.25*m_PhantomScale);
+  shepplogan[3].center.push_back(0.);
   shepplogan[3].angle = 72.;
   shepplogan[3].attenuation = -0.02;
 
   shepplogan[4].semiprincipalaxis.push_back(0.21*m_PhantomScale);
-  shepplogan[4].semiprincipalaxis.push_back(0.25*m_PhantomScale);
   shepplogan[4].semiprincipalaxis.push_back(0.50*m_PhantomScale);
+  shepplogan[4].semiprincipalaxis.push_back(0.25*m_PhantomScale);
   shepplogan[4].center.push_back(m_PhantomOriginOffsetX);
-  shepplogan[4].center.push_back(-0.35*m_PhantomScale);
   shepplogan[4].center.push_back(-0.25*m_PhantomScale);
+  shepplogan[4].center.push_back(0.35*m_PhantomScale);
   shepplogan[4].angle = 0.;
   shepplogan[4].attenuation = 0.02;
 
@@ -95,44 +104,44 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[5].semiprincipalaxis.push_back(0.046*m_PhantomScale);
   shepplogan[5].semiprincipalaxis.push_back(0.046*m_PhantomScale);
   shepplogan[5].center.push_back(m_PhantomOriginOffsetX);
-  shepplogan[5].center.push_back(-0.10*m_PhantomScale);
   shepplogan[5].center.push_back(-0.25*m_PhantomScale);
+  shepplogan[5].center.push_back(0.10*m_PhantomScale);
   shepplogan[5].angle = 0.;
   shepplogan[5].attenuation = 0.02;
 
   shepplogan[6].semiprincipalaxis.push_back(0.046*m_PhantomScale);
-  shepplogan[6].semiprincipalaxis.push_back(0.023*m_PhantomScale);
   shepplogan[6].semiprincipalaxis.push_back(0.020*m_PhantomScale);
+  shepplogan[6].semiprincipalaxis.push_back(0.023*m_PhantomScale);
   shepplogan[6].center.push_back(-0.08*m_PhantomScale + m_PhantomOriginOffsetX);
-  shepplogan[6].center.push_back(0.650*m_PhantomScale);
   shepplogan[6].center.push_back(-0.250*m_PhantomScale);
+  shepplogan[6].center.push_back(-0.650*m_PhantomScale);
   shepplogan[6].angle = 0.;
   shepplogan[6].attenuation = 0.01;
 
   shepplogan[7].semiprincipalaxis.push_back(0.046*m_PhantomScale);
-  shepplogan[7].semiprincipalaxis.push_back(0.023*m_PhantomScale);
   shepplogan[7].semiprincipalaxis.push_back(0.020*m_PhantomScale);
+  shepplogan[7].semiprincipalaxis.push_back(0.023*m_PhantomScale);
   shepplogan[7].center.push_back(0.06*m_PhantomScale + m_PhantomOriginOffsetX);
-  shepplogan[7].center.push_back(0.65*m_PhantomScale);
   shepplogan[7].center.push_back(-0.25*m_PhantomScale);
+  shepplogan[7].center.push_back(-0.65*m_PhantomScale);
   shepplogan[7].angle = 90.;
   shepplogan[7].attenuation = 0.01;
 
   shepplogan[8].semiprincipalaxis.push_back(0.056*m_PhantomScale);
-  shepplogan[8].semiprincipalaxis.push_back(0.040*m_PhantomScale);
   shepplogan[8].semiprincipalaxis.push_back(0.010*m_PhantomScale);
+  shepplogan[8].semiprincipalaxis.push_back(0.040*m_PhantomScale);
   shepplogan[8].center.push_back(0.060*m_PhantomScale + m_PhantomOriginOffsetX);
-  shepplogan[8].center.push_back(0.105*m_PhantomScale);
   shepplogan[8].center.push_back(0.625*m_PhantomScale);
+  shepplogan[8].center.push_back(-0.105*m_PhantomScale);
   shepplogan[8].angle = 90.;
   shepplogan[8].attenuation = 0.02;
 
   shepplogan[9].semiprincipalaxis.push_back(0.056*m_PhantomScale);
-  shepplogan[9].semiprincipalaxis.push_back(0.056*m_PhantomScale);
   shepplogan[9].semiprincipalaxis.push_back(0.100*m_PhantomScale);
+  shepplogan[9].semiprincipalaxis.push_back(0.056*m_PhantomScale);
   shepplogan[9].center.push_back(m_PhantomOriginOffsetX);
-  shepplogan[9].center.push_back(-0.100*m_PhantomScale);
   shepplogan[9].center.push_back(0.625*m_PhantomScale);
+  shepplogan[9].center.push_back(0.100*m_PhantomScale);
   shepplogan[9].angle = 0.;
   shepplogan[9].attenuation = -0.02;
 
