@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#include <fstream>
 #include <vcl_cmath.h>
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -75,16 +75,28 @@ bool SetQuadricParamFromRegularParamFunction
   double TempI = m_I;
   double TempJ = m_J;
 
-  //Applying Rotation
-  m_A = TempA*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)),2.0);
-  m_B = TempA*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)),2.0);
-  m_C = TempC;
-  m_D = 2*cos(m_RotationAngle*(itk::Math::pi/180))*sin(m_RotationAngle*(itk::Math::pi/180))*(TempB - TempA);
-  m_E = 0.;
+  //Applying Rotation on Z-axis
+//  m_A = TempA*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)),2.0);
+//  m_B = TempA*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)),2.0);
+//  m_C = TempC;
+//  m_D = 2*cos(m_RotationAngle*(itk::Math::pi/180))*sin(m_RotationAngle*(itk::Math::pi/180))*(TempB - TempA);
+//  m_E = 0.;
+//  m_F = 0.;
+//  m_G = TempG*cos(m_RotationAngle*(itk::Math::pi/180)) + TempH*sin(m_RotationAngle*(itk::Math::pi/180));
+//  m_H = TempG*(-1)*sin(m_RotationAngle*(itk::Math::pi/180)) + TempH*cos(m_RotationAngle*(itk::Math::pi/180));
+//  m_I = TempI;
+//  m_J = TempJ;
+
+  //Applying Rotation on Y-axis
+  m_A = TempA*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempC*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)),2.0);
+  m_B = TempB;//TempA*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)),2.0);
+  m_C = TempA*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempC*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)),2.0);
+  m_D = 0.;
+  m_E = 2*cos(m_RotationAngle*(itk::Math::pi/180))*sin(m_RotationAngle*(itk::Math::pi/180))*(TempA - TempC);
   m_F = 0.;
-  m_G = TempG*cos(m_RotationAngle*(itk::Math::pi/180)) + TempH*sin(m_RotationAngle*(itk::Math::pi/180));
-  m_H = TempG*(-1)*sin(m_RotationAngle*(itk::Math::pi/180)) + TempH*cos(m_RotationAngle*(itk::Math::pi/180));
-  m_I = TempI;
+  m_G = TempG*cos(m_RotationAngle*(itk::Math::pi/180)) - TempI*sin(m_RotationAngle*(itk::Math::pi/180));
+  m_H = TempH;//TempG*(-1)*sin(m_RotationAngle*(itk::Math::pi/180)) + TempH*cos(m_RotationAngle*(itk::Math::pi/180));
+  m_I = TempG*sin(m_RotationAngle*(itk::Math::pi/180)) + TempI*cos(m_RotationAngle*(itk::Math::pi/180));
   m_J = TempJ;
 
   //Saving Quadric Parameters for Translation
