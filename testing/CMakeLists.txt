@@ -18,3 +18,7 @@ ADD_EXECUTABLE(rtkrampfilternofftwtest rtkrampfiltertest.cxx)
 SET_TARGET_PROPERTIES(rtkrampfilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
 TARGET_LINK_LIBRARIES(rtkrampfilternofftwtest RTK)
 ADD_TEST(rtkrampfiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfiltertest)
+ADD_EXECUTABLE(rtkforwardprojectiontest rtkforwardprojectiontest.cxx)
+TARGET_LINK_LIBRARIES(rtkforwardprojectiontest RTK)
+ADD_TEST(rtkforwardprojectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkforwardprojectiontest)
+
