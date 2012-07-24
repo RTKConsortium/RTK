@@ -64,15 +64,6 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[1].angle = 0.;
   shepplogan[1].attenuation = -0.98;
 
-//  shepplogan[2].semiprincipalaxis.push_back(0.21*m_PhantomScale);
-//  shepplogan[2].semiprincipalaxis.push_back(0.56*m_PhantomScale);
-//  shepplogan[2].semiprincipalaxis.push_back(0.1*m_PhantomScale);
-//  shepplogan[2].center.push_back(0.);
-//  shepplogan[2].center.push_back(0.);
-//  shepplogan[2].center.push_back(0.);
-//  shepplogan[2].angle = 108.;
-//  shepplogan[2].attenuation = -0.02;
-
   shepplogan[2].semiprincipalaxis.push_back(0.41*m_PhantomScale);
   shepplogan[2].semiprincipalaxis.push_back(0.21*m_PhantomScale);
   shepplogan[2].semiprincipalaxis.push_back(0.16*m_PhantomScale);
