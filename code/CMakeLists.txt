@@ -2,11 +2,11 @@
 # Propagate cmake options in a header file
 CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
   ${CMAKE_BINARY_DIR}/rtkConfiguration.h)
-SET (RTK_LIBRARIES rtkIO)
+SET (RTK_LIBRARIES RTK)
 #=========================================================
 
 #=========================================================
-ADD_LIBRARY(rtkIO
+ADD_LIBRARY(RTK
             rtkHisImageIO.cxx
             rtkHisImageIOFactory.cxx
             rtkHndImageIO.cxx
@@ -14,7 +14,7 @@ ADD_LIBRARY(rtkIO
             rtkThreeDCircularProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
             itkFFTWCommon.cxx)
-TARGET_LINK_LIBRARIES(rtkIO ${ITK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 
 #=========================================================
 
@@ -55,7 +55,7 @@ IF (CUDA_FOUND)
 			  ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
-  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} rtkIO)
+  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} RTK)
 ENDIF (CUDA_FOUND)
 #=========================================================
 
@@ -80,7 +80,7 @@ IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
 ENDIF(NOT RTK_INSTALL_NO_DEVELOPMENT)
 
 IF(NOT RTK_INSTALL_NO_LIBRARIES)
-  INSTALL(TARGETS rtkIO
+  INSTALL(TARGETS RTK
     RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
     LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
     ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
