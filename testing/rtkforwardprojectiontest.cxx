@@ -45,8 +45,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
     {
     typename TImage::PixelType TestVal = itTest.Get();
     typename TImage::PixelType RefVal = itRef.Get();
-   //std::cout << "Test =" << TestVal << std::endl;
-   //std::cout << "Ref ="<< RefVal << std::endl;
+
     if( TestVal != RefVal )
       {
         std::cout << "Not equal" << std::endl;
@@ -58,7 +57,6 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
     ++itRef;
     }
   // Error per Pixel
-  //std::cout << "Test =" << TestVal << std::endl;
   ErrorType ErrorPerPixel = TestError/recon->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
   // MSE
@@ -72,16 +70,16 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.0005)
+  if (ErrorPerPixel > 0.005)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.005." << std::endl;
+              << ErrorPerPixel << " instead of 0.005" << std::endl;
     exit( EXIT_FAILURE);
   }
   if (PSNR < 25.)
   {
     std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 26." << std::endl;
+              << PSNR << " instead of 25" << std::endl;
     exit( EXIT_FAILURE);
   }
 }
