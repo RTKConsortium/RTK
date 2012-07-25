@@ -16,8 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef RTKGGOFUNCTIONS_H
-#define RTKGGOFUNCTIONS_H
+//#ifndef RTKGGOFUNCTIONS_H
+//#define RTKGGOFUNCTIONS_H
+
+#ifndef __rtkGgoFunctions_h
+#define __rtkGgoFunctions_h
 
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
@@ -65,4 +68,4 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
 
 }
 
-#endif // RTKGGOFUNCTIONS_H
+#endif // __rtkGgoFunctions_h

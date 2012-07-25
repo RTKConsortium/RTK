@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkRayBoxIntersectionFunction_txx
+#define __rtkRayBoxIntersectionFunction_txx
+
 namespace rtk
 {
 
@@ -77,3 +80,5 @@ RayBoxIntersectionFunction<TCoordRep, VBoxDimension>
 }
 
 } // namespace rtk
+
+#endif // __rtkRayBoxIntersectionFunction_txx

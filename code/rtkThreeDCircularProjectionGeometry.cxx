@@ -261,4 +261,3 @@ GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
   matrix = this->GetRotationMatrices()[i].GetInverse() * matrix.GetVnlMatrix();
   return matrix;
 }
-

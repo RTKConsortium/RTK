@@ -45,10 +45,10 @@ class ITK_EXPORT FDKWeightProjectionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef FDKWeightProjectionFilter Self;
+  typedef FDKWeightProjectionFilter                          Self;
   typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Some convenient typedefs. */
   typedef TInputImage                          InputImageType;

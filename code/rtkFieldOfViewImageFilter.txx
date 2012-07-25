@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkFieldOfViewImageFilter_txx
+#define __rtkFieldOfViewImageFilter_txx
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
@@ -126,3 +129,4 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 
 }// end namespace rtk
 
+#endif // __rtkFieldOfViewImageFilter_txx

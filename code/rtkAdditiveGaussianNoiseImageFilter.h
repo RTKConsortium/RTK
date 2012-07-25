@@ -100,10 +100,10 @@ public:
   }
 
 private:
-  TPixel m_OutputMinimum;
-  TPixel m_OutputMaximum;
-  float m_Mean;
-  float m_StandardDeviation;
+  TPixel                                           m_OutputMinimum;
+  TPixel                                           m_OutputMaximum;
+  float                                            m_Mean;
+  float                                            m_StandardDeviation;
   itk::Statistics::NormalVariateGenerator::Pointer m_Generator;
 };
 
@@ -132,10 +132,10 @@ class ITK_EXPORT AdditiveGaussianNoiseImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef AdditiveGaussianNoiseImageFilter Self;
-  typedef itk::ImageToImageFilter<TInputImage, TInputImage>  Superclass;
-  typedef itk::SmartPointer<Self>  Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  typedef AdditiveGaussianNoiseImageFilter                  Self;
+  typedef itk::ImageToImageFilter<TInputImage, TInputImage> Superclass;
+  typedef itk::SmartPointer<Self>                           Pointer;
+  typedef itk::SmartPointer<const Self>                     ConstPointer;
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);  
@@ -148,12 +148,12 @@ public:
   typedef typename Superclass::OutputImagePointer    OutputImagePointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage InputImageType;
-  typedef typename InputImageType::Pointer        InputImagePointer;
-  typedef typename InputImageType::ConstPointer   InputImageConstPointer;
-  typedef typename InputImageType::RegionType     InputImageRegionType; 
-  typedef typename InputImageType::PixelType      InputImagePixelType; 
-  typedef typename InputImageType::PixelType      InputPixelType;
+  typedef TInputImage                           InputImageType;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
+  typedef typename InputImageType::RegionType   InputImageRegionType;
+  typedef typename InputImageType::PixelType    InputImagePixelType;
+  typedef typename InputImageType::PixelType    InputPixelType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -262,11 +262,9 @@ private:
 
 public:
 
-  typedef itk::UnaryFunctorImageFilter<
-    InputImageType,
-    InputImageType,
-    NormalVariateNoiseFunctor< typename InputImageType::PixelType > >
-  NoiseFilterType;
+  typedef itk::UnaryFunctorImageFilter< InputImageType, InputImageType,
+                                       NormalVariateNoiseFunctor< typename InputImageType::PixelType > >
+                                       NoiseFilterType;
 
 private:
 
@@ -280,4 +278,3 @@ private:
 #endif
 
 #endif /* __rtkAdditiveGaussianNoiseImageFilter_h */
-

@@ -40,15 +40,15 @@ class ITK_EXPORT FieldOfViewImageFilter:
 {
 public:
   /** Standard class typedefs. */
-  typedef FieldOfViewImageFilter                             Self;
-  typedef itk::ImageToImageFilter<TInputImage,TOutputImage>  Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef FieldOfViewImageFilter                            Self;
+  typedef itk::ImageToImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                           Pointer;
+  typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef typename TOutputImage::RegionType                  OutputImageRegionType;
-  typedef typename TInputImage::Superclass::Pointer          ProjectionsStackPointer;
-  typedef rtk::ThreeDCircularProjectionGeometry              GeometryType;
-  typedef typename GeometryType::Pointer                     GeometryPointer;
+  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
+  typedef typename TInputImage::Superclass::Pointer         ProjectionsStackPointer;
+  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
+  typedef typename GeometryType::Pointer                    GeometryPointer;
 
 
   /** Method for creation through the object factory. */
@@ -100,5 +100,3 @@ private:
 #endif
 
 #endif
-
-

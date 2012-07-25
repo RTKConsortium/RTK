@@ -162,13 +162,13 @@ void rtk::HisImageIO::Write(const void* buffer)
   if ( (ndim < 2) || (ndim > 3) )
     itkExceptionMacro( <<"Only 2D or 3D support");
 
-  szHeader[16] = (char)(GetDimensions(0) % 256);  // X-size	lsb
-  szHeader[17] = (char)(GetDimensions(0) / 256);  // X-size	msb
-  szHeader[18] = (char)(GetDimensions(1) % 256);  // Y-size	lsb
-  szHeader[19] = (char)(GetDimensions(1) / 256);  // Y-size	msb
+  szHeader[16] = (char)(GetDimensions(0) % 256);  // X-size    lsb
+  szHeader[17] = (char)(GetDimensions(0) / 256);  // X-size    msb
+  szHeader[18] = (char)(GetDimensions(1) % 256);  // Y-size    lsb
+  szHeader[19] = (char)(GetDimensions(1) / 256);  // Y-size    msb
   if (ndim == 3) {
-    szHeader[20] = (char)(GetDimensions(0) % 256);  // NbFrames	lsb
-    szHeader[21] = (char)(GetDimensions(0) / 256);  // NbFrames	msb
+    szHeader[20] = (char)(GetDimensions(0) % 256);  // NbFrames	   lsb
+    szHeader[21] = (char)(GetDimensions(0) / 256);  // NbFrames	   msb
     }
 
   switch (GetComponentType())

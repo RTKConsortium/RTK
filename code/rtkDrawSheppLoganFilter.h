@@ -40,22 +40,22 @@ class ITK_EXPORT DrawSheppLoganFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawSheppLoganFilter                                    Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage>         Superclass;
-  typedef itk::SmartPointer<Self>                                   Pointer;
-  typedef itk::SmartPointer<const Self>                             ConstPointer;
-  typedef typename TOutputImage::RegionType                         OutputImageRegionType;
+  typedef DrawSheppLoganFilter                              Self;
+  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                           Pointer;
+  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
-  typedef std::vector<double>                                       VectorType;
-  typedef std::string                                               StringType;
+  typedef std::vector<double>                               VectorType;
+  typedef std::string                                       StringType;
 
-  typedef rtk::SetQuadricParamFromRegularParamFunction              SQPFunctionType;
+  typedef rtk::SetQuadricParamFromRegularParamFunction      SQPFunctionType;
   struct figure
   {
     VectorType semiprincipalaxis;
     VectorType center;
-    double angle;
-    double attenuation;
+    double     angle;
+    double     attenuation;
   };
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -82,8 +82,8 @@ private:
   DrawSheppLoganFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  double                   m_PhantomScale;
-  double                   m_PhantomOriginOffsetX;
+  double m_PhantomScale;
+  double m_PhantomOriginOffsetX;
 };
 
 } // end namespace rtk
@@ -93,5 +93,3 @@ private:
 #endif
 
 #endif
-
-

@@ -43,7 +43,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 // Put the helper class in an anonymous namespace so that it is not
 // exposed to the user
-namespace
+namespace rtk
 {
 
 /** \class Helper class to maintain state when casting a ray.
@@ -1584,6 +1584,5 @@ RayCastInterpolateImageFunction< TInputImage, TCoordRep >
 }
 
 } // namespace rtk
-
 
 #endif

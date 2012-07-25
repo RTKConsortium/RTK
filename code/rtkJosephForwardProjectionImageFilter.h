@@ -39,8 +39,8 @@ public:
   /** Standard class typedefs. */
   typedef JosephForwardProjectionImageFilter                     Self;
   typedef ForwardProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  typedef itk::SmartPointer<Self>                                Pointer;
+  typedef itk::SmartPointer<const Self>                          ConstPointer;
   typedef typename TInputImage::PixelType                        InputPixelType;
   typedef typename TOutputImage::PixelType                       OutputPixelType;
   typedef typename TOutputImage::RegionType                      OutputImageRegionType;

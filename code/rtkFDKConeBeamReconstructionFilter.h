@@ -49,7 +49,7 @@ class ITK_EXPORT FDKConeBeamReconstructionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef FDKConeBeamReconstructionFilter               Self;
+  typedef FDKConeBeamReconstructionFilter                    Self;
   typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
@@ -59,10 +59,10 @@ public:
   typedef TOutputImage OutputImageType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< InputImageType, OutputImageType >                 ExtractFilterType;
-  typedef rtk::FDKWeightProjectionFilter< InputImageType, OutputImageType >          WeightFilterType;
-  typedef rtk::FFTRampImageFilter< OutputImageType, OutputImageType, TFFTPrecision > RampFilterType;
-  typedef rtk::FDKBackProjectionImageFilter< OutputImageType, OutputImageType >      BackProjectionFilterType;
+  typedef itk::ExtractImageFilter<InputImageType, OutputImageType>                 ExtractFilterType;
+  typedef rtk::FDKWeightProjectionFilter<InputImageType, OutputImageType>          WeightFilterType;
+  typedef rtk::FFTRampImageFilter<OutputImageType, OutputImageType, TFFTPrecision> RampFilterType;
+  typedef rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>      BackProjectionFilterType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -102,9 +102,9 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer m_ExtractFilter;
-  typename WeightFilterType::Pointer m_WeightFilter;
-  typename RampFilterType::Pointer m_RampFilter;
+  typename ExtractFilterType::Pointer        m_ExtractFilter;
+  typename WeightFilterType::Pointer         m_WeightFilter;
+  typename RampFilterType::Pointer           m_RampFilter;
   typename BackProjectionFilterType::Pointer m_BackProjectionFilter;
 
 private:

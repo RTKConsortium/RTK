@@ -40,8 +40,8 @@ public:
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef rtk::ThreeDCircularProjectionGeometry        GeometryType;
-  typedef typename GeometryType::Pointer               GeometryPointer;
+  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
+  typedef typename GeometryType::Pointer                    GeometryPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ForwardProjectionImageFilter, itk::ImageToImageFilter);
@@ -55,7 +55,7 @@ protected:
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
   virtual ~ForwardProjectionImageFilter() {
-  };
+  }
 
   /** Apply changes to the input image requested region. */
   virtual void GenerateInputRequestedRegion();

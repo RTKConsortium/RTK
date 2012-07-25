@@ -82,8 +82,8 @@ private:
   typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
   typedef rtk::ElektaSynergyLutImageFilter<InputImageType, OutputImageType>          LutFilterType;
 
-  typename LutFilterType::Pointer m_LutFilter;
-  typename CropFilterType::Pointer m_CropFilter;
+  typename LutFilterType::Pointer     m_LutFilter;
+  typename CropFilterType::Pointer    m_CropFilter;
   typename ScatterFilterType::Pointer m_ScatterFilter;
 }; // end of class
 

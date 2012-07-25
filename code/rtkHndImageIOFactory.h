@@ -16,8 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef ITKHNDIMAGEIOFACTORY_H
-#define ITKHNDIMAGEIOFACTORY_H
+//#ifndef ITKHNDIMAGEIOFACTORY_H
+//#define ITKHNDIMAGEIOFACTORY_H
+
+#ifndef rtkHndImageIOFactory_h
+#define rtkHndImageIOFactory_h
 
 #include "rtkHndImageIO.h"
 

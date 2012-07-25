@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkSARTConeBeamReconstructionFilter_txx
+#define __rtkSARTConeBeamReconstructionFilter_txx
+
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 
@@ -196,3 +199,5 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 }
 
 } // end namespace rtk
+
+#endif // __rtkSARTConeBeamReconstructionFilter_txx

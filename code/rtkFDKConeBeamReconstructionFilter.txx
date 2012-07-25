@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkFDKConeBeamReconstructionFilter_txx
+#define __rtkFDKConeBeamReconstructionFilter_txx
+
 namespace rtk
 {
 
@@ -173,3 +176,5 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 }
 
 } // end namespace rtk
+
+#endif // __rtkFDKConeBeamReconstructionFilter_txx

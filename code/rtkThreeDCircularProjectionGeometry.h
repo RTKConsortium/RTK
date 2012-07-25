@@ -16,8 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
-#define ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
+//#ifndef ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
+//#define ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
+
+#ifndef __rtkThreeDCircularProjectionGeometry_h
+#define __rtkThreeDCircularProjectionGeometry_h
 
 #include "rtkProjectionGeometry.h"
 
@@ -193,4 +196,4 @@ private:
 };
 }
 
-#endif // ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
+#endif // __rtkThreeDCircularProjectionGeometry_h

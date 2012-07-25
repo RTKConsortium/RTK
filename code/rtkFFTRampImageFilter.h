@@ -46,22 +46,22 @@ public:
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage                         InputImageType;
-  typedef TOutputImage                        OutputImageType;
-  typedef TFFTPrecision                       FFTPrecisionType;
-  typedef typename InputImageType::Pointer    InputImagePointer;
-  typedef typename InputImageType::PixelType  InputImagePixelType;
-  typedef typename OutputImageType::Pointer   OutputImagePointer;
-  typedef typename OutputImageType::PixelType OutputImagePixelType;
+  typedef TInputImage                                       InputImageType;
+  typedef TOutputImage                                      OutputImageType;
+  typedef TFFTPrecision                                     FFTPrecisionType;
+  typedef typename InputImageType::Pointer                  InputImagePointer;
+  typedef typename InputImageType::PixelType                InputImagePixelType;
+  typedef typename OutputImageType::Pointer                 OutputImagePointer;
+  typedef typename OutputImageType::PixelType               OutputImagePixelType;
   typedef typename itk::Image<TFFTPrecision,
                               TInputImage::ImageDimension > FFTInputImageType;
-  typedef typename FFTInputImageType::Pointer FFTInputImagePointer;
+  typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
   typedef typename itk::Image<std::complex<TFFTPrecision>,
                               TInputImage::ImageDimension > FFTOutputImageType;
-  typedef typename FFTOutputImageType::Pointer FFTOutputImagePointer;
-  typedef typename InputImageType::RegionType  RegionType;
-  typedef typename InputImageType::IndexType   IndexType;
-  typedef typename InputImageType::SizeType    SizeType;
+  typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
+  typedef typename InputImageType::RegionType               RegionType;
+  typedef typename InputImageType::IndexType                IndexType;
+  typedef typename InputImageType::SizeType                 SizeType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -159,7 +159,7 @@ private:
   /** Percentage of the image width which is feathered with data to correct for truncation.
     * 0 means no correction.
     */
-  double m_TruncationCorrection;
+  double                              m_TruncationCorrection;
   typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
   int GetTruncationCorrectionExtent();
 

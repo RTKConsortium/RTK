@@ -32,10 +32,11 @@ public:
   /** Standard class typedefs. */
   typedef FDKBackProjectionImageFilter                        Self;
   typedef BackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                  Pointer;
-  typedef itk::SmartPointer<const Self>                            ConstPointer;
+  typedef itk::SmartPointer<Self>                             Pointer;
+  typedef itk::SmartPointer<const Self>                       ConstPointer;
 
-  typedef typename Superclass::ProjectionMatrixType                                  ProjectionMatrixType;                                                                                                      typedef typename TOutputImage::RegionType                                          OutputImageRegionType;
+  typedef typename Superclass::ProjectionMatrixType                                  ProjectionMatrixType;
+  typedef typename TOutputImage::RegionType                                          OutputImageRegionType;
   typedef itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension-1> ProjectionImageType;
   typedef typename ProjectionImageType::Pointer                                      ProjectionImagePointer;
 

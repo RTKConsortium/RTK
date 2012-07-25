@@ -16,8 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef RTKHOMOGENEOUSMATRIX_H
-#define RTKHOMOGENEOUSMATRIX_H
+//#ifndef RTKHOMOGENEOUSMATRIX_H
+//#define RTKHOMOGENEOUSMATRIX_H
+
+#ifndef rtkHomogeneousMatrix_h
+#define rtkHomogeneousMatrix_h
 
 #include <itkMatrix.h>
 #include <itkImage.h>

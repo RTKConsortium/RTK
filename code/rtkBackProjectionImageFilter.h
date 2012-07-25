@@ -66,7 +66,7 @@ protected:
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
   virtual ~BackProjectionImageFilter() {
-  };
+  }
 
   /** Apply changes to the input image requested region. */
   virtual void GenerateInputRequestedRegion();
