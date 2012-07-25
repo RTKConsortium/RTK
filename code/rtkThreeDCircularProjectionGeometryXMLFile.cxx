@@ -345,4 +345,5 @@ WriteLocalParameter(std::ofstream &output, const std::string &indent, const doub
 }
 
 }
+
 #endif

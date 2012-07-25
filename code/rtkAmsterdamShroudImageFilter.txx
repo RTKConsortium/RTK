@@ -122,4 +122,5 @@ AmsterdamShroudImageFilter<TInputImage, TOutputImage>
 }
 
 } // end namespace rtk
+
 #endif
