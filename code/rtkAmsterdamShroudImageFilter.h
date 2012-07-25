@@ -86,13 +86,13 @@ private:
   typedef itk::SubtractImageFilter< TOutputImage, TOutputImage >                 SubtractType;
   typedef itk::PermuteAxesImageFilter< TOutputImage >                            PermuteType;
 
-  typename DerivativeType::Pointer m_DerivativeFilter;
-  typename NegativeType::Pointer m_NegativeFilter;
-  typename ThresholdType::Pointer m_ThresholdFilter;
-  typename SumType::Pointer m_SumFilter;
+  typename DerivativeType::Pointer  m_DerivativeFilter;
+  typename NegativeType::Pointer    m_NegativeFilter;
+  typename ThresholdType::Pointer   m_ThresholdFilter;
+  typename SumType::Pointer         m_SumFilter;
   typename ConvolutionType::Pointer m_ConvolutionFilter;
-  typename SubtractType::Pointer m_SubtractFilter;
-  typename PermuteType::Pointer m_PermuteFilter;
+  typename SubtractType::Pointer    m_SubtractFilter;
+  typename PermuteType::Pointer     m_PermuteFilter;
 }; // end of class
 
 } // end namespace rtk

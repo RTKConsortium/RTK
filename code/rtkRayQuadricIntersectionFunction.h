@@ -106,7 +106,7 @@ protected:
   VectorType m_FocalPoint;
 
   /** Corners of the image Quadric */
-  TCoordRep m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J;
+  TCoordRep  m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J;
   VectorType m_RayOrigin;
   VectorType m_RayDirection;
   TCoordRep  m_NearestDistance;

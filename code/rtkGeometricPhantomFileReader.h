@@ -42,6 +42,7 @@ public:
   typedef itk::Object                              Superclass;
   typedef itk::SmartPointer<Self>                  Pointer;
   typedef itk::SmartPointer<const Self>            ConstPointer;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -49,7 +50,7 @@ public:
   itkTypeMacro(GeometricPhantomFileReader, itk::Object);
 
   /** Useful defines. */
-  typedef std::vector<double> VectorType;
+  typedef std::vector<double>                VectorType;
   typedef std::vector< std::vector<double> > VectorOfVectorType;
 
   bool Config( const std::string input);

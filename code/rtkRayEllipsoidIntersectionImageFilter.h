@@ -44,8 +44,8 @@ public:
   /** Standard class typedefs. */
   typedef RayEllipsoidIntersectionImageFilter                         Self;
   typedef RayQuadricIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                          Pointer;
-  typedef itk::SmartPointer<const Self>                                    ConstPointer;
+  typedef itk::SmartPointer<Self>                                     Pointer;
+  typedef itk::SmartPointer<const Self>                               ConstPointer;
 
   typedef SetQuadricParamFromRegularParamFunction                     SQPFunctionType;
   /** Method for creation through the object factory. */
@@ -81,13 +81,13 @@ private:
   RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  double m_SemiPrincipalAxisX;
-  double m_SemiPrincipalAxisY;
-  double m_SemiPrincipalAxisZ;
-  double m_CenterX;
-  double m_CenterY;
-  double m_CenterZ;
-  double m_RotationAngle;
+  double                   m_SemiPrincipalAxisX;
+  double                   m_SemiPrincipalAxisY;
+  double                   m_SemiPrincipalAxisZ;
+  double                   m_CenterX;
+  double                   m_CenterY;
+  double                   m_CenterZ;
+  double                   m_RotationAngle;
   SQPFunctionType::Pointer m_SQPFunctor;
 };
 

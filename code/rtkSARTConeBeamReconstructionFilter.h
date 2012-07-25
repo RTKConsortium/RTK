@@ -106,12 +106,12 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer m_ExtractFilter;
-  typename MultiplyFilterType::Pointer m_ZeroMultiplyFilter;
+  typename ExtractFilterType::Pointer           m_ExtractFilter;
+  typename MultiplyFilterType::Pointer          m_ZeroMultiplyFilter;
   typename ForwardProjectionFilterType::Pointer m_ForwardProjectionFilter;
-  typename SubtractFilterType::Pointer m_SubtractFilter;
-  typename MultiplyFilterType::Pointer m_MultiplyFilter;
-  typename BackProjectionFilterType::Pointer m_BackProjectionFilter;
+  typename SubtractFilterType::Pointer          m_SubtractFilter;
+  typename MultiplyFilterType::Pointer          m_MultiplyFilter;
+  typename BackProjectionFilterType::Pointer    m_BackProjectionFilter;
 
 private:
   //purposely not implemented

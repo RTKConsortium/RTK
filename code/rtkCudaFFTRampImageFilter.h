@@ -38,8 +38,8 @@ public:
   typedef itk::Image<float,3>                                ImageType;
   typedef CudaFFTRampImageFilter                             Self;
   typedef FFTRampImageFilter< ImageType, ImageType, double > Superclass;
-  typedef itk::SmartPointer<Self>                                 Pointer;
-  typedef itk::SmartPointer<const Self>                           ConstPointer;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);

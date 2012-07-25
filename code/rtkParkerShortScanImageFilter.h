@@ -43,10 +43,10 @@ class ITK_EXPORT ParkerShortScanImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef ParkerShortScanImageFilter Self;
+  typedef ParkerShortScanImageFilter                         Self;
   typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Some convenient typedefs. */
   typedef TInputImage                                     InputImageType;

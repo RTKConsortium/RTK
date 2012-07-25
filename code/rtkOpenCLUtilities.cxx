@@ -115,4 +115,3 @@ void CreateAndBuildOpenCLProgramFromSourceFile(const std::string fileName, const
     }
   delete oclSource;
 }
-

@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkSetQuadricParamFromRegularParamFunction_txx
+#define __rtkSetQuadricParamFromRegularParamFunction_txx
+
 #include <vcl_cmath.h>
 #include "rtkMacro.h"
 
@@ -115,7 +118,10 @@ bool SetQuadricParamFromRegularParamFunction
   double TransG = -2*TempA*m_CenterX - TempD*m_CenterY - TempE*m_CenterZ;
   double TransH = -2*TempB*m_CenterY - TempD*m_CenterX - TempF*m_CenterZ;
   double TransI = -2*TempC*m_CenterZ - TempE*m_CenterX - TempF*m_CenterY;
-  double TransJ = TempA*vcl_pow(m_CenterX,2.0) + TempB*vcl_pow(m_CenterY,2.0) + TempC*vcl_pow(m_CenterZ,2.0) + TempD*m_CenterX*m_CenterY + TempE*m_CenterX*m_CenterZ + TempF*m_CenterY*m_CenterZ - TempG*m_CenterX - TempH*m_CenterY - TempI*m_CenterZ;
+  double TransJ = TempA*vcl_pow(m_CenterX,2.0) + TempB*vcl_pow(m_CenterY,2.0)
+                + TempC*vcl_pow(m_CenterZ,2.0) + TempD*m_CenterX*m_CenterY
+                + TempE*m_CenterX*m_CenterZ + TempF*m_CenterY*m_CenterZ
+                - TempG*m_CenterX - TempH*m_CenterY - TempI*m_CenterZ;
 
   //Applying Translation
   m_G += TransG;
@@ -125,3 +131,5 @@ bool SetQuadricParamFromRegularParamFunction
   return true;
 }
 } // namespace rtk
+
+#endif // __rtkSetQuadricParamFromRegularParamFunction_txx

@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+//#ifndef __rtkOpenCLUtilities_hcu
+//#define __rtkOpenCLUtilities_hcu
+
 #ifndef __rtkOpenCLUtilities_hcu
 #define __rtkOpenCLUtilities_hcu
 

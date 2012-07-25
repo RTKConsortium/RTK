@@ -38,8 +38,8 @@ public:
   typedef itk::Image<float,3>                                ImageType;
   typedef OpenCLFDKBackProjectionImageFilter                 Self;
   typedef FDKBackProjectionImageFilter<ImageType, ImageType> Superclass;
-  typedef itk::SmartPointer<Self>                                 Pointer;
-  typedef itk::SmartPointer<const Self>                           ConstPointer;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   typedef ImageType::RegionType        OutputImageRegionType;
   typedef itk::Image<float, 2>         ProjectionImageType;

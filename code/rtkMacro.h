@@ -16,8 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef RTKMACRO_H
-#define RTKMACRO_H
+//#ifndef RTKMACRO_H
+//#define RTKMACRO_H
+
+#ifndef __rtkMacro_h
+#define __rtkMacro_h
 
 #include <iostream>
 
@@ -38,7 +41,7 @@
 #define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                         \
   try                                                                   \
     {                                                                   \
-    execFunc ;                                                          \
+    execFunc;                                                          \
     }                                                                   \
   catch( itk::ExceptionObject & err )                                   \
     {                                                                   \

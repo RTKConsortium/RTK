@@ -51,7 +51,7 @@ public:
   itkTypeMacro(SetQuadricParamFromRegularParamFunction, itk::Object);
 
   /** Useful defines. */
-  typedef std::vector<double> VectorType;
+  typedef std::vector<double>                VectorType;
   typedef std::vector< std::vector<double> > VectorOfVectorType;
 
   bool Translate( const VectorType& input );

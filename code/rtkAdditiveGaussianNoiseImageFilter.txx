@@ -16,6 +16,9 @@ PURPOSE. See the above copyright notices for more information.
 
 =========================================================================*/
 
+#ifndef __rtkAdditiveGaussianNoiseImageFilter_txx
+#define __rtkAdditiveGaussianNoiseImageFilter_txx
+
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 namespace rtk
@@ -64,4 +67,4 @@ itk::Indent indent) const
 
 } /* namespace rtk */
 
-
+#endif // __rtkAdditiveGaussianNoiseImageFilter_txx

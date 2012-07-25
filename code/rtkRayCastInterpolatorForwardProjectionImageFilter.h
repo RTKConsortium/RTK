@@ -39,8 +39,8 @@ public:
   /** Standard class typedefs. */
   typedef RayCastInterpolatorForwardProjectionImageFilter        Self;
   typedef ForwardProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  typedef itk::SmartPointer<Self>                                Pointer;
+  typedef itk::SmartPointer<const Self>                          ConstPointer;
 
   /** Useful typedefs. */
   typedef typename TInputImage::PixelType                        InputPixelType;
