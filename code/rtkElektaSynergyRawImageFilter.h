@@ -39,7 +39,7 @@ class SynergyAttenuation
 public:
   SynergyAttenuation()
     {
-    logRef = log(TOutput(NumericTraits<TInput>::max()-NumericTraits<TInput>::min()+1));
+    logRef = log(TOutput(itk::NumericTraits<TInput>::max()-itk::NumericTraits<TInput>::min()+1));
     }
   ~SynergyAttenuation() {}
   bool operator!=( const SynergyAttenuation & ) const
