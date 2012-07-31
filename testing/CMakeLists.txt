@@ -22,3 +22,13 @@ ADD_EXECUTABLE(rtkforwardprojectiontest rtkforwardprojectiontest.cxx)
 TARGET_LINK_LIBRARIES(rtkforwardprojectiontest RTK)
 ADD_TEST(rtkforwardprojectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkforwardprojectiontest)
 
+# Test headers
+ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
+IF(CUDA_FOUND)
+  SET_TARGET_PROPERTIES(rtkheadertest PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
+ENDIF(CUDA_FOUND)
+IF(OPENCL_FOUND)
+  SET_TARGET_PROPERTIES(rtkheadertest PROPERTIES COMPILE_FLAGS -DUSE_OPENCL)
+ENDIF(OPENCL_FOUND)
+TARGET_LINK_LIBRARIES(rtkheadertest RTK)
+ADD_TEST(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
