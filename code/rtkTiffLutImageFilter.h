@@ -30,6 +30,10 @@ namespace rtk
  *
  * The lookup table converts the raw values to the logarithm of the value divided by the max
  *
+ *
+ * \author Simon Rit
+ *
+ * \ingroup TiffLutImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT TiffLutImageFilter : public LutImageFilter<TInputImage, TOutputImage>

@@ -33,7 +33,10 @@
  * transfers it at the end.
  *
  * \author Simon Rit
+ *
+ * \ingroup FDKConeBeamReconstructionFilter
  */
+
 namespace rtk
 {
 

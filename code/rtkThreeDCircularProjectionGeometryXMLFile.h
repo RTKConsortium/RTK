@@ -32,6 +32,10 @@ namespace rtk
 /** \class ThreeDCircularProjectionGeometryXMLFileReader
  *
  * Reads an XML-format file containing geometry for reconstruction
+ *
+ * \author Simon Rit
+ *
+ * \ingroup XMLReader
  */
 class ThreeDCircularProjectionGeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >
@@ -82,9 +86,15 @@ private:
   std::string m_CurCharacterData;
 
   /** Projection parameters */
-  double m_InPlaneAngle, m_OutOfPlaneAngle, m_GantryAngle;
-  double m_SourceToIsocenterDistance, m_SourceOffsetX, m_SourceOffsetY;
-  double m_SourceToDetectorDistance, m_ProjectionOffsetX, m_ProjectionOffsetY;
+  double m_InPlaneAngle;
+  double m_OutOfPlaneAngle;
+  double m_GantryAngle;
+  double m_SourceToIsocenterDistance;
+  double m_SourceOffsetX;
+  double m_SourceOffsetY;
+  double m_SourceToDetectorDistance;
+  double m_ProjectionOffsetX;
+  double m_ProjectionOffsetY;
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;

@@ -21,6 +21,16 @@
 
 #include <itkUnaryFunctorImageFilter.h>
 
+/** \class LutImageFilter
+ * \brief TODO
+ *
+ * TODO
+ *
+ * \author Simon Rit
+ *
+ * \ingroup UnaryFunctorImageFilter
+ */
+
 namespace rtk
 {
 

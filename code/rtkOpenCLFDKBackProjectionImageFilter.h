@@ -27,6 +27,16 @@
 #include <CL/cl.h>
 #endif
 
+/** \class OpenCLFDKBackProjectionImageFilter
+ * \brief TODO
+ *
+ * TODO
+ *
+ * \author Simon Rit
+ *
+ * \ingroup FDKBackProjectionImageFilter
+ */
+
 namespace rtk
 {
 

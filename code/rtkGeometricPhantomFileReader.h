@@ -31,6 +31,9 @@ namespace rtk
 /** \class GeometricPhantomFileReader
  * \brief Reads configuration file which contains
  * the specifications for a specific phantom figure.
+ *
+ * \author Marc Vila
+ *
  * \ingroup Functions
  */
 class GeometricPhantomFileReader :

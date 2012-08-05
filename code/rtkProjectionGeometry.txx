@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkProjectionGeometry_txx
+#define __rtkProjectionGeometry_txx
+
 namespace rtk {
 
 //--------------------------------------------------------------------
@@ -33,3 +36,5 @@ ProjectionGeometry< TDimension >
 }
 
 }
+
+#endif // __rtkProjectionGeometry_txx

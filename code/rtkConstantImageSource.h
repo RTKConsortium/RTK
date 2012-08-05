@@ -32,8 +32,11 @@ namespace rtk
  *
  * ConstantImageSource generates an image with constant value.
  *
- * \ingroup DataSources Multithreaded
+ * \author Simon Rit
+ *
+ * \ingroup ImageSource
  */
+
 template <typename TOutputImage>
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
 {

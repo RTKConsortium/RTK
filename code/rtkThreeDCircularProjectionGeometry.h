@@ -34,6 +34,10 @@ namespace rtk
  * by the RotationAngle.
  * The detector can be shifted in plane with the ProjectionOffsetsX
  * and the ProjectionOffsetsY.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup ProjectionGeometry
  */
 
 class ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>

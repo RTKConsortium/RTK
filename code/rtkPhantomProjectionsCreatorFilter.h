@@ -33,8 +33,16 @@ namespace rtk
 {
 
 /** \class PhantomProjectionsCreatorFilter
- * \brief Computes intersection of projection rays with ellipsoids.
- * in order to create the projections of a specific phantom.
+ * \brief  Computes intersection between source rays and ellipsoids
+ *
+ * Computes intersection between source rays and ellipsoids,
+ * in order to create the projections of a specific phantom which is
+ * specified in a configuration file following the convention of
+ * http://www.slaney.org/pct/pct-errata.html
+ *
+ * \author Marc Vila
+ *
+ * \ingroup RayEllipsoidIntersectionImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

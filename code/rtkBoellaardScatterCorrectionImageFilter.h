@@ -23,11 +23,15 @@
 #include "rtkConfiguration.h"
 
 /** \class BoellaardScatterCorrectionImageFilter
+ * \brief TODO
  *
  * TODO
  *
  * \author Simon Rit
+ *
+ * \ingroup InPlaceImageFilter
  */
+
 namespace rtk
 {
 

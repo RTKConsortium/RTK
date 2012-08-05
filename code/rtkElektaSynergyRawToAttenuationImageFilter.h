@@ -34,6 +34,8 @@
  * e.g. Feldkamp algorithm.
  *
  * \author Simon Rit
+ *
+ * \ingroup ImageToImageFilter
  */
 namespace rtk
 {

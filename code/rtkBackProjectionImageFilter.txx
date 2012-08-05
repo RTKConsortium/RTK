@@ -165,8 +165,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   // Transpose projection for optimization
   if(this->GetTranspose() )
     {
-    for(unsigned int j=0; j<region.GetSize(0); j++, po-=npixels-1)
-      for(unsigned int i=0; i<region.GetSize(1); i++, po+=region.GetSize(0))
+    for(unsigned int j=0; j<region.GetSize(0); j++, po -= npixels-1)
+      for(unsigned int i=0; i<region.GetSize(1); i++, po += region.GetSize(0))
         *po = *pi++;
     }
   else

@@ -28,12 +28,22 @@
 namespace rtk
 {
 
-/** \class SetQuadricParamFromRegularParamFunction
- * \brief Translates quadric parameters to regular
- * expressions. It also rotates a quadric with a certain
- * given angle in order to create the desired figure.
+/** \class RegularToQuadricFunction
+ * \brief Translates regular geometric expression to quadric expression.
  *
- * \ingroup Functions
+ * Translates regular geometric parameters to quadric
+ * expressions.
+ *
+ *   http://fr.wikipedia.org/wiki/Quadrique
+ *
+ * It also rotates and translates a
+ * quadric expression with a certain given angle
+ * and center of the object, in order to create the
+ * desired figure.
+ *
+ * \author Marc Vila
+ *
+ * \ingroup Object
  */
 class SetQuadricParamFromRegularParamFunction :
     public itk::Object
@@ -114,7 +124,16 @@ protected:
   double m_CenterY;
   double m_CenterZ;
   double m_RotationAngle;
-  double m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J;
+  double m_A;
+  double m_B;
+  double m_C;
+  double m_D;
+  double m_E;
+  double m_F;
+  double m_G;
+  double m_H;
+  double m_I;
+  double m_J;
 
 private:
   SetQuadricParamFromRegularParamFunction( const Self& ); //purposely not implemented

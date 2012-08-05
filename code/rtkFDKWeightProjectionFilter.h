@@ -35,6 +35,8 @@
  * projection basis but InPlaneRotation and OutOfPlaneRotation are not
  * accounted for.
  * \author Simon Rit
+ *
+ * \ingroup InPlaceImageFilter
  */
 namespace rtk
 {

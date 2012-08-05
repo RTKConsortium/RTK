@@ -29,6 +29,10 @@ namespace rtk
 /** \class RayBoxIntersectionFunction
  * \brief Test if a ray intersects with a box.
  *
+ * TODO
+ *
+ * \author Simon Rit
+ *
  * \ingroup Functions
  */
 template <

@@ -192,7 +192,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
         pVol = pVolZeroPointer + i + vBufferSize[0] * (j + k * vBufferSize[1] );
 
         // Innermost loop
-        for(; i<(region.GetIndex(0) + (int)region.GetSize(0)); i++, u+=du, pVol++)
+        for(; i<(region.GetIndex(0) + (int)region.GetSize(0)); i++, u += du, pVol++)
           {
 #ifdef BILINEAR_BACKPROJECTION
           ui = itk::Math::Floor<double>(u);
@@ -264,7 +264,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
         {
 #endif
         pVol = pVolZeroPointer + i + vBufferSize[0] * (j + k * vBufferSize[1] );
-        for(; j<(region.GetIndex(1) + (int)region.GetSize(1)); j++, pVol+=vBufferSize[0], u+=du)
+        for(; j<(region.GetIndex(1) + (int)region.GetSize(1)); j++, pVol += vBufferSize[0], u += du)
           {
 #ifdef BILINEAR_BACKPROJECTION
           ui = itk::Math::Floor<double>(u);

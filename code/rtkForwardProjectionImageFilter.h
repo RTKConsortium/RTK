@@ -27,6 +27,10 @@ namespace rtk
 
 /** \class ForwardProjectionImageFilter
  * \brief Base class for forward projection, i.e. accumulation along x-ray lines.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup InPlaceImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

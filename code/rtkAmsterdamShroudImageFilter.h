@@ -34,6 +34,8 @@
  * TODO
  *
  * \author Simon Rit
+ *
+ * \ingroup ImageToImageFilter
  */
 namespace rtk
 {

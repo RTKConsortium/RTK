@@ -32,8 +32,13 @@ namespace rtk
 {
 
 /** \class SheppLoganPhantomFilter
- * \brief Computes intersection of projection rays with ellipsoids
- * in order to create a Shepp-Logan phantom projections.
+ * \brief Computes intersection between source rays and ellipsoids,
+ * in order to create the projections of a Shepp-Logan phantom resized
+ * to m_PhantoScale ( default 128 )
+ *
+ * \author Marc Vila
+ *
+ * \ingroup RayEllipsoidIntersectionImageFilter
  */
 
 template <class TInputImage, class TOutputImage>
