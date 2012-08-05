@@ -102,11 +102,11 @@ int main(int argc, char* argv[])
 
   // Shepp Logan projections filter
   typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
-  SLPType::Pointer slp=SLPType::New();
+  SLPType::Pointer slp = SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
 
   // Displaced detector weighting
-  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
+  typedef rtk::DisplacedDetectorImageFilter<OutputImageType> DDFType;
   DDFType::Pointer ddf = DDFType::New();
   ddf->SetInput( slp->GetOutput() );
 
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
   // FDK reconstruction filtering
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
+  typedef rtk::FDKConeBeamReconstructionFilter<OutputImageType> FDKCPUType;
   FDKCPUType::Pointer feldkamp = FDKCPUType::New();
   feldkamp->SetInput( 0, tomographySource->GetOutput() );
   feldkamp->SetInput( 1, ddf->GetOutput() );
