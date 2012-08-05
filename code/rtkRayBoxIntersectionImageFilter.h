@@ -28,6 +28,12 @@ namespace rtk
 
 /** \class RayBoxIntersectionImageFilter
  * \brief Computes intersection of projection rays with image box.
+ *
+ * TODO
+ *
+ * \author Simon Rit
+ *
+ * \ingroup InPlaceImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

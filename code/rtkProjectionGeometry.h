@@ -32,6 +32,10 @@ namespace rtk
  * Each matrix corresponds to a different position of a
  * projector, e.g. a detector and an x-ray source.
  * The class is meant to be specialized for specific geometries.
+ *
+ * \author Marc Vila
+ *
+ * \ingroup DataObject
  */
 
 template< unsigned int TDimension = 3 >

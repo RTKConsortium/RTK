@@ -167,8 +167,8 @@ void rtk::HisImageIO::Write(const void* buffer)
   szHeader[18] = (char)(GetDimensions(1) % 256);  // Y-size    lsb
   szHeader[19] = (char)(GetDimensions(1) / 256);  // Y-size    msb
   if (ndim == 3) {
-    szHeader[20] = (char)(GetDimensions(0) % 256);  // NbFrames	   lsb
-    szHeader[21] = (char)(GetDimensions(0) / 256);  // NbFrames	   msb
+    szHeader[20] = (char)(GetDimensions(0) % 256);  // NbFrames    lsb
+    szHeader[21] = (char)(GetDimensions(0) / 256);  // NbFrames    msb
     }
 
   switch (GetComponentType())

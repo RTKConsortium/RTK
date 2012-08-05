@@ -39,6 +39,8 @@
  * to extract sub-stacks.
  *
  * \author Simon Rit
+ *
+ * \ingroup InPlaceImageFilter
  */
 namespace rtk
 {

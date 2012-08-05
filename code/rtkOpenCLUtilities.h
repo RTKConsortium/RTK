@@ -16,11 +16,8 @@
  *
  *=========================================================================*/
 
-//#ifndef __rtkOpenCLUtilities_hcu
-//#define __rtkOpenCLUtilities_hcu
-
-#ifndef __rtkOpenCLUtilities_hcu
-#define __rtkOpenCLUtilities_hcu
+#ifndef __rtkOpenCLUtilities_h
+#define __rtkOpenCLUtilities_h
 
 #ifdef __APPLE__
 #include <OpenCL/cl.h>

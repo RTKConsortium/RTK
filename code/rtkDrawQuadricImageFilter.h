@@ -31,7 +31,12 @@ namespace rtk
 {
 
 /** \class DrawQuadricImageFilter
- * \brief Draws a quadric in an input image.
+ * \brief Creates a 3D reference of a quadric expression
+ * which parameters are stored in a configuration file.
+ *
+ * \author Marc Vila
+ *
+ * \ingroup InPlaceImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

@@ -26,7 +26,10 @@
  * uses CUFFT for the projection fft and ifft.
  *
  * \author Simon Rit
+ *
+ * \ingroup FFTRampImageFilter
  */
+
 namespace rtk
 {
 

@@ -35,6 +35,9 @@ namespace rtk
  * This is the universal projections reader of rtk (raw data converted to
  * understandable values, e.g. attenuation).
  *
+ * \author Simon Rit
+ *
+ * \ingroup ImageSource
  */
 template <class TOutputImage>
 class ITK_EXPORT ProjectionsReader : public itk::ImageSource<TOutputImage>

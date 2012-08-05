@@ -19,8 +19,8 @@
 //#ifndef ITKHNDIMAGEIOFACTORY_H
 //#define ITKHNDIMAGEIOFACTORY_H
 
-#ifndef rtkHndImageIOFactory_h
-#define rtkHndImageIOFactory_h
+#ifndef __rtkHndImageIOFactory_h
+#define __rtkHndImageIOFactory_h
 
 #include "rtkHndImageIO.h"
 
@@ -80,4 +80,4 @@ private:
 
 } // end namespace
 
-#endif /* end #define ITKHNDIMAGEIOFACTORY_H */
+#endif // __rtkHndImageIOFactory_h

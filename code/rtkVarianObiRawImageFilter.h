@@ -30,6 +30,12 @@ namespace rtk
   
 /** \class VarianObiRawImageFilter
  * \brief Interprets the raw Varian OBI projection data to values.
+ *
+ * TODO
+ *
+ * \author Simon Rit
+ *
+ * \ingroup UnaryFunctorImageFilter
  */
 namespace Function {  
   

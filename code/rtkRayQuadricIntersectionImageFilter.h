@@ -29,9 +29,14 @@ namespace rtk
 
 /** \class RayQuadricIntersectionImageFilter
  * \brief Computes intersection of projection rays with quadric objects.
+ *
  * (ellipsoid, cone, cylinder...). See
  * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
  * for more information.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup InPlaceImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

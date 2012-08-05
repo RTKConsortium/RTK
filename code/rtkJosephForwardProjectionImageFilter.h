@@ -29,6 +29,10 @@ namespace rtk
  * \brief Joseph forward projection.
  * Performs a forward projection, i.e. accumulation along x-ray lines,
  * using [Joseph, IEEE TMI, 1982].
+ *
+ * \author Simon Rit
+ *
+ * \ingroup ForwardProjectionImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

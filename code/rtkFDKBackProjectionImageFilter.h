@@ -21,6 +21,16 @@
 
 #include "rtkBackProjectionImageFilter.h"
 
+/** \class FDKBackProjectionImageFilter
+ * \brief TODO
+ *
+ * TODO
+ *
+ * \author Simon Rit
+ *
+ * \ingroup BackProjectionImageFilter
+ */
+
 namespace rtk
 {
 

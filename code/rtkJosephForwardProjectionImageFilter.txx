@@ -189,15 +189,15 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         typename TOutputImage::PixelType sum = value;
         for(int i=ns; i<fs; i++)
           {
-          pxiyi    += offsetz;
-          pxsyi    += offsetz;
-          pxiys    += offsetz;
-          pxsys    += offsetz;
+          pxiyi += offsetz;
+          pxsyi += offsetz;
+          pxiys += offsetz;
+          pxsys += offsetz;
           currentx += stepx;
           currenty += stepy;
           value = BilinearInterpolation(pxiyi, pxsyi, pxiys, pxsys,
                                         currentx, currenty, offsetx, offsety);
-          sum      += value;
+          sum += value;
           }
 
         // Last step was too long, remove extra

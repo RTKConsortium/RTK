@@ -67,13 +67,13 @@ StartElement(const char * name,const char **atts)
   this->StartElement(name);
 
   // Check on last version of file format. Warning if not.
-  if( std::string(name)=="RTKThreeDCircularGeometry" )
+  if( std::string(name) == "RTKThreeDCircularGeometry" )
     {
-    while( (*atts)!=NULL )
+    while( (*atts) != NULL )
       {
-      if( std::string(atts[0])=="version")
+      if( std::string(atts[0]) == "version" )
         m_Version = atoi(atts[1]);
-      atts+=2;
+      atts += 2;
       }
     if(m_Version != this->CurrentVersion)
       itkGenericExceptionMacro(<< "Incompatible version of input geometry (v" << m_Version

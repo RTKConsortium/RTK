@@ -53,7 +53,7 @@ template <class TOutputImage>
 void ProjectionsReader<TOutputImage>
 ::GenerateOutputInformation(void)
 {
-  if (m_FileNames.size()==0)
+  if (m_FileNames.size() == 0)
     return;
 
   static bool firstTime = true;

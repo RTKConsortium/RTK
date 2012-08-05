@@ -30,6 +30,10 @@ namespace rtk
   
 /** \class ElektaSynergyRawImageFilter
  * \brief Interprets the raw Elekta Synergy projection data to values.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup UnaryFunctorImageFilter
  */
 namespace Function {  
   
@@ -39,7 +43,7 @@ class SynergyAttenuation
 public:
   SynergyAttenuation()
     {
-    logRef = log(TOutput(NumericTraits<TInput>::max()-NumericTraits<TInput>::min()+1));
+    m_LogRef = log(TOutput(NumericTraits<TInput>::max()-NumericTraits<TInput>::min()+1));
     }
   ~SynergyAttenuation() {}
   bool operator!=( const SynergyAttenuation & ) const
@@ -52,11 +56,11 @@ public:
     }
   inline TOutput operator()( const TInput & A ) const
     {
-    return log( TOutput(A+1) ) - logRef;
+    return log( TOutput(A+1) ) - m_LogRef;
     }
 
 private:
-  TOutput logRef;
+  TOutput m_LogRef;
 }; 
 }
 

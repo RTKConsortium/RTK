@@ -127,6 +127,6 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     }
 }
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif // __rtkFieldOfViewImageFilter_txx

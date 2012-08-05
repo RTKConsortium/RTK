@@ -196,14 +196,14 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
         // Middle steps
         for(int i=ns; i<fs; i++)
           {
-          pxiyi    += offsetz;
-          pxsyi    += offsetz;
-          pxiys    += offsetz;
-          pxsys    += offsetz;
-          pxiyiw   += offsetz;
-          pxsyiw   += offsetz;
-          pxiysw   += offsetz;
-          pxsysw   += offsetz;
+          pxiyi += offsetz;
+          pxsyi += offsetz;
+          pxiys += offsetz;
+          pxsys += offsetz;
+          pxiyiw += offsetz;
+          pxsyiw += offsetz;
+          pxiysw += offsetz;
+          pxsysw += offsetz;
           currentx += stepx;
           currenty += stepy;
           BilinearSplit(itIn.Get(), stepLengthInMM,
@@ -228,7 +228,7 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
   OutputRegionIterator itW(weights, this->GetInput()->GetLargestPossibleRegion());
   while(!itOut.IsAtEnd())
     {
-    if(itW.Get()!=0.)
+    if(itW.Get() != 0.)
       {
       itOut.Set(itInVol.Get() + itOut.Get() / itW.Get() );
       }

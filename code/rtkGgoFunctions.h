@@ -25,6 +25,21 @@
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
 
+/** \class GgoFunctions
+ * \brief
+ *
+ * This function set a ConstantImageSource object from command line options stored in ggo struct.
+ *  The image is not buffered to allow streaming. The image is filled with zeros.
+ *  The required options in the ggo struct are:
+ *     - dimension: image size in pixels
+ *     - spacing: image spacing in coordinate units
+ *     - origin: image origin in coordinate units
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+
 namespace rtk
 {
 

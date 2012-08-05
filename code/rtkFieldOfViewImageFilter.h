@@ -28,10 +28,14 @@ namespace rtk
 
 /** \class FieldOfViewImageFilter
  * \brief Masks out the regions that are not included in our field of view or
- * create the mask if m_Mask is true. Note that the 3 angle parameters are
+ * creates the mask if m_Mask is true. Note that the 3 angle parameters are
  * assumed to be 0. in the circular geometry (GantryAngle, OutOfPlaneAngle and
  * m_InPlaneAngle). The rest is accounted for but the fov is assumed to be
  * cylindrical and symmetric on each side of the rotation plane.
+ *
+ * \author Marc Vila
+ *
+ * \ingroup InPlaceImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

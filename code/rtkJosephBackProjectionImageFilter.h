@@ -29,6 +29,10 @@ namespace rtk
  * \brief Transpose of JosephForwardProjectionImageFilter.
  * This is expected to be slow compared to VoxelBasedBackProjectionImageFilter
  * because anti-aliasing strategy is required.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup BackProjectionImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

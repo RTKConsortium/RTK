@@ -28,9 +28,13 @@ namespace rtk
 
 /** \class RayQuadricIntersectionFunction
  * \brief Test if a ray intersects with a Quadric.
+ *
  * Return intersection points if there are some. See
  * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
  * for information on how this is implemented.
+ *
+ * \author Simon Rit
+ *
  * \ingroup Functions
  */
 template <
@@ -105,8 +109,17 @@ protected:
   /// The focal point or position of the ray source
   VectorType m_FocalPoint;
 
-  /** Corners of the image Quadric */
-  TCoordRep  m_A, m_B, m_C, m_D, m_E, m_F, m_G, m_H, m_I, m_J;
+  /** Parameters of the quadratic shape */
+  TCoordRep  m_A;
+  TCoordRep  m_B;
+  TCoordRep  m_C;
+  TCoordRep  m_D;
+  TCoordRep  m_E;
+  TCoordRep  m_F;
+  TCoordRep  m_G;
+  TCoordRep  m_H;
+  TCoordRep  m_I;
+  TCoordRep  m_J;
   VectorType m_RayOrigin;
   VectorType m_RayDirection;
   TCoordRep  m_NearestDistance;

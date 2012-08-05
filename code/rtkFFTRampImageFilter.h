@@ -30,6 +30,8 @@
  * (see http://hdl.handle.net/10380/3154)
  *
  * \author Simon Rit
+ *
+ * \ingroup ImageToImageFilter
  */
 namespace rtk
 {

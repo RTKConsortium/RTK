@@ -25,7 +25,6 @@
 #if defined (_MSC_VER) && (_MSC_VER < 1600)
 //SR: taken from
 //#include "msinttypes/stdint.h"
-typedef unsigned int uint32_t;
 #else
 #include <stdint.h>
 #endif
@@ -48,24 +47,24 @@ public:
 
   typedef struct hnd_header {
     char sFileType[32];
-    uint32_t FileLength;
+    unsigned int FileLength;
     char sChecksumSpec[4];
-    uint32_t nCheckSum;
+    unsigned int nCheckSum;
     char sCreationDate[8];
     char sCreationTime[8];
     char sPatientID[16];
-    uint32_t nPatientSer;
+    unsigned int nPatientSer;
     char sSeriesID[16];
-    uint32_t nSeriesSer;
+    unsigned int nSeriesSer;
     char sSliceID[16];
-    uint32_t nSliceSer;
-    uint32_t SizeX;
-    uint32_t SizeY;
+    unsigned int nSliceSer;
+    unsigned int SizeX;
+    unsigned int SizeY;
     double dSliceZPos;
     char sModality[16];
-    uint32_t nWindow;
-    uint32_t nLevel;
-    uint32_t nPixelOffset;
+    unsigned int nWindow;
+    unsigned int nLevel;
+    unsigned int nPixelOffset;
     char sImageType[4];
     double dGantryRtn;
     double dSAD;

@@ -21,6 +21,16 @@
 
 #include "rtkFDKBackProjectionImageFilter.h"
 
+/** \class CudaFDKBackProjectionImageFilter
+ * \brief TODO
+ *
+ * TODO
+ *
+ * \author Simon Rit
+ *
+ * \ingroup FDKBackProjectionImageFilter
+ */
+
 namespace rtk
 {
 

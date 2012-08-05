@@ -51,6 +51,8 @@ namespace rtk
  * 
  * \warning This interpolator works for 3-dimensional images only.
  *
+ * \author Simon Rit
+ *
  * \ingroup ImageFunctions
  */
 template <class TInputImage, class TCoordRep = double>

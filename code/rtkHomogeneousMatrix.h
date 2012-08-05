@@ -19,11 +19,14 @@
 //#ifndef RTKHOMOGENEOUSMATRIX_H
 //#define RTKHOMOGENEOUSMATRIX_H
 
-#ifndef rtkHomogeneousMatrix_h
-#define rtkHomogeneousMatrix_h
+#ifndef __rtkHomogeneousMatrix_h
+#define __rtkHomogeneousMatrix_h
 
 #include <itkMatrix.h>
 #include <itkImage.h>
+
+namespace rtk
+{
 
 //--------------------------------------------------------------------
 /** Get IndexToPhysicalPoint matrix from an image (no accessor provided by ITK) */
@@ -53,7 +56,7 @@ GetIndexToPhysicalPointMatrix(const TImageType *image)
   matrix[Dimension][Dimension] = 1.0;
 
   return matrix;
-}
+};
 
 //--------------------------------------------------------------------
 /** Get PhysicalPointToIndex matrix from an image (no accessor provided by ITK) */
@@ -64,6 +67,8 @@ GetPhysicalPointToIndexMatrix(const TImageType *image)
 {
   typedef itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1> MatrixType;
   return MatrixType(GetIndexToPhysicalPointMatrix<TImageType>(image).GetInverse() );
-}
+};
 
-#endif // RTKHOMOGENEOUSMATRIX_H
+} // end namespace
+
+#endif // __rtkHomogeneousMatrix_h

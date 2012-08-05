@@ -25,6 +25,16 @@
 #include <itkConceptChecking.h>
 #include "rtkProjectionGeometry.h"
 
+/** \class BackProjectionImageFilter
+ * \brief TODO
+ *
+ * TODO
+ *
+ * \author Simon Rit
+ *
+ * \ingroup InPlaceImageFilter
+ */
+
 namespace rtk
 {
 

@@ -33,6 +33,8 @@
  * and zero pads the data on the nearest side to the center.
  *
  * \author Simon Rit
+ *
+ * \ingroup InPlaceImageFilter
  */
 namespace rtk
 {

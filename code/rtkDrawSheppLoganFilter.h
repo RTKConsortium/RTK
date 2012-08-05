@@ -30,8 +30,14 @@ namespace rtk
 {
 
 /** \class DrawSheppLoganFilter
- * \brief Draws a shepplogan phantom using parameters
- *  from http://www.slaney.org/pct/pct-errata.html. Resized to 256x256x256 voxels.
+ * \brief Creates a 3D reference of a shepplogan phantom using the parameters
+ *  of http://www.slaney.org/pct/pct-errata.html changing the axis Y by Z,
+ *  due to matters of visualization. The phantom is resized to m_PhantomScale
+ *  ( default 128 ).
+ *
+ * \author Marc Vila
+ *
+ * \ingroup InPlaceImageFilter
  */
 
 template <class TInputImage, class TOutputImage>

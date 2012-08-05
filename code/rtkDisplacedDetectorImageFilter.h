@@ -40,6 +40,8 @@
  * a priori knowledge of the detector displacements.
  *
  * \author Simon Rit
+ *
+ * \ingroup FDKBackProjectionImageFilter
  */
 namespace rtk
 {
