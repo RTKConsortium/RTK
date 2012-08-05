@@ -20,6 +20,7 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkDrawSheppLoganFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -48,9 +49,9 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 
     if( TestVal != RefVal )
       {
-        std::cout << "Not equal" << std::endl;
+        //std::cout << "Not equal" << std::endl;
         TestError += vcl_abs(RefVal - TestVal);
-        std::cout << "Error ="<< TestError << std::endl;
+        //std::cout << "Error ="<< TestError << std::endl;
         EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
       }
     ++itTest;
@@ -97,9 +98,8 @@ int main(int argc, char* argv[])
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer source[Dimension];
-
-  source[0] = ConstantImageSourceType::New();
+  // Resized Volume, it is used as the reference to calculate the Joseph Forward Projector quality.
+  const ConstantImageSourceType::Pointer resizedInput = ConstantImageSourceType::New();
   origin[0] = -127;
   origin[1] = -127;
   origin[2] = -127;
@@ -109,13 +109,29 @@ int main(int argc, char* argv[])
   spacing[0] = 1.;
   spacing[1] = 1.;
   spacing[2] = 1.;
-  source[0]->SetOrigin( origin );
-  source[0]->SetSpacing( spacing );
-  source[0]->SetSize( size );
-  source[0]->SetConstant( 1. );
+  resizedInput->SetOrigin( origin );
+  resizedInput->SetSpacing( spacing );
+  resizedInput->SetSize( size );
+  resizedInput->SetConstant( 1. );
 
-  //ConstantImageSourceType::Pointer fullSource = ConstantImageSourceType::New();
-  source[1] = ConstantImageSourceType::New();
+  // Shepp-Logan Resized Volume
+  const ConstantImageSourceType::Pointer sheppInput = ConstantImageSourceType::New();
+  origin[0] = -127;
+  origin[1] = -127;
+  origin[2] = -127;
+  size[0] = 256;
+  size[1] = 256;
+  size[2] = 176;
+  spacing[0] = 1.;
+  spacing[1] = 1.;
+  spacing[2] = 1.;
+  sheppInput->SetOrigin( origin );
+  sheppInput->SetSpacing( spacing );
+  sheppInput->SetSize( size );
+  sheppInput->SetConstant( 0. );
+
+  // Shepp-Logan Full Volume
+  const ConstantImageSourceType::Pointer sheppFullInput = ConstantImageSourceType::New();
   origin[0] = -127;
   origin[1] = -127;
   origin[2] = -127;
@@ -125,13 +141,31 @@ int main(int argc, char* argv[])
   spacing[0] = 1.;
   spacing[1] = 1.;
   spacing[2] = 1.;
-  source[1]->SetOrigin( origin );
-  source[1]->SetSpacing( spacing );
-  source[1]->SetSize( size );
-  source[1]->SetConstant( 1. );
+  sheppFullInput->SetOrigin( origin );
+  sheppFullInput->SetSpacing( spacing );
+  sheppFullInput->SetSize( size );
+  sheppFullInput->SetConstant( 0. );
 
-  //ConstantImageSourceType::Pointer fullSource = ConstantImageSourceType::New();
-  source[2] = ConstantImageSourceType::New();
+  // Full Volume, it is used in the Joseph Forward Projector in order to check
+  // the case of an inner ray source.
+  const ConstantImageSourceType::Pointer fullInput = ConstantImageSourceType::New();
+  origin[0] = -127;
+  origin[1] = -127;
+  origin[2] = -127;
+  size[0] = 256;
+  size[1] = 256;
+  size[2] = 256;
+  spacing[0] = 1.;
+  spacing[1] = 1.;
+  spacing[2] = 1.;
+  fullInput->SetOrigin( origin );
+  fullInput->SetSpacing( spacing );
+  fullInput->SetSize( size );
+  fullInput->SetConstant( 1. );
+
+  // Initialization Volume, it is used in the Joseph Forward Projector and in the
+  // Ray Box Intersection Filter in order to initialize the stack of projections.
+  const ConstantImageSourceType::Pointer initInput = ConstantImageSourceType::New();
   origin[0] = -127;
   origin[1] = -127;
   origin[2] = -127;
@@ -141,40 +175,157 @@ int main(int argc, char* argv[])
   spacing[0] = 1.;
   spacing[1] = 1.;
   spacing[2] = 1.;
-  source[2]->SetOrigin( origin );
-  source[2]->SetSpacing( spacing );
-  source[2]->SetSize( size );
-  source[2]->SetConstant( 0. );
+  initInput->SetOrigin( origin );
+  initInput->SetSpacing( spacing );
+  initInput->SetSize( size );
+  initInput->SetConstant( 0. );
 
-  // Create projection image filter
+  // Ray Box Intersection filter
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
-  typedef rtk::JosephForwardProjectionImageFilter< OutputImageType, OutputImageType >       JosephForwardProjectionType;
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   RBIType::Pointer rbi = RBIType::New();
-  JosephForwardProjectionType::Pointer jfp = JosephForwardProjectionType::New();
+
+  // Joseph Forward Projection filter
+  typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
+  JFPType::Pointer jfp = JFPType::New();
+
+  // Writer
+  typedef itk::ImageFileWriter<OutputImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
+
+  std::cout << "\n\n****** Case 1: inner ray source ******" << std::endl;
+  // Geometry
+  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
+  // Creating geometry
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(48.5, 1000., noProj);
-  source[0]->UpdateOutputInformation();
-  rbi->SetInput( source[2]->GetOutput() );
-  rbi->SetBoxFromImage( source[0]->GetOutput() );
+
+  // Calculating ray box intersection of the resized Input
+  resizedInput->UpdateOutputInformation();
+  rbi->SetInput( initInput->GetOutput() );
+  rbi->SetBoxFromImage( resizedInput->GetOutput() );
   rbi->SetGeometry( geometry );
   rbi->Update();
-  // Write
-  writer->SetFileName( "rbi.mhd" );
-  writer->SetInput( rbi->GetOutput() );
-  writer->Update();
-  jfp->SetInput(source[2]->GetOutput());
-  jfp->SetInput( 1, source[1]->GetOutput() );
+
+  // Calculating Joseph forward projection of the full Input with an inner ray source
+  jfp->SetInput(initInput->GetOutput());
+  jfp->SetInput( 1, fullInput->GetOutput() );
   jfp->SetGeometry( geometry );
   jfp->SetNumberOfThreads(1);
   jfp->Update();
-  writer->SetFileName( "Joseph.mhd" );
-  writer->SetInput( jfp->GetOutput() );
-  writer->Update();
+
   CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 2: inner ray source, 90° ******" << std::endl;
+  // Geometry
+  geometry = GeometryType::New();
+  // Creating geometry
+  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(48.5, 1000., noProj+90);
+  //We resize resizedInput, in order to have a symetric cube, 176x176x176
+  size[0] = 176;
+  size[1] = 176;
+  size[2] = 176;
+  resizedInput->SetSize( size );
+  // Calculating ray box intersection of the resized Input
+  resizedInput->UpdateOutputInformation();
+  rbi->SetInput( initInput->GetOutput() );
+  rbi->SetBoxFromImage( resizedInput->GetOutput() );
+  rbi->SetGeometry( geometry );
+  rbi->Update();
+  // Writing
+  writer->SetFileName( "rbi2.mhd" );
+  writer->SetInput( rbi->GetOutput() );
+  writer->Update();
+
+  // Calculating Joseph forward projection of the full Input with an inner ray source
+  jfp->SetInput(initInput->GetOutput());
+  jfp->SetInput( 1, fullInput->GetOutput() );
+  jfp->SetGeometry( geometry );
+  jfp->SetNumberOfThreads(1);
+  jfp->Update();
+  // Writing
+  writer->SetFileName( "joseph2.mhd" );
+  writer->SetInput( jfp->GetOutput() );
+  writer->Update();
+
+  CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 3: outer ray source ******" << std::endl;
+  // Geometry
+  geometry = GeometryType::New();
+  // Creating geometry
+  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(128.5, 1000., noProj);
+  // We resize resizedInput, in order to have a full Input 256x256x256
+  size[0] = 256;
+  size[1] = 256;
+  size[2] = 256;
+  resizedInput->SetSize( size );
+
+  // Calculating ray box intersection of the resized Input
+  resizedInput->UpdateOutputInformation();
+  rbi->SetInput( initInput->GetOutput() );
+  rbi->SetBoxFromImage( resizedInput->GetOutput() );
+  rbi->SetGeometry( geometry );
+  rbi->Update();
+
+  // Calculating Joseph forward projection of the full Input with an inner ray source
+  jfp->SetInput(initInput->GetOutput());
+  jfp->SetInput( 1, fullInput->GetOutput() );
+  jfp->SetGeometry( geometry );
+  jfp->SetNumberOfThreads(1);
+  jfp->Update();
+
+  CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+//  std::cout << "\n\n****** Case 4: Shepp-Logan, inner ray source ******" << std::endl;
+//  // Geometry
+//  geometry = GeometryType::New();
+//  // Creating geometry
+//  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
+//    geometry->AddProjection(48.5, 1000., noProj+270);
+
+//  // Create a reference object (in this case a 3D phantom reference).
+//  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+//  DSLType::Pointer dsl = DSLType::New();
+//  dsl->SetInput( sheppInput->GetOutput() );
+//  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+
+//  size[0] = 256;
+//  size[1] = 256;
+//  size[2] = 1; //Number of Projections
+//  initInput->SetSize( size );
+//  initInput->UpdateOutputInformation();
+////  // Calculating ray box intersection of the resized Input
+////  rbi->SetInput( initInput->GetOutput() );
+////  rbi->SetBoxFromImage( dsl->GetOutput() );
+////  rbi->SetGeometry( geometry );
+////  rbi->Update();
+////  // Writing
+////  writer->SetFileName( "rbi_shepp.mhd" );
+////  writer->SetInput( rbi->GetOutput() );
+////  writer->Update();
+
+////  dsl = DSLType::New();
+////  dsl->SetInput( sheppFullInput->GetOutput() );
+////  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+//  // Calculating Joseph forward projection of the full Input with an inner ray source
+//  jfp->SetInput(initInput->GetOutput());
+//  jfp->SetInput( 1, dsl->GetOutput() );
+//  jfp->SetGeometry( geometry );
+//  jfp->SetNumberOfThreads(1);
+//  jfp->Update();
+//  // Writing
+//  writer->SetFileName( "joseph_shepp.mhd" );
+//  writer->SetInput( jfp->GetOutput() );
+//  writer->Update();
+
+//  CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
+//  std::cout << "\n\nTest PASSED! " << std::endl;
+
   exit(EXIT_SUCCESS);
 }
