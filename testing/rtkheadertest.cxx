@@ -48,11 +48,11 @@
 #include "rtkTiffLutImageFilter.h"
 #include "rtkVarianObiRawImageFilter.h"
 
-#ifdef USE_OPENCL
-  #include "rtkOpenCLFDKBackProjectionImageFilter.h"
-  #include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
-  #include "rtkOpenCLUtilities.h"
-#endif
+//#ifdef USE_OPENCL
+//  #include "rtkOpenCLFDKBackProjectionImageFilter.h"
+//  #include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
+//  #include "rtkOpenCLUtilities.h"
+//#endif
 #ifdef USE_CUDA
   #include "rtkCudaFDKBackProjectionImageFilter.h"
   #include "rtkCudaFDKConeBeamReconstructionFilter.h"
