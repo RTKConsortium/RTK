@@ -1,0 +1,5 @@
+WRAP_GGO(rtkthreedphantomreference_GGO_C rtkthreedphantomreference.ggo)
+ADD_EXECUTABLE(rtkthreedphantomreference rtkthreedphantomreference.cxx ${rtkthreedphantomreference_GGO_C})
+TARGET_LINK_LIBRARIES(rtkthreedphantomreference RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkthreedphantomreference)
+

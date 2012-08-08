@@ -1,0 +1,5 @@
+WRAP_GGO(rtkshepploganphantom_GGO_C rtkshepploganphantom.ggo)
+ADD_EXECUTABLE(rtkshepploganphantom rtkshepploganphantom.cxx ${rtkshepploganphantom_GGO_C})
+TARGET_LINK_LIBRARIES(rtkshepploganphantom RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkshepploganphantom)
+

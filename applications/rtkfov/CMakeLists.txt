@@ -1,0 +1,5 @@
+WRAP_GGO(rtkfov_GGO_C rtkfov.ggo)
+ADD_EXECUTABLE(rtkfov rtkfov.cxx ${rtkfov_GGO_C})
+TARGET_LINK_LIBRARIES(rtkfov RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkfov)
+

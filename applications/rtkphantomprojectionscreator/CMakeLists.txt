@@ -1,0 +1,5 @@
+WRAP_GGO(rtkphantomprojectionscreator_GGO_C rtkphantomprojectionscreator.ggo)
+ADD_EXECUTABLE(rtkphantomprojectionscreator rtkphantomprojectionscreator.cxx ${rtkphantomprojectionscreator_GGO_C})
+TARGET_LINK_LIBRARIES(rtkphantomprojectionscreator RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkphantomprojectionscreator)
+

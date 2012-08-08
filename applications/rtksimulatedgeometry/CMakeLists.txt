@@ -1,0 +1,5 @@
+WRAP_GGO(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo)
+ADD_EXECUTABLE(rtksimulatedgeometry rtksimulatedgeometry.cxx ${rtksimulatedgeometry_GGO_C})
+TARGET_LINK_LIBRARIES(rtksimulatedgeometry RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtksimulatedgeometry)
+

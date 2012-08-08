@@ -1,0 +1,5 @@
+WRAP_GGO(rtkrayquadricintersection_GGO_C rtkrayquadricintersection.ggo)
+ADD_EXECUTABLE(rtkrayquadricintersection rtkrayquadricintersection.cxx ${rtkrayquadricintersection_GGO_C})
+TARGET_LINK_LIBRARIES(rtkrayquadricintersection RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkrayquadricintersection)
+
