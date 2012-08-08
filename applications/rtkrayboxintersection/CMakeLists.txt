@@ -1,0 +1,5 @@
+WRAP_GGO(rtkrayboxintersection_GGO_C rtkrayboxintersection.ggo)
+ADD_EXECUTABLE(rtkrayboxintersection rtkrayboxintersection.cxx ${rtkrayboxintersection_GGO_C})
+TARGET_LINK_LIBRARIES(rtkrayboxintersection RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkrayboxintersection)
+

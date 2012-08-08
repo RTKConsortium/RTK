@@ -1,0 +1,5 @@
+WRAP_GGO(rtkforwardprojections_GGO_C rtkforwardprojections.ggo)
+ADD_EXECUTABLE(rtkforwardprojections rtkforwardprojections.cxx ${rtkforwardprojections_GGO_C})
+TARGET_LINK_LIBRARIES(rtkforwardprojections RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkforwardprojections)
+

@@ -1,0 +1,5 @@
+WRAP_GGO(rtkrayellipsoidintersection_GGO_C rtkrayellipsoidintersection.ggo)
+ADD_EXECUTABLE(rtkrayellipsoidintersection rtkrayellipsoidintersection.cxx ${rtkrayellipsoidintersection_GGO_C})
+TARGET_LINK_LIBRARIES(rtkrayellipsoidintersection RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkrayellipsoidintersection)
+

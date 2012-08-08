@@ -1,0 +1,5 @@
+WRAP_GGO(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo)
+ADD_EXECUTABLE(rtkvarianobigeometry rtkvarianobigeometry.cxx ${rtkvarianobigeometry_GGO_C} rtkVarianObiXMLFileReader.cxx)
+TARGET_LINK_LIBRARIES(rtkvarianobigeometry RTK)
+SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkvarianobigeometry)
+
