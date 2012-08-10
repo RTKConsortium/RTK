@@ -23,10 +23,7 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkRayQuadricIntersectionImageFilter.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-
-#include <vector>
 
 namespace rtk
 {
@@ -61,7 +58,6 @@ public:
   typedef std::vector<double>                                                        VectorType;
   typedef std::string                                                                StringType;
   typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
-  typedef SetQuadricParamFromRegularParamFunction                                    SQPFunctionType;
   struct figure
   {
     VectorType semiprincipalaxis;
@@ -94,7 +90,6 @@ private:
   SheppLoganPhantomFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  SQPFunctionType::Pointer m_SQPFunctor;
   double                   m_PhantomScale;
   double                   m_PhantomOriginOffsetX;
 };

@@ -16,83 +16,90 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkTiffLutImageFilter_h
-#define __rtkTiffLutImageFilter_h
+#ifndef __rtkElektaSynergyLookupTableImageFilter_h
+#define __rtkElektaSynergyLookupTableImageFilter_h
 
-#include "rtkLutImageFilter.h"
+#include "rtkLookupTableImageFilter.h"
 #include <itkNumericTraits.h>
 
 namespace rtk
 {
 
-/** \class TiffLutImageFilter
- * \brief Lookup table for tiff projection images.
+/** \class ElektaSynergyLookupTableImageFilter
+ * \brief Lookup table for Elekta Synergy data.
  *
  * The lookup table converts the raw values to the logarithm of the value divided by the max
  *
- *
  * \author Simon Rit
  *
- * \ingroup TiffLutImageFilter
+ * \ingroup LookupTableImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT TiffLutImageFilter : public LutImageFilter<TInputImage, TOutputImage>
+class ITK_EXPORT ElektaSynergyLookupTableImageFilter : public LookupTableImageFilter<TInputImage, TOutputImage>
 {
 
 public:
   /** Standard class typedefs. */
-  typedef TiffLutImageFilter                        Self;
-  typedef LutImageFilter<TInputImage, TOutputImage> Superclass;
+  typedef ElektaSynergyLookupTableImageFilter               Self;
+  typedef LookupTableImageFilter<TInputImage, TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                   Pointer;
   typedef itk::SmartPointer<const Self>             ConstPointer;
 
   typedef typename TInputImage::PixelType           InputImagePixelType;
   typedef typename TOutputImage::PixelType          OutputImagePixelType;
-  typedef typename Superclass::FunctorType::LutType LutType;
+  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(TiffLutImageFilter, LutImageFilter);
+  itkTypeMacro(ElektaSynergyLookupTableImageFilter, LookupTableImageFilter);
+
 protected:
-  TiffLutImageFilter();
-  virtual ~TiffLutImageFilter() {}
+  ElektaSynergyLookupTableImageFilter();
+  virtual ~ElektaSynergyLookupTableImageFilter() {
+  }
 
 private:
-  TiffLutImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);     //purposely not implemented
+  ElektaSynergyLookupTableImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);              //purposely not implemented
 
 };
 
 } // end namespace rtk
 
 template <class TInputImage, class TOutputImage>
-rtk::TiffLutImageFilter<TInputImage, TOutputImage>::TiffLutImageFilter()
+rtk::ElektaSynergyLookupTableImageFilter<TInputImage, TOutputImage>::ElektaSynergyLookupTableImageFilter()
 {
   // Create the lut
-  typename LutType::Pointer lut = LutType::New();
-  typename LutType::SizeType size;
+  typename LookupTableType::Pointer lut = LookupTableType::New();
+  typename LookupTableType::SizeType size;
   size[0] = itk::NumericTraits<InputImagePixelType>::max()-itk::NumericTraits<InputImagePixelType>::min()+1;
   lut->SetRegions( size );
   lut->Allocate();
 
   // Iterate and set lut
-  OutputImagePixelType logRef = log(OutputImagePixelType(size[0]+1) );
-  itk::ImageRegionIteratorWithIndex<LutType> it( lut, lut->GetBufferedRegion() );
+  OutputImagePixelType                       logRef = log(OutputImagePixelType(size[0]) );
+  itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
   it.GoToBegin();
 
-  // 0 value is assumed to correspond to no attenuation
-  it.Set(0.);
+  //First value takes value of pixel #1
+  it.Set( logRef - log( OutputImagePixelType(size[0]-1) ) );
   ++it;
 
   //Conventional lookup table for the rest
   while( !it.IsAtEnd() ) {
-    it.Set( logRef - log( OutputImagePixelType(it.GetIndex()[0]+1) ) );
+    it.Set( logRef - log( OutputImagePixelType(size[0]-it.GetIndex()[0]) ) );
     ++it;
     }
+
+  //Last value takes value of pixel #1
+  --it;
+  it.Set( logRef - log( OutputImagePixelType(size[0]-1) ) );
+  ++it;
+
   // Set the lut to member and functor
-  this->SetLut(lut);
+  this->SetLookupTable(lut);
 }
 
 #endif

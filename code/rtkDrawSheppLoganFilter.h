@@ -22,9 +22,7 @@
 #include <itkInPlaceImageFilter.h>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkSetQuadricParamFromRegularParamFunction.h"
-
-#include <vector>
+#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 
 namespace rtk
 {
@@ -55,7 +53,7 @@ public:
   typedef std::vector<double>                               VectorType;
   typedef std::string                                       StringType;
 
-  typedef rtk::SetQuadricParamFromRegularParamFunction      SQPFunctionType;
+  typedef rtk::ConvertEllipsoidToQuadricParametersFunction          EQPFunctionType;
   struct figure
   {
     VectorType semiprincipalaxis;

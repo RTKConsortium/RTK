@@ -16,16 +16,16 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSetQuadricParamFromRegularParamFunction_txx
-#define __rtkSetQuadricParamFromRegularParamFunction_txx
+#ifndef __rtkConvertEllipsoidToQuadricParametersFunction_txx
+#define __rtkConvertEllipsoidToQuadricParametersFunction_txx
 
 #include <vcl_cmath.h>
 #include "rtkMacro.h"
 
 namespace rtk
 {
-SetQuadricParamFromRegularParamFunction
-::SetQuadricParamFromRegularParamFunction():
+ConvertEllipsoidToQuadricParametersFunction
+::ConvertEllipsoidToQuadricParametersFunction():
 m_SemiPrincipalAxisX(0.),
 m_SemiPrincipalAxisY(0.),
 m_SemiPrincipalAxisZ(0.),
@@ -37,10 +37,10 @@ m_E(0.), m_F(0.), m_G(0.), m_H(0.), m_I(0.), m_J(0.)
 {
 }
 
-bool SetQuadricParamFromRegularParamFunction
+bool ConvertEllipsoidToQuadricParametersFunction
 ::Translate( const VectorType& SemiPrincipalAxis )
 {
-  SetSemiPrincipalAxisX(SemiPrincipalAxis[0]);
+  m_SemiPrincipalAxisX = SemiPrincipalAxis[0];
   m_SemiPrincipalAxisY = SemiPrincipalAxis[1];
   m_SemiPrincipalAxisZ = SemiPrincipalAxis[2];
 
@@ -58,7 +58,7 @@ bool SetQuadricParamFromRegularParamFunction
   return true;
 }
 
-bool SetQuadricParamFromRegularParamFunction
+bool ConvertEllipsoidToQuadricParametersFunction
 ::Rotate( const double RotationAngle, const VectorType& Center )
 {
   m_RotationAngle = RotationAngle;
@@ -120,4 +120,4 @@ bool SetQuadricParamFromRegularParamFunction
 }
 } // namespace rtk
 
-#endif // __rtkSetQuadricParamFromRegularParamFunction_txx
+#endif // __rtkConvertEllipsoidToQuadricParametersFunction_txx

@@ -25,7 +25,7 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkSetQuadricParamFromRegularParamFunction.h"
+#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 
 namespace rtk
 {
@@ -52,7 +52,7 @@ public:
   typedef itk::SmartPointer<Self>                                     Pointer;
   typedef itk::SmartPointer<const Self>                               ConstPointer;
 
-  typedef SetQuadricParamFromRegularParamFunction                     SQPFunctionType;
+  typedef ConvertEllipsoidToQuadricParametersFunction                       EQPFunctionType;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -93,7 +93,7 @@ private:
   double                   m_CenterY;
   double                   m_CenterZ;
   double                   m_RotationAngle;
-  SQPFunctionType::Pointer m_SQPFunctor;
+  EQPFunctionType::Pointer m_EQPFunctor;
 };
 
 } // end namespace rtk

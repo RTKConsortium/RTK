@@ -37,7 +37,6 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 SheppLoganPhantomFilter<TInputImage, TOutputImage>
 ::SheppLoganPhantomFilter():
- m_SQPFunctor( SQPFunctionType::New() ),
  m_PhantomScale(128.),
  m_PhantomOriginOffsetX(0.)
 {
@@ -46,7 +45,6 @@ SheppLoganPhantomFilter<TInputImage, TOutputImage>
 template< class TInputImage, class TOutputImage >
 void SheppLoganPhantomFilter< TInputImage, TOutputImage >::GenerateData()
 {
-  m_SQPFunctor = SQPFunctionType::New();
   std::vector< REIType::Pointer > rei(10);
   unsigned int NumberOfFig = 10;
 

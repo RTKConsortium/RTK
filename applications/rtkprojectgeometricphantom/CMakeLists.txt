@@ -1,10 +1,10 @@
-WRAP_GGO(rtkfov_GGO_C rtkfov.ggo)
-ADD_EXECUTABLE(rtkfov rtkfov.cxx ${rtkfov_GGO_C})
-TARGET_LINK_LIBRARIES(rtkfov RTK)
+WRAP_GGO(rtkprojectgeometricphantom_GGO_C rtkprojectgeometricphantom.ggo)
+ADD_EXECUTABLE(rtkprojectgeometricphantom rtkprojectgeometricphantom.cxx ${rtkprojectgeometricphantom_GGO_C})
+TARGET_LINK_LIBRARIES(rtkprojectgeometricphantom RTK)
 
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtkfov) 
+  FOREACH(EXE_NAME rtkprojectgeometricphantom) 
     INSTALL(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries

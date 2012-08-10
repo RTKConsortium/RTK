@@ -22,7 +22,7 @@
 #include <itkImageToImageFilter.h>
 #include <itkCropImageFilter.h>
 
-#include "rtkElektaSynergyLutImageFilter.h"
+#include "rtkElektaSynergyLookupTableImageFilter.h"
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
 
 /** \class RawToAttenuationImageFilter
@@ -82,9 +82,9 @@ private:
 
   typedef itk::CropImageFilter<InputImageType, InputImageType>                       CropFilterType;
   typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
-  typedef rtk::ElektaSynergyLutImageFilter<InputImageType, OutputImageType>          LutFilterType;
+  typedef rtk::ElektaSynergyLookupTableImageFilter<InputImageType, OutputImageType>          LookupTableFilterType;
 
-  typename LutFilterType::Pointer     m_LutFilter;
+  typename LookupTableFilterType::Pointer     m_LookupTableFilter;
   typename CropFilterType::Pointer    m_CropFilter;
   typename ScatterFilterType::Pointer m_ScatterFilter;
 }; // end of class
