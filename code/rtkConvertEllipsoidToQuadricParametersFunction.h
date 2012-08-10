@@ -16,14 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSetQuadricParamFromRegularParamFunction_h
-#define __rtkSetQuadricParamFromRegularParamFunction_h
+#ifndef __rtkConvertEllipsoidToQuadricParametersFunction_h
+#define __rtkConvertEllipsoidToQuadricParametersFunction_h
 
 #include <itkNumericTraits.h>
-#include <vector>
-#include <itkImageBase.h>
-#include "rtkRayQuadricIntersectionFunction.h"
-#include "rtkMacro.h"
+#include <itkVector.h>
 
 namespace rtk
 {
@@ -45,12 +42,12 @@ namespace rtk
  *
  * \ingroup Object
  */
-class SetQuadricParamFromRegularParamFunction :
+class ConvertEllipsoidToQuadricParametersFunction :
     public itk::Object
 {
 public:
   /** Standard class typedefs. */
-  typedef SetQuadricParamFromRegularParamFunction  Self;
+  typedef ConvertEllipsoidToQuadricParametersFunction  Self;
   typedef itk::Object                              Superclass;
   typedef itk::SmartPointer<Self>                  Pointer;
   typedef itk::SmartPointer<const Self>            ConstPointer;
@@ -58,7 +55,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SetQuadricParamFromRegularParamFunction, itk::Object);
+  itkTypeMacro(ConvertEllipsoidToQuadricParametersFunction, itk::Object);
 
   /** Useful defines. */
   typedef std::vector<double>                VectorType;
@@ -103,15 +100,15 @@ public:
   itkSetMacro(CenterZ, double);
 
   itkGetMacro(RotationAngle, double);
-  itkSetMacro(RotationAngle, double);  
+  itkSetMacro(RotationAngle, double);
 
 protected:
 
   /// Constructor
-  SetQuadricParamFromRegularParamFunction();
+  ConvertEllipsoidToQuadricParametersFunction();
 
   /// Destructor
-  ~SetQuadricParamFromRegularParamFunction() {};
+  ~ConvertEllipsoidToQuadricParametersFunction() {};
 
   /// The focal point or position of the ray source
   VectorType m_FocalPoint;
@@ -136,14 +133,14 @@ protected:
   double m_J;
 
 private:
-  SetQuadricParamFromRegularParamFunction( const Self& ); //purposely not implemented
+  ConvertEllipsoidToQuadricParametersFunction( const Self& ); //purposely not implemented
   void operator=( const Self& ); //purposely not implemented
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSetQuadricParamFromRegularParamFunction.txx"
+#include "rtkConvertEllipsoidToQuadricParametersFunction.txx"
 #endif
 
 #endif

@@ -16,15 +16,15 @@
  *
  *=========================================================================*/
 
-#include "rtkthreedphantomreference_ggo.h"
+#include "rtkdrawgeometricphantom_ggo.h"
 #include "rtkGgoFunctions.h"
-#include "rtkDrawQuadricImageFilter.h"
+#include "rtkDrawGeometricPhantomImageFilter.h"
 #include <itkImageFileWriter.h>
 
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkthreedphantomreference, args_info);
+  GGO(rtkdrawgeometricphantom, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
@@ -33,10 +33,10 @@ int main(int argc, char * argv[])
   // Empty projection images
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkthreedphantomreference>(constantImageSource, args_info);
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawgeometricphantom>(constantImageSource, args_info);
 
   // Reference
-  typedef rtk::DrawQuadricImageFilter<OutputImageType, OutputImageType> DQType;
+  typedef rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType> DQType;
   if(args_info.verbose_flag)
     std::cout << "Creating reference... " << std::flush;
   DQType::Pointer dq = DQType::New();

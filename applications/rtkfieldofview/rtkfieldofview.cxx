@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkfov_ggo.h"
+#include "rtkfieldofview_ggo.h"
 #include "rtkGgoFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
@@ -30,7 +30,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkfov, args_info);
+  GGO(rtkfieldofview, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
@@ -66,16 +66,16 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( projections->GenerateOutputInformation() );
   //FOV filter
   typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
-  FOVFilterType::Pointer fov=FOVFilterType::New();
-  fov->SetInput(0, unmasked_reconstruction->GetOutput());
-  fov->SetProjectionsStack(projections->GetOutput());
-  fov->SetGeometry(geometryReader->GetOutputObject());
-  fov->Update();
+  FOVFilterType::Pointer fieldofview=FOVFilterType::New();
+  fieldofview->SetInput(0, unmasked_reconstruction->GetOutput());
+  fieldofview->SetProjectionsStack(projections->GetOutput());
+  fieldofview->SetGeometry(geometryReader->GetOutputObject());
+  fieldofview->Update();
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( fov->GetOutput() );
+  writer->SetInput( fieldofview->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );

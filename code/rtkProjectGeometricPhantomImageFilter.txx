@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkPhantomProjectionsCreatorFilter_txx
-#define __rtkPhantomProjectionsCreatorFilter_txx
+#ifndef __rtkProjectGeometricPhantomImageFilter_txx
+#define __rtkProjectGeometricPhantomImageFilter_txx
 
 #include <iostream>
 #include <fstream>
@@ -35,7 +35,7 @@
 namespace rtk
 {
 template< class TInputImage, class TOutputImage >
-void PhantomProjectionsCreatorFilter< TInputImage, TOutputImage >::GenerateData()
+void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData()
 {
   CFRType::Pointer cfr = CFRType::New();
   cfr->Config(m_ConfigFile);

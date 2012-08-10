@@ -32,7 +32,7 @@
 #include "rtkElektaSynergyRawToAttenuationImageFilter.h"
 
 // Tiff includes
-#include "rtkTiffLutImageFilter.h"
+#include "rtkTiffLookupTableImageFilter.h"
 
 namespace rtk
 {
@@ -122,7 +122,7 @@ void ProjectionsReader<TOutputImage>
       m_RawDataReader = reader;
 
       // Convert raw to Projections
-      typedef rtk::TiffLutImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typedef rtk::TiffLookupTableImageFilter<InputImageType, OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;

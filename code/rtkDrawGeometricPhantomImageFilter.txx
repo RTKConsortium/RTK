@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricImageFilter_txx
-#define __rtkDrawQuadricImageFilter_txx
+#ifndef __rtkDrawGeometricPhantomImageFilter_txx
+#define __rtkDrawGeometricPhantomImageFilter_txx
 
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
@@ -29,12 +29,12 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-void DrawQuadricImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
+void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                                                                              ThreadIdType threadId )
 {
   VectorOfVectorType figParam;
   //Getting phantom parameters
-  SQPFunctionType::Pointer sqpFunctor = SQPFunctionType::New();
+  EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
   //Config File Reader, cfr
   CFRType::Pointer cfr = CFRType::New();
   cfr->Config(m_ConfigFile);

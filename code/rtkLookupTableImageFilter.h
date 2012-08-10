@@ -16,12 +16,12 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLutImageFilter_h
-#define __rtkLutImageFilter_h
+#ifndef __rtkLookupTableImageFilter_h
+#define __rtkLookupTableImageFilter_h
 
 #include <itkUnaryFunctorImageFilter.h>
 
-/** \class LutImageFilter
+/** \class LookupTableImageFilter
  * \brief TODO
  *
  * TODO
@@ -40,37 +40,37 @@ template< class TInput, class TOutput >
 class LUT
 {
 public:
-  typedef itk::Image<TOutput,1>        LutType;
-  typedef typename LutType::PixelType* LutDataPointerType;
+  typedef itk::Image<TOutput,1>        LookupTableType;
+  typedef typename LookupTableType::PixelType* LookupTableDataPointerType;
 
   LUT() {};
   ~LUT() {};
 
-  LutDataPointerType GetLutDataPointer() {
-    return m_LutDataPointer;
+  LookupTableDataPointerType GetLookupTableDataPointer() {
+    return m_LookupTableDataPointer;
   }
-  void SetLutDataPointer(LutDataPointerType lut) {
-    m_LutDataPointer = lut;
+  void SetLookupTableDataPointer(LookupTableDataPointerType lut) {
+    m_LookupTableDataPointer = lut;
   }
 
   bool operator!=( const LUT & lut ) const {
-    return m_LutDataPointer != lut->GetLutDataPointer;
+    return m_LookupTableDataPointer != lut->GetLookupTableDataPointer;
   }
   bool operator==( const LUT & lut ) const {
-    return m_LutDataPointer == lut->GetLutDataPointer;
+    return m_LookupTableDataPointer == lut->GetLookupTableDataPointer;
   }
 
   inline TOutput operator()( const TInput & val ) const {
-    return m_LutDataPointer[val];
+    return m_LookupTableDataPointer[val];
   }
 
 private:
-  LutDataPointerType m_LutDataPointer;
+  LookupTableDataPointerType m_LookupTableDataPointer;
 };
 } // end namespace Functor
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT LutImageFilter : public
+class ITK_EXPORT LookupTableImageFilter : public
   itk::UnaryFunctorImageFilter< TInputImage,
                                 TOutputImage,
                                 Functor::LUT< typename TInputImage::PixelType,
@@ -80,10 +80,10 @@ class ITK_EXPORT LutImageFilter : public
 public:
   /** Lookup table type definition. */
   typedef Functor::LUT< typename TInputImage::PixelType, typename TOutputImage::PixelType > FunctorType;
-  typedef typename FunctorType::LutType                                                     LutType;
+  typedef typename FunctorType::LookupTableType                                                     LookupTableType;
 
   /** Standard class typedefs. */
-  typedef LutImageFilter                                                        Self;
+  typedef LookupTableImageFilter                                                        Self;
   typedef itk::UnaryFunctorImageFilter<TInputImage, TOutputImage, FunctorType > Superclass;
   typedef itk::SmartPointer<Self>                                               Pointer;
   typedef itk::SmartPointer<const Self>                                         ConstPointer;
@@ -92,29 +92,29 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(LutImageFilter, itk::UnaryFunctorImageFilter);
+  itkTypeMacro(LookupTableImageFilter, itk::UnaryFunctorImageFilter);
 
   /** Set lookup table. */
-  virtual void SetLut(LutType* _arg) {
-    //Idem as itkSetObjectMacro + call to functor SetLutDataPointer
-    itkDebugMacro("setting " << "Lut" " to " << _arg );
-    if (this->m_Lut != _arg) {
-      this->m_Lut = _arg;
+  virtual void SetLookupTable(LookupTableType* _arg) {
+    //Idem as itkSetObjectMacro + call to functor SetLookupTableDataPointer
+    itkDebugMacro("setting " << "LookupTable" " to " << _arg );
+    if (this->m_LookupTable != _arg) {
+      this->m_LookupTable = _arg;
       this->Modified();
-      this->GetFunctor().SetLutDataPointer(_arg->GetBufferPointer() );
+      this->GetFunctor().SetLookupTableDataPointer(_arg->GetBufferPointer() );
       }
   }
 
   /** Get lookup table. */
-  itkGetObjectMacro(Lut, LutType);
+  itkGetObjectMacro(LookupTable, LookupTableType);
 
 protected:
-  LutImageFilter() {}
-  virtual ~LutImageFilter() {}
-  typename LutType::Pointer m_Lut;
+  LookupTableImageFilter() {}
+  virtual ~LookupTableImageFilter() {}
+  typename LookupTableType::Pointer m_LookupTable;
 
 private:
-  LutImageFilter(const Self&); //purposely not implemented
+  LookupTableImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 };

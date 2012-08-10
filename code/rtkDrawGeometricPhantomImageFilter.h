@@ -16,13 +16,13 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricImageFilter_h
-#define __rtkDrawQuadricImageFilter_h
+#ifndef __rtkDrawGeometricPhantomImageFilter_h
+#define __rtkDrawGeometricPhantomImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkSetQuadricParamFromRegularParamFunction.h"
+#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkGeometricPhantomFileReader.h"
 
 #include <vector>
@@ -30,7 +30,7 @@
 namespace rtk
 {
 
-/** \class DrawQuadricImageFilter
+/** \class DrawGeometricPhantomImageFilter
  * \brief Creates a 3D reference of a quadric expression
  * which parameters are stored in a configuration file.
  *
@@ -40,12 +40,12 @@ namespace rtk
  */
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT DrawQuadricImageFilter :
+class ITK_EXPORT DrawGeometricPhantomImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawQuadricImageFilter                                    Self;
+  typedef DrawGeometricPhantomImageFilter                                    Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage>         Superclass;
   typedef itk::SmartPointer<Self>                                   Pointer;
   typedef itk::SmartPointer<const Self>                             ConstPointer;
@@ -55,30 +55,27 @@ public:
   typedef std::vector< std::vector<double> >                        VectorOfVectorType;
   typedef std::string                                               StringType;
 
-  typedef rtk::SetQuadricParamFromRegularParamFunction              SQPFunctionType;
+  typedef rtk::ConvertEllipsoidToQuadricParametersFunction              EQPFunctionType;
   typedef rtk::GeometricPhantomFileReader                           CFRType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawQuadricImageFilter, InPlaceImageFilter);
+  itkTypeMacro(DrawGeometricPhantomImageFilter, InPlaceImageFilter);
 
   /** Get/Set ConfigFile*/
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
 protected:
-  DrawQuadricImageFilter() {}
-  virtual ~DrawQuadricImageFilter() {};
+  DrawGeometricPhantomImageFilter() {}
+  virtual ~DrawGeometricPhantomImageFilter() {};
 
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
-  /** Translate user parameteres to quadric parameters.
-   * A call to this function will assume modification of the function.*/
-
 
 private:
-  DrawQuadricImageFilter(const Self&); //purposely not implemented
+  DrawGeometricPhantomImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
   StringType m_ConfigFile;
 
@@ -87,7 +84,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawQuadricImageFilter.txx"
+#include "rtkDrawGeometricPhantomImageFilter.txx"
 #endif
 
 #endif

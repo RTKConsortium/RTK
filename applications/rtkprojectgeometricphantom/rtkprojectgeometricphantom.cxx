@@ -16,12 +16,12 @@
  *
  *=========================================================================*/
 
-#include "rtkphantomprojectionscreator_ggo.h"
+#include "rtkprojectgeometricphantom_ggo.h"
 #include "rtkGgoFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkPhantomProjectionsCreatorFilter.h"
+#include "rtkProjectGeometricPhantomImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -29,7 +29,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkphantomprojectionscreator, args_info);
+  GGO(rtkprojectgeometricphantom, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
   // Create a stack of empty projection images
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkphantomprojectionscreator>(constantImageSource, args_info);
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkprojectgeometricphantom>(constantImageSource, args_info);
 
   // Adjust size according to geometry
   ConstantImageSourceType::SizeType sizeOutput;
@@ -60,7 +60,7 @@ int main(int argc, char * argv[])
   sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
   constantImageSource->SetSize( sizeOutput );
 
-  typedef rtk::PhantomProjectionsCreatorFilter<OutputImageType, OutputImageType> PPCType;
+  typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> PPCType;
   PPCType::Pointer ppc = PPCType::New();
   ppc->SetInput(constantImageSource->GetOutput());
   ppc->SetGeometry(geometryReader->GetOutputObject());

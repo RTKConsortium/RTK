@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkPhantomProjectionsCreatorFilter_h
-#define __rtkPhantomProjectionsCreatorFilter_h
+#ifndef __rtkProjectGeometricPhantomImageFilter_h
+#define __rtkProjectGeometricPhantomImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -32,7 +32,7 @@
 namespace rtk
 {
 
-/** \class PhantomProjectionsCreatorFilter
+/** \class ProjectGeometricPhantomImageFilter
  * \brief  Computes intersection between source rays and ellipsoids
  *
  * Computes intersection between source rays and ellipsoids,
@@ -46,12 +46,12 @@ namespace rtk
  */
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT PhantomProjectionsCreatorFilter :
+class ITK_EXPORT ProjectGeometricPhantomImageFilter :
   public RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef PhantomProjectionsCreatorFilter                                       Self;
+  typedef ProjectGeometricPhantomImageFilter                            Self;
   typedef RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                                       Pointer;
   typedef itk::SmartPointer<const Self>                                 ConstPointer;
@@ -71,7 +71,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(PhantomProjectionsCreatorFilter, RayEllipsoidIntersectionImageFilter);
+  itkTypeMacro(ProjectGeometricPhantomImageFilter, RayEllipsoidIntersectionImageFilter);
 
   /** Get/Set Number of Figures.*/
   itkSetMacro(ConfigFile, StringType);
@@ -81,8 +81,8 @@ public:
   rtkGetMacro(Fig, VectorOfVectorType);
 
 protected:
-  PhantomProjectionsCreatorFilter() {}
-  virtual ~PhantomProjectionsCreatorFilter() {};
+  ProjectGeometricPhantomImageFilter() {}
+  virtual ~ProjectGeometricPhantomImageFilter() {};
 
   virtual void GenerateData();
 
@@ -91,7 +91,7 @@ protected:
 
 
 private:
-  PhantomProjectionsCreatorFilter(const Self&); //purposely not implemented
+  ProjectGeometricPhantomImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
   VectorOfVectorType       m_Fig;
@@ -101,7 +101,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkPhantomProjectionsCreatorFilter.txx"
+#include "rtkProjectGeometricPhantomImageFilter.txx"
 #endif
 
 #endif

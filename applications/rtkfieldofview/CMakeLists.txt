@@ -1,10 +1,10 @@
-WRAP_GGO(rtkphantomprojectionscreator_GGO_C rtkphantomprojectionscreator.ggo)
-ADD_EXECUTABLE(rtkphantomprojectionscreator rtkphantomprojectionscreator.cxx ${rtkphantomprojectionscreator_GGO_C})
-TARGET_LINK_LIBRARIES(rtkphantomprojectionscreator RTK)
+WRAP_GGO(rtkfieldofview_GGO_C rtkfieldofview.ggo)
+ADD_EXECUTABLE(rtkfieldofview rtkfieldofview.cxx ${rtkfieldofview_GGO_C})
+TARGET_LINK_LIBRARIES(rtkfieldofview RTK)
 
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtkphantomprojectionscreator) 
+  FOREACH(EXE_NAME rtkfieldofview) 
     INSTALL(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries

@@ -37,15 +37,15 @@ RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
  m_CenterY(0.),
  m_CenterZ(0.),
  m_RotationAngle(0.),
- m_SQPFunctor( SQPFunctionType::New() )
+ m_EQPFunctor( EQPFunctionType::New() )
 {
 }
 
 template <class TInputImage, class TOutputImage>
 void RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  typename SQPFunctionType::VectorType semiprincipalaxis;
-  typename SQPFunctionType::VectorType center;
+  typename EQPFunctionType::VectorType semiprincipalaxis;
+  typename EQPFunctionType::VectorType center;
   semiprincipalaxis.push_back(m_SemiPrincipalAxisX);
   semiprincipalaxis.push_back(m_SemiPrincipalAxisY);
   semiprincipalaxis.push_back(m_SemiPrincipalAxisZ);
@@ -54,20 +54,20 @@ void RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThrea
   center.push_back(m_CenterZ);
 
   //Translate from regular expression to quadric
-  m_SQPFunctor->Translate(semiprincipalaxis);
+  m_EQPFunctor->Translate(semiprincipalaxis);
   //Applies rotation and translation if necessary
-  m_SQPFunctor->Rotate(m_RotationAngle, center);
+  m_EQPFunctor->Rotate(m_RotationAngle, center);
   //Setting parameters in order to compute the projections
-  this->GetRQIFunctor()->SetA( m_SQPFunctor->GetA() );
-  this->GetRQIFunctor()->SetB( m_SQPFunctor->GetB() );
-  this->GetRQIFunctor()->SetC( m_SQPFunctor->GetC() );
-  this->GetRQIFunctor()->SetD( m_SQPFunctor->GetD() );
-  this->GetRQIFunctor()->SetE( m_SQPFunctor->GetE() );
-  this->GetRQIFunctor()->SetF( m_SQPFunctor->GetF() );
-  this->GetRQIFunctor()->SetG( m_SQPFunctor->GetG() );
-  this->GetRQIFunctor()->SetH( m_SQPFunctor->GetH() );
-  this->GetRQIFunctor()->SetI( m_SQPFunctor->GetI() );
-  this->GetRQIFunctor()->SetJ( m_SQPFunctor->GetJ() );
+  this->GetRQIFunctor()->SetA( m_EQPFunctor->GetA() );
+  this->GetRQIFunctor()->SetB( m_EQPFunctor->GetB() );
+  this->GetRQIFunctor()->SetC( m_EQPFunctor->GetC() );
+  this->GetRQIFunctor()->SetD( m_EQPFunctor->GetD() );
+  this->GetRQIFunctor()->SetE( m_EQPFunctor->GetE() );
+  this->GetRQIFunctor()->SetF( m_EQPFunctor->GetF() );
+  this->GetRQIFunctor()->SetG( m_EQPFunctor->GetG() );
+  this->GetRQIFunctor()->SetH( m_EQPFunctor->GetH() );
+  this->GetRQIFunctor()->SetI( m_EQPFunctor->GetI() );
+  this->GetRQIFunctor()->SetJ( m_EQPFunctor->GetJ() );
 }
 }// end namespace rtk
 
