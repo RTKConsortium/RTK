@@ -37,16 +37,25 @@ template <class TInputImage, class TOutputImage>
 void FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  // Compute projection stack corners
+  // Compute projection stack indices of corners
   m_ProjectionsStack->UpdateOutputInformation();
-  typename TInputImage::PointType corner1, corner2;
   typename TInputImage::IndexType indexCorner1;
   indexCorner1 = m_ProjectionsStack->GetLargestPossibleRegion().GetIndex();
-  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCorner1, corner1);
+
   typename TInputImage::IndexType indexCorner2;
   indexCorner2 = indexCorner1 + m_ProjectionsStack->GetLargestPossibleRegion().GetSize();
   for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
-    indexCorner2[i]--;
+    indexCorner2[i] --;
+
+  // Account for linear interpolation borders
+  indexCorner1[0] += 0.5;
+  indexCorner1[1] += 0.5;
+  indexCorner2[0] -= 0.5;
+  indexCorner2[1] -= 0.5;
+
+  // To physical coordinates
+  typename TInputImage::PointType corner1, corner2;
+  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCorner1, corner1);
   m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCorner2, corner2);
 
   // Go over projection stack, compute minimum radius and minimum tangent
@@ -82,7 +91,6 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
   typename TInputImage::PointType pointBase, pointIncrement;
   typename TInputImage::IndexType index = outputRegionForThread.GetIndex();
   this->GetInput()->TransformIndexToPhysicalPoint( index, pointBase );
-  typename TInputImage::PointType point = pointBase;
   for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
     index[i]++;
   this->GetInput()->TransformIndexToPhysicalPoint( index, pointIncrement );
@@ -98,6 +106,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
   itOut.GoToBegin();
 
   // Go over output, compute weights and avoid redundant computation
+  typename TInputImage::PointType point = pointBase;
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
     double zsquare = point[2]*point[2];
