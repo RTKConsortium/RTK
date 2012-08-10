@@ -22,6 +22,7 @@
 #include <itkInPlaceImageFilter.h>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkConfiguration.h"
 
 namespace rtk
 {
