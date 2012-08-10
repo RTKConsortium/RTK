@@ -1,5 +1,14 @@
 WRAP_GGO(rtkbackprojections_GGO_C rtkbackprojections.ggo)
 ADD_EXECUTABLE(rtkbackprojections rtkbackprojections.cxx ${rtkbackprojections_GGO_C})
 TARGET_LINK_LIBRARIES(rtkbackprojections RTK)
-SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkbackprojections)
+
+# Installation code
+IF(NOT RTK_INSTALL_NO_EXECUTABLES)
+  FOREACH(EXE_NAME rtkbackprojections) 
+    INSTALL(TARGETS ${EXE_NAME}
+      RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
+      LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
+      ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
+  ENDFOREACH(EXE_NAME) 
+ENDIF(NOT RTK_INSTALL_NO_EXECUTABLES)
 

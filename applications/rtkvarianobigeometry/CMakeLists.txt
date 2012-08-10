@@ -1,5 +1,14 @@
 WRAP_GGO(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo)
 ADD_EXECUTABLE(rtkvarianobigeometry rtkvarianobigeometry.cxx ${rtkvarianobigeometry_GGO_C} rtkVarianObiXMLFileReader.cxx)
 TARGET_LINK_LIBRARIES(rtkvarianobigeometry RTK)
-SET(RTK_EXECUTABLE_TARGETS ${RTK_EXECUTABLE_TARGETS} rtkvarianobigeometry)
+
+# Installation code
+IF(NOT RTK_INSTALL_NO_EXECUTABLES)
+  FOREACH(EXE_NAME rtkvarianobigeometry) 
+    INSTALL(TARGETS ${EXE_NAME}
+      RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
+      LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
+      ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
+  ENDFOREACH(EXE_NAME) 
+ENDIF(NOT RTK_INSTALL_NO_EXECUTABLES)
 
