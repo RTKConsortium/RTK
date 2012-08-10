@@ -77,8 +77,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     const double sourceOffsetY = m_Geometry->GetSourceOffsetsY()[k];
     m_HatHeight = std::min(m_HatHeight, vcl_abs( sourceOffsetY+mag*(corner1[1]+projOffsetY-sourceOffsetY)));
     m_HatHeight = std::min(m_HatHeight, vcl_abs( sourceOffsetY+mag*(corner2[1]+projOffsetY-sourceOffsetY)));
-    m_HatTangent = std::min(m_HatTangent, vcl_abs((corner1[1]+projOffsetY-sourceOffsetY)/sdd));
-    m_HatTangent = std::min(m_HatTangent, vcl_abs((corner2[1]+projOffsetY-sourceOffsetY)/sdd));
+    m_HatTangent = std::min(m_HatTangent, vcl_abs(m_HatHeight/sid));
     }
 }
 
