@@ -40,7 +40,7 @@ template< class TInput, class TOutput >
 class LUT
 {
 public:
-  typedef itk::Image<TOutput,1>        LookupTableType;
+  typedef itk::Image<TOutput,1>                LookupTableType;
   typedef typename LookupTableType::PixelType* LookupTableDataPointerType;
 
   LUT() {};

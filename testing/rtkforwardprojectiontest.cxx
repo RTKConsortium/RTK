@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
   CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: inner ray source, 90° ******" << std::endl;
+  std::cout << "\n\n****** Case 2: inner ray source, 90 degrees ******" << std::endl;
   // Geometry
   geometry = GeometryType::New();
   // Creating geometry

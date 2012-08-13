@@ -45,7 +45,7 @@ class ITK_EXPORT DrawGeometricPhantomImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawGeometricPhantomImageFilter                                    Self;
+  typedef DrawGeometricPhantomImageFilter                           Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage>         Superclass;
   typedef itk::SmartPointer<Self>                                   Pointer;
   typedef itk::SmartPointer<const Self>                             ConstPointer;
@@ -55,7 +55,7 @@ public:
   typedef std::vector< std::vector<double> >                        VectorOfVectorType;
   typedef std::string                                               StringType;
 
-  typedef rtk::ConvertEllipsoidToQuadricParametersFunction              EQPFunctionType;
+  typedef rtk::ConvertEllipsoidToQuadricParametersFunction          EQPFunctionType;
   typedef rtk::GeometricPhantomFileReader                           CFRType;
 
   /** Method for creation through the object factory. */

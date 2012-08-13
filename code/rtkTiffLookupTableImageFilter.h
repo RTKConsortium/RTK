@@ -43,11 +43,11 @@ public:
   /** Standard class typedefs. */
   typedef TiffLookupTableImageFilter                        Self;
   typedef LookupTableImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                   Pointer;
-  typedef itk::SmartPointer<const Self>             ConstPointer;
+  typedef itk::SmartPointer<Self>                           Pointer;
+  typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef typename TInputImage::PixelType           InputImagePixelType;
-  typedef typename TOutputImage::PixelType          OutputImagePixelType;
+  typedef typename TInputImage::PixelType                   InputImagePixelType;
+  typedef typename TOutputImage::PixelType                  OutputImagePixelType;
   typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
 
   /** Method for creation through the object factory. */
