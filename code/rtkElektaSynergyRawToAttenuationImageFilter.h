@@ -84,9 +84,9 @@ private:
   typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
   typedef rtk::ElektaSynergyLookupTableImageFilter<InputImageType, OutputImageType>          LookupTableFilterType;
 
-  typename LookupTableFilterType::Pointer     m_LookupTableFilter;
-  typename CropFilterType::Pointer    m_CropFilter;
-  typename ScatterFilterType::Pointer m_ScatterFilter;
+  typename LookupTableFilterType::Pointer m_LookupTableFilter;
+  typename CropFilterType::Pointer        m_CropFilter;
+  typename ScatterFilterType::Pointer     m_ScatterFilter;
 }; // end of class
 
 } // end namespace rtk
