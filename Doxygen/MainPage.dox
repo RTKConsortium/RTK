@@ -6,15 +6,12 @@
  *
  * The objective of this project is to develop open-source software 
  * for fast tomographic reconstruction compatible with ITK. 
- * Subsequently, the library could be extended to other modalities 
- * and geometries, and used 
- * for 2D/3D registration.
  *
  * \section homepage Home Page
  *
  * The Home Page of the Reconstruction toolkit can be found at :
  *
- * http://github.com/SimonRit/RTK 
+ * http://www.openrtk.org/
  *
  * \section howto How to use this documentation
  *
