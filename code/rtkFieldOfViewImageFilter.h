@@ -28,17 +28,18 @@ namespace rtk
 {
 
 /** \class FieldOfViewImageFilter
- * \brief Masks out the regions that are not included in our field of view or
+ * \brief Computes the field of view mask for circular 3D geometry.
+ *
+ * Masks out the regions that are not included in our field of view or
  * creates the mask if m_Mask is true. Note that the 3 angle parameters are
- * assumed to be 0. in the circular geometry (GantryAngle, OutOfPlaneAngle and
- * m_InPlaneAngle). The rest is accounted for but the fov is assumed to be
+ * assumed to be 0. in the circular geometry: GantryAngle, OutOfPlaneAngle and
+ * InPlaneAngle. The rest is accounted for but the fov is assumed to be
  * cylindrical and symmetric on each side of the rotation plane.
  *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter
  */
-
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT FieldOfViewImageFilter:
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
@@ -66,7 +67,9 @@ public:
   itkGetMacro(Geometry, GeometryPointer);
   itkSetMacro(Geometry, GeometryPointer);
 
-  /** Get / Set of the member Mask */
+  /** Get / Set of the member Mask. If set, all the pixels in the field of view
+   * are set to 1. The data value is left otherwise. Pixels outside the mask
+   * are set to 0 in any case. */
   itkGetMacro(Mask, bool);
   itkSetMacro(Mask, bool);
 

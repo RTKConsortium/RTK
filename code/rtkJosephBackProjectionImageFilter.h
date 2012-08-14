@@ -27,14 +27,14 @@ namespace rtk
 
 /** \class JosephBackProjectionImageFilter
  * \brief Transpose of JosephForwardProjectionImageFilter.
+ *
  * This is expected to be slow compared to VoxelBasedBackProjectionImageFilter
- * because anti-aliasing strategy is required.
+ * because anti-aliasing strategy is required, i.e., doing two backprojections.
  *
  * \author Simon Rit
  *
- * \ingroup BackProjectionImageFilter
+ * \ingroup Projector
  */
-
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT JosephBackProjectionImageFilter :
   public BackProjectionImageFilter<TInputImage,TOutputImage>
@@ -69,6 +69,7 @@ protected:
    * to verify. */
   virtual void VerifyInputInformation() {}
 
+  /** Splat value between surrounding voxels using linear strategy. */
   void BilinearSplit(const InputPixelType ip,
                      const CoordRepType stepLengthInMM,
                      OutputPixelType *pxiyi,

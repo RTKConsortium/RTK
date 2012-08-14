@@ -21,19 +21,20 @@
 
 #include "rtkFDKBackProjectionImageFilter.h"
 
-/** \class CudaFDKBackProjectionImageFilter
- * \brief TODO
- *
- * TODO
- *
- * \author Simon Rit
- *
- * \ingroup FDKBackProjectionImageFilter
- */
-
 namespace rtk
 {
 
+/** \class CudaFDKBackProjectionImageFilter
+ * \brief Cuda version of the FDK backprojection.
+ *
+ * GPU-based implementation of the backprojection step of the
+ * [Feldkamp, Davis, Kress, 1984] algorithm for filtered backprojection
+ * reconstruction of cone-beam CT images with a circular source trajectory.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Projector CudaImageToImageFilter
+ */
 class ITK_EXPORT CudaFDKBackProjectionImageFilter :
   public FDKBackProjectionImageFilter< itk::Image<float,3>, itk::Image<float,3> >
 {

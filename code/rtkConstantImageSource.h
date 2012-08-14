@@ -30,13 +30,14 @@ namespace rtk
 /** \class ConstantImageSource
  * \brief Generate an n-dimensional image with constant pixel values.
  *
- * ConstantImageSource generates an image with constant value.
+ * ConstantImageSource generates an image with constant value. The filter is
+ * useful to allow streaming of large images with a constant source, e.g., a
+ * tomography reconstructed with a filtered backprojection algorithm.
  *
  * \author Simon Rit
  *
  * \ingroup ImageSource
  */
-
 template <typename TOutputImage>
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
 {

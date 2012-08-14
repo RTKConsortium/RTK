@@ -31,13 +31,12 @@ namespace rtk
 /** \class SheppLoganPhantomFilter
  * \brief Computes intersection between source rays and ellipsoids,
  * in order to create the projections of a Shepp-Logan phantom resized
- * to m_PhantoScale ( default 128 )
+ * to m_PhantoScale ( default 128 ).
  *
  * \author Marc Vila
  *
- * \ingroup RayEllipsoidIntersectionImageFilter
+ * \ingroup InPlaceImageFilter
  */
-
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT SheppLoganPhantomFilter :
   public RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage>
@@ -71,10 +70,10 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(SheppLoganPhantomFilter, RayEllipsoidIntersectionImageFilter);
 
-  rtkSetMacro(PhantomScale, double);
-  rtkGetMacro(PhantomScale, double);
-  rtkSetMacro(PhantomOriginOffsetX, double);
-  rtkGetMacro(PhantomOriginOffsetX, double);
+  itkSetMacro(PhantomScale, double);
+  itkGetMacro(PhantomScale, double);
+  itkSetMacro(PhantomOriginOffsetX, double);
+  itkGetMacro(PhantomOriginOffsetX, double);
 
 protected:
   SheppLoganPhantomFilter();

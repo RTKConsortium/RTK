@@ -27,18 +27,20 @@
 #include <CL/cl.h>
 #endif
 
+namespace rtk
+{
+
 /** \class OpenCLFDKBackProjectionImageFilter
- * \brief TODO
+ * \brief OpenCL version of FDK backprojection.
  *
- * TODO
+ * GPU-based implementation of the backprojection step of the
+ * [Feldkamp, Davis, Kress, 1984] algorithm for filtered backprojection
+ * reconstruction of cone-beam CT images with a circular source trajectory.
  *
  * \author Simon Rit
  *
- * \ingroup FDKBackProjectionImageFilter
+ * \ingroup Projector OpenCLImageToImageFilter
  */
-
-namespace rtk
-{
 
 class ITK_EXPORT OpenCLFDKBackProjectionImageFilter :
   public FDKBackProjectionImageFilter< itk::Image<float,3>, itk::Image<float,3> >

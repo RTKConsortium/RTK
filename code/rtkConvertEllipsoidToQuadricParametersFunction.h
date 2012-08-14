@@ -26,21 +26,14 @@ namespace rtk
 {
 
 /** \class RegularToQuadricFunction
- * \brief Translates regular geometric expression to quadric expression.
+ * \brief Converts ellipsoid parameters to quadric parameters.
  *
- * Translates regular geometric parameters to quadric
- * expressions.
- *
- *   http://fr.wikipedia.org/wiki/Quadrique
- *
- * It also rotates and translates a
- * quadric expression with a certain given angle
- * and center of the object, in order to create the
- * desired figure.
+ * Converts ellipsoid parameters, i.e., semi-principal axes, center and
+ * rotation angle to quadric parameters.
  *
  * \author Marc Vila
  *
- * \ingroup Object
+ * \ingroup Geometry
  */
 class ConvertEllipsoidToQuadricParametersFunction :
     public itk::Object
@@ -64,27 +57,19 @@ public:
   bool Translate( const VectorType& input );
   bool Rotate( const double input1, const VectorType& input2 );
 
-  /** Get / Set the quadric parameters. */
+  /** Get / Set the quadric parameters. The convention for the names of the
+   * quadric parameters is explained in
+   * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm*/
   itkGetMacro(A, double);
-  itkSetMacro(A, double);
   itkGetMacro(B, double);
-  itkSetMacro(B, double);
   itkGetMacro(C, double);
-  itkSetMacro(C, double);
   itkGetMacro(D, double);
-  itkSetMacro(D, double);
   itkGetMacro(E, double);
-  itkSetMacro(E, double);
   itkGetMacro(F, double);
-  itkSetMacro(F, double);
   itkGetMacro(G, double);
-  itkSetMacro(G, double);
   itkGetMacro(H, double);
-  itkSetMacro(H, double);
   itkGetMacro(I, double);
-  itkSetMacro(I, double);
   itkGetMacro(J, double);
-  itkSetMacro(J, double);
 
   itkGetMacro(SemiPrincipalAxisX, double);
   itkSetMacro(SemiPrincipalAxisX, double);
@@ -109,9 +94,6 @@ protected:
 
   /// Destructor
   ~ConvertEllipsoidToQuadricParametersFunction() {};
-
-  /// The focal point or position of the ray source
-  VectorType m_FocalPoint;
 
   /** Corners of the image Quadric */
   double m_SemiPrincipalAxisX;

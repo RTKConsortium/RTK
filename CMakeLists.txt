@@ -112,7 +112,7 @@ INCLUDE(${RTK_SOURCE_DIR}/cmake/KWStyle/KWStyle.cmake)
 OPTION(BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
 IF(BUILD_DOXYGEN)
   FIND_PACKAGE(Doxygen)
-  ADD_SUBDIRECTORY(Doxygen)
+  ADD_SUBDIRECTORY(documentation/Doxygen)
 ENDIF(BUILD_DOXYGEN)
 #=========================================================
 

@@ -22,19 +22,20 @@
 #include <itkInPlaceImageFilter.h>
 #include "rtkConfiguration.h"
 
+namespace rtk
+{
+
 /** \class BoellaardScatterCorrectionImageFilter
- * \brief TODO
+ * \brief Scatter correction for cone-beam CT reconstruction.
  *
- * TODO
+ * The scatter correction algorithm is based on the work of
+ * [Boellaard, Rad Onc, 1997]. It assumes a homogeneous contribution of scatter
+ * which is computed depending on the amount of tissues traversed by x-rays.
  *
  * \author Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
-
-namespace rtk
-{
-
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT BoellaardScatterCorrectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
@@ -57,15 +58,19 @@ public:
   /** Runtime information support. */
   itkTypeMacro(BoellaardScatterCorrectionImageFilter, itk::ImageToImageFilter);
 
-  /** Get / Set the air threshold on projection images */
+  /** Get / Set the air threshold on projection images. The threshold is used to
+   ** evaluate which part of the x-rays have traversed the patient. */
   itkGetMacro(AirThreshold, double);
   itkSetMacro(AirThreshold, double);
 
-  /** Get / Set the scatter-to-primary ratio on projection images */
+  /** Get / Set the scatter-to-primary ratio on projection images. This is used
+   ** to measure the scatter level on the projection image from the total measure
+   ** signal. */
   itkGetMacro(ScatterToPrimaryRatio, double);
   itkSetMacro(ScatterToPrimaryRatio, double);
 
-  /** Get / Set the non-negativity constraint threshold */
+  /** Get / Set the non-negativity constraint threshold. The pixels values will
+  ** no be alowed below this signal to avoid nan when computing the log. */
   itkGetMacro(NonNegativityConstraintThreshold, double);
   itkSetMacro(NonNegativityConstraintThreshold, double);
 

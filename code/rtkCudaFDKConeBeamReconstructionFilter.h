@@ -23,23 +23,21 @@
 #include "rtkCudaFFTRampImageFilter.h"
 #include "rtkCudaFDKBackProjectionImageFilter.h"
 
+namespace rtk
+{
+
 /** \class CudaFDKConeBeamReconstructionFilter
- * \brief Implements Feldkamp, David and Kress cone-beam reconstruction using Cuda
+ * \brief Implements [Feldkamp, Davis, Kress, 1984] algorithm using Cuda
  *
- * Replaces ramp and backprojection in FDKConeBeamReconstructionFilter with
- * - CudaFFTRampImageFilter
- * - CudaFDKBackProjectionImageFilter.
+ * Replaces ramp filter and backprojection in FDKConeBeamReconstructionFilter
+ * with CudaFFTRampImageFilter and CudaFDKBackProjectionImageFilter.
  * Also take care to create the reconstructed volume on the GPU at the beginning and
  * transfers it at the end.
  *
  * \author Simon Rit
  *
- * \ingroup FDKConeBeamReconstructionFilter
+ * \ingroup ReconstructionAlgorithm CudaImageToImageFilter
  */
-
-namespace rtk
-{
-
 class ITK_EXPORT CudaFDKConeBeamReconstructionFilter :
   public FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float >
 {

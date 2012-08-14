@@ -26,6 +26,9 @@
 #include <itkExtractImageFilter.h>
 #include <itkTimeProbe.h>
 
+namespace rtk
+{
+
 /** \class FDKConeBeamReconstructionFilter
  * \brief Implements Feldkamp, David and Kress cone-beam reconstruction
  *
@@ -40,11 +43,8 @@
  *
  * \author Simon Rit
  *
- * \ingroup InPlaceImageFilter
+ * \ingroup ReconstructionAlgorithm
  */
-namespace rtk
-{
-
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
 class ITK_EXPORT FDKConeBeamReconstructionFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>

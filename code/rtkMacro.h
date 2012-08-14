@@ -25,10 +25,23 @@
 #include <iostream>
 
 //--------------------------------------------------------------------
+/** \brief Debugging macro, displays name and content of a variable
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Macro
+ */
 #define DD(a) std::cout << #a " = [ " << a << " ]" << std::endl;
 //--------------------------------------------------------------------
 
 //--------------------------------------------------------------------
+//--------------------------------------------------------------------
+/** \brief Process gengetopt with config file option
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Macro
+ */
 #define GGO(ggo_filename, args_info)                                    \
   args_info_##ggo_filename args_info;                                   \
   cmdline_parser_##ggo_filename##2 (argc, argv, &args_info, 1, 1, 0);   \
@@ -38,6 +51,12 @@
 //--------------------------------------------------------------------
 
 //--------------------------------------------------------------------
+/** \brief Update a filter and catching/displaying exceptions
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Macro
+ */
 #define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                         \
   try                                                                   \
     {                                                                   \
@@ -49,28 +68,6 @@
     std::cerr << err << std::endl;                                      \
     exit(EXIT_FAILURE);                                                 \
     }
-//--------------------------------------------------------------------
-
-//--------------------------------------------------------------------
-/** Set built-in type. Creates member Set"name"() ;                     */
-#define rtkSetMacro(name,type)                                          \
-  virtual void Set##name (const type _arg)                              \
-  {                                                                     \
-    if (this->m_##name != _arg)                                         \
-      {                                                                 \
-      this->m_##name = _arg;                                            \
-      this->Modified();                                                 \
-      }                                                                 \
-  }
-//--------------------------------------------------------------------
-
-//--------------------------------------------------------------------
-/** Get built-in type.  Creates member Get"name"() (e.g., GetVisibility()); */
-#define rtkGetMacro(name,type)                                          \
-  virtual type Get##name ()                                             \
-  {                                                                     \
-    return this->m_##name;                                              \
-  }
 //--------------------------------------------------------------------
 
 #endif // RTKMACRO_H

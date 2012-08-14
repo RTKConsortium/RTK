@@ -26,7 +26,7 @@ namespace rtk
 {
 
 /** \class RayCastInterpolatorForwardProjectionImageFilter
- * \brief TODO
+ * \brief Forward projection using itk RayCastInterpolateFunction
  *
  * Forward projection using itk RayCastInterpolateFunction.
  * RayCastInterpolateFunction does not handle ITK geometry correctly but this
@@ -34,7 +34,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ForwardProjectionImageFilter
+ * \ingroup Projector
  */
 
 template <class TInputImage, class TOutputImage>

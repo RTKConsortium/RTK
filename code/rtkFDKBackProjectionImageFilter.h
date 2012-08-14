@@ -21,19 +21,20 @@
 
 #include "rtkBackProjectionImageFilter.h"
 
-/** \class FDKBackProjectionImageFilter
- * \brief TODO
- *
- * TODO
- *
- * \author Simon Rit
- *
- * \ingroup BackProjectionImageFilter
- */
-
 namespace rtk
 {
 
+/** \class FDKBackProjectionImageFilter
+ * \brief CPU version of the backprojection of the FDK algorithm.
+ *
+ * CPU implementation of the backprojection step of the
+ * [Feldkamp, Davis, Kress, 1984] algorithm for filtered backprojection
+ * reconstruction of cone-beam CT images with a circular source trajectory.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Projector
+ */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT FDKBackProjectionImageFilter :
   public BackProjectionImageFilter<TInputImage,TOutputImage>

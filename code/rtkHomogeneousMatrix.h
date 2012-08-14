@@ -29,7 +29,14 @@ namespace rtk
 {
 
 //--------------------------------------------------------------------
-/** Get IndexToPhysicalPoint matrix from an image (no accessor provided by ITK) */
+/** \brief Get IndexToPhysicalPoint matrix from an image (no accessor provided by ITK).
+ *
+ * The returned matrix is in homogeneous format.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
 //template <class TPixel, unsigned int VImageDimension>
 template <class TImageType>
 itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>
@@ -59,7 +66,14 @@ GetIndexToPhysicalPointMatrix(const TImageType *image)
 };
 
 //--------------------------------------------------------------------
-/** Get PhysicalPointToIndex matrix from an image (no accessor provided by ITK) */
+/** \brief Get PhysicalPointToIndex matrix from an image (no accessor provided by ITK).
+ *
+ * The returned matrix is in homogeneous format.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
 //template <class TPixel, unsigned int VImageDimension>
 template <class TImageType>
 itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>

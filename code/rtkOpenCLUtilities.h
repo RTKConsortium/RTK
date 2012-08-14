@@ -29,6 +29,12 @@
 #include <vector>
 #include <itkMacro.h>
 
+/** \brief Macro to check errors when running an OpenCL command.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Macro
+ */
 #define OPENCL_CHECK_ERROR(cmd) \
     { \
     cl_int rc = cmd; \
@@ -39,10 +45,28 @@
                                << rc); \
     }
 
+/** \brief Get the list of OpenCL compatible platforms
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
 std::vector<cl_platform_id> GetListOfOpenCLPlatforms();
 
+/** \brief Get the list of OpenCL compatible devices
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
 std::vector<cl_device_id> GetListOfOpenCLDevices(const cl_platform_id platform);
 
+/** \brief Builds an OpenCL program in a given filename given a context
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
 void CreateAndBuildOpenCLProgramFromSourceFile(const std::string fileName, const cl_context &context,
                                                cl_program &program);
 

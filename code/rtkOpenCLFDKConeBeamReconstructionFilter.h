@@ -22,8 +22,11 @@
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkOpenCLFDKBackProjectionImageFilter.h"
 
+namespace rtk
+{
+
 /** \class OpenCLFDKConeBeamReconstructionFilter
- * \brief Implements Feldkamp, David and Kress cone-beam reconstruction using OpenCL
+ * \brief Implements [Feldkamp, Davis, Kress, 1984] algorithm using OpenCL
  *
  * Replaces ramp and backprojection in FDKConeBeamReconstructionFilter with
  * - OpenCLFDKBackProjectionImageFilter.
@@ -32,11 +35,8 @@
  *
  * \author Simon Rit
  *
- * \ingroup FDKConeBeamReconstructionFilter
+ * \ingroup ReconstructionAlgorithm OpenCLImageToImageFilter
  */
-namespace rtk
-{
-
 class ITK_EXPORT OpenCLFDKConeBeamReconstructionFilter :
   public FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float >
 {

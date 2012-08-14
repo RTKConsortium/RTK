@@ -33,9 +33,9 @@ namespace rtk
 {
 
 /** \class HndImageIOFactory
+ * \brief ITK factory for Hnd file I/O.
  *
- * Factory for Hnd files (file format used by Varian for Obi raw data).
- *
+ * \author Simon Rit
  */
 class HndImageIOFactory : public itk::ObjectFactoryBase
 {

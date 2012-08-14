@@ -21,18 +21,18 @@
 
 #include "rtkFFTRampImageFilter.h"
 
-/** \class CudaFFTRampImageFilter
- * \brief Implements the ramp image filter of the filtered backprojection algorithm.
- * uses CUFFT for the projection fft and ifft.
- *
- * \author Simon Rit
- *
- * \ingroup FFTRampImageFilter
- */
-
 namespace rtk
 {
 
+/** \class CudaFFTRampImageFilter
+ * \brief Implements the ramp image filter of the FDK algorithm on GPU.
+ *
+ * Uses CUFFT for the projection fft and ifft.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup CudaImageToImageFilter
+ */
 class ITK_EXPORT CudaFFTRampImageFilter :
   public FFTRampImageFilter< itk::Image<float,3>, itk::Image<float,3>, float >
 {
@@ -52,7 +52,7 @@ public:
 protected:
   CudaFFTRampImageFilter();
   ~CudaFFTRampImageFilter(){
-  }
+}
 
   virtual void GenerateData();
 

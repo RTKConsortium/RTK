@@ -28,17 +28,17 @@
 namespace rtk
 {
   
-/** \class VarianObiRawImageFilter
- * \brief Interprets the raw Varian OBI projection data to values.
+namespace Function {  
+  
+/** \class ObiAttenuation
+ * \brief Converts a raw value measured by the Varian OBI system to attenuation
  *
- * TODO
+ * The current implementation assues a maximum possible value for hnd of 139000.
  *
  * \author Simon Rit
  *
- * \ingroup UnaryFunctorImageFilter
+ * \ingroup Functions
  */
-namespace Function {  
-  
 template< class TInput, class TOutput>
 class ObiAttenuation
 {
@@ -68,6 +68,15 @@ public:
 }; 
 }
 
+/** \class VarianObiRawImageFilter
+ * \brief Converts raw images measured by the Varian OBI system to attenuation
+ *
+ * Uses ObiAttenuation.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup ImageToImageFilter
+ */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT VarianObiRawImageFilter :
     public

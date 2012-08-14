@@ -9,7 +9,7 @@
 struct RabbitCtGlobalData
   {
   ///@{ Relevant data for the backprojection
-  unsigned int L;       ///< problem size	\in {128, 256, 512, 1024}
+  unsigned int L;       ///< problem size in {128, 256, 512, 1024}
   unsigned int S_x;     ///< projection image width
   unsigned int S_y;     ///< projection image height (detector rows)
   double * A_n;         ///< 3x4 projetion matrix

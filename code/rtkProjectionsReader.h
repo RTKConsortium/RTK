@@ -33,7 +33,10 @@ namespace rtk
 /** \class ProjectionsReader
  *
  * This is the universal projections reader of rtk (raw data converted to
- * understandable values, e.g. attenuation).
+ * understandable values, e.g. attenuation). Currently handles his (Elekta
+ * Synergy), hnd (Varian OBI), tiff. For all other ITK file formats, it is
+ * assumed that the attenuation is directly passed and there is no processing,
+ * only the reading.
  *
  * \author Simon Rit
  *

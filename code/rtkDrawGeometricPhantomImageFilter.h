@@ -31,14 +31,15 @@ namespace rtk
 {
 
 /** \class DrawGeometricPhantomImageFilter
- * \brief Creates a 3D reference of a quadric expression
- * which parameters are stored in a configuration file.
+ * \brief Draw quadric shapes in 3D image.
+ *
+ * The filter draws a list of quadric shapes which parameters are passed by a
+ * file. See rtkGeometricPhantomFileReader.h for the file format.
  *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter
  */
-
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT DrawGeometricPhantomImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>

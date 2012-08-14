@@ -28,12 +28,12 @@ namespace rtk
 /** \class TiffLookupTableImageFilter
  * \brief Lookup table for tiff projection images.
  *
- * The lookup table converts the raw values to the logarithm of the value divided by the max
- *
+ * The lookup table converts the raw values to the logarithm of the value
+ * divided by the maximum possible value.
  *
  * \author Simon Rit
  *
- * \ingroup TiffLookupTableImageFilter
+ * \ingroup ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT TiffLookupTableImageFilter : public LookupTableImageFilter<TInputImage, TOutputImage>

@@ -28,18 +28,21 @@ namespace rtk
 {
 /** \class ThreeDCircularProjectionGeometry
  * \brief Projection geometry for a point source and a 2-D flat panel.
+ *
  * The source and the detector rotate around a circle paremeterized
  * with the SourceToDetectorDistance and the SourceToIsocenterDistance.
  * The position of each projection along this circle is parameterized
  * by the RotationAngle.
  * The detector can be shifted in plane with the ProjectionOffsetsX
- * and the ProjectionOffsetsY.
+ * and the ProjectionOffsetsY. It can be also rotated with InPlaneAngles
+ * and OutOfPlaneAngles.
+ * The source can be shifted in plane with the SourceOffsetsX
+ * and the SourceOffsetsY.
  *
  * \author Simon Rit
  *
  * \ingroup ProjectionGeometry
  */
-
 class ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:

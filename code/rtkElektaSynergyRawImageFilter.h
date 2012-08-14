@@ -23,20 +23,22 @@
 #include <itkConceptChecking.h>
 #include <itkNumericTraits.h>
 
-#define HND_INTENSITY_MAX (139000)
-
 namespace rtk
 {
-  
+namespace Function {
+
 /** \class ElektaSynergyRawImageFilter
  * \brief Interprets the raw Elekta Synergy projection data to values.
  *
+ * This filter does the same as rtk::ElektaSynergyLookupTableImageFilter:
+ * converts the raw values measured by the panel to the logarithm of the value
+ * divided by the maximum numerical value. This could be improved with a
+ * calibration of the air value.
+ *
  * \author Simon Rit
  *
- * \ingroup UnaryFunctorImageFilter
+ * \ingroup ImageToImageFilter
  */
-namespace Function {  
-  
 template< class TInput, class TOutput>
 class SynergyAttenuation
 {

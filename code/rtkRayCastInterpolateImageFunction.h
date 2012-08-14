@@ -47,13 +47,13 @@ namespace rtk
  *
  * RayCastInterpolateImageFunction casts rays through a 3-dimensional
  * image and uses bilinear interpolation to integrate each plane of
- * voxels traversed.
+ * voxels traversed. This code has been taken and modified from ITK.
  * 
  * \warning This interpolator works for 3-dimensional images only.
  *
  * \author Simon Rit
  *
- * \ingroup ImageFunctions
+ * \ingroup Functions
  */
 template <class TInputImage, class TCoordRep = double>
 class ITK_EXPORT RayCastInterpolateImageFunction : 

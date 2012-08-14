@@ -28,18 +28,21 @@
 #include <itkSubtractImageFilter.h>
 #include <itkPermuteAxesImageFilter.h>
 
+namespace rtk
+{
+
 /** \class AmsterdamShroudImageFilter
- * \brief TODO
+ * \brief Compute the Amsterdam shroud image for respiratory signal extraction.
  *
- * TODO
+ * The Amsterdam shroud is an image that is used to extract a respiratory
+ * signal from cone-beam projection images. The X-axis is time and the Y-axis
+ * is the cranio-caudal position. More information is available in
+ * [Zijp, ICCR, 2004], [Sonke, Med Phys, 2005] and [Rit, IJROBP, 2012].
  *
  * \author Simon Rit
  *
  * \ingroup ImageToImageFilter
  */
-namespace rtk
-{
-
 template<class TInputImage, class TOutputImage=
            itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension-1> >
 class ITK_EXPORT AmsterdamShroudImageFilter :

@@ -35,7 +35,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup XMLReader
+ * \ingroup IOFilters
  */
 class ThreeDCircularProjectionGeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >
@@ -106,6 +106,10 @@ private:
 /** \class ThreeDCircularProjectionGeometryXMLFileWriter
  *
  * Writes an XML-format file containing geometry for reconstruction
+ *
+ * \author Simon Rit
+ *
+ * \ingroup IOFilters
  */
 class ThreeDCircularProjectionGeometryXMLFileWriter :
   public itk::XMLWriterBase< ThreeDCircularProjectionGeometry >

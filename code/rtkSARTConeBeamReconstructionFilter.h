@@ -27,6 +27,9 @@
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
 
+namespace rtk
+{
+
 /** \class SARTConeBeamReconstructionFilter
  * \brief Implements the Simultaneous Algebraic Reconstruction Technique [Andersen, 1984]
  *
@@ -42,11 +45,8 @@
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup ReconstructionAlgorithm
  */
-namespace rtk
-{
-
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT SARTConeBeamReconstructionFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
