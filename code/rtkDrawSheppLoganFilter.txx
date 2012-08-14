@@ -31,8 +31,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 DrawSheppLoganFilter<TInputImage, TOutputImage>
 ::DrawSheppLoganFilter():
-m_PhantomScale(128.0),
-m_PhantomOriginOffsetX(0.)
+m_PhantomScale(128.0)
 {
 }
 
@@ -49,7 +48,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[0].semiprincipalaxis.push_back(0.69*m_PhantomScale);
   shepplogan[0].semiprincipalaxis.push_back(0.90*m_PhantomScale);
   shepplogan[0].semiprincipalaxis.push_back(0.92*m_PhantomScale);
-  shepplogan[0].center.push_back(m_PhantomOriginOffsetX);
+  shepplogan[0].center.push_back(0.);
   shepplogan[0].center.push_back(0.);
   shepplogan[0].center.push_back(0.);
   shepplogan[0].angle = 0.;
@@ -58,7 +57,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[1].semiprincipalaxis.push_back(0.6624*m_PhantomScale);
   shepplogan[1].semiprincipalaxis.push_back(0.880*m_PhantomScale);
   shepplogan[1].semiprincipalaxis.push_back(0.874*m_PhantomScale);
-  shepplogan[1].center.push_back(m_PhantomOriginOffsetX);
+  shepplogan[1].center.push_back(0.);
   shepplogan[1].center.push_back(0.);
   shepplogan[1].center.push_back(0.);
   shepplogan[1].angle = 0.;
@@ -67,7 +66,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[2].semiprincipalaxis.push_back(0.41*m_PhantomScale);
   shepplogan[2].semiprincipalaxis.push_back(0.21*m_PhantomScale);
   shepplogan[2].semiprincipalaxis.push_back(0.16*m_PhantomScale);
-  shepplogan[2].center.push_back(-0.22*m_PhantomScale + m_PhantomOriginOffsetX);
+  shepplogan[2].center.push_back(-0.22*m_PhantomScale);
   shepplogan[2].center.push_back(-0.25*m_PhantomScale);
   shepplogan[2].center.push_back(0.);
   shepplogan[2].angle = 108.;
@@ -76,7 +75,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[3].semiprincipalaxis.push_back(0.31*m_PhantomScale);
   shepplogan[3].semiprincipalaxis.push_back(0.22*m_PhantomScale);
   shepplogan[3].semiprincipalaxis.push_back(0.11*m_PhantomScale);
-  shepplogan[3].center.push_back(0.22*m_PhantomScale + m_PhantomOriginOffsetX);
+  shepplogan[3].center.push_back(0.22*m_PhantomScale);
   shepplogan[3].center.push_back(-0.25*m_PhantomScale);
   shepplogan[3].center.push_back(0.);
   shepplogan[3].angle = 72.;
@@ -85,7 +84,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[4].semiprincipalaxis.push_back(0.21*m_PhantomScale);
   shepplogan[4].semiprincipalaxis.push_back(0.50*m_PhantomScale);
   shepplogan[4].semiprincipalaxis.push_back(0.25*m_PhantomScale);
-  shepplogan[4].center.push_back(m_PhantomOriginOffsetX);
+  shepplogan[4].center.push_back(0.);
   shepplogan[4].center.push_back(-0.25*m_PhantomScale);
   shepplogan[4].center.push_back(0.35*m_PhantomScale);
   shepplogan[4].angle = 0.;
@@ -94,7 +93,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[5].semiprincipalaxis.push_back(0.046*m_PhantomScale);
   shepplogan[5].semiprincipalaxis.push_back(0.046*m_PhantomScale);
   shepplogan[5].semiprincipalaxis.push_back(0.046*m_PhantomScale);
-  shepplogan[5].center.push_back(m_PhantomOriginOffsetX);
+  shepplogan[5].center.push_back(0.);
   shepplogan[5].center.push_back(-0.25*m_PhantomScale);
   shepplogan[5].center.push_back(0.10*m_PhantomScale);
   shepplogan[5].angle = 0.;
@@ -103,7 +102,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[6].semiprincipalaxis.push_back(0.046*m_PhantomScale);
   shepplogan[6].semiprincipalaxis.push_back(0.020*m_PhantomScale);
   shepplogan[6].semiprincipalaxis.push_back(0.023*m_PhantomScale);
-  shepplogan[6].center.push_back(-0.08*m_PhantomScale + m_PhantomOriginOffsetX);
+  shepplogan[6].center.push_back(-0.08*m_PhantomScale);
   shepplogan[6].center.push_back(-0.250*m_PhantomScale);
   shepplogan[6].center.push_back(-0.650*m_PhantomScale);
   shepplogan[6].angle = 0.;
@@ -112,7 +111,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[7].semiprincipalaxis.push_back(0.046*m_PhantomScale);
   shepplogan[7].semiprincipalaxis.push_back(0.020*m_PhantomScale);
   shepplogan[7].semiprincipalaxis.push_back(0.023*m_PhantomScale);
-  shepplogan[7].center.push_back(0.06*m_PhantomScale + m_PhantomOriginOffsetX);
+  shepplogan[7].center.push_back(0.06*m_PhantomScale);
   shepplogan[7].center.push_back(-0.25*m_PhantomScale);
   shepplogan[7].center.push_back(-0.65*m_PhantomScale);
   shepplogan[7].angle = 90.;
@@ -121,7 +120,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[8].semiprincipalaxis.push_back(0.056*m_PhantomScale);
   shepplogan[8].semiprincipalaxis.push_back(0.010*m_PhantomScale);
   shepplogan[8].semiprincipalaxis.push_back(0.040*m_PhantomScale);
-  shepplogan[8].center.push_back(0.060*m_PhantomScale + m_PhantomOriginOffsetX);
+  shepplogan[8].center.push_back(0.060*m_PhantomScale);
   shepplogan[8].center.push_back(0.625*m_PhantomScale);
   shepplogan[8].center.push_back(-0.105*m_PhantomScale);
   shepplogan[8].angle = 90.;
@@ -130,7 +129,7 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[9].semiprincipalaxis.push_back(0.056*m_PhantomScale);
   shepplogan[9].semiprincipalaxis.push_back(0.100*m_PhantomScale);
   shepplogan[9].semiprincipalaxis.push_back(0.056*m_PhantomScale);
-  shepplogan[9].center.push_back(m_PhantomOriginOffsetX);
+  shepplogan[9].center.push_back(0.);
   shepplogan[9].center.push_back(0.625*m_PhantomScale);
   shepplogan[9].center.push_back(0.100*m_PhantomScale);
   shepplogan[9].angle = 0.;

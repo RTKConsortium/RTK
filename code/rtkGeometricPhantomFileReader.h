@@ -29,8 +29,8 @@ namespace rtk
 {
 
 /** \class GeometricPhantomFileReader
- * \brief Reads configuration file which contains
- * the specifications for a specific phantom figure.
+ * \brief Reads configuration file containing specifications of a geometric
+ * phantom.
  *
  * \author Marc Vila
  *
@@ -58,8 +58,8 @@ public:
 
   bool Config( const std::string input);
 
-  rtkSetMacro(Fig, VectorOfVectorType);
-  rtkGetMacro(Fig, VectorOfVectorType);
+  itkSetMacro(Fig, VectorOfVectorType);
+  itkGetMacro(Fig, VectorOfVectorType);
 
 protected:
 

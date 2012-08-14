@@ -25,19 +25,21 @@
 #include <itkConceptChecking.h>
 #include "rtkProjectionGeometry.h"
 
-/** \class BackProjectionImageFilter
- * \brief TODO
- *
- * TODO
- *
- * \author Simon Rit
- *
- * \ingroup InPlaceImageFilter
- */
-
 namespace rtk
 {
 
+/** \class BackProjectionImageFilter
+ * \brief 3D backprojection
+ *
+ * Backprojects a stack of projection images (input 1) in a 3D volume (input 0)
+ * using linear interpolation according to a specified geometry. The operation
+ * is voxel-based, meaning that the center of each voxel is projected in the
+ * projection images to determine the interpolation location.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Projector
+ */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT BackProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
@@ -92,7 +94,7 @@ protected:
       not threadsafe in ThreadedGenerateData, this one is. The output can be multiplied by a constant. */
   ProjectionImagePointer GetProjection(const unsigned int iProj);
 
-  /** Creates the #iProj index to index projection matrix with current inputs
+  /** Creates iProj index to index projection matrices with current inputs
       instead of the physical point to physical point projection matrix provided by Geometry */
   ProjectionMatrixType GetIndexToIndexProjectionMatrix(const unsigned int iProj, const ProjectionImageType *proj);
 

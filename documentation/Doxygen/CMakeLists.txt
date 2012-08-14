@@ -8,10 +8,10 @@ IF (BUILD_DOXYGEN)
   #
   # Configure the script and the doxyfile, then add target
   #
-  CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/Doxygen/doxygen.config.in
+  CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/documentation/Doxygen/doxygen.config.in
                  ${PROJECT_BINARY_DIR}/Doxygen/doxygen.config)
 
-  CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/Doxygen/itkdoxygen.pl.in
+  CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/documentation/Doxygen/itkdoxygen.pl.in
                  ${PROJECT_BINARY_DIR}/Doxygen/itkdoxygen.pl)
 
   ADD_CUSTOM_TARGET(Documentation 

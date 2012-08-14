@@ -33,14 +33,12 @@ namespace rtk
 /** \class RayEllipsoidIntersectionImageFilter
  * \brief Computes intersection of projection rays with ellipsoids.
  *
- * See http://en.wikipedia.org/wiki/Ellipsoid
- * for more information.
+ * See http://en.wikipedia.org/wiki/Ellipsoid for more information.
  *
  * \author Simon Rit
  *
- * \ingroup RayQuadricIntersectionImageFilter
+ * \ingroup InPlaceImageFilter
  */
-
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT RayEllipsoidIntersectionImageFilter :
   public RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>

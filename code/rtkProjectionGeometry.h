@@ -28,16 +28,16 @@ namespace rtk
 
 /** \class ProjectionGeometry
  * \brief A templated class holding a vector of M x (M+1) matrices
+ *
  * This class contains a vector of projection matrices.
  * Each matrix corresponds to a different position of a
  * projector, e.g. a detector and an x-ray source.
  * The class is meant to be specialized for specific geometries.
  *
- * \author Marc Vila
+ * \author Simon Rit
  *
- * \ingroup DataObject
+ * \ingroup Geometry
  */
-
 template< unsigned int TDimension = 3 >
 class ProjectionGeometry : public itk::DataObject
 {

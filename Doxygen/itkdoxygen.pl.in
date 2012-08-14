@@ -1,9 +1,0 @@
-# for vxl files run the vxl_doxy.pl script, and use itkgroup.pl for all other files
-if ( $ARGV[0] =~ /(vxl|vcl|vnl)/) 
-{
-    system ("perl @RTK_SOURCE_DIR@/Doxygen/vxl_doxy.pl $ARGV[0]");
-}
-else
-{
-    system ("perl @RTK_SOURCE_DIR@/Doxygen/itkgroup.pl $ARGV[0]");
-}

@@ -21,21 +21,19 @@
 
 #include <itkUnaryFunctorImageFilter.h>
 
-/** \class LookupTableImageFilter
- * \brief TODO
- *
- * TODO
- *
- * \author Simon Rit
- *
- * \ingroup UnaryFunctorImageFilter
- */
-
 namespace rtk
 {
 
 namespace Functor
 {
+/** \brief Function to do the lookup operation.
+ *
+ * The lookup table is a 1D image which must contain all possible values.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
 template< class TInput, class TOutput >
 class LUT
 {
@@ -46,6 +44,7 @@ public:
   LUT() {};
   ~LUT() {};
 
+  /** Get/Set the lookup table. */
   LookupTableDataPointerType GetLookupTableDataPointer() {
     return m_LookupTableDataPointer;
   }
@@ -69,6 +68,15 @@ private:
 };
 } // end namespace Functor
 
+/** \class LookupTableImageFilter
+ * \brief Converts integer values of an input image using lookup table.
+ *
+ * The lookup table is passed via a functor of type Functor::LUT
+ *
+ * \author Simon Rit
+ *
+ * \ingroup ImageToImageFilter
+ */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT LookupTableImageFilter : public
   itk::UnaryFunctorImageFilter< TInputImage,

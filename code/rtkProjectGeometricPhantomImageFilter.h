@@ -42,9 +42,8 @@ namespace rtk
  *
  * \author Marc Vila
  *
- * \ingroup RayEllipsoidIntersectionImageFilter
+ * \ingroup InPlaceImageFilter
  */
-
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT ProjectGeometricPhantomImageFilter :
   public RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage>
@@ -77,8 +76,8 @@ public:
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
-  rtkSetMacro(Fig, VectorOfVectorType);
-  rtkGetMacro(Fig, VectorOfVectorType);
+  itkSetMacro(Fig, VectorOfVectorType);
+  itkGetMacro(Fig, VectorOfVectorType);
 
 protected:
   ProjectGeometricPhantomImageFilter() {}

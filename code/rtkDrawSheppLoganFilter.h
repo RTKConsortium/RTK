@@ -28,16 +28,15 @@ namespace rtk
 {
 
 /** \class DrawSheppLoganFilter
- * \brief Creates a 3D reference of a shepplogan phantom using the parameters
- *  of http://www.slaney.org/pct/pct-errata.html changing the axis Y by Z,
- *  due to matters of visualization. The phantom is resized to m_PhantomScale
- *  ( default 128 ).
+ * \brief Draws in a 3D image the Shepp-Logan phantom described in
+ *  http://www.slaney.org/pct/pct-errata.html
+ * Y and Z have been exchanged to follow the coordinate system of the IEC 61217
+ * international standard used by RTK.
  *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter
  */
-
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT DrawSheppLoganFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
@@ -67,27 +66,22 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(DrawSheppLoganFilter, InPlaceImageFilter);
 
-  /** Set/Get functions for members. */
-  rtkSetMacro(PhantomScale, double);
-  rtkGetMacro(PhantomScale, double);
-  rtkSetMacro(PhantomOriginOffsetX, double);
-  rtkGetMacro(PhantomOriginOffsetX, double);
+  /** Multiplicative Scaling factor for the phantom parameters described in
+   * http://www.slaney.org/pct/pct-errata.html. */
+  itkSetMacro(PhantomScale, double);
+  itkGetMacro(PhantomScale, double);
 
 protected:
   DrawSheppLoganFilter();
   virtual ~DrawSheppLoganFilter() {};
 
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
-  /** Translate user parameteres to quadric parameters.
-   * A call to this function will assume modification of the function.*/
-
 
 private:
   DrawSheppLoganFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
   double m_PhantomScale;
-  double m_PhantomOriginOffsetX;
 };
 
 } // end namespace rtk

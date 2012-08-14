@@ -28,11 +28,13 @@ namespace rtk
 /** \class ElektaSynergyLookupTableImageFilter
  * \brief Lookup table for Elekta Synergy data.
  *
- * The lookup table converts the raw values to the logarithm of the value divided by the max
+ * The lookup table converts the raw values measured by the panel to the
+ * logarithm of the value divided by the maximum numerical value. This could
+ * be improved with a calibration of the air value.
  *
  * \author Simon Rit
  *
- * \ingroup LookupTableImageFilter
+ * \ingroup ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT ElektaSynergyLookupTableImageFilter : public LookupTableImageFilter<TInputImage, TOutputImage>

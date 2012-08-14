@@ -25,8 +25,15 @@
 namespace rtk
 {
 
-//====================================================================
-// Class for reading His Image file format
+/** \class HisImageIO
+ * \brief Class for reading His Image file format
+ *
+ * The his image file format is used by Perkin Elmer flat panels.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup IOFilters
+ */
 class HisImageIO : public itk::ImageIOBase
 {
 public:

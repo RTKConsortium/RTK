@@ -1,10 +1,10 @@
-/**
+/*! \mainpage  Reconstruction ToolKit
  *
- * \mainpage  Reconstruction Toolkit
+ * \image html http://www.openrtk.org/opensourcelogos/rtk100.png
  *
  * \section intro Introduction
  *
- * The objective of this project is to develop open-source software 
+ * Welcome to the RTK project! The objective of this project is to develop open-source software 
  * for fast tomographic reconstruction compatible with ITK. 
  *
  * \section homepage Home Page

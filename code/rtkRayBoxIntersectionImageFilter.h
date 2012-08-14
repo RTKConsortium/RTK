@@ -29,7 +29,7 @@ namespace rtk
 /** \class RayBoxIntersectionImageFilter
  * \brief Computes intersection of projection rays with image box.
  *
- * TODO
+ * The filter uses RayBoxIntersectionFunction.
  *
  * \author Simon Rit
  *

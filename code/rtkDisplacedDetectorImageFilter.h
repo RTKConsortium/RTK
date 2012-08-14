@@ -23,7 +23,11 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
 
+namespace rtk
+{
+
 /** \class DisplacedDetectorImageFilter
+ * \brief Weigting for displaced detectors
  *
  * Weighting of image projections to handle off-centered panels
  * in tomography reconstruction. Based on [Wang, Med Phys, 2002].
@@ -41,11 +45,8 @@
  *
  * \author Simon Rit
  *
- * \ingroup FDKBackProjectionImageFilter
+ * \ingroup ImageToImageFilter
  */
-namespace rtk
-{
-
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT DisplacedDetectorImageFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>

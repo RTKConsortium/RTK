@@ -1,0 +1,23 @@
+/**
+ \defgroup Projector Objects related to forward- / back-projection.
+*/
+
+/**
+ \defgroup ReconstructionAlgorithm Objects to reconstruct a tomography.
+*/
+
+/**
+ \defgroup OpenCLImageToImageFilter Filters using the GPU with OpenCL.
+*/
+
+/**
+ \defgroup CudaImageToImageFilter Filters using the GPU with CUDA.
+*/
+
+/**
+ \defgroup Macro Useful macros for RTK development.
+*/
+
+/**
+ \defgroup Geometry Geometrical computations.
+*/

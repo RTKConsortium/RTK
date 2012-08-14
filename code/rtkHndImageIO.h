@@ -32,9 +32,13 @@
 namespace rtk {
 
 /** \class HndImageIO
+ * \brief Class for reading Hnd Image file format
  *
  * Reads Hnd files (file format used by Varian for Obi raw data).
  *
+ * \author Simon Rit
+ *
+ * \ingroup IOFilters
  */
 class HndImageIO : public itk::ImageIOBase
 {

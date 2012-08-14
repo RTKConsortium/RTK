@@ -27,9 +27,13 @@ namespace rtk
 {
 
 /** \class RayBoxIntersectionFunction
- * \brief Test if a ray intersects with a box.
+ * \brief Compute the intersection between a ray and a box.
  *
- * TODO
+ * The box is defined by two corners and is assumed to be parallel to the
+ * image coordinate system. The ray origin must be set first. The direction
+ * of the ray is then passed to the Evaluate function. It returns false if
+ * there is no intersection. It returns true otherwise and the nearest and
+ * farthest distance/point may be accessed.
  *
  * \author Simon Rit
  *

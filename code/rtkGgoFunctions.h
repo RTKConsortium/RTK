@@ -25,8 +25,10 @@
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
 
-/** \class GgoFunctions
- * \brief
+namespace rtk
+{
+
+/** \brief Create 3D image from gengetopt specifications.
  *
  * This function set a ConstantImageSource object from command line options stored in ggo struct.
  *  The image is not buffered to allow streaming. The image is filled with zeros.
@@ -39,17 +41,6 @@
  *
  * \ingroup Functions
  */
-
-namespace rtk
-{
-
-/** This function set a ConstantImageSource object from command line options stored in ggo struct.
-    The image is not buffered to allow streaming. The image is filled with zeros.
-    The required options in the ggo struct are:
-      - dimension: image size in pixels
-      - spacing: image spacing in coordinate units
-      - origin: image origin in coordinate units
-*/
 template< class TConstantImageSourceType, class TArgsInfo >
 void
 SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source, const TArgsInfo &args_info)

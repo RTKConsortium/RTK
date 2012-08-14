@@ -29,8 +29,11 @@
 namespace rtk
 {
 
-//====================================================================
-// Factory for reading His Image file format
+/** \class HisImageIOFactory
+ * \brief ITK factory for His file I/O.
+ *
+ * \author Simon Rit
+ */
 class HisImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
