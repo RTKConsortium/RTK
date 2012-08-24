@@ -26,7 +26,8 @@ namespace rtk
 
 namespace Functor
 {
-/** \brief Function to do the lookup operation.
+/** \class LookupTableImageFilter 
+ * \brief Function to do the lookup operation.
  *
  * The lookup table is a 1D image which must contain all possible values.
  *
