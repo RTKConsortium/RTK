@@ -33,67 +33,73 @@ void rtk::HndImageIO::ReadImageInformation()
   if (fp == NULL)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
-  fread ( (void *) hnd.sFileType, sizeof(char), 32, fp);
-  fread ( (void *) &hnd.FileLength, sizeof(uint32_t), 1, fp);
-  fread ( (void *) hnd.sChecksumSpec, sizeof(char), 4, fp);
-  fread ( (void *) &hnd.nCheckSum, sizeof(uint32_t), 1, fp);
-  fread ( (void *) hnd.sCreationDate, sizeof(char), 8, fp);
-  fread ( (void *) hnd.sCreationTime, sizeof(char), 8, fp);
-  fread ( (void *) hnd.sPatientID, sizeof(char), 16, fp);
-  fread ( (void *) &hnd.nPatientSer, sizeof(uint32_t), 1, fp);
-  fread ( (void *) hnd.sSeriesID, sizeof(char), 16, fp);
-  fread ( (void *) &hnd.nSeriesSer, sizeof(uint32_t), 1, fp);
-  fread ( (void *) hnd.sSliceID, sizeof(char), 16, fp);
-  fread ( (void *) &hnd.nSliceSer, sizeof(uint32_t), 1, fp);
-  fread ( (void *) &hnd.SizeX, sizeof(uint32_t), 1, fp);
-  fread ( (void *) &hnd.SizeY, sizeof(uint32_t), 1, fp);
-  fread ( (void *) &hnd.dSliceZPos, sizeof(double), 1, fp);
-  fread ( (void *) hnd.sModality, sizeof(char), 16, fp);
-  fread ( (void *) &hnd.nWindow, sizeof(uint32_t), 1, fp);
-  fread ( (void *) &hnd.nLevel, sizeof(uint32_t), 1, fp);
-  fread ( (void *) &hnd.nPixelOffset, sizeof(uint32_t), 1, fp);
-  fread ( (void *) hnd.sImageType, sizeof(char), 4, fp);
-  fread ( (void *) &hnd.dGantryRtn, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dSAD, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dSFD, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCollX1, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCollX2, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCollY1, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCollY2, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCollRtn, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dFieldX, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dFieldY, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dBladeX1, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dBladeX2, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dBladeY1, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dBladeY2, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dIDUPosLng, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dIDUPosLat, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dIDUPosVrt, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dIDUPosRtn, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dPatientSupportAngle, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dTableTopEccentricAngle, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCouchVrt, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCouchLng, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCouchLat, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dIDUResolutionX, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dIDUResolutionY, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dImageResolutionX, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dImageResolutionY, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dEnergy, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dDoseRate, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dXRayKV, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dXRayMA, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dMetersetExposure, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dAcqAdjustment, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCTProjectionAngle, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dCTNormChamber, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dGatingTimeTag, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dGating4DInfoX, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dGating4DInfoY, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dGating4DInfoZ, sizeof(double), 1, fp);
-  fread ( (void *) &hnd.dGating4DInfoTime, sizeof(double), 1, fp);
-  fclose (fp);
+  size_t nelements = 0;
+  nelements += fread ( (void *) hnd.sFileType, sizeof(char), 32, fp);
+  nelements += fread ( (void *) &hnd.FileLength, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) hnd.sChecksumSpec, sizeof(char), 4, fp);
+  nelements += fread ( (void *) &hnd.nCheckSum, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) hnd.sCreationDate, sizeof(char), 8, fp);
+  nelements += fread ( (void *) hnd.sCreationTime, sizeof(char), 8, fp);
+  nelements += fread ( (void *) hnd.sPatientID, sizeof(char), 16, fp);
+  nelements += fread ( (void *) &hnd.nPatientSer, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) hnd.sSeriesID, sizeof(char), 16, fp);
+  nelements += fread ( (void *) &hnd.nSeriesSer, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) hnd.sSliceID, sizeof(char), 16, fp);
+  nelements += fread ( (void *) &hnd.nSliceSer, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.SizeX, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.SizeY, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.dSliceZPos, sizeof(double), 1, fp);
+  nelements += fread ( (void *) hnd.sModality, sizeof(char), 16, fp);
+  nelements += fread ( (void *) &hnd.nWindow, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nLevel, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nPixelOffset, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) hnd.sImageType, sizeof(char), 4, fp);
+  nelements += fread ( (void *) &hnd.dGantryRtn, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dSAD, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dSFD, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCollX1, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCollX2, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCollY1, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCollY2, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCollRtn, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dFieldX, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dFieldY, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dBladeX1, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dBladeX2, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dBladeY1, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dBladeY2, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dIDUPosLng, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dIDUPosLat, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dIDUPosVrt, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dIDUPosRtn, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dPatientSupportAngle, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dTableTopEccentricAngle, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCouchVrt, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCouchLng, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCouchLat, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dIDUResolutionX, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dIDUResolutionY, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dImageResolutionX, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dImageResolutionY, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dEnergy, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dDoseRate, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dXRayKV, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dXRayMA, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dMetersetExposure, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dAcqAdjustment, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCTProjectionAngle, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dCTNormChamber, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dGatingTimeTag, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dGating4DInfoX, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dGating4DInfoY, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dGating4DInfoZ, sizeof(double), 1, fp);
+  nelements += fread ( (void *) &hnd.dGating4DInfoTime, sizeof(double), 1, fp);
+
+  if(nelements != /*char*/120 + /*uint32_t*/10 +  /*double*/41)
+    itkGenericExceptionMacro(<< "Could not read header data in " << m_FileName);
+
+  if(fclose (fp) != 0)
+    itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
 
   /* Convert hnd to ITK image information */
   SetNumberOfDimensions(2);
@@ -145,17 +151,23 @@ void rtk::HndImageIO::Read(void * buffer)
   pt_lut = (unsigned char*) malloc (sizeof (unsigned char) * GetDimensions(0) * GetDimensions(1) );
 
   /* Read LUT */
-  fseek (fp, 1024, SEEK_SET);
-  fread (pt_lut, sizeof(unsigned char), (GetDimensions(1)-1)*GetDimensions(0) / 4, fp);
+  if(fseek (fp, 1024, SEEK_SET) != 0)
+    itkGenericExceptionMacro(<< "Could not seek to image data in: " << m_FileName);
+
+  size_t nbytes = (GetDimensions(1)-1)*GetDimensions(0) / 4;
+  if(nbytes != fread (pt_lut, sizeof(unsigned char), nbytes, fp))
+    itkGenericExceptionMacro(<< "Could not read image LUT in: " << m_FileName);
 
   /* Read first row */
   for (i = 0; i < GetDimensions(0); i++) {
-    fread (&a, sizeof(uint32_t), 1, fp);
+    if(1 != fread (&a, sizeof(uint32_t), 1, fp))
+      itkGenericExceptionMacro(<< "Could not read first row in: " << m_FileName);
     buf[i] = a;
     }
 
   /* Read first pixel of second row */
-  fread (&a, sizeof(uint32_t), 1, fp);
+  if(1 != fread (&a, sizeof(uint32_t), 1, fp))
+    itkGenericExceptionMacro(<< "Could not read first pixel of second row");
   buf[i++] = a;
 
   /* Decompress the rest */
@@ -211,14 +223,16 @@ void rtk::HndImageIO::Read(void * buffer)
 
   /* Clean up */
   free (pt_lut);
-  fclose (fp);
+  if(fclose (fp) != 0)
+    itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
   return;
 
 read_error:
 
   itkGenericExceptionMacro(<< "Error reading hnd file");
   free (pt_lut);
-  fclose (fp);
+  if(fclose (fp) != 0)
+    itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
   return;
 }
 
