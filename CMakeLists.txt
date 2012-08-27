@@ -157,6 +157,11 @@ ADD_SUBDIRECTORY(code)
 ADD_SUBDIRECTORY(applications)
 ADD_SUBDIRECTORY(testing)
 
+option(BUILD_EXAMPLES "Build RTK examples" ON)
+IF(BUILD_EXAMPLES)
+  ADD_SUBDIRECTORY(examples)
+ENDIF(BUILD_EXAMPLES)
+
 #=========================================================
 # Generate RTKConfig.cmake for the build tree.
 SET (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
