@@ -28,8 +28,7 @@ ENDIF(BUILD_TESTING)
 SET(RTK_VERSION_MAJOR "0")
 SET(RTK_VERSION_MINOR "1")
 SET(RTK_VERSION_PATCH "0")
-SET(EXECUTABLE_OUTPUT_PATH ${RTK_BINARY_DIR})
-SET(LIBRARY_OUTPUT_PATH ${RTK_BINARY_DIR})
+
 #=========================================================
 
 #=========================================================
@@ -38,6 +37,20 @@ MACRO (DD in)
   MESSAGE(${in}=[${${in}}])
 ENDMACRO(DD)
 #=========================================================
+
+#=========================================================
+# Output directories.
+IF(NOT LIBRARY_OUTPUT_PATH)
+  SET (LIBRARY_OUTPUT_PATH ${RTK_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all libraries.")
+ENDIF(NOT LIBRARY_OUTPUT_PATH)
+IF(NOT EXECUTABLE_OUTPUT_PATH)
+  SET (EXECUTABLE_OUTPUT_PATH ${RTK_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all executables.")
+ENDIF(NOT EXECUTABLE_OUTPUT_PATH)
+MARK_AS_ADVANCED(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
+
+SET(RTK_LIBRARY_PATH "${LIBRARY_OUTPUT_PATH}")
+SET(RTK_EXECUTABLE_PATH "${EXECUTABLE_OUTPUT_PATH}")
+SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 #=========================================================
 # Remove some MS Visual c++ flags
