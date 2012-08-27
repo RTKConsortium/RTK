@@ -128,7 +128,7 @@ public:
   virtual void Read(void * buffer);
 
   /*-------- This part of the interfaces deals with writing data. ----- */
-  virtual void WriteImageInformation(bool keepOfStream) { }
+  virtual void WriteImageInformation(bool /*keepOfStream*/) { }
 
   virtual void WriteImageInformation() { WriteImageInformation(false); }
 
