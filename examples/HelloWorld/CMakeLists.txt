@@ -1,4 +1,3 @@
-# This is the root ITK CMakeLists file.
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
 # This project is designed to be built outside the Insight source tree.
