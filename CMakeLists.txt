@@ -148,8 +148,10 @@ if(NOT RTK_INSTALL_PACKAGE_DIR)
 endif()
 #=========================================================
 
+LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/utilities/itkfftw")
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/code")
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_BINARY_DIR}")
+
 INCLUDE_DIRECTORIES(${RTK_INCLUDE_DIRS})
 ADD_SUBDIRECTORY(utilities/itkfftw)
 INCLUDE_DIRECTORIES(BEFORE utilities/itkfftw)
@@ -160,6 +162,7 @@ ADD_SUBDIRECTORY(code)
 # Generate RTKConfig.cmake for the build tree.
 SET (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 SET (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
+SET(RTK_LIBRARIES ${RTK_LIBRARIES} ITKFFTW)
 CONFIGURE_FILE (cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 #=========================================================
 
