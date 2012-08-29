@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   ConstantImageSourceType::SpacingType spacing;
 
   // FOV filter Input Volume, it is used as the input to create the fov mask.
-  const ConstantImageSourceType::Pointer fovInput = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer fovInput = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -82,6 +82,8 @@ int main(int argc, char* argv[])
   spacing[0] = 2.;
   spacing[1] = 2.;
   spacing[2] = 2.;
+  
+  
   fovInput->SetOrigin( origin );
   fovInput->SetSpacing( spacing );
   fovInput->SetSize( size );
@@ -142,6 +144,6 @@ int main(int argc, char* argv[])
 
   CheckImageQuality<OutputImageType>(fov->GetOutput(), threshold->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
-
-  exit(EXIT_SUCCESS);
+  
+  return EXIT_SUCCESS;
 }

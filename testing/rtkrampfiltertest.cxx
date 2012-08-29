@@ -176,5 +176,5 @@ int main(int argc, char* argv[])
   CheckImageQuality<OutputImageType>(feldkampCropped->GetOutput(), dsl->GetOutput(), 1.015, 1.025, 26, 0.05);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
-  exit(EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }
