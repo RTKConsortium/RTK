@@ -66,6 +66,7 @@ int main(int argc, char * argv[])
   slp->SetGeometry(geometryReader->GetOutputObject());
   slp->SetPhantomScale(args_info.phantomscale_arg);
   slp->Update();
+
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
