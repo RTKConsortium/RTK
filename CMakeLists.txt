@@ -163,8 +163,14 @@ SET (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
 CONFIGURE_FILE (cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 #=========================================================
 
-ADD_SUBDIRECTORY(applications)
-ADD_SUBDIRECTORY(testing)
+option(BUILD_APPLICATIONS "Build RTK applications" ON)
+IF(BUILD_APPLICATIONS)
+  ADD_SUBDIRECTORY(applications)
+ENDIF(BUILD_APPLICATIONS)
+
+IF(BUILD_TESTING)
+  ADD_SUBDIRECTORY(testing)
+ENDIF(BUILD_TESTING)
 
 option(BUILD_EXAMPLES "Build RTK examples" ON)
 IF(BUILD_EXAMPLES)
