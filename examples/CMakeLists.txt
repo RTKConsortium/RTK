@@ -1,3 +1,4 @@
 SET(RTK_DIR ${RTK_BINARY_DIR})
 
 ADD_SUBDIRECTORY(HelloWorld)
+ADD_SUBDIRECTORY(FirstReconstruction)
