@@ -40,7 +40,7 @@ template <class TInputImage, class TOutputImage>
 void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType threadId )
+                       ThreadIdType itkNotUsed(threadId) )
 {
   // Create local object for multithreading purposes
   RBIFunctionType::Pointer rbiFunctor = RBIFunctionType::New();

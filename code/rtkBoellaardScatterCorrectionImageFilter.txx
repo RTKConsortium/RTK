@@ -61,7 +61,7 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId )
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   // Input / ouput iterators
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);

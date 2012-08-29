@@ -33,7 +33,7 @@ template <class TInputImage, class TOutputImage>
 void
 JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType threadId )
+                       ThreadIdType itkNotUsed(threadId) )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
