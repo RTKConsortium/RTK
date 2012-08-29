@@ -1,9 +1,9 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
-# This project is designed to be built outside the Insight source tree.
+# This project is designed to be built outside the RTK source tree.
 PROJECT(HelloWorld)
 
-## Find RTK
+# Find the RTK libraries and includes
 FIND_PACKAGE(RTK REQUIRED)
 INCLUDE(${RTK_USE_FILE})
 
