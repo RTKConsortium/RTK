@@ -128,5 +128,5 @@ int main(int argc, char* argv[])
 
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
-  exit(EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }

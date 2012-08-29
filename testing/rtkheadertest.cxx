@@ -62,5 +62,5 @@
 int main(int argc, char* argv[])
 { 
   std::cout << "\n\nTest PASSED! " << std::endl;
-  exit(EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }
