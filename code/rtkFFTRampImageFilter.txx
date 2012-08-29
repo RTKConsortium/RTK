@@ -351,7 +351,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     {
     // FFTW returns only the first half whereas vnl return the mirrored fft
 #if !defined(USE_FFTWD)
-    if(typeid(TFFTPrecision).name() == typeid(double).name() && itK.GetIndex()[0]>n)
+    if(typeid(TFFTPrecision).name() == typeid(double).name() && (unsigned int)itK.GetIndex()[0]>n)
       {
       typename FFTType::OutputImageType::IndexType mirroredIndex = itK.GetIndex();
       mirroredIndex[0] = fftK->GetOutput()->GetLargestPossibleRegion().GetSize()[0] - mirroredIndex[0];
@@ -360,7 +360,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     else
 #endif
 #if !defined(USE_FFTWF)
-    if(typeid(TFFTPrecision).name() == typeid(float).name() && itK.GetIndex()[0]>n)
+    if(typeid(TFFTPrecision).name() == typeid(float).name() && (unsigned int)itK.GetIndex()[0]>n)
       {
       typename FFTType::OutputImageType::IndexType mirroredIndex = itK.GetIndex();
       mirroredIndex[0] = fftK->GetOutput()->GetLargestPossibleRegion().GetSize()[0] - mirroredIndex[0];
