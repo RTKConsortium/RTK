@@ -24,7 +24,7 @@ namespace rtk
 bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
 {
   const char *       search_fig = "Ellipsoid"; // Set search pattern
-  int                offset = 0;
+  size_t             offset = 0;
   std::string        line;
   std::ifstream      myFile;
 
