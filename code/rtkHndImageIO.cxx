@@ -237,14 +237,14 @@ read_error:
 }
 
 //--------------------------------------------------------------------
-bool rtk::HndImageIO::CanWriteFile(const char* FileNameToWrite)
+bool rtk::HndImageIO::CanWriteFile(const char* itkNotUsed(FileNameToWrite))
 {
   return false;
 }
 
 //--------------------------------------------------------------------
 // Write Image
-void rtk::HndImageIO::Write(const void* buffer)
+void rtk::HndImageIO::Write(const void* itkNotUsed(buffer))
 {
   //TODO?
 }

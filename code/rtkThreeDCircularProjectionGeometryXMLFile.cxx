@@ -84,7 +84,7 @@ StartElement(const char * name,const char **atts)
 
 void
 ThreeDCircularProjectionGeometryXMLFileReader::
-StartElement(const char * name)
+StartElement(const char * itkNotUsed(name))
 {
 }
 

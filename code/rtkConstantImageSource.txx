@@ -140,7 +140,7 @@ ConstantImageSource<TOutputImage>
 template <typename TOutputImage>
 void 
 ConstantImageSource<TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId )
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
   for (; !it.IsAtEnd(); ++it)

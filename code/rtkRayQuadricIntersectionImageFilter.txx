@@ -49,7 +49,7 @@ template <class TInputImage, class TOutputImage>
 void
 RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType threadId )
+                       ThreadIdType itkNotUsed(threadId) )
 {
   // Create local object for multithreading purposes
   RQIFunctionType::Pointer rqiFunctor = RQIFunctionType::New();

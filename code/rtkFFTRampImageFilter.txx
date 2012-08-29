@@ -98,7 +98,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId )
+::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   // Pad image region
   FFTInputImagePointer paddedImage = PadInputImageRegion(outputRegionForThread);
