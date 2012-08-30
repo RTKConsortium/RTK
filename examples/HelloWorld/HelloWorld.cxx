@@ -1,6 +1,6 @@
 #include <rtkFDKBackProjectionImageFilter.h>
 
-int main(int argc, char **argv)
+int main(int , char **)
 {
   // Define the type of pixel and the image dimension
   typedef float OutputPixelType;
