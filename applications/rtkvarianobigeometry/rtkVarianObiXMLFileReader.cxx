@@ -38,7 +38,7 @@ CanReadFile(const char *name)
 
 void
 VarianObiXMLFileReader::
-StartElement(const char * name,const char **atts)
+StartElement(const char * itkNotUsed(name),const char ** itkNotUsed(atts))
 {
   m_CurCharacterData = "";
 }

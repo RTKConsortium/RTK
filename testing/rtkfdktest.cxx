@@ -4,6 +4,7 @@
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
+
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
@@ -56,7 +57,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 
 
-int main(int argc, char* argv[])
+int main(int, char* )
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
