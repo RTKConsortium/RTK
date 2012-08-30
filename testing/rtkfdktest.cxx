@@ -57,7 +57,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 
 
-int main(int, char* )
+int main(int, char** )
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
