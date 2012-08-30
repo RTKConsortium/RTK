@@ -1,5 +1,5 @@
 WRAP_GGO(rtkdigisensgeometry_GGO_C rtkdigisensgeometry.ggo)
-ADD_EXECUTABLE(rtkdigisensgeometry rtkdigisensgeometry.cxx ${rtkdigisensgeometry_GGO_C} rtkDigisensGeometryXMLFileReader.cxx)
+ADD_EXECUTABLE(rtkdigisensgeometry rtkdigisensgeometry.cxx ${rtkdigisensgeometry_GGO_C})
 TARGET_LINK_LIBRARIES(rtkdigisensgeometry RTK)
 
 # Installation code
