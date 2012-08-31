@@ -39,6 +39,24 @@ RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
+::SetBoxMin(VectorType _boxMin)
+{
+  m_RBIFunctor->SetBoxMin(_boxMin);
+  this->Modified();
+}
+
+template <class TInputImage, class TOutputImage>
+void
+RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
+::SetBoxMax(VectorType _boxMax)
+{
+  m_RBIFunctor->SetBoxMax(_boxMax);
+  this->Modified();
+}
+
+template <class TInputImage, class TOutputImage>
+void
+RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType itkNotUsed(threadId) )
 {

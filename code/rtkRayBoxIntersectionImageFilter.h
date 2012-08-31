@@ -47,11 +47,14 @@ public:
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef typename TOutputImage::RegionType            OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer            OutputImageBaseConstPointer;
-  typedef rtk::ThreeDCircularProjectionGeometry        GeometryType;
-  typedef typename GeometryType::Pointer               GeometryPointer;
-  typedef RayBoxIntersectionFunction<double, 3>        RBIFunctionType;
+  typedef typename TOutputImage::RegionType               OutputImageRegionType;
+  typedef typename TOutputImage::Superclass::ConstPointer OutputImageBaseConstPointer;
+  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
+  typedef typename GeometryType::Pointer                  GeometryPointer;
+  typedef RayBoxIntersectionFunction<double, 3>           RBIFunctionType;
+
+  /** Useful defines. */
+  typedef itk::Vector<double, 3> VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -65,6 +68,13 @@ public:
 
   /** Set the box from an image */
   void SetBoxFromImage(OutputImageBaseConstPointer _arg);
+
+  /** Set the box from an image */
+  void SetBoxMin(VectorType _boxMin);
+
+  /** Set the box from an image */
+  void SetBoxMax(VectorType _boxMax);
+
 
 protected:
   RayBoxIntersectionImageFilter() : m_RBIFunctor( RBIFunctionType::New() ), m_Geometry(NULL) { }
