@@ -12,7 +12,7 @@
 #include <itkImageFileWriter.h>
 #include <itkStreamingImageFilter.h>
 
-int main(int argc, char **argv)
+int main(int , char **)
 {
   // Defines the image type
   typedef itk::Image< float, 3 > ImageType;

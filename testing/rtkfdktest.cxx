@@ -2,8 +2,16 @@
 
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
-#include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
+
+#ifdef USE_CUDA
+#  include "rtkCudaFDKConeBeamReconstructionFilter.h"
+#elif USE_OPENCL
+#  include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
+#else
+#  include "rtkFDKConeBeamReconstructionFilter.h"
+#endif
+
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
@@ -56,7 +64,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 
 
-int main(int argc, char* argv[])
+int main(int, char** )
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
@@ -119,8 +127,14 @@ int main(int argc, char* argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // FDK reconstruction filtering
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
-  FDKCPUType::Pointer feldkamp = FDKCPUType::New();
+#ifdef USE_CUDA
+  typedef rtk::CudaFDKConeBeamReconstructionFilter                FDKType;
+#elif USE_OPENCL
+  typedef rtk::OpenCLFDKConeBeamReconstructionFilter              FDKType;
+#else
+  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKType;
+#endif
+  FDKType::Pointer feldkamp = FDKType::New();
   feldkamp->SetInput( 0, tomographySource->GetOutput() );
   feldkamp->SetInput( 1, slp->GetOutput() );
   feldkamp->SetGeometry( geometry );

@@ -38,7 +38,7 @@ CanReadFile(const char *name)
 
 void
 DigisensGeometryXMLFileReader::
-StartElement(const char * name,const char **atts)
+StartElement(const char * name,const char ** itkNotUsed(atts))
 {
   m_CurCharacterData = "";
 
