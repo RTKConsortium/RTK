@@ -1,20 +1,3 @@
-/*=========================================================================
- *
- *  Copyright RTK Consortium
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- *=========================================================================*/
 
 #include "rtkGgoFunctions.h"
 
@@ -27,6 +10,7 @@
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include <itkExtractImageFilter.h>
 #include <itkMultiplyByConstantImageFilter.h>
+#include <rtkSheppLoganPhantomFilter.h>
 
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
@@ -49,9 +33,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 
     if( TestVal != RefVal )
       {
-        //std::cout << "Not equal" << std::endl;
         TestError += vcl_abs(RefVal - TestVal);
-        //std::cout << "Error ="<< TestError << std::endl;
         EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
       }
     ++itTest;
@@ -64,14 +46,14 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
+  ErrorType PSNR = 20*log10(255.0) - 10*log10(MSE);
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
+  ErrorType QI = (255.0-ErrorPerPixel)/255.0;
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.005)
+  if (ErrorPerPixel > 0.5)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
               << ErrorPerPixel << " instead of 0.005" << std::endl;
@@ -90,6 +72,7 @@ int main(int argc, char* argv[])
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::Vector<double, 3>                   VectorType;
   const unsigned int NumberOfProjectionImages = 1;
 
   // Constant image sources
@@ -103,9 +86,9 @@ int main(int argc, char* argv[])
   origin[0] = -127;
   origin[1] = -127;
   origin[2] = -127;
-  size[0] = 256;
-  size[1] = 256;
-  size[2] = 176;
+  size[0] = 255;
+  size[1] = 255;
+  size[2] = 175;
   spacing[0] = 1.;
   spacing[1] = 1.;
   spacing[2] = 1.;
@@ -114,47 +97,15 @@ int main(int argc, char* argv[])
   resizedInput->SetSize( size );
   resizedInput->SetConstant( 1. );
 
-  // Shepp-Logan Resized Volume
-  const ConstantImageSourceType::Pointer sheppInput = ConstantImageSourceType::New();
-  origin[0] = -127;
-  origin[1] = -127;
-  origin[2] = -127;
-  size[0] = 256;
-  size[1] = 256;
-  size[2] = 176;
-  spacing[0] = 1.;
-  spacing[1] = 1.;
-  spacing[2] = 1.;
-  sheppInput->SetOrigin( origin );
-  sheppInput->SetSpacing( spacing );
-  sheppInput->SetSize( size );
-  sheppInput->SetConstant( 0. );
-
-  // Shepp-Logan Full Volume
-  const ConstantImageSourceType::Pointer sheppFullInput = ConstantImageSourceType::New();
-  origin[0] = -127;
-  origin[1] = -127;
-  origin[2] = -127;
-  size[0] = 256;
-  size[1] = 256;
-  size[2] = 256;
-  spacing[0] = 1.;
-  spacing[1] = 1.;
-  spacing[2] = 1.;
-  sheppFullInput->SetOrigin( origin );
-  sheppFullInput->SetSpacing( spacing );
-  sheppFullInput->SetSize( size );
-  sheppFullInput->SetConstant( 0. );
-
   // Full Volume, it is used in the Joseph Forward Projector in order to check
   // the case of an inner ray source.
   const ConstantImageSourceType::Pointer fullInput = ConstantImageSourceType::New();
   origin[0] = -127;
   origin[1] = -127;
   origin[2] = -127;
-  size[0] = 256;
-  size[1] = 256;
-  size[2] = 256;
+  size[0] = 255;
+  size[1] = 255;
+  size[2] = 255;
   spacing[0] = 1.;
   spacing[1] = 1.;
   spacing[2] = 1.;
@@ -169,8 +120,8 @@ int main(int argc, char* argv[])
   origin[0] = -127;
   origin[1] = -127;
   origin[2] = -127;
-  size[0] = 256;
-  size[1] = 256;
+  size[0] = 255;
+  size[1] = 255;
   size[2] = NumberOfProjectionImages;
   spacing[0] = 1.;
   spacing[1] = 1.;
@@ -180,6 +131,22 @@ int main(int argc, char* argv[])
   initInput->SetSize( size );
   initInput->SetConstant( 0. );
 
+  // Shepp-Logan Full Volume
+  const ConstantImageSourceType::Pointer sheppFullInput = ConstantImageSourceType::New();
+  origin[0] = -127;
+  origin[1] = -127;
+  origin[2] = -127;
+  size[0] = 255;
+  size[1] = 255;
+  size[2] = 255;
+  spacing[0] = 1.;
+  spacing[1] = 1.;
+  spacing[2] = 1.;
+  sheppFullInput->SetOrigin( origin );
+  sheppFullInput->SetSpacing( spacing );
+  sheppFullInput->SetSize( size );
+  sheppFullInput->SetConstant( 0. );
+
   // Ray Box Intersection filter
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
   RBIType::Pointer rbi = RBIType::New();
@@ -188,7 +155,7 @@ int main(int argc, char* argv[])
   typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
   JFPType::Pointer jfp = JFPType::New();
 
-  // Writer
+//  // Writer
   typedef itk::ImageFileWriter<OutputImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
 
@@ -198,7 +165,7 @@ int main(int argc, char* argv[])
   GeometryType::Pointer geometry = GeometryType::New();
   // Creating geometry
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(48.5, 1000., noProj);
+    geometry->AddProjection(47.5, 1000., noProj);
 
   // Calculating ray box intersection of the resized Input
   resizedInput->UpdateOutputInformation();
@@ -211,33 +178,33 @@ int main(int argc, char* argv[])
   jfp->SetInput(initInput->GetOutput());
   jfp->SetInput( 1, fullInput->GetOutput() );
   jfp->SetGeometry( geometry );
-  jfp->SetNumberOfThreads(1);
   jfp->Update();
 
   CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: inner ray source, 90 degrees ******" << std::endl;
+  std::cout << "\n\n****** Case 2: inner ray source, 90 degrees and source not in the middle of a pixel ******" << std::endl;
   // Geometry
   geometry = GeometryType::New();
   // Creating geometry
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(48.5, 1000., noProj+90);
-  //We resize resizedInput, in order to have a symetric cube, 176x176x176
-  size[0] = 176;
-  size[1] = 176;
-  size[2] = 176;
-  resizedInput->SetSize( size );
+    geometry->AddProjection(47.3, 1000., noProj+90);
+  // Creating the Box
+  VectorType boxMin, boxMax;
+  boxMin[0] = -127.;
+  boxMin[1] = -127.;
+  boxMin[2] = -127.;
+  boxMax[0] = boxMin[0]+174.8;
+  boxMax[1] = boxMin[1]+255.;
+  boxMax[2] = boxMin[2]+255.;
+
   // Calculating ray box intersection of the resized Input
   resizedInput->UpdateOutputInformation();
   rbi->SetInput( initInput->GetOutput() );
-  rbi->SetBoxFromImage( resizedInput->GetOutput() );
+  rbi->SetBoxMin(boxMin);
+  rbi->SetBoxMax(boxMax);
   rbi->SetGeometry( geometry );
   rbi->Update();
-  // Writing
-  writer->SetFileName( "rbi2.mhd" );
-  writer->SetInput( rbi->GetOutput() );
-  writer->Update();
 
   // Calculating Joseph forward projection of the full Input with an inner ray source
   jfp->SetInput(initInput->GetOutput());
@@ -245,10 +212,6 @@ int main(int argc, char* argv[])
   jfp->SetGeometry( geometry );
   jfp->SetNumberOfThreads(1);
   jfp->Update();
-  // Writing
-  writer->SetFileName( "joseph2.mhd" );
-  writer->SetInput( jfp->GetOutput() );
-  writer->Update();
 
   CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -259,10 +222,10 @@ int main(int argc, char* argv[])
   // Creating geometry
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(128.5, 1000., noProj);
-  // We resize resizedInput, in order to have a full Input 256x256x256
-  size[0] = 256;
-  size[1] = 256;
-  size[2] = 256;
+  // We resize resizedInput, in order to have a full Input 255x255x255
+  size[0] = 255;
+  size[1] = 255;
+  size[2] = 255;
   resizedInput->SetSize( size );
 
   // Calculating ray box intersection of the resized Input
@@ -276,56 +239,48 @@ int main(int argc, char* argv[])
   jfp->SetInput(initInput->GetOutput());
   jfp->SetInput( 1, fullInput->GetOutput() );
   jfp->SetGeometry( geometry );
-  jfp->SetNumberOfThreads(1);
   jfp->Update();
 
   CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-//  std::cout << "\n\n****** Case 4: Shepp-Logan, inner ray source ******" << std::endl;
-//  // Geometry
-//  geometry = GeometryType::New();
-//  // Creating geometry
-//  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-//    geometry->AddProjection(48.5, 1000., noProj+270);
+  std::cout << "\n\n****** Case 4: Shepp-Logan, outer ray source ******" << std::endl;
+  // Geometry
+  geometry = GeometryType::New();
+  // Creating geometry
+  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(120, 256., noProj);
 
-//  // Create a reference object (in this case a 3D phantom reference).
-//  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
-//  DSLType::Pointer dsl = DSLType::New();
-//  dsl->SetInput( sheppInput->GetOutput() );
-//  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+  // Create a reference object (in this case a 3D phantom reference).
+  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  DSLType::Pointer dsl = DSLType::New();
 
-//  size[0] = 256;
-//  size[1] = 256;
-//  size[2] = 1; //Number of Projections
-//  initInput->SetSize( size );
-//  initInput->UpdateOutputInformation();
-////  // Calculating ray box intersection of the resized Input
-////  rbi->SetInput( initInput->GetOutput() );
-////  rbi->SetBoxFromImage( dsl->GetOutput() );
-////  rbi->SetGeometry( geometry );
-////  rbi->Update();
-////  // Writing
-////  writer->SetFileName( "rbi_shepp.mhd" );
-////  writer->SetInput( rbi->GetOutput() );
-////  writer->Update();
+  size[0] = 255;
+  size[1] = 255;
+  size[2] = 1; //Number of Projections
+  initInput->SetSize( size );
+  initInput->UpdateOutputInformation();
 
-////  dsl = DSLType::New();
-////  dsl->SetInput( sheppFullInput->GetOutput() );
-////  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
-//  // Calculating Joseph forward projection of the full Input with an inner ray source
-//  jfp->SetInput(initInput->GetOutput());
-//  jfp->SetInput( 1, dsl->GetOutput() );
-//  jfp->SetGeometry( geometry );
-//  jfp->SetNumberOfThreads(1);
-//  jfp->Update();
-//  // Writing
-//  writer->SetFileName( "joseph_shepp.mhd" );
-//  writer->SetInput( jfp->GetOutput() );
-//  writer->Update();
+  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  SLPType::Pointer slp=SLPType::New();
+  slp->SetInput(initInput->GetOutput());
+  slp->SetGeometry(geometry);
+  slp->SetPhantomScale(128.);
+  slp->Update();
 
-//  CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
-//  std::cout << "\n\nTest PASSED! " << std::endl;
+  dsl = DSLType::New();
+  dsl->SetInput( sheppFullInput->GetOutput() );
+  dsl->SetPhantomScale(128.);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+
+  // Calculating Joseph forward projection of the full Input with an inner ray source
+  jfp->SetInput(initInput->GetOutput());
+  jfp->SetInput( 1, dsl->GetOutput() );
+  jfp->SetGeometry( geometry );
+  jfp->Update();
+
+  CheckImageQuality<OutputImageType>(slp->GetOutput(), jfp->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
 }
