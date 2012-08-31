@@ -84,7 +84,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType threadId )
+                       ThreadIdType itkNotUsed(threadId) )
 {
   // Prepare point increment (TransformIndexToPhysicalPoint too slow)
   typename TInputImage::PointType pointBase, pointIncrement;

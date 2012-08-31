@@ -59,7 +59,7 @@
   #include "rtkCudaFFTRampImageFilter.h"
 #endif
 
-int main(int argc, char* argv[])
+int main(int , char**)
 { 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;

@@ -37,7 +37,7 @@ m_PhantomScale(128.0)
 
 template <class TInputImage, class TOutputImage>
 void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                             ThreadIdType threadId )
+                                                                             ThreadIdType itkNotUsed(threadId) )
 {
   //Getting phantom parameters
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();

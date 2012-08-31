@@ -41,7 +41,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 FDKBackProjectionImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId )
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);

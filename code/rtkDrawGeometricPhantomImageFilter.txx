@@ -30,7 +30,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                             ThreadIdType threadId )
+                                                                             ThreadIdType itkNotUsed(threadId) )
 {
   VectorOfVectorType figParam;
   //Getting phantom parameters
