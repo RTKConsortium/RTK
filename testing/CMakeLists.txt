@@ -31,6 +31,10 @@ SET_TARGET_PROPERTIES(rtkrampfilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FI
 TARGET_LINK_LIBRARIES(rtkrampfilternofftwtest RTK)
 ADD_TEST(rtkrampfiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfiltertest)
 
+ADD_EXECUTABLE(rtkRaycastInterpolatorForwardProjectionTest rtkRaycastInterpolatorForwardProjectionTest.cxx)
+TARGET_LINK_LIBRARIES(rtkRaycastInterpolatorForwardProjectionTest RTK)
+ADD_TEST(rtkRaycastInterpolatorForwardProjectionTest ${EXECUTABLE_OUTPUT_PATH}/rtkRaycastInterpolatorForwardProjectionTest)
+
 ADD_EXECUTABLE(rtkforwardprojectiontest rtkforwardprojectiontest.cxx)
 TARGET_LINK_LIBRARIES(rtkforwardprojectiontest RTK)
 ADD_TEST(rtkforwardprojectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkforwardprojectiontest)
