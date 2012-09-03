@@ -1,0 +1,180 @@
+
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
+#include "rtkSheppLoganPhantomFilter.h"
+#include "rtkDrawSheppLoganFilter.h"
+#include "rtkConstantImageSource.h"
+
+template<class TImage>
+void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
+{
+  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
+  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
+  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
+
+  typedef double ErrorType;
+  ErrorType TestError = 0.;
+  ErrorType EnerError = 0.;
+
+  itTest.GoToBegin();
+  itRef.GoToBegin();
+
+  while( !itRef.IsAtEnd() )
+    {
+    typename TImage::PixelType TestVal = itTest.Get();
+    typename TImage::PixelType RefVal = itRef.Get();
+
+    if( TestVal != RefVal )
+      {
+      TestError += vcl_abs(RefVal - TestVal);
+      EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
+      }
+    ++itTest;
+    ++itRef;
+    }
+  // Error per Pixel
+  ErrorType ErrorPerPixel = TestError/recon->GetBufferedRegion().GetNumberOfPixels();
+  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
+  // MSE
+  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
+  std::cout << "MSE = " << MSE << std::endl;
+  // PSNR
+  ErrorType PSNR = 20*log10(255.0) - 10*log10(MSE);
+  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
+  // QI
+  ErrorType QI = (255.0-ErrorPerPixel)/255.0;
+  std::cout << "QI = " << QI << std::endl;
+
+  // Checking results
+  if (ErrorPerPixel > 1.25)
+    {
+    std::cerr << "Test Failed, Error per pixel not valid! "
+              << ErrorPerPixel << " instead of 1.25" << std::endl;
+    exit( EXIT_FAILURE);
+    }
+  if (PSNR < 43.)
+    {
+    std::cerr << "Test Failed, PSNR not valid! "
+              << PSNR << " instead of 44" << std::endl;
+    exit( EXIT_FAILURE);
+    }
+}
+
+int main(int , char** )
+{
+  const unsigned int Dimension = 3;
+  typedef float                                    OutputPixelType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::Vector<double, 3>                   VectorType;
+  const unsigned int NumberOfProjectionImages = 45;
+
+  // Constant image sources
+  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  ConstantImageSourceType::PointType origin;
+  ConstantImageSourceType::SizeType size;
+  ConstantImageSourceType::SpacingType spacing;
+
+  // The test projects a volume filled with ones. The forward projector should
+  // then return the intersection of the ray with the box and it is compared
+  // with the analytical intersection of a box with a ray.
+
+  // Create volume input.
+  const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
+  origin[0] = -126;
+  origin[1] = -126;
+  origin[2] = -126;
+  size[0] = 64;
+  size[1] = 64;
+  size[2] = 64;
+  spacing[0] = 4.;
+  spacing[1] = 4.;
+  spacing[2] = 4.;
+  volInput->SetOrigin( origin );
+  volInput->SetSpacing( spacing );
+  volInput->SetSize( size );
+  volInput->SetConstant( 1. );
+  volInput->UpdateOutputInformation();
+
+  // Initialization Volume, it is used in the forward projector and in the
+  // Ray Box Intersection Filter in order to initialize the stack of projections.
+  const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
+  size[2] = NumberOfProjectionImages;
+  projInput->SetOrigin( origin );
+  projInput->SetSpacing( spacing );
+  projInput->SetSize( size );
+  projInput->SetConstant( 0. );
+  projInput->Update();
+
+  // Forward Projection filter
+  typedef rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType> FPType;
+  FPType::Pointer fp = FPType::New();
+  fp->InPlaceOff();
+  fp->SetInput( projInput->GetOutput() );
+  fp->SetInput( 1, volInput->GetOutput() );
+
+  // Ray Box Intersection filter (reference)
+  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
+  RBIType::Pointer rbi = RBIType::New();
+  rbi->InPlaceOff();
+  rbi->SetInput( projInput->GetOutput() );
+  VectorType boxMin, boxMax;
+  boxMin[0] = -126.0;
+  boxMin[1] = -126.0;
+  boxMin[2] = -126.0;
+  boxMax[0] =  126.0;
+  boxMax[1] =  126.0;
+  boxMax[2] =  126.0;
+  rbi->SetBoxMin(boxMin);
+  rbi->SetBoxMax(boxMax);
+
+  std::cout << "\n\n****** Case 1: constant image ******" << std::endl;
+  // Geometry
+  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  GeometryType::Pointer geometry = GeometryType::New();
+  for(unsigned int i=0; i<NumberOfProjectionImages; i++)
+    geometry->AddProjection(500., 1000., i*8.);
+
+  rbi->SetGeometry( geometry );
+  rbi->Update();
+
+  fp->SetGeometry( geometry );
+  fp->Update();
+
+  CheckImageQuality<OutputImageType>(rbi->GetOutput(), fp->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 2: Shepp-Logan, outer ray source ******" << std::endl;
+
+  // Create Shepp Logan reference projections
+  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  SLPType::Pointer slp = SLPType::New();
+  slp->InPlaceOff();
+  slp->SetInput( projInput->GetOutput() );
+  slp->SetGeometry(geometry);
+  slp->Update();
+
+  // Create a Shepp Logan reference volume (finer resolution)
+  origin.Fill(-127);
+  size.Fill(128);
+  spacing.Fill(2.);
+  volInput->SetOrigin( origin );
+  volInput->SetSpacing( spacing );
+  volInput->SetSize( size );
+  volInput->SetConstant( 0. );
+
+  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  DSLType::Pointer dsl = DSLType::New();
+  dsl->InPlaceOff();
+  dsl->SetInput( volInput->GetOutput() );
+  dsl->Update();
+
+  // Forward projection
+  fp->SetInput( 1, dsl->GetOutput() );
+  fp->Update();
+
+  CheckImageQuality<OutputImageType>(slp->GetOutput(), fp->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  return EXIT_SUCCESS;
+}
