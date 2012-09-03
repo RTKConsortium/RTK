@@ -74,7 +74,9 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     }
 
   // Go over each projection
-  for(unsigned int iProj=0; iProj<outputRegionForThread.GetSize(2); iProj++)
+  for(int iProj=outputRegionForThread.GetIndex(2);
+          iProj<outputRegionForThread.GetIndex(2)+(int)outputRegionForThread.GetSize(2);
+          iProj++)
     {
     // Account for system rotations
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
