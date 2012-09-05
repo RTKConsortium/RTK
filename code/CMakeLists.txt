@@ -18,7 +18,7 @@ ADD_LIBRARY(RTK
             rtkVarianObiXMLFileReader.cxx
            )
 TARGET_LINK_LIBRARIES(RTK ITKFFTW)
-
+SET(RTK_LIBRARIES ${RTK_LIBRARIES} ITKFFTW)
 #=========================================================
 
 #=========================================================
@@ -94,6 +94,13 @@ IF(NOT RTK_INSTALL_NO_LIBRARIES)
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
   ENDIF(CUDA_FOUND)
+
+  IF(OPENCL_FOUND)
+    INSTALL(TARGETS rtkopencl
+      RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
+      LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
+      ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
+  ENDIF(OPENCL_FOUND)
 ENDIF(NOT RTK_INSTALL_NO_LIBRARIES)
 #=========================================================
 
