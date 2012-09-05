@@ -1,6 +1,7 @@
 #!/bin/bash -x
 
 ctest -S /home/srit/src/rtk/rtk-dashboard/shiitake_suse_gcc.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/shiitake_suse_gcc_debug.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/shiitake_suse_gcc_opencl.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/shiitake_suse_intel.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/shiitake_style.cmake -V
