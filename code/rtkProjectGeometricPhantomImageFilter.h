@@ -76,8 +76,8 @@ public:
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
-  itkSetMacro(Fig, VectorOfVectorType);
-  itkGetMacro(Fig, VectorOfVectorType);
+  virtual VectorOfVectorType GetFig ();
+  virtual void SetFig (const VectorOfVectorType _arg);
 
 protected:
   ProjectGeometricPhantomImageFilter() {}

@@ -63,4 +63,20 @@ bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
   return true;
 }
 
+GeometricPhantomFileReader::VectorOfVectorType GeometricPhantomFileReader::GetFig ()
+{
+  itkDebugMacro("returning Fig.");
+  return this->m_Fig;
+}
+
+void GeometricPhantomFileReader::SetFig (const VectorOfVectorType _arg)
+{
+  itkDebugMacro("setting Fig");
+  if (this->m_Fig != _arg)
+    {
+    this->m_Fig = _arg;
+    this->Modified();
+    }
+}
+
 } // namespace rtk

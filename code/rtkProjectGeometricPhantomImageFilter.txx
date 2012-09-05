@@ -82,6 +82,27 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
   rei[ m_Fig.size() - 1]->Update();
   this->GraftOutput( rei[m_Fig.size()-1]->GetOutput() );
 }
+
+template< class TInputImage, class TOutputImage >
+typename ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::VectorOfVectorType
+ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GetFig()
+{
+  itkDebugMacro("returning Fig.");
+  return this->m_Fig;
+}
+
+template< class TInputImage, class TOutputImage >
+void
+ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::SetFig(const VectorOfVectorType _arg)
+{
+  itkDebugMacro("setting Fig");
+  if (this->m_Fig != _arg)
+    {
+    this->m_Fig = _arg;
+    this->Modified();
+    }
+}
+
 } // end namespace rtk
 
 #endif
