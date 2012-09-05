@@ -58,8 +58,8 @@ public:
 
   bool Config( const std::string input);
 
-  itkSetMacro(Fig, VectorOfVectorType);
-  itkGetMacro(Fig, VectorOfVectorType);
+  virtual VectorOfVectorType GetFig ();
+  virtual void SetFig (const VectorOfVectorType _arg);
 
 protected:
 
