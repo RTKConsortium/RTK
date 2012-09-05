@@ -135,15 +135,15 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   shepplogan[9].angle = 0.;
   shepplogan[9].attenuation = -0.02;
 
-  typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
   typename TOutputImage::PointType point;
-
-  //Iterator at the beginning of the volume
-  itOut.GoToBegin();
+  const    TInputImage *           input = this->GetInput();
 
   for(unsigned int i=0; i<NumberOfFig; i++)
   {
+    typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
+    typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
+
     //Translate from regular expression to quadric
     sqpFunctor->Translate(shepplogan[i].semiprincipalaxis);
     //Applies rotation and translation if necessary
@@ -161,12 +161,13 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
                    sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
                    sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
       if(QuadricEllip<0)
-        itOut.Set(shepplogan[i].attenuation + itOut.Get());
+        itOut.Set(shepplogan[i].attenuation + itIn.Get());
       else if (i==0)
         itOut.Set(0.);
+      ++itIn;
       ++itOut;
       }
-  itOut.GoToBegin();
+    input = this->GetOutput();
   }
 }
 
