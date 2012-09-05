@@ -162,7 +162,6 @@ ADD_SUBDIRECTORY(code)
 # Generate RTKConfig.cmake for the build tree.
 SET (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 SET (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
-SET(RTK_LIBRARIES ${RTK_LIBRARIES} ITKFFTW)
 CONFIGURE_FILE (cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 #=========================================================
 

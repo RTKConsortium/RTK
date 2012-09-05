@@ -2,3 +2,23 @@ ADD_LIBRARY(ITKFFTW
             itkFFTWCommon.cxx)
 TARGET_LINK_LIBRARIES(ITKFFTW ${ITK_LIBRARIES})
 
+#=========================================================
+# Installation code
+IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
+  # Include .h and .txx files
+  FILE(GLOB __files1 "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+  FILE(GLOB __files2 "${CMAKE_CURRENT_SOURCE_DIR}/*.txx")
+  INSTALL(FILES ${__files1} ${__files2}
+    DESTINATION ${RTK_INSTALL_INCLUDE_DIR}
+    COMPONENT Development)
+ENDIF(NOT RTK_INSTALL_NO_DEVELOPMENT)
+
+IF(NOT RTK_INSTALL_NO_LIBRARIES)
+  INSTALL(TARGETS ITKFFTW
+    RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
+    LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
+    ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
+ENDIF(NOT RTK_INSTALL_NO_LIBRARIES)
+#=========================================================
+
+
