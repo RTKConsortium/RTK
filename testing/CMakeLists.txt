@@ -39,6 +39,10 @@ ADD_EXECUTABLE(rtkforwardprojectiontest rtkforwardprojectiontest.cxx)
 TARGET_LINK_LIBRARIES(rtkforwardprojectiontest RTK)
 ADD_TEST(rtkforwardprojectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkforwardprojectiontest)
 
+ADD_EXECUTABLE(rtkgeometryfiletest rtkgeometryfiletest.cxx)
+TARGET_LINK_LIBRARIES(rtkgeometryfiletest RTK)
+ADD_TEST(rtkgeometryfiletest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryfiletest)
+
 ADD_EXECUTABLE(rtkfovtest rtkfovtest.cxx)
 TARGET_LINK_LIBRARIES(rtkfovtest RTK)
 ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
