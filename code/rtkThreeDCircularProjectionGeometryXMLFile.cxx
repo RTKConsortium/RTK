@@ -250,7 +250,7 @@ WriteFile()
                         "GantryAngle");
     if(!bSIDGlobal)
       WriteLocalParameter(output, indent,
-                          this->m_InputObject->GetSourceToDetectorDistances()[i],
+                          this->m_InputObject->GetSourceToIsocenterDistances()[i],
                           "SourceToIsocenterDistance");
     if(!bSDDGlobal)
       WriteLocalParameter(output, indent,
