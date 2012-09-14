@@ -58,8 +58,8 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjection(
   matrix =
     this->GetProjectionTranslationMatrices().back().GetVnlMatrix() *
     this->GetMagnificationMatrices().back().GetVnlMatrix() *
-    this->GetRotationMatrices().back().GetVnlMatrix() *
-    this->GetSourceTranslationMatrices().back().GetVnlMatrix();
+    this->GetSourceTranslationMatrices().back().GetVnlMatrix()*
+    this->GetRotationMatrices().back().GetVnlMatrix();
 
   this->AddMatrix(matrix);
   this->Modified();

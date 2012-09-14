@@ -49,16 +49,16 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.061)
+  if (ErrorPerPixel > 0.07)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.06." << std::endl;
+              << ErrorPerPixel << " instead of 0.07." << std::endl;
     exit( EXIT_FAILURE);
   }
-  if (PSNR < 24.5)
+  if (PSNR < 23.6)
   {
     std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 24.5" << std::endl;
+              << PSNR << " instead of 23.6" << std::endl;
     exit( EXIT_FAILURE);
   }
 }
@@ -111,7 +111,7 @@ int main(int, char** )
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
   // Shepp Logan projections filter
   typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
