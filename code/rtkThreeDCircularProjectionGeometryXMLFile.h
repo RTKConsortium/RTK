@@ -50,7 +50,7 @@ public:
   typedef ThreeDCircularProjectionGeometry GeometryType;
 
   /** Latest version */
-  static const unsigned int CurrentVersion = 1;
+  static const unsigned int CurrentVersion = 2;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileReader, itk::XMLFileReader);
