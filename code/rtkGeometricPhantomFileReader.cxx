@@ -41,7 +41,7 @@ bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
     if ( ( offset = line.find(search_fig, 0) ) != std::string::npos ) //Ellipsoid
                                                                       // found
       {
-      const std::string parameterNames[8] = { "x", "y", "z", "A", "B", "C", "beta", "gray" };
+      const std::string parameterNames[8] = { "A", "B", "C", "x", "y", "z", "beta", "gray" };
       VectorType parameters;
       for ( int j = 0; j < 8; j++ )
         {
