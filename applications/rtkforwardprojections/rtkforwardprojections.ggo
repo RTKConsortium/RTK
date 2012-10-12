@@ -6,7 +6,7 @@ option "config"    - "Config file"                                              
 option "geometry"  g  "XML geometry file name"                                   string   yes
 option "input"     i "Input volume file name"                                    string   yes
 option "output"    o "Output projections file name"                              string   yes
-option "method"    m "Forward projection method" values="Joseph","RayCastInterpolator" enum no default="Joseph"
+option "method"    m "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
 
 section "Projections parameters"
 option "origin"    - "Origin (default=centered)" double multiple no
