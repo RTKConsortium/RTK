@@ -38,6 +38,12 @@ ADD_TEST(rtkRaycastInterpolatorForwardProjectionTest ${EXECUTABLE_OUTPUT_PATH}/r
 ADD_EXECUTABLE(rtkforwardprojectiontest rtkforwardprojectiontest.cxx)
 TARGET_LINK_LIBRARIES(rtkforwardprojectiontest RTK)
 ADD_TEST(rtkforwardprojectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkforwardprojectiontest)
+IF(CUDA_FOUND)
+  ADD_EXECUTABLE(rtkforwardprojectioncudatest rtkforwardprojectiontest.cxx)
+  TARGET_LINK_LIBRARIES(rtkforwardprojectioncudatest RTK rtkcuda)
+  SET_TARGET_PROPERTIES(rtkforwardprojectioncudatest PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
+  ADD_TEST(rtkforwardprojectioncudatest ${EXECUTABLE_OUTPUT_PATH}/rtkforwardprojectioncudatest)
+ENDIF(CUDA_FOUND)
 
 ADD_EXECUTABLE(rtkgeometryfiletest rtkgeometryfiletest.cxx)
 TARGET_LINK_LIBRARIES(rtkgeometryfiletest RTK)
