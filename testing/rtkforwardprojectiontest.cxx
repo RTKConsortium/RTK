@@ -1,10 +1,17 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
-#include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
+
+#ifdef USE_CUDA
+#  include "rtkCudaForwardProjectionImageFilter.h"
+#else
+#  include "rtkJosephForwardProjectionImageFilter.h"
+#endif
+
+#include <itkImageFileWriter.h>
 
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
@@ -47,6 +54,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
+#ifndef USE_CUDA
   if (ErrorPerPixel > 1.28)
     {
     std::cerr << "Test Failed, Error per pixel not valid! "
@@ -59,9 +67,23 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
               << PSNR << " instead of 44" << std::endl;
     exit( EXIT_FAILURE);
     }
+#else
+  if (ErrorPerPixel > 3.)
+    {
+    std::cerr << "Test Failed, Error per pixel not valid! "
+              << ErrorPerPixel << " instead of 3." << std::endl;
+    exit( EXIT_FAILURE);
+    }
+  if (PSNR < 40.)
+    {
+    std::cerr << "Test Failed, PSNR not valid! "
+              << PSNR << " instead of 40" << std::endl;
+    exit( EXIT_FAILURE);
+    }
+#endif
 }
 
-int main(int , char** )
+int main(int , char** argv)
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
@@ -107,7 +129,11 @@ int main(int , char** )
   projInput->Update();
 
   // Joseph Forward Projection filter
+#ifdef USE_CUDA
+  typedef rtk::CudaForwardProjectionImageFilter JFPType;
+#else
   typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
+#endif
   JFPType::Pointer jfp = JFPType::New();
   jfp->InPlaceOff();
   jfp->SetInput( projInput->GetOutput() );
