@@ -24,6 +24,7 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkMacro.h>
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -55,6 +56,7 @@ CudaForwardProjectionImageFilter
     cudaSetDevice(devices[0]);
     }
   const float *host_volume = this->GetInput(1)->GetBufferPointer();
+
   CUDA_forward_project_init (m_ProjectionDimension, m_VolumeDimension,
                              m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix, host_volume);
 }
@@ -88,6 +90,7 @@ CudaForwardProjectionImageFilter
   const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
   const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
                                       this->GetOutput()->GetBufferedRegion().GetSize(1);
+
   float t_step = 1; // Step in mm
   int blockSize[3] = {16,16,1};
   itk::Vector<double, 4> source_position;
@@ -134,7 +137,9 @@ CudaForwardProjectionImageFilter
       // Set source position in volume indices
       source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
       CUDA_forward_project(blockSize,
-                           this->GetOutput()->GetBufferPointer()+iProj*nPixelsPerProj,
+                           this->GetOutput()->GetBufferPointer() + (iProj -
+                           this->GetOutput()->GetBufferedRegion().GetIndex()[2]) *
+                           nPixelsPerProj,
                            m_DeviceProjection,
                            (double*)&(source_position[0]),
                            m_ProjectionDimension,
