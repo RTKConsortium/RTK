@@ -93,11 +93,14 @@ CudaForwardProjectionImageFilter
   itk::Vector<double, 4> source_position;
 
   // Setting BoxMin and BoxMax
+  // SR: we are using cuda textures where the pixel definition is not center but corner.
+  // Therefore, we set the box limits from index to index+size instead of, for ITK,
+  // index-0.5 to index+size-0.5.
   float boxMin[3];
   float boxMax[3];
   for(unsigned int i=0; i<3; i++)
     {
-      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i]-0.5;
+      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
       boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i];
     }
 
@@ -113,7 +116,8 @@ CudaForwardProjectionImageFilter
       Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
       volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(1) );
 
-      // Adding an offset to locate the center of my voxels in CUDA
+      // Adding 0.5 offset to change from the centered pixel convention (ITK)
+      // to the corner pixel convention (CUDA).
       for(unsigned int i=0; i<3; i++)
         volPPToIndex[i][3]+=0.5;
 
