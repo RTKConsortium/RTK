@@ -54,7 +54,6 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-#ifndef USE_CUDA
   if (ErrorPerPixel > 1.28)
     {
     std::cerr << "Test Failed, Error per pixel not valid! "
@@ -67,20 +66,6 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
               << PSNR << " instead of 44" << std::endl;
     exit( EXIT_FAILURE);
     }
-#else
-  if (ErrorPerPixel > 3.)
-    {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 3." << std::endl;
-    exit( EXIT_FAILURE);
-    }
-  if (PSNR < 40.)
-    {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 40" << std::endl;
-    exit( EXIT_FAILURE);
-    }
-#endif
 }
 
 int main(int , char** argv)
