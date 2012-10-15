@@ -1,0 +1,49 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef __rtkCudaForwardProjectionImageFilter_hcu
+#define __rtkCudaForwardProjectionImageFilter_hcu
+
+void
+CUDA_forward_project_init(int img_dim[2],
+                          int vol_dim[3],
+                          float *&dev_vol,
+                          float *&dev_img,
+                          float *&dev_matrix,
+                          const float *host_volume);
+
+void
+CUDA_forward_project(int blockSize[3],
+                     float *host_proj,
+                     float *dev_proj,
+                     double source_position[3],
+                     int projections_size[2],
+                     float t_step,
+                     float *dev_matrix,
+                     float matrix[16],
+                     float boxMin[3],
+                     float boxMax[3],
+                     float spacing[3]);
+
+void
+CUDA_forward_project_cleanup(int proj_dim[2],
+                             float *dev_vol,
+                             float *dev_img,
+                             float *dev_matrix);
+
+#endif

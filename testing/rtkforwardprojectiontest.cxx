@@ -1,10 +1,15 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
-#include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
+
+#ifdef USE_CUDA
+#  include "rtkCudaForwardProjectionImageFilter.h"
+#else
+#  include "rtkJosephForwardProjectionImageFilter.h"
+#endif
 
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
@@ -107,7 +112,11 @@ int main(int , char** )
   projInput->Update();
 
   // Joseph Forward Projection filter
+#ifdef USE_CUDA
+  typedef rtk::CudaForwardProjectionImageFilter JFPType;
+#else
   typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
+#endif
   JFPType::Pointer jfp = JFPType::New();
   jfp->InPlaceOff();
   jfp->SetInput( projInput->GetOutput() );
