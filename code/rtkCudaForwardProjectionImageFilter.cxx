@@ -119,7 +119,7 @@ CudaForwardProjectionImageFilter
       // Adding 0.5 offset to change from the centered pixel convention (ITK)
       // to the corner pixel convention (CUDA).
       for(unsigned int i=0; i<3; i++)
-        volPPToIndex[i][3]+=0.5;
+        volPPToIndex[i][3] += 0.5;
 
       // Compute matrix to transform projection index to volume index
       Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
