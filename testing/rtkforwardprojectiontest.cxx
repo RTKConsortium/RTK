@@ -11,8 +11,6 @@
 #  include "rtkJosephForwardProjectionImageFilter.h"
 #endif
 
-#include <itkImageFileWriter.h>
-
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
@@ -68,7 +66,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
     }
 }
 
-int main(int , char** argv)
+int main(int , char** )
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;

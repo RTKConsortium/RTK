@@ -3,6 +3,7 @@
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkFieldOfViewImageFilter.h"
 
 #ifdef USE_CUDA
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
@@ -49,16 +50,16 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.07)
+  if (ErrorPerPixel > 0.03)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.07." << std::endl;
+              << ErrorPerPixel << " instead of 0.03." << std::endl;
     exit( EXIT_FAILURE);
   }
-  if (PSNR < 23.6)
+  if (PSNR < 26.)
   {
     std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 23.6" << std::endl;
+              << PSNR << " instead of 26" << std::endl;
     exit( EXIT_FAILURE);
   }
 }
@@ -140,7 +141,16 @@ int main(int, char** )
   feldkamp->SetGeometry( geometry );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
 
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
+
+  // FOV
+  typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
+  FOVFilterType::Pointer fov=FOVFilterType::New();
+  fov->SetInput(0, feldkamp->GetOutput());
+  fov->SetProjectionsStack(slp->GetOutput());
+  fov->SetGeometry( geometry );
+  fov->Update();
+
+  CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }
