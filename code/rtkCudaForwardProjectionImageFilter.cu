@@ -259,7 +259,7 @@ CUDA_forward_project_init(int proj_dim[2],
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
 CUDA_forward_project(int blockSize[3],
-					 float *host_proj,
+                     float *host_proj,
                      float *dev_proj,
                      double source_position[3],
                      int projections_size[2],
@@ -316,6 +316,11 @@ CUDA_forward_project_cleanup(int proj_dim[2],
                              float *dev_proj,
                              float *dev_matrix)
 {
+  // Unbind the volume and matrix textures
+  cudaUnbindTexture (tex_vol);
+  CUDA_CHECK_ERROR;
+  cudaUnbindTexture (tex_matrix);
+  CUDA_CHECK_ERROR;
   // Deallocate memory on the device
   cudaFree (dev_proj);
   CUDA_CHECK_ERROR;
@@ -323,9 +328,5 @@ CUDA_forward_project_cleanup(int proj_dim[2],
   CUDA_CHECK_ERROR;
   cudaFreeArray ((cudaArray*)dev_vol);
   CUDA_CHECK_ERROR;
-  // Unbind the volume and matrix textures
-  cudaUnbindTexture (tex_vol);
-  CUDA_CHECK_ERROR;
-  cudaUnbindTexture (tex_matrix);
-  CUDA_CHECK_ERROR;
+
 }
