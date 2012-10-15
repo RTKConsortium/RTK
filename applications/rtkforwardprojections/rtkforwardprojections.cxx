@@ -21,6 +21,9 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
+#if CUDA_FOUND
+#  include "rtkCudaForwardProjectionImageFilter.h"
+#endif
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
 
 #include <itkImageFileReader.h>
@@ -88,6 +91,14 @@ int main(int argc, char * argv[])
   {
   case(method_arg_Joseph):
     forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    break;
+  case(method_arg_CudaRayCast):
+#if CUDA_FOUND
+    forwardProjection = rtk::CudaForwardProjectionImageFilter::New();
+#else
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+#endif
     break;
   case(method_arg_RayCastInterpolator):
     forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
