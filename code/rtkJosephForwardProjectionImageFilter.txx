@@ -38,10 +38,10 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
   const typename TInputImage::PixelType *beginBuffer = this->GetInput(1)->GetBufferPointer();
-  const unsigned int offsets[3] = {1,
-                                   this->GetInput(1)->GetBufferedRegion().GetSize()[0],
-                                   this->GetInput(1)->GetBufferedRegion().GetSize()[0] *
-                                   this->GetInput(1)->GetBufferedRegion().GetSize()[1]};
+  unsigned int offsets[3];
+  offsets[0] = 1;
+  offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
+  offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
   const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
 
   // Iterators on volume input and output

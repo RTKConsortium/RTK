@@ -188,7 +188,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
       }
     }
-  GraftOutput( m_BackProjectionFilter->GetOutput() );
+  this->GraftOutput( m_BackProjectionFilter->GetOutput() );
 }
 
 template<class TInputImage, class TOutputImage>

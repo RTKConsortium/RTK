@@ -88,7 +88,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)
-    ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
+    ProjectionMatrixType matrix = this->GetIndexToIndexProjectionMatrix(iProj, projection);
     double perspFactor = matrix[Dimension-1][Dimension];
     for(unsigned int j=0; j<Dimension; j++)
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
