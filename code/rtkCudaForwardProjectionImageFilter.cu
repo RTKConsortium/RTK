@@ -83,7 +83,7 @@ inline __host__ __device__ void operator+=(float3 &a, float3 b)
 }
 
 // T E X T U R E S ////////////////////////////////////////////////////////
-texture<float, cudaTextureType3D, cudaReadModeElementType> tex_vol;
+texture<float, 3, cudaReadModeElementType> tex_vol;
 texture<float, 1, cudaReadModeElementType> tex_matrix;
 ///////////////////////////////////////////////////////////////////////////
 
