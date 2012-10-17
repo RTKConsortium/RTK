@@ -173,8 +173,8 @@ CUDA_back_project_init(
   cudaMallocArray( (cudaArray **)&dev_img, &channelDesc, img_dim[0], img_dim[1] );
 
   // set texture parameters
-  tex_img.addressMode[0] = cudaAddressModeClamp;
-  tex_img.addressMode[1] = cudaAddressModeClamp;
+  tex_img.addressMode[0] = cudaAddressModeClamp; //For the time being, clamp mode.
+  tex_img.addressMode[1] = cudaAddressModeClamp; //For the time being, clamp mode.
   tex_img.filterMode = cudaFilterModeLinear;
   tex_img.normalized = false; // don't access with normalized texture coords
 
