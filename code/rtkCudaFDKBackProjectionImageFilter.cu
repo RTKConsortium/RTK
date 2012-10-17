@@ -238,10 +238,6 @@ CUDA_reconstruct_conebeam(
                                            blocksInY, 1.0f/(float)blocksInY );
     }
   CUDA_CHECK_ERROR;
-
-  // Unbind the image and projection matrix textures
-  cudaUnbindTexture (tex_img);
-  cudaUnbindTexture (tex_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -262,6 +258,10 @@ CUDA_reconstruct_conebeam_cleanup(
   // Copy reconstructed volume from device to host
   cudaMemcpy (vol, dev_vol, vol_size_malloc, cudaMemcpyDeviceToHost);
   CUDA_CHECK_ERROR;
+
+  // Unbind the image and projection matrix textures
+  cudaUnbindTexture (tex_img);
+  cudaUnbindTexture (tex_matrix);
 
   // Cleanup
   cudaFreeArray ((cudaArray*)dev_img);
