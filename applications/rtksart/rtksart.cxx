@@ -22,6 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkProjectionsReader.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
+#include "rtkCudaSARTConeBeamReconstructionFilter.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileWriter.h>
@@ -94,21 +95,52 @@ int main(int argc, char * argv[])
   case(bp_arg_Joseph):
     bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
+  case(bp_arg_CudaVoxelBased):
+    bp = rtk::CudaBackProjectionImageFilter::New();
+    break;
+
   default:
     std::cerr << "Unhandled --bp value." << std::endl;
     return EXIT_FAILURE;
   }
 
   // SART reconstruction filter
-  typedef rtk::SARTConeBeamReconstructionFilter< OutputImageType > SARTType;
-  SARTType::Pointer sart = SARTType::New();
+  rtk::SARTConeBeamReconstructionFilter< OutputImageType >::Pointer sart;
+  switch(args_info.sart_arg)
+  {
+  case(sart_arg_Sart):
+    sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType, OutputImageType>::New();
+    break;
+  case(bp_arg_Joseph):
+    sart = rtk::CudaSARTConeBeamReconstructionFilter::New();
+    break;
+
+  default:
+    std::cerr << "Unhandled --bp value." << std::endl;
+    return EXIT_FAILURE;
+  }
+
   sart->SetInput( inputFilter->GetOutput() );
   sart->SetInput(1, reader->GetOutput());
   sart->SetGeometry( geometryReader->GetOutputObject() );
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetLambda( args_info.lambda_arg );
   sart->SetBackProjectionFilter( bp );
-  sart->Update();
+
+  itk::TimeProbe readerProbe;
+  if(args_info.time_flag)
+  {
+    std::cout << "Recording elapsed time... " << std::flush;
+    readerProbe.Start();
+  }
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() )
+
+  if(args_info.time_flag)
+  {
+    readerProbe.Stop();
+    std::cout << "It took...  " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
+  }
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
