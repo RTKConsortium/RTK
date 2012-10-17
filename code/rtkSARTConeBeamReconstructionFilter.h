@@ -99,9 +99,9 @@ protected:
 
   virtual void GenerateInputRequestedRegion();
 
-  void GenerateOutputInformation();
+  virtual void GenerateOutputInformation();
 
-  void GenerateData();
+  virtual void GenerateData();
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
