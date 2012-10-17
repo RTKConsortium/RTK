@@ -39,9 +39,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ForwardProjectionFilter = JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
-  SetBackProjectionFilter(rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New());
-
-  //Permanent internal connections
+  SetBackProjectionFilter(rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New());  //Permanent internal connections
   m_ZeroMultiplyFilter->SetInput( m_ExtractFilter->GetOutput() );
   m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
   m_SubtractFilter->SetInput(0, m_ExtractFilter->GetOutput() );
@@ -176,15 +174,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_SubtractFilter->Update();
       m_MultiplyFilter->Update();
       m_BackProjectionFilter->Update();
-
-//if(i%32==0)
-//  {
-//  typedef typename itk::ImageFileWriter<TOutputImage> WriterType;
-//  typename WriterType::Pointer writer = WriterType::New();
-//  writer->SetFileName("sart.mha");
-//  writer->SetInput( m_BackProjectionFilter->GetOutput() );
-//  writer->Update();
-//  }
 
       }
     }
