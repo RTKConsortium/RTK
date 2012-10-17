@@ -23,6 +23,8 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
+#include "rtkCudaFDKBackProjectionImageFilter.h"
+#include "rtkCudaBackProjectionImageFilter.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileReader.h>
@@ -87,21 +89,30 @@ int main(int argc, char * argv[])
     std::cout << "Backprojecting volume..." << std::flush;
   itk::TimeProbe bpProbe;
   rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
+
   switch(args_info.method_arg)
   {
-  case(method_arg_VoxelBasedBackProjection):
-    bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(method_arg_FDKBackProjection):
-    bp = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(method_arg_Joseph):
-    bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  default:
+    case(method_arg_VoxelBasedBackProjection):
+      bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+    case(method_arg_FDKBackProjection):
+      bp = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+    case(method_arg_Joseph):
+      bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+    case(method_arg_CudaFDKBackProjection):
+      bp = rtk::CudaFDKBackProjectionImageFilter::New();
+      break;
+    case(method_arg_CudaBackProjection):
+      bp = rtk::CudaBackProjectionImageFilter::New();
+      break;
+
+    default:
     std::cerr << "Unhandled --method value." << std::endl;
     return EXIT_FAILURE;
   }
+
   bp->SetInput( constantImageSource->GetOutput() );
   bp->SetInput( 1, reader->GetOutput() );
   bp->SetGeometry( geometryReader->GetOutputObject() );
