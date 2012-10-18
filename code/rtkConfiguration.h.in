@@ -23,9 +23,14 @@
 
 /* Solves compatibility issue between ITKv3 and ITKv4 */
 #include <itkConfigure.h>
+namespace rtk
+{
 #if ITK_VERSION_MAJOR <= 3
-#  define ThreadIdType int
+  typedef int ThreadIdType;
+#else
+  typedef itk::ThreadIdType ThreadIdType;
 #endif
+}
 
 #cmakedefine01 CUDA_FOUND
 #cmakedefine01 OPENCL_FOUND
