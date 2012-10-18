@@ -89,8 +89,8 @@ CUDA_fft_convolution(const int3 &inputDimension, float *projection, cufftComplex
 
   // Thread Block Dimensions
   int tBlock_x = 16;
-  int tBlock_y = 4;
-  int tBlock_z = 4;
+  int tBlock_y = 8;
+  int tBlock_z = 8;
 
   int  blocksInX = (fftDimension.x - 1) / tBlock_x + 1;
   int  blocksInY = (fftDimension.y - 1) / tBlock_y + 1;

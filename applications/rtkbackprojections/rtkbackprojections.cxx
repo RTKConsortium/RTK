@@ -23,8 +23,10 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
-#include "rtkCudaFDKBackProjectionImageFilter.h"
-#include "rtkCudaBackProjectionImageFilter.h"
+#if CUDA_FOUND
+#  include "rtkCudaFDKBackProjectionImageFilter.h"
+#  include "rtkCudaBackProjectionImageFilter.h"
+#endif
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileReader.h>
@@ -102,10 +104,20 @@ int main(int argc, char * argv[])
       bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
     case(method_arg_CudaFDKBackProjection):
+#if CUDA_FOUND
       bp = rtk::CudaFDKBackProjectionImageFilter::New();
+#else
+      std::cerr << "The program has not been compiled with cuda option" << std::endl;
+      return EXIT_FAILURE;
+#endif
       break;
     case(method_arg_CudaBackProjection):
+#if CUDA_FOUND
       bp = rtk::CudaBackProjectionImageFilter::New();
+#else
+      std::cerr << "The program has not been compiled with cuda option" << std::endl;
+      return EXIT_FAILURE;
+#endif
       break;
 
     default:
