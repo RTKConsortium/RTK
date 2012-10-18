@@ -51,7 +51,6 @@ IF (CUDA_FOUND)
        rtkCudaFFTRampImageFilter.cu
        rtkCudaForwardProjectionImageFilter.cu
        rtkCudaBackProjectionImageFilter.cu )
-   DD(rtkcuda_CUDA_FILES)
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS ${rtkcuda_CUDA_FILES})
   ADD_LIBRARY(rtkcuda
               rtkCudaFDKBackProjectionImageFilter.cxx
