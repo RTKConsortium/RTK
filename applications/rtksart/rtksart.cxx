@@ -22,7 +22,9 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkProjectionsReader.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
-#include "rtkCudaSARTConeBeamReconstructionFilter.h"
+#if CUDA_FOUND
+#  include "rtkCudaSARTConeBeamReconstructionFilter.h"
+#endif
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileWriter.h>
@@ -96,7 +98,12 @@ int main(int argc, char * argv[])
     bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(bp_arg_CudaVoxelBased):
+#if CUDA_FOUND
     bp = rtk::CudaBackProjectionImageFilter::New();
+#else
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+#endif
     break;
 
   default:
@@ -112,7 +119,12 @@ int main(int argc, char * argv[])
     sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType, OutputImageType>::New();
     break;
   case(bp_arg_Joseph):
+#if CUDA_FOUND
     sart = rtk::CudaSARTConeBeamReconstructionFilter::New();
+#else
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+#endif
     break;
 
   default:

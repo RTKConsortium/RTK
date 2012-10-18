@@ -49,9 +49,9 @@ IF (CUDA_FOUND)
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
        rtkCudaFFTRampImageFilter.cu
-	   rtkCudaForwardProjectionImageFilter.cu
-           rtkCudaBackProjectionImageFilter.cu )
-
+       rtkCudaForwardProjectionImageFilter.cu
+       rtkCudaBackProjectionImageFilter.cu )
+   DD(rtkcuda_CUDA_FILES)
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS ${rtkcuda_CUDA_FILES})
   ADD_LIBRARY(rtkcuda
               rtkCudaFDKBackProjectionImageFilter.cxx
@@ -59,7 +59,7 @@ IF (CUDA_FOUND)
               rtkCudaFDKConeBeamReconstructionFilter.cxx
 	      rtkCudaForwardProjectionImageFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
-			  ${rtkcuda_CUDA_WRAPPERS}
+              ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
   TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} RTK)
