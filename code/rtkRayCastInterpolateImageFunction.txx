@@ -1425,7 +1425,7 @@ RayCastHelper<TInputImage, TCoordRep>
 
     if (intensity > threshold)
       {
-      integral += intensity - threshold;
+      integral += intensity;
       }
     this->IncrementVoxelPointers();
     }

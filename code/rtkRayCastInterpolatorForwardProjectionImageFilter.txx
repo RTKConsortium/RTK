@@ -25,6 +25,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkIdentityTransform.h>
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -42,7 +43,7 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
   // Create interpolator
   typedef typename rtk::RayCastInterpolateImageFunction< TInputImage, double > InterpolatorType;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  interpolator->SetThreshold( 0. );
+  interpolator->SetThreshold( itk::NumericTraits< double >::NonpositiveMin() );
   interpolator->SetInputImage( this->GetInput(1) );
   interpolator->SetTransform(itk::IdentityTransform<double,3>::New());
 
