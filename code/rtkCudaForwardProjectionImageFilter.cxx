@@ -35,6 +35,7 @@ CudaForwardProjectionImageFilter
   m_DeviceVolume     = NULL;
   m_DeviceProjection = NULL;
   m_DeviceMatrix     = NULL;
+  m_ExplicitGPUMemoryManagementFlag = false;
 }
 
 void
@@ -83,7 +84,8 @@ CudaForwardProjectionImageFilter
 ::GenerateData()
 {
   this->AllocateOutputs();
-  this->InitDevice();
+  if(!m_ExplicitGPUMemoryManagementFlag)
+    this->InitDevice();
   const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
@@ -150,7 +152,8 @@ CudaForwardProjectionImageFilter
                            boxMax,
                            spacing);
     }
-  this->CleanUpDevice();
+  if(!m_ExplicitGPUMemoryManagementFlag)
+    this->CleanUpDevice();
 }
 
 } // end namespace rtk
