@@ -62,16 +62,16 @@ public:
   /** Function to synchronize memory from device to host and free device memory */
   void CleanUpDevice();
 
+  /** Boolean to keep the hand on the memory management of the GPU. Default is
+   * off. If on, the user must call manually InitDevice and CleanUpDevice. */
+  itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
+  itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
+
 protected:
   CudaBackProjectionImageFilter();
   virtual ~CudaBackProjectionImageFilter() {};
 
   void GenerateData();
-
-  /** Boolean to keep the hand on the memory management of the GPU. Default is
-   * off. If on, the user must call manually InitDevice and CleanUpDevice. */
-  itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
-  itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
 
 private:
   CudaBackProjectionImageFilter(const Self&); //purposely not implemented

@@ -153,12 +153,12 @@ void kernel_forwardProject(float *dev_proj,
   ray.o = src_pos;
 
   float3 pixelPos;
-  pixelPos.x = tex1Dfetch(tex_matrix, 3)  + tex1Dfetch(tex_matrix, 0)*i +
-               tex1Dfetch(tex_matrix, 1)*j;
-  pixelPos.y = tex1Dfetch(tex_matrix, 7)  + tex1Dfetch(tex_matrix, 4)*i +
-               tex1Dfetch(tex_matrix, 5)*j;
-  pixelPos.z = tex1Dfetch(tex_matrix, 11) + tex1Dfetch(tex_matrix, 8)*i;
-               tex1Dfetch(tex_matrix, 9)*j;
+  pixelPos.x = tex1Dfetch(tex_matrix,  0)*i + tex1Dfetch(tex_matrix,  1)*j +
+               tex1Dfetch(tex_matrix,  3);
+  pixelPos.y = tex1Dfetch(tex_matrix,  4)*i + tex1Dfetch(tex_matrix,  5)*j +
+               tex1Dfetch(tex_matrix,  7);
+  pixelPos.z = tex1Dfetch(tex_matrix,  8)*i + tex1Dfetch(tex_matrix,  9)*j +
+               tex1Dfetch(tex_matrix, 11);
 
   ray.d = pixelPos - ray.o;
   ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
