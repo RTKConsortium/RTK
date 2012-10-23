@@ -16,12 +16,12 @@
  *
  *=========================================================================*/
 
-#include "rtkshepploganphantom_ggo.h"
+#include "rtkdrawshepploganphantom_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
+#include "rtkDrawSheppLoganFilter.h"
+#include "rtkConstantImageSource.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -29,51 +29,31 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkshepploganphantom, args_info);
+  GGO(rtkdrawshepploganphantom, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Geometry
-  if(args_info.verbose_flag)
-    std::cout << "Reading geometry information from "
-              << args_info.geometry_arg
-              << "..."
-              << std::endl;
-
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
-
   // Create a stack of empty projection images
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkshepploganphantom>(constantImageSource, args_info);
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawshepploganphantom>(constantImageSource, args_info);
 
-  // Adjust size according to geometry
-  ConstantImageSourceType::SizeType sizeOutput;
-  sizeOutput[0] = constantImageSource->GetSize()[0];
-  sizeOutput[1] = constantImageSource->GetSize()[1];
-  sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
-  constantImageSource->SetSize( sizeOutput );
 
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
-  SLPType::Pointer slp=SLPType::New();
-  slp->SetInput(constantImageSource->GetOutput());
-  slp->SetGeometry(geometryReader->GetOutputObject());
-  slp->SetPhantomScale(args_info.phantomscale_arg);
-  slp->Update();
+  // Create a reference object (in this case a 3D phantom reference).
+  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  DSLType::Pointer dsl = DSLType::New();
+  dsl->SetPhantomScale( args_info.phantomscale_arg );
+  dsl->SetInput( constantImageSource->GetOutput() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( slp->GetOutput() );
-  if(args_info.verbose_flag)
-    std::cout << "Projecting and writing... " << std::flush;
+  writer->SetInput( dsl->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
