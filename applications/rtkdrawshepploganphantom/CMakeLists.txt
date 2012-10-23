@@ -1,10 +1,10 @@
-WRAP_GGO(rtkshepploganphantom_GGO_C rtkshepploganphantom.ggo)
-ADD_EXECUTABLE(rtkshepploganphantom rtkshepploganphantom.cxx ${rtkshepploganphantom_GGO_C})
-TARGET_LINK_LIBRARIES(rtkshepploganphantom RTK)
+WRAP_GGO(rtkdrawshepploganphantom_GGO_C rtkdrawshepploganphantom.ggo)
+ADD_EXECUTABLE(rtkdrawshepploganphantom rtkdrawshepploganphantom.cxx ${rtkdrawshepploganphantom_GGO_C})
+TARGET_LINK_LIBRARIES(rtkdrawshepploganphantom RTK)
 
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtkshepploganphantom) 
+  FOREACH(EXE_NAME rtkdrawshepploganphantom) 
     INSTALL(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries

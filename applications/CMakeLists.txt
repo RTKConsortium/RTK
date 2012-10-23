@@ -17,9 +17,11 @@ ADD_SUBDIRECTORY(rtksart)
 ADD_SUBDIRECTORY(rtkrayquadricintersection)
 ADD_SUBDIRECTORY(rtkprojectgeometricphantom)
 ADD_SUBDIRECTORY(rtkdrawgeometricphantom)
-ADD_SUBDIRECTORY(rtkshepploganphantom)
+ADD_SUBDIRECTORY(rtkprojectshepploganphantom)
 ADD_SUBDIRECTORY(rtkfieldofview)
 ADD_SUBDIRECTORY(rtksubselect)
+ADD_SUBDIRECTORY(rtkdrawshepploganphantom)
+
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 ADD_SUBDIRECTORY(rtkvarianobigeometry)

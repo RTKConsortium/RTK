@@ -52,7 +52,7 @@ public:
   typedef std::vector<double>                               VectorType;
   typedef std::string                                       StringType;
 
-  typedef rtk::ConvertEllipsoidToQuadricParametersFunction          EQPFunctionType;
+  typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
   struct figure
   {
     VectorType semiprincipalaxis;
