@@ -17,6 +17,7 @@ else ()
   # the flag -ftest-coverage causes nvcc to barf, so exclude that one
   if (CMAKE_COMPILER_IS_GNUCC)
     string (REPLACE "-ftest-coverage" "" TMP "${CMAKE_CXX_FLAGS}")
+    string (REPLACE "-ftemplate-depth-50" "" TMP "${TMP}")
     string (REPLACE " " "," TMP "${TMP}")
     set (CUDA_CXX_FLAGS ${CUDA_CXX_FLAGS} ${TMP})
   endif ()
