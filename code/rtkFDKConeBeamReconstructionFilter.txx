@@ -136,7 +136,9 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
     m_BackProjectionFilter->Update();
     m_BackProjectionProbe.Stop();
     }
+
   this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+  this->GenerateOutputInformation();
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
