@@ -1,4 +1,5 @@
 #include <itkImageRegionConstIterator.h>
+#include <itkStreamingImageFilter.h>
 
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
@@ -108,6 +109,8 @@ int main(int, char** )
   projectionsSource->SetSize( size );
   projectionsSource->SetConstant( 0. );
 
+  std::cout << "\n\n****** Case 1: No streaming ******" << std::endl;
+
   // Geometry object
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
@@ -151,6 +154,21 @@ int main(int, char** )
   fov->Update();
 
   CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
-  std::cout << "\n\nTest PASSED! " << std::endl;
+  std::cout << "Test PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 2: streaming ******" << std::endl;
+
+  // Make sure that the data will be recomputed by releasing them
+  fov->GetOutput()->ReleaseData();
+
+  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamingType;
+  StreamingType::Pointer streamer = StreamingType::New();
+  streamer->SetInput(0, fov->GetOutput());
+  streamer->SetNumberOfStreamDivisions(8);
+  streamer->Update();
+
+  CheckImageQuality<OutputImageType>(streamer->GetOutput(), dsl->GetOutput());
+  std::cout << "Test PASSED! " << std::endl;
+
   return EXIT_SUCCESS;
 }
