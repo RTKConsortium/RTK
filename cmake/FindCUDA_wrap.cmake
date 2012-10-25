@@ -10,7 +10,7 @@ else ()
   # GCS 2011.03.16
   # Make nvcc less whiny
   if (CMAKE_COMPILER_IS_GNUCC)
-    set (CUDA_PROPAGATE_HOST_FLAGS OFF)
+    set (CUDA_PROPAGATE_HOST_FLAGS CACHE BOOL OFF)
   endif ()
 
   # GCS 2012-05-11:  We need to propagate cxx flags to nvcc, but 
@@ -19,7 +19,7 @@ else ()
     string (REPLACE "-ftest-coverage" "" TMP "${CMAKE_CXX_FLAGS}")
     string (REPLACE "-ftemplate-depth-50" "" TMP "${TMP}")
     string (REPLACE " " "," TMP "${TMP}")
-    set (CUDA_CXX_FLAGS ${TMP})
+    set (CUDA_CXX_FLAGS ${CUDA_CXX_FLAGS} ${TMP})
   endif ()
 
   # GCS 2012-05-07: Workaround for poor, troubled FindCUDA
