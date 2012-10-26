@@ -1,0 +1,11 @@
+#PBS -N rtk_dashboard
+#PBS -l walltime=05:00:00,nodes=1:ppn=8:gpus=1
+#PBS -o /tmp/RTK_dashboard/rtk_dashboard.out
+#PBS -e /tmp/RTK_dashboard/rtk_dashboard.err
+
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda32.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda40.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda41.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda42.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda50.cmake
+
