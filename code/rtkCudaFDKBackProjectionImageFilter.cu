@@ -87,6 +87,43 @@ void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y, float invBl
          tex1Dfetch(tex_matrix, 10)*k + tex1Dfetch(tex_matrix, 11);
 
   // Change coordinate systems
+  ip.x = ip.x * ip.z;
+  ip.y = ip.y * ip.z;
+
+  // Get texture point, clip left to GPU
+  voxel_data = tex2D(tex_img, ip.x, ip.y);
+
+  // Place it into the volume
+  dev_vol[vol_idx] += ip.z * ip.z * voxel_data;
+}
+
+__global__
+void kernel_fdk_3Dgrid(float *dev_vol, int3 vol_dim)
+{
+  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+
+  if (i >= vol_dim.x || j >= vol_dim.y || k >= vol_dim.z)
+    {
+    return;
+    }
+
+  // Index row major into the volume
+  long int vol_idx = i + (j + k*vol_dim.y)*(vol_dim.x);
+
+  float3 ip;
+  float  voxel_data;
+
+  // matrix multiply
+  ip.x = tex1Dfetch(tex_matrix, 0)*i + tex1Dfetch(tex_matrix, 1)*j +
+         tex1Dfetch(tex_matrix, 2)*k + tex1Dfetch(tex_matrix, 3);
+  ip.y = tex1Dfetch(tex_matrix, 4)*i + tex1Dfetch(tex_matrix, 5)*j +
+         tex1Dfetch(tex_matrix, 6)*k + tex1Dfetch(tex_matrix, 7);
+  ip.z = tex1Dfetch(tex_matrix, 8)*i + tex1Dfetch(tex_matrix, 9)*j +
+         tex1Dfetch(tex_matrix, 10)*k + tex1Dfetch(tex_matrix, 11);
+
+  // Change coordinate systems
   ip.z = 1 / ip.z;
   ip.x = ip.x * ip.z;
   ip.y = ip.y * ip.z;
@@ -219,25 +256,49 @@ CUDA_reconstruct_conebeam(
     }
   else
     {
+    int device;
+    cudaGetDevice(&device);
+
     // Thread Block Dimensions
     static int tBlock_x = 16;
     static int tBlock_y = 4;
     static int tBlock_z = 4;
 
     // Each element in the volume (each voxel) gets 1 thread
-    static int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
-    static int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
-    static int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
-    static dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
-    static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+    static unsigned int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
+    static unsigned int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
+    static unsigned int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
 
-    // Note: cbi->img AND cbi->matrix are passed via texture memory
-    //-------------------------------------
-    kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol,
-                                           make_int3(vol_dim[0], vol_dim[1], vol_dim[2]),
-                                           blocksInY, 1.0f/(float)blocksInY );
+    if(GetCudaComputeCapability(device).first<=1)
+      {
+      static dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
+      static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+
+
+      // Note: cbi->img AND cbi->matrix are passed via texture memory
+      //-------------------------------------
+      kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol,
+                                             make_int3(vol_dim[0], vol_dim[1], vol_dim[2]),
+                                             blocksInY, 1.0f/(float)blocksInY );
+      }
+    else
+      {
+      static dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
+      static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+
+
+      // Note: cbi->img AND cbi->matrix are passed via texture memory
+      //-------------------------------------
+      kernel_fdk_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol,
+                                             make_int3(vol_dim[0], vol_dim[1], vol_dim[2]));
+      }
+
     }
   CUDA_CHECK_ERROR;
+
+  // Unbind the image and projection matrix textures
+  cudaUnbindTexture (tex_img);
+  cudaUnbindTexture (tex_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -258,10 +319,6 @@ CUDA_reconstruct_conebeam_cleanup(
   // Copy reconstructed volume from device to host
   cudaMemcpy (vol, dev_vol, vol_size_malloc, cudaMemcpyDeviceToHost);
   CUDA_CHECK_ERROR;
-
-  // Unbind the image and projection matrix textures
-  cudaUnbindTexture (tex_img);
-  cudaUnbindTexture (tex_matrix);
 
   // Cleanup
   cudaFreeArray ((cudaArray*)dev_img);
