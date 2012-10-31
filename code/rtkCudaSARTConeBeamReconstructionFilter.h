@@ -24,7 +24,11 @@
 #include "rtkSARTConeBeamReconstructionFilter.h"
 
 #include <itkExtractImageFilter.h>
-#include <itkMultiplyByConstantImageFilter.h>
+#if ITK_VERSION_MAJOR <= 3
+#  include <itkMultiplyByConstantImageFilter.h>
+#else
+#  include <itkMultiplyImageFilter.h>
+#endif
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
 

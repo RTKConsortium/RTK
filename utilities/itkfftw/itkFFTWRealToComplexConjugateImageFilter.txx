@@ -21,7 +21,7 @@
 #if ITK_VERSION_MAJOR <= 3
 #  include <itkFFTRealToComplexConjugateImageFilter.txx>
 #else
-#  include <itkFFTRealToComplexConjugateImageFilter.hxx>
+#  include <itkForwardFFTImageFilter.hxx>
 #endif
 #include <iostream>
 #include <itkIndent.h>

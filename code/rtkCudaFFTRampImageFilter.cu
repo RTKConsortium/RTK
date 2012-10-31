@@ -73,6 +73,7 @@ CUDA_fft_convolution(const int3 &inputDimension, float *projection, cufftComplex
   cudaMalloc( (void**)&deviceKernelFFT, memorySizeKernelFFT);
   CUDA_CHECK_ERROR;
   cudaMemcpy (deviceKernelFFT, kernelFFT, memorySizeKernelFFT, cudaMemcpyHostToDevice);
+  CUDA_CHECK_ERROR;
 
   // 3D FFT
   cufftHandle fftFwd;

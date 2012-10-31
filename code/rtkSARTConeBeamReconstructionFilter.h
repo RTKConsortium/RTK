@@ -23,7 +23,11 @@
 #include "rtkForwardProjectionImageFilter.h"
 
 #include <itkExtractImageFilter.h>
-#include <itkMultiplyByConstantImageFilter.h>
+#if ITK_VERSION_MAJOR <= 3
+#  include <itkMultiplyByConstantImageFilter.h>
+#else
+#  include <itkMultiplyImageFilter.h>
+#endif
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
 
@@ -64,7 +68,11 @@ public:
 
   /** Typedefs of each subfilter of this composite filter */
   typedef itk::ExtractImageFilter< InputImageType, OutputImageType >                     ExtractFilterType;
+#if ITK_VERSION_MAJOR <= 3
   typedef itk::MultiplyByConstantImageFilter< OutputImageType, double, OutputImageType > MultiplyFilterType;
+#else
+  typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >  MultiplyFilterType;
+#endif
   typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >          ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                   SubtractFilterType;
   typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >             BackProjectionFilterType;

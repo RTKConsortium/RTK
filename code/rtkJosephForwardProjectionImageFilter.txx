@@ -230,8 +230,8 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
                         const unsigned int ox,
                         const unsigned int oy) const
 {
-  unsigned int ix = itk::Math::Floor(x);
-  unsigned int iy = itk::Math::Floor(y);
+  unsigned int ix = vnl_math_floor(x);
+  unsigned int iy = vnl_math_floor(y);
   unsigned int idx = ix*ox + iy*oy;
   CoordRepType lx = x - ix;
   CoordRepType ly = y - iy;
