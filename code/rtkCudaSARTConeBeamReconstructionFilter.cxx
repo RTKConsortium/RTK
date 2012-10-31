@@ -48,13 +48,14 @@ namespace rtk
   ::GenerateData()
   {
     // Init GPU memory
-    if(!m_ExplicitGPUMemoryManagementFlag);
+    if(!m_ExplicitGPUMemoryManagementFlag)
       this->InitDevice();
 
     // Run reconstruction
     this->Superclass::GenerateData();
+
     // Transfer result to CPU image
-    if(!m_ExplicitGPUMemoryManagementFlag);
+    if(!m_ExplicitGPUMemoryManagementFlag)
       this->CleanUpDevice();
   }
 
