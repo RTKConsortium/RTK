@@ -38,5 +38,6 @@
     }
 
 std::vector<int> GetListOfCudaDevices();
+std::pair<int,int> GetCudaComputeCapability(int device);
 
 #endif

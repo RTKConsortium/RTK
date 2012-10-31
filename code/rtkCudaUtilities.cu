@@ -23,8 +23,7 @@ std::vector<int> GetListOfCudaDevices()
   std::vector<int>      deviceList;
   int                   deviceCount;
   struct cudaDeviceProp properties;
-  cudaError_t           cudaResultCode = cudaGetDeviceCount(&deviceCount);
-  if (cudaResultCode == cudaSuccess)
+  if (cudaGetDeviceCount(&deviceCount) == cudaSuccess)
     {
     for (int device = 0; device < deviceCount; ++device) {
       cudaGetDeviceProperties(&properties, device);
@@ -36,4 +35,12 @@ std::vector<int> GetListOfCudaDevices()
     itkGenericExceptionMacro(<< "No CUDA device available");
 
   return deviceList;
+}
+
+std::pair<int,int> GetCudaComputeCapability(int device)
+{
+  struct cudaDeviceProp properties;
+  if (cudaGetDeviceProperties(&properties, device) != cudaSuccess)
+    itkGenericExceptionMacro(<< "Unvalid CUDA device");
+  return std::make_pair(properties.major, properties.minor);
 }
