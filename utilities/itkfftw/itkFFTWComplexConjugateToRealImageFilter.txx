@@ -21,7 +21,7 @@
 #if ITK_VERSION_MAJOR <= 3
 #  include "itkFFTComplexConjugateToRealImageFilter.txx"
 #else
-#  include "itkFFTComplexConjugateToRealImageFilter.hxx"
+#  include <itkInverseFFTImageFilter.hxx>
 #endif
 #include <iostream>
 #include <itkIndent.h>

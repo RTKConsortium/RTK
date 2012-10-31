@@ -259,8 +259,8 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
                 const unsigned int ox,
                 const unsigned int oy)
 {
-  const unsigned int ix = itk::Math::Floor(x);
-  const unsigned int iy = itk::Math::Floor(y);
+  const unsigned int ix = vnl_math_floor(x);
+  const unsigned int iy = vnl_math_floor(y);
   const unsigned int idx = ix*ox + iy*oy;
   const CoordRepType lx = x - ix;
   const CoordRepType ly = y - iy;

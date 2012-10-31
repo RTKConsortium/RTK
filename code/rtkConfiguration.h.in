@@ -23,6 +23,7 @@
 
 /* Solves compatibility issue between ITKv3 and ITKv4 */
 #include <itkConfigure.h>
+#include <itkIntTypes.h>
 #if ITK_VERSION_MAJOR <= 3
 namespace rtk
 {

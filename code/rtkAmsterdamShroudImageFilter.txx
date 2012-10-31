@@ -68,7 +68,11 @@ AmsterdamShroudImageFilter<TInputImage, TOutputImage>
   kernel->SetRegions(region);
   kernel->Allocate();
   kernel->FillBuffer(1.);
+#if ITK_VERSION_MAJOR <= 3
   m_ConvolutionFilter->SetImageKernelInput( kernel );
+#else
+  m_ConvolutionFilter->SetKernelImage( kernel );
+#endif
 
   // The permute filter is used to allow streaming because ITK splits the output image in the last direction
   typename PermuteType::PermuteOrderArrayType order;
