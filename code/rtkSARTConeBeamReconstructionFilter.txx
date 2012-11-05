@@ -40,17 +40,29 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   SetBackProjectionFilter(rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New());  //Permanent internal connections
+#if ITK_VERSION_MAJOR >= 4
+  m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
+  m_ZeroMultiplyFilter->SetInput2( m_ExtractFilter->GetOutput() );
+#else
   m_ZeroMultiplyFilter->SetInput( m_ExtractFilter->GetOutput() );
+#endif
   m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
   m_SubtractFilter->SetInput(0, m_ExtractFilter->GetOutput() );
   m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput() );
+#if ITK_VERSION_MAJOR >= 4
+  m_MultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
+  m_MultiplyFilter->SetInput2( m_SubtractFilter->GetOutput() );
+#else
   m_MultiplyFilter->SetInput( m_SubtractFilter->GetOutput() );
+#endif
 
   // Default parameters
 #if ITK_VERSION_MAJOR >= 4
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
+#else
+  m_ZeroMultiplyFilter->SetConstant( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
 #endif
-  m_ZeroMultiplyFilter->SetConstant( 0. );
+
 }
 
 template<class TInputImage, class TOutputImage>
@@ -145,7 +157,14 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   for(unsigned int i=0; i<Dimension; i++)
     sizeInMM[i] = this->GetInput(0)->GetLargestPossibleRegion().GetSize()[i] *
                   this->GetInput(0)->GetSpacing()[i];
+  //m_MultiplyFilter->SetConstant( m_Lambda / sizeInMM.GetNorm() );
+
+#if ITK_VERSION_MAJOR >= 4
+  m_MultiplyFilter->SetInput1( (const float)( m_Lambda / sizeInMM.GetNorm() ) );
+#else
   m_MultiplyFilter->SetConstant( m_Lambda / sizeInMM.GetNorm() );
+#endif
+  m_MultiplyFilter->Update();
 
   // For each iteration, go over each projection
   for(unsigned int iter=0; iter<m_NumberOfIterations; iter++)

@@ -25,8 +25,17 @@
 #  include "itkFFTWRealToComplexConjugateImageFilter.h"
 #  include "itkFFTWComplexConjugateToRealImageFilter.h"
 #endif
-#include <itkFFTRealToComplexConjugateImageFilter.h>
-#include <itkFFTComplexConjugateToRealImageFilter.h>
+
+#if ITK_VERSION_MAJOR <= 3
+#  include <itkFFTRealToComplexConjugateImageFilter.h>
+#else
+#  include <itkForwardFFTImageFilter.h>
+#endif
+#if ITK_VERSION_MAJOR <= 3
+#  include <itkFFTComplexConjugateToRealImageFilter.h>
+#else
+#  include <itkInverseFFTImageFilter.h>
+#endif
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -73,7 +82,7 @@ int
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GetTruncationCorrectionExtent()
 {
-  return itk::Math::Floor<TFFTPrecision>(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0) );
+  return vnl_math_floor(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0));//itk::Math::Floor<TFFTPrecision>(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0) );
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -107,7 +116,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 #if ITK_VERSION_MAJOR <= 3
   typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
 #else
-  typedef itk::FFTRealToComplexConjugateImageFilter< FFTInputImageType > FFTType;
+  typedef itk::ForwardFFTImageFilter< FFTInputImageType > FFTType;
 #endif
   typename FFTType::Pointer fftI = FFTType::New();
   fftI->SetInput( paddedImage );
@@ -135,11 +144,13 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 #if ITK_VERSION_MAJOR <= 3
   typedef itk::FFTComplexConjugateToRealImageFilter< FFTPrecisionType, ImageDimension > IFFTType;
 #else
-  typedef itk::FFTComplexConjugateToRealImageFilter< typename FFTType::OutputImageType > IFFTType;
+  typedef itk::InverseFFTImageFilter< typename FFTType::OutputImageType > IFFTType;
 #endif
   typename IFFTType::Pointer ifft = IFFTType::New();
   ifft->SetInput( fftI->GetOutput() );
+#if ITK_VERSION_MAJOR <= 3
   ifft->SetActualXDimensionIsOdd( paddedImage->GetLargestPossibleRegion().GetSize(0) % 2 );
+#endif
   ifft->SetNumberOfThreads( 1 );
   ifft->SetReleaseDataFlag( true );
   ifft->Update();
@@ -306,7 +317,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 #if ITK_VERSION_MAJOR <= 3
   typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
 #else
-  typedef itk::FFTRealToComplexConjugateImageFilter< FFTInputImageType > FFTType;
+  typedef itk::ForwardFFTImageFilter< FFTInputImageType > FFTType;
 #endif
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
