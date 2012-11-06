@@ -87,6 +87,7 @@ void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y, float invBl
          tex1Dfetch(tex_matrix, 10)*k + tex1Dfetch(tex_matrix, 11);
 
   // Change coordinate systems
+  ip.z = 1 / ip.z;
   ip.x = ip.x * ip.z;
   ip.y = ip.y * ip.z;
 
@@ -269,7 +270,7 @@ CUDA_reconstruct_conebeam(
     static unsigned int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
     static unsigned int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
 
-    if(GetCudaComputeCapability(device).first<=1)
+    if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
       {
       static dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
       static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
