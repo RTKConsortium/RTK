@@ -9,6 +9,8 @@ SET (RTK_LIBRARIES RTK)
 ADD_LIBRARY(RTK
             rtkHisImageIO.cxx
             rtkHisImageIOFactory.cxx
+            rtkElektaSynergyGeometryReader.cxx
+            rtkDbf.cxx
             rtkHndImageIO.cxx
             rtkHndImageIOFactory.cxx
             rtkThreeDCircularProjectionGeometry.cxx
