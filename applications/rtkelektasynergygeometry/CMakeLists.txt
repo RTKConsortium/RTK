@@ -1,5 +1,5 @@
 WRAP_GGO(rtkelektasynergygeometry_GGO_C rtkelektasynergygeometry.ggo)
-ADD_EXECUTABLE(rtkelektasynergygeometry rtkelektasynergygeometry.cxx ${rtkelektasynergygeometry_GGO_C} rtkDbf.cxx)
+ADD_EXECUTABLE(rtkelektasynergygeometry rtkelektasynergygeometry.cxx ${rtkelektasynergygeometry_GGO_C})
 TARGET_LINK_LIBRARIES(rtkelektasynergygeometry RTK)
 
 # Installation code
