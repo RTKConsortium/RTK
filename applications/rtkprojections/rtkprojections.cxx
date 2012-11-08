@@ -40,6 +40,12 @@ int main(int argc, char * argv[])
   names->SetRegularExpression(args_info.regexp_arg);
   names->SetSubMatch(0);
 
+  if(args_info.verbose_flag)
+    std::cout << "Regular expression matches "
+              << names->GetFileNames().size()
+              << " file(s)..."
+              << std::endl;
+
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();

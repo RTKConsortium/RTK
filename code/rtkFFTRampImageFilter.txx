@@ -82,7 +82,7 @@ int
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GetTruncationCorrectionExtent()
 {
-  return vnl_math_floor(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0));//itk::Math::Floor<TFFTPrecision>(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0) );
+  return vnl_math_floor(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0));
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
