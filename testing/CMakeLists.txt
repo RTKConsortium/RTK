@@ -60,6 +60,10 @@ ADD_EXECUTABLE(rtkfovtest rtkfovtest.cxx)
 TARGET_LINK_LIBRARIES(rtkfovtest RTK)
 ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
 
+ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)
+TARGET_LINK_LIBRARIES(rtkvariantest RTK)
+ADD_TEST(rtkvariantest ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest)
+
 ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest RTK)
 ADD_TEST(rtkelektatest ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest)
