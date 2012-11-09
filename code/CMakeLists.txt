@@ -13,11 +13,12 @@ ADD_LIBRARY(RTK
             rtkDbf.cxx
             rtkHndImageIO.cxx
             rtkHndImageIOFactory.cxx
+            rtkVarianObiXMLFileReader.cxx
+            rtkVarianObiGeometryReader.cxx
             rtkThreeDCircularProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
             rtkGeometricPhantomFileReader.cxx
             rtkDigisensGeometryXMLFileReader.cxx 
-            rtkVarianObiXMLFileReader.cxx
            )
 TARGET_LINK_LIBRARIES(RTK ITKFFTW)
 SET(RTK_LIBRARIES ${RTK_LIBRARIES} ITKFFTW)
