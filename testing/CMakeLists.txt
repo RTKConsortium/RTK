@@ -68,6 +68,16 @@ ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest RTK)
 ADD_TEST(rtkelektatest ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest)
 
+ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
+TARGET_LINK_LIBRARIES(rtksarttest RTK)
+ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
+IF(CUDA_FOUND)
+  ADD_EXECUTABLE(rtksartcudatest rtksarttest.cxx)
+  TARGET_LINK_LIBRARIES(rtksartcudatest RTK rtkcuda)
+  SET_TARGET_PROPERTIES(rtksartcudatest PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
+  ADD_TEST(rtksartcudatest ${EXECUTABLE_OUTPUT_PATH}/rtksartcudatest)
+ENDIF(CUDA_FOUND)
+
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
 IF(CUDA_FOUND)
