@@ -1,3 +1,10 @@
+# Find the data directory.
+FIND_PATH(RTK_DATA_ROOT RTKData.readme $ENV{RTK_DATA_ROOT})
+MARK_AS_ADVANCED(RTK_DATA_ROOT)
+CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
+  ${CMAKE_BINARY_DIR}/rtkTestConfiguration.h)
+
+
 ADD_EXECUTABLE(rtkfdktest rtkfdktest.cxx)
 TARGET_LINK_LIBRARIES(rtkfdktest RTK)
 ADD_TEST(rtkfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdktest)
@@ -52,6 +59,10 @@ ADD_TEST(rtkgeometryfiletest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryfiletest)
 ADD_EXECUTABLE(rtkfovtest rtkfovtest.cxx)
 TARGET_LINK_LIBRARIES(rtkfovtest RTK)
 ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
+
+ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
+TARGET_LINK_LIBRARIES(rtkelektatest RTK)
+ADD_TEST(rtkelektatest ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest)
 
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
