@@ -27,10 +27,6 @@ rtk::ElektaSynergyGeometryReader
   m_ImageDbfFileName("IMAGE.DBF"),
   m_FrameDbfFileName("FRAME.DBF")
 {
-  
-  GeometryType::Pointer m_Geometry;
-  std::string m_ImageDbfFileName;
-  std::string m_FrameDbfFileName;  
 }
 
 std::string
