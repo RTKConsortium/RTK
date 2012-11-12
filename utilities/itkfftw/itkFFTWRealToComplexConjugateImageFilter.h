@@ -17,7 +17,11 @@
 #ifndef __itkFFTWRealToComplexConjugateImageFilter_h
 #define __itkFFTWRealToComplexConjugateImageFilter_h
 
-#include <itkFFTRealToComplexConjugateImageFilter.h>
+#if ITK_VERSION_MAJOR <= 3
+#  include <itkFFTRealToComplexConjugateImageFilter.h>
+#else
+#  include <itkForwardFFTImageFilter.h>
+#endif
 #include "itkFFTWCommon.h"
 
 namespace itk
@@ -31,7 +35,7 @@ namespace itk
 #if ITK_VERSION_MAJOR >= 4
   template< class TInputImage, class TOutputImage=Image< std::complex<typename TInputImage::PixelType>, TInputImage::ImageDimension> >
   class ITK_EXPORT FFTWRealToComplexConjugateImageFilter :
-    public FFTRealToComplexConjugateImageFilter<TInputImage,TOutputImage>
+    public itk::ForwardFFTImageFilter<TInputImage,TOutputImage>
 #else
   template <class TPixel, unsigned int VDimension = 3>
   class ITK_EXPORT FFTWRealToComplexConjugateImageFilter :
@@ -41,7 +45,7 @@ namespace itk
 public:
   typedef FFTWRealToComplexConjugateImageFilter                   Self;
 #if ITK_VERSION_MAJOR >= 4
-  typedef itk::FFTRealToComplexConjugateImageFilter<TInputImage,TOutputImage>  Superclass;
+  typedef itk::ForwardFFTImageFilter<TInputImage,TOutputImage>  Superclass;
 #else
   typedef itk:: FFTRealToComplexConjugateImageFilter<TPixel,VDimension> Superclass;
 #endif
