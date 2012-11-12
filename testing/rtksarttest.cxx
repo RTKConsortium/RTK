@@ -1,7 +1,7 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
+#include "rtkProjectSphereFilter.h"
+#include "rtkDrawSphereFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkCudaBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
@@ -49,16 +49,16 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.055)
+  if (ErrorPerPixel > 0.03)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.055." << std::endl;
+              << ErrorPerPixel << " instead of 0.03." << std::endl;
     exit( EXIT_FAILURE);
   }
-  if (PSNR < 23.)
+  if (PSNR < 29.1)
   {
     std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 23" << std::endl;
+              << PSNR << " instead of 29.1" << std::endl;
     exit( EXIT_FAILURE);
   }
 }
@@ -82,27 +82,27 @@ int main(int, char** )
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = 128;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  size[0] = 64;
+  size[1] = 64;
+  size[2] = 64;
+  spacing[0] = 4.;
+  spacing[1] = 4.;
+  spacing[2] = 4.;
   tomographySource->SetOrigin( origin );
   tomographySource->SetSpacing( spacing );
   tomographySource->SetSize( size );
   tomographySource->SetConstant( 0. );
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -254.;
-  origin[1] = -254.;
-  origin[2] = -254.;
-  size[0] = 128;
-  size[1] = 128;
+  origin[0] = -255.;
+  origin[1] = -255.;
+  origin[2] = -255.;
+  size[0] = 64;
+  size[1] = 64;
   size[2] = NumberOfProjectionImages;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  spacing[0] = 8.;
+  spacing[1] = 8.;
+  spacing[2] = 8.;
   projectionsSource->SetOrigin( origin );
   projectionsSource->SetSpacing( spacing );
   projectionsSource->SetSize( size );
@@ -115,14 +115,16 @@ int main(int, char** )
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   // Shepp Logan projections filter
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  //typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  typedef rtk::ProjectSphereFilter<OutputImageType, OutputImageType> SLPType;
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
 
   // Create a reference object (in this case a 3D phantom reference).
-  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  //typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  typedef rtk::DrawSphereFilter<OutputImageType, OutputImageType> DSLType;
   DSLType::Pointer dsl = DSLType::New();
   dsl->SetInput( tomographySource->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
@@ -138,7 +140,7 @@ int main(int, char** )
   sart->SetInput(1, slp->GetOutput());
   sart->SetGeometry( geometry );
   sart->SetNumberOfIterations( 1 );
-  sart->SetLambda( 0.6 );
+  sart->SetLambda( 0.5 );
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
