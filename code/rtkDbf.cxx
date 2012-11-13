@@ -76,7 +76,7 @@ DbfFile::DbfFile(std::string fileName)
     m_Fields.push_back(DbfField(fldName, fldType, fldLength, fldRecOffset) );
     m_MapFieldNameIndex[m_Fields.back().GetName()] = i;
 
-    fldRecOffset+=fldLength;
+    fldRecOffset += fldLength;
     }
 
   // Seek to first record

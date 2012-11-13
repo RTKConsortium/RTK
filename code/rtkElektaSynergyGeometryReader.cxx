@@ -104,5 +104,3 @@ rtk::ElektaSynergyGeometryReader
                             -projFlexY[noProj]);
     }
 }
-
-

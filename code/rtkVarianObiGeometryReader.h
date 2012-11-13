@@ -86,8 +86,8 @@ private:
   virtual void GenerateData();
 
   GeometryType::Pointer m_Geometry;
-  std::string m_XMLFileName;
-  FileNamesContainer m_ProjectionsFileNames;
+  std::string           m_XMLFileName;
+  FileNamesContainer    m_ProjectionsFileNames;
 };
 
 }

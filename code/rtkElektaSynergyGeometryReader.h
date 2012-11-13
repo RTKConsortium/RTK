@@ -86,9 +86,9 @@ private:
   virtual void GenerateData();
 
   GeometryType::Pointer m_Geometry;
-  std::string m_DicomUID;
-  std::string m_ImageDbfFileName;
-  std::string m_FrameDbfFileName;  
+  std::string           m_DicomUID;
+  std::string           m_ImageDbfFileName;
+  std::string           m_FrameDbfFileName;  
 };
 
 }

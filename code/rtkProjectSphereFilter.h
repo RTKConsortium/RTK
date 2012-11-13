@@ -42,12 +42,12 @@ class ITK_EXPORT ProjectSphereFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef ProjectSphereFilter                                       Self;
+  typedef ProjectSphereFilter                                           Self;
   typedef RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                                       Pointer;
   typedef itk::SmartPointer<const Self>                                 ConstPointer;
-  typedef typename TOutputImage::RegionType               OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer OutputImageBaseConstPointer;
+  typedef typename TOutputImage::RegionType                             OutputImageRegionType;
+  typedef typename TOutputImage::Superclass::ConstPointer               OutputImageBaseConstPointer;
 
   typedef float OutputPixelType;
 

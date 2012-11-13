@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef RTKDBF_H
-#define RTKDBF_H
+#ifndef __rtkDbf_h
+#define __rtkDbf_h
 
 #include <string>
 #include <fstream>
@@ -25,7 +25,8 @@
 #include <map>
 #include <stdlib.h>
 
-namespace rtk{
+namespace rtk
+{
 
 /** \class DbfField
  * 
@@ -47,9 +48,9 @@ public:
 
 private:
   std::string m_Name;
-  char  m_Type;
-  short m_Length;
-  short m_RecOffset;
+  char        m_Type;
+  short       m_Length;
+  short       m_RecOffset;
 };
 
 /** \class DbfFile
