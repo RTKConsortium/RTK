@@ -57,7 +57,7 @@ rtk::VarianObiGeometryReader
     // Half Fan (offset detector), get lateral offset from XML file
     offsetx =
       dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer() )->GetMetaDataObjectValue() +
-	   dynamic_cast<MetaDataDoubleType *>(dic["DetectorPosLat"].GetPointer() )->GetMetaDataObjectValue();
+      dynamic_cast<MetaDataDoubleType *>(dic["DetectorPosLat"].GetPointer() )->GetMetaDataObjectValue();
     }
   else
     {
@@ -88,5 +88,3 @@ rtk::VarianObiGeometryReader
     m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
     }
 }
-
-
