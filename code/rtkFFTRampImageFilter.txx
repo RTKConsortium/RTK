@@ -21,12 +21,11 @@
 
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154
-#if defined(USE_FFTWD) || defined(USE_FFTWF)
-#  include "itkFFTWRealToComplexConjugateImageFilter.h"
-#  include "itkFFTWComplexConjugateToRealImageFilter.h"
-#endif
-
 #if ITK_VERSION_MAJOR <= 3
+#  if defined(USE_FFTWD) || defined(USE_FFTWF)
+#    include "itkFFTWRealToComplexConjugateImageFilter.h"
+#    include "itkFFTWComplexConjugateToRealImageFilter.h"
+#  endif
 #  include <itkFFTRealToComplexConjugateImageFilter.h>
 #else
 #  include <itkForwardFFTImageFilter.h>
@@ -103,9 +102,6 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   itk::fftw::Proxy<double>::Lock();
   itk::fftw::Proxy<double>::Unlock();
 #  endif
-#elif defined(USE_FFTWD) || defined(USE_FFTWF)
-  itk::FFTWGlobalConfiguration::Lock();
-  itk::FFTWGlobalConfiguration::Unlock();
 #endif
 }
 
