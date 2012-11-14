@@ -16,38 +16,39 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawSphereFilter_h
-#define __rtkDrawSphereFilter_h
+#ifndef __rtkDrawEllipsoidImageFilter_h
+#define __rtkDrawEllipsoidImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 
+#include <vector>
+
 namespace rtk
 {
 
-/** \class DrawSphereFilter
- * \brief Draws in a 3D image user defined sphere.
+/** \class DrawEllipsoidImageFilter
+ * \brief Draws in a 3D image user defined ellipsoid.
  *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT DrawSphereFilter :
+class ITK_EXPORT DrawEllipsoidImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawSphereFilter                                  Self;
+  typedef DrawEllipsoidImageFilter                          Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
   typedef std::vector<double>                               VectorType;
-  typedef std::string                                       StringType;
 
   typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
   struct figure
@@ -61,30 +62,30 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawSphereFilter, InPlaceImageFilter);
+  itkTypeMacro(DrawEllipsoidImageFilter, InPlaceImageFilter);
 
   /** Multiplicative Scaling factor for the phantom parameters described in
    * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(SphereScale, double);
-  itkGetMacro(SphereScale, double);
+  itkSetMacro(EllipsoidImageScale, double);
+  itkGetMacro(EllipsoidImageScale, double);
 
 protected:
-  DrawSphereFilter();
-  virtual ~DrawSphereFilter() {};
+  DrawEllipsoidImageFilter();
+  virtual ~DrawEllipsoidImageFilter() {};
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId );
 
 private:
-  DrawSphereFilter(const Self&); //purposely not implemented
+  DrawEllipsoidImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  double m_SphereScale;
+  double m_EllipsoidImageScale;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawSphereFilter.txx"
+#include "rtkDrawEllipsoidImageFilter.txx"
 #endif
 
 #endif
