@@ -15,6 +15,8 @@ ADD_LIBRARY(RTK
             rtkHndImageIOFactory.cxx
             rtkVarianObiXMLFileReader.cxx
             rtkVarianObiGeometryReader.cxx
+            rtkEdfImageIO.cxx
+            rtkEdfImageIOFactory.cxx
             rtkThreeDCircularProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
             rtkGeometricPhantomFileReader.cxx
