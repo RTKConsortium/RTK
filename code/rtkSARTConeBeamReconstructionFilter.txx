@@ -22,6 +22,8 @@
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 
+#include <algorithm>
+
 namespace rtk
 {
 
