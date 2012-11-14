@@ -20,8 +20,12 @@ ADD_LIBRARY(RTK
             rtkGeometricPhantomFileReader.cxx
             rtkDigisensGeometryXMLFileReader.cxx 
            )
-TARGET_LINK_LIBRARIES(RTK ITKFFTW)
-SET(RTK_LIBRARIES ${RTK_LIBRARIES} ITKFFTW)
+IF(ITK_VERSION_MAJOR LESS "4")
+  TARGET_LINK_LIBRARIES(RTK ITKFFTW)
+  SET(RTK_LIBRARIES ${RTK_LIBRARIES} ITKFFTW)
+ELSE()
+  TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
+ENDIF()
 #=========================================================
 
 #=========================================================
