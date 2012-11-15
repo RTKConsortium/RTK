@@ -37,7 +37,7 @@ m_EllipsoidImageScale(128.0)
 
 template <class TInputImage, class TOutputImage>
 void DrawEllipsoidImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                               itk::ThreadIdType itkNotUsed(threadId) )
+                                                                               ThreadIdType itkNotUsed(threadId) )
 {
   //Getting phantom parameters
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();

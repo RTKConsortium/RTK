@@ -23,7 +23,7 @@
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
-
+#include "rtkConfiguration.h"
 #include <vector>
 
 namespace rtk
@@ -73,7 +73,7 @@ protected:
   DrawEllipsoidImageFilter();
   virtual ~DrawEllipsoidImageFilter() {};
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId );
+  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
 
 private:
   DrawEllipsoidImageFilter(const Self&); //purposely not implemented
