@@ -86,9 +86,9 @@ protected:
     };
 
   /* Note - compatibility:
-    Unsigned8 = 1,	Signed8,	Unsigned16,	Signed16,
-    Unsigned32,	Signed32,	Unsigned64,	Signed64,
-    FloatIEEE32,	DoubleIEEE64
+    Unsigned8 = 1,Signed8,  Unsigned16, Signed16,
+    Unsigned32,   Signed32, Unsigned64, Signed64,
+    FloatIEEE32,  DoubleIEEE64
   */
 
   /***************************************************************************
@@ -138,8 +138,8 @@ protected:
   // * of the matrix in the data file.)
   // */
   //enum EdfRasterAxes {
-  //    RASTER_AXES_XrightYdown,	// matricial format: rows, columns
-  //    RASTER_AXES_XrightYup	// cartesian coordinate system
+  //RASTER_AXES_XrightYdown, // matricial format: rows, columns
+  //RASTER_AXES_XrightYup    // cartesian coordinate system
   //    // other 6 combinations not available (not needed until now)
   //};
 
