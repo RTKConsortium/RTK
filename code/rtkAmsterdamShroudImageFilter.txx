@@ -24,8 +24,8 @@
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage>
-AmsterdamShroudImageFilter<TInputImage, TOutputImage>
+template <class TInputImage>
+AmsterdamShroudImageFilter<TInputImage>
 ::AmsterdamShroudImageFilter()
 {
   m_DerivativeFilter = DerivativeType::New();
@@ -81,9 +81,9 @@ AmsterdamShroudImageFilter<TInputImage, TOutputImage>
   m_PermuteFilter->SetOrder(order);
 }
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage>
 void
-AmsterdamShroudImageFilter<TInputImage, TOutputImage>
+AmsterdamShroudImageFilter<TInputImage>
 ::GenerateOutputInformation()
 {
   // get pointers to the input and output
@@ -100,9 +100,9 @@ AmsterdamShroudImageFilter<TInputImage, TOutputImage>
   outputPtr->SetLargestPossibleRegion( m_PermuteFilter->GetOutput()->GetLargestPossibleRegion() );
 }
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage>
 void
-AmsterdamShroudImageFilter<TInputImage, TOutputImage>
+AmsterdamShroudImageFilter<TInputImage>
 ::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer  inputPtr =
@@ -116,9 +116,9 @@ AmsterdamShroudImageFilter<TInputImage, TOutputImage>
   m_PermuteFilter->GetOutput()->PropagateRequestedRegion();
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TInputImage>
 void
-AmsterdamShroudImageFilter<TInputImage, TOutputImage>
+AmsterdamShroudImageFilter<TInputImage>
 ::GenerateData()
 {
   m_PermuteFilter->Update();

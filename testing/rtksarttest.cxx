@@ -1,7 +1,7 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkProjectSphereFilter.h"
-#include "rtkDrawSphereFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkCudaBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
@@ -49,10 +49,10 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.03)
+  if (ErrorPerPixel > 0.031)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.03." << std::endl;
+              << ErrorPerPixel << " instead of 0.031" << std::endl;
     exit( EXIT_FAILURE);
   }
   if (PSNR < 29.1)
@@ -62,7 +62,6 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
     exit( EXIT_FAILURE);
   }
 }
-
 
 int main(int, char** )
 {
@@ -114,18 +113,29 @@ int main(int, char** )
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
-  // Shepp Logan projections filter
-  //typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
-  typedef rtk::ProjectSphereFilter<OutputImageType, OutputImageType> SLPType;
-  SLPType::Pointer slp=SLPType::New();
-  slp->SetInput( projectionsSource->GetOutput() );
-  slp->SetGeometry(geometry);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
+  // Create ellipsoid PROJECTIONS
+  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
+  REIType::Pointer rei;
 
-  // Create a reference object (in this case a 3D phantom reference).
-  //typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
-  typedef rtk::DrawSphereFilter<OutputImageType, OutputImageType> DSLType;
-  DSLType::Pointer dsl = DSLType::New();
+  rei = REIType::New();
+  rei->SetSemiPrincipalAxisX(0.69*128);
+  rei->SetSemiPrincipalAxisZ(0.92*128);
+  rei->SetSemiPrincipalAxisY(0.90*128);
+  rei->SetCenterX(0.);
+  rei->SetCenterZ(0.);
+  rei->SetCenterY(0.);
+  rei->SetRotationAngle(0.);
+  rei->SetMultiplicativeConstant(1.);
+
+  rei->SetInput( projectionsSource->GetOutput() );
+  rei->SetGeometry( geometry );
+
+  //Update
+  rei->Update();
+
+  // Create REFERENCE object (3D ellipsoid).
+  typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
+  DEType::Pointer dsl = DEType::New();
   dsl->SetInput( tomographySource->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
@@ -137,7 +147,7 @@ int main(int, char** )
 #endif
   SARTType::Pointer sart = SARTType::New();
   sart->SetInput( tomographySource->GetOutput() );
-  sart->SetInput(1, slp->GetOutput());
+  sart->SetInput(1, rei->GetOutput());
   sart->SetGeometry( geometry );
   sart->SetNumberOfIterations( 1 );
   sart->SetLambda( 0.5 );

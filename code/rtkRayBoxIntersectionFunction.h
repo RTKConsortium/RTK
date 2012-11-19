@@ -110,7 +110,7 @@ public:
 protected:
 
   /// Constructor
-  RayBoxIntersectionFunction(){};
+  RayBoxIntersectionFunction();
 
   /// Destructor
   ~RayBoxIntersectionFunction(){};

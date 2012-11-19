@@ -23,6 +23,18 @@ namespace rtk
 {
 
 template < class TCoordRep, unsigned int VBoxDimension >
+RayBoxIntersectionFunction<TCoordRep, VBoxDimension>
+::RayBoxIntersectionFunction():
+  m_BoxMin(0.),
+  m_BoxMax(0.),
+  m_RayOrigin(0.),
+  m_RayDirection(0.),
+  m_NearestDistance(0.),
+  m_FarthestDistance(0.)
+{
+}
+
+template < class TCoordRep, unsigned int VBoxDimension >
 bool
 RayBoxIntersectionFunction<TCoordRep, VBoxDimension>
 ::Evaluate( const VectorType& rayDirection )

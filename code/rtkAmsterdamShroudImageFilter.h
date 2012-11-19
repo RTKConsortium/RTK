@@ -47,17 +47,17 @@ namespace rtk
  *
  * \ingroup ImageToImageFilter
  */
-template<class TInputImage, class TOutputImage=
-           itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension-1> >
+template<class TInputImage>
 class ITK_EXPORT AmsterdamShroudImageFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+  public itk::ImageToImageFilter<TInputImage, itk::Image<double, TInputImage::ImageDimension-1> >
 {
 public:
   /** Standard class typedefs. */
-  typedef AmsterdamShroudImageFilter                         Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef itk::Image<double, TInputImage::ImageDimension-1>     TOutputImage;
+  typedef AmsterdamShroudImageFilter                            Self;
+  typedef itk::ImageToImageFilter<TInputImage, TOutputImage>    Superclass;
+  typedef itk::SmartPointer<Self>                               Pointer;
+  typedef itk::SmartPointer<const Self>                         ConstPointer;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
