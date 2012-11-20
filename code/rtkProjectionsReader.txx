@@ -31,8 +31,16 @@
 #include "rtkHisImageIOFactory.h"
 #include "rtkElektaSynergyRawToAttenuationImageFilter.h"
 
+// ImagX includes
+#include "rtkImagXImageIOFactory.h"
+#include "rtkImagXRawToAttenuationImageFilter.h"
+
 // Tiff includes
 #include "rtkTiffLookupTableImageFilter.h"
+
+// European Synchrotron Radiation Facility
+#include "rtkEdfImageIOFactory.h"
+#include "rtkEdfRawToAttenuationImageFilter.h"
 
 namespace rtk
 {
@@ -61,6 +69,8 @@ void ProjectionsReader<TOutputImage>
     {
     rtk::HndImageIOFactory::RegisterOneFactory();
     rtk::HisImageIOFactory::RegisterOneFactory();
+    rtk::ImagXImageIOFactory::RegisterOneFactory();
+    rtk::EdfImageIOFactory::RegisterOneFactory();
 #if ITK_VERSION_MAJOR <= 3
     itk::ImageIOFactory::RegisterBuiltInFactories();
 #endif
@@ -109,6 +119,25 @@ void ProjectionsReader<TOutputImage>
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;
       }
+    else if( !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") )
+      {
+      /////////// ImagX
+      typedef unsigned short                                     InputPixelType;
+      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+
+      // Reader
+      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
+      typename ReaderType::Pointer reader = ReaderType::New();
+      reader->SetImageIO( imageIO );
+      reader->SetFileNames( this->GetFileNames() );
+      m_RawDataReader = reader;
+
+      // Convert raw to Projections
+      typedef rtk::ImagXRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+      rawFilter->SetInput( reader->GetOutput() );
+      m_RawToProjectionsFilter = rawFilter;
+      }
     else if( !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
       {
       typedef unsigned short                                     InputPixelType;
@@ -125,6 +154,26 @@ void ProjectionsReader<TOutputImage>
       typedef rtk::TiffLookupTableImageFilter<InputImageType, OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       rawFilter->SetInput( reader->GetOutput() );
+      m_RawToProjectionsFilter = rawFilter;
+      }
+    else if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") )
+      {
+      /////////// ESRF
+      typedef unsigned short                                     InputPixelType;
+      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+
+      // Reader
+      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
+      typename ReaderType::Pointer reader = ReaderType::New();
+      reader->SetImageIO( imageIO );
+      reader->SetFileNames( this->GetFileNames() );
+      m_RawDataReader = reader;
+
+      // Convert raw to Projections
+      typedef rtk::EdfRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+      rawFilter->SetInput( reader->GetOutput() );
+      rawFilter->SetFileNames( this->GetFileNames() );
       m_RawToProjectionsFilter = rawFilter;
       }
     else
