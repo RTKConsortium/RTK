@@ -38,14 +38,9 @@ void
 EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if(m_FileNames.size()<0)
+  if(m_FileNames.size()!=this->GetInput()->GetLargestPossibleRegion().GetSize()[2])
     {
-    if(this->GetInput()->GetLargestPossibleRegion().GetSize()[2]>0)
-      {
-      itkGenericExceptionMacro(<< "Error, file names do not correspond to input");
-      }
-    else
-      return;
+    itkGenericExceptionMacro(<< "Error, file names do not correspond to input");
     }
 
   std::string path = itksys::SystemTools::GetFilenamePath(m_FileNames[0]);
@@ -83,7 +78,7 @@ EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
 template<class TInputImage, class TOutputImage>
 void
 EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId )
+::ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   // Dark image iterator
   OutputImageRegionType darkRegion = outputRegionForThread;
