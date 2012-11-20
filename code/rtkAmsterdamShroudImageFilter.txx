@@ -113,7 +113,6 @@ AmsterdamShroudImageFilter<TInputImage>
     }
   m_DerivativeFilter->SetInput( this->GetInput() );
   m_PermuteFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
-  m_PermuteFilter->GetOutput()->PropagateRequestedRegion();
 }
 
 template<class TInputImage>
