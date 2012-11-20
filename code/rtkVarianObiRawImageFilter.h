@@ -23,7 +23,7 @@
 #include <itkConceptChecking.h>
 #include <itkNumericTraits.h>
 
-#define HND_INTENSITY_MAX (139000)
+#define HND_INTENSITY_MAX (139000.)
 
 namespace rtk
 {
@@ -55,15 +55,7 @@ public:
     }
   inline TOutput operator()( const TInput & A ) const
     {
-    TOutput output = A;
-    if (A != itk::NumericTraits<TInput>::ZeroValue())
-      {
-      output *= -1.0/HND_INTENSITY_MAX;
-      output += 1.0;
-      if(output<itk::NumericTraits<TOutput>::ZeroValue())
-        output = itk::NumericTraits<TOutput>::ZeroValue();
-      }
-    return output;
+    return (!A)?0.:TOutput( vcl_log(HND_INTENSITY_MAX ) - vcl_log( double(A) ) );
     }
 }; 
 }
