@@ -55,7 +55,7 @@ public:
     }
   inline TOutput operator()( const TInput & A ) const
     {
-    return TOutput( vcl_log(HND_INTENSITY_MAX ) - vcl_log(A) );
+    return TOutput( vcl_log(HND_INTENSITY_MAX ) - vcl_log( double(A) ) );
     }
 }; 
 }
