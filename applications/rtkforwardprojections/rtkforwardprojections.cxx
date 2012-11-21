@@ -79,7 +79,7 @@ int main(int argc, char * argv[])
   readerProbe.Stop();
   if(args_info.verbose_flag)
     std::cout << " done in "
-              << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit()
+              << readerProbe.GetMean() << ' ' << readerProbe.GetUnit()
               << '.' << std::endl;
 
   // Create forward projection image filter
@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
   projProbe.Stop();
   if(args_info.verbose_flag)
     std::cout << " done in "
-              << projProbe.GetMeanTime() << ' ' << projProbe.GetUnit()
+              << projProbe.GetMean() << ' ' << projProbe.GetUnit()
               << '.' << std::endl;
 
   // Write
@@ -131,7 +131,7 @@ int main(int argc, char * argv[])
   writeProbe.Stop();
   if(args_info.verbose_flag)
     std::cout << " done in "
-              << writeProbe.GetMeanTime() << ' ' << projProbe.GetUnit()
+              << writeProbe.GetMean() << ' ' << projProbe.GetUnit()
               << '.' << std::endl;
 
   return EXIT_SUCCESS;

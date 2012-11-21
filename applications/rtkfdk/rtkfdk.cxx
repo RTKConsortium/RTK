@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
     readerProbe.Stop();
     if(args_info.verbose_flag)
-      std::cout << "It took " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
+      std::cout << "It took " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
   // Geometry
@@ -172,7 +172,7 @@ int main(int argc, char * argv[])
 
   if(args_info.verbose_flag)
     {
-    std::cout << "It took " << writerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
+    std::cout << "It took " << writerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     if(!strcmp(args_info.hardware_arg, "cpu") )
       static_cast<FDKCPUType* >(feldkamp.GetPointer())->PrintTiming(std::cout);
 #if CUDA_FOUND
