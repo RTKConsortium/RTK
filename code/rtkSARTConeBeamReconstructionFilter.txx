@@ -24,8 +24,6 @@
 
 #include <algorithm>
 
-using namespace std;
-
 namespace rtk
 {
 
@@ -150,10 +148,10 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
   // Fill and shuffle randomly the projection order.
   // Should be tunable with other solutions.
-  vector< unsigned int > projOrder(nProj);
+  std::vector< unsigned int > projOrder(nProj);
   for(unsigned int i=0; i<nProj; i++)
     projOrder[i] = i;
-  random_shuffle( projOrder.begin(), projOrder.end() );
+  std::random_shuffle( projOrder.begin(), projOrder.end() );
 
   // Set convergence factor. Approximate ray length through box with the
   // largest possible length through volume (volume diagonal).
@@ -206,7 +204,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 template<class TInputImage, class TOutputImage>
 void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
-::PrintTiming(ostream& os) const
+::PrintTiming(std::ostream& os) const
 {
 }
 
