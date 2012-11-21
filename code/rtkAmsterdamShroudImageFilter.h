@@ -39,7 +39,7 @@ namespace rtk
  * \brief Compute the Amsterdam shroud image for respiratory signal extraction.
  *
  * The Amsterdam shroud is an image that is used to extract a respiratory
- * signal from cone-beam projection images. The X-axis is time and the Y-axis
+ * signal from cone-beam projection images. The Y-axis is time and the X-axis
  * is the cranio-caudal position. More information is available in
  * [Zijp, ICCR, 2004], [Sonke, Med Phys, 2005] and [Rit, IJROBP, 2012].
  *

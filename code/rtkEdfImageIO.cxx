@@ -268,19 +268,19 @@ void rtk::EdfImageIO::Read(void * buffer)
 
 //--------------------------------------------------------------------
 // Write Image Information
-void rtk::EdfImageIO::WriteImageInformation(bool keepOfStream)
+void rtk::EdfImageIO::WriteImageInformation( bool itkNotUsed(keepOfStream) )
 {
 }
 
 //--------------------------------------------------------------------
 // Write Image Information
-bool rtk::EdfImageIO::CanWriteFile(const char* FileNameToWrite)
+bool rtk::EdfImageIO::CanWriteFile( const char* itkNotUsed(FileNameToWrite) )
 {
   return false;
 }
 
 //--------------------------------------------------------------------
 // Write Image
-void rtk::EdfImageIO::Write(const void * buffer)
+void rtk::EdfImageIO::Write( const void * itkNotUsed(buffer) )
 {
 } ////
