@@ -1,6 +1,10 @@
-# Find the data directory.
-FIND_PATH(RTK_DATA_ROOT RTKData.readme $ENV{RTK_DATA_ROOT})
+# Set the data directory to the directory created by the ExternalData.cmake
+# script
+ set(<variable> <value> [[CACHE <type> <docstring> [FORCE]] | PARENT_SCOPE])
+
+set(RTK_DATA_ROOT ${CMAKE_BINARY_DIR}/ExternalData/testing/Data CACHE PATH "Path of the data root")
 MARK_AS_ADVANCED(RTK_DATA_ROOT)
+
 CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
   ${CMAKE_BINARY_DIR}/rtkTestConfiguration.h)
 
@@ -62,11 +66,14 @@ ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
 
 ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)
 TARGET_LINK_LIBRARIES(rtkvariantest RTK)
-ADD_TEST(rtkvariantest ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest)
+ADD_TEST(Nrtkvariantest ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest)
 
 ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest RTK)
-ADD_TEST(rtkelektatest ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest)
+RTK_ADD_TEST(NAME rtkelektatest 
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest 
+	     DATA{Data/Input/elekta/FRAME.DBF,IMAGE.DBF,raw.his}
+             DATA{Data/Baseline/elekta/geometry.xml,attenuation.mha})
 
 ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest RTK)
