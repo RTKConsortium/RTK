@@ -64,7 +64,7 @@ IF(CUDA_FOUND)
   ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux" AND CMAKE_COMPILER_IS_GNUCC)
 
 
-  IF(CMAKE_SYSTEM_NAME MATCHES "Linux" OR "APPLE")
+  IF(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "APPLE")
       # For CUDA 3.2: surface_functions.h does some non-compliant things...
       #               so we tell g++ to ignore them when called via nvcc
       #               by passing the -fpermissive flag through the nvcc
@@ -73,12 +73,12 @@ IF(CUDA_FOUND)
       #               valid... resulting in TONS of warnings.  So, we go
       #               version checking again, this time nvcc...
       # Get the nvcc version number
-
-      IF(CUDA_VERSION_MAJOR MATCHES "3")
-          IF(CUDA_VERSION_MINOR MATCHES "2")
-              SET (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --compiler-options='-fpermissive')
-              MESSAGE(STATUS "nvcc-check: CUDA 3.2 exception: CUDA_NVCC_FLAGS set to \"${CUDA_NVCC_FLAGS}\"")
-          ENDIF()
+      
+      # This issue seems to be only if cuda is installed in system so test CUDA_INCLUDE_DIRS
+      # (see http://nvidia.custhelp.com/app/answers/detail/a_id/2869/~/linux-based-cuda-v3.x-compiler-issue-affecting-cuda-surface-apis)
+      IF(CUDA_VERSION_MAJOR MATCHES "3" AND CUDA_VERSION_MINOR MATCHES "2" AND CUDA_INCLUDE_DIRS MATCHES "/usr/include")
+          SET (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --compiler-options='-fpermissive')
+          MESSAGE(STATUS "nvcc-check: CUDA 3.2 exception: CUDA_NVCC_FLAGS set to \"${CUDA_NVCC_FLAGS}\"")
       ENDIF()
   ENDIF()
 ENDIF(CUDA_FOUND)
