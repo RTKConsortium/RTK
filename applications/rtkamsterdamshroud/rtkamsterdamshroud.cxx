@@ -46,12 +46,11 @@ int main(int argc, char * argv[])
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
-  
+
   // Amsterdam shroud
   typedef rtk::AmsterdamShroudImageFilter<OutputImageType> shroudFilterType;
   shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
   shroudFilter->SetInput( reader->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->UpdateOutputInformation() )
 
   // Write
   typedef itk::ImageFileWriter< shroudFilterType::OutputImageType > WriterType;
