@@ -75,4 +75,3 @@ private:
 } // end namespace
 
 #endif
-

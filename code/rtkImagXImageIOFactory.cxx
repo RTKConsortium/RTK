@@ -27,4 +27,3 @@ rtk::ImagXImageIOFactory::ImagXImageIOFactory()
                          1,
                          itk::CreateObjectFunction<ImagXImageIO>::New() );
 }
-
