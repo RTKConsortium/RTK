@@ -10,7 +10,6 @@
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkElektaSynergyLookupTableImageFilter.h"
-#include "rtkElektaSynergyRawImageFilter.h"
 #include "rtkElektaSynergyRawToAttenuationImageFilter.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"

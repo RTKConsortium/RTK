@@ -94,7 +94,7 @@ StartElement(const char * name, const char ** atts)
 
 void
 ImagXXMLFileReader::
-EndElement(const char *name)
+EndElement( const char *itkNotUsed(name) )
 {
 }
 

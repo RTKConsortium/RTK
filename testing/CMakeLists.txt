@@ -79,6 +79,10 @@ ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest RTK)
 ADD_TEST(rtkimagxtest ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest)
 
+ADD_EXECUTABLE(rtkedftest rtkedftest.cxx)
+TARGET_LINK_LIBRARIES(rtkedftest RTK)
+ADD_TEST(rtkedftest ${EXECUTABLE_OUTPUT_PATH}/rtkedftest)
+
 ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
 TARGET_LINK_LIBRARIES(rtksarttest RTK)
 ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)

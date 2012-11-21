@@ -173,20 +173,19 @@ void rtk::ImagXImageIO::Read(void * buffer)
 
 //--------------------------------------------------------------------
 // Write Image Information
-void rtk::ImagXImageIO::WriteImageInformation(bool keepOfStream)
+void rtk::ImagXImageIO::WriteImageInformation( bool itkNotUsed(keepOfStream) )
 {
 }
 
 //--------------------------------------------------------------------
 // Write Image Information
-bool rtk::ImagXImageIO::CanWriteFile(const char* FileNameToWrite)
+bool rtk::ImagXImageIO::CanWriteFile( const char* itkNotUsed(FileNameToWrite) )
 {
   return false;
 }
 
 //--------------------------------------------------------------------
 // Write Image
-void rtk::ImagXImageIO::Write(const void * buffer)
+void rtk::ImagXImageIO::Write( const void * itkNotUsed(buffer) )
 {
 } ////
-
