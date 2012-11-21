@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() )
   probe.Stop();
   std::cout << "The streamed ramp filter update took "
-            << probe.GetMeanTime()
+            << probe.GetMean()
             << probe.GetUnit()
             << std::endl;
 

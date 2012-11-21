@@ -151,7 +151,7 @@ int main(int argc, char * argv[])
   if(args_info.time_flag)
   {
     readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMeanTime() << ' ' << readerProbe.GetUnit() << std::endl;
+    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
   }
 
   // Write
