@@ -69,4 +69,3 @@ protected:
 } // end namespace
 
 #endif
-

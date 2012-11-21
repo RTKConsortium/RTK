@@ -189,4 +189,3 @@ bool rtk::ImagXImageIO::CanWriteFile( const char* itkNotUsed(FileNameToWrite) )
 void rtk::ImagXImageIO::Write( const void * itkNotUsed(buffer) )
 {
 } ////
-

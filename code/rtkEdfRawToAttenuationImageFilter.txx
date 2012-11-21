@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkEdfRawToAtteunuationImageFilter_txx
+#define __rtkEdfRawToAtteunuationImageFilter_txx
+
 #include <itkImageFileWriter.h>
 #include <itksys/SystemTools.hxx>
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -38,7 +41,7 @@ void
 EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if(m_FileNames.size()!=this->GetInput()->GetLargestPossibleRegion().GetSize()[2])
+  if( m_FileNames.size() != this->GetInput()->GetLargestPossibleRegion().GetSize()[2] )
     {
     itkGenericExceptionMacro(<< "Error, file names do not correspond to input");
     }
@@ -153,3 +156,5 @@ EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
 }
 
 } // end namespace rtk
+
+#endif
