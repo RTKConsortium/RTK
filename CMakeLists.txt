@@ -1,4 +1,10 @@
 #=========================================================
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
+if(WIN32 OR NOT EXISTS /dev/urandom)
+  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+endif()
+
+#=========================================================
 #RTK = Reconstruction toolkit
 PROJECT(RTK)
 #=========================================================
@@ -6,10 +12,9 @@ PROJECT(RTK)
 #=========================================================
 #Support for the CTest dashboard testing system
 INCLUDE(CTest)
+INCLUDE(cmake/RTKExternalData.cmake)
 #=========================================================
 
-#=========================================================
-CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
 ## Tell CMake to be quiet
 CMAKE_POLICY (SET CMP0003 NEW)
@@ -182,3 +187,4 @@ IF(BUILD_EXAMPLES)
   ADD_SUBDIRECTORY(examples)
 ENDIF(BUILD_EXAMPLES)
 
+ExternalData_Add_Target(rtkData)
