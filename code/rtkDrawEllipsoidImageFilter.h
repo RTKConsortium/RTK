@@ -51,13 +51,13 @@ public:
   typedef std::vector<double>                               VectorType;
 
   typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
-  struct figure
+  typedef struct
   {
     VectorType semiprincipalaxis;
     VectorType center;
     double     angle;
     double     attenuation;
-  };
+  } FigureType;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 

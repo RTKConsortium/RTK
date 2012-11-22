@@ -41,8 +41,8 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
 {
   //Getting phantom parameters
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
-  figure figParam;
-  std::vector< figure > shepplogan(10, figParam);
+  FigureType figParam;
+  std::vector< FigureType > shepplogan(10, figParam);
   unsigned int NumberOfFig = 10;
 
   shepplogan[0].semiprincipalaxis.push_back(0.69*m_PhantomScale);
