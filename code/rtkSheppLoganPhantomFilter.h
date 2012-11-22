@@ -57,8 +57,9 @@ public:
   typedef std::vector<double>                                                        VectorType;
   typedef std::string                                                                StringType;
   typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
-  struct figure
+  struct FigureType
   {
+    FigureType():angle(0.),attenuation(0.){};
     VectorType semiprincipalaxis;
     VectorType center;
     double angle;
