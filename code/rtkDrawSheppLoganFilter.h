@@ -53,13 +53,14 @@ public:
   typedef std::string                                       StringType;
 
   typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
-  typedef struct
+  struct FigureType
   {
+    FigureType():angle(0.),attenuation(0.){};
     VectorType semiprincipalaxis;
     VectorType center;
     double     angle;
     double     attenuation;
-  } FigureType;
+  };
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
