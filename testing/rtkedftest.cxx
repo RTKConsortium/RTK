@@ -68,7 +68,7 @@ int main(int, char** )
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/input/esrf/raw.edf") );
+                       std::string("/Input/ESRF/raw.edf") );
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
@@ -76,7 +76,7 @@ int main(int, char** )
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/baseline/esrf/attenuation.mha") );
+                       std::string("/Baseline/ESRF/attenuation.mha") );
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

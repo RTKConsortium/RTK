@@ -66,22 +66,31 @@ ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
 
 ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)
 TARGET_LINK_LIBRARIES(rtkvariantest RTK)
-ADD_TEST(Nrtkvariantest ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest)
+RTK_ADD_TEST(NAME rtkvariantest 
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest 
+	     DATA{Data/Input/Varian/raw.hnd,acqui.xml}
+             DATA{Data/Baseline/Varian/attenuation.mha})
 
 ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest RTK)
 RTK_ADD_TEST(NAME rtkelektatest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest 
-	     DATA{Data/Input/elekta/FRAME.DBF,IMAGE.DBF,raw.his}
-             DATA{Data/Baseline/elekta/geometry.xml,attenuation.mha})
+	     DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
+             DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha})
 
 ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest RTK)
-ADD_TEST(rtkimagxtest ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest)
+RTK_ADD_TEST(NAME rtkimagxtest 
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest 
+	     DATA{Data/Input/ImagX/raw.xml}
+             DATA{Data/Baseline/ImagX/attenuation.mha})
 
 ADD_EXECUTABLE(rtkedftest rtkedftest.cxx)
 TARGET_LINK_LIBRARIES(rtkedftest RTK)
-ADD_TEST(rtkedftest ${EXECUTABLE_OUTPUT_PATH}/rtkedftest)
+RTK_ADD_TEST(NAME rtkedftest 
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkedftest 
+	     DATA{Data/Input/ESRF/raw.edf,dark.edf,refHST0000.edf}
+             DATA{Data/Baseline/ESRF/attenuation.mha})
 
 ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
 TARGET_LINK_LIBRARIES(rtksarttest RTK)

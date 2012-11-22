@@ -108,18 +108,18 @@ int main(int, char** )
   // Elekta geometry
   rtk::ElektaSynergyGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::ElektaSynergyGeometryReader::New();
-  geoTargReader->SetDicomUID("1.3.46.423632.135428.1297875131.18");
+  geoTargReader->SetDicomUID("1.3.46.423632.135428.1351013645.166");
   geoTargReader->SetImageDbfFileName( std::string(RTK_DATA_ROOT) + 
-                                      std::string("/Input/elekta/IMAGE.DBF") );
+                                      std::string("/Input/Elekta/IMAGE.DBF") );
   geoTargReader->SetFrameDbfFileName( std::string(RTK_DATA_ROOT) + 
-                                      std::string("/Input/elekta/FRAME.DBF") );
+                                      std::string("/Input/Elekta/FRAME.DBF") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) + 
-                             std::string("/Baseline/elekta/geometry.xml") );
+                             std::string("/Baseline/Elekta/geometry.xml") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // 1. Check geometries
@@ -135,7 +135,7 @@ int main(int, char** )
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/elekta/raw.his") );
+                       std::string("/Input/Elekta/raw.his") );
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
@@ -143,7 +143,7 @@ int main(int, char** )
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/elekta/attenuation.mha") );
+                       std::string("/Baseline/Elekta/attenuation.mha") );
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
