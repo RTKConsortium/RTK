@@ -41,7 +41,7 @@ void DrawEllipsoidImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(c
 {
   //Getting phantom parameters
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
-  figure ellipsoid;
+  FigureType ellipsoid;
 
   ellipsoid.semiprincipalaxis.push_back(0.69*m_EllipsoidImageScale);
   ellipsoid.semiprincipalaxis.push_back(0.90*m_EllipsoidImageScale);
