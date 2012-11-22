@@ -107,13 +107,13 @@ int main(int, char** )
 {
   std::vector<std::string> fileNames;
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/input/varian/raw.hnd") );
+                       std::string("/Input/Varian/raw.hnd") );
 
   // Varian geometry
   rtk::VarianObiGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::VarianObiGeometryReader::New();
   geoTargReader->SetXMLFileName( std::string(RTK_DATA_ROOT) +
-                                 std::string("/input/varian/acqui.xml") );
+                                 std::string("/Input/Varian/acqui.xml") );
   geoTargReader->SetProjectionsFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
@@ -121,7 +121,7 @@ int main(int, char** )
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) + 
-                             std::string("/baseline/varian/geometry.xml") );
+                             std::string("/Baseline/Varian/geometry.xml") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // 1. Check geometries
@@ -142,7 +142,7 @@ int main(int, char** )
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/baseline/varian/attenuation.mha") );
+                       std::string("/Baseline/Varian/attenuation.mha") );
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
