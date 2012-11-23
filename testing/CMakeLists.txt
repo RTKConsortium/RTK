@@ -69,7 +69,7 @@ TARGET_LINK_LIBRARIES(rtkvariantest RTK)
 RTK_ADD_TEST(NAME rtkvariantest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest 
 	     DATA{Data/Input/Varian/raw.hnd,acqui.xml}
-             DATA{Data/Baseline/Varian/attenuation.mha})
+             DATA{Data/Baseline/Varian/attenuation.mha,geometry.xml})
 
 ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest RTK)
@@ -82,7 +82,7 @@ ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest RTK)
 RTK_ADD_TEST(NAME rtkimagxtest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest 
-	     DATA{Data/Input/ImagX/raw.xml}
+	     DATA{Data/Input/ImagX/raw.xml,raw.raw}
              DATA{Data/Baseline/ImagX/attenuation.mha})
 
 ADD_EXECUTABLE(rtkedftest rtkedftest.cxx)
