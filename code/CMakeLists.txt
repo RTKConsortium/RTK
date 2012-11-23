@@ -63,7 +63,24 @@ IF (CUDA_FOUND)
        rtkCudaFFTRampImageFilter.cu
        rtkCudaForwardProjectionImageFilter.cu
        rtkCudaBackProjectionImageFilter.cu )
+       
+  # This is a fix for ITK4 to avoid too long cmd lines error
+  # (http://www.itk.org/Bug/view.php?id=12198)
+  IF(WIN32 AND ITK_VERSION_MAJOR MATCHES "4")
+    GET_DIRECTORY_PROPERTY(dirInc INCLUDE_DIRECTORIES)
+    FIND_PATH(itkMacroPath itkMacro.h ${dirInc})
+    FIND_PATH(itkConfigurePath itkConfigure.h ${dirInc})
+    FIND_PATH(rtkConfigurationPath rtkConfiguration.h ${dirInc})
+    SET_DIRECTORY_PROPERTIES(PROPERTIES INCLUDE_DIRECTORIES "${itkMacroPath};${itkConfigurePath};${rtkConfigurationPath}")
+  ENDIF()
+
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS ${rtkcuda_CUDA_FILES})
+
+  # Rollback to all includes
+  IF(WIN32 AND ITK_VERSION_MAJOR MATCHES "4")
+    SET_DIRECTORY_PROPERTIES(PROPERTIES INCLUDE_DIRECTORIES "${dirInc}")
+  ENDIF()
+
   ADD_LIBRARY(rtkcuda
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFFTRampImageFilter.cxx
