@@ -55,7 +55,7 @@ EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
   itk::RegularExpressionSeriesFileNames::Pointer refNames = itk::RegularExpressionSeriesFileNames::New();
   refNames->SetDirectory(path.c_str() );
   refNames->SetNumericSort(false);
-  refNames->SetRegularExpression("refHST[0-9]*.edf");
+  refNames->SetRegularExpression("refHST[0-9]*.edf$");
   refNames->SetSubMatch(0);
 
   m_ReferenceProjectionsReader->SetFileNames( refNames->GetFileNames() );
