@@ -1,4 +1,4 @@
-ITK: The Insight Toolkit for Segmentation and Registration
+RTK: The Reconstruction ToolKit 
 
 
 Links
