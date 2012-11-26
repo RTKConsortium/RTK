@@ -85,7 +85,7 @@ DbfFile::DbfFile(std::string fileName)
 
 DbfFile::~DbfFile()
 {
-  free(m_Record);
+  delete [] m_Record;
 }
 
 bool DbfFile::ReadNextRecord()
