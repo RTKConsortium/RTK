@@ -92,6 +92,19 @@ RTK_ADD_TEST(NAME rtkedftest
 	     DATA{Data/Input/ESRF/raw.edf,dark.edf,refHST0000.edf}
              DATA{Data/Baseline/ESRF/attenuation.mha})
 
+
+ADD_EXECUTABLE(rtkprojectgeometricphantomtest rtkprojectgeometricphantomtest.cxx)
+TARGET_LINK_LIBRARIES(rtkprojectgeometricphantomtest RTK)
+RTK_ADD_TEST(NAME rtkprojectgeometricphantomtest 
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkprojectgeometricphantomtest 
+	     DATA{Data/Input/GeometricPhantom/SheppLogan.txt})
+
+ADD_EXECUTABLE(rtkdrawgeometricphantomtest rtkdrawgeometricphantomtest.cxx)
+TARGET_LINK_LIBRARIES(rtkdrawgeometricphantomtest RTK)
+RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest 
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdrawgeometricphantomtest 
+	     DATA{Data/Input/GeometricPhantom/SheppLogan.txt})
+
 ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
 TARGET_LINK_LIBRARIES(rtksarttest RTK)
 ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
