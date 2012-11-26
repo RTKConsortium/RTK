@@ -24,10 +24,24 @@ namespace rtk
 
 template < class TCoordRep, unsigned int VBoxDimension >
 RayQuadricIntersectionFunction<TCoordRep, VBoxDimension>
-::RayQuadricIntersectionFunction():
-m_A(0.), m_B(0.), m_C(0.), m_D(0.), m_E(0.),
-m_F(0.), m_G(0.), m_H(0.), m_I(0.), m_J(0.)
+::RayQuadricIntersectionFunction()
 {
+  m_A = 0.0;
+  m_B = 0.0;
+  m_C = 0.0;
+  m_D = 0.0;
+  m_E = 0.0;
+  m_F = 0.0;
+  m_G = 0.0;
+  m_H = 0.0;
+  m_I = 0.0;
+  m_J = 0.0;
+  m_NearestDistance = 0.0;
+  m_FarthestDistance = 0.0;
+
+  m_RayOrigin.Fill(0.0);
+  m_RayDirection.Fill(0.0);
+  m_FocalPoint.Fill(0.0);
 }
 
 template < class TCoordRep, unsigned int VBoxDimension >
