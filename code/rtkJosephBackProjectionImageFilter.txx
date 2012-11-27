@@ -51,6 +51,7 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
   typename TOutputImage::Pointer weights = TOutputImage::New();
   weights->SetRegions( this->GetInput()->GetLargestPossibleRegion() );
   weights->Allocate();
+  weights->FillBuffer(0);
   typename TInputImage::PixelType *beginBufferWeights = weights->GetBufferPointer();
 
   const unsigned int Dimension = TInputImage::ImageDimension;
