@@ -153,12 +153,12 @@ void kernel_forwardProject(float *dev_proj,
   ray.o = src_pos;
 
   float3 pixelPos;
-  pixelPos.x = tex1Dfetch(tex_matrix,  0)*i + tex1Dfetch(tex_matrix,  1)*j +
-               tex1Dfetch(tex_matrix,  3);
-  pixelPos.y = tex1Dfetch(tex_matrix,  4)*i + tex1Dfetch(tex_matrix,  5)*j +
-               tex1Dfetch(tex_matrix,  7);
-  pixelPos.z = tex1Dfetch(tex_matrix,  8)*i + tex1Dfetch(tex_matrix,  9)*j +
-               tex1Dfetch(tex_matrix, 11);
+  pixelPos.x = tex1Dfetch(tex_matrix, 3)  + tex1Dfetch(tex_matrix, 0)*i +
+               tex1Dfetch(tex_matrix, 1)*j;
+  pixelPos.y = tex1Dfetch(tex_matrix, 7)  + tex1Dfetch(tex_matrix, 4)*i +
+               tex1Dfetch(tex_matrix, 5)*j;
+  pixelPos.z = tex1Dfetch(tex_matrix, 11) + tex1Dfetch(tex_matrix, 8)*i +
+               tex1Dfetch(tex_matrix, 9)*j;
 
   ray.d = pixelPos - ray.o;
   ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
@@ -222,7 +222,7 @@ CUDA_forward_project_init(int proj_dim[2],
 
   // CUDA device pointers
   // Allocate memory for system matrix on the device
-  cudaMalloc( (void**)&dev_matrix, 16*sizeof(float) );
+  cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
   CUDA_CHECK_ERROR;
   // Allocate memory for reconstructed volume on the device
   cudaMalloc3DArray((cudaArray**)&dev_vol, &channelDesc, volSize);  //cudaMallocArray( (cudaArray**)&dev_vol, volSize_bytes);
@@ -261,7 +261,7 @@ CUDA_forward_project(int blockSize[3],
                      int projections_size[2],
                      float t_step,
                      float *dev_matrix,
-                     float matrix[16],
+                     float matrix[12],
                      float box_min[3],
                      float box_max[3],
                      float spacing[3])
@@ -274,9 +274,9 @@ CUDA_forward_project(int blockSize[3],
   CUDA_CHECK_ERROR;
 
   // Copy matrix and bind data to the texture
-  cudaMemcpy (dev_matrix, matrix, 16*sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
   CUDA_CHECK_ERROR;
-  cudaBindTexture (0, tex_matrix, dev_matrix, 16*sizeof(float) );
+  cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
   CUDA_CHECK_ERROR;
   // Converting arrays to CUDA format and setting parameters
   float3 sourcePos;
@@ -306,6 +306,8 @@ CUDA_forward_project(int blockSize[3],
   size_t projSize_bytes = (projections_size[0]*projections_size[1])*sizeof(float);
   cudaMemcpy (host_proj, dev_proj, projSize_bytes, cudaMemcpyDeviceToHost);
   CUDA_CHECK_ERROR;
+  cudaUnbindTexture (tex_matrix);
+  CUDA_CHECK_ERROR;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -318,8 +320,6 @@ CUDA_forward_project_cleanup(int proj_dim[2],
 {
   // Unbind the volume and matrix textures
   cudaUnbindTexture (tex_vol);
-  CUDA_CHECK_ERROR;
-  cudaUnbindTexture (tex_matrix);
   CUDA_CHECK_ERROR;
   // Deallocate memory on the device
   cudaFree (dev_proj);
