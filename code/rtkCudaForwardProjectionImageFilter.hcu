@@ -35,7 +35,7 @@ CUDA_forward_project(int blockSize[3],
                      int projections_size[2],
                      float t_step,
                      float *dev_matrix,
-                     float matrix[16],
+                     float matrix[12],
                      float boxMin[3],
                      float boxMax[3],
                      float spacing[3]);
