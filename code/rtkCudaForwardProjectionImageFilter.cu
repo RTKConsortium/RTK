@@ -231,10 +231,6 @@ CUDA_forward_project_init(int proj_dim[2],
   cudaMalloc((void **)&dev_proj, proj_dim[0]*proj_dim[1]*sizeof(float) );
   CUDA_CHECK_ERROR;
 
-  // CUDA data transfer, host data to the CUDA device
-  cudaMemset((void *)dev_proj, 0, proj_dim[0]*proj_dim[1]*sizeof(float) );
-  CUDA_CHECK_ERROR;
-
   //NOTE: cudaMemcpy of the matrix is done afterwards, just before calling kernel.
 
   // copy data to 3D array
@@ -272,6 +268,10 @@ CUDA_forward_project(int blockSize[3],
 {
   static dim3 dimBlock  = dim3(blockSize[0], blockSize[1], blockSize[2]);
   static dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
+
+  // Reset projection
+  cudaMemset((void *)dev_proj, 0, projections_size[0]*projections_size[1]*sizeof(float) );
+  CUDA_CHECK_ERROR;
 
   // Copy matrix and bind data to the texture
   cudaMemcpy (dev_matrix, matrix, 16*sizeof(float), cudaMemcpyHostToDevice);
