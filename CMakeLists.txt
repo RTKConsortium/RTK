@@ -152,18 +152,23 @@ if(NOT RTK_INSTALL_PACKAGE_DIR)
 endif()
 #=========================================================
 
-IF(ITK_VERSION_MAJOR LESS "4")
-  LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/utilities/itkfftw")
-ENDIF()
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/code")
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_BINARY_DIR}")
-
 INCLUDE_DIRECTORIES(${RTK_INCLUDE_DIRS})
+
 IF(ITK_VERSION_MAJOR LESS "4")
-  ADD_SUBDIRECTORY(utilities/itkfftw)
-  INCLUDE_DIRECTORIES(BEFORE utilities/itkfftw)
+  GET_DIRECTORY_PROPERTY(dirInc INCLUDE_DIRECTORIES)
+  FIND_FILE(itkConfigurePath itkConfigure.h ${dirInc}) 
+  FILE(STRINGS ${itkConfigurePath} USE_FFTWF REGEX "^#define USE_FFTWF$")
+  FILE(STRINGS ${itkConfigurePath} USE_FFTWD REGEX "^#define USE_FFTWD$")
+  IF(USE_FFTWF OR USE_FFTWD)
+    ADD_SUBDIRECTORY(utilities/itkfftw)
+    LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/utilities/itkfftw")
+    INCLUDE_DIRECTORIES(BEFORE utilities/itkfftw)
+  ENDIF()
   INCLUDE_DIRECTORIES(BEFORE utilities/itkcrop)
 ENDIF()
+
 
 ADD_SUBDIRECTORY(code)
 
