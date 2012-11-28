@@ -25,7 +25,8 @@ ADD_LIBRARY(RTK
             rtkGeometricPhantomFileReader.cxx
             rtkDigisensGeometryXMLFileReader.cxx 
            )
-IF(ITK_VERSION_MAJOR LESS "4")
+
+IF( ITK_VERSION_MAJOR LESS "4" AND (USE_FFTWF OR USE_FFTWD) )
   TARGET_LINK_LIBRARIES(RTK ITKFFTW)
   SET(RTK_LIBRARIES ${RTK_LIBRARIES} ITKFFTW)
 ELSE()
