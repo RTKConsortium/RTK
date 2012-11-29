@@ -90,19 +90,6 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::BeforeThreadedGenerateData()
 {
   UpdateTruncationMirrorWeights();
-
-  // Force init of fftw library mutex (static class member) before
-  // multithreading
-#if ITK_VERSION_MAJOR <= 3
-#  if defined(USE_FFTWF)
-  itk::fftw::Proxy<float>::Lock();
-  itk::fftw::Proxy<float>::Unlock();
-#  endif
-#  if defined(USE_FFTWD)
-  itk::fftw::Proxy<double>::Lock();
-  itk::fftw::Proxy<double>::Unlock();
-#  endif
-#endif
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
