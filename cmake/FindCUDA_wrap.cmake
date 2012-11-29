@@ -72,8 +72,8 @@ if(CUDA_FOUND)
         set(CUDA_HAVE_GPU TRUE CACHE BOOL "Whether CUDA-capable GPU is present")
     else()
         set(CUDA_HAVE_GPU FALSE CACHE BOOL "Whether CUDA-capable GPU is present")
-    mark_as_advanced(CUDA_HAVE_GPU)
     endif()
+    mark_as_advanced(CUDA_HAVE_GPU)
 endif(CUDA_FOUND)
 
 
