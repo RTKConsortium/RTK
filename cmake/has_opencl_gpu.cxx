@@ -29,7 +29,7 @@ int main() {
     }
 
   std::vector<cl_device_id> deviceList(numberOfDevices);
-  if(clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numberOfDevices, &(deviceList[0]), NULL) != CL_SUCCESS )
+  if(clGetDeviceIDs(platformList[0], CL_DEVICE_TYPE_GPU, numberOfDevices, &(deviceList[0]), NULL) != CL_SUCCESS )
     {
     return 1; // failure
     }
@@ -46,12 +46,12 @@ int main() {
   // If not a good device, switch to CPU.
   if(!bImageSupport)
     {
-    if( clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 0, NULL, &numberOfDevices) != CL_SUCCESS )
+    if( clGetDeviceIDs(platformList[0], CL_DEVICE_TYPE_CPU, 0, NULL, &numberOfDevices) != CL_SUCCESS )
       {
       return 1; // failure
       }
     deviceList.resize(numberOfDevices);
-    if( clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, numberOfDevices, &(deviceList[0]), NULL) != CL_SUCCESS)
+    if( clGetDeviceIDs(platformList[0], CL_DEVICE_TYPE_CPU, numberOfDevices, &(deviceList[0]), NULL) != CL_SUCCESS)
       {
       return 1; // failure
       }
