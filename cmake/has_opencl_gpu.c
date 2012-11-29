@@ -7,8 +7,20 @@
 
 int main() {
   
+  cl_uint numberOfPlatforms;
+  if( clGetPlatformIDs (0, NULL, &numberOfPlatforms) )
+    {
+    return 1; // failure
+    }
+
+  std::vector<cl_platform_id> platformList(numberOfPlatforms);
+  if( clGetPlatformIDs (numberOfPlatforms, &(platformList[0]), NULL) )
+    {
+    return 1; // failure
+    }
+
   cl_uint numberOfDevices;
-  if(clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numberOfDevices) ) != CL_SUCCESS)
+  if(clGetDeviceIDs(platformList[0], CL_DEVICE_TYPE_GPU, 0, NULL, &numberOfDevices) ) != CL_SUCCESS)
     {
     return 1; // failure
     }
