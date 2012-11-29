@@ -5,6 +5,8 @@
 #include <CL/cl.h>
 #endif
 
+#include <vector>
+
 int main() {
   
   cl_uint numberOfPlatforms;
