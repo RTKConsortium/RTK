@@ -1,5 +1,5 @@
 ADD_LIBRARY(ITKFFTW
-            itkFFTWCommon.cxx)
+            itkFFTWGlobalConfiguration.cxx)
 TARGET_LINK_LIBRARIES(ITKFFTW ${ITK_LIBRARIES})
 
 #=========================================================
