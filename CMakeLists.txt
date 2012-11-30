@@ -1,5 +1,5 @@
 #=========================================================
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3 FATAL_ERROR)
 if(WIN32 OR NOT EXISTS /dev/urandom)
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 endif()
