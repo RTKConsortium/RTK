@@ -57,7 +57,14 @@ rtk::CudaFFTRampImageFilter
     ++itK;
     }
 
-  CUDA_fft_convolution(inputDimension, paddedImage->GetBufferPointer(), (float2*)(fftK->GetBufferPointer() ) );
+  int2 kernelDimension;
+  kernelDimension.x = fftK->GetBufferedRegion().GetSize()[0];
+  kernelDimension.y = fftK->GetBufferedRegion().GetSize()[1];
+
+  CUDA_fft_convolution(inputDimension,
+                       kernelDimension,
+                       paddedImage->GetBufferPointer(),
+                       (float2*)(fftK->GetBufferPointer() ) );
 
   // Crop and paste result
   itk::ImageRegionConstIterator<FFTInputImageType> itS(paddedImage, this->GetOutput()->GetRequestedRegion() );
