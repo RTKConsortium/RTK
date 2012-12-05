@@ -45,7 +45,8 @@ rtk::CudaFFTRampImageFilter
   inputDimension.z = paddedImage->GetBufferedRegion().GetSize()[2];
 
   // Get FFT ramp kernel
-  FFTOutputImagePointer fftK = this->GetFFTRampKernel(paddedImage->GetLargestPossibleRegion().GetSize(0) );
+  FFTOutputImagePointer fftK = this->GetFFTRampKernel(paddedImage->GetLargestPossibleRegion().GetSize(0),
+                                                      paddedImage->GetLargestPossibleRegion().GetSize(1) );
 
   // CUFFT scales by the number of element, correct for it in kernel
   itk::ImageRegionIterator<FFTOutputImageType> itK(fftK, fftK->GetBufferedRegion() );
