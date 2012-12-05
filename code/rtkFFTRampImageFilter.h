@@ -121,6 +121,11 @@ public:
   /** Set/Get the Hamming window frequency. 0 (default) disables it */
   itkGetConstMacro(HammingFrequency, double);
   itkSetMacro(HammingFrequency, double);
+
+  /** Set/Get the Hann window frequency in Y direction. 0 (default) disables it */
+  itkGetConstMacro(HannCutFrequencyY, double);
+  itkSetMacro(HannCutFrequencyY, double);
+
 protected:
   FFTRampImageFilter();
   ~FFTRampImageFilter(){}
@@ -128,6 +133,8 @@ protected:
   void GenerateInputRequestedRegion();
 
   virtual void BeforeThreadedGenerateData();
+
+  virtual void AfterThreadedGenerateData();
 
   virtual void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId );
 
@@ -145,7 +152,7 @@ protected:
 
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions. */
-  FFTOutputImagePointer GetFFTRampKernel(const int width);
+  FFTOutputImagePointer GetFFTRampKernel(const int width, const int height);
 
   /** Pre compute weights for truncation correction in a lookup table. The index
     * is the distance to the original image border.
@@ -177,7 +184,9 @@ private:
   double m_HannCutFrequency;
   double m_CosineCutFrequency;
   double m_HammingFrequency;
+  double m_HannCutFrequencyY;
 
+  int m_BackupNumberOfThreads;
 }; // end of class
 
 } // end namespace rtk

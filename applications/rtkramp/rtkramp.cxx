@@ -56,6 +56,7 @@ int main(int argc, char * argv[])
   rampFilter->SetInput( reader->GetOutput() );
   rampFilter->SetTruncationCorrection(args_info.pad_arg);
   rampFilter->SetHannCutFrequency(args_info.hann_arg);
+  rampFilter->SetHannCutFrequencyY(args_info.hannY_arg);
 
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
