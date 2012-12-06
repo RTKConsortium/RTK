@@ -66,7 +66,6 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
 #endif
     }
-     rampFilter = rtk::CudaFFTRampImageFilter::New();
   else
     rampFilter = rampFilterType::New();
   rampFilter->SetInput( reader->GetOutput() );
