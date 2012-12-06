@@ -46,16 +46,16 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
     {
     rei[i] = REIType::New();
     //Set GrayScale value, axes, center...
-    rei[i]->SetMultiplicativeConstant(m_Fig[i][7]);
-    rei[i]->SetSemiPrincipalAxisX(m_Fig[i][0]);
-    rei[i]->SetSemiPrincipalAxisY(m_Fig[i][1]);
-    rei[i]->SetSemiPrincipalAxisZ(m_Fig[i][2]);
+    rei[i]->SetMultiplicativeConstant(m_Fig[i][8]);
+    rei[i]->SetSemiPrincipalAxisX(m_Fig[i][1]);
+    rei[i]->SetSemiPrincipalAxisY(m_Fig[i][2]);
+    rei[i]->SetSemiPrincipalAxisZ(m_Fig[i][3]);
 
-    rei[i]->SetCenterX(m_Fig[i][3]);
-    rei[i]->SetCenterY(m_Fig[i][4]);
-    rei[i]->SetCenterZ(m_Fig[i][5]);
+    rei[i]->SetCenterX(m_Fig[i][4]);
+    rei[i]->SetCenterY(m_Fig[i][5]);
+    rei[i]->SetCenterZ(m_Fig[i][6]);
 
-    rei[i]->SetRotationAngle(m_Fig[i][6]);
+    rei[i]->SetRotationAngle(m_Fig[i][7]);
 
     if ( i == ( m_Fig.size() - 1 ) ) //last case
       {
