@@ -121,8 +121,8 @@ CUDA_fft_convolution(const int3 &inputDimension,
 
   // Thread Block Dimensions
   int tBlock_x = 16;
-  int tBlock_y = 8;
-  int tBlock_z = 8;
+  int tBlock_y = 4;
+  int tBlock_z = 4;
   int  blocksInX = (fftDimension.x - 1) / tBlock_x + 1;
   int  blocksInY = (fftDimension.y - 1) / tBlock_y + 1;
   int  blocksInZ = (fftDimension.z - 1) / tBlock_z + 1;
