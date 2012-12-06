@@ -31,7 +31,10 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 DrawEllipsoidImageFilter<TInputImage, TOutputImage>
 ::DrawEllipsoidImageFilter():
-m_EllipsoidImageScale(128.0)
+m_Axis(0.),
+m_Center(0.),
+m_Attenuation(1.),
+m_Angle(0.)
 {
 }
 
@@ -43,14 +46,14 @@ void DrawEllipsoidImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(c
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
   FigureType ellipsoid;
 
-  ellipsoid.semiprincipalaxis.push_back(0.69*m_EllipsoidImageScale);
-  ellipsoid.semiprincipalaxis.push_back(0.90*m_EllipsoidImageScale);
-  ellipsoid.semiprincipalaxis.push_back(0.92*m_EllipsoidImageScale);
-  ellipsoid.center.push_back(0.);
-  ellipsoid.center.push_back(0.);
-  ellipsoid.center.push_back(0.);
-  ellipsoid.angle = 0.;
-  ellipsoid.attenuation = 1.;
+  ellipsoid.semiprincipalaxis.push_back(m_Axis[0]);
+  ellipsoid.semiprincipalaxis.push_back(m_Axis[1]);
+  ellipsoid.semiprincipalaxis.push_back(m_Axis[2]);
+  ellipsoid.center.push_back(m_Center[0]);
+  ellipsoid.center.push_back(m_Center[1]);
+  ellipsoid.center.push_back(m_Center[2]);
+  ellipsoid.angle = m_Angle;
+  ellipsoid.attenuation = m_Attenuation;
 
   typename TOutputImage::PointType point;
   const    TInputImage *           input = this->GetInput();

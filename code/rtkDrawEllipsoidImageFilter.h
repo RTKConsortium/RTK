@@ -67,8 +67,17 @@ public:
 
   /** Multiplicative Scaling factor for the phantom parameters described in
    * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(EllipsoidImageScale, double);
-  itkGetMacro(EllipsoidImageScale, double);
+  itkSetMacro(Attenuation, double);
+  itkGetMacro(Attenuation, double);
+
+  itkSetMacro(Angle, double);
+  itkGetMacro(Angle, double);
+
+  itkSetMacro(Axis, VectorType);
+  itkGetMacro(Axis, VectorType);
+
+  itkSetMacro(Center, VectorType);
+  itkGetMacro(Center, VectorType);
 
 protected:
   DrawEllipsoidImageFilter();
@@ -80,7 +89,10 @@ private:
   DrawEllipsoidImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  double m_EllipsoidImageScale;
+  std::vector< double > m_Axis;
+  std::vector< double > m_Center;
+  double                m_Attenuation;
+  double                m_Angle;
 };
 
 } // end namespace rtk
