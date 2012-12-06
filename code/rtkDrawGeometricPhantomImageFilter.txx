@@ -20,8 +20,10 @@
 #define __rtkDrawGeometricPhantomImageFilter_txx
 
 #include <iostream>
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
+#include "rtkDrawEllipsoidImageFilter.h"
+#include "rtkDrawCylinderImageFilter.h"
+#include "rtkDrawConeImageFilter.h"
+#include "itkAddImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
 
@@ -29,59 +31,113 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                             ThreadIdType itkNotUsed(threadId) )
+void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   VectorOfVectorType figParam;
   //Getting phantom parameters
-  EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
-  //Config File Reader, cfr
   CFRType::Pointer cfr = CFRType::New();
   cfr->Config(m_ConfigFile);
   figParam = cfr->GetFig();
   VectorType semiprincipalaxis;
   VectorType center;
 
-  typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
+  //Add Image Filter used to concatenate the different figures obtained on each iteration
+  typedef itk::AddImageFilter <TOutputImage, TOutputImage, TOutputImage> AddImageFilterType;
+  typename AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
 
-  typename TOutputImage::PointType point;
-
-  //Iterator at the beginning of the volume
-  itOut.GoToBegin();
   unsigned int NumberOfFig = figParam.size();
   for(unsigned int i=0; i<NumberOfFig; i++)
   {
-    semiprincipalaxis.push_back(figParam[i][0]);
+    //Set figures parameters
     semiprincipalaxis.push_back(figParam[i][1]);
     semiprincipalaxis.push_back(figParam[i][2]);
-    center.push_back(figParam[i][3]);
+    semiprincipalaxis.push_back(figParam[i][3]);
     center.push_back(figParam[i][4]);
     center.push_back(figParam[i][5]);
-    //Translate from regular expression to quadric
-    sqpFunctor->Translate(semiprincipalaxis);
-    //Applies rotation and translation if necessary
-    sqpFunctor->Rotate(figParam[i][6], center);
-    while( !itOut.IsAtEnd() )
-      {
-      this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
+    center.push_back(figParam[i][6]);
 
-      double QuadricEllip = sqpFunctor->GetA()*point[0]*point[0]   +
-                   sqpFunctor->GetB()*point[1]*point[1]   +
-                   sqpFunctor->GetC()*point[2]*point[2]   +
-                   sqpFunctor->GetD()*point[0]*point[1]   +
-                   sqpFunctor->GetE()*point[0]*point[2]   +
-                   sqpFunctor->GetF()*point[1]*point[2]   +
-                   sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
-                   sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
-      if(QuadricEllip<0)
-        itOut.Set(figParam[i][7] + itOut.Get());
-      else if (i==0)
-        itOut.Set(0.);
-      ++itOut;
+    //Deciding which figure to draw
+    switch ((int)figParam[i][0])
+    {
+      case 0:
+      {
+        // Create figure object (3D ellipsoid).
+        typedef rtk::DrawEllipsoidImageFilter<TInputImage, TOutputImage> DEType;
+        typename DEType::Pointer de = DEType::New();
+        de->SetInput( this->GetInput() );
+        de->SetAxis(semiprincipalaxis);
+        de->SetCenter(center);
+        de->SetAngle(figParam[i][7]);
+        de->SetAttenuation(figParam[i][8]);
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( de->Update() );
+        addFilter->SetInput1(de->GetOutput());
+        if(!i)
+          addFilter->SetInput2(this->GetInput());
+        else
+          addFilter->SetInput2(this->GetOutput());
+        break;
       }
-  semiprincipalaxis.erase(semiprincipalaxis.begin(), semiprincipalaxis.end());
-  center.erase(center.begin(), center.end());
-  itOut.GoToBegin();
+      case 1:
+      {
+        // Create figure object (3D cylinder).
+        typedef rtk::DrawCylinderImageFilter<TInputImage, TOutputImage> DCType;
+        typename DCType::Pointer dc = DCType::New();
+        dc->SetInput( this->GetInput() );
+        dc->SetAxis(semiprincipalaxis);
+        dc->SetCenter(center);
+        dc->SetAngle(figParam[i][7]);
+        dc->SetAttenuation(figParam[i][8]);
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( dc->Update() );
+        addFilter->SetInput1(dc->GetOutput());
+        if(!i)
+          addFilter->SetInput2(this->GetInput());
+        else
+          addFilter->SetInput2(this->GetOutput());
+        break;
+      }
+      case 2:
+      {
+        // Create figure object (3D cone).
+        typedef rtk::DrawConeImageFilter<TInputImage, TOutputImage> DCOType;
+        typename DCOType::Pointer dco = DCOType::New();
+        dco->SetInput( this->GetInput() );
+        dco->SetAxis(semiprincipalaxis);
+        dco->SetCenter(center);
+        dco->SetAngle(figParam[i][7]);
+        dco->SetAttenuation(figParam[i][8]);
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( dco->Update() );
+        addFilter->SetInput1(dco->GetOutput());
+        if(!i)
+          addFilter->SetInput2(this->GetInput());
+        else
+          addFilter->SetInput2(this->GetOutput());
+        break;
+      }
+      case 3:
+      {
+        // Create figure object (3D box).
+        typedef rtk::DrawEllipsoidImageFilter<TInputImage, TOutputImage> DBType;
+        typename DBType::Pointer db = DBType::New();
+        db->SetInput( this->GetInput() );
+        db->SetAxis(semiprincipalaxis);
+        db->SetCenter(center);
+        db->SetAngle(figParam[i][7]);
+        db->SetAttenuation(figParam[i][8]);
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( db->Update() );
+        addFilter->SetInput1(db->GetOutput());
+        if(!i)
+          addFilter->SetInput2(this->GetInput());
+        else
+          addFilter->SetInput2(this->GetOutput());
+        break;
+      }
+    }
+
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(addFilter->Update());
+    this->GraftOutput( addFilter->GetOutput() );
+
+    semiprincipalaxis.erase(semiprincipalaxis.begin(), semiprincipalaxis.end());
+    center.erase(center.begin(), center.end());
   }
 }
 
