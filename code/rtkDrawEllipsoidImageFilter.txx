@@ -25,14 +25,16 @@
 
 #include "rtkHomogeneousMatrix.h"
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
 DrawEllipsoidImageFilter<TInputImage, TOutputImage>
 ::DrawEllipsoidImageFilter():
-m_Axis(0.),
-m_Center(0.),
+m_Axis(3,90.),
+m_Center(3,0.),
 m_Attenuation(1.),
 m_Angle(0.)
 {
@@ -45,7 +47,6 @@ void DrawEllipsoidImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(c
   //Getting phantom parameters
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
   FigureType ellipsoid;
-
   ellipsoid.semiprincipalaxis.push_back(m_Axis[0]);
   ellipsoid.semiprincipalaxis.push_back(m_Axis[1]);
   ellipsoid.semiprincipalaxis.push_back(m_Axis[2]);
@@ -60,7 +61,6 @@ void DrawEllipsoidImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(c
 
   typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
   typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
-
   //Translate from regular expression to quadric
   sqpFunctor->Translate(ellipsoid.semiprincipalaxis);
   //Apply rotation and translation if necessary
