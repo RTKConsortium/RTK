@@ -21,7 +21,10 @@
 
 #include "rtkProjectionsReader.h"
 #include "rtkFFTRampImageFilter.h"
-#include "rtkCudaFFTRampImageFilter.h"
+#include "rtkConfiguration.h"
+#if CUDA_FOUND
+#  include "rtkCudaFFTRampImageFilter.h"
+#endif
 
 #include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -55,7 +58,15 @@ int main(int argc, char * argv[])
   typedef rtk::FFTRampImageFilter<OutputImageType, OutputImageType, float > rampFilterType;
   rampFilterType::Pointer rampFilter;
   if( !strcmp(args_info.hardware_arg, "cuda") )
+    {
+#if CUDA_FOUND
     rampFilter = rtk::CudaFFTRampImageFilter::New();
+#else
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+#endif
+    }
+     rampFilter = rtk::CudaFFTRampImageFilter::New();
   else
     rampFilter = rampFilterType::New();
   rampFilter->SetInput( reader->GetOutput() );
