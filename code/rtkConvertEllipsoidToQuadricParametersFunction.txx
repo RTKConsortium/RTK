@@ -45,16 +45,40 @@ bool ConvertEllipsoidToQuadricParametersFunction
   m_SemiPrincipalAxisZ = SemiPrincipalAxis[2];
 
   //Regular Ellipsoid Expression (No rotation, No Translation)
-  m_A = 1/vcl_pow(m_SemiPrincipalAxisX,2.0);
-  m_B = 1/vcl_pow(m_SemiPrincipalAxisY,2.0);
-  m_C = 1/vcl_pow(m_SemiPrincipalAxisZ,2.0);
+  // Parameter A
+  if(m_SemiPrincipalAxisX > itk::NumericTraits<double>::ZeroValue())
+    m_A = 1/vcl_pow(m_SemiPrincipalAxisX,2.0);
+  else if (m_SemiPrincipalAxisX < itk::NumericTraits<double>::ZeroValue())
+    m_A = -1/vcl_pow(m_SemiPrincipalAxisX,2.0);
+  else
+    m_A = 0.;
+  // Parameter B
+  if(m_SemiPrincipalAxisY > itk::NumericTraits<double>::ZeroValue())
+    m_B = 1/vcl_pow(m_SemiPrincipalAxisY,2.0);
+  else if (m_SemiPrincipalAxisY < itk::NumericTraits<double>::ZeroValue())
+    m_B = -1/vcl_pow(m_SemiPrincipalAxisY,2.0);
+  else
+    m_B = 0.;
+  // Parameter C
+  if(m_SemiPrincipalAxisZ > itk::NumericTraits<double>::ZeroValue())
+    m_C = 1/vcl_pow(m_SemiPrincipalAxisZ,2.0);
+  else if (m_SemiPrincipalAxisZ < itk::NumericTraits<double>::ZeroValue())
+    m_C = -1/vcl_pow(m_SemiPrincipalAxisZ,2.0);
+  else
+    m_C = 0.;
+
   m_D = 0.;
   m_E = 0.;
   m_F = 0.;
   m_G = 0.;
   m_H = 0.;
   m_I = 0.;
-  m_J = -1.;
+  if(SemiPrincipalAxis.size() > 3)
+    // J Quadric value for surfaces different to Cylinders and Ellipsoids.
+    m_J = SemiPrincipalAxis[3];
+  else
+    m_J = -1.;
+
   return true;
 }
 
