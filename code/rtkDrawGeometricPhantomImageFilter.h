@@ -73,7 +73,7 @@ protected:
   DrawGeometricPhantomImageFilter() {}
   virtual ~DrawGeometricPhantomImageFilter() {};
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  virtual void GenerateData();
 
 private:
   DrawGeometricPhantomImageFilter(const Self&); //purposely not implemented
