@@ -118,9 +118,9 @@ int main(int, char** )
   REIType::Pointer rei;
 
   rei = REIType::New();
-  rei->SetSemiPrincipalAxisX(0.69*128);
-  rei->SetSemiPrincipalAxisZ(0.92*128);
-  rei->SetSemiPrincipalAxisY(0.90*128);
+  rei->SetSemiPrincipalAxisX(90.);
+  rei->SetSemiPrincipalAxisZ(90.);
+  rei->SetSemiPrincipalAxisY(90.);
   rei->SetCenterX(0.);
   rei->SetCenterZ(0.);
   rei->SetCenterY(0.);
