@@ -91,7 +91,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::BeforeThreadedGenerateData()
 {
   UpdateTruncationMirrorWeights();
-  if(this->GetOutput()->GetRequestedRegion().GetSize()[2]==1 &&
+  if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 &&
      this->GetHannCutFrequencyY() != 0.)
     {
     m_BackupNumberOfThreads = this->GetNumberOfThreads();
