@@ -23,10 +23,11 @@ namespace rtk
 {
 bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
 {
-  const char *       search_fig = "Ellipsoid"; // Set search pattern
-  size_t             offset = 0;
-  std::string        line;
-  std::ifstream      myFile;
+  //Admitted figures
+  const std::string search_fig[4] = {"Ellipsoid", "Cylinder", "Cone", "Box"};
+  size_t            offset        = 0;
+  std::string       line;
+  std::ifstream     myFile;
 
   myFile.open( ConfigFile.c_str() );
   if ( !myFile.is_open() )
@@ -34,33 +35,37 @@ bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
     itkGenericExceptionMacro("Error opening File");
     return false;
     }
-
+  unsigned int k=0;
   while ( !myFile.eof() )
     {
+    k++;
     getline(myFile, line);
-    if ( ( offset = line.find(search_fig, 0) ) != std::string::npos ) //Ellipsoid
-                                                                      // found
+    for(unsigned int i = 0; i < 4; i++)
       {
-      const std::string parameterNames[8] = { "A", "B", "C", "x", "y", "z", "beta", "gray" };
-      VectorType parameters;
-      for ( int j = 0; j < 8; j++ )
+      if( (offset = line.find(search_fig[i], 0)) != std::string::npos )
         {
-        double val = 0.;
-        if ( ( offset = line.find(parameterNames[j], 0) ) != std::string::npos )
+        const std::string parameterNames[9] = {"Figure", "A=", "B=", "C=", "x=", "y=", "z=", "beta=", "gray=" };
+        VectorType parameters;
+        parameters.push_back((double)i);
+        for ( int j = 1; j < 9; j++ )
           {
-          offset += parameterNames[j].length()+1;
-          std::string s = line.substr(offset,line.length()-offset);
-          std::istringstream ss(s);
-          ss >> val;
-          //Saving all parameters for each ellipsoid
+          double val = 0.;
+          if ( ( offset = line.find(parameterNames[j], 0) ) != std::string::npos )
+            {
+            offset += parameterNames[j].length();
+            std::string s = line.substr(offset,line.length()-offset);
+            std::istringstream ss(s);
+            ss >> val;
+            //Saving all parameters for each ellipsoid
+            }
+          parameters.push_back(val);
           }
-        parameters.push_back(val);
+        m_Fig.push_back(parameters);
         }
-      m_Fig.push_back(parameters);
       }
     }
-  myFile.close();
-  return true;
+    myFile.close();
+    return true;
 }
 
 GeometricPhantomFileReader::VectorOfVectorType GeometricPhantomFileReader::GetFig ()
