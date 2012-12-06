@@ -21,6 +21,10 @@
 
 #include "rtkProjectionsReader.h"
 #include "rtkFFTRampImageFilter.h"
+#include "rtkConfiguration.h"
+#if CUDA_FOUND
+#  include "rtkCudaFFTRampImageFilter.h"
+#endif
 
 #include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -31,7 +35,7 @@ int main(int argc, char * argv[])
 {
   GGO(rtkramp, args_info);
 
-  typedef double OutputPixelType;
+  typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -51,11 +55,24 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Ramp filter
-  typedef rtk::FFTRampImageFilter<OutputImageType> rampFilterType;
-  rampFilterType::Pointer rampFilter = rampFilterType::New();
+  typedef rtk::FFTRampImageFilter<OutputImageType, OutputImageType, float > rampFilterType;
+  rampFilterType::Pointer rampFilter;
+  if( !strcmp(args_info.hardware_arg, "cuda") )
+    {
+#if CUDA_FOUND
+    rampFilter = rtk::CudaFFTRampImageFilter::New();
+#else
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+#endif
+    }
+     rampFilter = rtk::CudaFFTRampImageFilter::New();
+  else
+    rampFilter = rampFilterType::New();
   rampFilter->SetInput( reader->GetOutput() );
   rampFilter->SetTruncationCorrection(args_info.pad_arg);
   rampFilter->SetHannCutFrequency(args_info.hann_arg);
+  rampFilter->SetHannCutFrequencyY(args_info.hannY_arg);
 
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;

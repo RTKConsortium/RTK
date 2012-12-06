@@ -48,8 +48,37 @@ multiply_kernel(cufftComplex *projFFT, int3 fftDimension, cufftComplex *kernelFF
   projFFT[proj_idx] = result;
 }
 
+__global__
 void
-CUDA_fft_convolution(const int3 &inputDimension, float *projection, cufftComplex *kernelFFT)
+multiply_kernel2D(cufftComplex *projFFT,
+                  int3 fftDimension,
+                  cufftComplex *kernelFFT,
+                  unsigned int Blocks_Y,
+                  float invBlocks_Y)
+{
+  unsigned int blockIdx_z = __float2uint_rd(blockIdx.y * invBlocks_Y);
+  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+
+  if (i >= fftDimension.x || j >= fftDimension.y || k >= fftDimension.z)
+    return;
+
+  long int kernel_idx = i + j * fftDimension.x;
+  long int proj_idx = kernel_idx + k * fftDimension.y * fftDimension.x;
+
+  cufftComplex result;
+  result.x = projFFT[proj_idx].x * kernelFFT[kernel_idx].x - projFFT[proj_idx].y * kernelFFT[kernel_idx].y;
+  result.y = projFFT[proj_idx].y * kernelFFT[kernel_idx].x + projFFT[proj_idx].x * kernelFFT[kernel_idx].y;
+  projFFT[proj_idx] = result;
+}
+
+void
+CUDA_fft_convolution(const int3 &inputDimension,
+                     const int2 &kernelDimension,
+                     float *projection,
+                     cufftComplex *kernelFFT)
 {
   // CUDA device pointers
   float *deviceProjection;
@@ -69,7 +98,9 @@ CUDA_fft_convolution(const int3 &inputDimension, float *projection, cufftComplex
   CUDA_CHECK_ERROR;
 
   cufftComplex *deviceKernelFFT;
-  int           memorySizeKernelFFT = fftDimension.x*sizeof(cufftComplex);
+  int           memorySizeKernelFFT = kernelDimension.x *
+                                      kernelDimension.y *
+                                      sizeof(cufftComplex);
   cudaMalloc( (void**)&deviceKernelFFT, memorySizeKernelFFT);
   CUDA_CHECK_ERROR;
   cudaMemcpy (deviceKernelFFT, kernelFFT, memorySizeKernelFFT, cudaMemcpyHostToDevice);
@@ -92,13 +123,23 @@ CUDA_fft_convolution(const int3 &inputDimension, float *projection, cufftComplex
   int tBlock_x = 16;
   int tBlock_y = 8;
   int tBlock_z = 8;
-
   int  blocksInX = (fftDimension.x - 1) / tBlock_x + 1;
   int  blocksInY = (fftDimension.y - 1) / tBlock_y + 1;
   int  blocksInZ = (fftDimension.z - 1) / tBlock_z + 1;
   dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
-  multiply_kernel <<< dimGrid, dimBlock >>> ( deviceProjectionFFT, fftDimension, deviceKernelFFT, blocksInY, 1.0f/(float)blocksInY );
+  if(kernelDimension.y==1)
+    multiply_kernel <<< dimGrid, dimBlock >>> ( deviceProjectionFFT,
+                                                fftDimension,
+                                                deviceKernelFFT,
+                                                blocksInY,
+                                                1.0f/(float)blocksInY );
+  else
+    multiply_kernel2D <<< dimGrid, dimBlock >>> ( deviceProjectionFFT,
+                                                  fftDimension,
+                                                  deviceKernelFFT,
+                                                  blocksInY,
+                                                  1.0f/(float)blocksInY );
   CUDA_CHECK_ERROR;
 
   // 3D inverse FFT

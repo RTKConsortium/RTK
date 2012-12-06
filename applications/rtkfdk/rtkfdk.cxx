@@ -112,7 +112,8 @@ int main(int argc, char * argv[])
     f->SetInput( 1, pssf->GetOutput() ); \
     f->SetGeometry( geometryReader->GetOutputObject() ); \
     f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
-    f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);
+    f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg); \
+    f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);
 
   // FDK reconstruction filtering
   itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer feldkamp;
@@ -183,6 +184,7 @@ int main(int argc, char * argv[])
     else if(!strcmp(args_info.hardware_arg, "opencl") )
       static_cast<FDKOPENCLType*>(feldkamp.GetPointer())->PrintTiming(std::cout);
 #endif
+    std::cout << std::endl;
     }
 
   return EXIT_SUCCESS;
