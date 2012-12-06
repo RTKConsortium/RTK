@@ -45,8 +45,9 @@ namespace rtk
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::FFTRampImageFilter() :
-  m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.)
-  ,m_CosineCutFrequency(0.),m_HammingFrequency(0.)
+  m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.),
+  m_CosineCutFrequency(0.),m_HammingFrequency(0.), m_HannCutFrequencyY(0.),
+  m_BackupNumberOfThreads(1)
 {
 #if defined(USE_FFTWD)
   if(typeid(TFFTPrecision).name() == typeid(double).name() )
@@ -90,19 +91,22 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::BeforeThreadedGenerateData()
 {
   UpdateTruncationMirrorWeights();
+  if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 &&
+     this->GetHannCutFrequencyY() != 0.)
+    {
+    m_BackupNumberOfThreads = this->GetNumberOfThreads();
+    this->SetNumberOfThreads(1);
+    }
+  else
+    m_BackupNumberOfThreads = 1;
+}
 
-  // Force init of fftw library mutex (static class member) before
-  // multithreading
-#if ITK_VERSION_MAJOR <= 3
-#  if defined(USE_FFTWF)
-  itk::fftw::Proxy<float>::Lock();
-  itk::fftw::Proxy<float>::Unlock();
-#  endif
-#  if defined(USE_FFTWD)
-  itk::fftw::Proxy<double>::Lock();
-  itk::fftw::Proxy<double>::Unlock();
-#  endif
-#endif
+template<class TInputImage, class TOutputImage, class TFFTPrecision>
+void
+FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+::AfterThreadedGenerateData()
+{
+  this->SetNumberOfThreads(m_BackupNumberOfThreads);
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -121,11 +125,12 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 #endif
   typename FFTType::Pointer fftI = FFTType::New();
   fftI->SetInput( paddedImage );
-  fftI->SetNumberOfThreads( 1 );
+  fftI->SetNumberOfThreads( m_BackupNumberOfThreads );
   fftI->Update();
 
   // Get FFT ramp kernel
-  FFTOutputImagePointer fftK = this->GetFFTRampKernel(paddedImage->GetLargestPossibleRegion().GetSize(0) );
+  FFTOutputImagePointer fftK = this->GetFFTRampKernel(paddedImage->GetLargestPossibleRegion().GetSize(0),
+                                                      paddedImage->GetLargestPossibleRegion().GetSize(1) );
 
   //Multiply line-by-line
   itk::ImageRegionIterator<typename FFTType::OutputImageType> itI(fftI->GetOutput(),
@@ -152,7 +157,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 #if ITK_VERSION_MAJOR <= 3
   ifft->SetActualXDimensionIsOdd( paddedImage->GetLargestPossibleRegion().GetSize(0) % 2 );
 #endif
-  ifft->SetNumberOfThreads( 1 );
+  ifft->SetNumberOfThreads( m_BackupNumberOfThreads );
   ifft->SetReleaseDataFlag( true );
   ifft->Update();
 
@@ -288,7 +293,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 typename FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTOutputImagePointer
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::GetFFTRampKernel(const int width)
+::GetFFTRampKernel(const int width, const int height)
 {
   // Allocate kernel
   FFTInputImagePointer kernel = FFTInputImageType::New();
@@ -307,7 +312,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   i.Fill(0);
   j.Fill(0);
   kernel->SetPixel(i, 1./(4.*spacing) );
-  for(i[0]=1, j[0]=size[0]-1; i[0] < typename IndexType::IndexValueType(size[0]/2); i[0] += 2, j[0] -= 2) {
+  for(i[0]=1, j[0]=size[0]-1; i[0] < typename IndexType::IndexValueType(size[0]/2); i[0] += 2, j[0] -= 2)
+    {
     double v = i[0] * vnl_math::pi;
     v = -1. / (v * v * spacing);
     kernel->SetPixel(i, v);
@@ -338,26 +344,31 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   if( typeid(TFFTPrecision).name() == typeid(float).name() )
     n = n/2+1;
 #endif
-  const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency() ) );
 
   itK.GoToBegin();
   if(this->GetHannCutFrequency()>0.)
     {
+    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency() ) );
     for(unsigned int i=0; i<ncut; i++, ++itK)
       itK.Set( itK.Get() * TFFTPrecision(0.5*(1+vcl_cos(vnl_math::pi*i/ncut))));
     }
   else if(this->GetCosineCutFrequency() > 0.)
     {
+    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetCosineCutFrequency() ) );
     for(unsigned int i=0; i<ncut; i++, ++itK)
       itK.Set( itK.Get() * TFFTPrecision(vcl_cos(0.5*vnl_math::pi*i/ncut)));
     }
   else if(this->GetHammingFrequency() > 0.)
     {
+    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHammingFrequency() ) );
     for(unsigned int i=0; i<ncut; i++, ++itK)
       itK.Set( itK.Get() * TFFTPrecision(0.54+0.46*(vcl_cos(vnl_math::pi*i/ncut))));
     }
   else
-    return fftK->GetOutput();
+    {
+    itK.GoToReverseBegin();
+    ++itK;
+    }
 
   for(; !itK.IsAtEnd(); ++itK)
     {
@@ -383,7 +394,44 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     itK.Set( itK.Get() * TFFTPrecision(0.) );
     }
 
-  return fftK->GetOutput();
+  // Replicate and window if required
+  FFTOutputImagePointer result = fftK->GetOutput();
+  if(this->GetHannCutFrequencyY()>0.)
+    {
+    size.Fill(1);
+    size[0] = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
+    size[1] = height;
+
+    const unsigned int ncut = itk::Math::Round<double>( (height/2+1) * vnl_math_min(1.0, this->GetHannCutFrequencyY() ) );
+
+    result = FFTOutputImageType::New();
+    result->SetRegions( size );
+    result->Allocate();
+    result->FillBuffer(0.);
+
+    IteratorType itTwoDK(result, result->GetLargestPossibleRegion() );
+    for(unsigned int j=0; j<ncut; j++)
+      {
+      itK.GoToBegin();
+      const TFFTPrecision win( 0.5*( 1+vcl_cos(vnl_math::pi*j/ncut) ) );
+      for(unsigned int i=0; i<size[0]; ++itK, ++itTwoDK, i++)
+        {
+        itTwoDK.Set( win * itK.Get() );
+        }
+      }
+    itTwoDK.GoToReverseBegin();
+    for(unsigned int j=1; j<ncut; j++)
+      {
+      itK.GoToReverseBegin();
+      const TFFTPrecision win( 0.5*( 1+vcl_cos(vnl_math::pi*j/ncut) ) );
+      for(unsigned int i=0; i<size[0]; --itK, --itTwoDK, i++)
+        {
+        itTwoDK.Set( win * itK.Get() );
+        }
+      }
+    }
+
+  return result;
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
