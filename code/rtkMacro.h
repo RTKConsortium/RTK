@@ -87,7 +87,7 @@
 #define rtkSetStdVectorMacro(name, type)                              \
   virtual void Set##name (const type _arg)                            \
   {                                                                   \
-    itkDebugMacro("setting " #name " to " << _arg);                   \
+    itkDebugMacro("setting " #name " of type " #type );               \
     if ( this->m_##name != _arg )                                     \
     {                                                                 \
       this->m_##name = _arg;                                          \
