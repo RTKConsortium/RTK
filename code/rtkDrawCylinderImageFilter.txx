@@ -40,7 +40,7 @@ m_Angle(0.)
 
 template <class TInputImage, class TOutputImage>
 void DrawCylinderImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                               ThreadIdType itkNotUsed(threadId) )
+                                                                              ThreadIdType itkNotUsed(threadId) )
 {
   //Getting phantom parameters
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
