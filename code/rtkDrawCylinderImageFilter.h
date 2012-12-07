@@ -73,11 +73,11 @@ public:
   itkSetMacro(Angle, double);
   itkGetMacro(Angle, double);
 
-  itkSetMacro(Axis, VectorType );
-  itkGetMacro(Axis, VectorType );
+  rtkSetStdVectorMacro(Axis, VectorType );
+  rtkGetStdVectorMacro(Axis, VectorType );
 
-  itkSetMacro(Center, VectorType );
-  itkGetMacro(Center, VectorType );
+  rtkSetStdVectorMacro(Center, VectorType );
+  rtkGetStdVectorMacro(Center, VectorType );
 
 protected:
   DrawCylinderImageFilter();
