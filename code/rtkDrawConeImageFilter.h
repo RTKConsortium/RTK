@@ -42,7 +42,7 @@ class ITK_EXPORT DrawConeImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawConeImageFilter                          Self;
+  typedef DrawConeImageFilter                               Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
