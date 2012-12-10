@@ -42,7 +42,7 @@ class ITK_EXPORT DrawCylinderImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawCylinderImageFilter                          Self;
+  typedef DrawCylinderImageFilter                           Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
