@@ -35,6 +35,11 @@ endif ()
 
 set (CUDA_FOUND ${CUDA_FOUND} CACHE BOOL "Did we find cuda?")
 
+IF(CUDA_FOUND AND ${CUDA_VERSION} LESS 3.2)
+  MESSAGE("CUDA version ${CUDA_VERSION} found, too old for RTK")
+  SET(CUDA_FOUND FALSE)
+ENDIF()
+
 if (CUDA_FOUND)
   cuda_include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
