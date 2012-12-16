@@ -64,6 +64,12 @@ ADD_EXECUTABLE(rtkfovtest rtkfovtest.cxx)
 TARGET_LINK_LIBRARIES(rtkfovtest RTK)
 ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
 
+ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
+TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest RTK)
+RTK_ADD_TEST(NAME rtkamsterdamshroudtest 
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkamsterdamshroudtest 
+	     DATA{Data/Baseline/AmsterdamShroud/Amsterdam.mha})
+
 ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)
 TARGET_LINK_LIBRARIES(rtkvariantest RTK)
 RTK_ADD_TEST(NAME rtkvariantest 

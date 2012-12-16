@@ -31,8 +31,8 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 DrawConeImageFilter<TInputImage, TOutputImage>
 ::DrawConeImageFilter():
-m_Axis(0.),
-m_Center(0.),
+m_Axis(3,90.),
+m_Center(3,0.),
 m_Attenuation(1.),
 m_Angle(0.)
 {
@@ -40,7 +40,7 @@ m_Angle(0.)
 
 template <class TInputImage, class TOutputImage>
 void DrawConeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                               ThreadIdType itkNotUsed(threadId) )
+                                                                          ThreadIdType itkNotUsed(threadId) )
 {
   //Getting phantom parameters
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();

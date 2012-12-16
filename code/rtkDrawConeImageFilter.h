@@ -42,7 +42,7 @@ class ITK_EXPORT DrawConeImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawConeImageFilter                          Self;
+  typedef DrawConeImageFilter                               Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
@@ -73,11 +73,11 @@ public:
   itkSetMacro(Angle, double);
   itkGetMacro(Angle, double);
 
-  itkSetMacro(Axis, VectorType );
-  itkGetMacro(Axis, VectorType );
+  rtkSetStdVectorMacro(Axis, VectorType );
+  rtkGetStdVectorMacro(Axis, VectorType );
 
-  itkSetMacro(Center, VectorType );
-  itkGetMacro(Center, VectorType );
+  rtkSetStdVectorMacro(Center, VectorType );
+  rtkGetStdVectorMacro(Center, VectorType );
 
 protected:
   DrawConeImageFilter();
