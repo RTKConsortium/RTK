@@ -65,8 +65,18 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
   for(unsigned int i=0; i<vnl_math_min(args_info.origin_given, Dimension); i++)
     imageOrigin[i] = args_info.origin_arg[i];
 
+  typename ImageType::DirectionType imageDirection;
+  if(args_info.direction_given)
+    for(unsigned int i=0; i<Dimension; i++)
+      for(unsigned int j=0; j<Dimension; j++)
+        imageDirection[i][j] = args_info.direction_arg[i*Dimension+j];
+  else
+    imageDirection.SetIdentity();
+
+
   source->SetOrigin( imageOrigin );
   source->SetSpacing( imageSpacing );
+  source->SetDirection( imageDirection );
   source->SetSize( imageDimension );
   source->SetConstant( 0. );
   source->UpdateOutputInformation();
