@@ -324,10 +324,13 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
 #if CUDA_FOUND
       if(geometry->GetMatrices().size()==3)
         {
-        FDKCUDAType* fdkcuda = static_cast<FDKCUDAType*>( feldkamp.GetPointer() );
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
-        fdkcuda->InitDevice();
+        FDKCUDAType* fdkcuda = dynamic_cast<FDKCUDAType*>( feldkamp.GetPointer() );
+        if(fdkcuda)
+          {
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
+          fdkcuda->InitDevice();
+          }
         }
 #endif
       TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
@@ -366,7 +369,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
                     << " has been processed in reconstruction." << std::endl;
 
 #if CUDA_FOUND
-        FDKCUDAType* fdkcuda = static_cast<FDKCUDAType*>(feldkamp.GetPointer() );
+        FDKCUDAType* fdkcuda = dynamic_cast<FDKCUDAType*>(feldkamp.GetPointer() );
         if(fdkcuda)
           fdkcuda->CleanUpDevice();
 #endif
