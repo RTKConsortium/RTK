@@ -37,6 +37,9 @@ ConstantImageSource<TOutputImage>
     m_Size[i] = 64;
     m_Spacing[i] = 1.0;
     m_Origin[i] = 0.0;
+
+    for (unsigned int j=0; j<TOutputImage::GetImageDimension(); j++)
+      m_Direction[i][j] = (i==j)?1.:0.;
     }
 
   m_Constant = 0.;
@@ -134,6 +137,7 @@ ConstantImageSource<TOutputImage>
 
   output->SetSpacing(m_Spacing);
   output->SetOrigin(m_Origin);
+  output->SetDirection(m_Direction);
 }
 
 //----------------------------------------------------------------------------

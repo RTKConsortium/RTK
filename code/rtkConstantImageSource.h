@@ -74,6 +74,7 @@ public:
   typedef SpacingValueType                        SpacingValueArrayType[TOutputImage::ImageDimension];
   typedef typename TOutputImage::PointValueType   PointValueType;
   typedef PointValueType                          PointValueArrayType[TOutputImage::ImageDimension];
+  typedef typename TOutputImage::DirectionType    DirectionType;
 
   /** Set/Get size of the output image */
   itkSetMacro( Size, SizeType );
@@ -87,6 +88,10 @@ public:
   /** Set/Get origin of the output image */
   itkSetMacro( Origin, PointType );
   itkGetMacro( Origin, PointType );
+
+  /** Set/Get direction of the output image */
+  itkSetMacro( Direction, DirectionType );
+  itkGetMacro( Direction, DirectionType );
 
   /** Set/Get the pixel value of output */
   itkSetMacro(Constant, OutputImagePixelType);
@@ -105,9 +110,10 @@ private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented
   void operator=(const ConstantImageSource&); //purposely not implemented
 
-  SizeType       m_Size;    //size of the output image
-  SpacingType    m_Spacing; //spacing
-  PointType      m_Origin;  //origin
+  SizeType       m_Size;
+  SpacingType    m_Spacing;
+  PointType      m_Origin;
+  DirectionType  m_Direction;
 
   typename TOutputImage::PixelType m_Constant;
 };
