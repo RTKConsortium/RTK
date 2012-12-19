@@ -69,7 +69,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
         de->SetCenter(center);
         de->SetAngle(figParam[i][7]);
         de->SetAttenuation(figParam[i][8]);
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( de->Update() );
+        de->Update();
         addFilter->SetInput1(de->GetOutput());
         if(!i)
           addFilter->SetInput2(this->GetInput());
@@ -87,7 +87,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
         dc->SetCenter(center);
         dc->SetAngle(figParam[i][7]);
         dc->SetAttenuation(figParam[i][8]);
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( dc->Update() );
+        dc->Update();
         addFilter->SetInput1(dc->GetOutput());
         if(!i)
           addFilter->SetInput2(this->GetInput());
@@ -105,7 +105,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
         dco->SetCenter(center);
         dco->SetAngle(figParam[i][7]);
         dco->SetAttenuation(figParam[i][8]);
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( dco->Update() );
+        dco->Update();
         addFilter->SetInput1(dco->GetOutput());
         if(!i)
           addFilter->SetInput2(this->GetInput());
@@ -123,7 +123,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
         db->SetCenter(center);
         db->SetAngle(figParam[i][7]);
         db->SetAttenuation(figParam[i][8]);
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( db->Update() );
+        db->Update();
         addFilter->SetInput1(db->GetOutput());
         if(!i)
           addFilter->SetInput2(this->GetInput());
@@ -133,7 +133,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
       }
     }
 
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(addFilter->Update());
+    addFilter->Update();
     this->GraftOutput( addFilter->GetOutput() );
 
     semiprincipalaxis.erase(semiprincipalaxis.begin(), semiprincipalaxis.end());
