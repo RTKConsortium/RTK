@@ -37,7 +37,11 @@ int main(int argc, char * argv[])
                             args_info.sdd_arg,
                             angle,
                             args_info.proj_iso_x_arg,
-                            args_info.proj_iso_y_arg);
+                            args_info.proj_iso_y_arg,
+                            args_info.out_angle_arg,
+                            args_info.in_angle_arg,
+                            args_info.source_x_arg,
+                            args_info.source_y_arg);
     }
 
   // Write
