@@ -93,22 +93,85 @@ int main(int, char** )
     tomographySource->SetSize( size );
     tomographySource->SetConstant( 0. );
 
+    //////////////////////////////////
+    // Part 1: Shepp Logan
+    //////////////////////////////////
+
     // Shepp Logan reference filter
     typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
     DSLType::Pointer dsl=DSLType::New();
     dsl->SetInput( tomographySource->GetOutput() );
     dsl->SetPhantomScale(128.);
+    dsl->InPlaceOff();
     TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
     // Shepp Logan reference filter from Configuration File
     typedef rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType> DGPType;
     DGPType::Pointer dgp=DGPType::New();
     dgp->SetInput( tomographySource->GetOutput() );
+    dgp->InPlaceOff();
     dgp->SetConfigFile(std::string(RTK_DATA_ROOT) +
                        std::string("/Input/GeometricPhantom/SheppLogan.txt"));
     TRY_AND_EXIT_ON_ITK_EXCEPTION( dgp->Update() );
 
     CheckImageQuality<OutputImageType>(dsl->GetOutput(), dgp->GetOutput());
+    std::cout << "Test PASSED! " << std::endl;
+
+    //////////////////////////////////
+    // Part 2: other geometries than ellipsoid
+    //////////////////////////////////
+
+    // New Geometries from Configuration File
+    dgp->SetInput( tomographySource->GetOutput() );
+    dgp->SetConfigFile(std::string(RTK_DATA_ROOT) +
+                       std::string("/Input/GeometricPhantom/Geometries.txt"));
+    dgp->InPlaceOff();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( dgp->Update() );
+
+    // Create Reference
+    std::vector< double > axis;
+    axis.push_back(100.);
+    axis.push_back(0.);
+    axis.push_back(100.);
+
+    std::vector< double > center;
+    center.push_back(2.);
+    center.push_back(2.);
+    center.push_back(2.);
+
+    // Draw CYLINDER
+    typedef rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType> DCType;
+    DCType::Pointer dcl = DCType::New();
+    dcl->SetInput( tomographySource->GetOutput() );
+    dcl->SetAxis(axis);
+    dcl->SetCenter(center);
+    dcl->SetAngle(0.);
+    dcl->SetAttenuation(2.);
+    dcl->InPlaceOff();
+
+    // Draw CONE
+    axis.clear();
+    axis.push_back(25.);
+    axis.push_back(-50.);
+    axis.push_back(25.);
+
+    typedef rtk::DrawConeImageFilter<OutputImageType, OutputImageType> DCOType;
+    typename DCOType::Pointer dco = DCOType::New();
+    dco->SetInput( tomographySource->GetOutput() );
+    dco->SetAxis(axis);
+    dco->SetCenter(center);
+    dco->SetAngle(0.);
+    dco->SetAttenuation(-0.54);
+
+    //Add Image Filter used to concatenate the different figures obtained on each iteration
+    typedef itk::AddImageFilter <OutputImageType, OutputImageType, OutputImageType> AddImageFilterType;
+    typename AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
+
+    addFilter->SetInput1(dcl->GetOutput());
+    addFilter->SetInput2(dco->GetOutput());
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( addFilter->Update() );
+
+    CheckImageQuality<OutputImageType>(dgp->GetOutput(), addFilter->GetOutput());
     std::cout << "Test PASSED! " << std::endl;
 
     return EXIT_SUCCESS;
