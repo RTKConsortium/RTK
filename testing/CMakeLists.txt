@@ -111,6 +111,12 @@ RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdrawgeometricphantomtest 
 	     DATA{Data/Input/GeometricPhantom/SheppLogan.txt})
 
+ADD_EXECUTABLE(rtkdrawnewgeometriestest rtkdrawnewgeometriestest.cxx)
+TARGET_LINK_LIBRARIES(rtkdrawnewgeometriestest RTK)
+RTK_ADD_TEST(NAME rtkdrawnewgeometriestest 
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdrawnewgeometriestest 
+	     DATA{Data/Input/GeometricPhantom/Geometries.txt})
+
 ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
 TARGET_LINK_LIBRARIES(rtksarttest RTK)
 ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
