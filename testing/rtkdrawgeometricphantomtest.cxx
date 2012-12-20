@@ -156,7 +156,7 @@ int main(int, char** )
     axis.push_back(25.);
 
     typedef rtk::DrawConeImageFilter<OutputImageType, OutputImageType> DCOType;
-    typename DCOType::Pointer dco = DCOType::New();
+    DCOType::Pointer dco = DCOType::New();
     dco->SetInput( tomographySource->GetOutput() );
     dco->SetAxis(axis);
     dco->SetCenter(center);
@@ -165,7 +165,7 @@ int main(int, char** )
 
     //Add Image Filter used to concatenate the different figures obtained on each iteration
     typedef itk::AddImageFilter <OutputImageType, OutputImageType, OutputImageType> AddImageFilterType;
-    typename AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
+    AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
 
     addFilter->SetInput1(dcl->GetOutput());
     addFilter->SetInput2(dco->GetOutput());
