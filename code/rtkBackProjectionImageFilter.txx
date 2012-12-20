@@ -81,7 +81,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     {
     // Extract the current slice
     ProjectionImagePointer projection = GetProjection(iProj);
-    ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
+
+    ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj);
     interpolator->SetInputImage(projection);
 
     // Go over each voxel
@@ -179,20 +180,36 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 typename BackProjectionImageFilter<TInputImage,TOutputImage>::ProjectionMatrixType
 BackProjectionImageFilter<TInputImage,TOutputImage>
-::GetIndexToIndexProjectionMatrix(const unsigned int iProj, const ProjectionImageType *proj)
+::GetIndexToIndexProjectionMatrix(const unsigned int iProj)
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
 
-  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol = GetIndexToPhysicalPointMatrix< TOutputImage >(
-      this->GetOutput() );
-  itk::Matrix<double, Dimension, Dimension> matrixProj = GetPhysicalPointToIndexMatrix< ProjectionImageType >(proj);
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol =
+    GetIndexToPhysicalPointMatrix< TOutputImage >( this->GetOutput() );
+
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixStackProj =
+    GetPhysicalPointToIndexMatrix< TOutputImage >( this->GetInput(1) );
+
+  itk::Matrix<double, Dimension, Dimension> matrixProj;
+  matrixProj.SetIdentity();
+  for(unsigned int i=0; i<Dimension-1; i++)
+    {
+    matrixProj[i][Dimension-1] = matrixStackProj[i][Dimension];
+    for(unsigned int j=0; j<Dimension-1; j++)
+      matrixProj[i][j] = matrixStackProj[i][j];
+    }
 
   // Transpose projection for optimization
+  itk::Matrix<double, Dimension, Dimension> matrixFlip;
+  matrixFlip.SetIdentity();
   if(this->GetTranspose() )
-    for(unsigned int i=0; i<Dimension; i++)
-      std::swap(matrixProj[i][0], matrixProj[i][1]);
+    {
+    std::swap(matrixFlip[0][0], matrixFlip[0][1]);
+    std::swap(matrixFlip[1][0], matrixFlip[1][1]);
+    }
 
-  return ProjectionMatrixType(matrixProj.GetVnlMatrix() *
+  return ProjectionMatrixType(matrixFlip.GetVnlMatrix() *
+                              matrixProj.GetVnlMatrix() *
                               this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
                               matrixVol.GetVnlMatrix() );
 }
