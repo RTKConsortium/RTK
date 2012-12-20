@@ -96,7 +96,7 @@ protected:
 
   /** Creates iProj index to index projection matrices with current inputs
       instead of the physical point to physical point projection matrix provided by Geometry */
-  ProjectionMatrixType GetIndexToIndexProjectionMatrix(const unsigned int iProj, const ProjectionImageType *proj);
+  ProjectionMatrixType GetIndexToIndexProjectionMatrix(const unsigned int iProj);
 
 private:
   BackProjectionImageFilter(const Self&); //purposely not implemented

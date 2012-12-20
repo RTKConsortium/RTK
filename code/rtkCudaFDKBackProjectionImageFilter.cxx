@@ -116,7 +116,7 @@ CudaFDKBackProjectionImageFilter
 
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)
-    ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj, projection);
+    ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj);
 
     // We correct the matrix for non zero indexes
     itk::Matrix<double, 3, 3> matrixIdxProj;
