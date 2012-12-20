@@ -86,52 +86,85 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType itkNotUsed(threadId) )
 {
-  // Prepare point increment (TransformIndexToPhysicalPoint too slow)
-  typename TInputImage::PointType pointBase, pointIncrement;
-  typename TInputImage::IndexType index = outputRegionForThread.GetIndex();
-  this->GetInput()->TransformIndexToPhysicalPoint( index, pointBase );
-  for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
-    index[i]++;
-  this->GetInput()->TransformIndexToPhysicalPoint( index, pointIncrement );
-  for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
-    pointIncrement[i] -= pointBase[i];
+  typename TInputImage::DirectionType d = this->GetInput()->GetDirection();
+  if( d[0][0]==1. && d[0][1]==0. && d[0][2]==0. &&
+      d[1][0]==0. && d[1][1]==1. && d[1][2]==0. &&
+      d[2][0]==0. && d[2][1]==0. && d[2][2]==1.)
 
-  // Iterators
-  typedef itk::ImageRegionConstIterator<TInputImage> InputConstIterator;
-  InputConstIterator itIn(this->GetInput(0), outputRegionForThread);
-  itIn.GoToBegin();
-  typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
-  OutputIterator itOut(this->GetOutput(), outputRegionForThread);
-  itOut.GoToBegin();
-
-  // Go over output, compute weights and avoid redundant computation
-  typename TInputImage::PointType point = pointBase;
-  for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
-    double zsquare = point[2]*point[2];
-    point[1] = pointBase[1];
-    for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++)
+    // Prepare point increment (TransformIndexToPhysicalPoint too slow)
+    typename TInputImage::PointType pointBase, pointIncrement;
+    typename TInputImage::IndexType index = outputRegionForThread.GetIndex();
+    this->GetInput()->TransformIndexToPhysicalPoint( index, pointBase );
+    for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
+      index[i]++;
+    this->GetInput()->TransformIndexToPhysicalPoint( index, pointIncrement );
+    for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
+      pointIncrement[i] -= pointBase[i];
+  
+    // Iterators
+    typedef itk::ImageRegionConstIterator<TInputImage> InputConstIterator;
+    InputConstIterator itIn(this->GetInput(0), outputRegionForThread);
+    itIn.GoToBegin();
+    typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
+    OutputIterator itOut(this->GetOutput(), outputRegionForThread);
+    itOut.GoToBegin();
+  
+    // Go over output, compute weights and avoid redundant computation
+    typename TInputImage::PointType point = pointBase;
+    for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
       {
-      point[0] = pointBase[0];
-      for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
+      double zsquare = point[2]*point[2];
+      point[1] = pointBase[1];
+      for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++)
         {
-        double radius = vcl_sqrt(point[0]*point[0] + zsquare);
-        if ( radius <= m_Radius && radius*m_HatTangent<=m_HatHeight-vnl_math_abs(point[1]) )
+        point[0] = pointBase[0];
+        for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
           {
-          if(m_Mask)
-            itOut.Set(1.0);
+          double radius = vcl_sqrt(point[0]*point[0] + zsquare);
+          if ( radius <= m_Radius && radius*m_HatTangent<=m_HatHeight-vnl_math_abs(point[1]) )
+            {
+            if(m_Mask)
+              itOut.Set(1.0);
+            else
+              itOut.Set(itIn.Get());
+            }
           else
-            itOut.Set(itIn.Get());
+            itOut.Set(0.);
+          ++itIn;
+          ++itOut;
+          point[0] += pointIncrement[0];
           }
-        else
-          itOut.Set(0.);
-        ++itIn;
-        ++itOut;
-        point[0] += pointIncrement[0];
+        point[1] += pointIncrement[1];
         }
-      point[1] += pointIncrement[1];
+      point[2] += pointIncrement[2];
       }
-    point[2] += pointIncrement[2];
+    }
+  else
+    {
+    typedef itk::ImageRegionConstIteratorWithIndex<TInputImage> InputConstIterator;
+    InputConstIterator itIn(this->GetInput(0), outputRegionForThread);
+
+    typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
+    OutputIterator itOut(this->GetOutput(), outputRegionForThread);
+
+    typename TInputImage::PointType point;
+    while( !itIn.IsAtEnd() ) 
+      {
+      this->GetInput()->TransformIndexToPhysicalPoint( itIn.GetIndex(), point );
+      double radius = vcl_sqrt(point[0]*point[0] + point[2]*point[2]);
+      if ( radius <= m_Radius && radius*m_HatTangent<=m_HatHeight-vnl_math_abs(point[1]) )
+        {
+        if(m_Mask)
+          itOut.Set(1.0);
+        else
+          itOut.Set(itIn.Get());
+        }
+      else
+        itOut.Set(0.);
+      ++itIn;
+      ++itOut;
+      }
     }
 }
 
