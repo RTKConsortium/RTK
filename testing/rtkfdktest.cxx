@@ -151,12 +151,58 @@ int main(int, char** )
   fov->SetInput(0, feldkamp->GetOutput());
   fov->SetProjectionsStack(slp->GetOutput());
   fov->SetGeometry( geometry );
-  fov->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( fov->Update() );
 
   CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
   std::cout << "Test PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: streaming ******" << std::endl;
+  std::cout << "\n\n****** Case 2: perpendicular direction ******" << std::endl;
+
+  ConstantImageSourceType::OutputImageType::DirectionType direction;
+  direction[0][0] = 0;
+  direction[0][1] = 1;
+  direction[0][2] = 0;
+  direction[1][0] = -1;
+  direction[1][1] = 0;
+  direction[1][2] = 0;
+  direction[2][0] = 0;
+  direction[2][1] = 0;
+  direction[2][2] = 1;
+  tomographySource->SetDirection(direction);
+  origin[0] = -127.;
+  origin[1] =  127.;
+  origin[2] = -127.;
+  tomographySource->SetOrigin( origin );
+  fov->GetOutput()->ResetPipeline();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( fov->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+
+  CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
+  std::cout << "Test PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 3: 45 degree tilt direction ******" << std::endl;
+
+  direction[0][0] = 0.70710678118;
+  direction[0][1] = -0.70710678118;
+  direction[0][2] = 0.70710678118;
+  direction[1][0] = 0.70710678118;
+  direction[1][1] = 0;
+  direction[1][2] = 0;
+  direction[2][0] = 0;
+  direction[2][1] = 0;
+  direction[2][2] = 1;
+  tomographySource->SetDirection(direction);
+  origin[0] = -127.;
+  origin[1] =  127.;
+  origin[2] = -127.;
+  tomographySource->SetOrigin( origin );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( fov->Update() );
+
+  CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
+  std::cout << "Test PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 4: streaming ******" << std::endl;
 
   // Make sure that the data will be recomputed by releasing them
   fov->GetOutput()->ReleaseData();
