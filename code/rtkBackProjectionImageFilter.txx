@@ -47,7 +47,75 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     return;
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  inputPtr1->SetRequestedRegion( reqRegion );
+  if(m_Geometry.GetPointer()==NULL)
+    {
+    inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+    return;
+    }
+
+  const unsigned int Dimension = TInputImage::ImageDimension;
+
+  itk::ContinuousIndex<double, Dimension> cornerInf;
+  itk::ContinuousIndex<double, Dimension> cornerSup;
+  cornerInf[0] = itk::NumericTraits<double>::max();
+  cornerSup[0] = itk::NumericTraits<double>::NonpositiveMin();
+  cornerInf[1] = itk::NumericTraits<double>::max();
+  cornerSup[1] = itk::NumericTraits<double>::NonpositiveMin();
+  cornerInf[2] = reqRegion.GetIndex(2);
+  cornerSup[2] = reqRegion.GetIndex(2) + reqRegion.GetSize(2);
+
+  // Go over each projection
+  int iFirstProj = reqRegion.GetIndex(Dimension-1);
+  int nProj = reqRegion.GetSize(Dimension-1);
+  this->SetTranspose(false);
+  for(int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
+    {
+    // Extract the current slice
+    ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj);
+
+    for(int cz=0; cz<2; cz++)
+      for(int cy=0; cy<2; cy++)
+        for(int cx=0; cx<2; cx++)
+          {
+          // Compute projection index
+          typename TInputImage::IndexType index = this->GetInput()->GetRequestedRegion().GetIndex();
+          index[0] += cx*this->GetInput()->GetRequestedRegion().GetSize(0);
+          index[1] += cy*this->GetInput()->GetRequestedRegion().GetSize(1);
+          index[2] += cz*this->GetInput()->GetRequestedRegion().GetSize(2);
+
+          itk::ContinuousIndex<double, Dimension-1> point;
+          for(unsigned int i=0; i<Dimension-1; i++)
+            {
+            point[i] = matrix[i][Dimension];
+            for(unsigned int j=0; j<Dimension; j++)
+              point[i] += matrix[i][j] * index[j];
+            }
+
+          // Apply perspective
+          double perspFactor = matrix[Dimension-1][Dimension];
+          for(unsigned int j=0; j<Dimension; j++)
+            perspFactor += matrix[Dimension-1][j] * index[j];
+          perspFactor = 1/perspFactor;
+          for(unsigned int i=0; i<Dimension-1; i++)
+            point[i] = point[i]*perspFactor;
+          for(int i=0; i<2; i++)
+            {
+            cornerInf[i] = vnl_math_min(cornerInf[i], point[i]);
+            cornerSup[i] = vnl_math_max(cornerSup[i], point[i]);
+            }
+          }
+    }
+  reqRegion.SetIndex(0, vnl_math_floor(cornerInf[0]) );
+  reqRegion.SetIndex(1, vnl_math_floor(cornerInf[1]) );
+  reqRegion.SetSize(0, vnl_math_ceil(cornerSup[0]+1.)-vnl_math_floor(cornerInf[0]) );
+  reqRegion.SetSize(1, vnl_math_ceil(cornerSup[1]+1.)-vnl_math_floor(cornerInf[1]) );
+
+  if( reqRegion.Crop( inputPtr1->GetLargestPossibleRegion() ) )
+    inputPtr1->SetRequestedRegion( reqRegion );
+  else
+    {
+    inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+    }
 }
 
 /**
@@ -140,8 +208,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     {
     origin[i] = stack->GetOrigin()[i];
     spacing[i] = stack->GetSpacing()[i];
-    region.SetSize(i, stack->GetLargestPossibleRegion().GetSize()[i]);
-    region.SetIndex(i, stack->GetLargestPossibleRegion().GetIndex()[i]);
+    region.SetSize(i, stack->GetBufferedRegion().GetSize()[i]);
+    region.SetIndex(i, stack->GetBufferedRegion().GetIndex()[i]);
     }
   if(this->GetTranspose() )
     {
@@ -159,7 +227,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   projection->SetRegions(region);
   projection->Allocate();
 
-  const unsigned int    npixels = projection->GetLargestPossibleRegion().GetNumberOfPixels();
+  const unsigned int    npixels = projection->GetBufferedRegion().GetNumberOfPixels();
   const InputPixelType *pi = stack->GetBufferPointer() + (iProj-iProjBuff)*npixels;
   InputPixelType *      po = projection->GetBufferPointer();
 

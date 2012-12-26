@@ -74,8 +74,8 @@ OpenCLFDKBackProjectionImageFilter
   m_DeviceProjection =  clCreateImage2D(m_Context,
                                         CL_MEM_READ_ONLY,
                                         &projFormat,
-                                        this->GetInput(1)->GetRequestedRegion().GetSize()[0],
-                                        this->GetInput(1)->GetRequestedRegion().GetSize()[1],
+                                        this->GetInput(1)->GetLargestPossibleRegion().GetSize()[0],
+                                        this->GetInput(1)->GetLargestPossibleRegion().GetSize()[1],
                                         0,
                                         NULL,
                                         &error);

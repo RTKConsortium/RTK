@@ -74,6 +74,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // Compute input region (==requested region fully enlarged for dim 0)
   RegionType inputRegion;
   this->CallCopyOutputRegionToInputRegion(inputRegion, this->GetOutput()->GetRequestedRegion() );
+  inputRegion.SetIndex(0, this->GetOutput()->GetLargestPossibleRegion().GetIndex(0) );
+  inputRegion.SetSize(0, this->GetOutput()->GetLargestPossibleRegion().GetSize(0) );
   input->SetRequestedRegion( inputRegion );
 }
 
@@ -114,8 +116,11 @@ void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
-  // Pad image region
-  FFTInputImagePointer paddedImage = PadInputImageRegion(outputRegionForThread);
+  // Pad image region enlarged along X
+  RegionType enlargedRegionX = outputRegionForThread;
+  enlargedRegionX.SetIndex(0, this->GetOutput()->GetLargestPossibleRegion().GetIndex(0) );
+  enlargedRegionX.SetSize(0, this->GetOutput()->GetLargestPossibleRegion().GetSize(0) );
+  FFTInputImagePointer paddedImage = PadInputImageRegion(enlargedRegionX);
 
   // FFT padded image
 #if ITK_VERSION_MAJOR <= 3
