@@ -193,7 +193,7 @@ int main(int, char** )
   direction[2][2] = 1;
   tomographySource->SetDirection(direction);
   origin[0] = -127.;
-  origin[1] =  127.;
+  origin[1] = -127.;
   origin[2] = -127.;
   tomographySource->SetOrigin( origin );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
