@@ -43,6 +43,8 @@ rtk::CudaFFTRampImageFilter
   inputDimension.x = paddedImage->GetBufferedRegion().GetSize()[0];
   inputDimension.y = paddedImage->GetBufferedRegion().GetSize()[1];
   inputDimension.z = paddedImage->GetBufferedRegion().GetSize()[2];
+  if(inputDimension.y==1 && inputDimension.z>1) // Troubles cuda 3.2 and 4.0
+    std::swap(inputDimension.y, inputDimension.z);
 
   // Get FFT ramp kernel
   FFTOutputImagePointer fftK = this->GetFFTRampKernel(paddedImage->GetLargestPossibleRegion().GetSize(0),
