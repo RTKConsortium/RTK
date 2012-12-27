@@ -47,7 +47,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     return;
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if(m_Geometry.GetPointer()==NULL)
+  if(m_Geometry.GetPointer() == NULL)
     {
     inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
     return;
