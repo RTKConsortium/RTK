@@ -224,9 +224,9 @@ ComputeProjectionMagnificationMatrix(double sdd, const double sid)
   Superclass::MatrixType matrix;
   matrix.Fill(0.0);
   for(unsigned int i=0; i<2; i++)
-    matrix[i][i] = sdd;
-  matrix[2][2] = 1.0;
-  matrix[2][3] = sid;
+    matrix[i][i] = (sdd==0.)?1.:sdd;
+  matrix[2][2] = (sdd==0.)?0.:1.;
+  matrix[2][3] = (sdd==0.)?1.:sid;
   return matrix;
 }
 
