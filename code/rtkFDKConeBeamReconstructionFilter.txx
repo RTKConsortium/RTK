@@ -24,7 +24,7 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
-::FDKConeBeamReconstructionFilter(): m_ProjectionSubsetSize(4)
+::FDKConeBeamReconstructionFilter(): m_ProjectionSubsetSize(16)
 {
   this->SetNumberOfRequiredInputs(2);
 
