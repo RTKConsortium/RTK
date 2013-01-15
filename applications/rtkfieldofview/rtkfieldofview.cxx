@@ -67,6 +67,7 @@ int main(int argc, char * argv[])
   //FOV filter
   typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
   FOVFilterType::Pointer fieldofview=FOVFilterType::New();
+  fieldofview->SetMask(args_info.mask_flag);
   fieldofview->SetInput(0, unmasked_reconstruction->GetOutput());
   fieldofview->SetProjectionsStack(projections->GetOutput());
   fieldofview->SetGeometry(geometryReader->GetOutputObject());
