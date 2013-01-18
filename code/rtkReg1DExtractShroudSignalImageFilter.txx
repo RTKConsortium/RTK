@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReg1DReg1DExtractShroudSignalImageFilter_txx
-#define __rtkReg1DReg1DExtractShroudSignalImageFilter_txx
+#ifndef __rtkReg1DExtractShroudSignalImageFilter_txx
+#define __rtkReg1DExtractShroudSignalImageFilter_txx
 
 #include <itkExtractImageFilter.h>
 #include <itkTranslationTransform.h>
@@ -95,11 +95,11 @@ TOutputPixel
 Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
 ::register1D(RegisterImageType* f, RegisterImageType* m)
 {
-  typedef itk::TranslationTransform<TOutputPixel, 1>					TransformType;
-  typedef itk::RegularStepGradientDescentOptimizer                                      OptimizerType;
-  typedef itk::MeanSquaresImageToImageMetric<RegisterImageType, RegisterImageType>	MetricType;
-  typedef itk::LinearInterpolateImageFunction<RegisterImageType, TOutputPixel>          InterpolatorType;
-  typedef itk::ImageRegistrationMethod<RegisterImageType, RegisterImageType>		RegistrationType;
+  typedef itk::TranslationTransform<TOutputPixel, 1>                                TransformType;
+  typedef itk::RegularStepGradientDescentOptimizer                                  OptimizerType;
+  typedef itk::MeanSquaresImageToImageMetric<RegisterImageType, RegisterImageType>  MetricType;
+  typedef itk::LinearInterpolateImageFunction<RegisterImageType, TOutputPixel>      InterpolatorType;
+  typedef itk::ImageRegistrationMethod<RegisterImageType, RegisterImageType>        RegistrationType;
 
   typename MetricType::Pointer metric = MetricType::New();
   typename TransformType::Pointer transform = TransformType::New();
@@ -118,7 +118,8 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
 
   typedef typename RegistrationType::ParametersType ParametersType;
   ParametersType initialParameters(transform->GetNumberOfParameters());
-  initialParameters[0] = itk::NumericTraits<TOutputPixel>::Zero;;  // Initial offset along X
+  // Initial offset along X
+  initialParameters[0] = itk::NumericTraits<TOutputPixel>::Zero;
 
   registration->SetInitialTransformParameters(initialParameters);
   optimizer->SetMaximumStepLength(1.00);
@@ -139,8 +140,8 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
 {
   this->AllocateOutputs();
 
-  typedef itk::ExtractImageFilter<TInputImage, RegisterImageType>	ExtractFilterType;
-  typedef itk::ImageDuplicator<RegisterImageType>			DuplicatorType;
+  typedef itk::ExtractImageFilter<TInputImage, RegisterImageType>  ExtractFilterType;
+  typedef itk::ImageDuplicator<RegisterImageType>                  DuplicatorType;
 
   typename TInputImage::ConstPointer input = this->GetInput();
   typename TInputImage::RegionType inputRegion = input->GetLargestPossibleRegion();
@@ -152,13 +153,14 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   typename TInputImage::RegionType extractRegion;
   typename TInputImage::SizeType extractSize = inputRegion.GetSize();
   typename TInputImage::IndexType extractIdx = inputRegion.GetIndex();
+
   extractSize[1] = 0;
   extractIdx[1] = 0;
   extractRegion.SetSize(extractSize);
   extractRegion.SetIndex(extractIdx);
   extractor->SetExtractionRegion(extractRegion);
 #if ITK_VERSION_MAJOR >= 4
-  extractor->SetDirectionCollapseToSubmatrix();
+ extractor->SetDirectionCollapseToIdentity();
 #endif
   extractor->Update();
   typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
@@ -179,7 +181,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
     extractRegion.SetIndex(extractIdx);
     extractor->SetExtractionRegion(extractRegion);
 #if ITK_VERSION_MAJOR >= 4
-    extractor->SetDirectionCollapseToSubmatrix();
+    extractor->SetDirectionCollapseToIdentity();
 #endif
     extractor->Update();
     pos += register1D(prev, extractor->GetOutput());
