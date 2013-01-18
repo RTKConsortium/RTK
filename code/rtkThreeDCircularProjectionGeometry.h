@@ -16,9 +16,6 @@
  *
  *=========================================================================*/
 
-//#ifndef ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
-//#define ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
-
 #ifndef __rtkThreeDCircularProjectionGeometry_h
 #define __rtkThreeDCircularProjectionGeometry_h
 
