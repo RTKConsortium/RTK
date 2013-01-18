@@ -40,7 +40,7 @@ public:
   /** Standard class typedefs. */
   typedef itk::Image<TInputPixel, 2>                            TInputImage;
   typedef itk::Image<TOutputPixel, 1>                           TOutputImage;
-  typedef DPExtractShroudSignalImageFilter                        Self;
+  typedef DPExtractShroudSignalImageFilter                      Self;
   typedef itk::ImageToImageFilter<TInputImage, TOutputImage>    Superclass;
   typedef itk::SmartPointer<Self>                               Pointer;
   typedef itk::SmartPointer<const Self>                         ConstPointer;
