@@ -10,6 +10,8 @@
 #include "rtkProjectGeometricPhantomImageFilter.h"
 #include "itkPasteImageFilter.h"
 #include "rtkConfiguration.h"
+#include "rtkReg1DExtractShroudSignalImageFilter.h"
+#include "rtkDPExtractShroudSignalImageFilter.h"
 
 template<class TInputImage>
 void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage::Pointer ref)
@@ -66,8 +68,10 @@ void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage
 int main(int, char** )
 {
   const unsigned int Dimension = 3;
+  typedef double                                     reg1DPixelType;
   typedef float                                      OutputPixelType;
   typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
+  typedef itk::Image< reg1DPixelType, Dimension-2 >  reg1DImageType;
   unsigned int NumberOfProjectionImages = 100;
 
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
@@ -155,6 +159,8 @@ int main(int, char** )
   }
   itksys::SystemTools::RemoveFile("phantom.txt");
 
+  std::cout << "\n\n****** Case 1: Amsterdam Shroud Image ******" << std::endl;
+
   // Amsterdam shroud
   typedef rtk::AmsterdamShroudImageFilter<OutputImageType> shroudFilterType;
   shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
@@ -162,7 +168,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update());
 
   // Read reference object
-  typedef itk::ImageFileReader<  shroudFilterType::OutputImageType > ReaderAmsterdamType;
+  typedef itk::ImageFileReader< shroudFilterType::OutputImageType > ReaderAmsterdamType;
   ReaderAmsterdamType::Pointer reader2 = ReaderAmsterdamType::New();
   reader2->SetFileName(std::string(RTK_DATA_ROOT) +
                        std::string("/Baseline/AmsterdamShroud/Amsterdam.mha"));
@@ -170,6 +176,76 @@ int main(int, char** )
 
   CheckImageQuality< shroudFilterType::OutputImageType >(shroudFilter->GetOutput(), reader2->GetOutput());
   std::cout << "Test PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 2: Breathing signal calculated by reg1D algorithm ******\n" << std::endl;
+
+  //Estimation of breathing signal
+  typedef rtk::Reg1DExtractShroudSignalImageFilter< reg1DPixelType, reg1DPixelType > reg1DFilterType;
+  reg1DImageType::Pointer  reg1DSignal;
+  reg1DFilterType::Pointer reg1DFilter = reg1DFilterType::New();
+  reg1DFilter->SetInput( reader2->GetOutput() );
+  reg1DFilter->Update();
+  reg1DSignal = reg1DFilter->GetOutput();
+
+  //Test Reference
+  float reg1D[100] = {0, -4, -7.625, -10.75, -13.25, -15, -15.75, -15.625, -14.5, -12.625, -9.875, -6.5, -2.875, 1, 5.5, 9.625, 13.625, 16.5,
+  18.625, 19.5, 19, 17.25, 14.375, 10.75, 6.375, 1.875, -2.5, -6.625, -10.25, -13.25, -15.25, -16.375, -16.375, -15.25, -13.375,
+  -10.625, -7.25, -3.625, 0, 3.625, 6.375, 8.75, 10.375, 12.25, 13.625, 13.625, 12.125, 9.5, 6.25, 2.625, -1.5, -5.625, -9.375,
+  -12.5, -15, -16.75, -17.5, -17.375, -16.25, -14.375, -11.625, -8.25, -4.625, -0.75, 3.75, 7.875, 11.875, 14.75, 16.875, 17.75,
+  17.25, 15.5, 12.625, 9, 4.625, 0.125, -4.25, -8.375, -12, -15, -17, -18.125, -18.125, -17, -15.125, -12.375, -9, -5.375, -1.75,
+  1.875, 4.625, 7, 8.625, 10.5, 11.875, 11.875, 10.375, 7.75, 4.5, 0.875};
+
+  //Checking for possible errors
+  float sum = 0.;
+  unsigned int i = 0;
+  itk::ImageRegionConstIterator<reg1DImageType> it( reg1DSignal, reg1DSignal->GetLargestPossibleRegion() );
+  for (it.GoToBegin(); !it.IsAtEnd(); ++it, i++)
+  {
+    sum += vcl_abs(reg1D[i] - it.Get());
+  }
+
+  if (sum <= itk::NumericTraits< reg1DPixelType >::ZeroValue())
+    std::cout << "Test PASSED! " << std::endl;
+  else
+  {
+    std::cerr << "Test FAILED! " << "Breathing signal does not match, absolute difference " << sum << " instead of 0." << std::endl;
+    exit( EXIT_FAILURE);
+  }
+
+  std::cout << "\n\n****** Case 3: Breathing signal calculated by DP algorithm ******\n" << std::endl;
+
+  //Estimation of breathing signal
+  typedef rtk::DPExtractShroudSignalImageFilter< reg1DPixelType, reg1DPixelType > DPFilterType;
+  reg1DImageType::Pointer  DPSignal;
+  DPFilterType::Pointer DPFilter = DPFilterType::New();
+  DPFilter->SetInput( reader2->GetOutput() );
+  DPFilter->SetAmplitude( 20. );
+  DPFilter->Update();
+  DPSignal = DPFilter->GetOutput();
+
+  //Test Reference
+  float DP[100] = {-5, -7.5, -12.5, -17.5, -20, -22.5, -22.5, -22.5, -20, -17.5, -15, -12.5, -7.5, -2.5, 2.5, 5, 10, 12.5, 12.5, 15, 12.5, 12.5, 7.5, 5,
+  0, -5, -7.5, -12.5, -17.5, -20, -22.5, -22.5, -22.5, -20, -20, -15, -12.5, -7.5, -2.5, 2.5, 5, 10, 12.5, 12.5, 12.5, 12.5, 10, 7.5,
+  5, 0, -5, -7.5, -12.5, -17.5, -20, -22.5, -22.5, -22.5, -20, -17.5, -15, -12.5, -7.5, -2.5, 2.5, 5, 10, 12.5, 12.5, 15, 12.5, 12.5,
+  7.5, 5, 0, -5, -7.5, -12.5, -17.5, -20, -22.5, -22.5, -22.5, -20, -20, -15, -12.5, -7.5, -2.5, 2.5, 5, 10, 12.5, 12.5, 12.5, 12.5,
+  10, 7.5, 5, 0};
+
+  //Checking for possible errors
+  sum = 0.;
+  i = 0;
+  itk::ImageRegionConstIterator< reg1DImageType > itDP( DPSignal, DPSignal->GetLargestPossibleRegion() );
+  for (itDP.GoToBegin(); !itDP.IsAtEnd(); ++itDP, i++)
+  {
+    sum += vcl_abs(DP[i] - itDP.Get());
+  }
+
+  if (sum <= itk::NumericTraits< reg1DPixelType >::ZeroValue())
+    std::cout << "Test PASSED! " << std::endl;
+  else
+  {
+    std::cerr << "Test FAILED! " << "Breathing signal does not match, absolute difference " << sum << " instead of 0." << std::endl;
+    exit( EXIT_FAILURE);
+  }
 
   return EXIT_SUCCESS;
 }
