@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <fstream>
 
+#include "rtkTestConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkProjectGeometricPhantomImageFilter.h"
 #include "itkPasteImageFilter.h"
@@ -16,6 +17,7 @@
 template<class TInputImage>
 void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage::Pointer ref)
 {
+#if !(FAST_TESTS_NO_CHECKS)
   typedef itk::ImageRegionConstIterator<TInputImage>  ImageIteratorInType;
   ImageIteratorInType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorInType itRef( ref, ref->GetBufferedRegion() );
@@ -63,6 +65,7 @@ void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage
               << PSNR << " instead of 185" << std::endl;
     exit( EXIT_FAILURE);
   }
+#endif
 }
 
 int main(int, char** )
@@ -90,12 +93,21 @@ int main(int, char** )
   origin[0] = -50.;
   origin[1] = -50.;
   origin[2] = -158.75;
+#if FAST_TESTS_NO_CHECKS
+  sizeOutput[0] = 4;
+  sizeOutput[1] = 4;
+  sizeOutput[2] = 1;
+  spacing[0] = 106.;
+  spacing[1] = 106.;
+  spacing[2] = 2.5;
+#else
   sizeOutput[0] = 128;
   sizeOutput[1] = 128;
   sizeOutput[2] = 1;
   spacing[0] = 2.5;
   spacing[1] = 2.5;
   spacing[2] = 2.5;
+#endif
   constantImageSourceSingleProjection->SetOrigin( origin );
   constantImageSourceSingleProjection->SetSpacing( spacing );
   constantImageSourceSingleProjection->SetSize( sizeOutput );
@@ -187,6 +199,7 @@ int main(int, char** )
   reg1DFilter->Update();
   reg1DSignal = reg1DFilter->GetOutput();
 
+#if !(FAST_TESTS_NO_CHECKS)
   //Test Reference
   float reg1D[100] = {0, -4, -7.625, -10.75, -13.25, -15, -15.75, -15.625, -14.5, -12.625, -9.875, -6.5, -2.875, 1, 5.5, 9.625, 13.625, 16.5,
   18.625, 19.5, 19, 17.25, 14.375, 10.75, 6.375, 1.875, -2.5, -6.625, -10.25, -13.25, -15.25, -16.375, -16.375, -15.25, -13.375,
@@ -211,6 +224,7 @@ int main(int, char** )
     std::cerr << "Test FAILED! " << "Breathing signal does not match, absolute difference " << sum << " instead of 0." << std::endl;
     exit( EXIT_FAILURE);
   }
+#endif
 
   std::cout << "\n\n****** Case 3: Breathing signal calculated by DP algorithm ******\n" << std::endl;
 
@@ -223,6 +237,7 @@ int main(int, char** )
   DPFilter->Update();
   DPSignal = DPFilter->GetOutput();
 
+#if !(FAST_TESTS_NO_CHECKS)
   //Test Reference
   float DP[100] = {-5, -7.5, -12.5, -17.5, -20, -22.5, -22.5, -22.5, -20, -17.5, -15, -12.5, -7.5, -2.5, 2.5, 5, 10, 12.5, 12.5, 15, 12.5, 12.5, 7.5, 5,
   0, -5, -7.5, -12.5, -17.5, -20, -22.5, -22.5, -22.5, -20, -20, -15, -12.5, -7.5, -2.5, 2.5, 5, 10, 12.5, 12.5, 12.5, 12.5, 10, 7.5,
@@ -246,6 +261,7 @@ int main(int, char** )
     std::cerr << "Test FAILED! " << "Breathing signal does not match, absolute difference " << sum << " instead of 0." << std::endl;
     exit( EXIT_FAILURE);
   }
+#endif
 
   return EXIT_SUCCESS;
 }

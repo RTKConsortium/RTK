@@ -1,3 +1,4 @@
+#include "rtkTestConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkMacro.h"
 #include <itksys/SystemTools.hxx>

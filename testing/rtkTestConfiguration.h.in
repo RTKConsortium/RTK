@@ -22,4 +22,8 @@
 
 #define RTK_DATA_ROOT "@RTK_DATA_ROOT@"
 
+// Define if we want to have very fast tests and we do not want any functional
+// test, e.g., when one is doing valgrind or coverage tests
+#cmakedefine01 FAST_TESTS_NO_CHECKS
+
 #endif
