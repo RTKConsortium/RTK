@@ -21,6 +21,7 @@ ADD_LIBRARY(RTK
             rtkImagXImageIOFactory.cxx
             rtkImagXXMLFileReader.cxx
             rtkThreeDCircularProjectionGeometry.cxx
+            rtkReg23ProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
             rtkGeometricPhantomFileReader.cxx
             rtkDigisensGeometryXMLFileReader.cxx
