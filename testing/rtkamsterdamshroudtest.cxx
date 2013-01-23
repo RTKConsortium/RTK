@@ -196,7 +196,7 @@ int main(int, char** )
   1.875, 4.625, 7, 8.625, 10.5, 11.875, 11.875, 10.375, 7.75, 4.5, 0.875};
 
   //Checking for possible errors
-  float sum = 0.;
+  double zeroValue = 1e-12;
   unsigned int i = 0;
   itk::ImageRegionConstIterator<reg1DImageType> it( reg1DSignal, reg1DSignal->GetLargestPossibleRegion() );
   for (it.GoToBegin(); !it.IsAtEnd(); ++it, i++)
@@ -204,7 +204,7 @@ int main(int, char** )
     sum += vcl_abs(reg1D[i] - it.Get());
   }
 
-  if (sum <= itk::NumericTraits< reg1DPixelType >::ZeroValue())
+  if ( sum <= zeroValue )
     std::cout << "Test PASSED! " << std::endl;
   else
   {
@@ -239,7 +239,7 @@ int main(int, char** )
     sum += vcl_abs(DP[i] - itDP.Get());
   }
 
-  if (sum <= itk::NumericTraits< reg1DPixelType >::ZeroValue())
+  if ( sum <= zeroValue )
     std::cout << "Test PASSED! " << std::endl;
   else
   {
