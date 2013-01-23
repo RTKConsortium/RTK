@@ -1,4 +1,5 @@
 
+#include "rtkTestConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
@@ -9,6 +10,7 @@
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
+#if !(FAST_TESTS_NO_CHECKS)
   typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
@@ -59,6 +61,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
               << PSNR << " instead of 44" << std::endl;
     exit( EXIT_FAILURE);
     }
+#endif
 }
 
 int main(int , char** )
@@ -84,12 +87,21 @@ int main(int , char** )
   origin[0] = -126;
   origin[1] = -126;
   origin[2] = -126;
+#if FAST_TESTS_NO_CHECKS
+  size[0] = 2;
+  size[1] = 2;
+  size[2] = 2;
+  spacing[0] = 252.;
+  spacing[1] = 252.;
+  spacing[2] = 252.;
+#else
   size[0] = 64;
   size[1] = 64;
   size[2] = 64;
   spacing[0] = 4.;
   spacing[1] = 4.;
   spacing[2] = 4.;
+#endif
   volInput->SetOrigin( origin );
   volInput->SetSpacing( spacing );
   volInput->SetSize( size );
@@ -156,8 +168,13 @@ int main(int , char** )
 
   // Create a Shepp Logan reference volume (finer resolution)
   origin.Fill(-127);
+#if FAST_TESTS_NO_CHECKS
+  size.Fill(2);
+  spacing.Fill(254.);
+#else
   size.Fill(128);
   spacing.Fill(2.);
+#endif
   volInput->SetOrigin( origin );
   volInput->SetSpacing( spacing );
   volInput->SetSize( size );
