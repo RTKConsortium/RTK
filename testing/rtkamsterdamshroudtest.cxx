@@ -209,7 +209,8 @@ int main(int, char** )
   1.875, 4.625, 7, 8.625, 10.5, 11.875, 11.875, 10.375, 7.75, 4.5, 0.875};
 
   //Checking for possible errors
-  double zeroValue = 1e-12;
+  float zeroValue = 1e-12;
+  float sum = 0.;
   unsigned int i = 0;
   itk::ImageRegionConstIterator<reg1DImageType> it( reg1DSignal, reg1DSignal->GetLargestPossibleRegion() );
   for (it.GoToBegin(); !it.IsAtEnd(); ++it, i++)
