@@ -87,12 +87,12 @@ int main(int, char** )
   origin[1] = -127.;
   origin[2] = -127.;
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 254.;
-  spacing[1] = 254.;
-  spacing[2] = 254.;
+  size[0] = 32;
+  size[1] = 32;
+  size[2] = 32;
+  spacing[0] = 8.;
+  spacing[1] = 8.;
+  spacing[2] = 8.;
 #else
   size[0] = 128;
   size[1] = 128;
@@ -111,12 +111,12 @@ int main(int, char** )
   origin[1] = -254.;
   origin[2] = -254.;
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
+  size[0] = 32;
+  size[1] = 32;
   size[2] = NumberOfProjectionImages;
-  spacing[0] = 508.;
-  spacing[1] = 508.;
-  spacing[2] = 508.;
+  spacing[0] = 32.;
+  spacing[1] = 32.;
+  spacing[2] = 32.;
 #else
   size[0] = 128;
   size[1] = 128;
