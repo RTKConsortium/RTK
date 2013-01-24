@@ -60,6 +60,10 @@ ADD_EXECUTABLE(rtkgeometryfiletest rtkgeometryfiletest.cxx)
 TARGET_LINK_LIBRARIES(rtkgeometryfiletest RTK)
 ADD_TEST(rtkgeometryfiletest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryfiletest)
 
+ADD_EXECUTABLE(rtkTestReg23ProjectionGeometry rtkTestReg23ProjectionGeometry.cxx)
+TARGET_LINK_LIBRARIES(rtkTestReg23ProjectionGeometry RTK)
+ADD_TEST(rtkTestReg23ProjectionGeometry ${EXECUTABLE_OUTPUT_PATH}/rtkTestReg23ProjectionGeometry)
+
 ADD_EXECUTABLE(rtkfovtest rtkfovtest.cxx)
 TARGET_LINK_LIBRARIES(rtkfovtest RTK)
 ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
