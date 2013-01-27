@@ -1,6 +1,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkStreamingImageFilter.h>
 
+#include "rtkTestConfiguration.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
@@ -17,6 +18,7 @@
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
+#if !(FAST_TESTS_NO_CHECKS)
   typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
@@ -63,6 +65,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
               << PSNR << " instead of 26" << std::endl;
     exit( EXIT_FAILURE);
   }
+#endif
 }
 
 
@@ -83,12 +86,21 @@ int main(int, char** )
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
+#if FAST_TESTS_NO_CHECKS
+  size[0] = 32;
+  size[1] = 32;
+  size[2] = 32;
+  spacing[0] = 8.;
+  spacing[1] = 8.;
+  spacing[2] = 8.;
+#else
   size[0] = 128;
   size[1] = 128;
   size[2] = 128;
   spacing[0] = 2.;
   spacing[1] = 2.;
   spacing[2] = 2.;
+#endif
   tomographySource->SetOrigin( origin );
   tomographySource->SetSpacing( spacing );
   tomographySource->SetSize( size );
@@ -98,12 +110,21 @@ int main(int, char** )
   origin[0] = -254.;
   origin[1] = -254.;
   origin[2] = -254.;
+#if FAST_TESTS_NO_CHECKS
+  size[0] = 32;
+  size[1] = 32;
+  size[2] = NumberOfProjectionImages;
+  spacing[0] = 32.;
+  spacing[1] = 32.;
+  spacing[2] = 32.;
+#else
   size[0] = 128;
   size[1] = 128;
   size[2] = NumberOfProjectionImages;
   spacing[0] = 4.;
   spacing[1] = 4.;
   spacing[2] = 4.;
+#endif
   projectionsSource->SetOrigin( origin );
   projectionsSource->SetSpacing( spacing );
   projectionsSource->SetSize( size );

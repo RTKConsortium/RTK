@@ -16,6 +16,7 @@
  *
  *=========================================================================*/
 
+#include "rtkTestConfiguration.h"
 #include "rtkfdk_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
