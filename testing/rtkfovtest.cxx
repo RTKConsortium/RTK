@@ -1,6 +1,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkBinaryThresholdImageFilter.h>
 
+#include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
 #include "rtkFieldOfViewImageFilter.h"
 #include "rtkConstantImageSource.h"
@@ -9,6 +10,7 @@
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
+#if !(FAST_TESTS_NO_CHECKS)
   typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
@@ -55,6 +57,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
               << PSNR << " instead of 23.5" << std::endl;
     exit( EXIT_FAILURE);
   }
+#endif
 }
 
 
@@ -76,13 +79,22 @@ int main(int , char** )
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
-  size[0] = 128.;
-  size[1] = 128.;
-  size[2] = 128.;
+#if FAST_TESTS_NO_CHECKS
+  size[0] = 2;
+  size[1] = 2;
+  size[2] = 2;
+  spacing[0] = 254.;
+  spacing[1] = 254.;
+  spacing[2] = 254.;
+#else
+  size[0] = 128;
+  size[1] = 128;
+  size[2] = 128;
   spacing[0] = 2.;
   spacing[1] = 2.;
   spacing[2] = 2.;
-  
+#endif
+
   
   fovInput->SetOrigin( origin );
   fovInput->SetSpacing( spacing );
@@ -100,12 +112,21 @@ int main(int , char** )
   origin[0] = -254.;
   origin[1] = -254.;
   origin[2] = -254.;
+#if FAST_TESTS_NO_CHECKS
+  size[0] = 2;
+  size[1] = 2;
+  size[2] = NumberOfProjectionImages;
+  spacing[0] = 508.;
+  spacing[1] = 508.;
+  spacing[2] = 508.;
+#else
   size[0] = 128;
   size[1] = 128;
   size[2] = NumberOfProjectionImages;
   spacing[0] = 4.;
   spacing[1] = 4.;
   spacing[2] = 4.;
+#endif
   projectionsSource->SetOrigin( origin );
   projectionsSource->SetSpacing( spacing );
   projectionsSource->SetSize( size );

@@ -16,9 +16,6 @@
  *
  *=========================================================================*/
 
-//#ifndef ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
-//#define ITKTHREEDCIRCULARPROJECTIONGEOMETRY_H
-
 #ifndef __rtkThreeDCircularProjectionGeometry_h
 #define __rtkThreeDCircularProjectionGeometry_h
 
@@ -159,11 +156,12 @@ public:
    * projection images. */
   const ThreeDHomogeneousMatrixType GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const;
 
+  /** This function wraps an angle value between 0 and 360 degrees. */
+  static double ConvertAngleBetween0And360Degrees(const double a);
+
 protected:
   ThreeDCircularProjectionGeometry() {};
   virtual ~ThreeDCircularProjectionGeometry() {};
-
-  double ConvertAngleBetween0And360Degrees(const double a);
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);

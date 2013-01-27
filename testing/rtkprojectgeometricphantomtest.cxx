@@ -13,6 +13,7 @@ typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
+#if !(FAST_TESTS_NO_CHECKS)
   typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
@@ -63,60 +64,70 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
               << PSNR << " instead of 88" << std::endl;
     exit( EXIT_FAILURE);
     }
+#endif
 }
 
 int main(int, char** )
 {
-    const unsigned int Dimension = 3;
-    typedef float                                    OutputPixelType;
-    typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-    const unsigned int NumberOfProjectionImages = 180;
+  const unsigned int Dimension = 3;
+  typedef float                                    OutputPixelType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  const unsigned int NumberOfProjectionImages = 180;
 
-    // Constant image sources
-    typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
-    ConstantImageSourceType::PointType origin;
-    ConstantImageSourceType::SizeType size;
-    ConstantImageSourceType::SpacingType spacing;
+  // Constant image sources
+  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  ConstantImageSourceType::PointType origin;
+  ConstantImageSourceType::SizeType size;
+  ConstantImageSourceType::SpacingType spacing;
 
-    ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-    origin[0] = -254.;
-    origin[1] = -254.;
-    origin[2] = -254.;
-    size[0] = 128;
-    size[1] = 128;
-    size[2] = NumberOfProjectionImages;
-    spacing[0] = 4.;
-    spacing[1] = 4.;
-    spacing[2] = 4.;
-    projectionsSource->SetOrigin( origin );
-    projectionsSource->SetSpacing( spacing );
-    projectionsSource->SetSize( size );
-    projectionsSource->SetConstant( 0. );
+  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  origin[0] = -254.;
+  origin[1] = -254.;
+  origin[2] = -254.;
+#if FAST_TESTS_NO_CHECKS
+  size[0] = 2;
+  size[1] = 2;
+  size[2] = NumberOfProjectionImages;
+  spacing[0] = 508.;
+  spacing[1] = 508.;
+  spacing[2] = 508.;
+#else
+  size[0] = 128;
+  size[1] = 128;
+  size[2] = NumberOfProjectionImages;
+  spacing[0] = 4.;
+  spacing[1] = 4.;
+  spacing[2] = 4.;
+#endif
+  projectionsSource->SetOrigin( origin );
+  projectionsSource->SetSpacing( spacing );
+  projectionsSource->SetSize( size );
+  projectionsSource->SetConstant( 0. );
 
-    // Geometry object
-    typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
-    GeometryType::Pointer geometry = GeometryType::New();
-    for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-      geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  // Geometry object
+  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  GeometryType::Pointer geometry = GeometryType::New();
+  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
-    // Shepp Logan projections filter
-    typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
-    SLPType::Pointer slp=SLPType::New();
-    slp->SetInput( projectionsSource->GetOutput() );
-    slp->SetGeometry(geometry);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
+  // Shepp Logan projections filter
+  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  SLPType::Pointer slp=SLPType::New();
+  slp->SetInput( projectionsSource->GetOutput() );
+  slp->SetGeometry(geometry);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
 
-    // Shepp Logan projections filter from Configuration File
-    typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> PGPType;
-    PGPType::Pointer pgp=PGPType::New();
-    pgp->SetInput( projectionsSource->GetOutput() );
-    pgp->SetGeometry(geometry);
-    pgp->SetConfigFile(std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/GeometricPhantom/SheppLogan.txt"));
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( pgp->Update() );
+  // Shepp Logan projections filter from Configuration File
+  typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> PGPType;
+  PGPType::Pointer pgp=PGPType::New();
+  pgp->SetInput( projectionsSource->GetOutput() );
+  pgp->SetGeometry(geometry);
+  pgp->SetConfigFile(std::string(RTK_DATA_ROOT) +
+                     std::string("/Input/GeometricPhantom/SheppLogan.txt"));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( pgp->Update() );
 
-    CheckImageQuality<OutputImageType>(slp->GetOutput(), pgp->GetOutput());
-    std::cout << "Test PASSED! " << std::endl;
+  CheckImageQuality<OutputImageType>(slp->GetOutput(), pgp->GetOutput());
+  std::cout << "Test PASSED! " << std::endl;
 
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }

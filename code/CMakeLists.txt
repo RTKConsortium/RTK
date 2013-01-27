@@ -21,9 +21,11 @@ ADD_LIBRARY(RTK
             rtkImagXImageIOFactory.cxx
             rtkImagXXMLFileReader.cxx
             rtkThreeDCircularProjectionGeometry.cxx
+            rtkReg23ProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
             rtkGeometricPhantomFileReader.cxx
-            rtkDigisensGeometryXMLFileReader.cxx 
+            rtkDigisensGeometryXMLFileReader.cxx
+            rtkDigisensGeometryReader.cxx
            )
 
 IF( ITK_VERSION_MAJOR LESS "4" AND (USE_FFTWF OR USE_FFTWD) )
