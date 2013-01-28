@@ -30,7 +30,7 @@
 namespace rtk
 {
 
-/**
+/** \class Reg23ProjectionGeometry
  * \brief {A simple utility class which makes the REG23 projection geometry
  * compatible with RTK's geometry.}
  *
