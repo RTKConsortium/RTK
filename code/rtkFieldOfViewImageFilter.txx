@@ -66,7 +66,9 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     {
     const double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
     const double sdd = m_Geometry->GetSourceToDetectorDistances()[k];
-    const double mag = sid/sdd;
+    double mag = 1.;  // Parallel
+    if(sdd!=0.)
+      mag = sid/sdd;  // Divergent
 
     const double projOffsetX = m_Geometry->GetProjectionOffsetsX()[k];
     const double sourceOffsetX = m_Geometry->GetSourceOffsetsX()[k];
