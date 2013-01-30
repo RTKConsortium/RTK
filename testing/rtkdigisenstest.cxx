@@ -1,7 +1,7 @@
 #include "rtkTestConfiguration.h"
 #include "rtkProjectionsReader.h"
 #include "rtkMacro.h"
-#include "rtkElektaSynergyGeometryReader.h"
+#include "rtkDigisensGeometryReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -50,10 +50,10 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 1.6e-7)
+  if (ErrorPerPixel > 2.31e-7)
     {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 1.6e-7" << std::endl;
+              << ErrorPerPixel << " instead of 1.31e-7" << std::endl;
     exit( EXIT_FAILURE);
     }
   if (PSNR < 100.)
@@ -67,7 +67,6 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 
 void CheckGeometries(GeometryType *g1, GeometryType *g2)
 {
-#if !(FAST_TESTS_NO_CHECKS)
   const double e           = 1e-10;
   const unsigned int nproj = g1->GetGantryAngles().size();
   if(g2->GetGantryAngles().size() != nproj)
@@ -79,12 +78,15 @@ void CheckGeometries(GeometryType *g1, GeometryType *g2)
 
   for(unsigned int i=0; i<nproj; i++)
     {
-    if( e < std::fabs(g1->GetGantryAngles()[i] - 
-                      g2->GetGantryAngles()[i]) ||
-        e < std::fabs(g1->GetOutOfPlaneAngles()[i] -
-                      g2->GetOutOfPlaneAngles()[i]) || 
-        e < std::fabs(g1->GetInPlaneAngles()[i] - 
-                      g2->GetInPlaneAngles()[i]) ||
+    if( e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
+              std::fabs(g1->GetGantryAngles()[i] -
+                        g2->GetGantryAngles()[i])) ||
+        e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
+              std::fabs(g1->GetOutOfPlaneAngles()[i] -
+                        g2->GetOutOfPlaneAngles()[i])) ||
+        e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
+              std::fabs(g1->GetInPlaneAngles()[i] -
+                        g2->GetInPlaneAngles()[i])) ||
         e < std::fabs(g1->GetSourceToIsocenterDistances()[i] -
                       g2->GetSourceToIsocenterDistances()[i]) || 
         e < std::fabs(g1->GetSourceOffsetsX()[i] - 
@@ -98,32 +100,28 @@ void CheckGeometries(GeometryType *g1, GeometryType *g2)
         e < std::fabs(g1->GetProjectionOffsetsY()[i] -
                       g2->GetProjectionOffsetsY()[i]) )
       {
-      std::cerr << "Geometry of projection #" << i << "is unvalid."
+      std::cerr << "Geometry of projection #" << i << " is unvalid."
                 << std::endl;
       exit(EXIT_FAILURE);
       }
 
     }
-#endif
 }
 
 int main(int, char** )
 {
   // Elekta geometry
-  rtk::ElektaSynergyGeometryReader::Pointer geoTargReader;
-  geoTargReader = rtk::ElektaSynergyGeometryReader::New();
-  geoTargReader->SetDicomUID("1.3.46.423632.135428.1351013645.166");
-  geoTargReader->SetImageDbfFileName( std::string(RTK_DATA_ROOT) + 
-                                      std::string("/Input/Elekta/IMAGE.DBF") );
-  geoTargReader->SetFrameDbfFileName( std::string(RTK_DATA_ROOT) + 
-                                      std::string("/Input/Elekta/FRAME.DBF") );
+  rtk::DigisensGeometryReader::Pointer geoTargReader;
+  geoTargReader = rtk::DigisensGeometryReader::New();
+  geoTargReader->SetXMLFileName( std::string(RTK_DATA_ROOT) +
+                                 std::string("/Input/Digisens/calibration.cal") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) + 
-                             std::string("/Baseline/Elekta/geometry.xml") );
+                             std::string("/Baseline/Digisens/geometry.xml") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // 1. Check geometries
@@ -134,12 +132,12 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef itk::Image< OutputPixelType, Dimension > ImageType;
 
-  // Elekta projections reader
+  // Tif projections reader
   typedef rtk::ProjectionsReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/Elekta/raw.his") );
+                       std::string("/Input/Digisens/ima0010.tif") );
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
@@ -147,7 +145,7 @@ int main(int, char** )
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/Elekta/attenuation.mha") );
+                       std::string("/Baseline/Digisens/attenuation.mha") );
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

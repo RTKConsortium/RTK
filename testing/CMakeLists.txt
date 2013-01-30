@@ -60,6 +60,10 @@ ADD_EXECUTABLE(rtkgeometryfiletest rtkgeometryfiletest.cxx)
 TARGET_LINK_LIBRARIES(rtkgeometryfiletest RTK)
 ADD_TEST(rtkgeometryfiletest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryfiletest)
 
+ADD_EXECUTABLE(rtkTestReg23ProjectionGeometry rtkTestReg23ProjectionGeometry.cxx)
+TARGET_LINK_LIBRARIES(rtkTestReg23ProjectionGeometry RTK)
+ADD_TEST(rtkTestReg23ProjectionGeometry ${EXECUTABLE_OUTPUT_PATH}/rtkTestReg23ProjectionGeometry)
+
 ADD_EXECUTABLE(rtkfovtest rtkfovtest.cxx)
 TARGET_LINK_LIBRARIES(rtkfovtest RTK)
 ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
@@ -68,49 +72,55 @@ ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest RTK)
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkamsterdamshroudtest 
-	     DATA{Data/Baseline/AmsterdamShroud/Amsterdam.mha})
+             DATA{Data/Baseline/AmsterdamShroud/Amsterdam.mha})
 
 ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)
 TARGET_LINK_LIBRARIES(rtkvariantest RTK)
 RTK_ADD_TEST(NAME rtkvariantest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest 
-	     DATA{Data/Input/Varian/raw.hnd,acqui.xml}
+             DATA{Data/Input/Varian/raw.hnd,acqui.xml}
              DATA{Data/Baseline/Varian/attenuation.mha,geometry.xml})
 
 ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest RTK)
 RTK_ADD_TEST(NAME rtkelektatest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest 
-	     DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
+             DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
              DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha})
 
 ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest RTK)
 RTK_ADD_TEST(NAME rtkimagxtest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest 
-	     DATA{Data/Input/ImagX/raw.xml,raw.raw}
+             DATA{Data/Input/ImagX/raw.xml,raw.raw}
              DATA{Data/Baseline/ImagX/attenuation.mha})
 
 ADD_EXECUTABLE(rtkedftest rtkedftest.cxx)
 TARGET_LINK_LIBRARIES(rtkedftest RTK)
-RTK_ADD_TEST(NAME rtkedftest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkedftest 
-	     DATA{Data/Input/ESRF/raw.edf,dark.edf,refHST0000.edf}
+RTK_ADD_TEST(NAME rtkedftest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkedftest
+             DATA{Data/Input/ESRF/raw.edf,dark.edf,refHST0000.edf}
              DATA{Data/Baseline/ESRF/attenuation.mha})
 
+ADD_EXECUTABLE(rtkdigisenstest rtkdigisenstest.cxx)
+TARGET_LINK_LIBRARIES(rtkdigisenstest RTK)
+RTK_ADD_TEST(NAME rtkdigisenstest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdigisenstest
+             DATA{Data/Input/Digisens/ima0010.tif,calibration.cal},
+             DATA{Data/Baseline/Digisens/attenuation.mha,geometry.xml})
 
 ADD_EXECUTABLE(rtkprojectgeometricphantomtest rtkprojectgeometricphantomtest.cxx)
 TARGET_LINK_LIBRARIES(rtkprojectgeometricphantomtest RTK)
 RTK_ADD_TEST(NAME rtkprojectgeometricphantomtest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkprojectgeometricphantomtest 
-	     DATA{Data/Input/GeometricPhantom/SheppLogan.txt})
+             DATA{Data/Input/GeometricPhantom/SheppLogan.txt})
 
 ADD_EXECUTABLE(rtkdrawgeometricphantomtest rtkdrawgeometricphantomtest.cxx)
 TARGET_LINK_LIBRARIES(rtkdrawgeometricphantomtest RTK)
 RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest 
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdrawgeometricphantomtest 
-	     DATA{Data/Input/GeometricPhantom/SheppLogan.txt}
-	     DATA{Data/Input/GeometricPhantom/Geometries.txt})
+             DATA{Data/Input/GeometricPhantom/SheppLogan.txt}
+             DATA{Data/Input/GeometricPhantom/Geometries.txt})
 
 ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
 TARGET_LINK_LIBRARIES(rtksarttest RTK)
