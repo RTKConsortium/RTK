@@ -109,7 +109,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     {
     // Account for projections offsets
     double minOffset = itk::NumericTraits<double>::max();
-    double maxOffset = itk::NumericTraits<double>::min();
+    double maxOffset = itk::NumericTraits<double>::NonpositiveMin();
     for(unsigned int i=0; i<m_Geometry->GetProjectionOffsetsX().size(); i++)
       {
       minOffset = vnl_math_min(minOffset, m_Geometry->GetProjectionOffsetsX()[i]);
@@ -128,7 +128,9 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   // Case 1: Impossible to account for too large displacements
   if(m_InferiorCorner>0. || m_SuperiorCorner<0.)
     {
-    itkGenericExceptionMacro(<< "Can not account for detector displacement larger than 50% of panel size.");
+    itkGenericExceptionMacro(<< "Cannot account for detector displacement larger than 50% of panel size."
+                             << " Corner inf=" << m_InferiorCorner
+                             << " and corner sup=" << m_SuperiorCorner);
     }
   // Case 2: Not displaced, nothing to do
   else if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
@@ -205,8 +207,14 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   for(unsigned int k=0; k<overlapRegion.GetSize(2); k++)
     {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
-    const double invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
-    const double invden = 1/(2 * vcl_atan( theta * invsdd ) );
+    const double sdd = m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
+    double invsdd = 0.;
+    double invden = 0.;
+    if (sdd!=0.)
+      {
+      invsdd = 1./sdd;
+      invden = 1./(2.*vcl_atan( theta * invsdd ) );
+      }
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
     point[0] += m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
