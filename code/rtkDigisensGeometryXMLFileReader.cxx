@@ -51,13 +51,14 @@ StartElement(const char * name,const char ** itkNotUsed(atts))
     else if(itksys::SystemTools::Strucmp(name, "Camera") == 0)
       m_CurrentSection = CAMERA;
     else if(itksys::SystemTools::Strucmp(name, "Radios") == 0)
+      {
       m_CurrentSection = RADIOS;
+      m_NumberOfFiles = 0;
+      }
     else if(itksys::SystemTools::Strucmp(name, "Grid") == 0)
       m_CurrentSection = GRID;
     else if(itksys::SystemTools::Strucmp(name, "Processing") == 0)
       m_CurrentSection = PROCESSING;
-    else if(itksys::SystemTools::Strucmp(name, "files") == 0)
-      m_NumberOfFiles = 0;
     }
   m_TreeLevel++;
 }
