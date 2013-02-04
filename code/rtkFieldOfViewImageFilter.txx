@@ -57,11 +57,14 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
   typename TInputImage::PointType corner1, corner2;
   m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCorner1, corner1);
   m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCorner2, corner2);
+  for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
+    if(corner1[i]>corner2[i])
+      std::swap(corner1[i], corner2[i]);
 
   // Go over projection stack, compute minimum radius and minimum tangent
   m_Radius = itk::NumericTraits<double>::max();
-  m_HatTangent = itk::NumericTraits<double>::max();
-  m_HatHeight = itk::NumericTraits<double>::max();
+  m_HatHeightSup = itk::NumericTraits<double>::max();
+  m_HatHeightInf = itk::NumericTraits<double>::NonpositiveMin();
   for(unsigned int k=0; k<m_ProjectionsStack->GetLargestPossibleRegion().GetSize(2); k++)
     {
     const double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
@@ -77,9 +80,22 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 
     const double projOffsetY = m_Geometry->GetProjectionOffsetsY()[k];
     const double sourceOffsetY = m_Geometry->GetSourceOffsetsY()[k];
-    m_HatHeight = std::min(m_HatHeight, vcl_abs( sourceOffsetY+mag*(corner1[1]+projOffsetY-sourceOffsetY)));
-    m_HatHeight = std::min(m_HatHeight, vcl_abs( sourceOffsetY+mag*(corner2[1]+projOffsetY-sourceOffsetY)));
-    m_HatTangent = std::min(m_HatTangent, vcl_abs(m_HatHeight/sid));
+    const double heightInf = sourceOffsetY+mag*(corner1[1]+projOffsetY-sourceOffsetY);
+    if(heightInf>m_HatHeightInf)
+      {
+      m_HatHeightInf = heightInf;
+      m_HatTangentInf = m_HatHeightInf/sid;
+      if(sdd==0.) // Parallel
+        m_HatTangentInf = 0.;
+      }
+    const double heightSup = sourceOffsetY+mag*(corner2[1]+projOffsetY-sourceOffsetY);
+    if(heightSup<m_HatHeightSup)
+      {
+      m_HatHeightSup = heightSup;
+      m_HatTangentSup = m_HatHeightSup/sid;
+      if(sdd==0.) // Parallel
+        m_HatTangentSup = 0.;
+      }
     }
 }
 
@@ -124,7 +140,9 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
         for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
           {
           double radius = vcl_sqrt(point[0]*point[0] + zsquare);
-          if ( radius <= m_Radius && radius*m_HatTangent<=m_HatHeight-vnl_math_abs(point[1]) )
+          if ( radius <= m_Radius &&
+               radius*m_HatTangentInf >= m_HatHeightInf - point[1] &&
+               radius*m_HatTangentSup <= m_HatHeightSup - point[1])
             {
             if(m_Mask)
               itOut.Set(1.0);
@@ -155,7 +173,9 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
       {
       this->GetInput()->TransformIndexToPhysicalPoint( itIn.GetIndex(), point );
       double radius = vcl_sqrt(point[0]*point[0] + point[2]*point[2]);
-      if ( radius <= m_Radius && radius*m_HatTangent<=m_HatHeight-vnl_math_abs(point[1]) )
+      if ( radius <= m_Radius &&
+           point[1] <= m_HatHeightSup - radius*m_HatTangentSup &&
+           point[1] >= m_HatHeightInf - radius*m_HatTangentInf )
         {
         if(m_Mask)
           itOut.Set(1.0);
