@@ -39,7 +39,7 @@ ENDFUNCTION(FIND_GCC)
 
 # Main code dealing with each version of cuda
 IF(CUDA_FOUND)
-  IF(CMAKE_SYSTEM_NAME MATCHES "Linux" AND CMAKE_COMPILER_IS_GNUCC)
+  IF((CMAKE_SYSTEM_NAME MATCHES "Linux" AND CMAKE_COMPILER_IS_GNUCC) OR APPLE)
     # Compatible gcc can be checked in host_config.h
     SET(GCC_PATH "")
     IF(${CUDA_VERSION} VERSION_GREATER "4.1.99")
@@ -54,6 +54,9 @@ IF(CUDA_FOUND)
     IF(NOT GCC_PATH)
       FIND_GCC(GCC_PATH "4" "3")
     ENDIF()
+    IF(NOT GCC_PATH)
+      FIND_GCC(GCC_PATH "4" "2")
+    ENDIF()
 
     IF(GCC_PATH)
       MESSAGE(STATUS "nvcc-check: Found adequate gcc (${GCC_PATH})... telling nvcc to use it!")
@@ -61,7 +64,7 @@ IF(CUDA_FOUND)
     ELSE(GCC_PATH)
       MESSAGE(FATAL_ERROR "nvcc-check: Please install adequate gcc for cuda.\nNote that gcc-4.x can be installed side-by-side with your current version of gcc.\n")
     ENDIF(GCC_PATH)
-  ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux" AND CMAKE_COMPILER_IS_GNUCC)
+  ENDIF()
 
 
   IF(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "APPLE")
