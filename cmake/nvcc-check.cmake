@@ -6,8 +6,8 @@
 #
 # This script:
 #   * Checks the version of default gcc
-#   * If CUDA 4.x, we look for gcc-4.4
-#   * If not found or CUDA<4, we look for gcc-4.3 on the system
+#   * If CUDA 4.x, we look for gcc-4.4 or gcc44
+#   * If not found or CUDA<4, we look for gcc-4.3 or gcc43 on the system
 #   * If found we tell nvcc to use it
 #   * If not found, fatal error
 ######################################################################
@@ -15,26 +15,30 @@
 # This function searches for gcc version x.y (arguments 2 and 3 of the macro)
 # Return the result in argument 1, empty if not found
 FUNCTION(FIND_GCC GCC_PATH GCC_MAJOR GCC_MINOR)
-
   # Search for gcc-x.y
   FIND_PROGRAM(EXACT_GCC "gcc-${GCC_MAJOR}.${GCC_MINOR}")
   IF(EXACT_GCC)
     SET(GCC_PATH "${EXACT_GCC}" PARENT_SCOPE)
   ELSE(EXACT_GCC)
-    # gcc-x.y not found, check default gcc
-    FIND_PROGRAM(DEFAULT_GCC gcc)
-    EXEC_PROGRAM(${DEFAULT_GCC} ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
-
-    # Get major and minor revs
-    STRING(REGEX REPLACE "^([0-9]+)\\..*" "\\1" GCCVER_MAJOR "${GCCVER}")
-    STRING(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1" GCCVER_MINOR "${GCCVER}")
-
-    # Check that adequate
-    IF("${GCCVER_MAJOR}" MATCHES "${GCC_MAJOR}" AND "${GCCVER_MINOR}" MATCHES "${GCC_MINOR}")
-      SET(GCC_PATH ${DEFAULT_GCC} PARENT_SCOPE)
-    ENDIF()
+    # Search for gccxy
+    FIND_PROGRAM(EXACT_GCC2 "gcc${GCC_MAJOR}${GCC_MINOR}")
+    IF(EXACT_GCC2)
+      SET(GCC_PATH "${EXACT_GCC2}" PARENT_SCOPE)
+    ELSE(EXACT_GCC2)
+      # gcc-x.y not found, check default gcc
+      FIND_PROGRAM(DEFAULT_GCC gcc)
+      EXEC_PROGRAM(${DEFAULT_GCC} ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
+  
+      # Get major and minor revs
+      STRING(REGEX REPLACE "^([0-9]+)\\..*" "\\1" GCCVER_MAJOR "${GCCVER}")
+      STRING(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1" GCCVER_MINOR "${GCCVER}")
+  
+      # Check that adequate
+      IF("${GCCVER_MAJOR}" MATCHES "${GCC_MAJOR}" AND "${GCCVER_MINOR}" MATCHES "${GCC_MINOR}")
+        SET(GCC_PATH ${DEFAULT_GCC} PARENT_SCOPE)
+      ENDIF()
+    ENDIF(EXACT_GCC2)
   ENDIF(EXACT_GCC)
-
 ENDFUNCTION(FIND_GCC)
 
 # Main code dealing with each version of cuda

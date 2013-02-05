@@ -66,7 +66,11 @@ int main(int , char** )
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#if FAST_TESTS_NO_CHECKS
+  const unsigned int NumberOfProjectionImages = 3;
+#else
   const unsigned int NumberOfProjectionImages = 110;
+#endif
   const double ArcSize = 240.;
 
   // Constant image sources

@@ -34,7 +34,7 @@ namespace rtk
  * creates the mask if m_Mask is true. Note that the 3 angle parameters are
  * assumed to be 0. in the circular geometry: GantryAngle, OutOfPlaneAngle and
  * InPlaneAngle. The rest is accounted for but the fov is assumed to be
- * cylindrical and symmetric on each side of the rotation plane.
+ * cylindrical.
  *
  * \author Marc Vila
  *
@@ -97,8 +97,10 @@ private:
   bool                    m_Mask;
   ProjectionsStackPointer m_ProjectionsStack;
   double                  m_Radius;
-  double                  m_HatTangent;
-  double                  m_HatHeight;
+  double                  m_HatTangentInf;
+  double                  m_HatTangentSup;
+  double                  m_HatHeightInf;
+  double                  m_HatHeightSup;
 };
 
 } // end namespace rtk

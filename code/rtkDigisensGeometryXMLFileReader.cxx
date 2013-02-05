@@ -25,6 +25,15 @@
 namespace rtk
 {
 
+DigisensGeometryXMLFileReader::
+DigisensGeometryXMLFileReader()
+{
+  m_OutputObject = &m_Dictionary;
+  m_NumberOfFiles = 0;
+  m_CurrentSection = NONE;
+  m_TreeLevel = 0;
+}
+
 int
 DigisensGeometryXMLFileReader::
 CanReadFile(const char *name)
