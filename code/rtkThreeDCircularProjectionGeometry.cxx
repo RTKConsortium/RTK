@@ -17,7 +17,9 @@
  *=========================================================================*/
 
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkMacro.h"
 
+#include <algorithm>
 #include <itkCenteredEuler3DTransform.h>
 
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
@@ -165,6 +167,21 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
 
   //Last projection wraps the angle of the first one
   angularGaps[curr->second] = 0.5 * degreesToRadians * ( angles.begin()->first + 360 - prev->first );
+
+  // FIXME: Trick for the half scan in parallel geometry case
+  if(m_SourceToDetectorDistances[0]==0.)
+    {
+    std::vector<double>::iterator it = std::max_element(angularGaps.begin(), angularGaps.end());
+    if(*it>itk::Math::pi_over_2)
+      {
+      for(it=angularGaps.begin(); it<angularGaps.end(); it++)
+        {
+        if(*it>itk::Math::pi_over_2)
+          *it -= itk::Math::pi_over_2;
+        *it *= 2.;
+        }
+      }
+    }
 
   return angularGaps;
 }

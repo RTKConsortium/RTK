@@ -34,10 +34,10 @@ class DigisensGeometryXMLFileReader : public itk::XMLReader<itk::MetaDataDiction
 {
 public:
   /** Standard typedefs */
-  typedef DigisensGeometryXMLFileReader                      Self;
-  typedef itk::XMLReader<itk::MetaDataDictionary>            Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef enum {ROTATION,XRAY,CAMERA,RADIOS,GRID,PROCESSING} CurrentSectionType;
+  typedef DigisensGeometryXMLFileReader                           Self;
+  typedef itk::XMLReader<itk::MetaDataDictionary>                 Superclass;
+  typedef itk::SmartPointer<Self>                                 Pointer;
+  typedef enum {NONE,ROTATION,XRAY,CAMERA,RADIOS,GRID,PROCESSING} CurrentSectionType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DigisensGeometryXMLFileReader, itk::XMLReader);
@@ -49,9 +49,7 @@ public:
   int CanReadFile(const char* name);
 
 protected:
-  DigisensGeometryXMLFileReader(){
-    m_OutputObject = &m_Dictionary; m_TreeLevel = 0;
-  }
+  DigisensGeometryXMLFileReader();
   virtual ~DigisensGeometryXMLFileReader() {
   }
 
