@@ -26,13 +26,14 @@
 #    include "itkFFTWRealToComplexConjugateImageFilter.h"
 #    include "itkFFTWComplexConjugateToRealImageFilter.h"
 #  endif
+#  include <itkFFTComplexConjugateToRealImageFilter.h>
 #  include <itkFFTRealToComplexConjugateImageFilter.h>
 #else
+#  if defined(USE_FFTWD) || defined(USE_FFTWF)
+#    include "itkFFTWForwardFFTImageFilter.h"
+#    include "itkFFTWInverseFFTImageFilter.h"
+#  endif
 #  include <itkForwardFFTImageFilter.h>
-#endif
-#if ITK_VERSION_MAJOR <= 3
-#  include <itkFFTComplexConjugateToRealImageFilter.h>
-#else
 #  include <itkInverseFFTImageFilter.h>
 #endif
 

@@ -156,6 +156,8 @@ DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
     idx[0] += (*from)[idx];
     idx[1]--;
   }
+  delete prev;
+  delete curr;
 }
 
 } // end of namespace rtk

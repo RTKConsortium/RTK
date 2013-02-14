@@ -24,7 +24,8 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
-::FDKConeBeamReconstructionFilter(): m_ProjectionSubsetSize(4)
+::FDKConeBeamReconstructionFilter():
+  m_ProjectionSubsetSize(16)
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -45,6 +46,16 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 #endif
   m_WeightFilter->InPlaceOn();
   m_BackProjectionFilter->SetTranspose(true);
+
+  // Default to one projection per subset when FFTW is not available
+#if !defined(USE_FFTWD)
+  if( typeid(TFFTPrecision).name() == typeid(double).name() )
+    m_ProjectionSubsetSize = 2;
+#endif
+#if !defined(USE_FFTWF)
+  if( typeid(TFFTPrecision).name() == typeid(float).name() )
+    m_ProjectionSubsetSize = 2;
+#endif
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>

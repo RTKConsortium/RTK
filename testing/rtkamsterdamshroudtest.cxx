@@ -75,7 +75,11 @@ int main(int, char** )
   typedef float                                      OutputPixelType;
   typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
   typedef itk::Image< reg1DPixelType, Dimension-2 >  reg1DImageType;
-  unsigned int NumberOfProjectionImages = 100;
+#if FAST_TESTS_NO_CHECKS
+  const unsigned int NumberOfProjectionImages = 3;
+#else
+  const unsigned int NumberOfProjectionImages = 100;
+#endif
 
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometryMain = GeometryType::New();

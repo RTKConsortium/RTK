@@ -17,7 +17,9 @@
  *=========================================================================*/
 
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkMacro.h"
 
+#include <algorithm>
 #include <itkCenteredEuler3DTransform.h>
 
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
@@ -166,6 +168,21 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
   //Last projection wraps the angle of the first one
   angularGaps[curr->second] = 0.5 * degreesToRadians * ( angles.begin()->first + 360 - prev->first );
 
+  // FIXME: Trick for the half scan in parallel geometry case
+  if(m_SourceToDetectorDistances[0]==0.)
+    {
+    std::vector<double>::iterator it = std::max_element(angularGaps.begin(), angularGaps.end());
+    if(*it>itk::Math::pi_over_2)
+      {
+      for(it=angularGaps.begin(); it<angularGaps.end(); it++)
+        {
+        if(*it>itk::Math::pi_over_2)
+          *it -= itk::Math::pi_over_2;
+        *it *= 2.;
+        }
+      }
+    }
+
   return angularGaps;
 }
 
@@ -224,9 +241,9 @@ ComputeProjectionMagnificationMatrix(double sdd, const double sid)
   Superclass::MatrixType matrix;
   matrix.Fill(0.0);
   for(unsigned int i=0; i<2; i++)
-    matrix[i][i] = sdd;
-  matrix[2][2] = 1.0;
-  matrix[2][3] = sid;
+    matrix[i][i] = (sdd==0.)?1.:sdd;
+  matrix[2][2] = (sdd==0.)?0.:1.;
+  matrix[2][3] = (sdd==0.)?1.:sid;
   return matrix;
 }
 
