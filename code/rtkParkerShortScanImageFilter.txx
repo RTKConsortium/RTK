@@ -45,10 +45,12 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   itOut.GoToBegin();
 
   // Not a short scan if less than 20 degrees max gap, => nothing to do
-  if( angularGaps[maxAngularGapPos] < itk::Math::pi / 9 )
+  // FIXME: do nothing in parallel geometry, currently handled with a trick in the geometry object
+  if( m_Geometry->GetSourceToDetectorDistances()[0] == 0. ||
+      angularGaps[maxAngularGapPos] < itk::Math::pi / 9 )
     {
-    if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
-                                               // required
+      if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
+                                                 // required
       {
       while(!itIn.IsAtEnd() )
         {

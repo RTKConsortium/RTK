@@ -36,11 +36,16 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   for(unsigned int k=0; k<m_AngularWeightsAndRampFactor.size(); k++)
     {
     // Add correction factor for ramp filter
-    const double sid  = m_Geometry->GetSourceToIsocenterDistances()[k];
     const double sdd  = m_Geometry->GetSourceToDetectorDistances()[k];
-    // Zoom + factor 1/2 in eq 176, page 106, Kak & Slaney
-    const double rampFactor = sdd / (2 * sid);
-    m_AngularWeightsAndRampFactor[k] *= rampFactor;
+    if(sdd==0.) // Parallel
+      m_AngularWeightsAndRampFactor[k] *= 0.5;
+    else        // Divergent
+      {
+      // Zoom + factor 1/2 in eq 176, page 106, Kak & Slaney
+      const double sid  = m_Geometry->GetSourceToIsocenterDistances()[k];
+      const double rampFactor = sdd / (2. * sid);
+      m_AngularWeightsAndRampFactor[k] *= rampFactor;
+      }
     }
 }
 
@@ -78,21 +83,30 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
                - m_Geometry->GetSourceOffsetsY()[k];
     const double sdd  = m_Geometry->GetSourceToDetectorDistances()[k];
     const double sdd2 = sdd * sdd;
-    double weight = sdd  * m_AngularWeightsAndRampFactor[k];
-
-    for(unsigned int j=0;
-                     j<outputRegionForThread.GetSize(1);
-                     j++, point[1] += pointIncrement[1])
+    if(sdd != 0.) // Divergent
       {
-      point[0] = pointBase[0]
-                 + m_Geometry->GetProjectionOffsetsX()[k]
-                 - m_Geometry->GetSourceOffsetsX()[k];
-      const double sdd2y2 = sdd2 + point[1]*point[1];
-      for(unsigned int i=0;
-                       i<outputRegionForThread.GetSize(0);
-                       i++, ++itI, ++itO, point[0] += pointIncrement[0])
+      double weight = sdd * m_AngularWeightsAndRampFactor[k];
+      for(unsigned int j=0;
+                       j<outputRegionForThread.GetSize(1);
+                       j++, point[1] += pointIncrement[1])
         {
-        itO.Set( itI.Get() * weight / sqrt( sdd2y2 + point[0]*point[0]) );
+        point[0] = pointBase[0]
+                   + m_Geometry->GetProjectionOffsetsX()[k]
+                   - m_Geometry->GetSourceOffsetsX()[k];
+        const double sdd2y2 = sdd2 + point[1]*point[1];
+        for(unsigned int i=0;
+                         i<outputRegionForThread.GetSize(0);
+                         i++, ++itI, ++itO, point[0] += pointIncrement[0])
+          itO.Set( itI.Get() * weight / sqrt( sdd2y2 + point[0]*point[0]) );
+        }
+      }
+    else // Parallel
+      {
+      double weight = m_AngularWeightsAndRampFactor[k];
+      for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++)
+        {
+        for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++, ++itI, ++itO)
+          itO.Set( itI.Get() * weight);
         }
       }
     }

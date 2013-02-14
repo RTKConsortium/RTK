@@ -24,7 +24,7 @@
 namespace rtk
 {
 /** \class ThreeDCircularProjectionGeometry
- * \brief Projection geometry for a point source and a 2-D flat panel.
+ * \brief Projection geometry for a source and a 2-D flat panel.
  *
  * The source and the detector rotate around a circle paremeterized
  * with the SourceToDetectorDistance and the SourceToIsocenterDistance.
@@ -35,6 +35,8 @@ namespace rtk
  * and OutOfPlaneAngles.
  * The source can be shifted in plane with the SourceOffsetsX
  * and the SourceOffsetsY.
+ * 
+ * If SDD equals 0., then one is dealing with a parallel geometry.
  *
  * \author Simon Rit
  *
