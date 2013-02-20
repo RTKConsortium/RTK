@@ -7,7 +7,7 @@ option "geometry"  g  "XML geometry file name"                                  
 option "path"      p  "Path containing projections"                              string   yes
 option "regexp"    r  "Regular expression to select projection files in path"    string   yes
 option "output"    o "Output projections file name"                              string   yes
-option "method"    m "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","Joseph","CudaFDKBackProjection","CudaBackProjection" enum no default="VoxelBasedBackProjection"
+option "method"    m "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","CudaFDKBackProjection","CudaBackProjection" enum no default="VoxelBasedBackProjection"
 
 section "Volume properties"
 option "origin"    - "Origin (default=centered)" double multiple no
@@ -15,3 +15,6 @@ option "dimension" - "Dimension"                 int    multiple no  default="25
 option "spacing"   - "Spacing"                   double multiple no  default="1"
 option "direction" - "Direction"                 double multiple no
 
+section "Warped backprojection"
+option "signal"    - "Signal file name"          string    yes
+option "dvf"       - "Input 4D DVF"              string    yes
