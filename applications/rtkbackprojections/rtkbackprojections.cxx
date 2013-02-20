@@ -22,11 +22,13 @@
 #include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkFDKBackProjectionImageFilter.h"
+#include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #if CUDA_FOUND
 #  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
 #endif
+#include "rtkCyclicDeformationImageFilter.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileReader.h>
@@ -92,6 +94,15 @@ int main(int argc, char * argv[])
   itk::TimeProbe bpProbe;
   rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
 
+  // In case warp backprojection is used, we create a deformation
+  typedef itk::Vector<float,3> DVFPixelType;
+  typedef itk::Image< DVFPixelType, 3 > DVFImageType;
+  typedef rtk::CyclicDeformationImageFilter< DVFImageType > DeformationType;
+  typedef itk::ImageFileReader<DeformationType::InputImageType> DVFReaderType;
+  DVFReaderType::Pointer dvfReader = DVFReaderType::New();
+  DeformationType::Pointer def = DeformationType::New();
+  def->SetInput(dvfReader->GetOutput());
+
   switch(args_info.method_arg)
   {
     case(method_arg_VoxelBasedBackProjection):
@@ -99,6 +110,19 @@ int main(int argc, char * argv[])
       break;
     case(method_arg_FDKBackProjection):
       bp = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+    case(method_arg_FDKWarpBackProjection):
+      if(!args_info.signal_given || !args_info.dvf_given)
+        {
+        std::cerr << "FDKWarpBackProjection requires input 4D deformation "
+                  << "vector field and signal file names"
+                  << std::endl;
+        return EXIT_FAILURE;
+        }
+      dvfReader->SetFileName(args_info.dvf_arg);
+      bp = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>::New();
+      def->SetSignalFilename(args_info.signal_arg);
+      dynamic_cast<rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>*>(bp.GetPointer())->SetDeformation(def);
       break;
     case(method_arg_Joseph):
       bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
