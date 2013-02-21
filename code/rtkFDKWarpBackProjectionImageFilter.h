@@ -48,12 +48,12 @@ class ITK_EXPORT FDKWarpBackProjectionImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef FDKWarpBackProjectionImageFilter                    Self;
-  typedef BackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
-  typedef typename TInputImage::PixelType                     InputPixelType;
-  typedef typename TOutputImage::RegionType                   OutputImageRegionType;
+  typedef FDKWarpBackProjectionImageFilter                       Self;
+  typedef FDKBackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                Pointer;
+  typedef itk::SmartPointer<const Self>                          ConstPointer;
+  typedef typename TInputImage::PixelType                        InputPixelType;
+  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
 
   typedef TDeformation                      DeformationType;
   typedef typename DeformationType::Pointer DeformationPointer;
@@ -68,7 +68,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FDKWarpBackProjectionImageFilter, ImageToImageFilter);
+  itkTypeMacro(FDKWarpBackProjectionImageFilter, FDKBackProjectionImageFilter);
 
   /** Set the deformation. */
   itkGetMacro(Deformation, DeformationPointer);
