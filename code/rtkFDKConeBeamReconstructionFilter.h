@@ -65,6 +65,7 @@ public:
   typedef rtk::FDKWeightProjectionFilter<InputImageType, OutputImageType>          WeightFilterType;
   typedef rtk::FFTRampImageFilter<OutputImageType, OutputImageType, TFFTPrecision> RampFilterType;
   typedef rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>      BackProjectionFilterType;
+  typedef typename BackProjectionFilterType::Pointer                               BackProjectionFilterPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -89,6 +90,12 @@ public:
   itkGetMacro(ProjectionSubsetSize, unsigned int);
   itkSetMacro(ProjectionSubsetSize, unsigned int);
 
+  /** Get / Set and init the backprojection filter. The set function takes care
+   * of initializing the mini-pipeline and the ramp filter must therefore be
+   * created before calling this set function. */
+  itkGetMacro(BackProjectionFilter, BackProjectionFilterPointer);
+  virtual void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
+
 protected:
   FDKConeBeamReconstructionFilter();
   ~FDKConeBeamReconstructionFilter(){}
@@ -104,10 +111,10 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer        m_ExtractFilter;
-  typename WeightFilterType::Pointer         m_WeightFilter;
-  typename RampFilterType::Pointer           m_RampFilter;
-  typename BackProjectionFilterType::Pointer m_BackProjectionFilter;
+  typename ExtractFilterType::Pointer m_ExtractFilter;
+  typename WeightFilterType::Pointer  m_WeightFilter;
+  typename RampFilterType::Pointer    m_RampFilter;
+  BackProjectionFilterPointer         m_BackProjectionFilter;
 
 private:
   //purposely not implemented

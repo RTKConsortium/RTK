@@ -33,19 +33,17 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
   m_ExtractFilter = ExtractFilterType::New();
   m_WeightFilter = WeightFilterType::New();
   m_RampFilter = RampFilterType::New();
-  m_BackProjectionFilter = BackProjectionFilterType::New();
+  this->SetBackProjectionFilter( BackProjectionFilterType::New() );
 
   //Permanent internal connections
   m_WeightFilter->SetInput( m_ExtractFilter->GetOutput() );
   m_RampFilter->SetInput( m_WeightFilter->GetOutput() );
-  m_BackProjectionFilter->SetInput( 1, m_RampFilter->GetOutput() );
 
   // Default parameters
 #if ITK_VERSION_MAJOR >= 4
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
 #endif
   m_WeightFilter->InPlaceOn();
-  m_BackProjectionFilter->SetTranspose(true);
 
   // Default to one projection per subset when FFTW is not available
 #if !defined(USE_FFTWD)
@@ -186,6 +184,20 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
      << ' ' << m_FilterProbe.GetUnit() << std::endl;
   os << "  Backprojection: " << m_BackProjectionProbe.GetTotal()
      << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
+}
+
+template<class TInputImage, class TOutputImage, class TFFTPrecision>
+void
+FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
+::SetBackProjectionFilter (const BackProjectionFilterPointer _arg)
+{
+  itkDebugMacro("setting BackProjectionFilter to " << _arg);
+  if (this->m_BackProjectionFilter != _arg)
+    {
+    this->m_BackProjectionFilter = _arg;
+    m_BackProjectionFilter->SetInput( 1, m_RampFilter->GetOutput() );
+    this->Modified();
+    }
 }
 
 } // end namespace rtk
