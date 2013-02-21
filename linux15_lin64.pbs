@@ -5,6 +5,7 @@
 #PBS -q gpu
 #PBS -W x=GRES:gpu@1
 
+rm -fr /tmp/RTK_dashboard
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda32.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda40.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda41.cmake
@@ -15,4 +16,5 @@ ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc454_cuda32.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc472_cuda32.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_valgrind.cmake -V
 
