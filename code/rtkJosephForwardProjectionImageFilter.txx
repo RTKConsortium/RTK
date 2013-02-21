@@ -212,6 +212,9 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
         // Accumulate
         itOut.Set( itIn.Get() + sum );
         }
+      else
+        itOut.Set( itIn.Get() );
+
       }
     }
 }
