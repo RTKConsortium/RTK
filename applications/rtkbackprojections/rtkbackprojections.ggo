@@ -16,5 +16,5 @@ option "spacing"   - "Spacing"                   double multiple no  default="1"
 option "direction" - "Direction"                 double multiple no
 
 section "Warped backprojection"
-option "signal"    - "Signal file name"          string    yes
-option "dvf"       - "Input 4D DVF"              string    yes
+option "signal"    - "Signal file name"          string    no
+option "dvf"       - "Input 4D DVF"              string    no
