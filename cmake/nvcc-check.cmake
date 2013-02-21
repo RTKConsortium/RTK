@@ -28,11 +28,11 @@ FUNCTION(FIND_GCC GCC_PATH GCC_MAJOR GCC_MINOR)
       # gcc-x.y not found, check default gcc
       FIND_PROGRAM(DEFAULT_GCC gcc)
       EXEC_PROGRAM(${DEFAULT_GCC} ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
-  
+
       # Get major and minor revs
       STRING(REGEX REPLACE "^([0-9]+)\\..*" "\\1" GCCVER_MAJOR "${GCCVER}")
       STRING(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1" GCCVER_MINOR "${GCCVER}")
-  
+
       # Check that adequate
       IF("${GCCVER_MAJOR}" MATCHES "${GCC_MAJOR}" AND "${GCCVER_MINOR}" MATCHES "${GCC_MINOR}")
         SET(GCC_PATH ${DEFAULT_GCC} PARENT_SCOPE)
@@ -61,6 +61,9 @@ IF(CUDA_FOUND)
     IF(NOT GCC_PATH)
       FIND_GCC(GCC_PATH "4" "2")
     ENDIF()
+    IF(NOT GCC_PATH)
+      FIND_GCC(GCC_PATH "3" "4")
+    ENDIF()
 
     IF(GCC_PATH)
       MESSAGE(STATUS "nvcc-check: Found adequate gcc (${GCC_PATH})... telling nvcc to use it!")
@@ -80,7 +83,7 @@ IF(CUDA_FOUND)
       #               valid... resulting in TONS of warnings.  So, we go
       #               version checking again, this time nvcc...
       # Get the nvcc version number
-      
+
       # This issue seems to be only if cuda is installed in system so test CUDA_INCLUDE_DIRS
       # (see http://nvidia.custhelp.com/app/answers/detail/a_id/2869/~/linux-based-cuda-v3.x-compiler-issue-affecting-cuda-surface-apis)
       IF(CUDA_VERSION_MAJOR MATCHES "3" AND CUDA_VERSION_MINOR MATCHES "2" AND CUDA_INCLUDE_DIRS MATCHES "/usr/include")
