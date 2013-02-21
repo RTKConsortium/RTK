@@ -32,6 +32,8 @@
 #if OPENCL_FOUND
 # include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
 #endif
+#include "rtkFDKWarpBackProjectionImageFilter.h"
+#include "rtkCyclicDeformationImageFilter.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkStreamingImageFilter.h>
@@ -106,6 +108,22 @@ int main(int argc, char * argv[])
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfdk>(constantImageSource, args_info);
 
+  // Motion-compensated objects for the compensation of a cyclic deformation.
+  // Although these will only be used if the command line options for motion
+  // compensation are set, we still create the object before hand to avoid auto
+  // destruction.
+  typedef itk::Vector<float,3> DVFPixelType;
+  typedef itk::Image< DVFPixelType, 3 > DVFImageType;
+  typedef rtk::CyclicDeformationImageFilter< DVFImageType > DeformationType;
+  typedef itk::ImageFileReader<DeformationType::InputImageType> DVFReaderType;
+  DVFReaderType::Pointer dvfReader = DVFReaderType::New();
+  DeformationType::Pointer def = DeformationType::New();
+  def->SetInput(dvfReader->GetOutput());
+  typedef rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType> WarpBPType;
+  WarpBPType::Pointer bp = WarpBPType::New();
+  bp->SetDeformation(def);
+  bp->SetGeometry( geometryReader->GetOutputObject() );
+
   // This macro sets options for fdk filter which I can not see how to do better
   // because TFFTPrecision is not the same, e.g. for CPU and CUDA (SR)
 #define SET_FELDKAMP_OPTIONS(f) \
@@ -128,7 +146,15 @@ int main(int argc, char * argv[])
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
     feldkamp = FDKCPUType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKCPUType*>(feldkamp.GetPointer()) );
+    SET_FELDKAMP_OPTIONS( dynamic_cast<FDKCPUType*>(feldkamp.GetPointer()) );
+
+    // Motion compensated CBCT settings
+    if(args_info.signal_given && args_info.dvf_given)
+      {
+      dvfReader->SetFileName(args_info.dvf_arg);
+      def->SetSignalFilename(args_info.signal_arg);
+      dynamic_cast<FDKCPUType*>(feldkamp.GetPointer())->SetBackProjectionFilter( bp.GetPointer() );
+      }
     }
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {

@@ -21,3 +21,7 @@ option "origin"    - "Origin (default=centered)" double multiple no
 option "dimension" - "Dimension"                 int    multiple no  default="256"
 option "spacing"   - "Spacing"                   double multiple no  default="1"
 option "direction" - "Direction"                 double multiple no
+
+section "Motion-compensation described in [Rit et al, TMI, 2009] and [Rit et al, Med Phys, 2009]"
+option "signal"    - "Signal file name"          string    no
+option "dvf"       - "Input 4D DVF"              string    no
