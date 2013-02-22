@@ -29,9 +29,9 @@
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class TInterpolationWeightMultiplication>
 void
-JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage, TInterpolationWeightMultiplication>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType itkNotUsed(threadId) )
 {
@@ -219,9 +219,9 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
     }
 }
 
-template <class TInputImage, class TOutputImage>
-typename JosephForwardProjectionImageFilter<TInputImage,TOutputImage>::OutputPixelType
-JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
+template <class TInputImage, class TOutputImage, class TInterpolationWeightMultiplication>
+typename JosephForwardProjectionImageFilter<TInputImage, TOutputImage, TInterpolationWeightMultiplication>::OutputPixelType
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage, TInterpolationWeightMultiplication>
 ::BilinearInterpolation(const InputPixelType *pxiyi,
                         const InputPixelType *pxsyi,
                         const InputPixelType *pxiys,
@@ -238,10 +238,10 @@ JosephForwardProjectionImageFilter<TInputImage,TOutputImage>
   CoordRepType ly = y - iy;
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
-  return lxc * lyc * pxiyi[ idx ] +
-         lx  * lyc * pxsyi[ idx ] +
-         lxc * ly  * pxiys[ idx ] +
-         lx  * ly  * pxsys[ idx ];
+  return m_InterpolationWeightMultiplication(lxc * lyc, pxiyi, idx) +
+         m_InterpolationWeightMultiplication(lx  * lyc, pxsyi, idx) +
+         m_InterpolationWeightMultiplication(lxc * ly , pxiys, idx) +
+         m_InterpolationWeightMultiplication(lx  * ly , pxsys, idx);
 /* Alternative slower solution
   const unsigned int ix = itk::Math::Floor(x);
   const unsigned int iy = itk::Math::Floor(y);

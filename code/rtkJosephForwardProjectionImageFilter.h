@@ -24,6 +24,39 @@
 
 namespace rtk
 {
+namespace Functor
+{
+/** \class InterpolationWeightMultiplication
+ * \brief Function to accumulate the interpolation weights and the volume values.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
+class InterpolationWeightMultiplication
+{
+public:
+  InterpolationWeightMultiplication() {};
+  ~InterpolationWeightMultiplication() {};
+  bool operator!=( const InterpolationWeightMultiplication & ) const {
+    return false;
+  }
+  bool operator==(const InterpolationWeightMultiplication & other) const
+  {
+    return !( *this != other );
+  }
+
+  inline TOutput operator()( const TCoordRepType weight,
+                             const TInput *p,
+                             const unsigned int i ) const
+  {
+    return weight*p[i];
+  }
+private:
+};
+} // end namespace Functor
+
 
 /** \class JosephForwardProjectionImageFilter
  * \brief Joseph forward projection.
@@ -36,7 +69,10 @@ namespace rtk
  * \ingroup Projector
  */
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage,
+          class TOutputImage,
+          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType, double>
+          >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
 {
@@ -80,6 +116,8 @@ protected:
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
+
+  TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
 };
 
 } // end namespace rtk
