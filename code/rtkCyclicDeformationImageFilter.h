@@ -91,14 +91,14 @@ private:
 
   unsigned int m_Frame;
 
-  std::string m_SignalFilename;
+  std::string         m_SignalFilename;
   std::vector<double> m_Signal;
 
   // Linear interpolation position and weights
   unsigned int m_FrameInf;
   unsigned int m_FrameSup;
-  double m_WeightInf;
-  double m_WeightSup;
+  double       m_WeightInf;
+  double       m_WeightSup;
 };
 
 } // end namespace rtk
