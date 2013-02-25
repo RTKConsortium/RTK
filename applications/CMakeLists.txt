@@ -1,5 +1,11 @@
 FIND_PACKAGE(Gengetopt)
 
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# add path to RTK libraries to the install path
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
 #=========================================================
 # Executables
 ADD_SUBDIRECTORY(rtkprojections)
