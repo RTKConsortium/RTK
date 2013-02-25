@@ -86,7 +86,7 @@ private:
   FDKWarpBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                   //purposely not implemented
 
-  DeformationPointer m_Deformation;
+  DeformationPointer    m_Deformation;
   itk::Barrier::Pointer m_Barrier;
 };
 
