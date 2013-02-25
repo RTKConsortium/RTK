@@ -27,7 +27,8 @@ namespace rtk
 namespace Functor
 {
 /** \class InterpolationWeightMultiplication
- * \brief Function to accumulate the interpolation weights and the volume values.
+ * \brief Function to multiply the interpolation weights with the projected
+ * volume values.
  *
  * \author Simon Rit
  *
@@ -47,14 +48,53 @@ public:
     return !( *this != other );
   }
 
-  inline TOutput operator()( const TCoordRepType weight,
+  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+                             const double itkNotUsed(stepLengthInVoxel),
+                             const TCoordRepType weight,
                              const TInput *p,
                              const unsigned int i ) const
   {
     return weight*p[i];
   }
-private:
 };
+
+/** \class ProjectedValueAccumulation
+ * \brief Function to accumulate the ray casting on the projection.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TInput, class TOutput >
+class ProjectedValueAccumulation
+{
+public:
+  typedef itk::Vector<double, 3> VectorType;
+
+  ProjectedValueAccumulation() {};
+  ~ProjectedValueAccumulation() {};
+  bool operator!=( const ProjectedValueAccumulation & ) const
+    {
+    return false;
+    }
+  bool operator==(const ProjectedValueAccumulation & other) const
+    {
+    return !( *this != other );
+    }
+
+  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+                             const TInput &input,
+                             const TOutput &rayCastValue,
+                             const VectorType &stepInMM,
+                             const VectorType &itkNotUsed(source),
+                             const VectorType &itkNotUsed(sourceToPixel),
+                             const VectorType &itkNotUsed(nearestPoint),
+                             const VectorType &itkNotUsed(farthestPoint)) const
+    {
+    return input + rayCastValue * stepInMM.GetNorm();
+    }
+};
+
 } // end namespace Functor
 
 
@@ -71,7 +111,8 @@ private:
 
 template <class TInputImage,
           class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType, double>
+          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType, double>,
+          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>
           >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
@@ -94,6 +135,31 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(JosephForwardProjectionImageFilter, ForwardProjectionImageFilter);
 
+  /** Get/Set the functor that is used to multiply each interpolation value with a volume value */
+  TInterpolationWeightMultiplication &       GetInterpolationWeightMultiplication() { return m_InterpolationWeightMultiplication; }
+  const TInterpolationWeightMultiplication & GetInterpolationWeightMultiplication() const { return m_InterpolationWeightMultiplication; }
+  void SetInterpolationWeightMultiplication(const TInterpolationWeightMultiplication & _arg)
+  {
+    if ( m_InterpolationWeightMultiplication != _arg )
+      {
+      m_InterpolationWeightMultiplication = _arg;
+      this->Modified();
+      }
+  }
+
+  /** Get/Set the functor that is used to accumulate values in the projection image after the ray
+   * casting has been performed. */
+  TProjectedValueAccumulation &       GetProjectedValueAccumulation() { return m_ProjectedValueAccumulation; }
+  const TProjectedValueAccumulation & GetProjectedValueAccumulation() const { return m_ProjectedValueAccumulation; }
+  void SetProjectedValueAccumulation(const TProjectedValueAccumulation & _arg)
+  {
+    if ( m_ProjectedValueAccumulation != _arg )
+      {
+      m_ProjectedValueAccumulation = _arg;
+      this->Modified();
+      }
+  }
+
 protected:
   JosephForwardProjectionImageFilter() {}
   virtual ~JosephForwardProjectionImageFilter() {}
@@ -104,20 +170,23 @@ protected:
    * to verify. */
   virtual void VerifyInputInformation() {}
 
-  inline OutputPixelType BilinearInterpolation(const InputPixelType *pxiyi,
+  inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
+                                               const double stepLengthInVoxel,
+                                               const InputPixelType *pxiyi,
                                                const InputPixelType *pxsyi,
                                                const InputPixelType *pxiys,
                                                const InputPixelType *pxsys,
                                                const double x,
                                                const double y,
                                                const unsigned int ox,
-                                               const unsigned int oy) const;
+                                               const unsigned int oy);
 
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
 
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
+  TProjectedValueAccumulation        m_ProjectedValueAccumulation;
 };
 
 } // end namespace rtk
