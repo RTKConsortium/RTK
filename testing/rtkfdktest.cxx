@@ -205,7 +205,7 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
   std::cout << "Test PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 3: 45 degree tilt direction ******" << std::endl;
+   std::cout << "\n\n****** Case 3: 45 degree tilt direction ******" << std::endl;
 
   direction[0][0] = 0.70710678118;
   direction[0][1] = -0.70710678118;
@@ -227,7 +227,7 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
   std::cout << "Test PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 4: streaming ******" << std::endl;
+ std::cout << "\n\n****** Case 4: streaming ******" << std::endl;
 
   // Make sure that the data will be recomputed by releasing them
   fov->GetOutput()->ReleaseData();
@@ -236,10 +236,23 @@ int main(int, char** )
   StreamingType::Pointer streamer = StreamingType::New();
   streamer->SetInput(0, fov->GetOutput());
   streamer->SetNumberOfStreamDivisions(8);
-  streamer->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() );
 
   CheckImageQuality<OutputImageType>(streamer->GetOutput(), dsl->GetOutput());
   std::cout << "Test PASSED! " << std::endl;
 
+  std::cout << "\n\n****** Case 5: small ROI ******" << std::endl;
+  origin[0] = -5.;
+  origin[1] = -13.;
+  origin[2] = -20.;
+  size[0] = 64;
+  size[1] = 64;
+  size[2] = 64;
+  tomographySource->SetOrigin( origin );
+  tomographySource->SetSize( size );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( fov->UpdateLargestPossibleRegion() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->UpdateLargestPossibleRegion() )
+  CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
+  std::cout << "Test PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }
