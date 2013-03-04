@@ -45,9 +45,6 @@ CudaFDKBackProjectionImageFilter
   m_VolumeDimension[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   m_VolumeDimension[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
-  m_ProjectionDimension[0] = this->GetInput(1)->GetRequestedRegion().GetSize()[0];
-  m_ProjectionDimension[1] = this->GetInput(1)->GetRequestedRegion().GetSize()[1];
-
   // Cuda init
   std::vector<int> devices = GetListOfCudaDevices();
   if(devices.size()>1)
@@ -107,6 +104,10 @@ CudaFDKBackProjectionImageFilter
     matrixIdxVol[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     rotCenterIndex[i] -= this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     }
+
+  // Update projection dimension
+  m_ProjectionDimension[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
+  m_ProjectionDimension[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
 
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)

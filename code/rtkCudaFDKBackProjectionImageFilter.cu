@@ -203,10 +203,7 @@ CUDA_reconstruct_conebeam_init(
   CUDA_CHECK_ERROR;
   cudaMemset( (void *) dev_vol, 0, vol_size_malloc);
 
-  cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  cudaMallocArray( (cudaArray **)&dev_img, &channelDesc, img_dim[0], img_dim[1] );
-
-  // set texture parameters
+ // set texture parameters
   tex_img.addressMode[0] = cudaAddressModeClamp;
   tex_img.addressMode[1] = cudaAddressModeClamp;
   tex_img.filterMode = cudaFilterModeLinear;
@@ -227,7 +224,7 @@ CUDA_reconstruct_conebeam(
 {
   // copy image data, bind the array to the texture
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-
+  cudaMallocArray( (cudaArray **)&dev_img, &channelDesc, img_dim[0], img_dim[1] );
   cudaMemcpyToArray( (cudaArray*)dev_img, 0, 0, proj, img_dim[0] * img_dim[1] * sizeof(float), cudaMemcpyHostToDevice);
   cudaBindTextureToArray( tex_img, (cudaArray*)dev_img, channelDesc);
 
@@ -300,6 +297,8 @@ CUDA_reconstruct_conebeam(
   // Unbind the image and projection matrix textures
   cudaUnbindTexture (tex_img);
   cudaUnbindTexture (tex_matrix);
+  cudaFreeArray ((cudaArray*)dev_img);
+  CUDA_CHECK_ERROR;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -322,8 +321,6 @@ CUDA_reconstruct_conebeam_cleanup(
   CUDA_CHECK_ERROR;
 
   // Cleanup
-  cudaFreeArray ((cudaArray*)dev_img);
-  CUDA_CHECK_ERROR;
   cudaFree (dev_matrix);
   CUDA_CHECK_ERROR;
   cudaFree (dev_vol);
