@@ -159,7 +159,17 @@ JosephForwardProjectionImageFilter<TInputImage,
 
         // If its a corner, we can skip
         if( fs<ns )
-          continue;
+          {
+          itOut.Set( m_ProjectedValueAccumulation(threadId,
+                                                  itIn.Get(),
+                                                  0.,
+                                                  &(sourcePosition[0]),
+                                                  &(sourcePosition[0]),
+                                                  dirVox,
+                                                  &(sourcePosition[0]),
+                                                  &(sourcePosition[0])) );
+           continue;
+           }
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
