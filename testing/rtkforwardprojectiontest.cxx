@@ -144,11 +144,11 @@ int main(int , char** )
   rbi->InPlaceOff();
   rbi->SetInput( projInput->GetOutput() );
   VectorType boxMin, boxMax;
-  boxMin[0] = -128.0;
-  boxMin[1] = -128.0;
-  boxMin[2] = -128.0;
-  boxMax[0] =  128.0;
-  boxMax[1] =  128.0;
+  boxMin[0] = -126.0;
+  boxMin[1] = -126.0;
+  boxMin[2] = -126.0;
+  boxMax[0] =  126.0;
+  boxMax[1] =  126.0;
   boxMax[2] =   47.6;
   rbi->SetBoxMin(boxMin);
   rbi->SetBoxMax(boxMax);
@@ -178,7 +178,7 @@ int main(int , char** )
   }
 
   std::cout << "\n\n****** Case 2: outer ray source ******" << std::endl;
-  boxMax[2] = 128.0;
+  boxMax[2] = 126.0;
   rbi->SetBoxMax(boxMax);
 
   // Geometry
