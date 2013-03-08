@@ -65,8 +65,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   cornerSup[2] = reqRegion.GetIndex(2) + reqRegion.GetSize(2);
 
   // Go over each projection
-  int iFirstProj = reqRegion.GetIndex(Dimension-1);
-  int nProj = reqRegion.GetSize(Dimension-1);
+  const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
+  const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
   this->SetTranspose(false);
   for(int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
