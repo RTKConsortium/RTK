@@ -91,8 +91,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       // Check if camera is in
       for(unsigned int i=0; i<Dimension; i++)
         {
-        if(t[i]<this->GetInput()->GetRequestedRegion().GetIndex()[i] ||
-           t[i]>this->GetInput()->GetRequestedRegion().GetIndex()[i]+this->GetInput()->GetRequestedRegion().GetSize()[i]-1)
+        if(t[i]<this->GetInput()->GetRequestedRegion().GetIndex()[i]-0.5 ||
+           t[i]>this->GetInput()->GetRequestedRegion().GetIndex()[i]+this->GetInput()->GetRequestedRegion().GetSize()[i]-0.5)
           cameraIsIn = false;
         }
 
