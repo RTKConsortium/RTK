@@ -67,11 +67,6 @@ JosephForwardProjectionImageFilter<TInputImage,
       {
       boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i]+0.001;  // To avoid numerical errors
       boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i]-1.001;  // To avoid numerical errors
-      if(i==j)
-        {
-        boxMin[i] -= 0.5;
-        boxMax[i] += 0.5;
-        }
       }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
@@ -159,7 +154,17 @@ JosephForwardProjectionImageFilter<TInputImage,
 
         // If its a corner, we can skip
         if( fs<ns )
-          continue;
+          {
+          itOut.Set( m_ProjectedValueAccumulation(threadId,
+                                                  itIn.Get(),
+                                                  0.,
+                                                  &(sourcePosition[0]),
+                                                  &(sourcePosition[0]),
+                                                  dirVox,
+                                                  &(sourcePosition[0]),
+                                                  &(sourcePosition[0])) );
+           continue;
+           }
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
