@@ -105,8 +105,8 @@ CudaForwardProjectionImageFilter
   float boxMax[3];
   for(unsigned int i=0; i<3; i++)
     {
-      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
-      boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i];
+      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i]+0.5;
+      boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i]-1.0;
     }
 
   // Getting Spacing
