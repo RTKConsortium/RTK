@@ -20,6 +20,7 @@
 #define __rtkBackProjectionImageFilter_txx
 
 #include "rtkHomogeneousMatrix.h"
+#include "rtkMacro.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -73,40 +74,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     // Extract the current slice
     ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj);
 
-    // Find source coordinates (http://en.wikipedia.org/wiki/Camera_matrix)
-    itk::Matrix<double,Dimension,Dimension> R;
-    itk::Vector<double,Dimension> t;
-    for(unsigned int i=0; i<Dimension; i++)
-      {
-      t[i] = matrix[i][Dimension];
-      for(unsigned int j=0; j<Dimension; j++)
-        R[i][j] = matrix[i][j];
-      }
-    if(vnl_determinant(R.GetVnlMatrix()) != 0.0) // Divergent projection
-      {
-      R = R.GetInverse();
-      t = -1.*(R*t);
-      bool cameraIsIn = true;
-
-      // Check if camera is in
-      for(unsigned int i=0; i<Dimension; i++)
-        {
-        if(t[i]<this->GetInput()->GetRequestedRegion().GetIndex()[i]-0.5 ||
-           t[i]>this->GetInput()->GetRequestedRegion().GetIndex()[i]+this->GetInput()->GetRequestedRegion().GetSize()[i]-0.5)
-          cameraIsIn = false;
-        }
-
-      // The source point is in the volume so any part of the projection
-      // image will be in the volume, just request the largest
-      if(cameraIsIn)
-        {
-        inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
-        return;
-        }
-      }
-
     // Check which part of the projection image will be backprojected in the
     // volume.
+    double firstPerspFactor;
     for(int cz=0; cz<2; cz++)
       for(int cy=0; cy<2; cy++)
         for(int cx=0; cx<2; cx++)
@@ -132,6 +102,19 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
           perspFactor = 1/perspFactor;
           for(unsigned int i=0; i<Dimension-1; i++)
             point[i] = point[i]*perspFactor;
+
+          // Check if corners all have the same perspective factor sign.
+          // If not, source is too close for easily computing a smaller requested
+          // region than the largest possible one.
+          if(cx+cy+cz==0)
+            firstPerspFactor = perspFactor;
+          if(perspFactor*firstPerspFactor < 0.) // Change of sign
+            {
+            inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+            return;
+            }
+
+          // Look for extremas on projection to calculate requested region
           for(int i=0; i<2; i++)
             {
             cornerInf[i] = vnl_math_min(cornerInf[i], point[i]);
