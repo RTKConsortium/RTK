@@ -151,7 +151,7 @@ DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   while (idx[1] != inputIdx[1])
   {
     outputIdx[0]--;
-    value += (*from)[idx] * input->GetSpacing()[0];
+    value -= (*from)[idx] * input->GetSpacing()[0];
     (*output)[outputIdx] = value;
     idx[0] += (*from)[idx];
     idx[1]--;
