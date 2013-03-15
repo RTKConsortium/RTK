@@ -184,7 +184,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
     extractor->SetDirectionCollapseToIdentity();
 #endif
     extractor->Update();
-    pos += register1D(prev, extractor->GetOutput());
+    pos -= register1D(prev, extractor->GetOutput());
     outputIdx[0] = i;
     (*output)[outputIdx] = pos;
     duplicator->SetInputImage(extractor->GetOutput());
