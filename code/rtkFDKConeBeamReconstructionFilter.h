@@ -22,6 +22,7 @@
 #include "rtkFDKWeightProjectionFilter.h"
 #include "rtkFFTRampImageFilter.h"
 #include "rtkFDKBackProjectionImageFilter.h"
+#include "rtkConfiguration.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkTimeProbe.h>
