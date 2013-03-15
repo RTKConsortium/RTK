@@ -44,18 +44,14 @@ namespace rtk
 #cmakedefine01 OPENCL_FOUND
 #cmakedefine RTK_BUILD_SHARED_LIBS 1
 
-/* This code is for exporting symbols when building DLLs on windows */
-#if (!defined (BUILD_AGAINST_SLICER3) && (defined(_WIN32) || defined(WIN32)) && (defined (BUILD_SHARED_LIBS) || defined (RTK_BUILD_SHARED_LIBS)))
-# ifdef gpuit_EXPORTS
-#  define gpuit_EXPORT __declspec(dllexport)
-# else
-#  define gpuit_EXPORT __declspec(dllimport)
-# endif
-#else
-/* unix needs nothing */
-#define gpuit_EXPORT
-#endif
-
 #define RTK_BINARY_DIR "@RTK_BINARY_DIR@"
+
+/* Fix for ITK4 */
+#if defined(ITK_USE_FFTWF) && !defined(USE_FFTWF)
+#  define USE_FFTWF
+#endif
+#if defined(ITK_USE_FFTWD) && !defined(USE_FFTWD)
+#  define USE_FFTWD
+#endif
 
 #endif
