@@ -22,6 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
+#include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -65,13 +66,26 @@ int main(int argc, char * argv[])
   slp->SetInput(constantImageSource->GetOutput());
   slp->SetGeometry(geometryReader->GetOutputObject());
   slp->SetPhantomScale(args_info.phantomscale_arg);
-  slp->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
+
+  // Add noise
+  OutputImageType::Pointer output = slp->GetOutput();
+  if(args_info.noise_given)
+    {
+    typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
+    NIFType::Pointer noisy=NIFType::New();
+    noisy->SetInput( slp->GetOutput() );
+    noisy->SetMean( 0.0 );
+    noisy->SetStandardDeviation( args_info.noise_arg );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() );
+    output = noisy->GetOutput();
+    }
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( slp->GetOutput() );
+  writer->SetInput( output );
   if(args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
