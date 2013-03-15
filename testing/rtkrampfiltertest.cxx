@@ -16,9 +16,14 @@
 #include "rtkTestConfiguration.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
-#include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
+
+#ifdef USE_CUDA
+#  include "rtkCudaFDKConeBeamReconstructionFilter.h"
+#else
+#  include "rtkFDKConeBeamReconstructionFilter.h"
+#endif
 
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon,
@@ -174,8 +179,12 @@ int main(int , char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
   // FDK reconstruction filtering
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
-  FDKCPUType::Pointer feldkamp = FDKCPUType::New();
+#ifdef USE_CUDA
+  typedef rtk::CudaFDKConeBeamReconstructionFilter                FDKType;
+#else
+  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKType;
+#endif
+  FDKType::Pointer feldkamp = FDKType::New();
   feldkamp->SetInput( 0, tomographySource->GetOutput() );
   feldkamp->SetInput( 1, noisy->GetOutput() );
   feldkamp->SetGeometry( geometry );
@@ -184,14 +193,19 @@ int main(int , char** )
 
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 1.05, 1.06, 40, 0.13);
 
+  std::cout << "\n\n****** Test 1.5: add noise and test HannY window ******" << std::endl;
+  feldkamp->GetRampFilter()->SetHannCutFrequencyY(0.8);
+  feldkamp->Modified();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 1.05, 1.06, 40, 0.13);
+
   std::cout << "\n\n****** Test 2: smaller detector and test data padding for truncation ******" << std::endl;
 
   size[0] = 114;
   projectionsSource->SetSize( size );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->UpdateLargestPossibleRegion() );
 
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
-  FDKCPUType::Pointer feldkampCropped = FDKCPUType::New();
+  FDKType::Pointer feldkampCropped = FDKType::New();
   feldkampCropped->SetInput( 0, tomographySource->GetOutput() );
   feldkampCropped->SetInput( 1, slp->GetOutput() );
   feldkampCropped->SetGeometry( geometry );
