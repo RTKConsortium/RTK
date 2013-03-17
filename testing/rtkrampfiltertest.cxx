@@ -2,6 +2,12 @@
 #ifdef RAMP_FILTER_TEST_WITHOUT_FFTW
 #  include "rtkConfiguration.h"
 #  include <itkImageToImageFilter.h>
+#  if defined(ITK_USE_FFTWF)
+#    undef ITK_USE_FFTWF
+#  endif
+#  if defined(ITK_USE_FFTWD)
+#    undef ITK_USE_FFTWD
+#  endif
 #  if defined(USE_FFTWF)
 #    undef USE_FFTWF
 #  endif
