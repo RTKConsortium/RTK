@@ -29,12 +29,8 @@
 #  include <itkFFTComplexConjugateToRealImageFilter.h>
 #  include <itkFFTRealToComplexConjugateImageFilter.h>
 #else
-#  if defined(USE_FFTWD) || defined(USE_FFTWF)
-#    include "itkFFTWForwardFFTImageFilter.h"
-#    include "itkFFTWInverseFFTImageFilter.h"
-#  endif
-#  include <itkForwardFFTImageFilter.h>
-#  include <itkInverseFFTImageFilter.h>
+#  include <itkRealToHalfHermitianForwardFFTImageFilter.h>
+#  include <itkHalfHermitianToRealInverseFFTImageFilter.h>
 #endif
 
 #include <itkImageRegionIterator.h>
@@ -77,6 +73,13 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   this->CallCopyOutputRegionToInputRegion(inputRegion, this->GetOutput()->GetRequestedRegion() );
   inputRegion.SetIndex(0, this->GetOutput()->GetLargestPossibleRegion().GetIndex(0) );
   inputRegion.SetSize(0, this->GetOutput()->GetLargestPossibleRegion().GetSize(0) );
+
+  // Also enlarge along dim 1 if hann is set in that direction
+  if(m_HannCutFrequencyY>0.)
+    {
+    inputRegion.SetIndex(1, this->GetOutput()->GetLargestPossibleRegion().GetIndex(1) );
+    inputRegion.SetSize(1, this->GetOutput()->GetLargestPossibleRegion().GetSize(1) );
+    }
   input->SetRequestedRegion( inputRegion );
 }
 
@@ -119,15 +122,17 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
   // Pad image region enlarged along X
   RegionType enlargedRegionX = outputRegionForThread;
-  enlargedRegionX.SetIndex(0, this->GetOutput()->GetLargestPossibleRegion().GetIndex(0) );
-  enlargedRegionX.SetSize(0, this->GetOutput()->GetLargestPossibleRegion().GetSize(0) );
+  enlargedRegionX.SetIndex(0, this->GetInput()->GetRequestedRegion().GetIndex(0) );
+  enlargedRegionX.SetSize(0, this->GetInput()->GetRequestedRegion().GetSize(0) );
+  enlargedRegionX.SetIndex(1, this->GetInput()->GetRequestedRegion().GetIndex(1) );
+  enlargedRegionX.SetSize(1, this->GetInput()->GetRequestedRegion().GetSize(1) );
   FFTInputImagePointer paddedImage = PadInputImageRegion(enlargedRegionX);
 
   // FFT padded image
 #if ITK_VERSION_MAJOR <= 3
   typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
 #else
-  typedef itk::ForwardFFTImageFilter< FFTInputImageType > FFTType;
+  typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType > FFTType;
 #endif
   typename FFTType::Pointer fftI = FFTType::New();
   fftI->SetInput( paddedImage );
@@ -156,7 +161,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 #if ITK_VERSION_MAJOR <= 3
   typedef itk::FFTComplexConjugateToRealImageFilter< FFTPrecisionType, ImageDimension > IFFTType;
 #else
-  typedef itk::InverseFFTImageFilter< typename FFTType::OutputImageType > IFFTType;
+  typedef itk::HalfHermitianToRealInverseFFTImageFilter< typename FFTType::OutputImageType > IFFTType;
 #endif
   typename IFFTType::Pointer ifft = IFFTType::New();
   ifft->SetInput( fftI->GetOutput() );
@@ -330,7 +335,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 #if ITK_VERSION_MAJOR <= 3
   typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
 #else
-  typedef itk::ForwardFFTImageFilter< FFTInputImageType > FFTType;
+  typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType > FFTType;
 #endif
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
@@ -342,13 +347,15 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion() );
 
   unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
-#if !defined(USE_FFTWD)
+#if ITK_VERSION_MAJOR <= 3
+#  if !defined(USE_FFTWD)
   if( typeid(TFFTPrecision).name() == typeid(double).name() )
     n = n/2+1;
-#endif
-#if !defined(USE_FFTWF)
+#  endif
+#  if !defined(USE_FFTWF)
   if( typeid(TFFTPrecision).name() == typeid(float).name() )
     n = n/2+1;
+#  endif
 #endif
 
   itK.GoToBegin();
@@ -379,7 +386,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   for(; !itK.IsAtEnd(); ++itK)
     {
     // FFTW returns only the first half whereas vnl return the mirrored fft
-#if !defined(USE_FFTWD)
+#if ITK_VERSION_MAJOR <= 3
+#  if !defined(USE_FFTWD)
     if(typeid(TFFTPrecision).name() == typeid(double).name() && (unsigned int)itK.GetIndex()[0]>n)
       {
       typename FFTType::OutputImageType::IndexType mirroredIndex = itK.GetIndex();
@@ -387,8 +395,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
       itK.Set( fftK->GetOutput()->GetPixel(mirroredIndex) );
       }
     else
-#endif
-#if !defined(USE_FFTWF)
+#  endif
+#  if !defined(USE_FFTWF)
     if(typeid(TFFTPrecision).name() == typeid(float).name() && (unsigned int)itK.GetIndex()[0]>n)
       {
       typename FFTType::OutputImageType::IndexType mirroredIndex = itK.GetIndex();
@@ -396,6 +404,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
       itK.Set( fftK->GetOutput()->GetPixel(mirroredIndex) );
       }
     else
+#  endif
 #endif
     itK.Set( itK.Get() * TFFTPrecision(0.) );
     }
