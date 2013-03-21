@@ -50,7 +50,7 @@ public:
   /** Runtime information support. */
   itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
 protected:
-  CudaFFTRampImageFilter(){}
+  CudaFFTRampImageFilter();
   ~CudaFFTRampImageFilter(){}
 
   virtual void GenerateData();
