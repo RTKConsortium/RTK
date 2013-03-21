@@ -24,10 +24,8 @@
 rtk::CudaFFTRampImageFilter
 ::CudaFFTRampImageFilter()
 {
-  // We use FFTW for the kernel so we need to do the same thing as in the parent
-#if defined(USE_FFTWF)
-  this->SetGreatestPrimeFactor(13);
-#endif
+  // Temporary fix for bug #1939
+  this->SetGreatestPrimeFactor(2);
 }
 
 void
