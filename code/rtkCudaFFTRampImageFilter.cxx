@@ -21,13 +21,6 @@
 
 #include <itkMacro.h>
 
-rtk::CudaFFTRampImageFilter
-::CudaFFTRampImageFilter()
-{
-  // Temporary fix for bug #1939
-  this->SetGreatestPrimeFactor(2);
-}
-
 void
 rtk::CudaFFTRampImageFilter
 ::GenerateData()
