@@ -40,7 +40,7 @@
 #include <cuda.h>
 
 // P R O T O T Y P E S ////////////////////////////////////////////////////
-__global__ void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y, float invBlocks_Y);
+__global__ void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y);
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -55,13 +55,13 @@ texture<float, 1, cudaReadModeElementType> tex_matrix;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__
-void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y, float invBlocks_Y)
+void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y)
 {
   // CUDA 2.0 does not allow for a 3D grid, which severely
   // limits the manipulation of large 3D arrays of data.  The
   // following code is a hack to bypass this implementation
   // limitation.
-  unsigned int blockIdx_z = __float2uint_rd(blockIdx.y * invBlocks_Y);
+  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
@@ -277,7 +277,7 @@ CUDA_reconstruct_conebeam(
       //-------------------------------------
       kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol,
                                              make_int3(vol_dim[0], vol_dim[1], vol_dim[2]),
-                                             blocksInY, 1.0f/(float)blocksInY );
+                                             blocksInY );
       }
     else
       {
