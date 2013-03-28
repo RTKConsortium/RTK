@@ -32,10 +32,10 @@ void rtk::XRadImageIO::ReadImageInformation()
     itkExceptionMacro(<<"Could not open file " << m_FileName);
 
   SetNumberOfDimensions(3);
+  std::string section="";
   while(!is.eof())
     {
     std::string line;
-    std::string section;
     std::getline(is, line);
     if(line.find('[')!=std::string::npos)
       {
