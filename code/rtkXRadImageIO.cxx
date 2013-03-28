@@ -57,10 +57,10 @@ void rtk::XRadImageIO::ReadImageInformation()
         SetDimensions(2, atoi(paramValue.c_str()));
       else if(paramName == std::string("CBCT.DimensionalAttributes.DataSize"))
         {
-        if(atoi(paramValue.c_str())!=3)
-          {
-          itkExceptionMacro(<<"Was expecting CBCT.DimensionalAttributes.DataSize==3");
-          }
+        if(atoi(paramValue.c_str())==3)
+          SetComponentType(itk::ImageIOBase::FLOAT);
+        if(atoi(paramValue.c_str())==6)
+          SetComponentType(itk::ImageIOBase::USHORT);
         }
       else if(paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_I_cm"))
         {
@@ -87,7 +87,6 @@ void rtk::XRadImageIO::ReadImageInformation()
       }
 
     }
-  SetComponentType(itk::ImageIOBase::FLOAT);
 } ////
 
 //--------------------------------------------------------------------
