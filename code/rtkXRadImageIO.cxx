@@ -64,17 +64,17 @@ void rtk::XRadImageIO::ReadImageInformation()
         }
       else if(paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_I_cm"))
         {
-        double spacing = 0.1*atof(paramValue.c_str());
+        double spacing = 10*atof(paramValue.c_str());
         SetSpacing(0, (spacing==0.)?1.:spacing);
         }
       else if(paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_J_cm"))
         {
-        double spacing = 0.1*atof(paramValue.c_str());
+        double spacing = 10*atof(paramValue.c_str());
         SetSpacing(1, (spacing==0.)?1.:spacing);
         }
       else if(paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_K_cm"))
         {
-        double spacing = 0.1*atof(paramValue.c_str());
+        double spacing = 10*atof(paramValue.c_str());
         SetSpacing(2, (spacing==0.)?1.:spacing);
         }
       else
