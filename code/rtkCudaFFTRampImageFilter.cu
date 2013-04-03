@@ -28,10 +28,9 @@
 
 __global__
 void
-multiply_kernel(cufftComplex *projFFT, int3 fftDimension, cufftComplex *kernelFFT, unsigned int Blocks_Y,
-                float invBlocks_Y)
+multiply_kernel(cufftComplex *projFFT, int3 fftDimension, cufftComplex *kernelFFT, unsigned int Blocks_Y)
 {
-  unsigned int blockIdx_z = __float2uint_rd(blockIdx.y * invBlocks_Y);
+  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
@@ -53,10 +52,9 @@ void
 multiply_kernel2D(cufftComplex *projFFT,
                   int3 fftDimension,
                   cufftComplex *kernelFFT,
-                  unsigned int Blocks_Y,
-                  float invBlocks_Y)
+                  unsigned int Blocks_Y)
 {
-  unsigned int blockIdx_z = __float2uint_rd(blockIdx.y * invBlocks_Y);
+  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
@@ -132,14 +130,12 @@ CUDA_fft_convolution(const int3 &inputDimension,
     multiply_kernel <<< dimGrid, dimBlock >>> ( deviceProjectionFFT,
                                                 fftDimension,
                                                 deviceKernelFFT,
-                                                blocksInY,
-                                                1.0f/(float)blocksInY );
+                                                blocksInY );
   else
     multiply_kernel2D <<< dimGrid, dimBlock >>> ( deviceProjectionFFT,
                                                   fftDimension,
                                                   deviceKernelFFT,
-                                                  blocksInY,
-                                                  1.0f/(float)blocksInY );
+                                                  blocksInY );
   CUDA_CHECK_ERROR;
 
   // 3D inverse FFT
