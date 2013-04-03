@@ -26,6 +26,9 @@ ADD_LIBRARY(RTK
             rtkGeometricPhantomFileReader.cxx
             rtkDigisensGeometryXMLFileReader.cxx
             rtkDigisensGeometryReader.cxx
+            rtkXRadGeometryReader.cxx
+            rtkXRadImageIO.cxx
+            rtkXRadImageIOFactory.cxx
            )
 
 IF( ITK_VERSION_MAJOR LESS "4" AND (USE_FFTWF OR USE_FFTWD) )
