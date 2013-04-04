@@ -43,12 +43,19 @@ JosephForwardProjectionImageFilter<TInputImage,
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
-  const typename TInputImage::PixelType *beginBuffer = this->GetInput(1)->GetBufferPointer();
-  unsigned int offsets[3];
+  int offsets[3];
   offsets[0] = 1;
   offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
   const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+
+  // beginBuffer is pointing at point with index (0,0,0) in memory, even if
+  // it is not in the allocated memory
+  const typename TInputImage::PixelType *beginBuffer =
+      this->GetInput(1)->GetBufferPointer() -
+      offsets[0] * this->GetInput(1)->GetBufferedRegion().GetIndex()[0] -
+      offsets[1] * this->GetInput(1)->GetBufferedRegion().GetIndex()[1] -
+      offsets[2] * this->GetInput(1)->GetBufferedRegion().GetIndex()[2];
 
   // Iterators on volume input and output
   typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
@@ -65,8 +72,9 @@ JosephForwardProjectionImageFilter<TInputImage,
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
-      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i]+0.001;  // To avoid numerical errors
-      boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i]-1.001;  // To avoid numerical errors
+      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] + 0.001;  // To avoid numerical errors
+      boxMax[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] +
+                  this->GetInput(1)->GetBufferedRegion().GetSize()[i]  - 1.001;  // To avoid numerical errors
       }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
@@ -173,10 +181,11 @@ JosephForwardProjectionImageFilter<TInputImage,
           std::swap(notMainDirInf, notMainDirSup);
 
         // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
-        const unsigned int offsetx = offsets[notMainDirInf];
-        const unsigned int offsety = offsets[notMainDirSup];
-        const unsigned int offsetz = offsets[mainDir];
+        const int offsetx = offsets[notMainDirInf];
+        const int offsety = offsets[notMainDirSup];
+        const int offsetz = offsets[mainDir];
         const typename TInputImage::PixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
+
         pxiyi = beginBuffer + ns * offsetz;
         pxsyi = pxiyi + offsetx;
         pxiys = pxiyi + offsety;
@@ -275,12 +284,12 @@ JosephForwardProjectionImageFilter<TInputImage,
                          const InputPixelType *pxsys,
                          const CoordRepType x,
                          const CoordRepType y,
-                         const unsigned int ox,
-                         const unsigned int oy )
+                         const int ox,
+                         const int oy )
 {
-  unsigned int ix = vnl_math_floor(x);
-  unsigned int iy = vnl_math_floor(y);
-  unsigned int idx = ix*ox + iy*oy;
+  int ix = vnl_math_floor(x);
+  int iy = vnl_math_floor(y);
+  int idx = ix*ox + iy*oy;
   CoordRepType lx = x - ix;
   CoordRepType ly = y - iy;
   CoordRepType lxc = 1.-lx;
