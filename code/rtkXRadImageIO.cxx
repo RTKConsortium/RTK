@@ -37,13 +37,13 @@ void rtk::XRadImageIO::ReadImageInformation()
     {
     std::string line;
     std::getline(is, line);
-    if(line.find('[')!=std::string::npos)
+    if(line.find('[') != std::string::npos)
       {
       unsigned int pos1 = line.find('[');
       unsigned int pos2 = line.find(']');
       section = line.substr(pos1+1, pos2-pos1-1);
       }
-    if(line.find('=')!=std::string::npos)
+    if(line.find('=') != std::string::npos)
       {
       unsigned int pos       = line.find('=');
       std::string paramName  = line.substr(0,pos);
@@ -57,9 +57,9 @@ void rtk::XRadImageIO::ReadImageInformation()
         SetDimensions(2, atoi(paramValue.c_str()));
       else if(paramName == std::string("CBCT.DimensionalAttributes.DataSize"))
         {
-        if(atoi(paramValue.c_str())==3)
+        if(atoi(paramValue.c_str()) == 3)
           SetComponentType(itk::ImageIOBase::FLOAT);
-        if(atoi(paramValue.c_str())==6)
+        if(atoi(paramValue.c_str()) == 6)
           SetComponentType(itk::ImageIOBase::USHORT);
         }
       else if(paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_I_cm"))
