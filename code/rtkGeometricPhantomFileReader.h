@@ -24,6 +24,7 @@
 #include <itkImageBase.h>
 #include "rtkRayQuadricIntersectionFunction.h"
 #include "rtkMacro.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -36,7 +37,7 @@ namespace rtk
  *
  * \ingroup Functions
  */
-class GeometricPhantomFileReader :
+class RTK_EXPORT GeometricPhantomFileReader :
     public itk::Object
 {
 public:

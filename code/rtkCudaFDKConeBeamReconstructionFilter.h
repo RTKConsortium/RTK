@@ -22,6 +22,7 @@
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkCudaFFTRampImageFilter.h"
 #include "rtkCudaFDKBackProjectionImageFilter.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -38,7 +39,7 @@ namespace rtk
  *
  * \ingroup ReconstructionAlgorithm CudaImageToImageFilter
  */
-class ITK_EXPORT CudaFDKConeBeamReconstructionFilter :
+class rtkcuda_EXPORT CudaFDKConeBeamReconstructionFilter :
   public FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float >
 {
 public:

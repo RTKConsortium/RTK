@@ -21,6 +21,7 @@
 
 #include <itkLightProcessObject.h>
 #include "rtkReg23ProjectionGeometry.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -33,7 +34,7 @@ namespace rtk
  *
  * \ingroup IOFilters
  */
-class XRadGeometryReader :
+class RTK_EXPORT XRadGeometryReader :
   public itk::LightProcessObject
 {
 public:

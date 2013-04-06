@@ -19,6 +19,7 @@
 #ifndef __rtkEdfImageIOFactory_h
 #define __rtkEdfImageIOFactory_h
 
+#include "rtkWin32Header.h"
 #include "rtkEdfImageIO.h"
 #include <itkImageIOBase.h>
 #include <itkObjectFactoryBase.h>
@@ -31,7 +32,7 @@ namespace rtk {
  *
  * \author Simon Rit
  */
-class EdfImageIOFactory : public itk::ObjectFactoryBase
+class RTK_EXPORT EdfImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */

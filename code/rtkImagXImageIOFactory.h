@@ -19,6 +19,7 @@
 #ifndef __rtkImagXImageIOFactory_h
 #define __rtkImagXImageIOFactory_h
 
+#include "rtkWin32Header.h"
 #include "rtkImagXImageIO.h"
 #include <itkImageIOBase.h>
 #include <itkObjectFactoryBase.h>
@@ -32,7 +33,7 @@ namespace rtk
  * TODO
  *
  */
-class ImagXImageIOFactory : public itk::ObjectFactoryBase
+class RTK_EXPORT ImagXImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */

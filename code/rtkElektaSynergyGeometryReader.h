@@ -21,6 +21,7 @@
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -33,7 +34,7 @@ namespace rtk
  *
  * \ingroup IOFilters
  */
-class ElektaSynergyGeometryReader :
+class RTK_EXPORT ElektaSynergyGeometryReader :
   public itk::LightProcessObject
 {
 public:

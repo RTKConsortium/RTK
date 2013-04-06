@@ -22,6 +22,7 @@
 
 //RTK
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkWin32Header.h"
 
 //ITK
 #include <itkPoint.h>
@@ -58,7 +59,7 @@ namespace rtk
  * @author phil steininger
  * @version 1.0
  */
-class Reg23ProjectionGeometry :
+class RTK_EXPORT Reg23ProjectionGeometry :
     public rtk::ThreeDCircularProjectionGeometry
 {
 public:

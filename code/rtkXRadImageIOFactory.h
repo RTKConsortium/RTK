@@ -19,6 +19,7 @@
 #ifndef __rtkXRadImageIOFactory_h
 #define __rtkXRadImageIOFactory_h
 
+#include "rtkWin32Header.h"
 #include "rtkXRadImageIO.h"
 #include <itkImageIOBase.h>
 #include <itkObjectFactoryBase.h>
@@ -31,7 +32,7 @@ namespace rtk {
  *
  * \author Simon Rit
  */
-class XRadImageIOFactory : public itk::ObjectFactoryBase
+class RTK_EXPORT XRadImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */
