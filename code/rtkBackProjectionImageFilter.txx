@@ -69,7 +69,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
   this->SetTranspose(false);
-  for(int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
+  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Extract the current slice
     ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj);
