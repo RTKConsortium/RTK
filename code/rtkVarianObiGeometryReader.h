@@ -33,7 +33,7 @@ namespace rtk
  *
  * \ingroup IOFilters
  */
-class VarianObiGeometryReader :
+class RTK_EXPORT VarianObiGeometryReader :
   public itk::LightProcessObject
 {
 public:

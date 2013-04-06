@@ -20,6 +20,7 @@
 #define __rtkCudaFFTRampImageFilter_h
 
 #include "rtkFFTRampImageFilter.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -33,7 +34,7 @@ namespace rtk
  *
  * \ingroup CudaImageToImageFilter
  */
-class ITK_EXPORT CudaFFTRampImageFilter :
+class rtkcuda_EXPORT CudaFFTRampImageFilter :
   public FFTRampImageFilter< itk::Image<float,3>, itk::Image<float,3>, float >
 {
 public:

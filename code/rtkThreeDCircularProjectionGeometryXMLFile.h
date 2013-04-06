@@ -23,6 +23,7 @@
 #pragma warning ( disable : 4786 )
 #endif
 
+#include "rtkWin32Header.h"
 #include <itkXMLFile.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 
@@ -37,7 +38,7 @@ namespace rtk
  *
  * \ingroup IOFilters
  */
-class ThreeDCircularProjectionGeometryXMLFileReader :
+class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >
 {
 public:
@@ -111,7 +112,7 @@ private:
  *
  * \ingroup IOFilters
  */
-class ThreeDCircularProjectionGeometryXMLFileWriter :
+class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter :
   public itk::XMLWriterBase< ThreeDCircularProjectionGeometry >
 {
 public:

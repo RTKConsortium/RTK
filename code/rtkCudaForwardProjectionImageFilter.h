@@ -20,6 +20,7 @@
 #define __rtkCudaForwardProjectionImageFilter_h
 
 #include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkWin32Header.h"
 
 /** \class CudaForwardProjectionImageFilter
  * \brief TODO
@@ -34,7 +35,7 @@
 namespace rtk
 {
 
-class ITK_EXPORT CudaForwardProjectionImageFilter :
+class rtkcuda_EXPORT CudaForwardProjectionImageFilter :
   public ForwardProjectionImageFilter< itk::Image<float,3>, itk::Image<float,3> >
 {
 public:

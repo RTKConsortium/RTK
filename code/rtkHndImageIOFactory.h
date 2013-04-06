@@ -22,6 +22,7 @@
 #ifndef __rtkHndImageIOFactory_h
 #define __rtkHndImageIOFactory_h
 
+#include "rtkWin32Header.h"
 #include "rtkHndImageIO.h"
 
 // itk include
@@ -37,7 +38,7 @@ namespace rtk
  *
  * \author Simon Rit
  */
-class HndImageIOFactory : public itk::ObjectFactoryBase
+class RTK_EXPORT HndImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */

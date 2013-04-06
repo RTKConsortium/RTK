@@ -21,6 +21,7 @@
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -34,7 +35,7 @@ namespace rtk
  *
  * \ingroup IOFilters
  */
-class DigisensGeometryReader :
+class RTK_EXPORT DigisensGeometryReader :
   public itk::LightProcessObject
 {
 public:

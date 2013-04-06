@@ -36,7 +36,7 @@ namespace rtk
  * \ingroup Projector
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT JosephBackProjectionImageFilter :
+class JosephBackProjectionImageFilter :
   public BackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:

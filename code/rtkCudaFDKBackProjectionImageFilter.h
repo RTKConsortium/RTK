@@ -20,6 +20,7 @@
 #define __rtkCudaFDKBackProjectionImageFilter_h
 
 #include "rtkFDKBackProjectionImageFilter.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -35,7 +36,7 @@ namespace rtk
  *
  * \ingroup Projector CudaImageToImageFilter
  */
-class ITK_EXPORT CudaFDKBackProjectionImageFilter :
+class rtkcuda_EXPORT CudaFDKBackProjectionImageFilter :
   public FDKBackProjectionImageFilter< itk::Image<float,3>, itk::Image<float,3> >
 {
 public:

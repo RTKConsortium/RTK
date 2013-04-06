@@ -19,6 +19,7 @@
 #ifndef __rtkThreeDCircularProjectionGeometry_h
 #define __rtkThreeDCircularProjectionGeometry_h
 
+#include "rtkWin32Header.h"
 #include "rtkProjectionGeometry.h"
 
 namespace rtk
@@ -42,7 +43,7 @@ namespace rtk
  *
  * \ingroup ProjectionGeometry
  */
-class ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
+class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
   typedef ThreeDCircularProjectionGeometry Self;

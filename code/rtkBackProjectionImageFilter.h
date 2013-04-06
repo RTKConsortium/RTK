@@ -41,7 +41,7 @@ namespace rtk
  * \ingroup Projector
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT BackProjectionImageFilter :
+class BackProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
