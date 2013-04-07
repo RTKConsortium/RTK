@@ -4,10 +4,10 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkCudaBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 
 #ifdef USE_CUDA
+#  include "rtkCudaBackProjectionImageFilter.h"
 #  include "rtkCudaSARTConeBeamReconstructionFilter.h"
 #else
 #  include "rtkSARTConeBeamReconstructionFilter.h"
