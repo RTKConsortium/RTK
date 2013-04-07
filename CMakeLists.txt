@@ -117,6 +117,7 @@ ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 #=========================================================
 # Shared libraries option
 OPTION(BUILD_SHARED_LIBS "Build RTK with shared libraries." ${ITK_BUILD_SHARED})
+SET(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 #=========================================================
 
 #=========================================================
