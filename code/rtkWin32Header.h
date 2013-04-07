@@ -18,7 +18,9 @@
 #ifndef __rtkWin32Header_h
 #define __rtkWin32Header_h
 
-#if (defined(_WIN32) || defined(WIN32)) && !defined(RTKSTATIC) 
+#include "rtkConfiguration.h"
+
+#if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS) 
 # ifdef RTK_EXPORTS
 #  define RTK_EXPORT __declspec(dllexport)
 # else
@@ -30,7 +32,7 @@
 #endif
 
 
-#if (defined(_WIN32) || defined(WIN32)) && !defined(RTKSTATIC) 
+#if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS) 
 # ifdef rtkcuda_EXPORTS
 #  define rtkcuda_EXPORT __declspec(dllexport)
 # else
