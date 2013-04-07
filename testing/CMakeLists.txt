@@ -122,6 +122,14 @@ RTK_ADD_TEST(NAME rtkdigisenstest
              DATA{Data/Input/Digisens/ima0010.tif,calibration.cal},
              DATA{Data/Baseline/Digisens/attenuation.mha,geometry.xml})
 
+ADD_EXECUTABLE(rtkxradtest rtkxradtest.cxx)
+TARGET_LINK_LIBRARIES(rtkxradtest RTK)
+RTK_ADD_TEST(NAME rtkxradtest 
+             WORKING_DIRECTORY ${RTK_DATA_ROOT}/Input/XRad
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkxradtest
+             DATA{Data/Input/XRad/flat.header,flat.img,dark.header,dark.img,SolidWater_HiGain1x1.header,SolidWater_HiGain1x1_firstProj.header,SolidWater_HiGain1x1_firstProj.img}
+             DATA{Data/Baseline/XRad/geometry.xml,attenuation.mha})
+
 ADD_EXECUTABLE(rtkprojectgeometricphantomtest rtkprojectgeometricphantomtest.cxx)
 TARGET_LINK_LIBRARIES(rtkprojectgeometricphantomtest RTK)
 RTK_ADD_TEST(NAME rtkprojectgeometricphantomtest 
