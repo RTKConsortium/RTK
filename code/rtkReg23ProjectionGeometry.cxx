@@ -153,10 +153,10 @@ bool rtk::Reg23ProjectionGeometry::AddReg23Projection(
   ia *= -57.29577951308232;
 
   // SID: distance from source to isocenter along detector normal
-  double SID = fabs(n[0] * S[0] + n[1] * S[1] + n[2] * S[2]);
+  double SID = n[0] * S[0] + n[1] * S[1] + n[2] * S[2];
   // SDD: distance from source to detector along detector normal
-  double SDD = fabs(n[0] * (S[0] - R[0]) + n[1] * (S[1] - R[1]) + n[2] * (S[2] - R[2]));
-  if (SDD < 1e-6) // source is in detector plane
+  double SDD = n[0] * (S[0] - R[0]) + n[1] * (S[1] - R[1]) + n[2] * (S[2] - R[2]);
+  if (fabs(SDD) < 1e-6) // source is in detector plane
     return false;
 
   // source offset: compute source's "in-plane" x/y shift off isocenter
