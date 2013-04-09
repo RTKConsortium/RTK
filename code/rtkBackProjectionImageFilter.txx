@@ -76,7 +76,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
     // Check which part of the projection image will be backprojected in the
     // volume.
-    double firstPerspFactor;
+    double firstPerspFactor = 0.;
     for(int cz=0; cz<2; cz++)
       for(int cy=0; cy<2; cy++)
         for(int cx=0; cx<2; cx++)
