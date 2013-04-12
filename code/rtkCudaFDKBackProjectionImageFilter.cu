@@ -238,14 +238,14 @@ CUDA_reconstruct_conebeam(
   if(fabs(matrix[5])<1e-10 && fabs(matrix[9])<1e-10)
     {
     // Thread Block Dimensions
-      int tBlock_x = 32;
-      int tBlock_y = 16;
+    int tBlock_x = 32;
+    int tBlock_y = 16;
 
     // Each segment gets 1 thread
-      int  blocksInX = vol_dim[0]/tBlock_x;
-      int  blocksInY = vol_dim[2]/tBlock_y;
-      dim3 dimGrid  = dim3(blocksInX, blocksInY);
-      dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
+    int  blocksInX = vol_dim[0]/tBlock_x;
+    int  blocksInY = vol_dim[2]/tBlock_y;
+    dim3 dimGrid  = dim3(blocksInX, blocksInY);
+    dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
 
     // Note: cbi->img AND cbi->matrix are passed via texture memory
     //-------------------------------------
@@ -258,19 +258,19 @@ CUDA_reconstruct_conebeam(
     cudaGetDevice(&device);
 
     // Thread Block Dimensions
-      int tBlock_x = 16;
-      int tBlock_y = 4;
-      int tBlock_z = 4;
+    int tBlock_x = 16;
+    int tBlock_y = 4;
+    int tBlock_z = 4;
 
     // Each element in the volume (each voxel) gets 1 thread
-      unsigned int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
-      unsigned int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
-      unsigned int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
+    unsigned int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
+    unsigned int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
+    unsigned int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
 
     if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
       {
-        dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
-        dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+      dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
+      dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
 
       // Note: cbi->img AND cbi->matrix are passed via texture memory
@@ -281,8 +281,8 @@ CUDA_reconstruct_conebeam(
       }
     else
       {
-        dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
-        dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+      dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
+      dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
 
       // Note: cbi->img AND cbi->matrix are passed via texture memory
