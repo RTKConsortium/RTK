@@ -1,15 +1,13 @@
-#include "rtkMacro.h"
 #include "rtkTestConfiguration.h"
-#include "itkImageFileReader.h"
+
+#include <itkImageFileReader.h>
+#include <itkPasteImageFilter.h>
+
 #include "rtkAmsterdamShroudImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include <iomanip>
-#include <fstream>
-
 #include "rtkTestConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkProjectGeometricPhantomImageFilter.h"
-#include "itkPasteImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConfiguration.h"
 #include "rtkReg1DExtractShroudSignalImageFilter.h"
 #include "rtkDPExtractShroudSignalImageFilter.h"
@@ -134,10 +132,7 @@ int main(int, char** )
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
 
   // Single projection
-  typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> PPCType;
-  PPCType::Pointer ppc = PPCType::New();
-
-  std::ofstream      myConfigFile;
+  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
   double             size   = 80.;
   double             sinus  = 0.;
   const unsigned int Cycles = 4;
@@ -148,32 +143,78 @@ int main(int, char** )
     // Geometry object
     GeometryType::Pointer geometry = GeometryType::New();
     geometry->AddProjection(1200., 1500., i*360/sizeOutput[2]);
-    // Creating phantom config file for each projection
-    myConfigFile.open("phantom.txt");
-    myConfigFile <<"[Ellipsoid]  A=88.32 B=115.2 C=117.76 x=0 y=0 z=0 beta=0 gray=2.0\n"
-                 <<"[Ellipsoid]  A=35. B=" << size - sinus << " C=" << size - sinus << " x=-37. y=0 z=0 beta=0 gray=-1.98\n"
-                 <<"[Ellipsoid]  A=35. B=" << size - sinus << " C=" << size - sinus << " x=37.  y=0 z=0 beta=0 gray=-1.98\n"
-                 <<"[Ellipsoid]  A=8.  B=8.  C=8.  x=-40. y=0 z=0 beta=0 gray=1.42\n"
-                 << std::endl;
-    myConfigFile.close();
+
+    // Ellipse 1
+    REIType::Pointer e1 = REIType::New();
+    e1->SetInput(constantImageSourceSingleProjection->GetOutput());
+    e1->SetGeometry(geometry);
+    e1->SetMultiplicativeConstant(2.);
+    e1->SetSemiPrincipalAxisX(88.32);
+    e1->SetSemiPrincipalAxisY(115.2);
+    e1->SetSemiPrincipalAxisZ(117.76);
+    e1->SetCenterX(0.);
+    e1->SetCenterY(0.);
+    e1->SetCenterZ(0.);
+    e1->SetRotationAngle(0.);
+    e1->InPlaceOff();
+    e1->Update();
+
+    // Ellipse 2
+    REIType::Pointer e2 = REIType::New();
+    e2->SetInput(e1->GetOutput());
+    e2->SetGeometry(geometry);
+    e2->SetMultiplicativeConstant(-1.98);
+    e2->SetSemiPrincipalAxisX(35.);
+    e2->SetSemiPrincipalAxisY(size - sinus);
+    e2->SetSemiPrincipalAxisZ(size - sinus);
+    e2->SetCenterX(-37.);
+    e2->SetCenterY(0.);
+    e2->SetCenterZ(0.);
+    e2->SetRotationAngle(0.);
+    e2->Update();
+
+    // Ellipse 3
+    REIType::Pointer e3 = REIType::New();
+    e3->SetInput(e2->GetOutput());
+    e3->SetGeometry(geometry);
+    e3->SetMultiplicativeConstant(-1.98);
+    e3->SetSemiPrincipalAxisX(35.);
+    e3->SetSemiPrincipalAxisY(size - sinus);
+    e3->SetSemiPrincipalAxisZ(size - sinus);
+    e3->SetCenterX(37.);
+    e3->SetCenterY(0.);
+    e3->SetCenterZ(0.);
+    e3->SetRotationAngle(0.);
+    e3->Update();
+
+    // Ellipse 4
+    REIType::Pointer e4 = REIType::New();
+    e4->SetInput(e3->GetOutput());
+    e4->SetGeometry(geometry);
+    e4->SetMultiplicativeConstant(1.42);
+    e4->SetSemiPrincipalAxisX(8.);
+    e4->SetSemiPrincipalAxisY(8.);
+    e4->SetSemiPrincipalAxisZ(8.);
+    e4->SetCenterX(-40.);
+    e4->SetCenterY(0.);
+    e4->SetCenterZ(0.);
+    e4->SetRotationAngle(0.);
 
     // Creating movement
     sinus = 15*sin( i*2*itk::Math::pi/(sizeOutput[2]/Cycles) );
+
     // Generating projection
-    ppc->SetInput(constantImageSourceSingleProjection->GetOutput());
-    ppc->SetGeometry(geometry);
-    ppc->SetConfigFile("phantom.txt");
-    ppc->Update();
+    e4->Update();
+
     // Adding each projection to volume
-    pasteFilter->SetSourceImage(ppc->GetOutput());
+    pasteFilter->SetSourceImage(e4->GetOutput());
     pasteFilter->SetDestinationImage(wholeImage);
-    pasteFilter->SetSourceRegion(ppc->GetOutput()->GetLargestPossibleRegion());
+    pasteFilter->SetSourceRegion(e4->GetOutput()->GetLargestPossibleRegion());
     pasteFilter->SetDestinationIndex(destinationIndex);
     pasteFilter->Update();
     wholeImage = pasteFilter->GetOutput();
     destinationIndex[2]++;
   }
-  itksys::SystemTools::RemoveFile("phantom.txt");
 
   std::cout << "\n\n****** Case 1: Amsterdam Shroud Image ******" << std::endl;
 
