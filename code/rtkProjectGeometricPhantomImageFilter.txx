@@ -63,20 +63,18 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
         rei[i]->SetInput( rei[i]->GetOutput() );
       else
         rei[i]->SetInput( rei[i-1]->GetOutput() );
-      rei[i]->SetGeometry( this->GetGeometry() );
       }
 
     if (i>0) //other cases
       {
       rei[i]->SetInput( rei[i-1]->GetOutput() );
-      rei[i]->SetGeometry( this->GetGeometry() );
       }
 
     else //first case
       {
       rei[i]->SetInput( this->GetInput() );
-      rei[i]->SetGeometry( this->GetGeometry() );
       }
+    rei[i]->SetGeometry( this->GetGeometry() );
     }
   //Update
   rei[ m_Fig.size() - 1]->Update();
