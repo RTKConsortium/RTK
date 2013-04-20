@@ -110,6 +110,8 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
       // Compute ray intersection length
       if( rqiFunctor->Evaluate(direction) )
         itOut.Set( itIn.Get() + m_MultiplicativeConstant*(rqiFunctor->GetFarthestDistance() - rqiFunctor->GetNearestDistance() ));
+      else
+        itOut.Set( itIn.Get() );
       }
     }
 }
