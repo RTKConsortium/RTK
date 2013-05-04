@@ -78,9 +78,9 @@ void DrawEllipsoidImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(c
                           sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
                           sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
     if(QuadricEllip<0)
-      itOut.Set(ellipsoid.attenuation + itIn.Get());
+      itOut.Set( ellipsoid.attenuation + itIn.Get() );
     else
-      itOut.Set(0.);
+      itOut.Set( itIn.Get() );
     ++itIn;
     ++itOut;
   }
