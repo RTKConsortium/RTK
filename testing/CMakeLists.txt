@@ -25,6 +25,10 @@ IF(OPENCL_FOUND AND OPENCL_HAVE_GPU)
   ADD_TEST(rtkfdkopencltest ${EXECUTABLE_OUTPUT_PATH}/rtkfdkopencltest)
 ENDIF(OPENCL_FOUND AND OPENCL_HAVE_GPU)
 
+ADD_EXECUTABLE(rtkmotioncompensatedfdktest rtkmotioncompensatedfdktest.cxx)
+TARGET_LINK_LIBRARIES(rtkmotioncompensatedfdktest RTK)
+ADD_TEST(rtkmotioncompensatedfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkmotioncompensatedfdktest)
+
 ADD_EXECUTABLE(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
 TARGET_LINK_LIBRARIES(rtkdisplaceddetectortest RTK)
 ADD_TEST(rtkdisplaceddetectortest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetectortest)
