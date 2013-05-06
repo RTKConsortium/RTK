@@ -1,5 +1,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkPasteImageFilter.h>
+#include <itksys/SystemTools.hxx>
 
 #include "rtkTestConfiguration.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
