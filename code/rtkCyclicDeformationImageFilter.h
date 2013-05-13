@@ -75,7 +75,7 @@ public:
   itkSetMacro(Frame, unsigned int);
 
 protected:
-  CyclicDeformationImageFilter() {}
+  CyclicDeformationImageFilter(): m_Frame(0) {}
   virtual ~CyclicDeformationImageFilter() {}
 
   virtual void GenerateOutputInformation();
