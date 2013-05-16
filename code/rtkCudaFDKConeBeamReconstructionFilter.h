@@ -39,7 +39,7 @@ namespace rtk
  *
  * \ingroup ReconstructionAlgorithm CudaImageToImageFilter
  */
-class rtkcuda_EXPORT CudaFDKConeBeamReconstructionFilter :
+class CudaFDKConeBeamReconstructionFilter :
   public FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float >
 {
 public:
@@ -60,8 +60,8 @@ public:
   itkTypeMacro(CudaFDKConeBeamReconstructionFilter, FDKConeBeamReconstructionFilter);
 
   /** Functions to init and clean up the GPU when ExplicitGPUMemoryManagementFlag is true. */
-  void InitDevice();
-  void CleanUpDevice();
+  rtkcuda_EXPORT void InitDevice();
+  rtkcuda_EXPORT void CleanUpDevice();
 
   /** Boolean to keep the hand on the memory management of the GPU. Default is
    * off. If on, the user must call manually InitDevice and CleanUpDevice. */
@@ -69,7 +69,7 @@ public:
   itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
 
 protected:
-  CudaFDKConeBeamReconstructionFilter();
+  rtkcuda_EXPORT CudaFDKConeBeamReconstructionFilter();
   ~CudaFDKConeBeamReconstructionFilter(){}
 
   void GenerateData();

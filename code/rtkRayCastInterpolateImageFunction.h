@@ -56,7 +56,7 @@ namespace rtk
  * \ingroup Functions
  */
 template <class TInputImage, class TCoordRep = double>
-class ITK_EXPORT RayCastInterpolateImageFunction : 
+class RayCastInterpolateImageFunction : 
     public itk::InterpolateImageFunction<TInputImage,TCoordRep> 
 {
 public:

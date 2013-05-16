@@ -16,9 +16,6 @@
  *
  *=========================================================================*/
 
-//#ifndef RTKHOMOGENEOUSMATRIX_H
-//#define RTKHOMOGENEOUSMATRIX_H
-
 #ifndef __rtkHomogeneousMatrix_h
 #define __rtkHomogeneousMatrix_h
 

@@ -34,7 +34,7 @@ namespace rtk
  *
  * \ingroup CudaImageToImageFilter
  */
-class rtkcuda_EXPORT CudaFFTRampImageFilter :
+class CudaFFTRampImageFilter :
   public FFTRampImageFilter< itk::Image<float,3>, itk::Image<float,3>, float >
 {
 public:
@@ -51,7 +51,7 @@ public:
   /** Runtime information support. */
   itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
 protected:
-  CudaFFTRampImageFilter();
+  rtkcuda_EXPORT CudaFFTRampImageFilter();
   ~CudaFFTRampImageFilter(){}
 
   virtual void GenerateData();
