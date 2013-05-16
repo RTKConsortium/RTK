@@ -33,7 +33,7 @@ namespace rtk
  * \ingroup Projector
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT ForwardProjectionImageFilter :
+class ForwardProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
@@ -47,7 +47,7 @@ public:
   typedef typename GeometryType::Pointer                    GeometryPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ForwardProjectionImageFilter, itk::ImageToImageFilter);
+  itkTypeMacro(ForwardProjectionImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, GeometryPointer);
@@ -57,6 +57,7 @@ protected:
   ForwardProjectionImageFilter() : m_Geometry(NULL) {
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
+
   virtual ~ForwardProjectionImageFilter() {
   }
 

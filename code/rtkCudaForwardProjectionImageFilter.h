@@ -19,8 +19,8 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_h
 #define __rtkCudaForwardProjectionImageFilter_h
 
-#include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkWin32Header.h"
+#include "rtkForwardProjectionImageFilter.h"
 
 /** \class CudaForwardProjectionImageFilter
  * \brief TODO
@@ -35,7 +35,7 @@
 namespace rtk
 {
 
-class rtkcuda_EXPORT CudaForwardProjectionImageFilter :
+class CudaForwardProjectionImageFilter :
   public ForwardProjectionImageFilter< itk::Image<float,3>, itk::Image<float,3> >
 {
 public:
@@ -55,7 +55,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(CudaForwardProjectionImageFilter, ImageToImageFilter);
+  itkTypeMacro(CudaForwardProjectionImageFilter, ForwardProjectionImageFilter);
 
   /** Function to allocate memory on device */
   void InitDevice();
@@ -69,7 +69,7 @@ public:
   itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
 
 protected:
-  CudaForwardProjectionImageFilter();
+  rtkcuda_EXPORT CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
 
   void GenerateData();
