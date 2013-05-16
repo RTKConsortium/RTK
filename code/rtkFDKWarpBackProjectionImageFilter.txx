@@ -33,8 +33,9 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
 ::BeforeThreadedGenerateData()
 {
   this->SetTranspose(true);
+  typename TOutputImage::RegionType splitRegion;
   m_Barrier = itk::Barrier::New();
-  m_Barrier->Initialize(this->GetNumberOfThreads());
+  m_Barrier->Initialize( this->SplitRequestedRegion(0, this->GetNumberOfThreads(), splitRegion) );
 }
 
 /**
