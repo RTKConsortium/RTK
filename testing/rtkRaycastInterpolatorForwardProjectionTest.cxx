@@ -8,9 +8,14 @@
 #include "rtkConstantImageSource.h"
 
 template<class TImage>
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
+#if FAST_TESTS_NO_CHECKS
+void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
 {
+}
+#endif
 #if !(FAST_TESTS_NO_CHECKS)
+void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
+{
   typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
@@ -61,8 +66,8 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
               << PSNR << " instead of 44" << std::endl;
     exit( EXIT_FAILURE);
     }
-#endif
 }
+#endif
 
 int main(int , char** )
 {

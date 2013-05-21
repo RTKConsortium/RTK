@@ -32,6 +32,17 @@
 #endif
 
 template<class TImage>
+#if FAST_TESTS_NO_CHECKS
+void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon),
+                       typename TImage::Pointer itkNotUsed(ref),
+                       double itkNotUsed(refLowerThreshold),
+                       double itkNotUsed(refUpperThreshold),
+                       double itkNotUsed(snrThreshold),
+                       double itkNotUsed(errorPerPixelThreshold))
+{
+}
+#endif
+#if !(FAST_TESTS_NO_CHECKS)
 void CheckImageQuality(typename TImage::Pointer recon,
                        typename TImage::Pointer ref,
                        double refLowerThreshold,
@@ -39,7 +50,6 @@ void CheckImageQuality(typename TImage::Pointer recon,
                        double snrThreshold,
                        double errorPerPixelThreshold)
 {
-#if !(FAST_TESTS_NO_CHECKS)
   typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
@@ -88,9 +98,8 @@ void CheckImageQuality(typename TImage::Pointer recon,
               << PSNR << " instead of " << snrThreshold << std::endl;
     exit( EXIT_FAILURE);
   }
-#endif
 }
-
+#endif
 
 int main(int , char** )
 {
