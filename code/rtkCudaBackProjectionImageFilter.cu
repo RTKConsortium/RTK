@@ -216,14 +216,14 @@ CUDA_back_project(
   if(fabs(matrix[5])<1e-10 && fabs(matrix[9])<1e-10)
     {
     // Thread Block Dimensions
-    static int tBlock_x = 32;
-    static int tBlock_y = 16;
+    static const int tBlock_x = 32;
+    static const int tBlock_y = 16;
 
     // Each segment gets 1 thread
-    static int  blocksInX = vol_dim[0]/tBlock_x;
-    static int  blocksInY = vol_dim[2]/tBlock_y;
-    static dim3 dimGrid  = dim3(blocksInX, blocksInY);
-    static dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
+    int  blocksInX = vol_dim[0]/tBlock_x;
+    int  blocksInY = vol_dim[2]/tBlock_y;
+    dim3 dimGrid  = dim3(blocksInX, blocksInY);
+    dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
     // Note: cbi->img AND cbi->matrix are passed via texture memory
     //-------------------------------------
     kernel_optim <<< dimGrid, dimBlock >>> ( dev_vol, make_int3(vol_dim[0], vol_dim[1], vol_dim[2]) );
@@ -231,16 +231,16 @@ CUDA_back_project(
   else
     {
     // Thread Block Dimensions
-    static int tBlock_x = 16;
-    static int tBlock_y = 4;
-    static int tBlock_z = 4;
+    static const int tBlock_x = 16;
+    static const int tBlock_y = 4;
+    static const int tBlock_z = 4;
 
     // Each element in the volume (each voxel) gets 1 thread
-    static int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
-    static int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
-    static int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
-    static dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
-    static dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+    int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
+    int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
+    int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
+    dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
+    dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
     // Note: cbi->img AND cbi->matrix are passed via texture memory
     //-------------------------------------
