@@ -266,8 +266,8 @@ CUDA_forward_project(int blockSize[3],
                      float box_max[3],
                      float spacing[3])
 {
-  static dim3 dimBlock  = dim3(blockSize[0], blockSize[1], blockSize[2]);
-  static dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
+  dim3 dimBlock  = dim3(blockSize[0], blockSize[1], blockSize[2]);
+  dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
 
   // Reset projection
   cudaMemset((void *)dev_proj, 0, projections_size[0]*projections_size[1]*sizeof(float) );
