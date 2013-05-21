@@ -40,7 +40,7 @@ namespace rtk
  *
  * \ingroup InPlaceImageFilter
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT DrawGeometricPhantomImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
