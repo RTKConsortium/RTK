@@ -13,9 +13,14 @@
 #include "rtkDPExtractShroudSignalImageFilter.h"
 
 template<class TInputImage>
+#if FAST_TESTS_NO_CHECKS
+void CheckImageQuality(typename TInputImage::Pointer itkNotUsed(recon), typename TInputImage::Pointer itkNotUsed(ref))
+{
+}
+#endif
+#if !(FAST_TESTS_NO_CHECKS)
 void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage::Pointer ref)
 {
-#if !(FAST_TESTS_NO_CHECKS)
   typedef itk::ImageRegionConstIterator<TInputImage>  ImageIteratorInType;
   ImageIteratorInType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorInType itRef( ref, ref->GetBufferedRegion() );
@@ -63,8 +68,9 @@ void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage
               << PSNR << " instead of 185" << std::endl;
     exit( EXIT_FAILURE);
   }
-#endif
 }
+#endif
+
 
 int main(int, char** )
 {
