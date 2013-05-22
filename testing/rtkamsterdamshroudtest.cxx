@@ -17,8 +17,7 @@ template<class TInputImage>
 void CheckImageQuality(typename TInputImage::Pointer itkNotUsed(recon), typename TInputImage::Pointer itkNotUsed(ref))
 {
 }
-#endif
-#if !(FAST_TESTS_NO_CHECKS)
+#else
 void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage::Pointer ref)
 {
   typedef itk::ImageRegionConstIterator<TInputImage>  ImageIteratorInType;
