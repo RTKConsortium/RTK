@@ -30,6 +30,8 @@ namespace rtk
  *
  * Creates a 3D circular geometry from the Elekta database input. 
  *
+ * \test rtkelektatest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup IOFilters

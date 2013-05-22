@@ -25,7 +25,10 @@
 #include "rtkElektaSynergyLookupTableImageFilter.h"
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
 
-/** \class RawToAttenuationImageFilter
+namespace rtk
+{
+
+/** \class ElektaSynergyRawToAttenuationImageFilter
  * \brief Convert raw Elekta Synergy data to attenuation images
  *
  * This composite filter composes the operations required to convert
@@ -33,13 +36,12 @@
  * attenuation images usable in standard reconstruction algorithms,*
  * e.g. Feldkamp algorithm.
  *
+ * \test rtkelektatest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ImageToImageFilter
  */
-namespace rtk
-{
-
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT ElektaSynergyRawToAttenuationImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>

@@ -32,6 +32,8 @@ namespace rtk
  * logarithm of the value divided by the maximum numerical value. This could
  * be improved with a calibration of the air value.
  *
+ * \test rtkelektatest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ImageToImageFilter
