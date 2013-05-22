@@ -41,8 +41,7 @@ void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon),
                        double itkNotUsed(errorPerPixelThreshold))
 {
 }
-#endif
-#if !(FAST_TESTS_NO_CHECKS)
+#else
 void CheckImageQuality(typename TImage::Pointer recon,
                        typename TImage::Pointer ref,
                        double refLowerThreshold,
