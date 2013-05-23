@@ -220,8 +220,8 @@ CUDA_back_project(
     static const int tBlock_y = 16;
 
     // Each segment gets 1 thread
-    int  blocksInX = vol_dim[0]/tBlock_x;
-    int  blocksInY = vol_dim[2]/tBlock_y;
+    unsigned int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
+    unsigned int  blocksInY = (vol_dim[2]-1)/tBlock_y + 1;
     dim3 dimGrid  = dim3(blocksInX, blocksInY);
     dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
     // Note: cbi->img AND cbi->matrix are passed via texture memory
