@@ -20,13 +20,10 @@
 #define __rtkConstantImageSource_txx
 
 #include <itkImageRegionIterator.h>
- 
+
 namespace rtk
 {
 
-/**
- *
- */
 template <class TOutputImage>
 ConstantImageSource<TOutputImage>
 ::ConstantImageSource()
@@ -83,11 +80,8 @@ ConstantImageSource<TOutputImage>
   return this->m_Size.GetSize();
 }
 
-/**
- *
- */
 template <class TOutputImage>
-void 
+void
 ConstantImageSource<TOutputImage>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
