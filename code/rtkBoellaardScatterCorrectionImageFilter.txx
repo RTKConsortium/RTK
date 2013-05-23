@@ -32,10 +32,8 @@ m_ScatterToPrimaryRatio(0.),
 m_NonNegativityConstraintThreshold(20)
 {
 }
-  
-  /**
- * Requires full projection images to estimate scatter.
- */
+
+// Requires full projection images to estimate scatter.
 template <class TInputImage, class TOutputImage>
 void
 BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>

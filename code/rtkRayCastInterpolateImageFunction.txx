@@ -46,8 +46,9 @@ PURPOSE.  See the above copyright notices for more information.
 namespace rtk
 {
 
-/** \class Helper class to maintain state when casting a ray.
- *  This helper class keeps the RayCastInterpolateImageFunction thread safe.
+/** \class RayCastHelper
+ * Helper class to maintain state when casting a ray.
+ * This helper class keeps the RayCastInterpolateImageFunction thread safe.
  */
 template <class TInputImage, class TCoordRep = float>
 class RayCastHelper
@@ -135,7 +136,7 @@ public:
    * Increment each of the intensities of the 4 planar voxels
    * surrounding the current ray point.
    *
-   * \parameter increment      Intensity increment for each of the current 4 voxels
+   * \param increment      Intensity increment for each of the current 4 voxels
    */
   void IncrementIntensities(double increment=1);
 
