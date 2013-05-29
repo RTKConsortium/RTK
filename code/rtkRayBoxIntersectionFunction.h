@@ -33,7 +33,13 @@ namespace rtk
  * image coordinate system. The ray origin must be set first. The direction
  * of the ray is then passed to the Evaluate function. It returns false if
  * there is no intersection. It returns true otherwise and the nearest and
- * farthest distance/point may be accessed.
+ * farthest distance/point may be accessed. Nearest and farthest distance are
+ * defined such that NearestDistance < FarthestDistance.
+ *
+ * The default behavior of the function is to return the intersection between
+ * the line defined by the origin and direction. You need to modify the
+ * nearest and farthest distance if you want to account for the position of the
+ * source and the detector along the ray.
  *
  * \author Simon Rit
  *
@@ -88,10 +94,12 @@ public:
   /** Get the distance with the nearest intersection.
     * \warning Only relevant if called after Evaluate. */
   itkGetMacro(NearestDistance, TCoordRep);
+  itkSetMacro(NearestDistance, TCoordRep);
 
   /** Get the distance with the farthest intersection.
     * \warning Only relevant if called after Evaluate. */
   itkGetMacro(FarthestDistance, TCoordRep);
+  itkSetMacro(FarthestDistance, TCoordRep);
 
   /** Get the nearest point coordinates.
     * \warning Only relevant if called after Evaluate. */
