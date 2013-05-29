@@ -1,16 +1,23 @@
 #PBS -N rtk_dashboard
-#PBS -l walltime=01:59:00,nodes=1:ppn=8
-#PBS -o /tmp/RTK_dashboard/rtk_dashboard.out
-#PBS -e /tmp/RTK_dashboard/rtk_dashboard.err
+#PBS -l walltime=02:59:00,nodes=1:ppn=8
+#PBS -o /home/srit/tmp/rtk_dashboard.out
+#PBS -e /home/srit/tmp/rtk_dashboard.err
 #PBS -q gpu
 #PBS -W x=GRES:gpu@1
 
 rm -fr /tmp/RTK_dashboard
+mkdir /tmp/RTK_dashboard
+git clone git://github.com/SimonRit/RTK.git /tmp/RTK_dashboard/RTK
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda32.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda40.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda41.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda42.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda50.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda32_itk4.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda40_itk4.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda41_itk4.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda42_itk4.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda50_itk4.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc450_cuda32.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc454_cuda32.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc472_cuda32.cmake -V
