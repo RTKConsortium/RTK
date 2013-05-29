@@ -102,7 +102,9 @@ public:
  * \brief Joseph forward projection.
  *
  * Performs a forward projection, i.e. accumulation along x-ray lines,
- * using [Joseph, IEEE TMI, 1982].
+ * using [Joseph, IEEE TMI, 1982]. The forward projector tests if the  detector
+ * has been placed after the source and the volume. If the detector is in the volume
+ * the ray tracing is performed only until that point.
  *
  * \author Simon Rit
  *

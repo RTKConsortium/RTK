@@ -126,35 +126,19 @@ JosephForwardProjectionImageFilter<TInputImage,
         }
 
       // Test if there is an intersection
-      if( rbi[mainDir]->Evaluate(dirVox) )
+      if( rbi[mainDir]->Evaluate(dirVox) &&
+          rbi[mainDir]->GetFarthestDistance()>=0. && // check if detector after the source
+          rbi[mainDir]->GetNearestDistance()<=1.)    // check if detector after or in the volume
         {
+        // Clip the casting between source and pixel of the detector
+        rbi[mainDir]->SetNearestDistance ( std::max(rbi[mainDir]->GetNearestDistance() , 0.) );
+        rbi[mainDir]->SetFarthestDistance( std::min(rbi[mainDir]->GetFarthestDistance(), 1.) );
+
         // Compute and sort intersections: (n)earest and (f)arthest (p)points
         np = rbi[mainDir]->GetNearestPoint();
         fp = rbi[mainDir]->GetFarthestPoint();
         if(np[mainDir]>fp[mainDir])
           std::swap(np, fp);
-
-        // If the source is in the volume, use source as one of the intersection points
-        if(dirVox[mainDir]>0)
-          {
-          if(np[mainDir]<sourcePosition[mainDir])
-            {
-            // Source is in volume
-            np[0]=sourcePosition[0];
-            np[1]=sourcePosition[1];
-            np[2]=sourcePosition[2];
-            }
-          }
-        else
-          {
-          if(fp[mainDir]>sourcePosition[mainDir])
-            {
-            // Source is in volume
-            fp[0]=sourcePosition[0];
-            fp[1]=sourcePosition[1];
-            fp[2]=sourcePosition[2];
-            }
-          }
 
         // Compute main nearest and farthest slice indices
         const int ns = vnl_math_ceil ( np[mainDir] );
