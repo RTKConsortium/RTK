@@ -47,6 +47,8 @@ namespace rtk
  * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
  * to extract sub-stacks.
  *
+ * \test rtksarttest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ReconstructionAlgorithm

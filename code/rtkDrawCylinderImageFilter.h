@@ -32,6 +32,8 @@ namespace rtk
 /** \class DrawCylinderImageFilter
  * \brief Draws in a 3D image user defined Cylinder.
  *
+ * \test rtkdrawgeometricphantomtest.cxx
+ *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter

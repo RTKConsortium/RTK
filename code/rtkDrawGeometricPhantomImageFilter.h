@@ -36,6 +36,8 @@ namespace rtk
  * The filter draws a list of quadric shapes which parameters are passed by a
  * file. See rtkGeometricPhantomFileReader.h for the file format.
  *
+ * \test rtkdrawgeometricphantomtest.cxx
+ *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter

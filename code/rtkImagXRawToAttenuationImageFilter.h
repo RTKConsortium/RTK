@@ -25,17 +25,16 @@
 #include "rtkImagXLookupTableImageFilter.h"
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
 
+namespace rtk
+{
+
 /** \class ImagXRawToAttenuationImageFilter
  * \brief Convert raw ImagX data to attenuation images
- *
- * TODO
  *
  * \author Simon Rit
  *
  * \ingroup ImageToImageFilter
  */
-namespace rtk
-{
 
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT ImagXRawToAttenuationImageFilter :

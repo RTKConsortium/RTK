@@ -33,6 +33,11 @@ namespace rtk
  * in order to create the projections of a Shepp-Logan phantom resized
  * to m_PhantoScale ( default 128 ).
  *
+ * \test rtkRaycastInterpolatorForwardProjectionTest.cxx,
+ * rtkprojectgeometricphantomtest.cxx, rtkfdktest.cxx, rtkrampfiltertest.cxx,
+ * rtkforwardprojectiontest.cxx, rtkdisplaceddetectortest.cxx,
+ * rtkshortscantest.cxx
+ *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter

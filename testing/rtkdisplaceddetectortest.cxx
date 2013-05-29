@@ -64,6 +64,19 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtkdisplaceddetectortest.cxx
+ *
+ * \brief Functional test for classes performing FDK reconstructions with a
+ * displaced detector/source
+ *
+ * This test generates the projections of a simulated Shepp-Logan phantom and
+ * different sets of geometries with different displaced detectors and sources.
+ * Images are then reconstructed from the generated projection images and
+ * compared to the expected results which is analytically computed.
+ *
+ * \author Simon Rit and Marc Vila
+ */
 
 int main(int, char**)
 {

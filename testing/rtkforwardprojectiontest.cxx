@@ -73,6 +73,20 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtkforwardprojectiontest.cxx
+ *
+ * \brief Functional test for classes performing forward projections (Joseph,
+ * Cuda Ray Cast, Ray Box Intersection)
+ *
+ * This test generates compares the ray casting through a voxelized image (box
+ * filled with one or Shepp Logan phantom) and compares the result with
+ * analytical calculations. Several geometrical configurations are tested with
+ * the source inside or outside the projected volume.
+ *
+ * \author Simon Rit and Marc Vila
+ */
+
 int main(int , char** )
 {
   const unsigned int Dimension = 3;

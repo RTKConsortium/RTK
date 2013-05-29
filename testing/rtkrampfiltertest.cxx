@@ -100,6 +100,21 @@ void CheckImageQuality(typename TImage::Pointer recon,
 }
 #endif
 
+/**
+ * \file rtkrampfiltertest.cxx
+ *
+ * \brief Functional test for the ramp filter of the FDK reconstruction.
+ *
+ * This test generates the projections of a simulated Shepp-Logan phantom in
+ * different reconstruction scenarios (noise, truncation).
+ * CT images are reconstructed from each set of projection images using the
+ * FDK algorithm with different configuration of the ramp filter in order to
+ * reduce the possible artifacts. The generated results are compared to the
+ * expected results (analytical calculation).
+ *
+ * \author Simon Rit
+ */
+
 int main(int , char** )
 {
   const unsigned int Dimension = 3;

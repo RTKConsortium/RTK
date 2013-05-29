@@ -41,9 +41,12 @@
 namespace rtk
 {
 
-/** \class NormalVariateMultiplierFunctor
- * \brief Pixel functor that adds Gaussian noise.
- */
+/** \class NormalVariateNoiseFunctor
+*
+* \brief Pixel functor that adds Gaussian noise.
+*
+* \author Gavin Baker: gavinb at cs_mu_oz_au
+*/
 template < class TPixel >
 class NormalVariateNoiseFunctor
 {
@@ -139,6 +142,8 @@ private:
  *
  * where G() is the Gaussian generator and d is the seed.  A particular seed
  * can be specified in order to perform repeatable tests.
+ *
+ * \test rtkrampfiltertest.cxx
  *
  * \author Gavin Baker: gavinb at cs_mu_oz_au
  *

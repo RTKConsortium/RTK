@@ -43,6 +43,8 @@ namespace rtk
  * When an independent projection has to be processed, these values have to be set by the user from
  * a priori knowledge of the detector displacements.
  *
+ * \test rtkdisplaceddetectortest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ImageToImageFilter

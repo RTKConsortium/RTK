@@ -29,6 +29,8 @@ namespace rtk
  *
  * Creates a 3D circular geometry from Varian OBI data. 
  *
+ * \test rtkvariantest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup IOFilters

@@ -64,6 +64,19 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtkshortscantest.cxx
+ *
+ * \brief Functional test for FDK reconstruction from short scan
+ *
+ * This test generates the projections of a simulated Shepp-Logan phantom with
+ * a short scan geometry. The corresponding CT image is reconstructed using
+ * FDK with Parker weighting. The generated results are compared to the
+ * expected results (analytical calculation).
+ *
+ * \author Simon Rit and Marc Vila
+ */
+
 int main(int , char** )
 {
   const unsigned int Dimension = 3;

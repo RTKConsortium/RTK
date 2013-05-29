@@ -30,7 +30,9 @@ namespace rtk
 {
 
 /** \class DrawEllipsoidImageFilter
- * \brief Draws in a 3D image user defined ellipsoid.
+ * \brief Draws in a 3D image a user defined ellipsoid.
+ *
+ * \test rtksarttest.cxx, rtkmotioncompensatedfdktest.cxx
  *
  * \author Marc Vila
  *

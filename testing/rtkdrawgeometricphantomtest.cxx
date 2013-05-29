@@ -4,7 +4,6 @@
 #include "rtkConstantImageSource.h"
 #include "rtkGeometricPhantomFileReader.h"
 #include "rtkDrawGeometricPhantomImageFilter.h"
-#include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -71,6 +70,20 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
     }
 }
 #endif
+
+/**
+ * \file rtkdrawgeometricphantomtest.cxx
+ *
+ * \brief Functional test for the class that creates a geometric phantom
+ * specified in a config file.
+ *
+ * This test generates several phantoms with different geometrical shapes
+ * (Cone, Cylinder, Shepp-Logan...) specified by configuration files.
+ * The generated results are compared to the expected results, which are
+ * created through hard-coded geometric parameters.
+ *
+ * \author Marc Vila
+ */
 
 int main(int, char** )
 {

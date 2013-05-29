@@ -42,6 +42,9 @@ namespace rtk
  * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
  * to extract sub-stacks.
  *
+ * \test rtkfdktest.cxx, rtkrampfiltertest.cxx, rtkmotioncompensatedfdktest.cxx,
+ * rtkdisplaceddetectortest.cxx, rtkshortscantest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ReconstructionAlgorithm

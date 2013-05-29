@@ -32,6 +32,9 @@ namespace rtk
  *
  * The filter uses RayBoxIntersectionFunction.
  *
+ * \test rtkRaycastInterpolatorForwardProjectionTest.cxx,
+ * rtkforwardprojectiontest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup InPlaceImageFilter

@@ -33,6 +33,8 @@ namespace rtk
  * \brief Reads configuration file containing specifications of a geometric
  * phantom.
  *
+ * \test rtkprojectgeometricphantomtest.cxx, rtkdrawgeometricphantomtest.cxx
+ *
  * \author Marc Vila
  *
  * \ingroup Functions

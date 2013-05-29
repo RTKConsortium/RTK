@@ -112,6 +112,19 @@ void CheckGeometries(GeometryType *g1, GeometryType *g2)
     }
 }
 
+/**
+ * \file rtkdigisenstest.cxx
+ *
+ * \brief Functional tests for classes managing Digisens data
+ *
+ * This test reads a projection and the geometry of an acquisition from a
+ * Digisens acquisition and compares it to the expected results, which are
+ * read from a baseline image in the MetaIO file format and a geometry file in
+ * the RTK format, respectively.
+ *
+ * \author Simon Rit
+ */
+
 int main(int, char** )
 {
   // Elekta geometry

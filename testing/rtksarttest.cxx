@@ -70,6 +70,19 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtksarttest.cxx
+ *
+ * \brief Functional test for SART reconstruction
+ *
+ * This test generates the projections of an ellipsoid and reconstructs the CT
+ * image using the SART algorithm with different backprojectors (Voxel-Based,
+ * Joseph and CUDA Voxel-Based). The generated results are compared to the
+ * expected results (analytical calculation).
+ *
+ * \author Simon Rit and Marc Vila
+ */
+
 int main(int, char** )
 {
   const unsigned int Dimension = 3;

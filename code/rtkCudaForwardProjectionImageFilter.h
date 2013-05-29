@@ -22,18 +22,21 @@
 #include "rtkWin32Header.h"
 #include "rtkForwardProjectionImageFilter.h"
 
+namespace rtk
+{
+
 /** \class CudaForwardProjectionImageFilter
- * \brief TODO
+ * \brief Implements a Voxel Based forward projector
  *
- * TODO
+ * Accumulation of the volume value along the ray with trilinear interpolation
+ * (parallelised version, CUDA).
  *
- * \author TODO 
+ * \test rtkforwardprojectiontest.cxx
+ *
+ * \author Marc Vila
  *
  * \ingroup Projector CudaImageToImageFilter
  */
-
-namespace rtk
-{
 
 class CudaForwardProjectionImageFilter :
   public ForwardProjectionImageFilter< itk::Image<float,3>, itk::Image<float,3> >

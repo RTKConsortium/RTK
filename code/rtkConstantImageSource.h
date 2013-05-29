@@ -34,6 +34,13 @@ namespace rtk
  * useful to allow streaming of large images with a constant source, e.g., a
  * tomography reconstructed with a filtered backprojection algorithm.
  *
+ * \test rtkRaycastInterpolatorForwardProjectionTest.cxx,
+ * rtkprojectgeometricphantomtest.cxx, rtkfdktest.cxx, rtksarttest.cxx,
+ * rtkrampfiltertest.cxx, rtkamsterdamshroudtest.cxx,
+ * rtkdrawgeometricphantomtest.cxx, rtkmotioncompensatedfdktest.cxx,
+ * rtkfovtest.cxx, rtkforwardprojectiontest.cxx, rtkdisplaceddetectortest.cxx,
+ * rtkshortscantest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ImageSource

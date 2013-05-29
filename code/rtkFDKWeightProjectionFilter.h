@@ -23,6 +23,9 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
 
+namespace rtk
+{
+
 /** \class FDKWeightProjectionFilter
  * \brief Weighting of projections to correct for the divergence in
  * filtered backprojection reconstruction algorithms.
@@ -38,8 +41,6 @@
  *
  * \ingroup InPlaceImageFilter
  */
-namespace rtk
-{
 
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT FDKWeightProjectionFilter :

@@ -22,15 +22,16 @@
 #include <itkImageToImageFilter.h>
 #include <itkImageSeriesReader.h>
 
-/** \class RawToAttenuationImageFilter
+namespace rtk
+{
+
+/** \class EdfRawToAttenuationImageFilter
  * \brief Convert raw ESRF data to attenuation images
  *
  * \author Simon Rit
  *
  * \ingroup ImageToImageFilter
  */
-namespace rtk
-{
 
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT EdfRawToAttenuationImageFilter :

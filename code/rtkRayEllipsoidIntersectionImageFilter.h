@@ -35,6 +35,8 @@ namespace rtk
  *
  * See http://en.wikipedia.org/wiki/Ellipsoid for more information.
  *
+ * \test rtksarttest.cxx, rtkamsterdamshroudtest.cxx, rtkmotioncompensatedfdktest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup InPlaceImageFilter

@@ -68,6 +68,20 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtkmotioncompensatedfdktest.cxx
+ *
+ * \brief Functional tests for classes performing a motion compensated FDK
+ * reconstruction.
+ *
+ * This test generates the projections of a phantom, which consists of two
+ * ellipsoids (one of them moving). The resulting moving phantom is
+ * reconstructed using motion compensation techniques and these generated
+ * results are compared to the expected results (analytical computation).
+ *
+ * \author Simon Rit and Marc Vila
+ */
+
 int main(int, char** )
 {
   const unsigned int Dimension = 3;

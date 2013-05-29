@@ -64,6 +64,19 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtkfovtest.cxx
+ *
+ * \brief Functional test for classes in charge of creating a FOV (Field Of
+ * View) mask
+ *
+ * This test generates a FOV mask that can be used after a reconstruction.
+ * The generated results are compared to the expected results, which are
+ * created with a threshold in the backprojection images of the volume.
+ *
+ * \author Simon Rit and Marc Vila
+ */
+
 int main(int , char** )
 {
   const unsigned int Dimension = 3;
