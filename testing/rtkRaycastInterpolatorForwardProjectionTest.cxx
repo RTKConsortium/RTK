@@ -69,7 +69,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 #endif
 
 /**
- * \file rtkRaycastInterpolatorForwardProjectortest.cxx
+ * \file rtkRaycastInterpolatorForwardProjectionTest.cxx
  *
  * \brief Functional test for classes performing Ray Cast Forward projections.
  *

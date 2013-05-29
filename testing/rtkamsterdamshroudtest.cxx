@@ -71,7 +71,7 @@ void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage
 #endif
 
 /**
- * \file rtkamsterdamtest.cxx
+ * \file rtkamsterdamshroudtest.cxx
  *
  * \brief Functional test for classes performing Amsterdam Shroud and breathing signal extraction algorithms
  *
