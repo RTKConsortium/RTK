@@ -71,6 +71,20 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtkprojectgeometricphantomtest.cxx
+ *
+ * \brief Functional test for the class that projects a geometric phantom
+ * specified in a config file.
+ *
+ * This test generates the projections of a Shepp-Logan phantom which are
+ * specified by a configuration file located at the Baseline folder.
+ * The generated results are compared to the expected results, which are
+ * created through hard-coded geometric parameters.
+ *
+ * \author Marc Vila
+ */
+
 int main(int, char** )
 {
   const unsigned int Dimension = 3;

@@ -25,7 +25,7 @@
 namespace rtk
 {
 
-/** \class RegularToQuadricFunction
+/** \class ConvertEllipsoidToQuadricParametersFunction
  * \brief Converts ellipsoid parameters to quadric parameters.
  *
  * Converts ellipsoid parameters, i.e., semi-principal axes, center and
@@ -35,6 +35,7 @@ namespace rtk
  *
  * \ingroup Geometry
  */
+
 class ConvertEllipsoidToQuadricParametersFunction :
     public itk::Object
 {

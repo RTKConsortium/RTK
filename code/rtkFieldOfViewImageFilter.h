@@ -36,6 +36,8 @@ namespace rtk
  * InPlaneAngle. The rest is accounted for but the fov is assumed to be
  * cylindrical.
  *
+ * \test rtkfovtest.cxx, rtkfdktest.cxx, rtkmotioncompensatedfdktest.cxx
+ *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter

@@ -70,7 +70,19 @@ void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage
 }
 #endif
 
-
+/**
+ * \file rtkamsterdamtest.cxx
+ *
+ * \brief Functional test for classes performing Amsterdam Shroud and breathing signal extraction algorithms
+ *
+ * This test generates an Amsterdam Shroud image from a moving simulated phantom
+ * and extracts the breathing signal using two different methods, reg1D and D
+ * algorithms. The generated results are compared to the expected results,
+ * read from a baseline image in the MetaIO file format and hard-coded,
+ * respectively.
+ *
+ * \author Marc Vila
+ */
 int main(int, char** )
 {
   const unsigned int Dimension = 3;

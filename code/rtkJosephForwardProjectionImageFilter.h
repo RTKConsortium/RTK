@@ -106,6 +106,8 @@ public:
  * has been placed after the source and the volume. If the detector is in the volume
  * the ray tracing is performed only until that point.
  *
+ * \test rtkforwardprojectiontest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup Projector

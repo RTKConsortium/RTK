@@ -23,18 +23,21 @@
 #include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
 
+namespace rtk
+{
+
 /** \class FFTRampImageFilter
  * \brief Implements the ramp image filter of the filtered backprojection algorithm.
  *
  * The filter code is based on FFTConvolutionImageFilter by Gaetan Lehmann
  * (see http://hdl.handle.net/10380/3154)
  *
+ * \test rtkrampfiltertest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ImageToImageFilter
  */
-namespace rtk
-{
 
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
 class ITK_EXPORT FFTRampImageFilter :

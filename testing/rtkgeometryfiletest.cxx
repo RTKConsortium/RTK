@@ -56,6 +56,17 @@ void WriteReadAndCheck(GeometryType *geometry)
     }
 }
 
+/**
+ * \file rtkgeometryfiletest.cxx
+ *
+ * \brief Functional tests for classes managing RTK geometry data
+ *
+ * This test creates different RTK geometries and compares the result to
+ * to the expected one, read from a baseline .txt file in the RTK format.
+ *
+ * \author Simon Rit
+ */
+
 int main(int, char** )
 {
   // Create a geometry object with 1 projection

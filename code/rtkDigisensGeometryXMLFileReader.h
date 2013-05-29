@@ -25,10 +25,12 @@
 namespace rtk
 {
 
-/** \class rtkDigisensGeometryXMLFileReader
+/** \class DigisensGeometryXMLFileReader
  *
  * Reads the XML-format file written by Digisens geometric
  * calibration tool.
+ *
+ * \test rtkdigisenstest.cxx
  */
 class DigisensGeometryXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {

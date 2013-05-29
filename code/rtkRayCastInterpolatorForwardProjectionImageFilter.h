@@ -32,6 +32,8 @@ namespace rtk
  * RayCastInterpolateFunction does not handle ITK geometry correctly but this
  * is accounted for this class.
  *
+ * \test rtkRaycastInterpolatorForwardProjectionTest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup Projector

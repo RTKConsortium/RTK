@@ -68,6 +68,19 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtkRaycastInterpolatorForwardProjectortest.cxx
+ *
+ * \brief Functional test for classes performing Ray Cast Forward projections.
+ *
+ * This test generates compares the ray casting through a voxelized image (box
+ * filled with one or Shepp Logan phantom) and compares the result with
+ * analytical calculations. Several geometrical configurations are tested with
+ * the source inside or outside the projected volume.
+ *
+ * \author Simon Rit
+ */
+
 int main(int , char** )
 {
   const unsigned int Dimension = 3;

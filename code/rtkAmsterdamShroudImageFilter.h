@@ -43,6 +43,8 @@ namespace rtk
  * is the cranio-caudal position. More information is available in
  * [Zijp, ICCR, 2004], [Sonke, Med Phys, 2005] and [Rit, IJROBP, 2012].
  *
+ * \test rtkamsterdamshroudtest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ImageToImageFilter

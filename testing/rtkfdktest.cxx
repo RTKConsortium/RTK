@@ -72,6 +72,19 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 }
 #endif
 
+/**
+ * \file rtkfdktest.cxx
+ *
+ * \brief Functional test for classes performing FDK reconstructions
+ *
+ * This test generates the projections of a simulated Shepp-Logan phantom.
+ * A CT image is reconstructed from each set of generated projection images
+ * using the FDK algorithm and the reconstructed CT image is compared to the
+ * expected results which is analytically computed.
+ *
+ * \author Simon Rit and Marc Vila
+ */
+
 int main(int, char** )
 {
   const unsigned int Dimension = 3;

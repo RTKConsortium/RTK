@@ -30,6 +30,8 @@ namespace rtk
  *
  * Creates a 3D circular geometry from an exported XRad sinogram.
  *
+ * \test rtkxradtest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup IOFilters

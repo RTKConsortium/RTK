@@ -23,6 +23,9 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
 
+namespace rtk
+{
+
 /** \class ParkerShortScanImageFilter
  *
  * Weighting of image projections to handle off-centered panels
@@ -32,12 +35,12 @@
  * of its size. Otherwise, it does the weighting described in the publication
  * and zero pads the data on the nearest side to the center.
  *
+ * \test rtkshortscantest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
-namespace rtk
-{
 
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT ParkerShortScanImageFilter :

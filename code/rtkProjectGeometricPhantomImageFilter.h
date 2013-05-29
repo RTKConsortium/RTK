@@ -40,6 +40,8 @@ namespace rtk
  * specified in a configuration file following the convention of
  * http://www.slaney.org/pct/pct-errata.html
  *
+ * \test rtkprojectgeometricphantomtest.cxx
+ *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter

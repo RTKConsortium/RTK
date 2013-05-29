@@ -46,6 +46,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkTiffLookupTableImageFilter.h"
 #include "rtkVarianObiRawImageFilter.h"
+#include "rtkXRadGeometryReader.h"
 
 //#ifdef USE_OPENCL
 //  #include "rtkOpenCLFDKBackProjectionImageFilter.h"
@@ -57,6 +58,14 @@
   #include "rtkCudaFDKConeBeamReconstructionFilter.h"
   #include "rtkCudaFFTRampImageFilter.h"
 #endif
+
+/**
+ * \file rtkheadertest.cxx
+ *
+ * \brief This test includes all headers for coverage and style purposed.
+ *
+ * \author Simon Rit
+ */
 
 int main(int , char**)
 { 

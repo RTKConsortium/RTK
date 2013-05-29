@@ -38,6 +38,8 @@ namespace rtk
  * reconstruction. This has been described in [Rit et al, TMI, 2009] and
  * [Rit et al, Med Phys, 2009].
  *
+ * \test rtkmotioncompensatedfdktest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup Projector

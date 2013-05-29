@@ -38,6 +38,9 @@ namespace rtk
  * assumed that the attenuation is directly passed and there is no processing,
  * only the reading.
  *
+ * \test rtkedftest.cxx, rtkelektatest.cxx, rtkimagxtest.cxx, 
+ * rtkdigisenstest.cxx, rtkxradtest.cxx, rtkvariantest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup ImageSource

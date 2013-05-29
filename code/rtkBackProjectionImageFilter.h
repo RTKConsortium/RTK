@@ -36,6 +36,8 @@ namespace rtk
  * is voxel-based, meaning that the center of each voxel is projected in the
  * projection images to determine the interpolation location.
  *
+ * \test rtkfovtest.cxx
+ *
  * \author Simon Rit
  *
  * \ingroup Projector
