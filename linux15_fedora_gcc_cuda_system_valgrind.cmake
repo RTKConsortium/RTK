@@ -10,8 +10,10 @@ set(ENV{CUDA_BIN_PATH} "/usr/lib64/cuda/bin")
 set(CTEST_BUILD_FLAGS -j8)
 
 # OpenCL
-set(ENV{LD_LIBRARY_PATH} "/usr/lib64/nvidia:$ENV{LD_LIBRARY_PATH}")
-set(CONFIGURE_OPTIONS "-DOPENCL_ROOT_DIR=/usr/lib64/cuda")
+set(CONFIGURE_OPTIONS
+   -DOPENCL_LIBRARIES:PATH=/usr/lib64/nvidia/libOpenCL.so.1
+   -DOPENCL_INCLUDE_DIRS:PATH=/usr/include/cuda
+  )
 
 SET(ENV{VALGRIND_LIB} "/usr/lib64/valgrind")
 SET(CTEST_MEMORYCHECK_COMMAND /usr/bin/valgrind)
