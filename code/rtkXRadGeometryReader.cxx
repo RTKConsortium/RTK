@@ -82,13 +82,13 @@ rtk::XRadGeometryReader
     // The coordinate system of XRad is supposed to be illustrated in figure 1 of
     // [Clarkson et al, Med Phys, 2011]. Real acquisition of a Playmobil have been
     // actually used to be sure...
-    u[0]      *= -1.;
-    v[0]      *= -1.;
-    focus[0]  *= -1.;
+    u[0] *= -1.;
+    v[0] *= -1.;
+    focus[0] *= -1.;
     center[0] *= -1;
-    u[2]      *= -1.;
-    v[2]      *= -1.;
-    focus[2]  *= -1.;
+    u[2] *= -1.;
+    v[2] *= -1.;
+    focus[2] *= -1.;
     center[2] *= -1;
     std::swap(u[1], u[2]);
     std::swap(v[1], v[2]);
