@@ -133,7 +133,11 @@ bool rtk::Reg23ProjectionGeometry::AddReg23Projection(
   // extract Euler angles by using the standard ITK implementation:
   EulerType::Pointer euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
-  euler->SetMatrix(rm);
+  // workaround: Orthogonality tolerance problem when using
+  // Euler3DTransform->SetMatrix() due to error magnification.
+  // Parent class MatrixOffsetTransformBase does not perform an
+  // orthogonality check on the matrix!
+  euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(rm);
   oa = euler->GetAngleX(); // delivers radians
   ga = euler->GetAngleY();
   ia = euler->GetAngleZ();
