@@ -216,8 +216,8 @@ CUDA_back_project(
   if(fabs(matrix[5])<1e-10 && fabs(matrix[9])<1e-10)
     {
     // Thread Block Dimensions
-    static const int tBlock_x = 32;
-    static const int tBlock_y = 16;
+    const int tBlock_x = 32;
+    const int tBlock_y = 16;
 
     // Each segment gets 1 thread
     unsigned int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
@@ -231,9 +231,9 @@ CUDA_back_project(
   else
     {
     // Thread Block Dimensions
-    static const int tBlock_x = 16;
-    static const int tBlock_y = 4;
-    static const int tBlock_z = 4;
+    const int tBlock_x = 16;
+    const int tBlock_y = 4;
+    const int tBlock_z = 4;
 
     // Each element in the volume (each voxel) gets 1 thread
     int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
