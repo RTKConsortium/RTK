@@ -79,27 +79,27 @@ public:
 
   /** Get / Set the box inferior corner. Every coordinate must be inferior to
    * those of the superior corner. */
-  virtual VectorType GetBoxMin() { return this->m_BoxMin; };
+  virtual VectorType GetBoxMin() { return this->m_BoxMin; }
   virtual void SetBoxMin(const VectorType _arg) { m_BoxMin = _arg; }
 
   /** Get / Set the box superior corner. Every coordinate must be superior to
    * those of the inferior corner. */
   virtual VectorType GetBoxMax() { return this->m_BoxMax; }
-  virtual void SetBoxMax(const VectorType _arg) { m_BoxMax = _arg; };
+  virtual void SetBoxMax(const VectorType _arg) { m_BoxMax = _arg; }
 
   /** Get / Set the ray origin. */
   virtual VectorType GetRayOrigin() { return this->m_RayOrigin; }
-  virtual void SetRayOrigin(const VectorType _arg) { m_RayOrigin = _arg; };
+  virtual void SetRayOrigin(const VectorType _arg) { m_RayOrigin = _arg; }
 
   /** Get the distance with the nearest intersection.
     * \warning Only relevant if called after Evaluate. */
   virtual TCoordRep GetNearestDistance() { return this->m_NearestDistance; }
-  virtual void SetNearestDistance(const TCoordRep _arg) { m_NearestDistance = _arg; };
+  virtual void SetNearestDistance(const TCoordRep _arg) { m_NearestDistance = _arg; }
 
   /** Get the distance with the farthest intersection.
     * \warning Only relevant if called after Evaluate. */
   virtual TCoordRep GetFarthestDistance() { return this->m_FarthestDistance; }
-  virtual void SetFarthestDistance(const TCoordRep _arg) { m_FarthestDistance = _arg; };
+  virtual void SetFarthestDistance(const TCoordRep _arg) { m_FarthestDistance = _arg; }
 
   /** Get the nearest point coordinates.
     * \warning Only relevant if called after Evaluate. */
