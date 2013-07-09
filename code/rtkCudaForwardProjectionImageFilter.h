@@ -19,32 +19,39 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_h
 #define __rtkCudaForwardProjectionImageFilter_h
 
-#include "rtkWin32Header.h"
-#include "rtkForwardProjectionImageFilter.h"
+#include "rtkJosephForwardProjectionImageFilter.h"
+#include "itkCudaInPlaceImageFilter.h"
+#include "itkCudaUtil.h"
+#include "itkCudaKernelManager.h"
 
-namespace rtk
-{
 
 /** \class CudaForwardProjectionImageFilter
- * \brief Implements a Voxel Based forward projector
+ * \brief TODO
  *
- * Accumulation of the volume value along the ray with trilinear interpolation
- * (parallelised version, CUDA).
+ * TODO
  *
- * \test rtkforwardprojectiontest.cxx
- *
- * \author Marc Vila
+ * \author TODO 
  *
  * \ingroup Projector CudaImageToImageFilter
  */
 
-class CudaForwardProjectionImageFilter :
-  public ForwardProjectionImageFilter< itk::Image<float,3>, itk::Image<float,3> >
+
+
+namespace rtk
+{
+
+/** Create a helper Cuda Kernel class for CudaImageOps */
+itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
+
+class ITK_EXPORT CudaForwardProjectionImageFilter :
+  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+  ForwardProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::Image<float,3>                                ImageType;
-  typedef CudaForwardProjectionImageFilter                   Self;
+  typedef itk::CudaImage<float,3>                            ImageType;
+  typedef CudaForwardProjectionImageFilter                  Self;
+  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, ForwardProjectionImageFilter<ImageType, ImageType> > GPUSuperclass;
   typedef ForwardProjectionImageFilter<ImageType, ImageType> Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
@@ -58,24 +65,24 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(CudaForwardProjectionImageFilter, ForwardProjectionImageFilter);
+  itkTypeMacro(CudaForwardProjectionImageFilter, ImageToImageFilter);
 
   /** Function to allocate memory on device */
   void InitDevice();
 
   /** Function to synchronize memory from device to host and free device memory */
   void CleanUpDevice();
-
+  
   /** Boolean to keep the hand on the memory management of the GPU. Default is
    * off. If on, the user must call manually InitDevice and CleanUpDevice. */
   itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
   itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
 
 protected:
-  rtkcuda_EXPORT CudaForwardProjectionImageFilter();
+  CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
 
-  void GenerateData();
+  void GPUGenerateData();
 
 private:
   //purposely not implemented

@@ -55,14 +55,14 @@ namespace rtk
  * \ingroup ReconstructionAlgorithm
  */
 class ITK_EXPORT CudaSARTConeBeamReconstructionFilter :
-  public rtk::SARTConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3> >
+  public rtk::SARTConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> >
 {
 public:
   /** Standard class typedefs. */
-  typedef CudaSARTConeBeamReconstructionFilter                                          Self;
-  typedef SARTConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3> >  Superclass;
-  typedef itk::SmartPointer<Self>                                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                                 ConstPointer;
+  typedef CudaSARTConeBeamReconstructionFilter                                                  Self;
+  typedef SARTConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> >  Superclass;
+  typedef itk::SmartPointer<Self>                                                               Pointer;
+  typedef itk::SmartPointer<const Self>                                                         ConstPointer;
 
   /** Typedefs of each subfilter of this composite filter */
   typedef rtk::CudaForwardProjectionImageFilter                                          ForwardProjectionFilterType;

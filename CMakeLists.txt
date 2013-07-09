@@ -170,6 +170,9 @@ IF(ITK_VERSION_MAJOR LESS "4")
   INCLUDE_DIRECTORIES(BEFORE utilities/itkcrop)
 ENDIF()
 
+ADD_SUBDIRECTORY(utilities/ITKCudaCommon)
+INCLUDE_DIRECTORIES(utilities/ITKCudaCommon/include)
+
 
 ADD_SUBDIRECTORY(code)
 

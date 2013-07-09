@@ -23,7 +23,8 @@
 #include "rtkProjectionsReader.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
 #if CUDA_FOUND
-#  include "rtkCudaSARTConeBeamReconstructionFilter.h"
+  #include "rtkCudaSARTConeBeamReconstructionFilter.h"
+  #include "itkCudaImage.h"
 #endif
 
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -36,7 +37,11 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
+#ifdef USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#endif
 
   // Generate file names
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
