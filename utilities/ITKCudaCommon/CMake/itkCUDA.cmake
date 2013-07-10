@@ -32,9 +32,8 @@ if(NOT _BUILD_CUDA_KERNEL)
       DEPENDS ${PTX_FILES}
       COMMAND ${CMAKE_COMMAND} ARGS
         -D "_BUILD_CUDA_KERNEL=TRUE"
-        -D "PTXKernels:STRING=${PTX_FILES}"
-        #-P "${CMAKE_SOURCE_DIR}/Modules/External/ITKCudaCommon/CMake/itkCUDA.cmake" # call to itself!
-	    -P "${ITKCudaCommon_SOURCE_DIR}/CMake/itkCUDA.cmake" # call to itself!
+        -D "PTXKernels:STRING=\"${PTX_FILES}\""
+	-P "${ITKCudaCommon_SOURCE_DIR}/CMake/itkCUDA.cmake" # call to itself!
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
       COMMENT "Building CUDA PTX wrappers"
     )
