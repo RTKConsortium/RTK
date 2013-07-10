@@ -30,7 +30,50 @@
 
 namespace itk
 {
-class GPUMemPointer;
+class GPUMemPointer: public LightObject
+{
+public:
+  typedef GPUMemPointer            Self;
+  typedef Object                   Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
+
+  itkNewMacro(Self);
+  itkTypeMacro(GPUMemPointer, Object);
+
+  void Allocate(size_t bufferSize)
+  {
+    m_bufferSize = bufferSize;
+    CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
+  }
+
+  ~GPUMemPointer()
+  {
+    if(m_GPUBuffer)
+      {
+      CUDA_CHECK(cudaFree(m_GPUBuffer));
+      m_GPUBuffer = 0;
+      }
+  }
+
+  void* GetPointer()
+  {
+    return m_GPUBuffer;
+  }
+
+  void* GetPointerPtr()
+  {
+    return &m_GPUBuffer;
+  }
+
+protected:
+  GPUMemPointer() : m_GPUBuffer(0), m_bufferSize(0)
+  {
+  }
+
+  void* m_GPUBuffer;
+  size_t m_bufferSize;
+};
 
 /** \class CudaDataManager
  * \brief GPU memory manager implemented using Cuda. Required by CudaImage class.
@@ -140,7 +183,7 @@ protected:
   int m_MemFlags;
 
   /** buffer pointers */
-  std::tr1::shared_ptr<GPUMemPointer> m_GPUBuffer;
+  GPUMemPointer::Pointer m_GPUBuffer;
   //void* m_GPUBuffer;
   void* m_CPUBuffer;
 
@@ -150,43 +193,6 @@ protected:
 
   /** Mutex lock to prevent r/w hazard for multithreaded code */
   SimpleFastMutexLock m_Mutex;
-};
-
-class GPUMemPointer
-{
-public:
-  GPUMemPointer() : m_GPUBuffer(0), m_bufferSize(0)
-  {
-  }
-
-  void Allocate(size_t bufferSize)
-  {
-    m_bufferSize = bufferSize;
-    CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
-  }
-
-  ~GPUMemPointer()
-  {
-    if(m_GPUBuffer)
-      {
-      CUDA_CHECK(cudaFree(m_GPUBuffer));
-      m_GPUBuffer = 0;
-      }
-  }
-
-  void* GetPointer()
-  {
-    return m_GPUBuffer;
-  }
-  
-  void* GetPointerPtr()
-  {
-    return &m_GPUBuffer;
-  }
-
-protected:
-  void* m_GPUBuffer;
-  size_t m_bufferSize;
 };
 
 } // namespace itk
