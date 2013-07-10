@@ -21,7 +21,7 @@
 
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkWin32Header.h"
-#include "itkCudaImage.h"
+#include <itkCudaImage.h>
 
 namespace rtk
 {

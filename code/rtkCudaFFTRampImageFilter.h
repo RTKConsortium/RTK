@@ -22,6 +22,8 @@
 #include "rtkFFTRampImageFilter.h"
 #include "rtkWin32Header.h"
 
+#include <itkCudaImage.h>
+
 namespace rtk
 {
 
@@ -35,11 +37,11 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 class CudaFFTRampImageFilter :
-  public FFTRampImageFilter< itk::Image<float,3>, itk::Image<float,3>, float >
+  public FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float >
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::Image<float,3>                                ImageType;
+  typedef itk::CudaImage<float,3>                            ImageType;
   typedef CudaFFTRampImageFilter                             Self;
   typedef FFTRampImageFilter< ImageType, ImageType, double > Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
