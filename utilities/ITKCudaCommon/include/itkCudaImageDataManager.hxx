@@ -71,7 +71,7 @@ void CudaImageDataManager< ImageType >::MakeCPUBufferUpToDate()
      * correctly managed. Therefore, we check the time stamp of
      * CPU and Cuda data as well
      */
-    if ((m_IsCPUBufferDirty || (gpu_time > cpu_time)) && m_GPUBuffer != NULL && m_CPUBuffer != NULL)
+    if ((m_IsCPUBufferDirty || (gpu_time > cpu_time)) && m_GPUBuffer.GetPointer() != NULL && m_CPUBuffer != NULL)
       {
       cudaError_t errid;
 #ifdef VERBOSE
@@ -108,7 +108,7 @@ void CudaImageDataManager< ImageType >::MakeGPUBufferUpToDate()
     * correctly managed. Therefore, we check the time stamp of
     * CPU and GPU data as well
     */
-    if ((m_IsGPUBufferDirty || (gpu_time < cpu_time)) && m_CPUBuffer != NULL && m_GPUBuffer != NULL)
+    if ((m_IsGPUBufferDirty || (gpu_time < cpu_time)) && m_CPUBuffer != NULL && m_GPUBuffer.GetPointer() != NULL)
       {
       cudaError_t errid;
 #ifdef VERBOSE

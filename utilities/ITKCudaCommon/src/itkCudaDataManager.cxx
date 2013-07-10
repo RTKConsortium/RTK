@@ -22,7 +22,7 @@
 namespace itk
 {
 // constructor
-CudaDataManager::CudaDataManager() : m_GPUBuffer(new GPUMemPointer())
+CudaDataManager::CudaDataManager() : m_GPUBuffer(GPUMemPointer::New())
 {
   m_ContextManager = CudaContextManager::GetInstance();
   m_CPUBuffer = NULL;
