@@ -42,14 +42,14 @@ namespace rtk
  * \ingroup ReconstructionAlgorithm CudaImageToImageFilter
  */
 class CudaFDKConeBeamReconstructionFilter :
-  public FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float >
+  public FDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float >
 {
 public:
   /** Standard class typedefs. */
-  typedef CudaFDKConeBeamReconstructionFilter                                                Self;
-  typedef FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float > Superclass;
-  typedef itk::SmartPointer<Self>                                                            Pointer;
-  typedef itk::SmartPointer<const Self>                                                      ConstPointer;
+  typedef CudaFDKConeBeamReconstructionFilter                                                        Self;
+  typedef FDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > Superclass;
+  typedef itk::SmartPointer<Self>                                                                    Pointer;
+  typedef itk::SmartPointer<const Self>                                                              ConstPointer;
 
   /** Typedefs of subfilters which have been implemented with CUDA */
   typedef rtk::CudaFFTRampImageFilter           RampFilterType;

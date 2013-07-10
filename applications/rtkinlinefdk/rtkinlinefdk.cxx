@@ -171,7 +171,11 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   threadInfo->mutex.Lock();
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
+#if CUDA_FOUND
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#endif
 
   rtk::ThreeDCircularProjectionGeometry::Pointer geometry = rtk::ThreeDCircularProjectionGeometry::New();
   std::vector< std::string >                     fileNames;

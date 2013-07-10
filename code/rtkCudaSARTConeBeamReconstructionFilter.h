@@ -32,6 +32,8 @@
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
 
+#include <itkCudaImage.h>
+
 namespace rtk
 {
 
