@@ -70,7 +70,7 @@ public:
   itkSetMacro(Geometry, GeometryPointer);
 
   /** Get / Set of the member Mask. If set, all the pixels in the field of view
-   * are set to 1. The data value is left otherwise. Pixels outside the mask
+   * are set to 1. The data value is kept otherwise. Pixels outside the mask
    * are set to 0 in any case. */
   itkGetMacro(Mask, bool);
   itkSetMacro(Mask, bool);
