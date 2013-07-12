@@ -66,6 +66,11 @@ public:
     return &m_GPUBuffer;
   }
 
+  size_t GetBufferSize()
+  {
+    return m_bufferSize;
+  }
+
 protected:
   GPUMemPointer() : m_GPUBuffer(0), m_bufferSize(0)
   {

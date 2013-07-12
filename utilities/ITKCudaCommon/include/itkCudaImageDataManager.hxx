@@ -46,12 +46,12 @@ void CudaImageDataManager< ImageType >::SetImagePointer(ImageType* img)
   m_GPUBufferedRegionIndex = CudaDataManager::New();
   m_GPUBufferedRegionIndex->SetBufferSize(sizeof(int) * ImageDimension);
   m_GPUBufferedRegionIndex->SetCPUBufferPointer(m_BufferedRegionIndex);
-  m_GPUBufferedRegionIndex->Allocate();
+  m_GPUBufferedRegionIndex->SetGPUBufferDirty();
 
   m_GPUBufferedRegionSize = CudaDataManager::New();
   m_GPUBufferedRegionSize->SetBufferSize(sizeof(int) * ImageDimension);
   m_GPUBufferedRegionSize->SetCPUBufferPointer(m_BufferedRegionSize);
-  m_GPUBufferedRegionSize->Allocate();
+  m_GPUBufferedRegionSize->SetGPUBufferDirty();
 }
 
 template < class ImageType >
