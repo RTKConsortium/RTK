@@ -24,7 +24,7 @@
 void
 CUDA_fft_convolution(const int3 &inputDimension,
                      const int2 &kernelDimension,
-                     float *projection,
-                     float2 *kernelFFT);
+                     float *deviceProjection,
+                     float2 *deviceKernelFFT);
 
 #endif
