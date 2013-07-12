@@ -46,7 +46,7 @@ void CudaDataManager::SetBufferFlag(int flags)
 
 void CudaDataManager::Allocate()
 {
-  if (m_BufferSize > 0)
+  if (m_BufferSize > 0 && m_GPUBuffer->GetBufferSize() != m_BufferSize)
     {
 #ifdef VERBOSE
     std::cout << this << "::Allocate Create GPU buffer of size " << m_BufferSize << " Bytes" << std::endl;
@@ -104,6 +104,7 @@ void CudaDataManager::UpdateGPUBuffer()
 
   if (m_IsGPUBufferDirty && m_CPUBuffer && m_GPUBuffer)
     {
+    this->Allocate();
 #ifdef VERBOSE
     std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer << " : " << m_BufferSize << std::endl;
 #endif

@@ -49,7 +49,7 @@ void CudaImage< TPixel, VImageDimension >::Allocate()
   m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
   m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
-  m_DataManager->Allocate();
+  m_DataManager->SetGPUBufferDirty();
 
   /* prevent unnecessary copy from CPU to Cuda at the beginning */
   m_DataManager->SetTimeStamp(this->GetTimeStamp());
@@ -68,7 +68,7 @@ void CudaImage< TPixel, VImageDimension >::Initialize()
   m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
   m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
-  m_DataManager->Allocate();
+  m_DataManager->SetGPUBufferDirty();
 
   /* prevent unnecessary copy from CPU to Cuda at the beginning */
   m_DataManager->SetTimeStamp(this->GetTimeStamp());
