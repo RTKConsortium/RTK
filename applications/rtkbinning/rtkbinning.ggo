@@ -1,0 +1,9 @@
+package "rtk"
+version "Performas a binning on the input image"
+
+option "verbose"  v "Verbose execution"                              flag       off
+option "config"   - "Config file"                                    string     no
+option "output"   o "Output projections file name"                   string     yes
+option "input"    i "Input volume file name"                         string     yes
+option "binning"  b "Binning mode, e.g. [1,2] , [2,1] or [2,2]"  int multiple   no  default="2"
+
