@@ -7,8 +7,6 @@
 #include "rtkConstantImageSource.h"
 
 #include "rtkBinningImageFilter.h"
-#include "itkImageFileWriter.h"
-#include "rtkMacro.h"
 
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
@@ -64,7 +62,6 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
     exit( EXIT_FAILURE);
     }
 }
-//#endif
 
 /**
  * \file rtkbinningtest.cxx

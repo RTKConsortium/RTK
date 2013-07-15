@@ -1,5 +1,5 @@
 package "rtk"
-version "Performas a binning on the input image"
+version "Performs a binning on 2D images (pixeltype uint16)"
 
 option "verbose"  v "Verbose execution"                              flag       off
 option "config"   - "Config file"                                    string     no
