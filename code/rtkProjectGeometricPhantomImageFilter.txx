@@ -44,10 +44,9 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
   unsigned int ellip = 0;
   unsigned int box   = 0;
   BoxVectorType boxMin, boxMax;
-  std::vector< REIType::Pointer > rei;
-  std::vector< RBIType::Pointer > rbi;
+  std::vector< typename REIType::Pointer > rei;
+  std::vector< typename RBIType::Pointer > rbi;
 
-  //std::vector< REIType::Pointer > rei( m_Fig.size() );
   for ( unsigned int i = 0; i < m_Fig.size(); i++ )
   {
     // Ellipsoid, Cylinder and Cone Case
