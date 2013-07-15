@@ -41,7 +41,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
   cfr->Config(m_ConfigFile);
   m_Fig = cfr->GetFig();
 
-  std::vector< REIType::Pointer > rei( m_Fig.size() );
+  std::vector< typename REIType::Pointer > rei( m_Fig.size() );
   for ( unsigned int i = 0; i < m_Fig.size(); i++ )
     {
     rei[i] = REIType::New();

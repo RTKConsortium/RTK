@@ -61,7 +61,7 @@ public:
 
   typedef float OutputPixelType;
 
-  typedef itk::Image< OutputPixelType, 3 >                                           OutputImageType;
+  typedef TOutputImage                                                               OutputImageType;
   typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
   typedef std::vector<double>                                                        VectorType;
   typedef std::string                                                                StringType;
