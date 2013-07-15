@@ -52,16 +52,13 @@ public:
   typedef RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                                       Pointer;
   typedef itk::SmartPointer<const Self>                                 ConstPointer;
-  typedef typename TOutputImage::RegionType               OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer OutputImageBaseConstPointer;
+  typedef typename TOutputImage::RegionType                             OutputImageRegionType;
+  typedef typename TOutputImage::Superclass::ConstPointer               OutputImageBaseConstPointer;
 
-  typedef float OutputPixelType;
-
-  typedef itk::Image< OutputPixelType, 3 >                                           OutputImageType;
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
-  typedef std::vector<double>                                                        VectorType;
-  typedef std::string                                                                StringType;
-  typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
+  typedef Superclass                                                    REIType;
+  typedef std::vector<double>                                           VectorType;
+  typedef std::string                                                   StringType;
+  typedef std::vector< std::vector<double> >                            VectorOfVectorType;
   struct FigureType
   {
     FigureType():angle(0.),attenuation(0.){};
