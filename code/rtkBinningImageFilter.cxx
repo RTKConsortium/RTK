@@ -22,8 +22,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkMacro.h"
-
 typedef itk::Image<unsigned int, 2> TImage;
 namespace rtk
 {
@@ -106,7 +104,7 @@ void BinningImageFilter::GenerateOutputInformation()
 
 //template <class TInputImage, class TOutputImage>
 void BinningImageFilter
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+::ThreadedGenerateData(const OutputImageRegionType& itkNotUsed(outputRegionForThread), ThreadIdType itkNotUsed(threadId) )
 {
 
   int inputSize[2], binSize[2];
@@ -133,7 +131,7 @@ void BinningImageFilter
     {
       pos = j*binSize[0];
       for (i=0; i<binSize[0];i++, pos++)
-        bufferOut[pos] = (bufferIn[2*j*binSize[0]+i])+(bufferIn[(2*j+1)*binSize[0]+i])>>2;
+        bufferOut[pos] = ( (bufferIn[2*j*binSize[0]+i])+(bufferIn[(2*j+1)*binSize[0]+i]) )>>2;
     }
   }
 
@@ -142,7 +140,7 @@ void BinningImageFilter
   {
     int i, idx;
     for (i=0, idx=0;i<binSize[0]*(inputSize[1]);i++,idx+=2) // Only works if number of pixels per line multiple of 2
-      bufferOut[i] = (bufferIn[idx])+(bufferIn[idx+1])>>1;
+      bufferOut[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) )>>1;
   }
 
   // Binning 1x2
@@ -153,7 +151,7 @@ void BinningImageFilter
     {
       pos = j*inputSize[0];
       for (i=0; i<inputSize[0];i++, pos++)
-        bufferOut[pos] = (bufferIn[2*j*inputSize[0]+i])+(bufferIn[(2*j+1)*inputSize[0]+i])>>1;
+        bufferOut[pos] = ( (bufferIn[2*j*inputSize[0]+i])+(bufferIn[(2*j+1)*inputSize[0]+i]) )>>1;
     }
   }
   else
