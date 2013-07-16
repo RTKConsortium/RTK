@@ -57,8 +57,6 @@ public:
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   typedef ImageType::RegionType        OutputImageRegionType;
-  typedef itk::Image<float, 2>         ProjectionImageType;
-  typedef ProjectionImageType::Pointer ProjectionImagePointer;
   typedef itk::Vector<float,3>         VectorType;
 
   /** Method for creation through the object factory. */
