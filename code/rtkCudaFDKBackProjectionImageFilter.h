@@ -50,7 +50,7 @@ public:
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   typedef ImageType::RegionType            OutputImageRegionType;
-  typedef itk::Image<float, 2>             ProjectionImageType;
+  typedef itk::CudaImage<float, 2>         ProjectionImageType;
   typedef ProjectionImageType::Pointer     ProjectionImagePointer;
 
   /** Method for creation through the object factory. */
@@ -58,12 +58,6 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaFDKBackProjectionImageFilter, ImageToImageFilter);
-
-  /** Function to allocate memory on device */
-  void InitDevice();
-
-  /** Function to synchronize memory from device to host and free device memory */
-  void CleanUpDevice();
 
 protected:
   rtkcuda_EXPORT CudaFDKBackProjectionImageFilter();
@@ -74,12 +68,6 @@ protected:
 private:
   CudaFDKBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                   //purposely not implemented
-
-  int        m_VolumeDimension[3];
-  int        m_ProjectionDimension[2];
-  float *    m_DeviceVolume;
-  float *    m_DeviceProjection;
-  float *    m_DeviceMatrix;
 };
 
 } // end namespace rtk

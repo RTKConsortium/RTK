@@ -165,7 +165,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Extract the current slice
-    ProjectionImagePointer projection = GetProjection(iProj);
+    ProjectionImagePointer projection = GetProjection<ProjectionImageType>(iProj);
 
     ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj);
     interpolator->SetInputImage(projection);
@@ -207,7 +207,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 }
 
 template <class TInputImage, class TOutputImage>
-typename BackProjectionImageFilter<TInputImage,TOutputImage>::ProjectionImagePointer
+template <class TProjectionImage>
+typename TProjectionImage::Pointer
 BackProjectionImageFilter<TInputImage,TOutputImage>
 ::GetProjection(const unsigned int iProj)
 {
@@ -216,12 +217,12 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
   const int iProjBuff = stack->GetBufferedRegion().GetIndex(ProjectionImageType::ImageDimension);
 
-  ProjectionImagePointer projection = ProjectionImageType::New();
-  typename ProjectionImageType::RegionType region;
-  typename ProjectionImageType::SpacingType spacing;
-  typename ProjectionImageType::PointType origin;
+  typename TProjectionImage::Pointer projection = TProjectionImage::New();
+  typename TProjectionImage::RegionType region;
+  typename TProjectionImage::SpacingType spacing;
+  typename TProjectionImage::PointType origin;
 
-  for(unsigned int i=0; i<ProjectionImageType::ImageDimension; i++)
+  for(unsigned int i=0; i<TProjectionImage::ImageDimension; i++)
     {
     origin[i] = stack->GetOrigin()[i];
     spacing[i] = stack->GetSpacing()[i];
@@ -230,8 +231,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
   if(this->GetTranspose() )
     {
-    typename ProjectionImageType::SizeType size = region.GetSize();
-    typename ProjectionImageType::IndexType index = region.GetIndex();
+    typename TProjectionImage::SizeType size = region.GetSize();
+    typename TProjectionImage::IndexType index = region.GetIndex();
     std::swap(size[0], size[1]);
     std::swap(index[0], index[1]);
     std::swap(origin[0], origin[1]);

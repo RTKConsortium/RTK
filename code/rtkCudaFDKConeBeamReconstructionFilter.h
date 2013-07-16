@@ -61,27 +61,14 @@ public:
   /** Runtime information support. */
   itkTypeMacro(CudaFDKConeBeamReconstructionFilter, FDKConeBeamReconstructionFilter);
 
-  /** Functions to init and clean up the GPU when ExplicitGPUMemoryManagementFlag is true. */
-  rtkcuda_EXPORT void InitDevice();
-  rtkcuda_EXPORT void CleanUpDevice();
-
-  /** Boolean to keep the hand on the memory management of the GPU. Default is
-   * off. If on, the user must call manually InitDevice and CleanUpDevice. */
-  itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
-  itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
-
 protected:
   rtkcuda_EXPORT CudaFDKConeBeamReconstructionFilter();
   ~CudaFDKConeBeamReconstructionFilter(){}
-
-  void GenerateData();
 
 private:
   //purposely not implemented
   CudaFDKConeBeamReconstructionFilter(const Self&);
   void operator=(const Self&);
-
-  bool m_ExplicitGPUMemoryManagementFlag;
 }; // end of class
 
 } // end namespace rtk
