@@ -237,7 +237,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
     feldkamp = FDKCUDAType::New();
     FDKCUDAType* fdkcuda = static_cast<FDKCUDAType*>(feldkamp.GetPointer() );
     SET_FELDKAMP_OPTIONS( fdkcuda );
-    fdkcuda->SetExplicitGPUMemoryManagementFlag(true);
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     exit(EXIT_FAILURE);
@@ -333,7 +332,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
-          fdkcuda->InitDevice();
           }
         }
 #endif
@@ -374,8 +372,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
 
 #if CUDA_FOUND
         FDKCUDAType* fdkcuda = dynamic_cast<FDKCUDAType*>(feldkamp.GetPointer() );
-        if(fdkcuda)
-          fdkcuda->CleanUpDevice();
 #endif
 
 
