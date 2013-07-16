@@ -31,49 +31,6 @@ namespace rtk
 CudaFDKBackProjectionImageFilter
 ::CudaFDKBackProjectionImageFilter()
 {
-  m_DeviceVolume     = NULL;
-  m_DeviceProjection = NULL;
-  m_DeviceMatrix     = NULL;
-}
-
-void
-CudaFDKBackProjectionImageFilter
-::InitDevice()
-{
-  // Dimension arguments in CUDA format
-  m_VolumeDimension[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
-  m_VolumeDimension[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
-  m_VolumeDimension[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
-
-  // Cuda init
-  std::vector<int> devices = GetListOfCudaDevices();
-  if(devices.size()>1)
-    {
-    cudaThreadExit();
-    cudaSetDevice(devices[0]);
-    }
-
-  CUDA_reconstruct_conebeam_init (m_ProjectionDimension, m_VolumeDimension,
-                                  m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix);
-}
-
-void
-CudaFDKBackProjectionImageFilter
-::CleanUpDevice()
-{
-  if(this->GetOutput()->GetRequestedRegion() != this->GetOutput()->GetBufferedRegion() )
-    itkExceptionMacro(<< "Can't handle different requested and buffered regions "
-                      << this->GetOutput()->GetRequestedRegion()
-                      << this->GetOutput()->GetBufferedRegion() );
-
-  CUDA_reconstruct_conebeam_cleanup (m_VolumeDimension,
-                                     this->GetOutput()->GetBufferPointer(),
-                                     m_DeviceVolume,
-                                     m_DeviceProjection,
-                                     m_DeviceMatrix);
-  m_DeviceVolume     = NULL;
-  m_DeviceProjection = NULL;
-  m_DeviceMatrix     = NULL;
 }
 
 void
@@ -105,15 +62,24 @@ CudaFDKBackProjectionImageFilter
     rotCenterIndex[i] -= this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     }
 
-  // Update projection dimension
-  m_ProjectionDimension[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
-  m_ProjectionDimension[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+  // Cuda convenient format for dimensions
+  int projectionSize[2];
+  projectionSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
+  projectionSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+
+  int volumeSize[3];
+  volumeSize[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
+  volumeSize[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
+  volumeSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
+
+  float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Extract the current slice
-    ProjectionImagePointer projection = this->GetProjection(iProj);
+    ProjectionImagePointer projection = this->GetProjection<ProjectionImageType>(iProj);
 
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)
@@ -137,9 +103,14 @@ CudaFDKBackProjectionImageFilter
     for (int j = 0; j < 12; j++)
       fMatrix[j] = matrix[j/4][j%4];
 
-    CUDA_reconstruct_conebeam(m_ProjectionDimension, m_VolumeDimension,
-                              projection->GetBufferPointer(), fMatrix,
-                              m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix);
+    CUDA_reconstruct_conebeam(projectionSize,
+                              volumeSize,
+                              fMatrix,
+                              pin,
+                              pout,
+                              *(float**)( projection->GetCudaDataManager()->GetGPUBufferPointer() )
+                              );
+    pin = pout;
     }
 }
 
