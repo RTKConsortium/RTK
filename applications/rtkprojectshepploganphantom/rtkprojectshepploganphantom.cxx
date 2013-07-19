@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
   // Add noise
   OutputImageType::Pointer output = slp->GetOutput();
   if(args_info.noise_given)
-    {
+  {
     typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
     NIFType::Pointer noisy=NIFType::New();
     noisy->SetInput( slp->GetOutput() );
@@ -79,10 +79,10 @@ int main(int argc, char * argv[])
     noisy->SetStandardDeviation( args_info.noise_arg );
     TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() );
     output = noisy->GetOutput();
-    }
+  }
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  typedef itk::ImageFileWriter< OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( output );
