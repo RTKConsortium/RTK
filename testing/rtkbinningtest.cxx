@@ -5,6 +5,7 @@
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
+#include "itkImageFileWriter.h"
 
 #include "rtkBinningImageFilter.h"
 
@@ -23,18 +24,18 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   itRef.GoToBegin();
 
   while( !itRef.IsAtEnd() )
-    {
+  {
     typename TImage::PixelType TestVal = itTest.Get();
     typename TImage::PixelType RefVal = itRef.Get();
 
     if( TestVal != RefVal )
-      {
-      TestError += vcl_abs(RefVal - TestVal);
+    {
+      TestError += vcl_abs(ErrorType(RefVal - TestVal));
       EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-      }
+    }
     ++itTest;
     ++itRef;
-    }
+  }
   // Error per Pixel
   ErrorType ErrorPerPixel = TestError/recon->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
@@ -49,18 +50,18 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 1.28)
-    {
+  if (ErrorPerPixel > 0.001)
+  {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 1.28" << std::endl;
+              << ErrorPerPixel << " instead of 0.001" << std::endl;
     exit( EXIT_FAILURE);
-    }
-  if (PSNR < 44.)
-    {
+  }
+  if (PSNR < 120.)
+  {
     std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 44" << std::endl;
+              << PSNR << " instead of 120" << std::endl;
     exit( EXIT_FAILURE);
-    }
+  }
 }
 
 /**
@@ -87,8 +88,8 @@ int main(int , char** )
   ConstantImageSourceType::SpacingType spacing, spacingRef;
 
   // Create constant image of value 2 and reference image.
-  const ConstantImageSourceType::Pointer imgIn  = ConstantImageSourceType::New();
-  const ConstantImageSourceType::Pointer imgRef = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer imgIn  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer imgRef = ConstantImageSourceType::New();
 
   origin[0] = -126;
   origin[1] = -126;
@@ -126,32 +127,57 @@ int main(int , char** )
   binning_factors[1]=2;
   bin->SetInput( imgIn->GetOutput() );
   bin->SetBinningFactors(binning_factors);
-  bin->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->Update());
 
   CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-//  std::cout << "\n\n****** Case 2: binning 1x2 ******" << std::endl;
+  std::cout << "\n\n****** Case 2: binning 1x2 ******" << std::endl;
 
-//  // Adpating reference
-//  sizeRef[0] = 4;
-//  sizeRef[1] = 2;
-//  spacingRef[0] = 64.;
-//  spacingRef[1] = 128.;
+  imgIn->UpdateLargestPossibleRegion();
 
-//  imgRef->SetSpacing( spacingRef );
-//  imgRef->SetSize( sizeRef );
-//  imgRef->SetConstant( 4 );
+  // Adpating reference
+  sizeRef[0] = 4;
+  sizeRef[1] = 2;
+  spacingRef[0] = 64.;
+  spacingRef[1] = 128.;
 
-//  // Update binning filter
-//  binning_factors[0]=1;
-//  binning_factors[1]=2;
-//  bin->SetInput( imgIn->GetOutput() );
-//  bin->SetBinningFactors(binning_factors);
-//  bin->Update();
+  imgRef->SetSpacing( spacingRef );
+  imgRef->SetSize( sizeRef );
+  imgRef->UpdateLargestPossibleRegion();
 
-//  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
-//  std::cout << "\n\nTest PASSED! " << std::endl;
+  // Update binning filter
+  binning_factors[0]=1;
+  binning_factors[1]=2;
+  bin->SetBinningFactors(binning_factors);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->Update());
+
+  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 3: binning 2x1 ******" << std::endl;
+
+  imgIn->UpdateLargestPossibleRegion();
+
+  // Adpating reference
+  sizeRef[0] = 2;
+  sizeRef[1] = 4;
+  spacingRef[0] = 128.;
+  spacingRef[1] = 64.;
+
+  imgRef->SetSpacing( spacingRef );
+  imgRef->SetSize( sizeRef );
+  imgRef->UpdateLargestPossibleRegion();
+
+  // Update binning filter
+  binning_factors[0]=2;
+  binning_factors[1]=1;
+  bin->SetInput( imgIn->GetOutput() );
+  bin->SetBinningFactors(binning_factors);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->Update());
+
+  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
 }
