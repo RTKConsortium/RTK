@@ -59,7 +59,7 @@ public:
 
   typedef TImage::PixelType                 *OutputImagePointer;
   typedef TImage::PixelType                 *InputImagePointer;
-  typedef TImage::RegionType                 OutputImageRegionType;
+  typedef TImage::RegionType                OutputImageRegionType;
 
   typedef itk::Vector<unsigned int, TImage::ImageDimension> VectorType;
 
