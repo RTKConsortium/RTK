@@ -22,6 +22,7 @@
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -49,11 +50,24 @@ int main(int argc, char * argv[])
   dsl->SetInput( constantImageSource->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
+  // Add noise
+  OutputImageType::Pointer output = dsl->GetOutput();
+  if(args_info.noise_given)
+  {
+    typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
+    NIFType::Pointer noisy=NIFType::New();
+    noisy->SetInput( output );
+    noisy->SetMean( 0.0 );
+    noisy->SetStandardDeviation( args_info.noise_arg );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() );
+    output = noisy->GetOutput();
+  }
+
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  typedef itk::ImageFileWriter< OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( dsl->GetOutput() );
+  writer->SetInput( output );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
