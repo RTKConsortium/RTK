@@ -56,7 +56,7 @@ protected:
   rtkcuda_EXPORT CudaFFTRampImageFilter();
   ~CudaFFTRampImageFilter(){}
 
-  virtual void GenerateData();
+  virtual void GPUGenerateData();
 
 private:
   CudaFFTRampImageFilter(const Self&); //purposely not implemented
