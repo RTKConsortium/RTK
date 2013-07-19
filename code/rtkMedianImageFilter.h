@@ -37,7 +37,7 @@ namespace rtk
  *
  * \test rtkmediantest.cxx
  *
- * \author Marc Vila
+ * \author S. Brousmiche (UCL-iMagX) and Marc Vila
  *
  * \ingroup ImageToImageFilter
  */
