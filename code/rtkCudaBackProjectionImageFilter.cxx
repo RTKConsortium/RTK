@@ -35,7 +35,7 @@ CudaBackProjectionImageFilter
 
 void
 CudaBackProjectionImageFilter
-::GenerateData()
+::GPUGenerateData()
 {
   this->AllocateOutputs();
 

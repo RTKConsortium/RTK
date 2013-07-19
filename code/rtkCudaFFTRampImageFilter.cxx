@@ -32,7 +32,7 @@ rtk::CudaFFTRampImageFilter
 
 void
 rtk::CudaFFTRampImageFilter
-::GenerateData()
+::GPUGenerateData()
 {
   typedef itk::CudaImage<float,
                          ImageType::ImageDimension > FFTInputImageType;

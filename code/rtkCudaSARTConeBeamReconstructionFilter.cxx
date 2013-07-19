@@ -45,7 +45,7 @@ namespace rtk
 
   void
   CudaSARTConeBeamReconstructionFilter
-  ::GenerateData()
+  ::GPUGenerateData()
   {
     // Init GPU memory
     if(!m_ExplicitGPUMemoryManagementFlag)

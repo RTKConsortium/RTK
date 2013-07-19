@@ -80,7 +80,7 @@ protected:
   CudaSARTConeBeamReconstructionFilter();
   ~CudaSARTConeBeamReconstructionFilter(){}
 
-  void GenerateData();
+  void GPUGenerateData();
 
   void InitDevice();
 
