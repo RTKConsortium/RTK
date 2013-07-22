@@ -23,6 +23,7 @@
 #include "rtkWin32Header.h"
 
 #include <itkCudaImage.h>
+#include <itkCudaInPlaceImageFilter.h>
 
 namespace rtk
 {
@@ -39,7 +40,8 @@ namespace rtk
  * \ingroup Projector CudaImageToImageFilter
  */
 class  CudaFDKBackProjectionImageFilter :
-  public FDKBackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> >
+  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+  FDKBackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
   /** Standard class typedefs. */
