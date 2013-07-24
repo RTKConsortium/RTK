@@ -67,7 +67,7 @@ AmsterdamShroudImageFilter<TInputImage>
   region.SetSize(1, 17);
   kernel->SetRegions(region);
   kernel->Allocate();
-  kernel->FillBuffer(1.);
+  kernel->FillBuffer(1./17);
 #if ITK_VERSION_MAJOR <= 3
   m_ConvolutionFilter->SetImageKernelInput( kernel );
 #else
