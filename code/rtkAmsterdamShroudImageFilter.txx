@@ -26,7 +26,8 @@ namespace rtk
 
 template <class TInputImage>
 AmsterdamShroudImageFilter<TInputImage>
-::AmsterdamShroudImageFilter()
+::AmsterdamShroudImageFilter():
+  m_UnsharpMaskSize(17)
 {
   m_DerivativeFilter = DerivativeType::New();
   m_NegativeFilter = NegativeType::New();
@@ -57,28 +58,14 @@ AmsterdamShroudImageFilter<TInputImage>
 
   m_SumFilter->SetProjectionDimension(0);
 
-  // Unsharp mask: difference between image and moving average
-  // m_ConvolutionFilter computes the moving average
-  typename TOutputImage::Pointer kernel = TOutputImage::New();
-  typename TOutputImage::RegionType region;
-  region.SetIndex(0, 0);
-  region.SetIndex(1, -8);
-  region.SetSize(0, 1);
-  region.SetSize(1, 17);
-  kernel->SetRegions(region);
-  kernel->Allocate();
-  kernel->FillBuffer(1./17);
-#if ITK_VERSION_MAJOR <= 3
-  m_ConvolutionFilter->SetImageKernelInput( kernel );
-#else
-  m_ConvolutionFilter->SetKernelImage( kernel );
-#endif
-
   // The permute filter is used to allow streaming because ITK splits the output image in the last direction
   typename PermuteType::PermuteOrderArrayType order;
   order[0] = 1;
   order[1] = 0;
   m_PermuteFilter->SetOrder(order);
+
+  // Create default kernel
+  UpdateUnsharpMaskKernel();
 }
 
 template <class TInputImage>
@@ -120,8 +107,35 @@ void
 AmsterdamShroudImageFilter<TInputImage>
 ::GenerateData()
 {
+  unsigned int kernelWidth;
+  kernelWidth = m_ConvolutionFilter->GetKernelImage()->GetLargestPossibleRegion().GetSize()[1];
+  if(kernelWidth != m_UnsharpMaskSize)
+    UpdateUnsharpMaskKernel();
   m_PermuteFilter->Update();
   this->GraftOutput( m_PermuteFilter->GetOutput() );
+}
+
+template<class TInputImage>
+void
+AmsterdamShroudImageFilter<TInputImage>
+::UpdateUnsharpMaskKernel()
+{
+  // Unsharp mask: difference between image and moving average
+  // m_ConvolutionFilter computes the moving average
+  typename TOutputImage::Pointer kernel = TOutputImage::New();
+  typename TOutputImage::RegionType region;
+  region.SetIndex(0, 0);
+  region.SetIndex(1, m_UnsharpMaskSize/-2);
+  region.SetSize(0, 1);
+  region.SetSize(1, m_UnsharpMaskSize);
+  kernel->SetRegions(region);
+  kernel->Allocate();
+  kernel->FillBuffer(1./m_UnsharpMaskSize);
+  #if ITK_VERSION_MAJOR <= 3
+  m_ConvolutionFilter->SetImageKernelInput( kernel );
+  #else
+  m_ConvolutionFilter->SetKernelImage( kernel );
+  #endif
 }
 
 } // end namespace rtk
