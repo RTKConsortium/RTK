@@ -72,6 +72,14 @@ public:
   /** Standard New method. */
   itkNewMacro(Self);
 
+  /** Size parameter of the unsharp mask. This is the number of pixels along the
+   * time direction (X) along which it averages. The unsharp mask allows after
+   * computation of the shroud to enhance fast varying motions, e.g., breathing,
+   * and remove slow varying motions, e.g., rotation around the table. The default
+   * value is 17 pixels. */
+  itkGetMacro(UnsharpMaskSize, unsigned int);
+  itkSetMacro(UnsharpMaskSize, unsigned int);
+
   /** Runtime information support. */
   itkTypeMacro(AmsterdamShroudImageFilter, itk::ImageToImageFilter);
 protected:
@@ -80,6 +88,7 @@ protected:
 
   void GenerateOutputInformation();
   void GenerateInputRequestedRegion();
+  void UpdateUnsharpMaskKernel();
 
   /** Single-threaded version of GenerateData.  This filter delegates
    * to other filters. */
@@ -108,6 +117,7 @@ private:
   typename ConvolutionType::Pointer m_ConvolutionFilter;
   typename SubtractType::Pointer    m_SubtractFilter;
   typename PermuteType::Pointer     m_PermuteFilter;
+  unsigned int                      m_UnsharpMaskSize;
 }; // end of class
 
 } // end namespace rtk
