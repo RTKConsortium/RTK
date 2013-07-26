@@ -115,7 +115,7 @@ CudaInPlaceImageFilter< TInputImage, TOutputImage, TParentImageFilter >
           outputPtr->SetBufferedRegion(outputPtr->GetRequestedRegion());
           outputPtr->Allocate();
           }
-        // if the output is not of simular type then it is assumed the
+        // if the output is not of similar type then it is assumed the
         // the derived class allocated the output if needed.
         }
 
