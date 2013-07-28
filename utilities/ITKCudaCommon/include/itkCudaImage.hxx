@@ -51,7 +51,7 @@ void CudaImage< TPixel, VImageDimension >::Allocate()
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
   m_DataManager->SetGPUBufferDirty();
 
-  /* prevent unnecessary copy from CPU to Cuda at the beginning */
+  // prevent unnecessary copy from CPU to Cuda at the beginning
   m_DataManager->SetTimeStamp(this->GetTimeStamp());
 }
 
@@ -61,6 +61,10 @@ void CudaImage< TPixel, VImageDimension >::Initialize()
   // CPU image initialize
   Superclass::Initialize();
 
+  m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
+  m_DataManager->SetTimeStamp(this->GetTimeStamp());
+
+  /*
   // Cuda image initialize
   m_DataManager->Initialize();
   this->ComputeOffsetTable();
@@ -70,8 +74,8 @@ void CudaImage< TPixel, VImageDimension >::Initialize()
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
   m_DataManager->SetGPUBufferDirty();
 
-  /* prevent unnecessary copy from CPU to Cuda at the beginning */
-  m_DataManager->SetTimeStamp(this->GetTimeStamp());
+  // prevent unnecessary copy from CPU to Cuda at the beginning
+  m_DataManager->SetTimeStamp(this->GetTimeStamp());*/
 }
 
 /** If the class is modified we marke the GPUBuffer has dirty */
@@ -79,9 +83,38 @@ template <class TPixel, unsigned int VImageDimension>
 void CudaImage< TPixel, VImageDimension >::Modified() const
 {
   Superclass::Modified();
+  //m_DataManager->SetCPUDirtyFlag(false); // prevent the GPU to copy to the CPU
+  //m_DataManager->SetGPUBufferDirty();
+}
+
+template <class TPixel, unsigned int VImageDimension>
+void CudaImage< TPixel, VImageDimension >::SetBufferedRegion(const RegionType & region)
+{
+  // If the regions are the same we don't change
+  const RegionType currentRegion = this->GetBufferedRegion();
+  bool sameRegions = true;
+  for(unsigned int i=0;i<VImageDimension;i++)
+    {
+    if(region.GetSize()[i] != currentRegion.GetSize()[i]
+       || region.GetIndex()[i] != currentRegion.GetIndex()[i])
+      {
+      sameRegions = false;
+      break;
+      }
+    }
+
+  if(sameRegions)
+    {
+    return;
+    }
+
+  Superclass::SetBufferedRegion(region);
+  unsigned long numPixel = this->GetOffsetTable()[VImageDimension];
+  m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
   m_DataManager->SetCPUDirtyFlag(false); // prevent the GPU to copy to the CPU
   m_DataManager->SetGPUBufferDirty();
 }
+
 
 template <class TPixel, unsigned int VImageDimension>
 void CudaImage< TPixel, VImageDimension >::FillBuffer(const TPixel & value)
@@ -130,14 +163,14 @@ void CudaImage< TPixel, VImageDimension >::SetPixelContainer(PixelContainer *con
 {
   Superclass::SetPixelContainer(container);
   m_DataManager->SetCPUDirtyFlag(false);
-  m_DataManager->SetCudaDirtyFlag(true);
+  m_DataManager->SetGPUDirtyFlag(true);
 }
 
 template <class TPixel, unsigned int VImageDimension>
 void CudaImage< TPixel, VImageDimension >::UpdateBuffers()
 {
   m_DataManager->UpdateCPUBuffer();
-  m_DataManager->UpdateCudaBuffer();
+  m_DataManager->UpdateGPUBuffer();
 }
 
 template <class TPixel, unsigned int VImageDimension>
@@ -146,6 +179,7 @@ TPixel* CudaImage< TPixel, VImageDimension >::GetBufferPointer()
   /* less conservative version - if you modify pixel value using
    * this pointer then you must set the image as modified manually!!! */
   m_DataManager->UpdateCPUBuffer();
+  m_DataManager->SetGPUDirtyFlag(true);
   return Superclass::GetBufferPointer();
 }
 
@@ -154,6 +188,7 @@ const TPixel * CudaImage< TPixel, VImageDimension >::GetBufferPointer() const
 {
   // const does not change buffer, but if CPU is dirty then make it up-to-date
   m_DataManager->UpdateCPUBuffer();
+  m_DataManager->SetGPUDirtyFlag(true); // THIS IS NEEDED BECAUSE NON-CONST ITERATORS USE THIS FUNCTION
   return Superclass::GetBufferPointer();
 }
 
@@ -178,13 +213,18 @@ CudaImage< TPixel, VImageDimension >::Graft(const DataObject *data)
   // call the superclass' implementation
   Superclass::Graft(data);
 
+  //std::cout << this << " graft from " << data << std::endl;
+  m_DataManager = dynamic_cast<CudaImageDataManagerType*>((((CudaImage*)data)->GetCudaDataManager()).GetPointer());
+  
+  return;
+
   // Pass regular pointer to Graft() instead of smart pointer due to type
   // casting problem
   CudaImageDataManagerType* ptr = dynamic_cast<CudaImageDataManagerType*>(
       (((CudaImage*)data)->GetCudaDataManager()).GetPointer());
 
   // call Cuda data graft function
-  //m_DataManager->SetImagePointer(this); // hu! not necessary ?!
+  m_DataManager->SetImagePointer(this); // hu! not necessary ?!
   m_DataManager->Graft(ptr);
 
   // Synchronize timestamp of CudaImage and CudaDataManager

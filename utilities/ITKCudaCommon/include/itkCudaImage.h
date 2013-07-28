@@ -135,7 +135,8 @@ public:
   /** Return a pointer to the container. */
   PixelContainer * GetPixelContainer()
   {
-    m_DataManager->SetGPUBufferDirty(); return Superclass::GetPixelContainer();
+    m_DataManager->SetGPUBufferDirty(); 
+    return Superclass::GetPixelContainer();
   }
 
   const PixelContainer * GetPixelContainer() const
@@ -147,6 +148,10 @@ public:
   itkGetObjectMacro(DataManager, CudaImageDataManager< CudaImage >);
 
   CudaDataManager::Pointer GetCudaDataManager() const;
+  
+  /** Overload the SetBufferedRegion function because if the size changes we need
+   *  to invalidated the GPU buffer */
+  void SetBufferedRegion(const RegionType & region);
 
   /* Override DataHasBeenGenerated() in DataObject class.
    * We need this because CPU time stamp is always bigger

@@ -22,11 +22,11 @@
 namespace itk
 {
 // constructor
-CudaDataManager::CudaDataManager() : m_GPUBuffer(GPUMemPointer::New())
+CudaDataManager::CudaDataManager()
 {
   m_ContextManager = CudaContextManager::GetInstance();
   m_CPUBuffer = NULL;
-
+  m_GPUBuffer = GPUMemPointer::New();
   this->Initialize();
 }
 
@@ -48,11 +48,10 @@ void CudaDataManager::Allocate()
 {
   if (m_BufferSize > 0 && m_GPUBuffer->GetBufferSize() != m_BufferSize)
     {
-#ifdef VERBOSE
-    std::cout << this << "::Allocate Create GPU buffer of size " << m_BufferSize << " Bytes" << std::endl;
-#endif
-
     m_GPUBuffer->Allocate(m_BufferSize);
+    #ifdef VERBOSE
+      std::cout << this << "::Allocate Create GPU buffer of size " << m_BufferSize << " Bytes" << " : " << m_GPUBuffer->GetPointer() << std::endl;
+    #endif
     m_IsGPUBufferDirty = true;
     }
 }
@@ -91,8 +90,10 @@ void CudaDataManager::UpdateCPUBuffer()
   if (m_IsCPUBufferDirty && m_GPUBuffer && m_CPUBuffer)
     {
 #ifdef VERBOSE
-    std::cout << this << "::UpdateCPUBuffer GPU->CPU data copy " << m_GPUBuffer << "->" << m_CPUBuffer << " : " << m_BufferSize << std::endl;
+    std::cout << this << "::UpdateCPUBuffer GPU->CPU data copy " << m_GPUBuffer->GetPointer() << "->" << m_CPUBuffer << " : " << m_BufferSize << std::endl;
 #endif
+
+    CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
     CUDA_CHECK(cudaMemcpy(m_CPUBuffer, m_GPUBuffer->GetPointer(), m_BufferSize, cudaMemcpyDeviceToHost));
     m_IsCPUBufferDirty = false;
     }
@@ -101,13 +102,14 @@ void CudaDataManager::UpdateCPUBuffer()
 void CudaDataManager::UpdateGPUBuffer()
 {
   MutexHolderType mutexHolder(m_Mutex);
-
   if (m_IsGPUBufferDirty && m_CPUBuffer && m_GPUBuffer)
     {
     this->Allocate();
 #ifdef VERBOSE
-    std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer << " : " << m_BufferSize << std::endl;
+    std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer->GetPointer() << " : " << m_BufferSize << std::endl;
 #endif
+
+    CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context 
     CUDA_CHECK(cudaMemcpy(m_GPUBuffer->GetPointer(), m_CPUBuffer, m_BufferSize, cudaMemcpyHostToDevice));
 
     m_IsGPUBufferDirty = false;
@@ -152,6 +154,7 @@ void CudaDataManager::Graft(const CudaDataManager* data)
     m_CPUBuffer = data->m_CPUBuffer;
     m_IsCPUBufferDirty = data->m_IsCPUBufferDirty;
     m_IsGPUBufferDirty = data->m_IsGPUBufferDirty;
+    m_TimeStamp = data->m_TimeStamp;
     }
 }
 

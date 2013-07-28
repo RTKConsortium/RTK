@@ -60,7 +60,7 @@ public:
   itkGetObjectMacro(GPUBufferedRegionIndex, CudaDataManager);
   itkGetObjectMacro(GPUBufferedRegionSize, CudaDataManager);
 
-  void SetImagePointer(ImageType* img);
+  void SetImagePointer(typename ImageType::Pointer img);
   ImageType *GetImagePointer()
     {
     return this->m_Image();
@@ -79,11 +79,13 @@ protected:
   CudaImageDataManager() {}
   virtual ~CudaImageDataManager() {}
 
+  virtual void PrintSelf(std::ostream & os, Indent indent) const;
+
 private:
   CudaImageDataManager(const Self&);   //purposely not implemented
   void operator=(const Self&);
 
-  ImageType*                         m_Image;
+  typename ImageType::Pointer        m_Image;
   int                                m_BufferedRegionIndex[ImageType::ImageDimension];
   int                                m_BufferedRegionSize[ImageType::ImageDimension];
   typename CudaDataManager::Pointer  m_GPUBufferedRegionIndex;

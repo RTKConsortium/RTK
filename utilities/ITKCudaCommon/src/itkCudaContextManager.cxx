@@ -44,7 +44,6 @@ void CudaContextManager::DestroyInstance()
 
 CudaContextManager::CudaContextManager()
 {
-  m_Context = 0;
   m_DeviceIdx = -1;
   m_Device = 0;
 
@@ -57,30 +56,32 @@ CudaContextManager::CudaContextManager()
   std::vector<cudaDeviceProp> devices;
   m_NumberOfDevices = itk::CudaGetAvailableDevices(devices);
 
-  CUcontext context;
   CUdevice device;
-
   m_DeviceIdx = itk::CudaGetMaxFlopsDev();
-
   CUDA_CHECK(cuDeviceGet(&device, m_DeviceIdx));
 
-  CUDA_CHECK(cuCtxCreate(&context, CU_CTX_SCHED_AUTO, device));
+  CUDA_CHECK(cuCtxCreate(&m_Context, CU_CTX_SCHED_AUTO, device));
 
-  CUDA_CHECK(cuCtxSetCurrent(context));
+  CUDA_CHECK(cuCtxSetCurrent(m_Context));
 
   m_Device = device;
-  m_Context = context;
 }
 
 CudaContextManager::~CudaContextManager()
 {
+  CUDA_CHECK(cuCtxDestroy(m_Context));
 }
 
-int CudaContextManager::GetCurrentContext()
+int CudaContextManager::GetCurrentDevice()
 {
   int device = -1;
   CUDA_CHECK(cudaGetDevice(&device));
   return device;
+}
+
+CUcontext* CudaContextManager::GetCurrentContext()
+{
+  return &m_Context;
 }
 
 } // namespace itk
