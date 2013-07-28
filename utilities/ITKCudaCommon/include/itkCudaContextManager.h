@@ -41,14 +41,16 @@ public:
 
   void DestroyInstance();
   
-  int GetCurrentContext();
-  
+  CUcontext* GetCurrentContext();
+
+  int GetCurrentDevice();
+
 private:
 
   CudaContextManager();
   ~CudaContextManager();
 
-  void* m_Context;
+  CUcontext m_Context;
   int m_Device;
   int m_DeviceIdx;
   int m_NumberOfDevices;
