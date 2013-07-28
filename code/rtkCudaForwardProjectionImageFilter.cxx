@@ -81,7 +81,7 @@ CudaForwardProjectionImageFilter
 ::GPUGenerateData()
 {
   try {
-    this->AllocateOutputs();
+    //this->AllocateOutputs();
     if(!m_ExplicitGPUMemoryManagementFlag)
       {
       this->InitDevice();
