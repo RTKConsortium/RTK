@@ -37,7 +37,7 @@ void
 CudaFDKBackProjectionImageFilter
 ::GPUGenerateData()
 {
-  this->AllocateOutputs();
+  //this->AllocateOutputs();
 
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
