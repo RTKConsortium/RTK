@@ -248,7 +248,7 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
   std::cout << "Test PASSED! " << std::endl;
 
- std::cout << "\n\n****** Case 4: streaming ******" << std::endl;
+  std::cout << "\n\n****** Case 4: streaming ******" << std::endl;
 
   // Make sure that the data will be recomputed by releasing them
   fov->GetOutput()->ReleaseData();
