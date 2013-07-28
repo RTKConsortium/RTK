@@ -80,30 +80,13 @@ protected:
   CudaSARTConeBeamReconstructionFilter();
   ~CudaSARTConeBeamReconstructionFilter(){}
 
-  void GPUGenerateData();
-
-  void InitDevice();
-
-  void CleanUpDevice();
-
-  /** Boolean to keep the hand on the memory management of the GPU. Default is
-   * off. If on, the user must call manually InitDevice and CleanUpDevice. */
-  itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
-  itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
-
 private:
   //purposely not implemented
   CudaSARTConeBeamReconstructionFilter(const Self&);
   void operator=(const Self&);
 
-  bool m_ExplicitGPUMemoryManagementFlag;
-
 }; // end of class
 
 } // end namespace rtk
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkCudaSARTConeBeamReconstructionFilter.cxx"
-#endif
 
 #endif
