@@ -42,42 +42,44 @@ public:
   itkTypeMacro(GPUMemPointer, Object);
 
   void Allocate(size_t bufferSize)
-  {
-    m_bufferSize = bufferSize;
+    {
+    m_BufferSize = bufferSize;
     CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
-  }
+    }
 
   ~GPUMemPointer()
-  {
+    {
     if(m_GPUBuffer)
       {
       CUDA_CHECK(cudaFree(m_GPUBuffer));
       m_GPUBuffer = 0;
       }
-  }
+    }
 
   void* GetPointer()
-  {
+    {
     return m_GPUBuffer;
-  }
+    }
 
   void* GetPointerPtr()
-  {
+    {
     return &m_GPUBuffer;
-  }
+    }
 
   size_t GetBufferSize()
-  {
-    return m_bufferSize;
-  }
+    {
+    return m_BufferSize;
+    }
 
 protected:
-  GPUMemPointer() : m_GPUBuffer(0), m_bufferSize(0)
-  {
-  }
+  GPUMemPointer()
+    {
+    m_GPUBuffer = 0;
+    m_BufferSize = 0;
+    }
 
   void* m_GPUBuffer;
-  size_t m_bufferSize;
+  size_t m_BufferSize;
 };
 
 /** \class CudaDataManager
@@ -112,9 +114,10 @@ public:
   /** total buffer size in bytes */
   void SetBufferSize(unsigned int num);
 
-  unsigned int GetBufferSize() {
+  unsigned int GetBufferSize() 
+    {
     return m_BufferSize;
-  }
+    }
 
   void SetBufferFlag(int flags);
 
@@ -189,7 +192,6 @@ protected:
 
   /** buffer pointers */
   GPUMemPointer::Pointer m_GPUBuffer;
-  //void* m_GPUBuffer;
   void* m_CPUBuffer;
 
   /** checks if buffer needs to be updated */
