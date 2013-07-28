@@ -83,8 +83,8 @@ public:
     TCudaImageDataManager *manager)
   {
     return SetKernelArgWithImage(kernelIdx, argIdx++, manager) && 
-      SetKernelArgWithImage(kernelIdx, argIdx++, manager->GetCudaBufferedRegionIndex()) &&
-      SetKernelArgWithImage(kernelIdx, argIdx++, manager->GetCudaBufferedRegionSize());
+      SetKernelArgWithImage(kernelIdx, argIdx++, manager->GetGPUBufferedRegionIndex()) &&
+      SetKernelArgWithImage(kernelIdx, argIdx++, manager->GetGPUBufferedRegionSize());
   }
 
   bool LaunchKernel(int kernelIdx, int dim, 
