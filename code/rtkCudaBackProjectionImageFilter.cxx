@@ -37,7 +37,7 @@ void
 CudaBackProjectionImageFilter
 ::GPUGenerateData()
 {
-  this->AllocateOutputs();
+  //this->AllocateOutputs();
 
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
@@ -68,9 +68,14 @@ CudaBackProjectionImageFilter
   projectionSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
 
   int volumeSize[3];
-  volumeSize[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
-  volumeSize[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
-  volumeSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
+  //volumeSize[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
+  //volumeSize[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
+  //volumeSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
+
+  volumeSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
+  volumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
+  volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
+
 
   float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );

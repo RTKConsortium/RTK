@@ -41,7 +41,7 @@ rtk::CudaFFTRampImageFilter
                          ImageType::ImageDimension > FFTOutputImageType;
   typedef FFTOutputImageType::Pointer                FFTOutputImagePointer;
 
-  this->AllocateOutputs();
+  //this->AllocateOutputs();
 
   // Pad image region
   FFTInputImagePointer paddedImage;
