@@ -108,7 +108,11 @@ AmsterdamShroudImageFilter<TInputImage>
 ::GenerateData()
 {
   unsigned int kernelWidth;
+#if ITK_VERSION_MAJOR <= 3
+  kernelWidth = m_ConvolutionFilter->GetImageKernelInput()->GetLargestPossibleRegion().GetSize()[1];
+#else
   kernelWidth = m_ConvolutionFilter->GetKernelImage()->GetLargestPossibleRegion().GetSize()[1];
+#endif
   if(kernelWidth != m_UnsharpMaskSize)
     UpdateUnsharpMaskKernel();
   m_PermuteFilter->Update();
