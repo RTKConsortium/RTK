@@ -65,6 +65,7 @@ public:
   itkGetMacro(Geometry, GeometryPointer);
   itkSetMacro(Geometry, GeometryPointer);
 
+  /** Get / Set the multiplicative constant of the volume */
   itkGetMacro(MultiplicativeConstant, double);
   itkSetMacro(MultiplicativeConstant, double);
 

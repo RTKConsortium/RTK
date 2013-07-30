@@ -79,9 +79,13 @@ public:
   /** Set the box from an image */
   void SetBoxMax(VectorType _boxMax);
 
+  /** Get / Set the multiplicative constant of the volume */
+  itkGetMacro(MultiplicativeConstant, double);
+  itkSetMacro(MultiplicativeConstant, double);
+
 
 protected:
-  RayBoxIntersectionImageFilter() : m_RBIFunctor( RBIFunctionType::New() ), m_Geometry(NULL) { }
+  RayBoxIntersectionImageFilter() : m_RBIFunctor(RBIFunctionType::New()), m_Geometry(NULL), m_MultiplicativeConstant(1.) {}
   virtual ~RayBoxIntersectionImageFilter() {};
 
   /** Apply changes to the input image requested region. */
@@ -100,6 +104,8 @@ private:
 
   /** RTK geometry object */
   GeometryPointer m_Geometry;
+
+  double m_MultiplicativeConstant;
 };
 
 } // end namespace rtk
