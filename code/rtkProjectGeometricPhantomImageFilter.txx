@@ -90,8 +90,8 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
     else
     {
       rbi.push_back( RBIType::New() );
-      //Set GrayScale value, axes, center...
-      //rbi[box]->SetMultiplicativeConstant(m_Fig[i][8]);
+      //Set GrayScale value, boxmax, boxmin, center...
+      rbi[box]->SetMultiplicativeConstant(m_Fig[i][8]);
       boxMin[0] = -m_Fig[i][1];
       boxMin[1] = -m_Fig[i][2];
       boxMin[2] = -m_Fig[i][3];
@@ -101,6 +101,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       rbi[box]->SetBoxMin(boxMin);
       rbi[box]->SetBoxMax(boxMax);
 
+      // FIXME: add center location and rotation
       //rbi[box]->SetCenterY(m_Fig[i][4])
       //rbi[box]->SetCenterY(m_Fig[i][5]);
       //rbi[box]->SetCenterZ(m_Fig[i][6]);

@@ -110,7 +110,7 @@ RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 
       // Compute ray intersection length
       if( rbiFunctor->Evaluate(direction) )
-        itOut.Set( itIn.Get() + rbiFunctor->GetFarthestDistance() - rbiFunctor->GetNearestDistance() );
+        itOut.Set( itIn.Get() + m_MultiplicativeConstant*(rbiFunctor->GetFarthestDistance() - rbiFunctor->GetNearestDistance()) );
       }
     }
 }
