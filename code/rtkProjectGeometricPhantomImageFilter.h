@@ -26,6 +26,8 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkRayBoxIntersectionImageFilter.h"
+#include "itkAddImageFilter.h"
 
 #include <vector>
 
@@ -63,7 +65,10 @@ public:
 
   typedef itk::Image< OutputPixelType, 3 >                                           OutputImageType;
   typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
+  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>       RBIType;
+  typedef itk::AddImageFilter <TOutputImage, TOutputImage, TOutputImage>             AddImageFilterType;
   typedef std::vector<double>                                                        VectorType;
+  typedef itk::Vector<double, 3>                                                     BoxVectorType;
   typedef std::string                                                                StringType;
   typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
   typedef rtk::GeometricPhantomFileReader                                            CFRType;
