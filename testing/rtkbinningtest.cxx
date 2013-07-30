@@ -22,12 +22,10 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 
   itTest.GoToBegin();
   itRef.GoToBegin();
-
   while( !itRef.IsAtEnd() )
   {
     typename TImage::PixelType TestVal = itTest.Get();
     typename TImage::PixelType RefVal = itRef.Get();
-
     if( TestVal != RefVal )
     {
       TestError += vcl_abs(ErrorType(RefVal - TestVal));
@@ -98,22 +96,22 @@ int main(int , char** )
   spacing[0] = 64.;
   spacing[1] = 64.;
 
-  imgIn->SetOrigin( origin );
-  imgIn->SetSpacing( spacing );
-  imgIn->SetSize( size );
-  imgIn->SetConstant( 2 );
-  imgIn->UpdateOutputInformation();
+  imgIn->SetOrigin(origin);
+  imgIn->SetSpacing(spacing);
+  imgIn->SetSize(size);
+  imgIn->SetConstant(2);
+  imgIn->UpdateLargestPossibleRegion();
 
   sizeRef[0] = 2;
   sizeRef[1] = 2;
   spacingRef[0] = 128.;
   spacingRef[1] = 128.;
 
-  imgRef->SetOrigin( origin );
-  imgRef->SetSpacing( spacingRef );
-  imgRef->SetSize( sizeRef );
+  imgRef->SetOrigin(origin);
+  imgRef->SetSpacing(spacingRef);
+  imgRef->SetSize(sizeRef);
   imgRef->SetConstant( 2 );
-  imgRef->UpdateOutputInformation();
+  imgRef->UpdateLargestPossibleRegion();
 
   // Binning filter
   typedef rtk::BinningImageFilter BINType;
@@ -125,9 +123,9 @@ int main(int , char** )
   itk::Vector<unsigned int,2> binning_factors;
   binning_factors[0]=2;
   binning_factors[1]=2;
-  bin->SetInput( imgIn->GetOutput() );
+  bin->SetInput(imgIn->GetOutput());
   bin->SetBinningFactors(binning_factors);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
   CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -142,15 +140,15 @@ int main(int , char** )
   spacingRef[0] = 64.;
   spacingRef[1] = 128.;
 
-  imgRef->SetSpacing( spacingRef );
-  imgRef->SetSize( sizeRef );
+  imgRef->SetSpacing(spacingRef);
+  imgRef->SetSize(sizeRef);
   imgRef->UpdateLargestPossibleRegion();
 
   // Update binning filter
   binning_factors[0]=1;
   binning_factors[1]=2;
   bin->SetBinningFactors(binning_factors);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
   CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -165,16 +163,16 @@ int main(int , char** )
   spacingRef[0] = 128.;
   spacingRef[1] = 64.;
 
-  imgRef->SetSpacing( spacingRef );
-  imgRef->SetSize( sizeRef );
+  imgRef->SetSpacing(spacingRef);
+  imgRef->SetSize(sizeRef);
   imgRef->UpdateLargestPossibleRegion();
 
   // Update binning filter
   binning_factors[0]=2;
   binning_factors[1]=1;
-  bin->SetInput( imgIn->GetOutput() );
+  bin->SetInput(imgIn->GetOutput());
   bin->SetBinningFactors(binning_factors);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
   CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
