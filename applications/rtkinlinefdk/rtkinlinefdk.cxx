@@ -324,17 +324,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
 
       ddf->SetOffsets(threadInfo->minimumOffsetX, threadInfo->maximumOffsetX);
 
-#if CUDA_FOUND
-      if(geometry->GetMatrices().size()==3)
-        {
-        FDKCUDAType* fdkcuda = dynamic_cast<FDKCUDAType*>( feldkamp.GetPointer() );
-        if(fdkcuda)
-          {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
-          }
-        }
-#endif
       TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
 
       if(threadInfo->args_info->verbose_flag)
@@ -369,11 +358,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         if(threadInfo->args_info->verbose_flag)
               std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                     << " has been processed in reconstruction." << std::endl;
-
-#if CUDA_FOUND
-        FDKCUDAType* fdkcuda = dynamic_cast<FDKCUDAType*>(feldkamp.GetPointer() );
-#endif
-
 
         //Write to disk and exit
         writer->SetInput( feldkamp->GetOutput() );
