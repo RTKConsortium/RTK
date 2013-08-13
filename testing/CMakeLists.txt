@@ -85,6 +85,14 @@ ADD_EXECUTABLE(rtkfovtest rtkfovtest.cxx)
 TARGET_LINK_LIBRARIES(rtkfovtest RTK)
 ADD_TEST(rtkfovtest ${EXECUTABLE_OUTPUT_PATH}/rtkfovtest)
 
+ADD_EXECUTABLE(rtkbinningtest rtkbinningtest.cxx)
+TARGET_LINK_LIBRARIES(rtkbinningtest RTK)
+ADD_TEST(rtkbinningtest ${EXECUTABLE_OUTPUT_PATH}/rtkbinningtest)
+
+ADD_EXECUTABLE(rtkmediantest rtkmediantest.cxx)
+TARGET_LINK_LIBRARIES(rtkmediantest RTK)
+ADD_TEST(rtkmediantest ${EXECUTABLE_OUTPUT_PATH}/rtkmediantest)
+
 ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest RTK)
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest 

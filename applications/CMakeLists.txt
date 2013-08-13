@@ -28,6 +28,8 @@ ADD_SUBDIRECTORY(rtkfieldofview)
 ADD_SUBDIRECTORY(rtksubselect)
 ADD_SUBDIRECTORY(rtkdrawshepploganphantom)
 ADD_SUBDIRECTORY(rtkextractshroudsignal)
+ADD_SUBDIRECTORY(rtkbinning)
+ADD_SUBDIRECTORY(rtkmedian)
 
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files

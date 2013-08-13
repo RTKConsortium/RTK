@@ -51,6 +51,7 @@ int main(int argc, char * argv[])
   typedef rtk::AmsterdamShroudImageFilter<OutputImageType> shroudFilterType;
   shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
   shroudFilter->SetInput( reader->GetOutput() );
+  shroudFilter->SetUnsharpMaskSize(args_info.unsharp_arg);
 
   // Write
   typedef itk::ImageFileWriter< shroudFilterType::OutputImageType > WriterType;
