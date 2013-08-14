@@ -85,7 +85,9 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
     const double sdd2 = sdd * sdd;
     if(sdd != 0.) // Divergent
       {
-      double weight = sdd * m_AngularWeightsAndRampFactor[k];
+      const double tauOverD  = m_Geometry->GetSourceOffsetsX()[k] / sdd;
+      const double tauOverDw = m_AngularWeightsAndRampFactor[k] * tauOverD;
+      const double sddw      = m_AngularWeightsAndRampFactor[k] * sdd;
       for(unsigned int j=0;
                        j<outputRegionForThread.GetSize(1);
                        j++, point[1] += pointIncrement[1])
@@ -97,7 +99,11 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
         for(unsigned int i=0;
                          i<outputRegionForThread.GetSize(0);
                          i++, ++itI, ++itO, point[0] += pointIncrement[0])
-          itO.Set( itI.Get() * weight / sqrt( sdd2y2 + point[0]*point[0]) );
+          {
+          // The term between parentheses comes from the publication
+          // [Gullberg Crawford Tsui, TMI, 1986], equation 18
+          itO.Set( itI.Get() * (sddw - tauOverDw * point[0]) / sqrt( sdd2y2 + point[0]*point[0]) );
+          }
         }
       }
     else // Parallel
