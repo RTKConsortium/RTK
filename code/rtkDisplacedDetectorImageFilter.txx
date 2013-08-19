@@ -108,15 +108,15 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   if(!m_OffsetsSet)
     {
     // Account for projections offsets
-    double minOffset = itk::NumericTraits<double>::max();
-    double maxOffset = itk::NumericTraits<double>::NonpositiveMin();
+    double minSupUntiltCorner = itk::NumericTraits<double>::max();
+    double maxInfUntiltCorner = itk::NumericTraits<double>::NonpositiveMin();
     for(unsigned int i=0; i<m_Geometry->GetProjectionOffsetsX().size(); i++)
       {
-      minOffset = vnl_math_min(minOffset, m_Geometry->GetProjectionOffsetsX()[i]);
-      maxOffset = vnl_math_max(maxOffset, m_Geometry->GetProjectionOffsetsX()[i]);
+      maxInfUntiltCorner = vnl_math_max(maxInfUntiltCorner, ToUntiltedCoordinate(i, m_InferiorCorner) );
+      minSupUntiltCorner = vnl_math_min(minSupUntiltCorner, ToUntiltedCoordinate(i, m_SuperiorCorner) );
       }
-    m_InferiorCorner += maxOffset;
-    m_SuperiorCorner += minOffset;
+    m_InferiorCorner = maxInfUntiltCorner;
+    m_SuperiorCorner = minSupUntiltCorner;
     }
   else
     {
@@ -172,8 +172,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   // Not displaced, nothing to do
   if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
     {
-    if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
-                                               // required
+    // If not in place, copy is required
+    if(this->GetInput() != this->GetOutput() )
       {
       while(!itIn.IsAtEnd() )
         {
@@ -207,7 +207,9 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   for(unsigned int k=0; k<overlapRegion.GetSize(2); k++)
     {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
-    const double sdd = m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
+    const double sx  = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
+    double sdd = m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
+    sdd = sqrt(sdd * sdd + sx * sx); // To untilted situation
     double invsdd = 0.;
     double invden = 0.;
     if (sdd!=0.)
@@ -217,18 +219,18 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       }
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
-    point[0] += m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
 
     if( m_SuperiorCorner+m_InferiorCorner > 0. )
       {
       while(!itWeights.IsAtEnd() )
         {
-        if(point[0] <= -1*theta)
+        const double l = ToUntiltedCoordinate(itIn.GetIndex()[2], point[0]);
+        if(l <= -1*theta)
           itWeights.Set(0.0);
-        else if(point[0] >= theta)
+        else if(l >= theta)
           itWeights.Set(2.0);
         else
-          itWeights.Set( sin( itk::Math::pi*atan(point[0] * invsdd ) * invden ) + 1 );
+          itWeights.Set( sin( itk::Math::pi*atan(l * invsdd ) * invden ) + 1 );
         ++itWeights;
         point[0] += spacing[0];
         }
@@ -237,12 +239,13 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       {
       while(!itWeights.IsAtEnd() )
         {
-        if(point[0] <= -1*theta)
+        const double l = ToUntiltedCoordinate(itIn.GetIndex()[2], point[0]);
+        if(l <= -1*theta)
           itWeights.Set(2.0);
-        else if(point[0] >= theta)
+        else if(l >= theta)
           itWeights.Set(0.0);
         else
-          itWeights.Set( 1 - sin( itk::Math::pi*atan(point[0] * invsdd ) * invden ) );
+          itWeights.Set( 1 - sin( itk::Math::pi*atan(l * invsdd ) * invden ) );
         ++itWeights;
         point[0] += spacing[0];
         }
@@ -275,6 +278,21 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     itOut.Set( 0 );
     ++itOut;
     }
+}
+
+template <class TInputImage, class TOutputImage>
+double
+DisplacedDetectorImageFilter<TInputImage, TOutputImage>
+::ToUntiltedCoordinate(const unsigned int noProj,
+                       const double tiltedCoord) const
+{
+  const double sdd  = m_Geometry->GetSourceToDetectorDistances()[noProj];
+  const double sdd2 = sdd * sdd;
+  const double sx   = m_Geometry->GetSourceOffsetsX()[noProj];
+  const double px   = m_Geometry->GetProjectionOffsetsX()[noProj];
+  const double hyp  = sqrt(sdd2 + sx*sx);
+  const double l    = tiltedCoord + px;
+  return hyp * (sdd * l / (sdd2 + (sx - l) * sx ));
 }
 
 } // end namespace rtk
