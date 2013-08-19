@@ -45,7 +45,7 @@ SheppLoganPhantomFilter<TInputImage, TOutputImage>
 template< class TInputImage, class TOutputImage >
 void SheppLoganPhantomFilter< TInputImage, TOutputImage >::GenerateData()
 {
-  std::vector< REIType::Pointer > rei(10);
+  std::vector< typename REIType::Pointer > rei(10);
   unsigned int NumberOfFig = 10;
 
   for ( unsigned int j = 0; j < NumberOfFig; j++ )
