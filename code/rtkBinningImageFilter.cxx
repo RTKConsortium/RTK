@@ -124,7 +124,7 @@ void BinningImageFilter
   if(m_BinningFactors[0]==2 && m_BinningFactors[1]==2)
   {
     int i, j, idx, pos;
-    for (i=0, idx=0; i < (binSize[0] * (inputSize[1])); i++, idx+=2) // Only works if number of pixels per line multiple of 2
+    for (i=0, idx=0; i < (binSize[0] * (inputSize[1])); i++, idx += 2) // Only works if number of pixels per line multiple of 2
       bufferIn[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) )>>1;
 
     for (j=0; j<binSize[1];j++)
@@ -139,7 +139,7 @@ void BinningImageFilter
   else if(m_BinningFactors[0]==2 && m_BinningFactors[1]==1)
   {
     int i, idx;
-    for (i=0, idx=0; i < (binSize[0] * (inputSize[1])); i++, idx+=2) // Only works if number of pixels per line multiple of 2
+    for (i=0, idx=0; i < (binSize[0] * (inputSize[1])); i++, idx += 2) // Only works if number of pixels per line multiple of 2
       bufferOut[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) )>>1;
   }
 

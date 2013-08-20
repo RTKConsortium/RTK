@@ -50,7 +50,7 @@ void MedianImageFilter
 
   // Median 3x3 and 3x2
   if(m_MedianWindow[0]==3 && (m_MedianWindow[1]==3 || m_MedianWindow[1]==2) )
-  {   
+  {
     int m  = m_MedianWindow[0];
     int n  = m_MedianWindow[1];
     int th = 4;
@@ -63,7 +63,7 @@ void MedianImageFilter
     std::vector<unsigned short> hist(histBins, 0);
 
     // Boundaries not taken into account yet but set to original value
-    for(inY = 0; inY <= (inputSize[1]-1); inY+=(inputSize[1]-1))
+    for(inY = 0; inY <= (inputSize[1]-1); inY += (inputSize[1]-1))
       for(inX = 0; inX < inputSize[0]; inX++)
         bufferOut[inY*inputSize[0] + inX] = bufferIn[inY*inputSize[0] + inX];
 
