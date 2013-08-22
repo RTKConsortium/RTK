@@ -129,7 +129,7 @@ AmsterdamShroudImageFilter<TInputImage>
   typename TOutputImage::Pointer kernel = TOutputImage::New();
   typename TOutputImage::RegionType region;
   region.SetIndex(0, 0);
-  region.SetIndex(1, m_UnsharpMaskSize/-2);
+  region.SetIndex(1, (int)m_UnsharpMaskSize/-2);
   region.SetSize(0, 1);
   region.SetSize(1, m_UnsharpMaskSize);
   kernel->SetRegions(region);
