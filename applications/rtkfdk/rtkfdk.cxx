@@ -149,7 +149,7 @@ int main(int argc, char * argv[])
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
   FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
 #endif
-  itk::Image< OutputPixelType, Dimension > *pfeldkamp;
+  itk::Image< OutputPixelType, Dimension > *pfeldkamp = NULL;
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
     typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
