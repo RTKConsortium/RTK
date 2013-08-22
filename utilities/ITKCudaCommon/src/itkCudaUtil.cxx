@@ -200,7 +200,7 @@ bool IsCudaAvailable()
 {
   int count = 0;
   cudaError_t err = cudaGetDeviceCount(&count);
-
+  CUDA_CHECK(err)
   return count >= 1;
 }
 
