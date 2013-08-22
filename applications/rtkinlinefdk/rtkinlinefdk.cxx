@@ -332,6 +332,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() );
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->PropagateRequestedRegion() );
         }
+#if CUDA_FOUND
       else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
         {
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
@@ -341,6 +342,8 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->UpdateOutputInformation() );
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
         }
+#endif
+#if OPENCL_FOUND
       else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
         {
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
@@ -350,6 +353,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() );
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->PropagateRequestedRegion() );
         }
+#endif
       if(threadInfo->args_info->verbose_flag)
         std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                   << " has been processed in reconstruction." << std::endl;
@@ -368,6 +372,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() );
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->PropagateRequestedRegion() );
           }
+#if CUDA_FOUND
         else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
@@ -377,6 +382,8 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->UpdateOutputInformation() );
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
           }
+#endif
+#if OPENCL_FOUND
         else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
@@ -386,6 +393,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() );
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->PropagateRequestedRegion() );
           }
+#endif
         if(threadInfo->args_info->verbose_flag)
           std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                     << " has been processed in reconstruction." << std::endl;
@@ -398,16 +406,20 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() );
           writer->SetInput( feldkampCPU->GetOutput() );
           }
+#if CUDA_FOUND
         else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
           writer->SetInput( feldkampCUDA->GetOutput() );
           }
+#endif
+#if OPENCL_FOUND
         else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
           writer->SetInput( feldkampOCL->GetOutput() );
           }
+#endif
         if(threadInfo->args_info->verbose_flag)
               std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                     << " has been processed in reconstruction." << std::endl;
