@@ -171,10 +171,11 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   threadInfo->mutex.Lock();
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
+  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
 #if CUDA_FOUND
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef CPUOutputImageType                           OutputImageType;
 #endif
 
   rtk::ThreeDCircularProjectionGeometry::Pointer geometry = rtk::ThreeDCircularProjectionGeometry::New();
@@ -218,25 +219,24 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   f->GetRampFilter()->SetHannCutFrequency(threadInfo->args_info->hann_arg);
 
   // FDK reconstruction filtering
-  itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer feldkamp;
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
+  FDKCPUType::Pointer feldkampCPU = FDKCPUType::New();
 #if CUDA_FOUND
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
+  FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
 #endif
 #if OPENCL_FOUND
   typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
+  FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
 #endif
   if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
     {
-    feldkamp = FDKCPUType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKCPUType*>(feldkamp.GetPointer() ) );
+    SET_FELDKAMP_OPTIONS(feldkampCPU);
     }
   else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
     {
 #if CUDA_FOUND
-    feldkamp = FDKCUDAType::New();
-    FDKCUDAType* fdkcuda = static_cast<FDKCUDAType*>(feldkamp.GetPointer() );
-    SET_FELDKAMP_OPTIONS( fdkcuda );
+    SET_FELDKAMP_OPTIONS( feldkampCUDA );
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     exit(EXIT_FAILURE);
@@ -245,8 +245,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
     {
 #if OPENCL_FOUND
-    feldkamp = FDKOPENCLType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKOPENCLType*>(feldkamp.GetPointer() ) );
+    SET_FELDKAMP_OPTIONS( feldkampOCL );
 #else
     std::cerr << "The program has not been compiled with opencl option" << std::endl;
     exit(EXIT_FAILURE);
@@ -254,7 +253,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
     }
 
   // Writer
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  typedef itk::ImageFileWriter<  CPUOutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( threadInfo->args_info->output_arg );
 
@@ -324,43 +323,96 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
 
       ddf->SetOffsets(threadInfo->minimumOffsetX, threadInfo->maximumOffsetX);
 
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-
+      if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
+        {
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() );
+        OutputImageType::Pointer pimg = feldkampCPU->GetOutput();
+        pimg->DisconnectPipeline();
+        feldkampCPU->SetInput( pimg );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->PropagateRequestedRegion() );
+        }
+      else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
+        {
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
+        OutputImageType::Pointer pimg = feldkampCUDA->GetOutput();
+        pimg->DisconnectPipeline();
+        feldkampCUDA->SetInput( pimg );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->UpdateOutputInformation() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
+        }
+      else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
+        {
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
+        CPUOutputImageType::Pointer pimg = feldkampOCL->GetOutput();
+        pimg->DisconnectPipeline();
+        feldkampOCL->SetInput( pimg );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->PropagateRequestedRegion() );
+        }
       if(threadInfo->args_info->verbose_flag)
         std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                   << " has been processed in reconstruction." << std::endl;
-
-      OutputImageType::Pointer pimg = feldkamp->GetOutput();
-      pimg->DisconnectPipeline();
-      feldkamp->SetInput( pimg );
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
 
       if(threadInfo->stop)
         {
         // Process first projection
         subsetRegion.SetIndex(Dimension-1, 0);
         extract->SetExtractionRegion(subsetRegion);
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+        if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
+          {
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() );
+          OutputImageType::Pointer pimg = feldkampCPU->GetOutput();
+          pimg->DisconnectPipeline();
+          feldkampCPU->SetInput( pimg );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->PropagateRequestedRegion() );
+          }
+        else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
+          {
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
+          OutputImageType::Pointer pimg = feldkampCUDA->GetOutput();
+          pimg->DisconnectPipeline();
+          feldkampCUDA->SetInput( pimg );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->UpdateOutputInformation() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
+          }
+        else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
+          {
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
+          CPUOutputImageType::Pointer pimg = feldkampOCL->GetOutput();
+          pimg->DisconnectPipeline();
+          feldkampOCL->SetInput( pimg );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->PropagateRequestedRegion() );
+          }
         if(threadInfo->args_info->verbose_flag)
           std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                     << " has been processed in reconstruction." << std::endl;
-        pimg = feldkamp->GetOutput();
-        pimg->DisconnectPipeline();
-        feldkamp->SetInput( pimg );
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->UpdateOutputInformation() );
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->GetOutput()->PropagateRequestedRegion() );
 
         // Process last projection
         subsetRegion.SetIndex(Dimension-1, geometry->GetMatrices().size()-1);
         extract->SetExtractionRegion(subsetRegion);
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+        if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
+          {
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() );
+          writer->SetInput( feldkampCPU->GetOutput() );
+          }
+        else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
+          {
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
+          writer->SetInput( feldkampCUDA->GetOutput() );
+          }
+        else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
+          {
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
+          writer->SetInput( feldkampOCL->GetOutput() );
+          }
         if(threadInfo->args_info->verbose_flag)
               std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                     << " has been processed in reconstruction." << std::endl;
 
         //Write to disk and exit
-        writer->SetInput( feldkamp->GetOutput() );
         TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
         exit(EXIT_SUCCESS);
         }
