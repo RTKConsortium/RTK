@@ -116,7 +116,7 @@ bool CudaKernelManager::PushKernelArg(int kernelIdx, const void* argVal)
   return true;
 }
 
-bool CudaKernelManager::SetKernelArg(int kernelIdx, int argIdx, size_t argSize, const void* argVal)
+bool CudaKernelManager::SetKernelArg(int kernelIdx, int argIdx, size_t itkNotUsed(argSize), const void* argVal)
 {
   if (kernelIdx < 0 || kernelIdx >= (int)m_KernelContainer.size()) return false;
 
@@ -219,7 +219,7 @@ bool CudaKernelManager::LaunchKernel3D(int kernelIdx,
   return LaunchKernel(kernelIdx, 3, globalWorkSize, localWorkSize, sharedMemBytes);
 }
 
-bool CudaKernelManager::LaunchKernel(int kernelIdx, int dim, size_t *globalWorkSize, size_t *localWorkSize, 
+bool CudaKernelManager::LaunchKernel(int kernelIdx, int itkNotUsed(dim), size_t *globalWorkSize, size_t *localWorkSize,
                                      unsigned int sharedMemBytes)
 {
   if (kernelIdx < 0 || kernelIdx >= (int)m_KernelContainer.size()) return false;
