@@ -2,7 +2,6 @@ project(ITKCudaCommon)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 
-set (CUDA_NVCC_FLAGS "")
 include(itkCUDA)
 
 set(ITKCudaCommon_LIBRARIES ITKCudaCommon)
