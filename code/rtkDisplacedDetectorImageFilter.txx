@@ -112,8 +112,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     double maxInfUntiltCorner = itk::NumericTraits<double>::NonpositiveMin();
     for(unsigned int i=0; i<m_Geometry->GetProjectionOffsetsX().size(); i++)
       {
-      maxInfUntiltCorner = vnl_math_max(maxInfUntiltCorner, ToUntiltedCoordinate(i, m_InferiorCorner) );
-      minSupUntiltCorner = vnl_math_min(minSupUntiltCorner, ToUntiltedCoordinate(i, m_SuperiorCorner) );
+      maxInfUntiltCorner = vnl_math_max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinate(i, m_InferiorCorner) );
+      minSupUntiltCorner = vnl_math_min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinate(i, m_SuperiorCorner) );
       }
     m_InferiorCorner = maxInfUntiltCorner;
     m_SuperiorCorner = minSupUntiltCorner;
@@ -224,7 +224,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       {
       while(!itWeights.IsAtEnd() )
         {
-        const double l = ToUntiltedCoordinate(itIn.GetIndex()[2], point[0]);
+        const double l = m_Geometry->ToUntiltedCoordinate(itIn.GetIndex()[2], point[0]);
         if(l <= -1*theta)
           itWeights.Set(0.0);
         else if(l >= theta)
@@ -239,7 +239,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       {
       while(!itWeights.IsAtEnd() )
         {
-        const double l = ToUntiltedCoordinate(itIn.GetIndex()[2], point[0]);
+        const double l = m_Geometry->ToUntiltedCoordinate(itIn.GetIndex()[2], point[0]);
         if(l <= -1*theta)
           itWeights.Set(2.0);
         else if(l >= theta)
@@ -279,21 +279,5 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     ++itOut;
     }
 }
-
-template <class TInputImage, class TOutputImage>
-double
-DisplacedDetectorImageFilter<TInputImage, TOutputImage>
-::ToUntiltedCoordinate(const unsigned int noProj,
-                       const double tiltedCoord) const
-{
-  const double sdd  = m_Geometry->GetSourceToDetectorDistances()[noProj];
-  const double sdd2 = sdd * sdd;
-  const double sx   = m_Geometry->GetSourceOffsetsX()[noProj];
-  const double px   = m_Geometry->GetProjectionOffsetsX()[noProj];
-  const double hyp  = sqrt(sdd2 + sx*sx);
-  const double l    = tiltedCoord + px;
-  return hyp * (sdd * l / (sdd2 + (sx - l) * sx ));
-}
-
 } // end namespace rtk
 #endif
