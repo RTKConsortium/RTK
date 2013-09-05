@@ -19,59 +19,23 @@
 #ifndef __rtkCudaSARTConeBeamReconstructionFilter_cxx
 #define __rtkCudaSARTConeBeamReconstructionFilter_cxx
 
-#include "rtkJosephForwardProjectionImageFilter.h"
-#include "rtkJosephBackProjectionImageFilter.h"
-#include "rtkCudaForwardProjectionImageFilter.h"
-#include "rtkCudaBackProjectionImageFilter.h"
 #include "rtkCudaSARTConeBeamReconstructionFilter.h"
-#include "itkImageFileWriter.h"
-
+#include "rtkCudaBackProjectionImageFilter.h"
 
 namespace rtk
 {
 
-  CudaSARTConeBeamReconstructionFilter
-  ::CudaSARTConeBeamReconstructionFilter():
-      m_ExplicitGPUMemoryManagementFlag(false)
-  {
-      // Create each filter which are specific for cuda
-      m_ForwardProjectionFilter = ForwardProjectionFilterType::New();
-      BackProjectionFilterType::Pointer p = BackProjectionFilterType::New();
-      this->SetBackProjectionFilter(p.GetPointer());
-      //Permanent internal connections
-      m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
-      m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput() );
-  }
-
-  void
-  CudaSARTConeBeamReconstructionFilter
-  ::GenerateData()
-  {
-    // Init GPU memory
-    if(!m_ExplicitGPUMemoryManagementFlag)
-      this->InitDevice();
-
-    // Run reconstruction
-    this->Superclass::GenerateData();
-
-    // Transfer result to CPU image
-    if(!m_ExplicitGPUMemoryManagementFlag)
-      this->CleanUpDevice();
-  }
-
-  void
-  CudaSARTConeBeamReconstructionFilter
-  ::InitDevice()
-  {
-    //Nothing to do, memory control internally managed
-  }
-
-  void
-  CudaSARTConeBeamReconstructionFilter
-  ::CleanUpDevice()
-  {
-    //Nothing to do, memory control internally managed
-  }
+CudaSARTConeBeamReconstructionFilter
+::CudaSARTConeBeamReconstructionFilter()
+{
+  // Create each filter which are specific for cuda
+  m_ForwardProjectionFilter = ForwardProjectionFilterType::New();
+  BackProjectionFilterType::Pointer p = BackProjectionFilterType::New();
+  this->SetBackProjectionFilter(p.GetPointer());
+  //Permanent internal connections
+  m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
+  m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput() );
+}
 
 } // end namespace rtk
 

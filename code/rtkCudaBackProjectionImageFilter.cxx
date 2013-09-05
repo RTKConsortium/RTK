@@ -24,75 +24,20 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkMacro.h>
-#include <rtkMacro.h>
 
 namespace rtk
 {
 
 CudaBackProjectionImageFilter
-::CudaBackProjectionImageFilter():
-    m_ExplicitGPUMemoryManagementFlag(false)
+::CudaBackProjectionImageFilter()
 {
-  m_DeviceVolume     = NULL;
-  m_DeviceProjection = NULL;
-  m_DeviceMatrix     = NULL;
 }
 
 void
 CudaBackProjectionImageFilter
-::InitDevice()
+::GPUGenerateData()
 {
-  // Dimension arguments in CUDA format
-  m_VolumeDimension[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
-  m_VolumeDimension[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
-  m_VolumeDimension[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
-
-  m_ProjectionDimension[0] = this->GetInput(1)->GetRequestedRegion().GetSize()[0];
-  m_ProjectionDimension[1] = this->GetInput(1)->GetRequestedRegion().GetSize()[1];
-
-  // Cuda init
-  std::vector<int> devices = GetListOfCudaDevices();
-  if(devices.size()>1)
-    {
-    cudaThreadExit();
-    cudaSetDevice(devices[0]);
-    }
-
-  CUDA_back_project_init (m_ProjectionDimension,
-                          m_VolumeDimension,
-                          m_DeviceVolume,
-                          m_DeviceProjection,
-                          m_DeviceMatrix,
-                          this->GetInput()->GetBufferPointer());
-}
-
-void
-CudaBackProjectionImageFilter
-::CleanUpDevice()
-{
-  if(this->GetOutput()->GetRequestedRegion() != this->GetOutput()->GetBufferedRegion() )
-    itkExceptionMacro(<< "Can't handle different requested and buffered regions "
-                      << this->GetOutput()->GetRequestedRegion()
-                      << this->GetOutput()->GetBufferedRegion() );
-
-  CUDA_back_project_cleanup (m_VolumeDimension,
-                             m_DeviceVolume,
-                             m_DeviceProjection,
-                             m_DeviceMatrix,
-                             this->GetOutput()->GetBufferPointer());
-  m_DeviceVolume     = NULL;
-  m_DeviceProjection = NULL;
-  m_DeviceMatrix     = NULL;
-}
-
-void
-CudaBackProjectionImageFilter
-::GenerateData()
-{
-  this->AllocateOutputs();
-  //CUDA device Initialization, MemCpy, Malloc, etc.
-  if(!m_ExplicitGPUMemoryManagementFlag)
-    this->InitDevice();
+  //this->AllocateOutputs();
 
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
@@ -117,11 +62,29 @@ CudaBackProjectionImageFilter
     rotCenterIndex[i] -= this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     }
 
+  // Cuda convenient format for dimensions
+  int projectionSize[2];
+  projectionSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
+  projectionSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+
+  int volumeSize[3];
+  //volumeSize[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
+  //volumeSize[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
+  //volumeSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
+
+  volumeSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
+  volumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
+  volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
+
+
+  float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Extract the current slice
-    ProjectionImagePointer projection = this->GetProjection(iProj);
+    ProjectionImagePointer projection = this->GetProjection<ProjectionImageType>(iProj);
 
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)
@@ -145,17 +108,15 @@ CudaBackProjectionImageFilter
     for (int j = 0; j < 12; j++)
       fMatrix[j] = matrix[j/4][j%4];
 
-    CUDA_back_project(m_ProjectionDimension,
-                      m_VolumeDimension,
-                      projection->GetBufferPointer(),
+    CUDA_back_project(projectionSize,
+                      volumeSize,
                       fMatrix,
-                      m_DeviceVolume,
-                      m_DeviceProjection,
-                      m_DeviceMatrix);//, this->GetInput()->GetBufferPointer(), this->GetOutput()->GetBufferPointer());
+                      pin,
+                      pout,
+                      *(float**)( projection->GetCudaDataManager()->GetGPUBufferPointer() )
+                      );
+    pin = pout;
     }
-  //CUDA device CleanUp, transfer of data, free buffers and unbind textures
-  if(!m_ExplicitGPUMemoryManagementFlag)
-    this->CleanUpDevice();
 }
 
 } // end namespace rtk

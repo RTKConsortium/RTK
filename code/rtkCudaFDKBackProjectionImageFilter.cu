@@ -39,11 +39,8 @@
 *****************/
 #include <cuda.h>
 
-// P R O T O T Y P E S ////////////////////////////////////////////////////
-__global__ void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y);
 
 ///////////////////////////////////////////////////////////////////////////
-
 // T E X T U R E S ////////////////////////////////////////////////////////
 texture<float, 2, cudaReadModeElementType> tex_img;
 texture<float, 1, cudaReadModeElementType> tex_matrix;
@@ -55,7 +52,7 @@ texture<float, 1, cudaReadModeElementType> tex_matrix;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__
-void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y)
+void kernel_fdk(float *dev_vol_in, float *dev_vol_out, int3 vol_dim, unsigned int Blocks_Y)
 {
   // CUDA 2.0 does not allow for a 3D grid, which severely
   // limits the manipulation of large 3D arrays of data.  The
@@ -95,11 +92,11 @@ void kernel_fdk(float *dev_vol, int3 vol_dim, unsigned int Blocks_Y)
   voxel_data = tex2D(tex_img, ip.x, ip.y);
 
   // Place it into the volume
-  dev_vol[vol_idx] += ip.z * ip.z * voxel_data;
+  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + ip.z * ip.z * voxel_data;
 }
 
 __global__
-void kernel_fdk_3Dgrid(float *dev_vol, int3 vol_dim)
+void kernel_fdk_3Dgrid(float *dev_vol_in, float * dev_vol_out, int3 vol_dim)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -133,11 +130,11 @@ void kernel_fdk_3Dgrid(float *dev_vol, int3 vol_dim)
   voxel_data = tex2D(tex_img, ip.x, ip.y);
 
   // Place it into the volume
-  dev_vol[vol_idx] += ip.z * ip.z * voxel_data;
+  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + ip.z * ip.z * voxel_data;
 }
 
 __global__
-void kernel_fdk_optim(float *dev_vol, int3 vol_dim)
+void kernel_fdk_optim(float *dev_vol_in, float *dev_vol_out, int3 vol_dim)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = 0;
@@ -170,7 +167,7 @@ void kernel_fdk_optim(float *dev_vol, int3 vol_dim)
   // Place it into the volume segment
   for(; j<vol_dim.y; j++)
     {
-    dev_vol[vol_idx] += ip.z * tex2D(tex_img, ip.x, ip.y);
+    dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + ip.z * tex2D(tex_img, ip.x, ip.y);
     vol_idx+=vol_dim.x;
     ip.x+=dx;
     ip.y+=dy;
@@ -183,52 +180,32 @@ void kernel_fdk_optim(float *dev_vol, int3 vol_dim)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 ///////////////////////////////////////////////////////////////////////////
-// FUNCTION: CUDA_reconstruct_conebeam_init() /////////////////////////////
-void
-CUDA_reconstruct_conebeam_init(
-  int img_dim[2],
-  int vol_dim[3],
-  float *&dev_vol,         // Holds voxels on device
-  float *&dev_img,         // Holds image pixels on device
-  float *&dev_matrix       // Holds matrix on device
-  )
-{
-  // Size of volume Malloc
-  size_t vol_size_malloc = (vol_dim[0]*vol_dim[1]*vol_dim[2])*sizeof(float);
-
-  // CUDA device pointers
-  cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
-  CUDA_CHECK_ERROR;
-  cudaMalloc( (void**)&dev_vol, vol_size_malloc);
-  CUDA_CHECK_ERROR;
-  cudaMemset( (void *) dev_vol, 0, vol_size_malloc);
-
- // set texture parameters
-  tex_img.addressMode[0] = cudaAddressModeClamp;
-  tex_img.addressMode[1] = cudaAddressModeClamp;
-  tex_img.filterMode = cudaFilterModeLinear;
-  tex_img.normalized = false; // don't access with normalized texture coords
-}
-
-///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_reconstruct_conebeam() //////////////////////////////////
 void
 CUDA_reconstruct_conebeam(
   int img_dim[2],
   int vol_dim[3],
-  float *proj,
   float matrix[12],
-  float *dev_vol,
-  float *dev_img,
-  float *dev_matrix )
+  float *dev_vol_in,
+  float *dev_vol_out,
+  float *dev_img)
 {
-  // copy image data, bind the array to the texture
+  // set texture parameters
+  tex_img.addressMode[0] = cudaAddressModeClamp;
+  tex_img.addressMode[1] = cudaAddressModeClamp;
+  tex_img.filterMode = cudaFilterModeLinear;
+  tex_img.normalized = false; // don't access with normalized texture coords
+
+  // copy image data to array, bind the array to the texture
+  cudaArray *array_img;
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  cudaMallocArray( (cudaArray **)&dev_img, &channelDesc, img_dim[0], img_dim[1] );
-  cudaMemcpyToArray( (cudaArray*)dev_img, 0, 0, proj, img_dim[0] * img_dim[1] * sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTextureToArray( tex_img, (cudaArray*)dev_img, channelDesc);
+  cudaMallocArray( &array_img, &channelDesc, img_dim[0], img_dim[1] );
+  cudaMemcpyToArray( array_img, 0, 0, dev_img, img_dim[0] * img_dim[1] * sizeof(float), cudaMemcpyDeviceToDevice);
+  cudaBindTextureToArray( tex_img, (cudaArray*)array_img, channelDesc);
 
   // copy matrix, bind data to the texture
+  float *dev_matrix;
+  cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
   cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
   cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
 
@@ -249,7 +226,8 @@ CUDA_reconstruct_conebeam(
 
     // Note: cbi->img AND cbi->matrix are passed via texture memory
     //-------------------------------------
-    kernel_fdk_optim <<< dimGrid, dimBlock >>> ( dev_vol,
+    kernel_fdk_optim <<< dimGrid, dimBlock >>> ( dev_vol_in,
+                                                 dev_vol_out,
                                                  make_int3(vol_dim[0], vol_dim[1], vol_dim[2]) );
     }
   else
@@ -275,7 +253,8 @@ CUDA_reconstruct_conebeam(
 
       // Note: cbi->img AND cbi->matrix are passed via texture memory
       //-------------------------------------
-      kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol,
+      kernel_fdk <<< dimGrid, dimBlock >>> ( dev_vol_in,
+                                             dev_vol_out,
                                              make_int3(vol_dim[0], vol_dim[1], vol_dim[2]),
                                              blocksInY );
       }
@@ -287,8 +266,9 @@ CUDA_reconstruct_conebeam(
 
       // Note: cbi->img AND cbi->matrix are passed via texture memory
       //-------------------------------------
-      kernel_fdk_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol,
-                                             make_int3(vol_dim[0], vol_dim[1], vol_dim[2]));
+      kernel_fdk_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol_in,
+                                                    dev_vol_out,
+                                                    make_int3(vol_dim[0], vol_dim[1], vol_dim[2]));
       }
 
     }
@@ -297,32 +277,7 @@ CUDA_reconstruct_conebeam(
   // Unbind the image and projection matrix textures
   cudaUnbindTexture (tex_img);
   cudaUnbindTexture (tex_matrix);
-  cudaFreeArray ((cudaArray*)dev_img);
-  CUDA_CHECK_ERROR;
-}
-
-///////////////////////////////////////////////////////////////////////////
-// FUNCTION: CUDA_reconstruct_conebeam_cleanup() //////////////////////////
-void
-CUDA_reconstruct_conebeam_cleanup(
-  int vol_dim[3],
-  float *vol,
-  float *dev_vol,
-  float *dev_img,
-  float *dev_matrix
-  )
-
-{
-  // Size of volume Malloc
-  size_t vol_size_malloc = (vol_dim[0]*vol_dim[1]*vol_dim[2])*sizeof(float);
-
-  // Copy reconstructed volume from device to host
-  cudaMemcpy (vol, dev_vol, vol_size_malloc, cudaMemcpyDeviceToHost);
-  CUDA_CHECK_ERROR;
-
-  // Cleanup
+  cudaFreeArray ((cudaArray*)array_img);
   cudaFree (dev_matrix);
-  CUDA_CHECK_ERROR;
-  cudaFree (dev_vol);
   CUDA_CHECK_ERROR;
 }
