@@ -75,33 +75,16 @@ multiply_kernel2D(cufftComplex *projFFT,
 void
 CUDA_fft_convolution(const int3 &inputDimension,
                      const int2 &kernelDimension,
-                     float *projection,
-                     cufftComplex *kernelFFT)
+                     float *deviceProjection,
+                     cufftComplex *deviceKernelFFT)
 {
   // CUDA device pointers
-  float *deviceProjection;
-  int    nPixelsProjection = inputDimension.x*inputDimension.y*inputDimension.z;
-  int    memorySizeProjection = nPixelsProjection*sizeof(float);
-
-  cudaMalloc( (void**)&deviceProjection, memorySizeProjection );
-  CUDA_CHECK_ERROR;
-  cudaMemcpy (deviceProjection, projection, memorySizeProjection, cudaMemcpyHostToDevice);
-
   cufftComplex *deviceProjectionFFT;
   int3          fftDimension = inputDimension;
   fftDimension.x = inputDimension.x / 2 + 1;
 
   int memorySizeProjectionFFT = fftDimension.x*fftDimension.y*fftDimension.z*sizeof(cufftComplex);
   cudaMalloc( (void**)&deviceProjectionFFT, memorySizeProjectionFFT);
-  CUDA_CHECK_ERROR;
-
-  cufftComplex *deviceKernelFFT;
-  int           memorySizeKernelFFT = kernelDimension.x *
-                                      kernelDimension.y *
-                                      sizeof(cufftComplex);
-  cudaMalloc( (void**)&deviceKernelFFT, memorySizeKernelFFT);
-  CUDA_CHECK_ERROR;
-  cudaMemcpy (deviceKernelFFT, kernelFFT, memorySizeKernelFFT, cudaMemcpyHostToDevice);
   CUDA_CHECK_ERROR;
 
   // 3D FFT
@@ -150,12 +133,8 @@ CUDA_fft_convolution(const int3 &inputDimension,
   result = cufftExecC2R(fftInv, deviceProjectionFFT, deviceProjection);
   CUFFT_CHECK_ERROR(result);
 
-  cudaMemcpy (projection, deviceProjection, memorySizeProjection, cudaMemcpyDeviceToHost);
-
   // Release memory
   cufftDestroy(fftFwd);
   cufftDestroy(fftInv);
-  cudaFree(deviceProjection);
   cudaFree(deviceProjectionFFT);
-  cudaFree(deviceKernelFFT);
 }
