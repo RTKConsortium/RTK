@@ -25,7 +25,8 @@ CUDA_forward_project_init(int img_dim[2],
                           float *&dev_vol,
                           float *&dev_img,
                           float *&dev_matrix,
-                          const float *host_volume);
+                          const float *device_volume
+						  );
 
 void
 CUDA_forward_project(int blockSize[3],

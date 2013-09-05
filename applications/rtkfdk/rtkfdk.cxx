@@ -45,7 +45,12 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
+#if CUDA_FOUND
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
+  typedef CPUOutputImageType                           OutputImageType;
+#endif
 
   // Generate file names
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
@@ -134,32 +139,37 @@ int main(int argc, char * argv[])
     f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);
 
   // FDK reconstruction filtering
-  itk::ImageToImageFilter<OutputImageType, OutputImageType>::Pointer feldkamp;
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
-#if CUDA_FOUND
-  typedef rtk::CudaFDKConeBeamReconstructionFilter                FDKCUDAType;
-#endif
+  FDKCPUType::Pointer feldkamp = FDKCPUType::New();
 #if OPENCL_FOUND
-  typedef rtk::OpenCLFDKConeBeamReconstructionFilter              FDKOPENCLType;
+  typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
+  FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
 #endif
+#if CUDA_FOUND
+  typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
+  FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
+#endif
+  itk::Image< OutputPixelType, Dimension > *pfeldkamp = NULL;
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
+    typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
     feldkamp = FDKCPUType::New();
-    SET_FELDKAMP_OPTIONS( dynamic_cast<FDKCPUType*>(feldkamp.GetPointer()) );
+    SET_FELDKAMP_OPTIONS( feldkamp );
 
     // Motion compensated CBCT settings
     if(args_info.signal_given && args_info.dvf_given)
       {
       dvfReader->SetFileName(args_info.dvf_arg);
       def->SetSignalFilename(args_info.signal_arg);
-      dynamic_cast<FDKCPUType*>(feldkamp.GetPointer())->SetBackProjectionFilter( bp.GetPointer() );
+      feldkamp->SetBackProjectionFilter( bp.GetPointer() );
       }
+    pfeldkamp = feldkamp->GetOutput();
     }
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
 #if CUDA_FOUND
-    feldkamp = FDKCUDAType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKCUDAType*>(feldkamp.GetPointer()) );
+    SET_FELDKAMP_OPTIONS( feldkampCUDA );
+    pfeldkamp = feldkampCUDA->GetOutput();
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
@@ -168,8 +178,8 @@ int main(int argc, char * argv[])
   else if(!strcmp(args_info.hardware_arg, "opencl") )
     {
 #if OPENCL_FOUND
-    feldkamp = FDKOPENCLType::New();
-    SET_FELDKAMP_OPTIONS( static_cast<FDKOPENCLType*>(feldkamp.GetPointer()) );
+    SET_FELDKAMP_OPTIONS( feldkampOCL );
+    pfeldkamp = feldkampOCL->GetOutput();
 #else
     std::cerr << "The program has not been compiled with opencl option" << std::endl;
     return EXIT_FAILURE;
@@ -178,13 +188,13 @@ int main(int argc, char * argv[])
 
 
   // Streaming depending on streaming capability of writer
-  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
+  typedef itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType> StreamerType;
   StreamerType::Pointer streamerBP = StreamerType::New();
-  streamerBP->SetInput( feldkamp->GetOutput() );
+  streamerBP->SetInput( pfeldkamp );
   streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  typedef itk::ImageFileWriter<CPUOutputImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( streamerBP->GetOutput() );
@@ -201,14 +211,14 @@ int main(int argc, char * argv[])
     {
     std::cout << "It took " << writerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     if(!strcmp(args_info.hardware_arg, "cpu") )
-      static_cast<FDKCPUType* >(feldkamp.GetPointer())->PrintTiming(std::cout);
+      feldkamp->PrintTiming(std::cout);
 #if CUDA_FOUND
     else if(!strcmp(args_info.hardware_arg, "cuda") )
-      static_cast<FDKCUDAType*>(feldkamp.GetPointer())->PrintTiming(std::cout);
+      feldkampCUDA->PrintTiming(std::cout);
 #endif
 #if OPENCL_FOUND
     else if(!strcmp(args_info.hardware_arg, "opencl") )
-      static_cast<FDKOPENCLType*>(feldkamp.GetPointer())->PrintTiming(std::cout);
+      feldkampOCL->PrintTiming(std::cout);
 #endif
     std::cout << std::endl;
     }

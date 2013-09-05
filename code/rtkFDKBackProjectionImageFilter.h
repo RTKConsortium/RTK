@@ -46,10 +46,10 @@ public:
   typedef itk::SmartPointer<Self>                             Pointer;
   typedef itk::SmartPointer<const Self>                       ConstPointer;
 
-  typedef typename Superclass::ProjectionMatrixType                                  ProjectionMatrixType;
-  typedef typename TOutputImage::RegionType                                          OutputImageRegionType;
-  typedef itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension-1> ProjectionImageType;
-  typedef typename ProjectionImageType::Pointer                                      ProjectionImagePointer;
+  typedef typename Superclass::ProjectionMatrixType ProjectionMatrixType;
+  typedef typename TOutputImage::RegionType         OutputImageRegionType;
+  typedef typename Superclass::ProjectionImageType  ProjectionImageType;
+  typedef typename ProjectionImageType::Pointer     ProjectionImagePointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
