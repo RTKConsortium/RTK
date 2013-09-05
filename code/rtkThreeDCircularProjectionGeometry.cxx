@@ -293,4 +293,3 @@ ToUntiltedCoordinate(const unsigned int noProj,
   const double l    = tiltedCoord + px;
   return hyp * (sdd * l / (sdd2 + (sx - l) * sx ));
 }
-
