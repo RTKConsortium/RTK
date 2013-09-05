@@ -35,8 +35,6 @@
  * \ingroup Projector CudaImageToImageFilter
  */
 
-
-
 namespace rtk
 {
 
@@ -49,12 +47,12 @@ class ITK_EXPORT CudaForwardProjectionImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                            ImageType;
-  typedef CudaForwardProjectionImageFilter                  Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, ForwardProjectionImageFilter<ImageType, ImageType> > GPUSuperclass;
-  typedef ForwardProjectionImageFilter<ImageType, ImageType> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef itk::CudaImage<float,3>                                        ImageType;
+  typedef CudaForwardProjectionImageFilter                               Self;
+  typedef ForwardProjectionImageFilter<ImageType, ImageType>             Superclass;
+  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, Superclass > GPUSuperclass;
+  typedef itk::SmartPointer<Self>                                        Pointer;
+  typedef itk::SmartPointer<const Self>                                  ConstPointer;
 
   typedef ImageType::RegionType        OutputImageRegionType;
   typedef itk::Vector<float,3>         VectorType;
@@ -70,7 +68,7 @@ public:
 
   /** Function to synchronize memory from device to host and free device memory */
   void CleanUpDevice();
-  
+
   /** Boolean to keep the hand on the memory management of the GPU. Default is
    * off. If on, the user must call manually InitDevice and CleanUpDevice. */
   itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
