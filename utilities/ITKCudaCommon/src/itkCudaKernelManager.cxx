@@ -32,6 +32,7 @@ CudaKernelManager::CudaKernelManager()
 
 CudaKernelManager::~CudaKernelManager()
 {
+  CudaContextManager::DestroyInstance();
   if (m_Program)
     {
     CUDA_CHECK(cuModuleUnload(m_Program));
