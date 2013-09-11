@@ -26,7 +26,7 @@ namespace itk
 {
 
 template < class ImageType >
-void CudaImageDataManager< ImageType >::SetImagePointer(typename ImageType::Pointer img)
+void CudaImageDataManager< ImageType >::SetImagePointer(ImageType* img)
 {
   m_Image = img;
 

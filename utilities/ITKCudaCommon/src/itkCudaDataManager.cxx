@@ -32,6 +32,7 @@ CudaDataManager::CudaDataManager()
 
 CudaDataManager::~CudaDataManager()
 {
+  CudaContextManager::DestroyInstance();
 }
 
 void CudaDataManager::SetBufferSize(unsigned int num)

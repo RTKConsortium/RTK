@@ -39,7 +39,7 @@ public:
 
   static CudaContextManager* GetInstance();
 
-  void DestroyInstance();
+  static void DestroyInstance();
   
   CUcontext* GetCurrentContext();
 
