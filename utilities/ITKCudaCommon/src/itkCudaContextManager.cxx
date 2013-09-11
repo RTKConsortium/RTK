@@ -33,13 +33,18 @@ CudaContextManager* CudaContextManager::GetInstance()
     {
     m_Instance = new CudaContextManager();
     }
+  m_Instance->Register();
   return m_Instance;
 }
 
 void CudaContextManager::DestroyInstance()
 {
-  delete m_Instance;
-  m_Instance = NULL;
+  m_Instance->UnRegister();
+  if( m_Instance->GetReferenceCount() == 1)
+    {
+    m_Instance->Delete();
+    m_Instance = NULL;
+    }
 }
 
 CudaContextManager::CudaContextManager()

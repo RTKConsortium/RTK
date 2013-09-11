@@ -185,7 +185,7 @@ protected:
 
   unsigned int m_BufferSize;   // # of bytes
 
-  CudaContextManager *m_ContextManager;
+  CudaContextManager* m_ContextManager;
 
   /** buffer type */
   int m_MemFlags;
