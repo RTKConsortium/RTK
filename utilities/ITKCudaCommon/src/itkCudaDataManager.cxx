@@ -32,6 +32,7 @@ CudaDataManager::CudaDataManager()
 
 CudaDataManager::~CudaDataManager()
 {
+  m_GPUBuffer = NULL;
   CudaContextManager::DestroyInstance();
 }
 
