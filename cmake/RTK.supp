@@ -1,0 +1,69 @@
+{
+   CUDART dl fini
+   Memcheck:Leak
+   fun:_Znwm
+   fun:_dl_fini
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   CUDA cuInit malloc
+   Memcheck:Leak
+   fun:malloc
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA GetDeviceCount
+   Memcheck:Leak
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:cudaGetDeviceCount
+   fun:_ZN3itk23CudaGetAvailableDevicesERSt6vectorI14cudaDevicePropSaIS1_EE
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA cuCtxCreate_v2
+   Memcheck:Leak
+   fun:calloc
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA cuInit calloc
+   Memcheck:Leak
+   fun:calloc
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+
