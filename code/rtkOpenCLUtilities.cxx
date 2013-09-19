@@ -113,5 +113,5 @@ void CreateAndBuildOpenCLProgramFromSourceFile(const std::string fileName, const
                              << std::endl
                              << log);
     }
-  delete oclSource;
+  delete [] oclSource;
 }
