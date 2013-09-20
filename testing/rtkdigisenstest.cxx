@@ -160,10 +160,10 @@ int main(int, char** )
 
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
-  fileNames.clear();
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
+  std::vector<std::string> fileNamesRef;
+  fileNamesRef.push_back( std::string(RTK_DATA_ROOT) +
                        std::string("/Baseline/Digisens/attenuation.mha") );
-  readerRef->SetFileNames( fileNames );
+  readerRef->SetFileNames( fileNamesRef );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
   // 2. Compare read projections
