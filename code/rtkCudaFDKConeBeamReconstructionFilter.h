@@ -42,14 +42,15 @@ namespace rtk
  * \ingroup ReconstructionAlgorithm CudaImageToImageFilter
  */
 class CudaFDKConeBeamReconstructionFilter :
-  public FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float >
+  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+  FDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
   /** Standard class typedefs. */
-  typedef CudaFDKConeBeamReconstructionFilter                                                Self;
-  typedef FDKConeBeamReconstructionFilter< itk::Image<float,3>, itk::Image<float,3>, float > Superclass;
-  typedef itk::SmartPointer<Self>                                                            Pointer;
-  typedef itk::SmartPointer<const Self>                                                      ConstPointer;
+  typedef CudaFDKConeBeamReconstructionFilter                                                        Self;
+  typedef FDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > Superclass;
+  typedef itk::SmartPointer<Self>                                                                    Pointer;
+  typedef itk::SmartPointer<const Self>                                                              ConstPointer;
 
   /** Typedefs of subfilters which have been implemented with CUDA */
   typedef rtk::CudaFFTRampImageFilter           RampFilterType;
@@ -61,27 +62,16 @@ public:
   /** Runtime information support. */
   itkTypeMacro(CudaFDKConeBeamReconstructionFilter, FDKConeBeamReconstructionFilter);
 
-  /** Functions to init and clean up the GPU when ExplicitGPUMemoryManagementFlag is true. */
-  rtkcuda_EXPORT void InitDevice();
-  rtkcuda_EXPORT void CleanUpDevice();
-
-  /** Boolean to keep the hand on the memory management of the GPU. Default is
-   * off. If on, the user must call manually InitDevice and CleanUpDevice. */
-  itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
-  itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
-
 protected:
   rtkcuda_EXPORT CudaFDKConeBeamReconstructionFilter();
   ~CudaFDKConeBeamReconstructionFilter(){}
 
-  void GenerateData();
+  void GPUGenerateData();
 
 private:
   //purposely not implemented
   CudaFDKConeBeamReconstructionFilter(const Self&);
   void operator=(const Self&);
-
-  bool m_ExplicitGPUMemoryManagementFlag;
 }; // end of class
 
 } // end namespace rtk

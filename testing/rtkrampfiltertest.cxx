@@ -119,7 +119,11 @@ int main(int , char** )
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
+#ifdef USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#endif
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else

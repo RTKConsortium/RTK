@@ -89,7 +89,12 @@ int main(int, char** )
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
+#ifdef USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#endif
+
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
@@ -243,7 +248,7 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput());
   std::cout << "Test PASSED! " << std::endl;
 
- std::cout << "\n\n****** Case 4: streaming ******" << std::endl;
+  std::cout << "\n\n****** Case 4: streaming ******" << std::endl;
 
   // Make sure that the data will be recomputed by releasing them
   fov->GetOutput()->ReleaseData();

@@ -19,8 +19,7 @@
 #include "rtkCudaFDKConeBeamReconstructionFilter.h"
 
 rtk::CudaFDKConeBeamReconstructionFilter
-::CudaFDKConeBeamReconstructionFilter():
-    m_ExplicitGPUMemoryManagementFlag(false)
+::CudaFDKConeBeamReconstructionFilter()
 {
   // Create each filter which are specific for cuda
   m_RampFilter = RampFilterType::New();
@@ -37,32 +36,7 @@ rtk::CudaFDKConeBeamReconstructionFilter
 
 void
 rtk::CudaFDKConeBeamReconstructionFilter
-::GenerateData()
+::GPUGenerateData()
 {
-  // Init GPU memory
-  if(!m_ExplicitGPUMemoryManagementFlag)
-    this->InitDevice();
-
-  // Run reconstruction
-  this->Superclass::GenerateData();
-
-  // Transfer result to CPU image
-  if(!m_ExplicitGPUMemoryManagementFlag)
-    this->CleanUpDevice();
-}
-
-void
-rtk::CudaFDKConeBeamReconstructionFilter
-::InitDevice()
-{
-  BackProjectionFilterType* cudabp = dynamic_cast<BackProjectionFilterType*>( m_BackProjectionFilter.GetPointer() );
-  cudabp->InitDevice();
-}
-
-void
-rtk::CudaFDKConeBeamReconstructionFilter
-::CleanUpDevice()
-{
-  BackProjectionFilterType* cudabp = dynamic_cast<BackProjectionFilterType*>( m_BackProjectionFilter.GetPointer() );
-  cudabp->CleanUpDevice();
+  CPUSuperclass::GenerateData();
 }

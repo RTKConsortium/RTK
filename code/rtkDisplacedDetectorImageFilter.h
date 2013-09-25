@@ -107,13 +107,6 @@ protected:
 
   virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
 
-  /** Changes the coordinate on the projection image to the coordinate on a
-   * virtual detector that is perpendicular to the source to isocenter line and
-   * positioned at the intersection between the detector and the source to
-   * isocenter line. If SourceOffsetX is 0., simply adds the ProjectionOffsetX. */
-  double ToUntiltedCoordinate(const unsigned int noProj,
-                              const double tiltedCoord) const;
-
 private:
   DisplacedDetectorImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);               //purposely not implemented

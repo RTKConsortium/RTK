@@ -25,6 +25,7 @@
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkMacro.h>
 #include "rtkMacro.h"
+#include "itkCudaUtil.h"
 
 namespace rtk
 {
@@ -46,20 +47,16 @@ CudaForwardProjectionImageFilter
   m_VolumeDimension[0] = this->GetInput(1)->GetRequestedRegion().GetSize()[0];
   m_VolumeDimension[1] = this->GetInput(1)->GetRequestedRegion().GetSize()[1];
   m_VolumeDimension[2] = this->GetInput(1)->GetRequestedRegion().GetSize()[2];
+
   // Dimension arguments in CUDA format for projections
   m_ProjectionDimension[0] = this->GetInput(0)->GetRequestedRegion().GetSize()[0];
   m_ProjectionDimension[1] = this->GetInput(0)->GetRequestedRegion().GetSize()[1];
-  // Cuda initialization
-  std::vector<int> devices = GetListOfCudaDevices();
-  if(devices.size()>1)
-    {
-    cudaThreadExit();
-    cudaSetDevice(devices[0]);
-    }
-  const float *host_volume = this->GetInput(1)->GetBufferPointer();
+  
+  // Make sure the GPU Buffer is up to date
+  const float *device_volume = *(float**)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
 
   CUDA_forward_project_init (m_ProjectionDimension, m_VolumeDimension,
-                             m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix, host_volume);
+                             m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix,device_volume);
 }
 
 void
@@ -81,42 +78,46 @@ CudaForwardProjectionImageFilter
 
 void
 CudaForwardProjectionImageFilter
-::GenerateData()
+::GPUGenerateData()
 {
-  this->AllocateOutputs();
-  if(!m_ExplicitGPUMemoryManagementFlag)
-    this->InitDevice();
-  const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
-  const unsigned int Dimension = ImageType::ImageDimension;
-  const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
-  const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
-  const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
-                                      this->GetOutput()->GetBufferedRegion().GetSize(1);
+  try {
+    //this->AllocateOutputs();
+    if(!m_ExplicitGPUMemoryManagementFlag)
+      {
+      this->InitDevice();
+      }
 
-  float t_step = 1; // Step in mm
-  int blockSize[3] = {16,16,1};
-  itk::Vector<double, 4> source_position;
+    const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+    const unsigned int Dimension = ImageType::ImageDimension;
+    const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
+    const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
+    const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
+      this->GetOutput()->GetBufferedRegion().GetSize(1);
 
-  // Setting BoxMin and BoxMax
-  // SR: we are using cuda textures where the pixel definition is not center but corner.
-  // Therefore, we set the box limits from index to index+size instead of, for ITK,
-  // index-0.5 to index+size-0.5.
-  float boxMin[3];
-  float boxMax[3];
-  for(unsigned int i=0; i<3; i++)
-    {
+    float t_step = 1; // Step in mm
+    int blockSize[3] = {16,16,1};
+    itk::Vector<double, 4> source_position;
+
+    // Setting BoxMin and BoxMax
+    // SR: we are using cuda textures where the pixel definition is not center but corner.
+    // Therefore, we set the box limits from index to index+size instead of, for ITK,
+    // index-0.5 to index+size-0.5.
+    float boxMin[3];
+    float boxMax[3];
+    for(unsigned int i=0; i<3; i++)
+      {
       boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i]+0.5;
       boxMax[i] = boxMin[i] + this->GetInput(1)->GetBufferedRegion().GetSize()[i]-1.0;
-    }
+      }
 
-  // Getting Spacing
-  float spacing[3];
-  for(unsigned int i=0; i<3; i++)
-    spacing[i] = this->GetInput(1)->GetSpacing()[i];
+    // Getting Spacing
+    float spacing[3];
+    for(unsigned int i=0; i<3; i++)
+      spacing[i] = this->GetInput(1)->GetSpacing()[i];
 
-  // Go over each projection
-  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
-    {
+    // Go over each projection
+    for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
+      {
       // Account for system rotations
       Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
       volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(1) );
@@ -129,8 +130,8 @@ CudaForwardProjectionImageFilter
       // Compute matrix to transform projection index to volume index
       Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
       d_matrix = volPPToIndex.GetVnlMatrix() *
-                 geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-                 GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix();
+        geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
+        GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix();
       float matrix[4][4];
       for (int j=0; j<4; j++)
         for (int k=0; k<4; k++)
@@ -138,22 +139,29 @@ CudaForwardProjectionImageFilter
 
       // Set source position in volume indices
       source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
-      CUDA_forward_project(blockSize,
-                           this->GetOutput()->GetBufferPointer() + (iProj -
-                           this->GetOutput()->GetBufferedRegion().GetIndex()[2]) *
-                           nPixelsPerProj,
-                           m_DeviceProjection,
-                           (double*)&(source_position[0]),
-                           m_ProjectionDimension,
-                           t_step,
-                           m_DeviceMatrix,
-                           (float*)&(matrix[0][0]),
-                           boxMin,
-                           boxMax,
-                           spacing);
+     CUDA_forward_project(blockSize,
+        this->GetOutput()->GetBufferPointer() + (iProj -
+        this->GetOutput()->GetBufferedRegion().GetIndex()[2]) *
+        nPixelsPerProj,
+        m_DeviceProjection,
+        (double*)&(source_position[0]),
+        m_ProjectionDimension,
+        t_step,
+        m_DeviceMatrix,
+        (float*)&(matrix[0][0]),
+        boxMin,
+        boxMax,
+        spacing);
+      }
+    if(!m_ExplicitGPUMemoryManagementFlag)
+      this->CleanUpDevice();
     }
-  if(!m_ExplicitGPUMemoryManagementFlag)
-    this->CleanUpDevice();
+  catch(itk::ExceptionObject e)
+    {
+    std::cout << e.GetDescription() << std::endl;
+    getchar();
+    exit(0);
+    }
 }
 
 } // end namespace rtk

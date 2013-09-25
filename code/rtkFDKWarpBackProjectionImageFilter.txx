@@ -102,7 +102,7 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
     warpInterpolator->SetInputImage(m_Deformation->GetOutput());
 
     // Extract the current slice
-    ProjectionImagePointer projection = this->GetProjection(iProj);
+    ProjectionImagePointer projection = this->template GetProjection< ProjectionImageType >(iProj);
     interpolator->SetInputImage(projection);
 
     // Index to index matrix normalized to have a correct backprojection weight
