@@ -50,16 +50,16 @@ public:
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
-  typedef std::vector<double>                               VectorType;
+  typedef itk::Vector<double,3>                             VectorType;
 
   typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
   struct FigureType
   {
-    FigureType():angle(0.),attenuation(0.){};
+    FigureType():angle(0.),density(0.){};
     VectorType semiprincipalaxis;
     VectorType center;
     double     angle;
-    double     attenuation;
+    double     density;
   };
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -69,17 +69,17 @@ public:
 
   /** Multiplicative Scaling factor for the phantom parameters described in
    * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(Attenuation, double);
-  itkGetMacro(Attenuation, double);
+  itkSetMacro(Density, double);
+  itkGetMacro(Density, double);
 
   itkSetMacro(Angle, double);
   itkGetMacro(Angle, double);
 
-  rtkSetStdVectorMacro(Axis, VectorType );
-  rtkGetStdVectorMacro(Axis, VectorType );
+  itkSetMacro(Axis, VectorType);
+  itkGetMacro(Axis, VectorType);
 
-  rtkSetStdVectorMacro(Center, VectorType );
-  rtkGetStdVectorMacro(Center, VectorType );
+  itkSetMacro(Center, VectorType);
+  itkGetMacro(Center, VectorType);
 
 protected:
   DrawConeImageFilter();
@@ -89,12 +89,12 @@ protected:
 
 private:
   DrawConeImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  void operator=(const Self&);      //purposely not implemented
 
-  std::vector< double > m_Axis;
-  std::vector< double > m_Center;
-  double                m_Attenuation;
-  double                m_Angle;
+  VectorType     m_Axis;
+  VectorType     m_Center;
+  double         m_Density;
+  double         m_Angle;
 };
 
 } // end namespace rtk
