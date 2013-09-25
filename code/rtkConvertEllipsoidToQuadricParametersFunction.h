@@ -52,7 +52,7 @@ public:
   itkTypeMacro(ConvertEllipsoidToQuadricParametersFunction, itk::Object);
 
   /** Useful defines. */
-  typedef std::vector<double>                VectorType;
+  typedef itk::Vector<double,3>              VectorType;
   typedef std::vector< std::vector<double> > VectorOfVectorType;
 
   bool Translate( const VectorType& input );
@@ -88,6 +88,9 @@ public:
   itkGetMacro(RotationAngle, double);
   itkSetMacro(RotationAngle, double);
 
+  itkSetMacro(Figure, std::string);
+  itkGetMacro(Figure, std::string);
+
 protected:
 
   /// Constructor
@@ -114,6 +117,7 @@ protected:
   double m_H;
   double m_I;
   double m_J;
+  std::string m_Figure;
 
 private:
   ConvertEllipsoidToQuadricParametersFunction( const Self& ); //purposely not implemented
