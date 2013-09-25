@@ -52,7 +52,9 @@ public:
   typedef itk::SmartPointer<Self>                                     Pointer;
   typedef itk::SmartPointer<const Self>                               ConstPointer;
 
-  typedef ConvertEllipsoidToQuadricParametersFunction                       EQPFunctionType;
+  typedef itk::Vector<double,3>                                       VectorType;
+
+  typedef ConvertEllipsoidToQuadricParametersFunction                 EQPFunctionType;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -60,21 +62,18 @@ public:
   itkTypeMacro(RayEllipsoidIntersectionImageFilter, RayQuadricIntersectionImageFilter);
 
   /** Get/Set the semi-principal axes of the ellipsoid.*/
-  itkGetMacro(SemiPrincipalAxisX, double);
-  itkSetMacro(SemiPrincipalAxisX, double);
-  itkGetMacro(SemiPrincipalAxisY, double);
-  itkSetMacro(SemiPrincipalAxisY, double);
-  itkGetMacro(SemiPrincipalAxisZ, double);
-  itkSetMacro(SemiPrincipalAxisZ, double);
-  itkGetMacro(CenterX, double);
-  itkSetMacro(CenterX, double);
-  itkGetMacro(CenterY, double);
-  itkSetMacro(CenterY, double);
-  itkGetMacro(CenterZ, double);
-  itkSetMacro(CenterZ, double);
 
-  itkGetMacro(RotationAngle, double);
-  itkSetMacro(RotationAngle, double);
+  itkSetMacro(Angle, double);
+  itkGetMacro(Angle, double);
+
+  itkSetMacro(Axis, VectorType);
+  itkGetMacro(Axis, VectorType);
+
+  itkSetMacro(Center, VectorType);
+  itkGetMacro(Center, VectorType);
+
+  itkSetMacro(Figure, std::string);
+  itkGetMacro(Figure, std::string);
 
 protected:
   RayEllipsoidIntersectionImageFilter();
@@ -86,13 +85,11 @@ private:
   RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  double                   m_SemiPrincipalAxisX;
-  double                   m_SemiPrincipalAxisY;
-  double                   m_SemiPrincipalAxisZ;
-  double                   m_CenterX;
-  double                   m_CenterY;
-  double                   m_CenterZ;
-  double                   m_RotationAngle;
+  VectorType      m_Axis;
+  VectorType      m_Center;
+  double          m_Attenuation;
+  double          m_Angle;
+  std::string     m_Figure;
   EQPFunctionType::Pointer m_EQPFunctor;
 };
 
