@@ -58,11 +58,23 @@ public:
   /** Useful defines. */
   typedef std::vector<double>                VectorType;
   typedef std::vector< std::vector<double> > VectorOfVectorType;
+  typedef std::string                        StringType;
+
+//  struct FigureType
+//  {
+//    //FigureType():angle(0.),density(0.){};
+//    VectorOfVectorType       parameters;
+//    std::vector<std::string> figure;
+//  };
 
   bool Config( const std::string input);
 
   virtual VectorOfVectorType GetFig ();
   virtual void SetFig (const VectorOfVectorType _arg);
+
+  /** Get/Set Number of Figures.*/
+  rtkSetStdVectorMacro(FigureTypes, std::vector<StringType>);
+  rtkGetStdVectorMacro(FigureTypes, std::vector<StringType>);
 
 protected:
 
@@ -73,7 +85,8 @@ protected:
   ~GeometricPhantomFileReader() {};
 
   /** Corners of the image Quadric */
-  VectorOfVectorType m_Fig;
+  VectorOfVectorType      m_Fig;
+  std::vector<StringType> m_FigureTypes;
 
 private:
   GeometricPhantomFileReader( const Self& ); //purposely not implemented
