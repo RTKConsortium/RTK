@@ -67,16 +67,12 @@ int main(int , char **)
    // Create the projector
   typedef rtk::RayEllipsoidIntersectionImageFilter<ImageType, ImageType> REIType;
   REIType::Pointer rei = REIType::New();
-    
+  REIType::VectorType semiprincipalaxis, center;
+  semiprincipalaxis.Fill(50.);
+  center.Fill(0.);
   //Set GrayScale value, axes, center...
-  rei->SetMultiplicativeConstant(2.);
-  rei->SetSemiPrincipalAxisX(50.);
-  rei->SetSemiPrincipalAxisY(50.);
-  rei->SetSemiPrincipalAxisZ(50.);
-  rei->SetCenterX(0.);
-  rei->SetCenterY(0.);
-  rei->SetCenterZ(0.);
-  rei->SetRotationAngle(0.);
+  rei->SetDensity(2.);
+  rei->SetAngle(0.);
   rei->SetGeometry( geometry );
   rei->SetInput( constantImageSource->GetOutput() );
   rei->Update();
