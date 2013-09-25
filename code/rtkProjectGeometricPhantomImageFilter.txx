@@ -37,33 +37,45 @@ namespace rtk
 template< class TInputImage, class TOutputImage >
 void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData()
 {
+  //Reading figure config file
   CFRType::Pointer cfr = CFRType::New();
   cfr->Config(m_ConfigFile);
   m_Fig = cfr->GetFig();
+  //Reading type of figures
+  std::vector<std::string> figType;
+  figType = cfr->GetFigureTypes();
 
   unsigned int ellip = 0;
   unsigned int box   = 0;
-  BoxVectorType boxMin, boxMax;
+  VectorType boxMin, boxMax;
   std::vector< typename REIType::Pointer > rei;
   std::vector< typename RBIType::Pointer > rbi;
 
   for ( unsigned int i = 0; i < m_Fig.size(); i++ )
   {
     // Ellipsoid, Cylinder and Cone Case
-    if(m_Fig[i][0]!=3)
+    if(figType[i]!="Box")
     {
       rei.push_back( REIType::New() );
       //Set GrayScale value, axes, center...
-      rei[ellip]->SetMultiplicativeConstant(m_Fig[i][8]);
-      rei[ellip]->SetSemiPrincipalAxisX(m_Fig[i][1]);
-      rei[ellip]->SetSemiPrincipalAxisY(m_Fig[i][2]);
-      rei[ellip]->SetSemiPrincipalAxisZ(m_Fig[i][3]);
+      rei[ellip]->SetDensity(m_Fig[i][8]);
+      VectorType semiprincipalaxis;
+      semiprincipalaxis[0] = m_Fig[i][1];
+      semiprincipalaxis[1] = m_Fig[i][2];
+      semiprincipalaxis[2] = m_Fig[i][3];
+      if(figType[i]=="Cone")
+        rei[ellip]->SetFigure("Cone");
+      else
+        rei[ellip]->SetFigure("Ellipsoid");
+      rei[ellip]->SetAxis(semiprincipalaxis);
 
-      rei[ellip]->SetCenterX(m_Fig[i][4]);
-      rei[ellip]->SetCenterY(m_Fig[i][5]);
-      rei[ellip]->SetCenterZ(m_Fig[i][6]);
+      VectorType center;
+      center[0] = m_Fig[i][4];
+      center[1] = m_Fig[i][5];
+      center[2] = m_Fig[i][6];
+      rei[ellip]->SetCenter(center);
 
-      rei[ellip]->SetRotationAngle(m_Fig[i][7]);
+      rei[ellip]->SetAngle(m_Fig[i][7]);
 
       if ( ellip == ( m_Fig.size() - 1 ) ) //last case
       {
@@ -86,11 +98,11 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       ellip++;
     }
     // Box Case
-    else
+    else if (figType[i]=="Box")
     {
       rbi.push_back( RBIType::New() );
       //Set GrayScale value, boxmax, boxmin, center...
-      rbi[box]->SetMultiplicativeConstant(m_Fig[i][8]);
+      rbi[box]->SetDensity(m_Fig[i][8]);
       boxMin[0] = -m_Fig[i][1];
       boxMin[1] = -m_Fig[i][2];
       boxMin[2] = -m_Fig[i][3];
@@ -101,11 +113,10 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       rbi[box]->SetBoxMax(boxMax);
 
       // FIXME: add center location and rotation
-      //rbi[box]->SetCenterY(m_Fig[i][4])
-      //rbi[box]->SetCenterY(m_Fig[i][5]);
-      //rbi[box]->SetCenterZ(m_Fig[i][6]);
-
-      //rbi[box]->SetRotationAngle(m_Fig[i][7]);
+      //rbi[box]->SetCenterY(m_Fig.parameters[i][4])
+      //rbi[box]->SetCenterY(m_Fig.parameters[i][5]);
+      //rbi[box]->SetCenterZ(m_Fig.parameters[i][6]);
+      //rbi[box]->SetAngle(m_Fig.parameters[i][7]);
 
       if ( box == ( m_Fig.size() - 1 ) ) //last case
       {
@@ -126,6 +137,10 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       }
       rbi[box]->SetGeometry( this->GetGeometry() );
       box++;
+    }
+    else
+    {
+      itkGenericExceptionMacro(<< "Unknown Figure type ( " << figType[i] )
     }
   }
   //Add Image Filter used to concatenate the different figures obtained on each iteration

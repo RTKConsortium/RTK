@@ -29,16 +29,12 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
-::RayEllipsoidIntersectionImageFilter():
- m_SemiPrincipalAxisX(0.),
- m_SemiPrincipalAxisY(0.),
- m_SemiPrincipalAxisZ(0.),
- m_CenterX(0.),
- m_CenterY(0.),
- m_CenterZ(0.),
- m_RotationAngle(0.),
- m_EQPFunctor( EQPFunctionType::New() )
+::RayEllipsoidIntersectionImageFilter():m_EQPFunctor( EQPFunctionType::New() )
 {
+  m_Axis.Fill(0.);
+  m_Center.Fill(0.);
+  m_Angle = 0.;
+  m_Figure = "Ellipsoid";
 }
 
 template <class TInputImage, class TOutputImage>
@@ -46,17 +42,19 @@ void RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThrea
 {
   typename EQPFunctionType::VectorType semiprincipalaxis;
   typename EQPFunctionType::VectorType center;
-  semiprincipalaxis.push_back(m_SemiPrincipalAxisX);
-  semiprincipalaxis.push_back(m_SemiPrincipalAxisY);
-  semiprincipalaxis.push_back(m_SemiPrincipalAxisZ);
-  center.push_back(m_CenterX);
-  center.push_back(m_CenterY);
-  center.push_back(m_CenterZ);
+  semiprincipalaxis[0] = m_Axis[0];
+  semiprincipalaxis[1] = m_Axis[1];
+  semiprincipalaxis[2] = m_Axis[2];
+  center[0] = m_Center[0];
+  center[1] = m_Center[1];
+  center[2] = m_Center[2];
 
+  //Set type of Figure
+  m_EQPFunctor->SetFigure(m_Figure);
   //Translate from regular expression to quadric
   m_EQPFunctor->Translate(semiprincipalaxis);
   //Applies rotation and translation if necessary
-  m_EQPFunctor->Rotate(m_RotationAngle, center);
+  m_EQPFunctor->Rotate(m_Angle, center);
   //Setting parameters in order to compute the projections
   this->GetRQIFunctor()->SetA( m_EQPFunctor->GetA() );
   this->GetRQIFunctor()->SetB( m_EQPFunctor->GetB() );
