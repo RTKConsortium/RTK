@@ -32,12 +32,12 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 DrawEllipsoidImageFilter<TInputImage, TOutputImage>
-::DrawEllipsoidImageFilter():
-m_Axis(3,90.),
-m_Center(3,0.),
-m_Attenuation(1.),
-m_Angle(0.)
+::DrawEllipsoidImageFilter()
 {
+  m_Axis.Fill(90.);
+  m_Center.Fill(0.);
+  m_Density = 1.;
+  m_Angle = 0.;
 }
 
 template <class TInputImage, class TOutputImage>
@@ -47,20 +47,23 @@ void DrawEllipsoidImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(c
   //Getting phantom parameters
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
   FigureType ellipsoid;
-  ellipsoid.semiprincipalaxis.push_back(m_Axis[0]);
-  ellipsoid.semiprincipalaxis.push_back(m_Axis[1]);
-  ellipsoid.semiprincipalaxis.push_back(m_Axis[2]);
-  ellipsoid.center.push_back(m_Center[0]);
-  ellipsoid.center.push_back(m_Center[1]);
-  ellipsoid.center.push_back(m_Center[2]);
+  ellipsoid.semiprincipalaxis[0] = m_Axis[0];
+  ellipsoid.semiprincipalaxis[1] = m_Axis[1];
+  ellipsoid.semiprincipalaxis[2] = m_Axis[2];
+  ellipsoid.center[0] = m_Center[0];
+  ellipsoid.center[1] = m_Center[1];
+  ellipsoid.center[2] = m_Center[2];
   ellipsoid.angle = m_Angle;
-  ellipsoid.attenuation = m_Attenuation;
+  ellipsoid.density = m_Density;
 
   typename TOutputImage::PointType point;
   const    TInputImage *           input = this->GetInput();
 
   typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
   typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
+
+  //Set type of Figure
+  sqpFunctor->SetFigure("Ellipsoid");
   //Translate from regular expression to quadric
   sqpFunctor->Translate(ellipsoid.semiprincipalaxis);
   //Apply rotation and translation if necessary
@@ -78,7 +81,7 @@ void DrawEllipsoidImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(c
                           sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
                           sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
     if(QuadricEllip<0)
-      itOut.Set( ellipsoid.attenuation + itIn.Get() );
+      itOut.Set( ellipsoid.density + itIn.Get() );
     else
       itOut.Set( itIn.Get() );
     ++itIn;

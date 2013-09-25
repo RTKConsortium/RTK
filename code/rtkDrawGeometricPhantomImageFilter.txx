@@ -49,12 +49,12 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
   for(unsigned int i=0; i<NumberOfFig; i++)
   {
     //Set figures parameters
-    semiprincipalaxis.push_back(figParam[i][1]);
-    semiprincipalaxis.push_back(figParam[i][2]);
-    semiprincipalaxis.push_back(figParam[i][3]);
-    center.push_back(figParam[i][4]);
-    center.push_back(figParam[i][5]);
-    center.push_back(figParam[i][6]);
+    semiprincipalaxis[0] = figParam[i][1];
+    semiprincipalaxis[1] = figParam[i][2];
+    semiprincipalaxis[2] = figParam[i][3];
+    center[0] = figParam[i][4];
+    center[1] = figParam[i][5];
+    center[2] = figParam[i][6];
 
     //Deciding which figure to draw
     switch ((int)figParam[i][0])
@@ -68,7 +68,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
         de->SetAxis(semiprincipalaxis);
         de->SetCenter(center);
         de->SetAngle(figParam[i][7]);
-        de->SetAttenuation(figParam[i][8]);
+        de->SetDensity(figParam[i][8]);
         de->Update();
         addFilter->SetInput1(de->GetOutput());
         if(!i)
@@ -86,7 +86,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
         dc->SetAxis(semiprincipalaxis);
         dc->SetCenter(center);
         dc->SetAngle(figParam[i][7]);
-        dc->SetAttenuation(figParam[i][8]);
+        dc->SetDensity(figParam[i][8]);
         dc->Update();
         addFilter->SetInput1(dc->GetOutput());
         if(!i)
@@ -104,7 +104,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
         dco->SetAxis(semiprincipalaxis);
         dco->SetCenter(center);
         dco->SetAngle(figParam[i][7]);
-        dco->SetAttenuation(figParam[i][8]);
+        dco->SetDensity(figParam[i][8]);
         dco->Update();
         addFilter->SetInput1(dco->GetOutput());
         if(!i)
@@ -122,7 +122,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
         db->SetAxis(semiprincipalaxis);
         db->SetCenter(center);
         db->SetAngle(figParam[i][7]);
-        db->SetAttenuation(figParam[i][8]);
+        db->SetDensity(figParam[i][8]);
         db->Update();
         addFilter->SetInput1(db->GetOutput());
         if(!i)
@@ -136,8 +136,6 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
     addFilter->Update();
     this->GraftOutput( addFilter->GetOutput() );
 
-    semiprincipalaxis.erase(semiprincipalaxis.begin(), semiprincipalaxis.end());
-    center.erase(center.begin(), center.end());
   }
 }
 

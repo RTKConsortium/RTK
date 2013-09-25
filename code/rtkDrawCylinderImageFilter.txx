@@ -30,12 +30,12 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 DrawCylinderImageFilter<TInputImage, TOutputImage>
-::DrawCylinderImageFilter():
-m_Axis(3,90.),
-m_Center(3,0.),
-m_Attenuation(1.),
-m_Angle(0.)
+::DrawCylinderImageFilter()
 {
+  m_Axis.Fill(90.);
+  m_Center.Fill(0.);
+  m_Density = 1.;
+  m_Angle = 0.;
 }
 
 template <class TInputImage, class TOutputImage>
@@ -46,14 +46,14 @@ void DrawCylinderImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(co
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
   FigureType Cylinder;
 
-  Cylinder.semiprincipalaxis.push_back(m_Axis[0]);
-  Cylinder.semiprincipalaxis.push_back(m_Axis[1]);
-  Cylinder.semiprincipalaxis.push_back(m_Axis[2]);
-  Cylinder.center.push_back(m_Center[0]);
-  Cylinder.center.push_back(m_Center[1]);
-  Cylinder.center.push_back(m_Center[2]);
+  Cylinder.semiprincipalaxis[0] = m_Axis[0];
+  Cylinder.semiprincipalaxis[1] = m_Axis[1];
+  Cylinder.semiprincipalaxis[2] = m_Axis[2];
+  Cylinder.center[0] = m_Center[0];
+  Cylinder.center[1] = m_Center[1];
+  Cylinder.center[2] = m_Center[2];
   Cylinder.angle = m_Angle;
-  Cylinder.attenuation = m_Attenuation;
+  Cylinder.density = m_Density;
 
   typename TOutputImage::PointType point;
   const    TInputImage *           input = this->GetInput();
@@ -61,6 +61,8 @@ void DrawCylinderImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(co
   typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
   typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
+  //Set type of Figure
+  sqpFunctor->SetFigure("Cylinder");
   //Translate from regular expression to quadric
   sqpFunctor->Translate(Cylinder.semiprincipalaxis);
   //Apply rotation and translation if necessary
@@ -79,7 +81,7 @@ void DrawCylinderImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(co
                           sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
                           sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
     if(QuadricEllip<0)
-      itOut.Set(Cylinder.attenuation + itIn.Get());
+      itOut.Set(Cylinder.density + itIn.Get());
     else
       itOut.Set(0.);
     ++itIn;

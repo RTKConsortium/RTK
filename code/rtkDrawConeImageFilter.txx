@@ -30,12 +30,12 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 DrawConeImageFilter<TInputImage, TOutputImage>
-::DrawConeImageFilter():
-m_Axis(3,90.),
-m_Center(3,0.),
-m_Attenuation(1.),
-m_Angle(0.)
+::DrawConeImageFilter()
 {
+  m_Axis.Fill(90.);
+  m_Center.Fill(0.);
+  m_Density = 1.;
+  m_Angle = 0.;
 }
 
 template <class TInputImage, class TOutputImage>
@@ -46,16 +46,14 @@ void DrawConeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const 
   EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
   FigureType Cone;
 
-  Cone.semiprincipalaxis.push_back(m_Axis[0]);
-  Cone.semiprincipalaxis.push_back(m_Axis[1]);
-  Cone.semiprincipalaxis.push_back(m_Axis[2]);
-  // J Quadric parameter for cones
-  Cone.semiprincipalaxis.push_back(0.);
-  Cone.center.push_back(m_Center[0]);
-  Cone.center.push_back(m_Center[1]);
-  Cone.center.push_back(m_Center[2]);
+  Cone.semiprincipalaxis[0] = m_Axis[0];
+  Cone.semiprincipalaxis[1] = m_Axis[1];
+  Cone.semiprincipalaxis[2] = m_Axis[2];
+  Cone.center[0] = m_Center[0];
+  Cone.center[1] = m_Center[1];
+  Cone.center[2] = m_Center[2];
   Cone.angle = m_Angle;
-  Cone.attenuation = m_Attenuation;
+  Cone.density = m_Density;
 
   typename TOutputImage::PointType point;
   const    TInputImage *           input = this->GetInput();
@@ -63,6 +61,8 @@ void DrawConeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const 
   typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
   typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
+  //Set type of Figure
+  sqpFunctor->SetFigure("Cone");
   //Translate from regular expression to quadric
   sqpFunctor->Translate(Cone.semiprincipalaxis);
   //Apply rotation and translation if necessary
@@ -81,7 +81,7 @@ void DrawConeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const 
                           sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
                           sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
     if(QuadricEllip<0)
-      itOut.Set(Cone.attenuation + itIn.Get());
+      itOut.Set(Cone.density + itIn.Get());
     else
       itOut.Set(0.);
     ++itIn;
