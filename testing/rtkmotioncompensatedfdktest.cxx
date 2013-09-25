@@ -179,31 +179,32 @@ int main(int, char** )
 
     // Ellipse 1
     REIType::Pointer e1 = REIType::New();
+    REIType::VectorType semiprincipalaxis, center;
+    semiprincipalaxis.Fill(60.);
+    semiprincipalaxis[3] = -1;
+    center.Fill(0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
-    e1->SetMultiplicativeConstant(2.);
-    e1->SetSemiPrincipalAxisX(60.);
-    e1->SetSemiPrincipalAxisY(60.);
-    e1->SetSemiPrincipalAxisZ(60.);
-    e1->SetCenterX(0.);
-    e1->SetCenterY(0.);
-    e1->SetCenterZ(0.);
-    e1->SetRotationAngle(0.);
+    e1->SetDensity(2.);
+    e1->SetAxis(semiprincipalaxis);
+    e1->SetCenter(center);
+    e1->SetAngle(0.);
     e1->InPlaceOff();
     e1->Update();
 
     // Ellipse 2
     REIType::Pointer e2 = REIType::New();
+    semiprincipalaxis.Fill(8.);
+    semiprincipalaxis[3] = -1;
+    center[0] = 4*(vcl_abs( (4+noProj) % 8 - 4.) - 2.);
+    center[1] = 0.;
+    center[2] = 0.;
     e2->SetInput(e1->GetOutput());
     e2->SetGeometry(oneProjGeometry);
-    e2->SetMultiplicativeConstant(-1.);
-    e2->SetSemiPrincipalAxisX(8.);
-    e2->SetSemiPrincipalAxisY(8.);
-    e2->SetSemiPrincipalAxisZ(8.);
-    e2->SetCenterX( 4*(vcl_abs( (4+noProj) % 8 - 4.) - 2.) );
-    e2->SetCenterY(0.);
-    e2->SetCenterZ(0.);
-    e2->SetRotationAngle(0.);
+    e2->SetDensity(-1.);
+    e2->SetAxis(semiprincipalaxis);
+    e2->SetCenter(center);
+    e2->SetAngle(0.);
     e2->Update();
 
     // Adding each projection to volume
@@ -300,10 +301,12 @@ int main(int, char** )
   typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
   DEType::Pointer e1 = DEType::New();
   e1->SetInput( tomographySource->GetOutput() );
-  e1->SetAttenuation(2.);
-  DEType::VectorType axis(3, 60.);
+  e1->SetDensity(2.);
+  DEType::VectorType axis;
+  axis.Fill(60.);
   e1->SetAxis(axis);
-  DEType::VectorType center(3, 0.);
+  DEType::VectorType center;
+  center.Fill(0.);
   e1->SetCenter(center);
   e1->SetAngle(0.);
   e1->InPlaceOff();
@@ -312,10 +315,12 @@ int main(int, char** )
   // Ellipse 2
   DEType::Pointer e2 = DEType::New();
   e2->SetInput(e1->GetOutput());
-  e2->SetAttenuation(-1.);
-  DEType::VectorType axis2(3, 8.);
+  e2->SetDensity(-1.);
+  DEType::VectorType axis2;
+  axis2.Fill(8.);
   e2->SetAxis(axis2);
-  DEType::VectorType center2(3, 0.);
+  DEType::VectorType center2;
+  center2.Fill(0.);
   e2->SetCenter(center2);
   e2->SetAngle(0.);
   e2->InPlaceOff();

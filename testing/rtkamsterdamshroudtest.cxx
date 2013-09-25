@@ -163,59 +163,72 @@ int main(int, char** )
 
     // Ellipse 1
     REIType::Pointer e1 = REIType::New();
+    REIType::VectorType semiprincipalaxis, center;
+    semiprincipalaxis[0] = 88.32;
+    semiprincipalaxis[1] = 115.2;
+    semiprincipalaxis[2] = 117.76;
+    semiprincipalaxis[3] = -1;
+    center[0] = 0.;
+    center[1] = 0.;
+    center[2] = 0.;
     e1->SetInput(constantImageSourceSingleProjection->GetOutput());
     e1->SetGeometry(geometry);
-    e1->SetMultiplicativeConstant(2.);
-    e1->SetSemiPrincipalAxisX(88.32);
-    e1->SetSemiPrincipalAxisY(115.2);
-    e1->SetSemiPrincipalAxisZ(117.76);
-    e1->SetCenterX(0.);
-    e1->SetCenterY(0.);
-    e1->SetCenterZ(0.);
-    e1->SetRotationAngle(0.);
+    e1->SetDensity(2.);
+    e1->SetAxis(semiprincipalaxis);
+    e1->SetCenter(center);
+    e1->SetAngle(0.);
     e1->InPlaceOff();
     e1->Update();
 
     // Ellipse 2
     REIType::Pointer e2 = REIType::New();
+    semiprincipalaxis[0] = 35.;
+    semiprincipalaxis[1] = size - sinus;
+    semiprincipalaxis[2] = size - sinus;
+    semiprincipalaxis[3] = -1;
+    center[0] = -37.;
+    center[1] = 0.;
+    center[2] = 0.;
     e2->SetInput(e1->GetOutput());
     e2->SetGeometry(geometry);
-    e2->SetMultiplicativeConstant(-1.98);
-    e2->SetSemiPrincipalAxisX(35.);
-    e2->SetSemiPrincipalAxisY(size - sinus);
-    e2->SetSemiPrincipalAxisZ(size - sinus);
-    e2->SetCenterX(-37.);
-    e2->SetCenterY(0.);
-    e2->SetCenterZ(0.);
-    e2->SetRotationAngle(0.);
+    e2->SetDensity(-1.98);
+    e2->SetAxis(semiprincipalaxis);
+    e2->SetCenter(center);
+    e2->SetAngle(0.);
     e2->Update();
 
     // Ellipse 3
     REIType::Pointer e3 = REIType::New();
+    semiprincipalaxis[0] = 35.;
+    semiprincipalaxis[1] = size - sinus;
+    semiprincipalaxis[2] = size - sinus;
+    semiprincipalaxis[3] = -1;
+    center[0] = 37.;
+    center[1] = 0.;
+    center[2] = 0.;
     e3->SetInput(e2->GetOutput());
     e3->SetGeometry(geometry);
-    e3->SetMultiplicativeConstant(-1.98);
-    e3->SetSemiPrincipalAxisX(35.);
-    e3->SetSemiPrincipalAxisY(size - sinus);
-    e3->SetSemiPrincipalAxisZ(size - sinus);
-    e3->SetCenterX(37.);
-    e3->SetCenterY(0.);
-    e3->SetCenterZ(0.);
-    e3->SetRotationAngle(0.);
+    e3->SetDensity(-1.98);
+    e3->SetAxis(semiprincipalaxis);
+    e3->SetCenter(center);
+    e3->SetAngle(0.);
     e3->Update();
 
     // Ellipse 4
     REIType::Pointer e4 = REIType::New();
+    semiprincipalaxis[0] = 8.;
+    semiprincipalaxis[1] = 8.;
+    semiprincipalaxis[2] = 8.;
+    semiprincipalaxis[3] = -1;
+    center[0] = -40.;
+    center[1] = 0.;
+    center[2] = 0.;
     e4->SetInput(e3->GetOutput());
     e4->SetGeometry(geometry);
-    e4->SetMultiplicativeConstant(1.42);
-    e4->SetSemiPrincipalAxisX(8.);
-    e4->SetSemiPrincipalAxisY(8.);
-    e4->SetSemiPrincipalAxisZ(8.);
-    e4->SetCenterX(-40.);
-    e4->SetCenterY(0.);
-    e4->SetCenterZ(0.);
-    e4->SetRotationAngle(0.);
+    e4->SetDensity(1.42);
+    e4->SetAxis(semiprincipalaxis);
+    e4->SetCenter(center);
+    e4->SetAngle(0.);
 
     // Creating movement
     sinus = 15*sin( i*2*itk::Math::pi/(sizeOutput[2]/Cycles) );
