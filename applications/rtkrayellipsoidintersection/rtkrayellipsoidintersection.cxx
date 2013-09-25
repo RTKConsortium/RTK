@@ -62,17 +62,17 @@ int main(int argc, char * argv[])
   typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
   REIType::Pointer rei = REIType::New();
 
-  rei->SetMultiplicativeConstant(args_info.mult_arg);
-  if(args_info.axes_given>0) rei->SetSemiPrincipalAxisX(args_info.axes_arg[0]);
-  if(args_info.axes_given>1) rei->SetSemiPrincipalAxisY(args_info.axes_arg[1]);
-  if(args_info.axes_given>2) rei->SetSemiPrincipalAxisZ(args_info.axes_arg[2]);
-  if(args_info.center_given>0) rei->SetCenterX(args_info.center_arg[0]);
-  if(args_info.center_given>1) rei->SetCenterY(args_info.center_arg[1]);
-  if(args_info.center_given>2) rei->SetCenterZ(args_info.center_arg[2]);
+  rei->SetDensity(args_info.mult_arg);
+  if(args_info.axes_given>0) rei->SetAxis[0] = args_info.axes_arg[0];
+  if(args_info.axes_given>1) rei->SetAxis[1] = args_info.axes_arg[1];
+  if(args_info.axes_given>2) rei->SetAxis[2] = args_info.axes_arg[2];
+  if(args_info.center_given>0) rei->SetCenter[0] = args_info.center_arg[0];
+  if(args_info.center_given>1) rei->SetCenter[1] = args_info.center_arg[1];
+  if(args_info.center_given>2) rei->SetCenter[2] = args_info.center_arg[2];
   if(args_info.rotation_given>0)
   {
     rei->SetRotate(true);
-    rei->SetRotationAngle(args_info.rotation_arg[0]);
+    rei->SetAngle(args_info.rotation_arg[0]);
   }
 
   rei->SetInput( constantImageSource->GetOutput() );
