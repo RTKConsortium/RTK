@@ -167,14 +167,11 @@ int main(int, char** )
   REIType::Pointer rei;
 
   rei = REIType::New();
-  rei->SetSemiPrincipalAxisX(90.);
-  rei->SetSemiPrincipalAxisZ(90.);
-  rei->SetSemiPrincipalAxisY(90.);
-  rei->SetCenterX(0.);
-  rei->SetCenterZ(0.);
-  rei->SetCenterY(0.);
-  rei->SetRotationAngle(0.);
-  rei->SetMultiplicativeConstant(1.);
+  REIType::VectorType semiprincipalaxis, center;
+  semiprincipalaxis.Fill(90.);
+  center.Fill(0.);
+  rei->SetAngle(0.);
+  rei->SetDensity(1.);
 
   rei->SetInput( projectionsSource->GetOutput() );
   rei->SetGeometry( geometry );
