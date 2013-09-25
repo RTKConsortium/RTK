@@ -56,17 +56,17 @@ public:
   typedef typename TOutputImage::Superclass::ConstPointer               OutputImageBaseConstPointer;
 
   typedef Superclass                                                    REIType;
-  typedef std::vector<double>                                           VectorType;
+//  typedef itk::Vector<double,3>                                         VectorType;
   typedef std::string                                                   StringType;
   typedef std::vector< std::vector<double> >                            VectorOfVectorType;
-  struct FigureType
-  {
-    FigureType():angle(0.),attenuation(0.){};
-    VectorType semiprincipalaxis;
-    VectorType center;
-    double angle;
-    double attenuation;
-    };
+//  struct FigureType
+//  {
+//    FigureType():angle(0.),attenuation(0.){};
+//    VectorType semiprincipalaxis;
+//    VectorType center;
+//    double angle;
+//    double attenuation;
+//    };
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 

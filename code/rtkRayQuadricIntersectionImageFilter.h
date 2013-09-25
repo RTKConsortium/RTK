@@ -66,8 +66,8 @@ public:
   itkSetMacro(Geometry, GeometryPointer);
 
   /** Get / Set the multiplicative constant of the volume */
-  itkGetMacro(MultiplicativeConstant, double);
-  itkSetMacro(MultiplicativeConstant, double);
+  itkGetMacro(Density, double);
+  itkSetMacro(Density, double);
 
   /** Get the RayQuadricIntersectionFunction to set its parameters.
     * A call to this function will assume modification of the function.*/
@@ -95,7 +95,7 @@ private:
   GeometryPointer m_Geometry;
 
   /** Multiplicative factor of intersection length */
-  double m_MultiplicativeConstant;
+  double m_Density;
 };
 
 } // end namespace rtk

@@ -32,7 +32,7 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 ::RayQuadricIntersectionImageFilter():
   m_RQIFunctor( RQIFunctionType::New() ),
   m_Geometry(NULL),
-  m_MultiplicativeConstant(1.)
+  m_Density(1.)
 {
 }
 
@@ -109,7 +109,7 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 
       // Compute ray intersection length
       if( rqiFunctor->Evaluate(direction) )
-        itOut.Set( itIn.Get() + m_MultiplicativeConstant*(rqiFunctor->GetFarthestDistance() - rqiFunctor->GetNearestDistance() ));
+        itOut.Set( itIn.Get() + m_Density*(rqiFunctor->GetFarthestDistance() - rqiFunctor->GetNearestDistance() ));
       else
         itOut.Set( itIn.Get() );
       }
