@@ -33,7 +33,8 @@ m_CenterX(0.),
 m_CenterY(0.),
 m_CenterZ(0.),
 m_RotationAngle(0.), m_A(0.), m_B(0.), m_C(0.), m_D(0.),
-m_E(0.), m_F(0.), m_G(0.), m_H(0.), m_I(0.), m_J(0.)
+m_E(0.), m_F(0.), m_G(0.), m_H(0.), m_I(0.), m_J(0.),
+m_Figure("Ellipsoid")
 {
 }
 
@@ -43,7 +44,6 @@ bool ConvertEllipsoidToQuadricParametersFunction
   m_SemiPrincipalAxisX = SemiPrincipalAxis[0];
   m_SemiPrincipalAxisY = SemiPrincipalAxis[1];
   m_SemiPrincipalAxisZ = SemiPrincipalAxis[2];
-
   //Regular Ellipsoid Expression (No rotation, No Translation)
   // Parameter A
   if(m_SemiPrincipalAxisX > itk::NumericTraits<double>::ZeroValue())
@@ -73,11 +73,14 @@ bool ConvertEllipsoidToQuadricParametersFunction
   m_G = 0.;
   m_H = 0.;
   m_I = 0.;
-  if(SemiPrincipalAxis.size() > 3)
-    // J Quadric value for surfaces different to Cylinders and Ellipsoids.
-    m_J = SemiPrincipalAxis[3];
+
+  // J Quadric value for surfaces different to Cylinders and Ellipsoids.
+  if(m_Figure == "Cylinder" || m_Figure == "Ellipsoid")
+    m_J = -1;
+  else if(m_Figure == "Cone")
+    m_J = 0;
   else
-    m_J = -1.;
+    m_J = -1;
 
   return true;
 }
@@ -104,13 +107,13 @@ bool ConvertEllipsoidToQuadricParametersFunction
 
   //Applying Rotation on Y-axis
   m_A = TempA*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempC*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)),2.0);
-  m_B = TempB;//TempA*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempB*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)),2.0);
+  m_B = TempB;
   m_C = TempA*vcl_pow(sin(m_RotationAngle*(itk::Math::pi/180)), 2.0) + TempC*vcl_pow(cos(m_RotationAngle*(itk::Math::pi/180)),2.0);
   m_D = 0.;
   m_E = 2*cos(m_RotationAngle*(itk::Math::pi/180))*sin(m_RotationAngle*(itk::Math::pi/180))*(TempA - TempC);
   m_F = 0.;
   m_G = TempG*cos(m_RotationAngle*(itk::Math::pi/180)) - TempI*sin(m_RotationAngle*(itk::Math::pi/180));
-  m_H = TempH;//TempG*(-1)*sin(m_RotationAngle*(itk::Math::pi/180)) + TempH*cos(m_RotationAngle*(itk::Math::pi/180));
+  m_H = TempH;
   m_I = TempG*sin(m_RotationAngle*(itk::Math::pi/180)) + TempI*cos(m_RotationAngle*(itk::Math::pi/180));
   m_J = TempJ;
 

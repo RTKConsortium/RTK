@@ -61,6 +61,7 @@ bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
           parameters.push_back(val);
           }
         m_Fig.push_back(parameters);
+        m_FigureTypes.push_back(search_fig[i]);
         }
       }
     }
