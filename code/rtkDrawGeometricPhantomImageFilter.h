@@ -54,7 +54,7 @@ public:
   typedef itk::SmartPointer<const Self>                             ConstPointer;
   typedef typename TOutputImage::RegionType                         OutputImageRegionType;
 
-  typedef std::vector<double>                                       VectorType;
+  typedef itk::Vector<double,3>                                     VectorType;
   typedef std::vector< std::vector<double> >                        VectorOfVectorType;
   typedef std::string                                               StringType;
 
