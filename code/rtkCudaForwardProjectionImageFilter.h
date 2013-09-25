@@ -19,46 +19,49 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_h
 #define __rtkCudaForwardProjectionImageFilter_h
 
-#include "rtkWin32Header.h"
-#include "rtkForwardProjectionImageFilter.h"
+#include "rtkJosephForwardProjectionImageFilter.h"
+#include "itkCudaInPlaceImageFilter.h"
+#include "itkCudaUtil.h"
+#include "itkCudaKernelManager.h"
 
-namespace rtk
-{
 
 /** \class CudaForwardProjectionImageFilter
- * \brief Implements a Voxel Based forward projector
+ * \brief TODO
  *
- * Accumulation of the volume value along the ray with trilinear interpolation
- * (parallelised version, CUDA).
+ * TODO
  *
- * \test rtkforwardprojectiontest.cxx
- *
- * \author Marc Vila
+ * \author TODO 
  *
  * \ingroup Projector CudaImageToImageFilter
  */
 
-class CudaForwardProjectionImageFilter :
-  public ForwardProjectionImageFilter< itk::Image<float,3>, itk::Image<float,3> >
+namespace rtk
+{
+
+/** Create a helper Cuda Kernel class for CudaImageOps */
+itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
+
+class ITK_EXPORT CudaForwardProjectionImageFilter :
+  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+  ForwardProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::Image<float,3>                                ImageType;
-  typedef CudaForwardProjectionImageFilter                   Self;
-  typedef ForwardProjectionImageFilter<ImageType, ImageType> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef itk::CudaImage<float,3>                                        ImageType;
+  typedef CudaForwardProjectionImageFilter                               Self;
+  typedef ForwardProjectionImageFilter<ImageType, ImageType>             Superclass;
+  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, Superclass > GPUSuperclass;
+  typedef itk::SmartPointer<Self>                                        Pointer;
+  typedef itk::SmartPointer<const Self>                                  ConstPointer;
 
   typedef ImageType::RegionType        OutputImageRegionType;
-  typedef itk::Image<float, 2>         ProjectionImageType;
-  typedef ProjectionImageType::Pointer ProjectionImagePointer;
   typedef itk::Vector<float,3>         VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(CudaForwardProjectionImageFilter, ForwardProjectionImageFilter);
+  itkTypeMacro(CudaForwardProjectionImageFilter, ImageToImageFilter);
 
   /** Function to allocate memory on device */
   void InitDevice();
@@ -72,10 +75,10 @@ public:
   itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
 
 protected:
-  rtkcuda_EXPORT CudaForwardProjectionImageFilter();
+  CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
 
-  void GenerateData();
+  void GPUGenerateData();
 
 private:
   //purposely not implemented

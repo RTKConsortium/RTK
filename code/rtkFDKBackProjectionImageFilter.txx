@@ -41,7 +41,8 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 FDKBackProjectionImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
+                       ThreadIdType itkNotUsed(threadId) )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
@@ -83,7 +84,8 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Extract the current slice
-    ProjectionImagePointer projection = this->GetProjection(iProj);
+    ProjectionImagePointer projection;
+    projection = this->template GetProjection< ProjectionImageType >(iProj);
     interpolator->SetInputImage(projection);
 
     // Index to index matrix normalized to have a correct backprojection weight

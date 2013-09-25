@@ -278,3 +278,18 @@ GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
   matrix = this->GetRotationMatrices()[i].GetInverse() * matrix.GetVnlMatrix();
   return matrix;
 }
+
+
+double
+rtk::ThreeDCircularProjectionGeometry::
+ToUntiltedCoordinate(const unsigned int noProj,
+                     const double tiltedCoord) const
+{
+  const double sdd  = this->GetSourceToDetectorDistances()[noProj];
+  const double sdd2 = sdd * sdd;
+  const double sx   = this->GetSourceOffsetsX()[noProj];
+  const double px   = this->GetProjectionOffsetsX()[noProj];
+  const double hyp  = sqrt(sdd2 + sx*sx);
+  const double l    = tiltedCoord + px;
+  return hyp * (sdd * l / (sdd2 + (sx - l) * sx ));
+}
