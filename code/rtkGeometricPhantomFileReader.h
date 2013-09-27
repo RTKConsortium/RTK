@@ -60,6 +60,7 @@ public:
   typedef std::vector< std::vector<double> > VectorOfVectorType;
   typedef std::string                        StringType;
 
+//FIXME: this struct should be used, but error with Get/Set Macros
 //  struct FigureType
 //  {
 //    //FigureType():angle(0.),density(0.){};

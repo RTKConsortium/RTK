@@ -85,11 +85,11 @@ private:
   RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  VectorType      m_Axis;
-  VectorType      m_Center;
-  double          m_Attenuation;
-  double          m_Angle;
-  std::string     m_Figure;
+  VectorType               m_Axis;
+  VectorType               m_Center;
+  double                   m_Attenuation;
+  double                   m_Angle;
+  std::string              m_Figure;
   EQPFunctionType::Pointer m_EQPFunctor;
 };
 
