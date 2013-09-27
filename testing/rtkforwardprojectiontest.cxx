@@ -13,9 +13,13 @@
 #endif
 
 template<class TImage1, class TImage2>
+#if FAST_TESTS_NO_CHECKS
+void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
+{
+}
+#else
 void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref)
 {
-#if !(FAST_TESTS_NO_CHECKS)
   typedef itk::ImageRegionConstIterator<TImage1> ImageIteratorType1;
   typedef itk::ImageRegionConstIterator<TImage2> ImageIteratorType2;
   ImageIteratorType1 itTest( recon, recon->GetBufferedRegion() );
