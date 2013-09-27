@@ -54,6 +54,7 @@ public:
   /** Useful defines. */
   typedef itk::Vector<double,3>              VectorType;
   typedef std::vector< std::vector<double> > VectorOfVectorType;
+  typedef std::string                        StringType;
 
   bool Translate( const VectorType& input );
   bool Rotate( const double input1, const VectorType& input2 );
@@ -88,8 +89,8 @@ public:
   itkGetMacro(RotationAngle, double);
   itkSetMacro(RotationAngle, double);
 
-  itkSetMacro(Figure, std::string);
-  itkGetMacro(Figure, std::string);
+  itkSetMacro(Figure, StringType);
+  itkGetMacro(Figure, StringType);
 
 protected:
 
@@ -100,24 +101,24 @@ protected:
   ~ConvertEllipsoidToQuadricParametersFunction() {};
 
   /** Corners of the image Quadric */
-  double m_SemiPrincipalAxisX;
-  double m_SemiPrincipalAxisY;
-  double m_SemiPrincipalAxisZ;
-  double m_CenterX;
-  double m_CenterY;
-  double m_CenterZ;
-  double m_RotationAngle;
-  double m_A;
-  double m_B;
-  double m_C;
-  double m_D;
-  double m_E;
-  double m_F;
-  double m_G;
-  double m_H;
-  double m_I;
-  double m_J;
-  std::string m_Figure;
+  double     m_SemiPrincipalAxisX;
+  double     m_SemiPrincipalAxisY;
+  double     m_SemiPrincipalAxisZ;
+  double     m_CenterX;
+  double     m_CenterY;
+  double     m_CenterZ;
+  double     m_RotationAngle;
+  double     m_A;
+  double     m_B;
+  double     m_C;
+  double     m_D;
+  double     m_E;
+  double     m_F;
+  double     m_G;
+  double     m_H;
+  double     m_I;
+  double     m_J;
+  StringType m_Figure;
 
 private:
   ConvertEllipsoidToQuadricParametersFunction( const Self& ); //purposely not implemented
