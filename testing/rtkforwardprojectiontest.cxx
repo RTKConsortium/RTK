@@ -71,8 +71,8 @@ void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointe
               << PSNR << " instead of 44" << std::endl;
     //exit( EXIT_FAILURE);
     }
-#endif
 }
+#endif
 
 int main(int , char** )
 {
