@@ -167,7 +167,6 @@ int main(int, char** )
     semiprincipalaxis[0] = 88.32;
     semiprincipalaxis[1] = 115.2;
     semiprincipalaxis[2] = 117.76;
-    semiprincipalaxis[3] = -1;
     center[0] = 0.;
     center[1] = 0.;
     center[2] = 0.;
@@ -185,7 +184,6 @@ int main(int, char** )
     semiprincipalaxis[0] = 35.;
     semiprincipalaxis[1] = size - sinus;
     semiprincipalaxis[2] = size - sinus;
-    semiprincipalaxis[3] = -1;
     center[0] = -37.;
     center[1] = 0.;
     center[2] = 0.;
@@ -202,7 +200,6 @@ int main(int, char** )
     semiprincipalaxis[0] = 35.;
     semiprincipalaxis[1] = size - sinus;
     semiprincipalaxis[2] = size - sinus;
-    semiprincipalaxis[3] = -1;
     center[0] = 37.;
     center[1] = 0.;
     center[2] = 0.;
@@ -219,7 +216,6 @@ int main(int, char** )
     semiprincipalaxis[0] = 8.;
     semiprincipalaxis[1] = 8.;
     semiprincipalaxis[2] = 8.;
-    semiprincipalaxis[3] = -1;
     center[0] = -40.;
     center[1] = 0.;
     center[2] = 0.;
