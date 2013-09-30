@@ -14,7 +14,7 @@
 
 template<class TImage1, class TImage2>
 #if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
+void CheckImageQuality(typename TImage1::Pointer itkNotUsed(recon), typename TImage2::Pointer itkNotUsed(ref))
 {
 }
 #else
