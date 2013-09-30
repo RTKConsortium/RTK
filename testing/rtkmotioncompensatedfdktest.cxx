@@ -181,7 +181,6 @@ int main(int, char** )
     REIType::Pointer e1 = REIType::New();
     REIType::VectorType semiprincipalaxis, center;
     semiprincipalaxis.Fill(60.);
-    semiprincipalaxis[3] = -1;
     center.Fill(0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
@@ -195,7 +194,6 @@ int main(int, char** )
     // Ellipse 2
     REIType::Pointer e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
-    semiprincipalaxis[3] = -1;
     center[0] = 4*(vcl_abs( (4+noProj) % 8 - 4.) - 2.);
     center[1] = 0.;
     center[2] = 0.;
