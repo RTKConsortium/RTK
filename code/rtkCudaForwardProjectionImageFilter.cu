@@ -22,7 +22,6 @@
 #include "rtkConfiguration.h"
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaForwardProjectionImageFilter.hcu"
-#include "rtkMacro.h"
 
 /*****************
 *  C   #includes *
@@ -36,7 +35,7 @@
 * CUDA #includes *
 *****************/
 #include <cuda.h>
-//#include "/home/mvila/NVIDIA_GPU_Computing_SDK/C/common/inc/cutil_math.h"
+
 inline __host__ __device__ float3 operator-(float3 a, float3 b)
 {
     return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
