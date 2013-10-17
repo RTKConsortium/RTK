@@ -89,12 +89,12 @@ int main(int , char** )
   ConstantImageSourceType::Pointer imgIn  = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer imgRef = ConstantImageSourceType::New();
 
-  origin[0] = -126;
-  origin[1] = -126;
-  size[0] = 4;
-  size[1] = 4;
-  spacing[0] = 64.;
-  spacing[1] = 64.;
+  origin[0] = -7;
+  origin[1] = -7;
+  size[0] = 8;
+  size[1] = 8;
+  spacing[0] = 1.;
+  spacing[1] = 1.;
 
   imgIn->SetOrigin(origin);
   imgIn->SetSpacing(spacing);
@@ -102,10 +102,10 @@ int main(int , char** )
   imgIn->SetConstant(2);
   imgIn->UpdateLargestPossibleRegion();
 
-  sizeRef[0] = 2;
-  sizeRef[1] = 2;
-  spacingRef[0] = 128.;
-  spacingRef[1] = 128.;
+  sizeRef[0] = 4;
+  sizeRef[1] = 4;
+  spacingRef[0] = 2.;
+  spacingRef[1] = 2.;
 
   imgRef->SetOrigin(origin);
   imgRef->SetSpacing(spacingRef);
@@ -135,10 +135,10 @@ int main(int , char** )
   imgIn->UpdateLargestPossibleRegion();
 
   // Adpating reference
-  sizeRef[0] = 4;
-  sizeRef[1] = 2;
-  spacingRef[0] = 64.;
-  spacingRef[1] = 128.;
+  sizeRef[0] = 8;
+  sizeRef[1] = 4;
+  spacingRef[0] = 1.;
+  spacingRef[1] = 2.;
 
   imgRef->SetSpacing(spacingRef);
   imgRef->SetSize(sizeRef);
@@ -158,10 +158,10 @@ int main(int , char** )
   imgIn->UpdateLargestPossibleRegion();
 
   // Adpating reference
-  sizeRef[0] = 2;
-  sizeRef[1] = 4;
-  spacingRef[0] = 128.;
-  spacingRef[1] = 64.;
+  sizeRef[0] = 4;
+  sizeRef[1] = 8;
+  spacingRef[0] = 2.;
+  spacingRef[1] = 1.;
 
   imgRef->SetSpacing(spacingRef);
   imgRef->SetSize(sizeRef);
