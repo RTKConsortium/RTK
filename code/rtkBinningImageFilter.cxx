@@ -21,19 +21,20 @@
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
+#include <itkVariableLengthVector.h>
+#include <itkImageConstIteratorWithIndex.h>
+
 
 typedef itk::Image<unsigned int, 2> TImage;
 namespace rtk
 {
 
-//template<class TInputImage, class TOutputImage>
 BinningImageFilter::BinningImageFilter()
 {
   m_BinningFactors[0]=2;
   m_BinningFactors[1]=2;
 }
 
-//template<class TInputImage, class TOutputImage>
 void BinningImageFilter::GenerateInputRequestedRegion()
 {
   TImage::Pointer inputPtr = const_cast<TImage *>(this->GetInput());
@@ -61,7 +62,6 @@ void BinningImageFilter::GenerateInputRequestedRegion()
   inputPtr->SetLargestPossibleRegion( inputLargestPossibleRegion );
 }
 
-//template<class TImage, class TOutputImage>
 void BinningImageFilter::GenerateOutputInformation()
 {
   const TImage::SpacingType& inputSpacing    = this->GetInput()->GetSpacing();
@@ -92,7 +92,7 @@ void BinningImageFilter::GenerateOutputInformation()
   }
 
   this->GetOutput()->SetSpacing( outputSpacing );
-  //FIXME: origini needs to be shifted 0.5 pixels after binning
+  //FIXME: origin needs to be shifted 0.5 pixels after binning
   this->GetOutput()->SetOrigin( outputOrigin );
 
   // Set region
@@ -104,7 +104,7 @@ void BinningImageFilter::GenerateOutputInformation()
 
 //template <class TInputImage, class TOutputImage>
 void BinningImageFilter
-::ThreadedGenerateData(const OutputImageRegionType& itkNotUsed(outputRegionForThread), ThreadIdType itkNotUsed(threadId) )
+::ThreadedGenerateData(const OutputImageRegionType& itkNotUsed(outputRegionForThread), ThreadIdType threadId )
 {
 
   int inputSize[2], binSize[2];
@@ -117,21 +117,32 @@ void BinningImageFilter
   typedef   TImage::PixelType outputPixel;
 
   //this->GenerateOutputInformation();
-  inputPixel  *bufferIn  = const_cast<inputPixel*>( this->GetInput()->GetBufferPointer() );
-  outputPixel *bufferOut = const_cast<outputPixel*>(this->GetOutput()->GetBufferPointer() );
+  const inputPixel  *bufferIn  = this->GetInput()->GetBufferPointer();
+  outputPixel *bufferOut = this->GetOutput()->GetBufferPointer();
+
+  int initX = threadId*inputSize[0]*inputSize[1]/(this->GetNumberOfThreads()*m_BinningFactors[0]);
+  int endX = initX + binSize[0]*inputSize[1]/this->GetNumberOfThreads();
+  int initY = threadId*binSize[1]/this->GetNumberOfThreads();
+  int endY = initY + binSize[1]/this->GetNumberOfThreads();
 
   // Binning 2x2
   if(m_BinningFactors[0]==2 && m_BinningFactors[1]==2)
   {
-    int i, j, idx, pos;
-    for (i=0, idx=0; i < (binSize[0] * (inputSize[1])); i++, idx += 2) // Only works if number of pixels per line multiple of 2
-      bufferIn[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) )>>1;
+    const int Vlength = endX-initX;
+    std::vector<int> V(Vlength,0);
 
-    for (j=0; j<binSize[1];j++)
+    int i, j, idx, pos, vj;
+    for (i=0, idx=initX*m_BinningFactors[0]; i < Vlength; i++, idx+=2) // Only works if number of pixels per line multiple of 2
+    {
+        V[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) );
+    }
+    for (j=initY, vj=0; j<endY; j++, vj++)
     {
       pos = j*binSize[0];
       for (i=0; i < binSize[0]; i++, pos++)
-        bufferOut[pos] = ( (bufferIn[2*j*binSize[0]+i])+(bufferIn[(2*j+1)*binSize[0]+i]) )>>1;
+        {
+            bufferOut[pos] = ( (V[2*vj*binSize[0]+i])+(V[(2*vj+1)*binSize[0]+i]) )>>2;
+        }
     }
   }
 
@@ -139,15 +150,15 @@ void BinningImageFilter
   else if(m_BinningFactors[0]==2 && m_BinningFactors[1]==1)
   {
     int i, idx;
-    for (i=0, idx=0; i < (binSize[0] * (inputSize[1])); i++, idx += 2) // Only works if number of pixels per line multiple of 2
-      bufferOut[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) )>>1;
+    for (i=initX, idx=initX*m_BinningFactors[0]; i < endX; i++, idx+=2) // Only works if number of pixels per line multiple of 2
+        bufferOut[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) )>>1;
   }
 
   // Binning 1x2
   else if(m_BinningFactors[0]==1 && m_BinningFactors[1]==2)
   {
     int i, j, pos;
-    for (j=0; j<binSize[1];j++)
+    for (j=initY; j<endY;j++)
     {
       pos = j*inputSize[0];
       for (i=0; i<inputSize[0];i++, pos++)
