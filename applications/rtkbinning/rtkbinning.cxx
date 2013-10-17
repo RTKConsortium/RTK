@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
               << args_info.input_arg
               << "..."
               << std::flush;
-  itk::TimeProbe readerProbe;
+  itk::TimeProbe readerProbe, binningProbe;
   typedef itk::ImageFileReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
@@ -72,7 +72,13 @@ int main(int argc, char * argv[])
   BINFilterType::Pointer binning=BINFilterType::New();
   binning->SetInput(reader->GetOutput());
   binning->SetBinningFactors(binningFactors);
+  binningProbe.Start();
   binning->Update();
+  binningProbe.Stop();
+  if(args_info.verbose_flag)
+    std::cout << "Binning done in "
+              << binningProbe.GetMean() << ' ' << binningProbe.GetUnit()
+              << '.' << std::endl;
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
