@@ -37,7 +37,6 @@ BinningImageFilter::BinningImageFilter()
 void BinningImageFilter::GenerateInputRequestedRegion()
 {
   ImageType::Pointer inputPtr = const_cast<ImageType *>(this->GetInput());
-
   inputPtr->SetRequestedRegion( inputPtr->GetLargestPossibleRegion() );
 }
 
@@ -54,24 +53,20 @@ void BinningImageFilter::GenerateOutputInformation()
   ImageType::PointType    outputOrigin;
 
   for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
-  {
-    outputSpacing[i] = inputSpacing[i] * (double) m_BinningFactors[i];
-    outputOrigin[i]  = inputOrigin[i];
-    // Round down so that all output pixels fit input region
-    outputSize[i] = (unsigned long)vcl_floor(double(inputSize[i]) / double(m_BinningFactors[i]) );
-
-    if( outputSize[i] < 1 )
     {
-      outputSize[i] = 1;
-    }
+    outputSpacing[i] = inputSpacing[i] * m_BinningFactors[i];
+    outputOrigin[i]  = inputOrigin[i] + inputSpacing[i]/m_BinningFactors[i];
+    if(inputSize[i]%m_BinningFactors[i] != 0)
+      {
+      itkExceptionMacro(<< "Binning currently works only for integer divisions")
+      }
+    else
+      outputSize[i] = inputSize[i] / m_BinningFactors[i];
 
-    // Because of the later origin shift this starting index is not
-    // critical
-    outputStartIndex[i] = (long)vcl_ceil((double) inputStartIndex[i] / (double) m_BinningFactors[i] );
+    outputStartIndex[i] = inputStartIndex[i] / m_BinningFactors[i];
   }
 
   this->GetOutput()->SetSpacing( outputSpacing );
-  //FIXME: origin needs to be shifted 0.5 pixels after binning
   this->GetOutput()->SetOrigin( outputOrigin );
 
   // Set region
