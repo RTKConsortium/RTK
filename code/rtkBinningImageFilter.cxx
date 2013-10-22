@@ -25,7 +25,6 @@
 #include <itkImageConstIteratorWithIndex.h>
 
 
-typedef itk::Image<unsigned int, 2> TImage;
 namespace rtk
 {
 
@@ -37,23 +36,24 @@ BinningImageFilter::BinningImageFilter()
 
 void BinningImageFilter::GenerateInputRequestedRegion()
 {
-  TImage::Pointer inputPtr = const_cast<TImage *>(this->GetInput());
+  ImageType::Pointer inputPtr = const_cast<ImageType *>(this->GetInput());
+
   inputPtr->SetRequestedRegion( inputPtr->GetLargestPossibleRegion() );
 }
 
 void BinningImageFilter::GenerateOutputInformation()
 {
-  const TImage::SpacingType& inputSpacing    = this->GetInput()->GetSpacing();
-  const TImage::SizeType&    inputSize       = this->GetInput()->GetLargestPossibleRegion().GetSize();
-  const TImage::IndexType&   inputStartIndex = this->GetInput()->GetLargestPossibleRegion().GetIndex();
-  const TImage::PointType&   inputOrigin     = this->GetInput()->GetOrigin();
+  const ImageType::SpacingType& inputSpacing    = this->GetInput()->GetSpacing();
+  const ImageType::SizeType&    inputSize       = this->GetInput()->GetLargestPossibleRegion().GetSize();
+  const ImageType::IndexType&   inputStartIndex = this->GetInput()->GetLargestPossibleRegion().GetIndex();
+  const ImageType::PointType&   inputOrigin     = this->GetInput()->GetOrigin();
 
-  TImage::SpacingType  outputSpacing;
-  TImage::SizeType     outputSize;
-  TImage::IndexType    outputStartIndex;
-  TImage::PointType    outputOrigin;
+  ImageType::SpacingType  outputSpacing;
+  ImageType::SizeType     outputSize;
+  ImageType::IndexType    outputStartIndex;
+  ImageType::PointType    outputOrigin;
 
-  for (unsigned int i = 0; i < TImage::ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
   {
     outputSpacing[i] = inputSpacing[i] * (double) m_BinningFactors[i];
     outputOrigin[i]  = inputOrigin[i];
@@ -75,13 +75,12 @@ void BinningImageFilter::GenerateOutputInformation()
   this->GetOutput()->SetOrigin( outputOrigin );
 
   // Set region
-  TImage::RegionType outputLargestPossibleRegion;
+  ImageType::RegionType outputLargestPossibleRegion;
   outputLargestPossibleRegion.SetSize( outputSize );
   outputLargestPossibleRegion.SetIndex( outputStartIndex );
   this->GetOutput()->SetLargestPossibleRegion( outputLargestPossibleRegion );
 }
 
-//template <class TInputImage, class TOutputImage>
 void BinningImageFilter
 ::ThreadedGenerateData(const OutputImageRegionType& itkNotUsed(outputRegionForThread), ThreadIdType threadId )
 {
@@ -92,8 +91,8 @@ void BinningImageFilter
   binSize[0] = (inputSize[0]>>1);
   binSize[1] = (inputSize[1]>>1);
 
-  typedef   TImage::PixelType inputPixel;
-  typedef   TImage::PixelType outputPixel;
+  typedef   ImageType::PixelType inputPixel;
+  typedef   ImageType::PixelType outputPixel;
 
   //this->GenerateOutputInformation();
   const inputPixel  *bufferIn  = this->GetInput()->GetBufferPointer();
