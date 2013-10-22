@@ -1,6 +1,5 @@
 # Set the data directory to the directory created by the ExternalData.cmake
 # script
- set(<variable> <value> [[CACHE <type> <docstring> [FORCE]] | PARENT_SCOPE])
 
 set(RTK_DATA_ROOT ${CMAKE_BINARY_DIR}/ExternalData/testing/Data CACHE PATH "Path of the data root")
 MARK_AS_ADVANCED(RTK_DATA_ROOT)
