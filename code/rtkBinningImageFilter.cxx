@@ -37,7 +37,19 @@ BinningImageFilter::BinningImageFilter()
 void BinningImageFilter::GenerateInputRequestedRegion()
 {
   ImageType::Pointer inputPtr = const_cast<ImageType *>(this->GetInput());
-  inputPtr->SetRequestedRegion( inputPtr->GetLargestPossibleRegion() );
+  const ImageType::Pointer outputPtr = const_cast<ImageType *>(this->GetOutput());
+
+  ImageType::RegionType inputReqRegion = inputPtr->GetLargestPossibleRegion();
+  const ImageType::RegionType outputReqRegion = outputPtr->GetRequestedRegion();
+  const ImageType::RegionType outputLPRegion = outputPtr->GetLargestPossibleRegion();
+  for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
+    {
+    inputReqRegion.SetSize(i, outputReqRegion.GetSize(i) * m_BinningFactors[i]);
+    inputReqRegion.SetIndex(i, inputReqRegion.GetIndex(i) +
+                               m_BinningFactors[i] * ( outputReqRegion.GetIndex(i) -
+                                                       outputLPRegion.GetIndex(i) ) );
+    }
+  inputPtr->SetRequestedRegion( inputReqRegion );
 }
 
 void BinningImageFilter::GenerateOutputInformation()
@@ -55,7 +67,7 @@ void BinningImageFilter::GenerateOutputInformation()
   for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
     {
     outputSpacing[i] = inputSpacing[i] * m_BinningFactors[i];
-    outputOrigin[i]  = inputOrigin[i] + inputSpacing[i]/m_BinningFactors[i];
+    outputOrigin[i]  = inputOrigin[i] - 0.5*inputSpacing[i] + 0.5*outputSpacing[i];
     if(inputSize[i]%m_BinningFactors[i] != 0)
       {
       itkExceptionMacro(<< "Binning currently works only for integer divisions")
@@ -63,7 +75,7 @@ void BinningImageFilter::GenerateOutputInformation()
     else
       outputSize[i] = inputSize[i] / m_BinningFactors[i];
 
-    outputStartIndex[i] = inputStartIndex[i] / m_BinningFactors[i];
+    outputStartIndex[i] = 0;
   }
 
   this->GetOutput()->SetSpacing( outputSpacing );
