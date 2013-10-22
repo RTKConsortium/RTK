@@ -38,28 +38,7 @@ BinningImageFilter::BinningImageFilter()
 void BinningImageFilter::GenerateInputRequestedRegion()
 {
   TImage::Pointer inputPtr = const_cast<TImage *>(this->GetInput());
-
-  TImage::SpacingType inputSpacing;
-  TImage::SizeType    inputSize;
-  TImage::IndexType   inputStartIndex;
-  TImage::PointType   inputOrigin;
-
-  for (unsigned int i = 0; i < TImage::ImageDimension; i++)
-  {
-    inputSpacing[i] = inputPtr->GetSpacing()[i];
-    inputSize[i] = inputPtr->GetLargestPossibleRegion().GetSize()[i];
-    inputStartIndex[i] = inputPtr->GetLargestPossibleRegion().GetIndex()[i];
-    inputOrigin[i] = inputPtr->GetOrigin()[i];
-  }
-  //Set Spacing
-  inputPtr->SetSpacing( inputSpacing );
-  //Set Origin
-  inputPtr->SetOrigin( inputOrigin );
-  //Set Region
-  TImage::RegionType inputLargestPossibleRegion;
-  inputLargestPossibleRegion.SetSize( inputSize );
-  inputLargestPossibleRegion.SetIndex( inputStartIndex );
-  inputPtr->SetLargestPossibleRegion( inputLargestPossibleRegion );
+  inputPtr->SetRequestedRegion( inputPtr->GetLargestPossibleRegion() );
 }
 
 void BinningImageFilter::GenerateOutputInformation()
