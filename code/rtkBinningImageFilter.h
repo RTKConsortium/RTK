@@ -44,24 +44,22 @@ namespace rtk
  * \ingroup ImageToImageFilter
  */
 
-//FIXME: not templated yet
-//template <class TInputImage, class TOutputImage>
-typedef itk::Image<unsigned short, 2>       TImage;
 class ITK_EXPORT BinningImageFilter:
-  public itk::ImageToImageFilter< TImage, TImage >
+  public itk::ImageToImageFilter< itk::Image<unsigned short, 2>, itk::Image<unsigned short, 2> >
 {
 public:
   /** Standard class typedefs. */
   typedef BinningImageFilter                                Self;
-  typedef itk::ImageToImageFilter<TImage,TImage>            Superclass;
+  typedef itk::Image<unsigned short, 2>                     ImageType;
+  typedef itk::ImageToImageFilter<ImageType, ImageType>     Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef TImage::PixelType                 *OutputImagePointer;
-  typedef TImage::PixelType                 *InputImagePointer;
-  typedef TImage::RegionType                OutputImageRegionType;
+  typedef ImageType::PixelType                 *OutputImagePointer;
+  typedef ImageType::PixelType                 *InputImagePointer;
+  typedef ImageType::RegionType                OutputImageRegionType;
 
-  typedef itk::Vector<unsigned int, TImage::ImageDimension> VectorType;
+  typedef itk::Vector<unsigned int, ImageType::ImageDimension> VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
