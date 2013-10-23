@@ -81,6 +81,11 @@ public:
   itkGetMacro(ProjectionsStack, ProjectionsStackPointer);
   itkSetMacro(ProjectionsStack, ProjectionsStackPointer);
 
+  /** Assume that a displaced detector image filter, e.g.,
+   * rtk::DisplacedDetectorImageFilter, has been used. */
+  itkGetMacro(DisplacedDetector, bool);
+  itkSetMacro(DisplacedDetector, bool);
+
 protected:
   FieldOfViewImageFilter();
   virtual ~FieldOfViewImageFilter() {};
@@ -103,6 +108,7 @@ private:
   double                  m_HatTangentSup;
   double                  m_HatHeightInf;
   double                  m_HatHeightSup;
+  bool                    m_DisplacedDetector;
 };
 
 } // end namespace rtk

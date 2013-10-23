@@ -9,4 +9,5 @@ option "reconstruction" - "Reconstruction file unmasked"                        
 option "path"           p "Path where there are the projections"                      string   yes
 option "regexp"         r "Regular expression to select projection files in path"     string   yes
 option "mask"           m "Output a binary mask instead of a masked image"            flag     off
+option "displaced"      d "Assume that a displaced detector has been used"            flag     off
 

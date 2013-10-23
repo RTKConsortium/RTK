@@ -29,7 +29,8 @@ template<class TInputImage, class TOutputImage>
 FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::FieldOfViewImageFilter():
   m_Geometry(NULL),
-  m_Mask(false)
+  m_Mask(false),
+  m_DisplacedDetector(false)
 {
 }
 
@@ -75,8 +76,20 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 
     const double projOffsetX = m_Geometry->GetProjectionOffsetsX()[k];
     const double sourceOffsetX = m_Geometry->GetSourceOffsetsX()[k];
-    m_Radius = std::min( m_Radius, vcl_abs( sourceOffsetX+mag*(corner1[0]+projOffsetX-sourceOffsetX) ) );
-    m_Radius = std::min( m_Radius, vcl_abs( sourceOffsetX+mag*(corner2[0]+projOffsetX-sourceOffsetX) ) );
+    const double r1 = vcl_abs( sourceOffsetX+mag*(corner1[0]+projOffsetX-sourceOffsetX) );
+    const double r2 = vcl_abs( sourceOffsetX+mag*(corner2[0]+projOffsetX-sourceOffsetX) );
+    if(m_DisplacedDetector)
+      {
+      // The largest of the two radii counts (the short one is assumed to be
+      // compensated for by the displaced detector filter)
+      m_Radius = std::min( m_Radius, std::max(r1, r2) );
+      }
+    else
+      {
+      // The minimum of two radii counts in the general case
+      m_Radius = std::min( m_Radius, r1 );
+      m_Radius = std::min( m_Radius, r2 );
+      }
 
     const double projOffsetY = m_Geometry->GetProjectionOffsetsY()[k];
     const double sourceOffsetY = m_Geometry->GetSourceOffsetsY()[k];
