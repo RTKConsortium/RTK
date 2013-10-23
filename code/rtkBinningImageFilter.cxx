@@ -89,74 +89,73 @@ void BinningImageFilter::GenerateOutputInformation()
 }
 
 void BinningImageFilter
-::ThreadedGenerateData(const OutputImageRegionType& itkNotUsed(outputRegionForThread), ThreadIdType threadId )
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
+  const ImageType::PixelType *pIn  = this->GetInput()->GetBufferPointer();
+  ImageType::PixelType *pOut = this->GetOutput()->GetBufferPointer();
 
-  int inputSize[2], binSize[2];
-  inputSize[0] = this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
-  inputSize[1] = this->GetInput()->GetLargestPossibleRegion().GetSize()[1];
-  binSize[0] = (inputSize[0]>>1);
-  binSize[1] = (inputSize[1]>>1);
+  // Move pointers to beginning of region
+  ImageType::RegionType inputRegion;
+  for(unsigned int i=0; i<ImageType::ImageDimension; i++)
+    {
+    pOut += outputRegionForThread.GetIndex(i) * this->GetOutput()->GetOffsetTable()[i];
+    pIn  += outputRegionForThread.GetIndex(i) * this->GetInput() ->GetOffsetTable()[i] * m_BinningFactors[i];
 
-  typedef   ImageType::PixelType inputPixel;
-  typedef   ImageType::PixelType outputPixel;
-
-  //this->GenerateOutputInformation();
-  const inputPixel  *bufferIn  = this->GetInput()->GetBufferPointer();
-  outputPixel *bufferOut = this->GetOutput()->GetBufferPointer();
-
-  int initX = threadId*inputSize[0]*inputSize[1]/(this->GetNumberOfThreads()*m_BinningFactors[0]);
-  int endX = initX + binSize[0]*inputSize[1]/this->GetNumberOfThreads();
-  int initY = threadId*binSize[1]/this->GetNumberOfThreads();
-  int endY = initY + binSize[1]/this->GetNumberOfThreads();
+    // Account for difference between buffered and largest possible regions
+    pOut -= this->GetOutput()->GetOffsetTable()[i] *
+            (this->GetOutput()->GetBufferedRegion().GetIndex()[i] -
+             this->GetOutput()->GetLargestPossibleRegion().GetIndex()[i]);
+    pIn  -= this->GetInput()->GetOffsetTable()[i] *
+            (this->GetInput()->GetBufferedRegion().GetIndex()[i] -
+             this->GetInput()->GetLargestPossibleRegion().GetIndex()[i]);
+    }
 
   // Binning 2x2
   if(m_BinningFactors[0]==2 && m_BinningFactors[1]==2)
-  {
-    const int Vlength = endX-initX;
-    std::vector<int> V(Vlength,0);
+    {
+    const size_t buffSize = outputRegionForThread.GetNumberOfPixels()*2;
+    int *buffer = new int[buffSize];
+    for(unsigned int j=0; j<outputRegionForThread.GetSize(1)*2; j++,
+                                                                pIn+=this->GetInput()->GetOffsetTable()[1])
+      for(unsigned int i=0; i<outputRegionForThread.GetSize(0)*2; i+=2, buffer++)
+        *buffer = pIn[i] + pIn[i+1];
 
-    int i, j, idx, pos, vj;
-    for (i=0, idx=initX*m_BinningFactors[0]; i < Vlength; i++, idx+=2) // Only works if number of pixels per line multiple of 2
-    {
-        V[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) );
+    buffer -= buffSize; // Back to original position
+    for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
+                                                              pOut+=this->GetOutput()->GetOffsetTable()[1],
+                                                              buffer += 2*outputRegionForThread.GetSize(0))
+      for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
+        pOut[i] = (buffer[i] + buffer[i+outputRegionForThread.GetSize(0)] ) >> 2;
+
+    buffer -= buffSize; // Back to original position
+    delete buffer;
     }
-    for (j=initY, vj=0; j<endY; j++, vj++)
-    {
-      pos = j*binSize[0];
-      for (i=0; i < binSize[0]; i++, pos++)
-        {
-            bufferOut[pos] = ( (V[2*vj*binSize[0]+i])+(V[(2*vj+1)*binSize[0]+i]) )>>2;
-        }
-    }
-  }
 
   // Binning 2x1
   else if(m_BinningFactors[0]==2 && m_BinningFactors[1]==1)
-  {
-    int i, idx;
-    for (i=initX, idx=initX*m_BinningFactors[0]; i < endX; i++, idx+=2) // Only works if number of pixels per line multiple of 2
-        bufferOut[i] = ( (bufferIn[idx])+(bufferIn[idx+1]) )>>1;
-  }
+    {
+    for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
+                                                              pIn+=this->GetInput()->GetOffsetTable()[1])
+      for(unsigned int i=0; i<outputRegionForThread.GetSize(0)*2; i+=2, pOut++)
+        *pOut = (pIn[i] + pIn[i+1])>>1;
+    }
 
   // Binning 1x2
   else if(m_BinningFactors[0]==1 && m_BinningFactors[1]==2)
-  {
-    int i, j, pos;
-    for (j=initY; j<endY;j++)
     {
-      pos = j*inputSize[0];
-      for (i=0; i<inputSize[0];i++, pos++)
-        bufferOut[pos] = ( (bufferIn[2*j*inputSize[0]+i])+(bufferIn[(2*j+1)*inputSize[0]+i]) )>>1;
+    for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
+                                                              pOut += this->GetOutput()->GetOffsetTable()[1],
+                                                              pIn  += 2*this->GetInput()->GetOffsetTable()[1])
+      for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
+        pOut[i] = (pIn[i] + pIn[i+this->GetInput()->GetOffsetTable()[1]]) >> 1;
     }
-  }
   else
-  {
+    {
     itkExceptionMacro(<< "Binning factors mismatch! Current factors: "
                       << m_BinningFactors[0] << "x"
                       << m_BinningFactors[1] << " "
                       << "accepted modes [2x2] [2x1] and [1x2]")
-  }
+    }
 }
 
 } // end namespace rtk
