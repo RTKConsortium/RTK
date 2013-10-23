@@ -152,6 +152,8 @@ int main(int , char** )
   projectionsSource->SetSize( size );
   projectionsSource->SetConstant( 1. );
 
+  std::cout << "\n\n****** Case 1: centered detector ******" << std::endl;
+
   // Geometry
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
@@ -182,6 +184,20 @@ int main(int , char** )
   threshold->SetUpperThreshold(NumberOfProjectionImages+0.5);
   threshold->SetInsideValue(1.);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( threshold->Update() );
+
+  CheckImageQuality<OutputImageType>(fov->GetOutput(), threshold->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 2: offset detector ******" << std::endl;
+
+  origin[0] = -54.;
+  projectionsSource->SetOrigin( origin );
+  size[0] = 78;
+  projectionsSource->SetSize( size );
+  projectionsSource->UpdateOutputInformation();
+  projectionsSource->UpdateLargestPossibleRegion();
+  fov->SetDisplacedDetector(true);
+  fov->Update();
 
   CheckImageQuality<OutputImageType>(fov->GetOutput(), threshold->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
