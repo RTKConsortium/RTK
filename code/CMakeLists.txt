@@ -29,6 +29,7 @@ ADD_LIBRARY(RTK
             rtkXRadGeometryReader.cxx
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
+            rtkIOFactories.cxx
            )
 
 IF( ITK_VERSION_MAJOR LESS "4" AND (USE_FFTWF OR USE_FFTWD) )
