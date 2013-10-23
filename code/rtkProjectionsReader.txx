@@ -23,6 +23,9 @@
 #include <itkImageSeriesReader.h>
 #include <itkConfigure.h>
 
+// RTK
+#include "rtkIOFactories.h"
+
 // Varian Obi includes
 #include "rtkHndImageIOFactory.h"
 #include "rtkVarianObiRawImageFilter.h"
@@ -70,17 +73,8 @@ void ProjectionsReader<TOutputImage>
 
   static bool firstTime = true;
   if(firstTime)
-    {
-    rtk::HndImageIOFactory::RegisterOneFactory();
-    rtk::HisImageIOFactory::RegisterOneFactory();
-    rtk::ImagXImageIOFactory::RegisterOneFactory();
-    rtk::EdfImageIOFactory::RegisterOneFactory();
-    rtk::XRadImageIOFactory::RegisterOneFactory();
-#if ITK_VERSION_MAJOR <= 3
-    itk::ImageIOFactory::RegisterBuiltInFactories();
-#endif
-    firstTime = false;
-    }
+    rtk::RegisterIOFactories();
+
   itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO( m_FileNames[0].c_str(), itk::ImageIOFactory::ReadMode );
 
   if(m_ImageIO != imageIO)

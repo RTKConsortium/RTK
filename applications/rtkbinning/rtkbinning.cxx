@@ -22,7 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkBinningImageFilter.h"
-#include "rtkProjectionsReader.h"
+#include "rtkIOFactories.h"
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -32,6 +32,7 @@
 int main(int argc, char * argv[])
 {
   GGO(rtkbinning, args_info);
+  rtk::RegisterIOFactories();
 
   typedef unsigned short OutputPixelType;
   const unsigned int     Dimension = 2;
@@ -85,7 +86,7 @@ int main(int argc, char * argv[])
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( binning->GetOutput() );
   if(args_info.verbose_flag)
-    std::cout << "Projecting and writing... " << std::flush;
+    std::cout << "Writing... " << std::cout;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
