@@ -55,12 +55,13 @@ rtk::ElektaSynergyLookupTableImageFilter<TOutputImage>
   this->SetLookupTable(lut);
 }
 
-rtk::ElektaSynergyRawLookupTableImageFilter
+template <unsigned int VImageDimension>
+rtk::ElektaSynergyRawLookupTableImageFilter<VImageDimension>
 ::ElektaSynergyRawLookupTableImageFilter()
 {
   // Create the lut
-  LookupTableType::Pointer lut = LookupTableType::New();
-  LookupTableType::SizeType size;
+  typename LookupTableType::Pointer lut = LookupTableType::New();
+  typename LookupTableType::SizeType size;
   size[0] = itk::NumericTraits<InputImagePixelType>::max() -
             itk::NumericTraits<InputImagePixelType>::min() + 1;
   lut->SetRegions( size );
