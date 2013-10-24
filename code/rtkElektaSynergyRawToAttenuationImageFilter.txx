@@ -35,8 +35,8 @@ ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
     return;
 
   m_CropFilter->SetInput(inputPtr); //SR: this is most likely useless
-  m_LookupTableFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
-  m_LookupTableFilter->GetOutput()->PropagateRequestedRegion();
+  m_LogLookupTableFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
+  m_LogLookupTableFilter->GetOutput()->PropagateRequestedRegion();
 }
 
 template <class TInputImage, class TOutputImage>
@@ -44,12 +44,14 @@ ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::ElektaSynergyRawToAttenuationImageFilter()
 {
   m_CropFilter = CropFilterType::New();
+  m_RawLookupTableFilter = RawLookupTableFilterType::New();
   m_ScatterFilter = ScatterFilterType::New();
-  m_LookupTableFilter = LookupTableFilterType::New();
+  m_LogLookupTableFilter = LogLookupTableFilterType::New();
 
   //Permanent internal connections
-  m_ScatterFilter->SetInput( m_CropFilter->GetOutput() );
-  m_LookupTableFilter->SetInput( m_ScatterFilter->GetOutput() );
+  m_RawLookupTableFilter->SetInput( m_CropFilter->GetOutput() );
+  m_ScatterFilter->SetInput( m_RawLookupTableFilter->GetOutput() );
+  m_LogLookupTableFilter->SetInput( m_ScatterFilter->GetOutput() );
 
   //Default filter parameters
   typename CropFilterType::SizeType border = m_CropFilter->GetLowerBoundaryCropSize();
@@ -64,11 +66,11 @@ ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
   m_CropFilter->SetInput(this->GetInput() );
-  m_LookupTableFilter->UpdateOutputInformation();
-  this->GetOutput()->SetOrigin( m_LookupTableFilter->GetOutput()->GetOrigin() );
-  this->GetOutput()->SetSpacing( m_LookupTableFilter->GetOutput()->GetSpacing() );
-  this->GetOutput()->SetDirection( m_LookupTableFilter->GetOutput()->GetDirection() );
-  this->GetOutput()->SetLargestPossibleRegion( m_LookupTableFilter->GetOutput()->GetLargestPossibleRegion() );
+  m_LogLookupTableFilter->UpdateOutputInformation();
+  this->GetOutput()->SetOrigin( m_LogLookupTableFilter->GetOutput()->GetOrigin() );
+  this->GetOutput()->SetSpacing( m_LogLookupTableFilter->GetOutput()->GetSpacing() );
+  this->GetOutput()->SetDirection( m_LogLookupTableFilter->GetOutput()->GetDirection() );
+  this->GetOutput()->SetLargestPossibleRegion( m_LogLookupTableFilter->GetOutput()->GetLargestPossibleRegion() );
 }
 
 template<class TInputImage, class TOutputImage>
@@ -77,8 +79,8 @@ ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::GenerateData()
 {
   m_CropFilter->SetInput(this->GetInput() );
-  m_LookupTableFilter->Update();
-  this->GraftOutput( m_LookupTableFilter->GetOutput() );
+  m_LogLookupTableFilter->Update();
+  this->GraftOutput( m_LogLookupTableFilter->GetOutput() );
 }
 
 } // end namespace rtk

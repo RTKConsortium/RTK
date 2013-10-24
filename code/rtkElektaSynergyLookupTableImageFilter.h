@@ -38,18 +38,20 @@ namespace rtk
  *
  * \ingroup ImageToImageFilter
  */
-template <class TInputImage, class TOutputImage>
-class ITK_EXPORT ElektaSynergyLookupTableImageFilter : public LookupTableImageFilter<TInputImage, TOutputImage>
+template <class TOutputImage>
+class ITK_EXPORT ElektaSynergyLookupTableImageFilter:
+    public LookupTableImageFilter< itk::Image<unsigned short, 2>,
+                                   TOutputImage >
 {
 
 public:
   /** Standard class typedefs. */
-  typedef ElektaSynergyLookupTableImageFilter               Self;
-  typedef LookupTableImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  typedef ElektaSynergyLookupTableImageFilter                                 Self;
+  typedef LookupTableImageFilter<itk::Image<unsigned short, 2>, TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                             Pointer;
+  typedef itk::SmartPointer<const Self>                                       ConstPointer;
 
-  typedef typename TInputImage::PixelType                   InputImagePixelType;
+  typedef unsigned short                                    InputImagePixelType;
   typedef typename TOutputImage::PixelType                  OutputImagePixelType;
   typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
 
@@ -70,40 +72,104 @@ private:
 
 };
 
+/** \class ElektaSynergyRawLookupTableImageFilter
+ * \brief First part of ElektaSynergyLookupTableImageFilter.
+ *
+ * The lookup table has been split in two to allow application of the scatter
+ * correction algorithm in between. The first part only set values to have max
+ * value in air.
+ *
+ * \test rtkelektatest.cxx
+ *
+ * \author Simon Rit
+ *
+ * \ingroup ImageToImageFilter
+ */
+class ITK_EXPORT ElektaSynergyRawLookupTableImageFilter :
+    public LookupTableImageFilter< itk::Image<unsigned short, 2>,
+                                   itk::Image<unsigned short, 2> >
+{
+
+public:
+  /** Standard class typedefs. */
+  typedef ElektaSynergyRawLookupTableImageFilter                  Self;
+  typedef LookupTableImageFilter< itk::Image<unsigned short, 2>,
+                                  itk::Image<unsigned short, 2> > Superclass;
+  typedef itk::SmartPointer<Self>                                 Pointer;
+  typedef itk::SmartPointer<const Self>                           ConstPointer;
+
+  typedef unsigned short                           InputImagePixelType;
+  typedef unsigned short                           OutputImagePixelType;
+  typedef Superclass::FunctorType::LookupTableType LookupTableType;
+
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(ElektaSynergyRawLookupTableImageFilter, LookupTableImageFilter);
+
+protected:
+  ElektaSynergyRawLookupTableImageFilter();
+  virtual ~ElektaSynergyRawLookupTableImageFilter() {
+  }
+
+private:
+  ElektaSynergyRawLookupTableImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);                         //purposely not implemented
+
+};
+
+/** \class ElektaSynergyLogLookupTableImageFilter
+ * \brief Second part of ElektaSynergyLookupTableImageFilter.
+ *
+ * The lookup table has been split in two to allow application of the scatter
+ * correction algorithm in between. This second part takes the log of the ratio
+ * with the reference value times -1.
+ *
+ * \test rtkelektatest.cxx
+ *
+ * \author Simon Rit
+ *
+ * \ingroup ImageToImageFilter
+ */
+template <class TOutputImage>
+class ITK_EXPORT ElektaSynergyLogLookupTableImageFilter :
+    public LookupTableImageFilter< itk::Image<unsigned short, 2>,
+                                   TOutputImage >
+{
+
+public:
+  /** Standard class typedefs. */
+  typedef ElektaSynergyLogLookupTableImageFilter                              Self;
+  typedef LookupTableImageFilter<itk::Image<unsigned short, 2>, TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                             Pointer;
+  typedef itk::SmartPointer<const Self>                                       ConstPointer;
+
+  typedef unsigned short                                    InputImagePixelType;
+  typedef typename TOutputImage::PixelType                  OutputImagePixelType;
+  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
+
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(ElektaSynergyLogLookupTableImageFilter, LookupTableImageFilter);
+
+protected:
+  ElektaSynergyLogLookupTableImageFilter();
+  virtual ~ElektaSynergyLogLookupTableImageFilter() {
+  }
+
+private:
+  ElektaSynergyLogLookupTableImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);                         //purposely not implemented
+
+};
+
 } // end namespace rtk
 
-template <class TInputImage, class TOutputImage>
-rtk::ElektaSynergyLookupTableImageFilter<TInputImage, TOutputImage>::ElektaSynergyLookupTableImageFilter()
-{
-  // Create the lut
-  typename LookupTableType::Pointer lut = LookupTableType::New();
-  typename LookupTableType::SizeType size;
-  size[0] = itk::NumericTraits<InputImagePixelType>::max()-itk::NumericTraits<InputImagePixelType>::min()+1;
-  lut->SetRegions( size );
-  lut->Allocate();
-
-  // Iterate and set lut
-  OutputImagePixelType                       logRef = log(OutputImagePixelType(size[0]) );
-  itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
-  it.GoToBegin();
-
-  //First value takes value of pixel #1
-  it.Set( logRef - log( OutputImagePixelType(size[0]-1) ) );
-  ++it;
-
-  //Conventional lookup table for the rest
-  while( !it.IsAtEnd() ) {
-    it.Set( logRef - log( OutputImagePixelType(size[0]-it.GetIndex()[0]) ) );
-    ++it;
-    }
-
-  //Last value takes value of pixel #1
-  --it;
-  it.Set( logRef - log( OutputImagePixelType(size[0]-1) ) );
-  ++it;
-
-  // Set the lut to member and functor
-  this->SetLookupTable(lut);
-}
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkElektaSynergyLookupTableImageFilter.txx"
+#endif
 
 #endif
