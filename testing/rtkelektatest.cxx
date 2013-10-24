@@ -171,7 +171,7 @@ int main(int, char** )
 
   // ******* Test split of lookup table ******
   typedef unsigned short InputPixelType;
-  typedef itk::Image< InputPixelType, 2 > InputImageType;
+  typedef itk::Image< InputPixelType, 3 > InputImageType;
   typedef itk::ImageFileReader< InputImageType> RawReaderType;
   RawReaderType::Pointer r = RawReaderType::New();
   r->SetFileName(std::string(RTK_DATA_ROOT) +
@@ -183,7 +183,7 @@ int main(int, char** )
   full->SetInput(r->GetOutput());
   full->Update();
 
-  typedef rtk::ElektaSynergyRawLookupTableImageFilter RawLUTType;
+  typedef rtk::ElektaSynergyRawLookupTableImageFilter<3> RawLUTType;
   RawLUTType::Pointer raw = RawLUTType::New();
   raw->SetInput(r->GetOutput());
   raw->Update();

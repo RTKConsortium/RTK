@@ -82,10 +82,10 @@ private:
   ElektaSynergyRawToAttenuationImageFilter(const Self&);
   void operator=(const Self&);
 
-  typedef itk::CropImageFilter<InputImageType, InputImageType>                       CropFilterType;
-  typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
-  typedef rtk::ElektaSynergyRawLookupTableImageFilter                                RawLookupTableFilterType;
-  typedef rtk::ElektaSynergyLogLookupTableImageFilter<OutputImageType>               LogLookupTableFilterType;
+  typedef itk::CropImageFilter<InputImageType, InputImageType>                                  CropFilterType;
+  typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>            ScatterFilterType;
+  typedef typename rtk::ElektaSynergyRawLookupTableImageFilter<OutputImageType::ImageDimension> RawLookupTableFilterType;
+  typedef rtk::ElektaSynergyLogLookupTableImageFilter<OutputImageType>                          LogLookupTableFilterType;
 
   typename RawLookupTableFilterType::Pointer m_RawLookupTableFilter;
   typename LogLookupTableFilterType::Pointer m_LogLookupTableFilter;
