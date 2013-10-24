@@ -40,14 +40,16 @@ namespace rtk
  */
 template <class TOutputImage>
 class ITK_EXPORT ElektaSynergyLookupTableImageFilter:
-    public LookupTableImageFilter< itk::Image<unsigned short, 2>,
+    public LookupTableImageFilter< itk::Image<unsigned short, TOutputImage::ImageDimension>,
                                    TOutputImage >
 {
 
 public:
   /** Standard class typedefs. */
   typedef ElektaSynergyLookupTableImageFilter                                 Self;
-  typedef LookupTableImageFilter<itk::Image<unsigned short, 2>, TOutputImage> Superclass;
+  typedef LookupTableImageFilter<itk::Image<unsigned short, 
+                                            TOutputImage::ImageDimension>,
+                                 TOutputImage>                                Superclass;
   typedef itk::SmartPointer<Self>                                             Pointer;
   typedef itk::SmartPointer<const Self>                                       ConstPointer;
 
@@ -85,22 +87,23 @@ private:
  *
  * \ingroup ImageToImageFilter
  */
+template <unsigned int VImageDimension = 2>
 class ITK_EXPORT ElektaSynergyRawLookupTableImageFilter :
-    public LookupTableImageFilter< itk::Image<unsigned short, 2>,
-                                   itk::Image<unsigned short, 2> >
+    public LookupTableImageFilter< itk::Image<unsigned short, VImageDimension>,
+                                   itk::Image<unsigned short, VImageDimension> >
 {
 
 public:
   /** Standard class typedefs. */
-  typedef ElektaSynergyRawLookupTableImageFilter                  Self;
-  typedef LookupTableImageFilter< itk::Image<unsigned short, 2>,
-                                  itk::Image<unsigned short, 2> > Superclass;
+  typedef ElektaSynergyRawLookupTableImageFilter                                Self;
+  typedef LookupTableImageFilter< itk::Image<unsigned short, VImageDimension>,
+                                  itk::Image<unsigned short, VImageDimension> > Superclass;
   typedef itk::SmartPointer<Self>                                 Pointer;
   typedef itk::SmartPointer<const Self>                           ConstPointer;
 
   typedef unsigned short                           InputImagePixelType;
   typedef unsigned short                           OutputImagePixelType;
-  typedef Superclass::FunctorType::LookupTableType LookupTableType;
+  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -134,14 +137,16 @@ private:
  */
 template <class TOutputImage>
 class ITK_EXPORT ElektaSynergyLogLookupTableImageFilter :
-    public LookupTableImageFilter< itk::Image<unsigned short, 2>,
+    public LookupTableImageFilter< itk::Image<unsigned short, TOutputImage::ImageDimension>,
                                    TOutputImage >
 {
 
 public:
   /** Standard class typedefs. */
   typedef ElektaSynergyLogLookupTableImageFilter                              Self;
-  typedef LookupTableImageFilter<itk::Image<unsigned short, 2>, TOutputImage> Superclass;
+  typedef LookupTableImageFilter<itk::Image<unsigned short,
+                                            TOutputImage::ImageDimension>,
+                                 TOutputImage>                                Superclass;
   typedef itk::SmartPointer<Self>                                             Pointer;
   typedef itk::SmartPointer<const Self>                                       ConstPointer;
 
