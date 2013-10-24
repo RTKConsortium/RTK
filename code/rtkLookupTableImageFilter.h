@@ -94,7 +94,7 @@ public:
   typedef typename FunctorType::LookupTableType                                                     LookupTableType;
 
   /** Standard class typedefs. */
-  typedef LookupTableImageFilter                                                        Self;
+  typedef LookupTableImageFilter                                                Self;
   typedef itk::UnaryFunctorImageFilter<TInputImage, TOutputImage, FunctorType > Superclass;
   typedef itk::SmartPointer<Self>                                               Pointer;
   typedef itk::SmartPointer<const Self>                                         ConstPointer;

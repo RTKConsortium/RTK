@@ -103,7 +103,7 @@ void ProjectionsReader<TOutputImage>
       {
       /////////// Elekta synergy
       typedef unsigned short                                     InputPixelType;
-      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+      typedef itk::Image< InputPixelType, 2 >                    InputImageType;
 
       // Reader
       typedef itk::ImageSeriesReader< InputImageType > ReaderType;
