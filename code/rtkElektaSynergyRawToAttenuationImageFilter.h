@@ -84,11 +84,13 @@ private:
 
   typedef itk::CropImageFilter<InputImageType, InputImageType>                       CropFilterType;
   typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
-  typedef rtk::ElektaSynergyLookupTableImageFilter<InputImageType, OutputImageType>          LookupTableFilterType;
+  typedef rtk::ElektaSynergyRawLookupTableImageFilter                                RawLookupTableFilterType;
+  typedef rtk::ElektaSynergyLogLookupTableImageFilter<OutputImageType>               LogLookupTableFilterType;
 
-  typename LookupTableFilterType::Pointer m_LookupTableFilter;
-  typename CropFilterType::Pointer        m_CropFilter;
-  typename ScatterFilterType::Pointer     m_ScatterFilter;
+  typename RawLookupTableFilterType::Pointer m_RawLookupTableFilter;
+  typename LogLookupTableFilterType::Pointer m_LogLookupTableFilter;
+  typename CropFilterType::Pointer           m_CropFilter;
+  typename ScatterFilterType::Pointer        m_ScatterFilter;
 }; // end of class
 
 } // end namespace rtk

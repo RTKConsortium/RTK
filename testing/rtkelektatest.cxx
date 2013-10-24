@@ -169,7 +169,34 @@ int main(int, char** )
   // 2. Compare read projections
   CheckImageQuality< ImageType >(reader->GetOutput(), readerRef->GetOutput());
 
-  // If both succeed
+  // ******* Test split of lookup table ******
+  typedef unsigned short InputPixelType;
+  typedef itk::Image< InputPixelType, 2 > InputImageType;
+  typedef itk::ImageFileReader< InputImageType> RawReaderType;
+  RawReaderType::Pointer r = RawReaderType::New();
+  r->SetFileName(std::string(RTK_DATA_ROOT) +
+                 std::string("/Input/Elekta/raw.his"));
+  r->Update();
+
+  typedef rtk::ElektaSynergyLookupTableImageFilter<ImageType> FullLUTType;
+  FullLUTType::Pointer full = FullLUTType::New();
+  full->SetInput(r->GetOutput());
+  full->Update();
+
+  typedef rtk::ElektaSynergyRawLookupTableImageFilter RawLUTType;
+  RawLUTType::Pointer raw = RawLUTType::New();
+  raw->SetInput(r->GetOutput());
+  raw->Update();
+
+  typedef rtk::ElektaSynergyLogLookupTableImageFilter<ImageType> LogLUTType;
+  LogLUTType::Pointer log = LogLUTType::New();
+  log->SetInput(raw->GetOutput());
+  log->Update();
+
+  // Compare the result of the full lut with the split lut
+  CheckImageQuality< ImageType >(full->GetOutput(), log->GetOutput());
+
+  // If all succeed
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }
