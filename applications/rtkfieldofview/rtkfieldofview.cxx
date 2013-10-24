@@ -71,6 +71,7 @@ int main(int argc, char * argv[])
   fieldofview->SetInput(0, unmasked_reconstruction->GetOutput());
   fieldofview->SetProjectionsStack(projections->GetOutput());
   fieldofview->SetGeometry(geometryReader->GetOutputObject());
+  fieldofview->SetDisplacedDetector(args_info.displaced_flag);
   fieldofview->Update();
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
