@@ -98,15 +98,15 @@ void BinningImageFilter
   for(unsigned int i=0; i<ImageType::ImageDimension; i++)
     {
     pOut += outputRegionForThread.GetIndex(i) * this->GetOutput()->GetOffsetTable()[i];
-    pIn  += outputRegionForThread.GetIndex(i) * this->GetInput() ->GetOffsetTable()[i] * m_BinningFactors[i];
+    pIn += outputRegionForThread.GetIndex(i) * this->GetInput() ->GetOffsetTable()[i] * m_BinningFactors[i];
 
     // Account for difference between buffered and largest possible regions
     pOut -= this->GetOutput()->GetOffsetTable()[i] *
             (this->GetOutput()->GetBufferedRegion().GetIndex()[i] -
              this->GetOutput()->GetLargestPossibleRegion().GetIndex()[i]);
-    pIn  -= this->GetInput()->GetOffsetTable()[i] *
-            (this->GetInput()->GetBufferedRegion().GetIndex()[i] -
-             this->GetInput()->GetLargestPossibleRegion().GetIndex()[i]);
+    pIn -= this->GetInput()->GetOffsetTable()[i] *
+           (this->GetInput()->GetBufferedRegion().GetIndex()[i] -
+            this->GetInput()->GetLargestPossibleRegion().GetIndex()[i]);
     }
 
   // Binning 2x2
@@ -115,13 +115,13 @@ void BinningImageFilter
     const size_t buffSize = outputRegionForThread.GetNumberOfPixels()*2;
     int *buffer = new int[buffSize];
     for(unsigned int j=0; j<outputRegionForThread.GetSize(1)*2; j++,
-                                                                pIn+=this->GetInput()->GetOffsetTable()[1])
-      for(unsigned int i=0; i<outputRegionForThread.GetSize(0)*2; i+=2, buffer++)
+                                                                pIn += this->GetInput()->GetOffsetTable()[1])
+      for(unsigned int i=0; i<outputRegionForThread.GetSize(0)*2; i += 2, buffer++)
         *buffer = pIn[i] + pIn[i+1];
 
     buffer -= buffSize; // Back to original position
     for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
-                                                              pOut+=this->GetOutput()->GetOffsetTable()[1],
+                                                              pOut += this->GetOutput()->GetOffsetTable()[1],
                                                               buffer += 2*outputRegionForThread.GetSize(0))
       for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
         pOut[i] = (buffer[i] + buffer[i+outputRegionForThread.GetSize(0)] ) >> 2;
@@ -134,8 +134,8 @@ void BinningImageFilter
   else if(m_BinningFactors[0]==2 && m_BinningFactors[1]==1)
     {
     for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
-                                                              pIn+=this->GetInput()->GetOffsetTable()[1])
-      for(unsigned int i=0; i<outputRegionForThread.GetSize(0)*2; i+=2, pOut++)
+                                                              pIn += this->GetInput()->GetOffsetTable()[1])
+      for(unsigned int i=0; i<outputRegionForThread.GetSize(0)*2; i += 2, pOut++)
         *pOut = (pIn[i] + pIn[i+1])>>1;
     }
 
@@ -144,7 +144,7 @@ void BinningImageFilter
     {
     for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
                                                               pOut += this->GetOutput()->GetOffsetTable()[1],
-                                                              pIn  += 2*this->GetInput()->GetOffsetTable()[1])
+                                                              pIn += 2*this->GetInput()->GetOffsetTable()[1])
       for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
         pOut[i] = (pIn[i] + pIn[i+this->GetInput()->GetOffsetTable()[1]]) >> 1;
     }
