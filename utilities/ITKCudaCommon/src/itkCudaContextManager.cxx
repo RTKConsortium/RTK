@@ -61,20 +61,30 @@ CudaContextManager::CudaContextManager()
   std::vector<cudaDeviceProp> devices;
   m_NumberOfDevices = itk::CudaGetAvailableDevices(devices);
 
-  CUdevice device;
-  m_DeviceIdx = itk::CudaGetMaxFlopsDev();
-  CUDA_CHECK(cuDeviceGet(&device, m_DeviceIdx));
+  if(m_NumberOfDevices)
+    {
+    CUdevice device;
+    m_DeviceIdx = itk::CudaGetMaxFlopsDev();
+    CUDA_CHECK(cuDeviceGet(&device, m_DeviceIdx));
 
-  CUDA_CHECK(cuCtxCreate(&m_Context, CU_CTX_SCHED_AUTO, device));
+    CUDA_CHECK(cuCtxCreate(&m_Context, CU_CTX_SCHED_AUTO, device));
 
-  CUDA_CHECK(cuCtxSetCurrent(m_Context));
+    CUDA_CHECK(cuCtxSetCurrent(m_Context));
 
-  m_Device = device;
+    m_Device = device;
+    }
+  else
+    {
+    m_Context = NULL;
+    m_Device = NULL;
+    m_DeviceIdx = 0;
+    }
 }
 
 CudaContextManager::~CudaContextManager()
 {
-  CUDA_CHECK(cuCtxDestroy(m_Context));
+  if(m_Context)
+    CUDA_CHECK(cuCtxDestroy(m_Context));
 }
 
 int CudaContextManager::GetCurrentDevice()
