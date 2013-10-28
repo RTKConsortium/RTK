@@ -56,7 +56,6 @@ void BinningImageFilter::GenerateOutputInformation()
 {
   const ImageType::SpacingType& inputSpacing    = this->GetInput()->GetSpacing();
   const ImageType::SizeType&    inputSize       = this->GetInput()->GetLargestPossibleRegion().GetSize();
-  const ImageType::IndexType&   inputStartIndex = this->GetInput()->GetLargestPossibleRegion().GetIndex();
   const ImageType::PointType&   inputOrigin     = this->GetInput()->GetOrigin();
 
   ImageType::SpacingType  outputSpacing;
