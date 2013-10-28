@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkIOFactories_cxx
-#define __rtkIOFactories_cxx
+#ifndef __rtkIOFactories_h
+#define __rtkIOFactories_h
 
 namespace rtk
 {
