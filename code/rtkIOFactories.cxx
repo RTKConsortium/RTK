@@ -16,9 +16,6 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkIOFactories_cxx
-#define __rtkIOFactories_cxx
-
 #include <itkImageIOFactory.h>
 
 // Varian Obi includes
@@ -53,4 +50,3 @@ void RegisterIOFactories()
 
 } //namespace rtk
 
-#endif
