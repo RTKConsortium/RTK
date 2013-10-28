@@ -19,8 +19,11 @@
 #ifndef __rtkElektaSynergyLookupTableImageFilter_txx
 #define __rtkElektaSynergyLookupTableImageFilter_txx
 
+namespace rtk
+{
+
 template <class TOutputImage>
-rtk::ElektaSynergyLookupTableImageFilter<TOutputImage>
+ElektaSynergyLookupTableImageFilter<TOutputImage>
 ::ElektaSynergyLookupTableImageFilter()
 {
   // Create the lut
@@ -56,7 +59,7 @@ rtk::ElektaSynergyLookupTableImageFilter<TOutputImage>
 }
 
 template <unsigned int VImageDimension>
-rtk::ElektaSynergyRawLookupTableImageFilter<VImageDimension>
+ElektaSynergyRawLookupTableImageFilter<VImageDimension>
 ::ElektaSynergyRawLookupTableImageFilter()
 {
   // Create the lut
@@ -90,7 +93,7 @@ rtk::ElektaSynergyRawLookupTableImageFilter<VImageDimension>
 }
 
 template <class TOutputImage>
-rtk::ElektaSynergyLogLookupTableImageFilter<TOutputImage>
+ElektaSynergyLogLookupTableImageFilter<TOutputImage>
 ::ElektaSynergyLogLookupTableImageFilter()
 {
   // Create the lut
@@ -114,6 +117,8 @@ rtk::ElektaSynergyLogLookupTableImageFilter<TOutputImage>
 
   // Set the lut to member and functor
   this->SetLookupTable(lut);
+}
+
 }
 
 #endif
