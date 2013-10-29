@@ -180,6 +180,11 @@ SiddonForwardProjectionImageFilter<TInputImage,
     int vidx;
     double ivol;
 
+    // Avoid warnings
+    alpha_x_0 = 0;
+    alpha_y_0 = 0;
+    alpha_z_0 = 0;
+
     // Create intersection function
     typedef rtk::RayBoxIntersectionFunction<CoordRepType, TInputImage::ImageDimension> RBIFunctionType;
     typename RBIFunctionType::Pointer rbi[TInputImage::ImageDimension];
