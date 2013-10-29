@@ -19,11 +19,13 @@
 #ifndef __rtkIOFactories_h
 #define __rtkIOFactories_h
 
+#include "rtkWin32Header.h"
+
 namespace rtk
 {
 
 /** Register all rtk IO factories. */
-void RegisterIOFactories();
+void RTK_EXPORT RegisterIOFactories();
 
 } //namespace rtk
 
