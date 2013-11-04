@@ -59,28 +59,41 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Ramp filter
-  typedef rtk::FFTRampImageFilter<OutputImageType, OutputImageType, float > rampFilterType;
-  rampFilterType::Pointer rampFilter;
+#if CUDA_FOUND
+  typedef rtk::CudaFFTRampImageFilter CudaRampFilterType;
+  CudaRampFilterType::Pointer cudaRampFilter;
+#endif
+  typedef rtk::FFTRampImageFilter<OutputImageType, OutputImageType, double > CPURampFilterType;
+  CPURampFilterType::Pointer rampFilter;
   if( !strcmp(args_info.hardware_arg, "cuda") )
     {
 #if CUDA_FOUND
-    rampFilter = rtk::CudaFFTRampImageFilter::New();
+    cudaRampFilter = CudaRampFilterType::New();
+    cudaRampFilter->SetInput( reader->GetOutput() );
+    cudaRampFilter->SetTruncationCorrection(args_info.pad_arg);
+    cudaRampFilter->SetHannCutFrequency(args_info.hann_arg);
+    cudaRampFilter->SetHannCutFrequencyY(args_info.hannY_arg);
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
 #endif
     }
   else
-    rampFilter = rampFilterType::New();
-  rampFilter->SetInput( reader->GetOutput() );
-  rampFilter->SetTruncationCorrection(args_info.pad_arg);
-  rampFilter->SetHannCutFrequency(args_info.hann_arg);
-  rampFilter->SetHannCutFrequencyY(args_info.hannY_arg);
+    {
+    rampFilter = CPURampFilterType::New();
+    rampFilter->SetInput( reader->GetOutput() );
+    rampFilter->SetTruncationCorrection(args_info.pad_arg);
+    rampFilter->SetHannCutFrequency(args_info.hann_arg);
+    rampFilter->SetHannCutFrequencyY(args_info.hannY_arg);
+    }
 
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
-  streamer->SetInput( rampFilter->GetOutput() );
+  if( !strcmp(args_info.hardware_arg, "cuda") )
+    streamer->SetInput( cudaRampFilter->GetOutput() );
+  else
+    streamer->SetInput( rampFilter->GetOutput() );
   streamer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
   itk::TimeProbe probe;
