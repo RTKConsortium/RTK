@@ -16,6 +16,7 @@
  *
  *=========================================================================*/
 
+#include "rtkIOFactories.h"
 #include <itkImageIOFactory.h>
 
 // Varian Obi includes

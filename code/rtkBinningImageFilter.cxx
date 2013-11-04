@@ -72,8 +72,9 @@ void BinningImageFilter::GenerateOutputInformation()
       itkExceptionMacro(<< "Binning currently works only for integer divisions")
       }
     else
+      {
       outputSize[i] = inputSize[i] / m_BinningFactors[i];
-
+      }
     outputStartIndex[i] = 0;
   }
 
@@ -116,18 +117,24 @@ void BinningImageFilter
     int *buffer = new int[buffSize];
     for(unsigned int j=0; j<outputRegionForThread.GetSize(1)*2; j++,
                                                                 pIn += this->GetInput()->GetOffsetTable()[1])
+      {
       for(unsigned int i=0; i<outputRegionForThread.GetSize(0)*2; i += 2, buffer++)
+        {
         *buffer = pIn[i] + pIn[i+1];
-
+        }
+      }
     buffer -= buffSize; // Back to original position
     for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
                                                               pOut += this->GetOutput()->GetOffsetTable()[1],
                                                               buffer += 2*outputRegionForThread.GetSize(0))
+      {
       for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
+        {
         pOut[i] = (buffer[i] + buffer[i+outputRegionForThread.GetSize(0)] ) >> 2;
-
+        }
+      }
     buffer -= buffSize; // Back to original position
-    delete buffer;
+    delete [] buffer;
     }
 
   // Binning 2x1
@@ -135,8 +142,12 @@ void BinningImageFilter
     {
     for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
                                                               pIn += this->GetInput()->GetOffsetTable()[1])
+      {
       for(unsigned int i=0; i<outputRegionForThread.GetSize(0)*2; i += 2, pOut++)
+        {
         *pOut = (pIn[i] + pIn[i+1])>>1;
+        }
+      }
     }
 
   // Binning 1x2
@@ -145,8 +156,12 @@ void BinningImageFilter
     for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++,
                                                               pOut += this->GetOutput()->GetOffsetTable()[1],
                                                               pIn += 2*this->GetInput()->GetOffsetTable()[1])
+      {
       for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
+        {
         pOut[i] = (pIn[i] + pIn[i+this->GetInput()->GetOffsetTable()[1]]) >> 1;
+        }
+      }
     }
   else
     {
