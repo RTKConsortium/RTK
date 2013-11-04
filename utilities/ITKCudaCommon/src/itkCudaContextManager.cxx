@@ -76,7 +76,7 @@ CudaContextManager::CudaContextManager()
   else
     {
     m_Context = NULL;
-    m_Device = NULL;
+    m_Device = 0;
     m_DeviceIdx = 0;
     }
 }
@@ -84,7 +84,9 @@ CudaContextManager::CudaContextManager()
 CudaContextManager::~CudaContextManager()
 {
   if(m_Context)
+    {
     CUDA_CHECK(cuCtxDestroy(m_Context));
+    }
 }
 
 int CudaContextManager::GetCurrentDevice()
