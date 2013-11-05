@@ -90,9 +90,11 @@ int main(int argc, char * argv[])
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
+#if CUDA_FOUND
   if( !strcmp(args_info.hardware_arg, "cuda") )
     streamer->SetInput( cudaRampFilter->GetOutput() );
   else
+#endif
     streamer->SetInput( rampFilter->GetOutput() );
   streamer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
