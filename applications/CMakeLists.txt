@@ -12,7 +12,6 @@ ADD_SUBDIRECTORY(rtkprojections)
 ADD_SUBDIRECTORY(rtkparkershortscanweighting)
 ADD_SUBDIRECTORY(rtkwangdisplaceddetectorweighting)
 ADD_SUBDIRECTORY(rtkfdktwodweights)
-ADD_SUBDIRECTORY(rtkramp)
 ADD_SUBDIRECTORY(rtkfdk)
 ADD_SUBDIRECTORY(rtkinlinefdk)
 ADD_SUBDIRECTORY(rtkamsterdamshroud)
@@ -30,6 +29,8 @@ ADD_SUBDIRECTORY(rtkdrawshepploganphantom)
 ADD_SUBDIRECTORY(rtkextractshroudsignal)
 ADD_SUBDIRECTORY(rtkbinning)
 ADD_SUBDIRECTORY(rtkmedian)
+ADD_SUBDIRECTORY(rtkcropping)
+ADD_SUBDIRECTORY(rtkramp)
 
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
