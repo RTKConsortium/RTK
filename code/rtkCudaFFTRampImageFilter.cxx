@@ -19,7 +19,12 @@
 #include "rtkCudaFFTRampImageFilter.h"
 #include "rtkCudaFFTRampImageFilter.hcu"
 
+#include "rtkCudaCropImageFilter.h"
+#include "rtkCudaCropImageFilter.hcu"
+
 #include <itkMacro.h>
+
+#include <rtkMacro.h>
 
 rtk::CudaFFTRampImageFilter
  ::CudaFFTRampImageFilter()
@@ -94,14 +99,31 @@ rtk::CudaFFTRampImageFilter
                        *(float**)(paddedImage->GetCudaDataManager()->GetGPUBufferPointer()),
                        *(float2**)(fftKCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 
-  // Crop and paste result
-  itk::ImageRegionConstIterator<FFTInputImageType> itS(paddedImage, this->GetOutput()->GetRequestedRegion() );
-  itk::ImageRegionIterator<OutputImageType>        itD(this->GetOutput(), this->GetOutput()->GetRequestedRegion() );
-  itS.GoToBegin();
-  itD.GoToBegin();
-  while(!itS.IsAtEnd() ) {
-    itD.Set(itS.Get() );
-    ++itS;
-    ++itD;
-    }
+//  // Crop and paste result
+//  itk::ImageRegionConstIterator<FFTInputImageType> itS(paddedImage, this->GetOutput()->GetRequestedRegion() );
+//  itk::ImageRegionIterator<OutputImageType>        itD(this->GetOutput(), this->GetOutput()->GetRequestedRegion() );
+//  itS.GoToBegin();
+//  itD.GoToBegin();
+//  while(!itS.IsAtEnd() ) {
+//    itD.Set(itS.Get() );
+//    ++itS;
+//    ++itD;
+//    }
+
+  // CUDA Cropping and Graft Output
+  typedef rtk::CudaCropImageFilter CroppingFilter;
+  CroppingFilter::Pointer cf = CroppingFilter::New();
+  ImageType::SizeType UpCropSize, LowCropSize;
+  // Setting Crop Region parameters
+  LowCropSize[0] = -paddedImage->GetBufferedRegion().GetIndex()[0]*2;
+  LowCropSize[1] = -paddedImage->GetBufferedRegion().GetIndex()[1];
+  LowCropSize[2] = -paddedImage->GetBufferedRegion().GetIndex()[2];
+  UpCropSize[0] = (paddedImage->GetBufferedRegion().GetSize()[0] - this->GetOutput()->GetBufferedRegion().GetSize()[0]) - LowCropSize[0];
+  UpCropSize[1] = (paddedImage->GetBufferedRegion().GetSize()[1] - this->GetOutput()->GetBufferedRegion().GetSize()[1]) - LowCropSize[1];
+  UpCropSize[2] = (paddedImage->GetBufferedRegion().GetSize()[2] - this->GetOutput()->GetBufferedRegion().GetSize()[2]) - LowCropSize[2];
+  cf->SetUpperBoundaryCropSize(UpCropSize);
+  cf->SetLowerBoundaryCropSize(LowCropSize);
+  cf->SetInput(paddedImage);
+  cf->Update();
+  this->GraftOutput(cf->GetOutput());
 }
