@@ -212,8 +212,12 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   long zeroext = ( (long)xPaddedSize - (long)inputRegion.GetSize(0) ) / 2;
   paddedRegion.SetIndex(0, inputRegion.GetIndex(0) - zeroext);
 
-  // Set y padding
+  // Set y padding. Padding along Y is only required if
+  // - there is some windowing in the Y direction
+  // - the DFT requires the size to be the product of given prime factors
   typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
+  if(this->GetHannCutFrequencyY()>0.)
+    yPaddedSize *= 2;
   while( GreatestPrimeFactor( yPaddedSize ) > m_GreatestPrimeFactor )
     yPaddedSize++;
   paddedRegion.SetSize(1, yPaddedSize);
