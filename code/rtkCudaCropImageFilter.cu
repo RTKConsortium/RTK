@@ -45,9 +45,9 @@ crop_kernel(float *input, float *output, const long3 cropIdx, const uint3 cropDi
 }
 
 void
-CUDA_crop(const long3 cropIndex,
-          const uint3 cropSize,
-          const uint3 inputSize,
+CUDA_crop(const long3 &cropIndex,
+          const uint3 &cropSize,
+          const uint3 &inputSize,
           float *input,
           float *output)
 {
