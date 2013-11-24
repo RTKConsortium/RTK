@@ -39,15 +39,20 @@ CudaCropImageFilter
   uint3 sz, input_sz;
   long3 idx;
 
-  idx.x = croppedRegion.GetIndex()[0];
-  idx.y = croppedRegion.GetIndex()[1];
-  idx.z = croppedRegion.GetIndex()[2];
+  idx.x = croppedRegion.GetIndex()[0] - this->GetInput()->GetBufferedRegion().GetIndex()[0];
+  idx.y = croppedRegion.GetIndex()[1] - this->GetInput()->GetBufferedRegion().GetIndex()[1];
+  idx.z = croppedRegion.GetIndex()[2] - this->GetInput()->GetBufferedRegion().GetIndex()[2];
   sz.x = croppedRegion.GetSize()[0];
   sz.y = croppedRegion.GetSize()[1];
   sz.z = croppedRegion.GetSize()[2];
-  input_sz.x = this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
-  input_sz.y = this->GetInput()->GetLargestPossibleRegion().GetSize()[1];
-  input_sz.z = this->GetInput()->GetLargestPossibleRegion().GetSize()[2];
+  input_sz.x = this->GetInput()->GetBufferedRegion().GetSize()[0];
+  input_sz.y = this->GetInput()->GetBufferedRegion().GetSize()[1];
+  input_sz.z = this->GetInput()->GetBufferedRegion().GetSize()[2];
+
+  if(this->GetOutput()->GetBufferedRegion() != this->GetOutput()->GetRequestedRegion())
+    {
+    itkExceptionMacro(<< "CudaCropImageFilter assumes that requested and buffered regions are equal.");
+    }
 
   float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );

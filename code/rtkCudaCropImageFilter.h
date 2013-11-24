@@ -18,7 +18,7 @@
 #ifndef __rtkCudaCropImageFilter_h
 #define __rtkCudaCropImageFilter_h
 
-#include "itkCropImageFilter.h"
+#include <itkCropImageFilter.h>
 #include "rtkWin32Header.h"
 
 #include <itkCudaImage.h>
