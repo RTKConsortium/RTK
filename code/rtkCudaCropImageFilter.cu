@@ -29,11 +29,11 @@ __global__
 void
 crop_kernel(float *input, float *output, const long3 cropIdx, const uint3 cropDim, const uint3 inputDim, const unsigned int Blocks_Y)
 {
-    unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-    unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-    unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-    unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-    unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= cropDim.x || j >= cropDim.y || k >= cropDim.z)
     return;
