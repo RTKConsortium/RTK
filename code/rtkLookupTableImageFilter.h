@@ -20,6 +20,7 @@
 #define __rtkLookupTableImageFilter_h
 
 #include <itkUnaryFunctorImageFilter.h>
+#include <itkLinearInterpolateImageFunction.h>
 
 namespace rtk
 {
@@ -27,7 +28,12 @@ namespace rtk
 /** \class LookupTableImageFilter
  * \brief Function to do the lookup operation.
  *
- * The lookup table is a 1D image which must contain all possible values.
+ * The lookup table is a 1D image. Two cases:
+ * - if the pixel type is float or double, the meta information of the image
+ * (spacing and origin) is used to select the pixel position and interpolate
+ * linearly at this position.
+ * - otherwise, it reads the value at the integer position, without
+ * interpolation.
  *
  * \author Simon Rit
  *
@@ -41,18 +47,26 @@ template< class TInput, class TOutput >
 class LUT
 {
 public:
-  typedef itk::Image<TOutput,1>                LookupTableType;
-  typedef typename LookupTableType::PixelType* LookupTableDataPointerType;
+  typedef itk::Image<TOutput,1>                                                   LookupTableType;
+  typedef typename LookupTableType::Pointer                                       LookupTablePointer;
+  typedef typename LookupTableType::PixelType*                                    LookupTableDataPointer;
+  typedef typename itk::LinearInterpolateImageFunction< LookupTableType, double > InterpolatorType;
+  typedef typename InterpolatorType::Pointer                                      InterpolatorPointer;
 
-  LUT() {};
+  LUT():
+    m_LookupTableDataPointer(NULL),
+    m_Interpolator(InterpolatorType::New())
+  {};
   ~LUT() {};
 
   /** Get/Set the lookup table. */
-  LookupTableDataPointerType GetLookupTableDataPointer() {
-    return m_LookupTableDataPointer;
+  LookupTableDataPointer GetLookupTable() {
+    return m_LookupTablePointer;
   }
-  void SetLookupTableDataPointer(LookupTableDataPointerType lut) {
-    m_LookupTableDataPointer = lut;
+  void SetLookupTable(LookupTablePointer lut) {
+    m_LookupTablePointer = lut;
+    m_LookupTableDataPointer = lut->GetBufferPointer();
+    m_InverseLUTSpacing = 1. / m_LookupTablePointer->GetSpacing()[0];
   }
 
   bool operator!=( const LUT & lut ) const {
@@ -62,19 +76,50 @@ public:
     return m_LookupTableDataPointer == lut->GetLookupTableDataPointer;
   }
 
-  inline TOutput operator()( const TInput & val ) const {
-    return m_LookupTableDataPointer[val];
-  }
+  inline TOutput operator()( const TInput & val ) const;
 
 private:
-  LookupTableDataPointerType m_LookupTableDataPointer;
+  LookupTablePointer     m_LookupTablePointer;
+  LookupTableDataPointer m_LookupTableDataPointer;
+  InterpolatorPointer    m_Interpolator;
+  double                 m_InverseLUTSpacing;
 };
+
+template< class TInput, class TOutput >
+TOutput
+LUT<TInput, TOutput>
+::operator()( const TInput & val ) const {
+  return m_LookupTableDataPointer[val];
+}
+
+template<>
+float
+LUT<float, float>
+::operator()( const float & val ) const {
+  InterpolatorType::ContinuousIndexType index;
+  index[0] = m_InverseLUTSpacing * (val  - m_LookupTablePointer->GetOrigin()[0]);
+  return float(m_Interpolator->EvaluateAtContinuousIndex(index));
+}
+
+template<>
+double
+LUT<double, double>
+::operator()( const double & val ) const {
+  InterpolatorType::ContinuousIndexType index;
+  index[0] = m_InverseLUTSpacing * (val  - m_LookupTablePointer->GetOrigin()[0]);
+  return double(m_Interpolator->EvaluateAtContinuousIndex(index));
+}
+
 } // end namespace Functor
 
 /** \class LookupTableImageFilter
- * \brief Converts integer values of an input image using lookup table.
+ * \brief Converts values of an input image using lookup table.
  *
- * The lookup table is passed via a functor of type Functor::LUT
+ * The lookup table is passed via a functor of type Functor::LUT. If the image
+ * is of type integer, it directly reads the corresponding value in the lookup
+ * table. If the lookup table is of type double or float, it uses the meta-
+ * information of the lookup table (origin and spacing) to locate a continuous
+ * index and interpolate at the corresponding location.
  *
  * \author Simon Rit
  *
@@ -112,7 +157,7 @@ public:
     if (this->m_LookupTable != _arg) {
       this->m_LookupTable = _arg;
       this->Modified();
-      this->GetFunctor().SetLookupTableDataPointer(_arg->GetBufferPointer() );
+      this->GetFunctor().SetLookupTable(_arg);
       }
   }
 
