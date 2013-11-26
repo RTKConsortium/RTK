@@ -1,0 +1,9 @@
+package "rtk"
+version "Convert pixel intensities of projection images according to lookup table"
+
+option "verbose"   v "Verbose execution"                                         flag     off
+option "config"    - "Config file"                                               string   no
+option "output"    o "Output stack file name"                                    string   yes
+option "path"      p "Path containing projections"                               string   yes
+option "regexp"    r "Regular expression to select projection files in path"     string   yes
+option "lut"       l "File name for 1D lookup table"                             string   yes
