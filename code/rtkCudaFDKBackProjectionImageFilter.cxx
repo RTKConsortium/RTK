@@ -37,7 +37,8 @@ void
 CudaFDKBackProjectionImageFilter
 ::GPUGenerateData()
 {
-  //this->AllocateOutputs();
+  if(this->GetTranspose())
+    itkExceptionMacro(<< "Transpose is not handled by CudaFDKBackProjectionImageFilter")
 
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
@@ -75,12 +76,14 @@ CudaFDKBackProjectionImageFilter
   float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
-  // Go over each projection
-  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
-    {
-    // Extract the current slice
-    ProjectionImagePointer projection = this->GetProjection<ProjectionImageType>(iProj);
+  float *stackGPUPointer = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
+  ptrdiff_t projSize = this->GetInput(1)->GetBufferedRegion().GetSize()[0] *
+                       this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+  stackGPUPointer += projSize * (iFirstProj-this->GetInput(1)->GetBufferedRegion().GetIndex()[2]);
 
+  // Go over each projection
+  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++, stackGPUPointer += projSize)
+    {
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)
     ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj);
@@ -90,7 +93,7 @@ CudaFDKBackProjectionImageFilter
     matrixIdxProj.SetIdentity();
     for(unsigned int i=0; i<2; i++)
       //SR: 0.5 for 2D texture
-      matrixIdxProj[i][2] = -1*(projection->GetBufferedRegion().GetIndex()[i])+0.5;
+      matrixIdxProj[i][2] = -1*(this->GetInput(1)->GetBufferedRegion().GetIndex()[i])+0.5;
 
     matrix = matrixIdxProj.GetVnlMatrix() * matrix.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
 
@@ -108,7 +111,7 @@ CudaFDKBackProjectionImageFilter
                               fMatrix,
                               pin,
                               pout,
-                              *(float**)( projection->GetCudaDataManager()->GetGPUBufferPointer() )
+                              stackGPUPointer
                               );
     pin = pout;
     }
