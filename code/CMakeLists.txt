@@ -64,12 +64,13 @@ ENDIF(OPENCL_FOUND)
 # Cuda library stuff
 IF (CUDA_FOUND)
   SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
-  SET (rtkcuda_CUDA_FILES
+  SET (rtkcuda_CUDA_FILES 
+       rtkCudaCropImageFilter.cu 
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
        rtkCudaFFTRampImageFilter.cu
        rtkCudaForwardProjectionImageFilter.cu
-       rtkCudaBackProjectionImageFilter.cu )
+       rtkCudaBackProjectionImageFilter.cu)
        
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
@@ -89,6 +90,7 @@ IF (CUDA_FOUND)
   ENDIF()
 
   ADD_LIBRARY(rtkcuda
+              rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
