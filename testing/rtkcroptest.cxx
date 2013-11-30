@@ -49,7 +49,7 @@ int main(int , char** )
   ImageType::IndexType index;
   index.Fill(2);
   
-  if((crop->GetOutput()->GetPixel(index)-12.3)>0.0001)
+  if(fabs(crop->GetOutput()->GetPixel(index)-12.3)>0.0001)
     {
     std::cout << "Output should be 12.3. Value Computed = " 
               << crop->GetOutput()->GetPixel(index) << std::endl;
