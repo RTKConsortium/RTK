@@ -55,6 +55,12 @@ TARGET_LINK_LIBRARIES(rtkrampfiltertest RTK)
 ADD_TEST(rtkrampfiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfiltertest)
 ADD_CUDA_TEST(rtkrampfilter rtkrampfiltertest.cxx)
 
+ADD_EXECUTABLE(rtkrampfiltertest2 rtkrampfiltertest2.cxx)
+TARGET_LINK_LIBRARIES(rtkrampfiltertest2 RTK)
+ADD_TEST(rtkrampfiltertest2 ${EXECUTABLE_OUTPUT_PATH}/rtkrampfiltertest2)
+ADD_CUDA_TEST(rtkrampfilter2 rtkrampfiltertest2.cxx)
+
+
 ADD_EXECUTABLE(rtkrampfilternofftwtest rtkrampfiltertest.cxx)
 SET_TARGET_PROPERTIES(rtkrampfilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
 TARGET_LINK_LIBRARIES(rtkrampfilternofftwtest RTK)
