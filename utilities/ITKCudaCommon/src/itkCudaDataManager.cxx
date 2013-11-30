@@ -89,7 +89,11 @@ void CudaDataManager::UpdateCPUBuffer()
 {
   MutexHolderType holder(m_Mutex);
 
-  if (m_IsCPUBufferDirty && m_GPUBuffer && m_CPUBuffer)
+  if(m_IsGPUBufferDirty)
+    {
+    m_IsCPUBufferDirty = false;
+    }
+  else if(m_IsCPUBufferDirty && m_GPUBuffer && m_CPUBuffer)
     {
 #ifdef VERBOSE
     std::cout << this << "::UpdateCPUBuffer GPU->CPU data copy " << m_GPUBuffer->GetPointer() << "->" << m_CPUBuffer << " : " << m_BufferSize << std::endl;
@@ -104,16 +108,18 @@ void CudaDataManager::UpdateCPUBuffer()
 void CudaDataManager::UpdateGPUBuffer()
 {
   MutexHolderType mutexHolder(m_Mutex);
-  if (m_IsGPUBufferDirty && m_CPUBuffer && m_GPUBuffer)
+  if (m_IsGPUBufferDirty && m_GPUBuffer)
     {
-    this->Allocate();
+    this->Allocate(); // do the allocation
+
+    if(!m_IsCPUBufferDirty && m_CPUBuffer)
+      {
 #ifdef VERBOSE
-    std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer->GetPointer() << " : " << m_BufferSize << std::endl;
+      std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer->GetPointer() << " : " << m_BufferSize << std::endl;
 #endif
-
-    CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context 
-    CUDA_CHECK(cudaMemcpy(m_GPUBuffer->GetPointer(), m_CPUBuffer, m_BufferSize, cudaMemcpyHostToDevice));
-
+      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context 
+      CUDA_CHECK(cudaMemcpy(m_GPUBuffer->GetPointer(), m_CPUBuffer, m_BufferSize, cudaMemcpyHostToDevice));
+      }
     m_IsGPUBufferDirty = false;
     }
 }
