@@ -93,10 +93,6 @@ protected:
   // Cuda kernel manager
   typename CudaKernelManager::Pointer m_CudaKernelManager;
 
-  // Cuda kernel handle - kernel should be defined in specific filter (not in the
-  // base class)
-  //int m_KernelHandle;
-
 private:
   CudaImageToImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);        //purposely not implemented

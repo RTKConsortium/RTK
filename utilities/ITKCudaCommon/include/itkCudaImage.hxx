@@ -49,7 +49,11 @@ void CudaImage< TPixel, VImageDimension >::Allocate()
   m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
   m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
+  
+  // When we allocate both buffers are dirty as the image data can provided
+  // by GPU filters without going through the CPU memory first
   m_DataManager->SetGPUBufferDirty();
+  m_DataManager->SetCPUDirtyFlag(true);
 
   // prevent unnecessary copy from CPU to Cuda at the beginning
   m_DataManager->SetTimeStamp(this->GetTimeStamp());
