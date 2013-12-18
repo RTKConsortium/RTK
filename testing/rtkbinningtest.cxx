@@ -1,12 +1,8 @@
 
+#include "rtkConfiguration.h"
+#include "rtkMacro.h"
 #include "rtkTestConfiguration.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayBoxIntersectionImageFilter.h"
-#include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
-#include "itkImageFileWriter.h"
-
 #include <itkBinShrinkImageFilter.h>
 
 template<class TImage>
