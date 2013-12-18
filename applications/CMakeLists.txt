@@ -28,7 +28,6 @@ ADD_SUBDIRECTORY(rtkfieldofview)
 ADD_SUBDIRECTORY(rtksubselect)
 ADD_SUBDIRECTORY(rtkdrawshepploganphantom)
 ADD_SUBDIRECTORY(rtkextractshroudsignal)
-ADD_SUBDIRECTORY(rtkbinning)
 ADD_SUBDIRECTORY(rtkmedian)
 ADD_SUBDIRECTORY(rtklut)
 
