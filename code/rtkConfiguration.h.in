@@ -32,7 +32,15 @@ namespace rtk
 namespace itk
 {
   typedef int ThreadIdType;
+  typedef signed long IndexValueType;
+  typedef signed long OffsetValueType;
+  typedef signed long SizeValueType;
 }
+#  ifndef NDEBUG
+#    define itkAssertInDebugAndIgnoreInReleaseMacro(X) assert(X)
+#  else
+#    define itkAssertInDebugAndIgnoreInReleaseMacro(X)
+#  endif
 #else
 namespace rtk
 {

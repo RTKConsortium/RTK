@@ -73,14 +73,18 @@ rtk::CudaFFTRampImageFilter
   fftK = this->GetFFTRampKernel<FFTInputCPUImageType, FFTOutputCPUImageType>(s[0], s[1]);
 
   // Create the itk::CudaImage holding the kernel
+  FFTOutputImageType::RegionType kreg = fftK->GetLargestPossibleRegion();
+#if ITK_VERSION_MAJOR <= 3 && !defined(USE_FFTWF)
+  kreg.SetSize(0, kreg.GetSize(0)/2+1);
+#endif
   FFTOutputImagePointer fftKCUDA = FFTOutputImageType::New();
-  fftKCUDA->SetRegions(fftK->GetLargestPossibleRegion());
+  fftKCUDA->SetRegions(kreg);
   fftKCUDA->Allocate();
 
   // CUFFT scales by the number of element, correct for it in kernel.
   // Also transfer the kernel from the itk::Image to the itk::CudaImage.
-  itk::ImageRegionIterator<FFTOutputCPUImageType> itKI(fftK, fftK->GetBufferedRegion() );
-  itk::ImageRegionIterator<FFTOutputImageType>    itKO(fftKCUDA, fftKCUDA->GetBufferedRegion() );
+  itk::ImageRegionIterator<FFTOutputCPUImageType> itKI(fftK, kreg);
+  itk::ImageRegionIterator<FFTOutputImageType>    itKO(fftKCUDA, kreg);
   FFTPrecisionType invNPixels = 1 / double(paddedImage->GetBufferedRegion().GetNumberOfPixels() );
   while(!itKO.IsAtEnd() )
     {

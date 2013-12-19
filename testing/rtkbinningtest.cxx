@@ -1,13 +1,9 @@
 
+#include "rtkConfiguration.h"
+#include "rtkMacro.h"
 #include "rtkTestConfiguration.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayBoxIntersectionImageFilter.h"
-#include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
-#include "itkImageFileWriter.h"
-
-#include "rtkBinningImageFilter.h"
+#include <itkBinShrinkImageFilter.h>
 
 template<class TImage>
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
@@ -114,7 +110,7 @@ int main(int , char** )
   imgRef->UpdateLargestPossibleRegion();
 
   // Binning filter
-  typedef rtk::BinningImageFilter BINType;
+  typedef itk::BinShrinkImageFilter<OutputImageType, OutputImageType> BINType;
   BINType::Pointer bin = BINType::New();
 
   std::cout << "\n\n****** Case 1: binning 2x2 ******" << std::endl;
@@ -124,7 +120,7 @@ int main(int , char** )
   binning_factors[0]=2;
   binning_factors[1]=2;
   bin->SetInput(imgIn->GetOutput());
-  bin->SetBinningFactors(binning_factors);
+  bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
   CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
@@ -147,7 +143,7 @@ int main(int , char** )
   // Update binning filter
   binning_factors[0]=1;
   binning_factors[1]=2;
-  bin->SetBinningFactors(binning_factors);
+  bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
   CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
@@ -171,7 +167,7 @@ int main(int , char** )
   binning_factors[0]=2;
   binning_factors[1]=1;
   bin->SetInput(imgIn->GetOutput());
-  bin->SetBinningFactors(binning_factors);
+  bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
   CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
