@@ -22,6 +22,7 @@
 #include "rtkCudaBackProjectionImageFilter.h"
 #include "rtkCudaForwardProjectionImageFilter.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
+#include "rtkWin32Header.h"
 
 #include <itkExtractImageFilter.h>
 #if ITK_VERSION_MAJOR <= 3
@@ -77,7 +78,7 @@ public:
   itkTypeMacro(CudaSARTConeBeamReconstructionFilter, SARTConeBeamReconstructionFilter);
 
 protected:
-  CudaSARTConeBeamReconstructionFilter();
+  rtkcuda_EXPORT CudaSARTConeBeamReconstructionFilter();
   ~CudaSARTConeBeamReconstructionFilter(){}
 
 private:

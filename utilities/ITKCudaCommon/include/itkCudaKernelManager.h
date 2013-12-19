@@ -25,6 +25,7 @@
 #include "itkCudaImage.h"
 #include "itkCudaContextManager.h"
 #include "itkCudaDataManager.h"
+#include "rtkWin32Header.h"
 
 namespace itk
 {
@@ -36,7 +37,7 @@ namespace itk
  * \ingroup ITKCudaCommon
  */
 
-class ITK_EXPORT CudaKernelManager : public LightObject
+class ITKCudaCommon_EXPORT CudaKernelManager : public LightObject
 {
 public:
 

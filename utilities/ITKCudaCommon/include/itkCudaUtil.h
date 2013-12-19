@@ -33,6 +33,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
+#include "rtkWin32Header.h"
 
 namespace itk
 {
@@ -99,9 +100,9 @@ int CudaSelectPlatform(const char* name);
 int CudaGetAvailableDevices(std::vector<cudaDeviceProp> &devices);
 
 /** Check Cuda error */
-void CudaCheckError(cudaError_t error, const char* filename = "", int lineno = 0, const char* location = "");
+void ITKCudaCommon_EXPORT CudaCheckError(cudaError_t error, const char* filename = "", int lineno = 0, const char* location = "");
 
-void CudaCheckError(CUresult error, const char* filename = "", int lineno = 0, const char* location = "");
+void ITKCudaCommon_EXPORT CudaCheckError(CUresult error, const char* filename = "", int lineno = 0, const char* location = "");
 
 /** Check if Cuda-enabled Cuda is present. */
 bool IsCudaAvailable();
