@@ -23,7 +23,7 @@
 #include "itkCudaInPlaceImageFilter.h"
 #include "itkCudaUtil.h"
 #include "itkCudaKernelManager.h"
-
+#include "rtkWin32Header.h"
 
 /** \class CudaForwardProjectionImageFilter
  * \brief TODO
@@ -75,7 +75,7 @@ public:
   itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
 
 protected:
-  CudaForwardProjectionImageFilter();
+  rtkcuda_EXPORT CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
 
   void GPUGenerateData();

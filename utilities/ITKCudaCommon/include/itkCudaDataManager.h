@@ -25,6 +25,7 @@
 #include "itkCudaContextManager.h"
 #include "itkSimpleFastMutexLock.h"
 #include "itkMutexLockHolder.h"
+#include "rtkWin32Header.h"
 
 #include <memory>
 
@@ -95,7 +96,7 @@ protected:
  *
  * \ingroup ITKCudaCommon
  */
-class ITK_EXPORT CudaDataManager : public Object
+class ITKCudaCommon_EXPORT CudaDataManager : public Object
 {
   /** allow CudaKernelManager to access Cuda buffer pointer */
   friend class CudaKernelManager;

@@ -43,4 +43,15 @@
 #define rtkcuda_EXPORT 
 #endif
 
+#if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS) 
+# ifdef ITKCudaCommon_EXPORTS
+#  define ITKCudaCommon_EXPORT __declspec(dllexport)
+# else
+#  define ITKCudaCommon_EXPORT __declspec(dllimport)
+# endif  /* RTK_EXPORT */
+#else
+/* unix needs nothing */
+#define ITKCudaCommon_EXPORT 
+#endif
+
 #endif

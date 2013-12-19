@@ -8,6 +8,12 @@ set(ITKCudaCommon_SRC
 # Avoid issue with command line too long for nvcc
 SET_DIRECTORY_PROPERTIES(PROPERTIES INCLUDE_DIRECTORIES "" )
 
+# This is necessary for Shared libraries and RTK
+if(RTK_BUILD_SHARED_LIBS)
+  include_directories(${RTK_SOURCE_DIR}/code)
+  include_directories(${RTK_BINARY_DIR})
+endif()
+
 include_directories(${CUDA_INCLUDE_DIRS})
 include_directories(${ITKCudaCommon_SOURCE_DIR}/include)
 include_directories(${ITK_INCLUDE_DIRS})
