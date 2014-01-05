@@ -133,16 +133,16 @@ void rtk::HndImageIO::Read(void * buffer)
 {
   FILE *fp;
 
-  itk::uint32_t*      buf = (itk::uint32_t*)buffer;
+  itk::uint32_t *buf = (itk::uint32_t*)buffer;
   unsigned char *pt_lut;
-  itk::uint32_t       a;
+  itk::uint32_t  a;
   unsigned char  v;
   int            lut_idx, lut_off;
   size_t         num_read;
   char           dc;
   short          ds;
   long           dl, diff=0;
-  itk::uint32_t       i;
+  itk::uint32_t  i;
 
   fp = fopen (m_FileName.c_str(), "rb");
   if (fp == NULL)
