@@ -35,24 +35,24 @@ void rtk::HndImageIO::ReadImageInformation()
 
   size_t nelements = 0;
   nelements += fread ( (void *) hnd.sFileType, sizeof(char), 32, fp);
-  nelements += fread ( (void *) &hnd.FileLength, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.FileLength, sizeof(itk::uint32_t), 1, fp);
   nelements += fread ( (void *) hnd.sChecksumSpec, sizeof(char), 4, fp);
-  nelements += fread ( (void *) &hnd.nCheckSum, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nCheckSum, sizeof(itk::uint32_t), 1, fp);
   nelements += fread ( (void *) hnd.sCreationDate, sizeof(char), 8, fp);
   nelements += fread ( (void *) hnd.sCreationTime, sizeof(char), 8, fp);
   nelements += fread ( (void *) hnd.sPatientID, sizeof(char), 16, fp);
-  nelements += fread ( (void *) &hnd.nPatientSer, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nPatientSer, sizeof(itk::uint32_t), 1, fp);
   nelements += fread ( (void *) hnd.sSeriesID, sizeof(char), 16, fp);
-  nelements += fread ( (void *) &hnd.nSeriesSer, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nSeriesSer, sizeof(itk::uint32_t), 1, fp);
   nelements += fread ( (void *) hnd.sSliceID, sizeof(char), 16, fp);
-  nelements += fread ( (void *) &hnd.nSliceSer, sizeof(uint32_t), 1, fp);
-  nelements += fread ( (void *) &hnd.SizeX, sizeof(uint32_t), 1, fp);
-  nelements += fread ( (void *) &hnd.SizeY, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nSliceSer, sizeof(itk::uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.SizeX, sizeof(itk::uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.SizeY, sizeof(itk::uint32_t), 1, fp);
   nelements += fread ( (void *) &hnd.dSliceZPos, sizeof(double), 1, fp);
   nelements += fread ( (void *) hnd.sModality, sizeof(char), 16, fp);
-  nelements += fread ( (void *) &hnd.nWindow, sizeof(uint32_t), 1, fp);
-  nelements += fread ( (void *) &hnd.nLevel, sizeof(uint32_t), 1, fp);
-  nelements += fread ( (void *) &hnd.nPixelOffset, sizeof(uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nWindow, sizeof(itk::uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nLevel, sizeof(itk::uint32_t), 1, fp);
+  nelements += fread ( (void *) &hnd.nPixelOffset, sizeof(itk::uint32_t), 1, fp);
   nelements += fread ( (void *) hnd.sImageType, sizeof(char), 4, fp);
   nelements += fread ( (void *) &hnd.dGantryRtn, sizeof(double), 1, fp);
   nelements += fread ( (void *) &hnd.dSAD, sizeof(double), 1, fp);
@@ -95,7 +95,7 @@ void rtk::HndImageIO::ReadImageInformation()
   nelements += fread ( (void *) &hnd.dGating4DInfoZ, sizeof(double), 1, fp);
   nelements += fread ( (void *) &hnd.dGating4DInfoTime, sizeof(double), 1, fp);
 
-  if(nelements != /*char*/120 + /*uint32_t*/10 +  /*double*/41)
+  if(nelements != /*char*/120 + /*itk::uint32_t*/10 +  /*double*/41)
     itkGenericExceptionMacro(<< "Could not read header data in " << m_FileName);
 
   if(fclose (fp) != 0)
@@ -133,16 +133,16 @@ void rtk::HndImageIO::Read(void * buffer)
 {
   FILE *fp;
 
-  uint32_t*      buf = (uint32_t*)buffer;
+  itk::uint32_t*      buf = (itk::uint32_t*)buffer;
   unsigned char *pt_lut;
-  uint32_t       a;
+  itk::uint32_t       a;
   unsigned char  v;
   int            lut_idx, lut_off;
   size_t         num_read;
   char           dc;
   short          ds;
   long           dl, diff=0;
-  uint32_t       i;
+  itk::uint32_t       i;
 
   fp = fopen (m_FileName.c_str(), "rb");
   if (fp == NULL)
@@ -160,13 +160,13 @@ void rtk::HndImageIO::Read(void * buffer)
 
   /* Read first row */
   for (i = 0; i < GetDimensions(0); i++) {
-    if(1 != fread (&a, sizeof(uint32_t), 1, fp))
+    if(1 != fread (&a, sizeof(itk::uint32_t), 1, fp))
       itkGenericExceptionMacro(<< "Could not read first row in: " << m_FileName);
     buf[i] = a;
     }
 
   /* Read first pixel of second row */
-  if(1 != fread (&a, sizeof(uint32_t), 1, fp))
+  if(1 != fread (&a, sizeof(itk::uint32_t), 1, fp))
     itkGenericExceptionMacro(<< "Could not read first pixel of second row");
   buf[i++] = a;
 
@@ -174,7 +174,7 @@ void rtk::HndImageIO::Read(void * buffer)
   lut_idx = 0;
   lut_off = 0;
   while (i < GetDimensions(0) * GetDimensions(1) ) {
-    uint32_t r11, r12, r21;
+    itk::uint32_t r11, r12, r21;
 
     r11 = buf[i-GetDimensions(0)-1];
     r12 = buf[i-GetDimensions(0)];
@@ -211,7 +211,7 @@ void rtk::HndImageIO::Read(void * buffer)
         diff = ds;
         break;
       case 2:
-        num_read = fread (&dl, sizeof(uint32_t), 1, fp);
+        num_read = fread (&dl, sizeof(itk::uint32_t), 1, fp);
         if (num_read != 1) goto read_error;
         diff = dl;
         break;
