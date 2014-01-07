@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Bradley Lowekamp
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,38 +19,51 @@
 #define __itkBinShrinkImageFilter_h
 
 #include "itkShrinkImageFilter.h"
+#include "itkEnableIf.h"
+#include "itkIsSame.h"
 
 namespace itk
 {
 
 /** \class BinShrinkImageFilter
  * \brief Reduce the size of an image by an integer factor in each
- * dimension and averages by the same size.
+ * dimension while performing averaging of an input neighborhood.
  *
- * BinShrinkImageFilter reduces the size of an image by an integer factor
- * in each dimension. The algorithm implemented is a mean or box
- * filter subsample.
  *
  * The output image size in each dimension is given by:
  *
  * outputSize[j] = max( vcl_floor(inputSize[j]/shrinkFactor[j]), 1 );
  *
+ * The algorithm implemented can be describe with the following
+ * equation for 2D:
+ * \f[
+ *  \mathsf{I}_{out}(x_o,x_1) =
+ *    \frac{\sum_{i=0}^{f_0}\sum_{j=0}^{f_1}\mathsf{I}_{in}(f_0 x_o+i,f_1 x_1+j)}{f_0 f_1}
+ * \f]
+ *
  * This filter is implemented so that the starting extent of the first
  * pixel of the output matches that of the input.
  *
- * \ingroup ITKBinShrink
+ * \image html BinShrinkGrid.png "The change in image geometry from a 5x5 image binned by a factor of 2x2."
+ *
+ * This code was contributed in the Insight Journal paper:
+ * "BinShrink: A multi-resolution filter with cache efficient averaging"
+ *  by Lowekamp B., Chen D.
+ * http://hdl.handle.net/10380/3450
+ *
+ * \ingroup ITKImageGrid
  * \ingroup Streamed
  */
-template <class TInputImage, class TOutputImage>
-class ITK_EXPORT BinShrinkImageFilter:
-    public ImageToImageFilter<TInputImage,TOutputImage>
+template <typename TInputImage, typename TOutputImage>
+class BinShrinkImageFilter :
+  public ImageToImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef BinShrinkImageFilter                          Self;
-  typedef ImageToImageFilter<TInputImage,TOutputImage>   Superclass;
-  typedef SmartPointer<Self>                            Pointer;
-  typedef SmartPointer<const Self>                      ConstPointer;
+  typedef BinShrinkImageFilter                         Self;
+  typedef ImageToImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef SmartPointer<Self>                           Pointer;
+  typedef SmartPointer<const Self>                     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -59,19 +72,18 @@ public:
   itkTypeMacro(BinShrinkImageFilter, ShrinkImageFilter);
 
   /** Typedef to images */
-  typedef TOutputImage                                OutputImageType;
-  typedef TInputImage                                 InputImageType;
-  typedef typename OutputImageType::Pointer           OutputImagePointer;
-  typedef typename InputImageType::Pointer            InputImagePointer;
-  typedef typename InputImageType::ConstPointer       InputImageConstPointer;
+  typedef TOutputImage                          OutputImageType;
+  typedef TInputImage                           InputImageType;
+  typedef typename OutputImageType::Pointer     OutputImagePointer;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
 
-  typedef typename TOutputImage::OffsetType           OutputOffsetType;
-  typedef typename TOutputImage::IndexType            OutputIndexType;
-  typedef typename TInputImage::IndexType             InputIndexType;
+  typedef typename TOutputImage::OffsetType  OutputOffsetType;
+  typedef typename TOutputImage::IndexType   OutputIndexType;
+  typedef typename TInputImage::IndexType    InputIndexType;
 
   /** Typedef to describe the output image region type. */
   typedef typename TOutputImage::RegionType OutputImageRegionType;
-
 
   /** ImageDimension enumeration. */
   itkStaticConstMacro(ImageDimension, unsigned int,
@@ -118,10 +130,26 @@ protected:
 
 private:
   BinShrinkImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  void operator=(const Self&);       //purposely not implemented
 
   ShrinkFactorsType m_ShrinkFactors;
 
+  /** Round different pixel types. */
+  template< class TOutputType, class TInputType >
+  typename EnableIfC<std::numeric_limits<TOutputType>::is_integer,  TOutputType>::Type
+  RoundIfInteger( TInputType input )
+    {
+      return Math::Round< TOutputType >( input );
+    }
+
+  // For Non-fundamental types numeric_limits is not specialized, and
+  // is_integer defaults to false.
+  template< class TOutputType, class TInputType >
+  typename DisableIfC<std::numeric_limits<TOutputType>::is_integer,  TOutputType>::Type
+  RoundIfInteger( const TInputType & input, ...)
+    {
+      return static_cast<TOutputType>(input);
+    }
 };
 
 } // end namespace itk
