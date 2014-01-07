@@ -265,8 +265,7 @@ BinShrinkImageFilter<TInputImage,TOutputImage>
   // actually if we need to crop an exceptions should be thrown!
   //inputRequestedRegion.Crop( inputPtr->GetLargestPossibleRegion() );
 
-  if ( !inputPtr->GetLargestPossibleRegion().IsInside( inputRequestedRegion.GetIndex() ) ||
-       !inputPtr->GetLargestPossibleRegion().IsInside( inputRequestedRegion.GetUpperIndex() ) )
+  if ( !inputPtr->GetLargestPossibleRegion().IsInside(inputRequestedRegion) )
     {
     itkExceptionMacro( "Unexpected error calculating RR");
     }
