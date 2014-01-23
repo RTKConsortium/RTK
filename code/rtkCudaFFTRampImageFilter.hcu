@@ -26,5 +26,13 @@ CUDA_fft_convolution(const int3 &inputDimension,
                      const int2 &kernelDimension,
                      float *deviceProjection,
                      float2 *deviceKernelFFT);
+void
+CUDA_padding(const long3 &paddingIndex,
+             const uint3 &paddingSize,
+             float *deviceVolume,
+             float *devicePaddedVolume,
+             float *truncationWeights,
+             unsigned int sizeWeights,
+             float hannY);
 
 #endif
