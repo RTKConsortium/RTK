@@ -16,15 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConvertEllipsoidToQuadricParametersFunction_txx
-#define __rtkConvertEllipsoidToQuadricParametersFunction_txx
-
+#include <itkMath.h>
 #include <vcl_cmath.h>
-#include "rtkMacro.h"
+#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 
-namespace rtk
-{
-ConvertEllipsoidToQuadricParametersFunction
+rtk::ConvertEllipsoidToQuadricParametersFunction
 ::ConvertEllipsoidToQuadricParametersFunction():
 m_SemiPrincipalAxisX(0.),
 m_SemiPrincipalAxisY(0.),
@@ -38,7 +34,7 @@ m_Figure("Ellipsoid")
 {
 }
 
-bool ConvertEllipsoidToQuadricParametersFunction
+bool rtk::ConvertEllipsoidToQuadricParametersFunction
 ::Translate( const VectorType& SemiPrincipalAxis )
 {
   m_SemiPrincipalAxisX = SemiPrincipalAxis[0];
@@ -85,7 +81,7 @@ bool ConvertEllipsoidToQuadricParametersFunction
   return true;
 }
 
-bool ConvertEllipsoidToQuadricParametersFunction
+bool rtk::ConvertEllipsoidToQuadricParametersFunction
 ::Rotate( const double RotationAngle, const VectorType& Center )
 {
   m_RotationAngle = RotationAngle;
@@ -145,6 +141,4 @@ bool ConvertEllipsoidToQuadricParametersFunction
   m_J += TransJ;
   return true;
 }
-} // namespace rtk
 
-#endif // __rtkConvertEllipsoidToQuadricParametersFunction_txx

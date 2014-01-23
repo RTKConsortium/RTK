@@ -21,6 +21,7 @@
 
 #include <itkNumericTraits.h>
 #include <itkVector.h>
+#include <itkObjectFactory.h>
 
 namespace rtk
 {
@@ -126,9 +127,5 @@ private:
 };
 
 } // end namespace rtk
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConvertEllipsoidToQuadricParametersFunction.txx"
-#endif
 
 #endif

@@ -30,7 +30,8 @@ ADD_LIBRARY(RTK
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
-           )
+            rtkConvertEllipsoidToQuadricParametersFunction.cxx
+            )
 
 IF( ITK_VERSION_MAJOR LESS "4" AND (USE_FFTWF OR USE_FFTWD) )
   TARGET_LINK_LIBRARIES(RTK ITKFFTW)
