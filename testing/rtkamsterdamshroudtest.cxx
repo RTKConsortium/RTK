@@ -11,6 +11,7 @@
 #include "rtkConfiguration.h"
 #include "rtkReg1DExtractShroudSignalImageFilter.h"
 #include "rtkDPExtractShroudSignalImageFilter.h"
+#include "rtkMacro.h"
 
 template<class TInputImage>
 #if FAST_TESTS_NO_CHECKS
