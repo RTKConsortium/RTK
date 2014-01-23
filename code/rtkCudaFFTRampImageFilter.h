@@ -49,6 +49,9 @@ public:
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
+//  typedef typename itk::CudaImage<float,3>         CudaFFTInputImageType;
+//  typedef typename CudaFFTInputImageType::Pointer  CudaFFTInputImagePointer;
+
   /** Standard New method. */
   itkNewMacro(Self);
 
@@ -59,6 +62,16 @@ protected:
   ~CudaFFTRampImageFilter(){}
 
   virtual void GPUGenerateData();
+  /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
+    * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
+    * centralRegion is the region of the returned image which corresponds to inputRegion.
+    * The function is templated to allow its use with itk::CudaImage in children.
+    */
+//  typename rtk::CudaFFTInputImagePointer CudaPadInputImageRegion(const RegionType &inputRegion);
+  void CudaPadInputImageRegion(const RegionType &inputRegion);
+
+  //CudaFFTInputImagePointer m_padImage;
+  itk::CudaImage<float,3>::Pointer    m_padImage;
 
 private:
   CudaFFTRampImageFilter(const Self&); //purposely not implemented

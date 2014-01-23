@@ -162,6 +162,14 @@ protected:
     */
   void UpdateTruncationMirrorWeights();
 
+  int GetTruncationCorrectionExtent();
+
+  /**
+   * Greatest prime factor of the FFT input.
+   */
+  int m_GreatestPrimeFactor;
+  typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
+
 private:
   FFTRampImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);     //purposely not implemented
@@ -170,13 +178,6 @@ private:
     * 0 means no correction.
     */
   double                              m_TruncationCorrection;
-  typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
-  int GetTruncationCorrectionExtent();
-
-  /**
-   * Greatest prime factor of the FFT input.
-   */
-  int m_GreatestPrimeFactor;
 
   /**
    * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
