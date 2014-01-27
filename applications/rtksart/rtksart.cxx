@@ -61,6 +61,11 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->GenerateOutputInformation() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
+
+DD(reader->GetOutput()->GetOrigin());
+DD(reader->GetOutput()->GetLargestPossibleRegion().GetSize());
+        DD(reader->GetOutput()->GetSpacing());
 
   // Geometry
   if(args_info.verbose_flag)
@@ -149,6 +154,9 @@ int main(int argc, char * argv[])
   {
     std::cout << "Recording elapsed time... " << std::flush;
     readerProbe.Start();
+
+    // Set the SART filter to also display the execution times of its subfilters
+    sart->SetDisplayExecutionTimes(true);
   }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() )
