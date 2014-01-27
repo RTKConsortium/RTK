@@ -141,4 +141,3 @@ bool rtk::ConvertEllipsoidToQuadricParametersFunction
   m_J += TransJ;
   return true;
 }
-
