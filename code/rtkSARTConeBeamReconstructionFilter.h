@@ -29,7 +29,10 @@
 #  include <itkMultiplyImageFilter.h>
 #endif
 #include <itkSubtractImageFilter.h>
+#include <itkDivideOrZeroOutImageFilter.h>
 #include <itkTimeProbe.h>
+
+#include "rtkRayBoxIntersectionImageFilter.h"
 
 namespace rtk
 {
@@ -79,8 +82,11 @@ public:
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                   SubtractFilterType;
   typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >             BackProjectionFilterType;
   typedef typename BackProjectionFilterType::Pointer                                     BackProjectionFilterPointer;
+  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                  RayBoxIntersectionFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType>     DivideFilterType;
 
-  /** Standard New method. */
+
+/** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
@@ -100,6 +106,11 @@ public:
   itkGetMacro(Lambda, double);
   itkSetMacro(Lambda, double);
 
+  /** Get / Set the verbose behaviour. Default is false */
+  itkGetMacro(DisplayExecutionTimes, bool);
+  itkSetMacro(DisplayExecutionTimes, bool);
+
+
   /** Set and init the backprojection filter. Default is voxel based backprojection. */
   virtual void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
 
@@ -118,12 +129,15 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer           m_ExtractFilter;
-  typename MultiplyFilterType::Pointer          m_ZeroMultiplyFilter;
+  typename ExtractFilterType::Pointer           m_ExtractFilter, m_ExtractFilterRayBox;
+  typename MultiplyFilterType::Pointer          m_ZeroMultiplyFilter, m_ZeroMultiplyFilterRayBox;
   typename ForwardProjectionFilterType::Pointer m_ForwardProjectionFilter;
   typename SubtractFilterType::Pointer          m_SubtractFilter;
   typename MultiplyFilterType::Pointer          m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer    m_BackProjectionFilter;
+  typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
+  typename DivideFilterType::Pointer            m_DivideFilter;
+  bool m_DisplayExecutionTimes;
 
 private:
   //purposely not implemented
