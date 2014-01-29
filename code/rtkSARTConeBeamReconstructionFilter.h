@@ -31,6 +31,7 @@
 #include <itkSubtractImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 #include <itkTimeProbe.h>
+#include <itkThresholdImageFilter.h>
 
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
@@ -86,6 +87,7 @@ public:
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                  RayBoxIntersectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType>     DivideFilterType;
   typedef rtk::ConstantImageSource<OutputImageType>                                      ConstantImageSourceType;
+  typedef itk::ThresholdImageFilter<OutputImageType>                                     ThresholdFilterType;
 
 /** Standard New method. */
   itkNewMacro(Self);
@@ -106,6 +108,10 @@ public:
   /** Get / Set the convergence factor. Default is 0.3. */
   itkGetMacro(Lambda, double);
   itkSetMacro(Lambda, double);
+
+  /** Get / Set the positivity enforcement behaviour */
+  itkGetMacro(EnforcePositivity, bool);
+  itkSetMacro(EnforcePositivity, bool);
 
   /** Set and init the backprojection filter. Default is voxel based backprojection. */
   virtual void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
@@ -134,6 +140,9 @@ protected:
   typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
   typename DivideFilterType::Pointer            m_DivideFilter;
   typename ConstantImageSourceType::Pointer     m_ConstantImageSource;
+  typename ThresholdFilterType::Pointer         m_ThresholdFilter;
+
+  bool m_EnforcePositivity;
 
 private:
   //purposely not implemented
@@ -158,7 +167,8 @@ private:
                                     m_MultiplyProbe,
                                     m_RayBoxProbe,
                                     m_DivideProbe,
-                                    m_BackProjectionProbe;
+                                    m_BackProjectionProbe,
+                                    m_ThresholdProbe;
 
 }; // end of class
 
