@@ -52,14 +52,13 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilterRayBox = ExtractFilterType::New();
   m_RayBoxFilter = RayBoxIntersectionFilterType::New();
   m_DivideFilter = DivideFilterType::New();
-  m_ZeroMultiplyFilterRayBox = MultiplyFilterType::New();
+  m_ConstantImageSource = ConstantImageSourceType::New();
 
   //Permanent internal connections
 
 #if ITK_VERSION_MAJOR >= 4
   m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
   m_ZeroMultiplyFilter->SetInput2( m_ExtractFilter->GetOutput() );
-  m_ZeroMultiplyFilterRayBox->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
 #else
   m_ZeroMultiplyFilter->SetInput( m_ExtractFilter->GetOutput() );
 #endif
@@ -73,8 +72,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_MultiplyFilter->SetInput( m_SubtractFilter->GetOutput() );
 #endif
 
-  //  m_RayBoxFilter->SetInput(m_ConstantImageSource->GetOutput());
-  m_RayBoxFilter->SetInput(m_ZeroMultiplyFilterRayBox->GetOutput());
+  m_RayBoxFilter->SetInput(m_ConstantImageSource->GetOutput());
   m_ExtractFilterRayBox->SetInput(m_RayBoxFilter->GetOutput());
   m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
   m_DivideFilter->SetInput2(m_ExtractFilterRayBox->GetOutput());
@@ -85,7 +83,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilterRayBox->SetDirectionCollapseToSubmatrix();
 #else
   m_ZeroMultiplyFilter->SetConstant( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
-  m_ZeroMultiplyFilterRayBox->SetConstant( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
 #endif
 }
 
@@ -149,11 +146,10 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
   m_ForwardProjectionFilter->SetInput ( 1, this->GetInput(0) );
   m_ExtractFilter->SetInput( this->GetInput(1) );
-#if ITK_VERSION_MAJOR >= 4
-  m_ZeroMultiplyFilterRayBox->SetInput2( this->GetInput(1));
-#else
-  m_ZeroMultiplyFilterRayBox->SetInput( this->GetInput(1) );
-#endif
+
+  m_ConstantImageSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
+  m_ConstantImageSource->SetConstant(0);
+  m_ConstantImageSource->UpdateOutputInformation();
 
   // Create the m_RayBoxFiltersectionImageFilter
   m_RayBoxFilter->SetGeometry(this->GetGeometry().GetPointer());
@@ -170,7 +166,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_RayBoxFilter->SetBoxMax(Corner2);
 
   // Configure the extract filter to ask for the whole projection set
-  m_ExtractFilterRayBox->SetExtractionRegion(this->GetInput(1)->GetLargestPossibleRegion());
+//  m_ExtractFilterRayBox->SetExtractionRegion(this->GetInput(1)->GetLargestPossibleRegion());
 
   m_BackProjectionFilter->UpdateOutputInformation();
 
@@ -179,8 +175,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   this->GetOutput()->SetSpacing( m_BackProjectionFilter->GetOutput()->GetSpacing() );
   this->GetOutput()->SetDirection( m_BackProjectionFilter->GetOutput()->GetDirection() );
   this->GetOutput()->SetLargestPossibleRegion( m_BackProjectionFilter->GetOutput()->GetLargestPossibleRegion() );
-
-  std::cout << "Beacon 1" << std::endl;
 }
 
 template<class TInputImage, class TOutputImage>
@@ -215,9 +209,10 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 #else
   m_MultiplyFilter->SetConstant( m_Lambda );
 #endif
-
-  DD("Starting iterations");
-
+  
+  // Create the zero projection stack used as input by RayBoxIntersectionFilter
+  m_ConstantImageSource->Update();
+      
   // For each iteration, go over each projection
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
     {
@@ -241,96 +236,38 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
 
-      //Initialize a time probe
-      itk::TimeProbe                    timeProbe;
-      itk::RealTimeClock::TimeStampType previousTotal;
-
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Start();
-        }
-
+      m_ExtractProbe.Start();
       m_ExtractFilter->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of extract filter took " << timeProbe.GetTotal() << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
+      m_ExtractProbe.Stop();
 
+      m_ZeroMultiplyProbe.Start();
       m_ZeroMultiplyFilter->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of zero multiply filter took " << timeProbe.GetTotal() << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
+      m_ZeroMultiplyProbe.Stop();
 
+      m_ForwardProjectionProbe.Start();
       m_ForwardProjectionFilter->UpdateLargestPossibleRegion();
       //            m_ForwardProjectionFilter->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of forward projection filter took " << timeProbe.GetTotal() - previousTotal << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
+      m_ForwardProjectionProbe.Stop();
 
+      m_SubtractProbe.Start();
       m_SubtractFilter->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of subtract filter took " << timeProbe.GetTotal() - previousTotal << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
+      m_SubtractProbe.Stop();
 
+      m_MultiplyProbe.Start();
       m_MultiplyFilter->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of multiply by lambda filter took " << timeProbe.GetTotal() - previousTotal << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
+      m_MultiplyProbe.Stop();
 
-      m_ZeroMultiplyFilterRayBox->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of zero multiply filter for ray box took " << timeProbe.GetTotal() - previousTotal << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
-
+      m_RayBoxProbe.Start();
       m_RayBoxFilter->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of ray box intersection filter took " << timeProbe.GetTotal() - previousTotal << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
+      m_RayBoxProbe.Stop();
 
+      m_DivideProbe.Start();
       m_DivideFilter->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of divide filter took " << timeProbe.GetTotal() - previousTotal << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
+      m_DivideProbe.Stop();
 
+      m_BackProjectionProbe.Start();
       m_BackProjectionFilter->Update();
-      if (m_DisplayExecutionTimes)
-        {
-        timeProbe.Stop();
-        std::cout << "Execution of back projection filter took " << timeProbe.GetTotal() - previousTotal << " " <<timeProbe.GetUnit() << std::endl;
-        previousTotal = timeProbe.GetTotal();
-        timeProbe.Start();
-        }
+      m_BackProjectionProbe.Stop();
       }
     }
   this->GraftOutput( m_BackProjectionFilter->GetOutput() );
@@ -340,7 +277,27 @@ template<class TInputImage, class TOutputImage>
 void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::PrintTiming(std::ostream & os) const
-{}
+{
+  os << "SARTConeBeamReconstructionFilter timing:" << std::endl;
+  os << "  Extraction of projection sub-stacks: " << m_ExtractProbe.GetTotal()
+     << ' ' << m_ExtractProbe.GetUnit() << std::endl;
+  os << "  Multiplication by zero: " << m_ZeroMultiplyProbe.GetTotal()
+     << ' ' << m_ZeroMultiplyProbe.GetUnit() << std::endl;
+  os << "  Forward projection: " << m_ForwardProjectionProbe.GetTotal()
+     << ' ' << m_ForwardProjectionProbe.GetUnit() << std::endl;
+  os << "  Subtraction: " << m_SubtractProbe.GetTotal()
+     << ' ' << m_SubtractProbe.GetUnit() << std::endl;
+  os << "  Multiplication by lambda: " << m_MultiplyProbe.GetTotal()
+     << ' ' << m_MultiplyProbe.GetUnit() << std::endl;
+  os << "  Ray box intersection: " << m_RayBoxProbe.GetTotal()
+     << ' ' << m_RayBoxProbe.GetUnit() << std::endl;
+  os << "  Division: " << m_DivideProbe.GetTotal()
+     << ' ' << m_DivideProbe.GetUnit() << std::endl;
+  os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
+     << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
+
+
+}
 } // end namespace rtk
 
 #endif // __rtkSARTConeBeamReconstructionFilter_txx

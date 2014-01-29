@@ -33,6 +33,7 @@
 #include <itkTimeProbe.h>
 
 #include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkConstantImageSource.h"
 
 namespace rtk
 {
@@ -84,7 +85,7 @@ public:
   typedef typename BackProjectionFilterType::Pointer                                     BackProjectionFilterPointer;
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                  RayBoxIntersectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType>     DivideFilterType;
-
+  typedef rtk::ConstantImageSource<OutputImageType>                                      ConstantImageSourceType;
 
 /** Standard New method. */
   itkNewMacro(Self);
@@ -130,13 +131,14 @@ protected:
 
   /** Pointers to each subfilter of this composite filter */
   typename ExtractFilterType::Pointer           m_ExtractFilter, m_ExtractFilterRayBox;
-  typename MultiplyFilterType::Pointer          m_ZeroMultiplyFilter, m_ZeroMultiplyFilterRayBox;
+  typename MultiplyFilterType::Pointer          m_ZeroMultiplyFilter;
   typename ForwardProjectionFilterType::Pointer m_ForwardProjectionFilter;
   typename SubtractFilterType::Pointer          m_SubtractFilter;
   typename MultiplyFilterType::Pointer          m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer    m_BackProjectionFilter;
   typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
   typename DivideFilterType::Pointer            m_DivideFilter;
+  typename ConstantImageSourceType::Pointer     m_ConstantImageSource;
   bool m_DisplayExecutionTimes;
 
 private:
@@ -153,6 +155,17 @@ private:
   /** Convergence factor according to Andersen's publications which relates
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
+
+  //Time probes
+  itk::TimeProbe                    m_ExtractProbe, 
+                                    m_ZeroMultiplyProbe, 
+                                    m_ForwardProjectionProbe,
+                                    m_SubtractProbe,
+                                    m_MultiplyProbe,
+                                    m_RayBoxProbe,
+                                    m_DivideProbe,
+                                    m_BackProjectionProbe;
+
 }; // end of class
 
 } // end namespace rtk
