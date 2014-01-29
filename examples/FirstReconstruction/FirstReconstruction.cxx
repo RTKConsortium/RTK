@@ -73,6 +73,8 @@ int main(int , char **)
   //Set GrayScale value, axes, center...
   rei->SetDensity(2.);
   rei->SetAngle(0.);
+  rei->SetCenter(center);
+  rei->SetAxis(semiprincipalaxis);
   rei->SetGeometry( geometry );
   rei->SetInput( constantImageSource->GetOutput() );
   rei->Update();
@@ -90,6 +92,8 @@ int main(int , char **)
   constantImageSource2->SetSize( sizeOutput );
   constantImageSource2->SetConstant( 0. );
 
+  std::cout << "Performing reconstruction" << std::endl;
+
   // FDK reconstruction filtering
   typedef rtk::FDKConeBeamReconstructionFilter< ImageType > FDKCPUType;
   FDKCPUType::Pointer feldkamp = FDKCPUType::New();
@@ -100,6 +104,8 @@ int main(int , char **)
   feldkamp->GetRampFilter()->SetHannCutFrequency(0.0);
   feldkamp->Update();
 
+  std::cout << "Writing output image" << std::endl;
+
   // Writer
   typedef itk::ImageFileWriter<ImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
@@ -107,7 +113,9 @@ int main(int , char **)
   writer->SetUseCompression(true);
   writer->SetInput( feldkamp->GetOutput() );
   writer->Update();
-  
+
+  std::cout << "Done" << std::endl;
+
   return 0;
 }
 
