@@ -61,11 +61,6 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->GenerateOutputInformation() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
-
-DD(reader->GetOutput()->GetOrigin());
-DD(reader->GetOutput()->GetLargestPossibleRegion().GetSize());
-        DD(reader->GetOutput()->GetSpacing());
 
   // Geometry
   if(args_info.verbose_flag)
@@ -163,6 +158,7 @@ DD(reader->GetOutput()->GetLargestPossibleRegion().GetSize());
 
   if(args_info.time_flag)
   {
+    sart->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
   }
