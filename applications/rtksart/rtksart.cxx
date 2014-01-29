@@ -150,6 +150,10 @@ int main(int argc, char * argv[])
     std::cout << "Recording elapsed time... " << std::flush;
     readerProbe.Start();
   }
+  if(args_info.positivity_flag)
+  {
+    sart->SetEnforcePositivity(true);
+  }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() )
 

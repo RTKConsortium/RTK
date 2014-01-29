@@ -12,6 +12,7 @@ option "lambda"      l "Convergence factor"                                    d
 option "bp"          b "Backprojection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased" enum no default="VoxelBasedBackProjection"
 option "sart"        s "Sart method" values="Sart","CudaSart"                  enum no default="Sart"
 option "time"        t "Records elapsed time during the process"               flag   off
+option "positivity"  - "Enforces positivity during the reconstruction"         flag   off
 
 section "Volume properties"
 option "input"     i "Input volume"              string          no

@@ -51,6 +51,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_DivideFilter = DivideFilterType::New();
   m_ConstantImageSource = ConstantImageSourceType::New();
 
+  // Create the filter that enforces positivity
+  m_ThresholdFilter = ThresholdFilterType::New();
+  
   //Permanent internal connections
 
 #if ITK_VERSION_MAJOR >= 4
@@ -94,6 +97,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     this->m_BackProjectionFilter = _arg;
     m_BackProjectionFilter->SetInput(1, m_DivideFilter->GetOutput() );
     m_BackProjectionFilter->SetTranspose(false);
+    m_ThresholdFilter->SetInput(m_BackProjectionFilter->GetOutput() );
     this->Modified();
     }
 }
@@ -109,18 +113,21 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   if ( !inputPtr )
     return;
 
-  //SR: is this useful? CM : I think it isn't : GenerateInputRequestedRegion is
-  // run after
-  //GenerateOutputInformation. All the connections with inputs and
-  // data-dependent
-  //information should be set there, and do not have to be repeated here
+  //SR: is this useful? 
+  //CM : I think it isn't : GenerateInputRequestedRegion is
+  // run after GenerateOutputInformation. All the connections with inputs and
+  // data-dependent information should be set there, and do not have to be repeated here
   //
   //  m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
   //  m_ForwardProjectionFilter->SetInput ( 1, this->GetInput(0) );
   //  m_ExtractFilter->SetInput( this->GetInput(1) );
 
-  m_BackProjectionFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
-  m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
+
+  m_ThresholdFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
+  m_ThresholdFilter->GetOutput()->PropagateRequestedRegion();
+
+  //m_BackProjectionFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
+  //m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
 }
 
 template<class TInputImage, class TOutputImage>
@@ -161,17 +168,26 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
   m_RayBoxFilter->SetBoxMin(Corner1);
   m_RayBoxFilter->SetBoxMax(Corner2);
-
-  // Configure the extract filter to ask for the whole projection set
-//  m_ExtractFilterRayBox->SetExtractionRegion(this->GetInput(1)->GetLargestPossibleRegion());
-
-  m_BackProjectionFilter->UpdateOutputInformation();
+  
+  if(m_EnforcePositivity)
+    {
+    m_ThresholdFilter->SetOutsideValue(0);
+    m_ThresholdFilter->ThresholdBelow(0);
+    }
+  m_ThresholdFilter->UpdateOutputInformation();
+  //m_BackProjectionFilter->UpdateOutputInformation();
 
   // Update output information
-  this->GetOutput()->SetOrigin( m_BackProjectionFilter->GetOutput()->GetOrigin() );
-  this->GetOutput()->SetSpacing( m_BackProjectionFilter->GetOutput()->GetSpacing() );
-  this->GetOutput()->SetDirection( m_BackProjectionFilter->GetOutput()->GetDirection() );
-  this->GetOutput()->SetLargestPossibleRegion( m_BackProjectionFilter->GetOutput()->GetLargestPossibleRegion() );
+  this->GetOutput()->SetOrigin( m_ThresholdFilter->GetOutput()->GetOrigin() );
+  this->GetOutput()->SetSpacing( m_ThresholdFilter->GetOutput()->GetSpacing() );
+  this->GetOutput()->SetDirection( m_ThresholdFilter->GetOutput()->GetDirection() );
+  this->GetOutput()->SetLargestPossibleRegion( m_ThresholdFilter->GetOutput()->GetLargestPossibleRegion() );
+
+  // Update output information
+//  this->GetOutput()->SetOrigin( m_BackProjectionFilter->GetOutput()->GetOrigin() );
+//  this->GetOutput()->SetSpacing( m_BackProjectionFilter->GetOutput()->GetSpacing() );
+//  this->GetOutput()->SetDirection( m_BackProjectionFilter->GetOutput()->GetDirection() );
+//  this->GetOutput()->SetLargestPossibleRegion( m_BackProjectionFilter->GetOutput()->GetLargestPossibleRegion() );
 }
 
 template<class TInputImage, class TOutputImage>
@@ -218,7 +234,8 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       // After the first bp update, we need to use its output as input.
       if(iter+i)
         {
-        typename TInputImage::Pointer pimg = m_BackProjectionFilter->GetOutput();
+        //typename TInputImage::Pointer pimg = m_BackProjectionFilter->GetOutput();
+        typename TInputImage::Pointer pimg = m_ThresholdFilter->GetOutput();
         pimg->DisconnectPipeline();
         m_BackProjectionFilter->SetInput( pimg );
         m_ForwardProjectionFilter->SetInput(1, pimg );
@@ -265,9 +282,14 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_BackProjectionProbe.Start();
       m_BackProjectionFilter->Update();
       m_BackProjectionProbe.Stop();
+
+      m_ThresholdProbe.Start();
+      m_ThresholdFilter->Update();
+      m_ThresholdProbe.Stop();
       }
     }
-  this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+//  this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+  this->GraftOutput( m_ThresholdFilter->GetOutput());
 }
 
 template<class TInputImage, class TOutputImage>
@@ -292,9 +314,18 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
      << ' ' << m_DivideProbe.GetUnit() << std::endl;
   os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
      << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
-
-
+  if (m_EnforcePositivity)
+    {  
+    os << "  Positivity enforcement: " << m_ThresholdProbe.GetTotal()
+    << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
+    }
+  else
+    {
+    os << "  Positivity was not enforced, but passing through the filter still took: " << m_ThresholdProbe.GetTotal()
+    << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
+    }
 }
+
 } // end namespace rtk
 
 #endif // __rtkSARTConeBeamReconstructionFilter_txx
