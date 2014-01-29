@@ -149,9 +149,6 @@ int main(int argc, char * argv[])
   {
     std::cout << "Recording elapsed time... " << std::flush;
     readerProbe.Start();
-
-    // Set the SART filter to also display the execution times of its subfilters
-    sart->SetDisplayExecutionTimes(true);
   }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() )

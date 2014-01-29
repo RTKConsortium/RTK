@@ -34,9 +34,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_Lambda(0.3)
 {
   this->SetNumberOfRequiredInputs(2);
-  m_DisplayExecutionTimes = false;       // Default behaviour : the execution
-                                         // time of each filter is not displayed
-                                         // on std::cout
 
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();

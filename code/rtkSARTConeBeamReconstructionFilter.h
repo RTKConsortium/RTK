@@ -107,11 +107,6 @@ public:
   itkGetMacro(Lambda, double);
   itkSetMacro(Lambda, double);
 
-  /** Get / Set the verbose behaviour. Default is false */
-  itkGetMacro(DisplayExecutionTimes, bool);
-  itkSetMacro(DisplayExecutionTimes, bool);
-
-
   /** Set and init the backprojection filter. Default is voxel based backprojection. */
   virtual void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
 
@@ -139,7 +134,6 @@ protected:
   typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
   typename DivideFilterType::Pointer            m_DivideFilter;
   typename ConstantImageSourceType::Pointer     m_ConstantImageSource;
-  bool m_DisplayExecutionTimes;
 
 private:
   //purposely not implemented
