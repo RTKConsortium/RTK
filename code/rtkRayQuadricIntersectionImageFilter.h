@@ -77,8 +77,11 @@ protected:
   RayQuadricIntersectionImageFilter();
   virtual ~RayQuadricIntersectionImageFilter() {};
 
+  virtual void BeforeThreadedGenerateData();
+
   /** Apply changes to the input image requested region. */
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
+                                     ThreadIdType threadId );
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
