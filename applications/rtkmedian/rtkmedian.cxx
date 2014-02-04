@@ -32,6 +32,7 @@
 int main(int argc, char * argv[])
 {
   GGO(rtkmedian, args_info);
+  rtk::RegisterIOFactories();
 
   typedef unsigned short OutputPixelType;
   const unsigned int     Dimension = 2;
