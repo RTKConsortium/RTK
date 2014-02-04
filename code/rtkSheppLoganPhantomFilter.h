@@ -19,10 +19,6 @@
 #ifndef __rtkSheppLoganPhantomFilter_h
 #define __rtkSheppLoganPhantomFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkRayQuadricIntersectionImageFilter.h"
-
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 
 namespace rtk
@@ -43,40 +39,44 @@ namespace rtk
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT SheppLoganPhantomFilter :
-  public RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT SheppLoganPhantomFilter:
+  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef SheppLoganPhantomFilter                                       Self;
-  typedef RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                 ConstPointer;
-  typedef typename TOutputImage::RegionType                             OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer               OutputImageBaseConstPointer;
+  typedef SheppLoganPhantomFilter                                  Self;
+  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage>        Superclass;
+  typedef itk::SmartPointer<Self>                                  Pointer;
+  typedef itk::SmartPointer<const Self>                            ConstPointer;
 
-  typedef Superclass                                                    REIType;
-//  typedef itk::Vector<double,3>                                         VectorType;
-  typedef std::string                                                   StringType;
-  typedef std::vector< std::vector<double> >                            VectorOfVectorType;
-//  struct FigureType
-//  {
-//    FigureType():angle(0.),attenuation(0.){};
-//    VectorType semiprincipalaxis;
-//    VectorType center;
-//    double angle;
-//    double attenuation;
-//    };
+  typedef rtk::RayEllipsoidIntersectionImageFilter< TInputImage,
+                                                    TOutputImage > REIType;
+  typedef itk::Vector<double,3>                                    VectorType;
+  typedef std::string                                              StringType;
+  typedef std::vector< std::vector<double> >                       VectorOfVectorType;
+  typedef rtk::ThreeDCircularProjectionGeometry                    GeometryType;
+  typedef typename GeometryType::Pointer                           GeometryPointer;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SheppLoganPhantomFilter, RayEllipsoidIntersectionImageFilter);
+  itkTypeMacro(SheppLoganPhantomFilter, itk::InPlaceImageFilter);
 
+  /** Get / Set the scaling factor of the spatial dimensions of the phantom. By
+   * default, the scaling factor is 128 and the outer ellipse of the phantom is
+   * 88.32 x 115.2 x 117.76. */
   itkSetMacro(PhantomScale, double);
   itkGetMacro(PhantomScale, double);
-  itkSetMacro(PhantomOriginOffsetX, double);
-  itkGetMacro(PhantomOriginOffsetX, double);
+
+  /** Get / Set the spatial position of the Shepp Logan phantom relative to its`
+   * center. The default value is (0, 0, 0). */
+  itkSetMacro(OriginOffset, VectorType);
+  itkGetMacro(OriginOffset, VectorType);
+
+  /** Get / Set the object pointer to projection geometry */
+  itkGetMacro(Geometry, GeometryPointer);
+  itkSetMacro(Geometry, GeometryPointer);
 
 protected:
   SheppLoganPhantomFilter();
@@ -84,16 +84,13 @@ protected:
 
   virtual void GenerateData();
 
-  /** Translate user parameteres to quadric parameters.
-   * A call to this function will assume modification of the function.*/
-
-
 private:
   SheppLoganPhantomFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  void operator=(const Self&);          //purposely not implemented
 
-  double                   m_PhantomScale;
-  double                   m_PhantomOriginOffsetX;
+  double          m_PhantomScale;
+  VectorType      m_OriginOffset;
+  GeometryPointer m_Geometry;
 };
 
 } // end namespace rtk
