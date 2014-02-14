@@ -76,8 +76,10 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 
     const double projOffsetX = m_Geometry->GetProjectionOffsetsX()[k];
     const double sourceOffsetX = m_Geometry->GetSourceOffsetsX()[k];
-    const double r1 = vcl_abs( sourceOffsetX+mag*(corner1[0]+projOffsetX-sourceOffsetX) );
-    const double r2 = vcl_abs( sourceOffsetX+mag*(corner2[0]+projOffsetX-sourceOffsetX) );
+    double r1 = vcl_abs( sourceOffsetX+mag*(corner1[0]+projOffsetX-sourceOffsetX) );
+    r1 *= sid/sqrt(sid*sid+r1*r1);
+    double r2 = vcl_abs( sourceOffsetX+mag*(corner2[0]+projOffsetX-sourceOffsetX) );
+    r2 *= sid/sqrt(sid*sid+r2*r2);
     if(m_DisplacedDetector)
       {
       // The largest of the two radii counts (the short one is assumed to be
