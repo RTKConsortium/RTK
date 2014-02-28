@@ -48,12 +48,6 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
   for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
     indexCorner2[i] --;
 
-  // Account for linear interpolation borders
-  indexCorner1[0] += 0.5;
-  indexCorner1[1] += 0.5;
-  indexCorner2[0] -= 0.5;
-  indexCorner2[1] -= 0.5;
-
   // To physical coordinates
   typename TInputImage::PointType corner1, corner2;
   m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCorner1, corner1);
