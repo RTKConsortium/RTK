@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
   LUTFilterType::Pointer lutFilter = LUTFilterType::New();
   lutFilter->SetInput(projections->GetOutput());
   lutFilter->SetLookupTable(lutReader->GetOutput());
-  lutFilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutFilter->Update() );
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
