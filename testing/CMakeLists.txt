@@ -172,6 +172,10 @@ TARGET_LINK_LIBRARIES(rtksarttest RTK)
 ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
 ADD_CUDA_TEST(rtksart rtksarttest.cxx)
 
+ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
+TARGET_LINK_LIBRARIES(rtkjosephadjointoperatorstest RTK)
+ADD_TEST(rtkjosephadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkjosephadjointoperatorstest)
+
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
 IF(CUDA_FOUND)

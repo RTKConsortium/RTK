@@ -63,7 +63,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
-  // Create intersection function
+  // Create intersection functions, one for each possible main direction
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
   typename RBIFunctionType::Pointer rbi[Dimension];
   for(unsigned int j=0; j<Dimension; j++)
@@ -86,16 +86,23 @@ JosephForwardProjectionImageFilter<TInputImage,
           iProj++)
     {
     // Account for system rotations
+    // volPPToIndex maps the physical 3D coordinates of a point (in mm) to the
+    // corresponding 3D volume index
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
     volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(1) );
 
     // Set source position in volume indices
+    // GetSourcePosition() returns coordinates in mm. Multiplying by 
+    // volPPToIndex gives the corresponding volume index
     typename Superclass::GeometryType::HomogeneousVectorType sourcePosition;
     sourcePosition = volPPToIndex * geometry->GetSourcePosition(iProj);
     for(unsigned int i=0; i<Dimension; i++)
       rbi[i]->SetRayOrigin( &(sourcePosition[0]) );
 
     // Compute matrix to transform projection index to volume index
+    // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)
+    // ProjectionCoordinatesToFixedSystemMatrix maps the 2D position of a pixel on the detector to its 3D coordinates in volume's coordinates (still in mm)
+    // volPPToIndex maps 3D volume coordinates to a 3D index
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType matrix;
     matrix = volPPToIndex.GetVnlMatrix() *
              geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
