@@ -180,8 +180,8 @@ int main(int , char** )
   ThresholdType::Pointer threshold = ThresholdType::New();
   threshold->SetInput(bp->GetOutput());
   threshold->SetOutsideValue(0.);
-  threshold->SetLowerThreshold(NumberOfProjectionImages-0.5);
-  threshold->SetUpperThreshold(NumberOfProjectionImages+0.5);
+  threshold->SetLowerThreshold(NumberOfProjectionImages-0.01);
+  threshold->SetUpperThreshold(NumberOfProjectionImages+0.01);
   threshold->SetInsideValue(1.);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( threshold->Update() );
 
