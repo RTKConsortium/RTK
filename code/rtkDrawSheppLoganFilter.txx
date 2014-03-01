@@ -33,7 +33,8 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 DrawSheppLoganFilter<TInputImage, TOutputImage>
 ::DrawSheppLoganFilter():
-m_PhantomScale(128.0)
+m_PhantomScale(128.0),
+m_OriginOffset(0.)
 {
 }
 
