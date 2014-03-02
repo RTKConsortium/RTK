@@ -1,6 +1,6 @@
 # client maintainer: simon.rit@creatis.insa-lyon.fr
 set(CTEST_SITE "linux15.dg.creatis.insa-lyon.fr")
-set(CTEST_BUILD_NAME "Linux-64bit-gcc-cuda50_itk4")
+set(CTEST_BUILD_NAME "Linux-64bit-gcc-cuda50-itk4")
 set(CTEST_BUILD_CONFIGURATION Release)
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
