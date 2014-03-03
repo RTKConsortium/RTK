@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( projections->GetOutput() );
+  writer->SetInput( lutFilter->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Writing result... " << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
