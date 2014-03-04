@@ -101,6 +101,10 @@ protected:
   ~DisplacedDetectorImageFilter(){
   }
 
+  /** Retrieve computed inferior and superior corners */
+  itkGetMacro(InferiorCorner, double);
+  itkGetMacro(SuperiorCorner, double);
+
   virtual void GenerateInputRequestedRegion();
 
   virtual void GenerateOutputInformation();

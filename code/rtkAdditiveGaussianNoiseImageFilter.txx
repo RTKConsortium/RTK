@@ -47,7 +47,7 @@ AdditiveGaussianNoiseImageFilter<TInputImage>
 ::AdditiveGaussianNoiseImageFilter()
 {
   m_NoiseFilter = NoiseFilterType::New();
-  m_NoiseFilter->GetFunctor().SetOutputMinimum( itk::NumericTraits< InputPixelType >::min() );
+  m_NoiseFilter->GetFunctor().SetOutputMinimum( itk::NumericTraits< InputPixelType >::NonpositiveMin() );
   m_NoiseFilter->GetFunctor().SetOutputMaximum( itk::NumericTraits< InputPixelType >::max() );
 }
 

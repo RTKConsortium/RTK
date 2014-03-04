@@ -21,6 +21,8 @@
 
 #include <itkNumericTraits.h>
 #include <itkVector.h>
+#include <itkObjectFactory.h>
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -36,7 +38,7 @@ namespace rtk
  * \ingroup Geometry
  */
 
-class ConvertEllipsoidToQuadricParametersFunction :
+class RTK_EXPORT ConvertEllipsoidToQuadricParametersFunction :
     public itk::Object
 {
 public:
@@ -126,9 +128,5 @@ private:
 };
 
 } // end namespace rtk
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConvertEllipsoidToQuadricParametersFunction.txx"
-#endif
 
 #endif

@@ -40,6 +40,8 @@ RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
+  Superclass::BeforeThreadedGenerateData();
+
   typename EQPFunctionType::VectorType semiprincipalaxis;
   typename EQPFunctionType::VectorType center;
   semiprincipalaxis[0] = m_Axis[0];

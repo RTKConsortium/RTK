@@ -20,6 +20,8 @@
 #define __rtkDisplacedDetectorImageFilter_txx
 
 #include <itkImageRegionIteratorWithIndex.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
 
 namespace rtk
 {
