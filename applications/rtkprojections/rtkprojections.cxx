@@ -51,12 +51,17 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
 
+  reader->Update();
+DD(reader->GetOutput()->GetOrigin());
+DD(reader->GetOutput()->GetLargestPossibleRegion().GetSize());
+        DD(reader->GetOutput()->GetSpacing());
+
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( reader->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
+//  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
   writer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )

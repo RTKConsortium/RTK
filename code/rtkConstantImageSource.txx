@@ -34,6 +34,7 @@ ConstantImageSource<TOutputImage>
     m_Size[i] = 64;
     m_Spacing[i] = 1.0;
     m_Origin[i] = 0.0;
+    m_Index[i] = 0.0;
 
     for (unsigned int j=0; j<TOutputImage::GetImageDimension(); j++)
       m_Direction[i][j] = (i==j)?1.:0.;
@@ -112,6 +113,18 @@ ConstantImageSource<TOutputImage>
   os << m_Size[i] << "]" << std::endl;
 }
 
+template <class TOutputImage>
+void
+ConstantImageSource<TOutputImage>
+::SetInformationFromImage(TOutputImage* image)
+{
+  m_Size = image->GetLargestPossibleRegion().GetSize();
+  m_Index = image->GetLargestPossibleRegion().GetIndex();
+  m_Spacing = image->GetSpacing();
+  m_Origin = image->GetOrigin();
+  m_Direction = image->GetDirection();
+}
+
 //----------------------------------------------------------------------------
 template <typename TOutputImage>
 void 
@@ -119,14 +132,15 @@ ConstantImageSource<TOutputImage>
 ::GenerateOutputInformation()
 {
   TOutputImage *output;
-  IndexType index;
-  index.Fill( 0 );
+//  IndexType index;
+//  index.Fill( 0 );
   
   output = this->GetOutput(0);
 
   typename TOutputImage::RegionType largestPossibleRegion;
   largestPossibleRegion.SetSize( this->m_Size );
-  largestPossibleRegion.SetIndex( index );
+  largestPossibleRegion.SetIndex( m_Index );
+  //largestPossibleRegion.SetIndex( index );
   output->SetLargestPossibleRegion( largestPossibleRegion );
 
   output->SetSpacing(m_Spacing);
