@@ -74,7 +74,7 @@ public:
   typedef TOutputImage OutputImageType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< InputImageType, OutputImageType >                     ExtractFilterType;
+  typedef itk::ExtractImageFilter< InputImageType, InputImageType >                     ExtractFilterType;
 #if ITK_VERSION_MAJOR <= 3
   typedef itk::MultiplyByConstantImageFilter< OutputImageType, double, OutputImageType > MultiplyFilterType;
 #else
