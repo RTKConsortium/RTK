@@ -29,7 +29,12 @@
 #  include <itkMultiplyImageFilter.h>
 #endif
 #include <itkSubtractImageFilter.h>
+#include <itkDivideOrZeroOutImageFilter.h>
 #include <itkTimeProbe.h>
+#include <itkThresholdImageFilter.h>
+
+#include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkConstantImageSource.h"
 
 namespace rtk
 {
@@ -79,8 +84,12 @@ public:
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                   SubtractFilterType;
   typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >             BackProjectionFilterType;
   typedef typename BackProjectionFilterType::Pointer                                     BackProjectionFilterPointer;
+  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                  RayBoxIntersectionFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType>     DivideFilterType;
+  typedef rtk::ConstantImageSource<OutputImageType>                                      ConstantImageSourceType;
+  typedef itk::ThresholdImageFilter<OutputImageType>                                     ThresholdFilterType;
 
-  /** Standard New method. */
+/** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
@@ -100,6 +109,10 @@ public:
   itkGetMacro(Lambda, double);
   itkSetMacro(Lambda, double);
 
+  /** Get / Set the positivity enforcement behaviour */
+  itkGetMacro(EnforcePositivity, bool);
+  itkSetMacro(EnforcePositivity, bool);
+
   /** Set and init the backprojection filter. Default is voxel based backprojection. */
   virtual void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
 
@@ -118,12 +131,18 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer           m_ExtractFilter;
+  typename ExtractFilterType::Pointer           m_ExtractFilter, m_ExtractFilterRayBox;
   typename MultiplyFilterType::Pointer          m_ZeroMultiplyFilter;
   typename ForwardProjectionFilterType::Pointer m_ForwardProjectionFilter;
   typename SubtractFilterType::Pointer          m_SubtractFilter;
   typename MultiplyFilterType::Pointer          m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer    m_BackProjectionFilter;
+  typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
+  typename DivideFilterType::Pointer            m_DivideFilter;
+  typename ConstantImageSourceType::Pointer     m_ConstantImageSource;
+  typename ThresholdFilterType::Pointer         m_ThresholdFilter;
+
+  bool m_EnforcePositivity;
 
 private:
   //purposely not implemented
@@ -139,6 +158,18 @@ private:
   /** Convergence factor according to Andersen's publications which relates
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
+
+  //Time probes
+  itk::TimeProbe                    m_ExtractProbe, 
+                                    m_ZeroMultiplyProbe, 
+                                    m_ForwardProjectionProbe,
+                                    m_SubtractProbe,
+                                    m_MultiplyProbe,
+                                    m_RayBoxProbe,
+                                    m_DivideProbe,
+                                    m_BackProjectionProbe,
+                                    m_ThresholdProbe;
+
 }; // end of class
 
 } // end namespace rtk
