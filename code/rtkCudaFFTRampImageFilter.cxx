@@ -23,17 +23,17 @@
 #include "rtkCudaCropImageFilter.hcu"
 
 #include <itkMacro.h>
-#include <itkImageFileWriter.h>
-
-#include <rtkMacro.h>
 
 rtk::CudaFFTRampImageFilter
  ::CudaFFTRampImageFilter()
  {
    // We use FFTW for the kernel so we need to do the same thing as in the parent
- #if defined(USE_FFTWF)
-   this->SetGreatestPrimeFactor(13);
- #endif
+#if defined(USE_FFTWD)
+    m_GreatestPrimeFactor = 13;
+#endif
+#if defined(USE_FFTWF)
+    m_GreatestPrimeFactor = 13;
+#endif
  }
 
 void
@@ -70,7 +70,7 @@ rtk::CudaFFTRampImageFilter::CudaPadInputImageRegion(const RegionType &inputRegi
   if(!m_TruncationMirrorWeights.size())
     m_TruncationMirrorWeights.push_back(0.);
 
-  uint3 sz;
+  uint3 sz, sz_i;
   long3 idx;
   idx.x = paddedRegion.GetIndex()[0];
   idx.y = paddedRegion.GetIndex()[1];
@@ -79,12 +79,17 @@ rtk::CudaFFTRampImageFilter::CudaPadInputImageRegion(const RegionType &inputRegi
   sz.y = paddedRegion.GetSize()[1];
   sz.z = paddedRegion.GetSize()[2];
 
+  sz_i.x = inputRegion.GetSize()[0];
+  sz_i.y = inputRegion.GetSize()[1];
+  sz_i.z = inputRegion.GetSize()[2];
+
   float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( paddedImage->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // *** Call to Kernel *****************************************************************
   CUDA_padding(idx,
                sz,
+               sz_i,
                pin,
                pout,
                &m_TruncationMirrorWeights[0],
@@ -114,11 +119,7 @@ rtk::CudaFFTRampImageFilter
                      ImageType::ImageDimension >     FFTOutputCPUImageType;
   typedef FFTOutputCPUImageType::Pointer             FFTOutputCPUImagePointer;
 
-  //this->AllocateOutputs();
-
   // Pad image region
-  FFTInputImagePointer paddedImage;
-//  paddedImage = PadInputImageRegion<FFTInputImageType, FFTOutputImageType>(this->GetInput()->GetRequestedRegion());
   CudaPadInputImageRegion(this->GetInput()->GetRequestedRegion());
   int3 inputDimension;
   inputDimension.x = m_padImage->GetBufferedRegion().GetSize()[0];
