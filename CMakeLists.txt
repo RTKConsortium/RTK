@@ -25,7 +25,7 @@ IF (NOT CMAKE_BUILD_TYPE)
 ENDIF (NOT CMAKE_BUILD_TYPE)
 
 IF(BUILD_TESTING)
-    ENABLE_TESTING()
+  ENABLE_TESTING()
 ENDIF(BUILD_TESTING)
 #=========================================================
 

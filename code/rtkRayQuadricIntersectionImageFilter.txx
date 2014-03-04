@@ -48,6 +48,16 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
+::BeforeThreadedGenerateData()
+{
+  if(this->GetGeometry()->GetGantryAngles().size() !=
+          this->GetOutput()->GetRequestedRegion().GetSize()[2])
+      itkExceptionMacro(<<"Number of projections in the input stack and the geometry object differ.")
+}
+
+template <class TInputImage, class TOutputImage>
+void
+RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType itkNotUsed(threadId) )
 {

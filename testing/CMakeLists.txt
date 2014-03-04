@@ -18,6 +18,10 @@ macro(add_cuda_test testname testfile)
  endif()
 endmacro()
 
+# Executable to check the image quality
+ADD_EXECUTABLE(rtkcheckimagequality rtkcheckimagequality.cxx)
+TARGET_LINK_LIBRARIES(rtkcheckimagequality RTK)
+
 ADD_EXECUTABLE(rtkfdktest rtkfdktest.cxx)
 TARGET_LINK_LIBRARIES(rtkfdktest RTK)
 ADD_TEST(rtkfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdktest)
@@ -178,3 +182,4 @@ IF(OPENCL_FOUND)
 ENDIF(OPENCL_FOUND)
 TARGET_LINK_LIBRARIES(rtkheadertest RTK)
 ADD_TEST(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
+
