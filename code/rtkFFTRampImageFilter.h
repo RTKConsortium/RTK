@@ -176,7 +176,7 @@ private:
   /** Percentage of the image width which is feathered with data to correct for truncation.
     * 0 means no correction.
     */
-  double                              m_TruncationCorrection;
+  double m_TruncationCorrection;
   int GetTruncationCorrectionExtent();
 
   /**

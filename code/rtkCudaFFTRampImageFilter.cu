@@ -160,7 +160,7 @@ padding_kernel(float *input, float *output, const long3 paddingIdx, const uint3 
   unsigned int offsetL = (paddingDim.x*0.5f-inputDim.x)/2; // Offset left padded region
   unsigned int offsetR = (paddingDim.x*0.5f-inputDim.x)/2 + 1; // Offset left padded region
 
-  if(hannY!=0) // hannY filtering ON
+  if(hannY>0.f) // hannY filtering ON
   {
     // Input region (original image)
     if( i>=(paddingDim.x*0.25f+offsetL) && i<(paddingDim.x*0.25f+inputDim.x+offsetL) )
