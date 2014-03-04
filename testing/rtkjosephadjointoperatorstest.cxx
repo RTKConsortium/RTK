@@ -133,6 +133,7 @@ int main(int, char** )
   randomVolumeSource->SetSize( size );
   randomVolumeSource->SetMin( 0. );
   randomVolumeSource->SetMax( 1. );
+  randomVolumeSource->SetNumberOfThreads(2); //With 1, it's deterministic
 
   constantVolumeSource->SetOrigin( origin );
   constantVolumeSource->SetSpacing( spacing );
@@ -163,6 +164,7 @@ int main(int, char** )
   randomProjectionsSource->SetSize( size );
   randomProjectionsSource->SetMin( 0. );
   randomProjectionsSource->SetMax( 100. );
+  randomProjectionsSource->SetNumberOfThreads(2); //With 1, it's deterministic
 
   constantProjectionsSource->SetOrigin( origin );
   constantProjectionsSource->SetSpacing( spacing );
@@ -197,11 +199,11 @@ int main(int, char** )
   JosephBackProjectorType::Pointer bp = JosephBackProjectorType::New();
   bp->SetInput(0, constantVolumeSource->GetOutput());
   bp->SetInput(1, randomProjectionsSource->GetOutput());
-  bp->SetGeometry( geometry );
+  bp->SetGeometry( geometry.GetPointer() );
   
-  std::cout << "Updating Back Projection filter" << std::endl;
+//  std::cout << "Updating Back Projection filter" << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
-  std::cout << "Updated Back Projection filter" << std::endl;
+//  std::cout << "Updated Back Projection filter" << std::endl;
 
   CheckScalarProducts<OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
