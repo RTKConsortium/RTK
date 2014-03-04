@@ -57,7 +57,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       offsets[1] * this->GetInput(1)->GetBufferedRegion().GetIndex()[1] -
       offsets[2] * this->GetInput(1)->GetBufferedRegion().GetIndex()[2];
 
-  // Iterators on volume input and output
+  // Iterators on input and output projections
   typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
   InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;

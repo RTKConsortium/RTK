@@ -95,13 +95,6 @@ public:
   typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
   typedef typename GeometryType::Pointer                    GeometryPointer;
   
-  /** Get / Set the object pointer to projection geometry */
-  //itkGetMacro(Geometry, GeometryPointer);
-  //itkSetMacro(Geometry, GeometryPointer);
-  void SetGeometry(GeometryPointer geometryPointer){
-    m_Geometry = geometryPointer;
-  }
-
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -147,12 +140,8 @@ private:
   JosephBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
 
-  /** RTK geometry object */
-  GeometryPointer m_Geometry;
-
   /** Functor */
   TSplatWeightMultiplication m_SplatWeightMultiplication;
-  //TProjectedValueAccumulation        m_ProjectedValueAccumulation;
 };
 
 } // end namespace rtk

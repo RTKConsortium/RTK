@@ -38,26 +38,21 @@ JosephBackProjectionImageFilter<TInputImage,
                                    TSplatWeightMultiplication>
 ::GenerateData()
 {
-  std::cout << "Entering GenerateData" << std::endl;
-    
-    const unsigned int Dimension = TInputImage::ImageDimension;
+  const unsigned int Dimension = TInputImage::ImageDimension;
   typename TInputImage::RegionType Largest =this->GetInput(1)->GetLargestPossibleRegion(); 
   const unsigned int nPixelPerProj = Largest.GetSize(0) * Largest.GetSize(1);
   int offsets[3];
   offsets[0] = 1;
   offsets[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(0)->GetBufferedRegion().GetSize()[0] * this->GetInput(0)->GetBufferedRegion().GetSize()[1];
-  
-  std::cout << "Setting Geometry" << std::endl;
 
-  const typename JosephBackProjectionImageFilter<TInputImage,
-                                 TOutputImage,
-                                 TSplatWeightMultiplication>
-::GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
-
+//  const typename JosephBackProjectionImageFilter<TInputImage,
+//                                 TOutputImage,
+//                                 TSplatWeightMultiplication>
+//::
+  GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
 
   // Allocate the output image
-  std::cout << "Allocating outputs" << std::endl;
   this->AllocateOutputs();
 
   // beginBuffer is pointing at point with index (0,0,0) in memory, even if
@@ -68,11 +63,9 @@ JosephBackProjectionImageFilter<TInputImage,
       offsets[1] * this->GetOutput()->GetBufferedRegion().GetIndex()[1] -
       offsets[2] * this->GetOutput()->GetBufferedRegion().GetIndex()[2];
 
-  // Iterators on volume input and output
+  // Iterator on projections input
   typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
   InputRegionIterator itIn(this->GetInput(1), Largest);
-  //typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
-  //OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Create intersection functions, one for each possible main direction
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
@@ -90,8 +83,6 @@ JosephBackProjectionImageFilter<TInputImage,
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
     }
-
-  std::cout << "Entering main loop" << std::endl;
 
   // Go over each projection
   for(int iProj=Largest.GetIndex(2);
@@ -119,7 +110,7 @@ JosephBackProjectionImageFilter<TInputImage,
     typename GeometryType::ThreeDHomogeneousMatrixType matrix;
     matrix = volPPToIndex.GetVnlMatrix() *
              geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-             GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix();
+             GetIndexToPhysicalPointMatrix( this->GetInput(1) ).GetVnlMatrix();
 
     // Go over each pixel of the projection
     typename RBIFunctionType::VectorType dirVox, stepMM, dirVoxAbs, np, fp;
@@ -202,18 +193,13 @@ JosephBackProjectionImageFilter<TInputImage,
         const CoordRepType stepy = dirVox[notMainDirSup] * norm;
         CoordRepType currentx = np[notMainDirInf] + residual*stepx;
         CoordRepType currenty = np[notMainDirSup] + residual*stepy;
-        
+
         // Compute voxel to millimeters conversion
         stepMM[notMainDirInf] = this->GetInput(0)->GetSpacing()[notMainDirInf] * stepx;
         stepMM[notMainDirSup] = this->GetInput(0)->GetSpacing()[notMainDirSup] * stepy;
         stepMM[mainDir]       = this->GetInput(0)->GetSpacing()[mainDir];
 
         // First step
-        //typename TOutputImage::PixelType sum =
-        //      BilinearInterpolation(threadId,
-        //                            residual+0.5,
-        //                            pxiyi, pxsyi, pxiys, pxsys,
-        //                            currentx, currenty, offsetx, offsety);
         BilinearSplat(itIn.Get(), residual + 0.5, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
         
         // Middle steps
@@ -225,12 +211,8 @@ JosephBackProjectionImageFilter<TInputImage,
           pxsys += offsetz;
           currentx += stepx;
           currenty += stepy;
-          //sum += BilinearInterpolation(threadId,
-          //                             1.,
-          //                             pxiyi, pxsyi, pxiys, pxsys,
-          //                             currentx, currenty, offsetx, offsety);
-          //
-          BilinearSplat(itIn.Get(), 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety); 
+
+          BilinearSplat(itIn.Get(), 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
           }
 
         // Last step: goes to next voxel only if more than one
@@ -243,32 +225,11 @@ JosephBackProjectionImageFilter<TInputImage,
           currentx += stepx;
           currenty += stepy;
           }
-        //sum += BilinearInterpolation(threadId,
-        //                             0.5+fp[mainDir]-fs,
-        //                             pxiyi, pxsyi, pxiys, pxsys,
-        //                             currentx, currenty, offsetx, offsety);
+
           BilinearSplat(itIn.Get(), fp[mainDir]-fs +0.5, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety); 
 
-
-        // Accumulate
-//        itOut.Set( m_ProjectedValueAccumulation(threadId,
-//                                                itIn.Get(),
-//                                                sum,
-//                                                stepMM,
-//                                                &(sourcePosition[0]),
-//                                                dirVox,
-//                                                np,
-//                                                fp) );
         }
-//      else
-//        itOut.Set( m_ProjectedValueAccumulation(threadId,
-//                                                itIn.Get(),
-//                                                0.,
-//                                                &(sourcePosition[0]),
-//                                                &(sourcePosition[0]),
-//                                                dirVox,
-//                                                &(sourcePosition[0]),
-//                                                &(sourcePosition[0])) );
+
       }
     }
 }
@@ -300,10 +261,11 @@ JosephBackProjectionImageFilter<TInputImage,
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
 
-*pxiyi += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
-*pxsyi += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
-*pxiys += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
-*pxsys += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
+  pxiyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
+  pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
+  pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
+  pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
+
 }
 
 } // end namespace rtk
