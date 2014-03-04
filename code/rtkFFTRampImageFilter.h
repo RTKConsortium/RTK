@@ -149,6 +149,13 @@ protected:
 
   int GreatestPrimeFactor( int n ) const;
 
+  /**
+   * Greatest prime factor of the FFT input.
+   */
+  int m_GreatestPrimeFactor;
+
+  typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
+
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.
    * The function is templated to allow its use with itk::CudaImage in children.  */
@@ -162,14 +169,6 @@ protected:
     */
   void UpdateTruncationMirrorWeights();
 
-  int GetTruncationCorrectionExtent();
-
-  /**
-   * Greatest prime factor of the FFT input.
-   */
-  int m_GreatestPrimeFactor;
-  typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
-
 private:
   FFTRampImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);     //purposely not implemented
@@ -178,6 +177,7 @@ private:
     * 0 means no correction.
     */
   double                              m_TruncationCorrection;
+  int GetTruncationCorrectionExtent();
 
   /**
    * Cut frequency of Hann, Cosine and Hamming windows. The first one which is

@@ -142,7 +142,7 @@ CUDA_fft_convolution(const int3 &inputDimension,
 // ******************** Padding Section ***************************
 __global__
 void
-padding_kernel(float *input, float *output, const long3 paddingIdx, const uint3 paddingDim, const unsigned int Blocks_Y, float *truncationWeights, unsigned int sizeWeights, float hannY)
+padding_kernel(float *input, float *output, const long3 paddingIdx, const uint3 paddingDim, const uint3 inputDim, const unsigned int Blocks_Y, float *truncationWeights, unsigned int sizeWeights, float hannY)
 {
   unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
@@ -153,71 +153,76 @@ padding_kernel(float *input, float *output, const long3 paddingIdx, const uint3 
   if (i >= paddingDim.x || j >= paddingDim.y || k >= paddingDim.z)
     return;
 
-  unsigned long int out_idx = i + j*paddingDim.x + k*paddingDim.y*paddingDim.x;
-  unsigned long int mirror_idx = 0;
-  unsigned int condition = 0;
-  long int in_idx = -1;
+  unsigned long int out_idx = i + j*paddingDim.x + k*paddingDim.y*paddingDim.x; // index for padded region
+  unsigned long int mirror_idx = 0; // index for mirror regions
+  long int in_idx = -1; // Index for original input region
+  unsigned int condition = 0; // Condition for truncation factors
+  unsigned int offsetL = (paddingDim.x*0.5f-inputDim.x)/2; // Offset left padded region
+  unsigned int offsetR = (paddingDim.x*0.5f-inputDim.x)/2 + 1; // Offset left padded region
 
   if(hannY!=0) // hannY filtering ON
   {
-    // Middle zone
-    if(i>=paddingDim.x*0.25f && i<=paddingDim.x*0.75f)
+    // Input region (original image)
+    if( i>=(paddingDim.x*0.25f+offsetL) && i<(paddingDim.x*0.25f+inputDim.x+offsetL) )
     {
-      if(j>=paddingDim.y*0.5f)
+      if(j>=inputDim.y)
         condition=0;
       else
-        in_idx = (i-paddingDim.x*0.25f) + j*paddingDim.x*0.5f + k*paddingDim.y*paddingDim.x*0.25f;
+        in_idx = (i-paddingDim.x*0.25f-offsetL) + j*inputDim.x + k*inputDim.y*inputDim.x;
     }
-    // Left padded zone
-    else if(i<paddingDim.x*0.25f)
+    // Left padded region
+    else if(i<(paddingDim.x*0.25f+offsetL))
     {
-      if(j>=paddingDim.y*0.5f)
+      if(i<offsetL || j>=inputDim.y)
         condition=0;
       else
       {
-        //mirror_idx = (j-paddingDim.y*0.25f)*paddingDim.x*0.5f - (i-(paddingDim.x*0.25f+1)) + k*paddingDim.y*paddingDim.x*0.25f;
-        mirror_idx = j*paddingDim.x*0.5f - (i-(paddingDim.x*0.25f+1)) + k*paddingDim.y*paddingDim.x*0.25f;
-        condition = (paddingDim.x*0.25f-1) - i;
+        mirror_idx = (paddingDim.x*0.25f+offsetL-i) + j*inputDim.x + k*inputDim.y*inputDim.x;
+        condition = (paddingDim.x*0.25f+offsetL) - i;
       }
     }
-    // Right padded zone
-    else if(i>=paddingDim.x*0.75f)
+    // Right padded region
+    else if(i>=(paddingDim.x*0.25f+inputDim.x+offsetL))
     {
-      if(j>=paddingDim.y*0.5f)
+      if(i>=(paddingDim.x-offsetR) || j>=inputDim.y)
         condition=0;
       else
       {
-        //mirror_idx = (j-paddingDim.y*0.25f)*paddingDim.x*0.5f - (i-(paddingDim.x*1.25f-1)) + k*paddingDim.y*paddingDim.x*0.25f;
-        mirror_idx = j*paddingDim.x*0.5f - (i-(paddingDim.x*1.25f-1)) + k*paddingDim.y*paddingDim.x*0.25f;
-        condition = i - (paddingDim.x*0.75f-1);
+        mirror_idx = (paddingDim.x*0.25+inputDim.x+offsetL-1-i) + j*inputDim.x + k*inputDim.y*inputDim.x;
+        condition = i - (paddingDim.x*0.25f+inputDim.x+offsetL);
       }
     }
   }
   else  // hannY filtering OFF
   {
-    // Original image zone
-    if(i>=paddingDim.x*0.25f && i<=paddingDim.x*0.75f)
-      in_idx = (i-paddingDim.x*0.25f) + j*paddingDim.x*0.5f + k*paddingDim.y*paddingDim.x*0.5f;
-    // Left padded zone
-    else if(i<paddingDim.x*0.25f)
+    // Input region (original image)
+    if( i>=(paddingDim.x*0.25f+offsetL) && i<(paddingDim.x*0.25f+inputDim.x+offsetL) )
     {
-      if(j<paddingDim.y*0.25f || j>paddingDim.y*0.75f)
+      if(j>=inputDim.y)
+        condition=0;
+      else
+        in_idx = (i-paddingDim.x*0.25f-offsetL) + j*inputDim.x + k*inputDim.y*inputDim.x;
+    }
+    // Left padded region
+    else if(i<(paddingDim.x*0.25f+offsetL))
+    {
+      if(i<offsetL || j>=inputDim.y)
         condition=0;
       else
       {
-        mirror_idx = j*paddingDim.x*0.5f - (i-(paddingDim.x*0.25f+1)) + k*paddingDim.y*paddingDim.x*0.5f;
-        condition = (paddingDim.x*0.25f-1) - i;
+        mirror_idx = (paddingDim.x*0.25f+offsetL-i) + j*inputDim.x + k*inputDim.y*inputDim.x;
+        condition = (paddingDim.x*0.25f+offsetL) - i;
       }
     }
-    // Right padded zone
-    else if(i>=paddingDim.x*0.75f)
+    // Right padded region
+    else if(i>=(paddingDim.x*0.25f+inputDim.x+offsetL))
     {
-      if(j<paddingDim.y*0.25f || j>paddingDim.y*0.75f)
+      if(i>=(paddingDim.x-offsetR) || j>=inputDim.y)
         condition=0;
       else
       {
-        mirror_idx = j*paddingDim.x*0.5f - (i-(paddingDim.x*1.25f-1)) + k*paddingDim.y*paddingDim.x*0.5f;
-        condition = i - (paddingDim.x*0.75f-1);
+        mirror_idx = (paddingDim.x*0.25+inputDim.x+offsetL-1-i) + j*inputDim.x + k*inputDim.y*inputDim.x;
+        condition = i - (paddingDim.x*0.25f+inputDim.x+offsetL);
       }
     }
   }
@@ -228,7 +233,7 @@ padding_kernel(float *input, float *output, const long3 paddingIdx, const uint3 
   // Mirroring left and right zones
   else
   {
-    if(condition>sizeWeights)
+    if(condition>=sizeWeights) // No correction for truncation artifacts
       output[out_idx] = 0;
     else
       output[out_idx] = truncationWeights[condition]*input[mirror_idx];
@@ -238,6 +243,7 @@ padding_kernel(float *input, float *output, const long3 paddingIdx, const uint3 
 void
 CUDA_padding(const long3 &paddingIndex,
              const uint3 &paddingSize,
+             const uint3 &inputSize,
              float *input,
              float *output,
              float *truncationWeights,
@@ -256,20 +262,21 @@ CUDA_padding(const long3 &paddingIndex,
 
   float *weights_d;   // Pointer to host & device arrays of structure
   int size = sizeWeights*sizeof(float);
-  // Allocate weighting array on device
+  // Allocate truncation weighting array on device
   cudaMalloc((void **) &weights_d, size);
+  // Copying to GPU device truncation weighting array
   cudaMemcpy(weights_d, truncationWeights, size, cudaMemcpyHostToDevice);
   // Call to kernel
   padding_kernel <<< dimGrid, dimBlock >>> ( input,
                                              output,
                                              paddingIndex,
                                              paddingSize,
+                                             inputSize,
                                              blocksInY,
                                              weights_d,
                                              sizeWeights,
-                                             hannY);
+                                             hannY );
   CUDA_CHECK_ERROR;
-
   // Release memory
   cudaFree(weights_d);
 }
