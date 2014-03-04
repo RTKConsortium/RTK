@@ -25,6 +25,10 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
+//DEBUGGING
+#include <itkExtractImageFilter.h>
+//END OF DEBUGGING
+
 int main(int argc, char * argv[])
 {
   GGO(rtkrayboxintersection, args_info);
@@ -71,6 +75,18 @@ int main(int argc, char * argv[])
   rbi->SetGeometry( geometryReader->GetOutputObject() );
   rbi->Update();
 
+  // DEBUGGING
+  typedef itk::ExtractImageFilter<OutputImageType, OutputImageType> ExtractFilterType;
+  typename ExtractFilterType::Pointer extract = ExtractFilterType::New();
+  extract->SetInput(rbi->GetOutput());
+  typename ExtractFilterType::OutputImageRegionType extractRegion;
+  extractRegion = rbi->GetOutput()->GetLargestPossibleRegion();
+  extractRegion.SetSize(Dimension -1, 1);
+  extractRegion.SetIndex(Dimension -1, 3);
+  extract->SetExtractionRegion(extractRegion);
+  extract->Update();
+// END OF DEBUGGING
+
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
@@ -79,6 +95,12 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+
+  //DEBUGGING
+    writer->SetInput( extract->GetOutput() );
+    writer->SetFileName( "extractedRayBoxProjection.mha" );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+// END OF DEBUGGING
 
   return EXIT_SUCCESS;
 }

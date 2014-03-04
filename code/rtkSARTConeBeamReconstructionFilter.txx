@@ -25,6 +25,10 @@
 #include <algorithm>
 #include "itkTimeProbe.h"
 
+ // DEBUGGING
+#include "itkImageFileWriter.h"
+
+
 namespace rtk
 {
 template<class TInputImage, class TOutputImage>
@@ -72,10 +76,12 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_MultiplyFilter->SetInput( m_SubtractFilter->GetOutput() );
 #endif
 
-  m_RayBoxFilter->SetInput(m_ConstantImageSource->GetOutput());
-  m_ExtractFilterRayBox->SetInput(m_RayBoxFilter->GetOutput());
+
+  m_ExtractFilterRayBox->SetInput(m_ConstantImageSource->GetOutput());
+  m_RayBoxFilter->SetInput(m_ExtractFilterRayBox->GetOutput());
   m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
-  m_DivideFilter->SetInput2(m_ExtractFilterRayBox->GetOutput());
+//  m_DivideFilter->SetInput2(m_ExtractFilterRayBox->GetOutput());
+  m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
 
   // Default parameters
 #if ITK_VERSION_MAJOR >= 4
@@ -195,6 +201,12 @@ void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::GenerateData()
 {
+    // DEBUGGING
+    typedef itk::ImageFileWriter<TInputImage> FileWriterType;
+    typename FileWriterType::Pointer writer = FileWriterType::New();
+ // END OF DEBUGGING
+
+
   const unsigned int Dimension = this->InputImageDimension;
 
   // Check and set geometry
@@ -244,14 +256,29 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       // Change projection subset
       subsetRegion.SetIndex( Dimension-1, projOrder[i] );
       m_ExtractFilter->SetExtractionRegion(subsetRegion);
+//      //DEBUGGING
+//      subsetRegion.SetIndex( Dimension-1, 15 );
+//      subsetRegion.SetSize(Dimension -1,5);
+//    // END OF DEBUGGING
       m_ExtractFilterRayBox->SetExtractionRegion(subsetRegion);
 
       // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
 
+//      // DEBUGGING
+//      writer->SetFileName("Input1.mha");
+//      writer->SetInput(this->GetInput(1));
+//      writer->Update();
+//      // END OF DEBUGGING
+
       m_ExtractProbe.Start();
       m_ExtractFilter->Update();
+//      // DEBUGGING
+//      writer->SetFileName("ExtractFilterOutput.mha");
+//      writer->SetInput(m_ExtractFilter->GetOutput());
+//      writer->Update();
+//      // END OF DEBUGGING
       m_ExtractProbe.Stop();
 
       m_ZeroMultiplyProbe.Start();
@@ -265,18 +292,66 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
       m_SubtractProbe.Start();
       m_SubtractFilter->Update();
+//      // DEBUGGING
+//      writer->SetFileName("SubtractInput0.mha");
+//      writer->SetInput(m_SubtractFilter->GetInput(0));
+//      writer->Update();
+//      writer->SetFileName("SubtractInput1.mha");
+//      writer->SetInput(m_SubtractFilter->GetInput(1));
+//      writer->Update();
+//      writer->SetFileName("SubtractOutput.mha");
+//      writer->SetInput(m_SubtractFilter->GetOutput());
+//      writer->Update();
+//      // END OF DEBUGGING
       m_SubtractProbe.Stop();
 
       m_MultiplyProbe.Start();
       m_MultiplyFilter->Update();
+//      // DEBUGGING
+//      writer->SetFileName("MultiplyFilterOutput.mha");
+//      writer->SetInput(m_MultiplyFilter->GetOutput());
+//      writer->Update();
+//      // END OF DEBUGGING
       m_MultiplyProbe.Stop();
+
+      // DEBUGGING
+//    subsetRegion.SetIndex( Dimension-1, 15 );
+//    subsetRegion.SetSize(Dimension -1,5);
+//    m_ExtractFilterRayBox->SetExtractionRegion(subsetRegion);
+      m_ExtractFilterRayBox->Update();
+//      writer->SetFileName("ExtractFilterRayBoxOutput.mha");
+//      writer->SetInput(m_ExtractFilterRayBox->GetOutput());
+//      writer->Update();
+      // END OF DEBUGGING
+
 
       m_RayBoxProbe.Start();
       m_RayBoxFilter->Update();
+//      // DEBUGGING
+//      writer->SetFileName("RayBoxOutput.mha");
+//      writer->SetInput(m_RayBoxFilter->GetOutput());
+//      writer->Update();
+//      writer->SetFileName("RayBoxInput.mha");
+//      writer->SetInput(m_RayBoxFilter->GetInput());
+//      writer->Update();
+//      // END OF DEBUGGING
       m_RayBoxProbe.Stop();
+
+
 
       m_DivideProbe.Start();
       m_DivideFilter->Update();
+//      // DEBUGGING
+//      writer->SetFileName("DivideOutput.mha");
+//      writer->SetInput(m_DivideFilter->GetOutput());
+//      writer->Update();
+//      writer->SetFileName("DivideInput0.mha");
+//      writer->SetInput(m_DivideFilter->GetInput(0));
+//      writer->Update();
+//      writer->SetFileName("DivideInput1.mha");
+//      writer->SetInput(m_DivideFilter->GetInput(1));
+//      writer->Update();
+//      // END OF DEBUGGING
       m_DivideProbe.Stop();
 
       m_BackProjectionProbe.Start();

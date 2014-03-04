@@ -14,6 +14,10 @@
   #include "rtkSARTConeBeamReconstructionFilter.h"
 #endif
 
+// DEBUGGING
+#include "itkImageFileWriter.h"
+
+
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
 void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
@@ -176,6 +180,10 @@ int main(int, char** )
   rei->SetInput( projectionsSource->GetOutput() );
   rei->SetGeometry( geometry );
 
+  // DEBUGGING
+  rei->SetNumberOfThreads(1);
+  // END OF DEBUGGING
+
   //Update
   rei->Update();
 
@@ -199,6 +207,16 @@ int main(int, char** )
   sart->SetLambda( 0.5 );
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
+
+  // DEBUGGING
+  typedef itk::ImageFileWriter<OutputImageType> FileWriterType;
+  typename FileWriterType::Pointer writer = FileWriterType::New();
+
+  writer->SetFileName("reiOutput.mha");
+  writer->SetInput(rei->GetOutput());
+  writer->Update();
+
+// END OF DEBUGGING
 
   rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
   bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
