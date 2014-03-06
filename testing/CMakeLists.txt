@@ -120,10 +120,17 @@ RTK_ADD_TEST(NAME rtkvariantest
 
 ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest RTK)
-RTK_ADD_TEST(NAME rtkelektatest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest 
+RTK_ADD_TEST(NAME rtkelektatest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest
              DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
              DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha})
+
+ADD_EXECUTABLE(rtkluttest rtkluttest.cxx)
+TARGET_LINK_LIBRARIES(rtkluttest RTK)
+RTK_ADD_TEST(NAME rtkluttest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkluttest
+             DATA{Data/Input/Elekta/raw.his}
+             DATA{Data/Baseline/Elekta/attenuation.mha})
 
 ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest RTK)
