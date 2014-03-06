@@ -42,6 +42,17 @@ namespace rtk
  * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
  * to extract sub-stacks.
  *
+ * \dot
+ * digraph FDKConeBeamReconstructionFilter {
+ * node [shape=box];
+ * 1 [ label="rtk::FDKWeightProjectionFilter" URL="\ref rtk::FDKWeightProjectionFilter"];
+ * 2 [ label="rtk::FFTRampImageFilter" URL="\ref rtk::FFTRampImageFilter"];
+ * 3 [ label="rtk::FDKBackProjectionImageFilter" URL="\ref rtk::FDKBackProjectionImageFilter"];
+ * 1 -> 2;
+ * 2 -> 3;
+ * }
+ * \enddot
+ *
  * \test rtkfdktest.cxx, rtkrampfiltertest.cxx, rtkmotioncompensatedfdktest.cxx,
  * rtkdisplaceddetectortest.cxx, rtkshortscantest.cxx
  *
