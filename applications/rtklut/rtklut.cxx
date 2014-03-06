@@ -59,13 +59,13 @@ int main(int argc, char * argv[])
   LUTFilterType::Pointer lutFilter = LUTFilterType::New();
   lutFilter->SetInput(projections->GetOutput());
   lutFilter->SetLookupTable(lutReader->GetOutput());
-  lutFilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutFilter->Update() );
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( projections->GetOutput() );
+  writer->SetInput( lutFilter->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Writing result... " << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );

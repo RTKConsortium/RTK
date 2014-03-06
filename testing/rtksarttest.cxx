@@ -176,6 +176,8 @@ int main(int, char** )
   center.Fill(0.);
   rei->SetAngle(0.);
   rei->SetDensity(1.);
+  rei->SetCenter(center);
+  rei->SetAxis(semiprincipalaxis);
 
   rei->SetInput( projectionsSource->GetOutput() );
   rei->SetGeometry( geometry );
@@ -185,7 +187,7 @@ int main(int, char** )
   // END OF DEBUGGING
 
   //Update
-  rei->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() );
 
   // Create REFERENCE object (3D ellipsoid).
   typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
