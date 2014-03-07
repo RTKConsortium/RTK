@@ -39,7 +39,7 @@ JosephBackProjectionImageFilter<TInputImage,
 ::GenerateData()
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-  typename TInputImage::RegionType Largest =this->GetInput(1)->GetLargestPossibleRegion(); 
+  typename TInputImage::RegionType Largest =this->GetInput(1)->GetBufferedRegion();
   const unsigned int nPixelPerProj = Largest.GetSize(0) * Largest.GetSize(1);
   int offsets[3];
   offsets[0] = 1;
@@ -76,10 +76,22 @@ JosephBackProjectionImageFilter<TInputImage,
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
+//      boxMin[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] + 0.001;  // To avoid numerical errors
+//      boxMax[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] +
+//                  this->GetOutput()->GetBufferedRegion().GetSize()[i]  - 1.001;  // To avoid numerical errors
+
+    if(i==j){
+      boxMin[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] - 0.5;  // To avoid numerical errors
+      boxMax[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] +
+                  this->GetOutput()->GetBufferedRegion().GetSize()[i]  - 0.5;  // To avoid numerical errors
+        }
+    else
+    {
       boxMin[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] + 0.001;  // To avoid numerical errors
       boxMax[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] +
                   this->GetOutput()->GetBufferedRegion().GetSize()[i]  - 1.001;  // To avoid numerical errors
-      }
+    }
+    }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
     }
