@@ -183,6 +183,18 @@ ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
 TARGET_LINK_LIBRARIES(rtkjosephadjointoperatorstest RTK)
 ADD_TEST(rtkjosephadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkjosephadjointoperatorstest)
 
+ADD_EXECUTABLE(rtktotalvariationtest rtktotalvariationtest.cxx)
+TARGET_LINK_LIBRARIES(rtktotalvariationtest RTK)
+ADD_TEST(rtktotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtktotalvariationtest)
+
+ADD_EXECUTABLE(rtkgradienttest rtkgradienttest.cxx)
+TARGET_LINK_LIBRARIES(rtkgradienttest RTK)
+ADD_TEST(rtkgradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkgradienttest)
+
+ADD_EXECUTABLE(rtkdivergencetest rtkdivergencetest.cxx)
+TARGET_LINK_LIBRARIES(rtkdivergencetest RTK)
+ADD_TEST(rtkdivergencetest ${EXECUTABLE_OUTPUT_PATH}/rtkdivergencetest)
+
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
 IF(CUDA_FOUND)
