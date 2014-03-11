@@ -123,6 +123,7 @@ ConstantImageSource<TOutputImage>
   m_Spacing = image->GetSpacing();
   m_Origin = image->GetOrigin();
   m_Direction = image->GetDirection();
+  this->Modified();
 }
 
 //----------------------------------------------------------------------------
