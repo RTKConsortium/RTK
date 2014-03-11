@@ -77,7 +77,7 @@ NormalizedJosephBackProjectionImageFilter<TInputImage,TOutputImage>
   // Set constant image sources
   m_ConstantVolumeSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(0)));
   m_ConstantVolumeSource->SetConstant(0);
-  m_ConstantVolumeSource->UpdateOutputInformation();
+  m_ConstantVolumeSource->Update();
 
   m_ConstantProjectionSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
   m_ConstantProjectionSource->SetConstant(1);

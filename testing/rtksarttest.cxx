@@ -4,7 +4,7 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkJosephBackProjectionImageFilter.h"
+#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef USE_CUDA
   #include "rtkCudaBackProjectionImageFilter.h"
@@ -13,10 +13,6 @@
 #else
   #include "rtkSARTConeBeamReconstructionFilter.h"
 #endif
-
-// DEBUGGING
-#include "itkImageFileWriter.h"
-
 
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
@@ -182,10 +178,6 @@ int main(int, char** )
   rei->SetInput( projectionsSource->GetOutput() );
   rei->SetGeometry( geometry );
 
-  // DEBUGGING
-  rei->SetNumberOfThreads(1);
-  // END OF DEBUGGING
-
   //Update
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() );
 
@@ -205,20 +197,10 @@ int main(int, char** )
   sart->SetInput( tomographySource->GetOutput() );
   sart->SetInput(1, rei->GetOutput());
   sart->SetGeometry( geometry );
-  sart->SetNumberOfIterations( 1 );
+  sart->SetNumberOfIterations( 2 );
   sart->SetLambda( 0.5 );
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
-
-  // DEBUGGING
-  typedef itk::ImageFileWriter<OutputImageType> FileWriterType;
-  typename FileWriterType::Pointer writer = FileWriterType::New();
-
-  writer->SetFileName("reiOutput.mha");
-  writer->SetInput(rei->GetOutput());
-  writer->Update();
-
-// END OF DEBUGGING
 
   rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
   bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
@@ -230,7 +212,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
 
-  bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+  bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
   sart->SetBackProjectionFilter( bp );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
