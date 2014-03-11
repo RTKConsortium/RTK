@@ -52,6 +52,53 @@ namespace rtk
  * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
  * to extract sub-stacks.
  *
+ * \dot
+ * digraph SARTConeBeamReconstructionFilter {
+ *
+ * Input0 [ label="Input 0 (Volume)"];
+ * Input0 [shape=Mdiamond];
+ * Input1 [label="Input 1 (Projections)"];
+ * Input1 [shape=Mdiamond];
+ * Output [label="Output (Reconstruction)"];
+ * Output [shape=Mdiamond];
+ *
+ * node [shape=box];
+ * 1 [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
+ * 2 [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ * 3 [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+ * test [label="", fixedsize="false", width=0, height=0, shape=none];
+ * 4 [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+ * 5 [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
+ * 6 [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
+ * 7 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ * 8 [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ * 9 [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
+ * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+ * OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+ * Threshold [ label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
+ * OutofThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ * Input0 -> OutofInput0 [arrowhead=None];
+ * OutofInput0 -> 1;
+ * OutofInput0 -> BackProjection;
+ * 2 -> test[arrowhead=None];
+ * test -> 3;
+ * test -> 4;
+ * 3 -> 1;
+ * Input1 -> 2;
+ * 1 -> 4;
+ * 4 -> 5;
+ * 5 -> 6;
+ * 7 -> 8;
+ * 8 -> 9;
+ * 9 -> 6;
+ * 6 -> BackProjection;
+ * BackProjection -> Threshold;
+ * Threshold -> OutofThreshold [arrowhead=None];
+ * OutofThreshold -> OutofInput0 [style=dashed];
+ * OutofThreshold -> Output;
+ * }
+ * \enddot
+ *
  * \test rtksarttest.cxx
  *
  * \author Simon Rit
