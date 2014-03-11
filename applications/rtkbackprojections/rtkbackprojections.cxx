@@ -24,6 +24,7 @@
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
+#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #if CUDA_FOUND
 #  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
@@ -128,6 +129,9 @@ int main(int argc, char * argv[])
       break;
     case(method_arg_Joseph):
       bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+    case(method_arg_NormalizedJoseph):
+      bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
     case(method_arg_CudaFDKBackProjection):
 #if CUDA_FOUND

@@ -45,8 +45,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ForwardProjectionFilter = JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
-  //SetBackProjectionFilter(rtk::BackProjectionImageFilter<TInputImage,
-  // TInputImage>::New());
 
   // Create the filters required for correct weighting of the difference
   // projection
@@ -80,7 +78,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilterRayBox->SetInput(m_ConstantImageSource->GetOutput());
   m_RayBoxFilter->SetInput(m_ExtractFilterRayBox->GetOutput());
   m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
-//  m_DivideFilter->SetInput2(m_ExtractFilterRayBox->GetOutput());
   m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
 
   // Default parameters
@@ -119,21 +116,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   if ( !inputPtr )
     return;
 
-  //SR: is this useful? 
-  //CM : I think it isn't : GenerateInputRequestedRegion is
-  // run after GenerateOutputInformation. All the connections with inputs and
-  // data-dependent information should be set there, and do not have to be repeated here
-  //
-  //  m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
-  //  m_ForwardProjectionFilter->SetInput ( 1, this->GetInput(0) );
-  //  m_ExtractFilter->SetInput( this->GetInput(1) );
-
-
   m_ThresholdFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
   m_ThresholdFilter->GetOutput()->PropagateRequestedRegion();
 
-  //m_BackProjectionFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
-  //m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
 }
 
 template<class TInputImage, class TOutputImage>
@@ -181,7 +166,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     m_ThresholdFilter->ThresholdBelow(0);
     }
   m_ThresholdFilter->UpdateOutputInformation();
-  //m_BackProjectionFilter->UpdateOutputInformation();
 
   // Update output information
   this->GetOutput()->SetOrigin( m_ThresholdFilter->GetOutput()->GetOrigin() );
@@ -189,11 +173,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   this->GetOutput()->SetDirection( m_ThresholdFilter->GetOutput()->GetDirection() );
   this->GetOutput()->SetLargestPossibleRegion( m_ThresholdFilter->GetOutput()->GetLargestPossibleRegion() );
 
-  // Update output information
-//  this->GetOutput()->SetOrigin( m_BackProjectionFilter->GetOutput()->GetOrigin() );
-//  this->GetOutput()->SetSpacing( m_BackProjectionFilter->GetOutput()->GetSpacing() );
-//  this->GetOutput()->SetDirection( m_BackProjectionFilter->GetOutput()->GetDirection() );
-//  this->GetOutput()->SetLargestPossibleRegion( m_BackProjectionFilter->GetOutput()->GetLargestPossibleRegion() );
 }
 
 template<class TInputImage, class TOutputImage>

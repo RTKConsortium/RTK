@@ -22,6 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkProjectionsReader.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
+#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #if CUDA_FOUND
   #include "rtkCudaSARTConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
@@ -100,7 +101,8 @@ int main(int argc, char * argv[])
     bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(bp_arg_Joseph):
-    bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+//    bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(bp_arg_CudaVoxelBased):
 #if CUDA_FOUND
