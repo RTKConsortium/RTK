@@ -33,6 +33,37 @@ namespace rtk
  * Performs a Jospeh back projection and divides it by the Joseph back projection
  * of a projection filled with ones, to meet the requirements of SART.
  *
+ * \dot
+ * digraph NormalizedJosephBackProjectionImageFilter {
+ *
+ * Input0 [ label="Input 0 (Volume)"];
+ * Input0 [shape=Mdiamond];
+ * Input1 [label="Input 1 (Projections)"];
+ * Input1 [shape=Mdiamond];
+ * Output [label="Output (Reconstruction)"];
+ * Output [shape=Mdiamond];
+ *
+ * node [shape=box];
+ * ConstantVolumeSource [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ * ConstantProjectionSource [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ * BackProjection [ label="rtk::JosephBackProjectionImageFilter" URL="\ref rtk::JosephBackProjectionImageFilter"];
+ * BackProjectionOfConstant [ label="rtk::JosephBackProjectionImageFilter" URL="\ref rtk::JosephBackProjectionImageFilter"];
+ * Divide [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
+ * Add [ label="itk::AddImageFilter (by lambda)" URL="\ref itk::AddImageFilter"];
+ * OutofConstantVolumeSource [label="", fixedsize="false", width=0, height=0, shape=none];
+ * ConstantVolumeSource -> OutofConstantVolumeSource [arrowhead=None];
+ * OutofConstantVolumeSource -> BackProjection [ label="#0"];
+ * OutofConstantVolumeSource -> BackProjectionOfConstant [ label="#0"];
+ * Input1 -> BackProjection [ label="#1"];
+ * ConstantProjectionSource -> BackProjectionOfConstant [ label="#1"];
+ * BackProjectionOfConstant -> Divide [ label="#1"];
+ * BackProjection -> Divide [ label="#0"];
+ * Divide -> Add;
+ * Input0 -> Add;
+ * Add -> Output;
+ * }
+ * \enddot
+ *
  * \test rtksarttest.cxx
  *
  * \author Cyril Mory
