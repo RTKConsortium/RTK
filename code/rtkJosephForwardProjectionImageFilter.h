@@ -185,6 +185,21 @@ protected:
                                                const int ox,
                                                const int oy);
 
+  inline OutputPixelType BilinearInterpolationOnBorders(const ThreadIdType threadId,
+                                               const double stepLengthInVoxel,
+                                               const InputPixelType *pxiyi,
+                                               const InputPixelType *pxsyi,
+                                               const InputPixelType *pxiys,
+                                               const InputPixelType *pxsys,
+                                               const double x,
+                                               const double y,
+                                               const int ox,
+                                               const int oy,
+                                               const double minx,
+                                               const double miny,
+                                               const double maxx,
+                                               const double maxy);
+
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented

@@ -136,6 +136,23 @@ protected:
                                                const int ox,
                                                const int oy);
 
+  inline void BilinearSplatOnBorders(const InputPixelType rayValue,
+                                                 const double stepLengthInVoxel,
+                                                 const double voxelSize,
+                                                 OutputPixelType *pxiyi,
+                                                 OutputPixelType *pxsyi,
+                                                 OutputPixelType *pxiys,
+                                                 OutputPixelType *pxsys,
+                                                 const double x,
+                                                 const double y,
+                                                 const int ox,
+                                                 const int oy,
+                                                 const CoordRepType minx,
+                                                 const CoordRepType miny,
+                                                 const CoordRepType maxx,
+                                                 const CoordRepType maxy);
+
+
 private:
   JosephBackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented

@@ -46,10 +46,6 @@ JosephBackProjectionImageFilter<TInputImage,
   offsets[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(0)->GetBufferedRegion().GetSize()[0] * this->GetInput(0)->GetBufferedRegion().GetSize()[1];
 
-//  const typename JosephBackProjectionImageFilter<TInputImage,
-//                                 TOutputImage,
-//                                 TSplatWeightMultiplication>
-//::
   GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
 
   // Allocate the output image
@@ -76,21 +72,9 @@ JosephBackProjectionImageFilter<TInputImage,
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
-//      boxMin[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] + 0.001;  // To avoid numerical errors
-//      boxMax[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] +
-//                  this->GetOutput()->GetBufferedRegion().GetSize()[i]  - 1.001;  // To avoid numerical errors
-
-    if(i==j){
-      boxMin[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] - 0.5;  // To avoid numerical errors
+      boxMin[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i];
       boxMax[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] +
-                  this->GetOutput()->GetBufferedRegion().GetSize()[i]  - 0.5;  // To avoid numerical errors
-        }
-    else
-    {
-      boxMin[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] + 0.001;  // To avoid numerical errors
-      boxMax[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] +
-                  this->GetOutput()->GetBufferedRegion().GetSize()[i]  - 1.001;  // To avoid numerical errors
-    }
+                  this->GetOutput()->GetBufferedRegion().GetSize()[i]  - 1;
     }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
@@ -164,28 +148,37 @@ JosephBackProjectionImageFilter<TInputImage,
           std::swap(np, fp);
 
         // Compute main nearest and farthest slice indices
-        const int ns = vnl_math_ceil ( np[mainDir] );
-        const int fs = vnl_math_floor( fp[mainDir] );
+        // Numerical precision problems occur with the floor function
+        // on integer numbers stored as floats.
+        // They are avoided by adding a very small epsilon
+        float epsilon = 1e-10;
+        const int ns = vnl_math_ceil ( np[mainDir] + epsilon);
+        const int fs = vnl_math_floor( fp[mainDir] + epsilon);
 
-        // If its a corner, we can skip
-        if( fs<ns )
-          {
-        //  itOut.Set( m_ProjectedValueAccumulation(threadId,
-        //                                          itIn.Get(),
-        //                                          0.,
-        //                                          &(sourcePosition[0]),
-        //                                          &(sourcePosition[0]),
-        //                                          dirVox,
-        //                                          &(sourcePosition[0]),
-        //                                          &(sourcePosition[0])) );
-           continue;
-           }
+//        // If its a corner, we can skip
+//        if( fs<ns )
+//          {
+//          itOut.Set( m_ProjectedValueAccumulation(threadId,
+//                                                  itIn.Get(),
+//                                                  0.,
+//                                                  &(sourcePosition[0]),
+//                                                  &(sourcePosition[0]),
+//                                                  dirVox,
+//                                                  &(sourcePosition[0]),
+//                                                  &(sourcePosition[0])) );
+//           continue;
+//           }
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
         unsigned int notMainDirSup = (mainDir+2)%Dimension;
         if(notMainDirInf>notMainDirSup)
           std::swap(notMainDirInf, notMainDirSup);
+
+        const CoordRepType minx = rbi[mainDir]->GetBoxMin()[notMainDirInf];
+        const CoordRepType miny = rbi[mainDir]->GetBoxMin()[notMainDirSup];
+        const CoordRepType maxx = rbi[mainDir]->GetBoxMax()[notMainDirInf];
+        const CoordRepType maxy = rbi[mainDir]->GetBoxMax()[notMainDirSup];
 
         // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
         const int offsetx = offsets[notMainDirInf];
@@ -198,38 +191,60 @@ JosephBackProjectionImageFilter<TInputImage,
         pxiys = pxiyi + offsety;
         pxsys = pxsyi + offsety;
 
+//        // Compute step size and go to first voxel
+//        const CoordRepType residual = ns-np[mainDir];
+//        const CoordRepType norm = 1/dirVox[mainDir];
+//        const CoordRepType stepx = dirVox[notMainDirInf] * norm;
+//        const CoordRepType stepy = dirVox[notMainDirSup] * norm;
+//        CoordRepType currentx = np[notMainDirInf] + residual*stepx;
+//        CoordRepType currenty = np[notMainDirSup] + residual*stepy;
+
         // Compute step size and go to first voxel
         const CoordRepType residual = ns-np[mainDir];
         const CoordRepType norm = 1/dirVox[mainDir];
         const CoordRepType stepx = dirVox[notMainDirInf] * norm;
         const CoordRepType stepy = dirVox[notMainDirSup] * norm;
-        CoordRepType currentx = np[notMainDirInf] + residual*stepx;
-        CoordRepType currenty = np[notMainDirSup] + residual*stepy;
+        CoordRepType currentx = np[notMainDirInf];
+        CoordRepType currenty = np[notMainDirSup];
 
         // Compute voxel to millimeters conversion
         stepMM[notMainDirInf] = this->GetInput(0)->GetSpacing()[notMainDirInf] * stepx;
         stepMM[notMainDirSup] = this->GetInput(0)->GetSpacing()[notMainDirSup] * stepy;
         stepMM[mainDir]       = this->GetInput(0)->GetSpacing()[mainDir];
 
-        // First step
-        BilinearSplat(itIn.Get(), residual + 0.5, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
-        
-        // Middle steps
-        for(int i=ns; i<fs-1; i++)
+        // If the ray enters the volume not through the first main direction slice
+        if(residual > 0)
           {
+          // Move back to the previous main direction slice
+          pxiyi -= offsetz;
+          pxsyi -= offsetz;
+          pxiys -= offsetz;
+          pxsys -= offsetz;
+          currentx += (residual -1)*stepx;
+          currenty += (residual -1)*stepy;
+
+          // Perform bilinear splat with padding voxels containing 0
+          BilinearSplatOnBorders(itIn.Get(), 1.0, stepMM.GetNorm(),
+                                 pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                 offsetx, offsety, minx, miny, maxx, maxy);
+
+          // Move to next main direction slice
           pxiyi += offsetz;
           pxsyi += offsetz;
           pxiys += offsetz;
           pxsys += offsetz;
           currentx += stepx;
           currenty += stepy;
+
+          }
+
+        // Middle steps
+        for(int i=ns; i<=fs; i++)
+          {
 
           BilinearSplat(itIn.Get(), 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
-          }
 
-        // Last step: goes to next voxel only if more than one
-        if(ns!=fs)
-          {
+          // Move to next main direction slice
           pxiyi += offsetz;
           pxsyi += offsetz;
           pxiys += offsetz;
@@ -238,7 +253,14 @@ JosephBackProjectionImageFilter<TInputImage,
           currenty += stepy;
           }
 
-          BilinearSplat(itIn.Get(), fp[mainDir]-fs +0.5, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety); 
+        // If the ray exits the volume not through the last main direction slice
+        if(fp[mainDir] - fs > epsilon)
+          {
+            // Perform bilinear splat with padding voxels containing 0
+            BilinearSplatOnBorders(itIn.Get(), 1.0, stepMM.GetNorm(),
+                                   pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                   offsetx, offsety, minx, miny, maxx, maxy);
+          }
 
         }
 
@@ -279,6 +301,44 @@ JosephBackProjectionImageFilter<TInputImage,
   pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
 
 }
+
+template <class TInputImage,
+          class TOutputImage,
+          class TSplatWeightMultiplication>
+void
+JosephBackProjectionImageFilter<TInputImage,
+                                   TOutputImage,
+                                   TSplatWeightMultiplication>
+::BilinearSplatOnBorders(const InputPixelType rayValue,
+                                               const double stepLengthInVoxel,
+                                               const double voxelSize,
+                                               OutputPixelType *pxiyi,
+                                               OutputPixelType *pxsyi,
+                                               OutputPixelType *pxiys,
+                                               OutputPixelType *pxsys,
+                                               const double x,
+                                               const double y,
+                                               const int ox,
+                                               const int oy,
+                                               const CoordRepType minx,
+                                               const CoordRepType miny,
+                                               const CoordRepType maxx,
+                                               const CoordRepType maxy)
+{
+  int ix = vnl_math_floor(x);
+  int iy = vnl_math_floor(y);
+  int idx = ix*ox + iy*oy;
+  CoordRepType lx = x - ix;
+  CoordRepType ly = y - iy;
+  CoordRepType lxc = 1.-lx;
+  CoordRepType lyc = 1.-ly;
+
+  if ((ix >= minx) && (iy >= miny)) pxiyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
+  if ((ix+1 <= maxx) && (iy >= miny)) pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
+  if ((ix >= minx) && (iy+1 <= maxy)) pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
+  if ((ix+1 <= maxx) && (iy+1 <= maxy)) pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
+}
+
 
 } // end namespace rtk
 
