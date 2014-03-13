@@ -23,13 +23,13 @@
 #include "rtkJosephBackProjectionImageFilter.h"
 
 #include <algorithm>
-#include "itkTimeProbe.h"
+#include <itkTimeProbe.h>
 
 namespace rtk
 {
 template<class TInputImage, class TOutputImage>
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
-::SARTConeBeamReconstructionFilter() :
+::SARTConeBeamReconstructionFilter():
   m_NumberOfIterations(3),
   m_Lambda(0.3)
 {
@@ -113,7 +113,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
   m_ThresholdFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
   m_ThresholdFilter->GetOutput()->PropagateRequestedRegion();
-
 }
 
 template<class TInputImage, class TOutputImage>
@@ -160,6 +159,10 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     m_ThresholdFilter->SetOutsideValue(0);
     m_ThresholdFilter->ThresholdBelow(0);
     }
+  else
+    {
+    m_ThresholdFilter->ThresholdBelow(itk::NumericTraits< typename ThresholdFilterType::PixelType >::NonpositiveMin());
+    }
   m_ThresholdFilter->UpdateOutputInformation();
 
   // Update output information
@@ -167,7 +170,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   this->GetOutput()->SetSpacing( m_ThresholdFilter->GetOutput()->GetSpacing() );
   this->GetOutput()->SetDirection( m_ThresholdFilter->GetOutput()->GetDirection() );
   this->GetOutput()->SetLargestPossibleRegion( m_ThresholdFilter->GetOutput()->GetLargestPossibleRegion() );
-
 }
 
 template<class TInputImage, class TOutputImage>
@@ -206,7 +208,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   
   // Create the zero projection stack used as input by RayBoxIntersectionFilter
   m_ConstantImageSource->Update();
-      
+
   // For each iteration, go over each projection
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
     {
@@ -215,7 +217,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       // After the first bp update, we need to use its output as input.
       if(iter+i)
         {
-        //typename TInputImage::Pointer pimg = m_BackProjectionFilter->GetOutput();
         typename TInputImage::Pointer pimg = m_ThresholdFilter->GetOutput();
         pimg->DisconnectPipeline();
         m_BackProjectionFilter->SetInput( pimg );
@@ -233,6 +234,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
       m_ExtractProbe.Start();
       m_ExtractFilter->Update();
+      m_ExtractFilterRayBox->Update();
       m_ExtractProbe.Stop();
 
       m_ZeroMultiplyProbe.Start();
@@ -240,8 +242,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_ZeroMultiplyProbe.Stop();
 
       m_ForwardProjectionProbe.Start();
-      m_ForwardProjectionFilter->UpdateLargestPossibleRegion();
-      //            m_ForwardProjectionFilter->Update();
+      m_ForwardProjectionFilter->Update();
       m_ForwardProjectionProbe.Stop();
 
       m_SubtractProbe.Start();
@@ -251,8 +252,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_MultiplyProbe.Start();
       m_MultiplyFilter->Update();
       m_MultiplyProbe.Stop();
-
-      m_ExtractFilterRayBox->Update();
 
       m_RayBoxProbe.Start();
       m_RayBoxFilter->Update();
@@ -271,8 +270,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_ThresholdProbe.Stop();
       }
     }
-//  this->GraftOutput( m_BackProjectionFilter->GetOutput() );
-  this->GraftOutput( m_ThresholdFilter->GetOutput());
+  this->GraftOutput( m_ThresholdFilter->GetOutput() );
 }
 
 template<class TInputImage, class TOutputImage>

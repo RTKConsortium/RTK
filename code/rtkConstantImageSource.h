@@ -99,7 +99,7 @@ public:
   /** Set/Get direction of the output image */
   itkSetMacro( Direction, DirectionType );
   itkGetMacro( Direction, DirectionType );
-  
+
   /** Set/Get index of the output image's largest possible region */
   itkSetMacro( Index, IndexType );
   itkGetMacro( Index, IndexType );
@@ -108,7 +108,7 @@ public:
   itkSetMacro(Constant, OutputImagePixelType);
   itkGetConstMacro(Constant, OutputImagePixelType);
 
-  // Set output image information from an existing image
+  /** Set output image information from an existing image */
   void SetInformationFromImage(TOutputImage* image);
 
 protected:

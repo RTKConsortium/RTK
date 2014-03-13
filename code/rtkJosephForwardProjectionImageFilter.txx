@@ -75,7 +75,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
       boxMax[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] +
                   this->GetInput(1)->GetBufferedRegion().GetSize()[i] - 1;
-    }
+      }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
     }
@@ -151,23 +151,9 @@ JosephForwardProjectionImageFilter<TInputImage,
         // Numerical precision problems occur with the floor function
         // on integer numbers stored as floats.
         // They are avoided by adding a very small epsilon
-        float epsilon = 1e-10;
-        const int ns = vnl_math_ceil ( np[mainDir] + epsilon);
+        float epsilon = 1e-5;
+        const int ns = vnl_math_ceil ( np[mainDir] - epsilon);
         const int fs = vnl_math_floor( fp[mainDir] + epsilon);
-
-//        // If its a corner, we can skip
-//        if( fs<ns )
-//          {
-//          itOut.Set( m_ProjectedValueAccumulation(threadId,
-//                                                  itIn.Get(),
-//                                                  0.,
-//                                                  &(sourcePosition[0]),
-//                                                  &(sourcePosition[0]),
-//                                                  dirVox,
-//                                                  &(sourcePosition[0]),
-//                                                  &(sourcePosition[0])) );
-//           continue;
-//           }
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
@@ -214,10 +200,9 @@ JosephForwardProjectionImageFilter<TInputImage,
           currenty += (residual -1)*stepy;
 
           // Perform bilinear interpolation with padding voxels containing 0
-          sum += BilinearInterpolationOnBorders(threadId,
-                                      1.,
-                                      pxiyi, pxsyi, pxiys, pxsys,
-                                      currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
+          sum += BilinearInterpolationOnBorders(threadId, 1.,
+                                      pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                      offsetx, offsety, minx, miny, maxx, maxy);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -369,11 +354,20 @@ JosephForwardProjectionImageFilter<TInputImage,
   CoordRepType lyc = 1.-ly;
 
   OutputPixelType result=0;
-  if ((ix >= minx) && (iy >= miny)) result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx);
-  if ((ix+1 <= maxx) && (iy >= miny)) result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx);
-  if ((ix >= minx) && (iy+1 <= maxy)) result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx);
-  if ((ix+1 <= maxx) && (iy+1 <= maxy)) result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx);
-
+  if(ix >= minx)
+    {
+    if(iy >= miny)
+      result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx);
+    if(iy+1 <= maxy)
+      result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx);
+    }
+  if(ix+1 <= maxx)
+    {
+    if(iy >= miny)
+      result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx);
+    if(iy+1 <= maxy)
+      result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx);
+    }
   return (result * stepLengthInVoxel);
 }
 

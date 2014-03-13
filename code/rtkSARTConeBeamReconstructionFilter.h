@@ -121,20 +121,20 @@ public:
   typedef TOutputImage OutputImageType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< InputImageType, InputImageType >                     ExtractFilterType;
+  typedef itk::ExtractImageFilter< InputImageType, InputImageType >                          ExtractFilterType;
 #if ITK_VERSION_MAJOR <= 3
-  typedef itk::MultiplyByConstantImageFilter< OutputImageType, double, OutputImageType > MultiplyFilterType;
+  typedef itk::MultiplyByConstantImageFilter< OutputImageType, double, OutputImageType >     MultiplyFilterType;
 #else
-  typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >  MultiplyFilterType;
+  typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >      MultiplyFilterType;
 #endif
-  typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >          ForwardProjectionFilterType;
-  typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                   SubtractFilterType;
-  typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >             BackProjectionFilterType;
-  typedef typename BackProjectionFilterType::Pointer                                     BackProjectionFilterPointer;
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                  RayBoxIntersectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType>     DivideFilterType;
-  typedef rtk::ConstantImageSource<OutputImageType>                                      ConstantImageSourceType;
-  typedef itk::ThresholdImageFilter<OutputImageType>                                     ThresholdFilterType;
+  typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >              ForwardProjectionFilterType;
+  typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                       SubtractFilterType;
+  typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >                 BackProjectionFilterType;
+  typedef typename BackProjectionFilterType::Pointer                                         BackProjectionFilterPointer;
+  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>               RayBoxIntersectionFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType> DivideFilterType;
+  typedef rtk::ConstantImageSource<OutputImageType>                                          ConstantImageSourceType;
+  typedef itk::ThresholdImageFilter<OutputImageType>                                         ThresholdFilterType;
 
 /** Standard New method. */
   itkNewMacro(Self);
@@ -178,16 +178,17 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer           m_ExtractFilter, m_ExtractFilterRayBox;
-  typename MultiplyFilterType::Pointer          m_ZeroMultiplyFilter;
-  typename ForwardProjectionFilterType::Pointer m_ForwardProjectionFilter;
-  typename SubtractFilterType::Pointer          m_SubtractFilter;
-  typename MultiplyFilterType::Pointer          m_MultiplyFilter;
-  typename BackProjectionFilterType::Pointer    m_BackProjectionFilter;
+  typename ExtractFilterType::Pointer            m_ExtractFilter;
+  typename ExtractFilterType::Pointer            m_ExtractFilterRayBox;
+  typename MultiplyFilterType::Pointer           m_ZeroMultiplyFilter;
+  typename ForwardProjectionFilterType::Pointer  m_ForwardProjectionFilter;
+  typename SubtractFilterType::Pointer           m_SubtractFilter;
+  typename MultiplyFilterType::Pointer           m_MultiplyFilter;
+  typename BackProjectionFilterType::Pointer     m_BackProjectionFilter;
   typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
-  typename DivideFilterType::Pointer            m_DivideFilter;
-  typename ConstantImageSourceType::Pointer     m_ConstantImageSource;
-  typename ThresholdFilterType::Pointer         m_ThresholdFilter;
+  typename DivideFilterType::Pointer             m_DivideFilter;
+  typename ConstantImageSourceType::Pointer      m_ConstantImageSource;
+  typename ThresholdFilterType::Pointer          m_ThresholdFilter;
 
   bool m_EnforcePositivity;
 
@@ -206,16 +207,16 @@ private:
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
 
-  //Time probes
-  itk::TimeProbe                    m_ExtractProbe, 
-                                    m_ZeroMultiplyProbe, 
-                                    m_ForwardProjectionProbe,
-                                    m_SubtractProbe,
-                                    m_MultiplyProbe,
-                                    m_RayBoxProbe,
-                                    m_DivideProbe,
-                                    m_BackProjectionProbe,
-                                    m_ThresholdProbe;
+  /** Time probes */
+  itk::TimeProbe m_ExtractProbe;
+  itk::TimeProbe m_ZeroMultiplyProbe;
+  itk::TimeProbe m_ForwardProjectionProbe;
+  itk::TimeProbe m_SubtractProbe;
+  itk::TimeProbe m_MultiplyProbe;
+  itk::TimeProbe m_RayBoxProbe;
+  itk::TimeProbe m_DivideProbe;
+  itk::TimeProbe m_BackProjectionProbe;
+  itk::TimeProbe m_ThresholdProbe;
 
 }; // end of class
 

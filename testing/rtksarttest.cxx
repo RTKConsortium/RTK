@@ -197,7 +197,7 @@ int main(int, char** )
   sart->SetInput( tomographySource->GetOutput() );
   sart->SetInput(1, rei->GetOutput());
   sart->SetGeometry( geometry );
-  sart->SetNumberOfIterations( 2 );
+  sart->SetNumberOfIterations( 1 );
   sart->SetLambda( 0.5 );
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;

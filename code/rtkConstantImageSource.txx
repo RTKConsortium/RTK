@@ -34,7 +34,7 @@ ConstantImageSource<TOutputImage>
     m_Size[i] = 64;
     m_Spacing[i] = 1.0;
     m_Origin[i] = 0.0;
-    m_Index[i] = 0.0;
+    m_Index[i] = 0;
 
     for (unsigned int j=0; j<TOutputImage::GetImageDimension(); j++)
       m_Direction[i][j] = (i==j)?1.:0.;
@@ -118,12 +118,11 @@ void
 ConstantImageSource<TOutputImage>
 ::SetInformationFromImage(TOutputImage* image)
 {
-  m_Size = image->GetLargestPossibleRegion().GetSize();
-  m_Index = image->GetLargestPossibleRegion().GetIndex();
-  m_Spacing = image->GetSpacing();
-  m_Origin = image->GetOrigin();
-  m_Direction = image->GetDirection();
-  this->Modified();
+  this->SetSize( image->GetLargestPossibleRegion().GetSize() );
+  this->SetIndex( image->GetLargestPossibleRegion().GetIndex() );
+  this->SetSpacing( image->GetSpacing() );
+  this->SetOrigin( image->GetOrigin() );
+  this->SetDirection( image->GetDirection() );
 }
 
 //----------------------------------------------------------------------------
@@ -133,15 +132,11 @@ ConstantImageSource<TOutputImage>
 ::GenerateOutputInformation()
 {
   TOutputImage *output;
-//  IndexType index;
-//  index.Fill( 0 );
-  
   output = this->GetOutput(0);
 
   typename TOutputImage::RegionType largestPossibleRegion;
   largestPossibleRegion.SetSize( this->m_Size );
-  largestPossibleRegion.SetIndex( m_Index );
-  //largestPossibleRegion.SetIndex( index );
+  largestPossibleRegion.SetIndex( this->m_Index );
   output->SetLargestPossibleRegion( largestPossibleRegion );
 
   output->SetSpacing(m_Spacing);

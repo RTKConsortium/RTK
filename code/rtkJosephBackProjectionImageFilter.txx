@@ -34,19 +34,23 @@ template <class TInputImage,
           class TSplatWeightMultiplication>
 void
 JosephBackProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TSplatWeightMultiplication>
+                                TOutputImage,
+                                TSplatWeightMultiplication>
 ::GenerateData()
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-  typename TInputImage::RegionType Largest =this->GetInput(1)->GetBufferedRegion();
-  const unsigned int nPixelPerProj = Largest.GetSize(0) * Largest.GetSize(1);
+  typename TInputImage::RegionType buffReg = this->GetInput(1)->GetBufferedRegion();
+  const unsigned int nPixelPerProj = buffReg.GetSize(0) * buffReg.GetSize(1);
   int offsets[3];
   offsets[0] = 1;
   offsets[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(0)->GetBufferedRegion().GetSize()[0] * this->GetInput(0)->GetBufferedRegion().GetSize()[1];
 
   GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
+  if( !geometry )
+    {
+    itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");
+    }
 
   // Allocate the output image
   this->AllocateOutputs();
@@ -61,7 +65,7 @@ JosephBackProjectionImageFilter<TInputImage,
 
   // Iterator on projections input
   typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
-  InputRegionIterator itIn(this->GetInput(1), Largest);
+  InputRegionIterator itIn(this->GetInput(1), buffReg);
 
   // Create intersection functions, one for each possible main direction
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
@@ -72,17 +76,17 @@ JosephBackProjectionImageFilter<TInputImage,
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
-      boxMin[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i];
-      boxMax[i] = this->GetOutput()->GetBufferedRegion().GetIndex()[i] +
-                  this->GetOutput()->GetBufferedRegion().GetSize()[i]  - 1;
+      boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
+      boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
+                  this->GetOutput()->GetRequestedRegion().GetSize()[i]  - 1;
     }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
     }
 
   // Go over each projection
-  for(int iProj=Largest.GetIndex(2);
-          iProj<Largest.GetIndex(2)+(int)Largest.GetSize(2);
+  for(int iProj=buffReg.GetIndex(2);
+          iProj<buffReg.GetIndex(2)+(int)buffReg.GetSize(2);
           iProj++)
     {
     // Account for system rotations
@@ -151,23 +155,9 @@ JosephBackProjectionImageFilter<TInputImage,
         // Numerical precision problems occur with the floor function
         // on integer numbers stored as floats.
         // They are avoided by adding a very small epsilon
-        float epsilon = 1e-10;
-        const int ns = vnl_math_ceil ( np[mainDir] + epsilon);
+        float epsilon = 1e-5;
+        const int ns = vnl_math_ceil ( np[mainDir] - epsilon);
         const int fs = vnl_math_floor( fp[mainDir] + epsilon);
-
-//        // If its a corner, we can skip
-//        if( fs<ns )
-//          {
-//          itOut.Set( m_ProjectedValueAccumulation(threadId,
-//                                                  itIn.Get(),
-//                                                  0.,
-//                                                  &(sourcePosition[0]),
-//                                                  &(sourcePosition[0]),
-//                                                  dirVox,
-//                                                  &(sourcePosition[0]),
-//                                                  &(sourcePosition[0])) );
-//           continue;
-//           }
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
@@ -191,14 +181,6 @@ JosephBackProjectionImageFilter<TInputImage,
         pxiys = pxiyi + offsety;
         pxsys = pxsyi + offsety;
 
-//        // Compute step size and go to first voxel
-//        const CoordRepType residual = ns-np[mainDir];
-//        const CoordRepType norm = 1/dirVox[mainDir];
-//        const CoordRepType stepx = dirVox[notMainDirInf] * norm;
-//        const CoordRepType stepy = dirVox[notMainDirSup] * norm;
-//        CoordRepType currentx = np[notMainDirInf] + residual*stepx;
-//        CoordRepType currenty = np[notMainDirSup] + residual*stepy;
-
         // Compute step size and go to first voxel
         const CoordRepType residual = ns-np[mainDir];
         const CoordRepType norm = 1/dirVox[mainDir];
@@ -213,7 +195,7 @@ JosephBackProjectionImageFilter<TInputImage,
         stepMM[mainDir]       = this->GetInput(0)->GetSpacing()[mainDir];
 
         // If the ray enters the volume not through the first main direction slice
-        if(residual > 0)
+        if(residual > 0.)
           {
           // Move back to the previous main direction slice
           pxiyi -= offsetz;
@@ -256,10 +238,10 @@ JosephBackProjectionImageFilter<TInputImage,
         // If the ray exits the volume not through the last main direction slice
         if(fp[mainDir] - fs > epsilon)
           {
-            // Perform bilinear splat with padding voxels containing 0
-            BilinearSplatOnBorders(itIn.Get(), 1.0, stepMM.GetNorm(),
-                                   pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
-                                   offsetx, offsety, minx, miny, maxx, maxy);
+          // Perform bilinear splat with padding voxels containing 0
+          BilinearSplatOnBorders(itIn.Get(), 1.0, stepMM.GetNorm(),
+                                 pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                 offsetx, offsety, minx, miny, maxx, maxy);
           }
 
         }
@@ -333,10 +315,20 @@ JosephBackProjectionImageFilter<TInputImage,
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
 
-  if ((ix >= minx) && (iy >= miny)) pxiyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
-  if ((ix+1 <= maxx) && (iy >= miny)) pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
-  if ((ix >= minx) && (iy+1 <= maxy)) pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
-  if ((ix+1 <= maxx) && (iy+1 <= maxy)) pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
+  if(ix >= minx)
+    {
+    if(iy >= miny)
+      pxiyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
+    if(iy+1 <= maxy)
+      pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
+    }
+  if(ix+1 <= maxx)
+    {
+    if(iy >= miny)
+      pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
+    if(iy+1 <= maxy)
+      pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
+    }
 }
 
 

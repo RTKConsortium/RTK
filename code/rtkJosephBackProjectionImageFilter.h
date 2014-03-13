@@ -41,21 +41,22 @@ class SplatWeightMultiplication
 public:
   SplatWeightMultiplication() {};
   ~SplatWeightMultiplication() {};
-  bool operator!=( const SplatWeightMultiplication & ) const {
+  bool operator!=( const SplatWeightMultiplication & ) const
+    {
     return false;
-  }
+    }
   bool operator==(const SplatWeightMultiplication & other) const
-  {
+    {
     return !( *this != other );
-  }
+    }
 
   inline TOutput operator()( const TInput rayValue,
                              const double stepLengthInVoxel,
                              const double voxelSize,
                              const TCoordRepType weight) const
-  {
+    {
     return rayValue * weight * stepLengthInVoxel * voxelSize;
-  }
+    }
 };
 
 } // end namespace Functor
@@ -83,8 +84,8 @@ class ITK_EXPORT JosephBackProjectionImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef JosephBackProjectionImageFilter                     Self;
-  typedef BackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef JosephBackProjectionImageFilter                        Self;
+  typedef BackProjectionImageFilter<TInputImage,TOutputImage>    Superclass;
   typedef itk::SmartPointer<Self>                                Pointer;
   typedef itk::SmartPointer<const Self>                          ConstPointer;
   typedef typename TInputImage::PixelType                        InputPixelType;
@@ -92,9 +93,9 @@ public:
   typedef typename TOutputImage::RegionType                      OutputImageRegionType;
   typedef double                                                 CoordRepType;
   typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
-  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::Pointer                    GeometryPointer;
-  
+  typedef rtk::ThreeDCircularProjectionGeometry                  GeometryType;
+  typedef typename GeometryType::Pointer                         GeometryPointer;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -105,13 +106,13 @@ public:
   TSplatWeightMultiplication &       GetSplatWeightMultiplication() { return m_SplatWeightMultiplication; }
   const TSplatWeightMultiplication & GetSplatWeightMultiplication() const { return m_SplatWeightMultiplication; }
   void SetSplatWeightMultiplication(const TSplatWeightMultiplication & _arg)
-  {
+    {
     if ( m_SplatWeightMultiplication != _arg )
       {
       m_SplatWeightMultiplication = _arg;
       this->Modified();
       }
-  }
+    }
 
 
 protected:
@@ -137,25 +138,25 @@ protected:
                                                const int oy);
 
   inline void BilinearSplatOnBorders(const InputPixelType rayValue,
-                                                 const double stepLengthInVoxel,
-                                                 const double voxelSize,
-                                                 OutputPixelType *pxiyi,
-                                                 OutputPixelType *pxsyi,
-                                                 OutputPixelType *pxiys,
-                                                 OutputPixelType *pxsys,
-                                                 const double x,
-                                                 const double y,
-                                                 const int ox,
-                                                 const int oy,
-                                                 const CoordRepType minx,
-                                                 const CoordRepType miny,
-                                                 const CoordRepType maxx,
-                                                 const CoordRepType maxy);
+                                     const double stepLengthInVoxel,
+                                     const double voxelSize,
+                                     OutputPixelType *pxiyi,
+                                     OutputPixelType *pxsyi,
+                                     OutputPixelType *pxiys,
+                                     OutputPixelType *pxsys,
+                                     const double x,
+                                     const double y,
+                                     const int ox,
+                                     const int oy,
+                                     const CoordRepType minx,
+                                     const CoordRepType miny,
+                                     const CoordRepType maxx,
+                                     const CoordRepType maxy);
 
 
 private:
   JosephBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
+  void operator=(const Self&);                  //purposely not implemented
 
   /** Functor */
   TSplatWeightMultiplication m_SplatWeightMultiplication;

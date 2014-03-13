@@ -101,8 +101,7 @@ int main(int argc, char * argv[])
     bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(bp_arg_Joseph):
-//    bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-      bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(bp_arg_CudaVoxelBased):
 #if CUDA_FOUND
@@ -148,23 +147,23 @@ int main(int argc, char * argv[])
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
-  {
+    {
     std::cout << "Recording elapsed time... " << std::flush;
     readerProbe.Start();
-  }
+    }
   if(args_info.positivity_flag)
-  {
+    {
     sart->SetEnforcePositivity(true);
-  }
+    }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() )
 
   if(args_info.time_flag)
-  {
+    {
     sart->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-  }
+    }
 
   // Write
   typedef itk::ImageFileWriter< OutputImageType > WriterType;
