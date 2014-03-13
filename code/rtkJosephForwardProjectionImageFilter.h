@@ -143,26 +143,26 @@ public:
   TInterpolationWeightMultiplication &       GetInterpolationWeightMultiplication() { return m_InterpolationWeightMultiplication; }
   const TInterpolationWeightMultiplication & GetInterpolationWeightMultiplication() const { return m_InterpolationWeightMultiplication; }
   void SetInterpolationWeightMultiplication(const TInterpolationWeightMultiplication & _arg)
-  {
+    {
     if ( m_InterpolationWeightMultiplication != _arg )
       {
       m_InterpolationWeightMultiplication = _arg;
       this->Modified();
       }
-  }
+    }
 
   /** Get/Set the functor that is used to accumulate values in the projection image after the ray
    * casting has been performed. */
   TProjectedValueAccumulation &       GetProjectedValueAccumulation() { return m_ProjectedValueAccumulation; }
   const TProjectedValueAccumulation & GetProjectedValueAccumulation() const { return m_ProjectedValueAccumulation; }
   void SetProjectedValueAccumulation(const TProjectedValueAccumulation & _arg)
-  {
+    {
     if ( m_ProjectedValueAccumulation != _arg )
       {
       m_ProjectedValueAccumulation = _arg;
       this->Modified();
       }
-  }
+    }
 
 protected:
   JosephForwardProjectionImageFilter() {}
