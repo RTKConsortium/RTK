@@ -3,6 +3,10 @@ version "Reads raw projection images, convert to attenuation and stack them in a
 
 option "verbose"  v "Verbose execution"                                         flag      off
 option "config"   - "Config file"                                               string    no
-option "path"     p "Path containing projections"                               string    yes
-option "regexp"   r "Regular expression to select projection files in path"     string    yes
 option "output"   o "Output file name"                                          string    yes
+
+section "Projections"
+option "path"      p "Path containing projections"                               string                       yes
+option "regexp"    r "Regular expression to select projection files in path"     string                       yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

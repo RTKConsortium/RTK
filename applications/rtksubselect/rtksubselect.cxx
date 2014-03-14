@@ -32,9 +32,9 @@ int main(int argc, char * argv[])
   // Generate file names
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
   names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
+  names->SetNumericSort(args_info.nsort_flag);
   names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
+  names->SetSubMatch(args_info.submatch_arg);
 
   if(args_info.verbose_flag)
     std::cout << "Regular expression matches "

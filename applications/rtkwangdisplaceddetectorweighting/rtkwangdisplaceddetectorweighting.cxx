@@ -35,24 +35,10 @@ int main(int argc, char * argv[])
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
-  if(args_info.verbose_flag)
-    std::cout << "Regular expression matches "
-              << names->GetFileNames().size()
-              << " file(s)..."
-              << std::endl;
-
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->GenerateOutputInformation() )
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkwangdisplaceddetectorweighting>(reader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)

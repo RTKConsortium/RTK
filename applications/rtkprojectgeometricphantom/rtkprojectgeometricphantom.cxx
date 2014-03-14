@@ -23,9 +23,7 @@
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkProjectGeometricPhantomImageFilter.h"
 
-#include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-
 
 int main(int argc, char * argv[])
 {
@@ -65,7 +63,8 @@ int main(int argc, char * argv[])
   ppc->SetInput(constantImageSource->GetOutput());
   ppc->SetGeometry(geometryReader->GetOutputObject());
   ppc->SetConfigFile(args_info.phantomfile_arg);
-  ppc->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( ppc->Update() );
+
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();

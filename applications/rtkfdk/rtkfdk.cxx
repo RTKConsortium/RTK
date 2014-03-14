@@ -21,7 +21,6 @@
 #include "rtkConfiguration.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkProjectionsReader.h"
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
@@ -34,7 +33,6 @@
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
 
-#include <itkRegularExpressionSeriesFileNames.h>
 #include <itkStreamingImageFilter.h>
 #include <itkImageFileWriter.h>
 
@@ -52,24 +50,10 @@ int main(int argc, char * argv[])
   typedef CPUOutputImageType                           OutputImageType;
 #endif
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
-  if(args_info.verbose_flag)
-    std::cout << "Regular expression matches "
-              << names->GetFileNames().size()
-              << " file(s)..."
-              << std::endl;
-
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->GenerateOutputInformation() );
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfdk>(reader, args_info);
 
   itk::TimeProbe readerProbe;
   if(!args_info.lowmem_flag)
