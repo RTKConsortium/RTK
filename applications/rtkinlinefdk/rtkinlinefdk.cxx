@@ -99,9 +99,9 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
   // Generate file names
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
   names->SetDirectory(threadInfo->args_info->path_arg);
-  names->SetNumericSort(false);
+  names->SetNumericSort(threadInfo->args_info->nsort_flag);
   names->SetRegularExpression(threadInfo->args_info->regexp_arg);
-  names->SetSubMatch(0);
+  names->SetSubMatch(threadInfo->args_info->submatch_arg);
 
   if(threadInfo->args_info->verbose_flag)
     std::cout << "Regular expression matches "

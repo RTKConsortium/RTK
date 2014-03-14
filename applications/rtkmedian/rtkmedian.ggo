@@ -1,9 +1,13 @@
 package "rtk"
 version "Performs a median filtering on 2D images (pixeltype uint16)"
 
-option "verbose"  v "Verbose execution"                              flag       off
-option "config"   - "Config file"                                    string     no
-option "output"   o "Output projections file name"                   string     yes
-option "input"    i "Input volume file name"                         string     yes
-option "median"   b "Median window, e.g. [3,3] or [3,2]"            int multiple   no  default="3"
+option "verbose"  v "Verbose execution"                              flag            off
+option "config"   - "Config file"                                    string          no
+option "output"   o "Output projections file name"                   string          yes
+option "median"   b "Median window, e.g. [3,3] or [3,2]"             int    multiple no  default="3"
 
+section "Projections"
+option "path"      p "Path containing projections"                               string                       yes
+option "regexp"    r "Regular expression to select projection files in path"     string                       yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

@@ -18,16 +18,12 @@
 
 #include "rtkmedian_ggo.h"
 #include "rtkGgoFunctions.h"
-
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkMedianImageFilter.h"
-#include "rtkProjectionsReader.h"
-#include <itkImageFileReader.h>
-#include <itkImageFileWriter.h>
-#include <itkRegularExpressionSeriesFileNames.h>
-#include <itkTimeProbe.h>
 
+#include <itkImageFileWriter.h>
+#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -40,23 +36,10 @@ int main(int argc, char * argv[])
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Input reader
-  if(args_info.verbose_flag)
-    std::cout << "Reading input volume "
-              << args_info.input_arg
-              << "..."
-              << std::flush;
-  itk::TimeProbe readerProbe;
-  typedef itk::ImageFileReader< OutputImageType > ReaderType;
+  // Projections reader
+  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( args_info.input_arg );
-  readerProbe.Start();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
-  readerProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << readerProbe.GetMean() << ' ' << readerProbe.GetUnit()
-              << '.' << std::endl;
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmedian>(reader, args_info);
 
   // Reading median Window
   if(args_info.median_given<Dimension)
@@ -74,21 +57,15 @@ int main(int argc, char * argv[])
   median->SetInput(reader->GetOutput());
   median->SetMedianWindow(medianWindow);
   median->Update();
+
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( median->GetOutput() );
   if(args_info.verbose_flag)
-    std::cout << "Projecting and writing... " << std::flush;
+    std::cout << "Processing and writing... " << std::flush;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
-
-  writer->SetFileName( "orginal.mha" );
-  writer->SetInput( reader->GetOutput() );
-  if(args_info.verbose_flag)
-    std::cout << "Projecting and writing... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
-
 
   return EXIT_SUCCESS;
 }
