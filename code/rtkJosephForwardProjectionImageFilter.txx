@@ -64,6 +64,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Create intersection functions, one for each possible main direction
+  float epsilon = 1e-5;
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
   typename RBIFunctionType::Pointer rbi[Dimension];
   for(unsigned int j=0; j<Dimension; j++)
@@ -72,9 +73,9 @@ JosephForwardProjectionImageFilter<TInputImage,
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
-      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
+      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] + epsilon; //To avoid numerical errors
       boxMax[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] +
-                  this->GetInput(1)->GetBufferedRegion().GetSize()[i] - 1;
+                  this->GetInput(1)->GetBufferedRegion().GetSize()[i] - 1 - epsilon; //To avoid numerical errors
       }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
@@ -141,19 +142,22 @@ JosephForwardProjectionImageFilter<TInputImage,
         rbi[mainDir]->SetNearestDistance ( std::max(rbi[mainDir]->GetNearestDistance() , 0.) );
         rbi[mainDir]->SetFarthestDistance( std::min(rbi[mainDir]->GetFarthestDistance(), 1.) );
 
+        // Find out whether the source and the detector are inside the volume
+        bool isNearestPointInside = (rbi[mainDir]->GetNearestDistance() == 0);
+        bool isFarthestPointInside = (rbi[mainDir]->GetFarthestDistance() == 1);
+
         // Compute and sort intersections: (n)earest and (f)arthest (p)points
         np = rbi[mainDir]->GetNearestPoint();
         fp = rbi[mainDir]->GetFarthestPoint();
         if(np[mainDir]>fp[mainDir])
+          {
           std::swap(np, fp);
+          std::swap(isNearestPointInside, isFarthestPointInside);
+          }
 
         // Compute main nearest and farthest slice indices
-        // Numerical precision problems occur with the floor function
-        // on integer numbers stored as floats.
-        // They are avoided by adding a very small epsilon
-        float epsilon = 1e-5;
-        const int ns = vnl_math_ceil ( np[mainDir] - epsilon);
-        const int fs = vnl_math_floor( fp[mainDir] + epsilon);
+        const int ns = vnl_math_floor( np[mainDir]);
+        const int fs = vnl_math_ceil ( fp[mainDir]);
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
@@ -178,48 +182,37 @@ JosephForwardProjectionImageFilter<TInputImage,
         pxsys = pxsyi + offsety;
 
         // Compute step size and go to first voxel
-        const CoordRepType residual = ns-np[mainDir];
+        const CoordRepType residual = np[mainDir] - ns;
         const CoordRepType norm = 1/dirVox[mainDir];
         const CoordRepType stepx = dirVox[notMainDirInf] * norm;
         const CoordRepType stepy = dirVox[notMainDirSup] * norm;
-        CoordRepType currentx = np[notMainDirInf];
-        CoordRepType currenty = np[notMainDirSup];
+        CoordRepType currentx = np[notMainDirInf] - residual * stepx;
+        CoordRepType currenty = np[notMainDirSup] - residual * stepy;
 
         // Initialize the accumulation
         typename TOutputImage::PixelType sum = 0;
 
-        // If the ray enters the volume not through the first main direction slice
-        if(residual > 0)
-          {
-          // Move back to the previous main direction slice
-          pxiyi -= offsetz;
-          pxsyi -= offsetz;
-          pxiys -= offsetz;
-          pxsys -= offsetz;
-          currentx += (residual -1)*stepx;
-          currenty += (residual -1)*stepy;
+        // First step
+        // Perform bilinear interpolation with padding voxels containing 0
+        // If inside the volume, use a stepLengthInVoxel different from 1.
+        double stepLengthInVoxel = 1.;
+        if(isNearestPointInside) stepLengthInVoxel = 1 - residual;
+        sum += BilinearInterpolationOnBorders(threadId, stepLengthInVoxel * 0.5,
+                                    pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                    offsetx, offsety, minx, miny, maxx, maxy);
 
-          // Perform bilinear interpolation with padding voxels containing 0
-          sum += BilinearInterpolationOnBorders(threadId, 1.,
-                                      pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
-                                      offsetx, offsety, minx, miny, maxx, maxy);
-
-          // Move to next main direction slice
-          pxiyi += offsetz;
-          pxsyi += offsetz;
-          pxiys += offsetz;
-          pxsys += offsetz;
-          currentx += stepx;
-          currenty += stepy;
-
-          }
+        // Move to next main direction slice
+        pxiyi += offsetz;
+        pxsyi += offsetz;
+        pxiys += offsetz;
+        pxsys += offsetz;
+        currentx += stepx;
+        currenty += stepy;
 
         // Middle steps
-        for(int i=ns; i<=fs; i++)
+        for(int i=ns+1; i<fs; i++)
           {
-
           sum += BilinearInterpolation(threadId,
-                                       1.,
                                        pxiyi, pxsyi, pxiys, pxsys,
                                        currentx, currenty, offsetx, offsety);
 
@@ -232,14 +225,15 @@ JosephForwardProjectionImageFilter<TInputImage,
           currenty += stepy;
           }
 
-        // If the ray exits the volume not through the last main direction slice
-        if(fp[mainDir] - fs > epsilon)
-          {
-          sum += BilinearInterpolationOnBorders(threadId,
-                                    1.,
-                                    pxiyi, pxsyi, pxiys, pxsys,
-                                    currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
-          }
+        // Last step
+        // No matter whether the ray exits the volume through the last main direction
+        // slice or not, perform bilinear interpolation with padding voxels containing 0
+        // If inside the volume, use a stepLengthInVoxel different from 1.
+        stepLengthInVoxel = 1.;
+        if(isFarthestPointInside) stepLengthInVoxel = fp[mainDir] + 1 - fs;
+        sum += BilinearInterpolationOnBorders(threadId,stepLengthInVoxel *0.5,
+                                  pxiyi, pxsyi, pxiys, pxsys,
+                                  currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
 
         // Compute voxel to millimeters conversion
         stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
@@ -282,7 +276,6 @@ JosephForwardProjectionImageFilter<TInputImage,
                                    TInterpolationWeightMultiplication,
                                    TProjectedValueAccumulation>
 ::BilinearInterpolation( const ThreadIdType threadId,
-                         const double stepLengthInVoxel,
                          const InputPixelType *pxiyi,
                          const InputPixelType *pxsyi,
                          const InputPixelType *pxiys,
@@ -299,11 +292,10 @@ JosephForwardProjectionImageFilter<TInputImage,
   CoordRepType ly = y - iy;
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
-  return stepLengthInVoxel * (
-           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
-           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx) +
-           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx) +
-           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx) );
+  return ( m_InterpolationWeightMultiplication(threadId, lxc * lyc, pxiyi, idx) +
+           m_InterpolationWeightMultiplication(threadId, lx  * lyc, pxsyi, idx) +
+           m_InterpolationWeightMultiplication(threadId, lxc * ly , pxiys, idx) +
+           m_InterpolationWeightMultiplication(threadId, lx  * ly , pxsys, idx) );
 /* Alternative slower solution
   const unsigned int ix = itk::Math::Floor(x);
   const unsigned int iy = itk::Math::Floor(y);
@@ -357,18 +349,18 @@ JosephForwardProjectionImageFilter<TInputImage,
   if(ix >= minx)
     {
     if(iy >= miny)
-      result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx);
+      result += m_InterpolationWeightMultiplication(threadId, lxc * lyc, pxiyi, idx);
     if(iy+1 <= maxy)
-      result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx);
+      result += m_InterpolationWeightMultiplication(threadId, lxc * ly , pxiys, idx);
     }
   if(ix+1 <= maxx)
     {
     if(iy >= miny)
-      result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx);
+      result += m_InterpolationWeightMultiplication(threadId, lx  * lyc, pxsyi, idx);
     if(iy+1 <= maxy)
-      result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx);
+      result += m_InterpolationWeightMultiplication(threadId, lx  * ly , pxsys, idx);
     }
-  return (result * stepLengthInVoxel);
+  return (stepLengthInVoxel * result);
 }
 
 

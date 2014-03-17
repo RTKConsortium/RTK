@@ -49,7 +49,6 @@ public:
   }
 
   inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
-                             const double itkNotUsed(stepLengthInVoxel),
                              const TCoordRepType weight,
                              const TInput *p,
                              const int i ) const
@@ -175,7 +174,6 @@ protected:
   virtual void VerifyInputInformation() {}
 
   inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
-                                               const double stepLengthInVoxel,
                                                const InputPixelType *pxiyi,
                                                const InputPixelType *pxsyi,
                                                const InputPixelType *pxiys,

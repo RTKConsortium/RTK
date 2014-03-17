@@ -68,6 +68,7 @@ JosephBackProjectionImageFilter<TInputImage,
   InputRegionIterator itIn(this->GetInput(1), buffReg);
 
   // Create intersection functions, one for each possible main direction
+  float epsilon = 1e-5;
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
   typename RBIFunctionType::Pointer rbi[Dimension];
   for(unsigned int j=0; j<Dimension; j++)
@@ -76,9 +77,9 @@ JosephBackProjectionImageFilter<TInputImage,
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
-      boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
+      boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] + epsilon; //To avoid numerical errors
       boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
-                  this->GetOutput()->GetRequestedRegion().GetSize()[i]  - 1;
+                  this->GetOutput()->GetRequestedRegion().GetSize()[i]  - 1 - epsilon; //To avoid numerical errors
     }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
@@ -152,12 +153,8 @@ JosephBackProjectionImageFilter<TInputImage,
           std::swap(np, fp);
 
         // Compute main nearest and farthest slice indices
-        // Numerical precision problems occur with the floor function
-        // on integer numbers stored as floats.
-        // They are avoided by adding a very small epsilon
-        float epsilon = 1e-5;
-        const int ns = vnl_math_ceil ( np[mainDir] - epsilon);
-        const int fs = vnl_math_floor( fp[mainDir] + epsilon);
+        const int ns = vnl_math_floor( np[mainDir] );
+        const int fs = vnl_math_ceil ( fp[mainDir] );
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
@@ -182,49 +179,37 @@ JosephBackProjectionImageFilter<TInputImage,
         pxsys = pxsyi + offsety;
 
         // Compute step size and go to first voxel
-        const CoordRepType residual = ns-np[mainDir];
+        const CoordRepType residual = np[mainDir] - ns;
         const CoordRepType norm = 1/dirVox[mainDir];
         const CoordRepType stepx = dirVox[notMainDirInf] * norm;
         const CoordRepType stepy = dirVox[notMainDirSup] * norm;
-        CoordRepType currentx = np[notMainDirInf];
-        CoordRepType currenty = np[notMainDirSup];
+        CoordRepType currentx = np[notMainDirInf] - residual * stepx;
+        CoordRepType currenty = np[notMainDirSup] - residual * stepy;
 
         // Compute voxel to millimeters conversion
         stepMM[notMainDirInf] = this->GetInput(0)->GetSpacing()[notMainDirInf] * stepx;
         stepMM[notMainDirSup] = this->GetInput(0)->GetSpacing()[notMainDirSup] * stepy;
         stepMM[mainDir]       = this->GetInput(0)->GetSpacing()[mainDir];
 
-        // If the ray enters the volume not through the first main direction slice
-        if(residual > 0.)
-          {
-          // Move back to the previous main direction slice
-          pxiyi -= offsetz;
-          pxsyi -= offsetz;
-          pxiys -= offsetz;
-          pxsys -= offsetz;
-          currentx += (residual -1)*stepx;
-          currenty += (residual -1)*stepy;
+        // First step
+        // Perform bilinear splat ignoring the padding voxels
+        BilinearSplatOnBorders(itIn.Get(), stepMM.GetNorm(),
+                               pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                               offsetx, offsety, minx, miny, maxx, maxy);
 
-          // Perform bilinear splat with padding voxels containing 0
-          BilinearSplatOnBorders(itIn.Get(), 1.0, stepMM.GetNorm(),
-                                 pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
-                                 offsetx, offsety, minx, miny, maxx, maxy);
-
-          // Move to next main direction slice
-          pxiyi += offsetz;
-          pxsyi += offsetz;
-          pxiys += offsetz;
-          pxsys += offsetz;
-          currentx += stepx;
-          currenty += stepy;
-
-          }
+        // Move to next main direction slice
+        pxiyi += offsetz;
+        pxsyi += offsetz;
+        pxiys += offsetz;
+        pxsys += offsetz;
+        currentx += stepx;
+        currenty += stepy;
 
         // Middle steps
-        for(int i=ns; i<=fs; i++)
+        for(int i=ns+1; i<fs; i++)
           {
 
-          BilinearSplat(itIn.Get(), 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
+          BilinearSplat(itIn.Get(), stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -235,14 +220,12 @@ JosephBackProjectionImageFilter<TInputImage,
           currenty += stepy;
           }
 
-        // If the ray exits the volume not through the last main direction slice
-        if(fp[mainDir] - fs > epsilon)
-          {
-          // Perform bilinear splat with padding voxels containing 0
-          BilinearSplatOnBorders(itIn.Get(), 1.0, stepMM.GetNorm(),
-                                 pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
-                                 offsetx, offsety, minx, miny, maxx, maxy);
-          }
+        // Last step
+        // No matter whether the ray exits the volume through the last main direction
+        // slice or not, perform bilinear splat ignoring the padding voxels
+        BilinearSplatOnBorders(itIn.Get(), stepMM.GetNorm(),
+                               pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                               offsetx, offsety, minx, miny, maxx, maxy);
 
         }
 
@@ -258,7 +241,6 @@ JosephBackProjectionImageFilter<TInputImage,
                                    TOutputImage,
                                    TSplatWeightMultiplication>
 ::BilinearSplat(const InputPixelType rayValue,
-                                               const double stepLengthInVoxel,
                                                const double voxelSize,
                                                OutputPixelType *pxiyi,
                                                OutputPixelType *pxsyi,
@@ -277,10 +259,10 @@ JosephBackProjectionImageFilter<TInputImage,
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
 
-  pxiyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
-  pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
-  pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
-  pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
+  pxiyi[idx] += m_SplatWeightMultiplication(rayValue, voxelSize, lxc * lyc);
+  pxsyi[idx] += m_SplatWeightMultiplication(rayValue, voxelSize, lx * lyc);
+  pxiys[idx] += m_SplatWeightMultiplication(rayValue, voxelSize, lxc * ly);
+  pxsys[idx] += m_SplatWeightMultiplication(rayValue, voxelSize, lx * ly);
 
 }
 
@@ -292,7 +274,6 @@ JosephBackProjectionImageFilter<TInputImage,
                                    TOutputImage,
                                    TSplatWeightMultiplication>
 ::BilinearSplatOnBorders(const InputPixelType rayValue,
-                                               const double stepLengthInVoxel,
                                                const double voxelSize,
                                                OutputPixelType *pxiyi,
                                                OutputPixelType *pxsyi,
@@ -318,16 +299,16 @@ JosephBackProjectionImageFilter<TInputImage,
   if(ix >= minx)
     {
     if(iy >= miny)
-      pxiyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
+      pxiyi[idx] += m_SplatWeightMultiplication(rayValue, voxelSize, lxc * lyc);
     if(iy+1 <= maxy)
-      pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
+      pxiys[idx] += m_SplatWeightMultiplication(rayValue, voxelSize, lxc * ly);
     }
   if(ix+1 <= maxx)
     {
     if(iy >= miny)
-      pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
+      pxsyi[idx] += m_SplatWeightMultiplication(rayValue, voxelSize, lx * lyc);
     if(iy+1 <= maxy)
-      pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
+      pxsys[idx] += m_SplatWeightMultiplication(rayValue, voxelSize, lx * ly);
     }
 }
 
