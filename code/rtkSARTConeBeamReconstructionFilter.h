@@ -42,7 +42,7 @@ namespace rtk
 /** \class SARTConeBeamReconstructionFilter
  * \brief Implements the Simultaneous Algebraic Reconstruction Technique [Andersen, 1984]
  *
- * SARTConeBeamReconstructionFilter is a mini-pipeline filter which combines
+ * SARTConeBeamReconstructionFilter is a composite filter which combines
  * the different steps of the SART cone-beam reconstruction, mainly:
  * - ExtractFilterType to work on one projection at a time
  * - ForwardProjectionImageFilter,
@@ -51,6 +51,17 @@ namespace rtk
  * The input stack of projections is processed piece by piece (the size is
  * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
  * to extract sub-stacks.
+ *
+ * Two weighting steps must be applied when processing a given projection:
+ * - each pixel of the forward projection must be divided by the total length of the
+ * intersection between the ray and the reconstructed volume. This weighting step
+ * is performed using the part of the pipeline that contains RayBoxIntersectionImageFilter
+ * - each voxel of the back projection must be divided by the value it would take if
+ * a projection filled with ones was being reprojected. This weighting step is not
+ * performed when using a voxel-based back projection, as the weights are all equal to one
+ * in this case. When using a ray-based backprojector, typically Joseph,it must be performed.
+ * It is implemented in NormalizedJosephBackProjectionImageFilter, which
+ * is used in the SART pipeline.
  *
  * \dot
  * digraph SARTConeBeamReconstructionFilter {

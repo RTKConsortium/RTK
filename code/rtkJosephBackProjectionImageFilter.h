@@ -51,11 +51,10 @@ public:
     }
 
   inline TOutput operator()( const TInput rayValue,
-                             const double stepLengthInVoxel,
                              const double voxelSize,
                              const TCoordRepType weight) const
     {
-    return rayValue * weight * stepLengthInVoxel * voxelSize;
+    return rayValue * weight * voxelSize;
     }
 };
 
@@ -126,7 +125,6 @@ protected:
   virtual void VerifyInputInformation() {}
 
   inline void BilinearSplat(const InputPixelType rayValue,
-                                               const double stepLengthInVoxel,
                                                const double voxelSize,
                                                OutputPixelType *pxiyi,
                                                OutputPixelType *pxsyi,
@@ -138,7 +136,6 @@ protected:
                                                const int oy);
 
   inline void BilinearSplatOnBorders(const InputPixelType rayValue,
-                                     const double stepLengthInVoxel,
                                      const double voxelSize,
                                      OutputPixelType *pxiyi,
                                      OutputPixelType *pxsyi,
