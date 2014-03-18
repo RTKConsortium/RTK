@@ -18,11 +18,11 @@
 
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
-void CheckScalarProducts(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
+void CheckScalarProducts(typename TImage::Pointer itkNotUsed(vol1), typename TImage::Pointer itkNotUsed(vol2), typename TImage::Pointer itkNotUsed(proj1), typename TImage::Pointer itkNotUsed(proj2))
 {
 }
 #else
-void CheckScalarProducts(typename TImage::Pointer vol1, typename TImage::Pointer vol2,typename TImage::Pointer proj1, typename TImage::Pointer proj2)
+void CheckScalarProducts(typename TImage::Pointer vol1, typename TImage::Pointer vol2, typename TImage::Pointer proj1, typename TImage::Pointer proj2)
 {
   typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
   ImageIteratorType itVol1( vol1, vol1->GetBufferedRegion() );
