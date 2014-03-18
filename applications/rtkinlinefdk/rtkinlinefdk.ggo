@@ -3,11 +3,15 @@ version "Simulates an FDK on-the-fly reconstruction with one thread for acquisit
 
 option "verbose"   v "Verbose execution"                                         flag                         off
 option "config"    - "Config file"                                               string                       no
-option "geometry"  g  "XML geometry file name"                                   string                       yes
-option "path"      p  "Path containing projections"                              string                       yes
-option "regexp"    r  "Regular expression to select projection files in path"    string                       yes
+option "geometry"  g "XML geometry file name"                                    string                       yes
 option "output"    o "Output file name"                                          string                       yes
 option "hardware"  - "Hardware used for computation"                             values="cpu","cuda","opencl" no   default="cpu"
+
+section "Projections"
+option "path"      p "Path containing projections"                               string                       yes
+option "regexp"    r "Regular expression to select projection files in path"     string                       yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"

@@ -3,6 +3,10 @@ version "Creates an RTK geometry file from a Varian OBI acquisition."
 
 option "config"    - "Config file"                                           string          no
 option "xml_file"  x "Varian OBI XML information file on projections"        string          yes
-option "path"		 	 p "Path containing projections"		                       string          yes
-option "regexp"		 r "Regular expression to select projection files in path" string          yes
 option "output"    o "Output file name"                                      string          yes
+
+section "Projections"
+option "path"      p "Path containing projections"                               string                       yes
+option "regexp"    r "Regular expression to select projection files in path"     string                       yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

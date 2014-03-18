@@ -6,7 +6,11 @@ option "config"         - "Config file"                                         
 option "geometry"       g  "XML geometry file name"                                   string   yes
 option "output"         o "Output projections file name"                              string   yes
 option "reconstruction" - "Reconstruction file unmasked"                              string   yes
-option "path"           p "Path where there are the projections"                      string   yes
-option "regexp"         r "Regular expression to select projection files in path"     string   yes
 option "mask"           m "Output a binary mask instead of a masked image"            flag     off
 option "displaced"      d "Assume that a displaced detector has been used"            flag     off
+
+section "Projections"
+option "path"      p "Path containing projections"                               string                       yes
+option "regexp"    r "Regular expression to select projection files in path"     string                       yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

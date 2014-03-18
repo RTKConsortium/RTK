@@ -18,14 +18,12 @@
 
 #include "rtkfieldofview_ggo.h"
 #include "rtkGgoFunctions.h"
-
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkFieldOfViewImageFilter.h"
-#include "rtkProjectionsReader.h"
+
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkRegularExpressionSeriesFileNames.h>
 
 
 int main(int argc, char * argv[])
@@ -37,12 +35,10 @@ int main(int argc, char * argv[])
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
+  // Projections reader
+  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  ReaderType::Pointer reader = ReaderType::New();
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfieldofview>(reader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -55,24 +51,22 @@ int main(int argc, char * argv[])
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
-  //Reconstruction reader
+
+  // Reconstruction reader
   typedef itk::ImageFileReader<  OutputImageType > ImageReaderType;
   ImageReaderType::Pointer unmasked_reconstruction = ImageReaderType::New();
   unmasked_reconstruction->SetFileName(args_info.reconstruction_arg);
-  //Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
-  ReaderType::Pointer projections = ReaderType::New();
-  projections->SetFileNames( names->GetFileNames() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( projections->GenerateOutputInformation() );
-  //FOV filter
+
+  // FOV filter
   typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
   FOVFilterType::Pointer fieldofview=FOVFilterType::New();
   fieldofview->SetMask(args_info.mask_flag);
   fieldofview->SetInput(0, unmasked_reconstruction->GetOutput());
-  fieldofview->SetProjectionsStack(projections->GetOutput());
+  fieldofview->SetProjectionsStack(reader->GetOutput());
   fieldofview->SetGeometry(geometryReader->GetOutputObject());
   fieldofview->SetDisplacedDetector(args_info.displaced_flag);
-  fieldofview->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( fieldofview->Update() );
+
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
