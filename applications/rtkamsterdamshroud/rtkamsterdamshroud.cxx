@@ -19,11 +19,10 @@
 #include "rtkamsterdamshroud_ggo.h"
 #include "rtkMacro.h"
 
-#include "rtkProjectionsReader.h"
 #include "rtkAmsterdamShroudImageFilter.h"
+#include "rtkGgoFunctions.h"
 
 #include <itkImageFileWriter.h>
-#include <itkRegularExpressionSeriesFileNames.h>
 #include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
@@ -35,17 +34,10 @@ int main(int argc, char * argv[])
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkamsterdamshroud>(reader, args_info);
 
   // Amsterdam shroud
   typedef rtk::AmsterdamShroudImageFilter<OutputImageType> shroudFilterType;
@@ -58,7 +50,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( shroudFilter->GetOutput() );
-  writer->SetNumberOfStreamDivisions(names->GetFileNames().size());
+  writer->SetNumberOfStreamDivisions(reader->GetFileNames().size());
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 

@@ -17,8 +17,7 @@
  *=========================================================================*/
 
 #include "rtkvarianobigeometry_ggo.h"
-#include "rtkGgoFunctions.h"
-
+#include "rtkMacro.h"
 #include "rtkVarianObiGeometryReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
@@ -31,9 +30,9 @@ int main(int argc, char * argv[])
   // Generate file names of projections
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
   names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
+  names->SetNumericSort(args_info.nsort_flag);
   names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
+  names->SetSubMatch(args_info.submatch_arg);
 
   // Create geometry reader
   rtk::VarianObiGeometryReader::Pointer reader;

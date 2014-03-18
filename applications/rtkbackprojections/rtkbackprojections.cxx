@@ -19,7 +19,6 @@
 #include "rtkbackprojections_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
@@ -31,7 +30,6 @@
 #endif
 #include "rtkCyclicDeformationImageFilter.h"
 
-#include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkTimeProbe.h>
@@ -65,31 +63,11 @@ int main(int argc, char * argv[])
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkbackprojections>(constantImageSource, args_info);
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
-  if(args_info.verbose_flag)
-    std::cout << "Reading "
-              << names->GetFileNames().size()
-              << " projection file(s)..."
-              << std::flush;
-
   // Projections reader
-  itk::TimeProbe readerProbe;
-  readerProbe.Start();
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkbackprojections>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
-  readerProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << readerProbe.GetMean() << ' ' << readerProbe.GetUnit()
-              << '.' << std::endl;
 
   // Create back projection image filter
   if(args_info.verbose_flag)

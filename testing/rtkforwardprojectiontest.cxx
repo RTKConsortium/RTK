@@ -63,13 +63,13 @@ void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointe
     {
     std::cerr << "Test Failed, Error per pixel not valid! "
               << ErrorPerPixel << " instead of 1.28" << std::endl;
-    //exit( EXIT_FAILURE);
+    exit( EXIT_FAILURE);
     }
   if (PSNR < 44.)
     {
     std::cerr << "Test Failed, PSNR not valid! "
               << PSNR << " instead of 44" << std::endl;
-    //exit( EXIT_FAILURE);
+    exit( EXIT_FAILURE);
     }
 }
 #endif
