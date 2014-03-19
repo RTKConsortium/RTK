@@ -175,6 +175,7 @@ protected:
   virtual void VerifyInputInformation() {}
 
   inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
+                                               const double stepLengthInVoxel,
                                                const InputPixelType *pxiyi,
                                                const InputPixelType *pxsyi,
                                                const InputPixelType *pxiys,
