@@ -71,12 +71,12 @@ namespace rtk
  *
  * node [shape=box];
  * 1 [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
- * 2 [ label="itk::ExtractImageFilter" URL="http://www.itk.org/Doxygen/html/classitk_1_1ExtractImageFilter.html"];
- * 3 [ label="itk::MultiplyImageFilter (by zero)" URL="http://www.itk.org/Insight/Doxygen/html/classitk_1_1MultiplyImageFilter.html"];
+ * 2 [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ * 3 [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
  * test [label="", fixedsize="false", width=0, height=0, shape=none];
- * 4 [ label="itk::SubtractImageFilter" URL="http://www.itk.org/Doxygen/html/classitk_1_1SubtractImageFilter.html"];
+ * 4 [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  * 5 [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
- * 6 [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
+ * 6 [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
  * 7 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  * 8 [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * 9 [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
