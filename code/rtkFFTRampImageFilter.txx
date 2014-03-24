@@ -21,8 +21,8 @@
 
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154
-#  include <itkRealToHalfHermitianForwardFFTImageFilter.h>
-#  include <itkHalfHermitianToRealInverseFFTImageFilter.h>
+#include <itkRealToHalfHermitianForwardFFTImageFilter.h>
+#include <itkHalfHermitianToRealInverseFFTImageFilter.h>
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
