@@ -55,9 +55,10 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
   {
     // Ellipsoid, Cylinder and Cone Case
     if(figType[i]!="Box")
-    {
+      {
       rei.push_back( REIType::New() );
-      //Set GrayScale value, axes, center...
+
+      rei[ellip]->SetNumberOfThreads( this->GetNumberOfThreads() );
       rei[ellip]->SetDensity(m_Fig[i][8]);
       VectorType semiprincipalaxis;
       semiprincipalaxis[0] = m_Fig[i][1];
@@ -96,12 +97,13 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       }
       rei[ellip]->SetGeometry( this->GetGeometry() );
       ellip++;
-    }
+      }
     // Box Case
     else if (figType[i]=="Box")
-    {
+      {
       rbi.push_back( RBIType::New() );
-      //Set GrayScale value, boxmax, boxmin, center...
+
+      rbi[box]->SetNumberOfThreads( this->GetNumberOfThreads() );
       rbi[box]->SetDensity(m_Fig[i][8]);
       boxMin[0] = -m_Fig[i][1];
       boxMin[1] = -m_Fig[i][2];
@@ -137,11 +139,11 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       }
       rbi[box]->SetGeometry( this->GetGeometry() );
       box++;
-    }
+      }
     else
-    {
+      {
       itkGenericExceptionMacro(<< "Unknown Figure type ( " << figType[i] )
-    }
+      }
   }
   //Add Image Filter used to concatenate the different figures obtained on each iteration
   typename AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
