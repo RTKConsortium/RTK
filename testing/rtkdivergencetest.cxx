@@ -153,7 +153,7 @@ int main(int, char** )
   // Set the dimensions along which gradient and divergence
   // should be computed
   bool* computeGradientAlongDim = new bool[Dimension];
-  computeGradientAlongDim[0] = false;
+  computeGradientAlongDim[0] = true;
   computeGradientAlongDim[1] = false;
   computeGradientAlongDim[2] = true;
 
@@ -183,11 +183,6 @@ int main(int, char** )
       randomVolumeSource1->GetOutput(),
       div->GetOutput(),
       computeGradientAlongDim);
-
-  // For some unidentified reason, commenting the following line
-  // cause the CheckScalarProducts function to output
-  // ratio = -nan.
-  std::cout << " " << std::endl;
 
   std::cout << "\n\nTest PASSED! " << std::endl;
 
