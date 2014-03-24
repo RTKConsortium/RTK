@@ -53,22 +53,16 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ThresholdFilter = ThresholdFilterType::New();
   
   //Permanent internal connections
-#if ITK_VERSION_MAJOR >= 4
+
   m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
   m_ZeroMultiplyFilter->SetInput2( m_ExtractFilter->GetOutput() );
-#else
-  m_ZeroMultiplyFilter->SetInput( m_ExtractFilter->GetOutput() );
-#endif
+
   m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
   m_SubtractFilter->SetInput(0, m_ExtractFilter->GetOutput() );
   m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput() );
-#if ITK_VERSION_MAJOR >= 4
+
   m_MultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
   m_MultiplyFilter->SetInput2( m_SubtractFilter->GetOutput() );
-#else
-  m_MultiplyFilter->SetInput( m_SubtractFilter->GetOutput() );
-#endif
-
 
   m_ExtractFilterRayBox->SetInput(m_ConstantImageSource->GetOutput());
   m_RayBoxFilter->SetInput(m_ExtractFilterRayBox->GetOutput());
@@ -76,12 +70,8 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
 
   // Default parameters
-#if ITK_VERSION_MAJOR >= 4
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
   m_ExtractFilterRayBox->SetDirectionCollapseToSubmatrix();
-#else
-  m_ZeroMultiplyFilter->SetConstant( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
-#endif
 }
 
 template<class TInputImage, class TOutputImage>
@@ -200,11 +190,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     projOrder[i] = i;
   std::random_shuffle( projOrder.begin(), projOrder.end() );
 
-#if ITK_VERSION_MAJOR >= 4
   m_MultiplyFilter->SetInput1( (const float)m_Lambda  );
-#else
-  m_MultiplyFilter->SetConstant( m_Lambda );
-#endif
   
   // Create the zero projection stack used as input by RayBoxIntersectionFilter
   m_ConstantImageSource->Update();

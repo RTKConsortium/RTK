@@ -159,9 +159,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   extractRegion.SetSize(extractSize);
   extractRegion.SetIndex(extractIdx);
   extractor->SetExtractionRegion(extractRegion);
-#if ITK_VERSION_MAJOR >= 4
- extractor->SetDirectionCollapseToIdentity();
-#endif
+  extractor->SetDirectionCollapseToIdentity();
   extractor->Update();
   typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
   duplicator->SetInputImage(extractor->GetOutput());
@@ -180,9 +178,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
     extractRegion.SetSize(extractSize);
     extractRegion.SetIndex(extractIdx);
     extractor->SetExtractionRegion(extractRegion);
-#if ITK_VERSION_MAJOR >= 4
     extractor->SetDirectionCollapseToIdentity();
-#endif
     extractor->Update();
     pos -= register1D(prev, extractor->GetOutput());
     outputIdx[0] = i;

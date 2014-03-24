@@ -21,32 +21,12 @@
 //This file is interpreted by cmake, to define macros based on the cmake configuration options
 //
 
-/* Solves compatibility issue between ITKv3 and ITKv4 */
 #include <itkConfigure.h>
 #include <itkIntTypes.h>
-#if ITK_VERSION_MAJOR <= 3
-namespace rtk
-{
-  typedef int ThreadIdType;
-}
-namespace itk
-{
-  typedef int ThreadIdType;
-  typedef signed long IndexValueType;
-  typedef signed long OffsetValueType;
-  typedef signed long SizeValueType;
-}
-#  ifndef NDEBUG
-#    define itkAssertInDebugAndIgnoreInReleaseMacro(X) assert(X)
-#  else
-#    define itkAssertInDebugAndIgnoreInReleaseMacro(X)
-#  endif
-#else
 namespace rtk
 {
   typedef itk::ThreadIdType ThreadIdType;
 }
-#endif
 
 #cmakedefine01 CUDA_FOUND
 #cmakedefine01 OPENCL_FOUND
