@@ -158,6 +158,12 @@ void
 BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 ::AfterThreadedGenerateData()
 {
+  std::vector<int> dimsToProcess;
+  for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
+    {
+    if(m_DimensionsProcessed[dim]) dimsToProcess.push_back(dim);
+    }
+
   // The conditions on the borders this filter requires are very specific
   // Some must be enforced explicitely as they do not correspond to any of the
   // padding styles available in ITK.
@@ -166,12 +172,12 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 
   typename TOutputImage::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
 
-  for (int dim=0; dim<TOutputImage::ImageDimension; dim++)
+  for (int k=0; k<dimsToProcess.size(); k++)
     {
     // Create a slice region at the border of the largest possible region
     typename TOutputImage::RegionType slice = largest;
-    slice.SetSize(dim, 1);
-    slice.SetIndex(dim, largest.GetSize()[dim] - 1);
+      slice.SetSize(dimsToProcess[k], 1);
+    slice.SetIndex(dimsToProcess[k], largest.GetSize()[dimsToProcess[k]] - 1);
 
     // If it overlaps the output requested region, enforce boundary condition
     // on the overlap
@@ -180,7 +186,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
       itk::ImageRegionIterator<TOutputImage> oit(this->GetOutput(), slice);
       itk::ImageRegionConstIterator<TInputImage> iit(this->GetInput(), slice);
 
-      oit.Set(oit.Get() - iit.Get()[dim] / m_SpacingCoeffs[dim]);
+      oit.Set(oit.Get() - iit.Get()[dimsToProcess[k]] / m_SpacingCoeffs[dimsToProcess[k]]);
       ++oit;
       ++iit;
       }
