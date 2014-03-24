@@ -23,6 +23,23 @@ IF (BUILD_DOXYGEN)
   #
   # Configure the script and the doxyfile, then add target
   #
+
+  # Information on how to retrieve the ITK documentation tag file
+  SET(ITK_DOXYGEN_TAG_LOCATION "http://public.kitware.com/pub/itk/NightlyDoxygen/InsightDoxygenDocTag.gz")
+  SET(ITK_DOXYGEN_TAG_FILE ${PROJECT_BINARY_DIR}/Doxygen/InsightDoxygen.tag.gz)
+  SET(ITK_DOXYGEN_UNCOMPRESSED_TAG_FILE ${PROJECT_BINARY_DIR}/Doxygen/InsightDoxygen.tag)
+
+  # Get the ITK documentation tag file and unzip it
+  # Works only on UNIX at the moment
+  IF(EXISTS ${ITK_DOXYGEN_UNCOMPRESSED_TAG_FILE})
+  ELSE(EXISTS ${ITK_DOXYGEN_UNCOMPRESSED_TAG_FILE})
+  FILE( DOWNLOAD ${ITK_DOXYGEN_TAG_LOCATION} ${ITK_DOXYGEN_TAG_FILE})
+  	IF(UNIX)
+	  FIND_PACKAGE(GZIP)
+  	ENDIF(UNIX)
+  	EXECUTE_PROCESS(COMMAND ${GZIP_TOOL} -d ${ITK_DOXYGEN_TAG_FILE})
+  ENDIF(EXISTS ${ITK_DOXYGEN_UNCOMPRESSED_TAG_FILE})
+
   CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/documentation/Doxygen/doxygen.config.in
                  ${PROJECT_BINARY_DIR}/Doxygen/doxygen.config)
 
