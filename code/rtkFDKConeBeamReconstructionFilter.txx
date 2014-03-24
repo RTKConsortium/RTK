@@ -40,9 +40,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
   m_RampFilter->SetInput( m_WeightFilter->GetOutput() );
 
   // Default parameters
-#if ITK_VERSION_MAJOR >= 4
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
-#endif
   m_WeightFilter->InPlaceOn();
 
   // Default to one projection per subset when FFTW is not available

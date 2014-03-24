@@ -23,11 +23,7 @@
 #include "rtkForwardProjectionImageFilter.h"
 
 #include <itkExtractImageFilter.h>
-#if ITK_VERSION_MAJOR <= 3
-#  include <itkMultiplyByConstantImageFilter.h>
-#else
-#  include <itkMultiplyImageFilter.h>
-#endif
+#include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 #include <itkTimeProbe.h>
@@ -75,10 +71,10 @@ namespace rtk
  *
  * node [shape=box];
  * 1 [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
- * 2 [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
- * 3 [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+ * 2 [ label="itk::ExtractImageFilter" URL="http://www.itk.org/Doxygen/html/classitk_1_1ExtractImageFilter.html"];
+ * 3 [ label="itk::MultiplyImageFilter (by zero)" URL="http://www.itk.org/Insight/Doxygen/html/classitk_1_1MultiplyImageFilter.html"];
  * test [label="", fixedsize="false", width=0, height=0, shape=none];
- * 4 [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+ * 4 [ label="itk::SubtractImageFilter" URL="http://www.itk.org/Doxygen/html/classitk_1_1SubtractImageFilter.html"];
  * 5 [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
  * 6 [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
  * 7 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
@@ -133,11 +129,7 @@ public:
 
   /** Typedefs of each subfilter of this composite filter */
   typedef itk::ExtractImageFilter< InputImageType, InputImageType >                          ExtractFilterType;
-#if ITK_VERSION_MAJOR <= 3
-  typedef itk::MultiplyByConstantImageFilter< OutputImageType, double, OutputImageType >     MultiplyFilterType;
-#else
   typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >      MultiplyFilterType;
-#endif
   typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >              ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                       SubtractFilterType;
   typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >                 BackProjectionFilterType;
