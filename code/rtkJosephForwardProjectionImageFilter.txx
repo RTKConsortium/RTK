@@ -189,15 +189,17 @@ JosephForwardProjectionImageFilter<TInputImage,
         if (fs == ns) //If the voxel is a corner, we can skip most steps
           {
             sum += BilinearInterpolationOnBorders(threadId, fp[mainDir] - np[mainDir],
-                                    pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
-                                    offsetx, offsety, minx, miny, maxx, maxy);
+                                                  pxiyi, pxsyi, pxiys, pxsys,
+                                                  currentx, currenty, offsetx, offsety,
+                                                  minx, miny, maxx, maxy);
           }
         else
           {
           // First step
           sum += BilinearInterpolationOnBorders(threadId, residual + 0.5,
-                                      pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
-                                      offsetx, offsety, minx, miny, maxx, maxy);
+                                                pxiyi, pxsyi, pxiys, pxsys,
+                                                currentx, currenty, offsetx, offsety,
+                                                minx, miny, maxx, maxy);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -210,7 +212,7 @@ JosephForwardProjectionImageFilter<TInputImage,
           // Middle steps
           for(int i=ns+1; i<fs; i++)
             {
-            sum += BilinearInterpolation(threadId,
+            sum += BilinearInterpolation(threadId, 1.0,
                                          pxiyi, pxsyi, pxiys, pxsys,
                                          currentx, currenty, offsetx, offsety);
 
@@ -225,8 +227,9 @@ JosephForwardProjectionImageFilter<TInputImage,
 
           // Last step
           sum += BilinearInterpolationOnBorders(threadId,fp[mainDir] - fs + 0.5,
-                                    pxiyi, pxsyi, pxiys, pxsys,
-                                    currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
+                                                pxiyi, pxsyi, pxiys, pxsys,
+                                                currentx, currenty, offsetx, offsety,
+                                                minx, miny, maxx, maxy);
           }
         // Compute voxel to millimeters conversion
         stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
@@ -269,6 +272,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                    TInterpolationWeightMultiplication,
                                    TProjectedValueAccumulation>
 ::BilinearInterpolation( const ThreadIdType threadId,
+                         const double stepLengthInVoxel,
                          const InputPixelType *pxiyi,
                          const InputPixelType *pxsyi,
                          const InputPixelType *pxiys,
@@ -285,10 +289,10 @@ JosephForwardProjectionImageFilter<TInputImage,
   CoordRepType ly = y - iy;
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
-  return ( m_InterpolationWeightMultiplication(threadId, 1., lxc * lyc, pxiyi, idx) +
-           m_InterpolationWeightMultiplication(threadId, 1., lx  * lyc, pxsyi, idx) +
-           m_InterpolationWeightMultiplication(threadId, 1., lxc * ly , pxiys, idx) +
-           m_InterpolationWeightMultiplication(threadId, 1., lx  * ly , pxsys, idx) );
+  return ( m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
+           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx) +
+           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx) +
+           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx) );
 /* Alternative slower solution
   const unsigned int ix = itk::Math::Floor(x);
   const unsigned int iy = itk::Math::Floor(y);
@@ -353,7 +357,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx + offset_xs + offset_yi);
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx + offset_xs + offset_ys);
 
-  return stepLengthInVoxel * result;
+  return (stepLengthInVoxel * result);
 }
 
 

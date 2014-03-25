@@ -44,9 +44,6 @@ void RegisterIOFactories()
   rtk::ImagXImageIOFactory::RegisterOneFactory();
   rtk::EdfImageIOFactory::RegisterOneFactory();
   rtk::XRadImageIOFactory::RegisterOneFactory();
-#if ITK_VERSION_MAJOR <= 3
-  itk::ImageIOFactory::RegisterBuiltInFactories();
-#endif
 }
 
 } //namespace rtk

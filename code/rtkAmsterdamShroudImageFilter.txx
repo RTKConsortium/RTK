@@ -108,11 +108,7 @@ AmsterdamShroudImageFilter<TInputImage>
 ::GenerateData()
 {
   unsigned int kernelWidth;
-#if ITK_VERSION_MAJOR <= 3
-  kernelWidth = m_ConvolutionFilter->GetImageKernelInput()->GetLargestPossibleRegion().GetSize()[1];
-#else
   kernelWidth = m_ConvolutionFilter->GetKernelImage()->GetLargestPossibleRegion().GetSize()[1];
-#endif
   if(kernelWidth != m_UnsharpMaskSize)
     UpdateUnsharpMaskKernel();
   m_PermuteFilter->Update();
@@ -135,11 +131,7 @@ AmsterdamShroudImageFilter<TInputImage>
   kernel->SetRegions(region);
   kernel->Allocate();
   kernel->FillBuffer(1./m_UnsharpMaskSize);
-  #if ITK_VERSION_MAJOR <= 3
-  m_ConvolutionFilter->SetImageKernelInput( kernel );
-  #else
   m_ConvolutionFilter->SetKernelImage( kernel );
-  #endif
 }
 
 } // end namespace rtk
