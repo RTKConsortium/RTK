@@ -93,8 +93,6 @@ NormalizedJosephBackProjectionImageFilter<TInputImage,TOutputImage>
 
 }
 
-
-
 template <class TInputImage, class TOutputImage>
 void
 NormalizedJosephBackProjectionImageFilter<TInputImage,TOutputImage>
