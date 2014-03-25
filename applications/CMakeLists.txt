@@ -30,7 +30,7 @@ ADD_SUBDIRECTORY(rtkdrawshepploganphantom)
 ADD_SUBDIRECTORY(rtkextractshroudsignal)
 ADD_SUBDIRECTORY(rtkmedian)
 ADD_SUBDIRECTORY(rtklut)
-
+ADD_SUBDIRECTORY(rtktotalvariationdenoising)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 ADD_SUBDIRECTORY(rtkvarianobigeometry)
