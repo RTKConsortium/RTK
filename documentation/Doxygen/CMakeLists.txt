@@ -25,20 +25,27 @@ IF (BUILD_DOXYGEN)
   #
 
   # Information on how to retrieve the ITK documentation tag file
-  SET(ITK_DOXYGEN_TAG_LOCATION "http://public.kitware.com/pub/itk/NightlyDoxygen/InsightDoxygenDocTag.gz")
-  SET(ITK_DOXYGEN_TAG_FILE ${PROJECT_BINARY_DIR}/Doxygen/InsightDoxygen.tag.gz)
-  SET(ITK_DOXYGEN_UNCOMPRESSED_TAG_FILE ${PROJECT_BINARY_DIR}/Doxygen/InsightDoxygen.tag)
+  SET(ITK_DOXYGEN_TAG_LOCATION "http://public.kitware.com/pub/itk/NightlyDoxygen/InsightDoxygenDocTag")
+  SET(ITK_DOXYGEN_TAG_FILE ${PROJECT_BINARY_DIR}/Doxygen/InsightDoxygen.tag)
 
-  # Get the ITK documentation tag file and unzip it
-  # Works only on UNIX at the moment
-  IF(EXISTS ${ITK_DOXYGEN_UNCOMPRESSED_TAG_FILE})
-  ELSE(EXISTS ${ITK_DOXYGEN_UNCOMPRESSED_TAG_FILE})
-  FILE( DOWNLOAD ${ITK_DOXYGEN_TAG_LOCATION} ${ITK_DOXYGEN_TAG_FILE})
-  	IF(UNIX)
-	  FIND_PACKAGE(GZIP)
-  	ENDIF(UNIX)
-  	EXECUTE_PROCESS(COMMAND ${GZIP_TOOL} -d ${ITK_DOXYGEN_TAG_FILE})
-  ENDIF(EXISTS ${ITK_DOXYGEN_UNCOMPRESSED_TAG_FILE})
+  # Get the ITK documentation tag file
+  IF(NOT EXISTS ${ITK_DOXYGEN_TAG_FILE})
+    FILE( DOWNLOAD
+          ${ITK_DOXYGEN_TAG_LOCATION}
+          ${ITK_DOXYGEN_TAG_FILE}
+          TIMEOUT 60
+          STATUS statusITKDoxygenTagFile
+          SHOW_PROGRESS )
+    LIST(GET statusITKDoxygenTagFile 0 statusITKDoxygenTagFile)
+    IF(statusITKDoxygenTagFile)
+      FILE(REMOVE ${ITK_DOXYGEN_TAG_FILE})
+    ENDIF()
+  ENDIF(NOT EXISTS ${ITK_DOXYGEN_TAG_FILE})
+  IF(EXISTS ${ITK_DOXYGEN_TAG_FILE})
+    SET(DOXYGEN_TAGFILES_PARAMETER "${ITK_DOXYGEN_TAG_FILE}=http://www.itk.org/Doxygen/html/") 
+  ELSE()
+    SET(DOXYGEN_TAGFILES_PARAMETER "")
+  ENDIF()
 
   CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/documentation/Doxygen/doxygen.config.in
                  ${PROJECT_BINARY_DIR}/Doxygen/doxygen.config)
