@@ -33,12 +33,7 @@ ADD_LIBRARY(RTK
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
             )
 
-IF( ITK_VERSION_MAJOR LESS "4" AND (USE_FFTWF OR USE_FFTWD) )
-  TARGET_LINK_LIBRARIES(RTK ITKFFTW)
-  SET(RTK_LIBRARIES ${RTK_LIBRARIES} ITKFFTW)
-ELSE()
-  TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
-ENDIF()
+TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 #=========================================================
 
 #=========================================================
@@ -75,7 +70,7 @@ IF (CUDA_FOUND)
        
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
-  IF(WIN32 AND ITK_VERSION_MAJOR MATCHES "4")
+  IF(WIN32)
     GET_DIRECTORY_PROPERTY(dirInc INCLUDE_DIRECTORIES)
     FIND_PATH(itkMacroPath itkMacro.h ${dirInc})
     FIND_PATH(itkConfigurePath itkConfigure.h ${dirInc})
@@ -86,7 +81,7 @@ IF (CUDA_FOUND)
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS ${rtkcuda_CUDA_FILES})
 
   # Rollback to all includes
-  IF(WIN32 AND ITK_VERSION_MAJOR MATCHES "4")
+  IF(WIN32)
     SET_DIRECTORY_PROPERTIES(PROPERTIES INCLUDE_DIRECTORIES "${dirInc}")
   ENDIF()
 

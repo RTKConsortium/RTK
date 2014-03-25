@@ -25,11 +25,7 @@
 #include "rtkWin32Header.h"
 
 #include <itkExtractImageFilter.h>
-#if ITK_VERSION_MAJOR <= 3
-#  include <itkMultiplyByConstantImageFilter.h>
-#else
-#  include <itkMultiplyImageFilter.h>
-#endif
+#include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
 
