@@ -195,6 +195,10 @@ ADD_EXECUTABLE(rtkdivergencetest rtkdivergencetest.cxx)
 TARGET_LINK_LIBRARIES(rtkdivergencetest RTK)
 ADD_TEST(rtkdivergencetest ${EXECUTABLE_OUTPUT_PATH}/rtkdivergencetest)
 
+ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
+TARGET_LINK_LIBRARIES(rtkconjugategradienttest RTK)
+ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
+
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
 IF(CUDA_FOUND)
