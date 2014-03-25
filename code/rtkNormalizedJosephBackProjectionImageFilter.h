@@ -78,20 +78,20 @@ class ITK_EXPORT NormalizedJosephBackProjectionImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef NormalizedJosephBackProjectionImageFilter                     Self;
-  typedef BackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef NormalizedJosephBackProjectionImageFilter              Self;
+  typedef BackProjectionImageFilter<TInputImage,TOutputImage>    Superclass;
   typedef itk::SmartPointer<Self>                                Pointer;
   typedef itk::SmartPointer<const Self>                          ConstPointer;
   typedef typename TInputImage::PixelType                        InputPixelType;
   typedef typename TOutputImage::PixelType                       OutputPixelType;
   typedef typename TOutputImage::RegionType                      OutputImageRegionType;
-  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::Pointer                    GeometryPointer;
+  typedef rtk::ThreeDCircularProjectionGeometry                  GeometryType;
+  typedef typename GeometryType::Pointer                         GeometryPointer;
 
   /** Typedefs for subfilters */
   typedef itk::AddImageFilter<TOutputImage,TOutputImage> AddFilterType;
   typedef itk::DivideOrZeroOutImageFilter<TOutputImage,TOutputImage> DivideFilterType;
-  typedef ConstantImageSource<TInputImage> ConstantProjectionSourceType;
+  typedef ConstantImageSource<TInputImage>  ConstantProjectionSourceType;
   typedef ConstantImageSource<TOutputImage> ConstantVolumeSourceType;
   typedef JosephBackProjectionImageFilter<TInputImage,TOutputImage> JosephBackProjectionFilterType;
   
@@ -116,11 +116,12 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Sub filters */
-  typename AddFilterType::Pointer m_AddFilter;
-  typename DivideFilterType::Pointer m_DivideFilter;
-  typename ConstantProjectionSourceType::Pointer m_ConstantProjectionSource;
-  typename ConstantVolumeSourceType::Pointer m_ConstantVolumeSource;
-  typename JosephBackProjectionFilterType::Pointer m_JosephBackProjector, m_JosephBackProjectorOfConstantProjection;
+  typename AddFilterType::Pointer                   m_AddFilter;
+  typename DivideFilterType::Pointer                m_DivideFilter;
+  typename ConstantProjectionSourceType::Pointer    m_ConstantProjectionSource;
+  typename ConstantVolumeSourceType::Pointer        m_ConstantVolumeSource;
+  typename JosephBackProjectionFilterType::Pointer  m_JosephBackProjector;
+  typename JosephBackProjectionFilterType::Pointer  m_JosephBackProjectorOfConstantProjection;
 
 private:
   NormalizedJosephBackProjectionImageFilter(const Self&); //purposely not implemented
