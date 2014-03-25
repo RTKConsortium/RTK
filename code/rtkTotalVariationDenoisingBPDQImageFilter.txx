@@ -82,14 +82,17 @@ TotalVariationDenoisingBPDQImageFilter< TInputImage>
 
   // Compute the parameters used in Basis Pursuit Dequantization
   // and set the filters to use them
-  m_beta = 1;
+  m_beta = 1.0;
   for (int dim=0; dim<TInputImage::ImageDimension; dim++)
     {
       if (m_DimensionsProcessed[dim])  m_beta /= 2;
     }
   m_beta -= 0.001; // Beta must be smaller than 2^(-NumberOfDimensionsProcessed) for the algorithm to converge
-
   m_gamma = 1 / (2 * m_Lambda); // BPDQ uses a cost function defined as 0.5 * || f - f_0 ||_2^2 + gamma * TV(f)
+
+//  std::cout << "Gamma = " << m_gamma << std::endl;
+//  std::cout << "Beta = " << m_beta << std::endl;
+
   m_MultiplyFilter->SetConstant2(-m_beta);
   m_MagnitudeThresholdFilter->SetThreshold(m_gamma);
   m_GradientFilter->SetDimensionsProcessed(m_DimensionsProcessed);
