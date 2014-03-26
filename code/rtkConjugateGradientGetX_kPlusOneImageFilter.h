@@ -27,8 +27,8 @@ public:
     void SetXk(const TInputImage* Xk);
     void SetPk(const TInputImage* Pk);
 
-    itkGetMacro(alphak, float)
-    itkSetMacro(alphak, float)
+    itkGetMacro(Alphak, float)
+    itkSetMacro(Alphak, float)
 
     /** Typedefs for sub filters */
     typedef itk::AddImageFilter<TInputImage>      AddFilterType;
@@ -49,7 +49,7 @@ protected:
 private:
     ConjugateGradientGetX_kPlusOneImageFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
-    float m_alphak;
+    float m_Alphak;
 
     /** Pointers to sub filters */
     typename AddFilterType::Pointer       m_AddFilter;

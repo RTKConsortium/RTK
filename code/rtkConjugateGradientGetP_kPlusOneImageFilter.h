@@ -1,7 +1,9 @@
 #ifndef __rtkConjugateGradientGetP_kPlusOneImageFilter_h
 #define __rtkConjugateGradientGetP_kPlusOneImageFilter_h
 
-#include "itkImageToImageFilter.h"
+#include <itkImageToImageFilter.h>
+#include <itkAddImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 
 namespace rtk
 {
@@ -26,6 +28,13 @@ public:
     void SetRk(const TInputImage* Rk);
     void SetPk(const TInputImage* Pk);
 
+    itkSetMacro(SquaredNormR_k, float)
+    itkSetMacro(SquaredNormR_kPlusOne, float)
+
+    /** Typedefs for sub filters */
+    typedef itk::AddImageFilter<TInputImage>      AddFilterType;
+    typedef itk::MultiplyImageFilter<TInputImage> MultiplyFilterType;
+
 protected:
     ConjugateGradientGetP_kPlusOneImageFilter();
     ~ConjugateGradientGetP_kPlusOneImageFilter(){}
@@ -34,14 +43,22 @@ protected:
     typename TInputImage::Pointer GetRk();
     typename TInputImage::Pointer GetPk();
 
-    /** Does the real woPk. */
+    /** Does the real work. */
     virtual void GenerateData();
+
+    void GenerateOutputInformation();
 
 private:
     ConjugateGradientGetP_kPlusOneImageFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
-    //    virtual void GenerateInputRequestedRegion();
+    float m_SquaredNormR_k;
+    float m_SquaredNormR_kPlusOne;
+    float m_Betak;
+
+    /** Pointers to sub filters */
+    typename AddFilterType::Pointer       m_AddFilter;
+    typename MultiplyFilterType::Pointer  m_MultiplyFilter;
 
 };
 } //namespace ITK

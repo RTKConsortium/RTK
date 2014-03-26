@@ -52,7 +52,7 @@ ConjugateGradientGetX_kPlusOneImageFilter<TInputType>
 {
   // Set inputs
   m_MultiplyFilter->SetInput1(this->GetPk());
-  m_MultiplyFilter->SetConstant2(this->m_alphak);
+  m_MultiplyFilter->SetConstant2(this->m_Alphak);
   m_AddFilter->SetInput2(this->GetXk());
 
   // Have the last filter calculate its output information
@@ -67,10 +67,10 @@ template< typename TInputType>
 void ConjugateGradientGetX_kPlusOneImageFilter<TInputType>
 ::GenerateData()
 {
-  // Set inputs
-  m_MultiplyFilter->SetInput1(this->GetPk());
-  m_MultiplyFilter->SetConstant2(this->m_alphak);
-  m_AddFilter->SetInput2(this->GetXk());
+//  // Set inputs
+//  m_MultiplyFilter->SetInput1(this->GetPk());
+//  m_MultiplyFilter->SetConstant2(this->m_Alphak);
+//  m_AddFilter->SetInput2(this->GetXk());
 
   // Run the pipeline
   m_AddFilter->Update();
