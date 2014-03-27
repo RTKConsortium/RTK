@@ -61,7 +61,7 @@ public:
     /** Sub filter type definitions */
     typedef ForwardDifferenceGradientImageFilter<TInputImage> GradientFilterType;
     typedef typename GradientFilterType::OutputImageType GradientImageType;
-    typedef itk::MultiplyImageFilter<GradientImageType> MultiplyFilterType;
+    typedef itk::MultiplyImageFilter<TInputImage> MultiplyFilterType;
     typedef itk::SubtractImageFilter<TInputImage> SubtractImageFilterType;
     typedef itk::SubtractImageFilter<GradientImageType> SubtractGradientFilterType;
     typedef MagnitudeThresholdImageFilter<GradientImageType> MagnitudeThresholdFilterType;
@@ -85,8 +85,10 @@ public:
 
     /** Sub filter pointers */
     typename GradientFilterType::Pointer             m_GradientFilter;
+    typename GradientFilterType::Pointer             m_ZeroGradientFilter;
     typename MultiplyFilterType::Pointer             m_MultiplyFilter;
-    typename SubtractImageFilterType::Pointer        m_SubtractImageFilter;
+    typename MultiplyFilterType::Pointer             m_ZeroMultiplyFilter;
+    typename SubtractImageFilterType::Pointer        m_SubtractFilter;
     typename SubtractGradientFilterType::Pointer     m_SubtractGradientFilter;
     typename MagnitudeThresholdFilterType::Pointer   m_MagnitudeThresholdFilter;
     typename DivergenceFilterType::Pointer           m_DivergenceFilter;

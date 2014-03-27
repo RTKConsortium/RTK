@@ -20,14 +20,9 @@
 
 #include "rtkMagnitudeThresholdImageFilter.h"
 
-#include "itkImageRegionIterator.h"
-
-#include "itkImageRegionConstIterator.h"
-
-#include "itkProgressReporter.h"
-//#include "itkVectorCastImageFilter.h"
-
-//#include "vnl/vnl_math.h"
+#include <itkImageRegionIterator.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkProgressReporter.h>
 
 namespace rtk
 {
@@ -62,7 +57,7 @@ MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
         {
             norm += InputIt.Get()[i] * InputIt.Get()[i];
         }
-        norm = sqrt(norm); // TV is non-negative
+        norm = sqrt(norm);
 
         if (norm > m_Threshold)
             OutputIt.Set( m_Threshold * InputIt.Get() / norm);

@@ -34,7 +34,8 @@ namespace rtk
  * \brief Performs thresholding on the norm of each vector-valued input pixel
  *
  * If the norm of a vector is higher than the threshold, divides the
- * components of the vector by norm / threshold
+ * components of the vector by norm / threshold. Mathematically, it amounts
+ * to projecting onto the L_infinite ball of radius m_Threshold
  *
  */
 template< typename TInputImage,
