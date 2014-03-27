@@ -107,13 +107,13 @@ int main(int, char** )
   TVDenoisingFilterType::Pointer TVdenoising = TVDenoisingFilterType::New();
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
   TVdenoising->SetNumberOfIterations(5);
-  TVdenoising->SetLambda(1);
+  TVdenoising->SetLambda(0.005);
   bool* dimsProcessed = new bool[Dimension];
   for (int i=0; i<Dimension; i++)
   {
       dimsProcessed[i] = true;
   }
-  dimsProcessed[0]=false;
+//  dimsProcessed[0]=false;
   TVdenoising->SetDimensionsProcessed(dimsProcessed);
 
   // Update the TV denoising filter

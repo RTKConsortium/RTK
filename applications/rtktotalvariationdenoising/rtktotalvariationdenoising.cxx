@@ -49,14 +49,15 @@ int main(int argc, char * argv[])
   tv->SetInput(reader->GetOutput());
   tv->SetLambda(args_info.lambda_arg);
   tv->SetNumberOfIterations(args_info.niter_arg);
-  std::cout << args_info.dim_arg[0]<< args_info.dim_arg[1]<< args_info.dim_arg[2] << std::endl;
 
   bool* dimsProcessed = new bool[Dimension];
   for (int i=0; i<Dimension; i++)
     {
-    if (args_info.dim_arg[i] == 1) dimsProcessed[i] = true;
-    else dimsProcessed[i] = false;
+    if ((args_info.dim_given) && (args_info.dim_arg[i] == 0)) dimsProcessed[i] = false;
+    else dimsProcessed[i] = true;
+//    std::cout << dimsProcessed[i];
     }
+//  std::cout << std::endl;
   tv->SetDimensionsProcessed(dimsProcessed);
 
   // Write
