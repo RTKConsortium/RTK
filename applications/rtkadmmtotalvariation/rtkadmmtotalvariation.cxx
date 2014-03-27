@@ -104,8 +104,8 @@ int main(int argc, char * argv[])
   // Set all four numerical parameters
   admmFilter->SetCG_iterations(args_info.CGiter_arg);
   admmFilter->SetAL_iterations(args_info.iterations_arg);
-  admmFilter->Setalpha(args_info.alpha_arg);
-  admmFilter->Setbeta(args_info.beta_arg);
+  admmFilter->SetAlpha(args_info.alpha_arg);
+  admmFilter->SetBeta(args_info.beta_arg);
 
   // Set the inputs of the ADMM filter
   admmFilter->SetInput(0, inputFilter->GetOutput() );

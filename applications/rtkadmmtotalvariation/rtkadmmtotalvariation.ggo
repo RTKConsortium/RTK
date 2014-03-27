@@ -11,13 +11,13 @@ option "iterations" n "Number of iterations"         				 int                   
 option "alpha"      a "Regularization parameter"         			 float                        no   default="0.1"
 option "beta"      b "Augmented Lagrangian constraint multiplier"         	 float                        no   default="1"
 option "method"    m "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
-option "ecgPhases" e "File containing the ecg phase of each projection"          string			      yes
+#option "ecgPhases" e "File containing the ecg phase of each projection"          string			      yes
 option "bp"        - "Backprojection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased" enum no default="VoxelBasedBackProjection"
 #option "hardware"  - "Hardware used for computation"                            values="cpu","cuda","opencl" no   default="cpu"
 option "time"        t "Records elapsed time"                                    flag                         off
 option "input"      i "Volume file used for initialization"                     string                       no
-option "gatingwidth" w "Width of the gating window : must be between 0 and 100"			float						yes
-option "gatingcenter" c "Center of the gating window : must be between 0 and 100"		float						yes
+#option "gatingwidth" w "Width of the gating window : must be between 0 and 100"			float						yes
+#option "gatingcenter" c "Center of the gating window : must be between 0 and 100"		float						yes
 option "CGiter"     - "Number of nested iterations of conjugate gradient"       int                       no      default="5"
 
 section "Ramp filter"

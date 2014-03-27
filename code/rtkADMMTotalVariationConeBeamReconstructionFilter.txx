@@ -3,10 +3,6 @@
 
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 
-#include "itkObjectFactory.h"
-#include "itkImageRegionIterator.h"
-#include "itkImageRegionConstIterator.h"
-
 #include "rtkJosephForwardProjectionImageFilter.h"
 
 namespace rtk
@@ -18,8 +14,8 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariation
   this->SetNumberOfRequiredInputs(2);
 
   // Set the default values of member parameters
-  m_alpha=1;
-  m_beta=1;
+  m_Alpha=1;
+  m_Beta=1;
   m_AL_iterations=10;
   m_CG_iterations=3;
   m_MeasureExecutionTimes=false;
@@ -47,7 +43,6 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariation
   m_DivergenceFilter->SetInput(m_AddGradientsFilter->GetOutput());
   m_MultiplyFilter->SetInput1( m_DivergenceFilter->GetOutput() );
   m_AddVolumeFilter->SetInput2(m_MultiplyFilter->GetOutput());
-  m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_ConjugateGradientFilter->SetB(m_AddVolumeFilter->GetOutput());
   m_ConjugateGradientFilter->SetNumberOfIterations(m_CG_iterations);
   m_ConjugateGradientFilter->SetMeasureExecutionTimes(m_MeasureExecutionTimes);
@@ -82,26 +77,26 @@ void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
 ::ConfigureForwardProjection (int _arg)
 {
-
-    switch(_arg)
+  switch(_arg)
     {
     case(0):
-        m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
-        break;
+      m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
+    break;
     case(1):
-#if CUDA_FOUND
-        m_ForwardProjectionFilter = rtk::CudaForwardProjectionImageFilter::New();
-#else
-        std::cerr << "The program has not been compiled with cuda option" << std::endl;
-#endif
-        break;
+    #if CUDA_FOUND
+      m_ForwardProjectionFilter = rtk::CudaForwardProjectionImageFilter::New();
+    #else
+      std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    #endif
+    break;
     case(2):
-        m_ForwardProjectionFilter = rtk::RayCastInterpolatorForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
-        break;
+      m_ForwardProjectionFilter = rtk::RayCastInterpolatorForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
+    break;
+
     default:
-        std::cerr << "Unhandled --method value." << std::endl;
+      std::cerr << "Unhandled --method value." << std::endl;
     }
-    m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
+  m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
 }
 
 template< typename TOutputImage>
@@ -109,42 +104,29 @@ void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
 ::ConfigureBackProjection (int _arg)
 {
-
-    switch(_arg)
+  switch(_arg)
     {
     case(0):
-        m_BackProjectionFilterForConjugateGradient  = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-        m_BackProjectionFilter = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-        break;
+      m_BackProjectionFilterForConjugateGradient  = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
+      m_BackProjectionFilter = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
+      break;
     case(1):
-        m_BackProjectionFilterForConjugateGradient = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-        m_BackProjectionFilter = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-        break;
+      m_BackProjectionFilterForConjugateGradient = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
+      m_BackProjectionFilter = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
+      break;
     case(2):
-#if CUDA_FOUND
-        m_BackProjectionFilterForConjugateGradient = rtk::CudaBackProjectionImageFilter::New();
-        m_BackProjectionFilter = rtk::CudaBackProjectionImageFilter::New();
-#else
-        std::cerr << "The program has not been compiled with cuda option" << std::endl;
-#endif
-        break;
+    #if CUDA_FOUND
+      m_BackProjectionFilterForConjugateGradient = rtk::CudaBackProjectionImageFilter::New();
+      m_BackProjectionFilter = rtk::CudaBackProjectionImageFilter::New();
+    #else
+      std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    #endif
+    break;
 
     default:
-        std::cerr << "Unhandled --bp value." << std::endl;
+      std::cerr << "Unhandled --bp value." << std::endl;
     }
-
-    m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
-
-}
-
-
-template< typename TOutputImage>
-void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
-{
-    m_CGOperator->SetGeometry(_arg);
-    m_BackProjectionFilter->SetGeometry(_arg.GetPointer());;
+  m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
 }
 
 template< typename TOutputImage>
@@ -152,10 +134,10 @@ void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
 ::SetBetaForCurrentIteration(int iter){
 
-    float currentBeta = m_beta * (iter+1) / m_AL_iterations;
+    float currentBeta = m_Beta * (iter+1) / m_AL_iterations;
 
     m_CGOperator->SetBeta(currentBeta);
-    m_SoftThresholdFilter->SetThreshold(m_alpha/(2 * currentBeta));
+    m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * currentBeta));
     m_MultiplyFilter->SetConstant2( (const float) currentBeta);
 }
 
@@ -189,12 +171,18 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
   m_GradientFilter1->SetInput(this->GetInput(0));
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1));
+  m_ConjugateGradientFilter->SetX(this->GetInput(0));
+  m_MultiplyFilter->SetConstant2( m_Beta );
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
   m_BackProjectionFilter->SetInput(1, this->GetInput(1));
   m_AddVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+
+  // For the same reason, set geometry now
+  m_CGOperator->SetGeometry(this->m_Geometry);
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
 
   // Have the last filter calculate its output information
   m_SubtractFilter2->UpdateOutputInformation();
