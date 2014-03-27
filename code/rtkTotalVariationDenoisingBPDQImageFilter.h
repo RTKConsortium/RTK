@@ -25,6 +25,41 @@ namespace rtk
  * More information on the algorithm can be found at
  * http://wiki.epfl.ch/bpdq#download
  *
+ * \dot
+ * digraph TotalVariationDenoisingBPDQImageFilter {
+ *
+ * Input [label="Input"];
+ * Input [shape=Mdiamond];
+ * Output [label="Output"];
+ * Output [shape=Mdiamond];
+ *
+ * node [shape=box];
+ * ZeroMultiply [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+ * ZeroGradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+ * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
+ * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+ * Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
+ * Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+ * SubtractGradient [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+ * MagnitudeThreshold [ label="rtk::rtkMagnitudeThresholdImageFilter" URL="\ref rtk::rtkMagnitudeThresholdImageFilter"];
+ * OutOfZeroGradient [label="", fixedsize="false", width=0, height=0, shape=none];
+ *
+ * Input -> ZeroMultiply;
+ * Input -> Subtract;
+ * ZeroMultiply -> ZeroGradient;
+ * ZeroGradient -> OutOfZeroGradient [arrowhead=None];
+ * OutOfZeroGradient -> Divergence;
+ * OutOfZeroGradient -> SubtractGradient;
+ * Divergence -> Subtract;
+ * Subtract -> Multiply;
+ * Multiply -> Gradient;
+ * Gradient -> SubtractGradient;
+ * SubtractGradient -> MagnitudeThreshold;
+ * MagnitudeThreshold -> OutOfZeroGradient [style=dashed];
+ * Subtract -> Output;
+ * }
+ * \enddot
+ *
  * \author Cyril Mory
  *
  * \ingroup IntensityImageFilters
