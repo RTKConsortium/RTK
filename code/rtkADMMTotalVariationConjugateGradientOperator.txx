@@ -19,12 +19,8 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage>::ADMMTotalVariationCon
   m_GradientFilter = GradientFilterType::New();
 
   // Set permanent connections
-  m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
   m_DivergenceFilter->SetInput(m_GradientFilter->GetOutput());
   m_MultiplyFilter->SetInput1( m_DivergenceFilter->GetOutput() );
-  m_SubtractFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
   m_SubtractFilter->SetInput2( m_MultiplyFilter->GetOutput() );
 
   // Set permanent parameters
@@ -34,8 +30,6 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage>::ADMMTotalVariationCon
   // Set memory management options
   m_ZeroMultiplyProjectionFilter->ReleaseDataFlagOn();
   m_ZeroMultiplyVolumeFilter->ReleaseDataFlagOn();
-  m_ForwardProjectionFilter->ReleaseDataFlagOn();
-  m_BackProjectionFilter->ReleaseDataFlagOn();
   m_DivergenceFilter->ReleaseDataFlagOn();
   m_GradientFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
@@ -91,7 +85,13 @@ void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage>
 ::GenerateOutputInformation()
 {
-  // Set runtime connections
+  // Set runtime connections, and connections with
+  // forward and back projection filters, which are set
+  // at runtime
+  m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
+  m_SubtractFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
@@ -99,6 +99,11 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage>
 
   // Set runtime parameters
   m_MultiplyFilter->SetConstant2( m_Beta );
+
+  // Set memory management parameters for forward
+  // and back projection filters
+  m_ForwardProjectionFilter->ReleaseDataFlagOn();
+  m_BackProjectionFilter->ReleaseDataFlagOn();
 
   // Have the last filter calculate its output information
   m_SubtractFilter->UpdateOutputInformation();
