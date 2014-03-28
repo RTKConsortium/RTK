@@ -7,6 +7,8 @@
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
 
+#include <itkImageRegionSplitterMultidimensional.h>
+
 namespace rtk
 {
 
@@ -59,8 +61,16 @@ template< typename TInputType>
 void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
 ::BeforeThreadedGenerateData()
 {
+  // Instead of using GetNumberOfThreads, we need to split the image into the
+  // number of regions that will actually be returned by
+  // itkImageSource::SplitRequestedRegion. Sometimes this number is less than
+  // the number of threads requested.
+  OutputImageRegionType dummy;
+  unsigned int actualThreads = this->SplitRequestedRegion(
+    0, this->GetNumberOfThreads(), dummy);
+
   m_Barrier = itk::Barrier::New();
-  m_Barrier->Initialize(this->GetNumberOfThreads());
+  m_Barrier->Initialize(actualThreads);
 
   for (int i=0; i<this->GetNumberOfThreads(); i++)
     {
