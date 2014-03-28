@@ -202,6 +202,12 @@ ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradient
 ADD_EXECUTABLE(rtksirttest rtksirttest.cxx)
 TARGET_LINK_LIBRARIES(rtksirttest RTK)
 ADD_TEST(rtksirttest ${EXECUTABLE_OUTPUT_PATH}/rtksirttest)
+ADD_CUDA_TEST(rtksirt rtksirttest.cxx)
+
+ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
+TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest RTK)
+ADD_TEST(rtkadmmtotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest)
+ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx)
 
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)

@@ -19,6 +19,8 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariation
   m_AL_iterations=10;
   m_CG_iterations=3;
   m_MeasureExecutionTimes=false;
+  m_CurrentBackProjectionConfiguration = -1;
+  m_CurrentForwardProjectionConfiguration = -1;
 
   // Create the filters
   m_ZeroMultiplyVolumeFilter = MultiplyVolumeFilterType::New();
@@ -97,6 +99,12 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
       std::cerr << "Unhandled --method value." << std::endl;
     }
   m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
+
+  if (m_CurrentForwardProjectionConfiguration != _arg)
+    {
+    this->Modified();
+    m_CGOperator->Modified();
+    }
 }
 
 template< typename TOutputImage>
@@ -127,6 +135,12 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
       std::cerr << "Unhandled --bp value." << std::endl;
     }
   m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
+
+  if (m_CurrentBackProjectionConfiguration != _arg)
+    {
+    this->Modified();
+    m_CGOperator->Modified();
+    }
 }
 
 template< typename TOutputImage>
@@ -183,6 +197,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
   // For the same reason, set geometry now
   m_CGOperator->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+
+  // Set runtime parameters
+  m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);
 
   // Have the last filter calculate its output information
   m_SubtractFilter2->UpdateOutputInformation();

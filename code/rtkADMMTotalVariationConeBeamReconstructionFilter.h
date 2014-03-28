@@ -23,6 +23,89 @@
 
 namespace rtk
 {
+  /** \class ADMMTotalVariationConeBeamReconstructionFilter
+   * \brief Implements the ADMM reconstruction with total variation regularization
+   *
+   * This filter implements a reconstruction method based on compressed sensing.
+   * The method attempts to find the f that minimizes
+   * || Rf -p ||_2^2 + alpha * TV(f),
+   * with R the forward projection operator, p the measured projections,
+   * and TV the total variation. Details on the method and the calculations can be found in
+   *
+   * Mory, C., B. Zhang, V. Auvray, M. Grass, D. Schafer, F. Peyrin, S. Rit, P. Douek,
+   * and L. Boussel. “ECG-Gated C-Arm Computed Tomography Using L1 Regularization.”
+   * In Proceedings of the 20th European Signal Processing Conference (EUSIPCO), 2728–32, 2012.
+   *
+   * \dot
+   * digraph ADMMTotalVariationConeBeamReconstructionFilter {
+   *
+   * Input0 [ label="Input 0 (Volume)"];
+   * Input0 [shape=Mdiamond];
+   * Input1 [label="Input 1 (Projections)"];
+   * Input1 [shape=Mdiamond];
+   * Output [label="Output (Volume)"];
+   * Output [shape=Mdiamond];
+   *
+   * node [shape=box];
+   * ZeroMultiplyVolume [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+   * ZeroMultiplyGradient [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+   * BeforeZeroMultiplyVolume [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterGradient [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterZeroMultiplyGradient [label="", fixedsize="false", width=0, height=0, shape=none];
+   * Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+   * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+   * AddGradient [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+   * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
+   * Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
+   * AddVolume [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+   * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
+   * AfterConjugateGradient [label="", fixedsize="false", width=0, height=0, shape=none];
+   * GradientTwo [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+   * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+   * TVSoftThreshold [ label="rtk::SoftThresholdTVImageFilter" URL="\ref rtk::SoftThresholdTVImageFilter"];
+   * BeforeTVSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterTVSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+   * SubtractTwo [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+   *
+   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
+   * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
+   * BeforeZeroMultiplyVolume -> Gradient;
+   * BeforeZeroMultiplyVolume -> ConjugateGradient;
+   * Input1 -> BackProjection;
+   * Gradient -> AfterGradient [arrowhead=None];
+   * AfterGradient -> AddGradient;
+   * AfterGradient -> ZeroMultiplyGradient;
+   * ZeroMultiplyGradient -> AfterZeroMultiplyGradient [arrowhead=None];
+   * AfterZeroMultiplyGradient -> AddGradient;
+   * AfterZeroMultiplyGradient -> Subtract;
+   * AddGradient -> Divergence;
+   * Divergence -> Multiply;
+   * Multiply -> AddVolume;
+   * BackProjection -> AddVolume;
+   * AddVolume -> ConjugateGradient;
+   * ConjugateGradient -> AfterConjugateGradient;
+   * AfterConjugateGradient -> GradientTwo;
+   * GradientTwo -> Subtract;
+   * Subtract -> BeforeTVSoftThreshold [arrowhead=None];
+   * BeforeTVSoftThreshold -> TVSoftThreshold;
+   * BeforeTVSoftThreshold -> SubtractTwo;
+   * TVSoftThreshold -> AfterTVSoftThreshold [arrowhead=None];
+   * AfterTVSoftThreshold -> SubtractTwo;
+   *
+   * AfterTVSoftThreshold -> AfterGradient [style=dashed];
+   * SubtractTwo -> AfterZeroMultiplyGradient [style=dashed];
+   * AfterConjugateGradient -> BeforeZeroMultiplyVolume [style=dashed];
+   * AfterConjugateGradient -> Output [style=dashed];
+   * }
+   * \enddot
+   *
+   * \test rtkadmmtotalvariationtest.cxx
+   *
+   * \author Cyril Mory
+   *
+   * \ingroup ReconstructionAlgorithm
+   */
+
 template< typename TOutputImage >
 class ADMMTotalVariationConeBeamReconstructionFilter : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
@@ -128,6 +211,8 @@ private:
     int m_AL_iterations, m_CG_iterations;
     bool m_MeasureExecutionTimes;
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
+    int m_CurrentForwardProjectionConfiguration;
+    int m_CurrentBackProjectionConfiguration;
 
 };
 } //namespace ITK
