@@ -6,7 +6,7 @@
 
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
-void CheckTotalVariation(typename TImage::Pointer itkNotUsed(vol))
+void CheckTotalVariation(typename TImage::Pointer itkNotUsed(before), typename TImage::Pointer itkNotUsed(after))
 {
 }
 #else
@@ -29,7 +29,7 @@ void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Point
   std::cout << "Total variation after denoising is " << totalVariationAfter << std::endl;
 
   // Checking results
-  if (totalVariationBefore < totalVariationAfter)
+  if (totalVariationBefore/2 < totalVariationAfter)
   {
     std::cerr << "Test Failed: total variation was not reduced" << std::endl;
     exit( EXIT_FAILURE);
@@ -106,7 +106,7 @@ int main(int, char** )
   typedef rtk::TotalVariationDenoisingBPDQImageFilter<OutputImageType> TVDenoisingFilterType;
   TVDenoisingFilterType::Pointer TVdenoising = TVDenoisingFilterType::New();
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
-  TVdenoising->SetNumberOfIterations(5);
+  TVdenoising->SetNumberOfIterations(15);
   TVdenoising->SetLambda(0.005);
   bool* dimsProcessed = new bool[Dimension];
   for (int i=0; i<Dimension; i++)
