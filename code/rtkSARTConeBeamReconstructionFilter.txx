@@ -29,11 +29,13 @@ namespace rtk
 {
 template<class TInputImage, class TOutputImage>
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
-::SARTConeBeamReconstructionFilter():
-  m_NumberOfIterations(3),
-  m_Lambda(0.3)
+::SARTConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(2);
+
+  m_EnforcePositivity = false;
+  m_NumberOfIterations = 3;
+  m_Lambda = 0.3;
 
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
