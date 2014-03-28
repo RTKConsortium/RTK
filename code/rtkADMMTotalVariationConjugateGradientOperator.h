@@ -69,7 +69,7 @@ namespace rtk
    * }
    * \enddot
    *
-   * \test rtkadmmtvtest.cxx
+   * \test rtkadmmtotalvariationtest.cxx
    *
    * \author Cyril Mory
    *

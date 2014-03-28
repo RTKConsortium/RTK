@@ -19,6 +19,52 @@
 
 namespace rtk
 {
+  /** \class SIRTConeBeamReconstructionFilter
+   * \brief Implements SIRT
+   *
+   * This filter implements the SIRT method.
+   * SIRT attempts to find the f that minimizes || Rf -p ||_2^2, with R the
+   * forward projection operator and p the measured projections.
+   * In this it is similar to the ART and SART methods. The difference lies
+   * in the algorithm employed to minimize this cost function. ART uses the
+   * Kaczmarz method (projects and back projects one ray at a time),
+   * SART the block-Kaczmarz method (projects and back projects one projection
+   * at a time), and SIRT a steepest descent or conjugate gradient method
+   * (projects and back projects all projections together).
+   *
+   * \dot
+   * digraph SIRTConeBeamReconstructionFilter {
+   *
+   * Input0 [ label="Input 0 (Volume)"];
+   * Input0 [shape=Mdiamond];
+   * Input1 [label="Input 1 (Projections)"];
+   * Input1 [shape=Mdiamond];
+   * Output [label="Output (Volume)"];
+   * Output [shape=Mdiamond];
+   *
+   * node [shape=box];
+   * ZeroMultiplyVolume [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+   * BeforeZeroMultiplyVolume [label="", fixedsize="false", width=0, height=0, shape=none];
+   * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+   * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
+   *
+   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
+   * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
+   * BeforeZeroMultiplyVolume -> ConjugateGradient;
+   * Input1 -> BackProjection;
+   * ZeroMultiplyVolume -> BackProjection;
+   * BackProjection -> ConjugateGradient;
+   * ConjugateGradient -> Output;
+   * }
+   * \enddot
+   *
+   * \test rtksirttest.cxx
+   *
+   * \author Cyril Mory
+   *
+   * \ingroup ReconstructionAlgorithm
+   */
+
 template< typename TOutputImage >
 class SIRTConeBeamReconstructionFilter : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
