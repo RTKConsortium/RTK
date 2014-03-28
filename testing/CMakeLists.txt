@@ -199,6 +199,10 @@ ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest RTK)
 ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
 
+ADD_EXECUTABLE(rtksirttest rtksirttest.cxx)
+TARGET_LINK_LIBRARIES(rtksirttest RTK)
+ADD_TEST(rtksirttest ${EXECUTABLE_OUTPUT_PATH}/rtksirttest)
+
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
 IF(CUDA_FOUND)
