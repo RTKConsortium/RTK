@@ -78,7 +78,7 @@ rtk::TiffLookupTableImageFilter<TInputImage, TOutputImage>::TiffLookupTableImage
   lut->Allocate();
 
   // Iterate and set lut
-  OutputImagePixelType logRef = log(OutputImagePixelType(size[0]+1) );
+  OutputImagePixelType logRef = log(double(size[0]+1) );
   itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
   it.GoToBegin();
 
@@ -87,8 +87,9 @@ rtk::TiffLookupTableImageFilter<TInputImage, TOutputImage>::TiffLookupTableImage
   ++it;
 
   //Conventional lookup table for the rest
-  while( !it.IsAtEnd() ) {
-    it.Set( logRef - log( OutputImagePixelType(it.GetIndex()[0]+1) ) );
+  while( !it.IsAtEnd() ) 
+    {
+    it.Set( logRef - log( double(it.GetIndex()[0]+1) ) );
     ++it;
     }
   // Set the lut to member and functor
