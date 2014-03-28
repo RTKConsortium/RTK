@@ -19,13 +19,13 @@
 #define __rtkForwardDifferenceGradientImageFilter_hxx
 #include "rtkForwardDifferenceGradientImageFilter.h"
 
-#include "itkConstNeighborhoodIterator.h"
-#include "itkNeighborhoodInnerProduct.h"
-#include "itkImageRegionIterator.h"
-#include "rtkForwardDifferenceOperator.h"
-#include "itkNeighborhoodAlgorithm.h"
-#include "itkOffset.h"
-#include "itkProgressReporter.h"
+#include <itkConstNeighborhoodIterator.h>
+#include <itkNeighborhoodInnerProduct.h>
+#include <itkImageRegionIterator.h>
+#include <itkForwardDifferenceOperator.h>
+#include <itkNeighborhoodAlgorithm.h>
+#include <itkOffset.h>
+#include <itkProgressReporter.h>
 
 namespace rtk
 {
@@ -45,7 +45,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
   this->m_DimensionsProcessed = new bool[TInputImage::ImageDimension];
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
-      m_DimensionsProcessed[dim] = true;
+    m_DimensionsProcessed[dim] = true;
     }
 }
 
@@ -96,7 +96,6 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
   // Build an operator so that we can determine the kernel size
   ForwardDifferenceOperator< OperatorValueType, InputImageDimension > oper;
   oper.SetDirection(0);
-  oper.SetOrder(1);
   oper.CreateDirectional();
   SizeValueType radius = oper.GetRadius()[0];
 
@@ -177,7 +176,6 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
   for ( i = 0; i < InputImageDimension; i++ )
     {
     op[i].SetDirection(0);
-    op[i].SetOrder(1);
     op[i].CreateDirectional();
 
     // Take into account the pixel spacing if necessary
@@ -235,11 +233,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
 
     while ( !nit.IsAtEnd() )
       {
-//      for ( i = 0; i < InputImageDimension; ++i )
-        for ( i = 0; i < dimsToProcess.size(); ++i )
+      for ( i = 0; i < dimsToProcess.size(); ++i )
         {
-//            gradient[i] = SIP(x_slice[i], nit, op[i]);
-            gradient[dimsToProcess[i]] = SIP(x_slice[dimsToProcess[i]], nit, op[dimsToProcess[i]]);
+        gradient[dimsToProcess[i]] = SIP(x_slice[dimsToProcess[i]], nit, op[dimsToProcess[i]]);
         }
 
       // This method optionally performs a tansform for Physical
