@@ -100,7 +100,9 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   typename TOutputImage::RegionType outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
 
   // Compute the X coordinates of the corners of the image
-  m_InferiorCorner = inputPtr->GetOrigin()[0] +  inputPtr->GetSpacing()[0] * outputLargestPossibleRegion.GetIndex(0);
+  typename Superclass::InputImageType::PointType corner;
+  inputPtr->TransformIndexToPhysicalPoint(inputPtr->GetLargestPossibleRegion().GetIndex(), corner);
+  m_InferiorCorner = corner[0];
   m_SuperiorCorner = m_InferiorCorner;
   if (inputPtr->GetSpacing()[0]<0.)
     m_InferiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0)-1);
@@ -114,8 +116,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     double maxInfUntiltCorner = itk::NumericTraits<double>::NonpositiveMin();
     for(unsigned int i=0; i<m_Geometry->GetProjectionOffsetsX().size(); i++)
       {
-      maxInfUntiltCorner = vnl_math_max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinate(i, m_InferiorCorner) );
-      minSupUntiltCorner = vnl_math_min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinate(i, m_SuperiorCorner) );
+      maxInfUntiltCorner = vnl_math_max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner) );
+      minSupUntiltCorner = vnl_math_min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner) );
       }
     m_InferiorCorner = maxInfUntiltCorner;
     m_SuperiorCorner = minSupUntiltCorner;
@@ -210,7 +212,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     const double sx  = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
-    double sdd = m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
+    double sdd = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
     sdd = sqrt(sdd * sdd + sx * sx); // To untilted situation
     double invsdd = 0.;
     double invden = 0.;
@@ -226,7 +228,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       {
       while(!itWeights.IsAtEnd() )
         {
-        const double l = m_Geometry->ToUntiltedCoordinate(itIn.GetIndex()[2], point[0]);
+        const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
         if(l <= -1*theta)
           itWeights.Set(0.0);
         else if(l >= theta)
@@ -241,7 +243,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       {
       while(!itWeights.IsAtEnd() )
         {
-        const double l = m_Geometry->ToUntiltedCoordinate(itIn.GetIndex()[2], point[0]);
+        const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
         if(l <= -1*theta)
           itWeights.Set(2.0);
         else if(l >= theta)

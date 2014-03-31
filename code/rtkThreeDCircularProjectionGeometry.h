@@ -162,11 +162,10 @@ public:
 
   /** Changes the coordinate on the projection image to the coordinate on a
    * virtual detector that is perpendicular to the source to isocenter line and
-   * positioned at the intersection between the detector and the source to
-   * isocenter line. If SourceOffsetX is 0., simply adds the ProjectionOffsetX.
+   * positioned at the isocenter.
    * It is assumed that OutOfPlaneAngle=0 and InPlaneAngle=0.*/
-  double ToUntiltedCoordinate(const unsigned int noProj,
-                              const double tiltedCoord) const;
+  double ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
+                                         const double tiltedCoord) const;
 
 protected:
   ThreeDCircularProjectionGeometry() {};
