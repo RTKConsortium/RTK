@@ -82,10 +82,11 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
                + m_Geometry->GetProjectionOffsetsY()[k]
                - m_Geometry->GetSourceOffsetsY()[k];
     const double sdd  = m_Geometry->GetSourceToDetectorDistances()[k];
+    const double sid  = m_Geometry->GetSourceToIsocenterDistances()[k];
     const double sdd2 = sdd * sdd;
     if(sdd != 0.) // Divergent
       {
-      const double tauOverD  = m_Geometry->GetSourceOffsetsX()[k] / sdd;
+      const double tauOverD  = m_Geometry->GetSourceOffsetsX()[k] / sid;
       const double tauOverDw = m_AngularWeightsAndRampFactor[k] * tauOverD;
       const double sddw      = m_AngularWeightsAndRampFactor[k] * sdd;
       for(unsigned int j=0;
