@@ -1,3 +1,21 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 #ifndef __rtkADMMTotalVariationConeBeamReconstructionFilter_h
 #define __rtkADMMTotalVariationConeBeamReconstructionFilter_h
 
@@ -5,21 +23,13 @@
 #include <itkAddImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkTimeProbe.h>
 
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkSoftThresholdTVImageFilter.h"
-
 #include "rtkADMMTotalVariationConjugateGradientOperator.h"
-
-#include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
-#include "rtkJosephBackProjectionImageFilter.h"
-#ifdef USE_CUDA
-  #include "rtkCudaForwardProjectionImageFilter.h"
-  #include "rtkCudaBackProjectionImageFilter.h"
-#endif
-
+#include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "itkTimeProbe.h"
 
 namespace rtk
 {
@@ -57,7 +67,7 @@ namespace rtk
    * AddGradient [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
    * Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
-   * AddVolume [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+   * SubtractVolume [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * AfterConjugateGradient [label="", fixedsize="false", width=0, height=0, shape=none];
    * GradientTwo [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
@@ -80,9 +90,9 @@ namespace rtk
    * AfterZeroMultiplyGradient -> Subtract;
    * AddGradient -> Divergence;
    * Divergence -> Multiply;
-   * Multiply -> AddVolume;
-   * BackProjection -> AddVolume;
-   * AddVolume -> ConjugateGradient;
+   * Multiply -> SubtractVolume;
+   * BackProjection -> SubtractVolume;
+   * SubtractVolume -> ConjugateGradient;
    * ConjugateGradient -> AfterConjugateGradient;
    * AfterConjugateGradient -> GradientTwo;
    * GradientTwo -> Subtract;
@@ -107,7 +117,7 @@ namespace rtk
    */
 
 template< typename TOutputImage >
-class ADMMTotalVariationConeBeamReconstructionFilter : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
+class ADMMTotalVariationConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
     /** Standard class typedefs. */
@@ -130,14 +140,14 @@ public:
     typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
     typedef typename ForwardProjectionFilterType::Pointer                                 ForwardProjectionFilterPointer;
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                  BackProjectionFilterType;
-
+    typedef typename BackProjectionFilterType::Pointer                                    BackProjectionFilterPointer;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                               ConjugateGradientFilterType;
     typedef rtk::ForwardDifferenceGradientImageFilter<TOutputImage>                       ImageGradientFilterType;
     typedef rtk::BackwardDifferenceDivergenceImageFilter
         <typename ImageGradientFilterType::OutputImageType>                               ImageDivergenceFilterType;
     typedef rtk::SoftThresholdTVImageFilter
         <typename ImageGradientFilterType::OutputImageType>                               SoftThresholdTVFilterType;
-    typedef itk::AddImageFilter<TOutputImage>                                             AddVolumeFilterType;
+    typedef itk::SubtractImageFilter<TOutputImage>                                        SubtractVolumeFilterType;
     typedef itk::AddImageFilter<typename ImageGradientFilterType::OutputImageType>        AddGradientsFilterType;
     typedef itk::MultiplyImageFilter<TOutputImage>                                        MultiplyVolumeFilterType;
     typedef itk::MultiplyImageFilter<typename ImageGradientFilterType::OutputImageType>   MultiplyGradientFilterType;
@@ -145,10 +155,10 @@ public:
     typedef rtk::ADMMTotalVariationConjugateGradientOperator<TOutputImage>                CGOperatorFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
-    void ConfigureForwardProjection (int _arg);
+    void SetForwardProjectionFilter (int _arg);
 
     /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
-    void ConfigureBackProjection (int _arg);
+    void SetBackProjectionFilter (int _arg);
 
     /** Pass the geometry to all filters needing it */
     itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
@@ -179,12 +189,12 @@ protected:
     virtual void GenerateData();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter1, m_SubtractFilter2;
+    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter2, m_SubtractFilter3;
     typename MultiplyVolumeFilterType::Pointer                                  m_MultiplyFilter;
     typename MultiplyVolumeFilterType::Pointer                                  m_ZeroMultiplyVolumeFilter;
     typename MultiplyGradientFilterType::Pointer                                m_ZeroMultiplyGradientFilter;
     typename ImageGradientFilterType::Pointer                                   m_GradientFilter1, m_GradientFilter2;
-    typename AddVolumeFilterType::Pointer                                       m_AddVolumeFilter;
+    typename SubtractVolumeFilterType::Pointer                                  m_SubtractVolumeFilter;
     typename AddGradientsFilterType::Pointer                                    m_AddGradientsFilter;
     typename ImageDivergenceFilterType::Pointer                                 m_DivergenceFilter;
     typename ConjugateGradientFilterType::Pointer                               m_ConjugateGradientFilter;
