@@ -2,9 +2,9 @@ WRAP_GGO(rtkbackprojections_GGO_C rtkbackprojections.ggo)
 ADD_EXECUTABLE(rtkbackprojections rtkbackprojections.cxx ${rtkbackprojections_GGO_C})
 TARGET_LINK_LIBRARIES(rtkbackprojections RTK)
 
-IF (CUDA_FOUND)
+IF (RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtkbackprojections rtkcuda)
-ENDIF (CUDA_FOUND)
+ENDIF (RTK_USE_CUDA)
 
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)

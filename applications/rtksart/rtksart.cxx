@@ -22,7 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#if CUDA_FOUND
+#if RTK_USE_CUDA
   #include "rtkCudaSARTConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
 #endif
@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#if CUDA_FOUND
+#if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -88,7 +88,7 @@ int main(int argc, char * argv[])
     bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(bp_arg_CudaVoxelBased):
-#if CUDA_FOUND
+#if RTK_USE_CUDA
     bp = rtk::CudaBackProjectionImageFilter::New();
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -109,7 +109,7 @@ int main(int argc, char * argv[])
     sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType, OutputImageType>::New();
     break;
   case(bp_arg_Joseph):
-#if CUDA_FOUND
+#if RTK_USE_CUDA
     sart = rtk::CudaSARTConeBeamReconstructionFilter::New();
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;

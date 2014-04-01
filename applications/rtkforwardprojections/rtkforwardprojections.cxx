@@ -22,7 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkSiddonForwardProjectionImageFilter.h"
-#if CUDA_FOUND
+#if RTK_USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
 #endif
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
@@ -38,7 +38,7 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-  #if CUDA_FOUND
+  #if RTK_USE_CUDA
     typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
   #else
     typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -103,7 +103,7 @@ int main(int argc, char * argv[])
     forwardProjection = rtk::SiddonForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(method_arg_CudaRayCast):
-#if CUDA_FOUND
+#if RTK_USE_CUDA
     forwardProjection = rtk::CudaForwardProjectionImageFilter::New();
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;

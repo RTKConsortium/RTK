@@ -45,7 +45,7 @@ namespace rtk
         fw = rtk::RayCastInterpolatorForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
       break;
       case(2):
-      #if CUDA_FOUND
+      #if RTK_USE_CUDA
         fw = rtk::CudaForwardProjectionImageFilter::New();
       #else
         std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -56,7 +56,7 @@ namespace rtk
       break;
 
       default:
-        std::cerr << "Unhandled --method value." << std::endl;
+        std::cerr << "Unhandled --forward value." << std::endl;
       }
     return fw;
   }
@@ -75,7 +75,7 @@ namespace rtk
         bp = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
         break;
       case(2):
-      #if CUDA_FOUND
+      #if RTK_USE_CUDA
         bp = rtk::CudaBackProjectionImageFilter::New();
       #else
         std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -86,7 +86,7 @@ namespace rtk
         break;
 
       default:
-        std::cerr << "Unhandled --bp value." << std::endl;
+        std::cerr << "Unhandled --back value." << std::endl;
       }
     return bp;
   }

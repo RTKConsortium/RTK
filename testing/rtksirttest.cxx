@@ -200,11 +200,11 @@ int main(int, char** )
   sirt->SetNumberOfIterations( 5 );
 
   // In all cases, use the Joseph forward projector
-  sirt->ConfigureForwardProjection(0);
+  sirt->SetForwardProjectionFilter(0);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  sirt->ConfigureBackProjection( 0 );
+  sirt->SetBackProjectionFilter( 0 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sirt->Update() );
 
   CheckImageQuality<OutputImageType>(sirt->GetOutput(), dsl->GetOutput());
@@ -212,7 +212,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
 
-  sirt->ConfigureBackProjection( 1 );
+  sirt->SetBackProjectionFilter( 1 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sirt->Update() );
 
   CheckImageQuality<OutputImageType>(sirt->GetOutput(), dsl->GetOutput());
@@ -221,8 +221,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  sirt->ConfigureForwardProjection(0);
-  sirt->ConfigureBackProjection( 2 );
+  sirt->SetForwardProjectionFilter(0);
+  sirt->SetBackProjectionFilter( 2 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sirt->Update() );
 
   CheckImageQuality<OutputImageType>(sirt->GetOutput(), dsl->GetOutput());

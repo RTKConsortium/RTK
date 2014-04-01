@@ -22,7 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSIRTConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#if CUDA_FOUND
+#if RTK_USE_CUDA
   #include "rtkCudaSIRTConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
 #endif
@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#if CUDA_FOUND
+#if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -80,8 +80,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::SIRTConeBeamReconstructionFilter<OutputImageType> SIRTFilterType;
   SIRTFilterType::Pointer sirt = SIRTFilterType::New();
-  sirt->ConfigureForwardProjection(args_info.method_arg);
-  sirt->ConfigureBackProjection(args_info.bp_arg);
+  sirt->SetForwardProjectionFilter(args_info.method_arg);
+  sirt->SetBackProjectionFilter(args_info.bp_arg);
 
   sirt->SetInput( inputFilter->GetOutput() );
   sirt->SetInput(1, reader->GetOutput());

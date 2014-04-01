@@ -2,9 +2,9 @@ WRAP_GGO(rtkadmmtotalvariation_GGO_C rtkadmmtotalvariation.ggo)
 ADD_EXECUTABLE(rtkadmmtotalvariation rtkadmmtotalvariation.cxx ${rtkadmmtotalvariation_GGO_C})
 TARGET_LINK_LIBRARIES(rtkadmmtotalvariation RTK)
 
-IF (CUDA_FOUND)
+IF (RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtkadmmtotalvariation rtkcuda)
-ENDIF (CUDA_FOUND)
+ENDIF (RTK_USE_CUDA)
 
 IF (OPENCL_FOUND)
   TARGET_LINK_LIBRARIES(rtkadmmtotalvariation rtkopencl)
