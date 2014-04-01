@@ -16,16 +16,16 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSIRTConeBeamReconstructionFilter_txx
-#define __rtkSIRTConeBeamReconstructionFilter_txx
+#ifndef __rtkConjugateGradientConeBeamReconstructionFilter_txx
+#define __rtkConjugateGradientConeBeamReconstructionFilter_txx
 
-#include "rtkSIRTConeBeamReconstructionFilter.h"
+#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 
 namespace rtk
 {
 
 template< typename TOutputImage>
-SIRTConeBeamReconstructionFilter<TOutputImage>::SIRTConeBeamReconstructionFilter()
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -50,7 +50,7 @@ SIRTConeBeamReconstructionFilter<TOutputImage>::SIRTConeBeamReconstructionFilter
 
 template< typename TOutputImage>
 void
-SIRTConeBeamReconstructionFilter<TOutputImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::SetForwardProjectionFilter (int _arg)
 {
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
@@ -65,7 +65,7 @@ SIRTConeBeamReconstructionFilter<TOutputImage>
 
 template< typename TOutputImage>
 void
-SIRTConeBeamReconstructionFilter<TOutputImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::SetBackProjectionFilter (int _arg)
 {
   m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
@@ -81,7 +81,7 @@ SIRTConeBeamReconstructionFilter<TOutputImage>
 
 template< typename TOutputImage>
 void
-SIRTConeBeamReconstructionFilter<TOutputImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateInputRequestedRegion()
 {
     // Input 0 is the volume we update
@@ -102,7 +102,7 @@ SIRTConeBeamReconstructionFilter<TOutputImage>
 
 template< typename TOutputImage>
 void
-SIRTConeBeamReconstructionFilter<TOutputImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections
@@ -132,23 +132,23 @@ SIRTConeBeamReconstructionFilter<TOutputImage>
 
 template< typename TOutputImage>
 void
-SIRTConeBeamReconstructionFilter<TOutputImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateData()
 {
-  itk::TimeProbe SIRTTimeProbe;
+  itk::TimeProbe ConjugateGradientTimeProbe;
 
   if(m_MeasureExecutionTimes)
     {
-    std::cout << "Starting SIRT" << std::endl;
-    SIRTTimeProbe.Start();
+    std::cout << "Starting ConjugateGradient" << std::endl;
+    ConjugateGradientTimeProbe.Start();
     }
 
   m_ConjugateGradientFilter->Update();
 
   if(m_MeasureExecutionTimes)
     {
-    SIRTTimeProbe.Stop();
-    std::cout << "SIRT took " << SIRTTimeProbe.GetTotal() << ' ' << SIRTTimeProbe.GetUnit() << std::endl;
+    ConjugateGradientTimeProbe.Stop();
+    std::cout << "ConjugateGradient took " << ConjugateGradientTimeProbe.GetTotal() << ' ' << ConjugateGradientTimeProbe.GetUnit() << std::endl;
     }
 
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );

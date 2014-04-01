@@ -16,34 +16,34 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSIRTConeBeamReconstructionFilter_h
-#define __rtkSIRTConeBeamReconstructionFilter_h
+#ifndef __rtkConjugateGradientConeBeamReconstructionFilter_h
+#define __rtkConjugateGradientConeBeamReconstructionFilter_h
 
 #include <itkMultiplyImageFilter.h>
 #include <itkTimeProbe.h>
 
 #include "rtkConjugateGradientImageFilter.h"
-#include "rtkSIRTConjugateGradientOperator.h"
+#include "rtkReconstructionConjugateGradientOperator.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
 {
-  /** \class SIRTConeBeamReconstructionFilter
-   * \brief Implements SIRT
+  /** \class ConjugateGradientConeBeamReconstructionFilter
+   * \brief Implements ConjugateGradient
    *
-   * This filter implements the SIRT method.
-   * SIRT attempts to find the f that minimizes || Rf -p ||_2^2, with R the
+   * This filter implements the ConjugateGradient method.
+   * ConjugateGradient attempts to find the f that minimizes || Rf -p ||_2^2, with R the
    * forward projection operator and p the measured projections.
    * In this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
-   * at a time), and SIRT a steepest descent or conjugate gradient method
+   * at a time), and ConjugateGradient a steepest descent or conjugate gradient method
    * (projects and back projects all projections together).
    *
    * \dot
-   * digraph SIRTConeBeamReconstructionFilter {
+   * digraph ConjugateGradientConeBeamReconstructionFilter {
    *
    * Input0 [ label="Input 0 (Volume)"];
    * Input0 [shape=Mdiamond];
@@ -76,11 +76,11 @@ namespace rtk
    */
 
 template< typename TOutputImage >
-class SIRTConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
+class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
     /** Standard class typedefs. */
-    typedef SIRTConeBeamReconstructionFilter             Self;
+    typedef ConjugateGradientConeBeamReconstructionFilter             Self;
     typedef itk::ImageToImageFilter<TOutputImage, TOutputImage> Superclass;
     typedef itk::SmartPointer< Self >        Pointer;
 
@@ -88,7 +88,7 @@ public:
     itkNewMacro(Self)
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(SIRTConeBeamReconstructionFilter, itk::ImageToImageFilter)
+    itkTypeMacro(ConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter)
 
     /** The 3D image to be updated */
     void SetInputVolume(const TOutputImage* Volume);
@@ -101,7 +101,7 @@ public:
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                  ConjugateGradientFilterType;
     typedef itk::MultiplyImageFilter<TOutputImage>                           MultiplyVolumeFilterType;
-    typedef rtk::SIRTConjugateGradientOperator<TOutputImage>                 CGOperatorFilterType;
+    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>                 CGOperatorFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -119,8 +119,8 @@ public:
     itkGetMacro(MeasureExecutionTimes, bool)
 
 protected:
-    SIRTConeBeamReconstructionFilter();
-    ~SIRTConeBeamReconstructionFilter(){}
+    ConjugateGradientConeBeamReconstructionFilter();
+    ~ConjugateGradientConeBeamReconstructionFilter(){}
 
     /** Does the real work. */
     virtual void GenerateData();
@@ -143,7 +143,7 @@ protected:
     void GenerateOutputInformation();
 
 private:
-    SIRTConeBeamReconstructionFilter(const Self &); //purposely not implemented
+    ConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
     int m_NumberOfIterations;
@@ -157,7 +157,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSIRTConeBeamReconstructionFilter.txx"
+#include "rtkConjugateGradientConeBeamReconstructionFilter.txx"
 #endif
 
 #endif

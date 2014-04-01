@@ -16,14 +16,14 @@
  *
  *=========================================================================*/
 
-#include "rtksirt_ggo.h"
+#include "rtkconjugategradient_ggo.h"
 #include "rtkGgoFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkSIRTConeBeamReconstructionFilter.h"
+#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #if RTK_USE_CUDA
-  #include "rtkCudaSIRTConeBeamReconstructionFilter.h"
+//  #include "rtkCudaConjugateGradientConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
 #endif
 
@@ -31,21 +31,22 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtksirt, args_info);
+  GGO(rtkconjugategradient, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
+  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
 #if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef CPUOutputImageType                           OutputImageType;
 #endif
 
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtksirt>(reader, args_info);
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkconjugategradient>(reader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -73,20 +74,20 @@ int main(int argc, char * argv[])
     // Create new empty volume
     typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtksirt>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkconjugategradient>(constantImageSource, args_info);
     inputFilter = constantImageSource;
     }
 
   // Set the forward and back projection filters to be used
-  typedef rtk::SIRTConeBeamReconstructionFilter<OutputImageType> SIRTFilterType;
-  SIRTFilterType::Pointer sirt = SIRTFilterType::New();
-  sirt->SetForwardProjectionFilter(args_info.method_arg);
-  sirt->SetBackProjectionFilter(args_info.bp_arg);
+  typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
+  ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
+  conjugategradient->SetForwardProjectionFilter(args_info.method_arg);
+  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
 
-  sirt->SetInput( inputFilter->GetOutput() );
-  sirt->SetInput(1, reader->GetOutput());
-  sirt->SetGeometry( geometryReader->GetOutputObject() );
-  sirt->SetNumberOfIterations( args_info.niterations_arg );
+  conjugategradient->SetInput( inputFilter->GetOutput() );
+  conjugategradient->SetInput(1, reader->GetOutput());
+  conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
+  conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
@@ -95,11 +96,11 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( sirt->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
 
   if(args_info.time_flag)
     {
-//    sirt->PrintTiming(std::cout);
+//    conjugategradient->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
@@ -108,7 +109,7 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileWriter< OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( sirt->GetOutput() );
+  writer->SetInput( conjugategradient->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;

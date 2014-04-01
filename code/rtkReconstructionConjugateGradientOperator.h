@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSIRTConjugateGradientOperator_h
-#define __rtkSIRTConjugateGradientOperator_h
+#ifndef __rtkReconstructionConjugateGradientOperator_h
+#define __rtkReconstructionConjugateGradientOperator_h
 
 #include <itkMultiplyImageFilter.h>
 
@@ -30,23 +30,23 @@
 namespace rtk
 {
 
-  /** \class SIRTConjugateGradientOperator
-   * \brief Implements the operator A used in SIRT
+  /** \class ReconstructionConjugateGradientOperator
+   * \brief Implements the operator A used in conjugate gradient reconstruction
    *
-   * This filter implements the operator A used in the SIRT method.
-   * SIRT attempts to find the f that minimizes || Rf -p ||_2^2, with R the
+   * This filter implements the operator A used in the conjugate gradient reconstruction method,
+   * which attempts to find the f that minimizes || Rf -p ||_2^2, with R the
    * forward projection operator and p the measured projections.
    * In this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
-   * at a time), and SIRT a steepest descent or conjugate gradient method
-   * (projects and back projects all projections together).
+   * at a time), SIRT a steepest descent method, and here a conjugate gradient method is used
+   * (both project and back project all projections together).
    *
    * This filter takes in input f and outputs R_t R f
    *
    * \dot
-   * digraph SIRTConjugateGradientOperator {
+   * digraph ReconstructionConjugateGradientOperator {
    *
    * Input0 [ label="Input 0 (Volume)"];
    * Input0 [shape=Mdiamond];
@@ -74,7 +74,7 @@ namespace rtk
    * }
    * \enddot
    *
-   * \test rtksirttest.cxx
+   * \test rtkconjugategradienttest.cxx
    *
    * \author Cyril Mory
    *
@@ -82,11 +82,11 @@ namespace rtk
    */
 
 template< typename TOutputImage >
-class SIRTConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
+class ReconstructionConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
     /** Standard class typedefs. */
-    typedef SIRTConjugateGradientOperator             Self;
+    typedef ReconstructionConjugateGradientOperator             Self;
     typedef ConjugateGradientOperator< TOutputImage > Superclass;
     typedef itk::SmartPointer< Self >        Pointer;
 
@@ -94,7 +94,7 @@ public:
     itkNewMacro(Self)
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(rtkSIRTConjugateGradientOperator, ConjugateGradientOperator)
+    itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator)
 
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >    BackProjectionFilterType;
     typedef typename BackProjectionFilterType::Pointer                      BackProjectionFilterPointer;
@@ -114,8 +114,8 @@ public:
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
 
 protected:
-    SIRTConjugateGradientOperator();
-    ~SIRTConjugateGradientOperator(){}
+    ReconstructionConjugateGradientOperator();
+    ~ReconstructionConjugateGradientOperator(){}
 
     /** Does the real work. */
     virtual void GenerateData();
@@ -139,7 +139,7 @@ protected:
     void GenerateOutputInformation();
 
 private:
-    SIRTConjugateGradientOperator(const Self &); //purposely not implemented
+    ReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
 };
@@ -147,7 +147,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSIRTConjugateGradientOperator.txx"
+#include "rtkReconstructionConjugateGradientOperator.txx"
 #endif
 
 #endif

@@ -35,7 +35,14 @@ int main(int argc, char * argv[])
   GGO(rtkadmmtotalvariation, args_info);
 
   typedef float OutputPixelType;
-  typedef itk::Image< OutputPixelType, 3 > OutputImageType;
+  const unsigned int Dimension = 3;
+
+  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
+#if RTK_USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
+  typedef CPUOutputImageType                           OutputImageType;
+#endif
 
   //////////////////////////////////////////////////////////////////////////////////////////
   // Read all the inputs
