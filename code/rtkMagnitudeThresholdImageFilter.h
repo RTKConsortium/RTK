@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright RTK Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,17 +15,12 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+
 #ifndef __rtkMagnitudeThresholdImageFilter_h
 #define __rtkMagnitudeThresholdImageFilter_h
 
-//#include "itkNeighborhoodIterator.h"
-#include "itkInPlaceImageFilter.h"
-#include "itkImage.h"
-#include "itkVector.h"
-//#include "vnl/vnl_matrix.h"
-//#include "vnl/vnl_vector_fixed.h"
-//#include "vnl/algo/vnl_symmetric_eigensystem.h"
-//#include "vnl/vnl_math.h"
+#include <itkInPlaceImageFilter.h>
+#include <itkVector.h>
 
 namespace rtk
 {

@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright RTK Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+
 #ifndef __rtkSoftThresholdTVImageFilter_txx
 #define __rtkSoftThresholdTVImageFilter_txx
 
 #include "rtkSoftThresholdTVImageFilter.h"
 
-#include "itkImageRegionIterator.h"
-
-#include "itkImageRegionConstIterator.h"
-
-#include "itkProgressReporter.h"
-#include "itkVectorCastImageFilter.h"
+#include <itkImageRegionIterator.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkProgressReporter.h>
+#include <itkVectorCastImageFilter.h>
 
 #include "vnl/vnl_math.h"
 

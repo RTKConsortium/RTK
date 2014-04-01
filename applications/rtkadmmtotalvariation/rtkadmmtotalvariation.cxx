@@ -1,3 +1,21 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 #include "rtkadmmtotalvariation_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
@@ -89,8 +107,8 @@ int main(int argc, char * argv[])
   ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
 
   // Set the forward and back projection filters to be used
-  admmFilter->ConfigureForwardProjection(args_info.method_arg);
-  admmFilter->ConfigureBackProjection(args_info.bp_arg);
+  admmFilter->SetForwardProjectionFilter(args_info.forward_arg);
+  admmFilter->SetBackProjectionFilter(args_info.back_arg);
 
   // Set the geometry and interpolation weights
   admmFilter->SetGeometry(geometryReader->GetOutputObject());

@@ -203,11 +203,11 @@ int main(int, char** )
   admmtotalvariation->SetCG_iterations( 3 );
 
   // In all cases, use the Joseph forward projector
-  admmtotalvariation->ConfigureForwardProjection(0);
+  admmtotalvariation->SetForwardProjectionFilter(0);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  admmtotalvariation->ConfigureBackProjection( 0 );
+  admmtotalvariation->SetBackProjectionFilter( 0 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput());
@@ -215,7 +215,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
 
-  admmtotalvariation->ConfigureBackProjection( 1 );
+  admmtotalvariation->SetBackProjectionFilter( 1 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput());
@@ -224,8 +224,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  admmtotalvariation->ConfigureForwardProjection(0);
-  admmtotalvariation->ConfigureBackProjection( 2 );
+  admmtotalvariation->SetForwardProjectionFilter( 2 );
+  admmtotalvariation->SetBackProjectionFilter( 2 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput());

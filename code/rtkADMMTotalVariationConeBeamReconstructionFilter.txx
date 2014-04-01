@@ -1,3 +1,21 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 #ifndef __rtkADMMTotalVariationConeBeamReconstructionFilter_txx
 #define __rtkADMMTotalVariationConeBeamReconstructionFilter_txx
 
@@ -25,12 +43,12 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariation
   // Create the filters
   m_ZeroMultiplyVolumeFilter = MultiplyVolumeFilterType::New();
   m_ZeroMultiplyGradientFilter = MultiplyGradientFilterType::New();
-  m_SubtractFilter1 = SubtractGradientsFilterType::New();
   m_SubtractFilter2 = SubtractGradientsFilterType::New();
+  m_SubtractFilter3 = SubtractGradientsFilterType::New();
   m_MultiplyFilter = MultiplyVolumeFilterType::New();
   m_GradientFilter1 = ImageGradientFilterType::New();
   m_GradientFilter2 = ImageGradientFilterType::New();
-  m_AddVolumeFilter = AddVolumeFilterType::New();
+  m_SubtractVolumeFilter = SubtractVolumeFilterType::New();
   m_AddGradientsFilter = AddGradientsFilterType::New();
   m_DivergenceFilter = ImageDivergenceFilterType::New();
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
@@ -44,16 +62,16 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariation
   m_AddGradientsFilter->SetInput2(m_GradientFilter1->GetOutput());
   m_DivergenceFilter->SetInput(m_AddGradientsFilter->GetOutput());
   m_MultiplyFilter->SetInput1( m_DivergenceFilter->GetOutput() );
-  m_AddVolumeFilter->SetInput2(m_MultiplyFilter->GetOutput());
-  m_ConjugateGradientFilter->SetB(m_AddVolumeFilter->GetOutput());
+  m_SubtractVolumeFilter->SetInput2(m_MultiplyFilter->GetOutput());
+  m_ConjugateGradientFilter->SetB(m_SubtractVolumeFilter->GetOutput());
   m_ConjugateGradientFilter->SetNumberOfIterations(m_CG_iterations);
   m_ConjugateGradientFilter->SetMeasureExecutionTimes(m_MeasureExecutionTimes);
   m_GradientFilter2->SetInput(m_ConjugateGradientFilter->GetOutput());
-  m_SubtractFilter1->SetInput1(m_GradientFilter2->GetOutput());
-  m_SubtractFilter1->SetInput2(m_ZeroMultiplyGradientFilter->GetOutput());
-  m_SoftThresholdFilter->SetInput(m_SubtractFilter1->GetOutput());
-  m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
-  m_SubtractFilter2->SetInput2(m_SubtractFilter1->GetOutput());
+  m_SubtractFilter2->SetInput1(m_GradientFilter2->GetOutput());
+  m_SubtractFilter2->SetInput2(m_ZeroMultiplyGradientFilter->GetOutput());
+  m_SoftThresholdFilter->SetInput(m_SubtractFilter2->GetOutput());
+  m_SubtractFilter3->SetInput1(m_SoftThresholdFilter->GetOutput());
+  m_SubtractFilter3->SetInput2(m_SubtractFilter2->GetOutput());
 
   // Set permanent parameters
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -66,38 +84,20 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariation
   m_AddGradientsFilter->ReleaseDataFlagOn();
   m_DivergenceFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
-  m_AddVolumeFilter->ReleaseDataFlagOn();
+  m_SubtractVolumeFilter->ReleaseDataFlagOn();
   m_ConjugateGradientFilter->ReleaseDataFlagOff(); // Output is f_k+1
   m_GradientFilter2->ReleaseDataFlagOn();
-  m_SubtractFilter1->ReleaseDataFlagOff(); // Output used in two filters
+  m_SubtractFilter2->ReleaseDataFlagOff(); // Output used in two filters
   m_SoftThresholdFilter->ReleaseDataFlagOff(); // Output is g_k+1
-  m_SubtractFilter2->ReleaseDataFlagOff(); //Output is d_k+1
+  m_SubtractFilter3->ReleaseDataFlagOff(); //Output is d_k+1
 }
 
 template< typename TOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
-::ConfigureForwardProjection (int _arg)
+::SetForwardProjectionFilter (int _arg)
 {
-  switch(_arg)
-    {
-    case(0):
-      m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
-    break;
-    case(1):
-    #if CUDA_FOUND
-      m_ForwardProjectionFilter = rtk::CudaForwardProjectionImageFilter::New();
-    #else
-      std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    #endif
-    break;
-    case(2):
-      m_ForwardProjectionFilter = rtk::RayCastInterpolatorForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
-    break;
-
-    default:
-      std::cerr << "Unhandled --method value." << std::endl;
-    }
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
   m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
 
   if (m_CurrentForwardProjectionConfiguration != _arg)
@@ -110,30 +110,10 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
 template< typename TOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
-::ConfigureBackProjection (int _arg)
+::SetBackProjectionFilter (int _arg)
 {
-  switch(_arg)
-    {
-    case(0):
-      m_BackProjectionFilterForConjugateGradient  = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      m_BackProjectionFilter = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      break;
-    case(1):
-      m_BackProjectionFilterForConjugateGradient = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      m_BackProjectionFilter = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      break;
-    case(2):
-    #if CUDA_FOUND
-      m_BackProjectionFilterForConjugateGradient = rtk::CudaBackProjectionImageFilter::New();
-      m_BackProjectionFilter = rtk::CudaBackProjectionImageFilter::New();
-    #else
-      std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    #endif
-    break;
-
-    default:
-      std::cerr << "Unhandled --bp value." << std::endl;
-    }
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
+  m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
   m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
 
   if (m_CurrentBackProjectionConfiguration != _arg)
@@ -192,7 +172,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
   m_BackProjectionFilter->SetInput(1, this->GetInput(1));
-  m_AddVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+  m_SubtractVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
 
   // For the same reason, set geometry now
   m_CGOperator->SetGeometry(this->m_Geometry);
@@ -202,10 +182,10 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);
 
   // Have the last filter calculate its output information
-  m_SubtractFilter2->UpdateOutputInformation();
+  m_SubtractFilter3->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_SubtractFilter2->GetOutput() );
+  this->GetOutput()->CopyInformation( m_SubtractFilter3->GetOutput() );
 }
 
 template< typename TOutputImage>
@@ -251,18 +231,18 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
       g_k_plus_one->DisconnectPipeline();
       m_AddGradientsFilter->SetInput2(g_k_plus_one);
 
-      typename ImageGradientFilterType::OutputImageType::Pointer d_k_plus_one = m_SubtractFilter2->GetOutput();
+      typename ImageGradientFilterType::OutputImageType::Pointer d_k_plus_one = m_SubtractFilter3->GetOutput();
       d_k_plus_one->DisconnectPipeline();
       m_AddGradientsFilter->SetInput1(d_k_plus_one);
-      m_SubtractFilter1->SetInput2(d_k_plus_one);
+      m_SubtractFilter2->SetInput2(d_k_plus_one);
 
       // Recreate the links destroyed by DisconnectPipeline
       m_GradientFilter2->SetInput(m_ConjugateGradientFilter->GetOutput());
-      m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
+      m_SubtractFilter3->SetInput1(m_SoftThresholdFilter->GetOutput());
       }
 
     std::cout << "ADMM iteration " << iter << std::endl;
-    m_SubtractFilter2->Update();
+    m_SubtractFilter3->Update();
 
     if(m_MeasureExecutionTimes)
       {
