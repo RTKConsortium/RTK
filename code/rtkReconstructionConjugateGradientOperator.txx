@@ -16,16 +16,16 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSIRTConjugateGradientOperator_txx
-#define __rtkSIRTConjugateGradientOperator_txx
+#ifndef __rtkReconstructionConjugateGradientOperator_txx
+#define __rtkReconstructionConjugateGradientOperator_txx
 
-#include "rtkSIRTConjugateGradientOperator.h"
+#include "rtkReconstructionConjugateGradientOperator.h"
 
 namespace rtk
 {
 
 template< typename TOutputImage>
-SIRTConjugateGradientOperator<TOutputImage>::SIRTConjugateGradientOperator()
+ReconstructionConjugateGradientOperator<TOutputImage>::ReconstructionConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
   m_MultiplyFilter = MultiplyFilterType::New();
@@ -44,7 +44,7 @@ SIRTConjugateGradientOperator<TOutputImage>::SIRTConjugateGradientOperator()
 
 template< typename TOutputImage >
 void
-SIRTConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage>
 ::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
 {
   m_BackProjectionFilter = _arg;
@@ -52,7 +52,7 @@ SIRTConjugateGradientOperator<TOutputImage>
 
 template< typename TOutputImage >
 void
-SIRTConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
@@ -61,7 +61,7 @@ SIRTConjugateGradientOperator<TOutputImage>
 
 template< typename TOutputImage >
 void
-SIRTConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage>
 ::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
 {
   m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
@@ -70,7 +70,7 @@ SIRTConjugateGradientOperator<TOutputImage>
 
 template< typename TOutputImage >
 void
-SIRTConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume in which we backproject
@@ -88,7 +88,7 @@ SIRTConjugateGradientOperator<TOutputImage>
 
 template< typename TOutputImage >
 void
-SIRTConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections, and connections with
@@ -114,7 +114,7 @@ SIRTConjugateGradientOperator<TOutputImage>
 }
 
 template< typename TOutputImage >
-void SIRTConjugateGradientOperator<TOutputImage>::GenerateData()
+void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
 {
   // Execute Pipeline
   m_BackProjectionFilter->Update();

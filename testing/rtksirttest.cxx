@@ -8,10 +8,10 @@
 
 #ifdef USE_CUDA
   #include "rtkCudaBackProjectionImageFilter.h"
-//  #include "rtkCudaSIRTConeBeamReconstructionFilter.h"
+//  #include "rtkCudaConjugateGradientConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
 #else
-  #include "rtkSIRTConeBeamReconstructionFilter.h"
+  #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #endif
 
 template<class TImage>
@@ -72,12 +72,12 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 #endif
 
 /**
- * \file rtksirttest.cxx
+ * \file rtkconjugategradienttest.cxx
  *
- * \brief Functional test for SIRT reconstruction
+ * \brief Functional test for ConjugateGradient reconstruction
  *
  * This test generates the projections of an ellipsoid and reconstructs the CT
- * image using the SIRT algorithm with different backprojectors (Voxel-Based,
+ * image using the ConjugateGradient algorithm with different backprojectors (Voxel-Based,
  * Joseph). The generated results are compared to the
  * expected results (analytical calculation).
  *
@@ -187,45 +187,45 @@ int main(int, char** )
   dsl->SetInput( tomographySource->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
-  // SIRT reconstruction filtering
+  // ConjugateGradient reconstruction filtering
 //#ifdef USE_CUDA
-//  typedef rtk::CudaSIRTConeBeamReconstructionFilter                SIRTType;
+//  typedef rtk::CudaConjugateGradientConeBeamReconstructionFilter                ConjugateGradientType;
 //#else
-  typedef rtk::SIRTConeBeamReconstructionFilter< OutputImageType > SIRTType;
+  typedef rtk::ConjugateGradientConeBeamReconstructionFilter< OutputImageType > ConjugateGradientType;
 //#endif
-  SIRTType::Pointer sirt = SIRTType::New();
-  sirt->SetInput( tomographySource->GetOutput() );
-  sirt->SetInput(1, rei->GetOutput());
-  sirt->SetGeometry( geometry );
-  sirt->SetNumberOfIterations( 5 );
+  ConjugateGradientType::Pointer conjugategradient = ConjugateGradientType::New();
+  conjugategradient->SetInput( tomographySource->GetOutput() );
+  conjugategradient->SetInput(1, rei->GetOutput());
+  conjugategradient->SetGeometry( geometry );
+  conjugategradient->SetNumberOfIterations( 5 );
 
   // In all cases, use the Joseph forward projector
-  sirt->SetForwardProjectionFilter(0);
+  conjugategradient->SetForwardProjectionFilter(0);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  sirt->SetBackProjectionFilter( 0 );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( sirt->Update() );
+  conjugategradient->SetBackProjectionFilter( 0 );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
-  CheckImageQuality<OutputImageType>(sirt->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
 
-  sirt->SetBackProjectionFilter( 1 );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( sirt->Update() );
+  conjugategradient->SetBackProjectionFilter( 1 );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
-  CheckImageQuality<OutputImageType>(sirt->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  sirt->SetForwardProjectionFilter(0);
-  sirt->SetBackProjectionFilter( 2 );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( sirt->Update() );
+  conjugategradient->SetForwardProjectionFilter(0);
+  conjugategradient->SetBackProjectionFilter( 2 );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
-  CheckImageQuality<OutputImageType>(sirt->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
