@@ -23,14 +23,14 @@
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkSiddonForwardProjectionImageFilter.h"
-#ifdef USE_CUDA
+#if RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
 #endif
 
 // Back projection filters
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#ifdef USE_CUDA
+#if RTK_USE_CUDA
   #include "rtkCudaBackProjectionImageFilter.h"
 #endif
 
