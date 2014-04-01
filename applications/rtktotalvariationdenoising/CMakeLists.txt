@@ -2,9 +2,9 @@ WRAP_GGO(rtktotalvariationdenoising_GGO_C rtktotalvariationdenoising.ggo)
 ADD_EXECUTABLE(rtktotalvariationdenoising rtktotalvariationdenoising.cxx ${rtktotalvariationdenoising_GGO_C})
 TARGET_LINK_LIBRARIES(rtktotalvariationdenoising RTK)
 
-IF (CUDA_FOUND)
+IF (RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtktotalvariationdenoising rtkcuda)
-ENDIF (CUDA_FOUND)
+ENDIF (RTK_USE_CUDA)
 
 IF (OPENCL_FOUND)
   TARGET_LINK_LIBRARIES(rtktotalvariationdenoising rtkopencl)

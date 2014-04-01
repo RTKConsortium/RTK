@@ -50,7 +50,7 @@ if(BUILD_TESTING)
   add_test(rtkappprojectshepploganphantomtest ${EXECUTABLE_OUTPUT_PATH}/rtkprojectshepploganphantom  -o sheppy.mha -g geo --phantomscale 40 --dimension 128)
   set_tests_properties(rtkappprojectshepploganphantomtest PROPERTIES DEPENDS apprtksimulatedgeometrytest)
  
-  if(CUDA_FOUND AND CUDA_HAVE_GPU)
+  if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
     add_test(rtkappfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdk -g geo -p . -r sheppy.mha -o fdk_gpu.mha --hardware cuda)
   else()
     add_test(rtkappfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdk -g geo -p . -r sheppy.mha -o fdk_gpu.mha)

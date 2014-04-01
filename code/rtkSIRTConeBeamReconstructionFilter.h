@@ -20,20 +20,12 @@
 #define __rtkSIRTConeBeamReconstructionFilter_h
 
 #include <itkMultiplyImageFilter.h>
+#include <itkTimeProbe.h>
 
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkSIRTConjugateGradientOperator.h"
-
-#include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
-#include "rtkJosephBackProjectionImageFilter.h"
-#include "rtkJosephForwardProjectionImageFilter.h"
-#ifdef USE_CUDA
-  #include "rtkCudaForwardProjectionImageFilter.h"
-  #include "rtkCudaBackProjectionImageFilter.h"
-#endif
-
+#include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "itkTimeProbe.h"
 
 namespace rtk
 {
@@ -84,7 +76,7 @@ namespace rtk
    */
 
 template< typename TOutputImage >
-class SIRTConeBeamReconstructionFilter : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
+class SIRTConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
     /** Standard class typedefs. */
@@ -112,10 +104,10 @@ public:
     typedef rtk::SIRTConjugateGradientOperator<TOutputImage>                 CGOperatorFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
-    void ConfigureForwardProjection (int _arg);
+    void SetForwardProjectionFilter (int _arg);
 
     /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
-    void ConfigureBackProjection (int _arg);
+    void SetBackProjectionFilter (int _arg);
 
     /** Pass the geometry to all filters needing it */
     itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)

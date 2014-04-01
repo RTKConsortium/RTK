@@ -24,7 +24,7 @@
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#if CUDA_FOUND
+#if RTK_USE_CUDA
 #  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
 #endif
@@ -40,7 +40,7 @@ int main(int argc, char * argv[])
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
-#if CUDA_FOUND
+#if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -112,7 +112,7 @@ int main(int argc, char * argv[])
       bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
     case(method_arg_CudaFDKBackProjection):
-#if CUDA_FOUND
+#if RTK_USE_CUDA
       bp = rtk::CudaFDKBackProjectionImageFilter::New();
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -120,7 +120,7 @@ int main(int argc, char * argv[])
 #endif
       break;
     case(method_arg_CudaBackProjection):
-#if CUDA_FOUND
+#if RTK_USE_CUDA
       bp = rtk::CudaBackProjectionImageFilter::New();
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;

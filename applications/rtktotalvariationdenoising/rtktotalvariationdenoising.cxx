@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
   const unsigned int Dimension = 3;
 
   typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
-#if CUDA_FOUND
+#if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef CPUOutputImageType                           OutputImageType;

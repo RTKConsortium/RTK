@@ -51,27 +51,9 @@ SIRTConeBeamReconstructionFilter<TOutputImage>::SIRTConeBeamReconstructionFilter
 template< typename TOutputImage>
 void
 SIRTConeBeamReconstructionFilter<TOutputImage>
-::ConfigureForwardProjection (int _arg)
+::SetForwardProjectionFilter (int _arg)
 {
-  switch(_arg)
-    {
-    case(0):
-      m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
-    break;
-    case(1):
-    #if CUDA_FOUND
-      m_ForwardProjectionFilter = rtk::CudaForwardProjectionImageFilter::New();
-    #else
-      std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    #endif
-    break;
-    case(2):
-      m_ForwardProjectionFilter = rtk::RayCastInterpolatorForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
-    break;
-
-    default:
-      std::cerr << "Unhandled --method value." << std::endl;
-    }
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
   m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
 
   if (m_CurrentForwardProjectionConfiguration != _arg)
@@ -84,30 +66,10 @@ SIRTConeBeamReconstructionFilter<TOutputImage>
 template< typename TOutputImage>
 void
 SIRTConeBeamReconstructionFilter<TOutputImage>
-::ConfigureBackProjection (int _arg)
+::SetBackProjectionFilter (int _arg)
 {
-  switch(_arg)
-    {
-    case(0):
-      m_BackProjectionFilterForConjugateGradient  = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      m_BackProjectionFilter = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      break;
-    case(1):
-      m_BackProjectionFilterForConjugateGradient = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      m_BackProjectionFilter = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      break;
-    case(2):
-    #if CUDA_FOUND
-      m_BackProjectionFilterForConjugateGradient = rtk::CudaBackProjectionImageFilter::New();
-      m_BackProjectionFilter = rtk::CudaBackProjectionImageFilter::New();
-    #else
-      std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    #endif
-    break;
-
-    default:
-      std::cerr << "Unhandled --bp value." << std::endl;
-    }
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
+  m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
   m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
 
   if (m_CurrentBackProjectionConfiguration != _arg)
