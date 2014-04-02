@@ -24,8 +24,9 @@
 namespace rtk
 {
 
-template< typename TOutputImage>
-ADMMTotalVariationConjugateGradientOperator<TOutputImage>::ADMMTotalVariationConjugateGradientOperator()
+template< typename TOutputImage, typename TGradientOutputImage> 
+ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
+::ADMMTotalVariationConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
   this->m_Beta = 0;
@@ -54,35 +55,35 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage>::ADMMTotalVariationCon
   m_SubtractFilter->ReleaseDataFlagOff();
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConjugateGradientOperator<TOutputImage>
+ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
 {
   m_BackProjectionFilter = _arg;
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConjugateGradientOperator<TOutputImage>
+ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
 }
 
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConjugateGradientOperator<TOutputImage>
+ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
 {
   m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
   m_ForwardProjectionFilter->SetGeometry(_arg);
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConjugateGradientOperator<TOutputImage>
+ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume in which we backproject
@@ -98,9 +99,9 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage>
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConjugateGradientOperator<TOutputImage>
+ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections, and connections with
@@ -130,8 +131,10 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage>
   this->GetOutput()->CopyInformation( m_SubtractFilter->GetOutput() );
 }
 
-template< typename TOutputImage >
-void ADMMTotalVariationConjugateGradientOperator<TOutputImage>::GenerateData()
+template< typename TOutputImage, typename TGradientOutputImage> 
+void 
+ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
+::GenerateData()
 {
     // Execute Pipeline
     m_SubtractFilter->Update();

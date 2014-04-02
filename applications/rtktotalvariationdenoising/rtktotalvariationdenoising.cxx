@@ -23,6 +23,9 @@
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
+#if RTK_USE_CUDA
+#include <itkCudaImage.h>
+#endif
 
 int main(int argc, char * argv[])
 {
@@ -31,20 +34,24 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
 #if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage< itk::CovariantVector 
+      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #else
-  typedef CPUOutputImageType                           OutputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+  typedef itk::Image< itk::CovariantVector 
+      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #endif
-
+  
   // Read input
-  typedef itk::ImageFileReader<CPUOutputImageType> ReaderType;
+  typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
 
   // Apply total variation denoising
-  typedef rtk::TotalVariationDenoisingBPDQImageFilter<OutputImageType> TVDenoisingFilterType;
+  typedef rtk::TotalVariationDenoisingBPDQImageFilter
+      <OutputImageType, GradientOutputImageType> TVDenoisingFilterType;
   TVDenoisingFilterType::Pointer tv = TVDenoisingFilterType::New();
   tv->SetInput(reader->GetOutput());
   tv->SetLambda(args_info.lambda_arg);
@@ -61,7 +68,7 @@ int main(int argc, char * argv[])
   tv->SetDimensionsProcessed(dimsProcessed);
 
   // Write
-  typedef itk::ImageFileWriter<CPUOutputImageType> WriterType;
+  typedef itk::ImageFileWriter<OutputImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput(tv->GetOutput());

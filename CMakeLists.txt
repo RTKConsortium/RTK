@@ -166,9 +166,6 @@ IF(RTK_USE_CUDA)
   INCLUDE_DIRECTORIES(utilities/ITKCudaCommon/include)
 ENDIF(RTK_USE_CUDA)
 
-# Should RTK be compiled with CUDA ?
-SET(RTK_USE_CUDA RTK_USE_CUDA CACHE BOOL "Compile the CUDA parts in RTK ?")
-
 ADD_SUBDIRECTORY(code)
 
 #=========================================================

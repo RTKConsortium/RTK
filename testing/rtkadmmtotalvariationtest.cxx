@@ -7,12 +7,9 @@
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef USE_CUDA
-  #include "rtkCudaBackProjectionImageFilter.h"
-//  #include "rtkCudaADMMTotalVariationConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
-#else
-  #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 #endif
+#include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
@@ -86,13 +83,17 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 
 int main(int, char** )
 {
+  typedef float OutputPixelType;
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
 
-#ifdef USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage< itk::CovariantVector 
+      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+  typedef itk::Image< itk::CovariantVector 
+      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -188,11 +189,8 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // ADMMTotalVariation reconstruction filtering
-//#ifdef USE_CUDA
-//  typedef rtk::CudaADMMTotalVariationConeBeamReconstructionFilter                ADMMTotalVariationType;
-//#else
-  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter< OutputImageType > ADMMTotalVariationType;
-//#endif
+  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter
+    <OutputImageType, GradientOutputImageType>                ADMMTotalVariationType;
   ADMMTotalVariationType::Pointer admmtotalvariation = ADMMTotalVariationType::New();
   admmtotalvariation->SetInput( tomographySource->GetOutput() );
   admmtotalvariation->SetInput(1, rei->GetOutput());

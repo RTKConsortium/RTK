@@ -49,12 +49,11 @@ using namespace itk;
 
 template< typename TInputImage,
           typename TOperatorValueType = float,
-          typename TOutputValueType = float,
-          typename TOutputImageType = Image< CovariantVector< TOutputValueType,
-                                                           TInputImage::ImageDimension >,
-                                          TInputImage::ImageDimension > >
+          typename TOuputValue = float,
+          typename TOuputImage = Image< CovariantVector
+        < TOuputValue, TInputImage::ImageDimension >, TInputImage::ImageDimension > >
 class ForwardDifferenceGradientImageFilter:
-  public ImageToImageFilter< TInputImage, TOutputImageType >
+  public ImageToImageFilter< TInputImage, TOuputImage >
 {
 public:
   /** Extract dimension from input image. */
@@ -69,7 +68,7 @@ public:
   /** Convenient typedefs for simplifying declarations. */
   typedef TInputImage                       InputImageType;
   typedef typename InputImageType::Pointer  InputImagePointer;
-  typedef TOutputImageType                  OutputImageType;
+  typedef TOuputImage                       OutputImageType;
   typedef typename OutputImageType::Pointer OutputImagePointer;
 
   /** Standard class typedefs. */
@@ -86,7 +85,7 @@ public:
   /** Image typedef support. */
   typedef typename InputImageType::PixelType  InputPixelType;
   typedef TOperatorValueType                  OperatorValueType;
-  typedef TOutputValueType                    OutputValueType;
+  typedef TOuputValue                         OutputValueType;
   typedef typename OutputImageType::PixelType OutputPixelType;
   typedef CovariantVector<
     OutputValueType, itkGetStaticConstMacro(OutputImageDimension) >

@@ -34,8 +34,8 @@ namespace rtk
 //
 // Constructor
 //
-template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::ForwardDifferenceGradientImageFilter()
 {
   // default behaviour is to take into account both spacing and direction
@@ -53,15 +53,15 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
 //
 // Destructor
 //
-template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::~ForwardDifferenceGradientImageFilter()
 {}
 
 // This should be handled by an itkMacro, but it doesn't seem to work with pointer types
-template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::SetDimensionsProcessed(bool* DimensionsProcessed)
 {
   bool Modified=false;
@@ -76,9 +76,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
   if(Modified) this->Modified();
 }
 
-template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -131,9 +131,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
     }
 }
 
-template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::BeforeThreadedGenerateData()
 {
   Superclass::BeforeThreadedGenerateData();
@@ -143,9 +143,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
   this->GetOutput()->FillBuffer(zero);
 }
 
-template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                        ThreadIdType threadId)
 {
@@ -251,9 +251,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
     }
 }
 
-template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::GenerateOutputInformation()
 {
   // this methods is overloaded so that if the output image is a
@@ -276,9 +276,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputVa
 /**
  * Standard "PrintSelf" method
  */
-template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);

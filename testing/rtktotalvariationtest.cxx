@@ -55,15 +55,19 @@ void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Point
 
 int main(int, char** )
 {
+  typedef float OutputPixelType;
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
 
 #ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage< itk::CovariantVector 
+      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+  typedef itk::Image< itk::CovariantVector 
+      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #endif
-
+  
   // Random image sources
   typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
@@ -103,7 +107,8 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
 
   // Create and set the TV denoising filter
-  typedef rtk::TotalVariationDenoisingBPDQImageFilter<OutputImageType> TVDenoisingFilterType;
+  typedef rtk::TotalVariationDenoisingBPDQImageFilter
+    <OutputImageType, GradientOutputImageType>                TVDenoisingFilterType;
   TVDenoisingFilterType::Pointer TVdenoising = TVDenoisingFilterType::New();
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
   TVdenoising->SetNumberOfIterations(15);

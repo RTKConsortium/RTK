@@ -26,8 +26,9 @@
 namespace rtk
 {
 
-template< typename TOutputImage>
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariationConeBeamReconstructionFilter()
+template< typename TOutputImage, typename TGradientOutputImage> 
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
+::ADMMTotalVariationConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -92,9 +93,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariation
   m_SubtractFilter3->ReleaseDataFlagOff(); //Output is d_k+1
 }
 
-template< typename TOutputImage>
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::SetForwardProjectionFilter (int _arg)
 {
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
@@ -107,9 +108,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
     }
 }
 
-template< typename TOutputImage>
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::SetBackProjectionFilter (int _arg)
 {
   m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
@@ -123,9 +124,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
     }
 }
 
-template< typename TOutputImage>
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::SetBetaForCurrentIteration(int iter){
 
     float currentBeta = m_Beta * (iter+1) / m_AL_iterations;
@@ -135,9 +136,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
     m_MultiplyFilter->SetConstant2( (const float) currentBeta);
 }
 
-template< typename TOutputImage>
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateInputRequestedRegion()
 {
     // Input 0 is the volume we update
@@ -156,9 +157,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
 
 }
 
-template< typename TOutputImage>
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections
@@ -188,9 +189,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
   this->GetOutput()->CopyInformation( m_SubtractFilter3->GetOutput() );
 }
 
-template< typename TOutputImage>
+template< typename TOutputImage, typename TGradientOutputImage> 
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateData()
 {
   itk::TimeProbe ADMMTimeProbe;

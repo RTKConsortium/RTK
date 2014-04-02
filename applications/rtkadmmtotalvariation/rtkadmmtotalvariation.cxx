@@ -37,11 +37,14 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
 #if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage< itk::CovariantVector 
+      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #else
-  typedef CPUOutputImageType                           OutputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+  typedef itk::Image< itk::CovariantVector 
+      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #endif
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -109,11 +112,12 @@ int main(int argc, char * argv[])
   // Setup the ADMM filter and run it
   //////////////////////////////////////////////////////////////////////////////////////////
 
-  // Set filter to be fed to the conjugate gradient optimizer
-  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType> ADMM_TV_FilterType;
-  ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
+  // Set the reconstruction filter
+  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter
+      <OutputImageType, GradientOutputImageType> ADMM_TV_FilterType;
+    ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
 
-  // Set the forward and back projection filters to be used
+  // Set the forward and back projection filters to be used inside admmFilter
   admmFilter->SetForwardProjectionFilter(args_info.forward_arg);
   admmFilter->SetBackProjectionFilter(args_info.back_arg);
 

@@ -19,15 +19,18 @@
 #ifndef __rtkTotalVariationDenoisingBPDQImageFilter_h
 #define __rtkTotalVariationDenoisingBPDQImageFilter_h
 
+
+#include "rtkForwardDifferenceGradientImageFilter.h"
+#include "rtkBackwardDifferenceDivergenceImageFilter.h"
+#include "rtkMagnitudeThresholdImageFilter.h"
+
 #include <itkImageToImageFilter.h>
 #include <itkCastImageFilter.h>
 #include <itkImage.h>
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 
-#include "rtkForwardDifferenceGradientImageFilter.h"
-#include "rtkBackwardDifferenceDivergenceImageFilter.h"
-#include "rtkMagnitudeThresholdImageFilter.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -82,21 +85,18 @@ namespace rtk
  *
  * \ingroup IntensityImageFilters
  */
-template <class TInputImage>
+
+template< typename TOutputImage, typename TGradientOutputImage = 
+    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
+    TOutputImage::ImageDimension > >
 class TotalVariationDenoisingBPDQImageFilter :
-        public itk::ImageToImageFilter< TInputImage, TInputImage >
+        public itk::ImageToImageFilter< TOutputImage, TOutputImage >
 {
 public:
-    /** Extract dimension from input and output image. */
-    itkStaticConstMacro(InputImageDimension, unsigned int,
-                        TInputImage::ImageDimension);
-
-    /** Convenient typedefs for simplifying declarations. */
-    typedef TInputImage InputImageType;
 
     /** Standard class typedefs. */
     typedef TotalVariationDenoisingBPDQImageFilter Self;
-    typedef itk::ImageToImageFilter< InputImageType, InputImageType> Superclass;
+    typedef itk::ImageToImageFilter< TOutputImage, TOutputImage> Superclass;
     typedef itk::SmartPointer<Self> Pointer;
     typedef itk::SmartPointer<const Self>  ConstPointer;
 
@@ -106,19 +106,16 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, ImageToImageFilter)
 
-    /** Image typedef support. */
-    typedef typename InputImageType::PixelType InputPixelType;
-    typedef typename InputImageType::RegionType InputImageRegionType;
-    typedef typename InputImageType::SizeType InputSizeType;
-
     /** Sub filter type definitions */
-    typedef ForwardDifferenceGradientImageFilter<TInputImage> GradientFilterType;
-    typedef typename GradientFilterType::OutputImageType GradientImageType;
-    typedef itk::MultiplyImageFilter<TInputImage> MultiplyFilterType;
-    typedef itk::SubtractImageFilter<TInputImage> SubtractImageFilterType;
-    typedef itk::SubtractImageFilter<GradientImageType> SubtractGradientFilterType;
-    typedef MagnitudeThresholdImageFilter<GradientImageType> MagnitudeThresholdFilterType;
-    typedef BackwardDifferenceDivergenceImageFilter<GradientImageType> DivergenceFilterType;
+    typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
+            typename TOutputImage::ValueType, 
+            typename TOutputImage::ValueType, 
+            TGradientOutputImage> GradientFilterType;
+    typedef itk::MultiplyImageFilter<TOutputImage> MultiplyFilterType;
+    typedef itk::SubtractImageFilter<TOutputImage> SubtractImageFilterType;
+    typedef itk::SubtractImageFilter<TGradientOutputImage> SubtractGradientFilterType;
+    typedef MagnitudeThresholdImageFilter<TGradientOutputImage> MagnitudeThresholdFilterType;
+    typedef BackwardDifferenceDivergenceImageFilter<TGradientOutputImage, TOutputImage> DivergenceFilterType;
 
     itkGetMacro(NumberOfIterations, int)
     itkSetMacro(NumberOfIterations, int)
