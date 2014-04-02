@@ -94,7 +94,9 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TGradientOutputImage = 
+    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
+    TOutputImage::ImageDimension > >
 class ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
@@ -117,9 +119,12 @@ public:
 
     typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
     typedef itk::SubtractImageFilter<TOutputImage>                          SubtractFilterType;
-    typedef rtk::ForwardDifferenceGradientImageFilter<TOutputImage>         GradientFilterType;
+    typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
+            typename TOutputImage::ValueType, 
+            typename TOutputImage::ValueType, 
+            TGradientOutputImage>                            GradientFilterType;
     typedef rtk::BackwardDifferenceDivergenceImageFilter
-                          <typename GradientFilterType::OutputImageType>    DivergenceFilterType;
+        <TGradientOutputImage, TOutputImage>                 DivergenceFilterType;
 
     /** Set the backprojection filter*/
     void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
@@ -136,9 +141,6 @@ public:
 protected:
     ADMMTotalVariationConjugateGradientOperator();
     ~ADMMTotalVariationConjugateGradientOperator(){}
-
-//    typename TOutputImage::ConstPointer GetInputVolumeSeries();
-//    typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
     /** Does the real work. */
     virtual void GenerateData();

@@ -8,11 +8,9 @@
 
 #ifdef USE_CUDA
   #include "rtkCudaBackProjectionImageFilter.h"
-//  #include "rtkCudaConjugateGradientConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
-#else
-  #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #endif
+#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
@@ -89,7 +87,7 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
 
-#ifdef USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -188,11 +186,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // ConjugateGradient reconstruction filtering
-//#ifdef USE_CUDA
-//  typedef rtk::CudaConjugateGradientConeBeamReconstructionFilter                ConjugateGradientType;
-//#else
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter< OutputImageType > ConjugateGradientType;
-//#endif
   ConjugateGradientType::Pointer conjugategradient = ConjugateGradientType::New();
   conjugategradient->SetInput( tomographySource->GetOutput() );
   conjugategradient->SetInput(1, rei->GetOutput());

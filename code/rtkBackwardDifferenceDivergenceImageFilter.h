@@ -19,8 +19,8 @@
 #ifndef __rtkBackwardDifferenceDivergenceImageFilter_h
 #define __rtkBackwardDifferenceDivergenceImageFilter_h
 
-#include "itkImageToImageFilter.h"
-#include "itkCastImageFilter.h"
+#include <itkImageToImageFilter.h>
+#include <itkCastImageFilter.h>
 
 namespace rtk
 {
@@ -35,8 +35,8 @@ namespace rtk
  *
  * \ingroup IntensityImageFilters
  */
-template <class TInputImage, typename TOutputImage = itk::Image< float, //I'd like to be able to put here the type of the data held in the input covariant vectors
-                                                                 TInputImage::ImageDimension > >
+
+template <typename TInputImage, typename TOutputImage = itk::Image< float, TInputImage::ImageDimension > >
 class BackwardDifferenceDivergenceImageFilter :
         public itk::ImageToImageFilter< TInputImage, TOutputImage >
 {
