@@ -6,7 +6,7 @@
 #include "rtkConstantImageSource.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
-#ifdef USE_CUDA
+#if RTK_USE_CUDA
   #include "itkCudaImage.h"
 #endif
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
@@ -86,7 +86,7 @@ int main(int, char** )
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#ifdef RTK_USE_CUDA
+#if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
   typedef itk::CudaImage< itk::CovariantVector 
       < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;

@@ -109,11 +109,7 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
 
-#ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-#endif
 
   // Random and constant image sources
   typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
