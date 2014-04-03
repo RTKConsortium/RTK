@@ -124,7 +124,6 @@ CudaForwardProjectionImageFilter
 
       // Adding 0.5 offset to change from the centered pixel convention (ITK)
       // to the corner pixel convention (CUDA).
-      // Also correcting for non-zero index of the buffered region
       for(unsigned int i=0; i<3; i++)
         volPPToIndex[i][3] += 0.5;
 

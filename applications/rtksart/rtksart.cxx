@@ -36,11 +36,10 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
 #if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
-  typedef CPUOutputImageType                           OutputImageType;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 #endif
 
   // Projections reader
