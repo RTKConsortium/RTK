@@ -6,9 +6,13 @@ option "config"      - "Config file"                                           s
 option "geometry"    g "XML geometry file name"                                string yes
 option "output"      o "Output file name"                                      string yes
 option "niterations" n "Number of iterations"                                  int    no   default="5"
-option "bp"          b "Backprojection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased" enum no default="VoxelBasedBackProjection"
+#option "bp"          b "Backprojection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased" enum no default="VoxelBasedBackProjection"
 option "time"        t "Records elapsed time during the process"               flag   off
-option "method"      m "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
+#option "method"      m "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
+
+section "Projectors"
+option "forward"    - "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast","Siddon" enum no default="Joseph"
+option "back"       - "Backprojection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph" enum no default="VoxelBasedBackProjection"
 
 section "Projections"
 option "path"      p "Path containing projections"                               string                       yes
