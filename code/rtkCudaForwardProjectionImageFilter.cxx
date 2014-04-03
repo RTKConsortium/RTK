@@ -124,14 +124,23 @@ CudaForwardProjectionImageFilter
 
       // Adding 0.5 offset to change from the centered pixel convention (ITK)
       // to the corner pixel convention (CUDA).
+      // Also correcting for non-zero index of the buffered region
       for(unsigned int i=0; i<3; i++)
         volPPToIndex[i][3] += 0.5;
+
+      // Compute matrix to translate the pixel indices on the detector
+      // if the Requested region has non-zero index
+      Superclass::GeometryType::ThreeDHomogeneousMatrixType translation_matrix;
+      translation_matrix.SetIdentity();
+      for(unsigned int i=0; i<3; i++)
+        translation_matrix[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
 
       // Compute matrix to transform projection index to volume index
       Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
       d_matrix = volPPToIndex.GetVnlMatrix() *
         geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-        GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix();
+        GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix() *
+        translation_matrix.GetVnlMatrix();
       float matrix[4][4];
       for (int j=0; j<4; j++)
         for (int k=0; k<4; k++)
