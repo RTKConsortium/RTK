@@ -30,6 +30,7 @@ namespace rtk
 
 #cmakedefine01 CUDA_FOUND
 #cmakedefine01 OPENCL_FOUND
+#cmakedefine01 RTK_USE_CUDA
 #cmakedefine RTK_BUILD_SHARED_LIBS 1
 
 #define RTK_BINARY_DIR "@RTK_BINARY_DIR@"

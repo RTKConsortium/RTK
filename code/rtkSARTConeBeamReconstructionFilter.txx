@@ -19,8 +19,8 @@
 #ifndef __rtkSARTConeBeamReconstructionFilter_txx
 #define __rtkSARTConeBeamReconstructionFilter_txx
 
-#include "rtkJosephForwardProjectionImageFilter.h"
-#include "rtkJosephBackProjectionImageFilter.h"
+//#include "rtkJosephForwardProjectionImageFilter.h"
+//#include "rtkJosephBackProjectionImageFilter.h"
 
 #include <algorithm>
 #include <itkTimeProbe.h>
@@ -40,7 +40,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
-  m_ForwardProjectionFilter = JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::New();
+//  m_ForwardProjectionFilter = JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
 
@@ -59,9 +59,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
   m_ZeroMultiplyFilter->SetInput2( m_ExtractFilter->GetOutput() );
 
-  m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
+//  m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
   m_SubtractFilter->SetInput(0, m_ExtractFilter->GetOutput() );
-  m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput() );
+//  m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput() );
 
   m_MultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
   m_MultiplyFilter->SetInput2( m_SubtractFilter->GetOutput() );
@@ -79,15 +79,25 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 template<class TInputImage, class TOutputImage>
 void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
-::SetBackProjectionFilter(const BackProjectionFilterPointer _arg)
+::SetForwardProjectionFilter (int _arg)
 {
-  itkDebugMacro("setting BackProjectionFilter to " << _arg);
-  if (this->m_BackProjectionFilter != _arg)
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
+
+  if (m_CurrentForwardProjectionConfiguration != _arg)
     {
-    this->m_BackProjectionFilter = _arg;
-    m_BackProjectionFilter->SetInput(1, m_DivideFilter->GetOutput() );
-    m_BackProjectionFilter->SetTranspose(false);
-    m_ThresholdFilter->SetInput(m_BackProjectionFilter->GetOutput() );
+    this->Modified();
+    }
+}
+
+template<class TInputImage, class TOutputImage>
+void
+SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+::SetBackProjectionFilter (int _arg)
+{
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
+
+  if (m_CurrentBackProjectionConfiguration != _arg)
+    {
     this->Modified();
     }
 }
@@ -112,21 +122,35 @@ void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
-  const unsigned int Dimension = this->InputImageDimension;
+//  const unsigned int Dimension = this->InputImageDimension;
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
   typename ExtractFilterType::InputImageRegionType projRegion;
 
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
-  projRegion.SetSize(Dimension-1, 1);
+//  projRegion.SetSize(Dimension-1, 1);
   m_ExtractFilter->SetExtractionRegion(projRegion);
   m_ExtractFilterRayBox->SetExtractionRegion(projRegion);
 
-  // Run composite filter update
+  // Links with the forward and back projection filters should be set here
+  // and not in the constructor, as these filters are set at runtime
   m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
-  m_ForwardProjectionFilter->SetInput ( 1, this->GetInput(0) );
+  m_BackProjectionFilter->SetInput(1, m_DivideFilter->GetOutput() );
+  m_BackProjectionFilter->SetTranspose(false);
+  m_ThresholdFilter->SetInput(m_BackProjectionFilter->GetOutput() );
+
+  m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
+  m_ForwardProjectionFilter->SetInput( 1, this->GetInput(0) );
   m_ExtractFilter->SetInput( this->GetInput(1) );
+  m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput() );
+
+  // For the same reason, set geometry now
+  // Check and set geometry
+  if(this->GetGeometry().GetPointer() == NULL)
+    itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
+  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
 
   m_ConstantImageSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
   m_ConstantImageSource->SetConstant(0);
@@ -172,11 +196,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
   const unsigned int Dimension = this->InputImageDimension;
 
-  // Check and set geometry
-  if(this->GetGeometry().GetPointer() == NULL)
-    itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
-  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry().GetPointer());
-  m_BackProjectionFilter->SetGeometry(this->GetGeometry().GetPointer());
+
+//  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry().GetPointer());
+//  m_BackProjectionFilter->SetGeometry(this->GetGeometry().GetPointer());
 
   // The backprojection works on one projection at a time
   typename ExtractFilterType::InputImageRegionType subsetRegion;

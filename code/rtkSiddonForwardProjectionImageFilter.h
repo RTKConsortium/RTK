@@ -21,7 +21,7 @@
 
 #define EPSILON 0.00001
 #include "rtkConfiguration.h"
-#include "rtkForwardProjectionImageFilter.h"
+#include "rtkJosephForwardProjectionImageFilter.h"
 
 namespace rtk
 {

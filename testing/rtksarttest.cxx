@@ -6,13 +6,10 @@
 #include "rtkConstantImageSource.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
-#ifdef USE_CUDA
-  #include "rtkCudaBackProjectionImageFilter.h"
-  #include "rtkCudaSARTConeBeamReconstructionFilter.h"
+#if RTK_USE_CUDA
   #include "itkCudaImage.h"
-#else
-  #include "rtkSARTConeBeamReconstructionFilter.h"
 #endif
+#include "rtkSARTConeBeamReconstructionFilter.h"
 
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
@@ -89,7 +86,7 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
 
-#ifdef USE_CUDA
+#if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -188,11 +185,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // SART reconstruction filtering
-#ifdef USE_CUDA
-  typedef rtk::CudaSARTConeBeamReconstructionFilter                SARTType;
-#else
   typedef rtk::SARTConeBeamReconstructionFilter< OutputImageType > SARTType;
-#endif
   SARTType::Pointer sart = SARTType::New();
   sart->SetInput( tomographySource->GetOutput() );
   sart->SetInput(1, rei->GetOutput());
@@ -202,18 +195,17 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
-  bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-  sart->SetBackProjectionFilter( bp );
+  sart->SetBackProjectionFilter( 0 ); // Voxel based
+  sart->SetForwardProjectionFilter( 0 ); // Joseph
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 2: Normalized Joseph Backprojector ******" << std::endl;
 
-  bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-  sart->SetBackProjectionFilter( bp );
+  sart->SetBackProjectionFilter( 3 ); // Normalized Joseph
+  sart->SetForwardProjectionFilter( 0 ); // Joseph
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput());
@@ -222,8 +214,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector ******" << std::endl;
 
-  bp = rtk::CudaBackProjectionImageFilter::New();
-  sart->SetBackProjectionFilter( bp );
+  sart->SetBackProjectionFilter( 2 ); // Cuda voxel based
+  sart->SetForwardProjectionFilter( 2 ); // Cuda ray cast
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput());

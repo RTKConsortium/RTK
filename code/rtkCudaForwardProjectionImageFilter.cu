@@ -206,76 +206,43 @@ void kernel_forwardProject(float *dev_proj,
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 ///////////////////////////////////////////////////////////////////////////
-// FUNCTION: CUDA_forward_project_init() /////////////////////////////
-void
-CUDA_forward_project_init(int proj_dim[2],
-                          int vol_dim[3],
-                          float *&dev_vol,          // Holds voxels on device
-						  float *&dev_proj,         // Holds image pixels on device
-                          float *&dev_matrix,     // Holds matrix on device
-                          const float *device_volume // Holds volume on host
-						  ) 
-{
-  // Size of volume Malloc
-  cudaExtent volSize =  make_cudaExtent(vol_dim[0], vol_dim[1], vol_dim[2]);
-  //size_t volSize_bytes = (vol_dim[0]*vol_dim[1]*vol_dim[2])*sizeof(float);
-  static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-
-  // CUDA device pointers
-  // Allocate memory for system matrix on the device
-  cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
-  CUDA_CHECK_ERROR;
-  
-  // Allocate memory for 3D reconstructed volume on the device
-  cudaMalloc3DArray((cudaArray**)&dev_vol, &channelDesc, volSize);  
-  //cudaMalloc( (void**)&dev_vol, volSize_bytes);
-  CUDA_CHECK_ERROR;
-  
-  // Allocate memory for projections on the device
-  cudaMalloc((void **)&dev_proj, proj_dim[0]*proj_dim[1]*sizeof(float) );
-  CUDA_CHECK_ERROR;
-
-  //NOTE: cudaMemcpy of the matrix is done afterwards, just before calling kernel.
-  
-  // copy data to 3D array
-  cudaMemcpy3DParms copyParams = {0};
-  copyParams.srcPtr   = make_cudaPitchedPtr((void*)device_volume, vol_dim[0]*sizeof(float), vol_dim[0], vol_dim[1]);
-  copyParams.dstArray = (cudaArray*)dev_vol;
-  copyParams.extent   = volSize;
-  copyParams.kind     = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&copyParams);
-  
-  //cudaMemcpy(dev_vol, (void*)host_volume, volSize_bytes, cudaMemcpyHostToDevice);
-  CUDA_CHECK_ERROR;
-
-  // Set texture parameters
-  tex_vol.normalized = false;                      // access with normalized texture coordinates
-  tex_vol.filterMode = cudaFilterModeLinear;      // linear interpolation
-  tex_vol.addressMode[0] = cudaAddressModeClamp;  // clamp texture coordinates
-  tex_vol.addressMode[1] = cudaAddressModeClamp;
-  // Bind 3D array to 3D texture
-  cudaBindTextureToArray(tex_vol, (cudaArray*)dev_vol, channelDesc);
-  
-  //cudaBindTexture(0, tex_vol, dev_vol, volSize_bytes);
-  CUDA_CHECK_ERROR;
-}
-
-///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
-CUDA_forward_project(int blockSize[3],
-                     float *host_proj,
-                     float *dev_proj,
-                     double source_position[3],
-                     int projections_size[2],
-                     float t_step,
-                     float *dev_matrix,
-                     float matrix[12],
-                     float box_min[3],
-                     float box_max[3],
-                     float spacing[3])
+CUDA_forward_project( int projections_size[2],
+                      int vol_size[3],
+                      float matrix[12],
+                      float *dev_proj,
+                      float *dev_vol,
+                      float t_step,
+                      double source_position[3],
+                      float box_min[3],
+                      float box_max[3],
+                      float spacing[3])
 {
-  static dim3 dimBlock  = dim3(blockSize[0], blockSize[1], blockSize[2]);
+  // Set texture parameters
+  tex_vol.addressMode[0] = cudaAddressModeClamp;  // clamp texture coordinates
+  tex_vol.addressMode[1] = cudaAddressModeClamp;
+  tex_vol.normalized = false;                      // access with normalized texture coordinates
+  tex_vol.filterMode = cudaFilterModeLinear;      // linear interpolation
+
+  // Copy volume data to array, bind the array to the texture
+  cudaExtent volExtent =  make_cudaExtent(vol_size[0], vol_size[1], vol_size[2]);
+  cudaArray *array_vol;
+  static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
+  cudaMalloc3DArray((cudaArray**)&array_vol, &channelDesc, volExtent);
+
+  // Copy data to 3D array
+  cudaMemcpy3DParms copyParams = {0};
+  copyParams.srcPtr   = make_cudaPitchedPtr(dev_vol, vol_size[0]*sizeof(float), vol_size[0], vol_size[1]);
+  copyParams.dstArray = (cudaArray*)array_vol;
+  copyParams.extent   = volExtent;
+  copyParams.kind     = cudaMemcpyDeviceToDevice;
+  cudaMemcpy3D(&copyParams);
+
+  // Bind 3D array to 3D texture
+  cudaBindTextureToArray(tex_vol, (cudaArray*)array_vol, channelDesc);
+
+  static dim3 dimBlock  = dim3(16, 16, 1);
   static dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
 
   // Reset projection
@@ -283,15 +250,17 @@ CUDA_forward_project(int blockSize[3],
   CUDA_CHECK_ERROR;
 
   // Copy matrix and bind data to the texture
+  float *dev_matrix;
+  cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
   cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
-  CUDA_CHECK_ERROR;
   cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
   CUDA_CHECK_ERROR;
+
   // Converting arrays to CUDA format and setting parameters
   float3 sourcePos;
-  sourcePos.x = source_position[0];
-  sourcePos.y = source_position[1];
-  sourcePos.z = source_position[2];
+  sourcePos.x = (float) source_position[0];
+  sourcePos.y = (float) source_position[1];
+  sourcePos.z = (float) source_position[2];
   int2 projSize;
   projSize.x = projections_size[0];
   projSize.y = projections_size[1];
@@ -311,32 +280,17 @@ CUDA_forward_project(int blockSize[3],
   // Calling kernel
   kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj, sourcePos, projSize, t_step, boxMin, boxMax, dev_spacing);
 
-  // Copy reconstructed volume from device to host
-  size_t projSize_bytes = (projections_size[0]*projections_size[1])*sizeof(float);
-  cudaMemcpy (host_proj, dev_proj, projSize_bytes, cudaMemcpyDeviceToHost);
   CUDA_CHECK_ERROR;
-  cudaUnbindTexture (tex_matrix);
-  CUDA_CHECK_ERROR;
-}
 
-///////////////////////////////////////////////////////////////////////////
-// FUNCTION: CUDA_forward_project_cleanup() //////////////////////////
-void
-CUDA_forward_project_cleanup(int proj_dim[2],
-                             float *dev_vol,
-                             float *dev_proj,
-                             float *dev_matrix)
-{
   // Unbind the volume and matrix textures
   cudaUnbindTexture (tex_vol);
   CUDA_CHECK_ERROR;
-  // Deallocate memory on the device
-  cudaFree (dev_proj);
+  cudaUnbindTexture (tex_matrix);
+  CUDA_CHECK_ERROR;
+
+  // Cleanup
+  cudaFreeArray ((cudaArray*)array_vol);
   CUDA_CHECK_ERROR;
   cudaFree (dev_matrix);
-  CUDA_CHECK_ERROR;
-  
-  // Don't delete the volume the ITK GPU image should do that
-  cudaFreeArray ((cudaArray*)dev_vol);
   CUDA_CHECK_ERROR;
 }

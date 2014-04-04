@@ -20,31 +20,15 @@
 #define __rtkCudaForwardProjectionImageFilter_hcu
 
 void
-CUDA_forward_project_init(int img_dim[2],
-                          int vol_dim[3],
-                          float *&dev_vol,
-                          float *&dev_img,
-                          float *&dev_matrix,
-                          const float *device_volume
-						  );
-
-void
-CUDA_forward_project(int blockSize[3],
-                     float *host_proj,
-                     float *dev_proj,
-                     double source_position[3],
-                     int projections_size[2],
-                     float t_step,
-                     float *dev_matrix,
-                     float matrix[12],
-                     float boxMin[3],
-                     float boxMax[3],
-                     float spacing[3]);
-
-void
-CUDA_forward_project_cleanup(int proj_dim[2],
-                             float *dev_vol,
-                             float *dev_img,
-                             float *dev_matrix);
+CUDA_forward_project( int projections_size[2],
+                      int vol_size[3],
+                      float matrix[12],
+                      float *dev_proj,
+                      float *dev_vol,
+                      float t_step,
+                      double source_position[3],
+                      float box_min[3],
+                      float box_max[3],
+                      float spacing[3]);
 
 #endif
