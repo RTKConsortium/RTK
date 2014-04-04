@@ -36,44 +36,6 @@ CudaForwardProjectionImageFilter
   m_DeviceVolume     = NULL;
   m_DeviceProjection = NULL;
   m_DeviceMatrix     = NULL;
-  m_ExplicitGPUMemoryManagementFlag = false;
-}
-
-void
-CudaForwardProjectionImageFilter
-::InitDevice()
-{
-  // Dimension arguments in CUDA format for volume
-  m_VolumeDimension[0] = this->GetInput(1)->GetRequestedRegion().GetSize()[0];
-  m_VolumeDimension[1] = this->GetInput(1)->GetRequestedRegion().GetSize()[1];
-  m_VolumeDimension[2] = this->GetInput(1)->GetRequestedRegion().GetSize()[2];
-
-  // Dimension arguments in CUDA format for projections
-  m_ProjectionDimension[0] = this->GetInput(0)->GetRequestedRegion().GetSize()[0];
-  m_ProjectionDimension[1] = this->GetInput(0)->GetRequestedRegion().GetSize()[1];
-  
-  // Make sure the GPU Buffer is up to date
-  const float *device_volume = *(float**)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
-
-  CUDA_forward_project_init (m_ProjectionDimension, m_VolumeDimension,
-                             m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix,device_volume);
-}
-
-void
-CudaForwardProjectionImageFilter
-::CleanUpDevice()
-{
-  if(this->GetOutput()->GetRequestedRegion() != this->GetOutput()->GetBufferedRegion() )
-    itkExceptionMacro(<< "Can't handle different requested and buffered regions "
-                      << this->GetOutput()->GetRequestedRegion()
-                      << this->GetOutput()->GetBufferedRegion() );
-  CUDA_forward_project_cleanup (m_ProjectionDimension,
-                                m_DeviceVolume,
-                                m_DeviceProjection,
-                                m_DeviceMatrix);
-  m_DeviceVolume     = NULL;
-  m_DeviceProjection = NULL;
-  m_DeviceMatrix     = NULL;
 }
 
 void
@@ -81,12 +43,6 @@ CudaForwardProjectionImageFilter
 ::GPUGenerateData()
 {
   try {
-    //this->AllocateOutputs();
-    if(!m_ExplicitGPUMemoryManagementFlag)
-      {
-      this->InitDevice();
-      }
-
     const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
     const unsigned int Dimension = ImageType::ImageDimension;
     const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
@@ -161,9 +117,7 @@ CudaForwardProjectionImageFilter
         boxMax,
         spacing);
       }
-    if(!m_ExplicitGPUMemoryManagementFlag)
-      this->CleanUpDevice();
-    }
+  }
   catch(itk::ExceptionObject e)
     {
     std::cout << e.GetDescription() << std::endl;
