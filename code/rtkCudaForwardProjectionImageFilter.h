@@ -63,17 +63,6 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaForwardProjectionImageFilter, ImageToImageFilter);
 
-  /** Function to allocate memory on device */
-  void InitDevice();
-
-  /** Function to synchronize memory from device to host and free device memory */
-  void CleanUpDevice();
-
-  /** Boolean to keep the hand on the memory management of the GPU. Default is
-   * off. If on, the user must call manually InitDevice and CleanUpDevice. */
-  itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
-  itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
-
 protected:
   rtkcuda_EXPORT CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
@@ -90,7 +79,6 @@ private:
   float *            m_DeviceVolume;
   float *            m_DeviceProjection;
   float *            m_DeviceMatrix;
-  bool               m_ExplicitGPUMemoryManagementFlag;
 }; // end of class
 
 } // end namespace rtk
