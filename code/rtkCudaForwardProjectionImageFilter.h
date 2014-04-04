@@ -26,11 +26,14 @@
 #include "rtkWin32Header.h"
 
 /** \class CudaForwardProjectionImageFilter
- * \brief TODO
+ * \brief Trilinear interpolation forward projection implemented in CUDA
  *
- * TODO
+ * CudaForwardProjectionImageFilter is similar to
+ * JosephForwardProjectionImageFilter, except it uses a
+ * fixed step between sampling points instead of placing these
+ * sampling points only on the main direction slices.
  *
- * \author TODO 
+ * \author Simon Rit, updated by Cyril Mory
  *
  * \ingroup Projector CudaImageToImageFilter
  */

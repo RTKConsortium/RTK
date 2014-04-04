@@ -92,7 +92,6 @@ IF (RTK_USE_CUDA)
               rtkCudaFDKConeBeamReconstructionFilter.cxx
 	      rtkCudaForwardProjectionImageFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
-              rtkCudaSARTConeBeamReconstructionFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)

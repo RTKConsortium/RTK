@@ -6,13 +6,10 @@
 #include "rtkConstantImageSource.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
-#ifdef USE_CUDA
-  #include "rtkCudaBackProjectionImageFilter.h"
-  #include "rtkCudaSARTConeBeamReconstructionFilter.h"
+#if RTK_USE_CUDA
   #include "itkCudaImage.h"
-#else
-  #include "rtkSARTConeBeamReconstructionFilter.h"
 #endif
+#include "rtkSARTConeBeamReconstructionFilter.h"
 
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
@@ -89,7 +86,7 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
 
-#ifdef USE_CUDA
+#if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
