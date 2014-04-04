@@ -22,8 +22,8 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#if CUDA_FOUND
-  #include "rtkCudaSARTConeBeamReconstructionFilter.h"
+#if RTK_USE_CUDA
+//  #include "rtkCudaSARTConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
 #endif
 
@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#if CUDA_FOUND
+#if RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -77,57 +77,63 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
-  // Construct selected backprojection filter
-  rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
-  switch(args_info.bp_arg)
-  {
-  case(bp_arg_VoxelBasedBackProjection):
-    bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(bp_arg_Joseph):
-    bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(bp_arg_CudaVoxelBased):
-#if CUDA_FOUND
-    bp = rtk::CudaBackProjectionImageFilter::New();
-#else
-    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    return EXIT_FAILURE;
-#endif
-    break;
+//  // Construct selected backprojection filter
+//  rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
+//  switch(args_info.bp_arg)
+//  {
+//  case(bp_arg_VoxelBasedBackProjection):
+//    bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+//    break;
+//  case(bp_arg_Joseph):
+//    bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+//    break;
+//  case(bp_arg_CudaVoxelBased):
+//#if RTK_USE_CUDA
+//    bp = rtk::CudaBackProjectionImageFilter::New();
+//#else
+//    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+//    return EXIT_FAILURE;
+//#endif
+//    break;
 
-  default:
-    std::cerr << "Unhandled --bp value." << std::endl;
-    return EXIT_FAILURE;
-  }
+//  default:
+//    std::cerr << "Unhandled --bp value." << std::endl;
+//    return EXIT_FAILURE;
+//  }
+
+
+//  switch(args_info.sart_arg)
+//  {
+//  case(sart_arg_Sart):
+//    sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType, OutputImageType>::New();
+//    break;
+//  case(bp_arg_Joseph):
+//#if RTK_USE_CUDA
+//    sart = rtk::CudaSARTConeBeamReconstructionFilter::New();
+//#else
+//    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+//    return EXIT_FAILURE;
+//#endif
+//    break;
+
+//  default:
+//    std::cerr << "Unhandled --bp value." << std::endl;
+//    return EXIT_FAILURE;
+//  }
 
   // SART reconstruction filter
-  rtk::SARTConeBeamReconstructionFilter< OutputImageType >::Pointer sart;
-  switch(args_info.sart_arg)
-  {
-  case(sart_arg_Sart):
-    sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(bp_arg_Joseph):
-#if CUDA_FOUND
-    sart = rtk::CudaSARTConeBeamReconstructionFilter::New();
-#else
-    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    return EXIT_FAILURE;
-#endif
-    break;
+  rtk::SARTConeBeamReconstructionFilter< OutputImageType >::Pointer sart =
+      rtk::SARTConeBeamReconstructionFilter< OutputImageType >::New();
 
-  default:
-    std::cerr << "Unhandled --bp value." << std::endl;
-    return EXIT_FAILURE;
-  }
+  // Set the forward and back projection filters to be used inside admmFilter
+  sart->SetForwardProjectionFilter(args_info.fp_arg);
+  sart->SetBackProjectionFilter(args_info.bp_arg);
 
   sart->SetInput( inputFilter->GetOutput() );
   sart->SetInput(1, reader->GetOutput());
   sart->SetGeometry( geometryReader->GetOutputObject() );
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetLambda( args_info.lambda_arg );
-  sart->SetBackProjectionFilter( bp );
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)

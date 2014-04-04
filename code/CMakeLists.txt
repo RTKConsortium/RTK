@@ -58,7 +58,7 @@ ENDIF(OPENCL_FOUND)
 
 #=========================================================
 # Cuda library stuff
-IF (CUDA_FOUND)
+IF (RTK_USE_CUDA)
   SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
   SET (rtkcuda_CUDA_FILES 
        rtkCudaCropImageFilter.cu 
@@ -92,12 +92,11 @@ IF (CUDA_FOUND)
               rtkCudaFDKConeBeamReconstructionFilter.cxx
 	      rtkCudaForwardProjectionImageFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
-              rtkCudaSARTConeBeamReconstructionFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
   TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} RTK ITKCudaCommon)
-ENDIF (CUDA_FOUND)
+ENDIF (RTK_USE_CUDA)
 #=========================================================
 
 #=========================================================
@@ -126,12 +125,12 @@ IF(NOT RTK_INSTALL_NO_LIBRARIES)
     LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
     ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
 
-  IF(CUDA_FOUND)
+  IF(RTK_USE_CUDA)
     INSTALL(TARGETS rtkcuda
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  ENDIF(CUDA_FOUND)
+  ENDIF(RTK_USE_CUDA)
 
   IF(OPENCL_FOUND)
     INSTALL(TARGETS rtkopencl

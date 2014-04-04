@@ -2,9 +2,9 @@ WRAP_GGO(rtkfdk_GGO_C rtkfdk.ggo)
 ADD_EXECUTABLE(rtkfdk rtkfdk.cxx ${rtkfdk_GGO_C})
 TARGET_LINK_LIBRARIES(rtkfdk RTK)
 
-IF (CUDA_FOUND)
+IF (RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtkfdk rtkcuda)
-ENDIF (CUDA_FOUND)
+ENDIF (RTK_USE_CUDA)
 
 IF (OPENCL_FOUND)
   TARGET_LINK_LIBRARIES(rtkfdk rtkopencl)
