@@ -81,8 +81,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(args_info.forward_arg);
-  conjugategradient->SetBackProjectionFilter(args_info.back_arg);
+  conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
+  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
 
   conjugategradient->SetInput( inputFilter->GetOutput() );
   conjugategradient->SetInput(1, reader->GetOutput());

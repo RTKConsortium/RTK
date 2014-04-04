@@ -51,26 +51,11 @@ int main(int argc, char * argv[])
   // Read all the inputs
   //////////////////////////////////////////////////////////////////////////////////////////
 
-  // Read projections
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
-  if(args_info.verbose_flag)
-      std::cout << "Regular expression matches "
-                << names->GetFileNames().size()
-                << " file(s)..."
-                << std::endl;
-
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > projectionsReaderType;
   projectionsReaderType::Pointer projectionsReader = projectionsReaderType::New();
-  projectionsReader->SetFileNames( names->GetFileNames() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( projectionsReader->GenerateOutputInformation() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( projectionsReader->Update() );
+  rtk::SetProjectionsReaderFromGgo<projectionsReaderType,
+      args_info_rtkadmmtotalvariation>(projectionsReader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -118,8 +103,8 @@ int main(int argc, char * argv[])
     ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
-  admmFilter->SetForwardProjectionFilter(args_info.forward_arg);
-  admmFilter->SetBackProjectionFilter(args_info.back_arg);
+  admmFilter->SetForwardProjectionFilter(args_info.fp_arg);
+  admmFilter->SetBackProjectionFilter(args_info.bp_arg);
 
   // Set the geometry and interpolation weights
   admmFilter->SetGeometry(geometryReader->GetOutputObject());
@@ -132,7 +117,7 @@ int main(int argc, char * argv[])
 
   // Set all four numerical parameters
   admmFilter->SetCG_iterations(args_info.CGiter_arg);
-  admmFilter->SetAL_iterations(args_info.iterations_arg);
+  admmFilter->SetAL_iterations(args_info.niterations_arg);
   admmFilter->SetAlpha(args_info.alpha_arg);
   admmFilter->SetBeta(args_info.beta_arg);
 
