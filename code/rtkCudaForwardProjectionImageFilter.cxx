@@ -33,9 +33,6 @@ namespace rtk
 CudaForwardProjectionImageFilter
 ::CudaForwardProjectionImageFilter()
 {
-  m_DeviceVolume     = NULL;
-  m_DeviceProjection = NULL;
-  m_DeviceMatrix     = NULL;
 }
 
 void
@@ -51,7 +48,6 @@ CudaForwardProjectionImageFilter
       this->GetOutput()->GetBufferedRegion().GetSize(1);
 
     float t_step = 1; // Step in mm
-    int blockSize[3] = {16,16,1};
     itk::Vector<double, 4> source_position;
 
     // Setting BoxMin and BoxMax
@@ -70,6 +66,19 @@ CudaForwardProjectionImageFilter
     float spacing[3];
     for(unsigned int i=0; i<3; i++)
       spacing[i] = this->GetInput(1)->GetSpacing()[i];
+
+    // Cuda convenient format for dimensions
+    int projectionSize[2];
+    projectionSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
+    projectionSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
+
+    int volumeSize[3];
+    volumeSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
+    volumeSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+    volumeSize[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[2];
+
+    float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+    float *pvol = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
 
     // Go over each projection
     for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
@@ -103,19 +112,19 @@ CudaForwardProjectionImageFilter
 
       // Set source position in volume indices
       source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
-     CUDA_forward_project(blockSize,
-        this->GetOutput()->GetBufferPointer() + (iProj -
-        this->GetOutput()->GetBufferedRegion().GetIndex()[2]) *
-        nPixelsPerProj,
-        m_DeviceProjection,
-        (double*)&(source_position[0]),
-        m_ProjectionDimension,
-        t_step,
-        m_DeviceMatrix,
-        (float*)&(matrix[0][0]),
-        boxMin,
-        boxMax,
-        spacing);
+
+      int projectionOffset = iProj - this->GetOutput()->GetBufferedRegion().GetIndex(2);
+
+      CUDA_forward_project(projectionSize,
+                          volumeSize,
+                          (float*)&(matrix[0][0]),
+                          pout + nPixelsPerProj * projectionOffset,
+                          pvol,
+                          t_step,
+                          (double*)&(source_position[0]),
+                          boxMin,
+                          boxMax,
+                          spacing);
       }
   }
   catch(itk::ExceptionObject e)

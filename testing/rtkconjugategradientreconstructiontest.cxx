@@ -7,7 +7,7 @@
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #if RTK_USE_CUDA
-  #include "rtkCudaBackProjectionImageFilter.h"
+//  #include "rtkCudaBackProjectionImageFilter.h"
   #include "itkCudaImage.h"
 #endif
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
@@ -215,7 +215,7 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  conjugategradient->SetForwardProjectionFilter(0);
+  conjugategradient->SetForwardProjectionFilter(2);
   conjugategradient->SetBackProjectionFilter( 2 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
