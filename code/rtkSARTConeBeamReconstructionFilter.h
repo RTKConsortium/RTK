@@ -31,6 +31,7 @@
 
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkIterativeConeBeamReconstructionFilter.h"
 
 namespace rtk
 {
@@ -114,7 +115,7 @@ namespace rtk
  */
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT SARTConeBeamReconstructionFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+  public rtk::IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
@@ -133,7 +134,7 @@ public:
   typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >              ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                       SubtractFilterType;
   typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >                 BackProjectionFilterType;
-  typedef typename BackProjectionFilterType::Pointer                                         BackProjectionFilterPointer;
+//  typedef typename BackProjectionFilterType::Pointer                                         BackProjectionFilterPointer;
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>               RayBoxIntersectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType> DivideFilterType;
   typedef rtk::ConstantImageSource<OutputImageType>                                          ConstantImageSourceType;
@@ -163,8 +164,11 @@ public:
   itkGetMacro(EnforcePositivity, bool);
   itkSetMacro(EnforcePositivity, bool);
 
-  /** Set and init the backprojection filter. Default is voxel based backprojection. */
-  virtual void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
+  /** Select the ForwardProjection filter */
+  void SetForwardProjectionFilter (int _arg);
+
+  /** Select the backprojection filter */
+  void SetBackProjectionFilter (int _arg);
 
 protected:
   SARTConeBeamReconstructionFilter();
@@ -203,12 +207,17 @@ private:
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
-  /** Number of projections processed at a time. */
+  /** Number of iterations */
   unsigned int m_NumberOfIterations;
 
   /** Convergence factor according to Andersen's publications which relates
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
+
+  /** Internal variables storing the current forward
+    and back projection methods */
+  int m_CurrentForwardProjectionConfiguration;
+  int m_CurrentBackProjectionConfiguration;
 
   /** Time probes */
   itk::TimeProbe m_ExtractProbe;
