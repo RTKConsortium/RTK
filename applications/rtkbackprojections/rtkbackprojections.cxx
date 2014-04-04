@@ -84,15 +84,15 @@ int main(int argc, char * argv[])
   DeformationType::Pointer def = DeformationType::New();
   def->SetInput(dvfReader->GetOutput());
 
-  switch(args_info.method_arg)
+  switch(args_info.bp_arg)
   {
-    case(method_arg_VoxelBasedBackProjection):
+    case(bp_arg_VoxelBasedBackProjection):
       bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-    case(method_arg_FDKBackProjection):
+    case(bp_arg_FDKBackProjection):
       bp = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-    case(method_arg_FDKWarpBackProjection):
+    case(bp_arg_FDKWarpBackProjection):
       if(!args_info.signal_given || !args_info.dvf_given)
         {
         std::cerr << "FDKWarpBackProjection requires input 4D deformation "
@@ -105,13 +105,13 @@ int main(int argc, char * argv[])
       def->SetSignalFilename(args_info.signal_arg);
       dynamic_cast<rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>*>(bp.GetPointer())->SetDeformation(def);
       break;
-    case(method_arg_Joseph):
+    case(bp_arg_Joseph):
       bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-    case(method_arg_NormalizedJoseph):
+    case(bp_arg_NormalizedJoseph):
       bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-    case(method_arg_CudaFDKBackProjection):
+    case(bp_arg_CudaFDKBackProjection):
 #if RTK_USE_CUDA
       bp = rtk::CudaFDKBackProjectionImageFilter::New();
 #else
@@ -119,7 +119,7 @@ int main(int argc, char * argv[])
       return EXIT_FAILURE;
 #endif
       break;
-    case(method_arg_CudaBackProjection):
+    case(bp_arg_CudaBackProjection):
 #if RTK_USE_CUDA
       bp = rtk::CudaBackProjectionImageFilter::New();
 #else

@@ -94,15 +94,15 @@ int main(int argc, char * argv[])
 
   rtk::ForwardProjectionImageFilter<OutputImageType, OutputImageType>::Pointer forwardProjection;
   
-  switch(args_info.method_arg)
+  switch(args_info.fp_arg)
   {
-  case(method_arg_Joseph):
+  case(fp_arg_Joseph):
     forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
-  case(method_arg_Siddon):
-    forwardProjection = rtk::SiddonForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(method_arg_CudaRayCast):
+    case(fp_arg_RayCastInterpolator):
+      forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+  case(fp_arg_CudaRayCast):
 #if RTK_USE_CUDA
     forwardProjection = rtk::CudaForwardProjectionImageFilter::New();
 #else
@@ -110,8 +110,8 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
 #endif
     break;
-  case(method_arg_RayCastInterpolator):
-    forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+  case(fp_arg_Siddon):
+    forwardProjection = rtk::SiddonForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   default:
     std::cerr << "Unhandled --method value." << std::endl;
