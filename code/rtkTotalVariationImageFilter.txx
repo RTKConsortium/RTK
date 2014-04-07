@@ -137,15 +137,14 @@ void
 TotalVariationImageFilter< TInputImage >
 ::AfterThreadedGenerateData()
 {
-  ThreadIdType    i;
-  RealType        totalVariation;
+  RealType totalVariation = 0;
 
   ThreadIdType numberOfThreads = this->GetNumberOfThreads();
 
   RealType sumOfSquareRoots = NumericTraits< RealType >::Zero;
 
   // Add up the results from all threads
-  for ( i = 0; i < numberOfThreads; i++ )
+  for (ThreadIdType i = 0; i < numberOfThreads; i++ )
     {
     totalVariation += m_SumOfSquareRoots[i];
     }
