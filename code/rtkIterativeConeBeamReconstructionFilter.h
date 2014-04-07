@@ -23,14 +23,12 @@
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkSiddonForwardProjectionImageFilter.h"
-#if RTK_USE_CUDA
-  #include "rtkCudaForwardProjectionImageFilter.h"
-#endif
-
 // Back projection filters
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
+
 #if RTK_USE_CUDA
+  #include "rtkCudaForwardProjectionImageFilter.h"
   #include "rtkCudaBackProjectionImageFilter.h"
 #endif
 
@@ -61,8 +59,13 @@ public:
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Typedefs of each subfilter of this composite filter */
+#if RTK_USE_CUDA
+  typedef rtk::CudaForwardProjectionImageFilter< TOutputImage, TOutputImage >  ForwardProjectionFilterType;
+  typedef rtk::CudaBackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
+#else
   typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >  ForwardProjectionFilterType;
   typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
+#endif
   typedef typename ForwardProjectionFilterType::Pointer                    ForwardProjectionPointerType;
   typedef typename BackProjectionFilterType::Pointer                       BackProjectionPointerType;
 
