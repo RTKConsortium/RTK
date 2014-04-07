@@ -94,65 +94,64 @@ class TotalVariationDenoisingBPDQImageFilter :
 {
 public:
 
-    /** Standard class typedefs. */
-    typedef TotalVariationDenoisingBPDQImageFilter Self;
-    typedef itk::ImageToImageFilter< TOutputImage, TOutputImage> Superclass;
-    typedef itk::SmartPointer<Self> Pointer;
-    typedef itk::SmartPointer<const Self>  ConstPointer;
+  /** Standard class typedefs. */
+  typedef TotalVariationDenoisingBPDQImageFilter               Self;
+  typedef itk::ImageToImageFilter< TOutputImage, TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                              Pointer;
+  typedef itk::SmartPointer<const Self>                        ConstPointer;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self)
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, ImageToImageFilter)
 
-    /** Sub filter type definitions */
-    typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
-            typename TOutputImage::ValueType, 
-            typename TOutputImage::ValueType, 
-            TGradientOutputImage> GradientFilterType;
-    typedef itk::MultiplyImageFilter<TOutputImage> MultiplyFilterType;
-    typedef itk::SubtractImageFilter<TOutputImage> SubtractImageFilterType;
-    typedef itk::SubtractImageFilter<TGradientOutputImage> SubtractGradientFilterType;
-    typedef MagnitudeThresholdImageFilter<TGradientOutputImage> MagnitudeThresholdFilterType;
-    typedef BackwardDifferenceDivergenceImageFilter<TGradientOutputImage, TOutputImage> DivergenceFilterType;
+  /** Sub filter type definitions */
+  typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
+            typename TOutputImage::ValueType, typename TOutputImage::ValueType, 
+            TGradientOutputImage>                                                     GradientFilterType;
+  typedef itk::MultiplyImageFilter<TOutputImage>                                      MultiplyFilterType;
+  typedef itk::SubtractImageFilter<TOutputImage>                                      SubtractImageFilterType;
+  typedef itk::SubtractImageFilter<TGradientOutputImage>                              SubtractGradientFilterType;
+  typedef MagnitudeThresholdImageFilter<TGradientOutputImage>                         MagnitudeThresholdFilterType;
+  typedef BackwardDifferenceDivergenceImageFilter<TGradientOutputImage, TOutputImage> DivergenceFilterType;
 
-    itkGetMacro(NumberOfIterations, int)
-    itkSetMacro(NumberOfIterations, int)
+  itkGetMacro(NumberOfIterations, int)
+  itkSetMacro(NumberOfIterations, int)
 
-    itkSetMacro(Lambda, double)
-    itkGetMacro(Lambda, double)
+  itkSetMacro(Lambda, double)
+  itkGetMacro(Lambda, double)
 
-    void SetDimensionsProcessed(bool* arg);
+  void SetDimensionsProcessed(bool* arg);
 
-    protected:
-        TotalVariationDenoisingBPDQImageFilter();
-    virtual ~TotalVariationDenoisingBPDQImageFilter() {}
+protected:
+  TotalVariationDenoisingBPDQImageFilter();
+  virtual ~TotalVariationDenoisingBPDQImageFilter() {}
 
-    virtual void GenerateData();
+  virtual void GenerateData();
 
-    virtual void GenerateOutputInformation();
+  virtual void GenerateOutputInformation();
 
-    /** Sub filter pointers */
-    typename GradientFilterType::Pointer             m_GradientFilter;
-    typename GradientFilterType::Pointer             m_ZeroGradientFilter;
-    typename MultiplyFilterType::Pointer             m_MultiplyFilter;
-    typename MultiplyFilterType::Pointer             m_ZeroMultiplyFilter;
-    typename SubtractImageFilterType::Pointer        m_SubtractFilter;
-    typename SubtractGradientFilterType::Pointer     m_SubtractGradientFilter;
-    typename MagnitudeThresholdFilterType::Pointer   m_MagnitudeThresholdFilter;
-    typename DivergenceFilterType::Pointer           m_DivergenceFilter;
+  /** Sub filter pointers */
+  typename GradientFilterType::Pointer             m_GradientFilter;
+  typename GradientFilterType::Pointer             m_ZeroGradientFilter;
+  typename MultiplyFilterType::Pointer             m_MultiplyFilter;
+  typename MultiplyFilterType::Pointer             m_ZeroMultiplyFilter;
+  typename SubtractImageFilterType::Pointer        m_SubtractFilter;
+  typename SubtractGradientFilterType::Pointer     m_SubtractGradientFilter;
+  typename MagnitudeThresholdFilterType::Pointer   m_MagnitudeThresholdFilter;
+  typename DivergenceFilterType::Pointer           m_DivergenceFilter;
 
-    double m_Lambda;
-    int m_NumberOfIterations;
-    bool m_DimensionsProcessed[TOutputImage::ImageDimension];
+  double m_Lambda;
+  int    m_NumberOfIterations;
+  bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
 private:
-    TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
-    void operator=(const Self&); //purposely not implemented
+  TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&); //purposely not implemented
 
-    double m_beta;
-    double m_gamma;
+  double m_Beta;
+  double m_Gamma;
 };
 
 } // end namespace itk

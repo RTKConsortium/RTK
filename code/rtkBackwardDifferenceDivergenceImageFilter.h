@@ -49,10 +49,10 @@ public:
     typedef TInputImage InputImageType;
 
     /** Standard class typedefs. */
-    typedef BackwardDifferenceDivergenceImageFilter Self;
+    typedef BackwardDifferenceDivergenceImageFilter                Self;
     typedef itk::ImageToImageFilter< InputImageType, TOutputImage> Superclass;
-    typedef itk::SmartPointer<Self> Pointer;
-    typedef itk::SmartPointer<const Self>  ConstPointer;
+    typedef itk::SmartPointer<Self>                                Pointer;
+    typedef itk::SmartPointer<const Self>                          ConstPointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -80,9 +80,9 @@ public:
     void SetDimensionsProcessed(bool* DimensionsProcessed);
 
     /** Image typedef support. */
-    typedef typename InputImageType::PixelType InputPixelType;
+    typedef typename InputImageType::PixelType  InputPixelType;
     typedef typename InputImageType::RegionType InputImageRegionType;
-    typedef typename InputImageType::SizeType InputSizeType;
+    typedef typename InputImageType::SizeType   InputSizeType;
     typedef itk::CovariantVector< InputPixelType, InputImageDimension > CovariantVectorType;
 
     protected:
@@ -101,7 +101,7 @@ private:
     BackwardDifferenceDivergenceImageFilter(const Self&); //purposely not implemented
     void operator=(const Self&); //purposely not implemented
 
-    bool m_UseImageSpacing;
+    bool                              m_UseImageSpacing;
     typename TInputImage::SpacingType m_SpacingCoeffs;
 
     // list of the dimensions along which the divergence has

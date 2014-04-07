@@ -29,10 +29,10 @@ class ConjugateGradientGetR_kPlusOneImageFilter : public itk::ImageToImageFilter
 {
 public:
     /** Standard class typedefs. */
-    typedef ConjugateGradientGetR_kPlusOneImageFilter             Self;
+    typedef ConjugateGradientGetR_kPlusOneImageFilter          Self;
     typedef itk::ImageToImageFilter< TInputImage, TInputImage> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
-    typedef typename TInputImage::RegionType    OutputImageRegionType;
+    typedef itk::SmartPointer< Self >                          Pointer;
+    typedef typename TInputImage::RegionType                   OutputImageRegionType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -87,7 +87,7 @@ private:
     // The values are then sumed
     std::vector<float> m_SquaredNormR_kVector;
     std::vector<float> m_SquaredNormR_kPlusOneVector;
-    std::vector<float> m_pkt_A_pkVector;
+    std::vector<float> m_PktApkVector;
 
 };
 } //namespace ITK

@@ -39,54 +39,55 @@ class DivergenceOfGradientConjugateGradientOperator :
         public ConjugateGradientOperator< TInputImage >
 {
 public:
-    /** Extract dimension from input and output image. */
-    itkStaticConstMacro(InputImageDimension, unsigned int,
-                        TInputImage::ImageDimension);
 
-    /** Convenient typedefs for simplifying declarations. */
-    typedef TInputImage InputImageType;
+  /** Extract dimension from input and output image. */
+  itkStaticConstMacro(InputImageDimension, unsigned int,
+                      TInputImage::ImageDimension);
 
-    /** Standard class typedefs. */
-    typedef DivergenceOfGradientConjugateGradientOperator Self;
-    typedef itk::ImageToImageFilter< InputImageType, InputImageType> Superclass;
-    typedef itk::SmartPointer<Self> Pointer;
-    typedef itk::SmartPointer<const Self>  ConstPointer;
+  /** Convenient typedefs for simplifying declarations. */
+  typedef TInputImage InputImageType;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Standard class typedefs. */
+  typedef DivergenceOfGradientConjugateGradientOperator            Self;
+  typedef itk::ImageToImageFilter< InputImageType, InputImageType> Superclass;
+  typedef itk::SmartPointer<Self>                                  Pointer;
+  typedef itk::SmartPointer<const Self>                            ConstPointer;
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(DivergenceOfGradientConjugateGradientOperator, ImageToImageFilter)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self)
 
-    /** Image typedef support. */
-    typedef typename InputImageType::PixelType InputPixelType;
-    typedef typename InputImageType::RegionType InputImageRegionType;
-    typedef typename InputImageType::SizeType InputSizeType;
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(DivergenceOfGradientConjugateGradientOperator, ImageToImageFilter)
 
-    /** Sub filter type definitions */
-    typedef ForwardDifferenceGradientImageFilter<TInputImage> GradientFilterType;
-    typedef typename GradientFilterType::OutputImageType GradientImageType;
-    typedef BackwardDifferenceDivergenceImageFilter<GradientImageType> DivergenceFilterType;
+  /** Image typedef support. */
+  typedef typename InputImageType::PixelType  InputPixelType;
+  typedef typename InputImageType::RegionType InputImageRegionType;
+  typedef typename InputImageType::SizeType   InputSizeType;
 
-    void SetDimensionsProcessed(bool* arg);
+  /** Sub filter type definitions */
+  typedef ForwardDifferenceGradientImageFilter<TInputImage>          GradientFilterType;
+  typedef typename GradientFilterType::OutputImageType               GradientImageType;
+  typedef BackwardDifferenceDivergenceImageFilter<GradientImageType> DivergenceFilterType;
 
-    protected:
-        DivergenceOfGradientConjugateGradientOperator();
-    virtual ~DivergenceOfGradientConjugateGradientOperator() {}
+  void SetDimensionsProcessed(bool* arg);
 
-    virtual void GenerateData();
+protected:
+  DivergenceOfGradientConjugateGradientOperator();
+  virtual ~DivergenceOfGradientConjugateGradientOperator() {}
 
-    virtual void GenerateOutputInformation();
+  virtual void GenerateData();
 
-    /** Sub filter pointers */
-    typename GradientFilterType::Pointer             m_GradientFilter;
-    typename DivergenceFilterType::Pointer           m_DivergenceFilter;
+  virtual void GenerateOutputInformation();
 
-    bool* m_DimensionsProcessed;
+  /** Sub filter pointers */
+  typename GradientFilterType::Pointer             m_GradientFilter;
+  typename DivergenceFilterType::Pointer           m_DivergenceFilter;
+
+  bool* m_DimensionsProcessed;
 
 private:
-    DivergenceOfGradientConjugateGradientOperator(const Self&); //purposely not implemented
-    void operator=(const Self&); //purposely not implemented
+  DivergenceOfGradientConjugateGradientOperator(const Self&); //purposely not implemented
+  void operator=(const Self&); //purposely not implemented
 };
 
 } // end namespace itk

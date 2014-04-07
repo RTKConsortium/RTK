@@ -96,7 +96,7 @@ private:
 
     ConjugateGradientOperatorPointerType m_A;
 
-    int m_NumberOfIterations;
+    int  m_NumberOfIterations;
     bool m_MeasureExecutionTimes;
 
 };

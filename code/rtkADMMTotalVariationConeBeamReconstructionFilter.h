@@ -123,9 +123,9 @@ class ADMMTotalVariationConeBeamReconstructionFilter : public rtk::IterativeCone
 {
 public:
     /** Standard class typedefs. */
-    typedef ADMMTotalVariationConeBeamReconstructionFilter             Self;
-    typedef itk::ImageToImageFilter<TOutputImage, TOutputImage> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
+    typedef ADMMTotalVariationConeBeamReconstructionFilter       Self;
+    typedef itk::ImageToImageFilter<TOutputImage, TOutputImage>  Superclass;
+    typedef itk::SmartPointer< Self >                            Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -194,11 +194,13 @@ protected:
     virtual void GenerateData();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter2, m_SubtractFilter3;
+    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter2; 
+    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter3;
     typename MultiplyVolumeFilterType::Pointer                                  m_MultiplyFilter;
     typename MultiplyVolumeFilterType::Pointer                                  m_ZeroMultiplyVolumeFilter;
     typename MultiplyGradientFilterType::Pointer                                m_ZeroMultiplyGradientFilter;
-    typename ImageGradientFilterType::Pointer                                   m_GradientFilter1, m_GradientFilter2;
+    typename ImageGradientFilterType::Pointer                                   m_GradientFilter1; 
+    typename ImageGradientFilterType::Pointer                                   m_GradientFilter2;
     typename SubtractVolumeFilterType::Pointer                                  m_SubtractVolumeFilter;
     typename AddGradientsFilterType::Pointer                                    m_AddGradientsFilter;
     typename ImageDivergenceFilterType::Pointer                                 m_DivergenceFilter;
@@ -206,7 +208,8 @@ protected:
     typename SoftThresholdTVFilterType::Pointer                                 m_SoftThresholdFilter;
     typename CGOperatorFilterType::Pointer                                      m_CGOperator;
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
-    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient, m_BackProjectionFilter;
+    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient;
+    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -222,9 +225,12 @@ private:
     ADMMTotalVariationConeBeamReconstructionFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
-    float m_Alpha, m_Beta;
-    int m_AL_iterations, m_CG_iterations;
-    bool m_MeasureExecutionTimes;
+    float  m_Alpha;
+    float  m_Beta;
+    int    m_AL_iterations;
+    int    m_CG_iterations;
+    bool   m_MeasureExecutionTimes;
+
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
     /** Internal variables storing the current forward
