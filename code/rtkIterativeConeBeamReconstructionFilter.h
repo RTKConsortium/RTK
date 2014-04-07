@@ -55,16 +55,16 @@ class ITK_EXPORT IterativeConeBeamReconstructionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef IterativeConeBeamReconstructionFilter                   Self;
+  typedef IterativeConeBeamReconstructionFilter              Self;
   typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >   ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >      BackProjectionFilterType;
-  typedef typename ForwardProjectionFilterType::Pointer                           ForwardProjectionPointerType;
-  typedef typename BackProjectionFilterType::Pointer                              BackProjectionPointerType;
+  typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >  ForwardProjectionFilterType;
+  typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
+  typedef typename ForwardProjectionFilterType::Pointer                    ForwardProjectionPointerType;
+  typedef typename BackProjectionFilterType::Pointer                       BackProjectionPointerType;
 
   /** Standard New method. */
   itkNewMacro(Self);

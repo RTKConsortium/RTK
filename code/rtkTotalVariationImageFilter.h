@@ -52,7 +52,7 @@ class TotalVariationImageFilter:
 {
 public:
   /** Standard Self typedef */
-  typedef TotalVariationImageFilter                          Self;
+  typedef TotalVariationImageFilter                      Self;
   typedef ImageToImageFilter< TInputImage, TInputImage > Superclass;
   typedef SmartPointer< Self >                           Pointer;
   typedef SmartPointer< const Self >                     ConstPointer;

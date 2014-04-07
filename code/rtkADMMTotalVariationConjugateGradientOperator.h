@@ -101,9 +101,9 @@ class ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOper
 {
 public:
     /** Standard class typedefs. */
-    typedef ADMMTotalVariationConjugateGradientOperator             Self;
-    typedef ConjugateGradientOperator< TOutputImage > Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
+    typedef ADMMTotalVariationConjugateGradientOperator   Self;
+    typedef ConjugateGradientOperator< TOutputImage >     Superclass;
+    typedef itk::SmartPointer< Self >                     Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -155,6 +155,7 @@ protected:
     typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
     typename DivergenceFilterType::Pointer            m_DivergenceFilter;
     typename GradientFilterType::Pointer              m_GradientFilter;
+
     float m_Beta;
 
     /** When the inputs have the same type, ITK checks whether they occupy the

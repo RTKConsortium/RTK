@@ -80,9 +80,9 @@ class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeB
 {
 public:
     /** Standard class typedefs. */
-    typedef ConjugateGradientConeBeamReconstructionFilter             Self;
-    typedef itk::ImageToImageFilter<TOutputImage, TOutputImage> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
+    typedef ConjugateGradientConeBeamReconstructionFilter        Self;
+    typedef itk::ImageToImageFilter<TOutputImage, TOutputImage>  Superclass;
+    typedef itk::SmartPointer< Self >                            Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -130,7 +130,8 @@ protected:
     typename ConjugateGradientFilterType::Pointer                               m_ConjugateGradientFilter;
     typename CGOperatorFilterType::Pointer                                      m_CGOperator;
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
-    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient, m_BackProjectionFilter;
+    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient;
+    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -146,11 +147,12 @@ private:
     ConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
-    int m_NumberOfIterations;
-    bool m_MeasureExecutionTimes;
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-    int m_CurrentForwardProjectionConfiguration;
-    int m_CurrentBackProjectionConfiguration;
+
+    int   m_NumberOfIterations;
+    bool  m_MeasureExecutionTimes;
+    int   m_CurrentForwardProjectionConfiguration;
+    int   m_CurrentBackProjectionConfiguration;
 
 };
 } //namespace ITK

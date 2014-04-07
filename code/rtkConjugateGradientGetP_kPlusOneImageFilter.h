@@ -30,10 +30,10 @@ class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter
 {
 public:
     /** Standard class typedefs. */
-    typedef ConjugateGradientGetP_kPlusOneImageFilter             Self;
-    typedef itk::ImageToImageFilter< TInputImage, TInputImage> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
-    typedef typename TInputImage::RegionType    OutputImageRegionType;
+    typedef ConjugateGradientGetP_kPlusOneImageFilter           Self;
+    typedef itk::ImageToImageFilter< TInputImage, TInputImage>  Superclass;
+    typedef itk::SmartPointer< Self >                           Pointer;
+    typedef typename TInputImage::RegionType                    OutputImageRegionType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

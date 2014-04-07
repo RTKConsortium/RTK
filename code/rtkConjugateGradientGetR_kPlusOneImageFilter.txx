@@ -94,7 +94,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
     {
     m_SquaredNormR_kVector.push_back(0);
     m_SquaredNormR_kPlusOneVector.push_back(0);
-    m_pkt_A_pkVector.push_back(0);
+    m_PktApkVector.push_back(0);
     }
 }
 
@@ -123,7 +123,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   A_p_k_It.GoToBegin();
   while(!p_k_It.IsAtEnd())
     {
-    m_pkt_A_pkVector[threadId] += p_k_It.Get() * A_p_k_It.Get();
+    m_PktApkVector[threadId] += p_k_It.Get() * A_p_k_It.Get();
     ++p_k_It;
     ++A_p_k_It;
     }
@@ -136,7 +136,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   for (int i=0; i<this->GetNumberOfThreads(); i++)
     {
     squaredNormR_k += m_SquaredNormR_kVector[i];
-    p_k_t_A_p_k += m_pkt_A_pkVector[i];
+    p_k_t_A_p_k += m_PktApkVector[i];
     }
   float alphak = squaredNormR_k / (p_k_t_A_p_k + eps);
 
@@ -171,7 +171,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
     {
     m_SquaredNormR_k += m_SquaredNormR_kVector[i];
     m_SquaredNormR_kPlusOne += m_SquaredNormR_kPlusOneVector[i];
-    p_k_t_A_p_k += m_pkt_A_pkVector[i];
+    p_k_t_A_p_k += m_PktApkVector[i];
     }
   m_Alphak = m_SquaredNormR_k / (p_k_t_A_p_k + eps);
 }

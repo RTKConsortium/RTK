@@ -85,62 +85,60 @@ template< typename TOutputImage >
 class ReconstructionConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
-    /** Standard class typedefs. */
-    typedef ReconstructionConjugateGradientOperator             Self;
-    typedef ConjugateGradientOperator< TOutputImage > Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
+  /** Standard class typedefs. */
+  typedef ReconstructionConjugateGradientOperator    Self;
+  typedef ConjugateGradientOperator< TOutputImage >  Superclass;
+  typedef itk::SmartPointer< Self >                  Pointer;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self)
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator)
 
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >    BackProjectionFilterType;
-    typedef typename BackProjectionFilterType::Pointer                      BackProjectionFilterPointer;
+  typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >    BackProjectionFilterType;
+  typedef typename BackProjectionFilterType::Pointer                      BackProjectionFilterPointer;
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
-    typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
+  typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
+  typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
 
-    typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
+  typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
 
-    /** Set the backprojection filter*/
-    void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
+  /** Set the backprojection filter*/
+  void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
 
-    /** Set the forward projection filter*/
-    void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
+  /** Set the forward projection filter*/
+  void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
 
-    /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-    void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+  /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
+  void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
 
 protected:
-    ReconstructionConjugateGradientOperator();
-    ~ReconstructionConjugateGradientOperator(){}
+  ReconstructionConjugateGradientOperator();
+  ~ReconstructionConjugateGradientOperator(){}
 
-    /** Does the real work. */
-    virtual void GenerateData();
+  /** Does the real work. */
+  virtual void GenerateData();
 
-    /** Member pointers to the filters used internally (for convenience)*/
-    BackProjectionFilterPointer            m_BackProjectionFilter;
-    ForwardProjectionFilterPointer         m_ForwardProjectionFilter;
+  /** Member pointers to the filters used internally (for convenience)*/
+  BackProjectionFilterPointer            m_BackProjectionFilter;
+  ForwardProjectionFilterPointer         m_ForwardProjectionFilter;
 
-    typename MultiplyFilterType::Pointer              m_MultiplyFilter;
-    typename MultiplyFilterType::Pointer              m_ZeroMultiplyProjectionFilter;
-    typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyFilter;
+  typename MultiplyFilterType::Pointer              m_ZeroMultiplyProjectionFilter;
+  typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
 
-    /** When the inputs have the same type, ITK checks whether they occupy the
-    * same physical space or not. Obviously they dont, so we have to remove this check
-    */
-    void VerifyInputInformation(){}
+  /** When the inputs have the same type, ITK checks whether they occupy the
+   * same physical space or not. Obviously they dont, so we have to remove this check */
+  void VerifyInputInformation(){}
 
-    /** The volume and the projections must have different requested regions
-    */
-    void GenerateInputRequestedRegion();
-    void GenerateOutputInformation();
+  /** The volume and the projections must have different requested regions */
+  void GenerateInputRequestedRegion();
+  void GenerateOutputInformation();
 
 private:
-    ReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
+  ReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
+  void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK
