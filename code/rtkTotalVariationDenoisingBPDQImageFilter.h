@@ -145,7 +145,7 @@ public:
 
     double m_Lambda;
     int m_NumberOfIterations;
-    bool* m_DimensionsProcessed;
+    bool m_DimensionsProcessed[TOutputImage::ImageDimension];
 
 private:
     TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented

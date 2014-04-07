@@ -210,7 +210,7 @@ private:
   // list of the dimensions along which the gradient has
   // to be computed. The components on other dimensions
   // are set to zero
-  bool* m_DimensionsProcessed;
+  bool m_DimensionsProcessed[TInputImage::ImageDimension];
 };
 } // end namespace itk
 

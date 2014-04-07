@@ -32,10 +32,9 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
     m_NumberOfIterations = 1;
 
     // Default behaviour is to process all dimensions
-    this->m_DimensionsProcessed = new bool[TOutputImage::ImageDimension];
     for (int dim = 0; dim < TOutputImage::ImageDimension; dim++)
       {
-        m_DimensionsProcessed[dim] = true;
+      m_DimensionsProcessed[dim] = true;
       }
 
     // Create the sub filters
