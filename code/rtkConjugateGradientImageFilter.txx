@@ -44,14 +44,16 @@ void ConjugateGradientImageFilter<OutputImageType>::SetB(const OutputImageType* 
 }
 
 template<typename OutputImageType>
-typename OutputImageType::Pointer ConjugateGradientImageFilter<OutputImageType>::GetX()
+typename ConjugateGradientImageFilter<OutputImageType>::OutputImagePointer 
+ConjugateGradientImageFilter<OutputImageType>::GetX()
 {
   return static_cast< OutputImageType * >
           ( this->itk::ProcessObject::GetInput(0) );
 }
 
 template<typename OutputImageType>
-typename OutputImageType::Pointer ConjugateGradientImageFilter<OutputImageType>::GetB()
+typename ConjugateGradientImageFilter<OutputImageType>::OutputImagePointer 
+ConjugateGradientImageFilter<OutputImageType>::GetB()
 {
   return static_cast< OutputImageType * >
           ( this->itk::ProcessObject::GetInput(1) );
