@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
   tv->SetNumberOfIterations(args_info.niter_arg);
 
   bool* dimsProcessed = new bool[Dimension];
-  for (int i=0; i<Dimension; i++)
+  for (unsigned int i=0; i<Dimension; i++)
     {
     if ((args_info.dim_given) && (args_info.dim_arg[i] == 0)) dimsProcessed[i] = false;
     else dimsProcessed[i] = true;
