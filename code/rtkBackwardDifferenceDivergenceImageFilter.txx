@@ -39,10 +39,9 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
   this->SetUseImageSpacing(true);
 
   // default behaviour is to process all dimensions
-  this->m_DimensionsProcessed = new bool[TInputImage::ImageDimension];
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
-      m_DimensionsProcessed[dim] = true;
+    m_DimensionsProcessed[dim] = true;
     }
 }
 
@@ -158,17 +157,17 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 
   float div;
   while(!oit.IsAtEnd())
-  {
-      div = 0;
-      // Compute the local differences around the central pixel
-      for (int k = 0; k < dimsToProcess.size(); k++)
+    {
+    div = 0;
+    // Compute the local differences around the central pixel
+    for (int k = 0; k < dimsToProcess.size(); k++)
       {
-          div += (iit.GetPixel(c)[dimsToProcess[k]] - iit.GetPixel(c - strides[dimsToProcess[k]])[dimsToProcess[k]]) / m_SpacingCoeffs[dimsToProcess[k]];
+      div += (iit.GetPixel(c)[dimsToProcess[k]] - iit.GetPixel(c - strides[dimsToProcess[k]])[dimsToProcess[k]]) / m_SpacingCoeffs[dimsToProcess[k]];
       }
-      oit.Set(div);
-      ++oit;
-      ++iit;
-  }
+    oit.Set(div);
+    ++oit;
+    ++iit;
+    }
 }
 
 template <class TInputImage, class TOutputImage>

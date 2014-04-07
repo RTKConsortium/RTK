@@ -43,7 +43,6 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   this->m_UseImageDirection = true;
 
   // default behaviour is to process all dimensions
-  this->m_DimensionsProcessed = new bool[TInputImage::ImageDimension];
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
     m_DimensionsProcessed[dim] = true;

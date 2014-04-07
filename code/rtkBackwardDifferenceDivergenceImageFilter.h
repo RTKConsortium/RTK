@@ -108,7 +108,7 @@ private:
     // to be computed. The components on other dimensions
     // are ignored for performance, but the gradient filter
     // sets them to zero anyway
-    bool* m_DimensionsProcessed;
+    bool m_DimensionsProcessed[TInputImage::ImageDimension];
 };
 
 } // end namespace itk
