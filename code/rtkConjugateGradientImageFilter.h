@@ -45,12 +45,13 @@ class ConjugateGradientImageFilter : public itk::ImageToImageFilter< OutputImage
 {
 public:
     /** Standard class typedefs. */
-    typedef ConjugateGradientImageFilter             Self;
-    typedef itk::ImageToImageFilter< OutputImageType,  OutputImageType> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
+    typedef ConjugateGradientImageFilter                                              Self;
+    typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                Superclass;
+    typedef itk::SmartPointer< Self >                                                 Pointer;
     typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
-    typedef ConjugateGradientOperator<OutputImageType> ConjugateGradientOperatorType;
-    typedef typename ConjugateGradientOperatorType::Pointer ConjugateGradientOperatorPointerType;
+    typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
+    typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
+    typedef typename OutputImageType::Pointer                                         OutputImagePointer;
     typedef typename rtk::ConjugateGradientGetP_kPlusOneImageFilter<OutputImageType>  GetP_kPlusOne_FilterType;
     typedef typename rtk::ConjugateGradientGetR_kPlusOneImageFilter<OutputImageType>  GetR_kPlusOne_FilterType;
     typedef typename rtk::ConjugateGradientGetX_kPlusOneImageFilter<OutputImageType>  GetX_kPlusOne_FilterType;
@@ -80,8 +81,8 @@ protected:
     ConjugateGradientImageFilter();
     ~ConjugateGradientImageFilter(){}
 
-    typename OutputImageType::Pointer GetX();
-    typename OutputImageType::Pointer GetB();
+    OutputImagePointer GetX();
+    OutputImagePointer GetB();
 
     /** Does the real work. */
     virtual void GenerateData();
