@@ -160,7 +160,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
     {
     div = 0;
     // Compute the local differences around the central pixel
-    for (int k = 0; k < dimsToProcess.size(); k++)
+    for (unsigned int k = 0; k < dimsToProcess.size(); k++)
       {
       div += (iit.GetPixel(c)[dimsToProcess[k]] - iit.GetPixel(c - strides[dimsToProcess[k]])[dimsToProcess[k]]) / m_SpacingCoeffs[dimsToProcess[k]];
       }
@@ -189,7 +189,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 
   typename TOutputImage::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
 
-  for (int k=0; k<dimsToProcess.size(); k++)
+  for (unsigned int k=0; k<dimsToProcess.size(); k++)
     {
     // Create a slice region at the border of the largest possible region
     typename TOutputImage::RegionType slice = largest;
