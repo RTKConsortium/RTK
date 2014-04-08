@@ -225,11 +225,11 @@ private:
     ADMMTotalVariationConeBeamReconstructionFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
-    float  m_Alpha;
-    float  m_Beta;
-    int    m_AL_iterations;
-    int    m_CG_iterations;
-    bool   m_MeasureExecutionTimes;
+    float           m_Alpha;
+    float           m_Beta;
+    unsigned int    m_AL_iterations;
+    unsigned int    m_CG_iterations;
+    bool            m_MeasureExecutionTimes;
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
