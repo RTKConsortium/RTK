@@ -169,12 +169,14 @@ RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest
              DATA{Data/Input/GeometricPhantom/Geometries.txt})
 
 ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
-IF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+if(RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtksarttest RTK rtkcuda)
-ELSE()
+else()
   TARGET_LINK_LIBRARIES(rtksarttest RTK)
-ENDIF()
-ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
+endif()
+if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+  ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
+endif()
 ADD_CUDA_TEST(rtksart rtksarttest.cxx)
 
 ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
