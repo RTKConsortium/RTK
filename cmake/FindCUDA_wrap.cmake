@@ -89,7 +89,4 @@ if(CUDA_FOUND)
         set(CUDA_HAVE_GPU FALSE CACHE BOOL "Whether CUDA-capable GPU is present")
     endif()
     mark_as_advanced(CUDA_HAVE_GPU)
-
-  # Should RTK be compiled with CUDA ?
-  SET(RTK_USE_CUDA CUDA_FOUND CACHE BOOL "Compile the CUDA parts in RTK ?")
 endif(CUDA_FOUND)

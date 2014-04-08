@@ -42,7 +42,7 @@ FUNCTION(FIND_GCC GCC_PATH GCC_MAJOR GCC_MINOR)
 ENDFUNCTION(FIND_GCC)
 
 # Main code dealing with each version of cuda
-IF(RTK_USE_CUDA)
+IF(CUDA_FOUND)
   IF((CMAKE_SYSTEM_NAME MATCHES "Linux" AND CMAKE_COMPILER_IS_GNUCC) OR APPLE)
     # Compatible gcc can be checked in host_config.h
     SET(GCC_PATH "")
@@ -97,4 +97,4 @@ IF(RTK_USE_CUDA)
           MESSAGE(STATUS "nvcc-check: CUDA 3.2 exception: CUDA_NVCC_FLAGS set to \"${CUDA_NVCC_FLAGS}\"")
       ENDIF()
   ENDIF()
-ENDIF(RTK_USE_CUDA)
+ENDIF(CUDA_FOUND)
