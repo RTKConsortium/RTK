@@ -202,11 +202,11 @@ TARGET_LINK_LIBRARIES(rtkconjugategradientreconstructiontest RTK)
 ADD_TEST(rtkconjugategradientreconstructiontest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradientreconstructiontest)
 ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
 
-ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
-TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest RTK)
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
 if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
+  TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest RTK)
   ADD_TEST(rtkadmmtotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest)
 endif()
 ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx)

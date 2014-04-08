@@ -127,13 +127,13 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
-::SetBetaForCurrentIteration(int iter){
+::SetBetaForCurrentIteration(int iter)
+{
+  float currentBeta = m_Beta * (iter+1) / (float)m_AL_iterations;
 
-    float currentBeta = m_Beta * (iter+1) / m_AL_iterations;
-
-    m_CGOperator->SetBeta(currentBeta);
-    m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * currentBeta));
-    m_MultiplyFilter->SetConstant2( (const float) currentBeta);
+  m_CGOperator->SetBeta(currentBeta);
+  m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * currentBeta));
+  m_MultiplyFilter->SetConstant2( (const float) currentBeta);
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -141,20 +141,21 @@ void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateInputRequestedRegion()
 {
-    // Input 0 is the volume we update
-    typename Superclass::InputImagePointer inputPtr0 =
-            const_cast< TOutputImage * >( this->GetInput(0) );
-    if ( !inputPtr0 )
-        return;
-    inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+  // Input 0 is the volume we update
+  typename Superclass::InputImagePointer inputPtr0 = const_cast< TOutputImage * >( this->GetInput(0) );
+  if ( !inputPtr0 )
+    {
+    return;
+    }
+  inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
-    // Input 1 is the stack of projections to backproject
-    typename Superclass::InputImagePointer  inputPtr1 =
-            const_cast< TOutputImage * >( this->GetInput(1) );
-    if ( !inputPtr1 )
-        return;
-    inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
-
+  // Input 1 is the stack of projections to backproject
+  typename Superclass::InputImagePointer  inputPtr1 = const_cast< TOutputImage * >( this->GetInput(1) );
+  if ( !inputPtr1 )
+    {
+    return;
+    }
+  inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
