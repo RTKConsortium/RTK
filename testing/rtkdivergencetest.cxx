@@ -152,7 +152,7 @@ int main(int, char** )
 
   // Set the dimensions along which gradient and divergence
   // should be computed
-  bool* computeGradientAlongDim = new bool[Dimension];
+  bool computeGradientAlongDim[Dimension];
   computeGradientAlongDim[0] = true;
   computeGradientAlongDim[1] = false;
   computeGradientAlongDim[2] = true;

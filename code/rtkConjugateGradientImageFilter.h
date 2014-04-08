@@ -44,61 +44,61 @@ template< typename OutputImageType>
 class ConjugateGradientImageFilter : public itk::ImageToImageFilter< OutputImageType,  OutputImageType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef ConjugateGradientImageFilter                                              Self;
-    typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                Superclass;
-    typedef itk::SmartPointer< Self >                                                 Pointer;
-    typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
-    typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
-    typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
-    typedef typename OutputImageType::Pointer                                         OutputImagePointer;
-    typedef typename rtk::ConjugateGradientGetP_kPlusOneImageFilter<OutputImageType>  GetP_kPlusOne_FilterType;
-    typedef typename rtk::ConjugateGradientGetR_kPlusOneImageFilter<OutputImageType>  GetR_kPlusOne_FilterType;
-    typedef typename rtk::ConjugateGradientGetX_kPlusOneImageFilter<OutputImageType>  GetX_kPlusOne_FilterType;
+   
+  /** Standard class typedefs. */
+  typedef ConjugateGradientImageFilter                                              Self;
+  typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                Superclass;
+  typedef itk::SmartPointer< Self >                                                 Pointer;
+  typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
+  typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
+  typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
+  typedef typename OutputImageType::Pointer                                         OutputImagePointer;
+  typedef typename rtk::ConjugateGradientGetP_kPlusOneImageFilter<OutputImageType>  GetP_kPlusOne_FilterType;
+  typedef typename rtk::ConjugateGradientGetR_kPlusOneImageFilter<OutputImageType>  GetR_kPlusOne_FilterType;
+  typedef typename rtk::ConjugateGradientGetX_kPlusOneImageFilter<OutputImageType>  GetX_kPlusOne_FilterType;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self)
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(ConjugateGradientImageFilter, itk::ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ConjugateGradientImageFilter, itk::ImageToImageFilter)
 
-    /** Get and Set macro*/
-    itkGetMacro(NumberOfIterations, int)
-    itkSetMacro(NumberOfIterations, int)
+  /** Get and Set macro*/
+  itkGetMacro(NumberOfIterations, int)
+  itkSetMacro(NumberOfIterations, int)
+  
+  itkSetMacro(MeasureExecutionTimes, bool)
+  itkGetMacro(MeasureExecutionTimes, bool)
 
-    itkSetMacro(MeasureExecutionTimes, bool)
-    itkGetMacro(MeasureExecutionTimes, bool)
+  void SetA(ConjugateGradientOperatorPointerType _arg );
 
-    void SetA(ConjugateGradientOperatorPointerType _arg );
+  /** The input image to be updated.*/
+  void SetX(const OutputImageType* OutputImage);
 
-    /** The input image to be updated.*/
-    void SetX(const OutputImageType* OutputImage);
-
-    /** The image called "B" in the CG algorithm.*/
-    void SetB(const OutputImageType* OutputImage);
+  /** The image called "B" in the CG algorithm.*/
+  void SetB(const OutputImageType* OutputImage);
 
 protected:
-    ConjugateGradientImageFilter();
-    ~ConjugateGradientImageFilter(){}
+  ConjugateGradientImageFilter();
+  ~ConjugateGradientImageFilter(){}
 
-    OutputImagePointer GetX();
-    OutputImagePointer GetB();
+  OutputImagePointer GetX();
+  OutputImagePointer GetB();
 
-    /** Does the real work. */
-    virtual void GenerateData();
+  /** Does the real work. */
+  virtual void GenerateData();
 
-    /** Conjugate gradient requires the whole image */
-    void GenerateInputRequestedRegion();
+  /** Conjugate gradient requires the whole image */
+  void GenerateInputRequestedRegion();
 
 private:
-    ConjugateGradientImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
+  ConjugateGradientImageFilter(const Self &); //purposely not implemented
+  void operator=(const Self &);  //purposely not implemented
 
-    ConjugateGradientOperatorPointerType m_A;
+  ConjugateGradientOperatorPointerType m_A;
 
-    int  m_NumberOfIterations;
-    bool m_MeasureExecutionTimes;
-
+  int  m_NumberOfIterations;
+  bool m_MeasureExecutionTimes;
 };
 } //namespace RTK
 

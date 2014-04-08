@@ -136,7 +136,7 @@ int main(int, char** )
   GradientFilterType::Pointer grad = GradientFilterType::New();
   grad->SetInput(randomVolumeSource->GetOutput());
 
-  bool* computeGradientAlongDim = new bool[Dimension];
+  bool computeGradientAlongDim[Dimension];
   computeGradientAlongDim[0] = true;
   computeGradientAlongDim[1] = false;
   computeGradientAlongDim[2] = true;
