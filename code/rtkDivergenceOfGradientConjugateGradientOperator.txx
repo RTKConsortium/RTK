@@ -36,23 +36,22 @@ template <class TInputImage>
 DivergenceOfGradientConjugateGradientOperator<TInputImage>
 ::DivergenceOfGradientConjugateGradientOperator()
 {
-    // Default behaviour is to process all dimensions
-    this->m_DimensionsProcessed = new bool[TInputImage::ImageDimension];
-    for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
-      {
-        m_DimensionsProcessed[dim] = true;
-      }
+  // Default behaviour is to process all dimensions
+  for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
+    {
+    m_DimensionsProcessed[dim] = true;
+    }
 
-    // Create the sub filters
-    m_GradientFilter = GradientFilterType::New();
-    m_DivergenceFilter = DivergenceFilterType::New();
+  // Create the sub filters
+  m_GradientFilter = GradientFilterType::New();
+  m_DivergenceFilter = DivergenceFilterType::New();
 
-    // Set their initial connections
-    // These connections change after the first iteration
-    m_DivergenceFilter->SetInput(m_GradientFilter->GetOutput());
+  // Set their initial connections
+  // These connections change after the first iteration
+  m_DivergenceFilter->SetInput(m_GradientFilter->GetOutput());
 
-    // Set whether the sub filters should release their data during pipeline execution
-    m_GradientFilter->ReleaseDataFlagOn();
+  // Set whether the sub filters should release their data during pipeline execution
+  m_GradientFilter->ReleaseDataFlagOn();
 }
 
 template< class TInputImage>

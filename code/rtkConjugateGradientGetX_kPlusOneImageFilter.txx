@@ -28,6 +28,7 @@ template< typename TInputType>
 ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::ConjugateGradientGetX_kPlusOneImageFilter()
 {
   // Create the subfilters
+  m_Alphak = 0;
   m_MultiplyFilter = MultiplyFilterType::New();
   m_AddFilter = AddFilterType::New();
 
