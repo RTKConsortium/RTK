@@ -38,6 +38,10 @@ ConjugateGradientGetP_kPlusOneImageFilter<TInputType>::ConjugateGradientGetP_kPl
   // Create a permanent connection
   m_AddFilter->SetInput1(m_MultiplyFilter->GetOutput());
 
+  m_SquaredNormR_k = 0;
+  m_SquaredNormR_kPlusOne = 0;
+  m_Betak = 0;
+
   this->SetNumberOfRequiredInputs(3);
 }
 

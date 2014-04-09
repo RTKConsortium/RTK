@@ -29,54 +29,55 @@ template< typename TInputImage>
 class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef ConjugateGradientGetP_kPlusOneImageFilter           Self;
-    typedef itk::ImageToImageFilter< TInputImage, TInputImage>  Superclass;
-    typedef itk::SmartPointer< Self >                           Pointer;
-    typedef typename TInputImage::RegionType                    OutputImageRegionType;
+    
+  /** Standard class typedefs. */
+  typedef ConjugateGradientGetP_kPlusOneImageFilter           Self;
+  typedef itk::ImageToImageFilter< TInputImage, TInputImage>  Superclass;
+  typedef itk::SmartPointer< Self >                           Pointer;
+  typedef typename TInputImage::RegionType                    OutputImageRegionType;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self)
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(ConjugateGradientGetP_kPlusOneImageFilter, itk::ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ConjugateGradientGetP_kPlusOneImageFilter, itk::ImageToImageFilter)
 
-    /** Functions to set the inputs */
-    void SetR_kPlusOne(const TInputImage* R_kPlusOne);
-    void SetRk(const TInputImage* Rk);
-    void SetPk(const TInputImage* Pk);
+  /** Functions to set the inputs */
+  void SetR_kPlusOne(const TInputImage* R_kPlusOne);
+  void SetRk(const TInputImage* Rk);
+  void SetPk(const TInputImage* Pk);
 
-    itkSetMacro(SquaredNormR_k, float)
-    itkSetMacro(SquaredNormR_kPlusOne, float)
+  itkSetMacro(SquaredNormR_k, float)
+  itkSetMacro(SquaredNormR_kPlusOne, float)
 
-    /** Typedefs for sub filters */
-    typedef itk::AddImageFilter<TInputImage>      AddFilterType;
-    typedef itk::MultiplyImageFilter<TInputImage> MultiplyFilterType;
+  /** Typedefs for sub filters */
+  typedef itk::AddImageFilter<TInputImage>      AddFilterType;
+  typedef itk::MultiplyImageFilter<TInputImage> MultiplyFilterType;
 
 protected:
-    ConjugateGradientGetP_kPlusOneImageFilter();
-    ~ConjugateGradientGetP_kPlusOneImageFilter(){}
+  ConjugateGradientGetP_kPlusOneImageFilter();
+  ~ConjugateGradientGetP_kPlusOneImageFilter(){}
 
-    typename TInputImage::Pointer GetR_kPlusOne();
-    typename TInputImage::Pointer GetRk();
-    typename TInputImage::Pointer GetPk();
+  typename TInputImage::Pointer GetR_kPlusOne();
+  typename TInputImage::Pointer GetRk();
+  typename TInputImage::Pointer GetPk();
 
-    /** Does the real work. */
-    virtual void GenerateData();
+  /** Does the real work. */
+  virtual void GenerateData();
 
-    void GenerateOutputInformation();
+  void GenerateOutputInformation();
 
 private:
-    ConjugateGradientGetP_kPlusOneImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
+  ConjugateGradientGetP_kPlusOneImageFilter(const Self &); //purposely not implemented
+  void operator=(const Self &);  //purposely not implemented
 
-    float m_SquaredNormR_k;
-    float m_SquaredNormR_kPlusOne;
-    float m_Betak;
+  float m_SquaredNormR_k;
+  float m_SquaredNormR_kPlusOne;
+  float m_Betak;
 
-    /** Pointers to sub filters */
-    typename AddFilterType::Pointer       m_AddFilter;
-    typename MultiplyFilterType::Pointer  m_MultiplyFilter;
+  /** Pointers to sub filters */
+  typename AddFilterType::Pointer       m_AddFilter;
+  typename MultiplyFilterType::Pointer  m_MultiplyFilter;
 
 };
 } //namespace ITK
