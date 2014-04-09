@@ -21,26 +21,25 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkProjectionsReader.h"
+#include "rtkConstantImageSource.h"
 
 #include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
+#include <itkPasteImageFilter.h>
 
 int main(int argc, char * argv[])
 {
   GGO(rtksubselect, args_info);
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(args_info.nsort_flag);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(args_info.submatch_arg);
+  typedef float OutputPixelType;
+  const unsigned int Dimension = 3;
+  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  if(args_info.verbose_flag)
-    std::cout << "Regular expression matches "
-              << names->GetFileNames().size()
-              << " file(s)..."
-              << std::endl;
+  // Projections reader
+  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  ReaderType::Pointer reader = ReaderType::New();
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtksubselect>(reader, args_info);
+  reader->Update();
 
   // Geometry
   if(args_info.verbose_flag)
@@ -53,46 +52,75 @@ int main(int argc, char * argv[])
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
+  // Compute the indices of the selected projections
+  std::vector<int> indices;
+  int n = geometryReader->GetOutputObject()->GetGantryAngles().size();
+  if(args_info.list_given)
+    for(unsigned int i=0; i<args_info.list_given; i++)
+      {
+        indices.push_back(args_info.list_arg[i]);
+      }
+  else
+    for(int noProj=args_info.first_arg; noProj<n; noProj+=args_info.step_arg)
+      {
+        indices.push_back(noProj);
+      }
+
   // Output RTK geometry object
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer outputGeometry = GeometryType::New();
 
-  // Output filenames
-  std::vector< std::string > outputProjectionsNames;
+  // Output projections object
+  typedef rtk::ConstantImageSource< OutputImageType > SourceType;
+  SourceType::Pointer source = SourceType::New();
+  source->SetInformationFromImage(reader->GetOutput());
+  OutputImageType::SizeType outputSize = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
+  outputSize[Dimension - 1] = indices.size();
+  source->SetSize(outputSize);
+  source->SetConstant(0);
+  source->Update();
 
-  // Subsection
-  int n = geometryReader->GetOutputObject()->GetGantryAngles().size();
-  if(args_info.list_given)
+  // Fill in the outputGeometry and the output projections
+  typedef itk::PasteImageFilter<OutputImageType> PasteType;
+  PasteType::Pointer paste = PasteType::New();
+  paste->SetSourceImage(reader->GetOutput());
+  paste->SetDestinationImage(source->GetOutput());
+
+  OutputImageType::RegionType sourceRegion;
+  OutputImageType::IndexType destinationIndex;
+  for (unsigned int i=0; i<indices.size(); i++)
     {
-    for(unsigned int i=0; i<args_info.list_given; i++)
+    // If it is not the first projection, we need to use the output of
+    // the paste filter as input
+    if(i)
       {
-      int noProj = args_info.list_arg[i];
-      outputGeometry->AddProjection(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[noProj],
-                                    geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[noProj],
-                                    geometryReader->GetOutputObject()->GetGantryAngles()[noProj],
-                                    geometryReader->GetOutputObject()->GetProjectionOffsetsX()[noProj],
-                                    geometryReader->GetOutputObject()->GetProjectionOffsetsY()[noProj],
-                                    geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[noProj],
-                                    geometryReader->GetOutputObject()->GetInPlaneAngles()[noProj],
-                                    geometryReader->GetOutputObject()->GetSourceOffsetsX()[noProj],
-                                    geometryReader->GetOutputObject()->GetSourceOffsetsY()[noProj]);
-      outputProjectionsNames.push_back(names->GetFileNames()[noProj]);
+      OutputImageType::Pointer pimg = paste->GetOutput();
+      pimg->DisconnectPipeline();
+      paste->SetDestinationImage(pimg);
       }
+
+    sourceRegion = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
+    sourceRegion.SetIndex(Dimension - 1, indices[i]);
+    sourceRegion.SetSize(Dimension - 1, 1);
+    paste->SetSourceRegion(sourceRegion);
+
+    destinationIndex.Fill(0);
+    destinationIndex[Dimension -1] = i;
+    paste->SetDestinationIndex(destinationIndex);
+
+    paste->Update();
+
+    // Fill in the output geometry object
+    outputGeometry->AddProjection(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[indices[i]],
+                                  geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[indices[i]],
+                                  geometryReader->GetOutputObject()->GetGantryAngles()[indices[i]],
+                                  geometryReader->GetOutputObject()->GetProjectionOffsetsX()[indices[i]],
+                                  geometryReader->GetOutputObject()->GetProjectionOffsetsY()[indices[i]],
+                                  geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[indices[i]],
+                                  geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
+                                  geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
+                                  geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
     }
-  else
-    for(int noProj=args_info.first_arg; noProj<n; noProj+=args_info.step_arg)
-      {
-      outputGeometry->AddProjection(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[noProj],
-                                    geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[noProj],
-                                    geometryReader->GetOutputObject()->GetGantryAngles()[noProj],
-                                    geometryReader->GetOutputObject()->GetProjectionOffsetsX()[noProj],
-                                    geometryReader->GetOutputObject()->GetProjectionOffsetsY()[noProj],
-                                    geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[noProj],
-                                    geometryReader->GetOutputObject()->GetInPlaneAngles()[noProj],
-                                    geometryReader->GetOutputObject()->GetSourceOffsetsX()[noProj],
-                                    geometryReader->GetOutputObject()->GetSourceOffsetsY()[noProj]);
-      outputProjectionsNames.push_back(names->GetFileNames()[noProj]);
-      }
 
   // Geometry writer
   if(args_info.verbose_flag)
@@ -106,27 +134,13 @@ int main(int argc, char * argv[])
   xmlWriter->SetObject( &(*outputGeometry) );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-
-  // Projections reader
-  if(args_info.verbose_flag)
-    std::cout << "Reading and writing projections in "
-              << args_info.out_proj_arg
-              << "..."
-              << std::endl;
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( outputProjectionsNames );
-
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.out_proj_arg );
-  writer->SetInput( reader->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
-  writer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
+  writer->SetInput( paste->GetOutput() );
+  //TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
+//  writer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
