@@ -114,7 +114,7 @@ int main(int, char** )
   TVdenoising->SetNumberOfIterations(15);
   TVdenoising->SetLambda(0.005);
   bool dimsProcessed[Dimension];
-  for (int i=0; i<Dimension; i++)
+  for (unsigned int i=0; i<Dimension; i++)
     {
     dimsProcessed[i] = true;
     }
