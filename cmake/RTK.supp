@@ -5366,3 +5366,12 @@
    fun:malloc
    fun:H5FL_reg_malloc
 }
+{
+   GGO
+   Memcheck:Leak
+   fun:malloc
+   fun:update_arg.isra.2.constprop.3
+   fun:cmdline_parser_rtksimulatedgeometry_internal
+   obj:*
+   obj:*
+}
