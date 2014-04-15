@@ -170,6 +170,8 @@ IF(RTK_USE_CUDA)
   INCLUDE_DIRECTORIES(utilities/ITKCudaCommon/include)
 ENDIF(RTK_USE_CUDA)
 
+INCLUDE_DIRECTORIES(utilities/gift)
+
 ADD_SUBDIRECTORY(code)
 
 #=========================================================
