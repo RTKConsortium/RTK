@@ -31,6 +31,8 @@ ADD_SUBDIRECTORY(rtkextractshroudsignal)
 ADD_SUBDIRECTORY(rtkmedian)
 ADD_SUBDIRECTORY(rtklut)
 ADD_SUBDIRECTORY(rtktotalvariationdenoising)
+ADD_SUBDIRECTORY(rtkwaveletssoftthresholding)
+ADD_SUBDIRECTORY(rtkadmmwavelets)
 ADD_SUBDIRECTORY(rtkadmmtotalvariation)
 ADD_SUBDIRECTORY(rtkconjugategradient)
 
