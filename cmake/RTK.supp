@@ -5355,18 +5355,6 @@
    fun:(below main)
 }
 {
-   HDF5
-   Memcheck:Leak
-   fun:malloc
-   fun:H5MM_xstrdup
-}
-{
-   HDF5
-   Memcheck:Leak
-   fun:malloc
-   fun:H5FL_reg_malloc
-}
-{
    GGO
    Memcheck:Leak
    fun:malloc
@@ -5374,4 +5362,563 @@
    fun:cmdline_parser_rtksimulatedgeometry_internal
    obj:*
    obj:*
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_ocrt_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_strcrt_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_lacc_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_fcrt_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_facc_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_dxfr_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5E_init_interface
+   fun:H5E_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5P_create_class
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_init
+   fun:H5SL_create
+   fun:H5P_create_class
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_init
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_ocrt_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5P_create_id
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_init
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_fcrt_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5T_alloc
+   fun:H5TN_init_interface
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5T_path_find
+   fun:H5T_register.constprop.1
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_create
+   fun:H5P_create_class
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_register_real
+   fun:H5P_fcrt_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_create
+   fun:H5P_create_id
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:H5I_register_type
+   fun:H5E_init_interface
+   fun:H5E_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:H5I_register_type
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:H5I_register_type
+   fun:H5FD_register
+   fun:H5FD_sec2_init
+   fun:H5P_facc_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:H5I_register_type
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:H5I_register_type
+   fun:H5D_init_interface
+   fun:H5D_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5T_alloc
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5T_alloc
+   fun:H5T_create
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5T_alloc
+   fun:H5T_vlen_create
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   fun:H5T_alloc
+   fun:H5T_array_create
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   fun:H5SL_insert_common
+   fun:H5SL_insert
+   fun:H5P_create_id
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FD_register
+   fun:H5FD_sec2_init
+   fun:H5P_facc_reg_prop
+   fun:H5P_init_interface
+   fun:H5P_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5T_path_find
+   fun:H5T_register.constprop.1
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5T_register
+   fun:H5T_init_interface
+   fun:H5T_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5L_register
+   fun:H5L_register_external
+   fun:H5L_init
+   fun:H5_init_library
+   fun:H5Iget_type
+   fun:_ZN2H511IdComponent10p_valid_idEi
+   fun:_ZN2H59DataSpaceD1Ev
+   fun:__run_exit_handlers
+   fun:exit
+   fun:(below main)
 }
