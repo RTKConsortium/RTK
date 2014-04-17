@@ -7104,7 +7104,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7127,7 +7126,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7145,7 +7143,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7165,32 +7162,7 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   fun:cuCtxCreate_v2
-   fun:_ZN3itk18CudaContextManagerC1Ev
-   fun:_ZN3itk18CudaContextManager11GetInstanceEv
-   fun:_ZN3itk15CudaDataManagerC1Ev
-   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
-   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
-   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
-   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
-   fun:main
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: possible
-   fun:calloc
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7212,10 +7184,7 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
-   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7238,8 +7207,8 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7263,7 +7232,30 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7292,7 +7284,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7319,7 +7310,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7348,7 +7338,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7377,7 +7366,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7406,7 +7394,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7435,7 +7422,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7464,7 +7450,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7493,7 +7478,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7522,7 +7506,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7551,7 +7534,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7628,7 +7610,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7649,7 +7630,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7678,7 +7658,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7707,7 +7686,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    fun:_dl_allocate_tls
    fun:pthread_create@@GLIBC_2.2.5
@@ -7757,7 +7735,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
@@ -7950,7 +7927,6 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
    obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
