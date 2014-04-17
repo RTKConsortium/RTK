@@ -23,7 +23,6 @@
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #if RTK_USE_CUDA
-//  #include "rtkCudaConjugateGradientConeBeamReconstructionFilter.h"
   #include "itkCudaImage.h"
 #endif
 

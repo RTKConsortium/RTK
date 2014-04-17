@@ -213,11 +213,6 @@ private:
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
 
-  /** Internal variables storing the current forward
-    and back projection methods */
-  int m_CurrentForwardProjectionConfiguration;
-  int m_CurrentBackProjectionConfiguration;
-
   /** Time probes */
   itk::TimeProbe m_ExtractProbe;
   itk::TimeProbe m_ZeroMultiplyProbe;

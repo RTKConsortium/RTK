@@ -32,8 +32,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
-  m_CurrentBackProjectionConfiguration = -1;
-  m_CurrentForwardProjectionConfiguration = -1;
 
   // Create the filters
   m_ZeroMultiplyVolumeFilter = MultiplyVolumeFilterType::New();
@@ -55,12 +53,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 {
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
   m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
-
-  if (m_CurrentForwardProjectionConfiguration != _arg)
-    {
-    this->Modified();
-    m_CGOperator->Modified();
-    }
 }
 
 template< typename TOutputImage>
@@ -71,12 +63,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
   m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
   m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
-
-  if (m_CurrentBackProjectionConfiguration != _arg)
-    {
-    this->Modified();
-    m_CGOperator->Modified();
-    }
 }
 
 template< typename TOutputImage>
