@@ -36,9 +36,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_NumberOfIterations = 3;
   m_Lambda = 0.3;
 
-  m_CurrentForwardProjectionConfiguration = -1;
-  m_CurrentBackProjectionConfiguration = -1;
-
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
@@ -80,11 +77,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::SetForwardProjectionFilter (int _arg)
 {
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
-
-  if (m_CurrentForwardProjectionConfiguration != _arg)
-    {
-    this->Modified();
-    }
 }
 
 template<class TInputImage, class TOutputImage>
@@ -93,11 +85,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::SetBackProjectionFilter (int _arg)
 {
   m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
-
-  if (m_CurrentBackProjectionConfiguration != _arg)
-    {
-    this->Modified();
-    }
 }
 
 template<class TInputImage, class TOutputImage>
@@ -120,8 +107,6 @@ void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
-//  const unsigned int Dimension = this->InputImageDimension;
-
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
   typename ExtractFilterType::InputImageRegionType projRegion;

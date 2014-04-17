@@ -27,7 +27,8 @@ namespace rtk
   IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
   ::IterativeConeBeamReconstructionFilter()
   {
-
+    m_CurrentForwardProjectionConfiguration = -1;
+    m_CurrentBackProjectionConfiguration = -1;
   }
 
   template<class TInputImage, class TOutputImage>
@@ -90,6 +91,29 @@ namespace rtk
       }
     return bp;
   }
+
+  template<class TInputImage, class TOutputImage>
+  void
+  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  ::SetForwardProjectionFilter (int fwtype)
+  {
+    if (m_CurrentForwardProjectionConfiguration != fwtype)
+      {
+      this->Modified();
+      }
+  }
+
+  template<class TInputImage, class TOutputImage>
+  void
+  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  ::SetBackProjectionFilter (int bptype)
+  {
+    if (m_CurrentBackProjectionConfiguration != bptype)
+      {
+      this->Modified();
+      }
+  }
+
 } // end namespace rtk
 
 #endif // __rtkIterativeConeBeamReconstructionFilter_txx

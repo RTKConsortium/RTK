@@ -61,6 +61,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
 {
   m_BackProjectionFilter = _arg;
+  this->Modified();
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -69,6 +70,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
+  this->Modified();
 }
 
 
