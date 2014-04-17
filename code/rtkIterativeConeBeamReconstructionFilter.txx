@@ -46,7 +46,7 @@ namespace rtk
         fw = rtk::RayCastInterpolatorForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
       break;
       case(2):
-      #if RTK_USE_CUDA
+      #ifdef RTK_USE_CUDA
         fw = rtk::CudaForwardProjectionImageFilter::New();
       #else
         std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -76,7 +76,7 @@ namespace rtk
         bp = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
         break;
       case(2):
-      #if RTK_USE_CUDA
+      #ifdef RTK_USE_CUDA
         bp = rtk::CudaBackProjectionImageFilter::New();
       #else
         std::cerr << "The program has not been compiled with cuda option" << std::endl;

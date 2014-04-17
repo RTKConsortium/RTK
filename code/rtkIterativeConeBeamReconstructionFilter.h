@@ -28,7 +28,7 @@
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
   #include "rtkCudaBackProjectionImageFilter.h"
 #endif
