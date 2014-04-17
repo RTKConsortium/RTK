@@ -134,7 +134,6 @@ public:
   typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >              ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                       SubtractFilterType;
   typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >                 BackProjectionFilterType;
-//  typedef typename BackProjectionFilterType::Pointer                                         BackProjectionFilterPointer;
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>               RayBoxIntersectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType> DivideFilterType;
   typedef rtk::ConstantImageSource<OutputImageType>                                          ConstantImageSourceType;

@@ -19,7 +19,7 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_h
 #define __rtkCudaForwardProjectionImageFilter_h
 
-#include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
 #include "itkCudaInPlaceImageFilter.h"
 #include "itkCudaUtil.h"
 #include "itkCudaKernelManager.h"
