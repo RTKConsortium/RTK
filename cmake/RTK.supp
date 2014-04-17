@@ -5366,7 +5366,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_insert_common
@@ -5386,7 +5385,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_insert_common
@@ -5406,7 +5404,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_insert_common
@@ -5426,7 +5423,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_insert_common
@@ -5446,7 +5442,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_insert_common
@@ -5466,7 +5461,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_insert_common
@@ -5486,7 +5480,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5E_init_interface
@@ -5502,7 +5495,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5P_create_class
@@ -5519,7 +5511,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_init
    fun:H5SL_create
@@ -5537,7 +5528,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_init
    fun:H5SL_insert_common
@@ -5557,7 +5547,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5P_create_id
@@ -5574,7 +5563,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_init
    fun:H5SL_insert_common
@@ -5594,7 +5582,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5T_alloc
@@ -5612,7 +5599,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5T_path_find
@@ -5630,7 +5616,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_create
@@ -5648,7 +5633,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:realloc
    fun:H5SL_insert_common
    fun:H5SL_insert
@@ -5667,7 +5651,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_create
@@ -5685,7 +5668,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:calloc
    fun:H5I_register_type
    fun:H5E_init_interface
@@ -5701,7 +5683,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:calloc
    fun:H5I_register_type
    fun:H5P_init_interface
@@ -5717,7 +5698,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:calloc
    fun:H5I_register_type
    fun:H5FD_register
@@ -5736,7 +5716,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:calloc
    fun:H5I_register_type
    fun:H5T_init_interface
@@ -5752,7 +5731,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:calloc
    fun:H5I_register_type
    fun:H5D_init_interface
@@ -5768,7 +5746,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5T_alloc
@@ -5785,7 +5762,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5T_alloc
@@ -5803,7 +5779,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5T_alloc
@@ -5821,7 +5796,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_reg_calloc
    fun:H5T_alloc
@@ -5839,7 +5813,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FL_fac_malloc
    fun:H5SL_insert_common
@@ -5858,7 +5831,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5FD_register
    fun:H5FD_sec2_init
@@ -5876,7 +5848,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5T_path_find
    fun:H5T_register.constprop.1
@@ -5893,7 +5864,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5T_register
    fun:H5T_init_interface
@@ -5909,7 +5879,6 @@
 {
    HDF5
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
    fun:H5L_register
    fun:H5L_register_external
@@ -5921,4 +5890,2207 @@
    fun:__run_exit_handlers
    fun:exit
    fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaGetDeviceCount
+   fun:_ZN3itk23CudaGetAvailableDevicesERSt6vectorI14cudaDevicePropSaIS1_EE
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:_Znwm
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:realloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuMemAlloc_v2
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuMemAlloc_v2
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk32CudaForwardProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk39ReconstructionConjugateGradientOperatorIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk28ConjugateGradientImageFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuMemAlloc_v2
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk32CudaForwardProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk39ReconstructionConjugateGradientOperatorIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk28ConjugateGradientImageFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuArray3DCreate_v2
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMallocArray
+   fun:_Z17CUDA_back_projectPiS_PfS0_S0_S0_
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk39ReconstructionConjugateGradientOperatorIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuArray3DCreate_v2
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMallocArray
+   fun:_Z17CUDA_back_projectPiS_PfS0_S0_S0_
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk39ReconstructionConjugateGradientOperatorIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk28ConjugateGradientImageFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuInit
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   fun:cuCtxCreate_v2
+   fun:_ZN3itk18CudaContextManagerC1Ev
+   fun:_ZN3itk18CudaContextManager11GetInstanceEv
+   fun:_ZN3itk15CudaDataManagerC1Ev
+   fun:_ZN3itk9CudaImageIfLj3EEC1Ev
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEE10MakeOutputEm
+   fun:_ZN3itk11ImageSourceINS_9CudaImageIfLj3EEEEC1Ev
+   fun:_ZN3rtk19ConstantImageSourceIN3itk9CudaImageIfLj3EEEE3NewEv
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libcuda.so.304.119
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   obj:/usr/lib64/cuda/lib64/libcudart.so.5.0.35
+   fun:cudaMalloc
+   fun:_ZN3itk15CudaDataManager8AllocateEv
+   fun:_ZN3itk15CudaDataManager15UpdateGPUBufferEv
+   fun:_ZN3itk15CudaDataManager17SetCPUBufferDirtyEv
+   fun:_ZN3itk15CudaDataManager19GetGPUBufferPointerEv
+   fun:_ZN3rtk29CudaBackProjectionImageFilter15GPUGenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3rtk45ConjugateGradientConeBeamReconstructionFilterIN3itk9CudaImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   GGO
+   Memcheck:Leak
+   fun:malloc
+   fun:update_arg.isra.3.constprop.10
+   fun:cmdline_parser_rtksimulatedgeometry_internal
+   fun:cmdline_parser_rtksimulatedgeometry2
+   fun:main
 }
