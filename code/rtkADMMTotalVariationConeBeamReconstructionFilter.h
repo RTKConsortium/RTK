@@ -233,10 +233,6 @@ private:
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
-    /** Internal variables storing the current forward
-      and back projection methods */
-    int m_CurrentForwardProjectionConfiguration;
-    int m_CurrentBackProjectionConfiguration;
 
 };
 } //namespace ITK

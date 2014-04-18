@@ -57,9 +57,6 @@ protected:
     typename TInputImage::Pointer GetPk();
     typename TInputImage::Pointer GetAPk();
 
-//    /** Redefine the way the image should be split */
-//    virtual const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
-
     /** Initialize the thread synchronization barrier before the threads run,
         and create a few vectors in which each thread will store temporary
         accumulation results */
