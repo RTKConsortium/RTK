@@ -68,22 +68,24 @@ DeconstructSoftThresholdReconstructImageFilter<TImage>
 
     //Perform soft thresholding and set inputs for reconstruction
     for (unsigned int index=0; index < m_DeconstructionFilter->GetNumberOfOutputs(); index++)
-    {
-        if ((index % NbDetailsPerLevel)==0) {// Do not soft threshold the low pass coefficients
-            m_ReconstructionFilter->SetInput(index, m_DeconstructionFilter->GetOutput(index));
+      {
+      if ((index % NbDetailsPerLevel)==0)
+        {
+        // Do not soft threshold the low pass coefficients
+        m_ReconstructionFilter->SetInput(index, m_DeconstructionFilter->GetOutput(index));
         }
-        else{
-//        // Soft thresholding
+      else
+        {
+        // Soft thresholding
         softThresholdFilterArray[index] = SoftThresholdFilterType::New();
         softThresholdFilterArray[index]->SetInput(m_DeconstructionFilter->GetOutput(index));
         softThresholdFilterArray[index]->SetThreshold(m_Threshold);
-        softThresholdFilterArray[index]->Update();
 
         //Set input for reconstruction
         m_ReconstructionFilter->SetInput(index, softThresholdFilterArray[index]->GetOutput());
 
         } //end if
-    }// end for
+      }// end for
 
     // Perform reconstruction
     m_ReconstructionFilter->Update();

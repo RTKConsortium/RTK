@@ -76,50 +76,6 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
-//  // Construct selected backprojection filter
-//  rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
-//  switch(args_info.bp_arg)
-//  {
-//  case(bp_arg_VoxelBasedBackProjection):
-//    bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_Joseph):
-//    bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_CudaVoxelBased):
-//#ifdef RTK_USE_CUDA
-//    bp = rtk::CudaBackProjectionImageFilter::New();
-//#else
-//    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-//    return EXIT_FAILURE;
-//#endif
-//    break;
-
-//  default:
-//    std::cerr << "Unhandled --bp value." << std::endl;
-//    return EXIT_FAILURE;
-//  }
-
-
-//  switch(args_info.sart_arg)
-//  {
-//  case(sart_arg_Sart):
-//    sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_Joseph):
-//#ifdef RTK_USE_CUDA
-//    sart = rtk::CudaSARTConeBeamReconstructionFilter::New();
-//#else
-//    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-//    return EXIT_FAILURE;
-//#endif
-//    break;
-
-//  default:
-//    std::cerr << "Unhandled --bp value." << std::endl;
-//    return EXIT_FAILURE;
-//  }
-
   // SART reconstruction filter
   rtk::SARTConeBeamReconstructionFilter< OutputImageType >::Pointer sart =
       rtk::SARTConeBeamReconstructionFilter< OutputImageType >::New();
@@ -134,11 +90,11 @@ int main(int argc, char * argv[])
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetLambda( args_info.lambda_arg );
 
-  itk::TimeProbe readerProbe;
+  itk::TimeProbe totalTimeProbe;
   if(args_info.time_flag)
     {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
+    std::cout << "Recording elapsed time... " << std::endl << std::flush;
+    totalTimeProbe.Start();
     }
   if(args_info.positivity_flag)
     {
@@ -150,8 +106,8 @@ int main(int argc, char * argv[])
   if(args_info.time_flag)
     {
     sart->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+    totalTimeProbe.Stop();
+    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
     }
 
   // Write

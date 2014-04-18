@@ -183,8 +183,7 @@ public:
     itkSetMacro(CG_iterations, float)
     itkGetMacro(CG_iterations, float)
 
-    itkSetMacro(MeasureExecutionTimes, bool)
-    itkGetMacro(MeasureExecutionTimes, bool)
+    void PrintTiming(std::ostream& os) const;
 
 protected:
     ADMMTotalVariationConeBeamReconstructionFilter();
@@ -194,8 +193,8 @@ protected:
     virtual void GenerateData();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter2; 
-    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter3;
+    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter1;
+    typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter2;
     typename MultiplyVolumeFilterType::Pointer                                  m_MultiplyFilter;
     typename MultiplyVolumeFilterType::Pointer                                  m_ZeroMultiplyVolumeFilter;
     typename MultiplyGradientFilterType::Pointer                                m_ZeroMultiplyGradientFilter;
@@ -229,11 +228,13 @@ private:
     float           m_Beta;
     unsigned int    m_AL_iterations;
     unsigned int    m_CG_iterations;
-    bool            m_MeasureExecutionTimes;
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
-
+    /** Time probes */
+    itk::TimeProbe m_BeforeConjugateGradientProbe;
+    itk::TimeProbe m_ConjugateGradientProbe;
+    itk::TimeProbe m_TVSoftTresholdingProbe;
 };
 } //namespace ITK
 
