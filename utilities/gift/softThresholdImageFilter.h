@@ -64,13 +64,7 @@ public:
 
   inline TOutput operator()( const TInput & A ) const
     {
-    if ( A > 0 )
-      {
-          TInput temp = A - m_Threshold;
-          return ((temp > 0) ? temp : 0);
-      }
-    TInput temp = - A - m_Threshold;
-    return ((temp > 0) ? -temp : 0);
+    return (vnl_math_sgn(A) * vnl_math_max((TInput)vnl_math_abs(A) - m_Threshold, (TInput)0.0));
     }
 
 private:

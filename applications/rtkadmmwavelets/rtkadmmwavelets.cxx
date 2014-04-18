@@ -105,13 +105,7 @@ int main(int argc, char * argv[])
   // Set the geometry and interpolation weights
   admmFilter->SetGeometry(geometryReader->GetOutputObject());
 
-  // Set whether or not time probes should be activated
-  if (args_info.time_flag)
-    {
-    admmFilter->SetMeasureExecutionTimes(true);
-    }
-
-  // Set all four numerical parameters
+  // Set all numerical parameters
   admmFilter->SetCG_iterations(args_info.CGiter_arg);
   admmFilter->SetAL_iterations(args_info.niterations_arg);
   admmFilter->SetAlpha(args_info.alpha_arg);
@@ -123,19 +117,20 @@ int main(int argc, char * argv[])
   admmFilter->SetInput(0, inputFilter->GetOutput() );
   admmFilter->SetInput(1, projectionsReader->GetOutput() );
 
-  itk::TimeProbe timeProbe;
-    if (args_info.time_flag)
+  itk::TimeProbe totalTimeProbe;
+  if(args_info.time_flag)
     {
-    std::cout << "Starting global probes before updating the ADMM filter" << std::endl;
-    timeProbe.Start();
+    std::cout << "Recording elapsed time... " << std::endl << std::flush;
+    totalTimeProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() )
 
-  if (args_info.time_flag)
+  if(args_info.time_flag)
     {
-    timeProbe.Stop();
-    std::cout << "Updating the ADMM filter took " << timeProbe.GetTotal() << ' ' << timeProbe.GetUnit() << std::endl;
+    admmFilter->PrintTiming(std::cout);
+    totalTimeProbe.Stop();
+    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
     }
 
   // Set writer and write the output

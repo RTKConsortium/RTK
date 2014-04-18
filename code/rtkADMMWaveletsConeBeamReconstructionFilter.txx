@@ -21,8 +21,6 @@
 
 #include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 
-//#include "rtkJosephForwardProjectionImageFilter.h"
-
 namespace rtk
 {
 
@@ -37,9 +35,6 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_Beta=1;
   m_AL_iterations=10;
   m_CG_iterations=3;
-  m_MeasureExecutionTimes=false;
-  m_CurrentBackProjectionConfiguration = -1;
-  m_CurrentForwardProjectionConfiguration = -1;
 
   // Create the filters
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
@@ -86,12 +81,6 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 {
   m_ForwardProjectionFilterForConjugateGradient = this->InstantiateForwardProjectionFilter( _arg );
   m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilterForConjugateGradient );
-
-  if (m_CurrentForwardProjectionConfiguration != _arg)
-    {
-    this->Modified();
-    m_CGOperator->Modified();
-    }
 }
 
 template< typename TOutputImage >
@@ -102,12 +91,6 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
   m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
   m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
-
-  if (m_CurrentBackProjectionConfiguration != _arg)
-    {
-    this->Modified();
-    m_CGOperator->Modified();
-    }
 }
 
 template< typename TOutputImage >
@@ -182,32 +165,9 @@ void
 ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 ::GenerateData()
 {
-  itk::TimeProbe ADMMTimeProbe;
-  if(m_MeasureExecutionTimes)
-    {
-    std::cout << "Starting ADMM initialization" << std::endl;
-    ADMMTimeProbe.Start();
-    }
-
-  float PreviousTimeTotal, TimeDifference;
-  PreviousTimeTotal = 0;
-  TimeDifference = 0;
-  if(m_MeasureExecutionTimes)
-    {
-    ADMMTimeProbe.Stop();
-    std::cout << "ADMM initialization took " << ADMMTimeProbe.GetTotal() << ' ' << ADMMTimeProbe.GetUnit() << std::endl;
-    PreviousTimeTotal = ADMMTimeProbe.GetTotal();
-    }
-
   for(unsigned int iter=0; iter < m_AL_iterations; iter++)
     {
     SetBetaForCurrentIteration(iter);
-
-    if(m_MeasureExecutionTimes)
-      {
-      std::cout << "Starting ADMM iteration "<< iter << std::endl;
-      ADMMTimeProbe.Start();
-      }
 
     // After the first update, we need to use some outputs as inputs
     if(iter>0)
@@ -230,20 +190,38 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
       m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
       }
 
-    std::cout << "ADMM iteration " << iter << std::endl;
+    m_BeforeConjugateGradientProbe.Start();
+    m_AddFilter2->Update();
+    m_BeforeConjugateGradientProbe.Stop();
+
+    m_ConjugateGradientProbe.Start();
+    m_ConjugateGradientFilter->Update();
+    m_ConjugateGradientProbe.Stop();
+
+    m_WaveletsSoftTresholdingProbe.Start();
     m_SubtractFilter2->Update();
-
-    if(m_MeasureExecutionTimes)
-      {
-      ADMMTimeProbe.Stop();
-      TimeDifference = ADMMTimeProbe.GetTotal() - PreviousTimeTotal;
-      std::cout << "ADMM iteration " << iter << " took " << TimeDifference << ' ' << ADMMTimeProbe.GetUnit() << std::endl;
-      PreviousTimeTotal = ADMMTimeProbe.GetTotal();
-      }
-
+    m_WaveletsSoftTresholdingProbe.Stop();
     }
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
 }
+
+template< typename TOutputImage >
+void
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
+::PrintTiming(std::ostream & os) const
+{
+  os << "ADMMWaveletsConeBeamReconstructionFilter timing:" << std::endl;
+  os << "  Before conjugate gradient (computation of the B of AX=B): "
+     << m_BeforeConjugateGradientProbe.GetTotal()
+     << ' ' << m_BeforeConjugateGradientProbe.GetUnit() << std::endl;
+  os << "  Conjugate gradient optimization: "
+     << m_ConjugateGradientProbe.GetTotal()
+     << ' ' << m_ConjugateGradientProbe.GetUnit() << std::endl;
+  os << "  Wavelets soft thresholding: "
+     << m_WaveletsSoftTresholdingProbe.GetTotal()
+     << ' ' << m_WaveletsSoftTresholdingProbe.GetUnit() << std::endl;
+}
+
 
 }// end namespace
 

@@ -134,9 +134,7 @@ public:
     void SetInputProjectionStack(const TOutputImage* Projection);
 
     typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
-//    typedef typename ForwardProjectionFilterType::Pointer                                 ForwardProjectionFilterPointer;
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                  BackProjectionFilterType;
-//    typedef typename BackProjectionFilterType::Pointer                                    BackProjectionFilterPointer;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                               ConjugateGradientFilterType;
     typedef itk::SubtractImageFilter<TOutputImage>                                        SubtractFilterType;
     typedef itk::AddImageFilter<TOutputImage>                                             AddFilterType;
@@ -168,14 +166,13 @@ public:
     itkSetMacro(CG_iterations, float)
     itkGetMacro(CG_iterations, float)
 
-    itkSetMacro(MeasureExecutionTimes, bool)
-    itkGetMacro(MeasureExecutionTimes, bool)
-
     itkSetMacro(WaveletsOrder, unsigned int)
     itkGetMacro(WaveletsOrder, unsigned int)
 
     itkSetMacro(NumberOfLevels, unsigned int)
     itkGetMacro(NumberOfLevels, unsigned int)
+
+    void PrintTiming(std::ostream& os) const;
 
 protected:
     ADMMWaveletsConeBeamReconstructionFilter();
@@ -218,14 +215,13 @@ private:
     unsigned int    m_CG_iterations;
     unsigned int    m_WaveletsOrder;
     unsigned int    m_NumberOfLevels;
-    bool            m_MeasureExecutionTimes;
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
-    /** Internal variables storing the current forward
-      and back projection methods */
-    int m_CurrentForwardProjectionConfiguration;
-    int m_CurrentBackProjectionConfiguration;
+    /** Time probes */
+    itk::TimeProbe m_BeforeConjugateGradientProbe;
+    itk::TimeProbe m_ConjugateGradientProbe;
+    itk::TimeProbe m_WaveletsSoftTresholdingProbe;
 
 };
 } //namespace ITK
