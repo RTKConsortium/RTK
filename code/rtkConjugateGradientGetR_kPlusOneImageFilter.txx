@@ -25,8 +25,6 @@
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
 
-#include <itkImageRegionSplitterMultidimensional.h>
-
 namespace rtk
 {
 
@@ -90,7 +88,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   m_Barrier = itk::Barrier::New();
   m_Barrier->Initialize(actualThreads);
 
-  for (int i=0; i<this->GetNumberOfThreads(); i++)
+  for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
     {
     m_SquaredNormR_kVector.push_back(0);
     m_SquaredNormR_kPlusOneVector.push_back(0);
@@ -133,7 +131,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   // Each thread computes alpha_k
   float squaredNormR_k = 0;
   float p_k_t_A_p_k = 0;
-  for (int i=0; i<this->GetNumberOfThreads(); i++)
+  for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
     {
     squaredNormR_k += m_SquaredNormR_kVector[i];
     p_k_t_A_p_k += m_PktApkVector[i];
@@ -167,7 +165,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   m_SquaredNormR_k = 0;
   m_SquaredNormR_kPlusOne = 0;
   float p_k_t_A_p_k = 0;
-  for (int i=0; i<this->GetNumberOfThreads(); i++)
+  for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
     {
     m_SquaredNormR_k += m_SquaredNormR_kVector[i];
     m_SquaredNormR_kPlusOne += m_SquaredNormR_kPlusOneVector[i];

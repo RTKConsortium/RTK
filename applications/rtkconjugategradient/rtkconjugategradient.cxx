@@ -22,8 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#if RTK_USE_CUDA
-//  #include "rtkCudaConjugateGradientConeBeamReconstructionFilter.h"
+#ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
 #endif
 
@@ -37,7 +36,7 @@ int main(int argc, char * argv[])
   const unsigned int Dimension = 3;
 
   typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef CPUOutputImageType                           OutputImageType;

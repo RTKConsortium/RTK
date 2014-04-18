@@ -20,6 +20,7 @@
 #define __rtkIterativeConeBeamReconstructionFilter_h
 
 // Forward projection filters
+#include "rtkConfiguration.h"
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkSiddonForwardProjectionImageFilter.h"
@@ -27,7 +28,7 @@
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
   #include "rtkCudaBackProjectionImageFilter.h"
 #endif
@@ -59,13 +60,8 @@ public:
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Typedefs of each subfilter of this composite filter */
-#if RTK_USE_CUDA
-  typedef rtk::CudaForwardProjectionImageFilter< TOutputImage, TOutputImage >  ForwardProjectionFilterType;
-  typedef rtk::CudaBackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
-#else
   typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >  ForwardProjectionFilterType;
   typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
-#endif
   typedef typename ForwardProjectionFilterType::Pointer                    ForwardProjectionPointerType;
   typedef typename BackProjectionFilterType::Pointer                       BackProjectionPointerType;
 
@@ -76,8 +72,8 @@ public:
   itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** To be overriden in inherited classes */
-  virtual void SetForwardProjectionFilter (int fwtype){}
-  virtual void SetBackProjectionFilter (int bptype){}
+  virtual void SetForwardProjectionFilter (int fwtype);
+  virtual void SetBackProjectionFilter (int bptype);
 
 protected:
   IterativeConeBeamReconstructionFilter();
@@ -90,6 +86,11 @@ protected:
   /** Creates and returns an instance of the forward projection filter.
    * To be used in SetForwardProjectionFilter. */
   virtual ForwardProjectionPointerType InstantiateForwardProjectionFilter (int fwtype);
+
+  /** Internal variables storing the current forward
+    and back projection methods */
+  int m_CurrentForwardProjectionConfiguration;
+  int m_CurrentBackProjectionConfiguration;
 
 private:
   //purposely not implemented

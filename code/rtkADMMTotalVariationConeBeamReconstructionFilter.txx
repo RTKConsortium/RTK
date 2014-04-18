@@ -38,8 +38,6 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_AL_iterations=10;
   m_CG_iterations=3;
   m_MeasureExecutionTimes=false;
-  m_CurrentBackProjectionConfiguration = -1;
-  m_CurrentForwardProjectionConfiguration = -1;
 
   // Create the filters
   m_ZeroMultiplyVolumeFilter = MultiplyVolumeFilterType::New();
@@ -100,12 +98,6 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
 {
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
   m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
-
-  if (m_CurrentForwardProjectionConfiguration != _arg)
-    {
-    this->Modified();
-    m_CGOperator->Modified();
-    }
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -116,24 +108,18 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
   m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
   m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
-
-  if (m_CurrentBackProjectionConfiguration != _arg)
-    {
-    this->Modified();
-    m_CGOperator->Modified();
-    }
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
-::SetBetaForCurrentIteration(int iter){
+::SetBetaForCurrentIteration(int iter)
+{
+  float currentBeta = m_Beta * (iter+1) / (float)m_AL_iterations;
 
-    float currentBeta = m_Beta * (iter+1) / m_AL_iterations;
-
-    m_CGOperator->SetBeta(currentBeta);
-    m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * currentBeta));
-    m_MultiplyFilter->SetConstant2( (const float) currentBeta);
+  m_CGOperator->SetBeta(currentBeta);
+  m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * currentBeta));
+  m_MultiplyFilter->SetConstant2( (const float) currentBeta);
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -141,20 +127,21 @@ void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateInputRequestedRegion()
 {
-    // Input 0 is the volume we update
-    typename Superclass::InputImagePointer inputPtr0 =
-            const_cast< TOutputImage * >( this->GetInput(0) );
-    if ( !inputPtr0 )
-        return;
-    inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+  // Input 0 is the volume we update
+  typename Superclass::InputImagePointer inputPtr0 = const_cast< TOutputImage * >( this->GetInput(0) );
+  if ( !inputPtr0 )
+    {
+    return;
+    }
+  inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
-    // Input 1 is the stack of projections to backproject
-    typename Superclass::InputImagePointer  inputPtr1 =
-            const_cast< TOutputImage * >( this->GetInput(1) );
-    if ( !inputPtr1 )
-        return;
-    inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
-
+  // Input 1 is the stack of projections to backproject
+  typename Superclass::InputImagePointer  inputPtr1 = const_cast< TOutputImage * >( this->GetInput(1) );
+  if ( !inputPtr1 )
+    {
+    return;
+    }
+  inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 

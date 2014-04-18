@@ -151,8 +151,6 @@ private:
 
     int   m_NumberOfIterations;
     bool  m_MeasureExecutionTimes;
-    int   m_CurrentForwardProjectionConfiguration;
-    int   m_CurrentBackProjectionConfiguration;
 
 };
 } //namespace ITK

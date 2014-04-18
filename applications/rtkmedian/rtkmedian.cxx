@@ -43,13 +43,19 @@ int main(int argc, char * argv[])
 
   // Reading median Window
   if(args_info.median_given<Dimension)
-  {
+    {
     for(unsigned int i=0; i<Dimension; i++)
+      {
       medianWindow[i] = args_info.median_arg[0];
-  }
+      }
+    }
   else
+    {
     for(unsigned int i=0; i<Dimension; i++)
+      {
       medianWindow[i] = args_info.median_arg[i];
+      }
+    }
 
   // Median filter
   typedef rtk::MedianImageFilter MEDFilterType;
@@ -64,7 +70,9 @@ int main(int argc, char * argv[])
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( median->GetOutput() );
   if(args_info.verbose_flag)
+    {
     std::cout << "Processing and writing... " << std::flush;
+    }
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;

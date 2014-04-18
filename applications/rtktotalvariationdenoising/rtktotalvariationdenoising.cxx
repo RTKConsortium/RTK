@@ -23,7 +23,7 @@
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
 #include <itkCudaImage.h>
 #endif
 
@@ -34,7 +34,7 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
   typedef itk::CudaImage< itk::CovariantVector 
       < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;

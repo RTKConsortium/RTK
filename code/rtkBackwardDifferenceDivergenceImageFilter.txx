@@ -36,7 +36,7 @@ template <class TInputImage, class TOutputImage>
 BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
 ::BackwardDifferenceDivergenceImageFilter()
 {
-  this->SetUseImageSpacing(true);
+  m_UseImageSpacing = true;
 
   // default behaviour is to process all dimensions
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
@@ -149,7 +149,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
   iit.OverrideBoundaryCondition(&cbc);
 
   itk::SizeValueType c = (itk::SizeValueType) (iit.Size() / 2); // get offset of center pixel
-  itk::SizeValueType* strides = new itk::SizeValueType[TOutputImage::ImageDimension]; // get offsets to access neighboring pixels
+  itk::SizeValueType strides[TOutputImage::ImageDimension]; // get offsets to access neighboring pixels
   for (int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
     strides[dim] = iit.GetStride(dim);
@@ -160,7 +160,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
     {
     div = 0;
     // Compute the local differences around the central pixel
-    for (int k = 0; k < dimsToProcess.size(); k++)
+    for (unsigned int k = 0; k < dimsToProcess.size(); k++)
       {
       div += (iit.GetPixel(c)[dimsToProcess[k]] - iit.GetPixel(c - strides[dimsToProcess[k]])[dimsToProcess[k]]) / m_SpacingCoeffs[dimsToProcess[k]];
       }
@@ -189,7 +189,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 
   typename TOutputImage::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
 
-  for (int k=0; k<dimsToProcess.size(); k++)
+  for (unsigned int k=0; k<dimsToProcess.size(); k++)
     {
     // Create a slice region at the border of the largest possible region
     typename TOutputImage::RegionType slice = largest;

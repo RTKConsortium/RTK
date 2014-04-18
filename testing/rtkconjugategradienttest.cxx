@@ -161,11 +161,11 @@ int main(int, char** )
   typedef rtk::ForwardDifferenceGradientImageFilter<OutputImageType> GradientFilterType;
   GradientFilterType::Pointer gradientFilter = GradientFilterType::New();
   gradientFilter->SetInput(randomVolumeSource->GetOutput());
-  bool* dimsProcessed = new bool[Dimension];
-  for (int i=0; i<Dimension; i++)
-  {
-      dimsProcessed[i] = true;
-  }
+  bool dimsProcessed[Dimension];
+  for (unsigned int i=0; i<Dimension; i++)
+    {
+    dimsProcessed[i] = true;
+    }
   gradientFilter->SetDimensionsProcessed(dimsProcessed);
   typedef rtk::BackwardDifferenceDivergenceImageFilter<GradientFilterType::OutputImageType> DivergenceFilterType;
   DivergenceFilterType::Pointer divergenceFilter = DivergenceFilterType::New();

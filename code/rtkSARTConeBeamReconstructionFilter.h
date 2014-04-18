@@ -134,7 +134,6 @@ public:
   typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >              ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                       SubtractFilterType;
   typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >                 BackProjectionFilterType;
-//  typedef typename BackProjectionFilterType::Pointer                                         BackProjectionFilterPointer;
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>               RayBoxIntersectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType> DivideFilterType;
   typedef rtk::ConstantImageSource<OutputImageType>                                          ConstantImageSourceType;
@@ -213,11 +212,6 @@ private:
   /** Convergence factor according to Andersen's publications which relates
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
-
-  /** Internal variables storing the current forward
-    and back projection methods */
-  int m_CurrentForwardProjectionConfiguration;
-  int m_CurrentBackProjectionConfiguration;
 
   /** Time probes */
   itk::TimeProbe m_ExtractProbe;

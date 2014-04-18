@@ -27,7 +27,8 @@ namespace rtk
   IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
   ::IterativeConeBeamReconstructionFilter()
   {
-
+    m_CurrentForwardProjectionConfiguration = -1;
+    m_CurrentBackProjectionConfiguration = -1;
   }
 
   template<class TInputImage, class TOutputImage>
@@ -45,7 +46,7 @@ namespace rtk
         fw = rtk::RayCastInterpolatorForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
       break;
       case(2):
-      #if RTK_USE_CUDA
+      #ifdef RTK_USE_CUDA
         fw = rtk::CudaForwardProjectionImageFilter::New();
       #else
         std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -75,7 +76,7 @@ namespace rtk
         bp = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
         break;
       case(2):
-      #if RTK_USE_CUDA
+      #ifdef RTK_USE_CUDA
         bp = rtk::CudaBackProjectionImageFilter::New();
       #else
         std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -90,6 +91,29 @@ namespace rtk
       }
     return bp;
   }
+
+  template<class TInputImage, class TOutputImage>
+  void
+  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  ::SetForwardProjectionFilter (int fwtype)
+  {
+    if (m_CurrentForwardProjectionConfiguration != fwtype)
+      {
+      this->Modified();
+      }
+  }
+
+  template<class TInputImage, class TOutputImage>
+  void
+  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  ::SetBackProjectionFilter (int bptype)
+  {
+    if (m_CurrentBackProjectionConfiguration != bptype)
+      {
+      this->Modified();
+      }
+  }
+
 } // end namespace rtk
 
 #endif // __rtkIterativeConeBeamReconstructionFilter_txx
