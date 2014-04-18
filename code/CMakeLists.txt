@@ -38,7 +38,7 @@ TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 
 #=========================================================
 # OpenCL library stuff
-IF(OPENCL_FOUND)
+IF(RTK_USE_OPENCL)
   SET(RTK_LIBRARIES ${RTK_LIBRARIES} rtkopencl)
   ADD_LIBRARY(rtkopencl
               rtkOpenCLUtilities.cxx
@@ -53,7 +53,7 @@ IF(OPENCL_FOUND)
                                                         ${RTK_BINARY_DIR}/${openclSRC})
   ENDFOREACH(openclSRC)
   ADD_DEPENDENCIES(rtkopencl openclSRCCopy)
-ENDIF(OPENCL_FOUND)
+ENDIF(RTK_USE_OPENCL)
 #=========================================================
 
 #=========================================================

@@ -4,11 +4,11 @@ TARGET_LINK_LIBRARIES(rtkadmmtotalvariation RTK)
 
 IF (RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtkadmmtotalvariation rtkcuda)
-ENDIF (RTK_USE_CUDA)
+ENDIF()
 
-IF (OPENCL_FOUND)
+IF (RTK_USE_OPENCL)
   TARGET_LINK_LIBRARIES(rtkadmmtotalvariation rtkopencl)
-ENDIF (OPENCL_FOUND)
+ENDIF()
 
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
