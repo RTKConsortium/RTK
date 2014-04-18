@@ -217,6 +217,15 @@ if(NOT RTK_USE_CUDA)
 endif()
 ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx)
 
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkadmmwaveletstest rtkadmmwaveletstest.cxx)
+  TARGET_LINK_LIBRARIES(rtkadmmwaveletstest RTK)
+  ADD_TEST(rtkadmmwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmwaveletstest)
+endif()
+ADD_CUDA_TEST(rtkadmmwavelets rtkadmmwaveletstest.cxx)
+
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
 IF(RTK_USE_CUDA)
