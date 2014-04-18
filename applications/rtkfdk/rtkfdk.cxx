@@ -27,7 +27,7 @@
 #ifdef RTK_USE_CUDA
 # include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
 # include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
 #endif
 #include "rtkFDKWarpBackProjectionImageFilter.h"
@@ -125,7 +125,7 @@ int main(int argc, char * argv[])
   // FDK reconstruction filtering
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
   FDKCPUType::Pointer feldkamp = FDKCPUType::New();
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
   typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
   FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
 #endif
@@ -161,7 +161,7 @@ int main(int argc, char * argv[])
     }
   else if(!strcmp(args_info.hardware_arg, "opencl") )
     {
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
     SET_FELDKAMP_OPTIONS( feldkampOCL );
     pfeldkamp = feldkampOCL->GetOutput();
 #else
@@ -200,7 +200,7 @@ int main(int argc, char * argv[])
     else if(!strcmp(args_info.hardware_arg, "cuda") )
       feldkampCUDA->PrintTiming(std::cout);
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
     else if(!strcmp(args_info.hardware_arg, "opencl") )
       feldkampOCL->PrintTiming(std::cout);
 #endif
