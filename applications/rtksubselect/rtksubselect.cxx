@@ -62,6 +62,8 @@ int main(int argc, char * argv[])
 
   // Subsection
   int n = geometryReader->GetOutputObject()->GetGantryAngles().size();
+  if(args_info.last_given)
+    n = std::min(args_info.last_arg, n);
   if(args_info.list_given)
     {
     for(unsigned int i=0; i<args_info.list_given; i++)
