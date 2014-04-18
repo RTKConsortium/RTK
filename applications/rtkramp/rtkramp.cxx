@@ -21,7 +21,7 @@
 #include "rtkGgoFunctions.h"
 #include "rtkFFTRampImageFilter.h"
 #include "rtkConfiguration.h"
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
 #  include "rtkCudaFFTRampImageFilter.h"
 #endif
 
@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -49,7 +49,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Ramp filter
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef rtk::CudaFFTRampImageFilter CudaRampFilterType;
   CudaRampFilterType::Pointer cudaRampFilter;
 #endif
@@ -57,7 +57,7 @@ int main(int argc, char * argv[])
   CPURampFilterType::Pointer rampFilter;
   if( !strcmp(args_info.hardware_arg, "cuda") )
     {
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
     cudaRampFilter = CudaRampFilterType::New();
     cudaRampFilter->SetInput( reader->GetOutput() );
     cudaRampFilter->SetTruncationCorrection(args_info.pad_arg);
@@ -80,7 +80,7 @@ int main(int argc, char * argv[])
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   if( !strcmp(args_info.hardware_arg, "cuda") )
     streamer->SetInput( cudaRampFilter->GetOutput() );
   else

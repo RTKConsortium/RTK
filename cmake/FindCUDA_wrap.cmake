@@ -34,6 +34,7 @@ endif ()
 
 
 set (CUDA_FOUND ${CUDA_FOUND} CACHE BOOL "Did we find cuda?")
+mark_as_advanced(CUDA_FOUND)
 
 IF(CUDA_FOUND)
   IF(${CUDA_VERSION} LESS 3.2)
