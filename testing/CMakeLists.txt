@@ -169,12 +169,14 @@ RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest
              DATA{Data/Input/GeometricPhantom/Geometries.txt})
 
 ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
-IF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+if(RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtksarttest RTK rtkcuda)
-ELSE()
+else()
   TARGET_LINK_LIBRARIES(rtksarttest RTK)
-ENDIF()
-ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
+endif()
+if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+  ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
+endif()
 ADD_CUDA_TEST(rtksart rtksarttest.cxx)
 
 ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
@@ -197,14 +199,22 @@ ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest RTK)
 ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
 
-ADD_EXECUTABLE(rtkconjugategradientreconstructiontest rtkconjugategradientreconstructiontest.cxx)
-TARGET_LINK_LIBRARIES(rtkconjugategradientreconstructiontest RTK)
-ADD_TEST(rtkconjugategradientreconstructiontest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradientreconstructiontest)
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkconjugategradientreconstructiontest rtkconjugategradientreconstructiontest.cxx)
+  TARGET_LINK_LIBRARIES(rtkconjugategradientreconstructiontest RTK)
+  ADD_TEST(rtkconjugategradientreconstructiontest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradientreconstructiontest)
+endif()
 ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
 
-ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
-TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest RTK)
-ADD_TEST(rtkadmmtotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest)
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
+  TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest RTK)
+  ADD_TEST(rtkadmmtotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest)
+endif()
 ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx)
 
 # Test headers

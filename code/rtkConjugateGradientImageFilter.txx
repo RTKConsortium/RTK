@@ -28,6 +28,10 @@ template<typename OutputImageType>
 ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
+  
+  m_NumberOfIterations = 1;
+  m_MeasureExecutionTimes = false;
+
   m_A = ConjugateGradientOperatorType::New();
 }
 

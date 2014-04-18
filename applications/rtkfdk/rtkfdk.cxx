@@ -24,7 +24,7 @@
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
 # include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
 #if OPENCL_FOUND
@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
   const unsigned int Dimension = 3;
 
   typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef CPUOutputImageType                           OutputImageType;
@@ -129,7 +129,7 @@ int main(int argc, char * argv[])
   typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
   FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
 #endif
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
   FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
 #endif
@@ -151,7 +151,7 @@ int main(int argc, char * argv[])
     }
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
     SET_FELDKAMP_OPTIONS( feldkampCUDA );
     pfeldkamp = feldkampCUDA->GetOutput();
 #else
@@ -196,7 +196,7 @@ int main(int argc, char * argv[])
     std::cout << "It took " << writerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     if(!strcmp(args_info.hardware_arg, "cpu") )
       feldkamp->PrintTiming(std::cout);
-#if RTK_USE_CUDA
+#ifdef RTK_USE_CUDA
     else if(!strcmp(args_info.hardware_arg, "cuda") )
       feldkampCUDA->PrintTiming(std::cout);
 #endif
