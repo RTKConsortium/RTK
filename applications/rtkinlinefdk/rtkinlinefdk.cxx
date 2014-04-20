@@ -28,7 +28,7 @@
 #ifdef RTK_USE_CUDA
 # include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
 # include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
 #endif
 
@@ -225,7 +225,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
   FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
   typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
   FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
 #endif
@@ -244,7 +244,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
     }
   else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
     {
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
     SET_FELDKAMP_OPTIONS( feldkampOCL );
 #else
     std::cerr << "The program has not been compiled with opencl option" << std::endl;
@@ -343,7 +343,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
         }
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
       else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
         {
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
@@ -383,7 +383,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
           }
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
         else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
@@ -413,7 +413,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           writer->SetInput( feldkampCUDA->GetOutput() );
           }
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
         else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
