@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
       <OutputImageType, GradientOutputImageType> TVDenoisingFilterType;
   TVDenoisingFilterType::Pointer tv = TVDenoisingFilterType::New();
   tv->SetInput(reader->GetOutput());
-  tv->SetLambda(args_info.lambda_arg);
+  tv->SetGamma(args_info.gamma_arg);
   tv->SetNumberOfIterations(args_info.niter_arg);
 
   bool* dimsProcessed = new bool[Dimension];
