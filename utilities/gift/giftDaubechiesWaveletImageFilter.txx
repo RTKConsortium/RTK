@@ -363,10 +363,9 @@ DbWaveletImageFilter<TImage, TWavelet>
     //Add filters for each input level
     for (unsigned int ilevel=0; ilevel < this->GetNumberOfLevels(); ilevel++)
     {
-        //Add filters for each dimension
         if (this->IsDeconstruction())
         {
-            //Add filters
+            //Add filters for each dimension
             for (unsigned int idim = 0; idim < ImageDimension; idim++)
             {
                 this->AddFiltersForDimension(ilevel, idim, inputs, progress);

@@ -72,17 +72,17 @@ public:
     typedef typename TImage::PixelType                  PixelType;
     typedef typename TImage::InternalPixelType          InternalPixelType;
     
-    /** Get the number of multi-level/multi-band input images. */
-    virtual unsigned int GetNumberOfInputImages()
-    {
-        return 1;
-    }
+//    /** Get the number of multi-level/multi-band input images. */
+//    virtual unsigned int GetNumberOfInputImages()
+//    {
+//        return 1;
+//    }
 
-    /** Get the number of multi-level/multi-band output images. */
-    virtual unsigned int GetNumberOfOutputImages()
-    {
-        return 1;
-    }
+//    /** Get the number of multi-level/multi-band output images. */
+//    virtual unsigned int GetNumberOfOutputImages()
+//    {
+//        return 1;
+//    }
 
     /** Set the number of levels.
      * (NOTE: that the number of input and output levels are the same.
