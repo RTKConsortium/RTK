@@ -38,7 +38,7 @@ namespace rtk
  * \brief Applies a total variation denoising, only along the dimensions specified, on an image.
  *
  * This filter finds the minimum of lambda * || f - f_0 ||_2^2 + TV(f)
- * using basis pursuit dequantaization, where f is the current image, f_0 the
+ * using basis pursuit dequantization, where f is the current image, f_0 the
  * input image, and TV the total variation calculated with only the gradients
  * along the dimensions specified. This filter can be used, for example, to
  * perform 3D total variation denoising on a 4D dataset
@@ -62,7 +62,7 @@ namespace rtk
  * Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
  * Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
  * SubtractGradient [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
- * MagnitudeThreshold [ label="rtk::rtkMagnitudeThresholdImageFilter" URL="\ref rtk::rtkMagnitudeThresholdImageFilter"];
+ * MagnitudeThreshold [ label="rtk::MagnitudeThresholdImageFilter" URL="\ref rtk::MagnitudeThresholdImageFilter"];
  * OutOfZeroGradient [label="", fixedsize="false", width=0, height=0, shape=none];
  *
  * Input -> ZeroMultiply;
