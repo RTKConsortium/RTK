@@ -1,8 +1,8 @@
-#ifndef _giftDaubechiesWaveletOperator_TXX
-#define _giftDaubechiesWaveletOperator_TXX
+#ifndef _giftDaubechiesWaveletKernelSource_TXX
+#define _giftDaubechiesWaveletKernelSource_TXX
 
 //Includes
-#include "giftDaubechiesWaveletOperator.h"
+#include "giftDaubechiesWaveletKernelSource.h"
 #include "vnl/vnl_math.h"
 #include <vector>
 #include <algorithm>
@@ -11,9 +11,9 @@ namespace gift
 {
 
 template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
+typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
 ::CoefficientVector
-DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
 ::GenerateCoefficients()
 {
     //Test type
@@ -49,9 +49,9 @@ DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
 }
 
 template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>::
+typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>::
 CoefficientVector
-DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
 ::GenerateCoefficientsLowpassReconstruct()
 {
     CoefficientVector coeff;
@@ -140,9 +140,9 @@ DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
 }
 
 template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>::
+typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>::
 CoefficientVector
-DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
 ::GenerateCoefficientsHighpassDeconstruct()
 {
     CoefficientVector coeff = this->GenerateCoefficientsLowpassReconstruct();
@@ -158,9 +158,9 @@ DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
 }
 
 template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>::
+typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>::
 CoefficientVector
-DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
 ::GenerateCoefficientsLowpassDeconstruct()
 {
 
@@ -172,9 +172,9 @@ DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
 }
 
 template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>::
+typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>::
 CoefficientVector
-DaubechiesWaveletOperator<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
 ::GenerateCoefficientsHighpassReconstruct()
 {
     CoefficientVector coeff = this->GenerateCoefficientsHighpassDeconstruct();
