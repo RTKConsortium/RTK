@@ -1,4 +1,4 @@
-/*=========================================================================
+﻿/*=========================================================================
  *
  *  Copyright RTK Consortium
  *
@@ -42,11 +42,11 @@ inline __host__ __device__ float3 operator-(float3 a, float3 b)
 }
 inline __host__ __device__ float3 fminf(float3 a, float3 b)
 {
-	return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
+  return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
 }
 inline __host__ __device__ float3 fmaxf(float3 a, float3 b)
 {
-	return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
+  return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
 }
 inline __host__ __device__ float dot(float3 a, float3 b)
 { 
@@ -84,13 +84,14 @@ inline __host__ __device__ void operator+=(float3 &a, float3 b)
 // T E X T U R E S ////////////////////////////////////////////////////////
 texture<float, 3, cudaReadModeElementType> tex_vol;
 texture<float, 1, cudaReadModeElementType> tex_matrix;
+texture<float, 1, cudaReadModeElementType> tex_mu;
 ///////////////////////////////////////////////////////////////////////////
 
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
 struct Ray {
-        float3 o;	// origin
-        float3 d;	// direction
+        float3 o;  // origin
+        float3 d;  // direction
 };
 
 inline int iDivUp(int a, int b){
@@ -152,6 +153,7 @@ void kernel_forwardProject(float *dev_proj,
   ray.o = src_pos;
 
   float3 pixelPos;
+
   pixelPos.x = tex1Dfetch(tex_matrix, 3)  + tex1Dfetch(tex_matrix, 0)*i +
                tex1Dfetch(tex_matrix, 1)*j;
   pixelPos.y = tex1Dfetch(tex_matrix, 7)  + tex1Dfetch(tex_matrix, 4)*i +
@@ -192,8 +194,23 @@ void kernel_forwardProject(float *dev_proj,
   float  sum    = 0.0f;
   for(t=tnear; t<=tfar; t+=vStep)
     {
-    // Read from 3D texture from volume
-    sample = tex3D(tex_vol, pos.x, pos.y, pos.z);
+
+    // Read from 3D texture from volume, and make a trilinear interpolation
+    float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
+    float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
+    float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
+    sample =
+        (1-dxtex) * (1-dytex) * (1-dztex) * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex  , jtex  , ktex))
+      + dxtex     * (1-dytex) * (1-dztex) * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex+1, jtex  , ktex))
+      + (1-dxtex) * dytex     * (1-dztex) * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex  , jtex+1, ktex))
+      + dxtex     * dytex     * (1-dztex) * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex+1, jtex+1, ktex))
+      + (1-dxtex) * (1-dytex) * dztex     * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex  , jtex  , ktex+1))
+      + dxtex     * (1-dytex) * dztex     * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex+1, jtex  , ktex+1))
+      + (1-dxtex) * dytex     * dztex     * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex  , jtex+1, ktex+1))
+      + dxtex     * dytex     * dztex     * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex+1, jtex+1, ktex+1));
+
+    //sample = tex3D(tex_vol, pos.x, pos.y, pos.z);
+
     sum += sample;
     pos += step;
     }
@@ -211,6 +228,7 @@ void
 CUDA_forward_project( int projections_size[2],
                       int vol_size[3],
                       float matrix[12],
+                      float mu[256],
                       float *dev_proj,
                       float *dev_vol,
                       float t_step,
@@ -223,7 +241,7 @@ CUDA_forward_project( int projections_size[2],
   tex_vol.addressMode[0] = cudaAddressModeClamp;  // clamp texture coordinates
   tex_vol.addressMode[1] = cudaAddressModeClamp;
   tex_vol.normalized = false;                      // access with normalized texture coordinates
-  tex_vol.filterMode = cudaFilterModeLinear;      // linear interpolation
+  tex_vol.filterMode = cudaFilterModePoint;       // linear interpolation
 
   // Copy volume data to array, bind the array to the texture
   cudaExtent volExtent =  make_cudaExtent(vol_size[0], vol_size[1], vol_size[2]);
@@ -247,6 +265,14 @@ CUDA_forward_project( int projections_size[2],
 
   // Reset projection
   cudaMemset((void *)dev_proj, 0, projections_size[0]*projections_size[1]*sizeof(float) );
+  CUDA_CHECK_ERROR;
+
+  // mu matrix
+  float *dev_mu;
+  cudaMalloc( (void**)&dev_mu, 256*sizeof(float) );
+  cudaMemcpy (dev_mu, mu, 256*sizeof(float), cudaMemcpyHostToDevice);
+  CUDA_CHECK_ERROR;
+  cudaBindTexture (0, tex_mu, dev_mu, 256*sizeof(float) );
   CUDA_CHECK_ERROR;
 
   // Copy matrix and bind data to the texture
@@ -279,6 +305,7 @@ CUDA_forward_project( int projections_size[2],
 
   // Calling kernel
   kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj, sourcePos, projSize, t_step, boxMin, boxMax, dev_spacing);
+  cudaDeviceSynchronize();
 
   CUDA_CHECK_ERROR;
 
@@ -287,10 +314,14 @@ CUDA_forward_project( int projections_size[2],
   CUDA_CHECK_ERROR;
   cudaUnbindTexture (tex_matrix);
   CUDA_CHECK_ERROR;
+  cudaUnbindTexture (tex_mu);
+  CUDA_CHECK_ERROR;
 
   // Cleanup
   cudaFreeArray ((cudaArray*)array_vol);
   CUDA_CHECK_ERROR;
   cudaFree (dev_matrix);
+  CUDA_CHECK_ERROR;
+  cudaFree (dev_mu);
   CUDA_CHECK_ERROR;
 }
