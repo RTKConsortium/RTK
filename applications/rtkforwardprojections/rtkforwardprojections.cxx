@@ -103,7 +103,7 @@ int main(int argc, char * argv[])
       break;
   case(fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
-    forwardProjection = rtk::CudaForwardProjectionImageFilter::New();
+    forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;

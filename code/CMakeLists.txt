@@ -90,7 +90,6 @@ IF (RTK_USE_CUDA)
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
-	      rtkCudaForwardProjectionImageFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})

@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkCudaForwardProjectionImageFilter_txx
+#define __rtkCudaForwardProjectionImageFilter_txx
+
 #include "rtkCudaForwardProjectionImageFilter.h"
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaForwardProjectionImageFilter.hcu"
@@ -30,13 +33,15 @@
 namespace rtk
 {
 
-CudaForwardProjectionImageFilter
-::CudaForwardProjectionImageFilter()
-{
-}
-
+template <class TInputImage,
+          class TOutputImage,
+          class TInterpolationWeightMultiplication,
+          class TProjectedValueAccumulation>
 void
-CudaForwardProjectionImageFilter
+CudaForwardProjectionImageFilter<TInputImage,
+                                 TOutputImage,
+                                 TInterpolationWeightMultiplication,
+                                 TProjectedValueAccumulation>
 ::GPUGenerateData()
 {
   try {
@@ -110,6 +115,13 @@ CudaForwardProjectionImageFilter
         for (int k=0; k<4; k++)
           matrix[j][k] = (float)d_matrix[j][k];
 
+      // Compute mu
+      float mu[256];
+      for (int i = 0; i < 256; i++)
+        {
+        mu[i] = (float)i;
+        }
+
       // Set source position in volume indices
       source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
 
@@ -118,6 +130,7 @@ CudaForwardProjectionImageFilter
       CUDA_forward_project(projectionSize,
                           volumeSize,
                           (float*)&(matrix[0][0]),
+                          (float*)&(mu[0]),
                           pout + nPixelsPerProj * projectionOffset,
                           pvol,
                           t_step,
@@ -136,3 +149,5 @@ CudaForwardProjectionImageFilter
 }
 
 } // end namespace rtk
+
+#endif
