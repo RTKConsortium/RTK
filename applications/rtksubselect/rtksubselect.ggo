@@ -8,8 +8,9 @@ option "out_geometry"  -  "Output geometry file name"                           
 option "out_proj"      -  "Output projections stack file name"                       string       yes
 
 option "first"     f "First projection index"                                    int          no  default="0"
+option "last"      l "Last projection index"                                     int          no
 option "step"      s "Step between projections"                                  int          no  default="1"
-option "list"      l "List of projection indices to keep (0-based)"              int multiple no
+option "list"      - "List of projection indices to keep (0-based)"              int multiple no
 
 section "Projections"
 option "path"      p "Path containing projections"                               string                       yes

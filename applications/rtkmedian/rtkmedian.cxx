@@ -18,12 +18,11 @@
 
 #include "rtkmedian_ggo.h"
 #include "rtkGgoFunctions.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkMedianImageFilter.h"
 
 #include <itkImageFileWriter.h>
 #include <itkTimeProbe.h>
+#include <itkImageFileReader.h>
 
 int main(int argc, char * argv[])
 {
@@ -36,10 +35,10 @@ int main(int argc, char * argv[])
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  // Reader
+  typedef itk::ImageFileReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmedian>(reader, args_info);
+  reader->SetFileName(args_info.input_arg);
 
   // Reading median Window
   if(args_info.median_given<Dimension)

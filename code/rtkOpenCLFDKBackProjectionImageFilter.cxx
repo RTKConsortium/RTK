@@ -108,6 +108,7 @@ OpenCLFDKBackProjectionImageFilter
 {
   size_t volBytes = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels() * sizeof(float);
 
+  OPENCL_CHECK_ERROR( clReleaseKernel(m_Kernel) );
   OPENCL_CHECK_ERROR( clReleaseProgram(m_Program) );
   OPENCL_CHECK_ERROR( clFinish(m_CommandQueue) );
   OPENCL_CHECK_ERROR( clEnqueueReadBuffer (m_CommandQueue,
