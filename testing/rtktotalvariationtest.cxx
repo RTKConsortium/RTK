@@ -5,11 +5,6 @@
 #include "rtkMacro.h"
 
 template<class TImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckTotalVariation(typename TImage::Pointer itkNotUsed(before), typename TImage::Pointer itkNotUsed(after))
-{
-}
-#else
 void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Pointer after)
 {
   typedef rtk::TotalVariationImageFilter<TImage> TotalVariationFilterType;
@@ -31,22 +26,21 @@ void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Point
   // Checking results
   if (totalVariationBefore/2 < totalVariationAfter)
   {
-    std::cerr << "Test Failed: total variation was not reduced" << std::endl;
+    std::cerr << "Test Failed: total variation was not reduced enough" << std::endl;
     exit( EXIT_FAILURE);
   }
 }
-#endif
 
 /**
  * \file rtktotalvariationtest.cxx
  *
- * \brief Tests whether the Total Variation denoising filters indeed 
- * reduce the total variation of a random image
+ * \brief Tests whether the Total Variation denoising BPDQ filter indeed 
+ * reduces the total variation of a random image
  *
  * This test generates a random volume and performs TV denoising on this 
  * volume. It measures its total variation before and after denoising and
- * compares. Note that the TV denoising filters do not minimize TV alone, 
- * but TV + a data attachment term (they compute the proximal operator of TV).
+ * compares. Note that the TV denoising filter does not minimize TV alone, 
+ * but TV + a data attachment term (it computes the proximal operator of TV).
  * Nevertheless, in most cases, it is expected that the output has 
  * a lower TV than the input.
  *
@@ -78,16 +72,13 @@ int main(int, char** )
   RandomImageSourceType::SpacingType spacing;
 
   // Volume metadata
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  size[0] = 8;
+  size[1] = 8;
+  size[2] = 8;
+  spacing[0] = 32.;
+  spacing[1] = 32.;
+  spacing[2] = 32.;
 #else
   size[0] = 64;
   size[1] = 64;
