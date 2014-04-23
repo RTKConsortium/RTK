@@ -119,10 +119,10 @@ class ITK_EXPORT SARTConeBeamReconstructionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef SARTConeBeamReconstructionFilter                   Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef SARTConeBeamReconstructionFilter                                 Self;
+  typedef IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                          Pointer;
+  typedef itk::SmartPointer<const Self>                                    ConstPointer;
 
   /** Some convenient typedefs. */
   typedef TInputImage  InputImageType;
@@ -143,7 +143,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(SARTConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkTypeMacro(SARTConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);

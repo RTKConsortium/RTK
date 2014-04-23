@@ -123,15 +123,15 @@ class ADMMTotalVariationConeBeamReconstructionFilter : public rtk::IterativeCone
 {
 public:
     /** Standard class typedefs. */
-    typedef ADMMTotalVariationConeBeamReconstructionFilter       Self;
-    typedef itk::ImageToImageFilter<TOutputImage, TOutputImage>  Superclass;
-    typedef itk::SmartPointer< Self >                            Pointer;
+    typedef ADMMTotalVariationConeBeamReconstructionFilter                     Self;
+    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>  Superclass;
+    typedef itk::SmartPointer< Self >                                          Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ADMMTotalVariationConeBeamReconstructionFilter, itk::ImageToImageFilter)
+    itkTypeMacro(ADMMTotalVariationConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter)
 
     /** The 3D image to be updated */
     void SetInputVolume(const TOutputImage* Volume);

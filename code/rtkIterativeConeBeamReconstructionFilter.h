@@ -70,9 +70,11 @@ public:
   /** Runtime information support. */
   itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
-  /** To be overriden in inherited classes */
+  /** Accessors to forward and backprojection types. */
   virtual void SetForwardProjectionFilter (int fwtype);
+  int GetForwardProjectionFilter () { return m_CurrentForwardProjectionConfiguration; }
   virtual void SetBackProjectionFilter (int bptype);
+  int GetBackProjectionFilter () { return m_CurrentBackProjectionConfiguration; }
 
 protected:
   IterativeConeBeamReconstructionFilter();

@@ -76,7 +76,11 @@ void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::SetForwardProjectionFilter (int _arg)
 {
-  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
+  if( _arg != this->GetForwardProjectionFilter() )
+    {
+    Superclass::SetForwardProjectionFilter( _arg );
+    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
+    }
 }
 
 template<class TInputImage, class TOutputImage>
@@ -84,7 +88,11 @@ void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::SetBackProjectionFilter (int _arg)
 {
-  m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
+  if( _arg != this->GetBackProjectionFilter() )
+    {
+    Superclass::SetBackProjectionFilter( _arg );
+    m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
+    }
 }
 
 template<class TInputImage, class TOutputImage>
