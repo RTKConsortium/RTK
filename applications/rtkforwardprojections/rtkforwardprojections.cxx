@@ -21,7 +21,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
-#include "rtkSiddonForwardProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
 #include "rtkCudaForwardProjectionImageFilter.h"
 #endif
@@ -109,9 +108,6 @@ int main(int argc, char * argv[])
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
 #endif
-    break;
-  case(fp_arg_Siddon):
-    forwardProjection = rtk::SiddonForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   default:
     std::cerr << "Unhandled --method value." << std::endl;
