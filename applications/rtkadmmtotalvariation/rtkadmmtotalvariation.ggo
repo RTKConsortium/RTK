@@ -18,7 +18,7 @@ option "nsort"     - "Numeric sort for regular expression matches"              
 option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast","Siddon" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
 option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph" enum no default="VoxelBasedBackProjection"
 
 section "Volume properties"

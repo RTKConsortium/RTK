@@ -28,7 +28,7 @@ template< typename TOutputImage, typename TGradientOutputImage>
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 ::TotalVariationDenoisingBPDQImageFilter()
 {
-  m_Lambda = 1.0;
+  m_Gamma = 1.0;
   m_NumberOfIterations = 1;
 
   // Default behaviour is to process all dimensions
@@ -111,7 +111,6 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
       if (m_DimensionsProcessed[dim])  numberOfDimensionsProcessed += 1.0;
     }
   m_Beta = 1/(2 * numberOfDimensionsProcessed) - 0.001; // Beta must be smaller than 1 / (2 * NumberOfDimensionsProcessed) for the algorithm to converge
-  m_Gamma = 1 / (2 * m_Lambda); // BPDQ uses a cost function defined as 0.5 * || f - f_0 ||_2^2 + gamma * TV(f)
 
   m_MultiplyFilter->SetConstant2(m_Beta);
   m_MagnitudeThresholdFilter->SetThreshold(m_Gamma);

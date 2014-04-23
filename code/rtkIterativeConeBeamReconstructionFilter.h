@@ -23,7 +23,6 @@
 #include "rtkConfiguration.h"
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
-#include "rtkSiddonForwardProjectionImageFilter.h"
 // Back projection filters
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
