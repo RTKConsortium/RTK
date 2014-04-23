@@ -2,7 +2,7 @@
 #define __giftDaubechiesWaveletKernelSource_H
 
 //Includes
-#include<itkImageToImageFilter.h>
+#include<itkImageSource.h>
 
 namespace gift {
 
@@ -14,7 +14,7 @@ namespace gift {
  */
 template<TImage>
 class DaubechiesWaveletsKernelSource
-    : public itk::ImageToImageFilter<TImage>
+    : public itk::ImageSource<TImage>
 {
 public:
 
@@ -33,61 +33,33 @@ public:
 
     /** Standard class typedefs. */
     typedef DaubechiesWaveletKernelSource Self;
-    typedef itk::ImageToImageFilter<TImage>  Superclass;
+    typedef itk::ImageSource<TImage>  Superclass;
 
-    /** Default constructor (order = 3) */
-    DaubechiesWaveletKernelSource()
-    {
-        //Set defaults
-        this->SetLowpassDeconstruction();
-        this->m_Order = 3;
-    }
-
-    /** Constructor */
-    DaubechiesWaveletKernelSource(unsigned int order)
-    {
-        //Set defaults
-        this->SetDeconstruction();
-        this->m_Order = order;
-    }
 
     /** Sets the filter to return coefficients for low pass, deconstruct. */
-    void SetDeconstruction()
-    {
-        m_Type = Self::Deconstruct;
-    }
+    void SetDeconstruction();
 
     /** Sets the filter to return coefficients for low pass, reconstruct. */
-    void SetReconstruction()
-    {
-        m_Type = Self::Reconstruct;
-    }
+    void SetReconstruction();
 
     /** Prints some debugging information. */
-    virtual void PrintSelf(std::ostream& os, itk::Indent i)
-    {
-        os  << i << "DaubechiesWaveletKernelSource { this=" << this
-            << " }" << std::endl;
+    virtual void PrintSelf(std::ostream& os, itk::Indent i);
 
-        os << i << "m_Order=" << this->GetOrder() << std::endl;
-        os << i << "m_Pass=" << std::endl;
-        for (unsigned int dim=0; dim<TImage::ImageDimension; dim++)
-          {
-          os << i << i << this->m_Pass[dim] << std::endl;
-          }
-        os << i << "m_Type=" << this->m_Type << std::endl;
-
-        Superclass::PrintSelf( os, i.GetNextIndent() );
-    }
+    /** Set and Get macro for the pass vector */
+    itkSetMacro(Pass, Pass*)
+    itkGetMacro(Pass, Pass*)
 
 protected:
-    typedef typename Superclass::CoefficientVector CoefficientVector;
+    typedef std::vector<typename TImage::PixelType> CoefficientVector;
 
     /** Calculates CoefficientsVector coefficients. */
     CoefficientVector GenerateCoefficients();
 
     /** Does the real work */
-    void GenerateData();
+    virtual void GenerateData();
+
+    /** Defines the size, spacing, ... of the output kernel image */
+    virtual void GenerateOutputInformation();
 
 private:
 
@@ -111,7 +83,7 @@ private:
 
 //Include CXX
 #ifndef GIFT_MANUAL_INSTANTIATION
-#include "giftDaubechiesWaveletKernelSource.txx"
+#include "giftDaubechiesWaveletsKernelSource.txx"
 #endif
 
 #endif
