@@ -52,9 +52,6 @@ namespace rtk
         std::cerr << "The program has not been compiled with cuda option" << std::endl;
       #endif
       break;
-      case(3):
-        fw = rtk::SiddonForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
-      break;
 
       default:
         std::cerr << "Unhandled --forward value." << std::endl;

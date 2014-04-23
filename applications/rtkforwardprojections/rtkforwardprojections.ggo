@@ -8,7 +8,7 @@ option "input"     i "Input volume file name"                                   
 option "output"    o "Output projections file name"                              string   yes
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast","Siddon" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
 
 section "Projections parameters"
 option "origin"    - "Origin (default=centered)" double multiple no
