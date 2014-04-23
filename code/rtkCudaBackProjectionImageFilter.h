@@ -47,11 +47,13 @@ class CudaBackProjectionImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                            ImageType;
-  typedef CudaBackProjectionImageFilter                      Self;
-  typedef BackProjectionImageFilter<ImageType, ImageType>    Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef itk::CudaImage<float,3>                          ImageType;
+  typedef BackProjectionImageFilter< ImageType, ImageType> BackProjectionImageFilterType;
+  typedef CudaBackProjectionImageFilter                    Self;
+  typedef CudaInPlaceImageFilter<ImageType, ImageType,
+                     BackProjectionImageFilterType>        Superclass;
+  typedef itk::SmartPointer<Self>                          Pointer;
+  typedef itk::SmartPointer<const Self>                    ConstPointer;
 
   typedef ImageType::RegionType            OutputImageRegionType;
   typedef itk::CudaImage<float, 2>         ProjectionImageType;
@@ -61,7 +63,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(CudaBackProjectionImageFilter, BackProjectionImageFilter);
+  itkTypeMacro(CudaBackProjectionImageFilter, Superclass);
 
 protected:
   rtkcuda_EXPORT CudaBackProjectionImageFilter();
