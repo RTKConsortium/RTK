@@ -80,9 +80,9 @@ class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeB
 {
 public:
     /** Standard class typedefs. */
-    typedef ConjugateGradientConeBeamReconstructionFilter        Self;
-    typedef itk::ImageToImageFilter<TOutputImage, TOutputImage>  Superclass;
-    typedef itk::SmartPointer< Self >                            Pointer;
+    typedef ConjugateGradientConeBeamReconstructionFilter                      Self;
+    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>  Superclass;
+    typedef itk::SmartPointer< Self >                                          Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

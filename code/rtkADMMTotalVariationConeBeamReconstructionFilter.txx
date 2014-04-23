@@ -96,8 +96,12 @@ void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::SetForwardProjectionFilter (int _arg)
 {
-  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
-  m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
+  if( _arg != this->GetForwardProjectionFilter() )
+    {
+    Superclass::SetForwardProjectionFilter( _arg );
+    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
+    m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
+    }
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -105,9 +109,13 @@ void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::SetBackProjectionFilter (int _arg)
 {
-  m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
-  m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
-  m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
+  if( _arg != this->GetBackProjectionFilter() )
+    {
+    Superclass::SetBackProjectionFilter( _arg );
+    m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
+    m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
+    m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
+    }
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
