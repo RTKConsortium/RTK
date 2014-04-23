@@ -2,186 +2,271 @@
 #define _giftDaubechiesWaveletKernelSource_TXX
 
 //Includes
-#include "giftDaubechiesWaveletKernelSource.h"
+#include "giftDaubechiesWaveletsKernelSource.h"
 #include "vnl/vnl_math.h"
 #include <vector>
 #include <algorithm>
+#include <itkImageRegionIterator.h>
 
 namespace gift
 {
 
-template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
-::CoefficientVector
-DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
-::GenerateCoefficients()
+// Default constructor (order = 3)
+template<typename TImage>
+DaubechiesWaveletKernelSource<TImage>
+::DaubechiesWaveletKernelSource()
 {
-    //Test type
-    switch (this->m_Pass)
-    {
-    case Low:
-        switch (this->m_Type)
-        {
-        case Deconstruct:     //Low-pass, Deconstruct
-            return this->GenerateCoefficientsLowpassDeconstruct();
-            break;
-        case Reconstruct:     //Low-pass, Reconstruct
-            return this->GenerateCoefficientsLowpassReconstruct();
-            break;
-        }
-        break;
-    case High:
-        switch (this->m_Type)
-        {
-        case Deconstruct:     //High-pass, Deconstruct
-            return this->GenerateCoefficientsHighpassDeconstruct();
-            break;
-        case Reconstruct:     //High-pass, Reconstruct
-            return this->GenerateCoefficientsHighpassReconstruct();
-            break;
-        }
-        break;
-    }
-
-    //Default return
-    CoefficientVector coeff;
-    return coeff;
+  this->SetDeconstruction();
+  this->m_Order = 3;
 }
 
-template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>::
+// Constructor
+template<typename TImage>
+DaubechiesWaveletKernelSource<TImage>
+::DaubechiesWaveletKernelSource(unsigned int order)
+{
+  this->SetDeconstruction();
+  this->m_Order = order;
+}
+
+template<typename TImage>
+void
+DaubechiesWaveletKernelSource<TImage>
+::SetDeconstruction()
+{
+  m_Type = Self::Deconstruct;
+}
+
+template<typename TImage>
+void
+DaubechiesWaveletKernelSource<TImage>
+::SetReconstruction()
+{
+  m_Type = Self::Reconstruct;
+}
+
+template<typename TImage>
+void
+DaubechiesWaveletKernelSource<TImage>
+::PrintSelf(std::ostream& os, itk::Indent i)
+{
+  os  << i << "DaubechiesWaveletKernelSource { this=" << this
+      << " }" << std::endl;
+
+  os << i << "m_Order=" << this->GetOrder() << std::endl;
+  os << i << "m_Pass=" << std::endl;
+  for (unsigned int dim=0; dim<TImage::ImageDimension; dim++)
+    {
+    os << i << i << this->m_Pass[dim] << std::endl;
+    }
+  os << i << "m_Type=" << this->m_Type << std::endl;
+
+  Superclass::PrintSelf( os, i.GetNextIndent() );
+}
+
+template<typename TImage>
+typename DaubechiesWaveletKernelSource<TImage>::
 CoefficientVector
-DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TImage>
 ::GenerateCoefficientsLowpassReconstruct()
 {
-    CoefficientVector coeff;
+  CoefficientVector coeff;
 
-    // IMPORTANT NOTE : The kernels are in reverse order with respect to
-    // what can be found in the litterature. This is because ITK easily computes
-    // the inner product between an image region and a kernel, but does not mirror
-    // the kernel beforehand (which is necessary to perform a convolution). It is
-    // compensated by defining the kernel as the mirrors of what they really are.
+  // IMPORTANT NOTE : The kernels are in reverse order with respect to
+  // what can be found in the litterature. This is because ITK easily computes
+  // the inner product between an image region and a kernel, but does not mirror
+  // the kernel beforehand (which is necessary to perform a convolution). It is
+  // compensated by defining the kernel as the mirrors of what they really are.
 
-    switch (this->GetOrder())
+  switch (this->GetOrder())
     {
     case 1:
-        coeff.push_back(1.0/vnl_math::sqrt2);
-        coeff.push_back(1.0/vnl_math::sqrt2);
-        break;
+      coeff.push_back(1.0/vnl_math::sqrt2);
+      coeff.push_back(1.0/vnl_math::sqrt2);
+      break;
     case 2:
-        coeff.push_back(-0.1830127/vnl_math::sqrt2);
-        coeff.push_back(0.3169873/vnl_math::sqrt2);
-        coeff.push_back(1.1830127/vnl_math::sqrt2);
-        coeff.push_back(0.6830127/vnl_math::sqrt2);
-        break;
+      coeff.push_back(-0.1830127/vnl_math::sqrt2);
+      coeff.push_back(0.3169873/vnl_math::sqrt2);
+      coeff.push_back(1.1830127/vnl_math::sqrt2);
+      coeff.push_back(0.6830127/vnl_math::sqrt2);
+      break;
     case 3:
-        coeff.push_back(0.0498175/vnl_math::sqrt2);
-        coeff.push_back(-0.12083221/vnl_math::sqrt2);
-        coeff.push_back(-0.19093442/vnl_math::sqrt2);
-        coeff.push_back(0.650365/vnl_math::sqrt2);
-        coeff.push_back(1.14111692/vnl_math::sqrt2);
-        coeff.push_back(0.47046721/vnl_math::sqrt2);
-        break;
+      coeff.push_back(0.0498175/vnl_math::sqrt2);
+      coeff.push_back(-0.12083221/vnl_math::sqrt2);
+      coeff.push_back(-0.19093442/vnl_math::sqrt2);
+      coeff.push_back(0.650365/vnl_math::sqrt2);
+      coeff.push_back(1.14111692/vnl_math::sqrt2);
+      coeff.push_back(0.47046721/vnl_math::sqrt2);
+      break;
     case 4:
-        coeff.push_back(-0.01498699/vnl_math::sqrt2);
-        coeff.push_back(0.0465036/vnl_math::sqrt2);
-        coeff.push_back(0.0436163/vnl_math::sqrt2);
-        coeff.push_back(-0.26450717/vnl_math::sqrt2);
-        coeff.push_back(-0.03957503/vnl_math::sqrt2);
-        coeff.push_back(0.8922014/vnl_math::sqrt2);
-        coeff.push_back(1.01094572/vnl_math::sqrt2);
-        coeff.push_back(0.32580343/vnl_math::sqrt2);
-        break;
+      coeff.push_back(-0.01498699/vnl_math::sqrt2);
+      coeff.push_back(0.0465036/vnl_math::sqrt2);
+      coeff.push_back(0.0436163/vnl_math::sqrt2);
+      coeff.push_back(-0.26450717/vnl_math::sqrt2);
+      coeff.push_back(-0.03957503/vnl_math::sqrt2);
+      coeff.push_back(0.8922014/vnl_math::sqrt2);
+      coeff.push_back(1.01094572/vnl_math::sqrt2);
+      coeff.push_back(0.32580343/vnl_math::sqrt2);
+      break;
     case 5:
-        coeff.push_back(0.00471742793/vnl_math::sqrt2);
-        coeff.push_back(-0.01779187/vnl_math::sqrt2);
-        coeff.push_back(-0.00882680/vnl_math::sqrt2);
-        coeff.push_back(0.10970265/vnl_math::sqrt2);
-        coeff.push_back(-0.04560113/vnl_math::sqrt2);
-        coeff.push_back(-0.34265671/vnl_math::sqrt2);
-        coeff.push_back(0.19576696/vnl_math::sqrt2);
-        coeff.push_back(1.02432694/vnl_math::sqrt2);
-        coeff.push_back(0.85394354/vnl_math::sqrt2);
-        coeff.push_back(0.22641898/vnl_math::sqrt2);
-        break;
+      coeff.push_back(0.00471742793/vnl_math::sqrt2);
+      coeff.push_back(-0.01779187/vnl_math::sqrt2);
+      coeff.push_back(-0.00882680/vnl_math::sqrt2);
+      coeff.push_back(0.10970265/vnl_math::sqrt2);
+      coeff.push_back(-0.04560113/vnl_math::sqrt2);
+      coeff.push_back(-0.34265671/vnl_math::sqrt2);
+      coeff.push_back(0.19576696/vnl_math::sqrt2);
+      coeff.push_back(1.02432694/vnl_math::sqrt2);
+      coeff.push_back(0.85394354/vnl_math::sqrt2);
+      coeff.push_back(0.22641898/vnl_math::sqrt2);
+      break;
     case 6:
-        coeff.push_back(-0.00152353381/vnl_math::sqrt2);
-        coeff.push_back(0.00675606236/vnl_math::sqrt2);
-        coeff.push_back(0.000783251152/vnl_math::sqrt2);
-        coeff.push_back(-0.04466375/vnl_math::sqrt2);
-        coeff.push_back(0.03892321/vnl_math::sqrt2);
-        coeff.push_back(0.13788809/vnl_math::sqrt2);
-        coeff.push_back(-0.18351806/vnl_math::sqrt2);
-        coeff.push_back(-0.31998660/vnl_math::sqrt2);
-        coeff.push_back(0.44583132/vnl_math::sqrt2);
-        coeff.push_back(1.06226376/vnl_math::sqrt2);
-        coeff.push_back(0.69950381/vnl_math::sqrt2);
-        coeff.push_back(0.15774243/vnl_math::sqrt2);
-        break;
+      coeff.push_back(-0.00152353381/vnl_math::sqrt2);
+      coeff.push_back(0.00675606236/vnl_math::sqrt2);
+      coeff.push_back(0.000783251152/vnl_math::sqrt2);
+      coeff.push_back(-0.04466375/vnl_math::sqrt2);
+      coeff.push_back(0.03892321/vnl_math::sqrt2);
+      coeff.push_back(0.13788809/vnl_math::sqrt2);
+      coeff.push_back(-0.18351806/vnl_math::sqrt2);
+      coeff.push_back(-0.31998660/vnl_math::sqrt2);
+      coeff.push_back(0.44583132/vnl_math::sqrt2);
+      coeff.push_back(1.06226376/vnl_math::sqrt2);
+      coeff.push_back(0.69950381/vnl_math::sqrt2);
+      coeff.push_back(0.15774243/vnl_math::sqrt2);
+      break;
     case 7:
-        coeff.push_back(0.000500226853/vnl_math::sqrt2);
-        coeff.push_back(-0.00254790472/vnl_math::sqrt2);
-        coeff.push_back(0.000607514995/vnl_math::sqrt2);
-        coeff.push_back(0.01774979/vnl_math::sqrt2);
-        coeff.push_back(-0.02343994/vnl_math::sqrt2);
-        coeff.push_back(-0.05378245/vnl_math::sqrt2);
-        coeff.push_back(0.11400345/vnl_math::sqrt2);
-        coeff.push_back(0.1008467/vnl_math::sqrt2);
-        coeff.push_back(-0.31683501/vnl_math::sqrt2);
-        coeff.push_back(-0.20351382/vnl_math::sqrt2);
-        coeff.push_back(0.66437248/vnl_math::sqrt2);
-        coeff.push_back(1.03114849/vnl_math::sqrt2);
-        coeff.push_back(0.56079128/vnl_math::sqrt2);
-        coeff.push_back(0.11009943/vnl_math::sqrt2);
-        break;
+      coeff.push_back(0.000500226853/vnl_math::sqrt2);
+      coeff.push_back(-0.00254790472/vnl_math::sqrt2);
+      coeff.push_back(0.000607514995/vnl_math::sqrt2);
+      coeff.push_back(0.01774979/vnl_math::sqrt2);
+      coeff.push_back(-0.02343994/vnl_math::sqrt2);
+      coeff.push_back(-0.05378245/vnl_math::sqrt2);
+      coeff.push_back(0.11400345/vnl_math::sqrt2);
+      coeff.push_back(0.1008467/vnl_math::sqrt2);
+      coeff.push_back(-0.31683501/vnl_math::sqrt2);
+      coeff.push_back(-0.20351382/vnl_math::sqrt2);
+      coeff.push_back(0.66437248/vnl_math::sqrt2);
+      coeff.push_back(1.03114849/vnl_math::sqrt2);
+      coeff.push_back(0.56079128/vnl_math::sqrt2);
+      coeff.push_back(0.11009943/vnl_math::sqrt2);
+      break;
     } //end case(Order)
-
-    return coeff;
+  return coeff;
 }
 
-template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>::
+template<typename TImage>
+typename DaubechiesWaveletKernelSource<TImage>::
 CoefficientVector
-DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TImage>
 ::GenerateCoefficientsHighpassDeconstruct()
 {
-    CoefficientVector coeff = this->GenerateCoefficientsLowpassReconstruct();
-    unsigned int it;
+  CoefficientVector coeff = this->GenerateCoefficientsLowpassReconstruct();
+  unsigned int it;
 
-    double factor = 1;
-    for (it=0; it<coeff.size(); it++)
-    {
-        coeff[it] *= factor;
-        factor *= -1;
-    }
-    return coeff;
+  double factor = 1;
+  for (it=0; it<coeff.size(); it++)
+  {
+      coeff[it] *= factor;
+      factor *= -1;
+  }
+  return coeff;
 }
 
-template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>::
+template<typename TImage>
+typename DaubechiesWaveletKernelSource<TImage>::
 CoefficientVector
-DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TImage>
 ::GenerateCoefficientsLowpassDeconstruct()
 {
-
-
-    CoefficientVector coeff = this->GenerateCoefficientsLowpassReconstruct();
-    std::reverse(coeff.begin(), coeff.end());
-
-    return coeff;
+  CoefficientVector coeff = this->GenerateCoefficientsLowpassReconstruct();
+  std::reverse(coeff.begin(), coeff.end());
+  return coeff;
 }
 
-template<class TPixel, unsigned int VDimension, class TAllocator>
-typename DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>::
+template<typename TImage>
+typename DaubechiesWaveletKernelSource<TImage>::
 CoefficientVector
-DaubechiesWaveletKernelSource<TPixel, VDimension, TAllocator>
+DaubechiesWaveletKernelSource<TImage>
 ::GenerateCoefficientsHighpassReconstruct()
 {
-    CoefficientVector coeff = this->GenerateCoefficientsHighpassDeconstruct();
-    std::reverse(coeff.begin(), coeff.end());
-    return coeff;
+  CoefficientVector coeff = this->GenerateCoefficientsHighpassDeconstruct();
+  std::reverse(coeff.begin(), coeff.end());
+  return coeff;
 }
 
+template<typename TImage>
+void
+DaubechiesWaveletKernelSource<TImage>
+::GenerateOutputInformation()
+{
+  typename TImage::SizeType size;
+  size.Fill(2 * m_Order);
+
+  typename TImage::RegionType region;
+  region.SetSize(size);
+
+  this->GetOutput()->SetLargestPossibleRegion(region);
+}
+
+template<typename TImage>
+void
+DaubechiesWaveletKernelSource<TImage>
+::GenerateData()
+{
+  unsigned int dim = TImage::ImageDimension;
+
+  // Create a vector holding the coefficients along each direction
+  CoefficientVector *coeffs = new CoefficientVector[dim];
+  for(unsigned int d=0; d<dim; d++)
+    {
+    if (m_Type == Self::Deconstruct)
+      {
+      switch (m_Pass[d])
+        {
+        case Self::Low:
+          coeffs[d] = GenerateCoefficientsLowpassDeconstruct();
+          break;
+        case Self::High:
+          coeffs[d] = GenerateCoefficientsHighpassDeconstruct();
+          break;
+        default:
+          itkGenericExceptionMacro("In giftDaubechiesWaveletsKernelSource : unknown pass");
+        }
+      }
+    if (m_Type == Self::Reconstruct)
+      {
+      switch (m_Pass[d])
+        {
+        case Self::Low:
+          coeffs[d] = GenerateCoefficientsLowpassReconstruct();
+          break;
+        case Self::High:
+          coeffs[d] = GenerateCoefficientsHighpassReconstruct();
+          break;
+        default:
+          itkGenericExceptionMacro("In giftDaubechiesWaveletsKernelSource : unknown pass");
+        }
+      }
+    }
+
+  // Run through the output image and set the pixels to the product of the coefficients
+  this->GetOutput->Allocate();
+  itk::ImageRegionIterator< TImage > OutputIt;
+  OutputIt = itk::ImageRegionIterator< TImage >(this->GetOutput(), this->GetOutput()->GetLargestPossibleRegion());
+  typename TImage::IndexType index;
+  typename TImage::PixelType product;
+
+  while(!OutputIt.IsAtEnd())
+    {
+    index = OutputIt.GetIndex();
+    product = 1;
+    for(unsigned int d=0; d<dim; d++) product *= coeffs[d][index[d]];
+    OutputIt.Set(product);
+    }
+
+  // Clean up
+  delete coeffs[];
+}
 
 }// end namespace gift
 
