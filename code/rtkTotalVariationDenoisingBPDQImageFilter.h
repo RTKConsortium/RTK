@@ -119,8 +119,8 @@ public:
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
 
-  itkSetMacro(Lambda, double)
-  itkGetMacro(Lambda, double)
+  itkSetMacro(Gamma, double)
+  itkGetMacro(Gamma, double)
 
   void SetDimensionsProcessed(bool* arg);
 
@@ -142,7 +142,7 @@ protected:
   typename MagnitudeThresholdFilterType::Pointer   m_MagnitudeThresholdFilter;
   typename DivergenceFilterType::Pointer           m_DivergenceFilter;
 
-  double m_Lambda;
+  double m_Gamma;
   int    m_NumberOfIterations;
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
@@ -151,7 +151,6 @@ private:
   void operator=(const Self&); //purposely not implemented
 
   double m_Beta;
-  double m_Gamma;
 };
 
 } // end namespace itk
