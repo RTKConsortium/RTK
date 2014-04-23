@@ -11946,3 +11946,671 @@
    fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
    fun:main
 }
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_Z41CreateAndBuildOpenCLProgramFromSourceFileSsRKP11_cl_contextRP11_cl_program
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_Z41CreateAndBuildOpenCLProgramFromSourceFileSsRKP11_cl_contextRP11_cl_program
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   fun:_dl_map_object
+   fun:openaux
+   fun:_dl_catch_error
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   fun:_dl_map_object
+   fun:openaux
+   fun:_dl_catch_error
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_Z41CreateAndBuildOpenCLProgramFromSourceFileSsRKP11_cl_contextRP11_cl_program
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_Z41CreateAndBuildOpenCLProgramFromSourceFileSsRKP11_cl_contextRP11_cl_program
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_Z41CreateAndBuildOpenCLProgramFromSourceFileSsRKP11_cl_contextRP11_cl_program
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk20StreamingImageFilterINS_5ImageIfLj3EEES2_E16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:calloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk20StreamingImageFilterINS_5ImageIfLj3EEES2_E16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   obj:/usr/lib64/nvidia-304xx/libnvidia-opencl.so.304.119
+   fun:_Z41CreateAndBuildOpenCLProgramFromSourceFileSsRKP11_cl_contextRP11_cl_program
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:_ZN3itk20StreamingImageFilterINS_5ImageIfLj3EEES2_E16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:calloc
+   fun:_dl_check_map_versions
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:calloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
+{
+   OpenCL
+   Memcheck:Leak
+   fun:calloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   fun:_dl_map_object
+   fun:openaux
+   fun:_dl_catch_error
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   obj:/usr/lib64/nvidia-304xx/libOpenCL.so.1.0.0
+   fun:clGetPlatformIDs
+   fun:_Z24GetListOfOpenCLPlatformsv
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   fun:_ZN3rtk37OpenCLFDKConeBeamReconstructionFilter12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:main
+}
