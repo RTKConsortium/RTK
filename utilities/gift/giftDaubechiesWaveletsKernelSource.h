@@ -11,10 +11,12 @@ namespace gift {
  * \brief Creates a Daubechies wavelets kernel image with the requested
  * attributes (order, type, pass along each dimension)
  *
+ * \author Cyril Mory
+ *
+ * \ingroup ImageSource
  */
-template<TImage>
-class DaubechiesWaveletsKernelSource
-    : public itk::ImageSource<TImage>
+template<typename TImage>
+class DaubechiesWaveletsKernelSource : public itk::ImageSource<TImage>
 {
 public:
 
@@ -32,9 +34,28 @@ public:
 
 
     /** Standard class typedefs. */
-    typedef DaubechiesWaveletKernelSource Self;
+    typedef DaubechiesWaveletsKernelSource Self;
     typedef itk::ImageSource<TImage>  Superclass;
+    typedef itk::SmartPointer<Self>        Pointer;
+    typedef itk::SmartPointer<const Self>  ConstPointer;
 
+    /** Typedef for the output image type. */
+    typedef TImage OutputImageType;
+
+    /** Typedef for the output image PixelType. */
+    typedef typename TImage::PixelType OutputImagePixelType;
+
+    /** Typedef to describe the output image region type. */
+    typedef typename TImage::RegionType OutputImageRegionType;
+
+    /** Typedef for the "pass" vector (high pass or low pass along each dimension). */
+    typedef typename itk::Vector<Self::Pass> PassVector;
+
+    /** Run-time type information (and related methods). */
+    itkTypeMacro(DaubechiesWaveletsKernelSource, itk::ImageSource)
+
+    /** Method for creation through the object factory. */
+    itkNewMacro(Self)
 
     /** Sets the filter to return coefficients for low pass, deconstruct. */
     void SetDeconstruction();
@@ -45,11 +66,18 @@ public:
     /** Prints some debugging information. */
     virtual void PrintSelf(std::ostream& os, itk::Indent i);
 
+    /** Set and Get macro for the wavelet order */
+    itkSetMacro(Order, unsigned int)
+    itkGetMacro(Order, unsigned int)
+
     /** Set and Get macro for the pass vector */
-    itkSetMacro(Pass, Pass*)
-    itkGetMacro(Pass, Pass*)
+    itkSetMacro(Pass, PassVector)
+    itkGetMacro(Pass, PassVector)
 
 protected:
+    DaubechiesWaveletsKernelSource();
+    ~DaubechiesWaveletsKernelSource();
+
     typedef std::vector<typename TImage::PixelType> CoefficientVector;
 
     /** Calculates CoefficientsVector coefficients. */
@@ -73,7 +101,7 @@ private:
     unsigned int m_Order;
 
     /** Specifies the filter pass along each dimension */
-    Pass *m_Pass;
+    PassVector m_Pass;
 
     /** Specifies the filter type */
     Type m_Type;

@@ -1,5 +1,5 @@
-#ifndef _giftDaubechiesWaveletKernelSource_TXX
-#define _giftDaubechiesWaveletKernelSource_TXX
+#ifndef _giftDaubechiesWaveletsKernelSource_TXX
+#define _giftDaubechiesWaveletsKernelSource_TXX
 
 //Includes
 #include "giftDaubechiesWaveletsKernelSource.h"
@@ -11,27 +11,23 @@
 namespace gift
 {
 
-// Default constructor (order = 3)
 template<typename TImage>
-DaubechiesWaveletKernelSource<TImage>
-::DaubechiesWaveletKernelSource()
+DaubechiesWaveletsKernelSource<TImage>
+::DaubechiesWaveletsKernelSource()
 {
   this->SetDeconstruction();
   this->m_Order = 3;
 }
 
-// Constructor
 template<typename TImage>
-DaubechiesWaveletKernelSource<TImage>
-::DaubechiesWaveletKernelSource(unsigned int order)
+DaubechiesWaveletsKernelSource<TImage>
+::~DaubechiesWaveletsKernelSource()
 {
-  this->SetDeconstruction();
-  this->m_Order = order;
 }
 
 template<typename TImage>
 void
-DaubechiesWaveletKernelSource<TImage>
+DaubechiesWaveletsKernelSource<TImage>
 ::SetDeconstruction()
 {
   m_Type = Self::Deconstruct;
@@ -39,7 +35,7 @@ DaubechiesWaveletKernelSource<TImage>
 
 template<typename TImage>
 void
-DaubechiesWaveletKernelSource<TImage>
+DaubechiesWaveletsKernelSource<TImage>
 ::SetReconstruction()
 {
   m_Type = Self::Reconstruct;
@@ -47,10 +43,10 @@ DaubechiesWaveletKernelSource<TImage>
 
 template<typename TImage>
 void
-DaubechiesWaveletKernelSource<TImage>
+DaubechiesWaveletsKernelSource<TImage>
 ::PrintSelf(std::ostream& os, itk::Indent i)
 {
-  os  << i << "DaubechiesWaveletKernelSource { this=" << this
+  os  << i << "DaubechiesWaveletsKernelSource { this=" << this
       << " }" << std::endl;
 
   os << i << "m_Order=" << this->GetOrder() << std::endl;
@@ -65,19 +61,12 @@ DaubechiesWaveletKernelSource<TImage>
 }
 
 template<typename TImage>
-typename DaubechiesWaveletKernelSource<TImage>::
+typename DaubechiesWaveletsKernelSource<TImage>::
 CoefficientVector
-DaubechiesWaveletKernelSource<TImage>
-::GenerateCoefficientsLowpassReconstruct()
+DaubechiesWaveletsKernelSource<TImage>
+::GenerateCoefficientsLowpassDeconstruct()
 {
   CoefficientVector coeff;
-
-  // IMPORTANT NOTE : The kernels are in reverse order with respect to
-  // what can be found in the litterature. This is because ITK easily computes
-  // the inner product between an image region and a kernel, but does not mirror
-  // the kernel beforehand (which is necessary to perform a convolution). It is
-  // compensated by defining the kernel as the mirrors of what they really are.
-
   switch (this->GetOrder())
     {
     case 1:
@@ -155,15 +144,16 @@ DaubechiesWaveletKernelSource<TImage>
 }
 
 template<typename TImage>
-typename DaubechiesWaveletKernelSource<TImage>::
+typename DaubechiesWaveletsKernelSource<TImage>::
 CoefficientVector
-DaubechiesWaveletKernelSource<TImage>
+DaubechiesWaveletsKernelSource<TImage>
 ::GenerateCoefficientsHighpassDeconstruct()
 {
-  CoefficientVector coeff = this->GenerateCoefficientsLowpassReconstruct();
+  CoefficientVector coeff = this->GenerateCoefficientsLowpassDeconstruct();
+  std::reverse(coeff.begin(), coeff.end());
   unsigned int it;
 
-  double factor = 1;
+  double factor = -1;
   for (it=0; it<coeff.size(); it++)
   {
       coeff[it] *= factor;
@@ -173,20 +163,20 @@ DaubechiesWaveletKernelSource<TImage>
 }
 
 template<typename TImage>
-typename DaubechiesWaveletKernelSource<TImage>::
+typename DaubechiesWaveletsKernelSource<TImage>::
 CoefficientVector
-DaubechiesWaveletKernelSource<TImage>
-::GenerateCoefficientsLowpassDeconstruct()
+DaubechiesWaveletsKernelSource<TImage>
+::GenerateCoefficientsLowpassReconstruct()
 {
-  CoefficientVector coeff = this->GenerateCoefficientsLowpassReconstruct();
+  CoefficientVector coeff = this->GenerateCoefficientsLowpassDeconstruct();
   std::reverse(coeff.begin(), coeff.end());
   return coeff;
 }
 
 template<typename TImage>
-typename DaubechiesWaveletKernelSource<TImage>::
+typename DaubechiesWaveletsKernelSource<TImage>::
 CoefficientVector
-DaubechiesWaveletKernelSource<TImage>
+DaubechiesWaveletsKernelSource<TImage>
 ::GenerateCoefficientsHighpassReconstruct()
 {
   CoefficientVector coeff = this->GenerateCoefficientsHighpassDeconstruct();
@@ -196,7 +186,7 @@ DaubechiesWaveletKernelSource<TImage>
 
 template<typename TImage>
 void
-DaubechiesWaveletKernelSource<TImage>
+DaubechiesWaveletsKernelSource<TImage>
 ::GenerateOutputInformation()
 {
   typename TImage::SizeType size;
@@ -205,12 +195,13 @@ DaubechiesWaveletKernelSource<TImage>
   typename TImage::RegionType region;
   region.SetSize(size);
 
-  this->GetOutput()->SetLargestPossibleRegion(region);
+  this->GetOutput()->SetRegions(region);
+//  this->GetOutput()->SetLargestPossibleRegion(region);
 }
 
 template<typename TImage>
 void
-DaubechiesWaveletKernelSource<TImage>
+DaubechiesWaveletsKernelSource<TImage>
 ::GenerateData()
 {
   unsigned int dim = TImage::ImageDimension;
@@ -250,7 +241,7 @@ DaubechiesWaveletKernelSource<TImage>
     }
 
   // Run through the output image and set the pixels to the product of the coefficients
-  this->GetOutput->Allocate();
+  this->GetOutput()->Allocate();
   itk::ImageRegionIterator< TImage > OutputIt;
   OutputIt = itk::ImageRegionIterator< TImage >(this->GetOutput(), this->GetOutput()->GetLargestPossibleRegion());
   typename TImage::IndexType index;
@@ -262,10 +253,11 @@ DaubechiesWaveletKernelSource<TImage>
     product = 1;
     for(unsigned int d=0; d<dim; d++) product *= coeffs[d][index[d]];
     OutputIt.Set(product);
+    ++OutputIt;
     }
 
   // Clean up
-  delete coeffs[];
+  delete[] coeffs;
 }
 
 }// end namespace gift

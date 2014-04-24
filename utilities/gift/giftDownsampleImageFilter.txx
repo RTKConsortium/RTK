@@ -89,7 +89,7 @@ DownsampleImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void 
 DownsampleImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId)
 {
     itkDebugMacro(<<"Actually executing");
   
@@ -109,13 +109,14 @@ DownsampleImageFilter<TInputImage,TOutputImage>
     typename TOutputImage::SizeType factor;
     typename TOutputImage::OffsetType offset;
 
-//    // Get the input image start index (not necessarily zero because of padding)
-//    const typename TInputImage::IndexType& inputStartIndexRef = inputPtr->GetRequestedRegion().GetIndex();
-//    typename TInputImage::OffsetType inputStartIndex;
-//    for (unsigned int i=0; i < TInputImage::ImageDimension; i++)
-//    {
-//        inputStartIndex[i] = inputStartIndexRef[i];
-//    }
+    // Get the input image start index (not necessarily zero because of padding)
+    typename TInputImage::OffsetType inputStartIndex;
+    typename TInputImage::OffsetType outputStartIndex;
+    for (unsigned int i=0; i < TInputImage::ImageDimension; i++)
+    {
+        inputStartIndex[i] = inputPtr->GetRequestedRegion().GetIndex(i);
+        outputStartIndex[i] = outputPtr->GetLargestPossibleRegion().GetIndex(i);
+    }
 
     //Generate factor and offset array
     for (unsigned int i=0; i < TInputImage::ImageDimension; i++)
@@ -131,24 +132,23 @@ DownsampleImageFilter<TInputImage,TOutputImage>
         }
     }
   
-//    //Support progress methods/callbacks
-//    itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
+    //Support progress methods/callbacks
+    itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
     
     //Walk the output region, and sample the input image
     while (!outIt.IsAtEnd())
     {
         //Determine the index of the output pixel
-        outputIndex = outIt.GetIndex();
-    
+        outputIndex = outIt.GetIndex() - outputStartIndex;
+
         //Determine the input pixel location associated with this output pixel
-        inputIndex = (outputIndex * factor) + offset;
-//        inputIndex = (outputIndex * factor) + inputStartIndex + offset;
+        inputIndex = (outputIndex * factor) + inputStartIndex + offset;
 
         //Copy the input pixel to the output
         outIt.Set(inputPtr->GetPixel(inputIndex));
         ++outIt;
 
-//        progress.CompletedPixel();
+        progress.CompletedPixel();
     }
 }
 
@@ -173,29 +173,31 @@ DownsampleImageFilter<TInputImage,TOutputImage>
         return;
     }
   
-    //We need to compute the input requested region (size and start index)
-    unsigned int i;
-    const typename TOutputImage::SizeType& outputRequestedRegionSize
-        = outputPtr->GetRequestedRegion().GetSize();
-    const typename TOutputImage::IndexType& outputRequestedRegionStartIndex
-        = outputPtr->GetRequestedRegion().GetIndex();
+//    //We need to compute the input requested region (size and start index)
+//    unsigned int i;
+//    const typename TOutputImage::SizeType& outputRequestedRegionSize
+//        = outputPtr->GetRequestedRegion().GetSize();
+//    const typename TOutputImage::IndexType& outputRequestedRegionStartIndex
+//        = outputPtr->GetRequestedRegion().GetIndex();
   
-    typename TInputImage::SizeType  inputRequestedRegionSize;
-    typename TInputImage::IndexType inputRequestedRegionStartIndex;
+//    typename TInputImage::SizeType  inputRequestedRegionSize;
+//    typename TInputImage::IndexType inputRequestedRegionStartIndex;
   
-    for (i = 0; i < TInputImage::ImageDimension; i++)
-    {
-        inputRequestedRegionSize[i] = outputRequestedRegionSize[i] * m_Factors[i];
-        inputRequestedRegionStartIndex[i] = outputRequestedRegionStartIndex[i] * (long)m_Factors[i];
-    }
+//    for (i = 0; i < TInputImage::ImageDimension; i++)
+//    {
+//        inputRequestedRegionSize[i] = outputRequestedRegionSize[i] * m_Factors[i];
+//        inputRequestedRegionStartIndex[i] = outputRequestedRegionStartIndex[i] * (long)m_Factors[i];
+//    }
   
-    typename TInputImage::RegionType inputRequestedRegion;
-    inputRequestedRegion.SetSize(inputRequestedRegionSize);
-    inputRequestedRegion.SetIndex(inputRequestedRegionStartIndex);
+//    typename TInputImage::RegionType inputRequestedRegion;
+//    inputRequestedRegion.SetSize(inputRequestedRegionSize);
+//    inputRequestedRegion.SetIndex(inputRequestedRegionStartIndex);
 
-    inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion());
+//    inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion());
   
-    inputPtr->SetRequestedRegion(inputRequestedRegion);
+//    inputPtr->SetRequestedRegion(inputRequestedRegion);
+
+    inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
 /** 
@@ -238,7 +240,8 @@ DownsampleImageFilter<TInputImage,TOutputImage>
             outputSize[i] = 1;
         }
     
-        outputStartIndex[i] = (long)ceil((float) inputStartIndex[i] / (float)m_Factors[i]);
+//        outputStartIndex[i] = (long)ceil((float) inputStartIndex[i] / (float)m_Factors[i]);
+        outputStartIndex[i] = 0;
     }
   
     outputPtr->SetSpacing(outputSpacing);
@@ -246,14 +249,8 @@ DownsampleImageFilter<TInputImage,TOutputImage>
     typename TOutputImage::RegionType outputLargestPossibleRegion;
     outputLargestPossibleRegion.SetSize(outputSize);
     outputLargestPossibleRegion.SetIndex(outputStartIndex);
-  
-//    // Debugging information
-//    std::cout << "In DownsampleImageFilter::GenerateOutputInformation()" << std::endl;
-//    std::cout << "outputSize = [" << outputSize[0] << " " << outputSize[1] << " " << outputSize[2] << "]" << std::endl;
-//    std::cout << "outputSpacing = [" << outputSpacing[0] << " " << outputSpacing[1] << " " << outputSpacing[2] << "]" << std::endl;
-//    std::cout << "outputStartIndex = [" << outputStartIndex[0] << " " << outputStartIndex[1] << " " << outputStartIndex[2] << "]" << std::endl;
 
-    outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
+    outputPtr->SetRegions(outputLargestPossibleRegion);
 }
 
 } // end namespace gift
