@@ -21,19 +21,20 @@
 //Includes
 #include <itkImageToImageFilter.h>
 #include <itkMacro.h>
-#include <itkPadImageFilter.h>
+#include <itkMirrorPadImageFilter.h>
 #include <itkFFTConvolutionImageFilter.h>
 
+#include "giftDaubechiesWaveletsKernelSource.h"
 #include "giftDownsampleImageFilter.h"
 
 namespace gift {
 
 /**
  * \class DeconstructImageFilter
- * \brief An image filter that deconstructs an image.
+ * \brief An image filter that deconstructs an image using
+ * Daubechies wavelets.
  *
- * NOTE: Level=0 is the TOP level (original image).
- *
+ * \author Cyril Mory
  */
 template <class TImage>
 class DeconstructImageFilter
@@ -65,9 +66,10 @@ public:
     typedef typename TImage::InternalPixelType          InternalPixelType;
     
     /** Typedefs for pipeline's subfilters */
-    typedef itk::PadImageFilter<InputImageType>             PadFilterType;
-    typedef itk::FFTConvolutionImageFilter<InputImageType>  ConvolutionFilterType;
-    typedef gift::DownsampleImageFilter<InputImageType>     DownsampleImageFilter;
+    typedef itk::MirrorPadImageFilter<InputImageType, InputImageType>             PadFilterType;
+    typedef itk::FFTConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
+    typedef gift::DownsampleImageFilter<InputImageType>           DownsampleImageFilterType;
+    typedef gift::DaubechiesWaveletsKernelSource<InputImageType>  KernelSourceType;
 
     /** Set the number of input levels. */
     virtual void SetNumberOfLevels(unsigned int levels)
@@ -82,29 +84,17 @@ public:
         return this->m_NumberOfLevels;
     }
 
-    /** Gets the output image at the given image/level/band */
-    OutputImageType* GetOutputByLevelBand(unsigned int level, unsigned int band);
-    
-    /** Gets the output image (as an itk::DataObject*) at the given image/level/band */
-    itk::DataObject* GetDataObjectOutputByLevelBand(unsigned int level, unsigned int band);
-
-    /** Sets the output image at the given level/band */
-    void SetOutputByLevelBand(unsigned int level, unsigned int band, const OutputImageType * input);
-    
-    /** Gets the output image at the given level/band */
-    const OutputImageType* GetOutputByLevelBand(unsigned int level, unsigned int band);
-
-    /** Gets the number of bands for a given level */
-    unsigned int GetNumberOfOutputBands(unsigned int level);
-
-    /** DeconstructImageFilters produce images which are of different size
-     *  than the first input image (copying the information from the first input 
-     *  to all outputs is the default implementation of GenerateOutputInformation() 
-     *  in itkProcessObject.txx).
-     *  As such, we reimplement GenerateOutputInformation() in order to 
-     *  inform the pipeline execution model.  
+    /** DeconstructImageFilter produces images which are of different size
+     *  than the input image. As such, we reimplement GenerateOutputInformation()
+     *  in order to inform the pipeline execution model.
      */
     virtual void GenerateOutputInformation();
+
+    virtual void GenerateInputRequestedRegion();
+
+    /** Get/Set the order of the wavelet filters */
+    itkGetMacro(Order, unsigned int)
+    itkSetMacro(Order, unsigned int)
 
 protected:
     DeconstructImageFilter();
@@ -119,27 +109,23 @@ protected:
     /** Does the real work. */
     virtual void GenerateData();
 
-    /** Computes the n-D kernels from the 1-D ones */
-    virtual typename InputImageType::Pointer ComputeNdKernel(unsigned int index);
-    
     /** Calculates the number of ProcessObject output images */
     virtual unsigned int CalculateNumberOfOutputs();
 
-    /** Converts an output index to image/level/band */
-    void ConvertOutputIndexToLevelBand(unsigned int index, unsigned int &level, unsigned int &band);
-
-    /** Converts an output image/level/band to an index */
-    unsigned int ConvertOutputLevelBandToIndex(unsigned int level, unsigned int band);
+    /** Creates and sets the kernel sources to generate all kernels. */
+    void GenerateAllKernelSources();
 
 private:
     DeconstructImageFilter(const Self&);    //purposely not implemented
     void operator=(const Self&);                    //purposely not implemented
 
     unsigned int m_NumberOfLevels;     //Holds the number of deconstruction levels
-    typename PadFilterType::Pointer           m_PadFilter;
-    typename ConvolutionFilterType::Pointer   *m_ConvolutionFilters; //Holds an array convolution filters
-    typename ConvolutionFilterType::Pointer   *m_DownsampleFilters; //Holds an array of downsample filters
-    typename TImage::Pointer                  *m_Kernels; //Holds the kernels
+    unsigned int m_Order;             // Holds the order of the wavelet filters
+
+    typename std::vector<typename PadFilterType::Pointer>               m_PadFilters; //Holds a vector of padding filters
+    typename std::vector<typename ConvolutionFilterType::Pointer>       m_ConvolutionFilters; //Holds a vector of convolution filters
+    typename std::vector<typename DownsampleImageFilterType::Pointer>   m_DownsampleFilters; //Holds a vector of downsample filters
+    typename std::vector<typename KernelSourceType::Pointer>            m_KernelSources; //Holds a vector of kernel sources
 };
 
 }// namespace gift

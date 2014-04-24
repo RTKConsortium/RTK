@@ -39,7 +39,7 @@ namespace gift
  * 
  * \ingroup GeometricTransforms
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_EXPORT DownsampleImageFilter:
     public itk::ImageToImageFilter<TInputImage,TOutputImage>
 {
