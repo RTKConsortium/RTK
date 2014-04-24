@@ -13901,3 +13901,312 @@
    fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
    fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
 }
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk17RandomImageSourceINS_5ImageIfLj3EEEE9SetOriginENS_5PointIdLj3EEE
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk17RandomImageSourceINS_5ImageIfLj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZNK10vnl_vectorIdE8is_equalERKS0_d
+   fun:_ZN3itk18ImageToImageFilterINS_5ImageIfLj3EEES2_E22VerifyInputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk24BinaryFunctorImageFilterINS_5ImageIfLj3EEES2_S2_NS_7Functor4MultIfffEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZNK10vnl_vectorIdE8is_equalERKS0_d
+   fun:_ZN3itk18ImageToImageFilterINS_5ImageIfLj3EEENS1_INS_15CovariantVectorIfLj3EEELj3EEEE22VerifyInputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject25GenerateOutputInformationEv
+   fun:_ZN3rtk36ForwardDifferenceGradientImageFilterIN3itk5ImageIfLj3EEEffNS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZNK10vnl_vectorIdE8is_equalERKS0_d
+   fun:_ZN3itk18ImageToImageFilterINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEENS1_IfLj3EEEE22VerifyInputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk24BinaryFunctorImageFilterINS_5ImageIfLj3EEES2_S2_NS_7Functor4Sub2IfffEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZNK10vnl_vectorIdE8is_equalERKS0_d
+   fun:_ZN3itk18ImageToImageFilterINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEES4_E22VerifyInputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk24BinaryFunctorImageFilterINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEES4_S4_NS_7Functor4Sub2IS3_S3_S3_EEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZNK10vnl_vectorIdE8is_equalERKS0_d
+   fun:_ZN3itk18ImageToImageFilterINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEES4_E22VerifyInputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3rtk38TotalVariationDenoisingBPDQImageFilterIN3itk5ImageIfLj3EEENS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk9ImageBaseILj3EE5GraftEPKNS_10DataObjectE
+   fun:_ZN3itk5ImageINS_15CovariantVectorIfLj3EEELj3EE5GraftEPKNS_10DataObjectE
+   fun:_ZN3itk11ImageSourceINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEEE11GraftOutputERKSsPNS_10DataObjectE
+   fun:_ZN3itk11ImageSourceINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEEE14GraftNthOutputEjPNS_10DataObjectE
+   fun:_ZN3itk11ImageSourceINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEEE11GraftOutputEPNS_10DataObjectE
+   fun:_ZN3itk18InPlaceImageFilterINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEES4_E23InternalAllocateOutputsERKNS_8TrueTypeE.constprop.279
+   fun:_ZN3itk18InPlaceImageFilterINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEES4_E15AllocateOutputsEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk24BinaryFunctorImageFilterINS_5ImageIfLj3EEES2_S2_NS_7Functor4Sub2IfffEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk24BinaryFunctorImageFilterINS_5ImageIfLj3EEES2_S2_NS_7Functor4MultIfffEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk13ProcessObject25GenerateOutputInformationEv
+   fun:_ZN3rtk36ForwardDifferenceGradientImageFilterIN3itk5ImageIfLj3EEEffNS2_INS1_15CovariantVectorIfLj3EEELj3EEEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk24BinaryFunctorImageFilterINS_5ImageINS_15CovariantVectorIfLj3EEELj3EEES4_S4_NS_7Functor4Sub2IS3_S3_S3_EEE25GenerateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:_ZN3itk13ProcessObject23UpdateOutputInformationEv
+   fun:_ZN3itk9ImageBaseILj3EE23UpdateOutputInformationEv
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Cond
+   fun:_ZN3itk9ImageBaseILj3EE9SetOriginENS_5PointIdLj3EEE
+   fun:_ZN3itk9ImageBaseILj3EE15CopyInformationEPKNS_10DataObjectE
+   fun:_ZN3itk9ImageBaseILj3EE5GraftEPKNS_10DataObjectE
+   fun:_ZN3itk5ImageIfLj3EE5GraftEPKNS_10DataObjectE
+   fun:_ZN3itk11ImageSourceINS_5ImageIfLj3EEEE11GraftOutputERKSsPNS_10DataObjectE
+   fun:_ZN3itk11ImageSourceINS_5ImageIfLj3EEEE14GraftNthOutputEjPNS_10DataObjectE
+   fun:_ZN3itk11ImageSourceINS_5ImageIfLj3EEEE11GraftOutputEPNS_10DataObjectE
+   fun:(below main)
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:_Znwj
+   fun:_ZN3rtk25TotalVariationImageFilterIN3itk5ImageIfLj3EEEE20ThreadedGenerateDataERKNS1_11ImageRegionILj3EEEj
+}
+{
+   CUDA
+   Memcheck:Leak
+   fun:_Znaj
+   fun:_ZN3rtk25TotalVariationImageFilterIN3itk5ImageIfLj3EEEE20ThreadedGenerateDataERKNS1_11ImageRegionILj3EEEj
+   fun:_ZN3itk11ImageSourceINS_5ImageIfLj3EEEE16ThreaderCallbackEPv
+   fun:_ZN3itk13MultiThreader19SingleMethodExecuteEv
+   fun:_ZN3itk11ImageSourceINS_5ImageIfLj3EEEE12GenerateDataEv
+   fun:_ZN3itk13ProcessObject16UpdateOutputDataEPNS_10DataObjectE
+   fun:(below main)
+}
