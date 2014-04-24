@@ -79,6 +79,11 @@ TARGET_LINK_LIBRARIES(rtkforwardprojectiontest RTK)
 ADD_TEST(rtkforwardprojectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkforwardprojectiontest)
 ADD_CUDA_TEST(rtkforwardprojection rtkforwardprojectiontest.cxx)
 
+ADD_EXECUTABLE(rtkforwardprojectiontest2 rtkforwardprojectiontest2.cxx)
+TARGET_LINK_LIBRARIES(rtkforwardprojectiontest2 RTK)
+ADD_TEST(rtkforwardprojectiontest2 ${EXECUTABLE_OUTPUT_PATH}/rtkforwardprojectiontest2)
+ADD_CUDA_TEST(rtkforwardprojection2 rtkforwardprojectiontest2.cxx)
+
 ADD_EXECUTABLE(rtkgeometryfiletest rtkgeometryfiletest.cxx)
 TARGET_LINK_LIBRARIES(rtkgeometryfiletest RTK)
 ADD_TEST(rtkgeometryfiletest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryfiletest)
