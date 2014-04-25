@@ -51,6 +51,17 @@ CudaForwardProjectionImageFilter<TInputImage,
     const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
     const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
       this->GetOutput()->GetBufferedRegion().GetSize(1);
+    
+    // get energy
+    float* energyWeights = this->GetProjectedValueAccumulation().GetEnergyWeightList();
+
+    // get mu
+    itk::Image<float, 2>* muImage = this->GetProjectedValueAccumulation().GetMaterialMu();
+    float* mu = muImage->GetBufferPointer();
+    itk::Image<float, 2>::SizeType size = muImage->GetLargestPossibleRegion().GetSize();
+    int muSize[2];
+    muSize[0] = size[0];
+    muSize[1] = size[1];
 
     float t_step = 1; // Step in mm
     itk::Vector<double, 4> source_position;
@@ -115,13 +126,6 @@ CudaForwardProjectionImageFilter<TInputImage,
         for (int k=0; k<4; k++)
           matrix[j][k] = (float)d_matrix[j][k];
 
-      // Compute mu
-      float mu[256];
-      for (int i = 0; i < 256; i++)
-        {
-        mu[i] = (float)i;
-        }
-
       // Set source position in volume indices
       source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
 
@@ -129,8 +133,10 @@ CudaForwardProjectionImageFilter<TInputImage,
 
       CUDA_forward_project(projectionSize,
                           volumeSize,
+                          muSize,
                           (float*)&(matrix[0][0]),
-                          (float*)&(mu[0]),
+                          mu,
+                          energyWeights,
                           pout + nPixelsPerProj * projectionOffset,
                           pvol,
                           t_step,

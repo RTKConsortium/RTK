@@ -85,6 +85,7 @@ inline __host__ __device__ void operator+=(float3 &a, float3 b)
 texture<float, 3, cudaReadModeElementType> tex_vol;
 texture<float, 1, cudaReadModeElementType> tex_matrix;
 texture<float, 1, cudaReadModeElementType> tex_mu;
+texture<float, 1, cudaReadModeElementType> tex_energy;
 ///////////////////////////////////////////////////////////////////////////
 
 //__constant__ float3 spacingSquare;  // inverse view matrix
@@ -131,11 +132,18 @@ int intersectBox(Ray r, float3 boxmin, float3 boxmax, float *tnear, float *tfar)
     return smallest_tmax > largest_tmin;
 }
 
+__device__
+void accumulate()
+{
+}
+
 // KERNEL kernel_forwardProject
 __global__
 void kernel_forwardProject(float *dev_proj,
+                           float *dev_weights,
                            float3 src_pos,
                            int2 proj_dim,
+                           int2 mu_dim,
                            float tStep,
                            const float3 boxMin,
                            const float3 boxMax,
@@ -144,6 +152,7 @@ void kernel_forwardProject(float *dev_proj,
 
   unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y*blockDim.y + threadIdx.y;
+  unsigned int numThread = j*proj_dim.x + i;
 
   if (i >= proj_dim.x || j >= proj_dim.y)
     return;
@@ -185,36 +194,51 @@ void kernel_forwardProject(float *dev_proj,
   // Condition to exit the loop
   if(tnear>tfar)
     {
-    dev_proj[j*proj_dim.x + i] = 0.0f;
+    dev_proj[numThread] = 0.0f;
     return;
     }
 
   float  t;
-  float  sample = 0.0f;
-  float  sum    = 0.0f;
   for(t=tnear; t<=tfar; t+=vStep)
     {
+
+    float lastStepCoef = 1.;
+    if (t+vStep > tfar)
+      {
+      lastStepCoef += (tfar-t-halfVStep)/vStep;
+      }
 
     // Read from 3D texture from volume, and make a trilinear interpolation
     float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
     float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
     float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
-    sample =
-        (1-dxtex) * (1-dytex) * (1-dztex) * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex  , jtex  , ktex))
-      + dxtex     * (1-dytex) * (1-dztex) * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex+1, jtex  , ktex))
-      + (1-dxtex) * dytex     * (1-dztex) * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex  , jtex+1, ktex))
-      + dxtex     * dytex     * (1-dztex) * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex+1, jtex+1, ktex))
-      + (1-dxtex) * (1-dytex) * dztex     * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex  , jtex  , ktex+1))
-      + dxtex     * (1-dytex) * dztex     * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex+1, jtex  , ktex+1))
-      + (1-dxtex) * dytex     * dztex     * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex  , jtex+1, ktex+1))
-      + dxtex     * dytex     * dztex     * tex1Dfetch(tex_mu, (int)tex3D(tex_vol, itex+1, jtex+1, ktex+1));
+    
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex  )] += (1-dxtex) * (1-dytex) * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex  )] += dxtex     * (1-dytex) * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex  )] += (1-dxtex) * dytex     * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex  )] += dxtex     * dytex     * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex+1)] += (1-dxtex) * (1-dytex) * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex+1)] += dxtex     * (1-dytex) * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex+1)] += (1-dxtex) * dytex     * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex+1)] += dxtex     * dytex     * dztex     * lastStepCoef;
 
-    //sample = tex3D(tex_vol, pos.x, pos.y, pos.z);
-
-    sum += sample;
     pos += step;
     }
-  dev_proj[j*proj_dim.x + i] = (sum+(tfar-t+halfVStep)*sample) * tStep;
+  
+  // Loops over energy, multiply weights by mu, accumulate using Beer Lambert
+  for(unsigned int e=0; e<mu_dim.y; e++)
+    {
+    float rayIntegral = 0.;
+    for(unsigned int id=0; id<mu_dim.x; id++)
+      {
+      rayIntegral += dev_weights[numThread*mu_dim.x+id] * tex1Dfetch(tex_mu, e*mu_dim.x+id);
+      }
+    dev_proj[numThread] += exp(-rayIntegral) * tex1Dfetch(tex_energy, e);
+    //m_IntegralOverDetector[threadId] += valueToAccumulate;
+  }
+  dev_proj[numThread] *= tStep;
+  
+  accumulate();
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -227,8 +251,10 @@ void kernel_forwardProject(float *dev_proj,
 void
 CUDA_forward_project( int projections_size[2],
                       int vol_size[3],
+                      int mu_size[2],
                       float matrix[12],
-                      float mu[256],
+                      float *mu,
+                      float *energyWeights,
                       float *dev_proj,
                       float *dev_vol,
                       float t_step,
@@ -267,18 +293,33 @@ CUDA_forward_project( int projections_size[2],
   cudaMemset((void *)dev_proj, 0, projections_size[0]*projections_size[1]*sizeof(float) );
   CUDA_CHECK_ERROR;
 
-  // mu matrix
+  // mu
   float *dev_mu;
-  cudaMalloc( (void**)&dev_mu, 256*sizeof(float) );
-  cudaMemcpy (dev_mu, mu, 256*sizeof(float), cudaMemcpyHostToDevice);
+  cudaMalloc( (void**)&dev_mu, mu_size[0]*mu_size[1]*sizeof(float) );
+  cudaMemcpy (dev_mu, mu, mu_size[0]*mu_size[1]*sizeof(float), cudaMemcpyHostToDevice);
   CUDA_CHECK_ERROR;
-  cudaBindTexture (0, tex_mu, dev_mu, 256*sizeof(float) );
+  cudaBindTexture (0, tex_mu, dev_mu, mu_size[0]*mu_size[1]*sizeof(float) );
+  CUDA_CHECK_ERROR;
+
+  // energy
+  float *dev_energy;
+  cudaMalloc( (void**)&dev_energy, mu_size[1]*sizeof(float) );
+  cudaMemcpy (dev_energy, energyWeights, mu_size[1]*sizeof(float), cudaMemcpyHostToDevice);
+  CUDA_CHECK_ERROR;
+  cudaBindTexture (0, tex_energy, dev_energy, mu_size[1]*sizeof(float) );
+  CUDA_CHECK_ERROR;
+  
+  // interpolationWeights
+  float *dev_weights;
+  cudaMalloc( (void**)&dev_weights, mu_size[0]*projections_size[0]*projections_size[1]*sizeof(float) );
+  cudaMemset((void *)dev_weights, 0, mu_size[0]*projections_size[0]*projections_size[1]*sizeof(float) );
   CUDA_CHECK_ERROR;
 
   // Copy matrix and bind data to the texture
   float *dev_matrix;
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
   cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
+  CUDA_CHECK_ERROR;
   cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
   CUDA_CHECK_ERROR;
 
@@ -290,6 +331,9 @@ CUDA_forward_project( int projections_size[2],
   int2 projSize;
   projSize.x = projections_size[0];
   projSize.y = projections_size[1];
+  int2 muSize;
+  muSize.x = mu_size[0];
+  muSize.y = mu_size[1];
   float3 boxMin;
   boxMin.x = box_min[0];
   boxMin.y = box_min[1];
@@ -304,7 +348,7 @@ CUDA_forward_project( int projections_size[2],
   dev_spacing.z = spacing[2];
 
   // Calling kernel
-  kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj, sourcePos, projSize, t_step, boxMin, boxMax, dev_spacing);
+  kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj, dev_weights, sourcePos, projSize, muSize, t_step, boxMin, boxMax, dev_spacing);
   cudaDeviceSynchronize();
 
   CUDA_CHECK_ERROR;
@@ -316,6 +360,8 @@ CUDA_forward_project( int projections_size[2],
   CUDA_CHECK_ERROR;
   cudaUnbindTexture (tex_mu);
   CUDA_CHECK_ERROR;
+  cudaUnbindTexture (tex_energy);
+  CUDA_CHECK_ERROR;
 
   // Cleanup
   cudaFreeArray ((cudaArray*)array_vol);
@@ -323,5 +369,7 @@ CUDA_forward_project( int projections_size[2],
   cudaFree (dev_matrix);
   CUDA_CHECK_ERROR;
   cudaFree (dev_mu);
+  CUDA_CHECK_ERROR;
+  cudaFree (dev_energy);
   CUDA_CHECK_ERROR;
 }
