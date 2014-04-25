@@ -22,8 +22,10 @@
 void
 CUDA_forward_project( int projections_size[2],
                       int vol_size[3],
+                      int mu_size[2],
                       float matrix[12],
-                      float mu[256],
+                      float *mu,
+                      float *energyWeights,
                       float *dev_proj,
                       float *dev_vol,
                       float t_step,

@@ -25,6 +25,8 @@
 #include "itkCudaKernelManager.h"
 #include "rtkWin32Header.h"
 
+#include "itkImage.h"
+
 /** \class CudaForwardProjectionImageFilter
  * \brief Trilinear interpolation forward projection implemented in CUDA
  *
@@ -44,14 +46,128 @@
 
 namespace rtk
 {
+namespace Functor
+{
+/** \class CudaInterpolationWeightMultiplication
+ * \brief Function to multiply the interpolation weights with the projected
+ * volume values.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
+class CudaInterpolationWeightMultiplication
+{
+public:
+  CudaInterpolationWeightMultiplication() {};
+  ~CudaInterpolationWeightMultiplication() {};
+  bool operator!=( const CudaInterpolationWeightMultiplication & ) const {
+    return false;
+  }
+  bool operator==(const CudaInterpolationWeightMultiplication & other) const
+  {
+    return !( *this != other );
+  }
+
+  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+                             const double itkNotUsed(stepLengthInVoxel),
+                             const TCoordRepType weight,
+                             const TInput *p,
+                             const int i ) const
+  {
+    return weight*p[i];
+  }
+};
+
+/** \class CudaProjectedValueAccumulation
+ * \brief Function to accumulate the ray casting on the projection.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TInput, class TOutput >
+class CudaProjectedValueAccumulation
+{
+public:
+  typedef itk::Vector<double, 3> VectorType;
+  typedef itk::Image<float, 2> MaterialMuImageType;
+
+  CudaProjectedValueAccumulation()
+  {
+    MaterialMuImageType::RegionType region;
+    MaterialMuImageType::SizeType size;
+    size[0] = 20; //mat
+    size[1] = 10; //e
+    region.SetSize(size);
+    m_MaterialMu = MaterialMuImageType::New();
+    m_MaterialMu->SetRegions(region);
+    m_MaterialMu->Allocate();
+    itk::ImageRegionIterator< MaterialMuImageType > it(m_MaterialMu, region);
+    for(unsigned int e=0; e<10; e++)
+      {
+      for(unsigned int i=0; i<20; i++)
+        {
+        it.Set(e*i);
+        ++it;
+        }
+      }
+
+    m_EnergyWeightList = new float[10];
+    for (int i = 0; i < 10; i++)
+      {
+      m_EnergyWeightList[i] = (float)i;
+      }
+  };
+  ~CudaProjectedValueAccumulation()
+  {
+  delete[] m_EnergyWeightList;
+  };
+  bool operator!=( const CudaProjectedValueAccumulation & ) const
+    {
+    return false;
+    }
+  bool operator==(const CudaProjectedValueAccumulation & other) const
+    {
+    return !( *this != other );
+    }
+  
+  MaterialMuImageType::Pointer GetMaterialMu()
+  {
+    return m_MaterialMu;
+  };
+  
+  float* GetEnergyWeightList()
+  {
+    return m_EnergyWeightList;
+  }
+
+  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+                             const TInput &input,
+                             const TOutput &rayCastValue,
+                             const VectorType &stepInMM,
+                             const VectorType &itkNotUsed(source),
+                             const VectorType &itkNotUsed(sourceToPixel),
+                             const VectorType &itkNotUsed(nearestPoint),
+                             const VectorType &itkNotUsed(farthestPoint)) const
+    {
+    return input + rayCastValue * stepInMM.GetNorm();
+    }
+  MaterialMuImageType::Pointer m_MaterialMu;
+  float* m_EnergyWeightList;
+};
+
+} // end namespace Functor
+
 
 /** Create a helper Cuda Kernel class for CudaImageOps */
 itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
 
 template <class TInputImage,
           class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType, double>,
-          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>
+          class TInterpolationWeightMultiplication = Functor::CudaInterpolationWeightMultiplication<typename TInputImage::PixelType, double>,
+          class TProjectedValueAccumulation        = Functor::CudaProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>
           >
 class ITK_EXPORT CudaForwardProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< TInputImage, TOutputImage,
