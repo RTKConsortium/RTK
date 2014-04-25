@@ -35,7 +35,8 @@ template <class TInputImage, class TOutputImage>
 UpsampleImageFilter<TInputImage,TOutputImage>
 ::UpsampleImageFilter()
 {
-    this->SetNumberOfRequiredInputs(1);
+  this->SetNumberOfRequiredInputs(1);
+  this->m_Order = 0;
 }
 
 /**
@@ -112,23 +113,29 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 //    //Support progress methods/callbacks
 //    itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
     
+    typename TOutputImage::OffsetType outputStartIndex;
+    for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
+      {
+      outputStartIndex[i] =   outputPtr->GetLargestPossibleRegion().GetIndex(i);
+      }
+
     //Walk the output region, and sample the input image
     while (!outIt.IsAtEnd())
     {
         //Determine the index of the output pixel
-        outputIndex = outIt.GetIndex();
+        outputIndex = outIt.GetIndex() - outputStartIndex;
 
         //Determine if the current output pixel is zero OR an input value
         bool copyFromInput = true;
         for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
         {
-            if (outputIndex[dim] % m_Factors[dim] != 0)
+            if ((outputIndex[dim]-1) % m_Factors[dim])
             {
                 copyFromInput = false;
             }
 
             //Caculate inputIndex (note: will not be used if copyFromInput=false...)
-            inputIndex[dim] = floor( (double)outputIndex[dim] / (double)m_Factors[dim] );
+            inputIndex[dim] = floor( (double)(outputIndex[dim]-1) / (double)m_Factors[dim] );
 
             //Check within bounds
             if (inputIndex[dim] > ((int)inputSize[dim] - 1))
@@ -175,34 +182,35 @@ UpsampleImageFilter<TInputImage,TOutputImage>
         return;
     }
   
-    //We need to compute the input requested region (size and start index)
-    unsigned int i;
-    const typename TOutputImage::SizeType& outputRequestedRegionSize
-        = outputPtr->GetRequestedRegion().GetSize();
-    const typename TOutputImage::IndexType& outputRequestedRegionStartIndex
-        = outputPtr->GetRequestedRegion().GetIndex();
-  
-    typename TInputImage::SizeType  inputRequestedRegionSize;
-    typename TInputImage::IndexType inputRequestedRegionStartIndex;
-  
-    for (i = 0; i < TInputImage::ImageDimension; i++)
-    {
-        inputRequestedRegionSize[i]
-        = (long) ceil((double)outputRequestedRegionSize[i] /
-                      (double) m_Factors[i]);
-                      
-        inputRequestedRegionStartIndex[i]
-        = (long) floor((double)outputRequestedRegionStartIndex[i] /
-                       (double)m_Factors[i]);
-    }
-  
-    typename TInputImage::RegionType inputRequestedRegion;
-    inputRequestedRegion.SetSize(inputRequestedRegionSize);
-    inputRequestedRegion.SetIndex(inputRequestedRegionStartIndex);
+//    //We need to compute the input requested region (size and start index)
+//    unsigned int i;
+//    const typename TOutputImage::SizeType& outputRequestedRegionSize
+//        = outputPtr->GetRequestedRegion().GetSize();
+//    const typename TOutputImage::IndexType& outputRequestedRegionStartIndex
+//        = outputPtr->GetRequestedRegion().GetIndex();
 
-    inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion());
+//    typename TInputImage::SizeType  inputRequestedRegionSize;
+//    typename TInputImage::IndexType inputRequestedRegionStartIndex;
+
+//    for (i = 0; i < TInputImage::ImageDimension; i++)
+//    {
+//        inputRequestedRegionSize[i]
+//        = (long) ceil((double)outputRequestedRegionSize[i] /
+//                      (double) m_Factors[i]);
+
+//        inputRequestedRegionStartIndex[i]
+//        = (long) floor((double)outputRequestedRegionStartIndex[i] /
+//                       (double)m_Factors[i]);
+//    }
+
+//    typename TInputImage::RegionType inputRequestedRegion;
+//    inputRequestedRegion.SetSize(inputRequestedRegionSize);
+//    inputRequestedRegion.SetIndex(inputRequestedRegionStartIndex);
+
+//    inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion());
   
-    inputPtr->SetRequestedRegion(inputRequestedRegion);
+//    inputPtr->SetRequestedRegion(inputRequestedRegion);
+    inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
 /** 
@@ -230,21 +238,23 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     unsigned int i;
     const typename TInputImage::SpacingType& inputSpacing = inputPtr->GetSpacing();
     const typename TInputImage::SizeType& inputSize = inputPtr->GetLargestPossibleRegion().GetSize();
-    const typename TInputImage::IndexType& inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
+    const typename TInputImage::IndexType&    inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
 
     typename TOutputImage::SpacingType  outputSpacing;
     typename TOutputImage::SizeType     outputSize;
     typename TOutputImage::IndexType    outputStartIndex;
+
+    typename TInputImage::OffsetType offset;
   
     for (i = 0; i < TOutputImage::ImageDimension; i++)
     {
         outputSpacing[i] = inputSpacing[i] / (double)m_Factors[i];
-//        outputSize[i] = inputSize[i] * (unsigned long) m_Factors[i];
-        outputSize[i] = (inputSize[i] - 1) * (unsigned long) m_Factors[i] + 1;
-        outputStartIndex[i] = inputStartIndex[i] * (long) m_Factors[i];
+        outputSize[i] = inputSize[i] * (unsigned long) m_Factors[i] + 1;
+        offset[i] = -(int)m_Order +1;
     }
   
     outputPtr->SetSpacing(outputSpacing);
+    outputStartIndex = inputStartIndex + offset;
   
     typename TOutputImage::RegionType outputLargestPossibleRegion;
     outputLargestPossibleRegion.SetSize(outputSize);
