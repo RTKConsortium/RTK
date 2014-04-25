@@ -72,7 +72,7 @@ ENDIF ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
 
 #=========================================================
 # Find ITK (required)
-FIND_PACKAGE(ITK)
+FIND_PACKAGE(ITK 4.2.0 REQUIRED)
 IF(ITK_FOUND)
   INCLUDE(${ITK_USE_FILE})
 ELSE(ITK_FOUND)
