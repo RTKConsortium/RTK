@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:  GIFT Multi-level Multi-band Image Filter
-  Module:   giftMultilevelMultibandImageFilter.txx
+  Module:   giftReconstructImageFilter.txx
   Language: C++
   Date:     2005/11/22
   Version:  0.2
@@ -15,11 +15,11 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __giftMultilevelMultibandImageFilter_TXX
-#define __giftMultilevelMultibandImageFilter_TXX
+#ifndef __giftReconstructImageFilter_TXX
+#define __giftReconstructImageFilter_TXX
 
 //Includes
-#include "giftMultilevelMultibandImageFilter.h"
+#include "giftReconstructImageFilter.h"
 
 namespace gift
 {
@@ -27,23 +27,18 @@ namespace gift
 /////////////////////////////////////////////////////////
 //Default Constructor
 template <class TImage>
-MultilevelMultibandImageFilter<TImage>::MultilevelMultibandImageFilter()
+ReconstructImageFilter<TImage>::ReconstructImageFilter()
 {
-    //Initialise private variables
-    this->m_NumberOfInputImages     = 0;
-    this->m_NumberOfOutputImages    = 0;
-    this->m_NumberOfInputLevels     = 0;
-    this->m_NumberOfOutputLevels    = 0;
-    this->m_NumberOfInputBands      = 0;
-    this->m_NumberOfOutputBands     = 0;
-    this->m_Type = Self::User;
+  //Initialise private variables
+  this->m_NumberOfLevels     = 0;
+  m_Writer = WriterType::New();
 }
 
 
 /////////////////////////////////////////////////////////
 //PrintSelf()
 template <class TImage>
-void MultilevelMultibandImageFilter<TImage>
+void ReconstructImageFilter<TImage>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
     Superclass::PrintSelf(os, indent);
@@ -53,281 +48,168 @@ void MultilevelMultibandImageFilter<TImage>
 /////////////////////////////////////////////////////////
 //ModifyInputOutputStorage()
 template <class TImage>
-void MultilevelMultibandImageFilter<TImage>
+void ReconstructImageFilter<TImage>
 ::ModifyInputOutputStorage()
 {
     //Set as modified
     this->Modified();
 
-    //Set required number of inputs/outputs
+    //Set required number of outputs
     unsigned int requiredNumberOfInputs = this->CalculateNumberOfInputs();
     this->SetNumberOfRequiredInputs(requiredNumberOfInputs);
-    int requiredNumberOfOutputs = this->CalculateNumberOfOutputs();
-    this->SetNumberOfRequiredOutputs(requiredNumberOfOutputs);
+}
 
-    //Make acutal outputs and required outputs match
-//    unsigned int actualNumberOfOutputs = static_cast<unsigned int>(this->GetNumberOfOutputs());
-    int actualNumberOfOutputs = this->GetNumberOfOutputs();
-    int idx;
+template <class TImage>
+unsigned int ReconstructImageFilter<TImage>::CalculateNumberOfInputs()
+{
+  unsigned int dimension = TImage::ImageDimension;
+  unsigned int n = round(pow(2.0, dimension));
+  return (m_NumberOfLevels * (n-1) +1);
+}
 
-    if (actualNumberOfOutputs < requiredNumberOfOutputs)
+template <class TImage>
+void ReconstructImageFilter<TImage>
+::GenerateAllKernelSources()
+{
+  unsigned int dimension = TImage::ImageDimension;
+  unsigned int n = round(pow(2.0, dimension));
+
+  // Create a vector of PassVector
+  typename KernelSourceType::PassVector *passVectors = new typename KernelSourceType::PassVector[n];
+
+  // Fill it with the right values
+  unsigned int powerOfTwo = 1;
+  for (unsigned int dim = 0; dim<dimension; dim++)
     {
-        //Add extra outputs
-        for (idx = actualNumberOfOutputs; idx < requiredNumberOfOutputs; idx++)
-        {
-            typename itk::DataObject::Pointer output = this->MakeOutput(idx);
-            this->SetNthOutput(idx, output.GetPointer());
-        }
+    for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
+      {
+      if ((int)floor(vectIndex / powerOfTwo)%2) passVectors[vectIndex][dim] = KernelSourceType::High;
+      else passVectors[vectIndex][dim] = KernelSourceType::Low;
+      }
+    powerOfTwo *= 2;
     }
-    else if (actualNumberOfOutputs > requiredNumberOfOutputs)
-    {
-        //Remove extra outputs
-        for (idx = (actualNumberOfOutputs-1); idx >= requiredNumberOfOutputs; idx--)
-        {
-            if (idx < 0){break;}
 
-            typename itk::DataObject::Pointer output = this->GetOutputs()[idx];
-            this->RemoveOutput(output);
-        }
+  // Generate all the kernel sources and store them into m_KernelSources
+  for (unsigned int k=0; k<n; k++)
+    {
+    m_KernelSources.push_back(KernelSourceType::New());
+    m_KernelSources[k]->SetPass(passVectors[k]);
+    m_KernelSources[k]->SetReconstruction();
+    m_KernelSources[k]->SetOrder(this->GetOrder());
     }
 }
 
-
-/////////////////////////////////////////////////////////
-//GetOutputByImageLevelBand()
 template <class TImage>
-typename MultilevelMultibandImageFilter<TImage>::OutputImageType *
-MultilevelMultibandImageFilter<TImage>
-::GetOutputByImageLevelBand(unsigned int image, unsigned int level, unsigned int band)
-{
-    int index = this->ConvertOutputImageLevelBandToIndex(image, level, band);
-    return this->GetOutput(index);
-}
-
-/////////////////////////////////////////////////////////
-//GetDataObjectOutputByImageLevelBand()
-template <class TImage>
-itk::DataObject *
-MultilevelMultibandImageFilter<TImage>
-::GetDataObjectOutputByImageLevelBand(unsigned int image, unsigned int level, unsigned int band)
-{
-    int index = this->ConvertOutputImageLevelBandToIndex(image, level, band);
-    return this->GetOutput(index);
-}
-
-
-/////////////////////////////////////////////////////////
-//SetInputByImageLevelBand()
-template <class TImage>
-void
-MultilevelMultibandImageFilter<TImage>
-::SetInputByImageLevelBand(unsigned int image, unsigned int level, unsigned int band, const InputImageType * input)
-{
-    int index = this->ConvertInputImageLevelBandToIndex(image, level, band);
-    this->SetInput(index, input);
-}
-
-
-/////////////////////////////////////////////////////////
-//GetInputByImageLevelBand()
-template <class TImage>
-const typename MultilevelMultibandImageFilter<TImage>::InputImageType *
-MultilevelMultibandImageFilter<TImage>
-::GetInputByImageLevelBand(unsigned int image, unsigned int level, unsigned int band)
-{
-    int index = this->ConvertInputImageLevelBandToIndex(image, level, band);
-    return this->GetInput(index);
-}
-
-
-/////////////////////////////////////////////////////////
-//CalculateNumberOfInputs()
-template <class TImage>
-unsigned int MultilevelMultibandImageFilter<TImage>::CalculateNumberOfInputs()
-{
-    switch(this->m_Type)
-    {
-    case Self::Deconstruction:
-        return this->GetNumberOfInputImages();
-    case Self::Reconstruction:
-        //Fall through
-    case Self::Merge:
-        //Fall through
-    case Self::User:
-        return (this->GetNumberOfInputImages()*
-                this->GetNumberOfInputLevels()*
-                this->GetNumberOfInputBands());
-    default:
-        return 0;
-    }//end switch(Type)
-};
-
-
-/////////////////////////////////////////////////////////
-//CalculateNumberOfOutputs()
-template <class TImage>
-unsigned int MultilevelMultibandImageFilter<TImage>::CalculateNumberOfOutputs()
-{
-    switch(this->m_Type)
-    {
-    case Self::Reconstruction:
-        return this->GetNumberOfOutputImages();
-    case Self::Deconstruction:
-        //Fall through
-    case Self::Merge:
-        //Fall through
-    case Self::User:
-        return (this->GetNumberOfOutputImages()*
-                this->GetNumberOfOutputLevels()*
-                this->GetNumberOfOutputBands());
-    default:
-        return 0;
-    }//end switch(Type)
-};
-
-
-/////////////////////////////////////////////////////////
-//ConvertInputIndexToImageLevelBand()
-template <class TImage>
-void MultilevelMultibandImageFilter<TImage>
-::ConvertInputIndexToImageLevelBand(unsigned int index, 
-                                    unsigned int &image,
-                                    unsigned int &level, 
-                                    unsigned int &band)
-{
-    image = index/(this->GetNumberOfInputLevels()*this->GetNumberOfInputBands());
-    unsigned int indexForImage = index - (image*this->GetNumberOfInputLevels()*this->GetNumberOfInputBands());
-    level = indexForImage/this->GetNumberOfInputBands();
-    unsigned int indexForLevel = indexForImage - (level*this->GetNumberOfInputBands());
-    band = indexForLevel;
-};
-
-
-/////////////////////////////////////////////////////////
-//ConvertOutputIndexToImageLevelBand()
-template <class TImage>
-void MultilevelMultibandImageFilter<TImage>
-::ConvertOutputIndexToImageLevelBand(unsigned int index, 
-                                     unsigned int &image,
-                                     unsigned int &level, 
-                                     unsigned int &band)
-{
-    image = index/(this->GetNumberOfOutputLevels()*this->GetNumberOfOutputBands());
-    unsigned int indexForImage = index - (image*this->GetNumberOfOutputLevels()*this->GetNumberOfOutputBands());
-    level = indexForImage/this->GetNumberOfOutputBands();
-    unsigned int indexForLevel = indexForImage - (level*this->GetNumberOfOutputBands());
-    band = indexForLevel;
-};
-
-
-/////////////////////////////////////////////////////////
-//ConvertInputImageLevelBandToIndex()
-template <class TImage>
-unsigned int MultilevelMultibandImageFilter<TImage>
-::ConvertInputImageLevelBandToIndex(unsigned int image,
-                                    unsigned int level, 
-                                    unsigned int band)
-{
-    //NOTE: Level 0 is the first level...
-    unsigned int index = image*this->GetNumberOfInputLevels()*this->GetNumberOfInputBands() + 
-                         level*this->GetNumberOfInputBands() +
-                         band;
-    return index;
-};
-
-
-/////////////////////////////////////////////////////////
-//ConvertOutputImageLevelBandToIndex()
-template <class TImage>
-unsigned int MultilevelMultibandImageFilter<TImage>
-::ConvertOutputImageLevelBandToIndex(unsigned int image,
-                                     unsigned int level, 
-                                     unsigned int band)
-{
-    //NOTE: Level 0 is the first level...
-    unsigned int index = image*this->GetNumberOfOutputLevels()*this->GetNumberOfOutputBands() + 
-                         level*this->GetNumberOfOutputBands() +
-                         band;
-    return index;
-};
-
-
-/////////////////////////////////////////////////////////
-//GenerateInputRequestedRegion()
-template <class TImage>
-void MultilevelMultibandImageFilter<TImage>
+void ReconstructImageFilter<TImage>
 ::GenerateInputRequestedRegion()
 {
-    //Get first input
-    itk::ImageBase<ImageDimension> *firstInput;  
-    firstInput = const_cast<InputImageType*>(static_cast<const InputImageType*>(this->GetInput(0)));
-    
-    //Set each requested region to be the largest possible region
-    for (unsigned int index=0; index < this->GetNumberOfInputs(); ++index)
+  for (unsigned int i=0; i<this->CalculateNumberOfInputs(); i++)
     {
-        //Get current input
-        itk::ImageBase<ImageDimension> *currentInput;  
-        currentInput = const_cast<InputImageType*>(static_cast<const InputImageType*>(this->GetInput(index)));
-
-        typename itk::ImageBase<ImageDimension>::RegionType currentRegion = currentInput->GetRequestedRegion();
-        currentRegion.Crop(currentInput->GetLargestPossibleRegion());
-        currentInput->SetRequestedRegion(currentRegion);
-
-    }//end for
+    InputImagePointer  inputPtr  = const_cast<TImage *>(this->GetInput(i));
+    inputPtr->SetRequestedRegionToLargestPossibleRegion();
+    }
 }
 
-
-/////////////////////////////////////////////////////////
-//GenerateOutputInformation()
 template <class TImage>
-void MultilevelMultibandImageFilter<TImage>
+void ReconstructImageFilter<TImage>
 ::GenerateOutputInformation()
 {
-    //NOTE: We assume that NumberOfInputImages = NumberOfOutputImages.
-    //      Special subclasses of MultilevelMultibandImageFilter must override
-    //      this method to change this default behaviour...
+//  for (unsigned int i=0; i<this->CalculateNumberOfInputs(); i++)
+//    {
+//    this->GetInput(i)->Print(std::cout);
+//    }
 
-    itk::DataObject::Pointer input;
-    itk::DataObject::Pointer output;
+  // n is the number of bands per level, including the ones
+  // that will be Reconstructed and won't appear in the outputs
+  unsigned int dimension = TImage::ImageDimension;
+  unsigned int n = round(pow(2.0, dimension));
 
-    //Copy the information to the output from each corresponding input
-//    for (unsigned int index=0; index<this->GetNumberOfRequiredInputs(); index++)
-    for (unsigned int index=0; index<this->GetNumberOfInputImages(); index++)
+  // Before the cascade pipeline
+  // Create and set the add filters
+  for (unsigned int l=0; l<m_NumberOfLevels; l++)
     {
-        //Get the input and output at this index
-        input = const_cast<InputImageType*>(static_cast<const InputImageType*>(this->GetInput(index)));
-        output = this->GetOutput(index);
+    m_AddFilters.push_back(AddFilterType::New());
+    }
 
-        if (input && output)
-        {
-            //Copy the input information to the output
-            output->CopyInformation(input);
+  // Create and set the kernel sources
+  this->GenerateAllKernelSources();
 
-            //Also copy the requested region
-            output->SetRequestedRegion(input);
-        }//end if
-    }//end for
+  // Create all FFTConvolution and Downsampling filters
+  for (unsigned int i=0; i<n * m_NumberOfLevels; i++)
+    {
+    m_ConvolutionFilters.push_back(ConvolutionFilterType::New());
+    m_UpsampleFilters.push_back(UpsampleImageFilterType::New());
+    }
+
+  // Cascade pipeline
+  // Set all the filters and connect them together
+  unsigned int *upsamplingFactors = new unsigned int[dimension];
+  for (unsigned int d=0; d<dimension; d++) upsamplingFactors[d]=2;
+
+  for (unsigned int l=0; l<m_NumberOfLevels; l++)
+    {
+    for (unsigned int band=0; band<n; band++)
+      {
+      m_ConvolutionFilters[band + l*n]->SetInput(m_UpsampleFilters[band + l*n]->GetOutput());
+      m_ConvolutionFilters[band + l*n]->SetKernelImage(m_KernelSources[band]->GetOutput());
+      m_ConvolutionFilters[band + l*n]->SetOutputRegionModeToValid();
+
+      m_AddFilters[l]->SetInput(band, m_ConvolutionFilters[band + l*n]->GetOutput());
+      m_UpsampleFilters[band + l*n]->SetFactors(upsamplingFactors);
+      m_UpsampleFilters[band + l*n]->SetOrder(this->m_Order);
+      }
+    if (l>0) m_UpsampleFilters[n*l]->SetInput(m_AddFilters[l-1]->GetOutput());
+    }
+
+  // Connect the upsample filters to the inputs of the pipeline
+  unsigned int inputBand = 1;
+  m_UpsampleFilters[0]->SetInput(this->GetInput(0));
+  for (unsigned int i=0; i<n*m_NumberOfLevels; i++)
+    {
+    if (i%n)
+      {
+      m_UpsampleFilters[i]->SetInput(this->GetInput(inputBand));
+      inputBand++;
+      }
+    }
+
+  // Have the last filter calculate its output information
+  // and copy it as the output information of the composite filter
+  m_AddFilters[m_NumberOfLevels-1]->UpdateOutputInformation();
+  this->GetOutput()->CopyInformation( m_AddFilters[m_NumberOfLevels-1]->GetOutput() );
+
+  //Clean up
+  delete[] upsamplingFactors;
 }
 
-
-/////////////////////////////////////////////////////////
-//GenerateOutputRequestedRegion()
 template <class TImage>
-void MultilevelMultibandImageFilter<TImage>
-::GenerateOutputRequestedRegion(itk::DataObject *output)
+void ReconstructImageFilter<TImage>
+::GenerateData()
 {
-    //Set each requested region to be the largest possible region
-    for (unsigned int index=0; index < this->GetNumberOfOutputs(); ++index)
-    {
-        itk::ImageBase<ImageDimension> *givenData;  
-        itk::ImageBase<ImageDimension> *currentData;  
-        givenData = dynamic_cast<itk::ImageBase<ImageDimension>*>(output);
-        currentData = dynamic_cast<itk::ImageBase<ImageDimension>*>(this->GetOutput(index));
+//  unsigned int dimension = TImage::ImageDimension;
+//  unsigned int n = round(pow(2.0, dimension));
 
-        typename itk::ImageBase<ImageDimension>::RegionType currentRegion = currentData->GetRequestedRegion();
-        currentRegion.Crop(currentData->GetLargestPossibleRegion());
-        currentData->SetRequestedRegion(currentRegion);
-    }//end for      
+//  for (unsigned int l=0; l<m_NumberOfLevels; l++){
+//      m_UpsampleFilters[n*l]->Update();
+//      m_UpsampleFilters[n*l]->GetOutput()->Print(std::cout);
+//    }
+
+  // Have the last filter calculate its output image
+  // and graft it to the output of the composite filter
+  m_AddFilters[m_NumberOfLevels-1]->GraftOutput(this->GetOutput());
+  m_AddFilters[m_NumberOfLevels-1]->Update();
+  this->GraftOutput(m_AddFilters[m_NumberOfLevels-1]->GetOutput() );
+
+//  for (unsigned int s=0; s<m_UpsampleFilters.size(); s++)
+//    {
+//    std::cout << "Printing output of upsample filter " << s << std::endl;
+//    m_UpsampleFilters[s]->GetOutput()->Print(std::cout);
+//    m_Writer->SetInput(m_UpsampleFilters[s]->GetOutput());
+//    std::ostringstream os ;
+//    os << s << ".mha";
+//    m_Writer->SetFileName(os.str());
+//    m_Writer->Update();
+//    }
 }
 
 

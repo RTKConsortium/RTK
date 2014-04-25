@@ -39,7 +39,7 @@ namespace gift
  * 
  * \ingroup GeometricTransforms
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_EXPORT UpsampleImageFilter:
     public itk::ImageToImageFilter<TInputImage,TOutputImage>
 {
@@ -94,6 +94,14 @@ public:
    * \sa ProcessObject::GenerateInputRequestedRegion() */
   virtual void GenerateInputRequestedRegion();
 
+  /** Set/Get the order of the wavelet filter
+   * This is required because some information about the index of the image
+   * is lost during downsampling, and the upsampling filter can't guess
+   * what the exact index should be.
+   */
+  itkSetMacro(Order, unsigned int)
+  itkGetMacro(Order, unsigned int)
+
 protected:
   UpsampleImageFilter();
   ~UpsampleImageFilter() {};
@@ -115,6 +123,7 @@ private:
   void operator=(const Self&);          //purposely not implemented
 
   unsigned int m_Factors[ImageDimension];
+  unsigned int m_Order;
 };
 
   
