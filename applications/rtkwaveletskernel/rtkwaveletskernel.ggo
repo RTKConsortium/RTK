@@ -1,0 +1,9 @@
+package "rtk"
+version "Projects a volume according to a geometry file."
+
+option "verbose"   v "Verbose execution"                                         flag     off
+option "config"    - "Config file"                                               string   no
+option "output"    o "Output file name"                              string   yes
+option "order"     - "Order of the Daubechies wavelets"                          int   yes
+option "lowpass"   p "Lowpass along this dimension ? (0=false, 1=true)"          int multiple   yes
+option "reconstruction" r "Generate reconstruction kernels instead of deconstruction ones" flag off
