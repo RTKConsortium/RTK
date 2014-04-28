@@ -1,11 +1,11 @@
 package "rtk"
-version "Reconstruct a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984]."
+version "Total variation denoising along specified dimensions of a 3D image."
 
-option "verbose"   v "Verbose execution"                                         flag                         off
-option "config"    - "Config file"                                               string                       no
-option "input"     i "Input file name"                                           string                       yes
-option "output"    o "Output file name"                                          string                       yes
-option "gamma"     g "TV term's weighting parameter"		 double			      no default="1.0"
-option "dim" 	   d "Is denoising applied along this dimension (0=false, 1=true)"  int    multiple no  default="1"
-option "niter"     n "Number of iterations"					 int		  no  default="5"
+option "verbose"   v "Verbose execution"                                            flag         off
+option "config"    - "Config file"                                                  string       no
+option "input"     i "Input file name"                                              string       yes
+option "output"    o "Output file name"                                             string       yes
+option "gamma"     g "TV term's weighting parameter"                                double       no  default="1.0"
+option "dim" 	   d "Is denoising applied along this dimension (0=false, 1=true)"  int multiple no  default="1"
+option "niter"     n "Number of iterations"                                         int          no  default="5"
 
