@@ -107,6 +107,11 @@ public:
      */
     virtual void VerifyInputInformation() {}
 
+    void SetSizes(typename InputImageType::SizeType *sizesVector)
+    {
+    m_Sizes = sizesVector;
+    }
+
     /** Get/Set the order of the wavelet filters */
     itkGetMacro(Order, unsigned int)
     itkSetMacro(Order, unsigned int)
@@ -137,6 +142,7 @@ private:
 
     unsigned int m_NumberOfLevels;     //Holds the number of Reconstruction levels
     unsigned int m_Order;             // Holds the order of the wavelet filters
+    typename InputImageType::SizeType             *m_Sizes; //Holds the size of sub-images at each level
 
     typename std::vector<typename AddFilterType::Pointer>               m_AddFilters; //Holds a vector of add filters
     typename std::vector<typename ConvolutionFilterType::Pointer>       m_ConvolutionFilters; //Holds a vector of convolution filters

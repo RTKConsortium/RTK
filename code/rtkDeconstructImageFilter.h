@@ -96,6 +96,11 @@ public:
     itkGetMacro(Order, unsigned int)
     itkSetMacro(Order, unsigned int)
 
+    typename InputImageType::SizeType* GetSizes()
+    {
+    return m_Sizes.data();
+    }
+
 protected:
     DeconstructImageFilter();
     ~DeconstructImageFilter() {};
@@ -121,6 +126,7 @@ private:
 
     unsigned int m_NumberOfLevels;     //Holds the number of deconstruction levels
     unsigned int m_Order;             // Holds the order of the wavelet filters
+    typename std::vector<typename InputImageType::SizeType>             m_Sizes; //Holds the size of sub-images at each level
 
     typename std::vector<typename PadFilterType::Pointer>               m_PadFilters; //Holds a vector of padding filters
     typename std::vector<typename ConvolutionFilterType::Pointer>       m_ConvolutionFilters; //Holds a vector of convolution filters

@@ -198,6 +198,14 @@ void DeconstructImageFilter<TImage>
       }
     }
 
+  // Fill in the size vector (to be used for reconstruction)
+  m_Sizes.clear();
+  m_Sizes.push_back(this->GetInput()->GetLargestPossibleRegion().GetSize());
+  for (unsigned int l=0; l<m_NumberOfLevels; l++)
+    {
+    m_Sizes.push_back(m_DownsampleFilters[l*n]->GetOutput()->GetLargestPossibleRegion().GetSize());
+    }
+
   //Clean up
   delete[] downsamplingFactors;
 }
