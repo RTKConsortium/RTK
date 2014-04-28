@@ -110,9 +110,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     typename TOutputImage::IndexType outputIndex;
     typename TInputImage::IndexType inputIndex;
 
-//    //Support progress methods/callbacks
-//    itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
-    
     typename TOutputImage::OffsetType outputStartIndex;
     for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
       {
@@ -181,35 +178,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     {
         return;
     }
-  
-//    //We need to compute the input requested region (size and start index)
-//    unsigned int i;
-//    const typename TOutputImage::SizeType& outputRequestedRegionSize
-//        = outputPtr->GetRequestedRegion().GetSize();
-//    const typename TOutputImage::IndexType& outputRequestedRegionStartIndex
-//        = outputPtr->GetRequestedRegion().GetIndex();
 
-//    typename TInputImage::SizeType  inputRequestedRegionSize;
-//    typename TInputImage::IndexType inputRequestedRegionStartIndex;
-
-//    for (i = 0; i < TInputImage::ImageDimension; i++)
-//    {
-//        inputRequestedRegionSize[i]
-//        = (long) ceil((double)outputRequestedRegionSize[i] /
-//                      (double) m_Factors[i]);
-
-//        inputRequestedRegionStartIndex[i]
-//        = (long) floor((double)outputRequestedRegionStartIndex[i] /
-//                       (double)m_Factors[i]);
-//    }
-
-//    typename TInputImage::RegionType inputRequestedRegion;
-//    inputRequestedRegion.SetSize(inputRequestedRegionSize);
-//    inputRequestedRegion.SetIndex(inputRequestedRegionStartIndex);
-
-//    inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion());
-  
-//    inputPtr->SetRequestedRegion(inputRequestedRegion);
     inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
@@ -249,7 +218,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     for (i = 0; i < TOutputImage::ImageDimension; i++)
     {
         outputSpacing[i] = inputSpacing[i] / (double)m_Factors[i];
-        outputSize[i] = inputSize[i] * (unsigned long) m_Factors[i] + 1;
+        outputSize[i] = m_OutputSize[i] + 2 * m_Order - 1;
         offset[i] = -(int)m_Order +1;
     }
   

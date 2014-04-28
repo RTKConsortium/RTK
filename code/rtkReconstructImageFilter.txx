@@ -114,11 +114,6 @@ template <class TImage>
 void ReconstructImageFilter<TImage>
 ::GenerateOutputInformation()
 {
-//  for (unsigned int i=0; i<this->CalculateNumberOfInputs(); i++)
-//    {
-//    this->GetInput(i)->Print(std::cout);
-//    }
-
   // n is the number of bands per level, including the ones
   // that will be Reconstructed and won't appear in the outputs
   unsigned int dimension = TImage::ImageDimension;
@@ -157,6 +152,7 @@ void ReconstructImageFilter<TImage>
       m_AddFilters[l]->SetInput(band, m_ConvolutionFilters[band + l*n]->GetOutput());
       m_UpsampleFilters[band + l*n]->SetFactors(upsamplingFactors);
       m_UpsampleFilters[band + l*n]->SetOrder(this->m_Order);
+      m_UpsampleFilters[band + l*n]->SetOutputSize(this->m_Sizes[m_NumberOfLevels-1-l]);
       }
     if (l>0) m_UpsampleFilters[n*l]->SetInput(m_AddFilters[l-1]->GetOutput());
     }
@@ -186,30 +182,11 @@ template <class TImage>
 void ReconstructImageFilter<TImage>
 ::GenerateData()
 {
-//  unsigned int dimension = TImage::ImageDimension;
-//  unsigned int n = round(pow(2.0, dimension));
-
-//  for (unsigned int l=0; l<m_NumberOfLevels; l++){
-//      m_UpsampleFilters[n*l]->Update();
-//      m_UpsampleFilters[n*l]->GetOutput()->Print(std::cout);
-//    }
-
   // Have the last filter calculate its output image
   // and graft it to the output of the composite filter
   m_AddFilters[m_NumberOfLevels-1]->GraftOutput(this->GetOutput());
   m_AddFilters[m_NumberOfLevels-1]->Update();
   this->GraftOutput(m_AddFilters[m_NumberOfLevels-1]->GetOutput() );
-
-//  for (unsigned int s=0; s<m_UpsampleFilters.size(); s++)
-//    {
-//    std::cout << "Printing output of upsample filter " << s << std::endl;
-//    m_UpsampleFilters[s]->GetOutput()->Print(std::cout);
-//    m_Writer->SetInput(m_UpsampleFilters[s]->GetOutput());
-//    std::ostringstream os ;
-//    os << s << ".mha";
-//    m_Writer->SetFileName(os.str());
-//    m_Writer->Update();
-//    }
 }
 
 

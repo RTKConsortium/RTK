@@ -71,6 +71,7 @@ int main(int argc, char * argv[])
     wavelets->GetOutput(outputIndex)->Print(std::cout);
     waveletsR->SetInput(outputIndex, wavelets->GetOutput(outputIndex));
     }
+  waveletsR->SetSizes(wavelets->GetSizes());
   waveletsR->Update();
 
   // Write reconstruction

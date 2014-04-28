@@ -102,6 +102,14 @@ public:
   itkSetMacro(Order, unsigned int)
   itkGetMacro(Order, unsigned int)
 
+  /** Set/Get the size of the output image
+   * This is required because some information about the size of the image
+   * is lost during downsampling, and the upsampling filter can't guess
+   * what the exact size should be.
+   */
+  itkSetMacro(OutputSize, typename TOutputImage::SizeType)
+  itkGetMacro(OutputSize, typename TOutputImage::SizeType)
+
 protected:
   UpsampleImageFilter();
   ~UpsampleImageFilter() {};
@@ -124,6 +132,7 @@ private:
 
   unsigned int m_Factors[ImageDimension];
   unsigned int m_Order;
+  typename TOutputImage::SizeType m_OutputSize;
 };
 
   
