@@ -1,0 +1,8 @@
+package "rtk"
+version "Projects a volume according to a geometry file."
+
+option "verbose"   v "Verbose execution"                                         flag     off
+option "config"    - "Config file"                                               string   no
+option "input"     i "Input file name"                              string   yes
+option "order"     - "Order of the Daubechies wavelets"                          int   yes
+option "level"     l "Number of deconstruction levels"                           int   yes
