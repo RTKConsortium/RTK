@@ -1,20 +1,21 @@
 /*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
 
-  Program:  rtk (Generalised Image Fusion Toolkit)
-  Module:   rtkUpsampleImageFilter.h
-  Language: C++
-  Date:     2005/11/16
-  Version:  1.0
-  Author:   Dan Mueller [d.mueller@qut.edu.au]
-
-  Copyright (c) 2005 Queensland University of Technology. All rights reserved.
-  See rtkCopyright.txt for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-     PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
 #ifndef __rtkUpsampleImageFilter_H
 #define __rtkUpsampleImageFilter_H
 
@@ -26,18 +27,10 @@ namespace rtk
 /** \class UpsampleImageFilter
  * \brief Upsamples an image by the given factor for each dimension.
  *
- * Since this filter produces an image which is a different resolution 
- * and with different pixel spacing than its input image, 
- * it needs to override several of the methods defined
- * in ProcessObject in order to properly manage the pipeline execution model.
- * In particular, this filter overrides
- * ProcessObject::GenerateInputRequestedRegion() and
- * ProcessObject::GenerateOutputInformation().
- *
- * This filter is implemented as a multithreaded filter.  It provides a 
- * ThreadedGenerateData() method for its implementation.
+ * This filter is inspired from Dan Mueller's GIFT package
+ * http://www.insight-journal.org/browse/publication/103
  * 
- * \ingroup GeometricTransforms
+ * \author Cyril Mory
  */
 template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_EXPORT UpsampleImageFilter:
@@ -110,6 +103,15 @@ public:
   itkSetMacro(OutputSize, typename TOutputImage::SizeType)
   itkGetMacro(OutputSize, typename TOutputImage::SizeType)
 
+  /** Set/Get the index of the output image
+   * This is required because some information about the index of the image
+   * is lost during downsampling, and the upsampling filter can't guess
+   * what the exact index should be. The output index is actually set to
+   * OutputIndex + 1.
+   */
+  itkSetMacro(OutputIndex, typename TOutputImage::IndexType)
+  itkGetMacro(OutputIndex, typename TOutputImage::IndexType)
+
 protected:
   UpsampleImageFilter();
   ~UpsampleImageFilter() {};
@@ -133,6 +135,7 @@ private:
   unsigned int m_Factors[ImageDimension];
   unsigned int m_Order;
   typename TOutputImage::SizeType m_OutputSize;
+  typename TOutputImage::IndexType m_OutputIndex;
 };
 
   

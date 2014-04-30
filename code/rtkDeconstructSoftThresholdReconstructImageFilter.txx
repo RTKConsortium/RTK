@@ -1,3 +1,21 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 #ifndef __rtkDeconstructSoftThresholdReconstructImageFilter_TXX
 #define __rtkDeconstructSoftThresholdReconstructImageFilter_TXX
 
@@ -15,7 +33,9 @@ DeconstructSoftThresholdReconstructImageFilter<TImage>
 {
     m_DeconstructionFilter = DeconstructFilterType::New();
     m_ReconstructionFilter = ReconstructFilterType::New();
-    m_WaveletsOrder = 3;
+    m_Order = 3;
+    m_Threshold = 0;
+    m_PipelineConstructed = false;
 }
 
 
@@ -42,49 +62,70 @@ DeconstructSoftThresholdReconstructImageFilter<TImage>
 }
 
 /////////////////////////////////////////////////////////
+//GenerateInputRequestedRegion()
+template <class TImage>
+void
+DeconstructSoftThresholdReconstructImageFilter<TImage>
+::GenerateInputRequestedRegion()
+{
+  InputImagePointer  inputPtr  = const_cast<TImage *>(this->GetInput());
+  inputPtr->SetRequestedRegionToLargestPossibleRegion();
+}
+
+/////////////////////////////////////////////////////////
+//GenerateOutputInformation()
+template <class TImage>
+void
+DeconstructSoftThresholdReconstructImageFilter<TImage>
+::GenerateOutputInformation()
+{
+
+  if (!m_PipelineConstructed)
+    {
+  // Connect the inputs
+  m_DeconstructionFilter->SetInput(this->GetInput());
+
+  // Set runtime parameters
+  m_DeconstructionFilter->SetOrder(this->GetOrder());
+  m_ReconstructionFilter->SetOrder(this->GetOrder());
+  m_DeconstructionFilter->UpdateOutputInformation();
+  m_ReconstructionFilter->SetSizes(m_DeconstructionFilter->GetSizes());
+  m_ReconstructionFilter->SetIndices(m_DeconstructionFilter->GetIndices());
+
+  //Create and setup an array of soft threshold filters
+  for (unsigned int index=0; index < m_DeconstructionFilter->GetNumberOfOutputs(); index++)
+    {
+    // Soft thresholding
+    m_SoftTresholdFilters.push_back(SoftThresholdFilterType::New());
+    m_SoftTresholdFilters[index]->SetInput(m_DeconstructionFilter->GetOutput(index));
+    m_SoftTresholdFilters[index]->SetThreshold(m_Threshold);
+
+    //Set input for reconstruction
+    m_ReconstructionFilter->SetInput(index, m_SoftTresholdFilters[index]->GetOutput());
+    }
+
+  // The low pass coefficients are not thresholded
+  m_SoftTresholdFilters[0]->SetThreshold(0);
+    }
+
+  m_PipelineConstructed = true;
+
+  // Have the last filter calculate its output information
+  // and copy it as the output information of the composite filter
+  m_ReconstructionFilter->UpdateOutputInformation();
+  this->GetOutput()->CopyInformation( m_ReconstructionFilter->GetOutput() );
+}
+
+/////////////////////////////////////////////////////////
 //GenerateData()
 template <class TImage>
 void
 DeconstructSoftThresholdReconstructImageFilter<TImage>
 ::GenerateData()
 {
-    // Setup the deconstruction and reconstruction filters
-    m_DeconstructionFilter->SetInput(this->GetInput());
-
-    // Perform deconstruction
-    m_DeconstructionFilter->Update();
-
-    //Create and setup an array of soft threshold filters
-    typename SoftThresholdFilterType::Pointer softThresholdFilterArray[m_DeconstructionFilter->GetNumberOfOutputs()];
-
-    int NbDetailsPerLevel = pow(2.0, (double) ImageDimension);
-
-    //Perform soft thresholding and set inputs for reconstruction
-    for (unsigned int index=0; index < m_DeconstructionFilter->GetNumberOfOutputs(); index++)
-      {
-      if ((index % NbDetailsPerLevel)==0)
-        {
-        // Do not soft threshold the low pass coefficients
-        m_ReconstructionFilter->SetInput(index, m_DeconstructionFilter->GetOutput(index));
-        }
-      else
-        {
-        // Soft thresholding
-        softThresholdFilterArray[index] = SoftThresholdFilterType::New();
-        softThresholdFilterArray[index]->SetInput(m_DeconstructionFilter->GetOutput(index));
-        softThresholdFilterArray[index]->SetThreshold(m_Threshold);
-
-        //Set input for reconstruction
-        m_ReconstructionFilter->SetInput(index, softThresholdFilterArray[index]->GetOutput());
-
-        } //end if
-      }// end for
-
-    // Perform reconstruction
-    m_ReconstructionFilter->Update();
-
-    this->GraftOutput( m_ReconstructionFilter->GetOutput() );
-
+  // Perform reconstruction
+  m_ReconstructionFilter->Update();
+  this->GraftOutput( m_ReconstructionFilter->GetOutput() );
 }
 
 
