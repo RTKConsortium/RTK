@@ -151,7 +151,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_SoftThresholdFilter->SetNumberOfLevels(this->GetNumberOfLevels());
-  m_SoftThresholdFilter->SetWaveletsOrder(this->GetWaveletsOrder());
+  m_SoftThresholdFilter->SetOrder(this->GetOrder());
 
   // Have the last filter calculate its output information
   m_SubtractFilter2->UpdateOutputInformation();
@@ -174,14 +174,17 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
       {
       typename TOutputImage::Pointer f_k_plus_one = m_ConjugateGradientFilter->GetOutput();
       f_k_plus_one->DisconnectPipeline();
+      f_k_plus_one->Print(std::cout);
       m_ConjugateGradientFilter->SetX(f_k_plus_one);
 
       typename TOutputImage::Pointer W_t_G_k_plus_one = m_SoftThresholdFilter->GetOutput();
       W_t_G_k_plus_one->DisconnectPipeline();
+      W_t_G_k_plus_one->Print(std::cout);
       m_AddFilter1->SetInput2(W_t_G_k_plus_one);
 
       typename TOutputImage::Pointer W_t_D_k_plus_one = m_SubtractFilter2->GetOutput();
       W_t_D_k_plus_one->DisconnectPipeline();
+      W_t_D_k_plus_one->Print(std::cout);
       m_AddFilter1->SetInput1(W_t_D_k_plus_one);
       m_SubtractFilter1->SetInput2(W_t_D_k_plus_one);
 

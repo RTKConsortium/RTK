@@ -166,8 +166,8 @@ public:
     itkSetMacro(CG_iterations, float)
     itkGetMacro(CG_iterations, float)
 
-    itkSetMacro(WaveletsOrder, unsigned int)
-    itkGetMacro(WaveletsOrder, unsigned int)
+    itkSetMacro(Order, unsigned int)
+    itkGetMacro(Order, unsigned int)
 
     itkSetMacro(NumberOfLevels, unsigned int)
     itkGetMacro(NumberOfLevels, unsigned int)
@@ -213,7 +213,7 @@ private:
     float           m_Beta;
     unsigned int    m_AL_iterations;
     unsigned int    m_CG_iterations;
-    unsigned int    m_WaveletsOrder;
+    unsigned int    m_Order;
     unsigned int    m_NumberOfLevels;
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;

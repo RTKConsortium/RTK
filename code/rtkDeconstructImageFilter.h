@@ -1,20 +1,21 @@
 /*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
 
-  Program:  rtk Multi-level Multi-band Image Filter
-  Module:   rtkDeconstructImageFilter.h
-  Language: C++
-  Date:     2005/11/22
-  Version:  0.2
-  Author:   Dan Mueller [d.mueller@qut.edu.au]
-
-  Copyright (c) 2005 Queensland University of Technology. All rights reserved.
-  See rtkCopyright.txt for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-     PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
 #ifndef __rtkDeconstructImageFilter_H
 #define __rtkDeconstructImageFilter_H
 
@@ -33,6 +34,9 @@ namespace rtk {
  * \class DeconstructImageFilter
  * \brief An image filter that deconstructs an image using
  * Daubechies wavelets.
+ *
+ * This filter is inspired from Dan Mueller's GIFT package
+ * http://www.insight-journal.org/browse/publication/103
  *
  * \author Cyril Mory
  */
@@ -96,9 +100,28 @@ public:
     itkGetMacro(Order, unsigned int)
     itkSetMacro(Order, unsigned int)
 
+    /** Get the size of each convolution filter's output
+     * This is required because the downsampling implies
+     * a loss of information on the size (both 2n+1 and 2n
+     * are downsampled to n), and the upsampling filters
+     * used in the reconstruction process need this
+     * information.
+     */
     typename InputImageType::SizeType* GetSizes()
     {
     return m_Sizes.data();
+    }
+
+    /** Get the index of each convolution filter's output
+     * This is required because the downsampling implies
+     * a loss of information on the index (both 2n+1 and 2n
+     * are downsampled to n), and the upsampling filters
+     * used in the reconstruction process need this
+     * information.
+     */
+    typename InputImageType::IndexType* GetIndices()
+    {
+    return m_Indices.data();
     }
 
 protected:
@@ -124,10 +147,11 @@ private:
     DeconstructImageFilter(const Self&);    //purposely not implemented
     void operator=(const Self&);                    //purposely not implemented
 
-    unsigned int m_NumberOfLevels;     //Holds the number of deconstruction levels
-    unsigned int m_Order;             // Holds the order of the wavelet filters
+    unsigned int m_NumberOfLevels;        // Holds the number of deconstruction levels
+    unsigned int m_Order;                 // Holds the order of the wavelet filters
+    bool         m_PipelineConstructed;   // Filters instantiated by GenerateOutputInformation() should be instantiated only once
     typename std::vector<typename InputImageType::SizeType>             m_Sizes; //Holds the size of sub-images at each level
-
+    typename std::vector<typename InputImageType::IndexType>            m_Indices; //Holds the size of sub-images at each level
     typename std::vector<typename PadFilterType::Pointer>               m_PadFilters; //Holds a vector of padding filters
     typename std::vector<typename ConvolutionFilterType::Pointer>       m_ConvolutionFilters; //Holds a vector of convolution filters
     typename std::vector<typename DownsampleImageFilterType::Pointer>   m_DownsampleFilters; //Holds a vector of downsample filters

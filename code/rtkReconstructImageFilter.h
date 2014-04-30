@@ -1,20 +1,21 @@
 /*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
 
-  Program:  rtk Multi-level Multi-band Image Filter
-  Module:   rtkReconstructImageFilter.h
-  Language: C++
-  Date:     2005/11/22
-  Version:  0.2
-  Author:   Dan Mueller [d.mueller@qut.edu.au]
-
-  Copyright (c) 2005 Queensland University of Technology. All rights reserved.
-  See rtkCopyright.txt for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-     PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
 #ifndef __rtkReconstructImageFilter_H
 #define __rtkReconstructImageFilter_H
 
@@ -27,17 +28,15 @@
 #include "rtkDaubechiesWaveletsKernelSource.h"
 #include "rtkUpsampleImageFilter.h"
 
-// For debugging
-#include <itkImageFileWriter.h>
-#include <string>
-#include <sstream>
-
 namespace rtk {
 
 /**
  * \class ReconstructImageFilter
  * \brief An image filter that reconstructs an image using
  * Daubechies wavelets.
+ *
+ * This filter is inspired from Dan Mueller's GIFT package
+ * http://www.insight-journal.org/browse/publication/103
  *
  * \author Cyril Mory
  */
@@ -76,8 +75,6 @@ public:
     typedef rtk::UpsampleImageFilter<InputImageType>             UpsampleImageFilterType;
     typedef rtk::DaubechiesWaveletsKernelSource<InputImageType>  KernelSourceType;
 
-    typedef itk::ImageFileWriter<InputImageType>          WriterType;
-
     /** Set the number of input levels. */
     virtual void SetNumberOfLevels(unsigned int levels)
     {
@@ -112,6 +109,11 @@ public:
     m_Sizes = sizesVector;
     }
 
+    void SetIndices(typename InputImageType::IndexType *indicesVector)
+    {
+    m_Indices = indicesVector;
+    }
+
     /** Get/Set the order of the wavelet filters */
     itkGetMacro(Order, unsigned int)
     itkSetMacro(Order, unsigned int)
@@ -140,16 +142,18 @@ private:
     ReconstructImageFilter(const Self&);    //purposely not implemented
     void operator=(const Self&);                    //purposely not implemented
 
-    unsigned int m_NumberOfLevels;     //Holds the number of Reconstruction levels
-    unsigned int m_Order;             // Holds the order of the wavelet filters
-    typename InputImageType::SizeType             *m_Sizes; //Holds the size of sub-images at each level
+    unsigned int m_NumberOfLevels;        // Holds the number of Reconstruction levels
+    unsigned int m_Order;                 // Holds the order of the wavelet filters
+    bool         m_PipelineConstructed;   // Filters instantiated by GenerateOutputInformation() should be instantiated only once
 
+    typename InputImageType::SizeType                                   *m_Sizes; //Holds the size of sub-images at each level
+    typename InputImageType::IndexType                                  *m_Indices; //Holds the size of sub-images at each level
     typename std::vector<typename AddFilterType::Pointer>               m_AddFilters; //Holds a vector of add filters
     typename std::vector<typename ConvolutionFilterType::Pointer>       m_ConvolutionFilters; //Holds a vector of convolution filters
     typename std::vector<typename UpsampleImageFilterType::Pointer>     m_UpsampleFilters; //Holds a vector of Upsample filters
     typename std::vector<typename KernelSourceType::Pointer>            m_KernelSources; //Holds a vector of kernel sources
 
-    typename WriterType::Pointer                                        m_Writer; //For debugging
+
 };
 
 }// namespace rtk

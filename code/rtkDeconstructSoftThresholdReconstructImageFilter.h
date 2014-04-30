@@ -1,3 +1,21 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 #ifndef __rtkDeconstructSoftThresholdReconstructImageFilter_H
 #define __rtkDeconstructSoftThresholdReconstructImageFilter_H
 
@@ -10,7 +28,6 @@
 #include "rtkReconstructImageFilter.h"
 #include "rtkSoftThresholdImageFilter.h"
 
-
 namespace rtk {
 
 /**
@@ -18,7 +35,10 @@ namespace rtk {
  * \brief Deconstructs an image, soft thresholds it wavelets coefficients,
  * then reconstructs
  *
- * \ingroup Wavelet Image Filters
+ * This filter is inspired from Dan Mueller's GIFT package
+ * http://www.insight-journal.org/browse/publication/103
+ *
+ * \author Cyril Mory
  */
 template <class TImage>
 class DeconstructSoftThresholdReconstructImageFilter
@@ -58,13 +78,12 @@ public:
     void SetNumberOfLevels(unsigned int levels);
 
     /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
-    itkGetMacro(WaveletsOrder, unsigned int)
-    itkSetMacro(WaveletsOrder, unsigned int)
+    itkGetMacro(Order, unsigned int)
+    itkSetMacro(Order, unsigned int)
 
     /** Sets the threshold used in soft thresholding */
     itkGetMacro(Threshold, float)
     itkSetMacro(Threshold, float)
-
 
 protected:
     DeconstructSoftThresholdReconstructImageFilter();
@@ -72,16 +91,23 @@ protected:
     void PrintSelf(std::ostream&os, itk::Indent indent) const;
 
     /** Generate the output data. */
-    void GenerateData();
+    virtual void GenerateData();
+
+    /** Compute the information on output's size and index */
+    virtual void GenerateOutputInformation();
+
+    virtual void GenerateInputRequestedRegion();
 
 private:
     DeconstructSoftThresholdReconstructImageFilter(const Self&);     //purposely not implemented
     void operator=(const Self&);            //purposely not implemented
 
-    typename DeconstructFilterType::Pointer    m_DeconstructionFilter;
-    typename ReconstructFilterType::Pointer    m_ReconstructionFilter;
-    unsigned int    m_WaveletsOrder;
-    float m_Threshold;
+    typename DeconstructFilterType::Pointer                 m_DeconstructionFilter;
+    typename ReconstructFilterType::Pointer                 m_ReconstructionFilter;
+    std::vector<typename SoftThresholdFilterType::Pointer>  m_SoftTresholdFilters; //Holds an array of soft threshold filters
+    unsigned int    m_Order;
+    float           m_Threshold;
+    bool            m_PipelineConstructed;
 
 };
 
