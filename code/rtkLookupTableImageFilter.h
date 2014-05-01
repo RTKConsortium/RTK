@@ -67,6 +67,7 @@ public:
     m_LookupTablePointer = lut;
     m_LookupTableDataPointer = lut->GetBufferPointer();
     m_InverseLUTSpacing = 1. / m_LookupTablePointer->GetSpacing()[0];
+    m_Interpolator->SetInputImage(lut);
   }
 
   bool operator!=( const LUT & lut ) const {

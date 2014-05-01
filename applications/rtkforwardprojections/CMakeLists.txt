@@ -2,9 +2,9 @@ WRAP_GGO(rtkforwardprojections_GGO_C rtkforwardprojections.ggo)
 ADD_EXECUTABLE(rtkforwardprojections rtkforwardprojections.cxx ${rtkforwardprojections_GGO_C})
 TARGET_LINK_LIBRARIES(rtkforwardprojections RTK)
 
-IF (CUDA_FOUND)
+IF (RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtkforwardprojections rtkcuda)
-ENDIF (CUDA_FOUND)
+ENDIF (RTK_USE_CUDA)
 
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)

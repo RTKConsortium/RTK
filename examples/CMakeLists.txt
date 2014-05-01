@@ -10,10 +10,12 @@ if(BUILD_TESTING)
     PROPERTIES 
     PASS_REGULAR_EXPRESSION "RTK Hello World!"
     )
-
-  add_test(FirstReconstructionTest ${EXECUTABLE_OUTPUT_PATH}/FirstReconstruction)
-  add_test(FirstReconstructionCheckTest ${EXECUTABLE_OUTPUT_PATH}/rtkcheckimagequality output.mha)
-  set_tests_properties(FirstReconstructionCheckTest PROPERTIES DEPENDS FirstReconstructionTest)
-
+	
+  # This test can take a long time (especially in CPU)	
+  if(NOT FAST_TESTS_NO_CHECKS)	
+    add_test(FirstReconstructionTest ${EXECUTABLE_OUTPUT_PATH}/FirstReconstruction)
+    add_test(FirstReconstructionCheckTest ${EXECUTABLE_OUTPUT_PATH}/rtkcheckimagequality output.mha)
+    set_tests_properties(FirstReconstructionCheckTest PROPERTIES DEPENDS FirstReconstructionTest)
+  endif()
 endif()
 

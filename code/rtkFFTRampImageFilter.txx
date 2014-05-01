@@ -21,17 +21,8 @@
 
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154
-#if ITK_VERSION_MAJOR <= 3
-#  if defined(USE_FFTWD) || defined(USE_FFTWF)
-#    include "itkFFTWRealToComplexConjugateImageFilter.h"
-#    include "itkFFTWComplexConjugateToRealImageFilter.h"
-#  endif
-#  include <itkFFTComplexConjugateToRealImageFilter.h>
-#  include <itkFFTRealToComplexConjugateImageFilter.h>
-#else
-#  include <itkRealToHalfHermitianForwardFFTImageFilter.h>
-#  include <itkHalfHermitianToRealInverseFFTImageFilter.h>
-#endif
+#include <itkRealToHalfHermitianForwardFFTImageFilter.h>
+#include <itkHalfHermitianToRealInverseFFTImageFilter.h>
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -137,11 +128,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   paddedImage = PadInputImageRegion<FFTInputImageType, FFTOutputImageType>(enlargedRegionX);
 
   // FFT padded image
-#if ITK_VERSION_MAJOR <= 3
-  typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
-#else
   typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType > FFTType;
-#endif
   typename FFTType::Pointer fftI = FFTType::New();
   fftI->SetInput( paddedImage );
   fftI->SetNumberOfThreads( m_BackupNumberOfThreads );
@@ -168,16 +155,9 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   //Inverse FFT image
-#if ITK_VERSION_MAJOR <= 3
-  typedef itk::FFTComplexConjugateToRealImageFilter< FFTPrecisionType, ImageDimension > IFFTType;
-#else
   typedef itk::HalfHermitianToRealInverseFFTImageFilter< typename FFTType::OutputImageType > IFFTType;
-#endif
   typename IFFTType::Pointer ifft = IFFTType::New();
   ifft->SetInput( fftI->GetOutput() );
-#if ITK_VERSION_MAJOR <= 3
-  ifft->SetActualXDimensionIsOdd( paddedImage->GetLargestPossibleRegion().GetSize(0) % 2 );
-#endif
   ifft->SetNumberOfThreads( m_BackupNumberOfThreads );
   ifft->SetReleaseDataFlag( true );
   ifft->Update();
@@ -347,11 +327,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   // FFT kernel
-#if ITK_VERSION_MAJOR <= 3
-  typedef itk::FFTRealToComplexConjugateImageFilter< FFTPrecisionType, ImageDimension > FFTType;
-#else
   typedef itk::RealToHalfHermitianForwardFFTImageFilter< TFFTInputImage, TFFTOutputImage > FFTType;
-#endif
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
   fftK->SetNumberOfThreads( 1 );
@@ -362,16 +338,6 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion() );
 
   unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
-#if ITK_VERSION_MAJOR <= 3
-#  if !defined(USE_FFTWD)
-  if( typeid(TFFTPrecision).name() == typeid(double).name() )
-    n = n/2+1;
-#  endif
-#  if !defined(USE_FFTWF)
-  if( typeid(TFFTPrecision).name() == typeid(float).name() )
-    n = n/2+1;
-#  endif
-#endif
 
   itK.GoToBegin();
   if(this->GetHannCutFrequency()>0.)
@@ -400,27 +366,6 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   for(; !itK.IsAtEnd(); ++itK)
     {
-    // FFTW returns only the first half whereas vnl return the mirrored fft
-#if ITK_VERSION_MAJOR <= 3
-#  if !defined(USE_FFTWD)
-    if(typeid(TFFTPrecision).name() == typeid(double).name() && (unsigned int)itK.GetIndex()[0]>n)
-      {
-      typename FFTType::OutputImageType::IndexType mirroredIndex = itK.GetIndex();
-      mirroredIndex[0] = fftK->GetOutput()->GetLargestPossibleRegion().GetSize()[0] - mirroredIndex[0];
-      itK.Set( fftK->GetOutput()->GetPixel(mirroredIndex) );
-      }
-    else
-#  endif
-#  if !defined(USE_FFTWF)
-    if(typeid(TFFTPrecision).name() == typeid(float).name() && (unsigned int)itK.GetIndex()[0]>n)
-      {
-      typename FFTType::OutputImageType::IndexType mirroredIndex = itK.GetIndex();
-      mirroredIndex[0] = fftK->GetOutput()->GetLargestPossibleRegion().GetSize()[0] - mirroredIndex[0];
-      itK.Set( fftK->GetOutput()->GetPixel(mirroredIndex) );
-      }
-    else
-#  endif
-#endif
     itK.Set( itK.Get() * TFFTPrecision(0.) );
     }
 

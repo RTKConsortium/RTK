@@ -282,14 +282,26 @@ GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
 
 double
 rtk::ThreeDCircularProjectionGeometry::
-ToUntiltedCoordinate(const unsigned int noProj,
-                     const double tiltedCoord) const
+ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
+                                const double tiltedCoord) const
 {
+  // Aliases / constant
+  const double sid  = this->GetSourceToIsocenterDistances()[noProj];
+  const double sid2 = sid*sid;
   const double sdd  = this->GetSourceToDetectorDistances()[noProj];
-  const double sdd2 = sdd * sdd;
   const double sx   = this->GetSourceOffsetsX()[noProj];
   const double px   = this->GetProjectionOffsetsX()[noProj];
-  const double hyp  = sqrt(sdd2 + sx*sx);
-  const double l    = tiltedCoord + px;
-  return hyp * (sdd * l / (sdd2 + (sx - l) * sx ));
+
+  // sidu is the distance between the source and the virtual untilted detector
+  const double sidu = sqrt(sid2 + sx*sx);
+  // l is the coordinate on the virtual detector parallel to the real detector
+  // and passing at the isocenter
+  const double l    = (tiltedCoord + px - sx) * sid / sdd + sx;
+
+  // a is the angle between the virtual detector and the real detector
+  const double cosa = sx/sidu;
+
+  // the following relation refers to a note by R. Clackdoyle, title
+ // "Samping a tilted detector"
+  return l * sid / (sidu - l*cosa);
 }

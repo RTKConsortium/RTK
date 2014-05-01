@@ -19,18 +19,21 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_h
 #define __rtkCudaForwardProjectionImageFilter_h
 
-#include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
 #include "itkCudaInPlaceImageFilter.h"
 #include "itkCudaUtil.h"
 #include "itkCudaKernelManager.h"
 #include "rtkWin32Header.h"
 
 /** \class CudaForwardProjectionImageFilter
- * \brief TODO
+ * \brief Trilinear interpolation forward projection implemented in CUDA
  *
- * TODO
+ * CudaForwardProjectionImageFilter is similar to
+ * JosephForwardProjectionImageFilter, except it uses a
+ * fixed step between sampling points instead of placing these
+ * sampling points only on the main direction slices.
  *
- * \author TODO 
+ * \author Simon Rit, updated by Cyril Mory
  *
  * \ingroup Projector CudaImageToImageFilter
  */
@@ -63,17 +66,6 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaForwardProjectionImageFilter, ImageToImageFilter);
 
-  /** Function to allocate memory on device */
-  void InitDevice();
-
-  /** Function to synchronize memory from device to host and free device memory */
-  void CleanUpDevice();
-
-  /** Boolean to keep the hand on the memory management of the GPU. Default is
-   * off. If on, the user must call manually InitDevice and CleanUpDevice. */
-  itkGetMacro(ExplicitGPUMemoryManagementFlag, bool);
-  itkSetMacro(ExplicitGPUMemoryManagementFlag, bool);
-
 protected:
   rtkcuda_EXPORT CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
@@ -90,7 +82,6 @@ private:
   float *            m_DeviceVolume;
   float *            m_DeviceProjection;
   float *            m_DeviceMatrix;
-  bool               m_ExplicitGPUMemoryManagementFlag;
 }; // end of class
 
 } // end namespace rtk

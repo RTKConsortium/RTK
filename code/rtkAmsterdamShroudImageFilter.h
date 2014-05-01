@@ -21,11 +21,7 @@
 
 #include <itkImageToImageFilter.h>
 #include <itkRecursiveGaussianImageFilter.h>
-#if ITK_VERSION_MAJOR <= 3
-#  include <itkMultiplyByConstantImageFilter.h>
-#else
-#  include <itkMultiplyImageFilter.h>
-#endif
+#include <itkMultiplyImageFilter.h>
 #include <itkThresholdImageFilter.h>
 #include <itkSumProjectionImageFilter.h>
 #include <itkConvolutionImageFilter.h>
@@ -99,11 +95,7 @@ private:
   void operator=(const Self&);             //purposely not implemented
 
   typedef itk::RecursiveGaussianImageFilter< TInputImage, TInputImage >          DerivativeType;
-#if ITK_VERSION_MAJOR <= 3
-  typedef itk::MultiplyByConstantImageFilter< TInputImage, double, TInputImage > NegativeType;
-#else
   typedef itk::MultiplyImageFilter< TInputImage, TInputImage, TInputImage >      NegativeType;
-#endif
   typedef itk::ThresholdImageFilter< TInputImage >                               ThresholdType;
   typedef itk::SumProjectionImageFilter< TInputImage, TOutputImage >             SumType;
   typedef itk::ConvolutionImageFilter< TOutputImage, TOutputImage >              ConvolutionType;

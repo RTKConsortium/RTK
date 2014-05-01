@@ -22,7 +22,6 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
 
-#include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])

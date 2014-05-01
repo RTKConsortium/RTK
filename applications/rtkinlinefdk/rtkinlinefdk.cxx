@@ -25,10 +25,10 @@
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
 # include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
 # include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
 #endif
 
@@ -99,9 +99,9 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
   // Generate file names
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
   names->SetDirectory(threadInfo->args_info->path_arg);
-  names->SetNumericSort(false);
+  names->SetNumericSort(threadInfo->args_info->nsort_flag);
   names->SetRegularExpression(threadInfo->args_info->regexp_arg);
-  names->SetSubMatch(0);
+  names->SetSubMatch(threadInfo->args_info->submatch_arg);
 
   if(threadInfo->args_info->verbose_flag)
     std::cout << "Regular expression matches "
@@ -172,7 +172,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
   typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef CPUOutputImageType                           OutputImageType;
@@ -221,11 +221,11 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   // FDK reconstruction filtering
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
   FDKCPUType::Pointer feldkampCPU = FDKCPUType::New();
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
   FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
   typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
   FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
 #endif
@@ -235,7 +235,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
     }
   else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
     {
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
     SET_FELDKAMP_OPTIONS( feldkampCUDA );
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
@@ -244,7 +244,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
     }
   else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
     {
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
     SET_FELDKAMP_OPTIONS( feldkampOCL );
 #else
     std::cerr << "The program has not been compiled with opencl option" << std::endl;
@@ -332,7 +332,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() );
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->PropagateRequestedRegion() );
         }
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
       else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
         {
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
@@ -343,7 +343,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
         }
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
       else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
         {
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
@@ -372,7 +372,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() );
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->PropagateRequestedRegion() );
           }
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
         else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
@@ -383,7 +383,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
           }
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
         else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
@@ -406,14 +406,14 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() );
           writer->SetInput( feldkampCPU->GetOutput() );
           }
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
         else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
           writer->SetInput( feldkampCUDA->GetOutput() );
           }
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
         else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );

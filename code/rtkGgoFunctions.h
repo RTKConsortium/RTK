@@ -24,13 +24,15 @@
 
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
+#include "rtkProjectionsReader.h"
+#include <itkRegularExpressionSeriesFileNames.h>
 
 namespace rtk
 {
 
 /** \brief Create 3D image from gengetopt specifications.
  *
- * This function set a ConstantImageSource object from command line options stored in ggo struct.
+ * This function sets a ConstantImageSource object from command line options stored in ggo struct.
  *  The image is not buffered to allow streaming. The image is filled with zeros.
  *  The required options in the ggo struct are:
  *     - dimension: image size in pixels
@@ -46,7 +48,7 @@ void
 SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source, const TArgsInfo &args_info)
 {
   typedef typename TConstantImageSourceType::OutputImageType ImageType;
-  
+
   const unsigned int Dimension = ImageType::GetImageDimension();
 
   typename ImageType::SizeType imageDimension;
@@ -79,7 +81,44 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
   source->SetDirection( imageDirection );
   source->SetSize( imageDimension );
   source->SetConstant( 0. );
-  source->UpdateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( source->UpdateOutputInformation() );
+}
+
+/** \brief Read a stack of 2D projections from gengetopt specifications.
+ *
+ * This function sets a ProjectionsReader object from command line options stored in ggo struct.
+ * The projections are not buffered to allow streaming.
+ * The required options in the ggo struct are:
+ *     - verbose
+ *     - path: path containing projections
+ *     - regexp: regular expression to select projection files in path
+ *     - nsort: boolean to (des-)activate the numeric sort for expression matches
+ *     - submatch: index of the submatch that will be used to sort matches
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TProjectionsReaderType, class TArgsInfo >
+void
+SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, const TArgsInfo &args_info)
+{
+  // Generate file names
+  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
+  names->SetDirectory(args_info.path_arg);
+  names->SetNumericSort(args_info.nsort_flag);
+  names->SetRegularExpression(args_info.regexp_arg);
+  names->SetSubMatch(args_info.submatch_arg);
+
+  if(args_info.verbose_flag)
+    std::cout << "Regular expression matches "
+              << names->GetFileNames().size()
+              << " file(s)..."
+              << std::endl;
+
+  // Pass list to projections reader
+  reader->SetFileNames( names->GetFileNames() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() );
 }
 
 }
