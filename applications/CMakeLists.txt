@@ -30,7 +30,9 @@ ADD_SUBDIRECTORY(rtkdrawshepploganphantom)
 ADD_SUBDIRECTORY(rtkextractshroudsignal)
 ADD_SUBDIRECTORY(rtkmedian)
 ADD_SUBDIRECTORY(rtklut)
-
+ADD_SUBDIRECTORY(rtktotalvariationdenoising)
+ADD_SUBDIRECTORY(rtkadmmtotalvariation)
+ADD_SUBDIRECTORY(rtkconjugategradient)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 ADD_SUBDIRECTORY(rtkvarianobigeometry)
@@ -48,15 +50,21 @@ if(BUILD_TESTING)
   add_test(rtkappprojectshepploganphantomtest ${EXECUTABLE_OUTPUT_PATH}/rtkprojectshepploganphantom  -o sheppy.mha -g geo --phantomscale 40 --dimension 128)
   set_tests_properties(rtkappprojectshepploganphantomtest PROPERTIES DEPENDS apprtksimulatedgeometrytest)
  
-  if(CUDA_FOUND AND CUDA_HAVE_GPU)
+  if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
     add_test(rtkappfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdk -g geo -p . -r sheppy.mha -o fdk_gpu.mha --hardware cuda)
+	set_tests_properties(rtkappfdktest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
+    add_test(rtkappfdkchecktest ${EXECUTABLE_OUTPUT_PATH}/rtkcheckimagequality fdk_gpu.mha)
+    set_tests_properties(rtkappfdkchecktest PROPERTIES DEPENDS rtkappfdktest)
   else()
-    add_test(rtkappfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdk -g geo -p . -r sheppy.mha -o fdk_gpu.mha)
+    # Only run the software version if 
+    if(NOT FAST_TESTS_NO_CHECKS)
+      add_test(rtkappfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdk -g geo -p . -r sheppy.mha -o fdk_gpu.mha)
+	  set_tests_properties(rtkappfdktest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
+      add_test(rtkappfdkchecktest ${EXECUTABLE_OUTPUT_PATH}/rtkcheckimagequality fdk_gpu.mha)
+      set_tests_properties(rtkappfdkchecktest PROPERTIES DEPENDS rtkappfdktest)
+	endif()
   endif()
-  set_tests_properties(rtkappfdktest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
-
-  add_test(rtkappfdkchecktest ${EXECUTABLE_OUTPUT_PATH}/rtkcheckimagequality fdk_gpu.mha)
-  set_tests_properties(rtkappfdkchecktest PROPERTIES DEPENDS rtkappfdktest)
+ 
 
 
 endif()

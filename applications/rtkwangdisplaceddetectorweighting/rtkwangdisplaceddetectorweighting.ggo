@@ -3,10 +3,14 @@ version "Weight projection serie with parker weights for displaced detector geom
 
 option "verbose"   v "Verbose execution"                                         flag   off
 option "config"    - "Config file"                                               string no
-option "geometry"  g  "XML geometry file name"                                   string yes
-option "path"      p  "Path containing projections"                              string yes
-option "regexp"    r  "Regular expression to select projection files in path"    string yes
+option "geometry"  g "XML geometry file name"                                   string yes
 option "output"    o "Output file name"                                          string yes
 option "divisions" d "Number of stream divisions to cope with large serie"       int    no  default="1"
 option "minOffset" - "Minimum offset of projections in the ramp direction"       double no
 option "maxOffset" - "Maximum offset of projections in the ramp direction"       double no
+
+section "Projections"
+option "path"      p "Path containing projections"                               string                       yes
+option "regexp"    r "Regular expression to select projection files in path"     string                       yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

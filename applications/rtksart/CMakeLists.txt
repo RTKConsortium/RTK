@@ -2,9 +2,9 @@ WRAP_GGO(rtksart_GGO_C rtksart.ggo)
 ADD_EXECUTABLE(rtksart rtksart.cxx ${rtksart_GGO_C})
 TARGET_LINK_LIBRARIES(rtksart RTK)
 
-IF (CUDA_FOUND)
+IF (RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtksart rtkcuda)
-ENDIF (CUDA_FOUND)
+ENDIF (RTK_USE_CUDA)
 
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)

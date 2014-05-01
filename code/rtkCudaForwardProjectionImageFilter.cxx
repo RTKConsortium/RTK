@@ -33,47 +33,6 @@ namespace rtk
 CudaForwardProjectionImageFilter
 ::CudaForwardProjectionImageFilter()
 {
-  m_DeviceVolume     = NULL;
-  m_DeviceProjection = NULL;
-  m_DeviceMatrix     = NULL;
-  m_ExplicitGPUMemoryManagementFlag = false;
-}
-
-void
-CudaForwardProjectionImageFilter
-::InitDevice()
-{
-  // Dimension arguments in CUDA format for volume
-  m_VolumeDimension[0] = this->GetInput(1)->GetRequestedRegion().GetSize()[0];
-  m_VolumeDimension[1] = this->GetInput(1)->GetRequestedRegion().GetSize()[1];
-  m_VolumeDimension[2] = this->GetInput(1)->GetRequestedRegion().GetSize()[2];
-
-  // Dimension arguments in CUDA format for projections
-  m_ProjectionDimension[0] = this->GetInput(0)->GetRequestedRegion().GetSize()[0];
-  m_ProjectionDimension[1] = this->GetInput(0)->GetRequestedRegion().GetSize()[1];
-  
-  // Make sure the GPU Buffer is up to date
-  const float *device_volume = *(float**)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
-
-  CUDA_forward_project_init (m_ProjectionDimension, m_VolumeDimension,
-                             m_DeviceVolume, m_DeviceProjection, m_DeviceMatrix,device_volume);
-}
-
-void
-CudaForwardProjectionImageFilter
-::CleanUpDevice()
-{
-  if(this->GetOutput()->GetRequestedRegion() != this->GetOutput()->GetBufferedRegion() )
-    itkExceptionMacro(<< "Can't handle different requested and buffered regions "
-                      << this->GetOutput()->GetRequestedRegion()
-                      << this->GetOutput()->GetBufferedRegion() );
-  CUDA_forward_project_cleanup (m_ProjectionDimension,
-                                m_DeviceVolume,
-                                m_DeviceProjection,
-                                m_DeviceMatrix);
-  m_DeviceVolume     = NULL;
-  m_DeviceProjection = NULL;
-  m_DeviceMatrix     = NULL;
 }
 
 void
@@ -81,12 +40,6 @@ CudaForwardProjectionImageFilter
 ::GPUGenerateData()
 {
   try {
-    //this->AllocateOutputs();
-    if(!m_ExplicitGPUMemoryManagementFlag)
-      {
-      this->InitDevice();
-      }
-
     const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
     const unsigned int Dimension = ImageType::ImageDimension;
     const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
@@ -95,7 +48,6 @@ CudaForwardProjectionImageFilter
       this->GetOutput()->GetBufferedRegion().GetSize(1);
 
     float t_step = 1; // Step in mm
-    int blockSize[3] = {16,16,1};
     itk::Vector<double, 4> source_position;
 
     // Setting BoxMin and BoxMax
@@ -115,6 +67,19 @@ CudaForwardProjectionImageFilter
     for(unsigned int i=0; i<3; i++)
       spacing[i] = this->GetInput(1)->GetSpacing()[i];
 
+    // Cuda convenient format for dimensions
+    int projectionSize[2];
+    projectionSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
+    projectionSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
+
+    int volumeSize[3];
+    volumeSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
+    volumeSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+    volumeSize[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[2];
+
+    float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+    float *pvol = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
+
     // Go over each projection
     for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
       {
@@ -127,11 +92,19 @@ CudaForwardProjectionImageFilter
       for(unsigned int i=0; i<3; i++)
         volPPToIndex[i][3] += 0.5;
 
+      // Compute matrix to translate the pixel indices on the detector
+      // if the Requested region has non-zero index
+      Superclass::GeometryType::ThreeDHomogeneousMatrixType translation_matrix;
+      translation_matrix.SetIdentity();
+      for(unsigned int i=0; i<3; i++)
+        translation_matrix[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
+
       // Compute matrix to transform projection index to volume index
       Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
       d_matrix = volPPToIndex.GetVnlMatrix() *
         geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-        GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix();
+        GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix() *
+        translation_matrix.GetVnlMatrix();
       float matrix[4][4];
       for (int j=0; j<4; j++)
         for (int k=0; k<4; k++)
@@ -139,23 +112,21 @@ CudaForwardProjectionImageFilter
 
       // Set source position in volume indices
       source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
-     CUDA_forward_project(blockSize,
-        this->GetOutput()->GetBufferPointer() + (iProj -
-        this->GetOutput()->GetBufferedRegion().GetIndex()[2]) *
-        nPixelsPerProj,
-        m_DeviceProjection,
-        (double*)&(source_position[0]),
-        m_ProjectionDimension,
-        t_step,
-        m_DeviceMatrix,
-        (float*)&(matrix[0][0]),
-        boxMin,
-        boxMax,
-        spacing);
+
+      int projectionOffset = iProj - this->GetOutput()->GetBufferedRegion().GetIndex(2);
+
+      CUDA_forward_project(projectionSize,
+                          volumeSize,
+                          (float*)&(matrix[0][0]),
+                          pout + nPixelsPerProj * projectionOffset,
+                          pvol,
+                          t_step,
+                          (double*)&(source_position[0]),
+                          boxMin,
+                          boxMax,
+                          spacing);
       }
-    if(!m_ExplicitGPUMemoryManagementFlag)
-      this->CleanUpDevice();
-    }
+  }
   catch(itk::ExceptionObject e)
     {
     std::cout << e.GetDescription() << std::endl;

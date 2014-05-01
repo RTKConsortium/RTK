@@ -77,6 +77,11 @@ public:
   itkSetMacro(PhantomScale, double);
   itkGetMacro(PhantomScale, double);
 
+  /** Get / Set the spatial position of the Shepp Logan phantom relative to its`
+   * center. The default value is (0, 0, 0). */
+  itkSetMacro(OriginOffset, VectorType);
+  itkGetMacro(OriginOffset, VectorType);
+
 protected:
   DrawSheppLoganFilter();
   virtual ~DrawSheppLoganFilter() {};
@@ -87,7 +92,8 @@ private:
   DrawSheppLoganFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  double m_PhantomScale;
+  double     m_PhantomScale;
+  VectorType m_OriginOffset;
 };
 
 } // end namespace rtk

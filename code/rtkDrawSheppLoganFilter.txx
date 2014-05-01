@@ -33,7 +33,8 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 DrawSheppLoganFilter<TInputImage, TOutputImage>
 ::DrawSheppLoganFilter():
-m_PhantomScale(128.0)
+m_PhantomScale(128.0),
+m_OriginOffset(0.)
 {
 }
 
@@ -47,93 +48,93 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   std::vector< FigureType > shepplogan(10, figParam);
   unsigned int NumberOfFig = 10;
 
-  shepplogan[0].semiprincipalaxis[0] = 0.69*m_PhantomScale;
-  shepplogan[0].semiprincipalaxis[1] = 0.90*m_PhantomScale;
-  shepplogan[0].semiprincipalaxis[2] = 0.92*m_PhantomScale;
+  shepplogan[0].semiprincipalaxis[0] = 0.69;
+  shepplogan[0].semiprincipalaxis[1] = 0.90;
+  shepplogan[0].semiprincipalaxis[2] = 0.92;
   shepplogan[0].center[0] = 0.;
   shepplogan[0].center[1] = 0.;
   shepplogan[0].center[2] = 0.;
   shepplogan[0].angle = 0.;
   shepplogan[0].attenuation = 2.;
 
-  shepplogan[1].semiprincipalaxis[0] = 0.6624*m_PhantomScale;
-  shepplogan[1].semiprincipalaxis[1] = 0.880*m_PhantomScale;
-  shepplogan[1].semiprincipalaxis[2] = 0.874*m_PhantomScale;
+  shepplogan[1].semiprincipalaxis[0] = 0.6624;
+  shepplogan[1].semiprincipalaxis[1] = 0.880;
+  shepplogan[1].semiprincipalaxis[2] = 0.874;
   shepplogan[1].center[0] = 0.;
   shepplogan[1].center[1] = 0.;
   shepplogan[1].center[2] = 0.;
   shepplogan[1].angle = 0.;
   shepplogan[1].attenuation = -0.98;
 
-  shepplogan[2].semiprincipalaxis[0] = 0.41*m_PhantomScale;
-  shepplogan[2].semiprincipalaxis[1] = 0.21*m_PhantomScale;
-  shepplogan[2].semiprincipalaxis[2] = 0.16*m_PhantomScale;
-  shepplogan[2].center[0] = -0.22*m_PhantomScale;
-  shepplogan[2].center[1] = -0.25*m_PhantomScale;
+  shepplogan[2].semiprincipalaxis[0] = 0.41;
+  shepplogan[2].semiprincipalaxis[1] = 0.21;
+  shepplogan[2].semiprincipalaxis[2] = 0.16;
+  shepplogan[2].center[0] = -0.22;
+  shepplogan[2].center[1] = -0.25;
   shepplogan[2].center[2] = 0.;
   shepplogan[2].angle = 108.;
   shepplogan[2].attenuation = -0.02;
 
-  shepplogan[3].semiprincipalaxis[0] = 0.31*m_PhantomScale;
-  shepplogan[3].semiprincipalaxis[1] = 0.22*m_PhantomScale;
-  shepplogan[3].semiprincipalaxis[2] = 0.11*m_PhantomScale;
-  shepplogan[3].center[0] = 0.22*m_PhantomScale;
-  shepplogan[3].center[1] = -0.25*m_PhantomScale;
+  shepplogan[3].semiprincipalaxis[0] = 0.31;
+  shepplogan[3].semiprincipalaxis[1] = 0.22;
+  shepplogan[3].semiprincipalaxis[2] = 0.11;
+  shepplogan[3].center[0] = 0.22;
+  shepplogan[3].center[1] = -0.25;
   shepplogan[3].center[2] = 0.;
   shepplogan[3].angle = 72.;
   shepplogan[3].attenuation = -0.02;
 
-  shepplogan[4].semiprincipalaxis[0] = 0.21*m_PhantomScale;
-  shepplogan[4].semiprincipalaxis[1] = 0.50*m_PhantomScale;
-  shepplogan[4].semiprincipalaxis[2] = 0.25*m_PhantomScale;
+  shepplogan[4].semiprincipalaxis[0] = 0.21;
+  shepplogan[4].semiprincipalaxis[1] = 0.50;
+  shepplogan[4].semiprincipalaxis[2] = 0.25;
   shepplogan[4].center[0] = 0.;
-  shepplogan[4].center[1] = -0.25*m_PhantomScale;
-  shepplogan[4].center[2] = 0.35*m_PhantomScale;
+  shepplogan[4].center[1] = -0.25;
+  shepplogan[4].center[2] = 0.35;
   shepplogan[4].angle = 0.;
   shepplogan[4].attenuation = 0.02;
 
-  shepplogan[5].semiprincipalaxis[0] = 0.046*m_PhantomScale;
-  shepplogan[5].semiprincipalaxis[1] = 0.046*m_PhantomScale;
-  shepplogan[5].semiprincipalaxis[2] = 0.046*m_PhantomScale;
+  shepplogan[5].semiprincipalaxis[0] = 0.046;
+  shepplogan[5].semiprincipalaxis[1] = 0.046;
+  shepplogan[5].semiprincipalaxis[2] = 0.046;
   shepplogan[5].center[0] = 0.;
-  shepplogan[5].center[1] = -0.25*m_PhantomScale;
-  shepplogan[5].center[2] = 0.10*m_PhantomScale;
+  shepplogan[5].center[1] = -0.25;
+  shepplogan[5].center[2] = 0.10;
   shepplogan[5].angle = 0.;
   shepplogan[5].attenuation = 0.02;
 
-  shepplogan[6].semiprincipalaxis[0] = 0.046*m_PhantomScale;
-  shepplogan[6].semiprincipalaxis[1] = 0.020*m_PhantomScale;
-  shepplogan[6].semiprincipalaxis[2] = 0.023*m_PhantomScale;
-  shepplogan[6].center[0] = -0.08*m_PhantomScale;
-  shepplogan[6].center[1] = -0.250*m_PhantomScale;
-  shepplogan[6].center[2] = -0.650*m_PhantomScale;
+  shepplogan[6].semiprincipalaxis[0] = 0.046;
+  shepplogan[6].semiprincipalaxis[1] = 0.020;
+  shepplogan[6].semiprincipalaxis[2] = 0.023;
+  shepplogan[6].center[0] = -0.08;
+  shepplogan[6].center[1] = -0.250;
+  shepplogan[6].center[2] = -0.650;
   shepplogan[6].angle = 0.;
   shepplogan[6].attenuation = 0.01;
 
-  shepplogan[7].semiprincipalaxis[0] = 0.046*m_PhantomScale;
-  shepplogan[7].semiprincipalaxis[1] = 0.020*m_PhantomScale;
-  shepplogan[7].semiprincipalaxis[2] = 0.023*m_PhantomScale;
-  shepplogan[7].center[0] = 0.06*m_PhantomScale;
-  shepplogan[7].center[1] = -0.25*m_PhantomScale;
-  shepplogan[7].center[2] = -0.65*m_PhantomScale;
+  shepplogan[7].semiprincipalaxis[0] = 0.046;
+  shepplogan[7].semiprincipalaxis[1] = 0.020;
+  shepplogan[7].semiprincipalaxis[2] = 0.023;
+  shepplogan[7].center[0] = 0.06;
+  shepplogan[7].center[1] = -0.25;
+  shepplogan[7].center[2] = -0.65;
   shepplogan[7].angle = 90.;
   shepplogan[7].attenuation = 0.01;
 
-  shepplogan[8].semiprincipalaxis[0] = 0.056*m_PhantomScale;
-  shepplogan[8].semiprincipalaxis[1] = 0.010*m_PhantomScale;
-  shepplogan[8].semiprincipalaxis[2] = 0.040*m_PhantomScale;
-  shepplogan[8].center[0] = 0.060*m_PhantomScale;
-  shepplogan[8].center[1] = 0.625*m_PhantomScale;
-  shepplogan[8].center[2] = -0.105*m_PhantomScale;
+  shepplogan[8].semiprincipalaxis[0] = 0.056;
+  shepplogan[8].semiprincipalaxis[1] = 0.010;
+  shepplogan[8].semiprincipalaxis[2] = 0.040;
+  shepplogan[8].center[0] = 0.060;
+  shepplogan[8].center[1] = 0.625;
+  shepplogan[8].center[2] = -0.105;
   shepplogan[8].angle = 90.;
   shepplogan[8].attenuation = 0.02;
 
-  shepplogan[9].semiprincipalaxis[0] = 0.056*m_PhantomScale;
-  shepplogan[9].semiprincipalaxis[1] = 0.100*m_PhantomScale;
-  shepplogan[9].semiprincipalaxis[2] = 0.056*m_PhantomScale;
+  shepplogan[9].semiprincipalaxis[0] = 0.056;
+  shepplogan[9].semiprincipalaxis[1] = 0.100;
+  shepplogan[9].semiprincipalaxis[2] = 0.056;
   shepplogan[9].center[0] = 0.;
-  shepplogan[9].center[1] = 0.625*m_PhantomScale;
-  shepplogan[9].center[2] = 0.100*m_PhantomScale;
+  shepplogan[9].center[1] = 0.625;
+  shepplogan[9].center[2] = 0.100;
   shepplogan[9].angle = 0.;
   shepplogan[9].attenuation = -0.02;
 
@@ -149,14 +150,15 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
     //Set type of Figure
     sqpFunctor->SetFigure("Ellipsoid");
     //Translate from regular expression to quadric
-    sqpFunctor->Translate(shepplogan[i].semiprincipalaxis);
+    sqpFunctor->Translate(shepplogan[i].semiprincipalaxis * m_PhantomScale);
     //Applies rotation and translation if necessary
-    sqpFunctor->Rotate(shepplogan[i].angle, shepplogan[i].center);
+    sqpFunctor->Rotate(shepplogan[i].angle, (shepplogan[i].center + m_OriginOffset) * m_PhantomScale);
     while( !itOut.IsAtEnd() )
       {
       this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
 
-      double QuadricEllip = sqpFunctor->GetA()*point[0]*point[0]   +
+      double QuadricEllip =
+                   sqpFunctor->GetA()*point[0]*point[0]   +
                    sqpFunctor->GetB()*point[1]*point[1]   +
                    sqpFunctor->GetC()*point[2]*point[2]   +
                    sqpFunctor->GetD()*point[0]*point[1]   +
