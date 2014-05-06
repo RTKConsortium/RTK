@@ -1,0 +1,20 @@
+//
+#ifndef ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU
+#define ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU
+
+void
+CUDA_displaced_weight(
+  int proj_idx_in[3],
+  int proj_dim_in[3],
+  int proj_idx_out[3],
+  int proj_dim_out[3],
+  float *dev_proj_in,
+  float *dev_proj_out,
+  float *geometries,
+  float theta,
+  bool isPositiveCase,
+  float proj_orig[3],
+  float proj_row[3],
+  float proj_col[3]);
+
+#endif //ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU

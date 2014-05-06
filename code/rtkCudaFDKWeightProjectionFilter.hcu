@@ -1,0 +1,16 @@
+//
+#ifndef ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
+#define ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
+
+void
+CUDA_weight_projection(
+  int proj_dim[3],
+  float *dev_proj_in,
+  float *dev_proj_out,
+  float *geometries,
+  float proj_orig[3],
+  float proj_row [3],
+  float proj_col[3]
+);
+
+#endif //ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
