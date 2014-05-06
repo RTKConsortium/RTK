@@ -20,8 +20,6 @@
 #define __rtkParkerShortScanImageFilter_txx
 
 #include <itkImageRegionIteratorWithIndex.h>
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
 #include <itkMacro.h>
 
 namespace rtk
@@ -104,23 +102,26 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   //Delta
   double delta = 0.5 * (lastAngle - firstAngle - 180);
   delta = delta-360*floor(delta/360); // between -360 and 360
-  delta *= itk::Math::pi / 180;            // degrees to radians
+  delta *= itk::Math::pi / 180;       // degrees to radians
 
-  double invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
-  if( delta < atan(0.5 * detectorWidth * invsdd) )
+  double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
+  double sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
+  double invsid = 1./sqrt(sid*sid+sox*sox);
+  if( delta < atan(0.5 * detectorWidth * invsid) )
     itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
                     << "Delta is " << delta*180./itk::Math::pi
                     << " degrees and should be more than half the beam angle, i.e. "
-                    << atan(0.5 * detectorWidth * invsdd)*180./itk::Math::pi << " degrees.");
+                    << atan(0.5 * detectorWidth * invsid)*180./itk::Math::pi << " degrees.");
 
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
-    invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
+    sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
+    sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
+    invsid = 1./sqrt(sid*sid+sox*sox);
 
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
-    point[0] += m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
 
     // Parker's article assumes that the scan starts at 0, convert projection
     // angle accordingly
@@ -133,7 +134,8 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     itWeights.GoToBegin();
     while(!itWeights.IsAtEnd() )
       {
-      double alpha = atan( -1 * point[0] * invsdd );
+      const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
+      double alpha = atan( -1 * l * invsid );
       if(beta <= 2*delta-2*alpha)
         itWeights.Set( 2. * pow(sin( (itk::Math::pi*beta) / (4*(delta-alpha) ) ), 2.) );
       else if(beta <= itk::Math::pi-2*alpha)
