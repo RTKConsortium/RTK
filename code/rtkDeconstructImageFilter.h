@@ -38,13 +38,99 @@ namespace rtk {
  * This filter is inspired from Dan Mueller's GIFT package
  * http://www.insight-journal.org/browse/publication/103
  *
+ *
+ * \dot
+ * digraph DeconstructImageFilter {
+ *
+ * Input [ label="Input (here, 2D)"];
+ * Input [shape=Mdiamond];
+ * Output0 [label="Output 0"];
+ * Output0 [shape=Mdiamond];
+ * Output1 [label="Output 1"];
+ * Output1 [shape=Mdiamond];
+ * Output2 [label="Output 2"];
+ * Output2 [shape=Mdiamond];
+ * Output3 [label="Output 3"];
+ * Output3 [shape=Mdiamond];
+ * Output4 [label="Output 4"];
+ * Output4 [shape=Mdiamond];
+ * Output5 [label="Output 5"];
+ * Output5 [shape=Mdiamond];
+ * Output6 [label="Output 6"];
+ * Output6 [shape=Mdiamond];
+ *
+ * node [shape=box];
+ * Pad0 [ label="itk::MirrorPadImageFilter" URL="\ref rtk::MirrorPadImageFilter"];
+ * Pad1 [ label="itk::MirrorPadImageFilter" URL="\ref itk::MirrorPadImageFilter"];
+ * KernelSource_LL [ label="rtk::DaubechiesWaveletsKernelSource (Low, Low)" URL="\ref rtk::DaubechiesWaveletsKernelSource"];
+ * KernelSource_LH [ label="rtk::DaubechiesWaveletsKernelSource (Low, High)" URL="\ref rtk::DaubechiesWaveletsKernelSource"];
+ * KernelSource_HL [ label="rtk::DaubechiesWaveletsKernelSource (High, Low)" URL="\ref rtk::DaubechiesWaveletsKernelSource"];
+ * KernelSource_HH [ label="rtk::DaubechiesWaveletsKernelSource (High, High)" URL="\ref rtk::DaubechiesWaveletsKernelSource"];
+ * Conv0 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Conv1 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Conv2 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Conv3 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Conv4 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Conv5 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Conv6 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Conv7 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Down0 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
+ * Down1 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
+ * Down2 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
+ * Down3 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
+ * Down4 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
+ * Down5 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
+ * Down6 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
+ * Down7 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
+ * AfterPad0 [label="", fixedsize="false", width=0, height=0, shape=none];
+ * AfterPad1 [label="", fixedsize="false", width=0, height=0, shape=none];
+ * Input -> Pad1;
+ * Pad1 -> AfterPad1 [arrowhead=None];
+ * AfterPad1 -> Conv4;
+ * AfterPad1 -> Conv5;
+ * AfterPad1 -> Conv6;
+ * AfterPad1 -> Conv7;
+ * Conv4 -> Down4;
+ * Conv5 -> Down5;
+ * Conv6 -> Down6;
+ * Conv7 -> Down7;
+ * KernelSource_LL -> Conv4;
+ * KernelSource_LH -> Conv5;
+ * KernelSource_HL -> Conv6;
+ * KernelSource_HH -> Conv7;
+ * Down4 -> Pad0;
+ * Pad0 -> AfterPad0 [arrowhead=None];
+ * AfterPad0 -> Conv0;
+ * AfterPad0 -> Conv1;
+ * AfterPad0 -> Conv2;
+ * AfterPad0 -> Conv3;
+ * Conv0 -> Down0;
+ * Conv1 -> Down1;
+ * Conv2 -> Down2;
+ * Conv3 -> Down3;
+ * KernelSource_LL -> Conv0;
+ * KernelSource_LH -> Conv1;
+ * KernelSource_HL -> Conv2;
+ * KernelSource_HH -> Conv3;
+ * Down0 -> Output0;
+ * Down1 -> Output1;
+ * Down2 -> Output2;
+ * Down3 -> Output3;
+ * Down5 -> Output4;
+ * Down6 -> Output5;
+ * Down7 -> Output6;
+ * }
+ * \enddot
+ *
+ * \test rtkwaveletstest.cxx
+ *
  * \author Cyril Mory
  */
 template <class TImage>
 class DeconstructImageFilter
     : public itk::ImageToImageFilter<TImage, TImage>
 {
-public: 
+public:
     /** Standard class typedefs. */
     typedef DeconstructImageFilter          Self;
     typedef itk::ImageToImageFilter<TImage,TImage>  Superclass;
@@ -53,7 +139,7 @@ public:
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
-    
+
     /** Run-time type information (and related methods). */
     itkTypeMacro(DeconstructImageFilter, ImageToImageFilter)
 
@@ -68,7 +154,7 @@ public:
     typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
     typedef typename TImage::PixelType                  PixelType;
     typedef typename TImage::InternalPixelType          InternalPixelType;
-    
+
     /** Typedefs for pipeline's subfilters */
     typedef itk::MirrorPadImageFilter<InputImageType, InputImageType>             PadFilterType;
     typedef itk::FFTConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
@@ -130,7 +216,7 @@ protected:
     void PrintSelf(std::ostream&os, itk::Indent indent) const;
 
     /** Modifies the storage for Input and Output images.
-      * Should be called after changes to levels, bands, 
+      * Should be called after changes to levels, bands,
       * deconstruct, reconstruct, etc... */
     void ModifyInputOutputStorage();
 

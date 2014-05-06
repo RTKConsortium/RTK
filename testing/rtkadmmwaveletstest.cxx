@@ -200,7 +200,7 @@ int main(int, char** )
   admmWavelets->SetAL_iterations( 3 );
   admmWavelets->SetCG_iterations( 3 );
   admmWavelets->SetNumberOfLevels( 3 );
-  admmWavelets->SetWaveletsOrder( 3 );
+  admmWavelets->SetOrder( 3 );
 
   // In all cases, use the Joseph forward projector
   admmWavelets->SetForwardProjectionFilter(0);

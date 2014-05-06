@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
   admmFilter->SetAlpha(args_info.alpha_arg);
   admmFilter->SetBeta(args_info.beta_arg);
   admmFilter->SetNumberOfLevels(args_info.levels_arg);
-  admmFilter->SetWaveletsOrder(args_info.order_arg);
+  admmFilter->SetOrder(args_info.order_arg);
 
   // Set the inputs of the ADMM filter
   admmFilter->SetInput(0, inputFilter->GetOutput() );
