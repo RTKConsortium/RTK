@@ -17,6 +17,26 @@ float3 TransformIndexToPhysicalPoint(int2 idx, float3 origin, float3 row, float3
         );
 }
 
+//inline __device__
+//float ToUntiltedCoordinate(float tiltedCoord, float sdd, float sx, float px, float hyp)
+//{
+//  return hyp * (sdd * (tiltedCoord + px) / (sdd * sdd + (sx - (tiltedCoord + px)) * sx));
+//}
+
+inline __device__
+float ToUntiltedCoordinateAtIsocenter(float tiltedCoord, float sdd, float sid, float sx, float px, float sidu)
+{
+  // sidu is the distance between the source and the virtual untilted detector
+  // l is the coordinate on the virtual detector parallel to the real detector
+  // and passing at the isocenter
+  const double l = (tiltedCoord + px - sx) * sid / sdd + sx;
+  // a is the angle between the virtual detector and the real detector
+  const double cosa = sx / sidu;
+  // the following relation refers to a note by R. Clackdoyle, title
+  // "Samping a tilted detector"
+  return l * sid / (sidu - l * cosa);
+}
+
 __global__
 void kernel_parker_weight(
   int3 proj_size,
@@ -40,19 +60,23 @@ void kernel_parker_weight(
   if (pIdx.x >= proj_size.x || pIdx.y >= proj_size.y || pIdx.z >= proj_size.z)
     return;
 
-  float invsdd = 1. / tex1Dfetch(tex_geometry, pIdx.z * 3 + 0);
-  float pOffX = tex1Dfetch(tex_geometry, pIdx.z * 3 + 1);
+  float sdd = tex1Dfetch(tex_geometry, pIdx.z * 5 + 0);
+  float sx = tex1Dfetch(tex_geometry, pIdx.z * 5 + 1);
+  float px = tex1Dfetch(tex_geometry, pIdx.z * 5 + 2);
+  float sid = tex1Dfetch(tex_geometry, pIdx.z * 5 + 3);
 
   // convert actual index to point
   float3 pPoint = TransformIndexToPhysicalPoint(
         make_int2(pIdx.x, pIdx.y), proj_orig, proj_row, proj_col);
-  pPoint.x = pPoint.x + pOffX;
 
   // alpha projection angle
-  float alpha = atan(-1 * pPoint.x * invsdd);
+  float hyp = sqrtf(sid * sid + sx * sx); // to untilted situation
+  float invsid = 1.f / hyp;
+  float l = ToUntiltedCoordinateAtIsocenter(pPoint.x, sdd, sid, sx, px, hyp);
+  float alpha = atan(-1 * l * invsid);
 
   // beta projection angle: Parker's article assumes that the scan starts at 0
-  float beta = tex1Dfetch(tex_geometry, pIdx.z * 3 + 2);
+  float beta = tex1Dfetch(tex_geometry, pIdx.z * 5 + 4);
   beta -= firstAngle;
   if (beta < 0)
     beta += 360.f;
@@ -89,9 +113,9 @@ CUDA_parker_weight(
 {
   // copy geometry matrix to device, bind the matrix to the texture
   float *dev_geom;
-  cudaMalloc((void**)&dev_geom, proj_dim[2]*3*sizeof(float));
-  cudaMemcpy(dev_geom, geometries, proj_dim[2]*3*sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTexture(0, tex_geometry, dev_geom, proj_dim[2]*3*sizeof(float));
+  cudaMalloc((void**)&dev_geom, proj_dim[2]*5*sizeof(float));
+  cudaMemcpy(dev_geom, geometries, proj_dim[2]*5*sizeof(float), cudaMemcpyHostToDevice);
+  cudaBindTexture(0, tex_geometry, dev_geom, proj_dim[2]*5*sizeof(float));
 
   // Thread Block Dimensions
   int tBlock_x = 16;

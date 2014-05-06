@@ -59,14 +59,16 @@ CudaParkerShortScanImageFilter
 
   // check for enough data
   const int geomStart = this->GetInput()->GetBufferedRegion().GetIndex()[2];
-  const double invsdd = 1. / this->GetGeometry()->GetSourceToDetectorDistances()[geomStart];
+  double sox = this->GetGeometry()->GetSourceOffsetsX()[geomStart];
+  double sid = this->GetGeometry()->GetSourceToIsocenterDistances()[geomStart];
+  const double invsid = 1./sqrt(sid*sid+sox*sox);
   const double detectorWidth = this->GetInput()->GetSpacing()[0] *
                                this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
-  if (delta < atan(0.5 * detectorWidth * invsdd))
+  if (delta < atan(0.5 * detectorWidth * invsid))
     itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
                     << "Delta is " << delta * 180. / itk::Math::pi
                     << " degrees and should be more than half the beam angle, i.e. "
-                    << atan(0.5 * detectorWidth * invsdd) * 180. / itk::Math::pi << " degrees.");
+                    << atan(0.5 * detectorWidth * invsid) * 180. / itk::Math::pi << " degrees.");
 
   float proj_orig[3];
   proj_orig[0] = this->GetInput()->GetOrigin()[0];
@@ -94,12 +96,15 @@ CudaParkerShortScanImageFilter
   // 1: projection offset x
   // 2: gantry angle
   int geomIdx = this->GetInput()->GetBufferedRegion().GetIndex()[2];
-  float *geomMatrix = new float[proj_size[2] * 3];
+  float *geomMatrix = new float[proj_size[2] * 5];
   for (int g = 0; g < proj_size[2]; ++g)
   {
-    geomMatrix[g * 3 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 3 + 1] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 3 + 2] = this->GetGeometry()->GetGantryAngles()[g + geomIdx];
+    geomMatrix[g * 5 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
+    geomMatrix[g * 5 + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
+    geomMatrix[g * 5 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[g * 5 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[g * 5 + 4] = this->GetGeometry()->GetGantryAngles()[g + geomIdx];
+
   }
 
   float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
