@@ -134,17 +134,15 @@ int intersectBox(Ray r, float3 boxmin, float3 boxmax, float *tnear, float *tfar)
 
 // Original program
 __device__
-void accumulateOld1(float *dev_proj,
-                   float *dev_weights,
-                   unsigned int numThread,
-                   int2 mu_dim,
-                   float3 pos,
-                   float tnear,
-                   float tfar,
-                   float tStep,
-                   float vStep,
-                   float halfVStep,
-                   float3 step)
+void interpolateAndAccumulateOriginal(float *dev_proj,
+                                      unsigned int numThread,
+                                      float3 pos,
+                                      float tnear,
+                                      float tfar,
+                                      float tStep,
+                                      float vStep,
+                                      float halfVStep,
+                                      float3 step)
 {
   float  t;
   float  sample = 0.0f;
@@ -173,17 +171,15 @@ void accumulateOld1(float *dev_proj,
 
 // New structure, less precision
 __device__
-void accumulateOld2(float *dev_proj,
-                    float *dev_weights,
-                    unsigned int numThread,
-                    int2 mu_dim,
-                    float3 pos,
-                    float tnear,
-                    float tfar,
-                    float tStep,
-                    float vStep,
-                    float halfVStep,
-                    float3 step)
+void interpolateWeights1(float *dev_weights,
+                         unsigned int numThread,
+                         int2 mu_dim,
+                         float3 pos,
+                         float tnear,
+                         float tfar,
+                         float vStep,
+                         float halfVStep,
+                         float3 step)
 {
   float  t;
   for(t=tnear; t<=tfar; t+=vStep)
@@ -211,28 +207,19 @@ void accumulateOld2(float *dev_proj,
 
     pos += step;
     }
-  
-  // Loops over energy, multiply weights by mu, accumulate using Beer Lambert
-  for(int id=0; id<mu_dim.x; id++)
-    {
-    dev_proj[numThread] += dev_weights[numThread*mu_dim.x+id] * (float)id;
-    }
-  dev_proj[numThread] *= tStep;
 }
 
 // Fix the program with /VStep
 __device__
-void accumulateOld3(float *dev_proj,
-                    float *dev_weights,
-                    unsigned int numThread,
-                    int2 mu_dim,
-                    float3 pos,
-                    float tnear,
-                    float tfar,
-                    float tStep,
-                    float vStep,
-                    float halfVStep,
-                    float3 step)
+void interpolateWeights2(float *dev_weights,
+                         unsigned int numThread,
+                         int2 mu_dim,
+                         float3 pos,
+                         float tnear,
+                         float tfar,
+                         float vStep,
+                         float halfVStep,
+                         float3 step)
 {
   float  t;
   for(t=tnear; t<=tfar; t+=vStep)
@@ -260,68 +247,61 @@ void accumulateOld3(float *dev_proj,
 
     pos += step;
     }
-  
+}
+
+// New structure, less precision
+__device__
+void accumulate1(float *dev_proj,
+                 float *dev_weights,
+                 unsigned int numThread,
+                 int2 mu_dim,
+                 float tStep)
+{
   // Loops over energy, multiply weights by mu, accumulate using Beer Lambert
-  for(int id=0; id<mu_dim.x; id++)
+  for(int id = 0; id < mu_dim.x - 1; id++)
     {
-    dev_proj[numThread] += dev_weights[numThread*mu_dim.x+id] * (float)id;
+    dev_proj[numThread] += dev_weights[numThread * mu_dim.x + id] * (float)id;
     }
   dev_proj[numThread] *= tStep;
 }
 
-// primary projector : use energy and vol index to get mu
+// primary projector : use energy + vol index to get mu
 __device__
-void accumulatePrimary(float *dev_proj,
-                       float *dev_weights,
-                       unsigned int numThread,
-                       int2 mu_dim,
-                       float3 pos,
-                       float tnear,
-                       float tfar,
-                       float tStep,
-                       float vStep,
-                       float halfVStep,
-                       float3 step)
+void accumulate2(float *dev_proj,
+                 float *dev_weights,
+                 const unsigned int numThread,
+                 const int2 mu_dim,
+                 const float tStep,
+                 const float3 sourceToPixel,
+                 const float3 nearestPoint,
+                 const float3 farthestPoint,
+                 const float3 spacing)
 {
-  float  t;
-  for(t=tnear; t<=tfar; t+=vStep)
+  // Multiply interpolation weights by step norm in MM to convert voxel
+  // intersection length to MM.
+  for(int id = 0; id < mu_dim.x - 1; id++)
     {
-
-    float lastStepCoef = 1.;
-    if (t+vStep > tfar)
-      {
-      lastStepCoef += (tfar-t-halfVStep)/vStep;
-      }
-
-    // Read from 3D texture from volume, and make a trilinear interpolation
-    float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
-    float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
-    float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
-    
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex  )] += (1-dxtex) * (1-dytex) * (1-dztex) * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex  )] += dxtex     * (1-dytex) * (1-dztex) * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex  )] += (1-dxtex) * dytex     * (1-dztex) * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex  )] += dxtex     * dytex     * (1-dztex) * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex+1)] += (1-dxtex) * (1-dytex) * dztex     * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex+1)] += dxtex     * (1-dytex) * dztex     * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex+1)] += (1-dxtex) * dytex     * dztex     * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex+1)] += dxtex     * dytex     * dztex     * lastStepCoef;
-
-    pos += step;
+    dev_weights[numThread * mu_dim.x + id] *= tStep;
     }
-  
+
+  // The last material is the world material. One must fill the weight with
+  // the length from source to nearest point and farthest point to pixel
+  // point.
+  float3 worldVector = sourceToPixel + nearestPoint - farthestPoint;
+  worldVector = worldVector * spacing;
+  dev_weights[(numThread+1) * mu_dim.x - 1] = sqrtf(dot(worldVector, worldVector));
+
   // Loops over energy, multiply weights by mu, accumulate using Beer Lambert
   for(unsigned int e=0; e<mu_dim.y; e++)
     {
     float rayIntegral = 0.;
-    for(unsigned int id=0; id<mu_dim.x; id++)
+    for(unsigned int id = 0; id < mu_dim.x; id++)
       {
-      rayIntegral += dev_weights[numThread*mu_dim.x+id] * tex1Dfetch(tex_mu, e*mu_dim.x+id);
+      rayIntegral += dev_weights[numThread * mu_dim.x + id] * tex1Dfetch(tex_mu, e * mu_dim.x + id);
       }
     dev_proj[numThread] += exp(-rayIntegral) * tex1Dfetch(tex_energy, e);
     //m_IntegralOverDetector[threadId] += valueToAccumulate;
-  }
-  dev_proj[numThread] *= tStep;
+    }
 }
 
 // KERNEL kernel_forwardProject
@@ -336,7 +316,6 @@ void kernel_forwardProject(float *dev_proj,
                            const float3 boxMax,
                            const float3 spacing)
 {
-
   unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y*blockDim.y + threadIdx.y;
   unsigned int numThread = j*proj_dim.x + i;
@@ -384,11 +363,26 @@ void kernel_forwardProject(float *dev_proj,
     dev_proj[numThread] = 0.0f;
     return;
     }
+  
+  // Original program
+  // interpolateAndAccumulateOriginal(dev_proj, numThread, pos, tnear, tfar, tStep, vStep, halfVStep, step);
 
-  accumulatePrimary(dev_proj, dev_weights,
-                    numThread, mu_dim, pos,
-                    tnear, tfar, tStep,
-                    vStep, halfVStep, step);
+  // New structure
+  //interpolateWeights1(dev_weights, numThread, mu_dim, pos, tnear, tfar, vStep, halfVStep, step);
+  //accumulate1(dev_proj, dev_weights, numThread, mu_dim, tStep);
+
+  // Fix Bug
+  //interpolateWeights2(dev_weights, numThread, mu_dim, pos, tnear, tfar, vStep, halfVStep, step);
+  //accumulate1(dev_proj, dev_weights, numThread, mu_dim, tStep);
+
+  float3 sourceToPixel = pixelPos - ray.o;
+  float3 nearestPoint = ray.o + tnear * ray.d;
+  float3 farthestPoint = ray.o + tfar * ray.d;
+
+  // Primary
+  interpolateWeights2(dev_weights, numThread, mu_dim, pos, tnear, tfar, vStep, halfVStep, step);
+  accumulate2(dev_proj, dev_weights, numThread, mu_dim, tStep, sourceToPixel, nearestPoint, farthestPoint, spacing);
+  
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
