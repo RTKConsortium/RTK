@@ -132,9 +132,196 @@ int intersectBox(Ray r, float3 boxmin, float3 boxmax, float *tnear, float *tfar)
     return smallest_tmax > largest_tmin;
 }
 
+// Original program
 __device__
-void accumulate()
+void accumulateOld1(float *dev_proj,
+                   float *dev_weights,
+                   unsigned int numThread,
+                   int2 mu_dim,
+                   float3 pos,
+                   float tnear,
+                   float tfar,
+                   float tStep,
+                   float vStep,
+                   float halfVStep,
+                   float3 step)
 {
+  float  t;
+  float  sample = 0.0f;
+  float  sum    = 0.0f;
+  for(t=tnear; t<=tfar; t+=vStep)
+    {
+    // Read from 3D texture from volume, and make a trilinear interpolation
+    float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
+    float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
+    float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
+    sample = (1-dxtex) * (1-dytex) * (1-dztex) * tex3D(tex_vol, itex  , jtex  , ktex)
+           + dxtex     * (1-dytex) * (1-dztex) * tex3D(tex_vol, itex+1, jtex  , ktex)
+           + (1-dxtex) * dytex     * (1-dztex) * tex3D(tex_vol, itex  , jtex+1, ktex)
+           + dxtex     * dytex     * (1-dztex) * tex3D(tex_vol, itex+1, jtex+1, ktex)
+           + (1-dxtex) * (1-dytex) * dztex     * tex3D(tex_vol, itex  , jtex  , ktex+1)
+           + dxtex     * (1-dytex) * dztex     * tex3D(tex_vol, itex+1, jtex  , ktex+1)
+           + (1-dxtex) * dytex     * dztex     * tex3D(tex_vol, itex  , jtex+1, ktex+1)
+           + dxtex     * dytex     * dztex     * tex3D(tex_vol, itex+1, jtex+1, ktex+1);
+
+    sum += sample;
+    pos += step;
+    }
+
+  dev_proj[numThread] = (sum+(tfar-t+halfVStep)*sample) * tStep;
+}
+
+// New structure, less precision
+__device__
+void accumulateOld2(float *dev_proj,
+                    float *dev_weights,
+                    unsigned int numThread,
+                    int2 mu_dim,
+                    float3 pos,
+                    float tnear,
+                    float tfar,
+                    float tStep,
+                    float vStep,
+                    float halfVStep,
+                    float3 step)
+{
+  float  t;
+  for(t=tnear; t<=tfar; t+=vStep)
+    {
+
+    float lastStepCoef = 1.;
+    if (t+vStep > tfar)
+      {
+      lastStepCoef += (tfar-t-halfVStep);
+      }
+
+    // Read from 3D texture from volume, and make a trilinear interpolation
+    float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
+    float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
+    float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
+    
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex  )] += (1-dxtex) * (1-dytex) * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex  )] += dxtex     * (1-dytex) * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex  )] += (1-dxtex) * dytex     * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex  )] += dxtex     * dytex     * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex+1)] += (1-dxtex) * (1-dytex) * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex+1)] += dxtex     * (1-dytex) * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex+1)] += (1-dxtex) * dytex     * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex+1)] += dxtex     * dytex     * dztex     * lastStepCoef;
+
+    pos += step;
+    }
+  
+  // Loops over energy, multiply weights by mu, accumulate using Beer Lambert
+  for(int id=0; id<mu_dim.x; id++)
+    {
+    dev_proj[numThread] += dev_weights[numThread*mu_dim.x+id] * (float)id;
+    }
+  dev_proj[numThread] *= tStep;
+}
+
+// Fix the program with /VStep
+__device__
+void accumulateOld3(float *dev_proj,
+                    float *dev_weights,
+                    unsigned int numThread,
+                    int2 mu_dim,
+                    float3 pos,
+                    float tnear,
+                    float tfar,
+                    float tStep,
+                    float vStep,
+                    float halfVStep,
+                    float3 step)
+{
+  float  t;
+  for(t=tnear; t<=tfar; t+=vStep)
+    {
+
+    float lastStepCoef = 1.;
+    if (t+vStep > tfar)
+      {
+      lastStepCoef += (tfar-t-halfVStep)/vStep;
+      }
+
+    // Read from 3D texture from volume, and make a trilinear interpolation
+    float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
+    float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
+    float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
+    
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex  )] += (1-dxtex) * (1-dytex) * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex  )] += dxtex     * (1-dytex) * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex  )] += (1-dxtex) * dytex     * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex  )] += dxtex     * dytex     * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex+1)] += (1-dxtex) * (1-dytex) * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex+1)] += dxtex     * (1-dytex) * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex+1)] += (1-dxtex) * dytex     * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex+1)] += dxtex     * dytex     * dztex     * lastStepCoef;
+
+    pos += step;
+    }
+  
+  // Loops over energy, multiply weights by mu, accumulate using Beer Lambert
+  for(int id=0; id<mu_dim.x; id++)
+    {
+    dev_proj[numThread] += dev_weights[numThread*mu_dim.x+id] * (float)id;
+    }
+  dev_proj[numThread] *= tStep;
+}
+
+// primary projector : use energy and vol index to get mu
+__device__
+void accumulatePrimary(float *dev_proj,
+                       float *dev_weights,
+                       unsigned int numThread,
+                       int2 mu_dim,
+                       float3 pos,
+                       float tnear,
+                       float tfar,
+                       float tStep,
+                       float vStep,
+                       float halfVStep,
+                       float3 step)
+{
+  float  t;
+  for(t=tnear; t<=tfar; t+=vStep)
+    {
+
+    float lastStepCoef = 1.;
+    if (t+vStep > tfar)
+      {
+      lastStepCoef += (tfar-t-halfVStep)/vStep;
+      }
+
+    // Read from 3D texture from volume, and make a trilinear interpolation
+    float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
+    float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
+    float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
+    
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex  )] += (1-dxtex) * (1-dytex) * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex  )] += dxtex     * (1-dytex) * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex  )] += (1-dxtex) * dytex     * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex  )] += dxtex     * dytex     * (1-dztex) * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex+1)] += (1-dxtex) * (1-dytex) * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex+1)] += dxtex     * (1-dytex) * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex+1)] += (1-dxtex) * dytex     * dztex     * lastStepCoef;
+    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex+1)] += dxtex     * dytex     * dztex     * lastStepCoef;
+
+    pos += step;
+    }
+  
+  // Loops over energy, multiply weights by mu, accumulate using Beer Lambert
+  for(unsigned int e=0; e<mu_dim.y; e++)
+    {
+    float rayIntegral = 0.;
+    for(unsigned int id=0; id<mu_dim.x; id++)
+      {
+      rayIntegral += dev_weights[numThread*mu_dim.x+id] * tex1Dfetch(tex_mu, e*mu_dim.x+id);
+      }
+    dev_proj[numThread] += exp(-rayIntegral) * tex1Dfetch(tex_energy, e);
+    //m_IntegralOverDetector[threadId] += valueToAccumulate;
+  }
+  dev_proj[numThread] *= tStep;
 }
 
 // KERNEL kernel_forwardProject
@@ -198,47 +385,10 @@ void kernel_forwardProject(float *dev_proj,
     return;
     }
 
-  float  t;
-  for(t=tnear; t<=tfar; t+=vStep)
-    {
-
-    float lastStepCoef = 1.;
-    if (t+vStep > tfar)
-      {
-      lastStepCoef += (tfar-t-halfVStep)/vStep;
-      }
-
-    // Read from 3D texture from volume, and make a trilinear interpolation
-    float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
-    float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
-    float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
-    
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex  )] += (1-dxtex) * (1-dytex) * (1-dztex) * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex  )] += dxtex     * (1-dytex) * (1-dztex) * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex  )] += (1-dxtex) * dytex     * (1-dztex) * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex  )] += dxtex     * dytex     * (1-dztex) * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex  , ktex+1)] += (1-dxtex) * (1-dytex) * dztex     * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex  , ktex+1)] += dxtex     * (1-dytex) * dztex     * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex  , jtex+1, ktex+1)] += (1-dxtex) * dytex     * dztex     * lastStepCoef;
-    dev_weights[numThread * mu_dim.x + (int)tex3D(tex_vol, itex+1, jtex+1, ktex+1)] += dxtex     * dytex     * dztex     * lastStepCoef;
-
-    pos += step;
-    }
-  
-  // Loops over energy, multiply weights by mu, accumulate using Beer Lambert
-  for(unsigned int e=0; e<mu_dim.y; e++)
-    {
-    float rayIntegral = 0.;
-    for(unsigned int id=0; id<mu_dim.x; id++)
-      {
-      rayIntegral += dev_weights[numThread*mu_dim.x+id] * tex1Dfetch(tex_mu, e*mu_dim.x+id);
-      }
-    dev_proj[numThread] += exp(-rayIntegral) * tex1Dfetch(tex_energy, e);
-    //m_IntegralOverDetector[threadId] += valueToAccumulate;
-  }
-  dev_proj[numThread] *= tStep;
-  
-  accumulate();
+  accumulatePrimary(dev_proj, dev_weights,
+                    numThread, mu_dim, pos,
+                    tnear, tfar, tStep,
+                    vStep, halfVStep, step);
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
