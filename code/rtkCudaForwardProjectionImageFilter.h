@@ -105,9 +105,9 @@ public:
     m_MaterialMu->SetRegions(region);
     m_MaterialMu->Allocate();
     itk::ImageRegionIterator< MaterialMuImageType > it(m_MaterialMu, region);
-    for(unsigned int e=0; e<10; e++)
+    for(unsigned int e = 0; e < size[1]; e++)
       {
-      for(unsigned int i=0; i<20; i++)
+      for(unsigned int i = 0; i < size[0]; i++)
         {
         it.Set(e*i);
         ++it;

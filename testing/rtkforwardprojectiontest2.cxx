@@ -18,7 +18,7 @@
 
 void WriteImages()
 {
-  std::string name = "C:/img11";
+  std::string name = "C:/img7";
 
   const unsigned int Dimension = 3;
   typedef float OutputPixelType;
@@ -149,8 +149,8 @@ void CompareImages()
   typedef itk::ImageRegionConstIterator<ImageType> ImageIteratorType;
   typedef itk::ImageFileReader<ImageType> ReaderType;
   
-  std::string ref1 = "C:/data/img1_case";
-  std::string test1 = "C:/data/img5_case";
+  std::string ref1 = "C:/data/img6_case";
+  std::string test1 = "C:/data/img7_case";
 
   std::string values[4] = { "1", "2", "3", "4" };
 
