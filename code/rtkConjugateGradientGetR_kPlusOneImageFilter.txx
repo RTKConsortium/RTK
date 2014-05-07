@@ -125,8 +125,9 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
     ++p_k_It;
     ++A_p_k_It;
     }
-
+  std::cout << "Thread " << threadId << " entering barrier" << std::cout;
   m_Barrier->Wait();
+  std::cout << "Thread " << threadId << " leaving barrier" << std::cout; 
 
   // Each thread computes alpha_k
   float squaredNormR_k = 0;
