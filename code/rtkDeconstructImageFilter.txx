@@ -176,9 +176,11 @@ void DeconstructImageFilter<TImage>
       m_ConvolutionFilters[band + l*n]->SetInput(m_PadFilters[l]->GetOutput());
       m_ConvolutionFilters[band + l*n]->SetKernelImage(m_KernelSources[band]->GetOutput());
       m_ConvolutionFilters[band + l*n]->SetOutputRegionModeToValid();
+      m_ConvolutionFilters[band + l*n]->ReleaseDataFlagOn();
 
       m_DownsampleFilters[band + l*n]->SetInput(m_ConvolutionFilters[band + l*n]->GetOutput());
       m_DownsampleFilters[band + l*n]->SetFactors(downsamplingFactors);
+      m_DownsampleFilters[band + l*n]->ReleaseDataFlagOn();
       }
     if (l<m_NumberOfLevels-1) m_PadFilters[l]->SetInput(m_DownsampleFilters[n*(l+1)]->GetOutput());
     }
@@ -200,7 +202,6 @@ void DeconstructImageFilter<TImage>
       {
       m_DownsampleFilters[i]->UpdateOutputInformation();
       this->GetOutput(outputBand)->CopyInformation( m_DownsampleFilters[i]->GetOutput() );
-//      this->GetOutput(outputBand)->Print(std::cout);
       outputBand++;
       }
     }
@@ -237,24 +238,9 @@ void DeconstructImageFilter<TImage>
       {
       m_DownsampleFilters[i]->Update();
       this->GraftNthOutput(outputBand, m_DownsampleFilters[i]->GetOutput() );
-//      std::cout << "Grafting " << i << "-th downsample filter's output to output " << outputBand << std::endl;
       outputBand++;
       }
     }
-  // Debugging
-//  std::cout << "************ Printing output of Downsample filter 3 *************" << std::endl;
-//  m_DownsampleFilters[3]->GetOutput()->Print(std::cout);
-//  std::cout << "************ Printing output of Downsample filter 4 *************" << std::endl;
-//  m_DownsampleFilters[4]->GetOutput()->Print(std::cout);
-//  std::cout << "************ Printing input of Downsample filter 4 *************" << std::endl;
-//  m_DownsampleFilters[4]->GetInput()->Print(std::cout);
-//  std::cout << "************ Printing output of Pad filter 1 *************" << std::endl;
-//  m_PadFilters[1]->GetOutput()->Print(std::cout);
-//  std::cout << "************ Printing output of convolution filter 4 *************" << std::endl;
-//  m_ConvolutionFilters[1]->GetOutput()->Print(std::cout);
-//  std::cout << "************ Printing input of convolution filter 4 *************" << std::endl;
-//  m_ConvolutionFilters[1]->GetInput()->Print(std::cout);
-
 }
 
 

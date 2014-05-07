@@ -152,12 +152,16 @@ void ReconstructImageFilter<TImage>
         m_ConvolutionFilters[band + l*n]->SetInput(m_UpsampleFilters[band + l*n]->GetOutput());
         m_ConvolutionFilters[band + l*n]->SetKernelImage(m_KernelSources[band]->GetOutput());
         m_ConvolutionFilters[band + l*n]->SetOutputRegionModeToValid();
+        m_ConvolutionFilters[band + l*n]->ReleaseDataFlagOn();
 
         m_AddFilters[l]->SetInput(band, m_ConvolutionFilters[band + l*n]->GetOutput());
+        m_AddFilters[l]->ReleaseDataFlagOn();
+
         m_UpsampleFilters[band + l*n]->SetFactors(upsamplingFactors);
         m_UpsampleFilters[band + l*n]->SetOrder(this->m_Order);
         m_UpsampleFilters[band + l*n]->SetOutputSize(this->m_Sizes[band + l*n]);
         m_UpsampleFilters[band + l*n]->SetOutputIndex(this->m_Indices[band + l*n]);
+        m_UpsampleFilters[band + l*n]->ReleaseDataFlagOn();
         }
       if (l>0) m_UpsampleFilters[n*l]->SetInput(m_AddFilters[l-1]->GetOutput());
       }
