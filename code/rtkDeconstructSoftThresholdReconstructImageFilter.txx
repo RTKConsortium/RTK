@@ -99,6 +99,7 @@ DeconstructSoftThresholdReconstructImageFilter<TImage>
     m_SoftTresholdFilters.push_back(SoftThresholdFilterType::New());
     m_SoftTresholdFilters[index]->SetInput(m_DeconstructionFilter->GetOutput(index));
     m_SoftTresholdFilters[index]->SetThreshold(m_Threshold);
+    m_SoftTresholdFilters[index]->ReleaseDataFlagOn();
 
     //Set input for reconstruction
     m_ReconstructionFilter->SetInput(index, m_SoftTresholdFilters[index]->GetOutput());
