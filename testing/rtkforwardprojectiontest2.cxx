@@ -18,7 +18,7 @@
 
 void WriteImages()
 {
-  std::string name = "C:/img7";
+  std::string name = "C:/data/img10";
 
   const unsigned int Dimension = 3;
   typedef float OutputPixelType;
@@ -92,6 +92,60 @@ void WriteImages()
   writer->SetFileName( name + "_case1.mha" );
   writer->SetInput( jfp->GetOutput() );
   writer->Update();
+  
+  float min = 10000.;
+  float max = -10000.;
+  OutputImageType::RegionType region1;
+  OutputImageType::SizeType size1;
+  size1[0] = 64;
+  size1[1] = 64;
+  size1[2] = NumberOfProjectionImages;
+  region1.SetSize(size1);
+  itk::ImageRegionIterator< OutputImageType > itTemp(jfp->GetOutput(), region1);
+  for (unsigned int i = 0; i < 64*64*NumberOfProjectionImages; i++)
+    {
+    float value = itTemp.Get();
+    if (value > max) max = value;
+    if (value < min) min = value;
+    ++itTemp;
+    }
+  for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
+    {
+    typedef itk::Image< unsigned char, 2 > ImageType2;
+    ImageType2::Pointer image = ImageType2::New();
+    ImageType2::RegionType region2;
+    ImageType2::SizeType size2;
+    size2[0] = 64;
+    size2[1] = 64;
+    region2.SetSize(size2);
+    image->SetRegions(region2);
+    image->Allocate();
+
+    itk::ImageRegionIterator< OutputImageType > itProj(jfp->GetOutput(), region1);
+    itk::ImageRegionIterator< ImageType2 > itImage(image, region2);
+    for(unsigned int e = 0; e < 64*64*i; e++)
+      {
+      ++itProj;
+      }
+    for(unsigned int e = 0; e < 64*64; e++)
+      {
+      itImage.Set((unsigned char)((itProj.Get()-min)/(max-min)*255));
+      ++itProj;
+      ++itImage;
+      }
+
+    std::ostringstream stm ;
+    stm << i ;
+    typedef itk::ImageFileWriter<ImageType2> WriterType2;
+    WriterType2::Pointer writer2 = WriterType2::New();
+    writer2->SetFileName( std::string("C:/data2/test") + stm.str() + std::string(".png") );
+    writer2->SetInput( image );
+    writer2->Update();
+    }
+
+
+
+
   std::cout << "\n\nWriten ! " << std::endl;
 
   std::cout << "\n\n****** Case 2: outer ray source ******" << std::endl;
@@ -149,8 +203,8 @@ void CompareImages()
   typedef itk::ImageRegionConstIterator<ImageType> ImageIteratorType;
   typedef itk::ImageFileReader<ImageType> ReaderType;
   
-  std::string ref1 = "C:/data/img6_case";
-  std::string test1 = "C:/data/img7_case";
+  std::string ref1 = "C:/data/img7_case";
+  std::string test1 = "C:/data/img10_case";
 
   std::string values[4] = { "1", "2", "3", "4" };
 
@@ -217,7 +271,7 @@ void CompareImages()
 
 int main(int , char** )
 {
-  //WriteImages();
+  WriteImages();
   CompareImages();
   getchar();
 
