@@ -47,7 +47,7 @@ namespace rtk
       break;
       case(2):
       #ifdef RTK_USE_CUDA
-        fw = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+        fw = rtk::CudaForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
       #else
         std::cerr << "The program has not been compiled with cuda option" << std::endl;
       #endif

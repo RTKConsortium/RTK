@@ -436,64 +436,87 @@ void kernel_forwardProject(float *dev_proj, float *dev_weights)
 
   // Detect intersection with box
   float tnear, tfar;
-  if (!intersectBox(ray, &tnear, &tfar))
-    return;
-  if (tnear < 0.f)
-    tnear = 0.f; // clamp to near plane
-
-  // Step length in mm
-  float3 dirInMM = c_spacing * ray.d;
-  float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
-  float3 step = vStep * ray.d;
-
-  // First position in the box
-  float3 pos;
-  float halfVStep = 0.5f*vStep;
-  tnear = tnear + halfVStep;
-  pos = ray.o + tnear*ray.d;
-
-  // Condition to exit the loop
-  if(tnear>tfar)
+  if (intersectBox(ray, &tnear, &tfar) && (tfar > 0.))
     {
-    dev_proj[numThread] = 0.0f;
-    return;
-    }
+    if (tnear < 0.f)
+      tnear = 0.f; // clamp to near plane
+
+    // Step length in mm
+    float3 dirInMM = c_spacing * ray.d;
+    float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
+    float3 step = vStep * ray.d;
+
+    // First position in the box
+    float3 pos;
+    float halfVStep = 0.5f*vStep;
+    tnear = tnear + halfVStep;
+    pos = ray.o + tnear*ray.d;
   
-  switch (c_ProjectionType)
-    {
-    case 1: // Original program
+    switch (c_ProjectionType)
       {
-      // Original program
-      // interpolateAndAccumulateOriginal(dev_proj, numThread, pos, tnear, tfar, vStep, halfVStep, step);
+      case ORIGINAL:
+        {
+        // Original program
+        // interpolateAndAccumulateOriginal(dev_proj, numThread, pos, tnear, tfar, vStep, halfVStep, step);
 
-      // New structure
-      //interpolateWeights1(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
-      //accumulate1(dev_proj, dev_weights, numThread);
+        // New structure
+        //interpolateWeights1(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
+        //accumulate1(dev_proj, dev_weights, numThread);
 
-      // Fix Bug
-      interpolateWeights2(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
-      accumulate1(dev_proj, dev_weights, numThread);
-      break;
-      }
-    case 2: // Primary
-      {
-      float3 sourceToPixel = pixelPos - ray.o;
-      float3 nearestPoint = ray.o + tnear * ray.d;
-      float3 farthestPoint = ray.o + tfar * ray.d;
+        // Fix Bug
+        interpolateWeights2(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
+        accumulate1(dev_proj, dev_weights, numThread);
+        break;
+        }
+      case PRIMARY:
+        {
+        float3 sourceToPixel = pixelPos - ray.o;
+        float3 nearestPoint = ray.o + tnear * ray.d;
+        float3 farthestPoint = ray.o + tfar * ray.d;
 
-      interpolateWeights2(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
-      accumulate2(dev_proj, dev_weights, numThread, sourceToPixel, nearestPoint, farthestPoint);
-      break;
-      }
-    case 3: // Compton
-      {
-      float3 sourceToPixel = pixelPos - ray.o;
-      float3 nearestPoint = ray.o + tnear * ray.d;
-      float3 farthestPoint = ray.o + tfar * ray.d;
+        interpolateWeights2(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
+        accumulate2(dev_proj, dev_weights, numThread, sourceToPixel, nearestPoint, farthestPoint);
+        break;
+        }
+      case COMPTON:
+        {
+        float3 sourceToPixel = pixelPos - ray.o;
+        float3 nearestPoint = ray.o + tnear * ray.d;
+        float3 farthestPoint = ray.o + tfar * ray.d;
       
-      interpolateWeights2(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
-      accumulate3(dev_proj, dev_weights, numThread, sourceToPixel, nearestPoint, farthestPoint);
-      break;
+        interpolateWeights2(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
+        accumulate3(dev_proj, dev_weights, numThread, sourceToPixel, nearestPoint, farthestPoint);
+        break;
+        }
+      }
+    }
+  else
+    {
+    switch (c_ProjectionType)
+      {
+      case ORIGINAL:
+        {
+        accumulate1(dev_proj, dev_weights, numThread);
+        break;
+        }
+      case PRIMARY:
+        {
+        float3 sourceToPixel = pixelPos - ray.o;
+        float3 nearestPoint = ray.o;
+        float3 farthestPoint = ray.o;
+
+        accumulate2(dev_proj, dev_weights, numThread, sourceToPixel, nearestPoint, farthestPoint);
+        break;
+        }
+      case COMPTON:
+        {
+        float3 sourceToPixel = pixelPos - ray.o;
+        float3 nearestPoint = ray.o;
+        float3 farthestPoint = ray.o;
+      
+        accumulate3(dev_proj, dev_weights, numThread, sourceToPixel, nearestPoint, farthestPoint);
+        break;
+        }
       }
     }
 }
@@ -523,11 +546,11 @@ CUDA_forward_project( int projections_size[2],
 
   switch (params->projectionType)
     {
-    case 1: // Original program
+    case ORIGINAL:
       {
       break;
       }
-    case 2: // Primary
+    case PRIMARY:
       {
       // mu
       cudaMalloc( (void**)&dev_mu, params->matSize*params->energySize*sizeof(float) );
@@ -544,7 +567,7 @@ CUDA_forward_project( int projections_size[2],
       CUDA_CHECK_ERROR;
       break;
       }
-    case 3: // Compton
+    case COMPTON:
       {
       // mu
       cudaMalloc( (void**)&dev_mu, params->matSize*params->energySize*sizeof(float) );
@@ -649,11 +672,11 @@ CUDA_forward_project( int projections_size[2],
   
   switch (params->projectionType)
     {
-    case 1: // Original program
+    case ORIGINAL:
       {
       break;
       }
-    case 2: // Primary
+    case PRIMARY:
       {
       cudaUnbindTexture (tex_mu);
       CUDA_CHECK_ERROR;
@@ -665,7 +688,7 @@ CUDA_forward_project( int projections_size[2],
       CUDA_CHECK_ERROR;
       break;
       }
-    case 3: // Compton
+    case COMPTON:
       {
       cudaUnbindTexture (tex_mu);
       CUDA_CHECK_ERROR;

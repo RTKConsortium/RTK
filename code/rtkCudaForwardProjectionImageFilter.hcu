@@ -19,9 +19,17 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_hcu
 #define __rtkCudaForwardProjectionImageFilter_hcu
 
+enum ProjectionType {
+  ORIGINAL,
+  PRIMARY,
+  COMPTON,
+  RAYLEIGH,
+  FLUORESCENCE
+  };
+    
 struct CudaAccumulationParameters
   {
-  int projectionType;
+  ProjectionType projectionType;
   int matSize;
 
   // primary
