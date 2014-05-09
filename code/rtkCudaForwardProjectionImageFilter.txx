@@ -44,7 +44,7 @@ CudaForwardProjectionImageFilter<TInputImage,
 ::GPUGenerateData()
 {
   try {
-    const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+    const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
     const unsigned int Dimension = TInputImage::ImageDimension;
     const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
     const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
@@ -92,7 +92,7 @@ CudaForwardProjectionImageFilter<TInputImage,
     for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
       {
       // Account for system rotations
-      Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
+      typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
       volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(1) );
 
       // Adding 0.5 offset to change from the centered pixel convention (ITK)
@@ -102,13 +102,13 @@ CudaForwardProjectionImageFilter<TInputImage,
 
       // Compute matrix to translate the pixel indices on the detector
       // if the Requested region has non-zero index
-      Superclass::GeometryType::ThreeDHomogeneousMatrixType translation_matrix;
+      typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translation_matrix;
       translation_matrix.SetIdentity();
       for(unsigned int i=0; i<3; i++)
         translation_matrix[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
 
       // Compute matrix to transform projection index to volume index
-      Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
+      typename Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
       d_matrix = volPPToIndex.GetVnlMatrix() *
         geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
         GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix() *
