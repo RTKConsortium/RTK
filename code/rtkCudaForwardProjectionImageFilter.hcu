@@ -19,19 +19,39 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_hcu
 #define __rtkCudaForwardProjectionImageFilter_hcu
 
+struct CudaAccumulationParameters
+  {
+  int projectionType;
+  int matSize;
+
+  // primary
+  float* energyWeights;
+
+  // primary and compton
+  int energySize;
+  float* mu;
+
+  // compton
+  float energy_spacing;
+  float direction[3];
+  float invWlPhoton;
+  float e0m;
+  float eRadiusOverCrossSectionTerm;
+  float energy;
+  float detectorOrientationTimesPixelSurface[3];
+  };
+
 void
 CUDA_forward_project( int projections_size[2],
                       int vol_size[3],
-                      int mu_size[2],
                       float matrix[12],
-                      float *mu,
-                      float *energyWeights,
                       float *dev_proj,
                       float *dev_vol,
                       float t_step,
                       double source_position[3],
                       float box_min[3],
                       float box_max[3],
-                      float spacing[3]);
+                      float spacing[3],
+                      CudaAccumulationParameters* params);
 
 #endif

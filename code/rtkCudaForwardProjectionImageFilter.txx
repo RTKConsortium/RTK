@@ -21,7 +21,6 @@
 
 #include "rtkCudaForwardProjectionImageFilter.h"
 #include "rtkCudaUtilities.hcu"
-#include "rtkCudaForwardProjectionImageFilter.hcu"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -46,22 +45,13 @@ CudaForwardProjectionImageFilter<TInputImage,
 {
   try {
     const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
-    const unsigned int Dimension = ImageType::ImageDimension;
+    const unsigned int Dimension = TInputImage::ImageDimension;
     const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
     const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
     const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
       this->GetOutput()->GetBufferedRegion().GetSize(1);
-    
-    // get energy
-    float* energyWeights = this->GetProjectedValueAccumulation().GetEnergyWeightList();
 
-    // get mu
-    itk::Image<float, 2>* muImage = this->GetProjectedValueAccumulation().GetMaterialMu();
-    float* mu = muImage->GetBufferPointer();
-    itk::Image<float, 2>::SizeType size = muImage->GetLargestPossibleRegion().GetSize();
-    int muSize[2];
-    muSize[0] = size[0];
-    muSize[1] = size[1];
+    CudaAccumulationParameters* params = this->GetProjectedValueAccumulation().GetCudaParameters();
 
     float t_step = 1; // Step in mm
     itk::Vector<double, 4> source_position;
@@ -81,7 +71,9 @@ CudaForwardProjectionImageFilter<TInputImage,
     // Getting Spacing
     float spacing[3];
     for(unsigned int i=0; i<3; i++)
+      {
       spacing[i] = this->GetInput(1)->GetSpacing()[i];
+      }
 
     // Cuda convenient format for dimensions
     int projectionSize[2];
@@ -97,7 +89,7 @@ CudaForwardProjectionImageFilter<TInputImage,
     float *pvol = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
 
     // Go over each projection
-    for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
+    for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
       {
       // Account for system rotations
       Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
@@ -132,18 +124,16 @@ CudaForwardProjectionImageFilter<TInputImage,
       int projectionOffset = iProj - this->GetOutput()->GetBufferedRegion().GetIndex(2);
 
       CUDA_forward_project(projectionSize,
-                          volumeSize,
-                          muSize,
-                          (float*)&(matrix[0][0]),
-                          mu,
-                          energyWeights,
-                          pout + nPixelsPerProj * projectionOffset,
-                          pvol,
-                          t_step,
-                          (double*)&(source_position[0]),
-                          boxMin,
-                          boxMax,
-                          spacing);
+                           volumeSize,
+                           (float*)&(matrix[0][0]),
+                           pout + nPixelsPerProj * projectionOffset,
+                           pvol,
+                           t_step,
+                           (double*)&(source_position[0]),
+                           boxMin,
+                           boxMax,
+                           spacing,
+                           params);
       }
   }
   catch(itk::ExceptionObject e)
