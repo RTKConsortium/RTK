@@ -22,6 +22,8 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
+
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
 #endif
@@ -76,49 +78,11 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
-//  // Construct selected backprojection filter
-//  rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
-//  switch(args_info.bp_arg)
-//  {
-//  case(bp_arg_VoxelBasedBackProjection):
-//    bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_Joseph):
-//    bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_CudaVoxelBased):
-//#ifdef RTK_USE_CUDA
-//    bp = rtk::CudaBackProjectionImageFilter::New();
-//#else
-//    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-//    return EXIT_FAILURE;
-//#endif
-//    break;
-
-//  default:
-//    std::cerr << "Unhandled --bp value." << std::endl;
-//    return EXIT_FAILURE;
-//  }
-
-
-//  switch(args_info.sart_arg)
-//  {
-//  case(sart_arg_Sart):
-//    sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_Joseph):
-//#ifdef RTK_USE_CUDA
-//    sart = rtk::CudaSARTConeBeamReconstructionFilter::New();
-//#else
-//    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-//    return EXIT_FAILURE;
-//#endif
-//    break;
-
-//  default:
-//    std::cerr << "Unhandled --bp value." << std::endl;
-//    return EXIT_FAILURE;
-//  }
+  // Displaced detector weighting
+  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
+  DDFType::Pointer ddf = DDFType::New();
+  ddf->SetInput( reader->GetOutput() );
+  ddf->SetGeometry( geometryReader->GetOutputObject() );
 
   // SART reconstruction filter
   rtk::SARTConeBeamReconstructionFilter< OutputImageType >::Pointer sart =
@@ -129,7 +93,7 @@ int main(int argc, char * argv[])
   sart->SetBackProjectionFilter(args_info.bp_arg);
 
   sart->SetInput( inputFilter->GetOutput() );
-  sart->SetInput(1, reader->GetOutput());
+  sart->SetInput(1, ddf->GetOutput());
   sart->SetGeometry( geometryReader->GetOutputObject() );
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetLambda( args_info.lambda_arg );
