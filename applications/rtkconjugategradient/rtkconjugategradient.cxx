@@ -22,10 +22,11 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#ifdef RTK_USE_CUDA
-  #include "itkCudaImage.h"
-#endif
+#include "rtkDisplacedDetectorImageFilter.h"
 
+#ifdef RTK_USE_CUDA
+  #include <itkCudaImage.h>
+#endif
 #include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])
@@ -77,6 +78,12 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
+  // Displaced detector weighting
+  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
+  DDFType::Pointer ddf = DDFType::New();
+  ddf->SetInput( reader->GetOutput() );
+  ddf->SetGeometry( geometryReader->GetOutputObject() );
+
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
@@ -84,7 +91,7 @@ int main(int argc, char * argv[])
   conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
 
   conjugategradient->SetInput( inputFilter->GetOutput() );
-  conjugategradient->SetInput(1, reader->GetOutput());
+  conjugategradient->SetInput(1, ddf->GetOutput());
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
 

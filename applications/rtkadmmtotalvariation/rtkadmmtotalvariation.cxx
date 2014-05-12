@@ -123,7 +123,7 @@ int main(int argc, char * argv[])
 
   // Set the inputs of the ADMM filter
   admmFilter->SetInput(0, inputFilter->GetOutput() );
-  admmFilter->SetInput(1, projectionsReader->GetOutput() );
+  admmFilter->SetInput(1, ddf->GetOutput() );
 
   itk::TimeProbe timeProbe;
     if (args_info.time_flag)
