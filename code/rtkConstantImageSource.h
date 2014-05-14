@@ -110,6 +110,8 @@ public:
 
   /** Set output image information from an existing image */
   void SetInformationFromImage(TOutputImage* image);
+  void SetInformationFromImage(const TOutputImage* image);
+
 
 protected:
   ConstantImageSource();
