@@ -7,8 +7,6 @@
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
 
-#include "rtkJosephBackProjectionImageFilter.h"
-
 namespace rtk
 {
 
