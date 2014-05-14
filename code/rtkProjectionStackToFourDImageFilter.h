@@ -1,21 +1,19 @@
 #ifndef __rtkProjectionStackToFourDImageFilter_h
 #define __rtkProjectionStackToFourDImageFilter_h
 
-#include "itkImageToImageFilter.h"
+#include <itkExtractImageFilter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkArray2D.h>
+
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkSingleProjectionToFourDImageFilter.h"
-#include <itkExtractImageFilter.h>
 #include "rtkConstantImageSource.h"
-#include "rtkFFTRampImageFilter.h"
-
-#include "itkArray2D.h"
 
 namespace rtk
 {
-template< typename VolumeSeriesType, typename VolumeType, typename TFFTPrecision=double>
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision=double>
 class ProjectionStackToFourDImageFilter : public itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >
 {
 public:
@@ -23,6 +21,9 @@ public:
     typedef ProjectionStackToFourDImageFilter             Self;
     typedef itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType > Superclass;
     typedef itk::SmartPointer< Self >        Pointer;
+
+    /** Convenient typedefs */
+  typedef ProjectionStackType VolumeType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -35,18 +36,18 @@ public:
 
     /** The image that will be backprojected, then added, with coefficients, to each 3D volume of the 4D image.
     * It is 3D because the backprojection filters need it, but the third dimension, which is the number of projections, is 1  */
-    void SetInputProjectionStack(const VolumeType* Projection);
+    void SetInputProjectionStack(const ProjectionStackType* Projection);
 
     typedef rtk::BackProjectionImageFilter< VolumeType, VolumeType >              BackProjectionFilterType;
-    typedef typename BackProjectionFilterType::Pointer                                      BackProjectionFilterPointer;
-    typedef rtk::SingleProjectionToFourDImageFilter<VolumeSeriesType, VolumeType>       SingleProjectionToFourDFilterType;
-    typedef itk::ExtractImageFilter< VolumeType, VolumeType >                     ExtractFilterType;
-    typedef rtk::ConstantImageSource< VolumeType >                                    ConstantImageSourceType;
-    typedef rtk::FFTRampImageFilter<VolumeType, VolumeType, TFFTPrecision>          RampFilterType;
-    typedef rtk::ThreeDCircularProjectionGeometry                                       GeometryType;
+    typedef itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >   ExtractFilterType;
+    typedef rtk::ConstantImageSource< VolumeType >                                ConstantImageSourceType;
+    typedef itk::MultiplyImageFilter< VolumeSeriesType >                          MultiplyFilterType;
+    typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>   SplatFilterType;
+
+    typedef rtk::ThreeDCircularProjectionGeometry                                 GeometryType;
 
     /** Pass the backprojection filter to SingleProjectionToFourDFilter */
-    void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
+    void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
@@ -54,32 +55,33 @@ public:
     /** Pass the interpolation weights to SingleProjectionToFourDFilter */
     void SetWeights(const itk::Array2D<float> _arg);
 
-    /** Add a ramp filter if needed */
-    void SetUseRampFilter(bool arg);
-
-    /** Configure the FourDToSingleProjection to use Cuda for splat, or not*/
-    void SetUseCuda(const bool _arg);
-
-
 protected:
     ProjectionStackToFourDImageFilter();
     ~ProjectionStackToFourDImageFilter(){}
 
     typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
-    typename VolumeType::ConstPointer GetInputProjectionStack();
+    typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
     /** Does the real work. */
     virtual void GenerateData();
 
     virtual void GenerateOutputInformation();
 
+    virtual void GenerateInputRequestedRegion();
+
+    void InitializeConstantSource();
+
     /** Member pointers to the filters used internally (for convenience)*/
-    typename SingleProjectionToFourDFilterType::Pointer     m_SingleProjToFourDFilter;
+    typename MultiplyFilterType::Pointer                    m_ZeroMultiplyFilter;
+    typename SplatFilterType::Pointer                       m_SplatFilter;
+    typename BackProjectionFilterType::Pointer              m_BackProjectionFilter;
     typename ExtractFilterType::Pointer                     m_ExtractFilter;
-    typename ConstantImageSourceType::Pointer               m_constantImageSource;
-    bool                                                    m_UseRampFilter;
+    typename ConstantImageSourceType::Pointer               m_ConstantImageSource;
+
+    /** Other member variables */
     itk::Array2D<float>                                     m_Weights;
     GeometryType::Pointer                                   m_Geometry;
+    int                                                     m_ProjectionNumber;
 
 private:
     ProjectionStackToFourDImageFilter(const Self &); //purposely not implemented
