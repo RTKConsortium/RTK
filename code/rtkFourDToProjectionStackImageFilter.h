@@ -5,8 +5,8 @@
 #include <itkPasteImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 
-#include "rtkFourDToSingleProjectionImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 
 namespace rtk
 {

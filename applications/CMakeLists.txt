@@ -32,7 +32,6 @@ ADD_SUBDIRECTORY(rtkmedian)
 ADD_SUBDIRECTORY(rtklut)
 ADD_SUBDIRECTORY(rtktotalvariationdenoising)
 ADD_SUBDIRECTORY(rtkadmmtotalvariation)
-ADD_SUBDIRECTORY(rtkfourdtoprojstacktest)
 ADD_SUBDIRECTORY(rtkfourdconjugategradient)
 ADD_SUBDIRECTORY(rtkconjugategradient)
 
