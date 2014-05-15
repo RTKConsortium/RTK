@@ -101,7 +101,9 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+  virtual void BeforeThreadedGenerateData();
+  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+  virtual void AfterThreadedGenerateData();
 
 private:
   DownsampleImageFilter(const Self&);   //purposely not implemented
