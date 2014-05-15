@@ -21,6 +21,7 @@
 
 //Includes
 #include "rtkDeconstructImageFilter.h"
+#include "itkSimpleFilterWatcher.h"
 
 namespace rtk
 {
@@ -180,9 +181,17 @@ void DeconstructImageFilter<TImage>
 
       m_DownsampleFilters[band + l*n]->SetInput(m_ConvolutionFilters[band + l*n]->GetOutput());
       m_DownsampleFilters[band + l*n]->SetFactors(downsamplingFactors);
-      m_DownsampleFilters[band + l*n]->ReleaseDataFlagOn();
+
+      if ((band > 0) || (l==0))
+        {
+        m_DownsampleFilters[band + l*n]->ReleaseDataFlagOn();
+//        std::cout << "Set ReleaseDataFlagOn on filter " << band + l*n << std::endl;
+        }
       }
-    if (l<m_NumberOfLevels-1) m_PadFilters[l]->SetInput(m_DownsampleFilters[n*(l+1)]->GetOutput());
+    if (l<m_NumberOfLevels-1)
+      {
+      m_PadFilters[l]->SetInput(m_DownsampleFilters[n*(l+1)]->GetOutput());
+      }
     }
   m_PadFilters[m_NumberOfLevels-1]->SetInput(this->GetInput());
 
@@ -224,6 +233,8 @@ template <class TImage>
 void DeconstructImageFilter<TImage>
 ::GenerateData()
 {
+  std::cout << "Starting deconstruction" << std::endl;
+
   unsigned int dimension = TImage::ImageDimension;
   unsigned int n = round(pow(2.0, dimension));
 
@@ -241,6 +252,7 @@ void DeconstructImageFilter<TImage>
       outputBand++;
       }
     }
+  std::cout << "Done deconstruction" << std::endl;
 }
 
 

@@ -192,10 +192,14 @@ template <class TImage>
 void ReconstructImageFilter<TImage>
 ::GenerateData()
 {
+  std::cout << "Starting reconstruction" << std::endl;
+
   // Have the last filter calculate its output image
   // and graft it to the output of the composite filter
   m_AddFilters[m_NumberOfLevels-1]->Update();
   this->GraftOutput(m_AddFilters[m_NumberOfLevels-1]->GetOutput() );
+
+  std::cout << "Done reconstruction" << std::endl;
 }
 
 
