@@ -77,6 +77,7 @@ protected:
     typename ConstantSourceType::Pointer                    m_ConstantSource;
     typename ForwardProjectionFilterType::Pointer           m_ForwardProjectionFilter;
     typename MultiplyFilterType::Pointer                    m_ZeroMultiplyFilter;
+    typename MultiplyFilterType::Pointer                    m_ZeroMultiplyFilter2;
 
     /** Other member variables */
     itk::Array2D<float>                                     m_Weights;

@@ -16,10 +16,10 @@
  *
  *=========================================================================*/
 
-#include "rtkfourdconjugategradient_ggo.h"
+#include "rtkfourdrooster_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
+#include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
 #include "rtkDisplacedDetectorImageFilter.h"
@@ -31,22 +31,23 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkfourdconjugategradient, args_info);
+  GGO(rtkfourdrooster, args_info);
 
   typedef float OutputPixelType;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, 4 > VolumeSeriesType;
-  typedef itk::CudaImage< OutputPixelType, 3 > ProjectionStackType;
+  typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
+  typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
 #else
   typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
 #endif
+  typedef ProjectionStackType                   VolumeType;
 
   // Projections reader
   typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdconjugategradient>(reader, args_info);
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdrooster>(reader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -74,10 +75,15 @@ int main(int argc, char * argv[])
     // Create new empty volume
     typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdconjugategradient>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdrooster>(constantImageSource, args_info);
     inputFilter = constantImageSource;
     }
   inputFilter->Update();
+
+  // ROI reader
+  typedef itk::ImageFileReader<  VolumeType > InputReaderType;
+  InputReaderType::Pointer roiReader = InputReaderType::New();
+  roiReader->SetFileName( args_info.roi_arg );
 
   // Displaced detector weighting
   typedef rtk::DisplacedDetectorImageFilter< ProjectionStackType > DDFType;
@@ -92,15 +98,20 @@ int main(int argc, char * argv[])
   phaseReader->Update();
 
   // Set the forward and back projection filters to be used
-  typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ConjugateGradientFilterType;
-  ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
-  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
-  conjugategradient->SetInputVolumeSeries(inputFilter->GetOutput() );
-  conjugategradient->SetInputProjectionStack(ddf->GetOutput());
-  conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
-  conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
-  conjugategradient->SetWeights(phaseReader->GetOutput());
+  typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
+  ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
+  rooster->SetForwardProjectionFilter(args_info.fp_arg);
+  rooster->SetBackProjectionFilter(args_info.bp_arg);
+  rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
+  rooster->SetInputProjectionStack(ddf->GetOutput());
+  rooster->SetInputROI(roiReader->GetOutput());
+  rooster->SetGeometry( geometryReader->GetOutputObject() );
+  rooster->SetCG_iterations( args_info.cgiter_arg );
+  rooster->SetMainLoop_iterations( args_info.niter_arg );
+  rooster->SetTV_iterations( args_info.tviter_arg );
+  rooster->SetWeights(phaseReader->GetOutput());
+  rooster->SetGammaSpace(args_info.gamma_space_arg);
+  rooster->SetGammaTime(args_info.gamma_time_arg);
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
@@ -109,11 +120,11 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
 
   if(args_info.time_flag)
     {
-//    conjugategradient->PrintTiming(std::cout);
+    rooster->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
@@ -122,7 +133,7 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( conjugategradient->GetOutput() );
+  writer->SetInput( rooster->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;

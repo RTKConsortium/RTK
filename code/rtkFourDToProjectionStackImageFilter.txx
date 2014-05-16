@@ -3,12 +3,6 @@
 
 #include "rtkFourDToProjectionStackImageFilter.h"
 
-#include "itkObjectFactory.h"
-#include "itkImageRegionIterator.h"
-#include "itkImageRegionConstIterator.h"
-
-#include "rtkJosephForwardProjectionImageFilter.h"
-
 namespace rtk
 {
 
@@ -26,15 +20,17 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::FourDT
   m_InterpolationFilter = InterpolatorFilterType::New();
   m_ConstantSource = ConstantSourceType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
+  m_ZeroMultiplyFilter2 = MultiplyFilterType::New();
 
   // Set constant parameters
   m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename ProjectionStackType::PixelType>::ZeroValue());
+  m_ZeroMultiplyFilter2->SetConstant2(itk::NumericTraits<typename ProjectionStackType::PixelType>::ZeroValue());
 
   // Set permanent connections
   m_ExtractFilter->SetInput(m_ZeroMultiplyFilter->GetOutput());
 
   // Set memory management flags
-  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
+//  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
   m_InterpolationFilter->ReleaseDataFlagOn();
 }
 
@@ -136,9 +132,11 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 {
   // Connect the filters
   m_ZeroMultiplyFilter->SetInput1(this->GetInputProjectionStack());
+  m_ZeroMultiplyFilter2->SetInput1(this->GetInputProjectionStack());
   m_InterpolationFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_InterpolationFilter->SetInputVolume(m_ConstantSource->GetOutput());
-  m_PasteFilter->SetDestinationImage(this->GetInputProjectionStack());
+//  m_PasteFilter->SetDestinationImage(this->GetInputProjectionStack());
+  m_PasteFilter->SetDestinationImage(m_ZeroMultiplyFilter2->GetOutput());
 
   // Connections with the Forward projection filter can only be set at runtime
   m_ForwardProjectionFilter->SetInput(0, m_ExtractFilter->GetOutput());
@@ -164,10 +162,8 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
   m_PasteFilter->SetDestinationIndex(extractRegion.GetIndex());
 
   // Have the last filter calculate its output information
-  std::cout << "In FourDToProjectionStackImageFilter. About to UpdateOutputInformation" << std::endl;
   this->InitializeConstantSource();
   m_PasteFilter->UpdateOutputInformation();
-  std::cout << "In FourDToProjectionStackImageFilter. UpdateOutputInformation complete" << std::endl;
 
   // Copy it as the output information of the composite filter
   this->GetOutput()->CopyInformation(m_PasteFilter->GetOutput());
@@ -197,7 +193,6 @@ void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 ::GenerateData()
 {
-  std::cout << "In FourDToProjectionStackImageFilter : Entering GenerateData()" << std::endl;
   int Dimension = ProjectionStackType::ImageDimension;
 
   // Set the Extract filter
@@ -234,7 +229,6 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 
   // Graft its output
   this->GraftOutput( m_PasteFilter->GetOutput() );
-  std::cout << "In FourDToProjectionStackImageFilter : Leaving GenerateData()" << std::endl;
 }
 
 }// end namespace

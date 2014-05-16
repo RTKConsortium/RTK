@@ -38,6 +38,10 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
 {
   m_UseImageSpacing = true;
 
+  // default boundary condition
+  m_BoundaryCondition = new itk::ConstantBoundaryCondition<TInputImage>();
+  m_IsBoundaryConditionOverriden = false;
+
   // default behaviour is to process all dimensions
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
@@ -63,6 +67,14 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
   if(Modified) this->Modified();
 }
 
+template <class TInputImage, class TOutputImage>
+void
+BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
+::OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition)
+{
+  m_BoundaryCondition = boundaryCondition;
+  m_IsBoundaryConditionOverriden = true;
+}
 
 template <class TInputImage, class TOutputImage>
 void
@@ -175,6 +187,8 @@ void
 BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 ::AfterThreadedGenerateData()
 {
+  if (m_IsBoundaryConditionOverriden) return;
+
   std::vector<int> dimsToProcess;
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
@@ -186,6 +200,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
   // padding styles available in ITK.
   // This needs to be performed only if the output requested region contains
   // the borders of the image.
+  // It is ignored if the boundary condition has been overriden (this function returns before)
 
   typename TOutputImage::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
 
