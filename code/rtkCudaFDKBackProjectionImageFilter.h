@@ -48,7 +48,7 @@ public:
   typedef itk::CudaImage<float,3>                              ImageType;
   typedef FDKBackProjectionImageFilter< ImageType, ImageType>  FDKBackProjectionImageFilterType;
   typedef CudaFDKBackProjectionImageFilter                     Self;
-  typedef CudaInPlaceImageFilter<ImageType, ImageType,
+  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
                      FDKBackProjectionImageFilterType>         Superclass;
   typedef itk::SmartPointer<Self>                              Pointer;
   typedef itk::SmartPointer<const Self>                        ConstPointer;
