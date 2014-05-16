@@ -149,10 +149,8 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_ExtractFilter->SetExtractionRegion(subsetRegion);
 
   // Have the last filter calculate its output information
-  std::cout << "In ProjectionStackToFourDImageFilter. About to UpdateOutputInformation" << std::endl;
   this->InitializeConstantSource();
   m_SplatFilter->UpdateOutputInformation();
-  std::cout << "In ProjectionStackToFourDImageFilter. UpdateOutputInformation complete" << std::endl;
 
   // Copy it as the output information of the composite filter
   this->GetOutput()->CopyInformation(m_SplatFilter->GetOutput());
@@ -182,8 +180,6 @@ void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::GenerateData()
 {
-  std::cout << "In ProjectionStackToFourDImageFilter : Entering GenerateData()" << std::endl;
-
   int Dimension = ProjectionStackType::ImageDimension;
 
   // Set the Extract filter
@@ -216,7 +212,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Graft its output
   this->GraftOutput( m_SplatFilter->GetOutput() );
-  std::cout << "In ProjectionStackToFourDImageFilter : Leaving GenerateData()" << std::endl;
 }
 
 }// end namespace

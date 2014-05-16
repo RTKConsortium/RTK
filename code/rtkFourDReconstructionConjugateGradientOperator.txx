@@ -3,12 +3,6 @@
 
 #include "rtkFourDReconstructionConjugateGradientOperator.h"
 
-//#include "itkObjectFactory.h"
-//#include "itkImageRegionIterator.h"
-//#include "itkImageRegionConstIterator.h"
-
-//#include "rtkJosephBackProjectionImageFilter.h"
-
 namespace rtk
 {
 
@@ -19,16 +13,10 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
     // Create the two filters
     m_FourDToProjectionStackFilter = FourDToProjectionStackFilterType::New();
-//    m_FourDToProjectionStackFilter->ReleaseDataFlagOn();
     m_ProjectionStackToFourDFilter = ProjectionStackToFourDFilterType::New();
-    m_ConstantImageSourceFilter = ConstantImageSourceFilterType::New();
 
     // Connect them
-//    m_FourDToProjectionStackFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
-//    m_FourDToProjectionStackFilter->SetInputProjectionStack(this->GetInputProjectionStack());
-
-//    m_ProjectionStackToFourDFilter->SetInputVolumeSeries(m_ConstantImageSourceFilter->GetOutput());
-//    m_ProjectionStackToFourDFilter->SetInputProjectionStack(m_FourDToProjectionStackFilter->GetOutput());
+    m_ProjectionStackToFourDFilter->SetInputProjectionStack(m_FourDToProjectionStackFilter->GetOutput());
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -99,13 +87,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   // Set runtime connections
   m_FourDToProjectionStackFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_FourDToProjectionStackFilter->SetInputProjectionStack(this->GetInputProjectionStack());
-
-  m_ProjectionStackToFourDFilter->SetInputVolumeSeries(m_ConstantImageSourceFilter->GetOutput());
-  m_ProjectionStackToFourDFilter->SetInputProjectionStack(m_FourDToProjectionStackFilter->GetOutput());
-
-  // Set the constant source
-  m_ConstantImageSourceFilter->SetInformationFromImage(this->GetInputVolumeSeries());
-  m_ConstantImageSourceFilter->SetConstant( 0. );
+  m_ProjectionStackToFourDFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
 
   // Have the last filter calculate its output information
   m_ProjectionStackToFourDFilter->UpdateOutputInformation();
@@ -119,10 +101,8 @@ void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
-  std::cout << "In FourDReconstructionConjugateGradientOperator : Entering GenerateData()" << std::endl;
   m_ProjectionStackToFourDFilter->Update();
   this->GraftOutput( m_ProjectionStackToFourDFilter->GetOutput() );
-  std::cout << "In FourDReconstructionConjugateGradientOperator : Leaving GenerateData()" << std::endl;
 }
 
 }// end namespace

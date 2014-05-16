@@ -26,7 +26,6 @@
 #include "rtkFourDReconstructionConjugateGradientOperator.h"
 
 #include <itkExtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
 
@@ -41,7 +40,7 @@ namespace rtk
  *
  * \ingroup ReconstructionAlgorithm
  */
-template<class VolumeSeriesType, class ProjectionStackType>
+template<typename VolumeSeriesType, typename ProjectionStackType>
 class ITK_EXPORT FourDConjugateGradientConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
@@ -61,7 +60,6 @@ public:
   typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >                      ForwardProjectionFilterType;
   typedef rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >                         BackProjectionFilterType;
   typedef rtk::ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
-  typedef itk::MultiplyImageFilter<VolumeSeriesType>                                                MultiplyVolumeFilterType;
   typedef rtk::FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
   typedef rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
 
@@ -114,7 +112,6 @@ protected:
   typename ForwardProjectionFilterType::Pointer             m_ForwardProjectionFilter;
   typename BackProjectionFilterType::Pointer                m_BackProjectionFilter;
   typename BackProjectionFilterType::Pointer                m_BackProjectionFilterForB;
-  typename MultiplyVolumeFilterType::Pointer                m_ZeroMultiplyFilter;
   typename ConjugateGradientFilterType::Pointer             m_ConjugateGradientFilter;
   typename CGOperatorFilterType::Pointer                    m_CGOperator;
   typename ProjStackToFourDFilterType::Pointer              m_ProjStackToFourDFilter;

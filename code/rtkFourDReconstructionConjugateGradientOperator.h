@@ -2,13 +2,8 @@
 #define __rtkFourDReconstructionConjugateGradientOperator_h
 
 #include "rtkConjugateGradientOperator.h"
-
-#include "rtkBackProjectionImageFilter.h"
-#include "rtkForwardProjectionImageFilter.h"
-
 #include "rtkProjectionStackToFourDImageFilter.h"
 #include "rtkFourDToProjectionStackImageFilter.h"
-#include "rtkConstantImageSource.h"
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "itkArray2D.h"
@@ -41,7 +36,6 @@ public:
     typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >       ForwardProjectionFilterType;
     typedef rtk::FourDToProjectionStackImageFilter< ProjectionStackType, VolumeSeriesType >     FourDToProjectionStackFilterType;
     typedef rtk::ProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType >     ProjectionStackToFourDFilterType;
-    typedef rtk::ConstantImageSource<VolumeSeriesType>                                          ConstantImageSourceFilterType;
 
     /** Pass the backprojection filter to ProjectionStackToFourD*/
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
@@ -72,7 +66,6 @@ protected:
     /** Member pointers to the filters used internally (for convenience)*/
     typename FourDToProjectionStackFilterType::Pointer     m_FourDToProjectionStackFilter;
     typename ProjectionStackToFourDFilterType::Pointer     m_ProjectionStackToFourDFilter;
-    typename ConstantImageSourceFilterType::Pointer        m_ConstantImageSourceFilter;
 
 private:
     FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented

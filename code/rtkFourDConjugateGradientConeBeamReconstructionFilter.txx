@@ -39,47 +39,40 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_NumberOfIterations=3;
 
   // Create the filters
-  m_ZeroMultiplyFilter = MultiplyVolumeFilterType::New();
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
-
-  // Set permanent parameters
-  m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename VolumeSeriesType::PixelType>::ZeroValue());
-
-  // Set memory management parameters
-  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries)
 {
-    this->SetNthInput(0, const_cast<VolumeSeriesType*>(VolumeSeries));
+  this->SetNthInput(0, const_cast<VolumeSeriesType*>(VolumeSeries));
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(const VolumeType* Projection)
 {
-    this->SetNthInput(1, const_cast<VolumeType*>(Projection));
+  this->SetNthInput(1, const_cast<VolumeType*>(Projection));
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
 typename VolumeSeriesType::ConstPointer
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputVolumeSeries()
 {
-    return static_cast< const VolumeSeriesType * >
-            ( this->itk::ProcessObject::GetInput(0) );
+  return static_cast< const VolumeSeriesType * >
+          ( this->itk::ProcessObject::GetInput(0) );
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
 typename ProjectionStackType::ConstPointer
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputProjectionStack()
 {
-    return static_cast< const VolumeType * >
-            ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast< const VolumeType * >
+          ( this->itk::ProcessObject::GetInput(1) );
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
@@ -128,13 +121,12 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 ::GenerateOutputInformation()
 {
   // Set runtime connections
-  m_ZeroMultiplyFilter->SetInput1(this->GetInputVolumeSeries());
   m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
   m_ConjugateGradientFilter->SetX(this->GetInputVolumeSeries());
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
-  m_ProjStackToFourDFilter->SetInputVolumeSeries(m_ZeroMultiplyFilter->GetOutput());
+  m_ProjStackToFourDFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_ProjStackToFourDFilter->SetInputProjectionStack(this->GetInputProjectionStack());
   m_ConjugateGradientFilter->SetB(m_ProjStackToFourDFilter->GetOutput());
 
@@ -146,9 +138,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
 
   // Have the last filter calculate its output information
-  std::cout << "In FourDConjugateGradientConeBeamReconstructionFilter. About to UpdateOutputInformation" << std::endl;
   m_ConjugateGradientFilter->UpdateOutputInformation();
-  std::cout << "In FourDConjugateGradientConeBeamReconstructionFilter. UpdateOutputInformation complete" << std::endl;
 
   // Copy it as the output information of the composite filter
   this->GetOutput()->CopyInformation( m_ConjugateGradientFilter->GetOutput() );
@@ -159,10 +149,8 @@ void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
-  std::cout << "In FourDConjugateGradientConeBeamReconstructionFilter : Entering GenerateData()" << std::endl;
   m_ConjugateGradientFilter->Update();
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
-  std::cout << "In FourDConjugateGradientConeBeamReconstructionFilter : Leaving GenerateData()" << std::endl;
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
