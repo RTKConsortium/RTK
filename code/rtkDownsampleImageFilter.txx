@@ -89,8 +89,8 @@ void
 DownsampleImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  std::cout << "In DownsampleImageFilter : BeforeThreadedGenerateData, input size = " << this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
-  this->InvokeEvent(itk::StartEvent());
+//  std::cout << "In DownsampleImageFilter : BeforeThreadedGenerateData, input size = " << this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
+//  this->InvokeEvent(itk::StartEvent());
 }
 
 /**
@@ -168,7 +168,7 @@ void
 DownsampleImageFilter<TInputImage,TOutputImage>
 ::AfterThreadedGenerateData()
 {
-  std::cout << "In DownsampleImageFilter : AfterThreadedGenerateData" << std::endl;
+//  std::cout << "In DownsampleImageFilter : AfterThreadedGenerateData" << std::endl;
 }
 
 /** 

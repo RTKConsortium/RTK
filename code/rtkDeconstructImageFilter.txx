@@ -21,7 +21,7 @@
 
 //Includes
 #include "rtkDeconstructImageFilter.h"
-#include "itkSimpleFilterWatcher.h"
+//#include "itkSimpleFilterWatcher.h"
 
 namespace rtk
 {
