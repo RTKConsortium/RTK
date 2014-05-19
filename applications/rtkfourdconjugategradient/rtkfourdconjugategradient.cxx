@@ -109,7 +109,7 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   if(args_info.time_flag)
     {
