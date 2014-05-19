@@ -33,7 +33,11 @@
  * fixed step between sampling points instead of placing these
  * sampling points only on the main direction slices.
  *
- * \author Simon Rit, updated by Cyril Mory
+ * The code was developed based on the file tt_project_ray_gpu_kernels.cu of
+ * NiftyRec (http://sourceforge.net/projects/niftyrec/) which is distributed under a BSD
+ * license. See COPYRIGHT.TXT.
+ *
+ * \author Marc Vila, updated by Simon Rit and Cyril Mory
  *
  * \ingroup Projector CudaImageToImageFilter
  */
