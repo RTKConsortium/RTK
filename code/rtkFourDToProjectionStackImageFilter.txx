@@ -20,17 +20,15 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::FourDT
   m_InterpolationFilter = InterpolatorFilterType::New();
   m_ConstantSource = ConstantSourceType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
-  m_ZeroMultiplyFilter2 = MultiplyFilterType::New();
 
   // Set constant parameters
   m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename ProjectionStackType::PixelType>::ZeroValue());
-  m_ZeroMultiplyFilter2->SetConstant2(itk::NumericTraits<typename ProjectionStackType::PixelType>::ZeroValue());
 
   // Set permanent connections
   m_ExtractFilter->SetInput(m_ZeroMultiplyFilter->GetOutput());
 
   // Set memory management flags
-//  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
+  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
   m_InterpolationFilter->ReleaseDataFlagOn();
 }
 
@@ -132,11 +130,9 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 {
   // Connect the filters
   m_ZeroMultiplyFilter->SetInput1(this->GetInputProjectionStack());
-  m_ZeroMultiplyFilter2->SetInput1(this->GetInputProjectionStack());
   m_InterpolationFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_InterpolationFilter->SetInputVolume(m_ConstantSource->GetOutput());
-//  m_PasteFilter->SetDestinationImage(this->GetInputProjectionStack());
-  m_PasteFilter->SetDestinationImage(m_ZeroMultiplyFilter2->GetOutput());
+  m_PasteFilter->SetDestinationImage(this->GetInputProjectionStack());
 
   // Connections with the Forward projection filter can only be set at runtime
   m_ForwardProjectionFilter->SetInput(0, m_ExtractFilter->GetOutput());

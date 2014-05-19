@@ -86,8 +86,8 @@ AverageOutOfROIImageFilter< TInputImage, TROI >
 
     while(!ROIIterator.IsAtEnd())
       {
-        if (ROIIterator.Get()) outputIterator.Set( accumulateIterator.Get() );
-        else outputIterator.Set(0);
+        if (!ROIIterator.Get()) outputIterator.Set( accumulateIterator.Get() );
+        else outputIterator.Set(inputIterator.Get());
 
       ++outputIterator;
       ++accumulateIterator;

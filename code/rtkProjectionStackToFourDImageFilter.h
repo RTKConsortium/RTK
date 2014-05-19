@@ -87,7 +87,6 @@ private:
     ProjectionStackToFourDImageFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
-
 };
 } //namespace ITK
 

@@ -23,9 +23,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_SplatFilter = SplatFilterType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
 
-  // Set permanent connections
-  m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyFilter->GetOutput());
-
   // Set constant parameters
   m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename VolumeSeriesType::PixelType>::ZeroValue());
 }
@@ -124,6 +121,10 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // Set runtime connections
   m_ExtractFilter->SetInput(this->GetInputProjectionStack());
   m_ZeroMultiplyFilter->SetInput1(this->GetInputVolumeSeries());
+
+  // This connection must be set here, because when the filter is updated a second time
+  // the inputVolumeSeries of m_SplatFilter is "pimg"
+  m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyFilter->GetOutput());
 
   // Set connections with the backprojection filter
   m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
