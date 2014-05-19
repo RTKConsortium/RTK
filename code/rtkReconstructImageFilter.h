@@ -23,7 +23,8 @@
 #include <itkImageToImageFilter.h>
 #include <itkMacro.h>
 #include <itkNaryAddImageFilter.h>
-#include <itkFFTConvolutionImageFilter.h>
+//#include <itkFFTConvolutionImageFilter.h>
+#include <itkConvolutionImageFilter.h>
 
 #include "rtkDaubechiesWaveletsKernelSource.h"
 #include "rtkUpsampleImageFilter.h"
@@ -152,7 +153,8 @@ public:
 
     /** Typedefs for pipeline's subfilters */
     typedef itk::NaryAddImageFilter<InputImageType, InputImageType>   AddFilterType;
-    typedef itk::FFTConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
+//    typedef itk::FFTConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
+    typedef itk::ConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
     typedef rtk::UpsampleImageFilter<InputImageType>             UpsampleImageFilterType;
     typedef rtk::DaubechiesWaveletsKernelSource<InputImageType>  KernelSourceType;
 
