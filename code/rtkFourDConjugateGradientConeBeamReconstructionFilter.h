@@ -24,6 +24,7 @@
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkFourDReconstructionConjugateGradientOperator.h"
+#include "rtkProjectionStackToFourDImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
