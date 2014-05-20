@@ -11,6 +11,10 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConstantImageSource.h"
 
+#ifdef RTK_USE_CUDA
+#include "rtkCudaSplatImageFilter.h"
+#endif
+
 namespace rtk
 {
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision=double>
@@ -52,8 +56,16 @@ public:
     /** Pass the geometry to SingleProjectionToFourDFilter */
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
 
-    /** Pass the interpolation weights to SingleProjectionToFourDFilter */
-    void SetWeights(const itk::Array2D<float> _arg);
+//    /** Pass the interpolation weights to SingleProjectionToFourDFilter */
+//    void SetWeights(const itk::Array2D<float> _arg);
+
+    /** Use CUDA interpolation/splat filters */
+    itkSetMacro(UseCudaSplat, bool)
+    itkGetMacro(UseCudaSplat, bool)
+
+    /** Macros that take care of implementing the Get and Set methods for Weights */
+    itkGetMacro(Weights, itk::Array2D<float>)
+    itkSetMacro(Weights, itk::Array2D<float>)
 
 protected:
     ProjectionStackToFourDImageFilter();
@@ -82,6 +94,7 @@ protected:
     itk::Array2D<float>                                     m_Weights;
     GeometryType::Pointer                                   m_Geometry;
     int                                                     m_ProjectionNumber;
+    bool                                                    m_UseCudaSplat;
 
 private:
     ProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

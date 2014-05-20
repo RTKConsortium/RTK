@@ -87,6 +87,8 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
     m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
     m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
     }
+  if (_arg == 2) // The forward projection filter runs on GPU. It is most efficient to also run the interpolation on GPU.
+    m_CGOperator->SetUseCudaInterpolation(true);
 }
 
 
@@ -103,6 +105,11 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
     m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter( _arg );
     m_ProjStackToFourDFilter->SetBackProjectionFilter(m_BackProjectionFilterForB);
+    }
+  if (_arg == 2) // The back projection filter runs on GPU. It is most efficient to also run the splat on GPU.
+    {
+    m_CGOperator->SetUseCudaSplat(true);
+    m_ProjStackToFourDFilter->SetUseCudaSplat(true);
     }
 }
 

@@ -11,9 +11,11 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 {
   this->SetNumberOfRequiredInputs(2);
 
+  // Set default behavior
+  m_UseCudaInterpolation = false;
+  m_UseCudaSplat = false;
+
   // Create the filters
-  m_InterpolationFilter = InterpolationFilterType::New();
-  m_SplatFilter = SplatFilterType::New();
   m_ConstantVolumeSource1 = ConstantVolumeSourceType::New();
   m_ConstantVolumeSource2 = ConstantVolumeSourceType::New();
   m_ExtractFilter = ExtractFilterType::New();
@@ -75,16 +77,6 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::SetWeights(const itk::Array2D<float> _arg)
-{
-  m_InterpolationFilter->SetWeights(_arg);
-  m_SplatFilter->SetWeights(_arg);
-  this->Modified();
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType>
-void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
 {
   m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
@@ -136,6 +128,12 @@ void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  // Create the interpolation and splat filters at runtime
+  if (m_UseCudaInterpolation) m_InterpolationFilter = rtk::CudaInterpolateImageFilter::New();
+    else  m_InterpolationFilter = InterpolationFilterType::New();
+  if (m_UseCudaSplat) m_SplatFilter = rtk::CudaSplatImageFilter::New();
+    else m_SplatFilter = SplatFilterType::New();
+
   // Set runtime connections
   m_ZeroMultiplyVolumeSeriesFilter->SetInput1(this->GetInputVolumeSeries());
   m_ZeroMultiplyProjectionStackFilter->SetInput1(this->GetInputProjectionStack());
@@ -160,6 +158,8 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   extractRegion.SetIndex(Dimension-1, 0);
   m_ExtractFilter->SetExtractionRegion(extractRegion);
 
+  m_InterpolationFilter->SetWeights(m_Weights);
+  m_SplatFilter->SetWeights(m_Weights);
   m_InterpolationFilter->SetProjectionNumber(0);
   m_SplatFilter->SetProjectionNumber(0);
 

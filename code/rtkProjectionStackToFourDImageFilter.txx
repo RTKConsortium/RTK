@@ -16,11 +16,12 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   this->SetNumberOfRequiredInputs(2);
 
   m_ProjectionNumber = 0;
+  m_UseCudaSplat = false;
 
   // Create the filters
   m_ExtractFilter = ExtractFilterType::New();
   m_ConstantImageSource = ConstantImageSourceType::New();
-  m_SplatFilter = SplatFilterType::New();
+
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
 
   // Set constant parameters
@@ -62,14 +63,14 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   this->Modified();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
-void
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-::SetWeights(const itk::Array2D<float> _arg)
-{
-  m_Weights = _arg;
-  this->Modified();
-}
+//template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+//void
+//ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
+//::SetWeights(const itk::Array2D<float> _arg)
+//{
+//  m_Weights = _arg;
+//  this->Modified();
+//}
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
@@ -122,13 +123,13 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_ExtractFilter->SetInput(this->GetInputProjectionStack());
   m_ZeroMultiplyFilter->SetInput1(this->GetInputVolumeSeries());
 
-  // This connection must be set here, because when the filter is updated a second time
-  // the inputVolumeSeries of m_SplatFilter is "pimg"
-  m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyFilter->GetOutput());
-
-  // Set connections with the backprojection filter
   m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_ExtractFilter->GetOutput());
+
+  // Create and set the splat filter
+  if (m_UseCudaSplat) m_SplatFilter = rtk::CudaSplatImageFilter::New();
+      else m_SplatFilter = SplatFilterType::New();
+  m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyFilter->GetOutput());
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
 
   // Set runtime parameters
