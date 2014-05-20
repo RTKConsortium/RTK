@@ -2,11 +2,17 @@
 #define __rtkFourDReconstructionConjugateGradientOperator_h
 
 #include "rtkConjugateGradientOperator.h"
-#include "rtkProjectionStackToFourDImageFilter.h"
-#include "rtkFourDToProjectionStackImageFilter.h"
 
+#include <itkMultiplyImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkArray2D.h>
+
+#include "rtkConstantImageSource.h"
+#include "rtkInterpolatorWithKnownWeightsImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
+#include "rtkSplatWithKnownWeightsImageFilter.h"
+#include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "itkArray2D.h"
 
 namespace rtk
 {
@@ -18,6 +24,9 @@ public:
     typedef FourDReconstructionConjugateGradientOperator        Self;
     typedef ConjugateGradientOperator< VolumeSeriesType>        Superclass;
     typedef itk::SmartPointer< Self >                           Pointer;
+
+  /** Convenient typedef */
+    typedef ProjectionStackType                                 VolumeType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -34,8 +43,12 @@ public:
 
     typedef rtk::BackProjectionImageFilter< ProjectionStackType, ProjectionStackType >          BackProjectionFilterType;
     typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >       ForwardProjectionFilterType;
-    typedef rtk::FourDToProjectionStackImageFilter< ProjectionStackType, VolumeSeriesType >     FourDToProjectionStackFilterType;
-    typedef rtk::ProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType >     ProjectionStackToFourDFilterType;
+    typedef rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>          InterpolationFilterType;
+    typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>                 SplatFilterType;
+    typedef rtk::ConstantImageSource<VolumeType>                                                ConstantVolumeSourceType;
+    typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>                   ExtractFilterType;
+    typedef itk::MultiplyImageFilter<VolumeSeriesType>                                          MultiplyVolumeSeriesType;
+    typedef itk::MultiplyImageFilter<ProjectionStackType>                                       MultiplyProjectionStackType;
 
     /** Pass the backprojection filter to ProjectionStackToFourD*/
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
@@ -63,9 +76,19 @@ protected:
     /** Does the real work. */
     virtual void GenerateData();
 
+    /** Initialize the ConstantImageSourceFilter */
+    void InitializeConstantSource();
+
     /** Member pointers to the filters used internally (for convenience)*/
-    typename FourDToProjectionStackFilterType::Pointer     m_FourDToProjectionStackFilter;
-    typename ProjectionStackToFourDFilterType::Pointer     m_ProjectionStackToFourDFilter;
+    typename BackProjectionFilterType::Pointer       m_BackProjectionFilter;
+    typename ForwardProjectionFilterType::Pointer    m_ForwardProjectionFilter;
+    typename InterpolationFilterType::Pointer        m_InterpolationFilter;
+    typename SplatFilterType::Pointer                m_SplatFilter;
+    typename ConstantVolumeSourceType::Pointer       m_ConstantVolumeSource1;
+    typename ConstantVolumeSourceType::Pointer       m_ConstantVolumeSource2;
+    typename ExtractFilterType::Pointer              m_ExtractFilter;
+    typename MultiplyVolumeSeriesType::Pointer       m_ZeroMultiplyVolumeSeriesFilter;
+    typename MultiplyProjectionStackType::Pointer    m_ZeroMultiplyProjectionStackFilter;
 
 private:
     FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
