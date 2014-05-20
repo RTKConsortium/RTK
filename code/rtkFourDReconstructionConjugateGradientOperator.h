@@ -14,6 +14,11 @@
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
+#ifdef RTK_USE_CUDA
+#include "rtkCudaInterpolateImageFilter.h"
+#include "rtkCudaSplatImageFilter.h"
+#endif
+
 namespace rtk
 {
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -59,9 +64,15 @@ public:
     /** Pass the geometry to both ProjectionStackToFourD and FourDToProjectionStack */
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
 
-    /** Pass the interpolation weights to both ProjectionStackToFourD and FourDToProjectionStack */
-    void SetWeights(const itk::Array2D<float> _arg);
+    /** Use CUDA interpolation/splat filters */
+    itkSetMacro(UseCudaInterpolation, bool)
+    itkGetMacro(UseCudaInterpolation, bool)
+    itkSetMacro(UseCudaSplat, bool)
+    itkGetMacro(UseCudaSplat, bool)
 
+    /** Macros that take care of implementing the Get and Set methods for Weights.*/
+    itkGetMacro(Weights, itk::Array2D<float>)
+    itkSetMacro(Weights, itk::Array2D<float>)
 
 protected:
     FourDReconstructionConjugateGradientOperator();
@@ -90,10 +101,13 @@ protected:
     typename MultiplyVolumeSeriesType::Pointer       m_ZeroMultiplyVolumeSeriesFilter;
     typename MultiplyProjectionStackType::Pointer    m_ZeroMultiplyProjectionStackFilter;
 
+    bool m_UseCudaInterpolation;
+    bool m_UseCudaSplat;
+    itk::Array2D<float> m_Weights;
+
 private:
     FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace ITK
 
