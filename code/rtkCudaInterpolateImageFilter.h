@@ -21,6 +21,8 @@
 
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 #include "itkCudaImage.h"
+#include "itkCudaInPlaceImageFilter.h"
+
 namespace rtk
 {
 
@@ -34,12 +36,11 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 class ITK_EXPORT CudaInterpolateImageFilter :
-        public InterpolatorWithKnownWeightsImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,4> >
+        public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+    InterpolatorWithKnownWeightsImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,4> > >
 {
 public:
     /** Standard class typedefs. */
-    typedef itk::CudaImage<float,4>                                InputImageType;
-    typedef itk::CudaImage<float,3>                                OutputImageType;
     typedef rtk::CudaInterpolateImageFilter                             Self;
     typedef rtk::InterpolatorWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
     typedef itk::SmartPointer<Self>                            Pointer;
@@ -56,7 +57,7 @@ protected:
     ~CudaInterpolateImageFilter(){
     }
 
-    virtual void GenerateData();
+    virtual void GPUGenerateData();
 
 private:
     CudaInterpolateImageFilter(const Self&); //purposely not implemented

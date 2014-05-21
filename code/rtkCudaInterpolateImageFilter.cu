@@ -50,20 +50,11 @@ CUDA_interpolation(const int4 &inputSize,
                    float **weights)
 {
     // CUDA device pointers
-    float *deviceInput;
-    int    nVoxelsInput = inputSize.x * inputSize.y * inputSize.z * inputSize.w;
-    int    memorySizeInput = nVoxelsInput*sizeof(float);
-    float *deviceOutput;
     int    nVoxelsOutput = inputSize.x * inputSize.y * inputSize.z;
     int    memorySizeOutput = nVoxelsOutput*sizeof(float);
 
-    cudaMalloc( (void**)&deviceInput, memorySizeInput );
-    CUDA_CHECK_ERROR;
-    cudaMemcpy (deviceInput, input, memorySizeInput, cudaMemcpyHostToDevice);
-
-    cudaMalloc( (void**)&deviceOutput, memorySizeOutput);
-    CUDA_CHECK_ERROR;
-    cudaMemset(deviceOutput, 0, memorySizeOutput);
+    // Reset output volume
+    cudaMemset((void *)output, 0, memorySizeOutput );
 
     // Thread Block Dimensions
     int tBlock_x = 16;
@@ -79,17 +70,11 @@ CUDA_interpolation(const int4 &inputSize,
         if(weight!=0)
         {
 //            printf("%f\n", weight);
-            weighAndAddToOutput_kernel <<< dimGrid, dimBlock >>> ( deviceInput,
+            weighAndAddToOutput_kernel <<< dimGrid, dimBlock >>> ( input,
                                                                    inputSize,
-                                                                   deviceOutput,
+                                                                   output,
                                                                    phase,
                                                                    weight);
         }
     }
-
-    cudaMemcpy (output, deviceOutput, memorySizeOutput, cudaMemcpyDeviceToHost);
-
-    // Release memory
-    cudaFree(deviceInput);
-    cudaFree(deviceOutput);
 }

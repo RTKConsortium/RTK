@@ -49,29 +49,6 @@ CUDA_splat(const int4 &outputSize,
                    int projectionNumber,
                    float **weights)
 {
-//        printf("In Cuda_splat\n");
-
-    // CUDA device pointers
-    float *deviceInput;
-    unsigned long long int      nVoxelsInput = outputSize.x * outputSize.y * outputSize.z;
-    unsigned long long int      memorySizeInput = nVoxelsInput*sizeof(float);
-    float *deviceOutput;
-    unsigned long long int      nVoxelsOutput = outputSize.x * outputSize.y * outputSize.z * outputSize.w;
-    unsigned long long int      memorySizeOutput = nVoxelsOutput*sizeof(float);
-//    printf("In Cuda_splat : memorySizeInput = %u\n", memorySizeInput);
-//    printf("In Cuda_splat : memorySizeOutput = %u\n", memorySizeOutput);
-
-//    printf("In Cuda_splat : About to malloc input\n");
-    cudaMalloc( (void**)&deviceInput, memorySizeInput );
-    CUDA_CHECK_ERROR;
-    cudaMemcpy (deviceInput, input, memorySizeInput, cudaMemcpyHostToDevice);
-//    printf("In Cuda_splat : malloc input OK\n");
-
-//    printf("In Cuda_splat : About to malloc output\n");
-    cudaMalloc( (void**)&deviceOutput, memorySizeOutput);
-    CUDA_CHECK_ERROR;
-    cudaMemcpy(deviceOutput, output, memorySizeOutput, cudaMemcpyHostToDevice); //The filter is in place, thus the output needs to be copied (and not set to zero)
-//    printf("In Cuda_splat : malloc output OK\n");
 
     // Thread Block Dimensions
     int tBlock_x = 16;
@@ -86,18 +63,11 @@ CUDA_splat(const int4 &outputSize,
         float weight = weights[phase][projectionNumber];
         if(weight!=0)
         {
-//            printf("%f\n", weight);
-            splat_kernel <<< dimGrid, dimBlock >>> ( deviceInput,
-                                                       outputSize,
-                                                       deviceOutput,
-                                                       phase,
-                                                       weight);
+            splat_kernel <<< dimGrid, dimBlock >>> ( input,
+                                                     outputSize,
+                                                     output,
+                                                     phase,
+                                                     weight);
         }
     }
-
-    cudaMemcpy (output, deviceOutput, memorySizeOutput, cudaMemcpyDeviceToHost);
-
-    // Release memory
-    cudaFree(deviceInput);
-    cudaFree(deviceOutput);
 }

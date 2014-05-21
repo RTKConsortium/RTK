@@ -21,6 +21,90 @@
 
 namespace rtk
 {
+  /** \class FourDReconstructionConjugateGradientOperator
+   * \brief Implements part of the 4D reconstruction by conjugate gradient
+   *
+   * See the reference paper: "Cardiac C-arm computed tomography using
+   * a 3D + time ROI reconstruction method with spatial and temporal regularization"
+   * by Mory et al.
+   *
+   * 4D conjugate gradient reconstruction consists in iteratively
+   * minimizing the following cost function:
+   *
+   * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
+   *
+   * with
+   * - f a 4D series of 3D volumes, each one being the reconstruction
+   * at a given respiratory/cardiac phase
+   * - p_theta is the projection measured at angle theta
+   * - S_theta an interpolation operator which, from the 3D + time sequence f,
+   * estimates the 3D volume through which projection p_theta has been acquired
+   * - R_theta is the X-ray transform (the forward projection operator) for angle theta
+   *
+   * Computing the gradient of this cost function yields:
+   *
+   * S_theta^T R_theta^T R_theta S_theta f - S_theta^T R_theta^T p_theta
+   *
+   * where A^T means the adjoint of operator A.
+   *
+   * FourDReconstructionConjugateGradientOperator implements S_theta^T R_theta^T R_theta S_theta.
+   * It can achieved by FourDToProjectionStackImageFilter followed by
+   * ProjectionStackToFourDImageFilter (simple implementation), or
+   * by assembling the internal pipelines of these filters, and removing
+   * the unnecessary filters in the middle (a PasteImageFilter and an ExtractImageFilter), which
+   * results in performance gain and easier GPU memory management.
+   * The current implementation is the optimized one.
+   *
+   * \dot
+   * digraph FourDReconstructionConjugateGradientOperator {
+   *
+   * Input0 [ label="Input 0 (Input: 4D sequence of volumes)"];
+   * Input0 [shape=Mdiamond];
+   * Input1 [label="Input 1 (Projections)"];
+   * Input1 [shape=Mdiamond];
+   * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
+   * Output [shape=Mdiamond];
+   *
+   * node [shape=box];
+   * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+   * ZeroMultiplyProj [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+   * ZeroMultiply4D [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+   * Source1 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+   * Source2 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+   * ForwardProj [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
+   * Interpolation [ label="rtk::InterpolationImageFilter" URL="\ref rtk::InterpolationImageFilter"];
+   * BackProj [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+   * Splat [ label="rtk::SplatWithKnownWeightsImageFilter" URL="\ref rtk::SplatWithKnownWeightsImageFilter"];
+   * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterZeroMultiply [label="", fixedsize="false", width=0, height=0, shape=none];
+   *
+   * Input0 -> AfterInput0 [arrowhead=None];
+   * AfterInput0 -> Interpolation;
+   * AfterInput0 -> ZeroMultiply4D;
+   * Source1 -> Interpolation;
+   * Interpolation -> ForwardProj;
+   * Source2 -> BackProj;
+   * ForwardProj -> BackProj;
+   * BackProj -> Splat;
+   * Splat -> AfterSplat[arrowhead=None];
+   * AfterSplat -> Output;
+   * AfterSplat -> AfterZeroMultiply[style=dashed];
+   * ZeroMultiply4D -> AfterZeroMultiply[arrowhead=None];
+   * AfterZeroMultiply -> Splat;
+   * Input1 -> ZeroMultiplyProj;
+   * ZeroMultiplyProj -> Extract;
+   * Extract -> ForwardProj;
+   * }
+   * \enddot
+   *
+   * \test rtkfourdconjugategradienttest.cxx
+   *
+   * \author Cyril Mory
+   *
+   * \ingroup ReconstructionAlgorithm
+   */
+
 template< typename VolumeSeriesType, typename ProjectionStackType>
 class FourDReconstructionConjugateGradientOperator : public ConjugateGradientOperator< VolumeSeriesType>
 {
