@@ -28,7 +28,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId))
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId)
 {
   // Get angular gaps and max gap
   std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext( m_Geometry->GetGantryAngles() );
@@ -106,7 +106,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
   double sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
   double invsid = 1./sqrt(sid*sid+sox*sox);
-  if( delta < atan(0.5 * detectorWidth * invsid) )
+  if( !threadId && delta < atan(0.5 * detectorWidth * invsid) )
     itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
                     << "Delta is " << delta*180./itk::Math::pi
                     << " degrees and should be more than half the beam angle, i.e. "
