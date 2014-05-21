@@ -31,7 +31,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 {
   // Get angular gaps and max gap
-  std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext();
+  std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext( m_Geometry->GetGantryAngles() );
   int                 nProj = angularGaps.size();
   int                 maxAngularGapPos = 0;
   for(int iProj=1; iProj<nProj; iProj++)
@@ -49,8 +49,8 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   if( m_Geometry->GetSourceToDetectorDistances()[0] == 0. ||
       angularGaps[maxAngularGapPos] < itk::Math::pi / 9 )
     {
-      if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
-                                                 // required
+    if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
+                                               // required
       {
       while(!itIn.IsAtEnd() )
         {
@@ -80,7 +80,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
   const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
-  const std::multimap<double,unsigned int> sortedAngles = m_Geometry->GetSortedAngles();
+  const std::multimap<double,unsigned int> sortedAngles = m_Geometry->GetSortedAngles( m_Geometry->GetGantryAngles() );
   const double detectorWidth = this->GetInput()->GetSpacing()[0] *
                                this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
 
@@ -98,11 +98,10 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   itLastAngle = (itLastAngle==sortedAngles.begin())?--sortedAngles.end():--itLastAngle;
   double lastAngle = itLastAngle->first;
   if(lastAngle<firstAngle)
-    lastAngle += 360;
+    lastAngle += 2*M_PI;
   //Delta
-  double delta = 0.5 * (lastAngle - firstAngle - 180);
-  delta = delta-360*floor(delta/360); // between -360 and 360
-  delta *= itk::Math::pi / 180;       // degrees to radians
+  double delta = 0.5 * (lastAngle - firstAngle - M_PI);
+  delta = delta - 2*M_PI*floor( delta / (2*M_PI) ); // between -2*PI and 2*PI
 
   double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
   double sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
@@ -128,8 +127,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     double beta = rotationAngles[ itIn.GetIndex()[2] ];
     beta = beta - firstAngle;
     if (beta<0)
-      beta += 360;
-    beta *= itk::Math::pi / 180;
+      beta += 2*M_PI;
 
     itWeights.GoToBegin();
     while(!itWeights.IsAtEnd() )

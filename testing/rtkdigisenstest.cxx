@@ -82,13 +82,13 @@ void CheckGeometries(GeometryType *g1, GeometryType *g2)
 
   for(unsigned int i=0; i<nproj; i++)
     {
-    if( e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
+    if( e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(
               std::fabs(g1->GetGantryAngles()[i] -
                         g2->GetGantryAngles()[i])) ||
-        e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
+        e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(
               std::fabs(g1->GetOutOfPlaneAngles()[i] -
                         g2->GetOutOfPlaneAngles()[i])) ||
-        e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
+        e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(
               std::fabs(g1->GetInPlaneAngles()[i] -
                         g2->GetInPlaneAngles()[i])) ||
         e < std::fabs(g1->GetSourceToIsocenterDistances()[i] -
