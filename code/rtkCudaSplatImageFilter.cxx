@@ -24,31 +24,24 @@
 rtk::CudaSplatImageFilter
 ::CudaSplatImageFilter()
 {
-    // We use FFTW for the kernel so we need to do the same thing as in the parent
-    //#if defined(USE_FFTWF)
-    //  this->SetGreatestPrimeFactor(13);
-    //#endif
 }
 
 void
 rtk::CudaSplatImageFilter
-::GenerateData()
+::GPUGenerateData()
 {
-    this->AllocateOutputs();
-
-    // Get input requested region
-    OutputImageType::Pointer output = this->GetOutput();
-    InputImageType::Pointer input = this->GetInputVolume();
-
     int4 outputSize;
-    outputSize.x = output->GetLargestPossibleRegion().GetSize()[0];
-    outputSize.y = output->GetLargestPossibleRegion().GetSize()[1];
-    outputSize.z = output->GetLargestPossibleRegion().GetSize()[2];
-    outputSize.w = output->GetLargestPossibleRegion().GetSize()[3];
+    outputSize.x = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
+    outputSize.y = this->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
+    outputSize.z = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
+    outputSize.w = this->GetOutput()->GetLargestPossibleRegion().GetSize()[3];
+
+    float *pvolseries = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+    float *pvol = *(float**)( this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer() );
 
     CUDA_splat(outputSize,
-                       input->GetBufferPointer(),
-                       output->GetBufferPointer(),
-                       m_ProjectionNumber,
-                       m_Weights.data_array());
+               pvol,
+               pvolseries,
+               m_ProjectionNumber,
+               m_Weights.data_array());
 }

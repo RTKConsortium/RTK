@@ -25,8 +25,6 @@
 
 #include <algorithm>
 
-#include <itkImageFileWriter.h>
-
 namespace rtk
 {
 
@@ -157,15 +155,6 @@ void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
-  // FOR DEBUGGING ONLY
-  m_ProjStackToFourDFilter->Update();
-  typedef itk::ImageFileWriter<VolumeSeriesType> WriterType;
-  typename WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(m_ProjStackToFourDFilter->GetOutput());
-  writer->SetFileName("conj_grad_b.mha");
-  writer->Update();
-  // END OF DEBUGGING
-
   m_ConjugateGradientFilter->Update();
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
 }

@@ -21,6 +21,7 @@
 
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "itkCudaImage.h"
+#include "itkCudaInPlaceImageFilter.h"
 
 namespace rtk
 {
@@ -35,12 +36,12 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 class ITK_EXPORT CudaSplatImageFilter :
-        public SplatWithKnownWeightsImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,3> >
+    public itk::CudaInPlaceImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
+  SplatWithKnownWeightsImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,3> > >
+
 {
 public:
     /** Standard class typedefs. */
-    typedef itk::CudaImage<float,3>                                InputImageType;
-    typedef itk::CudaImage<float,4>                                OutputImageType;
     typedef rtk::CudaSplatImageFilter                             Self;
     typedef rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
     typedef itk::SmartPointer<Self>                            Pointer;
@@ -57,7 +58,7 @@ protected:
     ~CudaSplatImageFilter(){
     }
 
-    virtual void GenerateData();
+    virtual void GPUGenerateData();
 
 private:
     CudaSplatImageFilter(const Self&); //purposely not implemented

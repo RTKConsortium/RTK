@@ -24,36 +24,24 @@
 rtk::CudaInterpolateImageFilter
 ::CudaInterpolateImageFilter()
 {
-    // We use FFTW for the kernel so we need to do the same thing as in the parent
-    //#if defined(USE_FFTWF)
-    //  this->SetGreatestPrimeFactor(13);
-    //#endif
 }
 
 void
 rtk::CudaInterpolateImageFilter
-::GenerateData()
+::GPUGenerateData()
 {
-    this->AllocateOutputs();
-
-    // Get input requested region
-    InputImageType::Pointer input = this->GetInputVolumeSeries();
-    OutputImageType::Pointer output = this->GetOutput();
-
     int4 inputSize;
-    inputSize.x = input->GetLargestPossibleRegion().GetSize()[0];
-    inputSize.y = input->GetLargestPossibleRegion().GetSize()[1];
-    inputSize.z = input->GetLargestPossibleRegion().GetSize()[2];
-    inputSize.w = input->GetLargestPossibleRegion().GetSize()[3];
+    inputSize.x = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[0];
+    inputSize.y = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[1];
+    inputSize.z = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[2];
+    inputSize.w = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[3];
 
-//    input->Print(std::cout);
-//    output->Print(std::cout);
-//    std::cout << "m_ProjectionNumber = " << m_ProjectionNumber << std::endl;
-//    std::cout << m_Weights << std::endl;
+    float *pvolseries = *(float**)( this->GetInputVolumeSeries()->GetCudaDataManager()->GetGPUBufferPointer() );
+    float *pvol = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
     CUDA_interpolation(inputSize,
-                       input->GetBufferPointer(),
-                       output->GetBufferPointer(),
+                       pvolseries,
+                       pvol,
                        m_ProjectionNumber,
                        m_Weights.data_array());
 }

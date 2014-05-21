@@ -63,15 +63,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   this->Modified();
 }
 
-//template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
-//void
-//ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-//::SetWeights(const itk::Array2D<float> _arg)
-//{
-//  m_Weights = _arg;
-//  this->Modified();
-//}
-
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
@@ -102,7 +93,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   typename VolumeType::PointType constantImageSourceOrigin;
   constantImageSourceOrigin.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      constantImageSourceOrigin[i] = constantImageSourceSpacing[i] * (constantImageSourceSize[i]-1) * -0.5;
+      constantImageSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];;
 
   typename VolumeType::DirectionType constantImageSourceDirection;
   constantImageSourceDirection.SetIdentity();
