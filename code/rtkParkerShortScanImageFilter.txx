@@ -22,6 +22,10 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkMacro.h>
 
+#ifndef M_PI
+#define M_PI vnl_math::pi
+#endif
+
 namespace rtk
 {
 
@@ -98,7 +102,9 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   itLastAngle = (itLastAngle==sortedAngles.begin())?--sortedAngles.end():--itLastAngle;
   double lastAngle = itLastAngle->first;
   if(lastAngle<firstAngle)
+    {
     lastAngle += 2*M_PI;
+    }
   //Delta
   double delta = 0.5 * (lastAngle - firstAngle - M_PI);
   delta = delta - 2*M_PI*floor( delta / (2*M_PI) ); // between -2*PI and 2*PI
