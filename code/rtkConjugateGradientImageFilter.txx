@@ -143,7 +143,6 @@ void ConjugateGradientImageFilter<OutputImageType>
   // Start the iterative procedure
   for (int k=0; k<m_NumberOfIterations; k++)
     {
-    std::cout << "Starting conjugate gradient iteration number " << k <<std::endl;
     if(m_MeasureExecutionTimes) CGTimeProbe.Start();
 
     if(k>0)

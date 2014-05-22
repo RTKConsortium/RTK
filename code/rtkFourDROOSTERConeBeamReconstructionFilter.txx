@@ -28,8 +28,6 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   // Set permanent connections
   m_PositivityFilter->SetInput(m_FourDCGFilter->GetOutput());
   m_AverageOutOfROIFilter->SetInput(m_PositivityFilter->GetOutput());
-//  m_AverageOutOfROIFilter->SetInput(m_FourDCGFilter->GetOutput());
-
   m_TVDenoisingSpace->SetInput(m_AverageOutOfROIFilter->GetOutput());
   m_TVDenoisingTime->SetInput(m_TVDenoisingSpace->GetOutput());
 
