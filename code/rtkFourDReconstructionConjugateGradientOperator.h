@@ -48,8 +48,8 @@ namespace rtk
    * where A^T means the adjoint of operator A.
    *
    * FourDReconstructionConjugateGradientOperator implements S_theta^T R_theta^T R_theta S_theta.
-   * It can achieved by FourDToProjectionStackImageFilter followed by
-   * ProjectionStackToFourDImageFilter (simple implementation), or
+   * It can be achieved by a FourDToProjectionStackImageFilter followed by
+   * a ProjectionStackToFourDImageFilter (simple implementation), or
    * by assembling the internal pipelines of these filters, and removing
    * the unnecessary filters in the middle (a PasteImageFilter and an ExtractImageFilter), which
    * results in performance gain and easier GPU memory management.
