@@ -22,6 +22,10 @@
 #include <algorithm>
 #include <itkCenteredEuler3DTransform.h>
 
+#ifndef M_PI
+#define M_PI vnl_math::pi
+#endif
+
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
   double result = a-360*floor(a/360); // between -360 and 360
