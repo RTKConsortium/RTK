@@ -94,7 +94,7 @@ class CudaProjectedValueAccumulationOriginal : public CudaProjectedValueAccumula
 public:
   typedef CudaProjectedValueAccumulation<TInput, TOutput> Superclass;
   typedef typename Superclass::MaterialMuImageType        MaterialMuImageType;
-  
+
   CudaProjectedValueAccumulationOriginal()
   {
     // fake mu initialization
@@ -116,7 +116,7 @@ public:
     params->matSize = m_MaterialMu->GetLargestPossibleRegion().GetSize()[0];
     return params;
   }
-  
+
   // fake mu
   typename MaterialMuImageType::Pointer  m_MaterialMu;
 };
@@ -150,7 +150,7 @@ public:
       it.Set(0.);
       ++it;
       }
-    
+
     // fake energy initialization
     m_EnergyWeightList = new std::vector<double>();
     for (int i = 0; i < (int)size[1]; i++)
@@ -162,7 +162,7 @@ public:
   {
     delete m_EnergyWeightList;
   };
-  
+
   CudaAccumulationParameters* GetCudaParameters()
   {
     CudaAccumulationParameters* params = new CudaAccumulationParameters();
@@ -171,7 +171,7 @@ public:
     params->matSize = m_MaterialMu->GetLargestPossibleRegion().GetSize()[0];
     params->energySize = m_MaterialMu->GetLargestPossibleRegion().GetSize()[1];
     params->mu = new float[params->matSize*params->energySize];
-    
+
     double* p = m_MaterialMu->GetBufferPointer();
     float* pCopy = params->mu;
     for (int i = 0; i < params->matSize*params->energySize; i++)
@@ -179,7 +179,7 @@ public:
       *pCopy = *p;
       ++p; ++pCopy;
       }
-    
+
     params->energyWeights = new float[m_EnergyWeightList->size()];
     for(unsigned int i = 0; i < m_EnergyWeightList->size(); i++)
       {
@@ -200,7 +200,7 @@ public:
   typedef CudaProjectedValueAccumulation<TInput, TOutput> Superclass;
   typedef typename Superclass::MaterialMuImageType        MaterialMuImageType;
   typedef typename Superclass::VectorType                 VectorType;
-  
+
   CudaProjectedValueAccumulationCompton()
   {
     // fake mu initialization
@@ -239,7 +239,7 @@ public:
     m_Energy = 1.;
   };
   ~CudaProjectedValueAccumulationCompton() {};
-  
+
   CudaAccumulationParameters* GetCudaParameters()
   {
     CudaAccumulationParameters* params = new CudaAccumulationParameters();
@@ -273,7 +273,7 @@ public:
 
     return params;
   }
-  
+
   typename MaterialMuImageType::Pointer m_MaterialMu;
   VectorType m_Direction;
   double m_Energy;
@@ -300,7 +300,7 @@ itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication = Functor::CudaInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation        = Functor::CudaProjectedValueAccumulationCompton<typename TInputImage::PixelType, typename TOutputImage::PixelType>
+          class TProjectedValueAccumulation        = Functor::CudaProjectedValueAccumulationOriginal<typename TInputImage::PixelType, typename TOutputImage::PixelType>
           >
 class ITK_EXPORT CudaForwardProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< TInputImage, TOutputImage,
@@ -350,7 +350,7 @@ public:
 protected:
   rtkcuda_EXPORT CudaForwardProjectionImageFilter() {};
   ~CudaForwardProjectionImageFilter() {};
-  
+
   void GPUGenerateData();
 
 private:

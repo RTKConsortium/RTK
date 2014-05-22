@@ -199,7 +199,7 @@ void interpolateAndAccumulateOriginal(float *dev_proj,
   dev_proj[numThread] = (sum+(tfar-t+halfVStep)*sample) * c_tStep;
 }
 
-// New structure, less precision
+// New structure
 __device__
 void interpolateWeights1(float *dev_weights,
                          unsigned int numThread,
@@ -224,7 +224,7 @@ void interpolateWeights1(float *dev_weights,
     float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
     float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
     float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
-    
+
     dev_weights[numThread * c_matSize + (int)tex3D(tex_vol, itex  , jtex  , ktex  )] += (1-dxtex) * (1-dytex) * (1-dztex) * lastStepCoef;
     dev_weights[numThread * c_matSize + (int)tex3D(tex_vol, itex+1, jtex  , ktex  )] += dxtex     * (1-dytex) * (1-dztex) * lastStepCoef;
     dev_weights[numThread * c_matSize + (int)tex3D(tex_vol, itex  , jtex+1, ktex  )] += (1-dxtex) * dytex     * (1-dztex) * lastStepCoef;
@@ -263,7 +263,7 @@ void interpolateWeights2(float *dev_weights,
     float xtex = pos.x - 0.5; int itex = floor(xtex); float dxtex = xtex - itex;
     float ytex = pos.y - 0.5; int jtex = floor(ytex); float dytex = ytex - jtex;
     float ztex = pos.z - 0.5; int ktex = floor(ztex); float dztex = ztex - ktex;
-    
+
     dev_weights[numThread * c_matSize + (int)tex3D(tex_vol, itex  , jtex  , ktex  )] += (1-dxtex) * (1-dytex) * (1-dztex) * lastStepCoef;
     dev_weights[numThread * c_matSize + (int)tex3D(tex_vol, itex+1, jtex  , ktex  )] += dxtex     * (1-dytex) * (1-dztex) * lastStepCoef;
     dev_weights[numThread * c_matSize + (int)tex3D(tex_vol, itex  , jtex+1, ktex  )] += (1-dxtex) * dytex     * (1-dztex) * lastStepCoef;
@@ -277,7 +277,7 @@ void interpolateWeights2(float *dev_weights,
     }
 }
 
-// New structure, less precision
+// New structure
 __device__
 void accumulate1(float *dev_proj,
                  float *dev_weights,
@@ -291,7 +291,7 @@ void accumulate1(float *dev_proj,
   dev_proj[numThread] *= c_tStep;
 }
 
-// primary projector : use energy + vol index to get mu
+// primary projector
 __device__
 void accumulate2(float *dev_proj,
                  float *dev_weights,
@@ -327,7 +327,7 @@ void accumulate2(float *dev_proj,
     }
 }
 
-// compton projector
+// compton projector FIXME
 __device__
 void accumulate3(float *dev_proj,
                  float *dev_weights,
@@ -355,7 +355,7 @@ void accumulate3(float *dev_proj,
   //                         (Eratio + 1./Eratio - 1. + cosT*cosT); // DCSKleinNishinaTerm2
   float DCSKleinNishina = c_eRadiusOverCrossSectionTerm * Eratio * (1. + Eratio * (Eratio - 1. + cosT * cosT));
   float DCScompton = DCSKleinNishina * scatteringFunction;
-    
+
   // Multiply interpolation weights by step norm in MM to convert voxel
   // intersection length to MM.
   for(int id = 0; id < c_matSize - 1; id++)
@@ -404,7 +404,7 @@ void accumulate3(float *dev_proj,
 #endif
 
   // Final computation
-  dev_proj[numThread] += exp(-rayIntegral) * DCScompton * getSolidAngle(sourceToPixel) /* * (*m_ResponseDetector)(energy)*/;
+  dev_proj[numThread] += exp(-rayIntegral) * DCScompton * getSolidAngle(sourceToPixel) /* TODO * (*m_ResponseDetector)(energy)*/;
 }
 
 // KERNEL kernel_forwardProject
@@ -451,7 +451,7 @@ void kernel_forwardProject(float *dev_proj, float *dev_weights)
     float halfVStep = 0.5f*vStep;
     tnear = tnear + halfVStep;
     pos = ray.o + tnear*ray.d;
-  
+
     switch (c_ProjectionType)
       {
       case ORIGINAL:
@@ -483,7 +483,7 @@ void kernel_forwardProject(float *dev_proj, float *dev_weights)
         float3 sourceToPixel = pixelPos - ray.o;
         float3 nearestPoint = ray.o + tnear * ray.d;
         float3 farthestPoint = ray.o + tfar * ray.d;
-      
+
         interpolateWeights2(dev_weights, numThread, pos, tnear, tfar, vStep, halfVStep, step);
         accumulate3(dev_proj, dev_weights, numThread, sourceToPixel, nearestPoint, farthestPoint);
         break;
@@ -513,7 +513,7 @@ void kernel_forwardProject(float *dev_proj, float *dev_weights)
         float3 sourceToPixel = pixelPos - ray.o;
         float3 nearestPoint = ray.o;
         float3 farthestPoint = ray.o;
-      
+
         accumulate3(dev_proj, dev_weights, numThread, sourceToPixel, nearestPoint, farthestPoint);
         break;
         }
@@ -596,7 +596,7 @@ CUDA_forward_project( int projections_size[2],
   tex_vol.addressMode[0] = cudaAddressModeClamp;  // clamp texture coordinates
   tex_vol.addressMode[1] = cudaAddressModeClamp;
   tex_vol.normalized = false;                     // access with normalized texture coordinates
-  tex_vol.filterMode = cudaFilterModePoint;       // linear interpolation
+  tex_vol.filterMode = cudaFilterModePoint;       // no interpolation
 
   // Copy volume data to array, bind the array to the texture
   cudaExtent volExtent = make_cudaExtent(vol_size[0], vol_size[1], vol_size[2]);
@@ -626,13 +626,13 @@ CUDA_forward_project( int projections_size[2],
   // Reset projection
   cudaMemset((void *)dev_proj, 0, projections_size[0]*projections_size[1]*sizeof(float) );
   CUDA_CHECK_ERROR;
-  
+
   // interpolationWeights
   float *dev_weights;
   cudaMalloc( (void**)&dev_weights, params->matSize*projections_size[0]*projections_size[1]*sizeof(float) );
   cudaMemset((void *)dev_weights, 0, params->matSize*projections_size[0]*projections_size[1]*sizeof(float) );
   CUDA_CHECK_ERROR;
-  
+
   // constant memory
   float3 dev_sourcePos = make_float3(source_position[0], source_position[1], source_position[2]);
   float3 dev_boxMin = make_float3(box_min[0], box_min[1], box_min[2]);
@@ -648,7 +648,7 @@ CUDA_forward_project( int projections_size[2],
   cudaMemcpyToSymbol(c_matSize, &params->matSize, sizeof(int));
 
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
-  
+
   static dim3 dimBlock  = dim3(16, 16, 1);
   static dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
 
@@ -669,7 +669,7 @@ CUDA_forward_project( int projections_size[2],
   CUDA_CHECK_ERROR;
   cudaFree (dev_matrix);
   CUDA_CHECK_ERROR;
-  
+
   switch (params->projectionType)
     {
     case ORIGINAL:
