@@ -179,6 +179,17 @@ if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
 endif()
 ADD_CUDA_TEST(rtksart rtksarttest.cxx)
 
+ADD_EXECUTABLE(rtkfourdconjugategradienttest rtkfourdconjugategradienttest.cxx)
+if(RTK_USE_CUDA)
+  TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest RTK rtkcuda)
+else()
+  TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest RTK)
+endif()
+if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+  ADD_TEST(rtkfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdconjugategradienttest)
+endif()
+ADD_CUDA_TEST(rtkfourdconjugategradient rtkfourdconjugategradienttest.cxx)
+
 ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
 TARGET_LINK_LIBRARIES(rtkjosephadjointoperatorstest RTK)
 ADD_TEST(rtkjosephadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkjosephadjointoperatorstest)
@@ -220,11 +231,12 @@ ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx)
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
 if(NOT RTK_USE_CUDA)
-  ADD_EXECUTABLE(rtkfourdconjugategradienttest rtkfourdconjugategradienttest.cxx)
-  TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest RTK)
-  ADD_TEST(rtkfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdconjugategradienttest)
+  ADD_EXECUTABLE(rtkfourdroostertest rtkfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkfourdroostertest RTK)
+  ADD_TEST(rtkfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdroostertest)
 endif()
-ADD_CUDA_TEST(rtkfourdconjugategradient rtkfourdconjugategradienttest.cxx)
+ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
+
 
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)

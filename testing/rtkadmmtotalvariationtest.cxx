@@ -53,13 +53,13 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
-  if (ErrorPerPixel > 0.032)
+  if (ErrorPerPixel > 0.05)
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.08" << std::endl;
+              << ErrorPerPixel << " instead of 0.05" << std::endl;
     exit( EXIT_FAILURE);
   }
-  if (PSNR < 28)
+  if (PSNR < 23)
   {
     std::cerr << "Test Failed, PSNR not valid! "
               << PSNR << " instead of 23" << std::endl;
@@ -99,7 +99,7 @@ int main(int, char** )
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 180;
+  const unsigned int NumberOfProjectionImages = 90;
 #endif
 
 
@@ -198,7 +198,7 @@ int main(int, char** )
   admmtotalvariation->SetAlpha( 100 );
   admmtotalvariation->SetBeta( 1000 );
   admmtotalvariation->SetAL_iterations( 3 );
-  admmtotalvariation->SetCG_iterations( 3 );
+  admmtotalvariation->SetCG_iterations( 2 );
 
   // In all cases, use the Joseph forward projector
   admmtotalvariation->SetForwardProjectionFilter(0);
