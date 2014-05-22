@@ -9,6 +9,74 @@
 
 namespace rtk
 {
+  /** \class FourDROOSTERConeBeamReconstructionFilter
+   * \brief Implements 4D RecOnstructiOn using Spatial and TEmporal
+   * Regularization (short 4D ROOSTER)
+   *
+   * See the reference paper: "Cardiac C-arm computed tomography using
+   * a 3D + time ROI reconstruction method with spatial and temporal regularization"
+   * by Mory et al.
+   *
+   * 4D conjugate gradient reconstruction consists in iteratively
+   * minimizing the following cost function:
+   *
+   * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
+   *
+   * with
+   * - f a 4D series of 3D volumes, each one being the reconstruction
+   * at a given respiratory/cardiac phase
+   * - p_theta is the projection measured at angle theta
+   * - S_theta an interpolation operator which, from the 3D + time sequence f,
+   * estimates the 3D volume through which projection p_theta has been acquired
+   * - R_theta is the X-ray transform (the forward projection operator) for angle theta
+   *
+   * and then applying several regularization steps :
+   * - Replacing all negative values by zero
+   * - Averaging along time where no movement is expected
+   * - Applying total variation denoising in space
+   * - Applying total variation denoising in time
+   *
+   * and starting over.
+   *
+   * \dot
+   * digraph FourDROOSTERConeBeamReconstructionFilter {
+   *
+   * Input0 [ label="Input 0 (Input: 4D sequence of volumes)"];
+   * Input0 [shape=Mdiamond];
+   * Input1 [label="Input 1 (Projections)"];
+   * Input1 [shape=Mdiamond];
+   * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
+   * Output [shape=Mdiamond];
+   *
+   * node [shape=box];
+   * FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
+   * Positivity [ label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
+   * ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
+   * TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   * TVTime [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterTVTime [label="", fixedsize="false", width=0, height=0, shape=none];
+   *
+   * Input0 -> AfterInput0 [arrowhead=None];
+   * AfterInput0 -> FourDCG;
+   * Input1 -> FourDCG;
+   * FourDCG -> Positivity;
+   * Positivity -> ROI;
+   * ROI -> TVSpace;
+   * TVSpace -> TVTime;
+   * TVTime -> AfterTVTime [arrowhead=None];
+   * AfterTVTime -> Output;
+   * AfterTVTime -> AfterInput0 [style=dashed];
+   * }
+   * \enddot
+   *
+   * \test rtkfourdroostertest.cxx
+   *
+   * \author Cyril Mory
+   *
+   * \ingroup ReconstructionAlgorithm
+   */
+
 template< typename VolumeSeriesType, typename ProjectionStackType>
 class FourDROOSTERConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
