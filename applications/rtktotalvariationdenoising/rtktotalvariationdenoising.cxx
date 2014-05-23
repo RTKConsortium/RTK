@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
   GGO(rtktotalvariationdenoising, args_info);
 
   typedef float OutputPixelType;
-  const unsigned int Dimension = 4;
+  const unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
