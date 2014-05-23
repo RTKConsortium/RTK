@@ -85,6 +85,14 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     }
 }
 
+template <class TInputImage, class TOutputImage>
+void
+UpsampleImageFilter<TInputImage,TOutputImage>
+::BeforeThreadedGenerateData()
+{
+  std::cout << "In UpsampleImageFilter : BeforeThreadedGenerateData, input size = " << this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
+}
+
 
 /**
  *
@@ -94,6 +102,8 @@ void
 UpsampleImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
+  double eps = 10e-6;
+
   //Get the input and output pointers
   InputImageConstPointer  inputPtr    = this->GetInput();
   OutputImagePointer      outputPtr   = this->GetOutput();
@@ -135,7 +145,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
         }
 
       //Caculate inputIndex (note: will not be used if copyFromInput=false...)
-      inputIndex[dim] = round( (double)(outputIndex[dim]-1) / (double)m_Factors[dim] );
+      inputIndex[dim] = round( (double)(outputIndex[dim]-1) / (double)m_Factors[dim] + eps);
 
       //Check within bounds
       if (inputIndex[dim] > ((int)inputSize[dim] - 1))
@@ -160,6 +170,13 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     }
 }
 
+template <class TInputImage, class TOutputImage>
+void
+UpsampleImageFilter<TInputImage,TOutputImage>
+::AfterThreadedGenerateData()
+{
+  std::cout << "In UpsampleImageFilter : AfterThreadedGenerateData" << std::endl;
+}
 
 /** 
  *

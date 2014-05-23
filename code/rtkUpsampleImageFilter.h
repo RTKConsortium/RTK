@@ -126,7 +126,9 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
+  void BeforeThreadedGenerateData();
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+  void AfterThreadedGenerateData();
 
 private:
   UpsampleImageFilter(const Self&); //purposely not implemented
