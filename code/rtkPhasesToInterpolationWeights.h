@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright RTK Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef rtkPhasesToInterpolationWeights_h
-#define rtkPhasesToInterpolationWeights_h
+#ifndef __rtkPhasesToInterpolationWeights_h
+#define __rtkPhasesToInterpolationWeights_h
 
 #include "itkCSVFileReaderBase.h"
 #include "itkArray2D.h"
@@ -37,9 +37,9 @@ class ITK_EXPORT PhasesToInterpolationWeights:public itk::CSVFileReaderBase
 public:
     /** Standard class typedefs */
     typedef PhasesToInterpolationWeights      Self;
-    typedef CSVFileReaderBase         Superclass;
-    typedef itk::SmartPointer<Self>        Pointer;
-    typedef itk::SmartPointer<const Self>  ConstPointer;
+    typedef CSVFileReaderBase                 Superclass;
+    typedef itk::SmartPointer<Self>           Pointer;
+    typedef itk::SmartPointer<const Self>     ConstPointer;
 
     /** Standard New method. */
     itkNewMacro(Self)
@@ -87,9 +87,9 @@ protected:
 
 private:
 
-    Array2DType  m_Array2D;
-    int       m_NumberReconstructedPhases;
-    bool      m_UnevenTemporalSpacing;
+    Array2DType m_Array2D;
+    int         m_NumberReconstructedPhases;
+    bool        m_UnevenTemporalSpacing;
 
     PhasesToInterpolationWeights(const Self &);  //purposely not implemented
     void operator=(const Self &);          //purposely not implemented

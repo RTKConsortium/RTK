@@ -53,10 +53,10 @@ class ITK_EXPORT IterativeConeBeamReconstructionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef IterativeConeBeamReconstructionFilter              Self;
+  typedef IterativeConeBeamReconstructionFilter               Self;
   typedef itk::ImageToImageFilter<TOutputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef itk::SmartPointer<Self>                             Pointer;
+  typedef itk::SmartPointer<const Self>                       ConstPointer;
 
   /** Convenient typedefs */
   typedef ProjectionStackType VolumeType;

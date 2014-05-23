@@ -150,7 +150,7 @@ protected:
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
   // In some cases, regularization must use periodic boundary condition
-  typename itk::PeriodicBoundaryCondition<TOutputImage> * m_BoundaryConditionForGradientFilter;
+  typename itk::PeriodicBoundaryCondition<TOutputImage>         * m_BoundaryConditionForGradientFilter;
   typename itk::PeriodicBoundaryCondition<TGradientOutputImage> * m_BoundaryConditionForDivergenceFilter;
 
 private:
