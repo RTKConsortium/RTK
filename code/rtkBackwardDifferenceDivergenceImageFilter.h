@@ -115,7 +115,8 @@ private:
 
     // The default is ConstantBoundaryCondition, but this behavior sometimes needs to be overriden
     itk::ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
-    bool m_IsBoundaryConditionOverriden; // If so, do not perform boundary processing in AfterThreadedGenerateData
+    // If so, do not perform boundary processing in AfterThreadedGenerateData
+    bool                                                     m_IsBoundaryConditionOverriden;
 };
 
 } // end namespace itk
