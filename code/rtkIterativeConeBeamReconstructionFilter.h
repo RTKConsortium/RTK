@@ -47,7 +47,7 @@ namespace rtk
  *
  * \ingroup ReconstructionAlgorithm
  */
-template<class TOutputImage, class ProjectionStackType>
+template<class TOutputImage, class ProjectionStackType=TOutputImage> //Most of the time, TOutputImage is 3D, so it's fine to use only TOutputImage
 class ITK_EXPORT IterativeConeBeamReconstructionFilter :
   public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {

@@ -116,18 +116,6 @@ ConstantImageSource<TOutputImage>
 template <class TOutputImage>
 void
 ConstantImageSource<TOutputImage>
-::SetInformationFromImage(TOutputImage* image)
-{
-  this->SetSize( image->GetLargestPossibleRegion().GetSize() );
-  this->SetIndex( image->GetLargestPossibleRegion().GetIndex() );
-  this->SetSpacing( image->GetSpacing() );
-  this->SetOrigin( image->GetOrigin() );
-  this->SetDirection( image->GetDirection() );
-}
-
-template <class TOutputImage>
-void
-ConstantImageSource<TOutputImage>
 ::SetInformationFromImage(const TOutputImage* image)
 {
   this->SetSize( image->GetLargestPossibleRegion().GetSize() );
