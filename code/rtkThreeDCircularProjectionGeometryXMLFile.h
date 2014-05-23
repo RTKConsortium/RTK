@@ -145,7 +145,8 @@ protected:
       otherwise.
    */
   bool WriteGlobalParameter(std::ofstream &output, const std::string &indent,
-                            const std::vector<double> &v, const std::string &s);
+                            const std::vector<double> &v, const std::string &s,
+                            bool convertToDegrees=false);
 
   /** Write projection specific parameter with name s. */
   void WriteLocalParameter(std::ofstream &output, const std::string &indent,
