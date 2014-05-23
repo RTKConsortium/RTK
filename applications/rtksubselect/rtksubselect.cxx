@@ -113,15 +113,15 @@ int main(int argc, char * argv[])
     paste->Update();
 
     // Fill in the output geometry object
-    outputGeometry->AddProjection(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetGantryAngles()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetProjectionOffsetsX()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetProjectionOffsetsY()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
+    outputGeometry->AddProjectionInRadians(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetGantryAngles()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetProjectionOffsetsX()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetProjectionOffsetsY()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
     }
 
   // Geometry writer
