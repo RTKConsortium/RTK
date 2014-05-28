@@ -32,8 +32,8 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 #ifdef RTK_USE_CUDA
-#include "rtkCudaInterpolateImageFilter.h"
-#include "rtkCudaSplatImageFilter.h"
+#  include "rtkCudaInterpolateImageFilter.h"
+#  include "rtkCudaSplatImageFilter.h"
 #endif
 
 namespace rtk
