@@ -146,10 +146,12 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 ::GenerateOutputInformation()
 {
   // Create the interpolation and splat filters at runtime
+#ifdef RTK_USE_CUDA
   if (m_UseCudaInterpolation) m_InterpolationFilter = rtk::CudaInterpolateImageFilter::New();
     else  m_InterpolationFilter = InterpolationFilterType::New();
   if (m_UseCudaSplat) m_SplatFilter = rtk::CudaSplatImageFilter::New();
     else m_SplatFilter = SplatFilterType::New();
+#endif
 
   // Set runtime connections
   m_ZeroMultiplyVolumeSeriesFilter->SetInput1(this->GetInputVolumeSeries());
