@@ -72,7 +72,7 @@ namespace rtk
    * BeforePaste [label="", fixedsize="false", width=0, height=0, shape=none];
    * Source [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
    * ForwardProj [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
-   * Interpolation [ label="rtk::InterpolationImageFilter" URL="\ref rtk::InterpolationImageFilter"];
+   * Interpolation [ label="rtk::InterpolatorWithKnownWeightsImageFilter" URL="\ref rtk::InterpolatorWithKnownWeightsImageFilter"];
    * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
    * AfterPaste [label="", fixedsize="false", width=0, height=0, shape=none];
    *
