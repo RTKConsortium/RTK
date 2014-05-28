@@ -63,7 +63,7 @@ void PhasesToInterpolationWeights::Parse()
 
     // Get the data dimension and set the matrix size
     this->GetDataDimension(rows,columns);
-    int NumberOfProjections = rows+1;
+    unsigned int NumberOfProjections = rows+1;
     this->m_Array2D.SetSize(this->m_NumberReconstructedPhases, NumberOfProjections);
 
     // Create a vector to hold the projections' phases
