@@ -88,6 +88,10 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::BeforeThreadedGenerateData()
 {
   UpdateTruncationMirrorWeights();
+
+  // If the following condition is met, multi-threading is left to the (i)fft
+  // filter. Otherwise, one splits the image and a separate fft is performed
+  // per thread.
   if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 &&
      this->GetHannCutFrequencyY() != 0.)
     {
@@ -103,7 +107,9 @@ void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::AfterThreadedGenerateData()
 {
-  this->SetNumberOfThreads(m_BackupNumberOfThreads);
+  if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 &&
+     this->GetHannCutFrequencyY() != 0.)
+    this->SetNumberOfThreads(m_BackupNumberOfThreads);
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
