@@ -120,7 +120,8 @@ int main(int argc, char * argv[])
     f->SetGeometry( geometryReader->GetOutputObject() ); \
     f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
     f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg); \
-    f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);
+    f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg); \
+    f->SetProjectionSubsetSize(args_info.subsetsize_arg)
 
   // FDK reconstruction filtering
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
