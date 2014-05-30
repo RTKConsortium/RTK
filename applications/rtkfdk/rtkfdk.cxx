@@ -21,20 +21,18 @@
 #include "rtkConfiguration.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkProjectionsReader.h"
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
 # include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
 # include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
 #endif
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
 
-#include <itkRegularExpressionSeriesFileNames.h>
 #include <itkStreamingImageFilter.h>
 #include <itkImageFileWriter.h>
 
@@ -46,30 +44,16 @@ int main(int argc, char * argv[])
   const unsigned int Dimension = 3;
 
   typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef CPUOutputImageType                           OutputImageType;
 #endif
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
-  if(args_info.verbose_flag)
-    std::cout << "Regular expression matches "
-              << names->GetFileNames().size()
-              << " file(s)..."
-              << std::endl;
-
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->GenerateOutputInformation() );
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfdk>(reader, args_info);
 
   itk::TimeProbe readerProbe;
   if(!args_info.lowmem_flag)
@@ -136,16 +120,17 @@ int main(int argc, char * argv[])
     f->SetGeometry( geometryReader->GetOutputObject() ); \
     f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
     f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg); \
-    f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);
+    f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg); \
+    f->SetProjectionSubsetSize(args_info.subsetsize_arg)
 
   // FDK reconstruction filtering
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
   FDKCPUType::Pointer feldkamp = FDKCPUType::New();
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
   typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
   FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
 #endif
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
   FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
 #endif
@@ -167,7 +152,7 @@ int main(int argc, char * argv[])
     }
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
     SET_FELDKAMP_OPTIONS( feldkampCUDA );
     pfeldkamp = feldkampCUDA->GetOutput();
 #else
@@ -177,7 +162,7 @@ int main(int argc, char * argv[])
     }
   else if(!strcmp(args_info.hardware_arg, "opencl") )
     {
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
     SET_FELDKAMP_OPTIONS( feldkampOCL );
     pfeldkamp = feldkampOCL->GetOutput();
 #else
@@ -212,11 +197,11 @@ int main(int argc, char * argv[])
     std::cout << "It took " << writerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     if(!strcmp(args_info.hardware_arg, "cpu") )
       feldkamp->PrintTiming(std::cout);
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
     else if(!strcmp(args_info.hardware_arg, "cuda") )
       feldkampCUDA->PrintTiming(std::cout);
 #endif
-#if OPENCL_FOUND
+#ifdef RTK_USE_OPENCL
     else if(!strcmp(args_info.hardware_arg, "opencl") )
       feldkampOCL->PrintTiming(std::cout);
 #endif

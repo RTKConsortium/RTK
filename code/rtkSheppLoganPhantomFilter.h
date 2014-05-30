@@ -70,7 +70,8 @@ public:
   itkGetMacro(PhantomScale, double);
 
   /** Get / Set the spatial position of the Shepp Logan phantom relative to its`
-   * center. The default value is (0, 0, 0). */
+   * center. The default value is (0, 0, 0). The offset is applied before
+   * PhantomScale.*/
   itkSetMacro(OriginOffset, VectorType);
   itkGetMacro(OriginOffset, VectorType);
 

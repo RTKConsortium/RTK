@@ -18,12 +18,10 @@
 
 #include "rtklut_ggo.h"
 #include "rtkGgoFunctions.h"
-#include "rtkProjectionsReader.h"
 #include "rtkLookupTableImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkRegularExpressionSeriesFileNames.h>
 
 int main(int argc, char * argv[])
 {
@@ -34,18 +32,10 @@ int main(int argc, char * argv[])
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
-  ReaderType::Pointer projections = ReaderType::New();
-  projections->SetFileNames( names->GetFileNames() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( projections->Update() );
+  ReaderType::Pointer reader = ReaderType::New();
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklut>(reader, args_info);
 
   // Read lookup table
   typedef itk::Image<OutputPixelType, 1> LUTType;
@@ -57,15 +47,15 @@ int main(int argc, char * argv[])
   // Apply lookup table
   typedef rtk::LookupTableImageFilter<OutputImageType, OutputImageType> LUTFilterType;
   LUTFilterType::Pointer lutFilter = LUTFilterType::New();
-  lutFilter->SetInput(projections->GetOutput());
+  lutFilter->SetInput(reader->GetOutput());
   lutFilter->SetLookupTable(lutReader->GetOutput());
-  lutFilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutFilter->Update() );
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( projections->GetOutput() );
+  writer->SetInput( lutFilter->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Writing result... " << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );

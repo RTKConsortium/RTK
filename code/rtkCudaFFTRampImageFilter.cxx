@@ -136,9 +136,6 @@ rtk::CudaFFTRampImageFilter
 
   // Create the itk::CudaImage holding the kernel
   FFTOutputImageType::RegionType kreg = fftK->GetLargestPossibleRegion();
-#if ITK_VERSION_MAJOR <= 3 && !defined(USE_FFTWF)
-  kreg.SetSize(0, kreg.GetSize(0)/2+1);
-#endif
   FFTOutputImagePointer fftKCUDA = FFTOutputImageType::New();
   fftKCUDA->SetRegions(kreg);
   fftKCUDA->Allocate();

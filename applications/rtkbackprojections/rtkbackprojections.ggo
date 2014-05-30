@@ -4,17 +4,23 @@ version "Backprojects a volume according to a geometry file."
 option "verbose"   v "Verbose execution"                                         flag     off
 option "config"    - "Config file"                                               string   no
 option "geometry"  g  "XML geometry file name"                                   string   yes
-option "path"      p  "Path containing projections"                              string   yes
-option "regexp"    r  "Regular expression to select projection files in path"    string   yes
 option "output"    o "Output projections file name"                              string   yes
-option "method"    m "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","CudaFDKBackProjection","CudaBackProjection" enum no default="VoxelBasedBackProjection"
+
+section "Projections"
+option "path"      p "Path containing projections"                               string                       yes
+option "regexp"    r "Regular expression to select projection files in path"     string                       yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
+
+section "Projectors"
+option "bp"    - "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","NormalizedJoseph","CudaFDKBackProjection","CudaBackProjection" enum no default="VoxelBasedBackProjection"
+
+section "Warped backprojection"
+option "signal"    - "Signal file name"          string    no
+option "dvf"       - "Input 4D DVF"              string    no
 
 section "Volume properties"
 option "origin"    - "Origin (default=centered)" double multiple no
 option "dimension" - "Dimension"                 int    multiple no  default="256"
 option "spacing"   - "Spacing"                   double multiple no  default="1"
 option "direction" - "Direction"                 double multiple no
-
-section "Warped backprojection"
-option "signal"    - "Signal file name"          string    no
-option "dvf"       - "Input 4D DVF"              string    no

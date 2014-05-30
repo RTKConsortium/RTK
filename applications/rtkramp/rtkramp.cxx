@@ -18,16 +18,14 @@
 
 #include "rtkramp_ggo.h"
 #include "rtkMacro.h"
-
-#include "rtkProjectionsReader.h"
+#include "rtkGgoFunctions.h"
 #include "rtkFFTRampImageFilter.h"
 #include "rtkConfiguration.h"
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
 #  include "rtkCudaFFTRampImageFilter.h"
 #endif
 
 #include <itkImageFileWriter.h>
-#include <itkRegularExpressionSeriesFileNames.h>
 #include <itkStreamingImageFilter.h>
 #include <itkTimeProbe.h>
 
@@ -38,28 +36,20 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 #endif
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
-
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkramp>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Ramp filter
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
   typedef rtk::CudaFFTRampImageFilter CudaRampFilterType;
   CudaRampFilterType::Pointer cudaRampFilter;
 #endif
@@ -67,7 +57,7 @@ int main(int argc, char * argv[])
   CPURampFilterType::Pointer rampFilter;
   if( !strcmp(args_info.hardware_arg, "cuda") )
     {
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
     cudaRampFilter = CudaRampFilterType::New();
     cudaRampFilter->SetInput( reader->GetOutput() );
     cudaRampFilter->SetTruncationCorrection(args_info.pad_arg);
@@ -90,7 +80,7 @@ int main(int argc, char * argv[])
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
   if( !strcmp(args_info.hardware_arg, "cuda") )
     streamer->SetInput( cudaRampFilter->GetOutput() );
   else

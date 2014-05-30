@@ -34,6 +34,7 @@ endif ()
 
 
 set (CUDA_FOUND ${CUDA_FOUND} CACHE BOOL "Did we find cuda?")
+mark_as_advanced(CUDA_FOUND)
 
 IF(CUDA_FOUND)
   IF(${CUDA_VERSION} LESS 3.2)
@@ -58,10 +59,18 @@ set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
       -gencode arch=compute_13,code=sm_13
     )
 
-if(CUDA_VERSION_MAJOR GREATER "2")
-  set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
-        -gencode arch=compute_20,code=sm_20
+if("${CUDA_VERSION}" LESS 5.0)
+ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
+     -gencode arch=compute_20,code=sm_20
+     -gencode arch=compute_20,code=compute_20
     )
+else()
+ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
+     -gencode arch=compute_20,code=sm_20
+     -gencode arch=compute_30,code=sm_30
+     -gencode arch=compute_35,code=sm_35
+     -gencode arch=compute_35,code=compute_35
+     )
 endif()
 
 if(CUDA_FOUND)
@@ -82,6 +91,3 @@ if(CUDA_FOUND)
     endif()
     mark_as_advanced(CUDA_HAVE_GPU)
 endif(CUDA_FOUND)
-
-
-

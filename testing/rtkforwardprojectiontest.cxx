@@ -63,13 +63,13 @@ void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointe
     {
     std::cerr << "Test Failed, Error per pixel not valid! "
               << ErrorPerPixel << " instead of 1.28" << std::endl;
-    //exit( EXIT_FAILURE);
+    exit( EXIT_FAILURE);
     }
   if (PSNR < 44.)
     {
     std::cerr << "Test Failed, PSNR not valid! "
               << PSNR << " instead of 44" << std::endl;
-    //exit( EXIT_FAILURE);
+    exit( EXIT_FAILURE);
     }
 }
 #endif
@@ -85,7 +85,7 @@ int main(int , char** )
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 #endif
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType2;
+  //typedef itk::Image< OutputPixelType, Dimension > OutputImageType2;
 
   typedef itk::Vector<double, 3>                   VectorType;
 #if FAST_TESTS_NO_CHECKS
@@ -152,7 +152,7 @@ int main(int , char** )
   jfp->SetInput( 1, volInput->GetOutput() );
 
   // Ray Box Intersection filter (reference)
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType2, OutputImageType2> RBIType;
+  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
   RBIType::Pointer rbi = RBIType::New();
   rbi->InPlaceOff();
   rbi->SetInput( projInput->GetOutput() );
@@ -186,7 +186,7 @@ int main(int , char** )
     jfp->SetGeometry(geometry);
     jfp->Update();
 
-    CheckImageQuality<OutputImageType2, OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
+    CheckImageQuality<OutputImageType, OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
     std::cout << "\n\nTest of quarter #" << q << " PASSED! " << std::endl;
   }
 
@@ -206,13 +206,13 @@ int main(int , char** )
   jfp->SetGeometry( geometry );
   jfp->Update();
 
-  CheckImageQuality<OutputImageType2, OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
+  CheckImageQuality<OutputImageType, OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 3: Shepp-Logan, outer ray source ******" << std::endl;
 
   // Create Shepp Logan reference projections
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType2, OutputImageType2> SLPType;
+  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
   SLPType::Pointer slp = SLPType::New();
   slp->InPlaceOff();
   slp->SetInput( projInput->GetOutput() );
@@ -228,7 +228,7 @@ int main(int , char** )
   volInput->SetSize( size );
   volInput->SetConstant( 0. );
 
-  typedef rtk::DrawSheppLoganFilter<OutputImageType2, OutputImageType> DSLType;
+  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
   DSLType::Pointer dsl = DSLType::New();
   dsl->InPlaceOff();
   dsl->SetInput( volInput->GetOutput() );
@@ -238,7 +238,7 @@ int main(int , char** )
   jfp->SetInput( 1, dsl->GetOutput() );
   jfp->Update();
 
-  CheckImageQuality<OutputImageType2, OutputImageType>(slp->GetOutput(), jfp->GetOutput());
+  CheckImageQuality<OutputImageType, OutputImageType>(slp->GetOutput(), jfp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 4: Shepp-Logan, inner ray source ******" << std::endl;
@@ -252,7 +252,7 @@ int main(int , char** )
   jfp->SetGeometry( geometry );
   jfp->Update();
 
-  CheckImageQuality<OutputImageType2, OutputImageType>(slp->GetOutput(), jfp->GetOutput());
+  CheckImageQuality<OutputImageType, OutputImageType>(slp->GetOutput(), jfp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

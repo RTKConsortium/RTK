@@ -18,12 +18,9 @@
 
 #include "rtkprojections_ggo.h"
 #include "rtkMacro.h"
-
-#include "rtkProjectionsReader.h"
+#include "rtkGgoFunctions.h"
 
 #include <itkImageFileWriter.h>
-#include <itkRegularExpressionSeriesFileNames.h>
-#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -33,23 +30,10 @@ int main(int argc, char * argv[])
   const unsigned int Dimension = 3;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
-  if(args_info.verbose_flag)
-    std::cout << "Regular expression matches "
-              << names->GetFileNames().size()
-              << " file(s)..."
-              << std::endl;
-
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkprojections>(reader, args_info);
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;

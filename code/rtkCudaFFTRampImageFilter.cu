@@ -99,6 +99,7 @@ CUDA_fft_convolution(const int3 &inputDimension,
   CUFFT_CHECK_ERROR(result);
   result = cufftExecR2C(fftFwd, deviceProjection, deviceProjectionFFT);
   CUFFT_CHECK_ERROR(result);
+  cufftDestroy(fftFwd);
 
   // Thread Block Dimensions
   int tBlock_x = 16;
@@ -134,7 +135,6 @@ CUDA_fft_convolution(const int3 &inputDimension,
   CUFFT_CHECK_ERROR(result);
 
   // Release memory
-  cufftDestroy(fftFwd);
   cufftDestroy(fftInv);
   cudaFree(deviceProjectionFFT);
 }

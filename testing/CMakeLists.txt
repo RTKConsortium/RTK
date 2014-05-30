@@ -9,7 +9,7 @@ CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
 
 # Macro to add CUDA test from regular test
 macro(add_cuda_test testname testfile)
- if(CUDA_FOUND AND CUDA_HAVE_GPU)
+ if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
    set(testfullname ${testname}cudatest)
    add_executable(${testfullname} ${testfile})
    target_link_libraries(${testfullname} RTK rtkcuda)
@@ -25,13 +25,7 @@ TARGET_LINK_LIBRARIES(rtkcheckimagequality RTK)
 ADD_EXECUTABLE(rtkfdktest rtkfdktest.cxx)
 TARGET_LINK_LIBRARIES(rtkfdktest RTK)
 ADD_TEST(rtkfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdktest)
-
-IF(CUDA_FOUND AND CUDA_HAVE_GPU)
-  ADD_EXECUTABLE(rtkfdkcudatest rtkfdktest.cxx)
-  TARGET_LINK_LIBRARIES(rtkfdkcudatest RTK rtkcuda)
-  SET_TARGET_PROPERTIES(rtkfdkcudatest PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
-  ADD_TEST(rtkfdkcudatest ${EXECUTABLE_OUTPUT_PATH}/rtkfdkcudatest)
-ENDIF(CUDA_FOUND AND CUDA_HAVE_GPU)
+ADD_CUDA_TEST(rtkfdk rtkfdktest.cxx)
 
 IF(OPENCL_FOUND AND OPENCL_HAVE_GPU)
   ADD_EXECUTABLE(rtkfdkopencltest rtkfdktest.cxx)
@@ -69,12 +63,12 @@ ADD_EXECUTABLE(rtkrampfilternofftwtest rtkrampfiltertest.cxx)
 SET_TARGET_PROPERTIES(rtkrampfilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
 TARGET_LINK_LIBRARIES(rtkrampfilternofftwtest RTK)
 ADD_TEST(rtkrampfilternofftwtest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfilternofftwtest)
-IF(CUDA_FOUND AND CUDA_HAVE_GPU)
+IF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
   ADD_EXECUTABLE(rtkrampfilternofftwcudatest rtkrampfiltertest.cxx)
   TARGET_LINK_LIBRARIES(rtkrampfilternofftwcudatest RTK rtkcuda)
   SET_TARGET_PROPERTIES(rtkrampfilternofftwcudatest PROPERTIES COMPILE_FLAGS "-DUSE_CUDA -DRAMP_FILTER_TEST_WITHOUT_FFTW")
   ADD_TEST(rtkrampfilternofftwcudatest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfilternofftwcudatest)
-ENDIF(CUDA_FOUND AND CUDA_HAVE_GPU)
+ENDIF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
 
 ADD_EXECUTABLE(rtkRaycastInterpolatorForwardProjectionTest rtkRaycastInterpolatorForwardProjectionTest.cxx)
 TARGET_LINK_LIBRARIES(rtkRaycastInterpolatorForwardProjectionTest RTK)
@@ -120,10 +114,17 @@ RTK_ADD_TEST(NAME rtkvariantest
 
 ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest RTK)
-RTK_ADD_TEST(NAME rtkelektatest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest 
+RTK_ADD_TEST(NAME rtkelektatest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest
              DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
              DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha})
+
+ADD_EXECUTABLE(rtkluttest rtkluttest.cxx)
+TARGET_LINK_LIBRARIES(rtkluttest RTK)
+RTK_ADD_TEST(NAME rtkluttest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkluttest
+             DATA{Data/Input/Elekta/raw.his}
+             DATA{Data/Baseline/Elekta/attenuation.mha})
 
 ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest RTK)
@@ -168,15 +169,80 @@ RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest
              DATA{Data/Input/GeometricPhantom/Geometries.txt})
 
 ADD_EXECUTABLE(rtksarttest rtksarttest.cxx)
-TARGET_LINK_LIBRARIES(rtksarttest RTK)
-ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
+if(RTK_USE_CUDA)
+  TARGET_LINK_LIBRARIES(rtksarttest RTK rtkcuda)
+else()
+  TARGET_LINK_LIBRARIES(rtksarttest RTK)
+endif()
+if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+  ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
+endif()
 ADD_CUDA_TEST(rtksart rtksarttest.cxx)
+
+ADD_EXECUTABLE(rtkfourdconjugategradienttest rtkfourdconjugategradienttest.cxx)
+if(RTK_USE_CUDA)
+  TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest RTK rtkcuda)
+else()
+  TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest RTK)
+endif()
+if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+  ADD_TEST(rtkfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdconjugategradienttest)
+endif()
+ADD_CUDA_TEST(rtkfourdconjugategradient rtkfourdconjugategradienttest.cxx)
+
+ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
+TARGET_LINK_LIBRARIES(rtkjosephadjointoperatorstest RTK)
+ADD_TEST(rtkjosephadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkjosephadjointoperatorstest)
+
+ADD_EXECUTABLE(rtktotalvariationtest rtktotalvariationtest.cxx)
+TARGET_LINK_LIBRARIES(rtktotalvariationtest RTK)
+ADD_TEST(rtktotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtktotalvariationtest)
+
+ADD_EXECUTABLE(rtkgradienttest rtkgradienttest.cxx)
+TARGET_LINK_LIBRARIES(rtkgradienttest RTK)
+ADD_TEST(rtkgradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkgradienttest)
+
+ADD_EXECUTABLE(rtkdivergencetest rtkdivergencetest.cxx)
+TARGET_LINK_LIBRARIES(rtkdivergencetest RTK)
+ADD_TEST(rtkdivergencetest ${EXECUTABLE_OUTPUT_PATH}/rtkdivergencetest)
+
+ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
+TARGET_LINK_LIBRARIES(rtkconjugategradienttest RTK)
+ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
+
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkconjugategradientreconstructiontest rtkconjugategradientreconstructiontest.cxx)
+  TARGET_LINK_LIBRARIES(rtkconjugategradientreconstructiontest RTK)
+  ADD_TEST(rtkconjugategradientreconstructiontest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradientreconstructiontest)
+endif()
+ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
+
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
+  TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest RTK)
+  ADD_TEST(rtkadmmtotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest)
+endif()
+ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx)
+
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkfourdroostertest rtkfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkfourdroostertest RTK)
+  ADD_TEST(rtkfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdroostertest)
+endif()
+ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
+
 
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
-IF(CUDA_FOUND)
+IF(RTK_USE_CUDA)
   SET_TARGET_PROPERTIES(rtkheadertest PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
-ENDIF(CUDA_FOUND)
+ENDIF(RTK_USE_CUDA)
 IF(OPENCL_FOUND)
   SET_TARGET_PROPERTIES(rtkheadertest PROPERTIES COMPILE_FLAGS -DUSE_OPENCL)
 ENDIF(OPENCL_FOUND)

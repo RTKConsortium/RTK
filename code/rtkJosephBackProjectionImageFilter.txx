@@ -21,7 +21,6 @@
 
 #include "rtkHomogeneousMatrix.h"
 #include "rtkRayBoxIntersectionFunction.h"
-#include "rtkThreeDCircularProjectionGeometry.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -30,44 +29,45 @@
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage,
+          class TOutputImage,
+          class TSplatWeightMultiplication>
 void
-JosephBackProjectionImageFilter<TInputImage,TOutputImage>
+JosephBackProjectionImageFilter<TInputImage,
+                                TOutputImage,
+                                TSplatWeightMultiplication>
 ::GenerateData()
 {
-  const OutputImageRegionType outputRegionForThread = this->GetInput(1)->GetLargestPossibleRegion();
-  if( outputRegionForThread != this->GetInput(1)->GetBufferedRegion() )
-    {
-    itkGenericExceptionMacro(<< "Largest and buffered region must be similar");
-    }
-  if( this->GetInPlace() )
-    {
-    itkGenericExceptionMacro(<< "Error, cannot be in place yet");
-    }
-
-  this->AllocateOutputs();
-  this->GetOutput()->FillBuffer(0.);
-
-  typename TOutputImage::Pointer weights = TOutputImage::New();
-  weights->SetRegions( this->GetInput()->GetLargestPossibleRegion() );
-  weights->Allocate();
-  weights->FillBuffer(0);
-  typename TInputImage::PixelType *beginBufferWeights = weights->GetBufferPointer();
-
   const unsigned int Dimension = TInputImage::ImageDimension;
-  const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
-  typename TOutputImage::PixelType *beginBuffer = this->GetOutput()->GetBufferPointer();
-  unsigned int offsets[3];
+  typename TInputImage::RegionType buffReg = this->GetInput(1)->GetBufferedRegion();
+  const unsigned int nPixelPerProj = buffReg.GetSize(0) * buffReg.GetSize(1);
+  int offsets[3];
   offsets[0] = 1;
-  offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
-  offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
-  GeometryType *geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer());
+  offsets[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];
+  offsets[2] = this->GetInput(0)->GetBufferedRegion().GetSize()[0] * this->GetInput(0)->GetBufferedRegion().GetSize()[1];
 
-  // Iterators on volume input and output
+  GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
+  if( !geometry )
+    {
+    itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");
+    }
+
+  // Allocate the output image
+  this->AllocateOutputs();
+
+  // beginBuffer is pointing at point with index (0,0,0) in memory, even if
+  // it is not in the allocated memory
+  typename TOutputImage::PixelType *beginBuffer =
+      this->GetOutput()->GetBufferPointer() -
+      offsets[0] * this->GetOutput()->GetBufferedRegion().GetIndex()[0] -
+      offsets[1] * this->GetOutput()->GetBufferedRegion().GetIndex()[1] -
+      offsets[2] * this->GetOutput()->GetBufferedRegion().GetIndex()[2];
+
+  // Iterator on projections input
   typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
-  InputRegionIterator itIn(this->GetInput(1), outputRegionForThread);
+  InputRegionIterator itIn(this->GetInput(1), buffReg);
 
-  // Create intersection function
+  // Create intersection functions, one for each possible main direction
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
   typename RBIFunctionType::Pointer rbi[Dimension];
   for(unsigned int j=0; j<Dimension; j++)
@@ -76,34 +76,37 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
-      boxMin[i] = this->GetInput(0)->GetBufferedRegion().GetIndex()[i];
-      boxMax[i] = boxMin[i] + this->GetInput(0)->GetBufferedRegion().GetSize()[i]-1;
-      if(i==j)
-        {
-        boxMin[i] -= 0.5;
-        boxMax[i] += 0.5;
-        }
-      }
+      boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
+      boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
+                  this->GetOutput()->GetRequestedRegion().GetSize()[i]  - 1;
+    }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
     }
 
   // Go over each projection
-  for(unsigned int iProj=outputRegionForThread.GetIndex(2);
-                   iProj<outputRegionForThread.GetIndex(2)+outputRegionForThread.GetSize(2);
-                   iProj++)
+  for(int iProj=buffReg.GetIndex(2);
+          iProj<buffReg.GetIndex(2)+(int)buffReg.GetSize(2);
+          iProj++)
     {
     // Account for system rotations
+    // volPPToIndex maps the physical 3D coordinates of a point (in mm) to the
+    // corresponding 3D volume index
     typename GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
-    volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(0) );
+    volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetOutput() );
 
     // Set source position in volume indices
+    // GetSourcePosition() returns coordinates in mm. Multiplying by 
+    // volPPToIndex gives the corresponding volume index
     typename GeometryType::HomogeneousVectorType sourcePosition;
     sourcePosition = volPPToIndex * geometry->GetSourcePosition(iProj);
     for(unsigned int i=0; i<Dimension; i++)
       rbi[i]->SetRayOrigin( &(sourcePosition[0]) );
 
     // Compute matrix to transform projection index to volume index
+    // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)
+    // ProjectionCoordinatesToFixedSystemMatrix maps the 2D position of a pixel on the detector to its 3D coordinates in volume's coordinates (still in mm)
+    // volPPToIndex maps 3D volume coordinates to a 3D index
     typename GeometryType::ThreeDHomogeneousMatrixType matrix;
     matrix = volPPToIndex.GetVnlMatrix() *
              geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
@@ -134,9 +137,13 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
         }
 
       // Test if there is an intersection
-      if( rbi[mainDir]->Evaluate(dirVox) )
+      if( rbi[mainDir]->Evaluate(dirVox) &&
+          rbi[mainDir]->GetFarthestDistance()>=0. && // check if detector after the source
+          rbi[mainDir]->GetNearestDistance()<=1.)    // check if detector after or in the volume
         {
-        dirVox.Normalize();
+        // Clip the casting between source and pixel of the detector
+        rbi[mainDir]->SetNearestDistance ( std::max(rbi[mainDir]->GetNearestDistance() , 0.) );
+        rbi[mainDir]->SetFarthestDistance( std::min(rbi[mainDir]->GetFarthestDistance(), 1.) );
 
         // Compute and sort intersections: (n)earest and (f)arthest (p)points
         np = rbi[mainDir]->GetNearestPoint();
@@ -145,12 +152,8 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
           std::swap(np, fp);
 
         // Compute main nearest and farthest slice indices
-        const int ns = vnl_math_ceil ( np[mainDir] );
-        const int fs = vnl_math_floor( fp[mainDir] );
-
-        // If its a corner, we can skip
-        if( fs<ns )
-          continue;
+        const int ns = vnl_math_rnd( np[mainDir]);
+        const int fs = vnl_math_rnd( fp[mainDir]);
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
@@ -158,132 +161,165 @@ JosephBackProjectionImageFilter<TInputImage,TOutputImage>
         if(notMainDirInf>notMainDirSup)
           std::swap(notMainDirInf, notMainDirSup);
 
+        const CoordRepType minx = rbi[mainDir]->GetBoxMin()[notMainDirInf];
+        const CoordRepType miny = rbi[mainDir]->GetBoxMin()[notMainDirSup];
+        const CoordRepType maxx = rbi[mainDir]->GetBoxMax()[notMainDirInf];
+        const CoordRepType maxy = rbi[mainDir]->GetBoxMax()[notMainDirSup];
+
         // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
-        const unsigned int offsetx = offsets[notMainDirInf];
-        const unsigned int offsety = offsets[notMainDirSup];
-        const unsigned int offsetz = offsets[mainDir];
+        const int offsetx = offsets[notMainDirInf];
+        const int offsety = offsets[notMainDirSup];
+        const int offsetz = offsets[mainDir];
         OutputPixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
+
         pxiyi = beginBuffer + ns * offsetz;
         pxsyi = pxiyi + offsetx;
         pxiys = pxiyi + offsety;
         pxsys = pxsyi + offsety;
-        OutputPixelType *pxiyiw, *pxsyiw, *pxiysw, *pxsysw;
-        pxiyiw = beginBufferWeights + ns * offsetz;
-        pxsyiw = pxiyiw + offsetx;
-        pxiysw = pxiyiw + offsety;
-        pxsysw = pxsyiw + offsety;
 
         // Compute step size and go to first voxel
-        const CoordRepType residual = ns-np[mainDir];
+        const CoordRepType residual = ns - np[mainDir];
         const CoordRepType norm = 1/dirVox[mainDir];
         const CoordRepType stepx = dirVox[notMainDirInf] * norm;
         const CoordRepType stepy = dirVox[notMainDirSup] * norm;
-        CoordRepType currentx = np[notMainDirInf] + residual*stepx;
-        CoordRepType currenty = np[notMainDirSup] + residual*stepy;
+        CoordRepType currentx = np[notMainDirInf] + residual * stepx;
+        CoordRepType currenty = np[notMainDirSup] + residual * stepy;
 
-
-        // For voxel to millimeters conversion
+        // Compute voxel to millimeters conversion
         stepMM[notMainDirInf] = this->GetInput(0)->GetSpacing()[notMainDirInf] * stepx;
         stepMM[notMainDirSup] = this->GetInput(0)->GetSpacing()[notMainDirSup] * stepy;
         stepMM[mainDir]       = this->GetInput(0)->GetSpacing()[mainDir];
-        const CoordRepType stepLengthInMM = stepMM.GetNorm();
 
-        // First step
-        BilinearSplit(itIn.Get(), (residual+0.5) * stepLengthInMM,
-                     pxiyi,  pxsyi,  pxiys,  pxsys,
-                     pxiyiw, pxsyiw, pxiysw, pxsysw,
-                     currentx, currenty, offsetx, offsety);
-
-        // Middle steps
-        for(int i=ns; i<fs; i++)
+        if (fs == ns) //If the voxel is a corner, we can skip most steps
           {
+            BilinearSplatOnBorders(itIn.Get(), fp[mainDir] - np[mainDir], stepMM.GetNorm(),
+                                    pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                    offsetx, offsety, minx, miny, maxx, maxy);
+          }
+        else
+          {
+
+          // First step
+            BilinearSplatOnBorders(itIn.Get(), residual + 0.5, stepMM.GetNorm(),
+                                 pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                 offsetx, offsety, minx, miny, maxx, maxy);
+
+          // Move to next main direction slice
           pxiyi += offsetz;
           pxsyi += offsetz;
           pxiys += offsetz;
           pxsys += offsetz;
-          pxiyiw += offsetz;
-          pxsyiw += offsetz;
-          pxiysw += offsetz;
-          pxsysw += offsetz;
           currentx += stepx;
           currenty += stepy;
-          BilinearSplit(itIn.Get(), stepLengthInMM,
-                       pxiyi,  pxsyi,  pxiys,  pxsys,
-                       pxiyiw, pxsyiw, pxiysw, pxsysw,
-                       currentx, currenty, offsetx, offsety);
+
+          // Middle steps
+          for(int i=ns+1; i<fs; i++)
+            {
+
+            BilinearSplat(itIn.Get(), 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
+
+            // Move to next main direction slice
+            pxiyi += offsetz;
+            pxsyi += offsetz;
+            pxiys += offsetz;
+            pxsys += offsetz;
+            currentx += stepx;
+            currenty += stepy;
+            }
+
+          // Last step
+          BilinearSplatOnBorders(itIn.Get(), fp[mainDir] - fs + 0.5, stepMM.GetNorm(),
+                                 pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                 offsetx, offsety, minx, miny, maxx, maxy);
           }
-
-        // Last step
-        BilinearSplit(itIn.Get(), (-0.5+fp[mainDir]-fs) * stepLengthInMM,
-                      pxiyi,  pxsyi,  pxiys,  pxsys,
-                      pxiyiw, pxsyiw, pxiysw, pxsysw,
-                      currentx, currenty, offsetx, offsety);
         }
-      }
-    }
 
-  // Final result
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
-  InputRegionIterator itInVol(this->GetInput(), this->GetInput()->GetLargestPossibleRegion());
-  OutputRegionIterator itOut(this->GetOutput(), this->GetInput()->GetLargestPossibleRegion());
-  OutputRegionIterator itW(weights, this->GetInput()->GetLargestPossibleRegion());
-  while(!itOut.IsAtEnd())
-    {
-    if(itW.Get() != 0.)
-      {
-      itOut.Set(itInVol.Get() + itOut.Get() / itW.Get() );
       }
-    else
-      itOut.Set( itInVol.Get() );
-
-    ++itInVol;
-    ++itOut;
-    ++itW;
     }
 }
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage,
+          class TOutputImage,
+          class TSplatWeightMultiplication>
 void
-JosephBackProjectionImageFilter<TInputImage,TOutputImage>
-::BilinearSplit(const InputPixelType ip,
-                const CoordRepType stepLengthInMM,
-                OutputPixelType *pxiyi,
-                OutputPixelType *pxsyi,
-                OutputPixelType *pxiys,
-                OutputPixelType *pxsys,
-                OutputPixelType *pxiyiw,
-                OutputPixelType *pxsyiw,
-                OutputPixelType *pxiysw,
-                OutputPixelType *pxsysw,
-                const CoordRepType x,
-                const CoordRepType y,
-                const unsigned int ox,
-                const unsigned int oy)
+JosephBackProjectionImageFilter<TInputImage,
+                                   TOutputImage,
+                                   TSplatWeightMultiplication>
+::BilinearSplat(const InputPixelType rayValue,
+                                               const double stepLengthInVoxel,
+                                               const double voxelSize,
+                                               OutputPixelType *pxiyi,
+                                               OutputPixelType *pxsyi,
+                                               OutputPixelType *pxiys,
+                                               OutputPixelType *pxsys,
+                                               const double x,
+                                               const double y,
+                                               const int ox,
+                                               const int oy)
 {
-  const unsigned int ix = vnl_math_floor(x);
-  const unsigned int iy = vnl_math_floor(y);
-  const unsigned int idx = ix*ox + iy*oy;
-  const CoordRepType lx = x - ix;
-  const CoordRepType ly = y - iy;
-  const CoordRepType lxc = 1.-lx;
-  const CoordRepType lyc = 1.-ly;
+  int ix = vnl_math_floor(x);
+  int iy = vnl_math_floor(y);
+  int idx = ix*ox + iy*oy;
+  CoordRepType lx = x - ix;
+  CoordRepType ly = y - iy;
+  CoordRepType lxc = 1.-lx;
+  CoordRepType lyc = 1.-ly;
 
-  const CoordRepType wii = lxc * lyc * stepLengthInMM;
-  pxiyiw[idx] += wii;
-  pxiyi[idx] += wii * ip;
+  pxiyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
+  pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
+  pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
+  pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
 
-  const CoordRepType wsi = lx * lyc * stepLengthInMM;
-  pxsyiw[idx] += wsi;
-  pxsyi[idx] += wsi * ip;
-
-  const CoordRepType wis = lxc * ly * stepLengthInMM;
-  pxiysw[idx] += wis;
-  pxiys[idx] += wis * ip;
-
-  const CoordRepType wss = lx * ly * stepLengthInMM;
-  pxsysw[idx] += wss;
-  pxsys[idx] += wss * ip;
 }
+
+template <class TInputImage,
+          class TOutputImage,
+          class TSplatWeightMultiplication>
+void
+JosephBackProjectionImageFilter<TInputImage,
+                                   TOutputImage,
+                                   TSplatWeightMultiplication>
+::BilinearSplatOnBorders(const InputPixelType rayValue,
+                                               const double stepLengthInVoxel,
+                                               const double voxelSize,
+                                               OutputPixelType *pxiyi,
+                                               OutputPixelType *pxsyi,
+                                               OutputPixelType *pxiys,
+                                               OutputPixelType *pxsys,
+                                               const double x,
+                                               const double y,
+                                               const int ox,
+                                               const int oy,
+                                               const CoordRepType minx,
+                                               const CoordRepType miny,
+                                               const CoordRepType maxx,
+                                               const CoordRepType maxy)
+{
+  int ix = vnl_math_floor(x);
+  int iy = vnl_math_floor(y);
+  int idx = ix*ox + iy*oy;
+  CoordRepType lx = x - ix;
+  CoordRepType ly = y - iy;
+  CoordRepType lxc = 1.-lx;
+  CoordRepType lyc = 1.-ly;
+
+  int offset_xi = 0;
+  int offset_yi = 0;
+  int offset_xs = 0;
+  int offset_ys = 0;
+
+  if(ix < minx) offset_xi = ox;
+  if(iy < miny) offset_yi = oy;
+  if(ix >= maxx) offset_xs = -ox;
+  if(iy >= maxy) offset_ys = -oy;
+
+  pxiyi[idx + offset_xi + offset_yi] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
+  pxiys[idx + offset_xi + offset_ys] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
+  pxsyi[idx + offset_xs + offset_yi] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
+  pxsys[idx + offset_xs + offset_ys] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
+
+}
+
 
 } // end namespace rtk
 
