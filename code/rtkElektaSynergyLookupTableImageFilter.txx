@@ -105,13 +105,14 @@ ElektaSynergyLogLookupTableImageFilter<TOutputImage>
   lut->Allocate();
 
   // Iterate and set lut
-  OutputImagePixelType                       logRef = log(OutputImagePixelType(size[0]) );
+  OutputImagePixelType logRef = log(double(size[0]));
   itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
   it.GoToBegin();
 
   //Conventional lookup table for the rest
-  while( !it.IsAtEnd() ) {
-    it.Set( logRef - log( OutputImagePixelType(it.GetIndex()[0]) ) );
+  while( !it.IsAtEnd() ) 
+    {
+    it.Set( logRef - log( double(it.GetIndex()[0]) ) );
     ++it;
     }
 

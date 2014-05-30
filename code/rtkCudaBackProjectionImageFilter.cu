@@ -176,7 +176,7 @@ void kernel_optim(float *dev_vol_in, float *dev_vol_out, int3 vol_dim)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 ///////////////////////////////////////////////////////////////////////////
-// FUNCTION: CUDA_back_project_init() /////////////////////////////
+// FUNCTION: CUDA_back_project /////////////////////////////
 void
 CUDA_back_project(
   int img_dim[2],

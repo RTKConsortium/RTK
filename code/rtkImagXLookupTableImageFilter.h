@@ -79,7 +79,7 @@ rtk::ImagXLookupTableImageFilter<TInputImage, TOutputImage>::ImagXLookupTableIma
   lut->SetRegions( size );
   lut->Allocate();
 
-  OutputImagePixelType logRef = log(OutputImagePixelType(size[0]) );
+  OutputImagePixelType logRef = log(double(size[0]) );
 
   // Iterate and set lut
   itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );

@@ -21,9 +21,8 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
-#include "rtkSiddonForwardProjectionImageFilter.h"
-#if CUDA_FOUND
-#  include "rtkCudaForwardProjectionImageFilter.h"
+#ifdef RTK_USE_CUDA
+#include "rtkCudaForwardProjectionImageFilter.h"
 #endif
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
 
@@ -38,7 +37,7 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-  #if CUDA_FOUND
+  #ifdef RTK_USE_CUDA
     typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
   #else
     typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -94,24 +93,21 @@ int main(int argc, char * argv[])
 
   rtk::ForwardProjectionImageFilter<OutputImageType, OutputImageType>::Pointer forwardProjection;
   
-  switch(args_info.method_arg)
+  switch(args_info.fp_arg)
   {
-  case(method_arg_Joseph):
+  case(fp_arg_Joseph):
     forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
-  case(method_arg_Siddon):
-    forwardProjection = rtk::SiddonForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(method_arg_CudaRayCast):
-#if CUDA_FOUND
+    case(fp_arg_RayCastInterpolator):
+      forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+  case(fp_arg_CudaRayCast):
+#ifdef RTK_USE_CUDA
     forwardProjection = rtk::CudaForwardProjectionImageFilter::New();
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
 #endif
-    break;
-  case(method_arg_RayCastInterpolator):
-    forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   default:
     std::cerr << "Unhandled --method value." << std::endl;

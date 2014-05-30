@@ -18,13 +18,11 @@
 
 #include "rtkprojectshepploganphantom_ggo.h"
 #include "rtkGgoFunctions.h"
-
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
 
-#include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
 
@@ -63,9 +61,17 @@ int main(int argc, char * argv[])
 
   typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
   SLPType::Pointer slp=SLPType::New();
+  SLPType::VectorType offset(0.);
+  if(args_info.offset_given)
+    {
+    offset[0] = args_info.offset_arg[0];
+    offset[1] = args_info.offset_arg[1];
+    offset[2] = args_info.offset_arg[2];
+    }
   slp->SetInput(constantImageSource->GetOutput());
   slp->SetGeometry(geometryReader->GetOutputObject());
   slp->SetPhantomScale(args_info.phantomscale_arg);
+  slp->SetOriginOffset(offset);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
 
   // Add noise

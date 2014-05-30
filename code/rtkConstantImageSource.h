@@ -100,9 +100,16 @@ public:
   itkSetMacro( Direction, DirectionType );
   itkGetMacro( Direction, DirectionType );
 
+  /** Set/Get index of the output image's largest possible region */
+  itkSetMacro( Index, IndexType );
+  itkGetMacro( Index, IndexType );
+
   /** Set/Get the pixel value of output */
   itkSetMacro(Constant, OutputImagePixelType);
   itkGetConstMacro(Constant, OutputImagePixelType);
+
+  /** Set output image information from an existing image */
+  void SetInformationFromImage(const TOutputImage* image);
 
 protected:
   ConstantImageSource();
@@ -121,6 +128,7 @@ private:
   SpacingType    m_Spacing;
   PointType      m_Origin;
   DirectionType  m_Direction;
+  IndexType      m_Index;
 
   typename TOutputImage::PixelType m_Constant;
 };

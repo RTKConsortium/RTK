@@ -19,18 +19,17 @@
 #include "rtkbackprojections_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
-#if CUDA_FOUND
+#include "rtkNormalizedJosephBackProjectionImageFilter.h"
+#ifdef RTK_USE_CUDA
 #  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
 #endif
 #include "rtkCyclicDeformationImageFilter.h"
 
-#include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkTimeProbe.h>
@@ -41,7 +40,7 @@ int main(int argc, char * argv[])
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
-#if CUDA_FOUND
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -64,31 +63,11 @@ int main(int argc, char * argv[])
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkbackprojections>(constantImageSource, args_info);
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(false);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(0);
-
-  if(args_info.verbose_flag)
-    std::cout << "Reading "
-              << names->GetFileNames().size()
-              << " projection file(s)..."
-              << std::flush;
-
   // Projections reader
-  itk::TimeProbe readerProbe;
-  readerProbe.Start();
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkbackprojections>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
-  readerProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << readerProbe.GetMean() << ' ' << readerProbe.GetUnit()
-              << '.' << std::endl;
 
   // Create back projection image filter
   if(args_info.verbose_flag)
@@ -105,15 +84,15 @@ int main(int argc, char * argv[])
   DeformationType::Pointer def = DeformationType::New();
   def->SetInput(dvfReader->GetOutput());
 
-  switch(args_info.method_arg)
+  switch(args_info.bp_arg)
   {
-    case(method_arg_VoxelBasedBackProjection):
+    case(bp_arg_VoxelBasedBackProjection):
       bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-    case(method_arg_FDKBackProjection):
+    case(bp_arg_FDKBackProjection):
       bp = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-    case(method_arg_FDKWarpBackProjection):
+    case(bp_arg_FDKWarpBackProjection):
       if(!args_info.signal_given || !args_info.dvf_given)
         {
         std::cerr << "FDKWarpBackProjection requires input 4D deformation "
@@ -126,19 +105,22 @@ int main(int argc, char * argv[])
       def->SetSignalFilename(args_info.signal_arg);
       dynamic_cast<rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>*>(bp.GetPointer())->SetDeformation(def);
       break;
-    case(method_arg_Joseph):
+    case(bp_arg_Joseph):
       bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-    case(method_arg_CudaFDKBackProjection):
-#if CUDA_FOUND
+    case(bp_arg_NormalizedJoseph):
+      bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+    case(bp_arg_CudaFDKBackProjection):
+#ifdef RTK_USE_CUDA
       bp = rtk::CudaFDKBackProjectionImageFilter::New();
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;
       return EXIT_FAILURE;
 #endif
       break;
-    case(method_arg_CudaBackProjection):
-#if CUDA_FOUND
+    case(bp_arg_CudaBackProjection):
+#ifdef RTK_USE_CUDA
       bp = rtk::CudaBackProjectionImageFilter::New();
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;

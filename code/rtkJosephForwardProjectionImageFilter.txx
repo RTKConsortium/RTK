@@ -57,13 +57,13 @@ JosephForwardProjectionImageFilter<TInputImage,
       offsets[1] * this->GetInput(1)->GetBufferedRegion().GetIndex()[1] -
       offsets[2] * this->GetInput(1)->GetBufferedRegion().GetIndex()[2];
 
-  // Iterators on volume input and output
+  // Iterators on input and output projections
   typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
   InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
-  // Create intersection function
+  // Create intersection functions, one for each possible main direction
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
   typename RBIFunctionType::Pointer rbi[Dimension];
   for(unsigned int j=0; j<Dimension; j++)
@@ -72,9 +72,9 @@ JosephForwardProjectionImageFilter<TInputImage,
     typename RBIFunctionType::VectorType boxMin, boxMax;
     for(unsigned int i=0; i<Dimension; i++)
       {
-      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] + 0.001;  // To avoid numerical errors
+      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
       boxMax[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] +
-                  this->GetInput(1)->GetBufferedRegion().GetSize()[i]  - 1.001;  // To avoid numerical errors
+                  this->GetInput(1)->GetBufferedRegion().GetSize()[i] - 1;
       }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
@@ -86,16 +86,23 @@ JosephForwardProjectionImageFilter<TInputImage,
           iProj++)
     {
     // Account for system rotations
+    // volPPToIndex maps the physical 3D coordinates of a point (in mm) to the
+    // corresponding 3D volume index
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
     volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(1) );
 
     // Set source position in volume indices
+    // GetSourcePosition() returns coordinates in mm. Multiplying by 
+    // volPPToIndex gives the corresponding volume index
     typename Superclass::GeometryType::HomogeneousVectorType sourcePosition;
     sourcePosition = volPPToIndex * geometry->GetSourcePosition(iProj);
     for(unsigned int i=0; i<Dimension; i++)
       rbi[i]->SetRayOrigin( &(sourcePosition[0]) );
 
     // Compute matrix to transform projection index to volume index
+    // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)
+    // ProjectionCoordinatesToFixedSystemMatrix maps the 2D position of a pixel on the detector to its 3D coordinates in volume's coordinates (still in mm)
+    // volPPToIndex maps 3D volume coordinates to a 3D index
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType matrix;
     matrix = volPPToIndex.GetVnlMatrix() *
              geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
@@ -138,31 +145,24 @@ JosephForwardProjectionImageFilter<TInputImage,
         np = rbi[mainDir]->GetNearestPoint();
         fp = rbi[mainDir]->GetFarthestPoint();
         if(np[mainDir]>fp[mainDir])
+          {
           std::swap(np, fp);
+          }
 
         // Compute main nearest and farthest slice indices
-        const int ns = vnl_math_ceil ( np[mainDir] );
-        const int fs = vnl_math_floor( fp[mainDir] );
-
-        // If its a corner, we can skip
-        if( fs<ns )
-          {
-          itOut.Set( m_ProjectedValueAccumulation(threadId,
-                                                  itIn.Get(),
-                                                  0.,
-                                                  &(sourcePosition[0]),
-                                                  &(sourcePosition[0]),
-                                                  dirVox,
-                                                  &(sourcePosition[0]),
-                                                  &(sourcePosition[0])) );
-           continue;
-           }
+        const int ns = vnl_math_rnd( np[mainDir]);
+        const int fs = vnl_math_rnd( fp[mainDir]);
 
         // Determine the other two directions
         unsigned int notMainDirInf = (mainDir+1)%Dimension;
         unsigned int notMainDirSup = (mainDir+2)%Dimension;
         if(notMainDirInf>notMainDirSup)
           std::swap(notMainDirInf, notMainDirSup);
+
+        const CoordRepType minx = rbi[mainDir]->GetBoxMin()[notMainDirInf];
+        const CoordRepType miny = rbi[mainDir]->GetBoxMin()[notMainDirSup];
+        const CoordRepType maxx = rbi[mainDir]->GetBoxMax()[notMainDirInf];
+        const CoordRepType maxy = rbi[mainDir]->GetBoxMax()[notMainDirSup];
 
         // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
         const int offsetx = offsets[notMainDirInf];
@@ -176,50 +176,61 @@ JosephForwardProjectionImageFilter<TInputImage,
         pxsys = pxsyi + offsety;
 
         // Compute step size and go to first voxel
-        const CoordRepType residual = ns-np[mainDir];
+        const CoordRepType residual = ns - np[mainDir];
         const CoordRepType norm = 1/dirVox[mainDir];
         const CoordRepType stepx = dirVox[notMainDirInf] * norm;
         const CoordRepType stepy = dirVox[notMainDirSup] * norm;
-        CoordRepType currentx = np[notMainDirInf] + residual*stepx;
-        CoordRepType currenty = np[notMainDirSup] + residual*stepy;
+        CoordRepType currentx = np[notMainDirInf] + residual * stepx;
+        CoordRepType currenty = np[notMainDirSup] + residual * stepy;
 
-        // First step
-        typename TOutputImage::PixelType sum =
-              BilinearInterpolation(threadId,
-                                    residual+0.5,
-                                    pxiyi, pxsyi, pxiys, pxsys,
-                                    currentx, currenty, offsetx, offsety);
+        // Initialize the accumulation
+        typename TOutputImage::PixelType sum = 0;
 
-        // Middle steps
-        for(int i=ns; i<fs-1; i++)
+        if (fs == ns) //If the voxel is a corner, we can skip most steps
           {
+            sum += BilinearInterpolationOnBorders(threadId, fp[mainDir] - np[mainDir],
+                                                  pxiyi, pxsyi, pxiys, pxsys,
+                                                  currentx, currenty, offsetx, offsety,
+                                                  minx, miny, maxx, maxy);
+          }
+        else
+          {
+          // First step
+          sum += BilinearInterpolationOnBorders(threadId, residual + 0.5,
+                                                pxiyi, pxsyi, pxiys, pxsys,
+                                                currentx, currenty, offsetx, offsety,
+                                                minx, miny, maxx, maxy);
+
+          // Move to next main direction slice
           pxiyi += offsetz;
           pxsyi += offsetz;
           pxiys += offsetz;
           pxsys += offsetz;
           currentx += stepx;
           currenty += stepy;
-          sum += BilinearInterpolation(threadId,
-                                       1.,
-                                       pxiyi, pxsyi, pxiys, pxsys,
-                                       currentx, currenty, offsetx, offsety);
-          }
 
-        // Last step: goes to next voxel only if more than one
-        if(ns!=fs)
-          {
-          pxiyi += offsetz;
-          pxsyi += offsetz;
-          pxiys += offsetz;
-          pxsys += offsetz;
-          currentx += stepx;
-          currenty += stepy;
-          }
-        sum += BilinearInterpolation(threadId,
-                                     0.5+fp[mainDir]-fs,
-                                     pxiyi, pxsyi, pxiys, pxsys,
-                                     currentx, currenty, offsetx, offsety);
+          // Middle steps
+          for(int i=ns+1; i<fs; i++)
+            {
+            sum += BilinearInterpolation(threadId, 1.0,
+                                         pxiyi, pxsyi, pxiys, pxsys,
+                                         currentx, currenty, offsetx, offsety);
 
+            // Move to next main direction slice
+            pxiyi += offsetz;
+            pxsyi += offsetz;
+            pxiys += offsetz;
+            pxsys += offsetz;
+            currentx += stepx;
+            currenty += stepy;
+            }
+
+          // Last step
+          sum += BilinearInterpolationOnBorders(threadId,fp[mainDir] - fs + 0.5,
+                                                pxiyi, pxsyi, pxiys, pxsys,
+                                                currentx, currenty, offsetx, offsety,
+                                                minx, miny, maxx, maxy);
+          }
         // Compute voxel to millimeters conversion
         stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
         stepMM[notMainDirSup] = this->GetInput(1)->GetSpacing()[notMainDirSup] * stepy;
@@ -278,8 +289,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   CoordRepType ly = y - iy;
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
-  return stepLengthInVoxel * (
-           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
+  return ( m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
            m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx) +
            m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx) +
            m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx) );
@@ -296,6 +306,60 @@ JosephForwardProjectionImageFilter<TInputImage,
   return a + b*lx + c*ly + d*lx*ly;
 */
 }
+
+template <class TInputImage,
+          class TOutputImage,
+          class TInterpolationWeightMultiplication,
+          class TProjectedValueAccumulation>
+typename JosephForwardProjectionImageFilter<TInputImage,
+                                            TOutputImage,
+                                            TInterpolationWeightMultiplication,
+                                            TProjectedValueAccumulation>::OutputPixelType
+JosephForwardProjectionImageFilter<TInputImage,
+                                   TOutputImage,
+                                   TInterpolationWeightMultiplication,
+                                   TProjectedValueAccumulation>
+::BilinearInterpolationOnBorders( const ThreadIdType threadId,
+                           const double stepLengthInVoxel,
+                           const InputPixelType *pxiyi,
+                           const InputPixelType *pxsyi,
+                           const InputPixelType *pxiys,
+                           const InputPixelType *pxsys,
+                           const CoordRepType x,
+                           const CoordRepType y,
+                           const int ox,
+                           const int oy,
+                           const CoordRepType minx,
+                           const CoordRepType miny,
+                           const CoordRepType maxx,
+                           const CoordRepType maxy)
+{
+  int ix = vnl_math_floor(x);
+  int iy = vnl_math_floor(y);
+  int idx = ix*ox + iy*oy;
+  CoordRepType lx = x - ix;
+  CoordRepType ly = y - iy;
+  CoordRepType lxc = 1.-lx;
+  CoordRepType lyc = 1.-ly;
+
+  int offset_xi = 0;
+  int offset_yi = 0;
+  int offset_xs = 0;
+  int offset_ys = 0;
+
+  OutputPixelType result=0;
+  if(ix < minx) offset_xi = ox;
+  if(iy < miny) offset_yi = oy;
+  if(ix >= maxx) offset_xs = -ox;
+  if(iy >= maxy) offset_ys = -oy;
+  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
+  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx + offset_xi + offset_ys);
+  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx + offset_xs + offset_yi);
+  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx + offset_xs + offset_ys);
+
+  return (stepLengthInVoxel * result);
+}
+
 
 } // end namespace rtk
 

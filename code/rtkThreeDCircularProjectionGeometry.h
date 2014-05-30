@@ -30,13 +30,14 @@ namespace rtk
  * The source and the detector rotate around a circle paremeterized
  * with the SourceToDetectorDistance and the SourceToIsocenterDistance.
  * The position of each projection along this circle is parameterized
- * by the RotationAngle.
+ * by the GantryAngle.
  * The detector can be shifted in plane with the ProjectionOffsetsX
  * and the ProjectionOffsetsY. It can be also rotated with InPlaneAngles
- * and OutOfPlaneAngles.
+ * and OutOfPlaneAngles. All angles are in radians except for the function
+ * AddProjection that takes angles in degrees.
  * The source can be shifted in plane with the SourceOffsetsX
  * and the SourceOffsetsY.
- * 
+ *
  * If SDD equals 0., then one is dealing with a parallel geometry.
  *
  * \author Simon Rit
@@ -68,10 +69,17 @@ public:
                      const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
                      const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
+  /** Idem with angles in radians. */
+  void AddProjectionInRadians(const double sid, const double sdd, const double gantryAngle,
+                              const double projOffsetX=0., const double projOffsetY=0.,
+                              const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
+                              const double sourceOffsetX=0., const double sourceOffsetY=0.);
+
   /** Empty the geometry object. */
   void Clear();
 
-  /** Get the vector of geometry parameters (one per projection) */
+  /** Get the vector of geometry parameters (one per projection). Angles are
+   * in radians.*/
   const std::vector<double> &GetGantryAngles() const {
     return this->m_GantryAngles;
   }
@@ -100,15 +108,24 @@ public:
     return this->m_ProjectionOffsetsY;
   }
 
-  /** Get a multimap containing all sorted angles and corresponding index. */
-  const std::multimap<double,unsigned int> GetSortedAngles();
+  /** Get a vector containing the source angles in radians. The source angle is
+   * defined as the angle between the z-axis and the isocenter-source line. */
+  const std::vector<double> GetSourceAngles();
 
-  /** Get for each projection the angular gaps with next projection. */
-  const std::vector<double> GetAngularGapsWithNext();
+  /** Get a vector containing the tilt angles in radians. The tilt angle is
+   * defined as the difference between -GantryAngle and the SourceAngle. */
+  const std::vector<double> GetTiltAngles();
+
+  /** Get a multimap containing all sorted angles in radiansand corresponding
+   * index. */
+  const std::multimap<double,unsigned int> GetSortedAngles(const std::vector<double> &angles);
+
+  /** Get for each projection the angular gaps with next projection in radians. */
+  const std::vector<double> GetAngularGapsWithNext(const std::vector<double> &angles);
 
   /** Get for each projection half the angular distance between the previous
-   *  and the next projection. */
-  const std::vector<double> GetAngularGaps();
+   *  and the next projection in radians. */
+  const std::vector<double> GetAngularGaps(const std::vector<double> &angles);
 
   /** Compute rotation matrix in homogeneous coordinates from 3 angles in
    * degrees. The convention is the default in itk, i.e. ZXY of Euler angles.*/
@@ -160,13 +177,15 @@ public:
   /** This function wraps an angle value between 0 and 360 degrees. */
   static double ConvertAngleBetween0And360Degrees(const double a);
 
+  /** This function wraps an angle value between 0 and 2*PI radians. */
+  static double ConvertAngleBetween0And2PIRadians(const double a);
+
   /** Changes the coordinate on the projection image to the coordinate on a
    * virtual detector that is perpendicular to the source to isocenter line and
-   * positioned at the intersection between the detector and the source to
-   * isocenter line. If SourceOffsetX is 0., simply adds the ProjectionOffsetX.
+   * positioned at the isocenter.
    * It is assumed that OutOfPlaneAngle=0 and InPlaneAngle=0.*/
-  double ToUntiltedCoordinate(const unsigned int noProj,
-                              const double tiltedCoord) const;
+  double ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
+                                         const double tiltedCoord) const;
 
 protected:
   ThreeDCircularProjectionGeometry() {};

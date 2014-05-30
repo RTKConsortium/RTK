@@ -168,12 +168,14 @@ int main(int, char** )
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
+  slp->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
 
   // Create a reference object (in this case a 3D phantom reference).
   typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
   DSLType::Pointer dsl = DSLType::New();
   dsl->SetInput( tomographySource->GetOutput() );
+  dsl->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // FDK reconstruction filtering

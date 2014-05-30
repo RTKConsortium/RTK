@@ -32,10 +32,11 @@
  *
  * \ingroup Macro
  */
-#define DD(a) std::cout << #a " = [ " << a << " ]" << std::endl;
+#ifndef DD
+#  define DD(a) std::cout << #a " = [ " << a << " ]" << std::endl;
+#endif
 //--------------------------------------------------------------------
 
-//--------------------------------------------------------------------
 //--------------------------------------------------------------------
 /** \brief Process gengetopt with config file option
  *
@@ -61,14 +62,19 @@
 #define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                         \
   try                                                                   \
     {                                                                   \
-    execFunc;                                                          \
+    execFunc;                                                           \
     }                                                                   \
   catch( itk::ExceptionObject & err )                                   \
     {                                                                   \
-    std::cerr << "ExceptionObject caught with " #execFunc << std::endl; \
+    std::cerr << "ExceptionObject caught with " #execFunc               \
+              << " in file " << __FILE__                                \
+              << " line " << __LINE__                                   \
+              << std::endl;                                             \
     std::cerr << err << std::endl;                                      \
     exit(EXIT_FAILURE);                                                 \
     }
+//--------------------------------------------------------------------
+
 //--------------------------------------------------------------------
 /** \brief Set and Get built-in type (std::vector). Creates members
  *  Get"name()" and Set"name"()
