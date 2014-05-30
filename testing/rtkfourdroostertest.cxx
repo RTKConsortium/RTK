@@ -269,7 +269,7 @@ int main(int, char** )
   typedef itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType> JoinFilterType;
   JoinFilterType::Pointer join = JoinFilterType::New();
 
-  for (int n = 0; n < fourDSize[3]; n++)
+  for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
     {
     // Ellipse 1
     typedef rtk::DrawEllipsoidImageFilter<VolumeType, VolumeType> DEType;
