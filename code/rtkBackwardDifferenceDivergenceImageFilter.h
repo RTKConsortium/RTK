@@ -88,9 +88,9 @@ public:
     typedef typename InputImageType::SizeType   InputSizeType;
     typedef itk::CovariantVector< InputPixelType, InputImageDimension > CovariantVectorType;
 
-    protected:
-        BackwardDifferenceDivergenceImageFilter();
-    virtual ~BackwardDifferenceDivergenceImageFilter() {}
+protected:
+    BackwardDifferenceDivergenceImageFilter();
+    virtual ~BackwardDifferenceDivergenceImageFilter();
 
     virtual void GenerateInputRequestedRegion();
 

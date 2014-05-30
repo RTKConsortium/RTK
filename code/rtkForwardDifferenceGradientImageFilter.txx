@@ -59,6 +59,7 @@ template< typename TInputImage, typename TOperatorValueType, typename TOuputValu
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::~ForwardDifferenceGradientImageFilter()
 {
+  delete m_BoundaryCondition;
 }
 
 // This should be handled by an itkMacro, but it doesn't seem to work with pointer types
