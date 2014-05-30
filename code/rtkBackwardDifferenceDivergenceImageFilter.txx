@@ -49,6 +49,13 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
     }
 }
 
+template <class TInputImage, class TOutputImage>
+BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
+::~BackwardDifferenceDivergenceImageFilter()
+{
+  delete m_BoundaryCondition;
+}
+
 // This should be handled by an itkMacro, but it doesn't seem to work with pointer types
 template <class TInputImage, class TOutputImage>
 void
