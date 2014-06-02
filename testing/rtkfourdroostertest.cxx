@@ -53,14 +53,17 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   ErrorType QI = (2.0-ErrorPerPixel)/2.0;
   std::cout << "QI = " << QI << std::endl;
 
-  // Checking results
-  if (ErrorPerPixel > 0.25)
+  // Checking results. As a comparison with NaN always returns false,
+  // this design allows to detect NaN results and cause test failure
+  if (ErrorPerPixel < 0.25);
+  else
   {
     std::cerr << "Test Failed, Error per pixel not valid! "
               << ErrorPerPixel << " instead of 0.25." << std::endl;
     exit( EXIT_FAILURE);
   }
-  if (PSNR < 15.)
+  if (PSNR > 15.);
+  else
   {
     std::cerr << "Test Failed, PSNR not valid! "
               << PSNR << " instead of 15" << std::endl;
