@@ -157,3 +157,16 @@ It uses the same Apache 2.0 license as RTK
 itkImageScanlineConstIterator has been taken from ITK 4.5.0
 It uses the same Apache 2.0 license as RTK
 
+------------------------------------------------------------------------
+Some code is modified (a lot) from GIFT, the Generalized Image Fusion Toolkit
+(http://hdl.handle.net/1926/216)
+- rtkDaubechiesWaveletsKernelSource.h
+- rtkDaubechiesWaveletsKernelSource.txx
+- rtkDeconstructImageFilter.h
+- rtkDeconstructImageFilter.txx
+- rtkReconstructImageFilter.h
+- rtkReconstructImageFilter.txx
+- rtkDownsampleImageFilter.h
+- rtkDownsampleImageFilter.txx
+- rtkUpsampleImageFilter.h
+- rtkUpsampleImageFilter.txx
