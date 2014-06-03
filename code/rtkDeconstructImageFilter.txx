@@ -181,6 +181,7 @@ void DeconstructImageFilter<TImage>
 
       m_DownsampleFilters[band + l*n]->SetInput(m_ConvolutionFilters[band + l*n]->GetOutput());
       m_DownsampleFilters[band + l*n]->SetFactors(downsamplingFactors);
+      m_DownsampleFilters[band + l*n]->SetNumberOfThreads(1);
 
       if ((band > 0) || (l==0))
         {
