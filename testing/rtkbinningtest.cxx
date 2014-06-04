@@ -1,62 +1,9 @@
-
+#include "rtkTest.h"
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
 #include "rtkTestConfiguration.h"
 #include "rtkConstantImageSource.h"
 #include <itkBinShrinkImageFilter.h>
-
-template<class TImage>
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-  while( !itRef.IsAtEnd() )
-  {
-    typename TImage::PixelType TestVal = itTest.Get();
-    typename TImage::PixelType RefVal = itRef.Get();
-    if( TestVal != RefVal )
-    {
-      TestError += vcl_abs(ErrorType(RefVal - TestVal));
-      EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-    }
-    ++itTest;
-    ++itRef;
-  }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/recon->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(255.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (255.0-ErrorPerPixel)/255.0;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 0.001)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.001" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < 120.)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 120" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
 
 /**
  * \file rtkbinningtest.cxx
@@ -123,7 +70,7 @@ int main(int , char** )
   bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
-  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
+  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput(), 0.001, 120, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: binning 1x2 ******" << std::endl;
@@ -146,7 +93,7 @@ int main(int , char** )
   bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
-  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
+  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput(), 0.001, 120, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 3: binning 2x1 ******" << std::endl;
@@ -170,7 +117,7 @@ int main(int , char** )
   bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
-  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput());
+  CheckImageQuality<OutputImageType>(bin->GetOutput(), imgRef->GetOutput(), 0.001, 120, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
