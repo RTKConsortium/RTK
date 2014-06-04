@@ -32,6 +32,7 @@
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {
@@ -78,6 +79,7 @@ namespace rtk
  * 4 [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  * 5 [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
  * 6 [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
+ * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
  * 7 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  * 8 [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * 9 [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
@@ -96,10 +98,11 @@ namespace rtk
  * 1 -> 4;
  * 4 -> 5;
  * 5 -> 6;
+ * 6 -> Displaced;
  * 7 -> 8;
  * 8 -> 9;
  * 9 -> 6;
- * 6 -> BackProjection;
+ * Displaced -> BackProjection;
  * BackProjection -> Threshold;
  * Threshold -> OutofThreshold [arrowhead=None];
  * OutofThreshold -> OutofInput0 [style=dashed];
@@ -138,6 +141,7 @@ public:
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType> DivideFilterType;
   typedef rtk::ConstantImageSource<OutputImageType>                                          ConstantImageSourceType;
   typedef itk::ThresholdImageFilter<OutputImageType>                                         ThresholdFilterType;
+  typedef rtk::DisplacedDetectorImageFilter<InputImageType>                                  DisplacedDetectorFilterType;
 
 /** Standard New method. */
   itkNewMacro(Self);
@@ -195,6 +199,7 @@ protected:
   typename DivideFilterType::Pointer             m_DivideFilter;
   typename ConstantImageSourceType::Pointer      m_ConstantImageSource;
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
+  typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
 
   bool m_EnforcePositivity;
 
@@ -218,6 +223,7 @@ private:
   itk::TimeProbe m_ZeroMultiplyProbe;
   itk::TimeProbe m_ForwardProjectionProbe;
   itk::TimeProbe m_SubtractProbe;
+  itk::TimeProbe m_DisplacedDetectorProbe;
   itk::TimeProbe m_MultiplyProbe;
   itk::TimeProbe m_RayBoxProbe;
   itk::TimeProbe m_DivideProbe;
