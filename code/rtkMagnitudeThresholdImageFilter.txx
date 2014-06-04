@@ -32,7 +32,6 @@ template< typename TInputImage, typename TRealType, typename TOutputImage >
 MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 ::MagnitudeThresholdImageFilter()
 {
-    m_RequestedNumberOfThreads = this->GetNumberOfThreads();
     m_Threshold = 0;
 }
 

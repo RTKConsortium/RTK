@@ -89,7 +89,7 @@ namespace rtk
    * Source1 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
    * Source2 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
    * ForwardProj [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
-   * Interpolation [ label="rtk::InterpolationImageFilter" URL="\ref rtk::InterpolationImageFilter"];
+   * Interpolation [ label="InterpolatorWithKnownWeightsImageFilter" URL="\ref rtk::InterpolatorWithKnownWeightsImageFilter"];
    * BackProj [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * Splat [ label="rtk::SplatWithKnownWeightsImageFilter" URL="\ref rtk::SplatWithKnownWeightsImageFilter"];
    * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];
