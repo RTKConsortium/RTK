@@ -1,4 +1,4 @@
-
+#include "rtkTest.h"
 #include "rtkTestConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
@@ -8,61 +8,6 @@
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 #include "rtkMedianImageFilter.h"
-
-template<class TImage>
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  while( !itRef.IsAtEnd() )
-  {
-    typename TImage::PixelType TestVal = itTest.Get();
-    typename TImage::PixelType RefVal = itRef.Get();
-
-    if( TestVal != RefVal && TestVal!=0)
-    {
-      TestError += vcl_abs(ErrorType(RefVal - TestVal));
-      EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-    }
-    ++itTest;
-    ++itRef;
-  }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/recon->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(1011.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (1011.0-ErrorPerPixel)/1011.0;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 1.8)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 1.1" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < 51.)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 39" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
 
 /**
  * \file rtkmediantest.cxx
@@ -135,7 +80,7 @@ int main(int , char** )
   median->SetMedianWindow(median_window);
   median->Update();
 
-  CheckImageQuality<OutputImageType>(median->GetOutput(), imgRef->GetOutput());
+  CheckImageQuality<OutputImageType>(median->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: median 3x2 ******" << std::endl;
@@ -147,7 +92,7 @@ int main(int , char** )
   median->SetMedianWindow(median_window);
   median->Update();
 
-  CheckImageQuality<OutputImageType>(median->GetOutput(), imgRef->GetOutput());
+  CheckImageQuality<OutputImageType>(median->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
