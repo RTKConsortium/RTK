@@ -179,27 +179,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::PadInputImageRegion(const RegionType &inputRegion)
 {
   UpdateTruncationMirrorWeights();
-
-  RegionType paddedRegion = inputRegion;
-
-  // Set x padding
-  typename SizeType::SizeValueType xPaddedSize = 2*inputRegion.GetSize(0);
-  while( GreatestPrimeFactor( xPaddedSize ) > m_GreatestPrimeFactor )
-    xPaddedSize++;
-  paddedRegion.SetSize(0, xPaddedSize);
-  long zeroext = ( (long)xPaddedSize - (long)inputRegion.GetSize(0) ) / 2;
-  paddedRegion.SetIndex(0, inputRegion.GetIndex(0) - zeroext);
-
-  // Set y padding. Padding along Y is only required if
-  // - there is some windowing in the Y direction
-  // - the DFT requires the size to be the product of given prime factors
-  typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
-  if(this->GetHannCutFrequencyY()>0.)
-    yPaddedSize *= 2;
-  while( GreatestPrimeFactor( yPaddedSize ) > m_GreatestPrimeFactor )
-    yPaddedSize++;
-  paddedRegion.SetSize(1, yPaddedSize);
-  paddedRegion.SetIndex(1, inputRegion.GetIndex(1) );
+  RegionType paddedRegion = GetPaddedImageRegion(inputRegion);
 
   // Create padded image (spacing and origin do not matter)
   FFTInputImagePointer paddedImage = FFTInputImageType::New();
@@ -207,7 +187,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   paddedImage->Allocate();
   paddedImage->FillBuffer(0);
 
-  const long next = vnl_math_min(zeroext, (long)this->GetTruncationCorrectionExtent() );
+  const long next = vnl_math_min(inputRegion.GetIndex(0) - paddedRegion.GetIndex(0),
+                                 (long)this->GetTruncationCorrectionExtent() );
   if(next)
     {
     typename FFTInputImageType::IndexType idx;
@@ -255,6 +236,35 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   return paddedImage;
+}
+
+template<class TInputImage, class TOutputImage, class TFFTPrecision>
+typename FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::RegionType
+FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+::GetPaddedImageRegion(const RegionType &inputRegion)
+{
+  RegionType paddedRegion = inputRegion;
+
+  // Set x padding
+  typename SizeType::SizeValueType xPaddedSize = 2*inputRegion.GetSize(0);
+  while( GreatestPrimeFactor( xPaddedSize ) > m_GreatestPrimeFactor )
+    xPaddedSize++;
+  paddedRegion.SetSize(0, xPaddedSize);
+  long zeroext = ( (long)xPaddedSize - (long)inputRegion.GetSize(0) ) / 2;
+  paddedRegion.SetIndex(0, inputRegion.GetIndex(0) - zeroext);
+
+  // Set y padding. Padding along Y is only required if
+  // - there is some windowing in the Y direction
+  // - the DFT requires the size to be the product of given prime factors
+  typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
+  if(this->GetHannCutFrequencyY()>0.)
+    yPaddedSize *= 2;
+  while( GreatestPrimeFactor( yPaddedSize ) > m_GreatestPrimeFactor )
+    yPaddedSize++;
+  paddedRegion.SetSize(1, yPaddedSize);
+  paddedRegion.SetIndex(1, inputRegion.GetIndex(1) );
+
+  return paddedRegion;
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>

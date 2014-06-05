@@ -37,26 +37,7 @@ rtk::CudaFFTRampImageFilter::FFTInputImagePointer
 rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
 {
   UpdateTruncationMirrorWeights();
-  RegionType paddedRegion = inputRegion;
-
-  // Set x padding
-  typename SizeType::SizeValueType xPaddedSize = 2*inputRegion.GetSize(0);
-  while( GreatestPrimeFactor( xPaddedSize ) > this->GetGreatestPrimeFactor() )
-    xPaddedSize++;
-  paddedRegion.SetSize(0, xPaddedSize);
-  long zeroext = ( (long)xPaddedSize - (long)inputRegion.GetSize(0) ) / 2;
-  paddedRegion.SetIndex(0, inputRegion.GetIndex(0) - zeroext);
-
-  // Set y padding. Padding along Y is only required if
-  // - there is some windowing in the Y direction
-  // - the DFT requires the size to be the product of given prime factors
-  typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
-  if(this->GetHannCutFrequencyY()>0.)
-    yPaddedSize *= 2;
-  while( GreatestPrimeFactor( yPaddedSize ) >  this->GetGreatestPrimeFactor() )
-    yPaddedSize++;
-  paddedRegion.SetSize(1, yPaddedSize);
-  paddedRegion.SetIndex(1, inputRegion.GetIndex(1) );
+  RegionType paddedRegion = GetPaddedImageRegion(inputRegion);
 
   // Create padded image (spacing and origin do not matter)
   itk::CudaImage<float,3>::Pointer paddedImage = itk::CudaImage<float,3>::New();
@@ -83,7 +64,6 @@ rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
   float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( paddedImage->GetCudaDataManager()->GetGPUBufferPointer() );
 
-  // *** Call to Kernel *****************************************************************
   CUDA_padding(idx,
                sz,
                sz_i,
