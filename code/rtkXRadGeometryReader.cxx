@@ -109,14 +109,14 @@ rtk::XRadGeometryReader
     std::string svoff = dynamic_cast<MetaDataStringType*>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
     double voff = atof(svoff.c_str()) * reader->GetSpacing(1);
 
-    m_Geometry->AddProjection(tmpGeo->GetSourceToIsocenterDistances()[i],
-                              tmpGeo->GetSourceToDetectorDistances()[i],
-                              tmpGeo->GetGantryAngles()[i],
-                              tmpGeo->GetProjectionOffsetsX()[i]-uoff,
-                              tmpGeo->GetProjectionOffsetsY()[i]-voff,
-                              tmpGeo->GetOutOfPlaneAngles()[i],
-                              tmpGeo->GetInPlaneAngles()[i],
-                              tmpGeo->GetSourceOffsetsX()[i],
-                              tmpGeo->GetSourceOffsetsY()[i]);
+    m_Geometry->AddProjectionInRadians(tmpGeo->GetSourceToIsocenterDistances()[i],
+                                       tmpGeo->GetSourceToDetectorDistances()[i],
+                                       tmpGeo->GetGantryAngles()[i],
+                                       tmpGeo->GetProjectionOffsetsX()[i]-uoff,
+                                       tmpGeo->GetProjectionOffsetsY()[i]-voff,
+                                       tmpGeo->GetOutOfPlaneAngles()[i],
+                                       tmpGeo->GetInPlaneAngles()[i],
+                                       tmpGeo->GetSourceOffsetsX()[i],
+                                       tmpGeo->GetSourceOffsetsY()[i]);
     }
 }

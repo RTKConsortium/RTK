@@ -31,20 +31,24 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   // Get angular weights from geometry
-  m_AngularWeightsAndRampFactor = this->GetGeometry()->GetAngularGaps();
+  m_ConstantProjectionFactor = m_Geometry->GetAngularGaps( m_Geometry->GetSourceAngles() );
+  m_TiltAngles = m_Geometry->GetTiltAngles();
 
-  for(unsigned int k=0; k<m_AngularWeightsAndRampFactor.size(); k++)
+  for(unsigned int k=0; k<m_ConstantProjectionFactor.size(); k++)
     {
     // Add correction factor for ramp filter
     const double sdd  = m_Geometry->GetSourceToDetectorDistances()[k];
     if(sdd==0.) // Parallel
-      m_AngularWeightsAndRampFactor[k] *= 0.5;
+      m_ConstantProjectionFactor[k] *= 0.5;
     else        // Divergent
       {
-      // Zoom + factor 1/2 in eq 176, page 106, Kak & Slaney
+      // See [Rit and Clackdoyle, CT meeting, 2014]
+      ThreeDCircularProjectionGeometry::HomogeneousVectorType sp;
+      sp = m_Geometry->GetSourcePosition(k);
+      sp[3] = 0.;
       const double sid  = m_Geometry->GetSourceToIsocenterDistances()[k];
-      const double rampFactor = sdd / (2. * sid);
-      m_AngularWeightsAndRampFactor[k] *= rampFactor;
+      m_ConstantProjectionFactor[k] *= sdd / (2. * sid * sid);
+      m_ConstantProjectionFactor[k] *= sp.GetNorm();
       }
     }
 }
@@ -77,39 +81,44 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
           k<outputRegionForThread.GetIndex(2)+(int)outputRegionForThread.GetSize(2);
           k++)
     {
-    typename InputImageType::PointType point = pointBase;
-    point[1] = pointBase[1]
-               + m_Geometry->GetProjectionOffsetsY()[k]
-               - m_Geometry->GetSourceOffsetsY()[k];
     const double sdd  = m_Geometry->GetSourceToDetectorDistances()[k];
-    const double sid  = m_Geometry->GetSourceToIsocenterDistances()[k];
-    const double sdd2 = sdd * sdd;
     if(sdd != 0.) // Divergent
       {
-      const double tauOverD  = m_Geometry->GetSourceOffsetsX()[k] / sid;
-      const double tauOverDw = m_AngularWeightsAndRampFactor[k] * tauOverD;
-      const double sddw      = m_AngularWeightsAndRampFactor[k] * sdd;
+      typename InputImageType::PointType point = pointBase;
+      point[1] = pointBase[1]
+                 + m_Geometry->GetProjectionOffsetsY()[k]
+                 - m_Geometry->GetSourceOffsetsY()[k];
+      const double cosa = cos(m_TiltAngles[k]);
+      const double sina = sin(m_TiltAngles[k]);
+      const double tana = tan(m_TiltAngles[k]);
+      const double sid  = m_Geometry->GetSourceToIsocenterDistances()[k];
+      const double sdd2 = sdd * sdd;
+      const double RD   = sdd - sid;
+
+      const double numpart1 = sdd*(cosa+tana*sina);
+      const double sddtana = sdd * tana;
+
       for(unsigned int j=0;
                        j<outputRegionForThread.GetSize(1);
                        j++, point[1] += pointIncrement[1])
         {
         point[0] = pointBase[0]
                    + m_Geometry->GetProjectionOffsetsX()[k]
-                   - m_Geometry->GetSourceOffsetsX()[k];
+                   + tana * RD;
         const double sdd2y2 = sdd2 + point[1]*point[1];
         for(unsigned int i=0;
                          i<outputRegionForThread.GetSize(0);
                          i++, ++itI, ++itO, point[0] += pointIncrement[0])
           {
-          // The term between parentheses comes from the publication
-          // [Gullberg Crawford Tsui, TMI, 1986], equation 18
-          itO.Set( itI.Get() * (sddw - tauOverDw * point[0]) / sqrt( sdd2y2 + point[0]*point[0]) );
+          const double denom = sqrt( sdd2y2 + pow(point[0]-sddtana,2.) );
+          const double cosGamma = (numpart1 - point[0] * sina) / denom;
+          itO.Set( itI.Get() * m_ConstantProjectionFactor[k] * cosGamma );
           }
         }
       }
     else // Parallel
       {
-      double weight = m_AngularWeightsAndRampFactor[k];
+      double weight = m_ConstantProjectionFactor[k];
       for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++)
         {
         for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++, ++itI, ++itO)

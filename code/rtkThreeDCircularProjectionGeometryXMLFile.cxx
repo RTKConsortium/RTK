@@ -231,13 +231,16 @@ WriteFile()
   bool bInPlaneGlobal =
           WriteGlobalParameter(output, indent,
                                this->m_InputObject->GetInPlaneAngles(),
-                               "InPlaneAngle");
+                               "InPlaneAngle",
+                               true);
   bool bOutOfPlaneGlobal =
           WriteGlobalParameter(output, indent,
                                this->m_InputObject->GetOutOfPlaneAngles(),
-                               "OutOfPlaneAngle");
+                               "OutOfPlaneAngle",
+                               true);
 
   // Second, write per projection parameters (if corresponding parameter is not global)
+  const double radiansToDegrees = 45. / vcl_atan(1.);
   for(unsigned int i = 0; i<this->m_InputObject->GetMatrices().size(); i++)
     {
     output << indent;
@@ -246,7 +249,7 @@ WriteFile()
 
     // Only the GantryAngle is necessarily projection specific
     WriteLocalParameter(output, indent,
-                        this->m_InputObject->GetGantryAngles()[i],
+                        radiansToDegrees * this->m_InputObject->GetGantryAngles()[i],
                         "GantryAngle");
     if(!bSIDGlobal)
       WriteLocalParameter(output, indent,
@@ -274,11 +277,11 @@ WriteFile()
                           "ProjectionOffsetY");
     if(!bInPlaneGlobal)
       WriteLocalParameter(output, indent,
-                          this->m_InputObject->GetInPlaneAngles()[i],
+                          radiansToDegrees * this->m_InputObject->GetInPlaneAngles()[i],
                           "InPlaneAngle");
     if(!bOutOfPlaneGlobal)
       WriteLocalParameter(output, indent,
-                          this->m_InputObject->GetOutOfPlaneAngles()[i],
+                          radiansToDegrees * this->m_InputObject->GetOutOfPlaneAngles()[i],
                           "OutOfPlaneAngle");
 
     //Matrix
@@ -312,7 +315,11 @@ WriteFile()
 
 bool
 ThreeDCircularProjectionGeometryXMLFileWriter::
-WriteGlobalParameter(std::ofstream &output, const std::string &indent, const std::vector<double> &v, const std::string &s)
+WriteGlobalParameter(std::ofstream &output,
+                     const std::string &indent,
+                     const std::vector<double> &v,
+                     const std::string &s,
+                     bool convertToDegrees)
 {
   // Test if all values in vector v are equal. Return false if not.
   for(size_t i=0; i<v.size(); i++)
@@ -322,10 +329,13 @@ WriteGlobalParameter(std::ofstream &output, const std::string &indent, const std
   // Write value in file if not 0.
   if (0. != v[0])
     {
+    double val = v[0];
+    if(convertToDegrees)
+      val *= 45. / vcl_atan(1.);
     std::string ss(s);
     output << indent;
     this->WriteStartElement(ss, output);
-    output << v[0];
+    output << val;
     this->WriteEndElement(ss,output);
     output << std::endl;
     }
