@@ -147,6 +147,7 @@ protected:
     * centralRegion is the region of the returned image which corresponds to inputRegion.
     */
   virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
+  RegionType GetPaddedImageRegion(const RegionType &inputRegion);
 
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
