@@ -117,13 +117,6 @@ void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
-  typedef typename itk::Image<TFFTPrecision,
-                              TInputImage::ImageDimension > FFTInputImageType;
-  typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
-  typedef typename itk::Image<std::complex<TFFTPrecision>,
-                              TInputImage::ImageDimension > FFTOutputImageType;
-  typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
-
   // Pad image region enlarged along X
   RegionType enlargedRegionX = outputRegionForThread;
   enlargedRegionX.SetIndex(0, this->GetInput()->GetRequestedRegion().GetIndex(0) );
@@ -131,7 +124,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   enlargedRegionX.SetIndex(1, this->GetInput()->GetRequestedRegion().GetIndex(1) );
   enlargedRegionX.SetSize(1, this->GetInput()->GetRequestedRegion().GetSize(1) );
   FFTInputImagePointer paddedImage;
-  paddedImage = PadInputImageRegion<FFTInputImageType, FFTOutputImageType>(enlargedRegionX);
+  paddedImage = PadInputImageRegion(enlargedRegionX);
 
   // FFT padded image
   typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType > FFTType;
@@ -143,8 +136,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // Get FFT ramp kernel
   typename FFTOutputImageType::SizeType s;
   s = paddedImage->GetLargestPossibleRegion().GetSize();
-  FFTOutputImagePointer fftK;
-  fftK = this->GetFFTRampKernel<FFTInputImageType, FFTOutputImageType>(s[0], s[1]);
+  FFTOutputImagePointer fftK = this->GetFFTRampKernel(s[0], s[1]);
 
   //Multiply line-by-line
   itk::ImageRegionIterator<typename FFTType::OutputImageType> itI(fftI->GetOutput(),
@@ -173,7 +165,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   itk::ImageRegionIterator<OutputImageType>        itD(this->GetOutput(), outputRegionForThread);
   itS.GoToBegin();
   itD.GoToBegin();
-  while(!itS.IsAtEnd() ) {
+  while(!itS.IsAtEnd() )
+    {
     itD.Set(itS.Get() );
     ++itS;
     ++itD;
@@ -181,8 +174,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
-template<class TFFTInputImage, class TFFTOutputImage>
-typename TFFTInputImage::Pointer
+typename FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTInputImagePointer
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::PadInputImageRegion(const RegionType &inputRegion)
 {
@@ -210,7 +202,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   paddedRegion.SetIndex(1, inputRegion.GetIndex(1) );
 
   // Create padded image (spacing and origin do not matter)
-  typename TFFTInputImage::Pointer paddedImage = TFFTInputImage::New();
+  FFTInputImagePointer paddedImage = FFTInputImageType::New();
   paddedImage->SetRegions(paddedRegion);
   paddedImage->Allocate();
   paddedImage->FillBuffer(0);
@@ -218,14 +210,14 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   const long next = vnl_math_min(zeroext, (long)this->GetTruncationCorrectionExtent() );
   if(next)
     {
-    typename TFFTInputImage::IndexType idx;
-    typename TFFTInputImage::IndexType::IndexValueType borderDist=0, rightIdx=0;
+    typename FFTInputImageType::IndexType idx;
+    typename FFTInputImageType::IndexType::IndexValueType borderDist=0, rightIdx=0;
 
     // Mirror left
     RegionType leftRegion = inputRegion;
     leftRegion.SetIndex(0, inputRegion.GetIndex(0)-next);
     leftRegion.SetSize(0, next);
-    itk::ImageRegionIteratorWithIndex<TFFTInputImage> itLeft(paddedImage, leftRegion);
+    itk::ImageRegionIteratorWithIndex<FFTInputImageType> itLeft(paddedImage, leftRegion);
     while(!itLeft.IsAtEnd() )
       {
       idx = itLeft.GetIndex();
@@ -239,7 +231,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     RegionType rightRegion = inputRegion;
     rightRegion.SetIndex(0, inputRegion.GetIndex(0)+inputRegion.GetSize(0) );
     rightRegion.SetSize(0, next);
-    itk::ImageRegionIteratorWithIndex<TFFTInputImage> itRight(paddedImage, rightRegion);
+    itk::ImageRegionIteratorWithIndex<FFTInputImageType> itRight(paddedImage, rightRegion);
     while(!itRight.IsAtEnd() )
       {
       idx = itRight.GetIndex();
@@ -253,7 +245,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   // Copy central part
   itk::ImageRegionConstIterator<InputImageType> itS(this->GetInput(), inputRegion);
-  itk::ImageRegionIterator<TFFTInputImage>   itD(paddedImage, inputRegion);
+  itk::ImageRegionIterator<FFTInputImageType>   itD(paddedImage, inputRegion);
   itS.GoToBegin();
   itD.GoToBegin();
   while(!itS.IsAtEnd() ) {
@@ -303,8 +295,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
-template<class TFFTInputImage, class TFFTOutputImage>
-typename TFFTOutputImage::Pointer
+typename FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTOutputImagePointer
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GetFFTRampKernel(const int width, const int height)
 {
@@ -312,7 +303,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   SizeType size;
   size.Fill(1);
   size[0] = width;
-  typename TFFTInputImage::Pointer kernel = TFFTInputImage::New();
+  FFTInputImagePointer kernel = FFTInputImageType::New();
   kernel->SetRegions( size );
   kernel->Allocate();
   kernel->FillBuffer(0.);
@@ -333,7 +324,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   // FFT kernel
-  typedef itk::RealToHalfHermitianForwardFFTImageFilter< TFFTInputImage, TFFTOutputImage > FFTType;
+  typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType > FFTType;
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
   fftK->SetNumberOfThreads( 1 );
@@ -376,7 +367,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   // Replicate and window if required
-  typename TFFTOutputImage::Pointer result = fftK->GetOutput();
+  FFTOutputImagePointer result = fftK->GetOutput();
   if(this->GetHannCutFrequencyY()>0.)
     {
     size.Fill(1);
@@ -385,7 +376,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
     const unsigned int ncut = itk::Math::Round<double>( (height/2+1) * vnl_math_min(1.0, this->GetHannCutFrequencyY() ) );
 
-    result = TFFTOutputImage::New();
+    result = FFTOutputImageType::New();
     result->SetRegions( size );
     result->Allocate();
     result->FillBuffer(0.);

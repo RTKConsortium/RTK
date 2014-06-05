@@ -28,23 +28,20 @@ rtk::CudaFFTRampImageFilter
  ::CudaFFTRampImageFilter()
  {
    // We use FFTW for the kernel so we need to do the same thing as in the parent
-#if defined(USE_FFTWD)
-    m_GreatestPrimeFactor = 13;
-#endif
 #if defined(USE_FFTWF)
-    m_GreatestPrimeFactor = 13;
+   this->SetGreatestPrimeFactor(13);
 #endif
  }
 
-void
-rtk::CudaFFTRampImageFilter::CudaPadInputImageRegion(const RegionType &inputRegion)
+rtk::CudaFFTRampImageFilter::FFTInputImagePointer
+rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
 {
   UpdateTruncationMirrorWeights();
   RegionType paddedRegion = inputRegion;
 
   // Set x padding
   typename SizeType::SizeValueType xPaddedSize = 2*inputRegion.GetSize(0);
-  while( GreatestPrimeFactor( xPaddedSize ) > m_GreatestPrimeFactor )
+  while( GreatestPrimeFactor( xPaddedSize ) > this->GetGreatestPrimeFactor() )
     xPaddedSize++;
   paddedRegion.SetSize(0, xPaddedSize);
   long zeroext = ( (long)xPaddedSize - (long)inputRegion.GetSize(0) ) / 2;
@@ -56,7 +53,7 @@ rtk::CudaFFTRampImageFilter::CudaPadInputImageRegion(const RegionType &inputRegi
   typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
   if(this->GetHannCutFrequencyY()>0.)
     yPaddedSize *= 2;
-  while( GreatestPrimeFactor( yPaddedSize ) > m_GreatestPrimeFactor )
+  while( GreatestPrimeFactor( yPaddedSize ) >  this->GetGreatestPrimeFactor() )
     yPaddedSize++;
   paddedRegion.SetSize(1, yPaddedSize);
   paddedRegion.SetIndex(1, inputRegion.GetIndex(1) );
@@ -96,55 +93,40 @@ rtk::CudaFFTRampImageFilter::CudaPadInputImageRegion(const RegionType &inputRegi
                m_TruncationMirrorWeights.size(),
                this->GetHannCutFrequencyY());
 
-  m_padImage = paddedImage;
+  return paddedImage.GetPointer();
 }
 
 void
 rtk::CudaFFTRampImageFilter
 ::GPUGenerateData()
 {
-  // Cuda typedefs
-  typedef itk::CudaImage<float,
-                         ImageType::ImageDimension > FFTInputImageType;
-  typedef FFTInputImageType::Pointer                 FFTInputImagePointer;
-  typedef itk::CudaImage<std::complex<float>,
-                         ImageType::ImageDimension > FFTOutputImageType;
-  typedef FFTOutputImageType::Pointer                FFTOutputImagePointer;
-
-  // Non-cuda typedefs
-  typedef itk::Image<float,
-                     ImageType::ImageDimension >     FFTInputCPUImageType;
-  typedef FFTInputCPUImageType::Pointer              FFTInputCPUImagePointer;
-  typedef itk::Image<std::complex<float>,
-                     ImageType::ImageDimension >     FFTOutputCPUImageType;
-  typedef FFTOutputCPUImageType::Pointer             FFTOutputCPUImagePointer;
-
   // Pad image region
-  CudaPadInputImageRegion(this->GetInput()->GetRequestedRegion());
+  FFTInputImagePointer paddedImage = PadInputImageRegion(this->GetInput()->GetRequestedRegion());
+
   int3 inputDimension;
-  inputDimension.x = m_padImage->GetBufferedRegion().GetSize()[0];
-  inputDimension.y = m_padImage->GetBufferedRegion().GetSize()[1];
-  inputDimension.z = m_padImage->GetBufferedRegion().GetSize()[2];
+  inputDimension.x = paddedImage->GetBufferedRegion().GetSize()[0];
+  inputDimension.y = paddedImage->GetBufferedRegion().GetSize()[1];
+  inputDimension.z = paddedImage->GetBufferedRegion().GetSize()[2];
   if(inputDimension.y==1 && inputDimension.z>1) // Troubles cuda 3.2 and 4.0
     std::swap(inputDimension.y, inputDimension.z);
 
   // Get FFT ramp kernel. Must be itk::Image because GetFFTRampKernel is not
   // compatible with itk::CudaImage + ITK 3.20.
-  FFTOutputCPUImagePointer fftK;
-  FFTOutputImageType::SizeType s = m_padImage->GetLargestPossibleRegion().GetSize();
-  fftK = this->GetFFTRampKernel<FFTInputCPUImageType, FFTOutputCPUImageType>(s[0], s[1]);
+  FFTOutputImagePointer fftK;
+  FFTOutputImageType::SizeType s = paddedImage->GetLargestPossibleRegion().GetSize();
+  fftK = this->GetFFTRampKernel(s[0], s[1]);
 
   // Create the itk::CudaImage holding the kernel
   FFTOutputImageType::RegionType kreg = fftK->GetLargestPossibleRegion();
-  FFTOutputImagePointer fftKCUDA = FFTOutputImageType::New();
+  CudaFFTOutputImagePointer fftKCUDA = CudaFFTOutputImageType::New();
   fftKCUDA->SetRegions(kreg);
   fftKCUDA->Allocate();
 
   // CUFFT scales by the number of element, correct for it in kernel.
   // Also transfer the kernel from the itk::Image to the itk::CudaImage.
-  itk::ImageRegionIterator<FFTOutputCPUImageType> itKI(fftK, kreg);
-  itk::ImageRegionIterator<FFTOutputImageType>    itKO(fftKCUDA, kreg);
-  FFTPrecisionType invNPixels = 1 / double(m_padImage->GetBufferedRegion().GetNumberOfPixels() );
+  itk::ImageRegionIterator<FFTOutputImageType> itKI(fftK, kreg);
+  itk::ImageRegionIterator<CudaFFTOutputImageType> itKO(fftKCUDA, kreg);
+  FFTPrecisionType invNPixels = 1 / double(paddedImage->GetBufferedRegion().GetNumberOfPixels() );
   while(!itKO.IsAtEnd() )
     {
     itKO.Set(itKI.Get() * invNPixels );
@@ -152,12 +134,14 @@ rtk::CudaFFTRampImageFilter
     ++itKO;
     }
 
+  CudaImageType *cuPadImgP = dynamic_cast<CudaImageType*>(paddedImage.GetPointer());
+
   int2 kernelDimension;
   kernelDimension.x = fftK->GetBufferedRegion().GetSize()[0];
   kernelDimension.y = fftK->GetBufferedRegion().GetSize()[1];
   CUDA_fft_convolution(inputDimension,
                        kernelDimension,
-                       *(float**)(m_padImage->GetCudaDataManager()->GetGPUBufferPointer()),
+                       *(float**)(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),
                        *(float2**)(fftKCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 
   // CUDA Cropping and Graft Output
@@ -167,14 +151,14 @@ rtk::CudaFFTRampImageFilter
   for(unsigned int i=0; i<OutputImageType::ImageDimension; i++)
     {
     lowCropSize[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] -
-                     m_padImage->GetLargestPossibleRegion().GetIndex()[i];
-    upCropSize[i]  = m_padImage->GetLargestPossibleRegion().GetSize()[i] -
+                     paddedImage->GetLargestPossibleRegion().GetIndex()[i];
+    upCropSize[i]  = paddedImage->GetLargestPossibleRegion().GetSize()[i] -
                      this->GetOutput()->GetRequestedRegion().GetSize()[i] -
                      lowCropSize[i];
     }
   cf->SetUpperBoundaryCropSize(upCropSize);
   cf->SetLowerBoundaryCropSize(lowCropSize);
-  cf->SetInput(m_padImage);
+  cf->SetInput(cuPadImgP);
   cf->Update();
 
   // We only want to graft the data. To do so, we copy the rest before grafting.

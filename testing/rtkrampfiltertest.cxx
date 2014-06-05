@@ -245,7 +245,7 @@ int main(int , char** )
   feldkampCropped->GetRampFilter()->SetTruncationCorrection(0.1);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCropped->Update() );
 
-  CheckImageQuality<OutputImageType>(feldkampCropped->GetOutput(), dsl->GetOutput(), 1.015, 1.025, 26, 0.053);
+  CheckImageQuality<OutputImageType>(feldkampCropped->GetOutput(), dsl->GetOutput(), 1.015, 1.025, 26, 0.05);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
