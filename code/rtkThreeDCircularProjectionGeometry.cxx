@@ -29,16 +29,36 @@ double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
   return result;
 }
 
+double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(const double a)
+{
+  double result = a-2*M_PI*floor( a / (2*M_PI) ); // between -2*PI and 2*PI
+  if(result<0) result += 2*M_PI;                  // between 0     and 2*PI
+  return result;
+}
+
 void rtk::ThreeDCircularProjectionGeometry::AddProjection(
   const double sid, const double sdd, const double gantryAngle,
   const double projOffsetX, const double projOffsetY,
   const double outOfPlaneAngle, const double inPlaneAngle,
   const double sourceOffsetX, const double sourceOffsetY)
 {
+  const double degreesToRadians = vcl_atan(1.0) / 45.0;
+  AddProjectionInRadians(sid, sdd, degreesToRadians * gantryAngle,
+                         projOffsetX, projOffsetY, degreesToRadians * outOfPlaneAngle,
+                         degreesToRadians * inPlaneAngle,
+                         sourceOffsetX, sourceOffsetY);
+}
+
+void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
+  const double sid, const double sdd, const double gantryAngle,
+  const double projOffsetX, const double projOffsetY,
+  const double outOfPlaneAngle, const double inPlaneAngle,
+  const double sourceOffsetX, const double sourceOffsetY)
+{
   // Detector orientation parameters
-  m_GantryAngles.push_back( ConvertAngleBetween0And360Degrees(gantryAngle) );
-  m_OutOfPlaneAngles.push_back( ConvertAngleBetween0And360Degrees(outOfPlaneAngle) );
-  m_InPlaneAngles.push_back( ConvertAngleBetween0And360Degrees(inPlaneAngle) );
+  m_GantryAngles.push_back( ConvertAngleBetween0And2PIRadians(gantryAngle) );
+  m_OutOfPlaneAngles.push_back( ConvertAngleBetween0And2PIRadians(outOfPlaneAngle) );
+  m_InPlaneAngles.push_back( ConvertAngleBetween0And2PIRadians(inPlaneAngle) );
 
   // Source position parameters
   m_SourceToIsocenterDistances.push_back( sid );
@@ -86,87 +106,118 @@ void rtk::ThreeDCircularProjectionGeometry::Clear()
   this->Modified();
 }
 
-
-const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetSortedAngles()
+const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetSourceAngles()
 {
   unsigned int nProj = this->GetGantryAngles().size();
-  std::multimap<double,unsigned int> angles;
+  std::vector<double> sang;
+  VectorType z;
+  z.Fill(0.);
+  z[2] = 1.;
   for(unsigned int iProj=0; iProj<nProj; iProj++)
     {
-    double angle = this->GetGantryAngles()[iProj];
-    angles.insert(std::pair<double, unsigned int>(angle, iProj) );
+    HomogeneousVectorType sph = GetSourcePosition(iProj);
+
+    VectorType sp( &(sph[0]) );
+    sp.Normalize();
+    double a = acos(sp*z);
+    if(sp[0] > 0.)
+      a = 2. * M_PI - a;
+    sang.push_back( ConvertAngleBetween0And2PIRadians(a) );
     }
-  return angles;
+  return sang;
 }
 
-const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext()
+const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetTiltAngles()
+{
+  const std::vector<double> sangles = this->GetSourceAngles();
+  const std::vector<double> gangles = this->GetGantryAngles();
+  std::vector<double> tang;
+  for(unsigned int iProj=0; iProj<gangles.size(); iProj++)
+    {
+    double angle = -1. * gangles[iProj] - sangles[iProj];
+    tang.push_back( ConvertAngleBetween0And2PIRadians(angle) );
+    }
+  return tang;
+}
+
+const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double> &angles)
+{
+  unsigned int nProj = angles.size();
+  std::multimap<double,unsigned int> sangles;
+  for(unsigned int iProj=0; iProj<nProj; iProj++)
+    {
+    double angle = angles[iProj];
+    sangles.insert(std::pair<double, unsigned int>(angle, iProj) );
+    }
+  return sangles;
+}
+
+const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<double> &angles)
 {
   std::vector<double> angularGaps;
-  unsigned int        nProj = this->GetGantryAngles().size();
+  unsigned int        nProj = angles.size();
   angularGaps.resize(nProj);
 
   // Special management of single or empty dataset
-  const double degreesToRadians = vcl_atan(1.0) / 45.0;
   if(nProj==1)
-    angularGaps[0] = degreesToRadians * 360;
+    angularGaps[0] = 2*M_PI;
   if(nProj<2)
     return angularGaps;
 
   // Otherwise we sort the angles in a multimap
-  std::multimap<double,unsigned int> angles = this->GetSortedAngles();
+  std::multimap<double,unsigned int> sangles = this->GetSortedAngles( angles );
 
   // We then go over the sorted angles and deduce the angular weight
-  std::multimap<double,unsigned int>::const_iterator curr = angles.begin(), next = angles.begin();
+  std::multimap<double,unsigned int>::const_iterator curr = sangles.begin(), next = sangles.begin();
   next++;
 
   // All but the last projection
-  while(next!=angles.end() )
+  while(next!=sangles.end() )
     {
-    angularGaps[curr->second] = degreesToRadians * ( next->first - curr->first );
+    angularGaps[curr->second] = ( next->first - curr->first );
     curr++; next++;
     }
 
   //Last projection wraps the angle of the first one
-  angularGaps[curr->second] = 0.5 * degreesToRadians * ( angles.begin()->first + 360 - curr->first );
+  angularGaps[curr->second] = 0.5 * ( sangles.begin()->first + 2*M_PI - curr->first );
 
   return angularGaps;
 }
 
-const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps()
+const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> &angles)
 {
   std::vector<double> angularGaps;
-  unsigned int        nProj = this->GetGantryAngles().size();
+  unsigned int        nProj = angles.size();
   angularGaps.resize(nProj);
 
   // Special management of single or empty dataset
-  const double degreesToRadians = vcl_atan(1.0) / 45.0;
   if(nProj==1)
-    angularGaps[0] = degreesToRadians * 180;
+    angularGaps[0] = M_PI;
   if(nProj<2)
     return angularGaps;
 
   // Otherwise we sort the angles in a multimap
-  std::multimap<double,unsigned int> angles = this->GetSortedAngles();
+  std::multimap<double,unsigned int> sangles = this->GetSortedAngles(angles);
 
   // We then go over the sorted angles and deduce the angular weight
-  std::multimap<double,unsigned int>::const_iterator prev = angles.begin(),
-                                                     curr = angles.begin(),
-                                                     next = angles.begin();
+  std::multimap<double,unsigned int>::const_iterator prev = sangles.begin(),
+                                                     curr = sangles.begin(),
+                                                     next = sangles.begin();
   next++;
 
   //First projection wraps the angle of the last one
-  angularGaps[curr->second] = 0.5 * degreesToRadians * ( next->first - angles.rbegin()->first + 360 );
+  angularGaps[curr->second] = 0.5 * ( next->first - sangles.rbegin()->first + 2*M_PI );
   curr++; next++;
 
   //Rest of the angles
-  while(next!=angles.end() )
+  while(next!=sangles.end() )
     {
-    angularGaps[curr->second] = 0.5 * degreesToRadians * ( next->first - prev->first );
+    angularGaps[curr->second] = 0.5 * ( next->first - prev->first );
     prev++; curr++; next++;
     }
 
   //Last projection wraps the angle of the first one
-  angularGaps[curr->second] = 0.5 * degreesToRadians * ( angles.begin()->first + 360 - prev->first );
+  angularGaps[curr->second] = 0.5 * ( sangles.begin()->first + 2*M_PI - prev->first );
 
   // FIXME: Trick for the half scan in parallel geometry case
   if(m_SourceToDetectorDistances[0]==0.)
@@ -192,12 +243,10 @@ ComputeRotationHomogeneousMatrix(double angleX,
                                  double angleY,
                                  double angleZ)
 {
-  const double degreesToRadians = vcl_atan(1.0) / 45.0;
-
   typedef itk::CenteredEuler3DTransform<double> ThreeDTransformType;
   ThreeDTransformType::Pointer xfm = ThreeDTransformType::New();
   xfm->SetIdentity();
-  xfm->SetRotation( angleX*degreesToRadians, angleY*degreesToRadians, angleZ*degreesToRadians );
+  xfm->SetRotation( angleX, angleY, angleZ );
 
   ThreeDHomogeneousMatrixType matrix;
   matrix.SetIdentity();
