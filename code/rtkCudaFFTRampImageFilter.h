@@ -43,29 +43,27 @@ class CudaFFTRampImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                            ImageType;
-  typedef CudaFFTRampImageFilter                             Self;
-  typedef FFTRampImageFilter< ImageType, ImageType, double > Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef itk::CudaImage<float,3>                                    CudaImageType;
+  typedef itk::CudaImage< std::complex<float>, 3 >                   CudaFFTOutputImageType;
+  typedef CudaFFTOutputImageType::Pointer                            CudaFFTOutputImagePointer;
+  typedef CudaFFTRampImageFilter                                     Self;
+  typedef FFTRampImageFilter< CudaImageType, CudaImageType, double > Superclass;
+  typedef itk::SmartPointer<Self>                                    Pointer;
+  typedef itk::SmartPointer<const Self>                              ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
   itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
+
 protected:
   rtkcuda_EXPORT CudaFFTRampImageFilter();
   ~CudaFFTRampImageFilter(){}
 
   virtual void GPUGenerateData();
-  /** Pad the inputRegion region using GPU of the input image and assigns padded image to member m_padImage.
-    * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
-    * CentralRegion is the region of the returned image which corresponds to inputRegion.
-    */
-  void CudaPadInputImageRegion(const RegionType &inputRegion);
-  // Padded image
-  itk::CudaImage<float,3>::Pointer m_padImage;
+
+  virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
 
 private:
   CudaFFTRampImageFilter(const Self&); //purposely not implemented
