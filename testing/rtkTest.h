@@ -76,20 +76,18 @@ void CheckImageQuality(typename TImage::Pointer recon,
 
   // Checking results. As a comparison with NaN always returns false,
   // this design allows to detect NaN results and cause test failure
-  if (ErrorPerPixel < ErrorPerPixelTolerance);
-  else
-  {
+  if (!(ErrorPerPixel < ErrorPerPixelTolerance))
+    {
     std::cerr << "Test Failed, Error per pixel not valid! "
               << ErrorPerPixel << " instead of "<< ErrorPerPixelTolerance << std::endl;
     exit( EXIT_FAILURE);
-  }
-  if (PSNR > PSNRTolerance);
-  else
-  {
+    }
+  if (!(PSNR > PSNRTolerance))
+    {
     std::cerr << "Test Failed, PSNR not valid! "
               << PSNR << " instead of " << PSNRTolerance << std::endl;
     exit( EXIT_FAILURE);
-  }
+    }
 }
 #endif //FAST_TESTS_NO_CHECKS
 
@@ -181,7 +179,7 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
   std::cout << "ratio = " << ratio << std::endl;
 
   // Checking results
-  if (vcl_abs(ratio-1)>0.0001)
+  if (!(vcl_abs(ratio-1)<0.0001))
   {
     std::cerr << "Test Failed, ratio not valid! "
               << ratio << " instead of 1 +/- 0.0001" << std::endl;
