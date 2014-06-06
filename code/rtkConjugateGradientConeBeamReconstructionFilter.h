@@ -26,6 +26,7 @@
 #include "rtkReconstructionConjugateGradientOperator.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {
@@ -39,7 +40,7 @@ namespace rtk
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
-   * at a time), and ConjugateGradient a steepest descent or conjugate gradient method
+   * at a time), and ConjugateGradient a conjugate gradient method
    * (projects and back projects all projections together).
    *
    * \dot
@@ -101,7 +102,8 @@ public:
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                  ConjugateGradientFilterType;
     typedef itk::MultiplyImageFilter<TOutputImage>                           MultiplyVolumeFilterType;
-    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>                 CGOperatorFilterType;
+    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>       CGOperatorFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                  DisplacedDetectorFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -132,6 +134,7 @@ protected:
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForB;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check

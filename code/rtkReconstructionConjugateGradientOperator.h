@@ -26,6 +26,7 @@
 #include "rtkForwardProjectionImageFilter.h"
 
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {
@@ -102,6 +103,7 @@ public:
   typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
   typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
 
+  typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
   typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
 
   /** Set the backprojection filter*/
@@ -111,7 +113,7 @@ public:
   void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-  void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+  itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
 
 protected:
   ReconstructionConjugateGradientOperator();
@@ -127,6 +129,10 @@ protected:
   typename MultiplyFilterType::Pointer              m_MultiplyFilter;
   typename MultiplyFilterType::Pointer              m_ZeroMultiplyProjectionFilter;
   typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
+  typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+
+  /** Member attributes */
+  rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */
