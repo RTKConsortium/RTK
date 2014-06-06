@@ -22,7 +22,6 @@
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -85,12 +84,6 @@ int main(int argc, char * argv[])
   InputReaderType::Pointer roiReader = InputReaderType::New();
   roiReader->SetFileName( args_info.roi_arg );
 
-  // Displaced detector weighting
-  typedef rtk::DisplacedDetectorImageFilter< ProjectionStackType > DDFType;
-  DDFType::Pointer ddf = DDFType::New();
-  ddf->SetInput( reader->GetOutput() );
-  ddf->SetGeometry( geometryReader->GetOutputObject() );
-
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.phases_arg);
@@ -103,7 +96,7 @@ int main(int argc, char * argv[])
   rooster->SetForwardProjectionFilter(args_info.fp_arg);
   rooster->SetBackProjectionFilter(args_info.bp_arg);
   rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
-  rooster->SetInputProjectionStack(ddf->GetOutput());
+  rooster->SetInputProjectionStack(reader->GetOutput());
   rooster->SetInputROI(roiReader->GetOutput());
   rooster->SetGeometry( geometryReader->GetOutputObject() );
   rooster->SetCG_iterations( args_info.cgiter_arg );

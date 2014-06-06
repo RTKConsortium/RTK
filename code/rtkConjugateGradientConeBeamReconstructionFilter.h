@@ -34,8 +34,10 @@ namespace rtk
    * \brief Implements ConjugateGradient
    *
    * This filter implements the ConjugateGradient method.
-   * ConjugateGradient attempts to find the f that minimizes || Rf -p ||_2^2, with R the
-   * forward projection operator and p the measured projections.
+   * ConjugateGradient attempts to find the f that minimizes
+   * || sqrt(D) (Rf -p) ||_2^2,
+   * with R the forward projection operator,
+   * p the measured projections, and D the displaced detector weighting operator.
    * In this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
@@ -57,12 +59,14 @@ namespace rtk
    * ZeroMultiplyVolume [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
    * BeforeZeroMultiplyVolume [label="", fixedsize="false", width=0, height=0, shape=none];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    *
    * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
    * BeforeZeroMultiplyVolume -> ConjugateGradient;
-   * Input1 -> BackProjection;
+   * Input1 -> Displaced;
+   * Displaced -> BackProjection;
    * ZeroMultiplyVolume -> BackProjection;
    * BackProjection -> ConjugateGradient;
    * ConjugateGradient -> Output;

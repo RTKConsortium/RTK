@@ -38,6 +38,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyVolumeSeriesFilter = MultiplyVolumeSeriesType::New();
   m_ZeroMultiplyProjectionStackFilter = MultiplyProjectionStackType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent connections
   m_ExtractFilter->SetInput(m_ZeroMultiplyProjectionStackFilter->GetOutput());
@@ -88,16 +89,6 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
-  this->Modified();
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType>
-void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
-{
-  m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
-  m_ForwardProjectionFilter->SetGeometry(_arg.GetPointer());
   this->Modified();
 }
 
@@ -169,8 +160,10 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_ForwardProjectionFilter->SetInput(0, m_ExtractFilter->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, m_InterpolationFilter->GetOutput());
 
+  m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
+
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource2->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
 
   m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyVolumeSeriesFilter->GetOutput());
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
@@ -187,6 +180,11 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_SplatFilter->SetWeights(m_Weights);
   m_InterpolationFilter->SetProjectionNumber(0);
   m_SplatFilter->SetProjectionNumber(0);
+
+  // Set geometry
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Initialize m_ConstantVolumeSource
   this->InitializeConstantSource();

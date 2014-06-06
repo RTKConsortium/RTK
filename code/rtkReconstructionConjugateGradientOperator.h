@@ -35,16 +35,18 @@ namespace rtk
    * \brief Implements the operator A used in conjugate gradient reconstruction
    *
    * This filter implements the operator A used in the conjugate gradient reconstruction method,
-   * which attempts to find the f that minimizes || Rf -p ||_2^2, with R the
-   * forward projection operator and p the measured projections.
+   * which attempts to find the f that minimizes
+   * || sqrt(D) (Rf -p) ||_2^2,
+   * with R the forward projection operator,
+   * p the measured projections, and D the displaced detector weighting operator.
    * In this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
-   * at a time), SIRT a steepest descent method, and here a conjugate gradient method is used
-   * (both project and back project all projections together).
+   * at a time), and ConjugateGradient a conjugate gradient method
+   * (projects and back projects all projections together).
    *
-   * This filter takes in input f and outputs R_t R f
+   * This filter takes in input f and outputs R_t D R f
    *
    * \dot
    * digraph ReconstructionConjugateGradientOperator {
@@ -62,6 +64,7 @@ namespace rtk
    * BeforeZeroMultiplyVolume [label="", fixedsize="false", width=0, height=0, shape=none];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
    * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
@@ -69,7 +72,8 @@ namespace rtk
    * Input1 -> ZeroMultiplyProjections;
    * ZeroMultiplyProjections -> ForwardProjection;
    * ZeroMultiplyVolume -> BackProjection;
-   * ForwardProjection -> BackProjection;
+   * ForwardProjection -> Displaced;
+   * Displaced -> BackProjection;
    * BackProjection -> Output;
    *
    * }

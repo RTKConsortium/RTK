@@ -27,7 +27,6 @@
 #include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 
 int main(int argc, char * argv[])
@@ -67,12 +66,6 @@ int main(int argc, char * argv[])
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() );
-
-  // Displaced detector weighting
-  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
-  DDFType::Pointer ddf = DDFType::New();
-  ddf->SetInput( projectionsReader->GetOutput() );
-  ddf->SetGeometry( geometryReader->GetOutputObject() );
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource< OutputImageType >::Pointer inputFilter;
@@ -123,7 +116,7 @@ int main(int argc, char * argv[])
 
   // Set the inputs of the ADMM filter
   admmFilter->SetInput(0, inputFilter->GetOutput() );
-  admmFilter->SetInput(1, ddf->GetOutput() );
+  admmFilter->SetInput(1, projectionsReader->GetOutput() );
 
   itk::TimeProbe timeProbe;
     if (args_info.time_flag)

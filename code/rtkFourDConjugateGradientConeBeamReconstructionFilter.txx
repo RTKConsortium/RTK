@@ -42,6 +42,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
@@ -129,16 +130,18 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   // Set runtime connections
   m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
   m_ConjugateGradientFilter->SetX(this->GetInputVolumeSeries());
+  m_DisplacedDetectorFilter->SetInput(this->GetInputProjectionStack());
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_ProjStackToFourDFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
-  m_ProjStackToFourDFilter->SetInputProjectionStack(this->GetInputProjectionStack());
+  m_ProjStackToFourDFilter->SetInputProjectionStack(m_DisplacedDetectorFilter->GetOutput());
   m_ConjugateGradientFilter->SetB(m_ProjStackToFourDFilter->GetOutput());
 
   // For the same reason, set geometry now
   m_CGOperator->SetGeometry(this->m_Geometry);
   m_ProjStackToFourDFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);

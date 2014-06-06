@@ -27,6 +27,7 @@
 #include "rtkForwardProjectionImageFilter.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 
@@ -38,16 +39,18 @@ namespace rtk
    * of ADMM reconstruction with total variation regularization
    *
    * This filter implements the operator A used in the conjugate gradient step
-   * of a reconstruction method based on compressed sensing. The method attempts
-   * to find the f that minimizes || Rf -p ||_2^2 + alpha * TV(f), with R the
-   * forward projection operator, p the measured projections, and TV the total variation.
+   * of a reconstruction method based on compressed sensing.
+   * The method attempts to find the f that minimizes
+   * || sqrt(D) (Rf -p) ||_2^2 + alpha * TV(f),
+   * with R the forward projection operator, p the measured projections,
+   * D the displaced detector weighting matrix, and TV the total variation.
    * Details on the method and the calculations can be found in
    *
    * Mory, C., B. Zhang, V. Auvray, M. Grass, D. Schafer, F. Peyrin, S. Rit, P. Douek,
    * and L. Boussel. “ECG-Gated C-Arm Computed Tomography Using L1 Regularization.”
    * In Proceedings of the 20th European Signal Processing Conference (EUSIPCO), 2728–32, 2012.
    *
-   * This filter takes in input f and outputs R_t R f - beta div(grad(f)).
+   * This filter takes in input f and outputs R_t D R f - beta div(grad(f)).
    *
    * \dot
    * digraph ADMMTotalVariationConjugateGradientOperator {
@@ -69,6 +72,7 @@ namespace rtk
    * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
    * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
@@ -77,7 +81,8 @@ namespace rtk
    * Input1 -> ZeroMultiplyProjections;
    * ZeroMultiplyProjections -> ForwardProjection;
    * ZeroMultiplyVolume -> BackProjection;
-   * ForwardProjection -> BackProjection;
+   * ForwardProjection -> Displaced;
+   * Displaced -> BackProjection;
    * BackProjection -> Subtract;
    * Gradient -> Divergence;
    * Divergence -> Multiply;
@@ -122,9 +127,10 @@ public:
     typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
             typename TOutputImage::ValueType, 
             typename TOutputImage::ValueType, 
-            TGradientOutputImage>                            GradientFilterType;
+            TGradientOutputImage>                             GradientFilterType;
     typedef rtk::BackwardDifferenceDivergenceImageFilter
-        <TGradientOutputImage, TOutputImage>                 DivergenceFilterType;
+        <TGradientOutputImage, TOutputImage>                  DivergenceFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>   DisplacedDetectorFilterType;
 
     /** Set the backprojection filter*/
     void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
@@ -132,8 +138,8 @@ public:
     /** Set the forward projection filter*/
     void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
 
-    /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-    void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+    /** Pass the geometry to all filters needing it */
+    itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
 
     /** Set the regularization parameter */
     itkSetMacro(Beta, float)
@@ -155,8 +161,10 @@ protected:
     typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
     typename DivergenceFilterType::Pointer            m_DivergenceFilter;
     typename GradientFilterType::Pointer              m_GradientFilter;
+    typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
 
-    float m_Beta;
+    ThreeDCircularProjectionGeometry::Pointer         m_Geometry;
+    float                                             m_Beta;
 
     /** When the inputs have the same type, ITK checks whether they occupy the
     * same physical space or not. Obviously they dont, so we have to remove this check
