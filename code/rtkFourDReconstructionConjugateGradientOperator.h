@@ -30,6 +30,7 @@
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaInterpolateImageFilter.h"
@@ -48,7 +49,7 @@ namespace rtk
    * 4D conjugate gradient reconstruction consists in iteratively
    * minimizing the following cost function:
    *
-   * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
+   * Sum_over_theta || sqrt(D) (R_theta S_theta f - p_theta) ||_2^2
    *
    * with
    * - f a 4D series of 3D volumes, each one being the reconstruction
@@ -57,16 +58,17 @@ namespace rtk
    * - S_theta an interpolation operator which, from the 3D + time sequence f,
    * estimates the 3D volume through which projection p_theta has been acquired
    * - R_theta is the X-ray transform (the forward projection operator) for angle theta
+   * - D the displaced detector weighting matrix
    *
    * Computing the gradient of this cost function yields:
    *
-   * S_theta^T R_theta^T R_theta S_theta f - S_theta^T R_theta^T p_theta
+   * S_theta^T R_theta^T D R_theta S_theta f - S_theta^T R_theta^T D p_theta
    *
    * where A^T means the adjoint of operator A.
    *
-   * FourDReconstructionConjugateGradientOperator implements S_theta^T R_theta^T R_theta S_theta.
+   * FourDReconstructionConjugateGradientOperator implements S_theta^T R_theta^T D R_theta S_theta.
    * It can be achieved by a FourDToProjectionStackImageFilter followed by
-   * a ProjectionStackToFourDImageFilter (simple implementation), or
+   * a DisplacedDetectorFilter and ProjectionStackToFourDImageFilter (simple implementation), or
    * by assembling the internal pipelines of these filters, and removing
    * the unnecessary filters in the middle (a PasteImageFilter and an ExtractImageFilter), which
    * results in performance gain and easier GPU memory management.
@@ -95,6 +97,7 @@ namespace rtk
    * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterZeroMultiply [label="", fixedsize="false", width=0, height=0, shape=none];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
    * Input0 -> AfterInput0 [arrowhead=None];
    * AfterInput0 -> Interpolation;
@@ -102,7 +105,8 @@ namespace rtk
    * Source1 -> Interpolation;
    * Interpolation -> ForwardProj;
    * Source2 -> BackProj;
-   * ForwardProj -> BackProj;
+   * ForwardProj -> Displaced;
+   * Displaced -> BackProj;
    * BackProj -> Splat;
    * Splat -> AfterSplat[arrowhead=None];
    * AfterSplat -> Output;
@@ -155,6 +159,7 @@ public:
     typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>                   ExtractFilterType;
     typedef itk::MultiplyImageFilter<VolumeSeriesType>                                          MultiplyVolumeSeriesType;
     typedef itk::MultiplyImageFilter<ProjectionStackType>                                       MultiplyProjectionStackType;
+    typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                              DisplacedDetectorFilterType;
 
     /** Pass the backprojection filter to ProjectionStackToFourD*/
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
@@ -162,8 +167,8 @@ public:
     /** Pass the forward projection filter to FourDToProjectionStack */
     void SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg);
 
-    /** Pass the geometry to both ProjectionStackToFourD and FourDToProjectionStack */
-    void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+    /** Pass the geometry to all filters needing it */
+    itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
 
     /** Use CUDA interpolation/splat filters */
     itkSetMacro(UseCudaInterpolation, bool)
@@ -192,19 +197,21 @@ protected:
     void InitializeConstantSource();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename BackProjectionFilterType::Pointer       m_BackProjectionFilter;
-    typename ForwardProjectionFilterType::Pointer    m_ForwardProjectionFilter;
-    typename InterpolationFilterType::Pointer        m_InterpolationFilter;
-    typename SplatFilterType::Pointer                m_SplatFilter;
-    typename ConstantVolumeSourceType::Pointer       m_ConstantVolumeSource1;
-    typename ConstantVolumeSourceType::Pointer       m_ConstantVolumeSource2;
-    typename ExtractFilterType::Pointer              m_ExtractFilter;
-    typename MultiplyVolumeSeriesType::Pointer       m_ZeroMultiplyVolumeSeriesFilter;
-    typename MultiplyProjectionStackType::Pointer    m_ZeroMultiplyProjectionStackFilter;
+    typename BackProjectionFilterType::Pointer        m_BackProjectionFilter;
+    typename ForwardProjectionFilterType::Pointer     m_ForwardProjectionFilter;
+    typename InterpolationFilterType::Pointer         m_InterpolationFilter;
+    typename SplatFilterType::Pointer                 m_SplatFilter;
+    typename ConstantVolumeSourceType::Pointer        m_ConstantVolumeSource1;
+    typename ConstantVolumeSourceType::Pointer        m_ConstantVolumeSource2;
+    typename ExtractFilterType::Pointer               m_ExtractFilter;
+    typename MultiplyVolumeSeriesType::Pointer        m_ZeroMultiplyVolumeSeriesFilter;
+    typename MultiplyProjectionStackType::Pointer     m_ZeroMultiplyProjectionStackFilter;
+    typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
 
-    bool                m_UseCudaInterpolation;
-    bool                m_UseCudaSplat;
-    itk::Array2D<float> m_Weights;
+    ThreeDCircularProjectionGeometry::Pointer         m_Geometry;
+    bool                                              m_UseCudaInterpolation;
+    bool                                              m_UseCudaSplat;
+    itk::Array2D<float>                               m_Weights;
 
 private:
     FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented

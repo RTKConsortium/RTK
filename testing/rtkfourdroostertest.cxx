@@ -153,9 +153,9 @@ int main(int, char** )
   destinationIndex[1] = 0;
   destinationIndex[2] = 0;
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
+  pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
   std::ofstream signalFile("signal.txt");
-  ProjectionStackType::Pointer wholeImage = projectionsSource->GetOutput();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     {
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
@@ -194,13 +194,16 @@ int main(int, char** )
     e2->Update();
 
     // Adding each projection to the projection stack
+    if (noProj > 0) // After the first projection, we use the output as input
+      {
+      ProjectionStackType::Pointer wholeImage = pasteFilter->GetOutput();
+      wholeImage->DisconnectPipeline();
+      pasteFilter->SetDestinationImage(wholeImage);
+      }
     pasteFilter->SetSourceImage(e2->GetOutput());
-    pasteFilter->SetDestinationImage(wholeImage);
     pasteFilter->SetSourceRegion(e2->GetOutput()->GetLargestPossibleRegion());
     pasteFilter->SetDestinationIndex(destinationIndex);
-    pasteFilter->Update();
-    wholeImage = pasteFilter->GetOutput();
-    wholeImage->DisconnectPipeline();
+    pasteFilter->UpdateLargestPossibleRegion();
     destinationIndex[2]++;
 
     // Signal
@@ -278,7 +281,7 @@ int main(int, char** )
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
   rooster->SetInputVolumeSeries(fourdSource->GetOutput() );
-  rooster->SetInputProjectionStack(wholeImage);
+  rooster->SetInputProjectionStack(pasteFilter->GetOutput());
   rooster->SetGeometry(geometry);
   rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetInputROI(roi->GetOutput());

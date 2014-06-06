@@ -34,26 +34,13 @@ namespace rtk
    * a 3D + time ROI reconstruction method with spatial and temporal regularization"
    * by Mory et al.
    *
-   * 4D conjugate gradient reconstruction consists in iteratively
-   * minimizing the following cost function:
-   *
-   * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
-   *
-   * with
-   * - f a 4D series of 3D volumes, each one being the reconstruction
-   * at a given respiratory/cardiac phase
-   * - p_theta is the projection measured at angle theta
-   * - S_theta an interpolation operator which, from the 3D + time sequence f,
-   * estimates the 3D volume through which projection p_theta has been acquired
-   * - R_theta is the X-ray transform (the forward projection operator) for angle theta
-   *
-   * and then applying several regularization steps :
+   * 4D ROOSTER reconstruction consists in performing 4D Conjugate
+   * Gradient reconstruction, then applying several regularization steps :
    * - Replacing all negative values by zero
    * - Averaging along time where no movement is expected
    * - Applying total variation denoising in space
    * - Applying total variation denoising in time
-   *
-   * and starting over.
+   * and starting over as many times as the number of main loop iterations desired.
    *
    * \dot
    * digraph FourDROOSTERConeBeamReconstructionFilter {

@@ -79,12 +79,6 @@ int main(int argc, char * argv[])
     }
   inputFilter->Update();
 
-  // Displaced detector weighting
-  typedef rtk::DisplacedDetectorImageFilter< ProjectionStackType > DDFType;
-  DDFType::Pointer ddf = DDFType::New();
-  ddf->SetInput( reader->GetOutput() );
-  ddf->SetGeometry( geometryReader->GetOutputObject() );
-
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.phases_arg);
@@ -97,7 +91,7 @@ int main(int argc, char * argv[])
   conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
   conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
   conjugategradient->SetInputVolumeSeries(inputFilter->GetOutput() );
-  conjugategradient->SetInputProjectionStack(ddf->GetOutput());
+  conjugategradient->SetInputProjectionStack(reader->GetOutput());
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetWeights(phaseReader->GetOutput());

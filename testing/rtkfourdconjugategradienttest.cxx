@@ -154,9 +154,9 @@ int main(int, char** )
   destinationIndex[1] = 0;
   destinationIndex[2] = 0;
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
+  pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
   std::ofstream signalFile("signal.txt");
-  ProjectionStackType::Pointer wholeImage = projectionsSource->GetOutput();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     {
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
@@ -195,12 +195,16 @@ int main(int, char** )
     e2->Update();
 
     // Adding each projection to the projection stack
+    if (noProj > 0) // After the first projection, we use the output as input
+      {
+      ProjectionStackType::Pointer wholeImage = pasteFilter->GetOutput();
+      wholeImage->DisconnectPipeline();
+      pasteFilter->SetDestinationImage(wholeImage);
+      }
     pasteFilter->SetSourceImage(e2->GetOutput());
-    pasteFilter->SetDestinationImage(wholeImage);
     pasteFilter->SetSourceRegion(e2->GetOutput()->GetLargestPossibleRegion());
     pasteFilter->SetDestinationIndex(destinationIndex);
-    pasteFilter->Update();
-    wholeImage = pasteFilter->GetOutput();
+    pasteFilter->UpdateLargestPossibleRegion();
     destinationIndex[2]++;
 
     // Signal
@@ -262,7 +266,7 @@ int main(int, char** )
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
   conjugategradient->SetInputVolumeSeries(fourdSource->GetOutput() );
-  conjugategradient->SetInputProjectionStack(wholeImage);
+  conjugategradient->SetInputProjectionStack(pasteFilter->GetOutput());
   conjugategradient->SetGeometry(geometry);
   conjugategradient->SetNumberOfIterations(3);
   conjugategradient->SetWeights(phaseReader->GetOutput());

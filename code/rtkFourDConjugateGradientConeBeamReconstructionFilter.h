@@ -25,6 +25,7 @@
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkFourDReconstructionConjugateGradientOperator.h"
 #include "rtkProjectionStackToFourDImageFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
@@ -43,7 +44,7 @@ namespace rtk
    * 4D conjugate gradient reconstruction consists in iteratively
    * minimizing the following cost function:
    *
-   * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
+   * Sum_over_theta || sqrt(D) (R_theta S_theta f - p_theta) ||_2^2
    *
    * with
    * - f a 4D series of 3D volumes, each one being the reconstruction
@@ -52,6 +53,7 @@ namespace rtk
    * - S_theta an interpolation operator which, from the 3D + time sequence f,
    * estimates the 3D volume through which projection p_theta has been acquired
    * - R_theta is the X-ray transform (the forward projection operator) for angle theta
+   * - D the displaced detector weighting matrix
    *
    * \dot
    * digraph FourDConjugateGradientConeBeamReconstructionFilter {
@@ -68,11 +70,13 @@ namespace rtk
    * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * AfterCG [label="", fixedsize="false", width=0, height=0, shape=none];
    * PSTFD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
    * Input0 -> AfterInput0 [arrowhead=None];
    * AfterInput0 -> ConjugateGradient;
    * Input0 -> PSTFD;
-   * Input1 -> PSTFD;
+   * Input1 -> Displaced
+   * Displaced -> PSTFD;
    * PSTFD -> ConjugateGradient;
    * ConjugateGradient -> AfterCG [arrowhead=None];
    * AfterCG -> Output;
@@ -109,6 +113,7 @@ public:
   typedef rtk::ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
   typedef rtk::FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
   typedef rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
+  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                                    DisplacedDetectorFilterType;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -156,12 +161,13 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ForwardProjectionFilterType::Pointer             m_ForwardProjectionFilter;
-  typename BackProjectionFilterType::Pointer                m_BackProjectionFilter;
-  typename BackProjectionFilterType::Pointer                m_BackProjectionFilterForB;
-  typename ConjugateGradientFilterType::Pointer             m_ConjugateGradientFilter;
-  typename CGOperatorFilterType::Pointer                    m_CGOperator;
-  typename ProjStackToFourDFilterType::Pointer              m_ProjStackToFourDFilter;
+  typename ForwardProjectionFilterType::Pointer     m_ForwardProjectionFilter;
+  typename BackProjectionFilterType::Pointer        m_BackProjectionFilter;
+  typename BackProjectionFilterType::Pointer        m_BackProjectionFilterForB;
+  typename ConjugateGradientFilterType::Pointer     m_ConjugateGradientFilter;
+  typename CGOperatorFilterType::Pointer            m_CGOperator;
+  typename ProjStackToFourDFilterType::Pointer      m_ProjStackToFourDFilter;
+  typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
 
 private:
   //purposely not implemented
