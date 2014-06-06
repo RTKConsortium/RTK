@@ -30,7 +30,7 @@ template<class TImage>
 void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon),
                        typename TImage::Pointer itkNotUsed(ref),
                        double itkNotUsed(ErrorPerPixelTolerance),
-                       double itkNotUsed(PSNRTolerance)
+                       double itkNotUsed(PSNRTolerance),
                        double itkNotUsed(RefValueForPSNR))
 {
 }
