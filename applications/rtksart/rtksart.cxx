@@ -22,7 +22,6 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -78,12 +77,6 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
-  // Displaced detector weighting
-  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
-  DDFType::Pointer ddf = DDFType::New();
-  ddf->SetInput( reader->GetOutput() );
-  ddf->SetGeometry( geometryReader->GetOutputObject() );
-
   // SART reconstruction filter
   rtk::SARTConeBeamReconstructionFilter< OutputImageType >::Pointer sart =
       rtk::SARTConeBeamReconstructionFilter< OutputImageType >::New();
@@ -93,7 +86,7 @@ int main(int argc, char * argv[])
   sart->SetBackProjectionFilter(args_info.bp_arg);
 
   sart->SetInput( inputFilter->GetOutput() );
-  sart->SetInput(1, ddf->GetOutput());
+  sart->SetInput(1, reader->GetOutput());
   sart->SetGeometry( geometryReader->GetOutputObject() );
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetLambda( args_info.lambda_arg );
