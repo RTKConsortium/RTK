@@ -36,6 +36,12 @@ rtk::CudaFFTRampImageFilter
 rtk::CudaFFTRampImageFilter::FFTInputImagePointer
 rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
 {
+  CudaImageType::RegionType inBuffRegion = this->GetInput()->GetBufferedRegion();
+  if(inBuffRegion != this->GetInput()->GetRequestedRegion())
+    {
+    itkExceptionMacro(<< "CudaFFTRampImageFilter assumes that input requested and buffered regions are equal.");
+    }
+
   UpdateTruncationMirrorWeights();
   RegionType paddedRegion = GetPaddedImageRegion(inputRegion);
 
@@ -43,23 +49,18 @@ rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
   itk::CudaImage<float,3>::Pointer paddedImage = itk::CudaImage<float,3>::New();
   paddedImage->SetRegions(paddedRegion);
   paddedImage->Allocate();
-  paddedImage->FillBuffer(0);
-
-  if(!m_TruncationMirrorWeights.size())
-    m_TruncationMirrorWeights.push_back(0.);
 
   uint3 sz, sz_i;
-  long3 idx;
-  idx.x = paddedRegion.GetIndex()[0];
-  idx.y = paddedRegion.GetIndex()[1];
-  idx.z = paddedRegion.GetIndex()[2];
+  int3 idx;
+  idx.x = inBuffRegion.GetIndex()[0]-paddedRegion.GetIndex()[0];
+  idx.y = inBuffRegion.GetIndex()[1]-paddedRegion.GetIndex()[1];
+  idx.z = inBuffRegion.GetIndex()[2]-paddedRegion.GetIndex()[2];
   sz.x = paddedRegion.GetSize()[0];
   sz.y = paddedRegion.GetSize()[1];
   sz.z = paddedRegion.GetSize()[2];
-
-  sz_i.x = inputRegion.GetSize()[0];
-  sz_i.y = inputRegion.GetSize()[1];
-  sz_i.z = inputRegion.GetSize()[2];
+  sz_i.x = inBuffRegion.GetSize()[0];
+  sz_i.y = inBuffRegion.GetSize()[1];
+  sz_i.z = inBuffRegion.GetSize()[2];
 
   float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( paddedImage->GetCudaDataManager()->GetGPUBufferPointer() );
@@ -69,9 +70,7 @@ rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
                sz_i,
                pin,
                pout,
-               &m_TruncationMirrorWeights[0],
-               m_TruncationMirrorWeights.size(),
-               this->GetHannCutFrequencyY());
+               m_TruncationMirrorWeights );
 
   return paddedImage.GetPointer();
 }

@@ -139,116 +139,59 @@ CUDA_fft_convolution(const int3 &inputDimension,
   cudaFree(deviceProjectionFFT);
 }
 
-// ******************** Padding Section ***************************
 __global__
 void
-padding_kernel(float *input, float *output, const long3 paddingIdx, const uint3 paddingDim, const uint3 inputDim, const unsigned int Blocks_Y, float *truncationWeights, unsigned int sizeWeights, float hannY)
+padding_kernel(float *input,
+               float *output,
+               const int3 paddingIdx,
+               const uint3 paddingDim,
+               const uint3 inputDim,
+               const unsigned int Blocks_Y,
+               float *truncationWeights,
+               unsigned int sizeWeights)
 {
   unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= paddingDim.x || j >= paddingDim.y || k >= paddingDim.z)
     return;
 
-  unsigned long int out_idx = i + j*paddingDim.x + k*paddingDim.y*paddingDim.x; // index for padded region
-  unsigned long int mirror_idx = 0; // index for mirror regions
-  long int in_idx = -1; // Index for original input region
-  unsigned int condition = 0; // Condition for truncation factors
-  unsigned int offsetL = (paddingDim.x*0.5f-inputDim.x)/2; // Offset left padded region
-  unsigned int offsetR = (paddingDim.x*0.5f-inputDim.x)/2 + 1; // Offset left padded region
+  unsigned long int out_idx = i + (j + k*paddingDim.y) * paddingDim.x;
+  i -= paddingIdx.x;
+  j -= paddingIdx.y;
+  k -= paddingIdx.z;
 
-  if(hannY>0.f) // hannY filtering ON
-  {
-    // Input region (original image)
-    if( i>=(paddingDim.x*0.25f+offsetL) && i<(paddingDim.x*0.25f+inputDim.x+offsetL) )
+  // out of input y/z dimensions
+  if(j<0 || j>=inputDim.y || k<0 || k>=inputDim.z)
+    output[out_idx] = 0.0f;
+  // central part in CPU code
+  else if (i>=0 && i<inputDim.x)
+    output[out_idx] = input[i + (j + k*inputDim.y) * inputDim.x];
+  // left mirroring
+  else if (i<0 && -i<sizeWeights)
+    output[out_idx] = input[-i + (j + k*inputDim.y) * inputDim.x] * truncationWeights[-i];
+  // right mirroring
+  else if (i-inputDim.x<sizeWeights)
     {
-      if(j>=inputDim.y)
-        condition=0;
-      else
-        in_idx = (i-paddingDim.x*0.25f-offsetL) + j*inputDim.x + k*inputDim.y*inputDim.x;
+    unsigned int borderDist = i-inputDim.x+1;
+    i = inputDim.x-1-borderDist;
+    output[out_idx] = input[i + (j + k*inputDim.y) * inputDim.x] * truncationWeights[borderDist];
     }
-    // Left padded region
-    else if(i<(paddingDim.x*0.25f+offsetL))
-    {
-      if(i<offsetL || j>=inputDim.y)
-        condition=0;
-      else
-      {
-        mirror_idx = (paddingDim.x*0.25f+offsetL-i) + j*inputDim.x + k*inputDim.y*inputDim.x;
-        condition = (paddingDim.x*0.25f+offsetL) - i;
-      }
-    }
-    // Right padded region
-    else if(i>=(paddingDim.x*0.25f+inputDim.x+offsetL))
-    {
-      if(i>=(paddingDim.x-offsetR) || j>=inputDim.y)
-        condition=0;
-      else
-      {
-        mirror_idx = (paddingDim.x*0.25+inputDim.x+offsetL-1-i) + j*inputDim.x + k*inputDim.y*inputDim.x;
-        condition = i - (paddingDim.x*0.25f+inputDim.x+offsetL);
-      }
-    }
-  }
-  else  // hannY filtering OFF
-  {
-    // Input region (original image)
-    if( i>=(paddingDim.x*0.25f+offsetL) && i<(paddingDim.x*0.25f+inputDim.x+offsetL) )
-    {
-      if(j>=inputDim.y)
-        condition=0;
-      else
-        in_idx = (i-paddingDim.x*0.25f-offsetL) + j*inputDim.x + k*inputDim.y*inputDim.x;
-    }
-    // Left padded region
-    else if(i<(paddingDim.x*0.25f+offsetL))
-    {
-      if(i<offsetL || j>=inputDim.y)
-        condition=0;
-      else
-      {
-        mirror_idx = (paddingDim.x*0.25f+offsetL-i) + j*inputDim.x + k*inputDim.y*inputDim.x;
-        condition = (paddingDim.x*0.25f+offsetL) - i;
-      }
-    }
-    // Right padded region
-    else if(i>=(paddingDim.x*0.25f+inputDim.x+offsetL))
-    {
-      if(i>=(paddingDim.x-offsetR) || j>=inputDim.y)
-        condition=0;
-      else
-      {
-        mirror_idx = (paddingDim.x*0.25+inputDim.x+offsetL-1-i) + j*inputDim.x + k*inputDim.y*inputDim.x;
-        condition = i - (paddingDim.x*0.25f+inputDim.x+offsetL);
-      }
-    }
-  }
-
-  // Copying original image
-  if(in_idx!=-1)
-    output[out_idx] = input[in_idx];
-  // Mirroring left and right zones
+  // zero padding
   else
-  {
-    if(condition>=sizeWeights) // No correction for truncation artifacts
-      output[out_idx] = 0;
-    else
-      output[out_idx] = truncationWeights[condition]*input[mirror_idx];
-  }
+    output[out_idx] = 0.0f;
 }
 
 void
-CUDA_padding(const long3 &paddingIndex,
+CUDA_padding(const int3 &paddingIndex,
              const uint3 &paddingSize,
              const uint3 &inputSize,
-             float *input,
-             float *output,
-             float *truncationWeights,
-             unsigned int sizeWeights,
-             float hannY)
+             float *deviceVolume,
+             float *devicePaddedVolume,
+             const std::vector<float> &mirrorWeights)
 {
   // Thread Block Dimensions
   unsigned int tBlock_x = 4;
@@ -260,22 +203,24 @@ CUDA_padding(const long3 &paddingIndex,
   dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
-  float *weights_d;   // Pointer to host & device arrays of structure
-  int size = sizeWeights*sizeof(float);
-  // Allocate truncation weighting array on device
-  cudaMalloc((void **) &weights_d, size);
-  // Copying to GPU device truncation weighting array
-  cudaMemcpy(weights_d, truncationWeights, size, cudaMemcpyHostToDevice);
+  // Transfer weights if required
+  float *weights_d = NULL;
+  if( mirrorWeights.size() )
+    {
+    int size = mirrorWeights.size() * sizeof(float);
+    cudaMalloc((void **) &weights_d, size);
+    cudaMemcpy(weights_d, &(mirrorWeights[0]), size, cudaMemcpyHostToDevice);
+    }
+
   // Call to kernel
-  padding_kernel <<< dimGrid, dimBlock >>> ( input,
-                                             output,
+  padding_kernel <<< dimGrid, dimBlock >>> ( deviceVolume,
+                                             devicePaddedVolume,
                                              paddingIndex,
                                              paddingSize,
                                              inputSize,
                                              blocksInY,
                                              weights_d,
-                                             sizeWeights,
-                                             hannY );
+                                             mirrorWeights.size() );
   CUDA_CHECK_ERROR;
   // Release memory
   cudaFree(weights_d);
