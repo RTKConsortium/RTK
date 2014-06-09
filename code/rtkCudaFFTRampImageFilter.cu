@@ -138,3 +138,90 @@ CUDA_fft_convolution(const int3 &inputDimension,
   cufftDestroy(fftInv);
   cudaFree(deviceProjectionFFT);
 }
+
+__global__
+void
+padding_kernel(float *input,
+               float *output,
+               const int3 paddingIdx,
+               const uint3 paddingDim,
+               const uint3 inputDim,
+               const unsigned int Blocks_Y,
+               float *truncationWeights,
+               unsigned int sizeWeights)
+{
+  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+
+  if (i >= paddingDim.x || j >= paddingDim.y || k >= paddingDim.z)
+    return;
+
+  unsigned long int out_idx = i + (j + k*paddingDim.y) * paddingDim.x;
+  i -= paddingIdx.x;
+  j -= paddingIdx.y;
+  k -= paddingIdx.z;
+
+  // out of input y/z dimensions
+  if(j<0 || j>=inputDim.y || k<0 || k>=inputDim.z)
+    output[out_idx] = 0.0f;
+  // central part in CPU code
+  else if (i>=0 && i<inputDim.x)
+    output[out_idx] = input[i + (j + k*inputDim.y) * inputDim.x];
+  // left mirroring
+  else if (i<0 && -i<sizeWeights)
+    output[out_idx] = input[-i + (j + k*inputDim.y) * inputDim.x] * truncationWeights[-i];
+  // right mirroring
+  else if (i-inputDim.x<sizeWeights)
+    {
+    unsigned int borderDist = i-inputDim.x+1;
+    i = inputDim.x-1-borderDist;
+    output[out_idx] = input[i + (j + k*inputDim.y) * inputDim.x] * truncationWeights[borderDist];
+    }
+  // zero padding
+  else
+    output[out_idx] = 0.0f;
+}
+
+void
+CUDA_padding(const int3 &paddingIndex,
+             const uint3 &paddingSize,
+             const uint3 &inputSize,
+             float *deviceVolume,
+             float *devicePaddedVolume,
+             const std::vector<float> &mirrorWeights)
+{
+  // Thread Block Dimensions
+  unsigned int tBlock_x = 4;
+  unsigned int tBlock_y = 4;
+  unsigned int tBlock_z = 4;
+  unsigned int blocksInX = ( (paddingSize.x - 1) / tBlock_x ) + 1;
+  unsigned int blocksInY = ( (paddingSize.y - 1) / tBlock_y ) + 1;
+  unsigned int blocksInZ = ( (paddingSize.z - 1) / tBlock_z ) + 1;
+  dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
+  dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+
+  // Transfer weights if required
+  float *weights_d = NULL;
+  if( mirrorWeights.size() )
+    {
+    int size = mirrorWeights.size() * sizeof(float);
+    cudaMalloc((void **) &weights_d, size);
+    cudaMemcpy(weights_d, &(mirrorWeights[0]), size, cudaMemcpyHostToDevice);
+    }
+
+  // Call to kernel
+  padding_kernel <<< dimGrid, dimBlock >>> ( deviceVolume,
+                                             devicePaddedVolume,
+                                             paddingIndex,
+                                             paddingSize,
+                                             inputSize,
+                                             blocksInY,
+                                             weights_d,
+                                             mirrorWeights.size() );
+  CUDA_CHECK_ERROR;
+  // Release memory
+  cudaFree(weights_d);
+}
