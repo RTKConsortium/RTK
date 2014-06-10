@@ -1,12 +1,11 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkDisplacedDetectorImageFilter.h"
-#include "rtkTest.h"
 
 /**
  * \file rtkdisplaceddetectortest.cxx

@@ -1,8 +1,7 @@
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkProjectionsReader.h"
 #include "rtkMacro.h"
 #include "rtkDigisensGeometryReader.h"
-#include "rtkTest.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 

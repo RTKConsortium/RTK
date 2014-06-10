@@ -2,7 +2,7 @@
 #include <itksys/SystemTools.hxx>
 #include <itkJoinSeriesImageFilter.h>
 
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
@@ -10,7 +10,6 @@
 #include "rtkCyclicDeformationImageFilter.h"
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
-#include "rtkTest.h"
 
 /**
  * \file rtkfourdconjugategradienttest.cxx

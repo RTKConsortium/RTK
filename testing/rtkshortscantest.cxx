@@ -1,7 +1,6 @@
 #include <itkImageRegionConstIterator.h>
 
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"

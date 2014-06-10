@@ -1,7 +1,6 @@
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkProjectionsReader.h"
 #include "rtkMacro.h"
-#include "rtkTest.h"
 
 /**
  * \file rtkedftest.cxx

@@ -21,6 +21,7 @@
 
 #include <itkImageRegionConstIterator.h>
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkTestConfiguration.h"
 
 typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
 

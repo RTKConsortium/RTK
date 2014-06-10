@@ -1,5 +1,4 @@
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"

@@ -4,12 +4,11 @@
 #include <itkImageFileWriter.h>
 #include <itkMultiplyImageFilter.h>
 
+#include "rtkTest.h"
 #include "rtkMacro.h"
-#include "rtkTestConfiguration.h"
 
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"
-#include "rtkTest.h"
 
 /**
  * \file rtkdivergencetest.cxx

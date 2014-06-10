@@ -1,5 +1,4 @@
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
