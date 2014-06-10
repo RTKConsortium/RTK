@@ -1,7 +1,6 @@
 #include "rtkTest.h"
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
-#include "rtkTestConfiguration.h"
 #include "rtkConstantImageSource.h"
 #include <itkBinShrinkImageFilter.h>
 

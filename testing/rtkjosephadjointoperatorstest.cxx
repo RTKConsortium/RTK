@@ -1,5 +1,4 @@
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "itkRandomImageSource.h"
 #include "rtkConstantImageSource.h"
 #include "rtkJosephBackProjectionImageFilter.h"

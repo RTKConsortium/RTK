@@ -1,5 +1,4 @@
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkProjectionsReader.h"
 #include "rtkMacro.h"
 #include <itkRegularExpressionSeriesFileNames.h>

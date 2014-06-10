@@ -1,7 +1,6 @@
 #include <itkImageRegionConstIterator.h>
 
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"

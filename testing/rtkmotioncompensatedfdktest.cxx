@@ -2,7 +2,6 @@
 #include <itksys/SystemTools.hxx>
 
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"

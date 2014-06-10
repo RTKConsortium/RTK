@@ -3,7 +3,6 @@
 #include <itksys/SystemTools.hxx>
 #include <itkJoinSeriesImageFilter.h>
 
-#include "rtkTestConfiguration.h"
 #include "rtkTest.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"

@@ -1,7 +1,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkBinaryThresholdImageFilter.h>
 
-#include "rtkTestConfiguration.h"
 #include "rtkTest.h"
 #include "rtkMacro.h"
 #include "rtkFieldOfViewImageFilter.h"

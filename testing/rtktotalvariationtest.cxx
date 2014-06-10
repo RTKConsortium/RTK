@@ -1,4 +1,3 @@
-#include "rtkTestConfiguration.h"
 #include "itkRandomImageSource.h"
 #include "rtkTotalVariationImageFilter.h"
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
