@@ -31,7 +31,10 @@ ADD_LIBRARY(RTK
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
-            )
+            rtkGlobalTimer.cxx
+	    rtkGlobalTimerProbesCollector.cxx
+	    rtkWatcherForTimer.cxx
+	    )
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 #=========================================================
