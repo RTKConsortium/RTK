@@ -72,6 +72,7 @@ rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
                pout,
                m_TruncationMirrorWeights );
 
+  this->GetInput()->GetCudaDataManager()->ForceReleaseGPUBuffer();
   return paddedImage.GetPointer();
 }
 

@@ -49,6 +49,14 @@ public:
     CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
     }
 
+  void Release()
+    {
+    CUDA_CHECK(cuCtxSetCurrent(*(itk::CudaContextManager::GetInstance()->GetCurrentContext()))); // (peter) added this line
+    CUDA_CHECK(cudaFree(m_GPUBuffer));
+    m_BufferSize = 0;
+    m_GPUBuffer = 0;
+    }
+
   ~GPUMemPointer()
     {
     if(m_GPUBuffer)
@@ -153,6 +161,9 @@ public:
   virtual void UpdateGPUBuffer();
 
   void Allocate();
+
+  /** Release GPU Buffer without copying data to CPU and set CPU clean */
+  void ForceReleaseGPUBuffer();
 
   /** Synchronize CPU and Cuda buffers (using dirty flags) */
   bool Update();
