@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <itkMacro.h>
+#include <rtkGlobalTimer.h>
 
 //--------------------------------------------------------------------
 /** \brief Debugging macro, displays name and content of a variable
@@ -100,5 +101,69 @@
       this->Modified();                                               \
     }                                                                 \
   }
+//--------------------------------------------------------------------
+
+//--------------------------------------------------------------------
+/** \brief Redefine ITK's New macros in order to add a watcher to
+ * each new object created
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup Macro
+ */
+
+#undef itkSimpleNewMacro
+#define itkSimpleNewMacro(x)                                   \
+  static Pointer New(void)                                     \
+    {                                                          \
+    Pointer smartPtr = ::itk::ObjectFactory< x >::Create();    \
+    if ( smartPtr.GetPointer() == ITK_NULLPTR )                \
+      {                                                        \
+      smartPtr = new x;                                        \
+      }                                                        \
+    smartPtr->UnRegister();                                    \
+    /* If smartPtr is a ProcessObject, watch it */                 \
+    itk::ProcessObject* processObjectPointer = NULL;                \
+    processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer());\
+    if (processObjectPointer != NULL) \
+      {\
+      rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer); \
+      }\
+    return smartPtr;                                           \
+    }
+
+#undef itkCreateAnotherMacro
+#define itkCreateAnotherMacro(x)                               \
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE \
+    {                                                          \
+    ::itk::LightObject::Pointer smartPtr;                      \
+    smartPtr = x::New().GetPointer();\
+    return smartPtr;                                           \
+    }
+
+#undef itkFactorylessNewMacro
+#define itkFactorylessNewMacro(x)                              \
+  static Pointer New(void)                                     \
+    {                                                          \
+    Pointer smartPtr;                                          \
+    x *     rawPtr = new x;                                    \
+    smartPtr = rawPtr;                                         \
+    rawPtr->UnRegister();                                      \
+    /* If smartPtr is a ProcessObject, watch it */                 \
+    itk::ProcessObject* processObjectPointer = NULL;                \
+    processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer());\
+    if (processObjectPointer != NULL) \
+      {\
+      rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer); \
+      }\
+    return smartPtr;                                           \
+    }\
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE \
+    {                                                          \
+    ::itk::LightObject::Pointer smartPtr;                      \
+    smartPtr = x::New().GetPointer();                          \
+    return smartPtr;                                           \
+    }
+
 
 #endif // RTKMACRO_H
