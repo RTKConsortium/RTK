@@ -21,6 +21,7 @@
 
 #include "rtkCudaForwardProjectionImageFilter.h"
 #include "rtkCudaUtilities.hcu"
+#include "rtkCudaForwardProjectionImageFilter.hcu"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -33,14 +34,10 @@ namespace rtk
 {
 
 template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation>
+          class TOutputImage>
 void
 CudaForwardProjectionImageFilter<TInputImage,
-                                 TOutputImage,
-                                 TInterpolationWeightMultiplication,
-                                 TProjectedValueAccumulation>
+                                 TOutputImage>
 ::GPUGenerateData()
 {
   try {
@@ -50,8 +47,6 @@ CudaForwardProjectionImageFilter<TInputImage,
     const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
     const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
       this->GetOutput()->GetBufferedRegion().GetSize(1);
-
-    CudaAccumulationParameters* params = this->GetProjectedValueAccumulation().GetCudaParameters();
 
     float t_step = 1; // Step in mm
     itk::Vector<double, 4> source_position;
@@ -132,8 +127,7 @@ CudaForwardProjectionImageFilter<TInputImage,
                            (double*)&(source_position[0]),
                            boxMin,
                            boxMax,
-                           spacing,
-                           params);
+                           spacing);
       }
   }
   catch(itk::ExceptionObject e)
