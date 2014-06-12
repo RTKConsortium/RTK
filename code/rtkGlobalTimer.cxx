@@ -85,32 +85,38 @@ void
 GlobalTimer
 ::Watch(ProcessObject *o)
 {
+  m_Mutex.Lock();
   rtk::WatcherForTimer watcher(o);
   m_Watchers.push_back(watcher);
+  m_Mutex.Unlock();
 }
 
 unsigned int
 GlobalTimer
 ::Start(const char *id)
 {
+  m_Mutex.Lock();
   m_TimeProbesCollectorBase.Start(id);
-  return m_GlobalTimerProbesCollector.Start(id);
+//  return m_GlobalTimerProbesCollector.Start(id);
+  m_Mutex.Unlock();
 }
 
 void
 GlobalTimer
 ::Stop(unsigned int pos, const char *id)
 {
+  m_Mutex.Lock();
   m_TimeProbesCollectorBase.Stop(id);
-  m_GlobalTimerProbesCollector.Stop(pos);
+//  m_GlobalTimerProbesCollector.Stop(pos);
+  m_Mutex.Unlock();
 }
 
 void
 GlobalTimer
 ::Report(std::ostream & os) const
 {
-  if (m_Verbose) m_GlobalTimerProbesCollector.Report(os);
-  else m_TimeProbesCollectorBase.Report(os);
+//  if (m_Verbose) m_GlobalTimerProbesCollector.Report(os);
+  /*else*/ m_TimeProbesCollectorBase.Report(os);
 }
 
 void
@@ -118,7 +124,7 @@ GlobalTimer
 ::Clear(void)
 {
   m_TimeProbesCollectorBase.Clear();
-  m_GlobalTimerProbesCollector.Clear();
+//  m_GlobalTimerProbesCollector.Clear();
 }
 
 

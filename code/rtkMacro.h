@@ -105,7 +105,7 @@
 
 //--------------------------------------------------------------------
 /** \brief Redefine ITK's New macros in order to add a watcher to
- * each new object created
+ * each new filter created
  *
  * \author Cyril Mory
  *
@@ -127,6 +127,7 @@
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer());\
     if (processObjectPointer != NULL) \
       {\
+      /*smartPtr->Register();*/ \
       rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer); \
       }\
     return smartPtr;                                           \
@@ -154,6 +155,7 @@
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer());\
     if (processObjectPointer != NULL) \
       {\
+      /*smartPtr->Register();*/ \
       rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer); \
       }\
     return smartPtr;                                           \
