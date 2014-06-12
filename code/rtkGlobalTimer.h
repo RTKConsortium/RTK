@@ -18,10 +18,11 @@
 #ifndef __rtkGlobalTimer_h
 #define __rtkGlobalTimer_h
 
-#include "itkProcessObject.h"
+#include <itkProcessObject.h>
 #include "rtkGlobalTimerProbesCollector.h"
-#include "itkTimeProbesCollectorBase.h"
+#include <itkTimeProbesCollectorBase.h>
 #include "rtkWatcherForTimer.h"
+#include <itkSimpleFastMutexLock.h>
 
 namespace rtk
 {
@@ -82,7 +83,7 @@ protected:
   virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
   bool m_Verbose;
 
-  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;
+//  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;
   itk::TimeProbesCollectorBase    m_TimeProbesCollectorBase;
   std::vector<rtk::WatcherForTimer> m_Watchers;
 
@@ -91,6 +92,7 @@ private:
   void operator=(const Self &); //purposely not implemented
 
   static Pointer m_Instance;
+  itk::SimpleFastMutexLock m_Mutex;
 
 };
 } // end namespace itk

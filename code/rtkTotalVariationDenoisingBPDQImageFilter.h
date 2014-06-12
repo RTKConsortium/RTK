@@ -19,15 +19,11 @@
 #ifndef __rtkTotalVariationDenoisingBPDQImageFilter_h
 #define __rtkTotalVariationDenoisingBPDQImageFilter_h
 
-
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "rtkMagnitudeThresholdImageFilter.h"
-#include "rtkMacro.h"
 
-//#include <itkImageToImageFilter.h>
 #include <itkCastImageFilter.h>
-//#include <itkImage.h>
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #include <itkPeriodicBoundaryCondition.h>
