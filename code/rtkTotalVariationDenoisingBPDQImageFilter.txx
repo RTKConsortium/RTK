@@ -73,6 +73,15 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   m_MagnitudeThresholdFilter->ReleaseDataFlagOn();
 }
 
+template< typename TOutputImage, typename TGradientOutputImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+::~TotalVariationDenoisingBPDQImageFilter()
+{
+  delete m_BoundaryConditionForGradientFilter;
+  delete m_BoundaryConditionForDivergenceFilter;
+}
+
+
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
