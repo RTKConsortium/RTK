@@ -117,7 +117,7 @@
   static Pointer New(void)                                     \
     {                                                          \
     Pointer smartPtr = ::itk::ObjectFactory< x >::Create();    \
-    if ( smartPtr.GetPointer() == ITK_NULLPTR )                \
+    if ( smartPtr.GetPointer() == NULL )                \
       {                                                        \
       smartPtr = new x;                                        \
       }                                                        \
@@ -127,7 +127,7 @@
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer());\
     if (processObjectPointer != NULL) \
       {\
-      /*smartPtr->Register();*/ \
+      smartPtr->Register(); \
       rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer); \
       }\
     return smartPtr;                                           \
@@ -135,7 +135,7 @@
 
 #undef itkCreateAnotherMacro
 #define itkCreateAnotherMacro(x)                               \
-  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE \
+  virtual::itk::LightObject::Pointer CreateAnother(void) const \
     {                                                          \
     ::itk::LightObject::Pointer smartPtr;                      \
     smartPtr = x::New().GetPointer();\
@@ -155,12 +155,12 @@
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer());\
     if (processObjectPointer != NULL) \
       {\
-      /*smartPtr->Register();*/ \
+      smartPtr->Register(); \
       rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer); \
       }\
     return smartPtr;                                           \
     }\
-  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE \
+  virtual::itk::LightObject::Pointer CreateAnother(void) const \
     {                                                          \
     ::itk::LightObject::Pointer smartPtr;                      \
     smartPtr = x::New().GetPointer();                          \

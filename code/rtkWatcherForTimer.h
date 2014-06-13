@@ -57,12 +57,12 @@ public:
    *  WatcherForTimer */
   const char * GetNameOfClass()
   {
-    return ( m_Process.GetPointer() ? m_Process->GetNameOfClass() : "None" );
+    return ( m_Process ? m_Process->GetNameOfClass() : "None" );
   }
 
   /** Methods to access member data */
   /** Get a pointer to the process object being watched. */
-  ProcessObject * GetProcess() { return m_Process.GetPointer(); }
+  ProcessObject * GetProcess() { return m_Process; }
 
 protected:
 
@@ -75,7 +75,7 @@ protected:
 
 private:
   unsigned int                m_IndexInGlobalTimer;
-  itk::ProcessObject::Pointer m_Process;
+  itk::ProcessObject* m_Process;
 
   typedef SimpleMemberCommand< WatcherForTimer > CommandType;
   CommandType::Pointer m_StartFilterCommand;

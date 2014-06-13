@@ -20,7 +20,7 @@
 
 namespace rtk
 {
-GlobalTimer::Pointer GlobalTimer:: m_Instance = ITK_NULLPTR;
+GlobalTimer::Pointer GlobalTimer:: m_Instance = NULL;
 
 /**
  * Prompting off by default
@@ -115,16 +115,20 @@ void
 GlobalTimer
 ::Report(std::ostream & os) const
 {
+    m_Mutex.Lock();
 //  if (m_Verbose) m_GlobalTimerProbesCollector.Report(os);
   /*else*/ m_TimeProbesCollectorBase.Report(os);
+    m_Mutex.Unlock();
 }
 
 void
 GlobalTimer
 ::Clear(void)
 {
+    m_Mutex.Lock();
   m_TimeProbesCollectorBase.Clear();
 //  m_GlobalTimerProbesCollector.Clear();
+    m_Mutex.Unlock();
 }
 
 

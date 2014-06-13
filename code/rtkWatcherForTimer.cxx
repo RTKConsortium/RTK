@@ -43,7 +43,7 @@ WatcherForTimer
 
 WatcherForTimer
 ::WatcherForTimer() :
-  m_Process(ITK_NULLPTR),
+  m_Process(NULL),
   m_StartTag(0),
   m_EndTag(0)
 {
