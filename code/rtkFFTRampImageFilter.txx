@@ -188,7 +188,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   paddedImage->FillBuffer(0);
 
   const long next = vnl_math_min(inputRegion.GetIndex(0) - paddedRegion.GetIndex(0),
-                                 (FFTInputImageType::IndexValueType)this->GetTruncationCorrectionExtent() );
+                                 (typename FFTInputImageType::IndexValueType)this->GetTruncationCorrectionExtent() );
   if(next)
     {
     typename FFTInputImageType::IndexType idx;
