@@ -120,6 +120,9 @@ public:
       undetermined values */
   void SetDimensionsProcessed(bool* DimensionsProcessed);
 
+  /** Allows to change the default boundary condition */
+  void OverrideBoundaryCondition(ImageBoundaryCondition< TInputImage >* boundaryCondition);
+
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
   itkConceptMacro( InputConvertibleToOutputCheck,
@@ -211,6 +214,8 @@ private:
   // to be computed. The components on other dimensions
   // are set to zero
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
+
+  ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
 };
 } // end namespace itk
 

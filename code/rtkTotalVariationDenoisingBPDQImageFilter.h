@@ -23,21 +23,21 @@
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "rtkMagnitudeThresholdImageFilter.h"
+#include "rtkMacro.h"
 
-#include <itkImageToImageFilter.h>
+//#include <itkImageToImageFilter.h>
 #include <itkCastImageFilter.h>
-#include <itkImage.h>
+//#include <itkImage.h>
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
-
-#include "rtkMacro.h"
+#include <itkPeriodicBoundaryCondition.h>
 
 namespace rtk
 {
 /** \class TotalVariationDenoisingBPDQImageFilter
  * \brief Applies a total variation denoising, only along the dimensions specified, on an image.
  *
- * This filter finds the minimum of lambda * || f - f_0 ||_2^2 + TV(f)
+ * This filter finds the minimum of || f - f_0 ||_2^2 + gamma * TV(f)
  * using basis pursuit dequantization, where f is the current image, f_0 the
  * input image, and TV the total variation calculated with only the gradients
  * along the dimensions specified. This filter can be used, for example, to
@@ -124,6 +124,9 @@ public:
 
   void SetDimensionsProcessed(bool* arg);
 
+  /** In some cases, regularization must use periodic boundary condition */
+  void SetBoundaryConditionToPeriodic();
+
 protected:
   TotalVariationDenoisingBPDQImageFilter();
   virtual ~TotalVariationDenoisingBPDQImageFilter() {}
@@ -145,6 +148,10 @@ protected:
   double m_Gamma;
   int    m_NumberOfIterations;
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
+
+  // In some cases, regularization must use periodic boundary condition
+  typename itk::PeriodicBoundaryCondition<TOutputImage>         * m_BoundaryConditionForGradientFilter;
+  typename itk::PeriodicBoundaryCondition<TGradientOutputImage> * m_BoundaryConditionForDivergenceFilter;
 
 private:
   TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented

@@ -32,6 +32,8 @@ ADD_SUBDIRECTORY(rtkmedian)
 ADD_SUBDIRECTORY(rtklut)
 ADD_SUBDIRECTORY(rtktotalvariationdenoising)
 ADD_SUBDIRECTORY(rtkadmmtotalvariation)
+ADD_SUBDIRECTORY(rtkfourdrooster)
+ADD_SUBDIRECTORY(rtkfourdconjugategradient)
 ADD_SUBDIRECTORY(rtkconjugategradient)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files

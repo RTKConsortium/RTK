@@ -69,7 +69,9 @@ IF (RTK_USE_CUDA)
        rtkCudaDisplacedDetectorImageFilter.cu
        rtkCudaParkerShortScanImageFilter.cu
        rtkCudaForwardProjectionImageFilter.cu
-       rtkCudaBackProjectionImageFilter.cu)
+       rtkCudaBackProjectionImageFilter.cu
+       rtkCudaSplatImageFilter.cu
+       rtkCudaInterpolateImageFilter.cu)
        
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
@@ -98,6 +100,8 @@ IF (RTK_USE_CUDA)
               rtkCudaFDKConeBeamReconstructionFilter.cxx
 	      rtkCudaForwardProjectionImageFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
+	      rtkCudaSplatImageFilter.cxx
+	      rtkCudaInterpolateImageFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)

@@ -38,6 +38,9 @@ template< typename TInputImage, typename TOperatorValueType, typename TOuputValu
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::ForwardDifferenceGradientImageFilter()
 {
+  // default boundary condition
+  m_BoundaryCondition = new ZeroFluxNeumannBoundaryCondition<TInputImage>();
+
   // default behaviour is to take into account both spacing and direction
   this->m_UseImageSpacing   = true;
   this->m_UseImageDirection = true;
@@ -55,7 +58,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::~ForwardDifferenceGradientImageFilter()
-{}
+{
+  delete m_BoundaryCondition;
+}
 
 // This should be handled by an itkMacro, but it doesn't seem to work with pointer types
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
@@ -73,6 +78,14 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
       }
     }
   if(Modified) this->Modified();
+}
+
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+void
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+::OverrideBoundaryCondition(ImageBoundaryCondition< TInputImage >* boundaryCondition)
+{
+  m_BoundaryCondition = boundaryCondition;
 }
 
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
@@ -151,8 +164,6 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   unsigned int    i;
   CovariantVectorType gradient;
 
-  ZeroFluxNeumannBoundaryCondition< InputImageType > nbc;
-
   ConstNeighborhoodIterator< InputImageType > nit;
   ImageRegionIterator< OutputImageType >      it;
 
@@ -228,7 +239,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     nit = ConstNeighborhoodIterator< InputImageType >(radius,
                                                       inputImage, *fit);
     it = ImageRegionIterator< OutputImageType >(outputImage, *fit);
-    nit.OverrideBoundaryCondition(&nbc);
+    nit.OverrideBoundaryCondition(m_BoundaryCondition);
     nit.GoToBegin();
 
     while ( !nit.IsAtEnd() )

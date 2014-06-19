@@ -36,6 +36,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   m_SubtractFilter = SubtractFilterType::New();
   m_DivergenceFilter = DivergenceFilterType::New();
   m_GradientFilter = GradientFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent connections
   m_DivergenceFilter->SetInput(m_GradientFilter->GetOutput());
@@ -73,16 +74,6 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   this->Modified();
 }
 
-
-template< typename TOutputImage, typename TGradientOutputImage> 
-void
-ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
-{
-  m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
-  m_ForwardProjectionFilter->SetGeometry(_arg);
-}
-
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
@@ -111,12 +102,18 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   // at runtime
   m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
+  m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_SubtractFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
   m_GradientFilter->SetInput(this->GetInput(0));
+
+  // Set geometry
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set runtime parameters
   m_MultiplyFilter->SetConstant2( m_Beta );
