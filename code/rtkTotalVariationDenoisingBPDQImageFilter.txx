@@ -90,6 +90,18 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   if(Modified) this->Modified();
 }
 
+template< typename TOutputImage, typename TGradientOutputImage>
+void
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+::SetBoundaryConditionToPeriodic()
+{
+  m_BoundaryConditionForGradientFilter = new itk::PeriodicBoundaryCondition<TOutputImage>();
+  m_BoundaryConditionForDivergenceFilter = new itk::PeriodicBoundaryCondition<TGradientOutputImage>();
+
+  m_GradientFilter->OverrideBoundaryCondition(m_BoundaryConditionForGradientFilter);
+  m_DivergenceFilter->OverrideBoundaryCondition(m_BoundaryConditionForDivergenceFilter);
+}
+
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
@@ -108,7 +120,7 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   double numberOfDimensionsProcessed = 0;
   for (int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
-      if (m_DimensionsProcessed[dim])  numberOfDimensionsProcessed += 1.0;
+    if (m_DimensionsProcessed[dim])  numberOfDimensionsProcessed += 1.0;
     }
   m_Beta = 1/(2 * numberOfDimensionsProcessed) - 0.001; // Beta must be smaller than 1 / (2 * NumberOfDimensionsProcessed) for the algorithm to converge
 
@@ -140,13 +152,6 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
     pimg->DisconnectPipeline();
     m_DivergenceFilter->SetInput( pimg );
     m_SubtractGradientFilter->SetInput1( pimg );
-
-    // After the first iteration, the ZeroGradientFilter and ZeroMultiplyFilter become useless
-    if (iter==0)
-      {
-      m_ZeroGradientFilter = NULL;
-      m_ZeroMultiplyFilter = NULL;
-      }
     }
   this->GraftOutput(m_SubtractFilter->GetOutput());
 }

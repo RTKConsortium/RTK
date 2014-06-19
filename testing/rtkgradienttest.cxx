@@ -5,10 +5,6 @@
 #include "itkRandomImageSource.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"
 
-//#ifdef USE_CUDA
-//#else
-//#endif
-
 template<class TImage, class TGradient>
 #if FAST_TESTS_NO_CHECKS
 void CheckGradient(typename TImage::Pointer itkNotUsed(im), typename TGradient::Pointer itkNotUsed(grad), bool* itkNotUsed(dimensionsProcessed))
