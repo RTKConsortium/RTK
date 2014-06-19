@@ -102,8 +102,6 @@ protected:
 private:
   TRealType m_Threshold;
 
-  ThreadIdType m_RequestedNumberOfThreads;
-
   MagnitudeThresholdImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);                     //purposely not implemented
 };

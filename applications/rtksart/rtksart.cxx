@@ -22,6 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
+
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
 #endif
@@ -75,50 +76,6 @@ int main(int argc, char * argv[])
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtksart>(constantImageSource, args_info);
     inputFilter = constantImageSource;
     }
-
-//  // Construct selected backprojection filter
-//  rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
-//  switch(args_info.bp_arg)
-//  {
-//  case(bp_arg_VoxelBasedBackProjection):
-//    bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_Joseph):
-//    bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_CudaVoxelBased):
-//#ifdef RTK_USE_CUDA
-//    bp = rtk::CudaBackProjectionImageFilter::New();
-//#else
-//    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-//    return EXIT_FAILURE;
-//#endif
-//    break;
-
-//  default:
-//    std::cerr << "Unhandled --bp value." << std::endl;
-//    return EXIT_FAILURE;
-//  }
-
-
-//  switch(args_info.sart_arg)
-//  {
-//  case(sart_arg_Sart):
-//    sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType, OutputImageType>::New();
-//    break;
-//  case(bp_arg_Joseph):
-//#ifdef RTK_USE_CUDA
-//    sart = rtk::CudaSARTConeBeamReconstructionFilter::New();
-//#else
-//    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-//    return EXIT_FAILURE;
-//#endif
-//    break;
-
-//  default:
-//    std::cerr << "Unhandled --bp value." << std::endl;
-//    return EXIT_FAILURE;
-//  }
 
   // SART reconstruction filter
   rtk::SARTConeBeamReconstructionFilter< OutputImageType >::Pointer sart =

@@ -1,68 +1,11 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkParkerShortScanImageFilter.h"
-
-template<class TImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
-{
-}
-#else
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  while( !itRef.IsAtEnd() )
-    {
-    typename TImage::PixelType TestVal = itTest.Get();
-    typename TImage::PixelType RefVal = itRef.Get();
-    TestError += vcl_abs(RefVal - TestVal);
-    EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-    ++itTest;
-    ++itRef;
-    }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 0.09)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.09." << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < 22)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 22" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
-#endif
 
 /**
  * \file rtkshortscantest.cxx
@@ -180,7 +123,7 @@ int main(int , char** )
   feldkamp->SetGeometry( geometry );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
 
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.09, 22, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }

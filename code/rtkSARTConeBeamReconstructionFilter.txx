@@ -40,6 +40,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
   m_SubtractFilter = SubtractFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
 
   // Create the filters required for correct weighting of the difference
@@ -65,6 +66,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_RayBoxFilter->SetInput(m_ExtractFilterRayBox->GetOutput());
   m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
   m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
+  m_DisplacedDetectorFilter->SetInput(m_DivideFilter->GetOutput());
 
   // Default parameters
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
@@ -126,7 +128,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   // Links with the forward and back projection filters should be set here
   // and not in the constructor, as these filters are set at runtime
   m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
-  m_BackProjectionFilter->SetInput(1, m_DivideFilter->GetOutput() );
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput() );
   m_BackProjectionFilter->SetTranspose(false);
   m_ThresholdFilter->SetInput(m_BackProjectionFilter->GetOutput() );
 
@@ -143,6 +145,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     }
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   m_ConstantImageSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
   m_ConstantImageSource->SetConstant(0);
@@ -258,6 +261,10 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_DivideFilter->Update();
       m_DivideProbe.Stop();
 
+      m_DisplacedDetectorProbe.Start();
+      m_DisplacedDetectorFilter->Update();
+      m_DisplacedDetectorProbe.Stop();
+
       m_BackProjectionProbe.Start();
       m_BackProjectionFilter->Update();
       m_BackProjectionProbe.Stop();
@@ -290,6 +297,8 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
      << ' ' << m_RayBoxProbe.GetUnit() << std::endl;
   os << "  Division: " << m_DivideProbe.GetTotal()
      << ' ' << m_DivideProbe.GetUnit() << std::endl;
+  os << "  Displaced detector: " << m_DisplacedDetectorProbe.GetTotal()
+     << ' ' << m_DisplacedDetectorProbe.GetUnit() << std::endl;
   os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
      << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
   if (m_EnforcePositivity)
