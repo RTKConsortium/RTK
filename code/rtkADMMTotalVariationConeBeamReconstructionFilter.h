@@ -30,6 +30,7 @@
 #include "rtkADMMTotalVariationConjugateGradientOperator.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {
@@ -38,9 +39,10 @@ namespace rtk
    *
    * This filter implements a reconstruction method based on compressed sensing.
    * The method attempts to find the f that minimizes
-   * || Rf -p ||_2^2 + alpha * TV(f),
+   * || sqrt(D) (Rf -p) ||_2^2 + alpha * TV(f),
    * with R the forward projection operator, p the measured projections,
-   * and TV the total variation. Details on the method and the calculations can be found in
+   * D the displaced detector weighting matrix, and TV the total variation.
+   * Details on the method and the calculations can be found in
    *
    * Mory, C., B. Zhang, V. Auvray, M. Grass, D. Schafer, F. Peyrin, S. Rit, P. Douek,
    * and L. Boussel. “ECG-Gated C-Arm Computed Tomography Using L1 Regularization.”
@@ -63,6 +65,7 @@ namespace rtk
    * AfterGradient [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterZeroMultiplyGradient [label="", fixedsize="false", width=0, height=0, shape=none];
    * Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * AddGradient [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
@@ -81,7 +84,8 @@ namespace rtk
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
    * BeforeZeroMultiplyVolume -> Gradient;
    * BeforeZeroMultiplyVolume -> ConjugateGradient;
-   * Input1 -> BackProjection;
+   * Input1 -> Displaced;
+   * Displaced -> BackProjection;
    * Gradient -> AfterGradient [arrowhead=None];
    * AfterGradient -> AddGradient;
    * AfterGradient -> ZeroMultiplyGradient;
@@ -158,6 +162,7 @@ public:
     typedef itk::MultiplyImageFilter<TGradientOutputImage>   MultiplyGradientFilterType;
     typedef itk::SubtractImageFilter<TGradientOutputImage>   SubtractGradientsFilterType;
     typedef rtk::ADMMTotalVariationConjugateGradientOperator<TOutputImage>                CGOperatorFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                               DisplacedDetectorFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -210,6 +215,7 @@ protected:
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check

@@ -47,28 +47,31 @@ namespace rtk
  *
  * \ingroup ReconstructionAlgorithm
  */
-template<class TInputImage, class TOutputImage=TInputImage>
+template<class TOutputImage, class ProjectionStackType=TOutputImage> //Most of the time, TOutputImage is 3D, so it's fine to use only TOutputImage
 class ITK_EXPORT IterativeConeBeamReconstructionFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+  public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef IterativeConeBeamReconstructionFilter              Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef IterativeConeBeamReconstructionFilter               Self;
+  typedef itk::ImageToImageFilter<TOutputImage, TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                             Pointer;
+  typedef itk::SmartPointer<const Self>                       ConstPointer;
+
+  /** Convenient typedefs */
+  typedef ProjectionStackType VolumeType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >  ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
-  typedef typename ForwardProjectionFilterType::Pointer                    ForwardProjectionPointerType;
-  typedef typename BackProjectionFilterType::Pointer                       BackProjectionPointerType;
+  typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >  ForwardProjectionFilterType;
+  typedef rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >     BackProjectionFilterType;
+  typedef typename ForwardProjectionFilterType::Pointer                         ForwardProjectionPointerType;
+  typedef typename BackProjectionFilterType::Pointer                            BackProjectionPointerType;
 
   /** Standard New method. */
-  itkNewMacro(Self);
+  itkNewMacro(Self)
 
   /** Runtime information support. */
-  itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter)
 
   /** Accessors to forward and backprojection types. */
   virtual void SetForwardProjectionFilter (int fwtype);

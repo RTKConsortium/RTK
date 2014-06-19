@@ -79,15 +79,18 @@ public:
         performed. The vector components at unprocessed dimensions are ignored */
     void SetDimensionsProcessed(bool* DimensionsProcessed);
 
+    /** Allows to change the default boundary condition */
+    void OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition);
+
     /** Image typedef support. */
     typedef typename InputImageType::PixelType  InputPixelType;
     typedef typename InputImageType::RegionType InputImageRegionType;
     typedef typename InputImageType::SizeType   InputSizeType;
     typedef itk::CovariantVector< InputPixelType, InputImageDimension > CovariantVectorType;
 
-    protected:
-        BackwardDifferenceDivergenceImageFilter();
-    virtual ~BackwardDifferenceDivergenceImageFilter() {}
+protected:
+    BackwardDifferenceDivergenceImageFilter();
+    virtual ~BackwardDifferenceDivergenceImageFilter();
 
     virtual void GenerateInputRequestedRegion();
 
@@ -109,6 +112,11 @@ private:
     // are ignored for performance, but the gradient filter
     // sets them to zero anyway
     bool m_DimensionsProcessed[TInputImage::ImageDimension];
+
+    // The default is ConstantBoundaryCondition, but this behavior sometimes needs to be overriden
+    itk::ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
+    // If so, do not perform boundary processing in AfterThreadedGenerateData
+    bool                                                     m_IsBoundaryConditionOverriden;
 };
 
 } // end namespace itk
