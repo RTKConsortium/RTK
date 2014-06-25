@@ -22,6 +22,7 @@
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "itkCudaImage.h"
 #include "itkCudaInPlaceImageFilter.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -41,28 +42,28 @@ class ITK_EXPORT CudaSplatImageFilter :
 
 {
 public:
-    /** Standard class typedefs. */
-    typedef rtk::CudaSplatImageFilter                             Self;
-    typedef rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
-    typedef itk::SmartPointer<Self>                            Pointer;
-    typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class typedefs. */
+  typedef rtk::CudaSplatImageFilter                             Self;
+  typedef rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
-    /** Standard New method. */
-    itkNewMacro(Self)
+  /** Standard New method. */
+  itkNewMacro(Self)
 
-    /** Runtime information support. */
-    itkTypeMacro(CudaSplatImageFilter, SplatWithKnownWeightsImageFilter)
+  /** Runtime information support. */
+  itkTypeMacro(CudaSplatImageFilter, SplatWithKnownWeightsImageFilter)
 
 protected:
-    CudaSplatImageFilter();
-    ~CudaSplatImageFilter(){
-    }
+  rtkcuda_EXPORT CudaSplatImageFilter();
+  ~CudaSplatImageFilter(){
+  }
 
-    virtual void GPUGenerateData();
+  virtual void GPUGenerateData();
 
 private:
-    CudaSplatImageFilter(const Self&); //purposely not implemented
-    void operator=(const Self&);         //purposely not implemented
+  CudaSplatImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 
