@@ -65,60 +65,56 @@ template< typename VolumeType, typename VolumeSeriesType>
 void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
 ::ThreadedGenerateData(const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
+  typename VolumeType::ConstPointer volume = this->GetInputVolume();
+  typename VolumeSeriesType::Pointer volumeSeries = this->GetInputVolumeSeries();
 
-    typename VolumeType::ConstPointer volume = this->GetInputVolume();
-    typename VolumeSeriesType::Pointer volumeSeries = this->GetInputVolumeSeries();
+  unsigned int Dimension = volume->GetImageDimension();
 
-    int Dimension = volume->GetImageDimension();
+  typename VolumeSeriesType::RegionType volumeSeriesRegion;
+  typename VolumeSeriesType::SizeType volumeSeriesSize;
+  typename VolumeSeriesType::IndexType volumeSeriesIndex;
 
-    typename VolumeSeriesType::RegionType volumeSeriesRegion;
-    typename VolumeSeriesType::SizeType volumeSeriesSize;
-    typename VolumeSeriesType::IndexType volumeSeriesIndex;
+  typedef itk::ImageRegionIterator<VolumeType>        OutputRegionIterator;
+  typedef itk::ImageRegionIterator<VolumeSeriesType>  VolumeSeriesRegionIterator;
 
-    typedef itk::ImageRegionIterator<VolumeType>        OutputRegionIterator;
-    typedef itk::ImageRegionIterator<VolumeSeriesType>  VolumeSeriesRegionIterator;
+  float weight;
 
-    float weight;
-
-    // Compute the weighted sum of phases (with known weights) to get the output
-    for (int phase=0; phase<m_Weights.rows(); phase++)
+  // Compute the weighted sum of phases (with known weights) to get the output
+  for (unsigned int phase=0; phase<m_Weights.rows(); phase++)
+    {
+    weight = m_Weights[phase][m_ProjectionNumber];
+    if (weight != 0)
       {
+      volumeSeriesRegion = volumeSeries->GetLargestPossibleRegion();
+      volumeSeriesSize = volumeSeries->GetLargestPossibleRegion().GetSize();
+      volumeSeriesIndex = volumeSeries->GetLargestPossibleRegion().GetIndex();
 
-      weight = m_Weights[phase][m_ProjectionNumber];
-      if (weight != 0)
+      typename VolumeType::SizeType outputRegionSize = outputRegionForThread.GetSize();
+      typename VolumeType::IndexType outputRegionIndex = outputRegionForThread.GetIndex();
+
+      for (unsigned int i=0; i<Dimension; i++)
         {
-
-        volumeSeriesRegion = volumeSeries->GetLargestPossibleRegion();
-        volumeSeriesSize = volumeSeries->GetLargestPossibleRegion().GetSize();
-        volumeSeriesIndex = volumeSeries->GetLargestPossibleRegion().GetIndex();
-
-        typename VolumeType::SizeType outputRegionSize = outputRegionForThread.GetSize();
-        typename VolumeType::IndexType outputRegionIndex = outputRegionForThread.GetIndex();
-
-        for (int i=0; i<Dimension; i++)
-          {
-          volumeSeriesSize[i] = outputRegionSize[i];
-          volumeSeriesIndex[i] = outputRegionIndex[i];
-          }
-        volumeSeriesSize[Dimension] = 1;
-        volumeSeriesIndex[Dimension] = phase;
-
-        volumeSeriesRegion.SetSize(volumeSeriesSize);
-        volumeSeriesRegion.SetIndex(volumeSeriesIndex);
-
-        // Iterators
-        OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
-        VolumeSeriesRegionIterator itVolumeSeries(volumeSeries, volumeSeriesRegion);
-
-        while(!itOut.IsAtEnd())
-          {
-          itOut.Set(itOut.Get() + weight * itVolumeSeries.Get());
-          ++itVolumeSeries;
-          ++itOut;
-          }
+        volumeSeriesSize[i] = outputRegionSize[i];
+        volumeSeriesIndex[i] = outputRegionIndex[i];
         }
-    }
+      volumeSeriesSize[Dimension] = 1;
+      volumeSeriesIndex[Dimension] = phase;
+      
+      volumeSeriesRegion.SetSize(volumeSeriesSize);
+      volumeSeriesRegion.SetIndex(volumeSeriesIndex);
 
+      // Iterators
+      OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
+      VolumeSeriesRegionIterator itVolumeSeries(volumeSeries, volumeSeriesRegion);
+
+      while(!itOut.IsAtEnd())
+        {
+        itOut.Set(itOut.Get() + weight * itVolumeSeries.Get());
+        ++itVolumeSeries;
+        ++itOut;
+        }
+      }
+    }
 }
 
 }// end namespace
