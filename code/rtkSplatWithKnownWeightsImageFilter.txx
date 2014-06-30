@@ -125,7 +125,7 @@ void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
   //    typename VolumeSeriesType::ConstPointer volumeSeries = this->GetInputVolumeSeries();
   typename VolumeType::Pointer volume = this->GetInputVolume();
 
-  int Dimension = volume->GetImageDimension();
+  unsigned int Dimension = volume->GetImageDimension();
 
   typename VolumeType::RegionType volumeRegion;
   typename VolumeType::SizeType volumeSize;
@@ -136,7 +136,7 @@ void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
   float weight;
 
   // Update each phase
-  for (int phase=0; phase<m_Weights.rows(); phase++)
+  for (unsigned int phase=0; phase<m_Weights.rows(); phase++)
     {
 
     weight = m_Weights[phase][m_ProjectionNumber];
@@ -144,7 +144,7 @@ void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
       {
       volumeRegion = volume->GetLargestPossibleRegion();
 
-      for (int i=0; i<Dimension; i++)
+      for (unsigned int i=0; i<Dimension; i++)
         {
         volumeSize[i] = outputRegionForThread.GetSize()[i];
         volumeIndex[i] = outputRegionForThread.GetIndex()[i];
