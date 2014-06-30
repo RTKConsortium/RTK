@@ -216,6 +216,7 @@ private:
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
 
   ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
+  bool                                                m_IsBoundaryConditionOverriden;
 };
 } // end namespace itk
 
