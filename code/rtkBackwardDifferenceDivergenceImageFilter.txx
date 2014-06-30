@@ -53,7 +53,9 @@ template <class TInputImage, class TOutputImage>
 BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
 ::~BackwardDifferenceDivergenceImageFilter()
 {
-  delete m_BoundaryCondition;
+  // If the boundary condition has been overriden, the memory
+  // m_BoundaryCondition points to will be released outside this filter
+  if (!m_IsBoundaryConditionOverriden) delete m_BoundaryCondition;
 }
 
 // This should be handled by an itkMacro, but it doesn't seem to work with pointer types
@@ -79,6 +81,7 @@ void
 BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
 ::OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition)
 {
+  delete m_BoundaryCondition;
   m_BoundaryCondition = boundaryCondition;
   m_IsBoundaryConditionOverriden = true;
 }

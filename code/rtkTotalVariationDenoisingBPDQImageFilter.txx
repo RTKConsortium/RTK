@@ -59,6 +59,8 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 
   // Set permanent parameters
   m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_BoundaryConditionForGradientFilter = new itk::ZeroFluxNeumannBoundaryCondition<TOutputImage>();
+  m_BoundaryConditionForDivergenceFilter = new itk::ZeroFluxNeumannBoundaryCondition<TGradientOutputImage>();
 
   // Set whether the sub filters should release their data during pipeline execution
   m_ZeroMultiplyFilter->ReleaseDataFlagOn();
@@ -72,6 +74,15 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   m_SubtractGradientFilter->ReleaseDataFlagOn();
   m_MagnitudeThresholdFilter->ReleaseDataFlagOn();
 }
+
+template< typename TOutputImage, typename TGradientOutputImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+::~TotalVariationDenoisingBPDQImageFilter()
+{
+  delete m_BoundaryConditionForGradientFilter;
+  delete m_BoundaryConditionForDivergenceFilter;
+}
+
 
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
