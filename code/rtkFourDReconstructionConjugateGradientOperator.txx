@@ -171,6 +171,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource2->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilter->SetInPlace(false);
 
   m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyVolumeSeriesFilter->GetOutput());
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());

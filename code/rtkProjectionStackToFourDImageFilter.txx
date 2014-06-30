@@ -139,6 +139,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_ExtractFilter->GetOutput());
+  m_BackProjectionFilter->SetInPlace(false);
 
   // Create and set the splat filter
 #ifdef RTK_USE_CUDA

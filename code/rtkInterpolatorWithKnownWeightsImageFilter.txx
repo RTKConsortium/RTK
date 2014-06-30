@@ -31,7 +31,6 @@ template< typename VolumeType, typename VolumeSeriesType>
 InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::InterpolatorWithKnownWeightsImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
-  this->SetInPlace( true );
   m_ProjectionNumber = 0;
 }
 
@@ -74,7 +73,8 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
   typename VolumeSeriesType::SizeType volumeSeriesSize;
   typename VolumeSeriesType::IndexType volumeSeriesIndex;
 
-  typedef itk::ImageRegionIterator<VolumeType>        OutputRegionIterator;
+  typedef itk::ImageRegionIterator<VolumeType>        VolumeRegionIterator;
+  typedef itk::ImageRegionConstIterator<VolumeType>   VolumeRegionConstIterator;
   typedef itk::ImageRegionIterator<VolumeSeriesType>  VolumeSeriesRegionIterator;
 
   float weight;
@@ -104,14 +104,16 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
       volumeSeriesRegion.SetIndex(volumeSeriesIndex);
 
       // Iterators
-      OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
-      VolumeSeriesRegionIterator itVolumeSeries(volumeSeries, volumeSeriesRegion);
+      VolumeRegionIterator        itOut(this->GetOutput(), outputRegionForThread);
+      VolumeRegionConstIterator   itIn(volume, outputRegionForThread);
+      VolumeSeriesRegionIterator  itVolumeSeries(volumeSeries, volumeSeriesRegion);
 
       while(!itOut.IsAtEnd())
         {
-        itOut.Set(itOut.Get() + weight * itVolumeSeries.Get());
+        itOut.Set(itIn.Get() + weight * itVolumeSeries.Get());
         ++itVolumeSeries;
         ++itOut;
+        ++itIn;
         }
       }
     }
