@@ -97,23 +97,29 @@ void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::InitializeConstantSource()
 {
-  int Dimension = 3;
+  unsigned int Dimension = 3;
 
   // Configure the constant image source that is connected to input 2 of the m_SingleProjToFourDFilter
   typename VolumeType::SizeType ConstantVolumeSourceSize;
   ConstantVolumeSourceSize.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    {
+    ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    }
 
   typename VolumeType::SpacingType ConstantVolumeSourceSpacing;
   ConstantVolumeSourceSpacing.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    { 
+    ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    }
 
   typename VolumeType::PointType ConstantVolumeSourceOrigin;
   ConstantVolumeSourceOrigin.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+    {
+    ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+    }
 
   typename VolumeType::DirectionType ConstantVolumeSourceDirection;
   ConstantVolumeSourceDirection.SetIdentity();
@@ -148,7 +154,8 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
     m_SplatFilter = rtk::CudaSplatImageFilter::New();
   else
 #endif
-    m_SplatFilter = SplatFilterType::New();
+ 
+  m_SplatFilter = SplatFilterType::New();
 
   // Set runtime connections
   m_ZeroMultiplyVolumeSeriesFilter->SetInput1(this->GetInputVolumeSeries());
