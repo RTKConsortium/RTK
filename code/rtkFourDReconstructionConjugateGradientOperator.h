@@ -113,9 +113,9 @@ namespace rtk
    * AfterSplat -> AfterZeroMultiply[style=dashed];
    * ZeroMultiply4D -> AfterZeroMultiply[arrowhead=None];
    * AfterZeroMultiply -> Splat;
-   * Input1 -> ZeroMultiplyProj;
-   * ZeroMultiplyProj -> Extract;
-   * Extract -> ForwardProj;
+   * Input1 -> Extract;
+   * Extract -> ZeroMultiplyProj;
+   * ZeroMultiplyProj -> ForwardProj;
    * }
    * \enddot
    *
