@@ -41,11 +41,14 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent connections
-  m_ExtractFilter->SetInput(m_ZeroMultiplyProjectionStackFilter->GetOutput());
+  m_ZeroMultiplyProjectionStackFilter->SetInput1(m_ExtractFilter->GetOutput());
 
   // Set constant parameters
   m_ZeroMultiplyVolumeSeriesFilter->SetConstant2(itk::NumericTraits<typename VolumeSeriesType::PixelType>::ZeroValue());
   m_ZeroMultiplyProjectionStackFilter->SetConstant2(itk::NumericTraits<typename ProjectionStackType::PixelType>::ZeroValue());
+
+  // Memory management options
+  m_ZeroMultiplyVolumeSeriesFilter->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -159,12 +162,12 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // Set runtime connections
   m_ZeroMultiplyVolumeSeriesFilter->SetInput1(this->GetInputVolumeSeries());
-  m_ZeroMultiplyProjectionStackFilter->SetInput1(this->GetInputProjectionStack());
+  m_ExtractFilter->SetInput(this->GetInputProjectionStack());
 
   m_InterpolationFilter->SetInputVolume(m_ConstantVolumeSource1->GetOutput());
   m_InterpolationFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
 
-  m_ForwardProjectionFilter->SetInput(0, m_ExtractFilter->GetOutput());
+  m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionStackFilter->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, m_InterpolationFilter->GetOutput());
 
   m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
@@ -217,13 +220,14 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   extractRegion.SetSize(Dimension-1, 1);
 
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+  typename VolumeSeriesType::Pointer pimg;
   for(int proj=0; proj<NumberProjs; proj++)
     {
 
     // After the first update, we need to use the output as input.
     if(proj>0)
       {
-      typename VolumeSeriesType::Pointer pimg = m_SplatFilter->GetOutput();
+      pimg = m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_SplatFilter->SetInputVolumeSeries( pimg );
       }
@@ -242,6 +246,9 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // Graft its output
   this->GraftOutput( m_SplatFilter->GetOutput() );
+
+  // Release the data in pimg
+  pimg->ReleaseData();
 }
 
 }// end namespace

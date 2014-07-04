@@ -130,19 +130,24 @@ void ConjugateGradientImageFilter<OutputImageType>
   GetX_kPlusOne_Filter->SetXk(this->GetX());
   GetX_kPlusOne_Filter->SetPk(P_zero);
 
+  // Define the smart pointers that will be used with DisconnectPipeline()
+  typename OutputImageType::Pointer R_kPlusOne;
+  typename OutputImageType::Pointer P_kPlusOne;
+  typename OutputImageType::Pointer X_kPlusOne;
+
   // Start the iterative procedure
   for (int iter=0; iter<m_NumberOfIterations; iter++)
     {
 
     if(iter>0)
       {
-      typename OutputImageType::Pointer R_kPlusOne = GetR_kPlusOne_Filter->GetOutput();
+      R_kPlusOne = GetR_kPlusOne_Filter->GetOutput();
       R_kPlusOne->DisconnectPipeline();
 
-      typename OutputImageType::Pointer P_kPlusOne = GetP_kPlusOne_Filter->GetOutput();
+      P_kPlusOne = GetP_kPlusOne_Filter->GetOutput();
       P_kPlusOne->DisconnectPipeline();
 
-      typename OutputImageType::Pointer X_kPlusOne = GetX_kPlusOne_Filter->GetOutput();
+      X_kPlusOne = GetX_kPlusOne_Filter->GetOutput();
       X_kPlusOne->DisconnectPipeline();
 
       m_A->SetX(P_kPlusOne);
@@ -170,6 +175,10 @@ void ConjugateGradientImageFilter<OutputImageType>
 
   this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
 
+  // Release the memory from temporary smart pointers
+  R_kPlusOne->ReleaseData();
+  P_kPlusOne->ReleaseData();
+  X_kPlusOne->ReleaseData();
 }
 
 }// end namespace
