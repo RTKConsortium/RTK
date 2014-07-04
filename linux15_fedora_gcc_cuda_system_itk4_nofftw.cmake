@@ -15,6 +15,8 @@ set(ENV{LD_LIBRARY_PATH} "/usr/lib64/nvidia:$ENV{LD_LIBRARY_PATH}")
 set(CONFIGURE_OPTIONS
    -DOPENCL_LIBRARIES:PATH=/usr/lib64/nvidia-304xx/libOpenCL.so.1
    -DOPENCL_INCLUDE_DIRS:PATH=/usr/include/cuda
+   -DRTK_USE_CUDA:BOOL=ON
+   -DRTK_USE_OPENCL:BOOL=ON
   )
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")

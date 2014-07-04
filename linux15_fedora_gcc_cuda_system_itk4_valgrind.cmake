@@ -14,6 +14,8 @@ set(CTEST_BUILD_FLAGS -j8)
 set(CONFIGURE_OPTIONS
    -DOPENCL_LIBRARIES:PATH=/usr/lib64/nvidia-304xx/libOpenCL.so.1
    -DOPENCL_INCLUDE_DIRS:PATH=/usr/include/cuda
+   -DRTK_USE_CUDA:BOOL=ON
+   -DRTK_USE_OPENCL:BOOL=ON
   )
 
 SET(ENV{VALGRIND_LIB} "/usr/lib64/valgrind")
