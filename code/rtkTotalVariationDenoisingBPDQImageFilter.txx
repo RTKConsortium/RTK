@@ -49,11 +49,9 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 
   // Set permanent connections
   m_ZeroGradientFilter->SetInput(m_ZeroMultiplyFilter->GetOutput());
-  m_DivergenceFilter->SetInput(m_ZeroGradientFilter->GetOutput());
   m_SubtractFilter->SetInput2(m_DivergenceFilter->GetOutput());
   m_MultiplyFilter->SetInput1(m_SubtractFilter->GetOutput());
   m_GradientFilter->SetInput(m_MultiplyFilter->GetOutput());
-  m_SubtractGradientFilter->SetInput1(m_ZeroGradientFilter->GetOutput());
   m_SubtractGradientFilter->SetInput2(m_GradientFilter->GetOutput());
   m_MagnitudeThresholdFilter->SetInput(m_SubtractGradientFilter->GetOutput());
 
@@ -64,7 +62,7 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 
   // Set whether the sub filters should release their data during pipeline execution
   m_ZeroMultiplyFilter->ReleaseDataFlagOn();
-  m_ZeroGradientFilter->ReleaseDataFlagOff(); //Output used twice
+  m_ZeroGradientFilter->ReleaseDataFlagOff(); //Output used twice, but quick to compute and uses much memory
   m_DivergenceFilter->ReleaseDataFlagOn();
   // The m_SubtractFilter's output is the pipeline's output
   // Therefore it MUST NOT release its output
@@ -126,6 +124,12 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   m_ZeroMultiplyFilter->SetInput(inputPtr);
   m_SubtractFilter->SetInput1(inputPtr);
 
+  // These connections must be made at runtime, because if
+  // the filter is updated, then re-used with a different input,
+  // these connections must be reset
+  m_DivergenceFilter->SetInput(m_ZeroGradientFilter->GetOutput());
+  m_SubtractGradientFilter->SetInput1(m_ZeroGradientFilter->GetOutput());
+
   // Compute the parameters used in Basis Pursuit Dequantization
   // and set the filters to use them
   double numberOfDimensionsProcessed = 0;
@@ -153,18 +157,23 @@ void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 ::GenerateData()
 {
+  typename TGradientOutputImage::Pointer pimg;
+
   // The first iteration only updates intermediate variables, not the output
   // The output is updated m_NumberOfIterations-1 times, therefore an additional
   // iteration must be performed so that even m_NumberOfIterations=1 has an effect
   for (int iter=0; iter<=m_NumberOfIterations; iter++)
     {
     m_MagnitudeThresholdFilter->Update();
-    typename TGradientOutputImage::Pointer pimg = m_MagnitudeThresholdFilter->GetOutput();
+    pimg = m_MagnitudeThresholdFilter->GetOutput();
     pimg->DisconnectPipeline();
     m_DivergenceFilter->SetInput( pimg );
     m_SubtractGradientFilter->SetInput1( pimg );
     }
   this->GraftOutput(m_SubtractFilter->GetOutput());
+
+  //Release the data in pimg
+  pimg->ReleaseData();
 }
 
 } // end namespace rtk
