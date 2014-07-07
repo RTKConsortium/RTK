@@ -157,6 +157,9 @@ private:
   TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
+  virtual void SetPipelineForFirstIteration();
+  virtual void SetPipelineAfterFirstIteration();
+
   double m_Beta;
 };
 
