@@ -48,6 +48,7 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
+  reader->ReleaseDataFlagOn();
 
   // Apply total variation denoising
   typedef rtk::TotalVariationDenoisingBPDQImageFilter
@@ -66,6 +67,7 @@ int main(int argc, char * argv[])
     }
 //  std::cout << std::endl;
   tv->SetDimensionsProcessed(dimsProcessed);
+  tv->ReleaseDataFlagOn();
 
   // Write
   typedef itk::ImageFileWriter<OutputImageType> WriterType;

@@ -38,39 +38,23 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
     }
 
   // Create the sub filters
-  m_ZeroGradientFilter = GradientFilterType::New();
   m_GradientFilter = GradientFilterType::New();
-  m_ZeroMultiplyFilter = MultiplyFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   m_SubtractFilter = SubtractImageFilterType::New();
   m_SubtractGradientFilter = SubtractGradientFilterType::New();
   m_MagnitudeThresholdFilter = MagnitudeThresholdFilterType::New();
   m_DivergenceFilter = DivergenceFilterType::New();
 
-  // Set permanent connections
-  m_ZeroGradientFilter->SetInput(m_ZeroMultiplyFilter->GetOutput());
-  m_SubtractFilter->SetInput2(m_DivergenceFilter->GetOutput());
-  m_MultiplyFilter->SetInput1(m_SubtractFilter->GetOutput());
-  m_GradientFilter->SetInput(m_MultiplyFilter->GetOutput());
-  m_SubtractGradientFilter->SetInput2(m_GradientFilter->GetOutput());
-  m_MagnitudeThresholdFilter->SetInput(m_SubtractGradientFilter->GetOutput());
-
   // Set permanent parameters
-  m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_BoundaryConditionForGradientFilter = new itk::ZeroFluxNeumannBoundaryCondition<TOutputImage>();
   m_BoundaryConditionForDivergenceFilter = new itk::ZeroFluxNeumannBoundaryCondition<TGradientOutputImage>();
 
-  // Set whether the sub filters should release their data during pipeline execution
-  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
-  m_ZeroGradientFilter->ReleaseDataFlagOff(); //Output used twice, but quick to compute and uses much memory
+//  // Set whether the sub filters should release their data during pipeline execution
   m_DivergenceFilter->ReleaseDataFlagOn();
-  // The m_SubtractFilter's output is the pipeline's output
-  // Therefore it MUST NOT release its output
-  m_SubtractFilter->ReleaseDataFlagOff();
+//  m_SubtractFilter->ReleaseDataFlagOff(); // It is the pipeline's output
   m_GradientFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
   m_SubtractGradientFilter->ReleaseDataFlagOn();
-  m_MagnitudeThresholdFilter->ReleaseDataFlagOn();
 }
 
 template< typename TOutputImage, typename TGradientOutputImage>
@@ -116,19 +100,8 @@ void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 ::GenerateOutputInformation()
 {
-  // get pointers to the input and output
-  typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
-  typename Superclass::InputImageConstPointer inputPtr  = this->GetInput();
-
-  // Set the inputs
-  m_ZeroMultiplyFilter->SetInput(inputPtr);
-  m_SubtractFilter->SetInput1(inputPtr);
-
-  // These connections must be made at runtime, because if
-  // the filter is updated, then re-used with a different input,
-  // these connections must be reset
-  m_DivergenceFilter->SetInput(m_ZeroGradientFilter->GetOutput());
-  m_SubtractGradientFilter->SetInput1(m_ZeroGradientFilter->GetOutput());
+  // Set the pipeline for the first iteration
+  SetPipelineForFirstIteration();
 
   // Compute the parameters used in Basis Pursuit Dequantization
   // and set the filters to use them
@@ -137,20 +110,48 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
     {
     if (m_DimensionsProcessed[dim])  numberOfDimensionsProcessed += 1.0;
     }
-  m_Beta = 1/(2 * numberOfDimensionsProcessed) - 0.001; // Beta must be smaller than 1 / (2 * NumberOfDimensionsProcessed) for the algorithm to converge
+  // Beta must be smaller than 1 / (2 * NumberOfDimensionsProcessed) for the algorithm to converge
+  m_Beta = 1/(2 * numberOfDimensionsProcessed) - 0.001;
 
   m_MultiplyFilter->SetConstant2(m_Beta);
   m_MagnitudeThresholdFilter->SetThreshold(m_Gamma);
   m_GradientFilter->SetDimensionsProcessed(m_DimensionsProcessed);
-  m_ZeroGradientFilter->SetDimensionsProcessed(m_DimensionsProcessed);
   m_DivergenceFilter->SetDimensionsProcessed(m_DimensionsProcessed);
 
   // Have the last filter calculate its output information,
   // which should update that of the whole pipeline
   m_MagnitudeThresholdFilter->UpdateOutputInformation();
-  outputPtr->CopyInformation( m_SubtractFilter->GetOutput() );
+  this->GetOutput()->CopyInformation( m_MultiplyFilter->GetOutput() );
 }
 
+template< typename TOutputImage, typename TGradientOutputImage>
+void
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+::SetPipelineForFirstIteration()
+{
+  m_MultiplyFilter->SetInput1(this->GetInput());
+  m_GradientFilter->SetInput(m_MultiplyFilter->GetOutput());
+  m_MagnitudeThresholdFilter->SetInput(m_GradientFilter->GetOutput());
+}
+
+template< typename TOutputImage, typename TGradientOutputImage>
+void
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+::SetPipelineAfterFirstIteration()
+{
+  m_SubtractFilter->SetInput1(this->GetInput());
+  m_SubtractFilter->SetInput2(m_DivergenceFilter->GetOutput());
+
+  m_MultiplyFilter->SetInput1(m_SubtractFilter->GetOutput());
+
+  m_GradientFilter->SetInput(m_MultiplyFilter->GetOutput());
+
+  m_SubtractGradientFilter->SetInput2(m_GradientFilter->GetOutput());
+
+  m_MagnitudeThresholdFilter->SetInput(m_SubtractGradientFilter->GetOutput());
+  m_MagnitudeThresholdFilter->UpdateOutputInformation();
+  m_MagnitudeThresholdFilter->GetOutput()->PropagateRequestedRegion();
+}
 
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
@@ -164,6 +165,8 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   // iteration must be performed so that even m_NumberOfIterations=1 has an effect
   for (int iter=0; iter<=m_NumberOfIterations; iter++)
     {
+      if(iter==1) SetPipelineAfterFirstIteration();
+
     m_MagnitudeThresholdFilter->Update();
     pimg = m_MagnitudeThresholdFilter->GetOutput();
     pimg->DisconnectPipeline();
