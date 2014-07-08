@@ -18,7 +18,7 @@
 #ifndef __rtkMultiplyByVectorImageFilter_h
 #define __rtkMultiplyByVectorImageFilter_h
 
-#include "itkAccumulateImageFilter.h"
+#include <itkImageToImageFilter.h>
 
 namespace rtk
 {
@@ -44,10 +44,10 @@ public:
     typedef itk::SmartPointer< Self >                           Pointer;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(MultiplyByVectorImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(MultiplyByVectorImageFilter, itk::ImageToImageFilter);
 
     /** The image containing the weights applied to the temporal components */
     void SetVector(std::vector<float> vect);
@@ -57,7 +57,6 @@ protected:
     ~MultiplyByVectorImageFilter(){}
 
     /** Does the real work. */
-//    virtual void GenerateData();
     virtual void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
 
 private:

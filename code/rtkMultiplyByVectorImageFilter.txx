@@ -31,6 +31,7 @@ template< class TInputImage >
 MultiplyByVectorImageFilter< TInputImage >
 ::MultiplyByVectorImageFilter()
 {
+  this->SetNumberOfThreads(2);
 }
 
 template< class TInputImage >
@@ -46,14 +47,16 @@ template< class TInputImage >
 void
 MultiplyByVectorImageFilter< TInputImage >
 ::ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
-//::GenerateData()
 {
   int Dimension = this->GetInput()->GetImageDimension();
 
-  for (int i=outputRegionForThread.GetIndex()[Dimension-1]; i<outputRegionForThread.GetSize()[Dimension-1]; i++)
+  for (int i=outputRegionForThread.GetIndex()[Dimension-1];
+       i<outputRegionForThread.GetSize()[Dimension-1]
+          + outputRegionForThread.GetIndex()[Dimension-1]; i++)
     {
     typename TInputImage::RegionType SubRegion;
     SubRegion=outputRegionForThread;
+    SubRegion.SetSize(Dimension-1, 1);
     SubRegion.SetIndex(Dimension-1, i);
 
     itk::ImageRegionIterator<TInputImage> outputIterator(this->GetOutput(), SubRegion);
@@ -61,8 +64,7 @@ MultiplyByVectorImageFilter< TInputImage >
 
     while(!inputIterator.IsAtEnd())
       {
-      outputIterator.Set(inputIterator.Get());
-//      outputIterator.Set(inputIterator.Get() * m_Vector[i]);
+      outputIterator.Set(inputIterator.Get() * m_Vector[i]);
       ++outputIterator;
       ++inputIterator;
       }
