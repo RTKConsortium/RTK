@@ -31,7 +31,6 @@ template< class TInputImage >
 MultiplyByVectorImageFilter< TInputImage >
 ::MultiplyByVectorImageFilter()
 {
-  this->SetNumberOfThreads(2);
 }
 
 template< class TInputImage >
