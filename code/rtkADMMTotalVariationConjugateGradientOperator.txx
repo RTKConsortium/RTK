@@ -37,6 +37,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   m_DivergenceFilter = DivergenceFilterType::New();
   m_GradientFilter = GradientFilterType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_GatingWeightsFilter = GatingWeightsFilterType::New();
 
   // Set permanent connections
   m_DivergenceFilter->SetInput(m_GradientFilter->GetOutput());
@@ -74,6 +75,15 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   this->Modified();
 }
 
+template< typename TOutputImage, typename TGradientOutputImage>
+void
+ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
+::SetGatingWeights(std::vector<float> weights)
+{
+  m_GatingWeights = weights;
+  m_IsGated = true;
+}
+
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
@@ -102,7 +112,17 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   // at runtime
   m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
+  if(m_IsGated)
+    {
+    // Insert the gating filter into the pipeline
+    m_GatingWeightsFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
+    m_GatingWeightsFilter->SetVector(m_GatingWeights);
+    m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
+    }
+  else
+    {
+    m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
+    }
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_SubtractFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));

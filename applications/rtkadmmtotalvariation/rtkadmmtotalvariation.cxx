@@ -28,6 +28,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
+#include "rtkPhaseGatingImageFilter.h"
 
 int main(int argc, char * argv[])
 {
@@ -67,6 +68,20 @@ int main(int argc, char * argv[])
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() );
 
+  // Phase gating weights reader
+  typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
+  PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
+  if (args_info.phases_given)
+    {
+    phaseGating->SetFileName(args_info.phases_arg);
+    phaseGating->SetGatingWindowWidth(args_info.windowwidth_arg);
+    phaseGating->SetGatingWindowCenter(args_info.windowcenter_arg);
+    phaseGating->SetGatingWindowShape(args_info.windowshape_arg);
+    phaseGating->SetInputProjectionStack(projectionsReader->GetOutput());
+    phaseGating->SetInputGeometry(geometryReader->GetOutputObject());
+    phaseGating->Update();
+    }
+
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource< OutputImageType >::Pointer inputFilter;
   if(args_info.input_given)
@@ -99,15 +114,6 @@ int main(int argc, char * argv[])
   admmFilter->SetForwardProjectionFilter(args_info.fp_arg);
   admmFilter->SetBackProjectionFilter(args_info.bp_arg);
 
-  // Set the geometry and interpolation weights
-  admmFilter->SetGeometry(geometryReader->GetOutputObject());
-
-  // Set whether or not time probes should be activated
-  if (args_info.time_flag)
-    {
-    admmFilter->SetMeasureExecutionTimes(true);
-    }
-
   // Set all four numerical parameters
   admmFilter->SetCG_iterations(args_info.CGiter_arg);
   admmFilter->SetAL_iterations(args_info.niterations_arg);
@@ -116,11 +122,22 @@ int main(int argc, char * argv[])
 
   // Set the inputs of the ADMM filter
   admmFilter->SetInput(0, inputFilter->GetOutput() );
-  admmFilter->SetInput(1, projectionsReader->GetOutput() );
+  if (args_info.phases_given)
+    {
+    admmFilter->SetInput(1, phaseGating->GetOutput());
+    admmFilter->SetGeometry( phaseGating->GetOutputGeometry() );
+    admmFilter->SetGatingWeights( phaseGating->GetGatingWeightsOnSelectedProjections() );
+    }
+  else
+    {
+    admmFilter->SetInput(1, projectionsReader->GetOutput() );
+    admmFilter->SetGeometry( geometryReader->GetOutputObject() );
+    }
 
   itk::TimeProbe timeProbe;
     if (args_info.time_flag)
     {
+    admmFilter->SetMeasureExecutionTimes(true);
     std::cout << "Starting global probes before updating the ADMM filter" << std::endl;
     timeProbe.Start();
     }

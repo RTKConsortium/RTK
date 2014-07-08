@@ -55,6 +55,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_GatingWeightsFilter = GatingWeightsFilterType::New();
 
   // Set permanent connections
   m_ZeroMultiplyGradientFilter->SetInput1(m_GradientFilter1->GetOutput());
@@ -132,6 +133,15 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_MultiplyFilter->SetConstant2( (const float) currentBeta);
 }
 
+template< typename TOutputImage, typename TGradientOutputImage>
+void
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
+::SetGatingWeights(std::vector<float> weights)
+{
+  m_GatingWeights = weights;
+  m_IsGated = true;
+}
+
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
@@ -165,7 +175,20 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_CGOperator->SetInput(1, this->GetInput(1));
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_MultiplyFilter->SetConstant2( m_Beta );
-  m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
+  if (m_IsGated)
+    {
+    // Insert the gating filter into the pipeline
+    m_GatingWeightsFilter->SetInput(this->GetInput(1));
+    m_GatingWeightsFilter->SetVector(m_GatingWeights);
+    m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
+
+    // Also perform gating in the conjugate gradient operator
+    m_CGOperator->SetGatingWeights(m_GatingWeights);
+    }
+  else
+    {
+    m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
+    }
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
