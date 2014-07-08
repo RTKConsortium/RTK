@@ -31,6 +31,7 @@
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkMultiplyByVectorImageFilter.h"
 
 namespace rtk
 {
@@ -143,26 +144,27 @@ public:
     /** The gated measured projections */
     void SetInputProjectionStack(const TOutputImage* Projection);
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
-    typedef typename ForwardProjectionFilterType::Pointer                                 ForwardProjectionFilterPointer;
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                  BackProjectionFilterType;
-    typedef typename BackProjectionFilterType::Pointer                                    BackProjectionFilterPointer;
-    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                               ConjugateGradientFilterType;
+    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >     ForwardProjectionFilterType;
+    typedef typename ForwardProjectionFilterType::Pointer                       ForwardProjectionFilterPointer;
+    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >        BackProjectionFilterType;
+    typedef typename BackProjectionFilterType::Pointer                          BackProjectionFilterPointer;
+    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                     ConjugateGradientFilterType;
     typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
             typename TOutputImage::ValueType, 
             typename TOutputImage::ValueType, 
-            TGradientOutputImage>                            ImageGradientFilterType;
+            TGradientOutputImage>                                               ImageGradientFilterType;
     typedef rtk::BackwardDifferenceDivergenceImageFilter
-        <TGradientOutputImage, TOutputImage>                 ImageDivergenceFilterType;
+        <TGradientOutputImage, TOutputImage>                                    ImageDivergenceFilterType;
     typedef rtk::SoftThresholdTVImageFilter
-        <TGradientOutputImage>                               SoftThresholdTVFilterType;
-    typedef itk::SubtractImageFilter<TOutputImage>                                        SubtractVolumeFilterType;
-    typedef itk::AddImageFilter<TGradientOutputImage>        AddGradientsFilterType;
-    typedef itk::MultiplyImageFilter<TOutputImage>                                        MultiplyVolumeFilterType;
-    typedef itk::MultiplyImageFilter<TGradientOutputImage>   MultiplyGradientFilterType;
-    typedef itk::SubtractImageFilter<TGradientOutputImage>   SubtractGradientsFilterType;
-    typedef rtk::ADMMTotalVariationConjugateGradientOperator<TOutputImage>                CGOperatorFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                               DisplacedDetectorFilterType;
+        <TGradientOutputImage>                                                  SoftThresholdTVFilterType;
+    typedef itk::SubtractImageFilter<TOutputImage>                              SubtractVolumeFilterType;
+    typedef itk::AddImageFilter<TGradientOutputImage>                           AddGradientsFilterType;
+    typedef itk::MultiplyImageFilter<TOutputImage>                              MultiplyVolumeFilterType;
+    typedef itk::MultiplyImageFilter<TGradientOutputImage>                      MultiplyGradientFilterType;
+    typedef itk::SubtractImageFilter<TGradientOutputImage>                      SubtractGradientsFilterType;
+    typedef rtk::ADMMTotalVariationConjugateGradientOperator<TOutputImage>      CGOperatorFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                     DisplacedDetectorFilterType;
+    typedef rtk::MultiplyByVectorImageFilter<TOutputImage>                      GatingWeightsFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -175,6 +177,9 @@ public:
 
     /** Increase the value of Beta at each iteration */
     void SetBetaForCurrentIteration(int iter);
+
+    /** In the case of a gated reconstruction, set the gating weights */
+    void SetGatingWeights(std::vector<float> weights);
 
     itkSetMacro(Alpha, float)
     itkGetMacro(Alpha, float)
@@ -216,6 +221,7 @@ protected:
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
+    typename GatingWeightsFilterType::Pointer                                   m_GatingWeightsFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -226,6 +232,11 @@ protected:
     */
     void GenerateInputRequestedRegion();
     void GenerateOutputInformation();
+
+    /** Have gating weights been set ? If so, apply them, otherwise ignore
+     * the gating weights filter */
+    bool                m_IsGated;
+    std::vector<float>  m_GatingWeights;
 
 private:
     ADMMTotalVariationConeBeamReconstructionFilter(const Self &); //purposely not implemented
