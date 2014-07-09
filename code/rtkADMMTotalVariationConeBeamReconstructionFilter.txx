@@ -21,8 +21,6 @@
 
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 
-//#include "rtkJosephForwardProjectionImageFilter.h"
-
 namespace rtk
 {
 
@@ -38,6 +36,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_AL_iterations=10;
   m_CG_iterations=3;
   m_MeasureExecutionTimes=false;
+  m_IsGated=false;
 
   // Create the filters
   m_ZeroMultiplyVolumeFilter = MultiplyVolumeFilterType::New();
