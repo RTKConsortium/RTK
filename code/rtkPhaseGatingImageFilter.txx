@@ -149,7 +149,7 @@ PhaseGatingImageFilter<ProjectionStackType>::SelectProjections()
   m_GatingWeightsOnSelectedProjections.clear();
 
   // Select only those projections that have non-zero weights to speed up computing
-  for (int i=0; i < m_GatingWeights.size(); i++)
+  for (unsigned int i=0; i < m_GatingWeights.size(); i++)
     {
     if (m_GatingWeights[i]>eps)
       {
@@ -195,7 +195,7 @@ void PhaseGatingImageFilter<ProjectionStackType>::GenerateData()
   // Count the projections actually used in constructing the output
   int counter=0;
 
-  for(int i=0; i < m_GatingWeights.size(); i++)
+  for(unsigned int i=0; i < m_GatingWeights.size(); i++)
     {
     if (m_SelectedProjections[i])
       {

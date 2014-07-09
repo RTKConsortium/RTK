@@ -160,8 +160,26 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector and gating ******" << std::endl;
+
+  admmtotalvariation->SetBackProjectionFilter( 0 );
+
+  // Generate arbitrary gating weights (select every third projection)
+  std::vector<float> gatingWeights;
+  for (int i=0; i<NumberOfProjectionImages; i++)
+    {
+      if ((i%3)==0) gatingWeights.push_back(1);
+      else gatingWeights.push_back(0);
+    }
+  admmtotalvariation->SetGatingWeights( gatingWeights );
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
+
+  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
+  std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
   admmtotalvariation->SetForwardProjectionFilter( 2 );
   admmtotalvariation->SetBackProjectionFilter( 2 );
