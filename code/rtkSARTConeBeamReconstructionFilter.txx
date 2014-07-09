@@ -32,7 +32,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
   this->SetNumberOfRequiredInputs(2);
 
+  // Set default parameters
   m_EnforcePositivity = false;
+  m_IsGated = false;
   m_NumberOfIterations = 3;
   m_Lambda = 0.3;
 

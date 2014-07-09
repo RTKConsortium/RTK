@@ -29,7 +29,12 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::ADMMTotalVariationConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
-  this->m_Beta = 0;
+
+  // Set default parameters
+  m_Beta = 0;
+  m_IsGated = false;
+
+  // Create filters
   m_MultiplyFilter = MultiplyFilterType::New();
   m_ZeroMultiplyProjectionFilter = MultiplyFilterType::New();
   m_ZeroMultiplyVolumeFilter = MultiplyFilterType::New();
