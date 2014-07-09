@@ -312,6 +312,7 @@ int main(int, char** )
 #endif
 
   itksys::SystemTools::RemoveFile("signal.txt");
+  delete[] Volumes;
 
   return EXIT_SUCCESS;
 }

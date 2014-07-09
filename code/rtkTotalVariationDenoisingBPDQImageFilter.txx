@@ -88,6 +88,9 @@ void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 ::SetBoundaryConditionToPeriodic()
 {
+  delete m_BoundaryConditionForGradientFilter;
+  delete m_BoundaryConditionForDivergenceFilter;
+
   m_BoundaryConditionForGradientFilter = new itk::PeriodicBoundaryCondition<TOutputImage>();
   m_BoundaryConditionForDivergenceFilter = new itk::PeriodicBoundaryCondition<TGradientOutputImage>();
 
