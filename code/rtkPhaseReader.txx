@@ -33,7 +33,7 @@ PhaseReader::PhaseReader()
 void PhaseReader::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
-  for (int proj=0; proj<m_Phases.size(); proj++)
+  for (unsigned int proj=0; proj<m_Phases.size(); proj++)
       os << this->m_Phases[proj] << std::endl;
 }
 
