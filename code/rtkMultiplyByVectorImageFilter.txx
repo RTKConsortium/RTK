@@ -31,7 +31,6 @@ template< class TInputImage >
 MultiplyByVectorImageFilter< TInputImage >
 ::MultiplyByVectorImageFilter()
 {
-  this->SetNumberOfThreads(2);
 }
 
 template< class TInputImage >
@@ -50,7 +49,7 @@ MultiplyByVectorImageFilter< TInputImage >
 {
   int Dimension = this->GetInput()->GetImageDimension();
 
-  for (int i=outputRegionForThread.GetIndex()[Dimension-1];
+  for (unsigned int i=outputRegionForThread.GetIndex()[Dimension-1];
        i<outputRegionForThread.GetSize()[Dimension-1]
           + outputRegionForThread.GetIndex()[Dimension-1]; i++)
     {
