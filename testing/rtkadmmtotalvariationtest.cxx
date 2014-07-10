@@ -166,7 +166,7 @@ int main(int, char** )
 
   // Generate arbitrary gating weights (select every third projection)
   std::vector<float> gatingWeights;
-  for (int i=0; i<NumberOfProjectionImages; i++)
+  for (unsigned int i=0; i<NumberOfProjectionImages; i++)
     {
       if ((i%3)==0) gatingWeights.push_back(1);
       else gatingWeights.push_back(0);
