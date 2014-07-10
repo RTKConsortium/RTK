@@ -102,7 +102,9 @@ endif()
 option(RTK_USE_CUDA "Use CUDA for RTK" ${RTK_USE_CUDA_DEFAULT})
 
 IF(RTK_USE_CUDA)
-  FIND_PACKAGE(CUDA_wrap REQUIRED)
+  IF(NOT CUDA_FOUND)
+    FIND_PACKAGE(CUDA_wrap REQUIRED)
+  ENDIF()
   INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
 ENDIF()
 #=========================================================
