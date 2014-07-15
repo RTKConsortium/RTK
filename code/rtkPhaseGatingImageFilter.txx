@@ -76,18 +76,17 @@ void PhaseGatingImageFilter<ProjectionStackType>::ComputeWeights()
   for(unsigned int proj=0; proj<m_Phases.size(); proj++)
   {
   distance = vnl_math_min(fabs(m_GatingWindowCenter - 1 - m_Phases[proj]), fabs(m_GatingWindowCenter - m_Phases[proj]));
-  distance = vnl_math_min(distance, fabs(m_GatingWindowCenter + 1 - m_Phases[proj]));
+  distance = vnl_math_min(distance, vnl_math_abs(m_GatingWindowCenter + 1.f - m_Phases[proj]));
 
   switch(m_GatingWindowShape)
     {
     case(0): // Rectangular
       if (2 * distance <= m_GatingWindowWidth) m_GatingWeights.push_back(1);
       else m_GatingWeights.push_back(0);
-    break;
+      break;
     case(1): // Triangular
-      m_GatingWeights.push_back(vnl_math_max(1 - 2 * distance / m_GatingWindowWidth, 0));
-    break;
-
+      m_GatingWeights.push_back(vnl_math_max(1.f - 2.f * distance / m_GatingWindowWidth, 0.f));
+      break;
     default:
       std::cerr << "Unhandled gating window shape value." << std::endl;
     }
