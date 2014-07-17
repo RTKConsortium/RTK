@@ -65,7 +65,7 @@ if(NOT SWIG_DIR)
 
     # configure step
     configure_file(
-      swig_configure_step.cmake.in
+      ${CMAKE_CURRENT_LIST_DIR}/swig_configure_step.cmake.in
       ${CMAKE_CURRENT_BINARY_DIR}/swig_configure_step.cmake
       @ONLY)
     set(swig_CONFIGURE_COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/swig_configure_step.cmake)
