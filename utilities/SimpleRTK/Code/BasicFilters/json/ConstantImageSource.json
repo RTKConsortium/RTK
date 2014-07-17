@@ -1,0 +1,60 @@
+{
+  "name" : "ConstantImageSource",
+  "template_code_filename" : "ImageSource",
+  "template_test_filename" : "ImageFilter",
+  "doc" : "",
+  "number_of_inputs" : 0,
+  "pixel_types" : "BasicPixelIDTypeList",
+  "output_image_type" : "TImageType",
+  "filter_type" : "rtk::ConstantImageSource<OutputImageType>",
+  "include_files" : [
+    "srtkDirectionConvert.hxx"
+  ],
+  "members" : [
+    {
+      "name" : "OutputPixelType",
+      "type" : "PixelIDValueEnum",
+      "default" : "rtk::simple::srtkFloat32",
+      "custom_itk_cast" : ""
+    },
+    {
+      "name" : "Size",
+      "type" : "unsigned int",
+      "dim_vec" : 1,
+      "default" : "std::vector<unsigned int>(3, 64)",
+      "itk_type" : "typename FilterType::SizeType"
+    },
+    {
+      "name" : "Constant",
+      "type" : "double",
+	  "default" : "0.0",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Gets and sets for Constant parameters",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Gets and sets for Constant parameters"
+    },
+    {
+      "name" : "Origin",
+      "type" : "double",
+      "dim_vec" : 1,
+      "default" : "std::vector<double>(3, 0.0)",
+      "itk_type" : "typename FilterType::PointType"
+    },
+    {
+      "name" : "Spacing",
+      "type" : "double",
+      "dim_vec" : 1,
+      "default" : "std::vector<double>(3, 1.0)",
+      "itk_type" : "typename FilterType::SpacingType"
+    },
+    {
+      "name" : "Direction",
+      "type" : "std::vector<double>",
+      "default" : "std::vector<double>()",
+      "doc" : "Passing a zero sized array, defaults to identiy matrix. The size of the array must exactly match the direction matrix for the dimension of the image.",
+      "custom_itk_cast" : "filter->SetDirection( VectorToITKDirection<typename FilterType::DirectionType>( this->m_Direction ) );"
+    }
+  ],
+  "briefdescription" : "Generate an n-dimensional image of a Gaussian.",
+  "detaileddescription" : "GaussianImageSourcegenerates an image of a Gaussian. m_Normalized determines whether or not the Gaussian is normalized (whether or not the sum over infinite space is 1.0) When creating an image, it is preferable tonotnormalize the Gaussian m_Scale scales the output of the Gaussian to span a range larger than 0->1, and is typically set to the maximum value of the output data type (for instance, 255 for uchars)\n\nThe output image may be of any dimension."
+}

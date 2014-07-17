@@ -1,0 +1,18 @@
+#include "itkImage.h"
+#include "itkVectorImage.h"
+#include "itkLabelMap.h"
+#include "itkLabelObject.h"
+#include "itkNumericTraits.h"
+#include "itkNumericTraitsVariableLengthVectorPixel.h"
+#include "itkVectorIndexSelectionCastImageFilter.h"
+#include "itkComposeImageFilter.h"
+
+#include "srtk${name}.h"
+$(if itk_name then
+  OUT=[[
+#include "rtk${itk_name}.h"]]
+else
+  OUT=[[
+#include "rtk${name}.h"]]
+end)
+
