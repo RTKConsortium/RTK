@@ -20,19 +20,26 @@ CudaFDKWeightProjectionFilter
 ::GPUGenerateData()
 {
   // Get angular weights from geometry
-  std::vector<double> angularWeightsAndRampFactor = this->GetGeometry()->GetAngularGaps();
-  for(unsigned int g = 0; g < angularWeightsAndRampFactor.size(); g++)
+  std::vector<double> constantProjectionFactor =
+      this->GetGeometry()->GetAngularGaps(this->GetGeometry()->GetSourceAngles());
+  std::vector<double> tiltAngles =
+      this->GetGeometry()->GetTiltAngles();
+
+  for(unsigned int g = 0; g < constantProjectionFactor.size(); g++)
   {
     // Add correction factor for ramp filter
     const double sdd  = this->GetGeometry()->GetSourceToDetectorDistances()[g];
     if(sdd == 0.) // Parallel
-      angularWeightsAndRampFactor[g] *= 0.5;
+      constantProjectionFactor[g] *= 0.5;
     else        // Divergent
     {
-      // Zoom + factor 1/2 in eq 176, page 106, Kak & Slaney
+      // See [Rit and Clackdoyle, CT meeting, 2014]
+      ThreeDCircularProjectionGeometry::HomogeneousVectorType sp;
+      sp = this->GetGeometry()->GetSourcePosition(g);
+      sp[3] = 0.;
       const double sid  = this->GetGeometry()->GetSourceToIsocenterDistances()[g];
-      const double rampFactor = sdd / (2. * sid);
-      angularWeightsAndRampFactor[g] *= rampFactor;
+      constantProjectionFactor[g] *= sdd / (2. * sid *sid);
+      constantProjectionFactor[g] *= sp.GetNorm();
     }
   }
 
@@ -69,12 +76,12 @@ CudaFDKWeightProjectionFilter
   for (int g = 0; g < proj_size[2]; ++g)
   {
     geomMatrix[g * 7 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 7 + 1] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 7 + 2] = this->GetGeometry()->GetProjectionOffsetsY()[g + geomIdx];
-    geomMatrix[g * 7 + 3] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
+    geomMatrix[g * 7 + 1] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[g * 7 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[g * 7 + 3] = this->GetGeometry()->GetProjectionOffsetsY()[g + geomIdx];
     geomMatrix[g * 7 + 4] = this->GetGeometry()->GetSourceOffsetsY()[g + geomIdx];
-    geomMatrix[g * 7 + 5] = angularWeightsAndRampFactor[g + geomIdx];
-    geomMatrix[g * 7 + 6] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[g * 7 + 5] = constantProjectionFactor[g + geomIdx];
+    geomMatrix[g * 7 + 6] = tiltAngles[g + geomIdx];
   }
 
   float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());

@@ -19,9 +19,9 @@ void
 CudaParkerShortScanImageFilter
 ::GPUGenerateData()
 {
-  std::vector<double> angularGaps = this->GetGeometry()->GetAngularGapsWithNext();
   const std::vector<double> rotationAngles = this->GetGeometry()->GetGantryAngles();
-  const std::multimap<double,unsigned int> sortedAngles = this->GetGeometry()->GetSortedAngles();
+  std::vector<double> angularGaps = this->GetGeometry()->GetAngularGapsWithNext(rotationAngles);
+  const std::multimap<double,unsigned int> sortedAngles = this->GetGeometry()->GetSortedAngles(rotationAngles);
 
   // compute max. angular gap
   int maxAngularGapPos = 0;
@@ -51,11 +51,10 @@ CudaParkerShortScanImageFilter
   itLastAngle = (itLastAngle == sortedAngles.begin()) ? --sortedAngles.end() : --itLastAngle;
   double lastAngle = itLastAngle->first;
   if (lastAngle < firstAngle)
-    lastAngle += 360;
+    lastAngle += 2*M_PI;
   //Delta
-  double delta = 0.5 * (lastAngle - firstAngle - 180);
-  delta = delta - 360 * floor(delta / 360); // between -360 and 360
-  delta *= itk::Math::pi / 180;             // degrees to radians
+  double delta = 0.5 * (lastAngle - firstAngle - M_PI);
+  delta = delta - 2*M_PI* floor(delta / (2*M_PI)); // between -2*PI and 2*PI
 
   // check for enough data
   const int geomStart = this->GetInput()->GetBufferedRegion().GetIndex()[2];
