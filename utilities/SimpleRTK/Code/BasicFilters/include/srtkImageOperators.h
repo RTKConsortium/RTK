@@ -35,7 +35,7 @@ namespace simple {
 /**
 * \brief Performs the operator on a per pixel basis.
 *
-* All overloaded simpleITK operators are performed on a per-pixel
+* All overloaded simpleRTK operators are performed on a per-pixel
 * basis, and implemented with the coresponding image filters. These
 * operators gernerally don't work with label images, and the logical
 * operators don't work with images of real components or vector images.

@@ -34,6 +34,9 @@ set ( SimpleRTKBasicFiltersSource
   srtkCastImageFilter-3l.cxx
   srtkCastImageFilter-3v.cxx
   srtkCastImageFilter.cxx
+  srtkStatisticsImageFilter.cxx
+  srtkHashImageFilter.cxx
+  srtkMeasurementMap.cxx
 )
 # sort the list to en-sure the same list across platforms
 list ( SORT SimpleRTKBasicFiltersGeneratedSource )

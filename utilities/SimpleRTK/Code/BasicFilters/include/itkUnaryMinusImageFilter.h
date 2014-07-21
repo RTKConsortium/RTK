@@ -18,7 +18,7 @@
 #ifndef __itkUnaryMinusFunctor_h
 #define __itkUnaryMinusFunctor_h
 
-namespace rtk
+namespace itk
 {
 namespace Functor
 {
