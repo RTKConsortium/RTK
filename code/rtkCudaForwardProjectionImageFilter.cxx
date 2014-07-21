@@ -31,7 +31,8 @@ namespace rtk
 {
 
 CudaForwardProjectionImageFilter
-::CudaForwardProjectionImageFilter()
+::CudaForwardProjectionImageFilter():
+    m_StepSize(1)
 {
 }
 
@@ -46,7 +47,6 @@ CudaForwardProjectionImageFilter
   const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
     this->GetOutput()->GetBufferedRegion().GetSize(1);
 
-  float t_step = 1; // Step in mm
   itk::Vector<double, 4> source_position;
 
   // Setting BoxMin and BoxMax
@@ -119,7 +119,7 @@ CudaForwardProjectionImageFilter
                         (float*)&(matrix[0][0]),
                         pout + nPixelsPerProj * projectionOffset,
                         pvol,
-                        t_step,
+                        m_StepSize,
                         (double*)&(source_position[0]),
                         boxMin,
                         boxMax,
