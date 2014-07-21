@@ -110,7 +110,9 @@ public:
 
   /** Get a vector containing the source angles in radians. The source angle is
    * defined as the angle between the z-axis and the isocenter-source line. */
-  const std::vector<double> GetSourceAngles();
+  const std::vector<double> GetSourceAngles() const {
+    return this->m_SourceAngles;
+  }
 
   /** Get a vector containing the tilt angles in radians. The tilt angle is
    * defined as the difference between -GantryAngle and the SourceAngle. */
@@ -213,6 +215,7 @@ protected:
   std::vector<double> m_GantryAngles;
   std::vector<double> m_OutOfPlaneAngles;
   std::vector<double> m_InPlaneAngles;
+  std::vector<double> m_SourceAngles;
   std::vector<double> m_SourceToIsocenterDistances;
   std::vector<double> m_SourceOffsetsX;
   std::vector<double> m_SourceOffsetsY;
