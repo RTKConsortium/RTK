@@ -1,0 +1,227 @@
+/*=========================================================================
+*
+*  Copyright Insight Software Consortium
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0.txt
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*=========================================================================*/
+$(include DoNotEditWarning.cxx.in)
+
+$(include StandardIncludes.cxx.in)
+$(include AddExtraIncludes.cxx.in)
+
+namespace rtk {
+namespace simple {
+
+//-----------------------------------------------------------------------------
+
+//
+// Default constructor that initializes parameters
+//
+$(include ConstructorSignature.cxx.in)
+{
+$(include ConstructorInitializeMembers.cxx.in)
+
+  typedef ${pixel_types2}  PixelIDTypeList2;
+
+
+  this->m_DualMemberFactory.reset( new detail::DualMemberFunctionFactory<MemberFunctionType>( this ) );
+
+  this->m_DualMemberFactory->RegisterMemberFunctions< PixelIDTypeList, PixelIDTypeList2, 3 > ();
+  this->m_DualMemberFactory->RegisterMemberFunctions< PixelIDTypeList, PixelIDTypeList2, 2 > ();
+
+$(if vector_pixel_types_by_component then
+  OUT=[[  typedef ${vector_pixel_types_by_component} VectorByComponentsPixelIDTypeList;
+]]
+  if vector_pixel_types_by_component2 then
+  OUT = OUT..[[  typedef ${vector_pixel_types_by_component2} VectorByComponentsPixelIDTypeList2;
+]]
+  else
+  OUT = OUT..[[  typedef PixelIDTypeList2 VectorByComponentsPixelIDTypeList2;
+]]
+  end
+  OUT = OUT..[[
+  typedef detail::DualExecuteInternalVectorAddressor<MemberFunctionType> VectorAddressorType;
+  this->m_DualMemberFactory->RegisterMemberFunctions< VectorByComponentsPixelIDTypeList, VectorByComponentsPixelIDTypeList2, 3, VectorAddressorType> ();
+  this->m_DualMemberFactory->RegisterMemberFunctions< VectorByComponentsPixelIDTypeList, VectorByComponentsPixelIDTypeList2, 2, VectorAddressorType> ();]]
+end)
+
+
+}
+
+//
+// ToString
+//
+$(include ToStringSignature.cxx.in)
+{
+$(include ToStringBody.cxx.in)
+$(include ToStringReturn.cxx.in)
+}
+
+$(include CustomMethods.cxx.in)
+
+//
+// Execute
+//$(include ExecuteWithParameters.cxx.in)
+Image ${name}::Execute ( $(include ImageParameters.in) )
+{
+  PixelIDValueEnum type1 = image1.GetPixelID();
+  unsigned int dimension = image1.GetDimension();
+
+$(if number_of_inputs == 2 then
+OUT=[[
+  PixelIDValueEnum type2 = image2.GetPixelID();
+  // todo need better error handling and potential type conversion
+  if ( dimension != image2.GetDimension() ||
+       image1.GetWidth() != image2.GetWidth() ||
+       image1.GetHeight() != image2.GetHeight() ||
+       image1.GetDepth() != image2.GetDepth() )
+    {
+      sitkExceptionMacro ( "Both images for ${name} don't match type or dimension!" );
+    }]]
+else
+OUT=[[
+  ${custom_type2}]]
+
+end)
+
+  return this->m_DualMemberFactory->GetMemberFunction( type1, type2, dimension )( $(for inum=1,number_of_inputs do
+  if inum>1 then
+    OUT=OUT .. ', '
+  end
+  OUT= OUT .. 'image' .. inum
+                                                                          end) );
+}
+
+
+//-----------------------------------------------------------------------------
+
+//
+// ExecuteInternal
+//
+template <class TImageType, class TImageType2>
+Image ${name}::DualExecuteInternal ( $(for inum=1,number_of_inputs do
+ if inum>1 then
+       OUT=OUT.. ', '
+  end
+  OUT= OUT .. 'const Image& inImage' .. inum
+  end ) )
+{
+  // Define the input and output image types
+  typedef TImageType     InputImageType;
+  typedef TImageType2    InputImageType2;
+
+  $(if output_image_type then
+  OUT=[[//Define output image type
+  typedef ${output_image_type} OutputImageType;]]
+  elseif output_pixel_type then
+  OUT=[[// Define output image type
+  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;]]
+  else
+  OUT=[[typedef InputImageType OutputImageType;]]
+  end)
+
+$(include ExecuteInternalGetImagePointers.cxx.in)
+
+$(include ExecuteInternalITKFilter.cxx.in)
+
+$(include ExecuteInternalSetITKFilterInputs.cxx.in)
+$(include ExecuteInternalUpdateAndReturn.cxx.in)
+}
+
+$(if vector_pixel_types_by_component then
+OUT=[[
+//
+// Dispatched methods to call DualExecuteInternal on each component of the VectorImage
+//
+template <class TImageType, class TImageType2> Image
+${name}::DualExecuteInternalVector ( $(for inum=1,number_of_inputs do
+ if inum>1 then
+       OUT=OUT.. ', '
+  end
+  OUT= OUT .. 'const Image& inImage' .. inum
+  end ) )
+{
+  typedef TImageType                                                               VectorInputImageType;
+  typedef typename VectorInputImageType::InternalPixelType                         ComponentType;
+  typedef typename itk::Image<ComponentType, VectorInputImageType::ImageDimension> ComponentImageType;
+  // we must define the input and output image types
+  // they should be the same as the scalar execute internal method
+  typedef ComponentImageType   InputImageType;
+]]
+if vector_pixel_types_by_component2 then OUT = OUT..[[
+  typedef TImageType2                                                                VectorInputImageType2;
+  typedef typename VectorInputImageType2::InternalPixelType                          ComponentType2;
+  typedef typename itk::Image<ComponentType2, VectorInputImageType2::ImageDimension> ComponentImageType2;
+  typedef ComponentImageType2  InputImageType2;]]
+else
+   OUT= OUT..[[
+  typedef TImageType2  InputImageType2;]]
+end
+if output_image_type then
+OUT=OUT..[[
+  //Define output image type
+  typedef ${output_image_type} OutputImageType;]]
+elseif output_pixel_type then
+OUT=OUT..[[
+  // Define output image type
+  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;]]
+else
+  OUT=OUT..[[
+  // Define output image type
+  typedef InputImageType OutputImageType;]]
+end
+
+OUT=OUT..[[
+
+  // Get the pointer to the ITK image contained in image1
+  typename VectorInputImageType::ConstPointer image1 =
+    this->CastImageToITK<VectorInputImageType>( inImage1 );
+
+  typedef itk::VectorIndexSelectionCastImageFilter< VectorInputImageType, ComponentImageType > ComponentExtratorType;
+  typename ComponentExtratorType::Pointer extractor = ComponentExtratorType::New();
+  extractor->SetInput( image1 );
+
+  typedef itk::ComposeImageFilter<OutputImageType> ToVectorFilterType;
+  typename ToVectorFilterType::Pointer toVector = ToVectorFilterType::New();
+
+  unsigned int numComps = image1->GetNumberOfComponentsPerPixel();
+  for ( unsigned int i = 0; i < numComps; ++i )
+    {
+    extractor->SetIndex( i );
+    extractor->Update();
+
+    Image tmp = this->DualExecuteInternal<InputImageType,InputImageType2>( Image( extractor->GetOutput() )$(for inum=2,number_of_inputs do
+                                                                                                                         OUT=OUT .. ', inImage' .. inum
+                                                                                                                           end) );
+
+    typename OutputImageType::ConstPointer tempITKImage = this->CastImageToITK<OutputImageType>( tmp );
+
+    toVector->SetInput( i, tempITKImage );
+    }
+
+  toVector->Update();
+
+  return Image( toVector->GetOutput() );
+}
+
+//-----------------------------------------------------------------------------
+]]end)
+
+
+//-----------------------------------------------------------------------------
+
+$(include FunctionalAPI.cxx.in)
+
+} // end namespace simple
+} // end namespace itk

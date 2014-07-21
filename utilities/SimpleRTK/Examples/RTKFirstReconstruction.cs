@@ -1,17 +1,29 @@
+/*=========================================================================
+*
+*  Copyright Insight Software Consortium
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0.txt
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*=========================================================================*/
 using System;
 using rtk.simple;
 
-namespace rtk.simple
-{
-    class testRTK
-    {
-        static void Main(string[] args)
-        {
-            try
-            {
-                if (args.Length < 1)
-                {
-                    Console.WriteLine("Usage: testRTK <output>");
+namespace rtk.simple.examples {
+    class RTKFirstReconstruction {
+        static void Main(string[] args) {
+            try {
+                if (args.Length < 1) {
+                    Console.WriteLine("Usage: RTKFirstReconstruction <output>");
                     return;
                 }
 
@@ -48,7 +60,7 @@ namespace rtk.simple
                 constantImageSource.SetSize(sizeOutput);
                 constantImageSource.SetConstant(0.0);
                 Image source = constantImageSource.Execute();
-                
+
                 RayEllipsoidIntersectionImageFilter rei = new RayEllipsoidIntersectionImageFilter();
                 VectorDouble semiprincipalaxis = new VectorDouble(3);
                 semiprincipalaxis.Add(50.0);
@@ -64,40 +76,36 @@ namespace rtk.simple
                 rei.SetAngle(0);
                 rei.SetCenter(center);
                 rei.SetAxis(semiprincipalaxis);
-                rei.SetGeometry( geometry );
+                rei.SetGeometry(geometry);
                 Image reiImage = rei.Execute(source);
-  
-  
+
+
                 // Create reconstructed image
                 ConstantImageSource constantImageSource2 = new ConstantImageSource();
                 VectorUInt32 sizeOutput2 = new VectorUInt32(3);
                 sizeOutput2.Add(256);
                 sizeOutput2.Add(256);
                 sizeOutput2.Add(256);
-                constantImageSource2.SetOrigin( origin );
-                constantImageSource2.SetSpacing( spacing );
-                constantImageSource2.SetSize( sizeOutput2 );
+                constantImageSource2.SetOrigin(origin);
+                constantImageSource2.SetSpacing(spacing);
+                constantImageSource2.SetSize(sizeOutput2);
                 constantImageSource2.SetConstant(0.0);
                 Image source2 = constantImageSource2.Execute();
 
                 Console.WriteLine("Performing reconstruction");
                 FDKConeBeamReconstructionFilter feldkamp = new FDKConeBeamReconstructionFilter();
-                feldkamp.SetGeometry( geometry );
+                feldkamp.SetGeometry(geometry);
                 feldkamp.SetTruncationCorrection(0.0);
                 feldkamp.SetHannCutFrequency(0.0);
-                Image image = feldkamp.Execute(source2,reiImage);
+                Image image = feldkamp.Execute(source2, reiImage);
 
                 ImageFileWriter writer = new ImageFileWriter();
                 writer.SetFileName(args[0]);
                 writer.Execute(image);
 
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Console.WriteLine(ex);
             }
         }
     }
 }
-
-

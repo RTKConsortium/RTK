@@ -76,7 +76,7 @@
 // Any include files, definitions, etc. need to go here.
 %{
 #include <SimpleRTK.h>
-//#include <srtkImageOperators.h>
+#include <srtkImageOperators.h>
 %}
 
 // Language Specific Sections
@@ -166,8 +166,8 @@ namespace std
 %include "srtkImageFileReader.h"
 
 // Basic Filters
-//%include "srtkHashImageFilter.h"
-//%include "srtkStatisticsImageFilter.h"
+%include "srtkHashImageFilter.h"
+%include "srtkStatisticsImageFilter.h"
 //%include "srtkMeasurementMap.h"
 //%include "srtkLabelStatisticsImageFilter.h"
 %include "srtkCastImageFilter.h"

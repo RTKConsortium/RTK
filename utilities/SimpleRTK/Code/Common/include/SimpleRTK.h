@@ -20,8 +20,6 @@
 
 #include <stdint.h>
 
-
-
 // Utility classes
 #include "srtkMacro.h"
 #include "srtkDetail.h"
@@ -45,17 +43,10 @@
 #include "srtkImageFileWriter.h"
 #include "srtkImportImageFilter.h"
 
-
-//#include "srtkHashImageFilter.h"
-//#include "srtkJoinSeriesImageFilter.h"
-//#include "srtkComposeImageFilter.h"
+#include "srtkHashImageFilter.h"
 #include "srtkPixelIDTypeLists.h"
-//#include "srtkStatisticsImageFilter.h"
-//#include "srtkLabelStatisticsImageFilter.h"
-
+#include "srtkStatisticsImageFilter.h"
 #include "srtkCastImageFilter.h"
-
-//#include "srtkAdditionalProcedures.h"
 
 // These headers are auto-generated
 #include "SimpleRTKBasicFiltersGeneratedHeaders.h"

@@ -20,7 +20,7 @@
 
 #include "itkHashImageFilter.h"
 
-namespace rtk {
+namespace itk {
 
 //
 // Constructor

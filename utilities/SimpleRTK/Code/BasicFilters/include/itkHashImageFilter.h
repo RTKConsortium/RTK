@@ -24,11 +24,10 @@
 #include "itkCastImageFilter.h"
 #include "itkByteSwapper.h"
 
-
 #include "Ancillary/hl_md5.h"
 #include "Ancillary/hl_sha1.h"
 
-namespace rtk {
+namespace itk {
 
 /** \class CastImageFilter
  * \brief Generates a hash string from an image.

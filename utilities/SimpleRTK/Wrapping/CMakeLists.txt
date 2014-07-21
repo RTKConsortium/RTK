@@ -230,9 +230,9 @@ if ( WRAP_JAVA )
   file(MAKE_DIRECTORY ${JAVA_SOURCE_DIRECTORY})
   file(MAKE_DIRECTORY ${JAVA_BINARY_DIRECTORY})
 
-  # Nicely write the bridge code in org/itk/simple
-  set(CMAKE_SWIG_OUTDIR ${JAVA_SOURCE_DIRECTORY}/org/itk/simple/)
-  set(CMAKE_SWIG_FLAGS -package "org.itk.simple" ${CMAKE_SWIG_GLOBAL_FLAGS})
+  # Nicely write the bridge code in org/rtk/simple
+  set(CMAKE_SWIG_OUTDIR ${JAVA_SOURCE_DIRECTORY}/org/rtk/simple/)
+  set(CMAKE_SWIG_FLAGS -package "org.rtk.simple" ${CMAKE_SWIG_GLOBAL_FLAGS})
   set(SWIG_MODULE_SimpleRTKJava_EXTRA_DEPS ${SWIG_EXTRA_DEPS}
     ${CMAKE_CURRENT_SOURCE_DIR}/Java.i )
   SWIG_add_module ( SimpleRTKJava java SimpleRTK.i SimpleRTKJAVA_wrap.cxx)
@@ -240,9 +240,9 @@ if ( WRAP_JAVA )
   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/SimpleRTKJAVA_wrap.cxx  PROPERTIES COMPILE_FLAGS "-w")
   srtk_strip_target( ${SWIG_MODULE_SimpleRTKJava_TARGET_NAME} )
 
-  # Add target for org.itk.simple.jar
-  add_custom_target(org_itk_simple_jar ALL DEPENDS ${JAR_FILE})
-  set(JAVA_SOURCE_CODE ${JAVA_SOURCE_DIRECTORY}/org/itk/simple/*.java)
+  # Add target for org.rtk.simple.jar
+  add_custom_target(org_rtk_simple_jar ALL DEPENDS ${JAR_FILE})
+  set(JAVA_SOURCE_CODE ${JAVA_SOURCE_DIRECTORY}/org/rtk/simple/*.java)
 
   # Add custom command and target to compile the generated files and put them in a jar file
   # Make sure the commands depend on the output library from SWIG
@@ -251,7 +251,7 @@ if ( WRAP_JAVA )
     COMMENT "Creating jar file..."
     COMMAND ${Java_JAVAC_EXECUTABLE} -d ${JAVA_BINARY_DIRECTORY} ${JAVA_SOURCE_CODE}
     COMMAND ${Java_JAR_EXECUTABLE} cf ${CMAKE_CURRENT_BINARY_DIR}/${JAR_FILE} -C ${JAVA_BINARY_DIRECTORY} org
-    COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d ${JAVA_BINARY_DIRECTORY}/javadoc -sourcepath ${JAVA_SOURCE_DIRECTORY} org.itk.simple
+    COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d ${JAVA_BINARY_DIRECTORY}/javadoc -sourcepath ${JAVA_SOURCE_DIRECTORY} org.rtk.simple
     COMMAND ${Java_JAR_EXECUTABLE} cf ${CMAKE_CURRENT_BINARY_DIR}/${JAVADOC_FILE} -C ${JAVA_BINARY_DIRECTORY}/javadoc org
     COMMAND ${Java_JAR_EXECUTABLE} cf ${CMAKE_CURRENT_BINARY_DIR}/${JAVA_SOURCE_FILE} org
     DEPENDS ${SWIG_MODULE_SimpleRTKJava_TARGET_NAME}
@@ -315,7 +315,7 @@ if ( WRAP_CSHARP )
   else (WIN32 )
     set(CMAKE_SWIG_FLAGS -dllimport \"SimpleRTKCSharpNative\")
   endif ( UNIX )
-  set(CMAKE_SWIG_FLAGS -namespace \"itk.simple\" ${CMAKE_SWIG_GLOBAL_FLAGS} ${CMAKE_SWIG_FLAGS})
+  set(CMAKE_SWIG_FLAGS -namespace \"rtk.simple\" ${CMAKE_SWIG_GLOBAL_FLAGS} ${CMAKE_SWIG_FLAGS})
   set(SWIG_MODULE_SimpleRTKCSharpNative_EXTRA_DEPS ${SWIG_EXTRA_DEPS}
     ${CMAKE_CURRENT_SOURCE_DIR}/CSharp.i
     ${CMAKE_CURRENT_SOURCE_DIR}/CSharpTypemapHelper.i )

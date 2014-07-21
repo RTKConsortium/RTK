@@ -37,42 +37,42 @@ if( WRAP_JAVA )
     ${SimpleRTK_BINARY_DIR}/Wrapping/${JAVADOC_FILE}
     )
 
-  if(NOT DEFINED SIMPLEITK_JAVA_ARCH)
+  if(NOT DEFINED SIMPLERTK_JAVA_ARCH)
     if(MSVC)
       if (CMAKE_CL_64)
-        set(SIMPLEITK_JAVA_ARCH "win64")
+        set(SIMPLERTK_JAVA_ARCH "win64")
       else()
-        set(SIMPLEITK_JAVA_ARCH "win32")
+        set(SIMPLERTK_JAVA_ARCH "win32")
       endif()
     elseif(APPLE)
       # assemble macosx-OSX_DEPLOYMENT_TARGET-OSX_ARCHITECTURE
-      set(SIMPLEITK_JAVA_ARCH "macosx")
+      set(SIMPLERTK_JAVA_ARCH "macosx")
       if(CMAKE_OSX_DEPLOYMENT_TARGET)
-        set(SIMPLEITK_JAVA_ARCH "${SIMPLEITK_JAVA_ARCH}-${CMAKE_OSX_DEPLOYMENT_TARGET}")
+        set(SIMPLERTK_JAVA_ARCH "${SIMPLERTK_JAVA_ARCH}-${CMAKE_OSX_DEPLOYMENT_TARGET}")
       endif()
       if(CMAKE_OSX_ARCHITECTURES MATCHES "i386" AND CMAKE_OSX_ARCHITECTURES MATCHES "x86_64")
         if (CMAKE_OSX_ARCHITECTURES MATCHES "ppc")
-          set(SIMPLEITK_JAVA_ARCH "${SIMPLEITK_JAVA_ARCH}-universal")
+          set(SIMPLERTK_JAVA_ARCH "${SIMPLERTK_JAVA_ARCH}-universal")
         else()
-          set(SIMPLEITK_JAVA_ARCH "${SIMPLEITK_JAVA_ARCH}-intel")
+          set(SIMPLERTK_JAVA_ARCH "${SIMPLERTK_JAVA_ARCH}-intel")
           set(_OSX_ARCHITECTURES "intel")
         endif()
       elseif(CMAKE_OSX_ARCHITECTURES)
         string(REPLACE ";" "_" _OSX_ARCHITECTURES "${CMAKE_OSX_ARCHITECTURES}")
-        set(SIMPLEITK_JAVA_ARCH "${SIMPLEITK_JAVA_ARCH}-${_OSX_ARCHITECTURES}")
+        set(SIMPLERTK_JAVA_ARCH "${SIMPLERTK_JAVA_ARCH}-${_OSX_ARCHITECTURES}")
       else()
-        set(SIMPLEITK_JAVA_ARCH "${SIMPLEITK_JAVA_ARCH}-unknown")
+        set(SIMPLERTK_JAVA_ARCH "${SIMPLERTK_JAVA_ARCH}-unknown")
       endif()
     else()
-      set(SIMPLEITK_JAVA_ARCH "unknown")
+      set(SIMPLERTK_JAVA_ARCH "unknown")
     endif()
   endif()
 
-  set( JAVA_PACKAGE_STAGE_DIR "SimpleRTK-${SimpleRTK_VERSION}-Java-${SIMPLEITK_JAVA_ARCH}")
+  set( JAVA_PACKAGE_STAGE_DIR "SimpleRTK-${SimpleRTK_VERSION}-Java-${SIMPLERTK_JAVA_ARCH}")
 
   add_custom_target( dist.Java
     COMMENT "Creating Java package ${JAVA_PACKAGE_STAGE_DIR}.zip"
-    DEPENDS org_itk_simple_jar
+    DEPENDS org_rtk_simple_jar
     )
 
   add_custom_command( TARGET dist.Java
@@ -114,23 +114,23 @@ if( WRAP_CSHARP AND Java_JAR_EXECUTABLE )
     "${CSHARP_BINARY_DIRECTORY}/SimpleRTKCSharpManaged.dll"
     )
 
-  if(NOT DEFINED SIMPLEITK_CSHARP_ARCH)
+  if(NOT DEFINED SIMPLERTK_CSHARP_ARCH)
     if(MSVC)
       if (CMAKE_CL_64)
-        set(SIMPLEITK_CSHARP_ARCH "win64")
+        set(SIMPLERTK_CSHARP_ARCH "win64")
       else()
-        set(SIMPLEITK_CSHARP_ARCH "win32")
+        set(SIMPLERTK_CSHARP_ARCH "win32")
       endif()
     else()
-      set(SIMPLEITK_CSHARP_ARCH "unknown")
+      set(SIMPLERTK_CSHARP_ARCH "unknown")
     endif()
 
     if(CSHARP_PLATFORM)
-      set(SIMPLEITK_CSHARP_ARCH "${SIMPLEITK_CSHARP_ARCH}-${CSHARP_PLATFORM}")
+      set(SIMPLERTK_CSHARP_ARCH "${SIMPLERTK_CSHARP_ARCH}-${CSHARP_PLATFORM}")
     endif()
   endif()
 
-  set( CSHARP_PACKAGE_STAGE_DIR "SimpleRTK-${SimpleRTK_VERSION}-CSharp-${SIMPLEITK_CSHARP_ARCH}")
+  set( CSHARP_PACKAGE_STAGE_DIR "SimpleRTK-${SimpleRTK_VERSION}-CSharp-${SIMPLERTK_CSHARP_ARCH}")
 
   add_custom_target( dist.CSharp
     COMMENT "Creating CSharp package ${CSHARP_PACKAGE_STAGE_DIR}.zip"

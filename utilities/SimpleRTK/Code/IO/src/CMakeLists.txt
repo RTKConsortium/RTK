@@ -25,7 +25,7 @@ if( WRAP_JAVA )
     TARGET SimpleRTKIO
     POST_BUILD
     COMMENT "Cleaning java build..."
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${SimpleRTK_BINARY_DIR}/Wrapping/org/itk/simple/*.java
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${SimpleRTK_BINARY_DIR}/Wrapping/build/org/itk/simple/*.class
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${SimpleRTK_BINARY_DIR}/Wrapping/org/rtk/simple/*.java
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${SimpleRTK_BINARY_DIR}/Wrapping/build/org/rtk/simple/*.class
   )
 endif()

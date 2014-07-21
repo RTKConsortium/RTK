@@ -2,7 +2,7 @@
     OUT=[[typedef ${filter_type} FilterType;]]
   else
     if itk_name then
-      OUT=[[typedef rtk::${itk_name}<InputImageType,]]
+      OUT=[[typedef itk::${itk_name}<InputImageType,]]
     else
       OUT=[[typedef rtk::${name}<InputImageType,]]
     end
@@ -14,5 +14,5 @@
          end
      OUT=OUT .. [[  OutputImageType> FilterType;]]
   end)
-  // Set up the ITK filter
+  // Set up the filter
   typename FilterType::Pointer filter = FilterType::New();

@@ -43,8 +43,8 @@ template< class TInputImage, class TOutputImage >
 SliceImageFilter< TInputImage, TOutputImage >
 ::SliceImageFilter()
 {
-  m_Start.Fill(NumericTraits<IndexValueType>::min());
-  m_Stop.Fill(NumericTraits<IndexValueType>::max());
+  m_Start.Fill(itk::NumericTraits<IndexValueType>::min());
+  m_Stop.Fill(itk::NumericTraits<IndexValueType>::max());
   m_Step.Fill(1);
 }
 
