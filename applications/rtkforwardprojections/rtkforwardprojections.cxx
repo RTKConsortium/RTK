@@ -104,6 +104,7 @@ int main(int argc, char * argv[])
   case(fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
     forwardProjection = rtk::CudaForwardProjectionImageFilter::New();
+    dynamic_cast<rtk::CudaForwardProjectionImageFilter*>( forwardProjection.GetPointer() )->SetStepSize(args_info.step_arg);
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
