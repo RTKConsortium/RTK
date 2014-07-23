@@ -93,11 +93,11 @@ option ( WRAP_JAVA "Wrap Java" ${WRAP_JAVA_DEFAULT} )
 check_PIC_flag ( Java )
 
 find_package ( TCL QUIET )
-if ( ${TCL_FOUND} )
-  set ( WRAP_TCL_DEFAULT ON )
-else ( ${TCL_FOUND} )
-  set ( WRAP_TCL_DEFAULT OFF )
-endif ( ${TCL_FOUND} )
+#if ( ${TCL_FOUND} )
+#  set ( WRAP_TCL_DEFAULT ON )
+#else ( ${TCL_FOUND} )
+set ( WRAP_TCL_DEFAULT OFF )
+#endif ( ${TCL_FOUND} )
 list( APPEND SRTK_LANGUAGES_VARS
   TCL_LIBRARY
   TCL_INCLUDE_PATH

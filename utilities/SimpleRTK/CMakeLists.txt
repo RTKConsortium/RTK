@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.1 FATAL_ERROR )
+cmake_minimum_required (VERSION 2.8.11 FATAL_ERROR )
 
 # Explicitly add INCREMENTAL linking option to command lines.
 # http://www.cmake.org/pipermail/cmake/2010-February/035174.html
