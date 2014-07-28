@@ -48,8 +48,8 @@ namespace rtk
 /** Create a helper Cuda Kernel class for CudaImageOps */
 itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
 
-template <class TInputImage,
-          class TOutputImage>
+template <class TInputImage = itk::CudaImage<float,3>,
+          class TOutputImage = itk::CudaImage<float,3> >
 class ITK_EXPORT CudaForwardProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< TInputImage, TOutputImage,
   ForwardProjectionImageFilter< TInputImage, TOutputImage > >
