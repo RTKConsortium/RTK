@@ -229,6 +229,7 @@ CUDA_forward_project( int projections_size[2],
   cudaArray *array_vol;
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
   cudaMalloc3DArray((cudaArray**)&array_vol, &channelDesc, volExtent);
+  CUDA_CHECK_ERROR;
 
   // Copy data to 3D array
   cudaMemcpy3DParms copyParams = {0};
@@ -237,9 +238,11 @@ CUDA_forward_project( int projections_size[2],
   copyParams.extent   = volExtent;
   copyParams.kind     = cudaMemcpyDeviceToDevice;
   cudaMemcpy3D(&copyParams);
+  CUDA_CHECK_ERROR;
 
   // Bind 3D array to 3D texture
   cudaBindTextureToArray(tex_vol, (cudaArray*)array_vol, channelDesc);
+  CUDA_CHECK_ERROR;
 
   static dim3 dimBlock  = dim3(16, 16, 1);
   static dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));

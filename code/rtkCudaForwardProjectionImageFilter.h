@@ -69,8 +69,12 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaForwardProjectionImageFilter, ImageToImageFilter);
 
+  /** Set step size along ray (in mm). Default is 1 mm. */
+  itkGetConstMacro(StepSize, double);
+  itkSetMacro(StepSize, double);
+
 protected:
-  rtkcuda_EXPORT CudaForwardProjectionImageFilter() {};
+  rtkcuda_EXPORT CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
 
   void GPUGenerateData();
@@ -80,6 +84,7 @@ private:
   CudaForwardProjectionImageFilter(const Self&);
   void operator=(const Self&);
 
+  double             m_StepSize;
 }; // end of class
 
 } // end namespace rtk

@@ -20,7 +20,6 @@
 #define __rtkBackProjectionImageFilter_txx
 
 #include "rtkHomogeneousMatrix.h"
-#include "rtkMacro.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -158,6 +157,19 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
+  // Initialize output region with input region in case the filter is not in
+  // place
+  if(this->GetInput() != this->GetOutput() )
+    {
+    itIn.GoToBegin();
+    while(!itIn.IsAtEnd() )
+      {
+      itOut.Set(itIn.Get() );
+      ++itIn;
+      ++itOut;
+      }
+    }
+
   // Continuous index at which we interpolate
   itk::ContinuousIndex<double, Dimension-1> pointProj;
 
@@ -170,10 +182,21 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj);
     interpolator->SetInputImage(projection);
 
+    // Optimized version
+    if (fabs(matrix[1][0])<1e-10 && fabs(matrix[2][0])<1e-10)
+      {
+      OptimizedBackprojectionX( outputRegionForThread, matrix, projection);
+      continue;
+      }
+    if (fabs(matrix[1][1])<1e-10 && fabs(matrix[2][1])<1e-10)
+      {
+      OptimizedBackprojectionY( outputRegionForThread, matrix, projection);
+      continue;
+      }
+
     // Go over each voxel
-    itIn.GoToBegin();
     itOut.GoToBegin();
-    while(!itIn.IsAtEnd() )
+    while(!itOut.IsAtEnd() )
       {
       // Compute projection index
       for(unsigned int i=0; i<Dimension-1; i++)
@@ -194,16 +217,137 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       // Interpolate if in projection
       if( interpolator->IsInsideBuffer(pointProj) )
         {
-        if (iProj!=iFirstProj)
-          itOut.Set( itOut.Get() + interpolator->EvaluateAtContinuousIndex(pointProj) );
-        else
-          itOut.Set( itIn.Get() + interpolator->EvaluateAtContinuousIndex(pointProj) );
+        itOut.Set( itOut.Get() + interpolator->EvaluateAtContinuousIndex(pointProj) );
         }
 
-      ++itIn;
       ++itOut;
       }
     }
+}
+
+template <class TInputImage, class TOutputImage>
+void
+BackProjectionImageFilter<TInputImage,TOutputImage>
+::OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
+                           const ProjectionImagePointer projection)
+{
+  typename ProjectionImageType::SizeType pSize = projection->GetBufferedRegion().GetSize();
+  typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
+  typename TOutputImage::SizeType vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
+  typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
+  typename TInputImage::PixelType *pProj;
+  typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
+
+  // Pointers in memory to index (0,0,0) which do not necessarily exist
+  pVolZeroPointer = this->GetOutput()->GetBufferPointer();
+  pVolZeroPointer -= vBufferIndex[0] + vBufferSize[0] * (vBufferIndex[1] + vBufferSize[1] * vBufferIndex[2]);
+
+  // Continuous index at which we interpolate
+  double u, v, w;
+  int    ui, vi;
+  double du;
+
+  for(int k=region.GetIndex(2); k<region.GetIndex(2)+(int)region.GetSize(2); k++)
+    {
+    for(int j=region.GetIndex(1); j<region.GetIndex(1)+(int)region.GetSize(1); j++)
+      {
+      int i = region.GetIndex(0);
+      u = matrix[0][0] * i + matrix[0][1] * j + matrix[0][2] * k + matrix[0][3];
+      v =                    matrix[1][1] * j + matrix[1][2] * k + matrix[1][3];
+      w =                    matrix[2][1] * j + matrix[2][2] * k + matrix[2][3];
+
+      //Apply perspective
+      w = 1/w;
+      u = u*w-pIndex[0];
+      v = v*w-pIndex[1];
+      du = w * matrix[0][0];
+
+      double u1, u2, v1, v2;
+      vi = vnl_math_floor(v);
+      if(vi>=0 && vi<(int)pSize[1]-1)
+        {
+        v1 = v-vi;
+        v2 = 1.0-v1;
+
+        pProj = projection->GetBufferPointer() + vi * pSize[0];
+        pVol = pVolZeroPointer + i + vBufferSize[0] * (j + k * vBufferSize[1] );
+
+        // Innermost loop
+        for(; i<(region.GetIndex(0) + (int)region.GetSize(0)); i++, u += du, pVol++)
+          {
+          ui = vnl_math_floor(u);
+          if(ui>=0 && ui<(int)pSize[0]-1)
+            {
+            u1 = u-ui;
+            u2 = 1.0-u1;
+            *pVol += v2 * (u2 * *(pProj+ui)          + u1 * *(pProj+ui+1) ) +
+                     v1 * (u2 * *(pProj+ui+pSize[0]) + u1 * *(pProj+ui+pSize[0]+1) );
+            }
+          } //i
+        }
+      } //j
+    } //k
+}
+
+template <class TInputImage, class TOutputImage>
+void
+BackProjectionImageFilter<TInputImage,TOutputImage>
+::OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
+                           const ProjectionImagePointer projection)
+{
+  typename ProjectionImageType::SizeType pSize = projection->GetBufferedRegion().GetSize();
+  typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
+  typename TOutputImage::SizeType vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
+  typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
+  typename TInputImage::PixelType *pProj;
+  typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
+
+  // Pointers in memory to index (0,0,0) which do not necessarily exist
+  pVolZeroPointer = this->GetOutput()->GetBufferPointer();
+  pVolZeroPointer -= vBufferIndex[0] + vBufferSize[0] * (vBufferIndex[1] + vBufferSize[1] * vBufferIndex[2]);
+
+  // Continuous index at which we interpolate
+  double u, v, w;
+  int    ui, vi;
+  double du;
+
+  for(int k=region.GetIndex(2); k<region.GetIndex(2)+(int)region.GetSize(2); k++)
+    {
+    for(int i=region.GetIndex(0); i<region.GetIndex(0)+(int)region.GetSize(0); i++)
+      {
+      int j = region.GetIndex(1);
+      u = matrix[0][0] * i + matrix[0][1] * j + matrix[0][2] * k + matrix[0][3];
+      v = matrix[1][0] * i +                    matrix[1][2] * k + matrix[1][3];
+      w = matrix[2][0] * i +                    matrix[2][2] * k + matrix[2][3];
+
+      //Apply perspective
+      w = 1/w;
+      u = u*w-pIndex[0];
+      v = v*w-pIndex[1];
+      du = w * matrix[0][1];
+
+      vi = vnl_math_floor(v);
+      if(vi>=0 && vi<(int)pSize[1]-1)
+        {
+        pVol = pVolZeroPointer + i + vBufferSize[0] * (j + k * vBufferSize[1] );
+        for(; j<(region.GetIndex(1) + (int)region.GetSize(1)); j++, pVol += vBufferSize[0], u += du)
+          {
+          ui = vnl_math_floor(u);
+          if(ui>=0 && ui<(int)pSize[0]-1)
+            {
+            double u1, u2, v1, v2;
+            pProj = projection->GetBufferPointer() + vi * pSize[0] + ui;
+            v1 = v-vi;
+            v2 = 1.0-v1;
+            u1 = u-ui;
+            u2 = 1.0-u1;
+            *pVol += v2 * (u2 * *(pProj)          + u1 * *(pProj+1) ) +
+                     v1 * (u2 * *(pProj+pSize[0]) + u1 * *(pProj+pSize[0]+1) );
+            }
+          } //j
+        }
+      } //i
+    } //k
 }
 
 template <class TInputImage, class TOutputImage>

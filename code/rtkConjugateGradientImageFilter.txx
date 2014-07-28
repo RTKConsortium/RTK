@@ -130,31 +130,24 @@ void ConjugateGradientImageFilter<OutputImageType>
   GetX_kPlusOne_Filter->SetXk(this->GetX());
   GetX_kPlusOne_Filter->SetPk(P_zero);
 
-  float PreviousTimeTotal, TimeDifference;
-  PreviousTimeTotal = 0;
-  TimeDifference = 0;
-  if(m_MeasureExecutionTimes)
-    {
-    CGTimeProbe.Stop();
-    std::cout << "      Conjugate gradient initialization took " << CGTimeProbe.GetTotal() << ' ' << CGTimeProbe.GetUnit() << std::endl;
-    PreviousTimeTotal = CGTimeProbe.GetTotal();
-    }
+  // Define the smart pointers that will be used with DisconnectPipeline()
+  typename OutputImageType::Pointer R_kPlusOne;
+  typename OutputImageType::Pointer P_kPlusOne;
+  typename OutputImageType::Pointer X_kPlusOne;
 
   // Start the iterative procedure
-  for (int k=0; k<m_NumberOfIterations; k++)
+  for (int iter=0; iter<m_NumberOfIterations; iter++)
     {
-    std::cout << "Starting conjugate gradient iteration number " << k <<std::endl;
-    if(m_MeasureExecutionTimes) CGTimeProbe.Start();
 
-    if(k>0)
+    if(iter>0)
       {
-      typename OutputImageType::Pointer R_kPlusOne = GetR_kPlusOne_Filter->GetOutput();
+      R_kPlusOne = GetR_kPlusOne_Filter->GetOutput();
       R_kPlusOne->DisconnectPipeline();
 
-      typename OutputImageType::Pointer P_kPlusOne = GetP_kPlusOne_Filter->GetOutput();
+      P_kPlusOne = GetP_kPlusOne_Filter->GetOutput();
       P_kPlusOne->DisconnectPipeline();
 
-      typename OutputImageType::Pointer X_kPlusOne = GetX_kPlusOne_Filter->GetOutput();
+      X_kPlusOne = GetX_kPlusOne_Filter->GetOutput();
       X_kPlusOne->DisconnectPipeline();
 
       m_A->SetX(P_kPlusOne);
@@ -178,18 +171,14 @@ void ConjugateGradientImageFilter<OutputImageType>
     GetP_kPlusOne_Filter->SetSquaredNormR_k(GetR_kPlusOne_Filter->GetSquaredNormR_k());
     GetP_kPlusOne_Filter->SetSquaredNormR_kPlusOne(GetR_kPlusOne_Filter->GetSquaredNormR_kPlusOne());
     GetP_kPlusOne_Filter->Update();
-
-    if(m_MeasureExecutionTimes)
-      {
-      CGTimeProbe.Stop();
-      TimeDifference = CGTimeProbe.GetTotal() - PreviousTimeTotal;
-      std::cout << "      Conjugate gradient iteration " << k << " took "<< TimeDifference << ' ' << CGTimeProbe.GetUnit() << std::endl;
-      PreviousTimeTotal = CGTimeProbe.GetTotal();
-      }
     }
 
   this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
 
+  // Release the memory from temporary smart pointers
+  R_kPlusOne->ReleaseData();
+  P_kPlusOne->ReleaseData();
+  X_kPlusOne->ReleaseData();
 }
 
 }// end namespace
