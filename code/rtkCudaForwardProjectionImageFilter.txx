@@ -87,6 +87,7 @@ CudaForwardProjectionImageFilter<TInputImage,
   volumeSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
   volumeSize[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[2];
 
+  float *pin = *(float**)( this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pvol = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
 
@@ -128,6 +129,7 @@ CudaForwardProjectionImageFilter<TInputImage,
     CUDA_forward_project(projectionSize,
                         volumeSize,
                         (float*)&(matrix[0][0]),
+                        pin + nPixelsPerProj * projectionOffset,
                         pout + nPixelsPerProj * projectionOffset,
                         pvol,
                         m_StepSize,
