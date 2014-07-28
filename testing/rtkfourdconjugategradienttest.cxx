@@ -270,7 +270,7 @@ int main(int, char** )
   conjugategradient->SetNumberOfIterations(3);
   conjugategradient->SetWeights(phaseReader->GetOutput());
 
-  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Joseph forward projector, Voxel-Based back projector, CPU interpolation and splat ******" << std::endl;
 
   conjugategradient->SetBackProjectionFilter( 0 ); // Voxel based
   conjugategradient->SetForwardProjectionFilter( 0 ); // Joseph
@@ -280,7 +280,7 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 2: CUDA Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 2: CUDA ray cast forward projector, CUDA Voxel-Based back projector, GPU interpolation and splat ******" << std::endl;
 
   conjugategradient->SetBackProjectionFilter( 2 ); // Cuda voxel based
   conjugategradient->SetForwardProjectionFilter( 2 ); // Cuda ray cast
