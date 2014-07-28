@@ -138,7 +138,7 @@ int intersectBox(Ray r, float *tnear, float *tfar)
 
 // KERNEL kernel_forwardProject
 __global__
-void kernel_forwardProject(float *dev_proj)
+void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out)
 {
   unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y*blockDim.y + threadIdx.y;
@@ -165,8 +165,9 @@ void kernel_forwardProject(float *dev_proj)
 
   // Detect intersection with box
   float tnear, tfar;
-  if (!intersectBox(ray, &tnear, &tfar) && (tfar > 0.))
+  if ( !intersectBox(ray, &tnear, &tfar) || tfar < 0.f )
     {
+    dev_proj_out[numThread] = dev_proj_in[numThread];
     }
   else
     {
@@ -195,7 +196,7 @@ void kernel_forwardProject(float *dev_proj)
       sum += sample;
       pos += step;
       }
-    dev_proj[numThread] = (sum+(tfar-t+halfVStep)/vStep*sample) * c_tStep;
+    dev_proj_out[numThread] = dev_proj_in[numThread] + (sum+(tfar-t+halfVStep)/vStep*sample) * c_tStep;
     }
 }
 
@@ -210,7 +211,8 @@ void
 CUDA_forward_project( int projections_size[2],
                       int vol_size[3],
                       float matrix[12],
-                      float *dev_proj,
+                      float *dev_proj_in,
+                      float *dev_proj_out,
                       float *dev_vol,
                       float t_step,
                       double source_position[3],
@@ -246,11 +248,7 @@ CUDA_forward_project( int projections_size[2],
 
   static dim3 dimBlock  = dim3(16, 16, 1);
   static dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
-  
-  // Reset projection
-  cudaMemset((void *)dev_proj, 0, projections_size[0]*projections_size[1]*sizeof(float) );
-  CUDA_CHECK_ERROR;
-  
+
   // Copy matrix and bind data to the texture
   float *dev_matrix;
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
@@ -273,7 +271,7 @@ CUDA_forward_project( int projections_size[2],
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
 
   // Calling kernel
-  kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj);
+  kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out);
 
   CUDA_CHECK_ERROR;
 
