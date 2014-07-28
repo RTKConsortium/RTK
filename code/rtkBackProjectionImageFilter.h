@@ -87,6 +87,16 @@ protected:
 
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
 
+  /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
+    and matrix[2][0] are zeros. */
+  virtual void OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
+                                        const ProjectionImagePointer projection);
+
+  /** Optimized version when the rotation is parallel to Y, i.e. matrix[1][1]
+    and matrix[2][1] are zeros. */
+  virtual void OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
+                                        const ProjectionImagePointer projection);
+
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
   virtual void VerifyInputInformation() {}

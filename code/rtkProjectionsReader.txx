@@ -210,6 +210,10 @@ void ProjectionsReader<TOutputImage>
     m_ImageIO = imageIO;
     }
 
+  // Release output data of m_RawDataReader if conversion occurs
+  if ( m_RawDataReader != m_RawToProjectionsFilter )
+    m_RawDataReader->ReleaseDataFlagOn();
+
   // Set output information as provided by the pipe
   m_RawToProjectionsFilter->UpdateOutputInformation();
   TOutputImage * output = this->GetOutput();

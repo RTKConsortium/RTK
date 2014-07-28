@@ -1,71 +1,12 @@
-#include <itkImageRegionConstIterator.h>
-
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
+#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 
 #ifdef USE_CUDA
   #include "itkCudaImage.h"
-#endif
-#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
-
-template<class TImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
-{
-}
-#else
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  while( !itRef.IsAtEnd() )
-    {
-    typename TImage::PixelType TestVal = itTest.Get();
-    typename TImage::PixelType RefVal = itRef.Get();
-    TestError += vcl_abs(RefVal - TestVal);
-    EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-    ++itTest;
-    ++itRef;
-    }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 0.08)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.08" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < 23)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 23" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
 #endif
 
 /**
@@ -200,7 +141,7 @@ int main(int, char** )
   conjugategradient->SetBackProjectionFilter( 0 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
-  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
@@ -208,7 +149,7 @@ int main(int, char** )
   conjugategradient->SetBackProjectionFilter( 1 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
-  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
@@ -218,7 +159,7 @@ int main(int, char** )
   conjugategradient->SetBackProjectionFilter( 2 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
-  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 

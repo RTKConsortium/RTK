@@ -1,6 +1,6 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
@@ -10,63 +10,6 @@
   #include "itkCudaImage.h"
 #endif
 #include "rtkSARTConeBeamReconstructionFilter.h"
-
-template<class TImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
-{
-}
-#else
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  while( !itRef.IsAtEnd() )
-    {
-    typename TImage::PixelType TestVal = itTest.Get();
-    typename TImage::PixelType RefVal = itRef.Get();
-    TestError += vcl_abs(RefVal - TestVal);
-    EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-    ++itTest;
-    ++itRef;
-    }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 0.032)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.032" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < 28.6)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 28.6" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
-#endif
 
 /**
  * \file rtksarttest.cxx
@@ -199,7 +142,7 @@ int main(int, char** )
   sart->SetForwardProjectionFilter( 0 ); // Joseph
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
-  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: Normalized Joseph Backprojector ******" << std::endl;
@@ -208,17 +151,35 @@ int main(int, char** )
   sart->SetForwardProjectionFilter( 0 ); // Joseph
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
-  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector and gating ******" << std::endl;
+
+  sart->SetBackProjectionFilter( 0 );
+
+  // Generate arbitrary gating weights (select every third projection)
+  std::vector<float> gatingWeights;
+  for (unsigned int i=0; i<NumberOfProjectionImages; i++)
+    {
+      if ((i%3)==0) gatingWeights.push_back(1);
+      else gatingWeights.push_back(0);
+    }
+  sart->SetGatingWeights( gatingWeights );
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
+
+  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector ******" << std::endl;
 
   sart->SetBackProjectionFilter( 2 ); // Cuda voxel based
   sart->SetForwardProjectionFilter( 2 ); // Cuda ray cast
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
-  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 

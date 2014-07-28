@@ -28,9 +28,12 @@ template< typename TOutputImage>
 ReconstructionConjugateGradientOperator<TOutputImage>::ReconstructionConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
+
+  // Create filters
   m_MultiplyFilter = MultiplyFilterType::New();
   m_ZeroMultiplyProjectionFilter = MultiplyFilterType::New();
   m_ZeroMultiplyVolumeFilter = MultiplyFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent parameters
   m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -56,16 +59,6 @@ ReconstructionConjugateGradientOperator<TOutputImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
-}
-
-
-template< typename TOutputImage >
-void
-ReconstructionConjugateGradientOperator<TOutputImage>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
-{
-  m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
-  m_ForwardProjectionFilter->SetGeometry(_arg);
 }
 
 template< typename TOutputImage >
@@ -96,14 +89,21 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // at runtime
   m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
+  m_DisplacedDetectorFilter->SetInput( m_ForwardProjectionFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
 
+  // Set geometry
+  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+
   // Set memory management parameters for forward
   // and back projection filters
   m_ForwardProjectionFilter->ReleaseDataFlagOn();
+  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
   m_BackProjectionFilter->ReleaseDataFlagOn();
 
   // Have the last filter calculate its output information

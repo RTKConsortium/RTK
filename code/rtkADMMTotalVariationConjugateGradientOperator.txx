@@ -29,13 +29,20 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::ADMMTotalVariationConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
-  this->m_Beta = 0;
+
+  // Set default parameters
+  m_Beta = 0;
+  m_IsGated = false;
+
+  // Create filters
   m_MultiplyFilter = MultiplyFilterType::New();
   m_ZeroMultiplyProjectionFilter = MultiplyFilterType::New();
   m_ZeroMultiplyVolumeFilter = MultiplyFilterType::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_DivergenceFilter = DivergenceFilterType::New();
   m_GradientFilter = GradientFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_GatingWeightsFilter = GatingWeightsFilterType::New();
 
   // Set permanent connections
   m_DivergenceFilter->SetInput(m_GradientFilter->GetOutput());
@@ -73,14 +80,13 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   this->Modified();
 }
 
-
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
+::SetGatingWeights(std::vector<float> weights)
 {
-  m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
-  m_ForwardProjectionFilter->SetGeometry(_arg);
+  m_GatingWeights = weights;
+  m_IsGated = true;
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -111,12 +117,28 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   // at runtime
   m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
+  if(m_IsGated)
+    {
+    // Insert the gating filter into the pipeline
+    m_GatingWeightsFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
+    m_GatingWeightsFilter->SetVector(m_GatingWeights);
+    m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
+    }
+  else
+    {
+    m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
+    }
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_SubtractFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
   m_GradientFilter->SetInput(this->GetInput(0));
+
+  // Set geometry
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set runtime parameters
   m_MultiplyFilter->SetConstant2( m_Beta );

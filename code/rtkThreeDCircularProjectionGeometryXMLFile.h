@@ -52,6 +52,7 @@ public:
 
   /** Convenient typedefs */
   typedef ThreeDCircularProjectionGeometry GeometryType;
+  typedef GeometryType::Pointer            GeometryPointer;
 
   /** Latest version */
   static const unsigned int CurrentVersion = 2;
@@ -64,6 +65,9 @@ public:
 
   /** Determine if a file can be read */
   int CanReadFile(const char* name);
+
+  /** Get smart pointer to projection geometry. */
+  itkGetMacro(Geometry, GeometryPointer);
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();
@@ -85,7 +89,7 @@ private:
   ThreeDCircularProjectionGeometryXMLFileReader(const Self&);
   void operator=(const Self&);
 
-  GeometryType::Pointer m_Geometry;
+  GeometryPointer m_Geometry;
 
   std::string m_CurCharacterData;
 

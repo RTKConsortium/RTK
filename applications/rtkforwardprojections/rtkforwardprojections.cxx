@@ -98,12 +98,13 @@ int main(int argc, char * argv[])
   case(fp_arg_Joseph):
     forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
-    case(fp_arg_RayCastInterpolator):
-      forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-      break;
+  case(fp_arg_RayCastInterpolator):
+    forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    break;
   case(fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
     forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    dynamic_cast<rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>*>( forwardProjection.GetPointer() )->SetStepSize(args_info.step_arg);
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
@@ -117,7 +118,10 @@ int main(int argc, char * argv[])
   forwardProjection->SetInput( 1, reader->GetOutput() );
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   projProbe.Start();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() )
+  if(!args_info.lowmem_flag)
+    {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() );
+    }
   projProbe.Stop();
   if(args_info.verbose_flag)
     std::cout << " done in "
@@ -132,6 +136,10 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( forwardProjection->GetOutput() );
+  if(args_info.lowmem_flag)
+    {
+    writer->SetNumberOfStreamDivisions(sizeOutput[2]);
+    }
   writeProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
   writeProbe.Stop();
