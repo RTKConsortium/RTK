@@ -48,27 +48,30 @@ namespace rtk
 /** Create a helper Cuda Kernel class for CudaImageOps */
 itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
 
+template <class TInputImage = itk::CudaImage<float,3>,
+          class TOutputImage = itk::CudaImage<float,3> >
 class ITK_EXPORT CudaForwardProjectionImageFilter :
-  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-  ForwardProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
+  public itk::CudaInPlaceImageFilter< TInputImage, TOutputImage,
+  ForwardProjectionImageFilter< TInputImage, TOutputImage > >
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                                        ImageType;
-  typedef CudaForwardProjectionImageFilter                               Self;
-  typedef ForwardProjectionImageFilter<ImageType, ImageType>             Superclass;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, Superclass > GPUSuperclass;
-  typedef itk::SmartPointer<Self>                                        Pointer;
-  typedef itk::SmartPointer<const Self>                                  ConstPointer;
-
-  typedef ImageType::RegionType        OutputImageRegionType;
-  typedef itk::Vector<float,3>         VectorType;
+  typedef CudaForwardProjectionImageFilter                                    Self;
+  typedef ForwardProjectionImageFilter<TInputImage, TOutputImage>             Superclass;
+  typedef itk::CudaInPlaceImageFilter<TInputImage, TOutputImage, Superclass > GPUSuperclass;
+  typedef itk::SmartPointer<Self>                                             Pointer;
+  typedef itk::SmartPointer<const Self>                                       ConstPointer;
+  typedef itk::Vector<float,3>                                                VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaForwardProjectionImageFilter, ImageToImageFilter);
+
+  /** Set step size along ray (in mm). Default is 1 mm. */
+  itkGetConstMacro(StepSize, double);
+  itkSetMacro(StepSize, double);
 
 protected:
   rtkcuda_EXPORT CudaForwardProjectionImageFilter();
@@ -81,13 +84,13 @@ private:
   CudaForwardProjectionImageFilter(const Self&);
   void operator=(const Self&);
 
-  int                m_VolumeDimension[3];
-  int                m_ProjectionDimension[2];
-  float *            m_DeviceVolume;
-  float *            m_DeviceProjection;
-  float *            m_DeviceMatrix;
+  double             m_StepSize;
 }; // end of class
 
 } // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkCudaForwardProjectionImageFilter.txx"
+#endif
 
 #endif

@@ -85,7 +85,7 @@ int main(int , char** )
 
   // Joseph Forward Projection filter
 #ifdef USE_CUDA
-  typedef rtk::CudaForwardProjectionImageFilter JFPType;
+  typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
 #else
   typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
 #endif

@@ -1,4 +1,4 @@
-/*=========================================================================
+﻿/*=========================================================================
  *
  *  Copyright RTK Consortium
  *
@@ -42,11 +42,11 @@ inline __host__ __device__ float3 operator-(float3 a, float3 b)
 }
 inline __host__ __device__ float3 fminf(float3 a, float3 b)
 {
-	return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
+  return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
 }
 inline __host__ __device__ float3 fmaxf(float3 a, float3 b)
 {
-	return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
+  return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
 }
 inline __host__ __device__ float dot(float3 a, float3 b)
 { 
@@ -81,16 +81,22 @@ inline __host__ __device__ void operator+=(float3 &a, float3 b)
     a.x += b.x; a.y += b.y; a.z += b.z;
 }
 
-// T E X T U R E S ////////////////////////////////////////////////////////
+// TEXTURES AND CONSTANTS //
+
 texture<float, 3, cudaReadModeElementType> tex_vol;
 texture<float, 1, cudaReadModeElementType> tex_matrix;
-///////////////////////////////////////////////////////////////////////////
 
+__constant__ float3 c_sourcePos;
+__constant__ int2 c_projSize;
+__constant__ float3 c_boxMin;
+__constant__ float3 c_boxMax;
+__constant__ float3 c_spacing;
+__constant__ float c_tStep;
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
 struct Ray {
-        float3 o;	// origin
-        float3 d;	// direction
+        float3 o;  // origin
+        float3 d;  // direction
 };
 
 inline int iDivUp(int a, int b){
@@ -105,14 +111,14 @@ inline int iDivUp(int a, int b){
 // Intersection function of a ray with a box, followed "slabs" method
 // http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
 __device__
-int intersectBox(Ray r, float3 boxmin, float3 boxmax, float *tnear, float *tfar)
+int intersectBox(Ray r, float *tnear, float *tfar)
 {
     // Compute intersection of ray with all six bbox planes
     float3 invR = make_float3(1.f / r.d.x, 1.f / r.d.y, 1.f / r.d.z);
     float3 T1;
-    T1 = invR * (boxmin - r.o);
+    T1 = invR * (c_boxMin - r.o);
     float3 T2;
-    T2 = invR * (boxmax - r.o);
+    T2 = invR * (c_boxMax - r.o);
 
     // Re-order intersections to find smallest and largest on each axis
     float3 tmin;
@@ -132,26 +138,21 @@ int intersectBox(Ray r, float3 boxmin, float3 boxmax, float *tnear, float *tfar)
 
 // KERNEL kernel_forwardProject
 __global__
-void kernel_forwardProject(float *dev_proj,
-                           float3 src_pos,
-                           int2 proj_dim,
-                           float tStep,
-                           const float3 boxMin,
-                           const float3 boxMax,
-                           const float3 spacing)
+void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out)
 {
-
   unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y*blockDim.y + threadIdx.y;
+  unsigned int numThread = j*c_projSize.x + i;
 
-  if (i >= proj_dim.x || j >= proj_dim.y)
+  if (i >= c_projSize.x || j >= c_projSize.y)
     return;
 
   // Setting ray origin
   Ray ray;
-  ray.o = src_pos;
+  ray.o = c_sourcePos;
 
   float3 pixelPos;
+
   pixelPos.x = tex1Dfetch(tex_matrix, 3)  + tex1Dfetch(tex_matrix, 0)*i +
                tex1Dfetch(tex_matrix, 1)*j;
   pixelPos.y = tex1Dfetch(tex_matrix, 7)  + tex1Dfetch(tex_matrix, 4)*i +
@@ -164,40 +165,39 @@ void kernel_forwardProject(float *dev_proj,
 
   // Detect intersection with box
   float tnear, tfar;
-  if (!intersectBox(ray, boxMin, boxMax, &tnear, &tfar))
-    return;
-  if (tnear < 0.f)
-    tnear = 0.f; // clamp to near plane
-
-  // Step length in mm
-  float3 dirInMM = spacing * ray.d;
-  float vStep = tStep / sqrtf(dot(dirInMM, dirInMM));
-  float3 step = vStep * ray.d;
-
-  // First position in the box
-  float3 pos;
-  float halfVStep = 0.5f*vStep;
-  tnear = tnear + halfVStep;
-  pos = ray.o + tnear*ray.d;
-
-  // Condition to exit the loop
-  if(tnear>tfar)
+  if ( !intersectBox(ray, &tnear, &tfar) || tfar < 0.f )
     {
-    dev_proj[j*proj_dim.x + i] = 0.0f;
-    return;
+    dev_proj_out[numThread] = dev_proj_in[numThread];
     }
-
-  float  t;
-  float  sample = 0.0f;
-  float  sum    = 0.0f;
-  for(t=tnear; t<=tfar; t+=vStep)
+  else
     {
-    // Read from 3D texture from volume
-    sample = tex3D(tex_vol, pos.x, pos.y, pos.z);
-    sum += sample;
-    pos += step;
+    if (tnear < 0.f)
+      tnear = 0.f; // clamp to near plane
+
+    // Step length in mm
+    float3 dirInMM = c_spacing * ray.d;
+    float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
+    float3 step = vStep * ray.d;
+
+    // First position in the box
+    float3 pos;
+    float halfVStep = 0.5f*vStep;
+    tnear = tnear + halfVStep;
+    pos = ray.o + tnear*ray.d;
+
+    float  t;
+    float  sample = 0.0f;
+    float  sum    = 0.0f;
+    for(t=tnear; t<=tfar; t+=vStep)
+      {
+      // Read from 3D texture from volume
+      sample = tex3D(tex_vol, pos.x, pos.y, pos.z);
+
+      sum += sample;
+      pos += step;
+      }
+    dev_proj_out[numThread] = dev_proj_in[numThread] + (sum+(tfar-t+halfVStep)/vStep*sample) * c_tStep;
     }
-  dev_proj[j*proj_dim.x + i] = (sum+(tfar-t+halfVStep)*sample) * tStep;
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -211,7 +211,8 @@ void
 CUDA_forward_project( int projections_size[2],
                       int vol_size[3],
                       float matrix[12],
-                      float *dev_proj,
+                      float *dev_proj_in,
+                      float *dev_proj_out,
                       float *dev_vol,
                       float t_step,
                       double source_position[3],
@@ -222,14 +223,15 @@ CUDA_forward_project( int projections_size[2],
   // Set texture parameters
   tex_vol.addressMode[0] = cudaAddressModeClamp;  // clamp texture coordinates
   tex_vol.addressMode[1] = cudaAddressModeClamp;
-  tex_vol.normalized = false;                      // access with normalized texture coordinates
+  tex_vol.normalized = false;                     // access with normalized texture coordinates
   tex_vol.filterMode = cudaFilterModeLinear;      // linear interpolation
 
   // Copy volume data to array, bind the array to the texture
-  cudaExtent volExtent =  make_cudaExtent(vol_size[0], vol_size[1], vol_size[2]);
+  cudaExtent volExtent = make_cudaExtent(vol_size[0], vol_size[1], vol_size[2]);
   cudaArray *array_vol;
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
   cudaMalloc3DArray((cudaArray**)&array_vol, &channelDesc, volExtent);
+  CUDA_CHECK_ERROR;
 
   // Copy data to 3D array
   cudaMemcpy3DParms copyParams = {0};
@@ -238,47 +240,38 @@ CUDA_forward_project( int projections_size[2],
   copyParams.extent   = volExtent;
   copyParams.kind     = cudaMemcpyDeviceToDevice;
   cudaMemcpy3D(&copyParams);
+  CUDA_CHECK_ERROR;
 
   // Bind 3D array to 3D texture
   cudaBindTextureToArray(tex_vol, (cudaArray*)array_vol, channelDesc);
+  CUDA_CHECK_ERROR;
 
   static dim3 dimBlock  = dim3(16, 16, 1);
   static dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
-
-  // Reset projection
-  cudaMemset((void *)dev_proj, 0, projections_size[0]*projections_size[1]*sizeof(float) );
-  CUDA_CHECK_ERROR;
 
   // Copy matrix and bind data to the texture
   float *dev_matrix;
   cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
   cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
+  CUDA_CHECK_ERROR;
   cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
   CUDA_CHECK_ERROR;
 
-  // Converting arrays to CUDA format and setting parameters
-  float3 sourcePos;
-  sourcePos.x = (float) source_position[0];
-  sourcePos.y = (float) source_position[1];
-  sourcePos.z = (float) source_position[2];
-  int2 projSize;
-  projSize.x = projections_size[0];
-  projSize.y = projections_size[1];
-  float3 boxMin;
-  boxMin.x = box_min[0];
-  boxMin.y = box_min[1];
-  boxMin.z = box_min[2];
-  float3 boxMax;
-  boxMax.x = box_max[0];
-  boxMax.y = box_max[1];
-  boxMax.z = box_max[2];
-  float3 dev_spacing;
-  dev_spacing.x = spacing[0];
-  dev_spacing.y = spacing[1];
-  dev_spacing.z = spacing[2];
+  // constant memory
+  float3 dev_sourcePos = make_float3(source_position[0], source_position[1], source_position[2]);
+  float3 dev_boxMin = make_float3(box_min[0], box_min[1], box_min[2]);
+  int2 dev_projSize = make_int2(projections_size[0], projections_size[1]);
+  float3 dev_boxMax = make_float3(box_max[0], box_max[1], box_max[2]);
+  float3 dev_spacing = make_float3(spacing[0], spacing[1], spacing[2]);
+  cudaMemcpyToSymbol(c_sourcePos, &dev_sourcePos, sizeof(float3));
+  cudaMemcpyToSymbol(c_projSize, &dev_projSize, sizeof(int2));
+  cudaMemcpyToSymbol(c_boxMin, &dev_boxMin, sizeof(float3));
+  cudaMemcpyToSymbol(c_boxMax, &dev_boxMax, sizeof(float3));
+  cudaMemcpyToSymbol(c_spacing, &dev_spacing, sizeof(float3));
+  cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
 
   // Calling kernel
-  kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj, sourcePos, projSize, t_step, boxMin, boxMax, dev_spacing);
+  kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out);
 
   CUDA_CHECK_ERROR;
 

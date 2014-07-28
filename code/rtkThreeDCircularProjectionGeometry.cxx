@@ -86,8 +86,20 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
     this->GetMagnificationMatrices().back().GetVnlMatrix() *
     this->GetSourceTranslationMatrices().back().GetVnlMatrix()*
     this->GetRotationMatrices().back().GetVnlMatrix();
-
   this->AddMatrix(matrix);
+
+  // Calculate source angle
+  VectorType z;
+  z.Fill(0.);
+  z[2] = 1.;
+  HomogeneousVectorType sph = GetSourcePosition( m_GantryAngles.size()-1 );
+  VectorType sp( &(sph[0]) );
+  sp.Normalize();
+  double a = acos(sp*z);
+  if(sp[0] > 0.)
+    a = 2. * M_PI - a;
+  m_SourceAngles.push_back( ConvertAngleBetween0And2PIRadians(a) );
+
   this->Modified();
 }
 
@@ -108,27 +120,6 @@ void rtk::ThreeDCircularProjectionGeometry::Clear()
   m_RotationMatrices.clear();
   m_SourceTranslationMatrices.clear();
   this->Modified();
-}
-
-const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetSourceAngles()
-{
-  unsigned int nProj = this->GetGantryAngles().size();
-  std::vector<double> sang;
-  VectorType z;
-  z.Fill(0.);
-  z[2] = 1.;
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
-    {
-    HomogeneousVectorType sph = GetSourcePosition(iProj);
-
-    VectorType sp( &(sph[0]) );
-    sp.Normalize();
-    double a = acos(sp*z);
-    if(sp[0] > 0.)
-      a = 2. * M_PI - a;
-    sang.push_back( ConvertAngleBetween0And2PIRadians(a) );
-    }
-  return sang;
 }
 
 const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetTiltAngles()
