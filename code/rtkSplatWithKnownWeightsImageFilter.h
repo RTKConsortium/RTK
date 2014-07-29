@@ -18,9 +18,9 @@
 #ifndef __rtkSplatWithKnownWeightsImageFilter_h
 #define __rtkSplatWithKnownWeightsImageFilter_h
 
-#include "itkInPlaceImageFilter.h"
-
-#include "itkArray2D.h"
+#include <itkInPlaceImageFilter.h>
+#include <itkImageRegionSplitterDirection.h>
+#include <itkArray2D.h>
 
 namespace rtk
 {
@@ -99,11 +99,13 @@ protected:
     /** Does the real work. */
     virtual void ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
 
-    /** Splats the OutputRequestedRegion along the first direction, not the last*/
-    unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, typename VolumeSeriesType::RegionType &splatRegion);
+    /** Splits the OutputRequestedRegion along the first direction, not the last */
+    virtual const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
 
-    itk::Array2D<float> m_Weights;
-    int                 m_ProjectionNumber;
+    itk::Array2D<float>                         m_Weights;
+    int                                         m_ProjectionNumber;
+    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+
 private:
     SplatWithKnownWeightsImageFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented

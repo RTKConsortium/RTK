@@ -181,6 +181,18 @@ ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
 TARGET_LINK_LIBRARIES(rtkjosephadjointoperatorstest ${RTK_LIBRARIES})
 ADD_TEST(rtkjosephadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkjosephadjointoperatorstest)
 
+ADD_EXECUTABLE(rtkfourdadjointoperatorstest rtkfourdadjointoperatorstest.cxx)
+TARGET_LINK_LIBRARIES(rtkfourdadjointoperatorstest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkfourdadjointoperatorstest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkfourdadjointoperatorstest
+             DATA{Data/Input/Phases/phases_slow.txt})
+
+ADD_EXECUTABLE(rtkinterpolatesplatadjointtest rtkinterpolatesplatadjointtest.cxx)
+TARGET_LINK_LIBRARIES(rtkinterpolatesplatadjointtest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkinterpolatesplatadjointtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkinterpolatesplatadjointtest
+             DATA{Data/Input/Phases/phases_slow.txt})
+
 ADD_EXECUTABLE(rtktotalvariationtest rtktotalvariationtest.cxx)
 TARGET_LINK_LIBRARIES(rtktotalvariationtest ${RTK_LIBRARIES})
 ADD_TEST(rtktotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtktotalvariationtest)
@@ -211,9 +223,19 @@ ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstruct
 if(NOT RTK_USE_CUDA)
   ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
   TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest ${RTK_LIBRARIES})
-  ADD_TEST(rtkadmmtotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest)
+  RTK_ADD_TEST(NAME rtkadmmtotalvariationtest
+               COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest
+               DATA{Data/Input/Phases/phases.txt})
 endif()
-ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx)
+if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+ SET(testfullname rtkadmmtotalvariationcudatest)
+ ADD_EXECUTABLE(${testfullname} rtkadmmtotalvariationtest.cxx)
+ TARGET_LINK_LIBRARIES(${testfullname} ${RTK_LIBRARIES})
+ SET_TARGET_PROPERTIES(${testfullname} PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
+ RTK_ADD_TEST(NAME ${testfullname}
+              COMMAND ${EXECUTABLE_OUTPUT_PATH}/${testfullname}
+              DATA{Data/Input/Phases/phases.txt})
+endif()
 
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
