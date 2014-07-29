@@ -35,8 +35,8 @@ SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SplatWithKnownWe
   m_ProjectionNumber = 0;
 
   // Set the direction along which the output requested region should NOT be split
-  m_splitter = itk::ImageRegionSplitterDirection::New();
-  m_splitter->SetDirection(VolumeSeriesType::ImageDimension - 1);
+  m_Splitter = itk::ImageRegionSplitterDirection::New();
+  m_Splitter->SetDirection(VolumeSeriesType::ImageDimension - 1);
 }
 
 template< typename VolumeSeriesType, typename VolumeType>
@@ -70,7 +70,7 @@ const itk::ImageRegionSplitterBase*
 SplatWithKnownWeightsImageFilter< VolumeSeriesType, VolumeType >
 ::GetImageRegionSplitter(void) const
 {
-  return m_splitter;
+  return m_Splitter;
 }
 
 template< typename VolumeSeriesType, typename VolumeType>

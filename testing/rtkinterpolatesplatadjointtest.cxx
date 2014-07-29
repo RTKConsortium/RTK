@@ -6,6 +6,7 @@
 #include "rtkPhasesToInterpolationWeights.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkMacro.h"
 
 #include <itkImageFileReader.h>
 

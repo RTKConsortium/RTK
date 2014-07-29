@@ -104,7 +104,7 @@ protected:
 
     itk::Array2D<float>                         m_Weights;
     int                                         m_ProjectionNumber;
-    itk::ImageRegionSplitterDirection::Pointer  m_splitter;
+    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
 private:
     SplatWithKnownWeightsImageFilter(const Self &); //purposely not implemented
