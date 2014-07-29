@@ -33,6 +33,10 @@ SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SplatWithKnownWe
   this->SetNumberOfRequiredInputs(2);
   this->SetInPlace(true);
   m_ProjectionNumber = 0;
+
+  // Set the direction along which the output requested region should NOT be split
+  m_Splitter = itk::ImageRegionSplitterDirection::New();
+  m_Splitter->SetDirection(VolumeSeriesType::ImageDimension - 1);
 }
 
 template< typename VolumeSeriesType, typename VolumeType>
@@ -62,67 +66,17 @@ typename VolumeType::Pointer SplatWithKnownWeightsImageFilter<VolumeSeriesType, 
 }
 
 template< typename VolumeSeriesType, typename VolumeType>
-unsigned int  SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
-::SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType &splatRegion)
+const itk::ImageRegionSplitterBase*
+SplatWithKnownWeightsImageFilter< VolumeSeriesType, VolumeType >
+::GetImageRegionSplitter(void) const
 {
-  // Get the output pointer
-  VolumeSeriesType *outputPtr = this->GetOutput();
-
-  const typename VolumeSeriesType::SizeType & requestedRegionSize =
-          outputPtr->GetRequestedRegion().GetSize();
-
-
-  // Initialize the splatRegion to the output requested region
-  splatRegion = outputPtr->GetRequestedRegion();
-  typename VolumeSeriesType::IndexType splatIndex = splatRegion.GetIndex();
-  typename VolumeSeriesType::SizeType splatSize = splatRegion.GetSize();
-
-  // splat on the innermost dimension available
-  unsigned int splatAxis = 0;
-  while ( requestedRegionSize[splatAxis] == 1 )
-    {
-    if ( splatAxis == outputPtr->GetImageDimension()-1 )
-      { // cannot splat
-      itkDebugMacro("  Cannot Splat");
-      return 1;
-      }
-    ++splatAxis;
-    }
-
-  // determine the actual number of pieces that will be generated
-  const double range=static_cast<double>(requestedRegionSize[splatAxis]);
-  const unsigned int valuesPerThread = itk::Math::Ceil< unsigned int >(range / static_cast<double>(num));
-  const unsigned int maxThreadIdUsed = itk::Math::Ceil< unsigned int >(range / static_cast<double>(valuesPerThread)) - 1;
-
-  // Splat the region
-  if ( i < maxThreadIdUsed )
-    {
-    splatIndex[splatAxis] += i * valuesPerThread;
-    splatSize[splatAxis] = valuesPerThread;
-    }
-  if ( i == maxThreadIdUsed )
-    {
-    splatIndex[splatAxis] += i * valuesPerThread;
-    // last thread needs to process the "rest" dimension being splat
-    splatSize[splatAxis] = splatSize[splatAxis] - i * valuesPerThread;
-    }
-
-  // set the splat region ivars
-  splatRegion.SetIndex(splatIndex);
-  splatRegion.SetSize(splatSize);
-
-  itkDebugMacro("  Splat Piece: " << splatRegion);
-
-  return maxThreadIdUsed + 1;
+  return m_Splitter;
 }
 
 template< typename VolumeSeriesType, typename VolumeType>
 void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
 ::ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
-
-  //    typename VolumeSeriesType::Pointer output = this->GetOutput();
-  //    typename VolumeSeriesType::ConstPointer volumeSeries = this->GetInputVolumeSeries();
   typename VolumeType::Pointer volume = this->GetInputVolume();
 
   unsigned int Dimension = volume->GetImageDimension();
@@ -135,38 +89,45 @@ void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
 
   float weight;
 
+  // Copy the input to the output
+  itk::ImageRegionIterator<VolumeSeriesType>        itOut(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionConstIterator<VolumeSeriesType>   itIn(this->GetInputVolumeSeries(), outputRegionForThread);
+  while(!itOut.IsAtEnd())
+    {
+    itOut.Set(itIn.Get());
+    ++itOut;
+    ++itIn;
+    }
+
   // Update each phase
   for (unsigned int phase=0; phase<m_Weights.rows(); phase++)
     {
 
     weight = m_Weights[phase][m_ProjectionNumber];
-    if (weight != 0)
+    volumeRegion = volume->GetLargestPossibleRegion();
+
+    for (unsigned int i=0; i<Dimension; i++)
       {
-      volumeRegion = volume->GetLargestPossibleRegion();
-
-      for (unsigned int i=0; i<Dimension; i++)
-        {
-        volumeSize[i] = outputRegionForThread.GetSize()[i];
-        volumeIndex[i] = outputRegionForThread.GetIndex()[i];
-        }
-      volumeRegion.SetSize(volumeSize);
-      volumeRegion.SetIndex(volumeIndex);
-
-      volumeSeriesRegion = outputRegionForThread;
-      volumeSeriesRegion.SetSize(Dimension, 1);
-      volumeSeriesRegion.SetIndex(Dimension, phase);
-
-      itk::ImageRegionIterator<VolumeSeriesType> outputIterator(this->GetOutput(), volumeSeriesRegion);
-      itk::ImageRegionIterator<VolumeType> volumeIterator(volume, volumeRegion);
-
-      while(!volumeIterator.IsAtEnd())
-        {
-        outputIterator.Set(outputIterator.Get() + weight * volumeIterator.Get());
-        ++volumeIterator;
-        ++outputIterator;
-        }
-
+      volumeSize[i] = outputRegionForThread.GetSize()[i];
+      volumeIndex[i] = outputRegionForThread.GetIndex()[i];
       }
+    volumeRegion.SetSize(volumeSize);
+    volumeRegion.SetIndex(volumeIndex);
+
+    volumeSeriesRegion = outputRegionForThread;
+    volumeSeriesRegion.SetSize(Dimension, 1);
+    volumeSeriesRegion.SetIndex(Dimension, phase);
+
+    itk::ImageRegionIterator<VolumeSeriesType> outputIterator(this->GetOutput(), volumeSeriesRegion);
+    itk::ImageRegionIterator<VolumeType> volumeIterator(volume, volumeRegion);
+
+    while(!volumeIterator.IsAtEnd())
+      {
+      outputIterator.Set(outputIterator.Get() + weight * volumeIterator.Get());
+      ++volumeIterator;
+      ++outputIterator;
+      }
+
     }
 
 }

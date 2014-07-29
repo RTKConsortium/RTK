@@ -4,6 +4,7 @@
 #include "rtkConstantImageSource.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
+#include "rtkPhaseGatingImageFilter.h"
 
 #ifdef USE_CUDA
   #include "itkCudaImage.h"
@@ -165,13 +166,20 @@ int main(int, char** )
   admmtotalvariation->SetBackProjectionFilter( 0 );
 
   // Generate arbitrary gating weights (select every third projection)
-  std::vector<float> gatingWeights;
-  for (unsigned int i=0; i<NumberOfProjectionImages; i++)
-    {
-      if ((i%3)==0) gatingWeights.push_back(1);
-      else gatingWeights.push_back(0);
-    }
-  admmtotalvariation->SetGatingWeights( gatingWeights );
+  typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
+  PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
+  phaseGating->SetFileName(std::string(RTK_DATA_ROOT) +
+                           std::string("/Input/Phases/phases.txt"));
+  phaseGating->SetGatingWindowWidth(0.20);
+  phaseGating->SetGatingWindowShape(0); // Rectangular
+  phaseGating->SetGatingWindowCenter(0.70);
+  phaseGating->SetInputProjectionStack(rei->GetOutput());
+  phaseGating->SetInputGeometry(geometry);
+  phaseGating->Update();
+
+  admmtotalvariation->SetInput(1, phaseGating->GetOutput());
+  admmtotalvariation->SetGeometry( phaseGating->GetOutputGeometry() );
+  admmtotalvariation->SetGatingWeights( phaseGating->GetGatingWeightsOnSelectedProjections() );
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
