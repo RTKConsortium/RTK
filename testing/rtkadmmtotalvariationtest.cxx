@@ -168,8 +168,13 @@ int main(int, char** )
   // Generate arbitrary gating weights (select every third projection)
   typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
   PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
+#if FAST_TESTS_NO_CHECKS
+  phaseGating->SetFileName(std::string(RTK_DATA_ROOT) +
+                           std::string("/Input/Phases/phases_3projs.txt"));
+#else
   phaseGating->SetFileName(std::string(RTK_DATA_ROOT) +
                            std::string("/Input/Phases/phases.txt"));
+#endif
   phaseGating->SetGatingWindowWidth(0.20);
   phaseGating->SetGatingWindowShape(0); // Rectangular
   phaseGating->SetGatingWindowCenter(0.70);
