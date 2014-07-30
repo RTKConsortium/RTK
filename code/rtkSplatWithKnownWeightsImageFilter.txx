@@ -34,9 +34,15 @@ SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SplatWithKnownWe
   this->SetInPlace(true);
   m_ProjectionNumber = 0;
 
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   // Set the direction along which the output requested region should NOT be split
   m_Splitter = itk::ImageRegionSplitterDirection::New();
   m_Splitter->SetDirection(VolumeSeriesType::ImageDimension - 1);
+#else
+  // Old versions of ITK (before 4.4) do not have the ImageRegionSplitterDirection
+  // and should run this filter with only one thread
+  this->SetNumberOfThreads(1);
+#endif
 }
 
 template< typename VolumeSeriesType, typename VolumeType>
@@ -65,12 +71,27 @@ typename VolumeType::Pointer SplatWithKnownWeightsImageFilter<VolumeSeriesType, 
           ( this->itk::ProcessObject::GetInput(1) );
 }
 
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  template< typename VolumeSeriesType, typename VolumeType>
+  const itk::ImageRegionSplitterBase*
+  SplatWithKnownWeightsImageFilter< VolumeSeriesType, VolumeType >
+  ::GetImageRegionSplitter(void) const
+  {
+    return m_Splitter;
+  }
+#endif
+
 template< typename VolumeSeriesType, typename VolumeType>
-const itk::ImageRegionSplitterBase*
-SplatWithKnownWeightsImageFilter< VolumeSeriesType, VolumeType >
-::GetImageRegionSplitter(void) const
+void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
+::BeforeThreadedGenerateData()
 {
-  return m_Splitter;
+#if !(ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4))
+  if (this->GetNumberOfThreads() > 1)
+    {
+    itkWarningMacro(<< "Splat filter cannot use multiple threads with ITK versions older than v4.4. Reverting to single thread behavior");
+    this->SetNumberOfThreads(1);
+    }
+#endif
 }
 
 template< typename VolumeSeriesType, typename VolumeType>
