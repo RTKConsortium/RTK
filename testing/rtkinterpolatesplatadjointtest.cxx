@@ -142,22 +142,29 @@ int main(int, char** )
   std::cout << "\n\n****** 4D to 3D (interpolation) ******" << std::endl;
 
   typedef rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType> InterpolateFilterType;
-  InterpolateFilterType::Pointer fw = InterpolateFilterType::New();
-  fw->SetInputVolume(constantVolumeSource->GetOutput());
-  fw->SetInputVolumeSeries(randomVolumeSeriesSource->GetOutput());
-  fw->SetWeights(phaseReader->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
+  InterpolateFilterType::Pointer interp = InterpolateFilterType::New();
+  interp->SetInputVolume(constantVolumeSource->GetOutput());
+  interp->SetInputVolumeSeries(randomVolumeSeriesSource->GetOutput());
+  interp->SetWeights(phaseReader->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( interp->Update() );
 
   std::cout << "\n\n****** 3D to 4D (splat) ******" << std::endl;
 
   typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType> SplatFilterType;
-  SplatFilterType::Pointer bp = SplatFilterType::New();
-  bp->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
-  bp->SetInputVolume(randomVolumeSource->GetOutput());
-  bp->SetWeights(phaseReader->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
+  SplatFilterType::Pointer splat = SplatFilterType::New();
+  splat->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
+  splat->SetInputVolume(randomVolumeSource->GetOutput());
+  splat->SetWeights(phaseReader->GetOutput());
 
-  CheckScalarProducts<VolumeSeriesType, VolumeType>(randomVolumeSeriesSource->GetOutput(), bp->GetOutput(), randomVolumeSource->GetOutput(), fw->GetOutput());
+// If ITK version < 4.4, try to force the splat filter to use several threads
+// Splat filter should display a warning and revert to single threading
+#if !(ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4))
+  splat->SetNumberOfThreads(2);
+#endif
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( splat->Update() );
+
+  CheckScalarProducts<VolumeSeriesType, VolumeType>(randomVolumeSeriesSource->GetOutput(), splat->GetOutput(), randomVolumeSource->GetOutput(), interp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
