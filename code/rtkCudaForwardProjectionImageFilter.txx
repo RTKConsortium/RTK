@@ -106,10 +106,11 @@ CudaForwardProjectionImageFilter<TInputImage,
     for(unsigned int i=0; i<3; i++)
       {
       projIndexTranslation[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
+      volIndexTranslation[i][3] = -this->GetInput(1)->GetBufferedRegion().GetIndex(i);
 
       // Adding 0.5 offset to change from the centered pixel convention (ITK)
       // to the corner pixel convention (CUDA).
-      volIndexTranslation[i][3] = 0.5-this->GetInput(1)->GetBufferedRegion().GetIndex(i);
+      volPPToIndex[i][3] += 0.5;
       }
 
     // Compute matrix to transform projection index to volume index
