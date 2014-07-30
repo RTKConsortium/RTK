@@ -225,7 +225,8 @@ if(NOT RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest ${RTK_LIBRARIES})
   RTK_ADD_TEST(NAME rtkadmmtotalvariationtest
                COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest
-               DATA{Data/Input/Phases/phases.txt})
+               DATA{Data/Input/Phases/phases.txt}
+	       DATA{Data/Input/Phases/phases_3projs.txt})
 endif()
 if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
  SET(testfullname rtkadmmtotalvariationcudatest)
