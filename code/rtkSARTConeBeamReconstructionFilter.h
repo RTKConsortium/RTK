@@ -32,6 +32,7 @@
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {
@@ -78,6 +79,7 @@ namespace rtk
  * 4 [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  * 5 [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
  * 6 [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
+ * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
  * 7 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  * 8 [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * 9 [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
@@ -96,10 +98,11 @@ namespace rtk
  * 1 -> 4;
  * 4 -> 5;
  * 5 -> 6;
+ * 6 -> Displaced;
  * 7 -> 8;
  * 8 -> 9;
  * 9 -> 6;
- * 6 -> BackProjection;
+ * Displaced -> BackProjection;
  * BackProjection -> Threshold;
  * Threshold -> OutofThreshold [arrowhead=None];
  * OutofThreshold -> OutofInput0 [style=dashed];
@@ -119,10 +122,10 @@ class ITK_EXPORT SARTConeBeamReconstructionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef SARTConeBeamReconstructionFilter                   Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef SARTConeBeamReconstructionFilter                                 Self;
+  typedef IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                          Pointer;
+  typedef itk::SmartPointer<const Self>                                    ConstPointer;
 
   /** Some convenient typedefs. */
   typedef TInputImage  InputImageType;
@@ -138,12 +141,14 @@ public:
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType> DivideFilterType;
   typedef rtk::ConstantImageSource<OutputImageType>                                          ConstantImageSourceType;
   typedef itk::ThresholdImageFilter<OutputImageType>                                         ThresholdFilterType;
+  typedef rtk::DisplacedDetectorImageFilter<InputImageType>                                  DisplacedDetectorFilterType;
+  typedef itk::MultiplyImageFilter<InputImageType,InputImageType, InputImageType>            GatingWeightsFilterType;
 
 /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(SARTConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkTypeMacro(SARTConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
@@ -168,6 +173,9 @@ public:
 
   /** Select the backprojection filter */
   void SetBackProjectionFilter (int _arg);
+
+  /** In the case of a gated SART, set the gating weights */
+  void SetGatingWeights(std::vector<float> weights);
 
 protected:
   SARTConeBeamReconstructionFilter();
@@ -195,6 +203,8 @@ protected:
   typename DivideFilterType::Pointer             m_DivideFilter;
   typename ConstantImageSourceType::Pointer      m_ConstantImageSource;
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
+  typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
+  typename GatingWeightsFilterType::Pointer      m_GatingWeightsFilter;
 
   bool m_EnforcePositivity;
 
@@ -213,16 +223,23 @@ private:
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
 
+  /** Have gating weights been set ? If so, apply them, otherwise ignore
+   * the gating weights filter */
+  bool                m_IsGated;
+  std::vector<float>  m_GatingWeights;
+
   /** Time probes */
   itk::TimeProbe m_ExtractProbe;
   itk::TimeProbe m_ZeroMultiplyProbe;
   itk::TimeProbe m_ForwardProjectionProbe;
   itk::TimeProbe m_SubtractProbe;
+  itk::TimeProbe m_DisplacedDetectorProbe;
   itk::TimeProbe m_MultiplyProbe;
   itk::TimeProbe m_RayBoxProbe;
   itk::TimeProbe m_DivideProbe;
   itk::TimeProbe m_BackProjectionProbe;
   itk::TimeProbe m_ThresholdProbe;
+  itk::TimeProbe m_GatingProbe;
 
 }; // end of class
 

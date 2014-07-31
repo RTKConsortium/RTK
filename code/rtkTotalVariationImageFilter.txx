@@ -31,10 +31,11 @@ namespace rtk
 
 template< typename TInputImage >
 TotalVariationImageFilter< TInputImage >
-::TotalVariationImageFilter():m_SumOfSquareRoots(1)
+::TotalVariationImageFilter()
 {
   // first output is a copy of the image, DataObject created by
   // superclass
+  m_SumOfSquareRoots.Fill(1);
 
   // allocate the data object for the output which is
   // just a decorator around real type
@@ -110,8 +111,7 @@ TotalVariationImageFilter< TInputImage >
 ::AllocateOutputs()
 {
   // Pass the input through as the output
-  InputImagePointer image =
-    const_cast< TInputImage * >( this->GetInput() );
+  InputImagePointer image = const_cast< TInputImage * >( this->GetInput() );
 
   this->GraftOutput(image);
 
@@ -138,10 +138,7 @@ TotalVariationImageFilter< TInputImage >
 ::AfterThreadedGenerateData()
 {
   RealType totalVariation = 0;
-
   ThreadIdType numberOfThreads = this->GetNumberOfThreads();
-
-  RealType sumOfSquareRoots = NumericTraits< RealType >::Zero;
 
   // Add up the results from all threads
   for (ThreadIdType i = 0; i < numberOfThreads; i++ )
@@ -184,19 +181,18 @@ TotalVariationImageFilter< TInputImage >
 
   // Run through the image
   while(!iit.IsAtEnd())
-  {
-      // Compute the local differences around the central pixel
-      float difference;
-      float sumOfSquaredDifferences = 0;
-      for (int dim = 0; dim < ImageDimension; dim++)
+    {
+    // Compute the local differences around the central pixel
+    float difference;
+    float sumOfSquaredDifferences = 0;
+    for (int dim = 0; dim < ImageDimension; dim++)
       {
-          difference = iit.GetPixel(c + strides[dim]) - iit.GetPixel(c);
-          sumOfSquaredDifferences += difference * difference;
+      difference = iit.GetPixel(c + strides[dim]) - iit.GetPixel(c);
+      sumOfSquaredDifferences += difference * difference;
       }
-      sumOfSquareRoots += sqrt(sumOfSquaredDifferences);
-
-      ++iit;
-  }
+    sumOfSquareRoots += sqrt(sumOfSquaredDifferences);
+    ++iit;
+    }
 
   m_SumOfSquareRoots[threadId] = sumOfSquareRoots;
 }

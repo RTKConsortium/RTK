@@ -1,71 +1,13 @@
-#include <itkImageRegionConstIterator.h>
-
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
+#include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
+#include "rtkPhaseGatingImageFilter.h"
 
 #ifdef USE_CUDA
   #include "itkCudaImage.h"
-#endif
-#include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
-
-template<class TImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
-{
-}
-#else
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  while( !itRef.IsAtEnd() )
-    {
-    typename TImage::PixelType TestVal = itTest.Get();
-    typename TImage::PixelType RefVal = itRef.Get();
-    TestError += vcl_abs(RefVal - TestVal);
-    EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-    ++itTest;
-    ++itRef;
-    }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 0.032)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.08" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < 28)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 23" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
 #endif
 
 /**
@@ -99,7 +41,7 @@ int main(int, char** )
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 180;
+  const unsigned int NumberOfProjectionImages = 90;
 #endif
 
 
@@ -198,7 +140,7 @@ int main(int, char** )
   admmtotalvariation->SetAlpha( 100 );
   admmtotalvariation->SetBeta( 1000 );
   admmtotalvariation->SetAL_iterations( 3 );
-  admmtotalvariation->SetCG_iterations( 3 );
+  admmtotalvariation->SetCG_iterations( 2 );
 
   // In all cases, use the Joseph forward projector
   admmtotalvariation->SetForwardProjectionFilter(0);
@@ -208,7 +150,7 @@ int main(int, char** )
   admmtotalvariation->SetBackProjectionFilter( 0 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
-  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
@@ -216,17 +158,47 @@ int main(int, char** )
   admmtotalvariation->SetBackProjectionFilter( 1 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
-  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector and gating ******" << std::endl;
+
+  admmtotalvariation->SetBackProjectionFilter( 0 );
+
+  // Generate arbitrary gating weights (select every third projection)
+  typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
+  PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
+#if FAST_TESTS_NO_CHECKS
+  phaseGating->SetFileName(std::string(RTK_DATA_ROOT) +
+                           std::string("/Input/Phases/phases_3projs.txt"));
+#else
+  phaseGating->SetFileName(std::string(RTK_DATA_ROOT) +
+                           std::string("/Input/Phases/phases.txt"));
+#endif
+  phaseGating->SetGatingWindowWidth(0.20);
+  phaseGating->SetGatingWindowShape(0); // Rectangular
+  phaseGating->SetGatingWindowCenter(0.70);
+  phaseGating->SetInputProjectionStack(rei->GetOutput());
+  phaseGating->SetInputGeometry(geometry);
+  phaseGating->Update();
+
+  admmtotalvariation->SetInput(1, phaseGating->GetOutput());
+  admmtotalvariation->SetGeometry( phaseGating->GetOutputGeometry() );
+  admmtotalvariation->SetGatingWeights( phaseGating->GetGatingWeightsOnSelectedProjections() );
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
+
+  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
+  std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
   admmtotalvariation->SetForwardProjectionFilter( 2 );
   admmtotalvariation->SetBackProjectionFilter( 2 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
-  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 

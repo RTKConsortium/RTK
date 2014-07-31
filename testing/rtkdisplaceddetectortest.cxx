@@ -1,68 +1,11 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkDisplacedDetectorImageFilter.h"
-
-template<class TImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
-{
-}
-#else
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  while( !itRef.IsAtEnd() )
-    {
-    typename TImage::PixelType TestVal = itTest.Get();
-    typename TImage::PixelType RefVal = itRef.Get();
-    TestError += vcl_abs(RefVal - TestVal);
-    EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-    ++itTest;
-    ++itRef;
-    }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 0.061)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.06." << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < 24.)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 24." << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
-#endif
 
 /**
  * \file rtkdisplaceddetectortest.cxx
@@ -175,7 +118,7 @@ int main(int, char**)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 120., 0.);
   slp->Update();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 2: negative offset in geometry ******" << std::endl;
   geometry = GeometryType::New();
@@ -185,7 +128,7 @@ int main(int, char**)
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, -120., 0.);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 3: no displacement ******" << std::endl;
   geometry = GeometryType::New();
@@ -196,7 +139,7 @@ int main(int, char**)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
   projectionsSource->SetOrigin(origin);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 4: negative offset in origin ******" << std::endl;
   geometry = GeometryType::New();
@@ -208,13 +151,13 @@ int main(int, char**)
   origin[0] = -400;
   projectionsSource->SetOrigin(origin);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 5: positive offset in origin ******" << std::endl;
   origin[0] = -100;
   projectionsSource->SetOrigin(origin);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput());
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;

@@ -112,6 +112,7 @@ void CreateAndBuildOpenCLProgramFromSourceFile(const std::string fileName, const
     itkGenericExceptionMacro(<< "OPENCL ERROR with clBuildProgram. The log is:"
                              << std::endl
                              << log);
+    delete [] log;
     }
   delete [] oclSource;
 }

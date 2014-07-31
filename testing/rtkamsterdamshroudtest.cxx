@@ -1,75 +1,16 @@
-#include "rtkTestConfiguration.h"
 
 #include <itkImageFileReader.h>
 #include <itkPasteImageFilter.h>
 
+#include "rtkTest.h"
 #include "rtkAmsterdamShroudImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkTestConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConfiguration.h"
 #include "rtkReg1DExtractShroudSignalImageFilter.h"
 #include "rtkDPExtractShroudSignalImageFilter.h"
 #include "rtkMacro.h"
-
-template<class TInputImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TInputImage::Pointer itkNotUsed(recon), typename TInputImage::Pointer itkNotUsed(ref))
-{
-}
-#else
-void CheckImageQuality(typename TInputImage::Pointer recon, typename TInputImage::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TInputImage>  ImageIteratorInType;
-  ImageIteratorInType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorInType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  while( !itRef.IsAtEnd() )
-    {
-    typename TInputImage::PixelType TestVal = itTest.Get();
-    typename TInputImage::PixelType RefVal  = itRef.Get();
-
-    TestError += vcl_abs(RefVal - TestVal);
-    EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-    ++itTest;
-    ++itRef;
-    }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(6304.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (6304.-ErrorPerPixel)/6304.;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 1.20e-6)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 1.20e-6." << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < 185.)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 185" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
-#endif
 
 /**
  * \file rtkamsterdamshroudtest.cxx
@@ -258,7 +199,7 @@ int main(int, char** )
                        std::string("/Baseline/AmsterdamShroud/Amsterdam.mha"));
   reader2->Update();
 
-  CheckImageQuality< shroudFilterType::OutputImageType >(shroudFilter->GetOutput(), reader2->GetOutput());
+  CheckImageQuality< shroudFilterType::OutputImageType >(shroudFilter->GetOutput(), reader2->GetOutput(), 1.20e-6, 185, 2.0);
   std::cout << "Test PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: Breathing signal calculated by reg1D algorithm ******\n" << std::endl;

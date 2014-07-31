@@ -48,13 +48,14 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
+  reader->ReleaseDataFlagOn();
 
   // Apply total variation denoising
   typedef rtk::TotalVariationDenoisingBPDQImageFilter
       <OutputImageType, GradientOutputImageType> TVDenoisingFilterType;
   TVDenoisingFilterType::Pointer tv = TVDenoisingFilterType::New();
   tv->SetInput(reader->GetOutput());
-  tv->SetLambda(args_info.lambda_arg);
+  tv->SetGamma(args_info.gamma_arg);
   tv->SetNumberOfIterations(args_info.niter_arg);
 
   bool* dimsProcessed = new bool[Dimension];
@@ -66,6 +67,7 @@ int main(int argc, char * argv[])
     }
 //  std::cout << std::endl;
   tv->SetDimensionsProcessed(dimsProcessed);
+  tv->ReleaseDataFlagOn();
 
   // Write
   typedef itk::ImageFileWriter<OutputImageType> WriterType;

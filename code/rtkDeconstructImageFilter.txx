@@ -136,7 +136,6 @@ template <class TImage>
 void DeconstructImageFilter<TImage>
 ::GenerateOutputInformation()
 {
-
   // n is the number of bands per level, including the ones
   // that will be deconstructed and won't appear in the outputs
   unsigned int dimension = TImage::ImageDimension;
@@ -181,7 +180,7 @@ void DeconstructImageFilter<TImage>
 
       m_DownsampleFilters[band + l*n]->SetInput(m_ConvolutionFilters[band + l*n]->GetOutput());
       m_DownsampleFilters[band + l*n]->SetFactors(downsamplingFactors);
-      m_DownsampleFilters[band + l*n]->SetNumberOfThreads(1);
+//      m_DownsampleFilters[band + l*n]->SetNumberOfThreads(1);
 
       if ((band > 0) || (l==0))
         {

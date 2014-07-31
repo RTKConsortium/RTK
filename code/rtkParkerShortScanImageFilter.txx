@@ -20,9 +20,11 @@
 #define __rtkParkerShortScanImageFilter_txx
 
 #include <itkImageRegionIteratorWithIndex.h>
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
 #include <itkMacro.h>
+
+#ifndef M_PI
+#define M_PI vnl_math::pi
+#endif
 
 namespace rtk
 {
@@ -30,10 +32,10 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId))
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   // Get angular gaps and max gap
-  std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext();
+  std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext( m_Geometry->GetGantryAngles() );
   int                 nProj = angularGaps.size();
   int                 maxAngularGapPos = 0;
   for(int iProj=1; iProj<nProj; iProj++)
@@ -51,8 +53,8 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   if( m_Geometry->GetSourceToDetectorDistances()[0] == 0. ||
       angularGaps[maxAngularGapPos] < itk::Math::pi / 9 )
     {
-      if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
-                                                 // required
+    if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
+                                               // required
       {
       while(!itIn.IsAtEnd() )
         {
@@ -82,10 +84,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
   const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
-  const std::multimap<double,unsigned int> sortedAngles = m_Geometry->GetSortedAngles();
-  const double detectorWidth = this->GetInput()->GetSpacing()[0] *
-                               this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
-
+  const std::multimap<double,unsigned int> sortedAngles = m_Geometry->GetSortedAngles( m_Geometry->GetGantryAngles() );
 
   // Compute delta between first and last angle where there is weighting required
   // First angle
@@ -100,40 +99,59 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   itLastAngle = (itLastAngle==sortedAngles.begin())?--sortedAngles.end():--itLastAngle;
   double lastAngle = itLastAngle->first;
   if(lastAngle<firstAngle)
-    lastAngle += 360;
+    {
+    lastAngle += 2*M_PI;
+    }
   //Delta
-  double delta = 0.5 * (lastAngle - firstAngle - 180);
-  delta = delta-360*floor(delta/360); // between -360 and 360
-  delta *= itk::Math::pi / 180;            // degrees to radians
+  double delta = 0.5 * (lastAngle - firstAngle - M_PI);
+  delta = delta - 2*M_PI*floor( delta / (2*M_PI) ); // between -2*PI and 2*PI
 
-  double invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
-  if( delta < atan(0.5 * detectorWidth * invsdd) )
-    itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
-                    << "Delta is " << delta*180./itk::Math::pi
-                    << " degrees and should be more than half the beam angle, i.e. "
-                    << atan(0.5 * detectorWidth * invsdd)*180./itk::Math::pi << " degrees.");
+  // Pre-compute the two corners of the projection images
+  typename TInputImage::IndexType id = this->GetInput()->GetLargestPossibleRegion().GetIndex();
+  typename TInputImage::SizeType  sz = this->GetInput()->GetLargestPossibleRegion().GetSize();
+  typename TInputImage::SizeType ones;
+  ones.Fill(1);
+  typename TInputImage::PointType corner1, corner2;
+  this->GetInput()->TransformIndexToPhysicalPoint(id, corner1);
+  this->GetInput()->TransformIndexToPhysicalPoint(id-ones+sz, corner2);
 
+  // Go over projection images
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
-    invsdd = 1/m_Geometry->GetSourceToDetectorDistances()[itIn.GetIndex()[2]];
+    double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
+    double sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
+    double invsid = 1./sqrt(sid*sid+sox*sox);
+
+    // Check that Parker weighting is relevant for this projection
+    double halfDetectorWidth1 = std::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]) );
+    double halfDetectorWidth2 = std::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]) );
+    double halfDetectorWidth = std::min(halfDetectorWidth1, halfDetectorWidth2);
+    if( delta < atan(halfDetectorWidth * invsid) )
+      {
+      m_WarningMutex.Lock();
+      itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
+                      << " according to projection #" << k << ". Delta is " << delta*180./itk::Math::pi
+                      << " degrees and should be more than half the beam angle, i.e. "
+                      << atan(halfDetectorWidth * invsid)*180./itk::Math::pi << " degrees.");
+      m_WarningMutex.Unlock();
+      }
 
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
-    point[0] += m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
 
     // Parker's article assumes that the scan starts at 0, convert projection
     // angle accordingly
     double beta = rotationAngles[ itIn.GetIndex()[2] ];
     beta = beta - firstAngle;
     if (beta<0)
-      beta += 360;
-    beta *= itk::Math::pi / 180;
+      beta += 2*M_PI;
 
     itWeights.GoToBegin();
     while(!itWeights.IsAtEnd() )
       {
-      double alpha = atan( -1 * point[0] * invsdd );
+      const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
+      double alpha = atan( -1 * l * invsid );
       if(beta <= 2*delta-2*alpha)
         itWeights.Set( 2. * pow(sin( (itk::Math::pi*beta) / (4*(delta-alpha) ) ), 2.) );
       else if(beta <= itk::Math::pi-2*alpha)
