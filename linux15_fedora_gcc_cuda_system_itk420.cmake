@@ -8,6 +8,7 @@ set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk420")
 set(ENV{ITK_DIR} "/home/srit/src/itk420/lin64-dg/lib/cmake/ITK-4.2")
 set(ENV{CUDA_BIN_PATH} "/usr/lib64/cuda/bin")
 set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia-304xx")
+set(ENV{ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS} 8)
 set(CTEST_BUILD_FLAGS -j8)
 
 # OpenCL
