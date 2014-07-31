@@ -130,8 +130,8 @@ public:
   itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, ImageToImageFilter)
 
   /** Sub filter type definitions */
-  typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
-            typename TOutputImage::ValueType, typename TOutputImage::ValueType, 
+  typedef ForwardDifferenceGradientImageFilter<TOutputImage,
+            typename TOutputImage::ValueType, typename TOutputImage::ValueType,
             TGradientOutputImage>                                                     GradientFilterType;
   typedef itk::MultiplyImageFilter<TOutputImage>                                      MultiplyFilterType;
   typedef itk::SubtractImageFilter<TOutputImage>                                      SubtractImageFilterType;
