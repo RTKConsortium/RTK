@@ -31,14 +31,19 @@ namespace rtk
 template<typename ProjectionStackType>
 PhaseGatingImageFilter<ProjectionStackType>::PhaseGatingImageFilter()
 {
-    m_OutputGeometry = GeometryType::New();
-    m_PhaseReader = PhaseReader::New();
+  m_OutputGeometry = GeometryType::New();
+  m_PhaseReader = PhaseReader::New();
+
+  // Set default parameters
+  m_GatingWindowWidth = 1;
+  m_GatingWindowShape = 0;
+  m_GatingWindowCenter = 0.5;
 }
 
 template<typename ProjectionStackType>
 void PhaseGatingImageFilter<ProjectionStackType>::SetInputProjectionStack(const ProjectionStackType* Projections)
 {
-    this->SetNthInput(0, const_cast<ProjectionStackType*>(Projections));
+  this->SetNthInput(0, const_cast<ProjectionStackType*>(Projections));
 }
 
 template<typename ProjectionStackType>
@@ -60,8 +65,8 @@ void PhaseGatingImageFilter<ProjectionStackType>::GenerateInputRequestedRegion()
 
   if ( inputPtr )
   {
-      // request the region of interest
-      inputPtr->SetRequestedRegionToLargestPossibleRegion();
+  // request the region of interest
+  inputPtr->SetRequestedRegionToLargestPossibleRegion();
   }
 }
 
