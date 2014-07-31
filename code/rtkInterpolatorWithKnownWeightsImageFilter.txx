@@ -81,9 +81,9 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
 
   // Initialize output region with input region in case the filter is not in
   // place
+  VolumeRegionIterator        itOut(this->GetOutput(), outputRegionForThread);
   if(this->GetInput() != this->GetOutput() )
     {
-    VolumeRegionIterator        itOut(this->GetOutput(), outputRegionForThread);
     VolumeRegionConstIterator   itIn(volume, outputRegionForThread);
     while(!itOut.IsAtEnd())
       {

@@ -226,7 +226,7 @@ if(NOT RTK_USE_CUDA)
   RTK_ADD_TEST(NAME rtkadmmtotalvariationtest
                COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest
                DATA{Data/Input/Phases/phases.txt}
-	       DATA{Data/Input/Phases/phases_3projs.txt})
+               DATA{Data/Input/Phases/phases_3projs.txt})
 endif()
 if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
  SET(testfullname rtkadmmtotalvariationcudatest)
@@ -235,7 +235,8 @@ if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
  SET_TARGET_PROPERTIES(${testfullname} PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
  RTK_ADD_TEST(NAME ${testfullname}
               COMMAND ${EXECUTABLE_OUTPUT_PATH}/${testfullname}
-              DATA{Data/Input/Phases/phases.txt})
+              DATA{Data/Input/Phases/phases.txt}
+              DATA{Data/Input/Phases/phases_3projs.txt})
 endif()
 
 # We cannot compile this test using CPU if GPU is present
