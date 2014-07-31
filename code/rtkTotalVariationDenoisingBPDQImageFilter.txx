@@ -49,9 +49,9 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   m_BoundaryConditionForGradientFilter = new itk::ZeroFluxNeumannBoundaryCondition<TOutputImage>();
   m_BoundaryConditionForDivergenceFilter = new itk::ZeroFluxNeumannBoundaryCondition<TGradientOutputImage>();
 
-//  // Set whether the sub filters should release their data during pipeline execution
+  // Set whether the sub filters should release their data during pipeline execution
   m_DivergenceFilter->ReleaseDataFlagOn();
-//  m_SubtractFilter->ReleaseDataFlagOff(); // It is the pipeline's output
+  m_SubtractFilter->ReleaseDataFlagOff(); // It is the pipeline's output
   m_GradientFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
   m_SubtractGradientFilter->ReleaseDataFlagOn();
@@ -168,9 +168,10 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   // iteration must be performed so that even m_NumberOfIterations=1 has an effect
   for (int iter=0; iter<=m_NumberOfIterations; iter++)
     {
-      if(iter==1) SetPipelineAfterFirstIteration();
+    if(iter==1) SetPipelineAfterFirstIteration();
 
     m_MagnitudeThresholdFilter->Update();
+
     pimg = m_MagnitudeThresholdFilter->GetOutput();
     pimg->DisconnectPipeline();
     m_DivergenceFilter->SetInput( pimg );

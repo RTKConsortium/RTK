@@ -164,8 +164,6 @@ protected:
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             ThreadIdType threadId);
 
-  void BeforeThreadedGenerateData();
-
   virtual void GenerateOutputInformation();
 
 private:
