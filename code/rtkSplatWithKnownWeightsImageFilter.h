@@ -19,8 +19,11 @@
 #define __rtkSplatWithKnownWeightsImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
-#include <itkImageRegionSplitterDirection.h>
 #include <itkArray2D.h>
+
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  #include <itkImageRegionSplitterDirection.h>
+#endif
 
 namespace rtk
 {
@@ -98,13 +101,17 @@ protected:
 
     /** Does the real work. */
     virtual void ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+    virtual void BeforeThreadedGenerateData();
 
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     /** Splits the OutputRequestedRegion along the first direction, not the last */
     virtual const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
+    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+#endif
 
     itk::Array2D<float>                         m_Weights;
     int                                         m_ProjectionNumber;
-    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+
 
 private:
     SplatWithKnownWeightsImageFilter(const Self &); //purposely not implemented
