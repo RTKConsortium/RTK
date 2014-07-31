@@ -223,6 +223,7 @@ CUDA_forward_project( int projections_size[2],
   // Set texture parameters
   tex_vol.addressMode[0] = cudaAddressModeClamp;  // clamp texture coordinates
   tex_vol.addressMode[1] = cudaAddressModeClamp;
+  tex_vol.addressMode[2] = cudaAddressModeClamp;
   tex_vol.normalized = false;                     // access with normalized texture coordinates
   tex_vol.filterMode = cudaFilterModeLinear;      // linear interpolation
 
