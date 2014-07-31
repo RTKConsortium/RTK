@@ -273,10 +273,10 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
       if(threadInfo->fileName != "" && (fileNames.size()==0 || fileNames.back() != threadInfo->fileName) )
         fileNames.push_back(threadInfo->fileName);
 
-      geometry->AddProjection(threadInfo->sid, threadInfo->sdd, threadInfo->gantryAngle,
-                              threadInfo->projOffsetX, threadInfo->projOffsetY,
-                              threadInfo->outOfPlaneAngle, threadInfo->inPlaneAngle,
-                              threadInfo->sourceOffsetX, threadInfo->sourceOffsetY);
+      geometry->AddProjectionInRadians(threadInfo->sid, threadInfo->sdd, threadInfo->gantryAngle,
+                                       threadInfo->projOffsetX, threadInfo->projOffsetY,
+                                       threadInfo->outOfPlaneAngle, threadInfo->inPlaneAngle,
+                                       threadInfo->sourceOffsetX, threadInfo->sourceOffsetY);
 
       std::cout << "Geometry size : "<<geometry->GetMatrices().size() << std::endl;
 

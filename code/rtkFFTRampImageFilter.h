@@ -62,6 +62,13 @@ public:
   typedef typename InputImageType::IndexType                IndexType;
   typedef typename InputImageType::SizeType                 SizeType;
 
+  typedef typename itk::Image<TFFTPrecision,
+                              TInputImage::ImageDimension > FFTInputImageType;
+  typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
+  typedef typename itk::Image<std::complex<TFFTPrecision>,
+                              TInputImage::ImageDimension > FFTOutputImageType;
+  typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
+
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
                       TInputImage::ImageDimension);
@@ -138,10 +145,9 @@ protected:
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
     * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
     * centralRegion is the region of the returned image which corresponds to inputRegion.
-    * The function is templated to allow its use with itk::CudaImage in children.
     */
-  template<class TFFTInputImage, class TFFTOutputImage>
-  typename TFFTInputImage::Pointer PadInputImageRegion(const RegionType &inputRegion);
+  virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
+  RegionType GetPaddedImageRegion(const RegionType &inputRegion);
 
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
 
@@ -150,10 +156,8 @@ protected:
   int GreatestPrimeFactor( int n ) const;
 
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
-   *  Used in generate data functions.
-   * The function is templated to allow its use with itk::CudaImage in children.  */
-  template<class TFFTInputImage, class TFFTOutputImage>
-  typename TFFTOutputImage::Pointer GetFFTRampKernel(const int width, const int height);
+   *  Used in generate data functions.  */
+  FFTOutputImagePointer GetFFTRampKernel(const int width, const int height);
 
   /** Pre compute weights for truncation correction in a lookup table. The index
     * is the distance to the original image border.
@@ -161,6 +165,7 @@ protected:
     * already been computed.
     */
   void UpdateTruncationMirrorWeights();
+  typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
 
 private:
   FFTRampImageFilter(const Self&); //purposely not implemented
@@ -170,7 +175,6 @@ private:
     * 0 means no correction.
     */
   double                              m_TruncationCorrection;
-  typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
   int GetTruncationCorrectionExtent();
 
   /**

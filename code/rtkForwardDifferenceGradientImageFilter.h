@@ -120,6 +120,9 @@ public:
       undetermined values */
   void SetDimensionsProcessed(bool* DimensionsProcessed);
 
+  /** Allows to change the default boundary condition */
+  void OverrideBoundaryCondition(ImageBoundaryCondition< TInputImage >* boundaryCondition);
+
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
   itkConceptMacro( InputConvertibleToOutputCheck,
@@ -161,13 +164,11 @@ protected:
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             ThreadIdType threadId);
 
-  void BeforeThreadedGenerateData();
+  virtual void GenerateOutputInformation();
 
 private:
   ForwardDifferenceGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);      //purposely not implemented
-
-  virtual void GenerateOutputInformation();
 
   // An overloaded method which may transform the gradient to a
   // physical vector and converts to the correct output pixel type.
@@ -211,6 +212,9 @@ private:
   // to be computed. The components on other dimensions
   // are set to zero
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
+
+  ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
+  bool                                                m_IsBoundaryConditionOverriden;
 };
 } // end namespace itk
 

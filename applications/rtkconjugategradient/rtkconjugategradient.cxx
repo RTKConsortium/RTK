@@ -22,10 +22,10 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
-#ifdef RTK_USE_CUDA
-  #include "itkCudaImage.h"
-#endif
 
+#ifdef RTK_USE_CUDA
+  #include <itkCudaImage.h>
+#endif
 #include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])

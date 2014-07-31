@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtksubselect>(reader, args_info);
-  reader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
   // Geometry
   if(args_info.verbose_flag)
@@ -80,7 +80,7 @@ int main(int argc, char * argv[])
   outputSize[Dimension - 1] = indices.size();
   source->SetSize(outputSize);
   source->SetConstant(0);
-  source->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( source->Update() )
 
   // Fill in the outputGeometry and the output projections
   typedef itk::PasteImageFilter<OutputImageType> PasteType;
@@ -101,27 +101,27 @@ int main(int argc, char * argv[])
       paste->SetDestinationImage(pimg);
       }
 
-    sourceRegion = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
+    sourceRegion = reader->GetOutput()->GetLargestPossibleRegion();
     sourceRegion.SetIndex(Dimension - 1, indices[i]);
     sourceRegion.SetSize(Dimension - 1, 1);
     paste->SetSourceRegion(sourceRegion);
 
-    destinationIndex.Fill(0);
+    destinationIndex = reader->GetOutput()->GetLargestPossibleRegion().GetIndex();
     destinationIndex[Dimension -1] = i;
     paste->SetDestinationIndex(destinationIndex);
 
-    paste->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( paste->Update() )
 
     // Fill in the output geometry object
-    outputGeometry->AddProjection(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetGantryAngles()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetProjectionOffsetsX()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetProjectionOffsetsY()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
-                                  geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
+    outputGeometry->AddProjectionInRadians(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetGantryAngles()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetProjectionOffsetsX()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetProjectionOffsetsY()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
+                                           geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
     }
 
   // Geometry writer

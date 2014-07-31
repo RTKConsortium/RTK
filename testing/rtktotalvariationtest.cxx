@@ -1,4 +1,3 @@
-#include "rtkTestConfiguration.h"
 #include "itkRandomImageSource.h"
 #include "rtkTotalVariationImageFilter.h"
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
@@ -73,12 +72,12 @@ int main(int, char** )
 
   // Volume metadata
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 8;
-  size[1] = 8;
-  size[2] = 8;
-  spacing[0] = 32.;
-  spacing[1] = 32.;
-  spacing[2] = 32.;
+  size[0] = 64;
+  size[1] = 64;
+  size[2] = 1;
+  spacing[0] = 1.;
+  spacing[1] = 1.;
+  spacing[2] = 1.;
 #else
   size[0] = 64;
   size[1] = 64;
@@ -103,7 +102,8 @@ int main(int, char** )
   TVDenoisingFilterType::Pointer TVdenoising = TVDenoisingFilterType::New();
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
   TVdenoising->SetNumberOfIterations(15);
-  TVdenoising->SetLambda(0.005);
+  TVdenoising->SetGamma(100);
+  
   bool dimsProcessed[Dimension];
   for (unsigned int i=0; i<Dimension; i++)
     {

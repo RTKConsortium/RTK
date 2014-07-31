@@ -26,6 +26,7 @@
 #include "rtkReconstructionConjugateGradientOperator.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {
@@ -33,13 +34,15 @@ namespace rtk
    * \brief Implements ConjugateGradient
    *
    * This filter implements the ConjugateGradient method.
-   * ConjugateGradient attempts to find the f that minimizes || Rf -p ||_2^2, with R the
-   * forward projection operator and p the measured projections.
+   * ConjugateGradient attempts to find the f that minimizes
+   * || sqrt(D) (Rf -p) ||_2^2,
+   * with R the forward projection operator,
+   * p the measured projections, and D the displaced detector weighting operator.
    * In this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
-   * at a time), and ConjugateGradient a steepest descent or conjugate gradient method
+   * at a time), and ConjugateGradient a conjugate gradient method
    * (projects and back projects all projections together).
    *
    * \dot
@@ -56,12 +59,14 @@ namespace rtk
    * ZeroMultiplyVolume [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
    * BeforeZeroMultiplyVolume [label="", fixedsize="false", width=0, height=0, shape=none];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    *
    * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
    * BeforeZeroMultiplyVolume -> ConjugateGradient;
-   * Input1 -> BackProjection;
+   * Input1 -> Displaced;
+   * Displaced -> BackProjection;
    * ZeroMultiplyVolume -> BackProjection;
    * BackProjection -> ConjugateGradient;
    * ConjugateGradient -> Output;
@@ -80,9 +85,9 @@ class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeB
 {
 public:
     /** Standard class typedefs. */
-    typedef ConjugateGradientConeBeamReconstructionFilter        Self;
-    typedef itk::ImageToImageFilter<TOutputImage, TOutputImage>  Superclass;
-    typedef itk::SmartPointer< Self >                            Pointer;
+    typedef ConjugateGradientConeBeamReconstructionFilter                      Self;
+    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>  Superclass;
+    typedef itk::SmartPointer< Self >                                          Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -101,7 +106,8 @@ public:
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                  ConjugateGradientFilterType;
     typedef itk::MultiplyImageFilter<TOutputImage>                           MultiplyVolumeFilterType;
-    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>                 CGOperatorFilterType;
+    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>       CGOperatorFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                  DisplacedDetectorFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -130,8 +136,9 @@ protected:
     typename ConjugateGradientFilterType::Pointer                               m_ConjugateGradientFilter;
     typename CGOperatorFilterType::Pointer                                      m_CGOperator;
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
-    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
+    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForB;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check

@@ -38,6 +38,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent parameters
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -51,8 +52,12 @@ void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::SetForwardProjectionFilter (int _arg)
 {
-  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
-  m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
+  if( _arg != this->GetForwardProjectionFilter() )
+    {
+    Superclass::SetForwardProjectionFilter( _arg );
+    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
+    m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
+    }
 }
 
 template< typename TOutputImage>
@@ -60,9 +65,13 @@ void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::SetBackProjectionFilter (int _arg)
 {
-  m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
-  m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
-  m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
+  if( _arg != this->GetBackProjectionFilter() )
+    {
+    Superclass::SetBackProjectionFilter( _arg );
+    m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
+    m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter( _arg );
+    m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilter);
+    }
 }
 
 template< typename TOutputImage>
@@ -70,20 +79,19 @@ void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateInputRequestedRegion()
 {
-    // Input 0 is the volume we update
-    typename Superclass::InputImagePointer inputPtr0 =
-            const_cast< TOutputImage * >( this->GetInput(0) );
-    if ( !inputPtr0 )
-        return;
-    inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+  // Input 0 is the volume we update
+  typename Superclass::InputImagePointer inputPtr0 =
+          const_cast< TOutputImage * >( this->GetInput(0) );
+  if ( !inputPtr0 )
+      return;
+  inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
-    // Input 1 is the stack of projections to backproject
-    typename Superclass::InputImagePointer  inputPtr1 =
-            const_cast< TOutputImage * >( this->GetInput(1) );
-    if ( !inputPtr1 )
-        return;
-    inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
-
+  // Input 1 is the stack of projections to backproject
+  typename Superclass::InputImagePointer  inputPtr1 =
+          const_cast< TOutputImage * >( this->GetInput(1) );
+  if ( !inputPtr1 )
+      return;
+  inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 }
 
 template< typename TOutputImage>
@@ -95,16 +103,18 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1));
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
+  m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
-  m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, this->GetInput(1));
-  m_ConjugateGradientFilter->SetB(m_BackProjectionFilter->GetOutput());
+  m_BackProjectionFilterForB->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
+  m_BackProjectionFilterForB->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_ConjugateGradientFilter->SetB(m_BackProjectionFilterForB->GetOutput());
 
   // For the same reason, set geometry now
   m_CGOperator->SetGeometry(this->m_Geometry);
-  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_BackProjectionFilterForB->SetGeometry(this->m_Geometry.GetPointer());
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);

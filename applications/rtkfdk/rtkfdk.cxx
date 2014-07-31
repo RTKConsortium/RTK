@@ -120,23 +120,23 @@ int main(int argc, char * argv[])
     f->SetGeometry( geometryReader->GetOutputObject() ); \
     f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
     f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg); \
-    f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);
+    f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg); \
+    f->SetProjectionSubsetSize(args_info.subsetsize_arg)
 
   // FDK reconstruction filtering
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
-  FDKCPUType::Pointer feldkamp = FDKCPUType::New();
+  FDKCPUType::Pointer feldkamp;
 #ifdef RTK_USE_OPENCL
   typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
-  FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
+  FDKOPENCLType::Pointer feldkampOCL;
 #endif
 #ifdef RTK_USE_CUDA
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
-  FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
+  FDKCUDAType::Pointer feldkampCUDA;
 #endif
   itk::Image< OutputPixelType, Dimension > *pfeldkamp = NULL;
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
-    typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
     feldkamp = FDKCPUType::New();
     SET_FELDKAMP_OPTIONS( feldkamp );
 
@@ -152,6 +152,7 @@ int main(int argc, char * argv[])
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
 #ifdef RTK_USE_CUDA
+    feldkampCUDA = FDKCUDAType::New();
     SET_FELDKAMP_OPTIONS( feldkampCUDA );
     pfeldkamp = feldkampCUDA->GetOutput();
 #else
@@ -162,6 +163,7 @@ int main(int argc, char * argv[])
   else if(!strcmp(args_info.hardware_arg, "opencl") )
     {
 #ifdef RTK_USE_OPENCL
+    feldkampOCL = FDKOPENCLType::New();
     SET_FELDKAMP_OPTIONS( feldkampOCL );
     pfeldkamp = feldkampOCL->GetOutput();
 #else
