@@ -154,9 +154,21 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector and gating ******" << std::endl;
+#ifdef USE_CUDA
+  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector ******" << std::endl;
 
-  sart->SetBackProjectionFilter( 0 );
+  sart->SetBackProjectionFilter( 2 ); // Cuda voxel based
+  sart->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
+
+  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
+
+  std::cout << "\n\n****** Voxel-Based Backprojector and gating ******" << std::endl;
+
+  sart->SetBackProjectionFilter( 0 ); // Voxel based
+  sart->SetForwardProjectionFilter( 0 ); // Joseph
 
   // Generate arbitrary gating weights (select every third projection)
   std::vector<float> gatingWeights;
@@ -172,16 +184,6 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-#ifdef USE_CUDA
-  std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector ******" << std::endl;
-
-  sart->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  sart->SetForwardProjectionFilter( 2 ); // Cuda ray cast
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
-
-  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-#endif
 
   return EXIT_SUCCESS;
 }
