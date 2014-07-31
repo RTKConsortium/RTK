@@ -79,14 +79,18 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
 
   float weight;
 
-  // Copy the input volume to the output
-  VolumeRegionIterator        itOut(this->GetOutput(), outputRegionForThread);
-  VolumeRegionConstIterator   itIn(volume, outputRegionForThread);
-  while(!itOut.IsAtEnd())
+  // Initialize output region with input region in case the filter is not in
+  // place
+  if(this->GetInput() != this->GetOutput() )
     {
-    itOut.Set(itIn.Get());
-    ++itOut;
-    ++itIn;
+    VolumeRegionIterator        itOut(this->GetOutput(), outputRegionForThread);
+    VolumeRegionConstIterator   itIn(volume, outputRegionForThread);
+    while(!itOut.IsAtEnd())
+      {
+      itOut.Set(itIn.Get());
+      ++itOut;
+      ++itIn;
+      }
     }
 
   // Compute the weighted sum of phases (with known weights) to get the output
