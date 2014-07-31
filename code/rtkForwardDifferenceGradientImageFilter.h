@@ -166,11 +166,11 @@ protected:
 
   void BeforeThreadedGenerateData();
 
+  virtual void GenerateOutputInformation();
+
 private:
   ForwardDifferenceGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);      //purposely not implemented
-
-  virtual void GenerateOutputInformation();
 
   // An overloaded method which may transform the gradient to a
   // physical vector and converts to the correct output pixel type.
