@@ -16,10 +16,10 @@
  *
  *=========================================================================*/
 
-#include "rtktestdownsample_ggo.h"
+#include "rtktestupsample_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkDownsampleImageFilter.h"
+#include "rtkUpsampleImageFilter.h"
 #include "rtkConstantImageSource.h"
 
 #ifdef RTK_USE_CUDA
@@ -28,7 +28,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtktestdownsample, args_info);
+  GGO(rtktestupsample, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
@@ -43,12 +43,14 @@ int main(int argc, char * argv[])
 
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
+  ConstantImageSourceType::SizeType upsampledSize;
   ConstantImageSourceType::SpacingType spacing;
+  OutputImageType::IndexType index;
 
-  unsigned int *downsamplingFactors = new unsigned int[Dimension];
-  for (unsigned int d=0; d<Dimension; d++) downsamplingFactors[d]=2;
+  unsigned int *UpsamplingFactors = new unsigned int[Dimension];
+  for (unsigned int d=0; d<Dimension; d++) UpsamplingFactors[d]=2;
 
-  typedef rtk::DownsampleImageFilter<OutputImageType> DownsampleFilterType;
+  typedef rtk::UpsampleImageFilter<OutputImageType> UpsampleFilterType;
 
   // Initialize random seed
   srand (time(NULL));
@@ -62,6 +64,12 @@ int main(int argc, char * argv[])
     size[1] = rand() % 512;
     size[2] = rand() % 512;
 
+    upsampledSize[0] = size[0] * 2;
+    upsampledSize[1] = size[1] * 2;
+    upsampledSize[2] = size[2] * 2;
+
+    index.Fill(0);
+
     spacing[0] = 1.;
     spacing[1] = 1.;
     spacing[2] = 1.;
@@ -73,11 +81,13 @@ int main(int argc, char * argv[])
     constantImageSource->SetConstant( 0. );
     constantImageSource->Update();
 
-    // Downsample it
-    DownsampleFilterType::Pointer downsample = DownsampleFilterType::New();
-    downsample->SetFactors(downsamplingFactors);
-    downsample->SetInput(constantImageSource->GetOutput());
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( downsample->Update() );
+    // Upsample it
+    UpsampleFilterType::Pointer Upsample = UpsampleFilterType::New();
+    Upsample->SetFactors(UpsamplingFactors);
+    Upsample->SetInput(constantImageSource->GetOutput());
+    Upsample->SetOutputSize(upsampledSize);
+    Upsample->SetOutputIndex(index);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( Upsample->Update() );
     }
 
 

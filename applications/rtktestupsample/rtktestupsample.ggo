@@ -1,0 +1,6 @@
+package "wavelets"
+version "Downsample a 3D volume of random size, n times, in order to try to reproduce the multi-threading bug"
+
+option "verbose"     v "Verbose execution"                                     flag   off
+option "config"      - "Config file"                                           string no
+option "niterations" n "Number of iterations"                                  int    no   default="5"
