@@ -110,14 +110,18 @@ void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
 
   float weight;
 
-  // Copy the input to the output
-  itk::ImageRegionIterator<VolumeSeriesType>        itOut(this->GetOutput(), outputRegionForThread);
-  itk::ImageRegionConstIterator<VolumeSeriesType>   itIn(this->GetInputVolumeSeries(), outputRegionForThread);
-  while(!itOut.IsAtEnd())
+  // Initialize output region with input region in case the filter is not in
+  // place
+  if(this->GetInput() != this->GetOutput() )
     {
-    itOut.Set(itIn.Get());
-    ++itOut;
-    ++itIn;
+    itk::ImageRegionIterator<VolumeSeriesType>        itOut(this->GetOutput(), outputRegionForThread);
+    itk::ImageRegionConstIterator<VolumeSeriesType>   itIn(this->GetInputVolumeSeries(), outputRegionForThread);
+    while(!itOut.IsAtEnd())
+      {
+      itOut.Set(itIn.Get());
+      ++itOut;
+      ++itIn;
+      }
     }
 
   // Update each phase
