@@ -22,6 +22,7 @@
 #include "rtkUpsampleImageFilter.h"
 
 #include "itkImageRegionIterator.h"
+#include "itkImageRegionConstIterator.h"
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
 #include "itkNumericTraits.h"
@@ -38,6 +39,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 {
   this->SetNumberOfRequiredInputs(1);
   this->m_Order = 0;
+//  this->SetNumberOfThreads(1);
 }
 
 /**
@@ -114,59 +116,108 @@ UpsampleImageFilter<TInputImage,TOutputImage>
   //Define/declare an iterator that will walk the output region for this
   //thread.
   typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
+  typedef itk::ImageRegionConstIterator<TInputImage> InputIterator;
   OutputIterator outIt(outputPtr, outputRegionForThread);
+
+  //Fill the output region with zeros
+  while (!outIt.IsAtEnd())
+    {
+    outIt.Set(itk::NumericTraits<typename TOutputImage::PixelType>::Zero);
+    ++outIt;
+    }
 
   //Define a few indices that will be used to translate from an input pixel
   //to an output pixel
-  typename TOutputImage::IndexType outputIndex;
+//  typename TOutputImage::IndexType outputIndex;
   typename TInputImage::IndexType inputIndex;
+  typename TOutputImage::IndexType outputStartIndex;
+  typename TInputImage::IndexType inputStartIndex;
 
-  typename TOutputImage::OffsetType outputStartIndex;
-  typename TOutputImage::OffsetType inputStartIndex;
+  typename TOutputImage::OffsetType firstValidPixelOffset;
+  typename TOutputImage::OffsetType firstPixelOfLineOffset;
+
+  outputStartIndex = outputPtr->GetLargestPossibleRegion().GetIndex();
+  inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
+
+  //Find the first output pixel that is copied from the input (the one with lowest indices
+  //in all dimensions)
+//  std::cout << "Looking for first valid pixel" << std::endl;
+  firstValidPixelOffset = outputRegionForThread.GetIndex() - outputStartIndex;
   for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
     {
-    outputStartIndex[i] =   outputPtr->GetLargestPossibleRegion().GetIndex(i);
-    inputStartIndex[i] =  inputPtr->GetLargestPossibleRegion().GetIndex(i);
+      while(firstValidPixelOffset[i]-1 % m_Factors[i])
+        {
+        firstValidPixelOffset[i] = firstValidPixelOffset[i]+1;
+        }
     }
+//  std::cout << "First valid pixel found : " << firstValidPixelOffset << std::endl;
 
-  //Walk the output region, and sample the input image
-  while (!outIt.IsAtEnd())
+  // Walk the slice obtained by setting the first coordinate to zero. If the
+  // line (1D vector traversing the output region along the first dimension)
+  // contains pixels that should be copied from the input,
+  // create an iterator and perform the copies
+  OutputImageRegionType slice = outputRegionForThread;
+  slice.SetSize(0, 1);
+  slice.SetIndex(0, outputRegionForThread.GetIndex(0) + firstValidPixelOffset[0]);
+//  std::cout << "Processing slice " << slice << std::endl;
+
+  OutputIterator sliceIt(outputPtr, slice);
+  while (!sliceIt.IsAtEnd())
     {
-    //Determine the index of the output pixel
-    outputIndex = outIt.GetIndex() - outputStartIndex;
+      //Determine the index of the output pixel
+      firstPixelOfLineOffset = sliceIt.GetIndex() - outputStartIndex;
 
-    //Determine if the current output pixel is zero OR an input value
-    bool copyFromInput = true;
-    for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
-      {
-      if ((outputIndex[dim]-1) % m_Factors[dim])
+      //Check whether the line contains pixels that should be copied from the input
+      bool copyFromInput = true;
+      for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
         {
-        copyFromInput = false;
+        if ((firstPixelOfLineOffset[dim]-1) % m_Factors[dim])
+          copyFromInput = false;
         }
 
-      //Caculate inputIndex (note: will not be used if copyFromInput=false...)
-      inputIndex[dim] = round( (double)(outputIndex[dim]-1) / (double)m_Factors[dim] + eps);
-
-      //Check within bounds
-      if (inputIndex[dim] > ((int)inputSize[dim] - 1))
+      // If it does, create an iterator along the line and copy the pixels
+      if (copyFromInput)
         {
-        copyFromInput &= false;
+        //Calculate the corresponding input index
+        for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
+          {
+          //inputIndex[i] = round( (double)(firstPixelOfLineOffset[i]-1) / (double)m_Factors[i] + eps);
+          inputIndex[i] = (int) (firstPixelOfLineOffset[i]-1) / (int) m_Factors[i];
+//          std::cout << "Processing line starting at " << inputIndex << std::endl;
+          }
+
+        // Create the iterators
+        typename TOutputImage::RegionType outputLine = slice;
+        typename TOutputImage::SizeType outputLineSize;
+        outputLineSize.Fill(1);
+        outputLineSize[0] = outputRegionForThread.GetSize(0) - firstPixelOfLineOffset[0];
+        outputLine.SetSize(outputLineSize);
+        outputLine.SetIndex(sliceIt.GetIndex());
+
+        typename TInputImage::RegionType inputLine = inputPtr->GetLargestPossibleRegion();
+        typename TInputImage::SizeType inputLineSize;
+        inputLineSize.Fill(1);
+        inputLineSize[0] = (int) outputLineSize[0] / (int) m_Factors[0];
+        inputLine.SetSize(inputLineSize);
+        inputLine.SetIndex(inputIndex);
+
+//        std::cout << "outputLine is " << outputLine << std::endl;
+//        std::cout << "inputLine is " << inputLine << std::endl;
+
+        OutputIterator outIt(outputPtr, outputLine);
+        InputIterator inIt(inputPtr, inputLine);
+
+        // Walk the line and copy the pixels
+        while(!inIt.IsAtEnd())
+          {
+          outIt.Set(inIt.Get());
+          for (int i=0; i<m_Factors[0]; i++) ++outIt;
+          ++inIt;
+          }
+
         }
-      }
-
-    if (copyFromInput)
-      {
-      //Copy the output value from the input
-      outIt.Set(inputPtr->GetPixel(inputIndex + inputStartIndex));
-      }
-    else
-      {
-      //Copy zero to the output value
-      outIt.Set(itk::NumericTraits<typename TOutputImage::PixelType>::Zero);
-      }
-
-    //Increment iterator and progress reporter
-    ++outIt;
+      // Move to next pixel in the slice
+      ++sliceIt;
     }
 }
 
