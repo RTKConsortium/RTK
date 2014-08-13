@@ -39,7 +39,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 {
   this->SetNumberOfRequiredInputs(1);
   this->m_Order = 0;
-//  this->SetNumberOfThreads(1);
 }
 
 /**
@@ -104,14 +103,9 @@ void
 UpsampleImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
-  double eps = 10e-6;
-
   //Get the input and output pointers
   InputImageConstPointer  inputPtr    = this->GetInput();
   OutputImagePointer      outputPtr   = this->GetOutput();
-
-  //Get input size
-  const typename TInputImage::SizeType& inputSize = inputPtr->GetLargestPossibleRegion().GetSize();
 
   //Define/declare an iterator that will walk the output region for this
   //thread.
@@ -128,11 +122,10 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 
   //Define a few indices that will be used to translate from an input pixel
   //to an output pixel
-//  typename TOutputImage::IndexType outputIndex;
-  typename TInputImage::IndexType inputIndex;
   typename TOutputImage::IndexType outputStartIndex;
   typename TInputImage::IndexType inputStartIndex;
 
+  typename TInputImage::OffsetType inputOffset;
   typename TOutputImage::OffsetType firstValidPixelOffset;
   typename TOutputImage::OffsetType firstPixelOfLineOffset;
 
@@ -141,7 +134,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 
   //Find the first output pixel that is copied from the input (the one with lowest indices
   //in all dimensions)
-//  std::cout << "Looking for first valid pixel" << std::endl;
   firstValidPixelOffset = outputRegionForThread.GetIndex() - outputStartIndex;
   for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
     {
@@ -150,7 +142,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
         firstValidPixelOffset[i] = firstValidPixelOffset[i]+1;
         }
     }
-//  std::cout << "First valid pixel found : " << firstValidPixelOffset << std::endl;
 
   // Walk the slice obtained by setting the first coordinate to zero. If the
   // line (1D vector traversing the output region along the first dimension)
@@ -159,7 +150,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
   OutputImageRegionType slice = outputRegionForThread;
   slice.SetSize(0, 1);
   slice.SetIndex(0, outputRegionForThread.GetIndex(0) + firstValidPixelOffset[0]);
-//  std::cout << "Processing slice " << slice << std::endl;
 
   OutputIterator sliceIt(outputPtr, slice);
   while (!sliceIt.IsAtEnd())
@@ -181,9 +171,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
         //Calculate the corresponding input index
         for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
           {
-          //inputIndex[i] = round( (double)(firstPixelOfLineOffset[i]-1) / (double)m_Factors[i] + eps);
-          inputIndex[i] = (int) (firstPixelOfLineOffset[i]-1) / (int) m_Factors[i];
-//          std::cout << "Processing line starting at " << inputIndex << std::endl;
+          inputOffset[i] = (firstPixelOfLineOffset[i]-1) / m_Factors[i];
           }
 
         // Create the iterators
@@ -197,12 +185,9 @@ UpsampleImageFilter<TInputImage,TOutputImage>
         typename TInputImage::RegionType inputLine = inputPtr->GetLargestPossibleRegion();
         typename TInputImage::SizeType inputLineSize;
         inputLineSize.Fill(1);
-        inputLineSize[0] = (int) outputLineSize[0] / (int) m_Factors[0];
+        inputLineSize[0] = (outputLineSize[0]+1) / m_Factors[0];
         inputLine.SetSize(inputLineSize);
-        inputLine.SetIndex(inputIndex);
-
-//        std::cout << "outputLine is " << outputLine << std::endl;
-//        std::cout << "inputLine is " << inputLine << std::endl;
+        inputLine.SetIndex(inputStartIndex + inputOffset);
 
         OutputIterator outIt(outputPtr, outputLine);
         InputIterator inIt(inputPtr, inputLine);

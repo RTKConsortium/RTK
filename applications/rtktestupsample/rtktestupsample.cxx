@@ -22,8 +22,6 @@
 #include "rtkUpsampleImageFilter.h"
 #include "rtkConstantImageSource.h"
 
-#include "itkImageFileWriter.h"
-
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
 #endif
@@ -54,8 +52,6 @@ int main(int argc, char * argv[])
 
   typedef rtk::UpsampleImageFilter<OutputImageType> UpsampleFilterType;
 
-  typedef itk::ImageFileWriter<OutputImageType> WriteFilterType;
-
   // Initialize random seed
   srand (time(NULL));
 
@@ -64,9 +60,9 @@ int main(int argc, char * argv[])
     std::cout << "In iteration " << i << std::endl;
 
     // Create new random volume
-    size[0] = rand() % 512;
-    size[1] = rand() % 512;
-    size[2] = rand() % 512;
+    size[0] = rand() % 511 + 1;
+    size[1] = rand() % 511 + 1;
+    size[2] = rand() % 511 + 1;
 
     upsampledSize[0] = size[0] * 2;
     upsampledSize[1] = size[1] * 2;
@@ -92,20 +88,7 @@ int main(int argc, char * argv[])
     Upsample->SetOutputSize(upsampledSize);
     Upsample->SetOutputIndex(index);
     TRY_AND_EXIT_ON_ITK_EXCEPTION( Upsample->Update() );
-
-    // Write both the random image and the upsampled one
-    WriteFilterType::Pointer writer = WriteFilterType::New();
-
-    writer->SetInput(constantImageSource->GetOutput());
-    writer->SetFileName("toBeUpsampled.mha");
-    writer->Update();
-
-    writer->SetInput(Upsample->GetOutput());
-    writer->SetFileName("upsampled.mha");
-    writer->Update();
-
     }
-
 
   return EXIT_SUCCESS;
 }
