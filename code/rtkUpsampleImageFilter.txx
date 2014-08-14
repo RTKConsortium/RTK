@@ -101,7 +101,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void 
 UpsampleImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId)
 {
   //Get the input and output pointers
   InputImageConstPointer  inputPtr    = this->GetInput();
@@ -132,15 +132,18 @@ UpsampleImageFilter<TInputImage,TOutputImage>
   outputStartIndex = outputPtr->GetLargestPossibleRegion().GetIndex();
   inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
 
+  //Support progress methods/callbacks
+  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
+
   //Find the first output pixel that is copied from the input (the one with lowest indices
   //in all dimensions)
   firstValidPixelOffset = outputRegionForThread.GetIndex() - outputStartIndex;
   for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
     {
-      while(firstValidPixelOffset[i]-1 % m_Factors[i])
-        {
-        firstValidPixelOffset[i] = firstValidPixelOffset[i]+1;
-        }
+    while(firstValidPixelOffset[i]-1 % m_Factors[i])
+      {
+      firstValidPixelOffset[i] = firstValidPixelOffset[i]+1;
+      }
     }
 
   // Walk the slice obtained by setting the first coordinate to zero. If the
@@ -154,55 +157,57 @@ UpsampleImageFilter<TInputImage,TOutputImage>
   OutputIterator sliceIt(outputPtr, slice);
   while (!sliceIt.IsAtEnd())
     {
-      //Determine the index of the output pixel
-      firstPixelOfLineOffset = sliceIt.GetIndex() - outputStartIndex;
+    //Determine the offset of the current pixel in the slice
+    firstPixelOfLineOffset = sliceIt.GetIndex() - outputStartIndex;
 
-      //Check whether the line contains pixels that should be copied from the input
-      bool copyFromInput = true;
-      for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
+    //Check whether the line contains pixels that should be copied from the input
+    bool copyFromInput = true;
+    for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
+      {
+      if ((firstPixelOfLineOffset[dim]-1) % m_Factors[dim])
+        copyFromInput = false;
+      }
+
+    // If it does, create an iterator along the line and copy the pixels
+    if (copyFromInput)
+      {
+      //Calculate the corresponding input index
+      for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
         {
-        if ((firstPixelOfLineOffset[dim]-1) % m_Factors[dim])
-          copyFromInput = false;
+        inputOffset[i] = (firstPixelOfLineOffset[i]-1) / m_Factors[i];
         }
 
-      // If it does, create an iterator along the line and copy the pixels
-      if (copyFromInput)
+      // Create the iterators
+      typename TOutputImage::RegionType outputLine = slice;
+      typename TOutputImage::SizeType outputLineSize;
+      outputLineSize.Fill(1);
+      outputLineSize[0] = outputRegionForThread.GetSize(0) - firstPixelOfLineOffset[0];
+      outputLine.SetSize(outputLineSize);
+      outputLine.SetIndex(sliceIt.GetIndex());
+
+      typename TInputImage::RegionType inputLine = inputPtr->GetLargestPossibleRegion();
+      typename TInputImage::SizeType inputLineSize;
+      inputLineSize.Fill(1);
+      inputLineSize[0] = (outputLineSize[0]+1) / m_Factors[0];
+      inputLine.SetSize(inputLineSize);
+      inputLine.SetIndex(inputStartIndex + inputOffset);
+
+      OutputIterator outIt(outputPtr, outputLine);
+      InputIterator inIt(inputPtr, inputLine);
+
+      // Walk the line and copy the pixels
+      while(!inIt.IsAtEnd())
         {
-        //Calculate the corresponding input index
-        for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
-          {
-          inputOffset[i] = (firstPixelOfLineOffset[i]-1) / m_Factors[i];
-          }
+        outIt.Set(inIt.Get());
+        for (int i=0; i<m_Factors[0]; i++) ++outIt;
+        ++inIt;
 
-        // Create the iterators
-        typename TOutputImage::RegionType outputLine = slice;
-        typename TOutputImage::SizeType outputLineSize;
-        outputLineSize.Fill(1);
-        outputLineSize[0] = outputRegionForThread.GetSize(0) - firstPixelOfLineOffset[0];
-        outputLine.SetSize(outputLineSize);
-        outputLine.SetIndex(sliceIt.GetIndex());
-
-        typename TInputImage::RegionType inputLine = inputPtr->GetLargestPossibleRegion();
-        typename TInputImage::SizeType inputLineSize;
-        inputLineSize.Fill(1);
-        inputLineSize[0] = (outputLineSize[0]+1) / m_Factors[0];
-        inputLine.SetSize(inputLineSize);
-        inputLine.SetIndex(inputStartIndex + inputOffset);
-
-        OutputIterator outIt(outputPtr, outputLine);
-        InputIterator inIt(inputPtr, inputLine);
-
-        // Walk the line and copy the pixels
-        while(!inIt.IsAtEnd())
-          {
-          outIt.Set(inIt.Get());
-          for (int i=0; i<m_Factors[0]; i++) ++outIt;
-          ++inIt;
-          }
-
+        progress.CompletedPixel();
         }
-      // Move to next pixel in the slice
-      ++sliceIt;
+
+      }
+    // Move to next pixel in the slice
+    ++sliceIt;
     }
 }
 

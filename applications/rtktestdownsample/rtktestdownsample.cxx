@@ -55,12 +55,12 @@ int main(int argc, char * argv[])
 
   for (unsigned int i=0; i<args_info.niterations_arg; i++)
     {
-      std::cout << "In iteration " << i << std::endl;
+    std::cout << "In iteration " << i << std::endl;
 
     // Create new random volume
-    size[0] = rand() % 512;
-    size[1] = rand() % 512;
-    size[2] = rand() % 512;
+    size[0] = rand() % 256 + 256;
+    size[1] = rand() % 256 + 256;
+    size[2] = rand() % 256 + 256;
 
     spacing[0] = 1.;
     spacing[1] = 1.;
