@@ -44,7 +44,7 @@ class ITK_EXPORT DrawCubeImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawCubeImageFilter                          Self;
+  typedef DrawCubeImageFilter                               Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
