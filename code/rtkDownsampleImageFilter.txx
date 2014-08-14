@@ -109,29 +109,27 @@ DownsampleImageFilter<TInputImage,TOutputImage>
   //Define/declare an iterator that will walk the output region for this
   //thread.
   typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
-  OutputIterator outIt(outputPtr, outputRegionForThread);
+  typedef itk::ImageRegionConstIterator<TInputImage> InputIterator;
 
   //Define a few indices that will be used to translate from an input pixel
   //to an output pixel
-  typename TOutputImage::IndexType outputIndex;
-  typename TInputImage::IndexType inputIndex;
-  typename TOutputImage::SizeType factor;
+  typename TInputImage::IndexType inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
+  typename TOutputImage::IndexType outputStartIndex = outputPtr->GetLargestPossibleRegion().GetIndex();
+
+  typename TOutputImage::OffsetType firstPixelOfOutputRegionForThreadOffset;
+  typename TInputImage::OffsetType firstPixelOfInputRegionForThreadOffset;
+  typename TOutputImage::OffsetType firstPixelOfOutputLineOffset;
+  typename TInputImage::OffsetType firstPixelOfInputLineOffset;
   typename TOutputImage::OffsetType offset;
 
-  // Get the input image start index (not necessarily zero because of padding)
-  typename TInputImage::OffsetType inputStartIndex;
-  typename TInputImage::OffsetType outputStartIndex;
-  for (unsigned int i=0; i < TInputImage::ImageDimension; i++)
-    {
-    inputStartIndex[i] = inputPtr->GetRequestedRegion().GetIndex(i);
-    outputStartIndex[i] = outputPtr->GetLargestPossibleRegion().GetIndex(i);
-    }
+  //Support progress methods/callbacks
+  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
 
-  //Generate factor and offset array
+  //Unless the downsampling factor is 1, we always skip the first pixel
+  //Create an offset array to enforce this behavior
   for (unsigned int i=0; i < TInputImage::ImageDimension; i++)
     {
-    factor[i] = m_Factors[i];
-    if (factor[i] == 1)
+    if (m_Factors[i] == 1)
       {
       offset[i] = 0;
       }
@@ -141,23 +139,74 @@ DownsampleImageFilter<TInputImage,TOutputImage>
       }
     }
 
-  //Support progress methods/callbacks
-  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
-
-  //Walk the output region, and sample the input image
-  while (!outIt.IsAtEnd())
+  //Find the first input pixel that is copied to the output (the one with lowest indices
+  //in all dimensions)
+  firstPixelOfOutputRegionForThreadOffset =
+      outputRegionForThread.GetIndex() - outputStartIndex;
+  for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
     {
-    //Determine the index of the output pixel
-    outputIndex = outIt.GetIndex() - outputStartIndex;
+    firstPixelOfInputRegionForThreadOffset[dim] =
+        firstPixelOfOutputRegionForThreadOffset[dim] * m_Factors[dim]
+        + offset[dim];
+    }
 
-    //Determine the input pixel location associated with this output pixel
-    inputIndex = (outputIndex * factor) + inputStartIndex + offset;
+  // Walk the slice obtained by setting the first coordinate to zero.
+  // Each pixel is the beginning of a line (a 1D vector traversing
+  // the output region along the first dimension). For each pixel,
+  // create an iterator and perform the copy from the input
+  OutputImageRegionType slice = outputRegionForThread;
+  slice.SetSize(0, 1);
+  OutputIterator sliceIt(outputPtr, slice);
 
-    //Copy the input pixel to the output
-    outIt.Set(inputPtr->GetPixel(inputIndex));
-    ++outIt;
+  while (!sliceIt.IsAtEnd())
+    {
+    //Determine the offset of the current pixel in the slice
+    firstPixelOfOutputLineOffset = sliceIt.GetIndex() - outputStartIndex;
 
-    progress.CompletedPixel();
+    //Calculate the offset of the corresponding input pixel
+    for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
+      {
+      firstPixelOfInputLineOffset[dim] =
+          firstPixelOfOutputLineOffset[dim] * m_Factors[dim]
+          + offset[dim];
+      }
+
+    // Create the iterators
+    typename TOutputImage::RegionType outputLine = outputRegionForThread;
+    typename TOutputImage::SizeType outputLineSize;
+    outputLineSize.Fill(1);
+    outputLineSize[0] = outputRegionForThread.GetSize(0);
+    outputLine.SetSize(outputLineSize);
+    outputLine.SetIndex(sliceIt.GetIndex());
+
+    typename TInputImage::RegionType inputLine = inputPtr->GetLargestPossibleRegion();
+    typename TInputImage::SizeType inputLineSize;
+    inputLineSize.Fill(1);
+
+    // Short example of how to calculate the inputLineSize :
+    // If we downsample by a factor 3 the vector [x a x x b x x],
+    // (starting in "a" because we have already taken into account the
+    // offset, using firstPixelOfInputLineOffset) we obtain [a b],
+    // so all we need is a vector of length 4 = (2 - 1) * 3 + 1
+    inputLineSize[0] = (outputLineSize[0] - 1) * m_Factors[0] + 1;
+    inputLine.SetSize(inputLineSize);
+    inputLine.SetIndex(inputStartIndex + firstPixelOfInputLineOffset);
+
+    OutputIterator outIt(outputPtr, outputLine);
+    InputIterator inIt(inputPtr, inputLine);
+
+    // Walk the line and copy the pixels
+    while(!outIt.IsAtEnd())
+      {
+      outIt.Set(inIt.Get());
+      for (int i=0; i<m_Factors[0]; i++) ++inIt;
+      ++outIt;
+
+      progress.CompletedPixel();
+      }
+
+    // Move to next pixel in the slice
+    ++sliceIt;
     }
 }
 
