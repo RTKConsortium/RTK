@@ -64,7 +64,7 @@ protected:
   CudaCropImageFilter();
   virtual ~CudaCropImageFilter() {};
 
-  void GPUGenerateData();
+  virtual void GPUGenerateData();
 
 private:
   CudaCropImageFilter(const Self&); //purposely not implemented
