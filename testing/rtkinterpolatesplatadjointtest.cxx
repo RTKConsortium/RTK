@@ -33,7 +33,7 @@ int main(int, char** )
   typedef itk::Image< OutputPixelType, Dimension + 1 > VolumeSeriesType;
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfSlices = 3;
+  const unsigned int NumberOfSlices = 2;
 #else
   const unsigned int NumberOfSlices = 64;
 #endif
@@ -65,7 +65,7 @@ int main(int, char** )
 #if FAST_TESTS_NO_CHECKS
   fourDSize[0] = 2;
   fourDSize[1] = 2;
-  fourDSize[2] = 2;
+  fourDSize[2] = NumberOfSlices;
   fourDSize[3] = 2;
   fourDSpacing[0] = 252.;
   fourDSpacing[1] = 252.;
@@ -74,7 +74,7 @@ int main(int, char** )
 #else
   fourDSize[0] = 64;
   fourDSize[1] = 64;
-  fourDSize[2] = 64;
+  fourDSize[2] = NumberOfSlices;
   fourDSize[3] = 5;
   fourDSpacing[0] = 4.;
   fourDSpacing[1] = 4.;

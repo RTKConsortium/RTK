@@ -77,7 +77,7 @@ protected:
   rtkcuda_EXPORT CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
 
-  void GPUGenerateData();
+  virtual void GPUGenerateData();
 
 private:
   //purposely not implemented

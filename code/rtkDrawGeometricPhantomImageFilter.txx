@@ -23,6 +23,7 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkDrawCylinderImageFilter.h"
 #include "rtkDrawConeImageFilter.h"
+#include "rtkDrawCubeImageFilter.h"
 #include "itkAddImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
@@ -116,7 +117,7 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
       case 3:
       {
         // Create figure object (3D box).
-        typedef rtk::DrawEllipsoidImageFilter<TInputImage, TOutputImage> DBType;
+        typedef rtk::DrawCubeImageFilter<TInputImage, TOutputImage> DBType;
         typename DBType::Pointer db = DBType::New();
         db->SetInput( this->GetInput() );
         db->SetAxis(semiprincipalaxis);
