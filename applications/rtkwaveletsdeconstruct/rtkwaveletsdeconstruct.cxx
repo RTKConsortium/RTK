@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
   WaveletsSoftThresholdFilterType::Pointer wst = WaveletsSoftThresholdFilterType::New();
   wst->SetInput(reader->GetOutput());
   wst->SetOrder(args_info.order_arg);
-  wst->SetThreshold(0.);
+  wst->SetThreshold(args_info.threshold_arg);
   wst->SetNumberOfLevels(args_info.level_arg);
 
   // Write reconstruction

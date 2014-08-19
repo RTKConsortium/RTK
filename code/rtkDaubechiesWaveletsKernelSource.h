@@ -25,7 +25,7 @@
 namespace rtk {
 
 /**
- * \class Daubechies Wavelet Kernel Source
+ * \class DaubechiesWaveletKernelSource
  * \brief Creates a Daubechies wavelets kernel image with the requested
  * attributes (order, type, pass along each dimension)
  *
