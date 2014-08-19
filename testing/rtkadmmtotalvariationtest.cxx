@@ -142,7 +142,7 @@ int main(int, char** )
   admmtotalvariation->SetAL_iterations( 3 );
   admmtotalvariation->SetCG_iterations( 2 );
 
-  // In all cases, use the Joseph forward projector
+  // In all cases except CUDA, use the Joseph forward projector
   admmtotalvariation->SetForwardProjectionFilter(0);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
@@ -161,9 +161,21 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector and gating ******" << std::endl;
+#ifdef USE_CUDA
+  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  admmtotalvariation->SetBackProjectionFilter( 0 );
+  admmtotalvariation->SetForwardProjectionFilter( 2 );
+  admmtotalvariation->SetBackProjectionFilter( 2 );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
+
+  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
+
+  std::cout << "\n\n****** Voxel-Based Backprojector and gating ******" << std::endl;
+
+  admmtotalvariation->SetForwardProjectionFilter(0); // Joseph
+  admmtotalvariation->SetBackProjectionFilter( 0 ); // Voxel based
 
   // Generate arbitrary gating weights (select every third projection)
   typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
@@ -191,16 +203,6 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-#ifdef USE_CUDA
-  std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
-
-  admmtotalvariation->SetForwardProjectionFilter( 2 );
-  admmtotalvariation->SetBackProjectionFilter( 2 );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
-
-  CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-#endif
 
   return EXIT_SUCCESS;
 }

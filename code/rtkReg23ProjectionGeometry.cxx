@@ -37,6 +37,12 @@ bool rtk::Reg23ProjectionGeometry::VerifyAngles(const double outOfPlaneAngleRAD,
   const double gantryAngleRAD, const double inPlaneAngleRAD,
   const Matrix3x3Type &referenceMatrix) const
 {
+  // Check if parameters are Nan. Fails if they are.
+  if(outOfPlaneAngleRAD != outOfPlaneAngleRAD ||
+     gantryAngleRAD != gantryAngleRAD ||
+     inPlaneAngleRAD != inPlaneAngleRAD)
+    return false;
+
   typedef itk::Euler3DTransform<double> EulerType;
 
   const Matrix3x3Type &rm = referenceMatrix; // shortcut
