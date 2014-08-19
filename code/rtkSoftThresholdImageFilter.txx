@@ -13,7 +13,7 @@ template <class TInputImage, class TOutputImage>
 SoftThresholdImageFilter<TInputImage, TOutputImage>
 ::SoftThresholdImageFilter()
 {
-    this->SetThreshold(NumericTraits<InputPixelType>::Zero);
+  this->SetThreshold(NumericTraits<InputPixelType>::Zero);
 }
 
 /**
@@ -24,8 +24,8 @@ void
 SoftThresholdImageFilter<TInputImage, TOutputImage>
 ::SetThreshold(const InputPixelType threshold)
 {
-    this->GetFunctor().SetThreshold(threshold);
-    this->Modified();
+  this->GetFunctor().SetThreshold(threshold);
+  this->Modified();
 }
 
 } // end namespace itk

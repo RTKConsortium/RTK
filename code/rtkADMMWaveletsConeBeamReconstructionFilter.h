@@ -77,11 +77,11 @@ namespace rtk
    *
    * Input0 -> BeforeZeroMultiply [arrowhead=None];
    * BeforeZeroMultiply -> ZeroMultiply;
+   * BeforeZeroMultiply -> G;
    * ZeroMultiply -> AfterZeroMultiply;
    * BeforeZeroMultiply -> ConjugateGradient;
    * Input1 -> BackProjection;
    * AfterZeroMultiply -> D;
-   * AfterZeroMultiply -> G;
    * AfterZeroMultiply -> BackProjection;
    * D -> Add;
    * G -> Add;
@@ -98,7 +98,7 @@ namespace rtk
    * SoftThreshold -> AfterSoftThreshold [arrowhead=None];
    * AfterSoftThreshold -> SubtractTwo;
    *
-   * AfterSoftThreshold -> G [style=dashed];
+   * AfterSoftThreshold -> G [style=dashed, constraint=false];
    * SubtractTwo -> D [style=dashed];
    * AfterConjugateGradient -> BeforeZeroMultiply [style=dashed];
    * AfterConjugateGradient -> Output [style=dashed];
@@ -140,7 +140,7 @@ public:
     typedef itk::AddImageFilter<TOutputImage>                                             AddFilterType;
     typedef itk::MultiplyImageFilter<TOutputImage>                                        MultiplyFilterType;
     typedef rtk::ADMMWaveletsConjugateGradientOperator<TOutputImage>                      CGOperatorFilterType;
-    typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TOutputImage>            SoftThresholdFilterType;
+    typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TOutputImage>             SoftThresholdFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -150,9 +150,6 @@ public:
 
     /** Pass the geometry to all filters needing it */
     itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
-
-    /** Increase the value of Beta at each iteration */
-    void SetBetaForCurrentIteration(int iter);
 
     itkSetMacro(Alpha, float)
     itkGetMacro(Alpha, float)

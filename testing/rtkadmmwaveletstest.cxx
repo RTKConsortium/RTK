@@ -69,7 +69,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 #endif
 
 /**
- * \file rtkadmmWaveletstest.cxx
+ * \file rtkadmmwaveletstest.cxx
  *
  * \brief Functional test for ADMMWavelets reconstruction
  *

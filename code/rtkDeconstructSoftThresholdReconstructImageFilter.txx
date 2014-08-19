@@ -82,31 +82,31 @@ DeconstructSoftThresholdReconstructImageFilter<TImage>
 
   if (!m_PipelineConstructed)
     {
-  // Connect the inputs
-  m_DeconstructionFilter->SetInput(this->GetInput());
+    // Connect the inputs
+    m_DeconstructionFilter->SetInput(this->GetInput());
 
-  // Set runtime parameters
-  m_DeconstructionFilter->SetOrder(this->GetOrder());
-  m_ReconstructionFilter->SetOrder(this->GetOrder());
-  m_DeconstructionFilter->UpdateOutputInformation();
-  m_ReconstructionFilter->SetSizes(m_DeconstructionFilter->GetSizes());
-  m_ReconstructionFilter->SetIndices(m_DeconstructionFilter->GetIndices());
+    // Set runtime parameters
+    m_DeconstructionFilter->SetOrder(this->GetOrder());
+    m_ReconstructionFilter->SetOrder(this->GetOrder());
+    m_DeconstructionFilter->UpdateOutputInformation();
+    m_ReconstructionFilter->SetSizes(m_DeconstructionFilter->GetSizes());
+    m_ReconstructionFilter->SetIndices(m_DeconstructionFilter->GetIndices());
 
-  //Create and setup an array of soft threshold filters
-  for (unsigned int index=0; index < m_DeconstructionFilter->GetNumberOfOutputs(); index++)
-    {
-    // Soft thresholding
-    m_SoftTresholdFilters.push_back(SoftThresholdFilterType::New());
-    m_SoftTresholdFilters[index]->SetInput(m_DeconstructionFilter->GetOutput(index));
-    m_SoftTresholdFilters[index]->SetThreshold(m_Threshold);
-    m_SoftTresholdFilters[index]->ReleaseDataFlagOn();
+    //Create and setup an array of soft threshold filters
+    for (unsigned int index=0; index < m_DeconstructionFilter->GetNumberOfOutputs(); index++)
+      {
+      // Soft thresholding
+      m_SoftTresholdFilters.push_back(SoftThresholdFilterType::New());
+      m_SoftTresholdFilters[index]->SetInput(m_DeconstructionFilter->GetOutput(index));
+      m_SoftTresholdFilters[index]->SetThreshold(m_Threshold);
+      m_SoftTresholdFilters[index]->ReleaseDataFlagOn();
 
-    //Set input for reconstruction
-    m_ReconstructionFilter->SetInput(index, m_SoftTresholdFilters[index]->GetOutput());
-    }
+      //Set input for reconstruction
+      m_ReconstructionFilter->SetInput(index, m_SoftTresholdFilters[index]->GetOutput());
+      }
 
-  // The low pass coefficients are not thresholded
-  m_SoftTresholdFilters[0]->SetThreshold(0);
+    // The low pass coefficients are not thresholded
+    m_SoftTresholdFilters[0]->SetThreshold(0);
     }
 
   m_PipelineConstructed = true;

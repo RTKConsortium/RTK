@@ -49,7 +49,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
 
   // Set permanent connections
-  m_AddFilter1->SetInput1(m_ZeroMultiplyFilter->GetOutput());
+//  m_AddFilter1->SetInput1(m_ZeroMultiplyFilter->GetOutput());
   m_AddFilter1->SetInput2(m_ZeroMultiplyFilter->GetOutput());
   m_MultiplyFilter->SetInput1( m_AddFilter1->GetOutput() );
   m_AddFilter2->SetInput1(m_MultiplyFilter->GetOutput());
@@ -96,18 +96,6 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 template< typename TOutputImage >
 void
 ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::SetBetaForCurrentIteration(int iter)
-{
-  float currentBeta = m_Beta * (iter+1) / (float)m_AL_iterations;
-
-  m_CGOperator->SetBeta(currentBeta);
-  m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * currentBeta));
-  m_MultiplyFilter->SetConstant2( (const float) currentBeta);
-}
-
-template< typename TOutputImage >
-void
-ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume we update
@@ -135,6 +123,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   // Set runtime connections
   m_ZeroMultiplyFilter->SetInput1(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1)); // The projections (the conjugate gradient operator needs them)
+  m_CGOperator->SetBeta(m_Beta);
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_MultiplyFilter->SetConstant2( m_Beta );
 
@@ -142,6 +131,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyFilter->GetOutput());
   m_BackProjectionFilter->SetInput(1, this->GetInput(1));
+  m_AddFilter1->SetInput1(this->GetInput(0));
   m_AddFilter2->SetInput2(m_BackProjectionFilter->GetOutput());
 
   // For the same reason, set geometry now
@@ -152,6 +142,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_SoftThresholdFilter->SetNumberOfLevels(this->GetNumberOfLevels());
   m_SoftThresholdFilter->SetOrder(this->GetOrder());
+  m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * m_Beta));
 
   // Have the last filter calculate its output information
   m_SubtractFilter2->UpdateOutputInformation();
@@ -165,28 +156,30 @@ void
 ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 ::GenerateData()
 {
+  typename TOutputImage::Pointer f_k_plus_one;
+  typename TOutputImage::Pointer W_t_G_k_plus_one;
+  typename TOutputImage::Pointer W_t_D_k_plus_one;
+
   for(unsigned int iter=0; iter < m_AL_iterations; iter++)
     {
-    SetBetaForCurrentIteration(iter);
-
     // After the first update, we need to use some outputs as inputs
     if(iter>0)
       {
-      typename TOutputImage::Pointer f_k_plus_one = m_ConjugateGradientFilter->GetOutput();
+      f_k_plus_one = m_ConjugateGradientFilter->GetOutput();
       f_k_plus_one->DisconnectPipeline();
       m_ConjugateGradientFilter->SetX(f_k_plus_one);
 
-      typename TOutputImage::Pointer W_t_G_k_plus_one = m_SoftThresholdFilter->GetOutput();
+      W_t_G_k_plus_one = m_SoftThresholdFilter->GetOutput();
       W_t_G_k_plus_one->DisconnectPipeline();
-      m_AddFilter1->SetInput2(W_t_G_k_plus_one);
+      m_AddFilter1->SetInput1(W_t_G_k_plus_one);
 
-      typename TOutputImage::Pointer W_t_D_k_plus_one = m_SubtractFilter2->GetOutput();
+      W_t_D_k_plus_one = m_SubtractFilter2->GetOutput();
       W_t_D_k_plus_one->DisconnectPipeline();
-      m_AddFilter1->SetInput1(W_t_D_k_plus_one);
+      m_AddFilter1->SetInput2(W_t_D_k_plus_one);
       m_SubtractFilter1->SetInput2(W_t_D_k_plus_one);
 
       // Recreate the links destroyed by DisconnectPipeline
-      m_SubtractFilter1->SetInput(m_ConjugateGradientFilter->GetOutput());
+      m_SubtractFilter1->SetInput1(m_ConjugateGradientFilter->GetOutput());
       m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
       }
 
