@@ -1,5 +1,5 @@
 package "rtk"
-version "Projects a volume according to a geometry file."
+version "Denoises a volume using Daubechies wavelets soft thresholding"
 
 option "verbose"   v "Verbose execution"                                         flag     off
 option "config"    - "Config file"                                               string   no

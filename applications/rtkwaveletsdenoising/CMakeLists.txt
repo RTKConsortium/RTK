@@ -1,14 +1,14 @@
-WRAP_GGO(rtktestdownsample_GGO_C rtktestdownsample.ggo)
-ADD_EXECUTABLE(rtktestdownsample rtktestdownsample.cxx ${rtktestdownsample_GGO_C})
-TARGET_LINK_LIBRARIES(rtktestdownsample RTK)
+WRAP_GGO(rtkwaveletsdenoising_GGO_C rtkwaveletsdenoising.ggo)
+ADD_EXECUTABLE(rtkwaveletsdenoising rtkwaveletsdenoising.cxx ${rtkwaveletsdenoising_GGO_C})
+TARGET_LINK_LIBRARIES(rtkwaveletsdenoising RTK)
 
 IF (RTK_USE_CUDA)
-  TARGET_LINK_LIBRARIES(rtktestdownsample rtkcuda)
+  TARGET_LINK_LIBRARIES(rtkwaveletsdenoising rtkcuda)
 ENDIF (RTK_USE_CUDA)
 
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtktestdownsample) 
+  FOREACH(EXE_NAME rtkwaveletsdenoising) 
     INSTALL(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries

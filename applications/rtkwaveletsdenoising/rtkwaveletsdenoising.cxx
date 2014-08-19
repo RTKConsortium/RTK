@@ -16,54 +16,42 @@
  *
  *=========================================================================*/
 
-#include "rtkwaveletskernel_ggo.h"
+#include "rtkwaveletsdenoising_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkDaubechiesWaveletsKernelSource.h"
+#include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
 #include <itkImageFileWriter.h>
+#include <itkImageFileReader.h>
+#include <string>
+#include <sstream>
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkwaveletskernel, args_info);
+  GGO(rtkwaveletsdenoising, args_info);
 
   typedef float OutputPixelType;
-  const unsigned int Dimension = 2;
+  const unsigned int Dimension = 3;
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Create the kernel source
-  typedef rtk::DaubechiesWaveletsKernelSource<OutputImageType> KernelSourceType;
-  KernelSourceType::Pointer source = KernelSourceType::New();
-  KernelSourceType::PassVector pass;
-  for (unsigned int dim=0; dim<Dimension; dim++)
-    {
-    if(args_info.lowpass_arg[dim])
-      {
-      pass[dim] = KernelSourceType::Low;
-      }
-    else
-      {
-      pass[dim] = KernelSourceType::High;
-      }
-    }
+  // Read the input image
+  typedef itk::ImageFileReader<OutputImageType> ReaderType;
+  ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileName(args_info.input_arg);
 
-  if (args_info.reconstruction_flag)
-    {
-    source->SetReconstruction();
-    }
-  else
-    {
-    source->SetDeconstruction();
-    }
-  source->SetOrder(args_info.order_arg);
-  source->SetPass(pass);
-  source->Update();
+  // Create the denoising filter
+  typedef rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType> WaveletsSoftThresholdFilterType;
+  WaveletsSoftThresholdFilterType::Pointer wst = WaveletsSoftThresholdFilterType::New();
+  wst->SetInput(reader->GetOutput());
+  wst->SetOrder(args_info.order_arg);
+  wst->SetThreshold(args_info.threshold_arg);
+  wst->SetNumberOfLevels(args_info.level_arg);
 
-  // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  // Write reconstruction
+  typedef itk::ImageFileWriter<OutputImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( source->GetOutput() );
+  writer->SetInput( wst->GetOutput() );
+  writer->SetFileName(args_info.output_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;

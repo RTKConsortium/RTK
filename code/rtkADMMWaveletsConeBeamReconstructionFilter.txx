@@ -49,7 +49,6 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
 
   // Set permanent connections
-//  m_AddFilter1->SetInput1(m_ZeroMultiplyFilter->GetOutput());
   m_AddFilter1->SetInput2(m_ZeroMultiplyFilter->GetOutput());
   m_MultiplyFilter->SetInput1( m_AddFilter1->GetOutput() );
   m_AddFilter2->SetInput1(m_MultiplyFilter->GetOutput());
