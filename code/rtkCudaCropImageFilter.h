@@ -61,7 +61,7 @@ public:
   itkTypeMacro(CudaCropImageFilter, ImageToImageFilter);
 
 protected:
-  CudaCropImageFilter();
+  rtkcuda_EXPORT CudaCropImageFilter();
   virtual ~CudaCropImageFilter() {};
 
   virtual void GPUGenerateData();
