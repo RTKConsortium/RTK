@@ -74,7 +74,7 @@ public:
   itkSetMacro(StepSize, double);
 
 protected:
-  rtkcuda_EXPORT CudaForwardProjectionImageFilter();
+  CudaForwardProjectionImageFilter();
   ~CudaForwardProjectionImageFilter() {};
 
   virtual void GPUGenerateData();
