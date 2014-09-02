@@ -52,9 +52,18 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   // Set whether the sub filters should release their data during pipeline execution
   m_DivergenceFilter->ReleaseDataFlagOn();
   m_SubtractFilter->ReleaseDataFlagOff(); // It is the pipeline's output
+  m_MagnitudeThresholdFilter->ReleaseDataFlagOff(); // Output used twice
   m_GradientFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
   m_SubtractGradientFilter->ReleaseDataFlagOn();
+
+  // Set some filters to be InPlace
+
+  // TotalVariationDenoisingBPDQ reaches its memory consumption peak here,
+  // when m_SubtractGradientFilter allocates its output (a covariant vector image)
+  // and uses its two inputs (two covariant vector images)
+  // Setting it in place reduces the memory requirement from 3 cov. vector images to 2
+  m_SubtractGradientFilter->SetInPlace(true);
 }
 
 template< typename TOutputImage, typename TGradientOutputImage>
