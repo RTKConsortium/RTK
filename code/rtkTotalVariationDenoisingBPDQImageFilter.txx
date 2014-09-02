@@ -51,19 +51,20 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 
   // Set whether the sub filters should release their data during pipeline execution
   m_DivergenceFilter->ReleaseDataFlagOn();
-  m_SubtractFilter->ReleaseDataFlagOff(); // It is the pipeline's output
-  m_MagnitudeThresholdFilter->ReleaseDataFlagOff(); // Output used twice
+  m_SubtractFilter->ReleaseDataFlagOn(); // It is the pipeline's output, but it is explicitely computed during the last iteration
   m_GradientFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
   m_SubtractGradientFilter->ReleaseDataFlagOn();
 
   // Set some filters to be InPlace
 
-  // TotalVariationDenoisingBPDQ reaches its memory consumption peak here,
+  // TotalVariationDenoisingBPDQ reaches its memory consumption peak
   // when m_SubtractGradientFilter allocates its output (a covariant vector image)
   // and uses its two inputs (two covariant vector images)
-  // Setting it in place reduces the memory requirement from 3 cov. vector images to 2
+  // Setting it in place reduces the memory requirement from 3 covariant vector images to 2
   m_SubtractGradientFilter->SetInPlace(true);
+  m_MultiplyFilter->SetInPlace(true);
+  m_SubtractFilter->SetInPlace(true);
 }
 
 template< typename TOutputImage, typename TGradientOutputImage>
@@ -161,8 +162,6 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   m_SubtractGradientFilter->SetInput2(m_GradientFilter->GetOutput());
 
   m_MagnitudeThresholdFilter->SetInput(m_SubtractGradientFilter->GetOutput());
-  m_MagnitudeThresholdFilter->UpdateOutputInformation();
-  m_MagnitudeThresholdFilter->GetOutput()->PropagateRequestedRegion();
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -175,7 +174,7 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   // The first iteration only updates intermediate variables, not the output
   // The output is updated m_NumberOfIterations-1 times, therefore an additional
   // iteration must be performed so that even m_NumberOfIterations=1 has an effect
-  for (int iter=0; iter<=m_NumberOfIterations; iter++)
+  for (int iter=0; iter<m_NumberOfIterations; iter++)
     {
     if(iter==1) SetPipelineAfterFirstIteration();
 
@@ -186,10 +185,11 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
     m_DivergenceFilter->SetInput( pimg );
     m_SubtractGradientFilter->SetInput1( pimg );
     }
-  this->GraftOutput(m_SubtractFilter->GetOutput());
-
-  //Release the data in pimg
+  m_DivergenceFilter->Update();
   pimg->ReleaseData();
+
+  m_SubtractFilter->Update();
+  this->GraftOutput(m_SubtractFilter->GetOutput());
 }
 
 } // end namespace rtk
