@@ -24,8 +24,8 @@
 namespace rtk
 {
 
-template< typename TOutputImage, typename TGradientOutputImage> 
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+template< typename TOutputImage, typename TGradientImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::TotalVariationDenoisingBPDQImageFilter()
 {
   m_Gamma = 1.0;
@@ -47,7 +47,7 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 
   // Set permanent parameters
   m_BoundaryConditionForGradientFilter = new itk::ZeroFluxNeumannBoundaryCondition<TOutputImage>();
-  m_BoundaryConditionForDivergenceFilter = new itk::ZeroFluxNeumannBoundaryCondition<TGradientOutputImage>();
+  m_BoundaryConditionForDivergenceFilter = new itk::ZeroFluxNeumannBoundaryCondition<TGradientImage>();
 
   // Set whether the sub filters should release their data during pipeline execution
   m_DivergenceFilter->ReleaseDataFlagOn();
@@ -63,12 +63,10 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   // and uses its two inputs (two covariant vector images)
   // Setting it in place reduces the memory requirement from 3 covariant vector images to 2
   m_SubtractGradientFilter->SetInPlace(true);
-  m_MultiplyFilter->SetInPlace(true);
-  m_SubtractFilter->SetInPlace(true);
 }
 
-template< typename TOutputImage, typename TGradientOutputImage>
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+template< typename TOutputImage, typename TGradientImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::~TotalVariationDenoisingBPDQImageFilter()
 {
   delete m_BoundaryConditionForGradientFilter;
@@ -76,9 +74,9 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
 }
 
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetDimensionsProcessed(bool* arg)
 {
   bool Modified=false;
@@ -93,24 +91,24 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   if(Modified) this->Modified();
 }
 
-template< typename TOutputImage, typename TGradientOutputImage>
+template< typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetBoundaryConditionToPeriodic()
 {
   delete m_BoundaryConditionForGradientFilter;
   delete m_BoundaryConditionForDivergenceFilter;
 
   m_BoundaryConditionForGradientFilter = new itk::PeriodicBoundaryCondition<TOutputImage>();
-  m_BoundaryConditionForDivergenceFilter = new itk::PeriodicBoundaryCondition<TGradientOutputImage>();
+  m_BoundaryConditionForDivergenceFilter = new itk::PeriodicBoundaryCondition<TGradientImage>();
 
   m_GradientFilter->OverrideBoundaryCondition(m_BoundaryConditionForGradientFilter);
   m_DivergenceFilter->OverrideBoundaryCondition(m_BoundaryConditionForDivergenceFilter);
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::GenerateOutputInformation()
 {
   // Set the pipeline for the first iteration
@@ -137,9 +135,9 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   this->GetOutput()->CopyInformation( m_MultiplyFilter->GetOutput() );
 }
 
-template< typename TOutputImage, typename TGradientOutputImage>
+template< typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetPipelineForFirstIteration()
 {
   m_MultiplyFilter->SetInput1(this->GetInput());
@@ -147,9 +145,9 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   m_MagnitudeThresholdFilter->SetInput(m_GradientFilter->GetOutput());
 }
 
-template< typename TOutputImage, typename TGradientOutputImage>
+template< typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetPipelineAfterFirstIteration()
 {
   m_SubtractFilter->SetInput1(this->GetInput());
@@ -164,12 +162,12 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
   m_MagnitudeThresholdFilter->SetInput(m_SubtractGradientFilter->GetOutput());
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientOutputImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::GenerateData()
 {
-  typename TGradientOutputImage::Pointer pimg;
+  typename TGradientImage::Pointer pimg;
 
   // The first iteration only updates intermediate variables, not the output
   // The output is updated m_NumberOfIterations-1 times, therefore an additional

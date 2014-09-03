@@ -109,7 +109,7 @@ namespace rtk
  * \ingroup IntensityImageFilters
  */
 
-template< typename TOutputImage, typename TGradientOutputImage = 
+template< typename TOutputImage, typename TGradientImage =
     itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
     TOutputImage::ImageDimension > >
 class TotalVariationDenoisingBPDQImageFilter :
@@ -130,14 +130,16 @@ public:
   itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, ImageToImageFilter)
 
   /** Sub filter type definitions */
-  typedef ForwardDifferenceGradientImageFilter<TOutputImage,
-            typename TOutputImage::ValueType, typename TOutputImage::ValueType,
-            TGradientOutputImage>                                                     GradientFilterType;
-  typedef itk::MultiplyImageFilter<TOutputImage>                                      MultiplyFilterType;
-  typedef itk::SubtractImageFilter<TOutputImage>                                      SubtractImageFilterType;
-  typedef itk::SubtractImageFilter<TGradientOutputImage>                              SubtractGradientFilterType;
-  typedef MagnitudeThresholdImageFilter<TGradientOutputImage>                         MagnitudeThresholdFilterType;
-  typedef BackwardDifferenceDivergenceImageFilter<TGradientOutputImage, TOutputImage> DivergenceFilterType;
+  typedef ForwardDifferenceGradientImageFilter
+            <TOutputImage,
+             typename TOutputImage::ValueType,
+             typename TOutputImage::ValueType,
+             TGradientImage>                                                      GradientFilterType;
+  typedef itk::MultiplyImageFilter<TOutputImage>                                  MultiplyFilterType;
+  typedef itk::SubtractImageFilter<TOutputImage>                                  SubtractImageFilterType;
+  typedef itk::SubtractImageFilter<TGradientImage>                                SubtractGradientFilterType;
+  typedef MagnitudeThresholdImageFilter<TGradientImage>                           MagnitudeThresholdFilterType;
+  typedef BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>   DivergenceFilterType;
 
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
@@ -171,8 +173,8 @@ protected:
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
   // In some cases, regularization must use periodic boundary condition
-  typename itk::ImageBoundaryCondition<TOutputImage, TOutputImage>                  * m_BoundaryConditionForGradientFilter;
-  typename itk::ImageBoundaryCondition<TGradientOutputImage, TGradientOutputImage>  * m_BoundaryConditionForDivergenceFilter;
+  typename itk::ImageBoundaryCondition<TOutputImage, TOutputImage>      * m_BoundaryConditionForGradientFilter;
+  typename itk::ImageBoundaryCondition<TGradientImage, TGradientImage>  * m_BoundaryConditionForDivergenceFilter;
 
 private:
   TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented

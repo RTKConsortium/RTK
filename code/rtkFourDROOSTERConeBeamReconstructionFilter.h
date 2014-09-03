@@ -90,6 +90,16 @@ public:
     typedef rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> Superclass;
     typedef itk::SmartPointer< Self >        Pointer;
     typedef ProjectionStackType              VolumeType;
+    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1> CovariantVectorForSpatialGradient;
+    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1> CovariantVectorForTemporalGradient;
+
+#ifdef RTK_USE_CUDA
+    typedef itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension> SpatialGradientImageType;
+    typedef itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension> TemporalGradientImageType;
+#else
+    typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension> SpatialGradientImageType;
+    typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension> TemporalGradientImageType;
+#endif
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -103,13 +113,14 @@ public:
     /** The stack of measured projections */
     void SetInputProjectionStack(const ProjectionStackType* Projection);
 
-    /** The stack of measured projections */
+    /** The region of interest outside of which all movement is removed */
     void SetInputROI(const VolumeType* ROI);
 
     typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>  FourDCGFilterType;
     typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
     typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType>                                              AverageOutOfROIFilterType;
-    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType>                                   TVDenoisingFilterType;
+    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>         SpatialTVDenoisingFilterType;
+    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>        TemporalTVDenoisingFilterType;
 
     /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
     void SetForwardProjectionFilter(int fwtype);
@@ -119,9 +130,6 @@ public:
 
     /** Pass the interpolation weights to SingleProjectionToFourDFilter */
     void SetWeights(const itk::Array2D<float> _arg);
-
-    /** Pass the motion weights to the gradient and divergence filters*/
-    void SetROI(VolumeType* ROI);
 
     void PrintTiming(std::ostream& os) const;
 
@@ -163,8 +171,8 @@ protected:
     typename FourDCGFilterType::Pointer                     m_FourDCGFilter;
     typename ThresholdFilterType::Pointer                   m_PositivityFilter;
     typename AverageOutOfROIFilterType::Pointer             m_AverageOutOfROIFilter;
-    typename TVDenoisingFilterType::Pointer                 m_TVDenoisingSpace;
-    typename TVDenoisingFilterType::Pointer                 m_TVDenoisingTime;
+    typename SpatialTVDenoisingFilterType::Pointer          m_TVDenoisingSpace;
+    typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
 
 private:
     FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented
