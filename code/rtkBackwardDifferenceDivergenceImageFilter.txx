@@ -184,7 +184,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
     // Compute the local differences around the central pixel
     for (unsigned int k = 0; k < dimsToProcess.size(); k++)
       {
-      div += (iit.GetPixel(c)[dimsToProcess[k]] - iit.GetPixel(c - strides[dimsToProcess[k]])[dimsToProcess[k]]) / m_SpacingCoeffs[dimsToProcess[k]];
+      div += (iit.GetPixel(c)[k] - iit.GetPixel(c - strides[dimsToProcess[k]])[k]) / m_SpacingCoeffs[dimsToProcess[k]];
       }
     oit.Set(div);
     ++oit;
@@ -228,7 +228,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
       itk::ImageRegionIterator<TOutputImage> oit(this->GetOutput(), slice);
       itk::ImageRegionConstIterator<TInputImage> iit(this->GetInput(), slice);
 
-      oit.Set(oit.Get() - iit.Get()[dimsToProcess[k]] / m_SpacingCoeffs[dimsToProcess[k]]);
+      oit.Set(oit.Get() - iit.Get()[k] / m_SpacingCoeffs[dimsToProcess[k]]);
       ++oit;
       ++iit;
       }
