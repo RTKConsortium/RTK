@@ -46,6 +46,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
   // Memory management options
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
+  m_ProjStackToFourDFilter->ReleaseDataFlagOn();
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
@@ -162,6 +163,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 ::GenerateData()
 {
   m_ConjugateGradientFilter->Update();
+
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
 }
 

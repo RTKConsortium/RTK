@@ -88,6 +88,10 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   m_Barrier = itk::Barrier::New();
   m_Barrier->Initialize(actualThreads);
 
+  m_SquaredNormR_kVector.clear();
+  m_SquaredNormR_kPlusOneVector.clear();
+  m_PktApkVector.clear();
+
   for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
     {
     m_SquaredNormR_kVector.push_back(0);
@@ -151,7 +155,6 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
     ++A_p_k_It;
     ++outputIt;
     }
-
 }
 
 template< typename TInputType>

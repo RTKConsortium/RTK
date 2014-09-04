@@ -67,6 +67,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
   // Set memory management parameters
   m_FourDCGFilter->ReleaseDataFlagOn();
+  m_PositivityFilter->SetInPlace(true);
   m_PositivityFilter->ReleaseDataFlagOn();
   m_AverageOutOfROIFilter->ReleaseDataFlagOn();
   m_TVDenoisingSpace->ReleaseDataFlagOn();

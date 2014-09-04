@@ -78,6 +78,7 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
   inputFilter->Update();
+  inputFilter->ReleaseDataFlagOn();
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();

@@ -43,6 +43,9 @@ ConjugateGradientGetP_kPlusOneImageFilter<TInputType>::ConjugateGradientGetP_kPl
   m_Betak = 0;
 
   this->SetNumberOfRequiredInputs(3);
+
+  // Set memory management options
+  m_MultiplyFilter->ReleaseDataFlagOn();
 }
 
 template< typename TInputType>
@@ -116,6 +119,9 @@ void ConjugateGradientGetP_kPlusOneImageFilter<TInputType>
 
   // Pass the Add filter's output
   this->GraftOutput(m_AddFilter->GetOutput());
+
+  // Release data in internal filters
+  m_MultiplyFilter->GetOutput()->ReleaseData();
 }
 
 }// end namespace
