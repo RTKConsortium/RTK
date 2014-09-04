@@ -78,6 +78,7 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
   inputFilter->Update();
+  inputFilter->ReleaseDataFlagOn();
 
   // ROI reader
   typedef itk::ImageFileReader<  VolumeType > InputReaderType;

@@ -247,8 +247,17 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   // Graft its output
   this->GraftOutput( m_SplatFilter->GetOutput() );
 
-  // Release the data in pimg
+  // Release the data in internal filters
   pimg->ReleaseData();
+  m_ConstantVolumeSource1->GetOutput()->ReleaseData();
+  m_ConstantVolumeSource2->GetOutput()->ReleaseData();
+  m_ExtractFilter->GetOutput()->ReleaseData();
+  m_ZeroMultiplyVolumeSeriesFilter->GetOutput()->ReleaseData();
+  m_ZeroMultiplyProjectionStackFilter->GetOutput()->ReleaseData();
+  m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
+  m_InterpolationFilter->GetOutput()->ReleaseData();
+  m_BackProjectionFilter->GetOutput()->ReleaseData();
+  m_ForwardProjectionFilter->GetOutput()->ReleaseData();
 }
 
 }// end namespace
