@@ -11,7 +11,7 @@ option "tviter"      - "Number of total variation nested iterations"           i
 option "time"        t "Records elapsed time during the process"               flag   off
 option "gamma_time"  - "Regularization parameter along time. The higher, the smoother"  double yes
 option "gamma_space" - "Regularization parameter along space. The higher, the smoother"  double yes
-option "roi"         - "Region Of Interest file, binary image with ones where movement can occur and zeros elsewhere" string yes
+option "motionmask"  - "Region Of Interest file, binary image with ones where movement can occur and zeros elsewhere" string yes
 
 section "Projections"
 option "path"      p "Path containing projections"                               string                       yes
@@ -20,7 +20,7 @@ option "nsort"     - "Numeric sort for regular expression matches"              
 option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
 
 section "Phase gating"
-option "phases"    - "File containing the phase of each projection"              string                       yes
+option "signal"    - "File containing the phase of each projection"              string                       yes
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
@@ -32,4 +32,4 @@ option "origin"    - "Origin (default=centered)"                double multiple 
 option "dimension" - "Size of a volume"                         int    multiple no  default="256"
 option "spacing"   - "Spacing of a volume"                      double multiple no  default="1"
 option "direction" - "Direction of a volume"                    double multiple no
-option "volumes"   - "Number of volumes in the 4D reconstruction"   int no default="10"
+option "frames"    - "Number of time frames in the 4D reconstruction"   int no default="10"

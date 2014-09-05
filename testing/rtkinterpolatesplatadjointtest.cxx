@@ -136,7 +136,7 @@ int main(int, char** )
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(std::string(RTK_DATA_ROOT) +
                            std::string("/Input/Phases/phases_slow.txt"));
-  phaseReader->SetNumberOfReconstructedPhases( fourDSize[3] );
+  phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
   std::cout << "\n\n****** 4D to 3D (interpolation) ******" << std::endl;

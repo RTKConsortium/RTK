@@ -258,7 +258,7 @@ int main(int, char** )
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName("signal.txt");
-  phaseReader->SetNumberOfReconstructedPhases( fourDSize[3] );
+  phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
   // Set the forward and back projection filters to be used

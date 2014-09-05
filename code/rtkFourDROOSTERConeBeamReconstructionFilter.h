@@ -114,7 +114,7 @@ public:
     void SetInputProjectionStack(const ProjectionStackType* Projection);
 
     /** The region of interest outside of which all movement is removed */
-    void SetInputROI(const VolumeType* ROI);
+    void SetMotionMask(const VolumeType* mask);
 
     typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>  FourDCGFilterType;
     typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
