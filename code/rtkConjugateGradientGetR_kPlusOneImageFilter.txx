@@ -129,7 +129,6 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
     ++p_k_It;
     ++A_p_k_It;
     }
-
   m_Barrier->Wait();
 
   // Each thread computes alpha_k

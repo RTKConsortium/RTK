@@ -30,7 +30,7 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   this->SetNumberOfRequiredInputs(2);
   
   m_NumberOfIterations = 1;
-  m_MeasureExecutionTimes = false;
+//  m_MeasureExecutionTimes = false;
 
   m_A = ConjugateGradientOperatorType::New();
 }
@@ -94,11 +94,11 @@ void ConjugateGradientImageFilter<OutputImageType>
 {
   itk::TimeProbe CGTimeProbe;
 
-  if(m_MeasureExecutionTimes)
-    {
-    std::cout << "Starting conjugate gradient initialization"<< std::endl;
-    CGTimeProbe.Start();
-    }
+//  if(m_MeasureExecutionTimes)
+//    {
+//    std::cout << "Starting conjugate gradient initialization"<< std::endl;
+//    CGTimeProbe.Start();
+//    }
 
   // Initialization
   m_A->SetX(this->GetX());
@@ -139,7 +139,6 @@ void ConjugateGradientImageFilter<OutputImageType>
   // Start the iterative procedure
   for (int iter=0; iter<m_NumberOfIterations; iter++)
     {
-
     if(iter>0)
       {
       R_kPlusOne = GetR_kPlusOne_Filter->GetOutput();

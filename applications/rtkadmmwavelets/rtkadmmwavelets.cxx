@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkadmmtotalvariation_ggo.h"
+#include "rtkadmmwavelets_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
 
@@ -27,24 +27,20 @@
 #include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
-#include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
-#include "rtkPhaseGatingImageFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkadmmtotalvariation, args_info);
+  GGO(rtkadmmwavelets, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector 
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector 
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #endif
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +51,7 @@ int main(int argc, char * argv[])
   typedef rtk::ProjectionsReader< OutputImageType > projectionsReaderType;
   projectionsReaderType::Pointer projectionsReader = projectionsReaderType::New();
   rtk::SetProjectionsReaderFromGgo<projectionsReaderType,
-      args_info_rtkadmmtotalvariation>(projectionsReader, args_info);
+      args_info_rtkadmmwavelets>(projectionsReader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -68,19 +64,11 @@ int main(int argc, char * argv[])
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() );
 
-  // Phase gating weights reader
-  typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
-  PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
-  if (args_info.phases_given)
-    {
-    phaseGating->SetFileName(args_info.phases_arg);
-    phaseGating->SetGatingWindowWidth(args_info.windowwidth_arg);
-    phaseGating->SetGatingWindowCenter(args_info.windowcenter_arg);
-    phaseGating->SetGatingWindowShape(args_info.windowshape_arg);
-    phaseGating->SetInputProjectionStack(projectionsReader->GetOutput());
-    phaseGating->SetInputGeometry(geometryReader->GetOutputObject());
-    phaseGating->Update();
-    }
+  // Displaced detector weighting
+  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
+  DDFType::Pointer ddf = DDFType::New();
+  ddf->SetInput( projectionsReader->GetOutput() );
+  ddf->SetGeometry( geometryReader->GetOutputObject() );
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource< OutputImageType >::Pointer inputFilter;
@@ -97,7 +85,7 @@ int main(int argc, char * argv[])
     // Create new empty volume
     typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmtotalvariation>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmwavelets>(constantImageSource, args_info);
     inputFilter = constantImageSource;
     }
 
@@ -106,38 +94,33 @@ int main(int argc, char * argv[])
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // Set the reconstruction filter
-  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter
-      <OutputImageType, GradientOutputImageType> ADMM_TV_FilterType;
-    ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
+  typedef rtk::ADMMWaveletsConeBeamReconstructionFilter
+      <OutputImageType> ADMM_Wavelets_FilterType;
+    ADMM_Wavelets_FilterType::Pointer admmFilter = ADMM_Wavelets_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
   admmFilter->SetForwardProjectionFilter(args_info.fp_arg);
   admmFilter->SetBackProjectionFilter(args_info.bp_arg);
 
-  // Set all four numerical parameters
+  // Set the geometry and interpolation weights
+  admmFilter->SetGeometry(geometryReader->GetOutputObject());
+
+  // Set all numerical parameters
   admmFilter->SetCG_iterations(args_info.CGiter_arg);
   admmFilter->SetAL_iterations(args_info.niterations_arg);
   admmFilter->SetAlpha(args_info.alpha_arg);
   admmFilter->SetBeta(args_info.beta_arg);
+  admmFilter->SetNumberOfLevels(args_info.levels_arg);
+  admmFilter->SetOrder(args_info.order_arg);
 
   // Set the inputs of the ADMM filter
   admmFilter->SetInput(0, inputFilter->GetOutput() );
-  if (args_info.phases_given)
-    {
-    admmFilter->SetInput(1, phaseGating->GetOutput());
-    admmFilter->SetGeometry( phaseGating->GetOutputGeometry() );
-    admmFilter->SetGatingWeights( phaseGating->GetGatingWeightsOnSelectedProjections() );
-    }
-  else
-    {
-    admmFilter->SetInput(1, projectionsReader->GetOutput() );
-    admmFilter->SetGeometry( geometryReader->GetOutputObject() );
-    }
+  admmFilter->SetInput(1, projectionsReader->GetOutput() );
 
   itk::TimeProbe totalTimeProbe;
   if(args_info.time_flag)
     {
-    std::cout << "Starting global probes before updating the ADMM filter" << std::endl;
+    std::cout << "Recording elapsed time... " << std::endl << std::flush;
     totalTimeProbe.Start();
     }
 

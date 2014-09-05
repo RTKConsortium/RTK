@@ -158,6 +158,20 @@ itkImageScanlineConstIterator has been taken from ITK 4.5.0
 It uses the same Apache 2.0 license as RTK
 
 ------------------------------------------------------------------------
+Some code is modified (a lot) from GIFT, the Generalized Image Fusion Toolkit
+(http://hdl.handle.net/1926/216)
+- rtkDaubechiesWaveletsKernelSource.h
+- rtkDaubechiesWaveletsKernelSource.txx
+- rtkDeconstructImageFilter.h
+- rtkDeconstructImageFilter.txx
+- rtkReconstructImageFilter.h
+- rtkReconstructImageFilter.txx
+- rtkDownsampleImageFilter.h
+- rtkDownsampleImageFilter.txx
+- rtkUpsampleImageFilter.h
+- rtkUpsampleImageFilter.txx
+
+------------------------------------------------------------------------
 Some code is modified from http://sourceforge.net/projects/niftyrec/:
 - tt_project_ray_gpu_kernels.cu in rtkCudaForwardProjectionImageFilter.h 
 
@@ -190,4 +204,3 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
-
