@@ -84,6 +84,7 @@ DeconstructSoftThresholdReconstructImageFilter<TImage>
     {
     // Connect the inputs
     m_DeconstructionFilter->SetInput(this->GetInput());
+    m_DeconstructionFilter->ReleaseDataFlagOn();
 
     // Set runtime parameters
     m_DeconstructionFilter->SetOrder(this->GetOrder());

@@ -21,7 +21,6 @@
 
 //Includes
 #include "rtkDeconstructImageFilter.h"
-//#include "itkSimpleFilterWatcher.h"
 
 namespace rtk
 {
@@ -36,16 +35,14 @@ DeconstructImageFilter<TImage>::DeconstructImageFilter()
   this->m_PipelineConstructed = false;
 }
 
-
 /////////////////////////////////////////////////////////
 //PrintSelf()
 template <class TImage>
 void DeconstructImageFilter<TImage>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
-    Superclass::PrintSelf(os, indent);
+  Superclass::PrintSelf(os, indent);
 }
-
 
 /////////////////////////////////////////////////////////
 //ModifyInputOutputStorage()
@@ -53,35 +50,34 @@ template <class TImage>
 void DeconstructImageFilter<TImage>
 ::ModifyInputOutputStorage()
 {
-    //Set as modified
-    this->Modified();
+  this->Modified();
 
-    //Set required number of outputs
-    unsigned int requiredNumberOfOutputs = this->CalculateNumberOfOutputs();
-    this->SetNumberOfRequiredOutputs(requiredNumberOfOutputs);
+  //Set required number of outputs
+  unsigned int requiredNumberOfOutputs = this->CalculateNumberOfOutputs();
+  this->SetNumberOfRequiredOutputs(requiredNumberOfOutputs);
 
-    //Make actual outputs and required outputs match
-    int actualNumberOfOutputs = this->GetNumberOfOutputs();
-    int idx;
+  //Make actual outputs and required outputs match
+  int actualNumberOfOutputs = this->GetNumberOfOutputs();
+  int idx;
 
-    if (actualNumberOfOutputs < requiredNumberOfOutputs)
+  if (actualNumberOfOutputs < requiredNumberOfOutputs)
     {
-        //Add extra outputs
-        for (idx = actualNumberOfOutputs; idx < requiredNumberOfOutputs; idx++)
-        {
-            typename itk::DataObject::Pointer output = this->MakeOutput(idx);
-            this->SetNthOutput(idx, output.GetPointer());
-        }
+    //Add extra outputs
+    for (idx = actualNumberOfOutputs; idx < requiredNumberOfOutputs; idx++)
+      {
+      typename itk::DataObject::Pointer output = this->MakeOutput(idx);
+      this->SetNthOutput(idx, output.GetPointer());
+      }
     }
-    else if (actualNumberOfOutputs > requiredNumberOfOutputs)
+  else if (actualNumberOfOutputs > requiredNumberOfOutputs)
+  {
+  //Remove extra outputs
+  for (idx = (actualNumberOfOutputs-1); idx >= requiredNumberOfOutputs; idx--)
     {
-        //Remove extra outputs
-        for (idx = (actualNumberOfOutputs-1); idx >= requiredNumberOfOutputs; idx--)
-        {
-            if (idx < 0){break;}
-            this->RemoveOutput(idx);
-        }
+    if (idx < 0){break;}
+    this->RemoveOutput(idx);
     }
+  }
 }
 
 template <class TImage>
@@ -94,13 +90,18 @@ unsigned int DeconstructImageFilter<TImage>::CalculateNumberOfOutputs()
 
 template <class TImage>
 void DeconstructImageFilter<TImage>
-::GenerateAllKernelSources()
+::GeneratePassVectors()
 {
   unsigned int dimension = TImage::ImageDimension;
   unsigned int n = round(pow(2.0, dimension));
 
   // Create a vector of PassVector
-  typename KernelSourceType::PassVector *passVectors = new typename KernelSourceType::PassVector[n];
+  m_PassVectors.clear();
+  for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
+    {
+    typename ConvolutionFilterType::PassVector temp;
+    m_PassVectors.push_back(temp);
+    }
 
   // Fill it with the right values
   unsigned int powerOfTwo = 1;
@@ -108,19 +109,10 @@ void DeconstructImageFilter<TImage>
     {
     for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
       {
-      if ((int)floor(vectIndex / powerOfTwo)%2) passVectors[vectIndex][dim] = KernelSourceType::High;
-      else passVectors[vectIndex][dim] = KernelSourceType::Low;
+      if ((int)floor(vectIndex / powerOfTwo)%2) m_PassVectors[vectIndex][dim] = ConvolutionFilterType::High;
+      else m_PassVectors[vectIndex][dim] = ConvolutionFilterType::Low;
       }
     powerOfTwo *= 2;
-    }
-
-  // Generate all the kernel sources and store them into m_KernelSources
-  for (unsigned int k=0; k<n; k++)
-    {
-    m_KernelSources.push_back(KernelSourceType::New());
-    m_KernelSources[k]->SetPass(passVectors[k]);
-    m_KernelSources[k]->SetDeconstruction();
-    m_KernelSources[k]->SetOrder(this->GetOrder());
     }
 }
 
@@ -155,7 +147,7 @@ void DeconstructImageFilter<TImage>
     }
 
   // Create and set the kernel sources
-  this->GenerateAllKernelSources();
+  this->GeneratePassVectors();
 
   // Create all FFTConvolution and Downsampling filters
   for (unsigned int i=0; i<n * m_NumberOfLevels; i++)
@@ -174,18 +166,17 @@ void DeconstructImageFilter<TImage>
     for (unsigned int band=0; band<n; band++)
       {
       m_ConvolutionFilters[band + l*n]->SetInput(m_PadFilters[l]->GetOutput());
-      m_ConvolutionFilters[band + l*n]->SetKernelImage(m_KernelSources[band]->GetOutput());
-      m_ConvolutionFilters[band + l*n]->SetOutputRegionModeToValid();
+      m_ConvolutionFilters[band + l*n]->SetPass(m_PassVectors[band]);
+      m_ConvolutionFilters[band + l*n]->SetDeconstruction();
+      m_ConvolutionFilters[band + l*n]->SetOrder(this->GetOrder());
       m_ConvolutionFilters[band + l*n]->ReleaseDataFlagOn();
 
       m_DownsampleFilters[band + l*n]->SetInput(m_ConvolutionFilters[band + l*n]->GetOutput());
       m_DownsampleFilters[band + l*n]->SetFactors(downsamplingFactors);
-//      m_DownsampleFilters[band + l*n]->SetNumberOfThreads(1);
 
       if ((band > 0) || (l==0))
         {
         m_DownsampleFilters[band + l*n]->ReleaseDataFlagOn();
-//        std::cout << "Set ReleaseDataFlagOn on filter " << band + l*n << std::endl;
         }
       }
     if (l<m_NumberOfLevels-1)
@@ -197,8 +188,7 @@ void DeconstructImageFilter<TImage>
 
   //Clean up
   delete[] downsamplingFactors;
-
-    }
+  }
 
   // Have the last filters calculate their output information
   // and copy it as the output information of the composite filter

@@ -16,16 +16,17 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDaubechiesWaveletKernelSource_H
-#define __rtkDaubechiesWaveletKernelSource_H
+#ifndef __rtkDaubechiesWaveletsConvolutionImageFilter_H
+#define __rtkDaubechiesWaveletsConvolutionImageFilter_H
 
 //Includes
-#include<itkImageSource.h>
+#include <itkImageToImageFilter.h>
+#include <itkConvolutionImageFilter.h>
 
 namespace rtk {
 
 /**
- * \class DaubechiesWaveletKernelSource
+ * \class DaubechiesWaveletsConvolutionImageFilter
  * \brief Creates a Daubechies wavelets kernel image with the requested
  * attributes (order, type, pass along each dimension)
  *
@@ -36,7 +37,7 @@ namespace rtk {
  *
  */
 template<typename TImage>
-class DaubechiesWaveletsKernelSource : public itk::ImageSource<TImage>
+class DaubechiesWaveletsConvolutionImageFilter : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
 
@@ -54,8 +55,8 @@ public:
 
 
     /** Standard class typedefs. */
-    typedef DaubechiesWaveletsKernelSource Self;
-    typedef itk::ImageSource<TImage>  Superclass;
+    typedef DaubechiesWaveletsConvolutionImageFilter Self;
+    typedef itk::ImageToImageFilter<TImage, TImage>  Superclass;
     typedef itk::SmartPointer<Self>        Pointer;
     typedef itk::SmartPointer<const Self>  ConstPointer;
 
@@ -69,13 +70,16 @@ public:
     typedef typename TImage::RegionType OutputImageRegionType;
 
     /** Typedef for the "pass" vector (high pass or low pass along each dimension). */
-    typedef typename itk::Vector<Self::Pass> PassVector;
+    typedef typename itk::Vector<Self::Pass, TImage::ImageDimension> PassVector;
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(DaubechiesWaveletsKernelSource, itk::ImageSource)
+    itkTypeMacro(DaubechiesWaveletsConvolutionImageFilter, itk::ImageSource)
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
+
+    /** Typedef for the internal convolution filter */
+    typedef typename itk::ConvolutionImageFilter<TImage> ConvolutionFilterType;
 
     /** Sets the filter to return coefficients for low pass, deconstruct. */
     void SetDeconstruction();
@@ -95,8 +99,8 @@ public:
     itkGetMacro(Pass, PassVector)
 
 protected:
-    DaubechiesWaveletsKernelSource();
-    ~DaubechiesWaveletsKernelSource();
+    DaubechiesWaveletsConvolutionImageFilter();
+    ~DaubechiesWaveletsConvolutionImageFilter();
 
     typedef std::vector<typename TImage::PixelType> CoefficientVector;
 
@@ -131,7 +135,7 @@ private:
 
 //Include CXX
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkDaubechiesWaveletsKernelSource.txx"
+#include "rtkDaubechiesWaveletsConvolutionImageFilter.txx"
 #endif
 
 #endif

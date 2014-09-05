@@ -16,11 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef _rtkDaubechiesWaveletsKernelSource_TXX
-#define _rtkDaubechiesWaveletsKernelSource_TXX
+#ifndef _rtkDaubechiesWaveletsConvolutionImageFilter_TXX
+#define _rtkDaubechiesWaveletsConvolutionImageFilter_TXX
 
 //Includes
-#include "rtkDaubechiesWaveletsKernelSource.h"
+#include "rtkDaubechiesWaveletsConvolutionImageFilter.h"
 #include "vnl/vnl_math.h"
 #include <vector>
 #include <algorithm>
@@ -30,22 +30,22 @@ namespace rtk
 {
 
 template<typename TImage>
-DaubechiesWaveletsKernelSource<TImage>
-::DaubechiesWaveletsKernelSource()
+DaubechiesWaveletsConvolutionImageFilter<TImage>
+::DaubechiesWaveletsConvolutionImageFilter()
 {
   this->SetDeconstruction();
   this->m_Order = 3;
 }
 
 template<typename TImage>
-DaubechiesWaveletsKernelSource<TImage>
-::~DaubechiesWaveletsKernelSource()
+DaubechiesWaveletsConvolutionImageFilter<TImage>
+::~DaubechiesWaveletsConvolutionImageFilter()
 {
 }
 
 template<typename TImage>
 void
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::SetDeconstruction()
 {
   m_Type = Self::Deconstruct;
@@ -53,7 +53,7 @@ DaubechiesWaveletsKernelSource<TImage>
 
 template<typename TImage>
 void
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::SetReconstruction()
 {
   m_Type = Self::Reconstruct;
@@ -61,10 +61,10 @@ DaubechiesWaveletsKernelSource<TImage>
 
 template<typename TImage>
 void
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::PrintSelf(std::ostream& os, itk::Indent i)
 {
-  os  << i << "DaubechiesWaveletsKernelSource { this=" << this
+  os  << i << "DaubechiesWaveletsConvolutionImageFilter { this=" << this
       << " }" << std::endl;
 
   os << i << "m_Order=" << this->GetOrder() << std::endl;
@@ -79,9 +79,9 @@ DaubechiesWaveletsKernelSource<TImage>
 }
 
 template<typename TImage>
-typename DaubechiesWaveletsKernelSource<TImage>::
+typename DaubechiesWaveletsConvolutionImageFilter<TImage>::
 CoefficientVector
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::GenerateCoefficientsLowpassDeconstruct()
 {
   CoefficientVector coeff;
@@ -158,15 +158,15 @@ DaubechiesWaveletsKernelSource<TImage>
       coeff.push_back(0.11009943/vnl_math::sqrt2);
       break;
     default:
-      itkGenericExceptionMacro(<< "In rtkDaubechiesWaveletsKernelSource.txx: Order should be >= 7.");
+      itkGenericExceptionMacro(<< "In rtkDaubechiesWaveletsConvolutionImageFilter.txx: Order should be >= 7.");
     } //end case(Order)
   return coeff;
 }
 
 template<typename TImage>
-typename DaubechiesWaveletsKernelSource<TImage>::
+typename DaubechiesWaveletsConvolutionImageFilter<TImage>::
 CoefficientVector
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::GenerateCoefficientsHighpassDeconstruct()
 {
   CoefficientVector coeff = this->GenerateCoefficientsLowpassDeconstruct();
@@ -183,9 +183,9 @@ DaubechiesWaveletsKernelSource<TImage>
 }
 
 template<typename TImage>
-typename DaubechiesWaveletsKernelSource<TImage>::
+typename DaubechiesWaveletsConvolutionImageFilter<TImage>::
 CoefficientVector
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::GenerateCoefficientsLowpassReconstruct()
 {
   CoefficientVector coeff = this->GenerateCoefficientsLowpassDeconstruct();
@@ -194,9 +194,9 @@ DaubechiesWaveletsKernelSource<TImage>
 }
 
 template<typename TImage>
-typename DaubechiesWaveletsKernelSource<TImage>::
+typename DaubechiesWaveletsConvolutionImageFilter<TImage>::
 CoefficientVector
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::GenerateCoefficientsHighpassReconstruct()
 {
   CoefficientVector coeff = this->GenerateCoefficientsHighpassDeconstruct();
@@ -206,22 +206,50 @@ DaubechiesWaveletsKernelSource<TImage>
 
 template<typename TImage>
 void
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::GenerateOutputInformation()
 {
-  typename TImage::SizeType size;
-  size.Fill(2 * m_Order);
+  unsigned int dim = TImage::ImageDimension;
+  std::vector<typename TImage::Pointer> kernelImages;
+  std::vector<typename ConvolutionFilterType::Pointer> convolutionFilters;
 
-  typename TImage::RegionType region;
-  region.SetSize(size);
+  // Create and connect as many Convolution filters as the number of dimensions
+  for(unsigned int d=0; d<dim; d++)
+    {
+    // Create the 1-D kernel image
+    typename TImage::SizeType kernelSize;
+    kernelSize.Fill(1);
+    kernelSize[d] = 2 * m_Order;
 
-  this->GetOutput()->SetRegions(region);
-//  this->GetOutput()->SetLargestPossibleRegion(region);
+    typename TImage::IndexType kernelIndex;
+    kernelIndex.Fill(0);
+
+    typename TImage::RegionType kernelRegion;
+    kernelRegion.SetSize(kernelSize);
+    kernelRegion.SetIndex(kernelIndex);
+
+    kernelImages.push_back(TImage::New());
+    kernelImages[d]->SetRegions(kernelRegion);
+
+    // Create the convolution filters
+    convolutionFilters.push_back(ConvolutionFilterType::New());
+    convolutionFilters[d]->SetKernelImage(kernelImages[d]);
+    convolutionFilters[d]->SetOutputRegionModeToValid();
+
+    if (d==0) convolutionFilters[d]->SetInput(this->GetInput());
+    else convolutionFilters[d]->SetInput(convolutionFilters[d-1]->GetOutput());
+    }
+
+  // Generate output information
+  convolutionFilters[dim-1]->UpdateOutputInformation();
+
+  // Copy it to the output
+  this->GetOutput()->CopyInformation(convolutionFilters[dim - 1]->GetOutput());
 }
 
 template<typename TImage>
 void
-DaubechiesWaveletsKernelSource<TImage>
+DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::GenerateData()
 {
   unsigned int dim = TImage::ImageDimension;
@@ -241,7 +269,7 @@ DaubechiesWaveletsKernelSource<TImage>
           coeffs[d] = GenerateCoefficientsHighpassDeconstruct();
           break;
         default:
-          itkGenericExceptionMacro("In rtkDaubechiesWaveletsKernelSource : unknown pass");
+          itkGenericExceptionMacro("In rtkDaubechiesWaveletsConvolutionImageFilter : unknown pass");
         }
       }
     if (m_Type == Self::Reconstruct)
@@ -255,26 +283,56 @@ DaubechiesWaveletsKernelSource<TImage>
           coeffs[d] = GenerateCoefficientsHighpassReconstruct();
           break;
         default:
-          itkGenericExceptionMacro("In rtkDaubechiesWaveletsKernelSource : unknown pass");
+          itkGenericExceptionMacro("In rtkDaubechiesWaveletsConvolutionImageFilter : unknown pass");
         }
       }
     }
 
-  // Run through the output image and set the pixels to the product of the coefficients
-  this->GetOutput()->Allocate();
-  itk::ImageRegionIterator< TImage > OutputIt;
-  OutputIt = itk::ImageRegionIterator< TImage >(this->GetOutput(), this->GetOutput()->GetLargestPossibleRegion());
-  typename TImage::IndexType index;
-  typename TImage::PixelType product;
+  std::vector<typename TImage::Pointer> kernelImages;
+  std::vector<typename ConvolutionFilterType::Pointer> convolutionFilters;
+  typedef itk::ImageRegionIterator<TImage> KernelIteratorType;
 
-  while(!OutputIt.IsAtEnd())
+  // Convolve the input "Dimension" times, each time with a 1-D kernel
+  for (int d=0; d<dim; d++)
     {
-    index = OutputIt.GetIndex();
-    product = 1;
-    for(unsigned int d=0; d<dim; d++) product *= coeffs[d][index[d]];
-    OutputIt.Set(product);
-    ++OutputIt;
+    // Create the 1-D kernel image
+    typename TImage::SizeType kernelSize;
+    kernelSize.Fill(1);
+    kernelSize[d] = 2 * m_Order;
+
+    typename TImage::IndexType kernelIndex;
+    kernelIndex.Fill(0);
+
+    typename TImage::RegionType kernelRegion;
+    kernelRegion.SetSize(kernelSize);
+    kernelRegion.SetIndex(kernelIndex);
+
+    kernelImages.push_back(TImage::New());
+    kernelImages[d]->SetRegions(kernelRegion);
+    kernelImages[d]->Allocate();
+    KernelIteratorType kernelIt(kernelImages[d], kernelImages[d]->GetLargestPossibleRegion());
+
+    int pos = 0;
+    while(!kernelIt.IsAtEnd())
+      {
+      kernelIt.Set(coeffs[d][pos]);
+      pos++;
+      ++kernelIt;
+      }
+
+    // Create the convolution filters
+    convolutionFilters.push_back(ConvolutionFilterType::New());
+    convolutionFilters[d]->SetKernelImage(kernelImages[d]);
+    convolutionFilters[d]->SetOutputRegionModeToValid();
+
+    if (d==0) convolutionFilters[d]->SetInput(this->GetInput());
+    else convolutionFilters[d]->SetInput(convolutionFilters[d-1]->GetOutput());
     }
+
+  // Generate output information
+  convolutionFilters[dim-1]->Update();
+
+  this->GraftOutput(convolutionFilters[dim-1]->GetOutput());
 
   // Clean up
   delete[] coeffs;
