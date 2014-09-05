@@ -92,9 +92,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetInputROI(const VolumeType* ROI)
+::SetMotionMask(const VolumeType* mask)
 {
-  this->SetNthInput(2, const_cast<VolumeType*>(ROI));
+  this->SetNthInput(2, const_cast<VolumeType*>(mask));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
