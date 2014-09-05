@@ -114,7 +114,7 @@ public:
 
 protected:
   UpsampleImageFilter();
-  ~UpsampleImageFilter() {};
+  ~UpsampleImageFilter() {}
 
   /** UpsampleImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData() routine
@@ -126,9 +126,9 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-  void BeforeThreadedGenerateData();
+//  void BeforeThreadedGenerateData();
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
-  void AfterThreadedGenerateData();
+//  void AfterThreadedGenerateData();
 
 private:
   UpsampleImageFilter(const Self&); //purposely not implemented

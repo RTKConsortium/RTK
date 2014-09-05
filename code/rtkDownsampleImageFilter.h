@@ -89,7 +89,7 @@ public:
 
 protected:
   DownsampleImageFilter();
-  ~DownsampleImageFilter() {};
+  ~DownsampleImageFilter() {}
 
   /** DownsampleImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData() routine
@@ -101,9 +101,9 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-  virtual void BeforeThreadedGenerateData();
+//  virtual void BeforeThreadedGenerateData();
   virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
-  virtual void AfterThreadedGenerateData();
+//  virtual void AfterThreadedGenerateData();
 
 private:
   DownsampleImageFilter(const Self&);   //purposely not implemented

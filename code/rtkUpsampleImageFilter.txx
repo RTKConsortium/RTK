@@ -86,13 +86,13 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     }
 }
 
-template <class TInputImage, class TOutputImage>
-void
-UpsampleImageFilter<TInputImage,TOutputImage>
-::BeforeThreadedGenerateData()
-{
-  std::cout << "In UpsampleImageFilter : BeforeThreadedGenerateData, input size = " << this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
-}
+//template <class TInputImage, class TOutputImage>
+//void
+//UpsampleImageFilter<TInputImage,TOutputImage>
+//::BeforeThreadedGenerateData()
+//{
+//  std::cout << "In UpsampleImageFilter : BeforeThreadedGenerateData, input size = " << this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
+//}
 
 
 /**
@@ -211,13 +211,13 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     }
 }
 
-template <class TInputImage, class TOutputImage>
-void
-UpsampleImageFilter<TInputImage,TOutputImage>
-::AfterThreadedGenerateData()
-{
-  std::cout << "In UpsampleImageFilter : AfterThreadedGenerateData" << std::endl;
-}
+//template <class TInputImage, class TOutputImage>
+//void
+//UpsampleImageFilter<TInputImage,TOutputImage>
+//::AfterThreadedGenerateData()
+//{
+//  std::cout << "In UpsampleImageFilter : AfterThreadedGenerateData" << std::endl;
+//}
 
 /** 
  *
