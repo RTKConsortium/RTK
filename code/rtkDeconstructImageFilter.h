@@ -23,10 +23,8 @@
 #include <itkImageToImageFilter.h>
 #include <itkMacro.h>
 #include <itkMirrorPadImageFilter.h>
-//#include <itkFFTConvolutionImageFilter.h>
-#include <itkConvolutionImageFilter.h>
 
-#include "rtkDaubechiesWaveletsKernelSource.h"
+#include "rtkDaubechiesWaveletsConvolutionImageFilter.h"
 #include "rtkDownsampleImageFilter.h"
 
 namespace rtk {
@@ -67,14 +65,14 @@ namespace rtk {
  * KernelSource_LH [ label="rtk::DaubechiesWaveletsKernelSource (Low, High)" URL="\ref rtk::DaubechiesWaveletsKernelSource"];
  * KernelSource_HL [ label="rtk::DaubechiesWaveletsKernelSource (High, Low)" URL="\ref rtk::DaubechiesWaveletsKernelSource"];
  * KernelSource_HH [ label="rtk::DaubechiesWaveletsKernelSource (High, High)" URL="\ref rtk::DaubechiesWaveletsKernelSource"];
- * Conv0 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
- * Conv1 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
- * Conv2 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
- * Conv3 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
- * Conv4 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
- * Conv5 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
- * Conv6 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
- * Conv7 [ label="itk::FFTConvolutionImageFilter" URL="\ref itk::FFTConvolutionImageFilter"];
+ * Conv0 [ label="itk::DaubechiesWaveletsConvolutionImageFilter" URL="\ref itk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv1 [ label="itk::DaubechiesWaveletsConvolutionImageFilter" URL="\ref itk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv2 [ label="itk::DaubechiesWaveletsConvolutionImageFilter" URL="\ref itk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv3 [ label="itk::DaubechiesWaveletsConvolutionImageFilter" URL="\ref itk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv4 [ label="itk::DaubechiesWaveletsConvolutionImageFilter" URL="\ref itk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv5 [ label="itk::DaubechiesWaveletsConvolutionImageFilter" URL="\ref itk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv6 [ label="itk::DaubechiesWaveletsConvolutionImageFilter" URL="\ref itk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv7 [ label="itk::DaubechiesWaveletsConvolutionImageFilter" URL="\ref itk::DaubechiesWaveletsConvolutionImageFilter"];
  * Down0 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
  * Down1 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
  * Down2 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
@@ -158,22 +156,20 @@ public:
 
     /** Typedefs for pipeline's subfilters */
     typedef itk::MirrorPadImageFilter<InputImageType, InputImageType>             PadFilterType;
-//    typedef itk::FFTConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
-    typedef itk::ConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
+    typedef rtk::DaubechiesWaveletsConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
     typedef rtk::DownsampleImageFilter<InputImageType>           DownsampleImageFilterType;
-    typedef rtk::DaubechiesWaveletsKernelSource<InputImageType>  KernelSourceType;
 
     /** Set the number of input levels. */
     virtual void SetNumberOfLevels(unsigned int levels)
     {
-        this->m_NumberOfLevels = levels;
-        this->ModifyInputOutputStorage();
+      this->m_NumberOfLevels = levels;
+      this->ModifyInputOutputStorage();
     }
 
     /** Get the number of input levels (per image). */
     virtual unsigned int GetNumberOfLevels()
     {
-        return this->m_NumberOfLevels;
+      return this->m_NumberOfLevels;
     }
 
     /** DeconstructImageFilter produces images which are of different size
@@ -214,7 +210,7 @@ public:
 
 protected:
     DeconstructImageFilter();
-    ~DeconstructImageFilter() {};
+    ~DeconstructImageFilter() {}
     void PrintSelf(std::ostream&os, itk::Indent indent) const;
 
     /** Modifies the storage for Input and Output images.
@@ -229,7 +225,7 @@ protected:
     virtual unsigned int CalculateNumberOfOutputs();
 
     /** Creates and sets the kernel sources to generate all kernels. */
-    void GenerateAllKernelSources();
+    void GeneratePassVectors();
 
 private:
     DeconstructImageFilter(const Self&);    //purposely not implemented
@@ -243,7 +239,8 @@ private:
     typename std::vector<typename PadFilterType::Pointer>               m_PadFilters; //Holds a vector of padding filters
     typename std::vector<typename ConvolutionFilterType::Pointer>       m_ConvolutionFilters; //Holds a vector of convolution filters
     typename std::vector<typename DownsampleImageFilterType::Pointer>   m_DownsampleFilters; //Holds a vector of downsample filters
-    typename std::vector<typename KernelSourceType::Pointer>            m_KernelSources; //Holds a vector of kernel sources
+    //Holds a vector of PassVectors. A PassVector has Dimension components, each one storing either "High" or "Low"
+    typename std::vector<typename ConvolutionFilterType::PassVector>    m_PassVectors;
 };
 
 }// namespace rtk

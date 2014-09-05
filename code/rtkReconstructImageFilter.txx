@@ -52,10 +52,9 @@ template <class TImage>
 void ReconstructImageFilter<TImage>
 ::ModifyInputOutputStorage()
 {
-  //Set as modified
   this->Modified();
 
-  //Set required number of outputs
+  //Set required number of inputs
   unsigned int requiredNumberOfInputs = this->CalculateNumberOfInputs();
   this->SetNumberOfRequiredInputs(requiredNumberOfInputs);
 }
@@ -70,13 +69,18 @@ unsigned int ReconstructImageFilter<TImage>::CalculateNumberOfInputs()
 
 template <class TImage>
 void ReconstructImageFilter<TImage>
-::GenerateAllKernelSources()
+::GeneratePassVectors()
 {
   unsigned int dimension = TImage::ImageDimension;
   unsigned int n = round(pow(2.0, dimension));
 
   // Create a vector of PassVector
-  typename KernelSourceType::PassVector *passVectors = new typename KernelSourceType::PassVector[n];
+  m_PassVectors.clear();
+  for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
+    {
+    typename ConvolutionFilterType::PassVector temp;
+    m_PassVectors.push_back(temp);
+    }
 
   // Fill it with the right values
   unsigned int powerOfTwo = 1;
@@ -84,19 +88,10 @@ void ReconstructImageFilter<TImage>
     {
     for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
       {
-      if ((int)floor(vectIndex / powerOfTwo)%2) passVectors[vectIndex][dim] = KernelSourceType::High;
-      else passVectors[vectIndex][dim] = KernelSourceType::Low;
+      if ((int)floor(vectIndex / powerOfTwo)%2) m_PassVectors[vectIndex][dim] = ConvolutionFilterType::High;
+      else m_PassVectors[vectIndex][dim] = ConvolutionFilterType::Low;
       }
     powerOfTwo *= 2;
-    }
-
-  // Generate all the kernel sources and store them into m_KernelSources
-  for (unsigned int k=0; k<n; k++)
-    {
-    m_KernelSources.push_back(KernelSourceType::New());
-    m_KernelSources[k]->SetPass(passVectors[k]);
-    m_KernelSources[k]->SetReconstruction();
-    m_KernelSources[k]->SetOrder(this->GetOrder());
     }
 }
 
@@ -131,7 +126,7 @@ void ReconstructImageFilter<TImage>
       }
 
     // Create and set the kernel sources
-    this->GenerateAllKernelSources();
+    this->GeneratePassVectors();
 
     // Create all FFTConvolution and Downsampling filters
     for (unsigned int i=0; i<n * m_NumberOfLevels; i++)
@@ -150,8 +145,9 @@ void ReconstructImageFilter<TImage>
       for (unsigned int band=0; band<n; band++)
         {
         m_ConvolutionFilters[band + l*n]->SetInput(m_UpsampleFilters[band + l*n]->GetOutput());
-        m_ConvolutionFilters[band + l*n]->SetKernelImage(m_KernelSources[band]->GetOutput());
-        m_ConvolutionFilters[band + l*n]->SetOutputRegionModeToValid();
+        m_ConvolutionFilters[band + l*n]->SetPass(m_PassVectors[band]);
+        m_ConvolutionFilters[band + l*n]->SetReconstruction();
+        m_ConvolutionFilters[band + l*n]->SetOrder(this->GetOrder());
         m_ConvolutionFilters[band + l*n]->ReleaseDataFlagOn();
 
         m_AddFilters[l]->SetInput(band, m_ConvolutionFilters[band + l*n]->GetOutput());
@@ -194,9 +190,20 @@ void ReconstructImageFilter<TImage>
 {
   std::cout << "Starting reconstruction" << std::endl;
 
+  unsigned int dimension = TImage::ImageDimension;
+  unsigned int n = round(pow(2.0, dimension));
+
   // Have the last filter calculate its output image
   // and graft it to the output of the composite filter
-  m_AddFilters[m_NumberOfLevels-1]->Update();
+  for (unsigned int l=0; l<m_NumberOfLevels; l++)
+    {
+      for (unsigned int band=0; band<n; band++)
+        {
+        m_UpsampleFilters[band + l*n]->Update();
+        m_ConvolutionFilters[band + l*n]->Update();
+        }
+    m_AddFilters[l]->Update();
+    }
   this->GraftOutput(m_AddFilters[m_NumberOfLevels-1]->GetOutput() );
 
   std::cout << "Done reconstruction" << std::endl;
