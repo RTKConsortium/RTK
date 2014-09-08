@@ -140,7 +140,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
   firstValidPixelOffset = outputRegionForThread.GetIndex() - outputStartIndex;
   for (unsigned int i=0; i<TOutputImage::ImageDimension; i++)
     {
-    while(firstValidPixelOffset[i]-1 % m_Factors[i])
+    while((firstValidPixelOffset[i]-1) % m_Factors[i])
       {
       firstValidPixelOffset[i] = firstValidPixelOffset[i]+1;
       }
