@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDownsampleImageFilter_H
-#define __rtkDownsampleImageFilter_H
+#ifndef __rtkDownsampleImageFilter_h
+#define __rtkDownsampleImageFilter_h
 
 #include "itkImageToImageFilter.h"
 
@@ -109,8 +109,8 @@ private:
   DownsampleImageFilter(const Self&);   //purposely not implemented
   void operator=(const Self&);          //purposely not implemented
   
-  unsigned int m_Factors[ImageDimension];
-  int m_Offsets[ImageDimension];
+  unsigned int  m_Factors[ImageDimension];
+  int           m_Offsets[ImageDimension];
 };
 
   

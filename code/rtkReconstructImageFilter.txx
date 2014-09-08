@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReconstructImageFilter_TXX
-#define __rtkReconstructImageFilter_TXX
+#ifndef __rtkReconstructImageFilter_txx
+#define __rtkReconstructImageFilter_txx
 
 //Includes
 #include "rtkReconstructImageFilter.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReconstructImageFilter_H
-#define __rtkReconstructImageFilter_H
+#ifndef __rtkReconstructImageFilter_h
+#define __rtkReconstructImageFilter_h
 
 //Includes
 #include <itkImageToImageFilter.h>
@@ -126,7 +126,7 @@ class ReconstructImageFilter
 {
 public:
     /** Standard class typedefs. */
-    typedef ReconstructImageFilter          Self;
+    typedef ReconstructImageFilter                  Self;
     typedef itk::ImageToImageFilter<TImage,TImage>  Superclass;
     typedef itk::SmartPointer<Self>                 Pointer;
     typedef itk::SmartPointer<const Self>           ConstPointer;
@@ -225,8 +225,8 @@ private:
     unsigned int m_Order;                 // Holds the order of the wavelet filters
     bool         m_PipelineConstructed;   // Filters instantiated by GenerateOutputInformation() should be instantiated only once
 
-    typename InputImageType::SizeType                                   *m_Sizes; //Holds the size of sub-images at each level
-    typename InputImageType::IndexType                                  *m_Indices; //Holds the size of sub-images at each level
+    typename InputImageType::SizeType                                  *m_Sizes; //Holds the size of sub-images at each level
+    typename InputImageType::IndexType                                 *m_Indices; //Holds the size of sub-images at each level
     typename std::vector<typename AddFilterType::Pointer>               m_AddFilters; //Holds a vector of add filters
     typename std::vector<typename ConvolutionFilterType::Pointer>       m_ConvolutionFilters; //Holds a vector of convolution filters
     typename std::vector<typename UpsampleImageFilterType::Pointer>     m_UpsampleFilters; //Holds a vector of Upsample filters

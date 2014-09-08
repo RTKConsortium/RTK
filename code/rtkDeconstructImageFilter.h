@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDeconstructImageFilter_H
-#define __rtkDeconstructImageFilter_H
+#ifndef __rtkDeconstructImageFilter_h
+#define __rtkDeconstructImageFilter_h
 
 //Includes
 #include <itkImageToImageFilter.h>
@@ -131,7 +131,7 @@ class DeconstructImageFilter
 {
 public:
     /** Standard class typedefs. */
-    typedef DeconstructImageFilter          Self;
+    typedef DeconstructImageFilter                  Self;
     typedef itk::ImageToImageFilter<TImage,TImage>  Superclass;
     typedef itk::SmartPointer<Self>                 Pointer;
     typedef itk::SmartPointer<const Self>           ConstPointer;
@@ -234,6 +234,7 @@ private:
     unsigned int m_NumberOfLevels;        // Holds the number of deconstruction levels
     unsigned int m_Order;                 // Holds the order of the wavelet filters
     bool         m_PipelineConstructed;   // Filters instantiated by GenerateOutputInformation() should be instantiated only once
+
     typename std::vector<typename InputImageType::SizeType>             m_Sizes; //Holds the size of sub-images at each level
     typename std::vector<typename InputImageType::IndexType>            m_Indices; //Holds the size of sub-images at each level
     typename std::vector<typename PadFilterType::Pointer>               m_PadFilters; //Holds a vector of padding filters

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkUpsampleImageFilter_TXX
-#define __rtkUpsampleImageFilter_TXX
+#ifndef __rtkUpsampleImageFilter_txx
+#define __rtkUpsampleImageFilter_txx
 
 #include "rtkUpsampleImageFilter.h"
 
@@ -109,8 +109,8 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 
   //Define/declare an iterator that will walk the output region for this
   //thread.
-  typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
-  typedef itk::ImageRegionConstIterator<TInputImage> InputIterator;
+  typedef itk::ImageRegionIterator<TOutputImage>      OutputIterator;
+  typedef itk::ImageRegionConstIterator<TInputImage>  InputIterator;
   OutputIterator outIt(outputPtr, outputRegionForThread);
 
   //Fill the output region with zeros
@@ -122,10 +122,10 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 
   //Define a few indices that will be used to translate from an input pixel
   //to an output pixel
-  typename TOutputImage::IndexType outputStartIndex;
-  typename TInputImage::IndexType inputStartIndex;
+  typename TOutputImage::IndexType  outputStartIndex;
+  typename TInputImage::IndexType   inputStartIndex;
 
-  typename TInputImage::OffsetType inputOffset;
+  typename TInputImage::OffsetType  inputOffset;
   typename TOutputImage::OffsetType firstValidPixelOffset;
   typename TOutputImage::OffsetType firstPixelOfLineOffset;
 
