@@ -117,7 +117,7 @@ class ADMMWaveletsConeBeamReconstructionFilter : public rtk::IterativeConeBeamRe
 {
 public:
     /** Standard class typedefs. */
-    typedef ADMMWaveletsConeBeamReconstructionFilter       Self;
+    typedef ADMMWaveletsConeBeamReconstructionFilter             Self;
     typedef itk::ImageToImageFilter<TOutputImage, TOutputImage>  Superclass;
     typedef itk::SmartPointer< Self >                            Pointer;
 

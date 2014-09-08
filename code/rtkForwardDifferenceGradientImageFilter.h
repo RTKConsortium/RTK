@@ -83,9 +83,9 @@ public:
   itkTypeMacro(ForwardDifferenceGradientImageFilter, ImageToImageFilter);
 
   /** Image typedef support. */
-  typedef typename InputImageType::PixelType  	InputPixelType;
   typedef TOperatorValueType                  	OperatorValueType;
   typedef TOuputValue                         	OutputValueType;
+  typedef typename InputImageType::PixelType  	InputPixelType;
   typedef typename OutputImageType::PixelType 	CovariantVectorType;
   typedef typename OutputImageType::RegionType 	OutputImageRegionType;
 

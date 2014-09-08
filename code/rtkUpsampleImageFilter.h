@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkUpsampleImageFilter_H
-#define __rtkUpsampleImageFilter_H
+#ifndef __rtkUpsampleImageFilter_h
+#define __rtkUpsampleImageFilter_h
 
 #include "itkImageToImageFilter.h"
 
@@ -134,10 +134,10 @@ private:
   UpsampleImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);          //purposely not implemented
 
-  unsigned int m_Factors[ImageDimension];
-  unsigned int m_Order;
-  typename TOutputImage::SizeType m_OutputSize;
-  typename TOutputImage::IndexType m_OutputIndex;
+  unsigned int                      m_Factors[ImageDimension];
+  unsigned int                      m_Order;
+  typename TOutputImage::SizeType   m_OutputSize;
+  typename TOutputImage::IndexType  m_OutputIndex;
 };
 
   

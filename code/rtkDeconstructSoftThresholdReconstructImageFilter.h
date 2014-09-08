@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDeconstructSoftThresholdReconstructImageFilter_H
-#define __rtkDeconstructSoftThresholdReconstructImageFilter_H
+#ifndef __rtkDeconstructSoftThresholdReconstructImageFilter_h
+#define __rtkDeconstructSoftThresholdReconstructImageFilter_h
 
 //ITK includes
 #include "itkMacro.h"
@@ -102,12 +102,13 @@ private:
     DeconstructSoftThresholdReconstructImageFilter(const Self&);     //purposely not implemented
     void operator=(const Self&);            //purposely not implemented
 
-    typename DeconstructFilterType::Pointer                 m_DeconstructionFilter;
-    typename ReconstructFilterType::Pointer                 m_ReconstructionFilter;
-    std::vector<typename SoftThresholdFilterType::Pointer>  m_SoftTresholdFilters; //Holds an array of soft threshold filters
     unsigned int    m_Order;
     float           m_Threshold;
     bool            m_PipelineConstructed;
+
+    typename DeconstructFilterType::Pointer                 m_DeconstructionFilter;
+    typename ReconstructFilterType::Pointer                 m_ReconstructionFilter;
+    std::vector<typename SoftThresholdFilterType::Pointer>  m_SoftTresholdFilters; //Holds an array of soft threshold filters
 
 };
 

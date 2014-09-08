@@ -96,7 +96,7 @@ class ADMMWaveletsConjugateGradientOperator : public ConjugateGradientOperator< 
 {
 public:
     /** Standard class typedefs. */
-    typedef ADMMWaveletsConjugateGradientOperator   Self;
+    typedef ADMMWaveletsConjugateGradientOperator         Self;
     typedef ConjugateGradientOperator< TOutputImage >     Superclass;
     typedef itk::SmartPointer< Self >                     Pointer;
 

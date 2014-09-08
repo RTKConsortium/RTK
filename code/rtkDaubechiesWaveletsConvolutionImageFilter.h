@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDaubechiesWaveletsConvolutionImageFilter_H
-#define __rtkDaubechiesWaveletsConvolutionImageFilter_H
+#ifndef __rtkDaubechiesWaveletsConvolutionImageFilter_h
+#define __rtkDaubechiesWaveletsConvolutionImageFilter_h
 
 //Includes
 #include <itkImageToImageFilter.h>
@@ -55,10 +55,10 @@ public:
 
 
     /** Standard class typedefs. */
-    typedef DaubechiesWaveletsConvolutionImageFilter Self;
-    typedef itk::ImageToImageFilter<TImage, TImage>  Superclass;
-    typedef itk::SmartPointer<Self>        Pointer;
-    typedef itk::SmartPointer<const Self>  ConstPointer;
+    typedef DaubechiesWaveletsConvolutionImageFilter  Self;
+    typedef itk::ImageToImageFilter<TImage, TImage>   Superclass;
+    typedef itk::SmartPointer<Self>                   Pointer;
+    typedef itk::SmartPointer<const Self>             ConstPointer;
 
     /** Typedef for the output image type. */
     typedef TImage OutputImageType;
