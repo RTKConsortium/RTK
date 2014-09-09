@@ -39,8 +39,8 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_FourDCGFilter = FourDCGFilterType::New();
   m_PositivityFilter = ThresholdFilterType::New();
   m_AverageOutOfROIFilter = AverageOutOfROIFilterType::New();
-  m_TVDenoisingSpace = TVDenoisingFilterType::New();
-  m_TVDenoisingTime = TVDenoisingFilterType::New();
+  m_TVDenoisingSpace = SpatialTVDenoisingFilterType::New();
+  m_TVDenoisingTime = TemporalTVDenoisingFilterType::New();
 
   // Set permanent connections
   m_PositivityFilter->SetInput(m_FourDCGFilter->GetOutput());
@@ -67,6 +67,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
   // Set memory management parameters
   m_FourDCGFilter->ReleaseDataFlagOn();
+  m_PositivityFilter->SetInPlace(true);
   m_PositivityFilter->ReleaseDataFlagOn();
   m_AverageOutOfROIFilter->ReleaseDataFlagOn();
   m_TVDenoisingSpace->ReleaseDataFlagOn();
@@ -91,9 +92,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetInputROI(const VolumeType* ROI)
+::SetMotionMask(const VolumeType* mask)
 {
-  this->SetNthInput(2, const_cast<VolumeType*>(ROI));
+  this->SetNthInput(2, const_cast<VolumeType*>(mask));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -158,15 +159,6 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetROI(VolumeType* ROI)
-{
-  m_AverageOutOfROIFilter->SetSegmentation(ROI);
-  this->Modified();
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType>
-void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
   // Set runtime connections
@@ -226,7 +218,6 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_TVDenoisingTime->Update();
     m_TVTimeProbe.Stop();
     }
-
   this->GraftOutput( m_TVDenoisingTime->GetOutput() );
 }
 

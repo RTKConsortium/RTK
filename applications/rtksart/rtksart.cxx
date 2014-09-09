@@ -114,11 +114,11 @@ int main(int argc, char * argv[])
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetLambda( args_info.lambda_arg );
 
-  itk::TimeProbe readerProbe;
+  itk::TimeProbe totalTimeProbe;
   if(args_info.time_flag)
     {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
+    std::cout << "Recording elapsed time... " << std::endl << std::flush;
+    totalTimeProbe.Start();
     }
   if(args_info.positivity_flag)
     {
@@ -130,8 +130,8 @@ int main(int argc, char * argv[])
   if(args_info.time_flag)
     {
     sart->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+    totalTimeProbe.Stop();
+    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
     }
 
   // Write

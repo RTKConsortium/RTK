@@ -75,19 +75,29 @@ int main(int argc, char * argv[])
     typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdrooster>(constantImageSource, args_info);
+
+    // GenGetOpt can't handle default arguments for multiple arguments like dimension or spacing.
+    // The only default it accepts is to set all components of a multiple argument to the same value.
+    // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable value
+    // which is why a "frames" argument is introduced
+    ConstantImageSourceType::SizeValueType * inputSize = const_cast<ConstantImageSourceType::SizeValueType *>(constantImageSource->GetSize());
+    inputSize[3] = args_info.frames_arg;
+    constantImageSource->Modified();
+
     inputFilter = constantImageSource;
     }
   inputFilter->Update();
+  inputFilter->ReleaseDataFlagOn();
 
   // ROI reader
   typedef itk::ImageFileReader<  VolumeType > InputReaderType;
-  InputReaderType::Pointer roiReader = InputReaderType::New();
-  roiReader->SetFileName( args_info.roi_arg );
+  InputReaderType::Pointer motionMaskReader = InputReaderType::New();
+  motionMaskReader->SetFileName( args_info.motionmask_arg );
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName(args_info.phases_arg);
-  phaseReader->SetNumberOfReconstructedPhases(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
+  phaseReader->SetFileName(args_info.signal_arg);
+  phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   phaseReader->Update();
 
   // Set the forward and back projection filters to be used
@@ -97,7 +107,7 @@ int main(int argc, char * argv[])
   rooster->SetBackProjectionFilter(args_info.bp_arg);
   rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   rooster->SetInputProjectionStack(reader->GetOutput());
-  rooster->SetInputROI(roiReader->GetOutput());
+  rooster->SetMotionMask(motionMaskReader->GetOutput());
   rooster->SetGeometry( geometryReader->GetOutputObject() );
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );
