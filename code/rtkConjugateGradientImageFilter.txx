@@ -30,7 +30,7 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   this->SetNumberOfRequiredInputs(2);
   
   m_NumberOfIterations = 1;
-  m_MeasureExecutionTimes = false;
+//  m_MeasureExecutionTimes = false;
 
   m_A = ConjugateGradientOperatorType::New();
 }
@@ -94,14 +94,15 @@ void ConjugateGradientImageFilter<OutputImageType>
 {
   itk::TimeProbe CGTimeProbe;
 
-  if(m_MeasureExecutionTimes)
-    {
-    std::cout << "Starting conjugate gradient initialization"<< std::endl;
-    CGTimeProbe.Start();
-    }
+//  if(m_MeasureExecutionTimes)
+//    {
+//    std::cout << "Starting conjugate gradient initialization"<< std::endl;
+//    CGTimeProbe.Start();
+//    }
 
   // Initialization
   m_A->SetX(this->GetX());
+  m_A->ReleaseDataFlagOn();
 
   typename SubtractFilterType::Pointer SubtractFilter = SubtractFilterType::New();
   SubtractFilter->SetInput(0, this->GetB());
@@ -138,7 +139,6 @@ void ConjugateGradientImageFilter<OutputImageType>
   // Start the iterative procedure
   for (int iter=0; iter<m_NumberOfIterations; iter++)
     {
-
     if(iter>0)
       {
       R_kPlusOne = GetR_kPlusOne_Filter->GetOutput();
@@ -162,6 +162,8 @@ void ConjugateGradientImageFilter<OutputImageType>
 
       GetX_kPlusOne_Filter->SetPk(P_kPlusOne);
       GetX_kPlusOne_Filter->SetXk(X_kPlusOne);
+
+      P_zero->ReleaseData();
       }
 
     m_A->Update();
@@ -175,10 +177,14 @@ void ConjugateGradientImageFilter<OutputImageType>
 
   this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
 
-  // Release the memory from temporary smart pointers
+  // Release the data from internal filters
   R_kPlusOne->ReleaseData();
   P_kPlusOne->ReleaseData();
   X_kPlusOne->ReleaseData();
+  GetR_kPlusOne_Filter->GetOutput()->ReleaseData();
+  GetP_kPlusOne_Filter->GetOutput()->ReleaseData();
+  m_A->GetOutput()->ReleaseData();
+  SubtractFilter->GetOutput()->ReleaseData();
 }
 
 }// end namespace
