@@ -8,7 +8,7 @@ get_filename_component(CTEST_DASHBOARD_ROOT "${CTEST_SCRIPT_DIRECTORY}/../${dash
 set(CTEST_SOURCE_DIRECTORY ${CTEST_DASHBOARD_ROOT}/RTK)
 set(CTEST_BINARY_DIRECTORY ${CTEST_DASHBOARD_ROOT}/RTK-Doxygen)
 set(CTEST_NOTES_FILES "${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}")
-set(ENV{ITK_DIR} "/home/srit/src/itk4/lin64")
+set(ENV{ITK_DIR} "/home/srit/src/itk/lin64")
 set(ENV{CUDA_BIN_PATH} "/home/srit/Download/cuda55/bin")
 
 file(WRITE ${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake
