@@ -84,7 +84,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
   const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
-  const std::multimap<double,unsigned int> sortedAngles = m_Geometry->GetSortedAngles( m_Geometry->GetGantryAngles() );
+  const std::map<double,unsigned int> sortedAngles = m_Geometry->GetUniqueSortedAngles( m_Geometry->GetGantryAngles() );
 
   // Compute delta between first and last angle where there is weighting required
   // First angle

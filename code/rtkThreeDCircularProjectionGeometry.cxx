@@ -147,6 +147,18 @@ const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::
   return sangles;
 }
 
+const std::map<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> &angles)
+{
+  unsigned int nProj = angles.size();
+  std::map<double,unsigned int> sangles;
+  for(unsigned int iProj=0; iProj<nProj; iProj++)
+    {
+    double angle = angles[iProj];
+    sangles.insert(std::pair<double, unsigned int>(angle, iProj) );
+    }
+  return sangles;
+}
+
 const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<double> &angles)
 {
   std::vector<double> angularGaps;
