@@ -88,13 +88,13 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
 
   // Compute delta between first and last angle where there is weighting required
   // First angle
-  std::multimap<double,unsigned int>::const_iterator itFirstAngle;
+  std::map<double,unsigned int>::const_iterator itFirstAngle;
   itFirstAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
   itFirstAngle = (++itFirstAngle==sortedAngles.end())?sortedAngles.begin():itFirstAngle;
   itFirstAngle = (++itFirstAngle==sortedAngles.end())?sortedAngles.begin():itFirstAngle;
   const double firstAngle = itFirstAngle->first;
   // Last angle
-  std::multimap<double,unsigned int>::const_iterator itLastAngle;
+  std::map<double,unsigned int>::const_iterator itLastAngle;
   itLastAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
   itLastAngle = (itLastAngle==sortedAngles.begin())?--sortedAngles.end():--itLastAngle;
   double lastAngle = itLastAngle->first;
