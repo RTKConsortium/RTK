@@ -188,7 +188,7 @@ template <class TImage>
 void ReconstructImageFilter<TImage>
 ::GenerateData()
 {
-  std::cout << "Starting reconstruction" << std::endl;
+//  std::cout << "Starting reconstruction" << std::endl;
 
   unsigned int dimension = TImage::ImageDimension;
   unsigned int n = round(pow(2.0, dimension));
@@ -206,7 +206,7 @@ void ReconstructImageFilter<TImage>
     }
   this->GraftOutput(m_AddFilters[m_NumberOfLevels-1]->GetOutput() );
 
-  std::cout << "Done reconstruction" << std::endl;
+//  std::cout << "Done reconstruction" << std::endl;
 }
 
 

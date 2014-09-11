@@ -108,8 +108,8 @@ DownsampleImageFilter<TInputImage,TOutputImage>
 
   //Define/declare an iterator that will walk the output region for this
   //thread.
-  typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
-  typedef itk::ImageRegionConstIterator<TInputImage> InputIterator;
+  typedef itk::ImageRegionIterator<TOutputImage> 	OutputIterator;
+  typedef itk::ImageRegionConstIterator<TInputImage> 	InputIterator;
 
   //Define a few indices that will be used to translate from an input pixel
   //to an output pixel

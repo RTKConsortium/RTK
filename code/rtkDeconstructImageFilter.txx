@@ -223,7 +223,7 @@ template <class TImage>
 void DeconstructImageFilter<TImage>
 ::GenerateData()
 {
-  std::cout << "Starting deconstruction" << std::endl;
+//  std::cout << "Starting deconstruction" << std::endl;
 
   unsigned int dimension = TImage::ImageDimension;
   unsigned int n = round(pow(2.0, dimension));
@@ -242,7 +242,7 @@ void DeconstructImageFilter<TImage>
       outputBand++;
       }
     }
-  std::cout << "Done deconstruction" << std::endl;
+//  std::cout << "Done deconstruction" << std::endl;
 }
 
 
