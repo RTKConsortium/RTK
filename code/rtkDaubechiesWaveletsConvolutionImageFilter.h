@@ -70,7 +70,7 @@ public:
     typedef typename TImage::RegionType OutputImageRegionType;
 
     /** Typedef for the "pass" vector (high pass or low pass along each dimension). */
-    typedef typename itk::Vector<Self::Pass, TImage::ImageDimension> PassVector;
+    typedef typename itk::Vector<typename Self::Pass, TImage::ImageDimension> PassVector;
 
     /** Run-time type information (and related methods). */
     itkTypeMacro(DaubechiesWaveletsConvolutionImageFilter, itk::ImageSource)
