@@ -110,15 +110,21 @@ public:
 
   /** Get a vector containing the source angles in radians. The source angle is
    * defined as the angle between the z-axis and the isocenter-source line. */
-  const std::vector<double> GetSourceAngles();
+  const std::vector<double> GetSourceAngles() const {
+    return this->m_SourceAngles;
+  }
 
   /** Get a vector containing the tilt angles in radians. The tilt angle is
    * defined as the difference between -GantryAngle and the SourceAngle. */
   const std::vector<double> GetTiltAngles();
 
-  /** Get a multimap containing all sorted angles in radiansand corresponding
+  /** Get a multimap containing all sorted angles in radians and corresponding
    * index. */
   const std::multimap<double,unsigned int> GetSortedAngles(const std::vector<double> &angles);
+
+  /** Get a map containing unique sorted angles in radians and corresponding
+   * index. */
+  const std::map<double,unsigned int> GetUniqueSortedAngles(const std::vector<double> &angles);
 
   /** Get for each projection the angular gaps with next projection in radians. */
   const std::vector<double> GetAngularGapsWithNext(const std::vector<double> &angles);
@@ -213,6 +219,7 @@ protected:
   std::vector<double> m_GantryAngles;
   std::vector<double> m_OutOfPlaneAngles;
   std::vector<double> m_InPlaneAngles;
+  std::vector<double> m_SourceAngles;
   std::vector<double> m_SourceToIsocenterDistances;
   std::vector<double> m_SourceOffsetsX;
   std::vector<double> m_SourceOffsetsY;

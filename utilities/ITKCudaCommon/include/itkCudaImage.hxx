@@ -38,10 +38,18 @@ CudaImage< TPixel, VImageDimension >::~CudaImage()
 }
 
 template <class TPixel, unsigned int VImageDimension>
-void CudaImage< TPixel, VImageDimension >::Allocate()
+#if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 6)
+  void CudaImage< TPixel, VImageDimension >::Allocate()
+#else
+  void CudaImage< TPixel, VImageDimension >::Allocate(bool initializePixels)
+#endif
 {
   // allocate CPU memory - calling Allocate() in superclass
+#if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 6)
   Superclass::Allocate();
+#else
+  Superclass::Allocate(initializePixels);
+#endif
 
   // allocate Cuda memory
   this->ComputeOffsetTable();
@@ -52,8 +60,19 @@ void CudaImage< TPixel, VImageDimension >::Allocate()
   
   // When we allocate both buffers are dirty as the image data can provided
   // by GPU filters without going through the CPU memory first
-  m_DataManager->SetGPUBufferDirty();
+  // Setting only the flag so that no memory transfer is done as Allocate
+  // is called everytime the filter updates
+  //m_DataManager->SetGPUBufferDirty();
+  m_DataManager->SetGPUDirtyFlag(true);
   m_DataManager->SetCPUDirtyFlag(true);
+
+// If initialize pixel is set then we set the CPU dirty flag to false
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR > 5)
+  if(initializePixels)
+    {
+    m_DataManager->SetCPUDirtyFlag(false);
+    }
+#endif
 
   // prevent unnecessary copy from CPU to Cuda at the beginning
   m_DataManager->SetTimeStamp(this->GetTimeStamp());

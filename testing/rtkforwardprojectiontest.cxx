@@ -85,7 +85,7 @@ int main(int , char** )
 
   // Joseph Forward Projection filter
 #ifdef USE_CUDA
-  typedef rtk::CudaForwardProjectionImageFilter JFPType;
+  typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
 #else
   typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
 #endif
@@ -96,6 +96,9 @@ int main(int , char** )
 
   // Ray Box Intersection filter (reference)
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
+#ifdef USE_CUDA
+  jfp->SetStepSize(10);
+#endif
   RBIType::Pointer rbi = RBIType::New();
   rbi->InPlaceOff();
   rbi->SetInput( projInput->GetOutput() );
@@ -132,6 +135,10 @@ int main(int , char** )
     CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput(), 1.28, 44.0, 255.0);
     std::cout << "\n\nTest of quarter #" << q << " PASSED! " << std::endl;
   }
+
+#ifdef USE_CUDA
+  jfp->SetStepSize(1);
+#endif
 
   std::cout << "\n\n****** Case 2: outer ray source ******" << std::endl;
   boxMax[2] = 126.0;
