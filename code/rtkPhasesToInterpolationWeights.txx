@@ -29,7 +29,7 @@ namespace rtk
 PhasesToInterpolationWeights::PhasesToInterpolationWeights()
 {
     //    this->m_Array2D = new Array2DType;
-    this->m_NumberReconstructedPhases = 0;
+    this->m_NumberReconstructedFrames = 0;
     this->m_UnevenTemporalSpacing = false;
 }
 
@@ -39,8 +39,8 @@ void PhasesToInterpolationWeights::PrintSelf(std::ostream & os, itk::Indent inde
     os << this->m_Array2D << std::endl;
 }
 
-void PhasesToInterpolationWeights::SetNumberOfReconstructedPhases(int n){
-    this->m_NumberReconstructedPhases = n;
+void PhasesToInterpolationWeights::SetNumberOfReconstructedFrames(int n){
+    this->m_NumberReconstructedFrames = n;
 }
 
 void PhasesToInterpolationWeights::Parse()
@@ -64,7 +64,7 @@ void PhasesToInterpolationWeights::Parse()
     // Get the data dimension and set the matrix size
     this->GetDataDimension(rows,columns);
     unsigned int NumberOfProjections = rows+1;
-    this->m_Array2D.SetSize(this->m_NumberReconstructedPhases, NumberOfProjections);
+    this->m_Array2D.SetSize(this->m_NumberReconstructedFrames, NumberOfProjections);
 
     // Create a vector to hold the projections' phases
     std::vector<float> projectionPhases; //Stores the instant of the cardiac cycle at which each projection was acquired
@@ -102,10 +102,10 @@ void PhasesToInterpolationWeights::Parse()
             if ((i>30) && (i<50)) weight = 2; // The higher this number, the better the temporal resolution in systole
             cumulatedWeights.push_back(cumulatedWeights[i-1] + weight);
         }
-        float step = cumulatedWeights[99]/m_NumberReconstructedPhases;
+        float step = cumulatedWeights[99]/m_NumberReconstructedFrames;
 
         reconstructedPhases.push_back(0);
-        for (int n = 1; n < this->m_NumberReconstructedPhases; n++)
+        for (int n = 1; n < this->m_NumberReconstructedFrames; n++)
         {
             int i=0;
             while (cumulatedWeights[reconstructedPhases[n-1] * 100] + step > cumulatedWeights[i])
@@ -116,15 +116,15 @@ void PhasesToInterpolationWeights::Parse()
             reconstructedPhases.push_back(((float) i) / 100. );
         }
         reconstructedPhases.push_back(1);
-        for (int n = 0; n < this->m_NumberReconstructedPhases; n++){
+        for (int n = 0; n < this->m_NumberReconstructedFrames; n++){
             std::cout << reconstructedPhases[n] << std::endl;
         }
     }
     else   // The reconstructed phases are all separated by the same amount of time
     {
-        for (float n = 0.; n < this->m_NumberReconstructedPhases + 1; n++)
+        for (float n = 0.; n < this->m_NumberReconstructedFrames + 1; n++)
         {
-            reconstructedPhases.push_back(n/this->m_NumberReconstructedPhases);
+            reconstructedPhases.push_back(n/this->m_NumberReconstructedFrames);
         }
     }
     m_Array2D.Fill(0);
@@ -137,7 +137,7 @@ void PhasesToInterpolationWeights::Parse()
         while(!((projectionPhases[c] >= reconstructedPhases[lower]) && (projectionPhases[c] < reconstructedPhases[upper]))) {
             lower++;
             upper++;
-            if(lower == this->m_NumberReconstructedPhases) {
+            if(lower == this->m_NumberReconstructedFrames) {
                 std::cout << "Problem while determining the interpolation weights" << std::endl;
             }
         }
@@ -145,7 +145,7 @@ void PhasesToInterpolationWeights::Parse()
         float upperWeight = (projectionPhases[c] - reconstructedPhases[lower]) / (reconstructedPhases[upper] - reconstructedPhases[lower]);
 
         // The last phase is equal to the first one (see comment above when filling "reconstructedPhases")
-        if (upper==this->m_NumberReconstructedPhases) upper=0;
+        if (upper==this->m_NumberReconstructedFrames) upper=0;
 
         m_Array2D[lower][c] = (float) lowerWeight;
         m_Array2D[upper][c] = (float) upperWeight;

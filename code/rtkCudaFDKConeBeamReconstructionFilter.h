@@ -66,7 +66,7 @@ protected:
   rtkcuda_EXPORT CudaFDKConeBeamReconstructionFilter();
   ~CudaFDKConeBeamReconstructionFilter(){}
 
-  void GPUGenerateData();
+  virtual void GPUGenerateData();
 
 private:
   //purposely not implemented
