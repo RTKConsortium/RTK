@@ -19,7 +19,6 @@
 #ifndef __rtkDeconstructImageFilter_txx
 #define __rtkDeconstructImageFilter_txx
 
-//Includes
 #include "rtkDeconstructImageFilter.h"
 
 namespace rtk
@@ -84,7 +83,7 @@ template <class TImage>
 unsigned int DeconstructImageFilter<TImage>::CalculateNumberOfOutputs()
 {
   unsigned int dimension = TImage::ImageDimension;
-  unsigned int n = round(pow(2.0, dimension));
+  unsigned int n = itk::Math::Round<double>(std::pow(2.0, dimension));
   return (m_NumberOfLevels * (n-1) +1);
 }
 
@@ -93,7 +92,7 @@ void DeconstructImageFilter<TImage>
 ::GeneratePassVectors()
 {
   unsigned int dimension = TImage::ImageDimension;
-  unsigned int n = round(pow(2.0, dimension));
+  unsigned int n = itk::Math::Round<double>(vcl_pow(2.0, dimension));
 
   // Create a vector of PassVector
   m_PassVectors.clear();
@@ -131,7 +130,7 @@ void DeconstructImageFilter<TImage>
   // n is the number of bands per level, including the ones
   // that will be deconstructed and won't appear in the outputs
   unsigned int dimension = TImage::ImageDimension;
-  unsigned int n = round(pow(2.0, dimension));
+  unsigned int n = itk::Math::Round<double>(std::pow(2.0, dimension));
 
   if(!m_PipelineConstructed)
     {
@@ -226,7 +225,7 @@ void DeconstructImageFilter<TImage>
 //  std::cout << "Starting deconstruction" << std::endl;
 
   unsigned int dimension = TImage::ImageDimension;
-  unsigned int n = round(pow(2.0, dimension));
+  unsigned int n = itk::Math::Round<double>(vcl_pow(2.0, dimension));
 
   // Have the last filters calculate their output image
   // and graft it to the output of the composite filter
