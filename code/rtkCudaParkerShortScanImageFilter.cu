@@ -79,8 +79,7 @@ void kernel_parker_weight(
   float beta = tex1Dfetch(tex_geometry, pIdx.z * 5 + 4);
   beta -= firstAngle;
   if (beta < 0)
-    beta += 360.f;
-  beta *= CUDART_PI_F / 180.f;
+    beta += (2. * CUDART_PI_F);
 
   // compute weight
   float weight = 0.;

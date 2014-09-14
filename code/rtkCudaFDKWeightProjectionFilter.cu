@@ -37,34 +37,34 @@ void kernel_weight_projection(
   if (pIdx.x >= proj_size.x || pIdx.y >= proj_size.y || pIdx.z >= proj_size.z)
     return;
 
-  float sdd = tex1Dfetch(tex_geometry, pIdx.z * 7 + 0);
-  float sid = tex1Dfetch(tex_geometry, pIdx.z * 7 + 6);
-  float wFac = tex1Dfetch(tex_geometry, pIdx.z * 7 + 5);
+  const float sdd = tex1Dfetch(tex_geometry, pIdx.z * 7 + 0);
+  const float sid = tex1Dfetch(tex_geometry, pIdx.z * 7 + 1);
+  const float wFac = tex1Dfetch(tex_geometry, pIdx.z * 7 + 5);
   if (sdd == 0) // parallel
   {
     dev_proj_out[pIdx_comp] = dev_proj_in[pIdx_comp] * wFac;
   }
   else // divergent
   {
-    float pOffX = tex1Dfetch(tex_geometry, pIdx.z * 7 + 1);
-    float pOffY = tex1Dfetch(tex_geometry, pIdx.z * 7 + 2);
-    float sOffX = tex1Dfetch(tex_geometry, pIdx.z * 7 + 3);
-    float sOffY = tex1Dfetch(tex_geometry, pIdx.z * 7 + 4);
-    float tauOverD = sOffX / sid;
-    float tauOverDw = wFac * tauOverD;
-    float sddw = wFac * sdd;
+    const float pOffX = tex1Dfetch(tex_geometry, pIdx.z * 7 + 2);
+    const float pOffY = tex1Dfetch(tex_geometry, pIdx.z * 7 + 3);
+    const float sOffY = tex1Dfetch(tex_geometry, pIdx.z * 7 + 4);
+    const float tAngle = tex1Dfetch(tex_geometry, pIdx.z * 7 + 6);
+    const float sina = sin(tAngle);
+    const float cosa = cos(tAngle);
+    const float tana = tan(tAngle);
 
     // compute projection point from index
     float3 pPoint = TransformIndexToPhysicalPoint(
           make_int2(pIdx.x, pIdx.y), proj_orig, proj_row, proj_col);
-    pPoint.x = pPoint.x + pOffX - sOffX;
+    pPoint.x = pPoint.x + pOffX + tana * (sdd - sid);
     pPoint.y = pPoint.y + pOffY - sOffY;
 
-    // The term between parentheses comes from the publication
-    // [Gullberg Crawford Tsui, TMI, 1986], equation 18
-    dev_proj_out[pIdx_comp] = dev_proj_in[pIdx_comp]
-                                * (sddw - tauOverDw * pPoint.x)
-                                / sqrt(sdd * sdd + pPoint.y * pPoint.y + pPoint.x * pPoint.x);
+    const float numpart1 = sdd*(cosa+tana*sina);
+    const float denom = sqrt((sdd * sdd + pPoint.y * pPoint.y) +
+                             ((pPoint.x - sdd * tana) * (pPoint.x - sdd * tana)));
+    const float cosGamma = (numpart1 - pPoint.x * sina) / denom;
+    dev_proj_out[pIdx_comp] = dev_proj_in[pIdx_comp] * wFac * cosGamma;
   }
 }
 
