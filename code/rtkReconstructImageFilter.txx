@@ -62,8 +62,8 @@ void ReconstructImageFilter<TImage>
 template <class TImage>
 unsigned int ReconstructImageFilter<TImage>::CalculateNumberOfInputs()
 {
-  unsigned int dimension = TImage::ImageDimension;
-  unsigned int n = round(pow(2.0, dimension));
+  int dimension = TImage::ImageDimension;
+  unsigned int n = itk::Math::Round<double>(std::pow(2.0, dimension));
   return (m_NumberOfLevels * (n-1) +1);
 }
 
@@ -71,8 +71,8 @@ template <class TImage>
 void ReconstructImageFilter<TImage>
 ::GeneratePassVectors()
 {
-  unsigned int dimension = TImage::ImageDimension;
-  unsigned int n = round(pow(2.0, dimension));
+  int dimension = TImage::ImageDimension;
+  unsigned int n = itk::Math::Round<double>(std::pow(2.0, dimension));
 
   // Create a vector of PassVector
   m_PassVectors.clear();
@@ -115,8 +115,8 @@ void ReconstructImageFilter<TImage>
     {
     // n is the number of bands per level, including the ones
     // that will be Reconstructed and won't appear in the outputs
-    unsigned int dimension = TImage::ImageDimension;
-    unsigned int n = round(pow(2.0, dimension));
+    int dimension = TImage::ImageDimension;
+    unsigned int n = itk::Math::Round<double>(std::pow(2.0, dimension));
 
     // Before the cascade pipeline
     // Create and set the add filters
@@ -190,8 +190,8 @@ void ReconstructImageFilter<TImage>
 {
 //  std::cout << "Starting reconstruction" << std::endl;
 
-  unsigned int dimension = TImage::ImageDimension;
-  unsigned int n = round(pow(2.0, dimension));
+  int dimension = TImage::ImageDimension;
+  unsigned int n = itk::Math::Round<double>(std::pow(2.0, dimension));
 
   // Have the last filter calculate its output image
   // and graft it to the output of the composite filter
