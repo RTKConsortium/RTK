@@ -1,6 +1,23 @@
-//
-#ifndef RTKCUDAFDKWEIGHTPROJECTIONFILTER_H
-#define RTKCUDAFDKWEIGHTPROJECTIONFILTER_H
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef __rtkCudaFDKWeightProjectionFilter_h
+#define __rtkCudaFDKWeightProjectionFilter_h
 
 #include "rtkFDKWeightProjectionFilter.h"
 #include "rtkWin32Header.h"
@@ -11,15 +28,15 @@
 namespace rtk
 {
 
-/** @class CudaFDKWeightProjectionFilter
- * @brief Cuda version of rtk::FDKWeightProjectionFilter.
+/** \class CudaFDKWeightProjectionFilter
+ * \brief Cuda version of rtk::FDKWeightProjectionFilter.
  *
  * Cuda version of rtk::FDKWeightProjectionFilter.
  *
- * @see rtk::FDKWeightProjectionFilter
+ * \see rtk::FDKWeightProjectionFilter
  *
- * @author peter
- * @version 0.1
+ * \author peter
+ * \version 0.1
  */
 class CudaFDKWeightProjectionFilter :
     public  itk::CudaInPlaceImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>,
@@ -61,4 +78,4 @@ private:
 
 } // end namespace rtk
 
-#endif // RTKCUDAFDKWEIGHTPROJECTIONFILTER_H
+#endif // __rtkCudaFDKWeightProjectionFilter_h

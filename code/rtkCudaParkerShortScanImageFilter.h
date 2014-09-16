@@ -1,6 +1,23 @@
-//
-#ifndef RTKCUDAPARKERSHORTSCANIMAGEFILTER_H
-#define RTKCUDAPARKERSHORTSCANIMAGEFILTER_H
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef __rtkCudaParkerShortScanImageFilter_h
+#define __rtkCudaParkerShortScanImageFilter_h
 
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkWin32Header.h"
@@ -11,15 +28,15 @@
 namespace rtk
 {
 
-/** @class CudaParkerShortScanImageFilter
- * @brief Cuda version of rtk::ParkerShortScanImageFilter.
+/** \class CudaParkerShortScanImageFilter
+ * \brief Cuda version of rtk::ParkerShortScanImageFilter.
  *
  * Cuda version of rtk::ParkerShortScanImageFilter.
  *
- * @see rtk::ParkerShortScanImageFilter
+ * \see rtk::ParkerShortScanImageFilter
  *
- * @author peter
- * @version 0.1
+ * \author peter
+ * \version 0.1
  */
 class CudaParkerShortScanImageFilter :
     public  itk::CudaInPlaceImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>,
@@ -60,4 +77,4 @@ private:
 
 }
 
-#endif // RTKCUDAPARKERSHORTSCANIMAGEFILTER_H
+#endif // __rtkCudaParkerShortScanImageFilter_h
