@@ -16,6 +16,12 @@ option "regexp"    r "Regular expression to select projection files in path"    
 option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
 option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
 
+section "Phase gating"
+option "phases"       - "File containing the phase of each projection"                                              string              no
+option "windowcenter" c "Target reconstruction phase"                                                               float   no default="0"
+option "windowwidth"  w "Tolerance around the target phase to determine in-phase and out-of-phase projections"      float   no default="1"
+option "windowshape"  s "Shape of the gating window"     values="Rectangular","Triangular"                          enum    no default="Rectangular"
+
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
 option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph" enum no default="VoxelBasedBackProjection"

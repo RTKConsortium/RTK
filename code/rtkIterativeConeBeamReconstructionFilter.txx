@@ -23,31 +23,31 @@
 
 namespace rtk
 {
-  template<class TInputImage, class TOutputImage>
-  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  template<class TOutputImage, class ProjectionStackType>
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
   ::IterativeConeBeamReconstructionFilter()
   {
     m_CurrentForwardProjectionConfiguration = -1;
     m_CurrentBackProjectionConfiguration = -1;
   }
 
-  template<class TInputImage, class TOutputImage>
-  typename IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>::ForwardProjectionPointerType
-  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  template<class TOutputImage, class ProjectionStackType>
+  typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::ForwardProjectionPointerType
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
   ::InstantiateForwardProjectionFilter (int fwtype)
   {
     ForwardProjectionPointerType fw;
     switch(fwtype)
       {
       case(0):
-        fw = rtk::JosephForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
+        fw = rtk::JosephForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
       break;
       case(1):
-        fw = rtk::RayCastInterpolatorForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
+        fw = rtk::RayCastInterpolatorForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
       break;
       case(2):
       #ifdef RTK_USE_CUDA
-        fw = rtk::CudaForwardProjectionImageFilter::New();
+        fw = rtk::CudaForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
       #else
         std::cerr << "The program has not been compiled with cuda option" << std::endl;
       #endif
@@ -59,18 +59,18 @@ namespace rtk
     return fw;
   }
 
-  template<class TInputImage, class TOutputImage>
-  typename IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>::BackProjectionPointerType
-  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>::InstantiateBackProjectionFilter(int bptype)
+  template<class TOutputImage, class ProjectionStackType>
+  typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::BackProjectionPointerType
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::InstantiateBackProjectionFilter(int bptype)
   {
     BackProjectionPointerType bp;
     switch(bptype)
       {
       case(0):
-        bp = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>::New();
+        bp = rtk::BackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
         break;
       case(1):
-        bp = rtk::JosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
+        bp = rtk::JosephBackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
         break;
       case(2):
       #ifdef RTK_USE_CUDA
@@ -80,7 +80,7 @@ namespace rtk
       #endif
       break;
       case(3):
-        bp = rtk::NormalizedJosephBackProjectionImageFilter<TOutputImage, TOutputImage>::New();
+        bp = rtk::NormalizedJosephBackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
         break;
 
       default:
@@ -89,9 +89,9 @@ namespace rtk
     return bp;
   }
 
-  template<class TInputImage, class TOutputImage>
+  template<class TOutputImage, class ProjectionStackType>
   void
-  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
   ::SetForwardProjectionFilter (int fwtype)
   {
     if (m_CurrentForwardProjectionConfiguration != fwtype)
@@ -100,9 +100,9 @@ namespace rtk
       }
   }
 
-  template<class TInputImage, class TOutputImage>
+  template<class TOutputImage, class ProjectionStackType>
   void
-  IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
   ::SetBackProjectionFilter (int bptype)
   {
     if (m_CurrentBackProjectionConfiguration != bptype)

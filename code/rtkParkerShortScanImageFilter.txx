@@ -22,13 +22,17 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkMacro.h>
 
+#ifndef M_PI
+#define M_PI vnl_math::pi
+#endif
+
 namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId)
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   // Get angular gaps and max gap
   std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext( m_Geometry->GetGantryAngles() );
@@ -80,43 +84,57 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
   const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
-  const std::multimap<double,unsigned int> sortedAngles = m_Geometry->GetSortedAngles( m_Geometry->GetGantryAngles() );
-  const double detectorWidth = this->GetInput()->GetSpacing()[0] *
-                               this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
-
+  const std::map<double,unsigned int> sortedAngles = m_Geometry->GetUniqueSortedAngles( m_Geometry->GetGantryAngles() );
 
   // Compute delta between first and last angle where there is weighting required
   // First angle
-  std::multimap<double,unsigned int>::const_iterator itFirstAngle;
+  std::map<double,unsigned int>::const_iterator itFirstAngle;
   itFirstAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
   itFirstAngle = (++itFirstAngle==sortedAngles.end())?sortedAngles.begin():itFirstAngle;
   itFirstAngle = (++itFirstAngle==sortedAngles.end())?sortedAngles.begin():itFirstAngle;
   const double firstAngle = itFirstAngle->first;
   // Last angle
-  std::multimap<double,unsigned int>::const_iterator itLastAngle;
+  std::map<double,unsigned int>::const_iterator itLastAngle;
   itLastAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
   itLastAngle = (itLastAngle==sortedAngles.begin())?--sortedAngles.end():--itLastAngle;
   double lastAngle = itLastAngle->first;
   if(lastAngle<firstAngle)
+    {
     lastAngle += 2*M_PI;
+    }
   //Delta
   double delta = 0.5 * (lastAngle - firstAngle - M_PI);
   delta = delta - 2*M_PI*floor( delta / (2*M_PI) ); // between -2*PI and 2*PI
 
-  double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
-  double sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
-  double invsid = 1./sqrt(sid*sid+sox*sox);
-  if( !threadId && delta < atan(0.5 * detectorWidth * invsid) )
-    itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
-                    << "Delta is " << delta*180./itk::Math::pi
-                    << " degrees and should be more than half the beam angle, i.e. "
-                    << atan(0.5 * detectorWidth * invsid)*180./itk::Math::pi << " degrees.");
+  // Pre-compute the two corners of the projection images
+  typename TInputImage::IndexType id = this->GetInput()->GetLargestPossibleRegion().GetIndex();
+  typename TInputImage::SizeType  sz = this->GetInput()->GetLargestPossibleRegion().GetSize();
+  typename TInputImage::SizeType ones;
+  ones.Fill(1);
+  typename TInputImage::PointType corner1, corner2;
+  this->GetInput()->TransformIndexToPhysicalPoint(id, corner1);
+  this->GetInput()->TransformIndexToPhysicalPoint(id-ones+sz, corner2);
 
+  // Go over projection images
   for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
     {
-    sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
-    sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
-    invsid = 1./sqrt(sid*sid+sox*sox);
+    double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
+    double sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
+    double invsid = 1./sqrt(sid*sid+sox*sox);
+
+    // Check that Parker weighting is relevant for this projection
+    double halfDetectorWidth1 = std::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]) );
+    double halfDetectorWidth2 = std::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]) );
+    double halfDetectorWidth = std::min(halfDetectorWidth1, halfDetectorWidth2);
+    if( delta < atan(halfDetectorWidth * invsid) )
+      {
+      m_WarningMutex.Lock();
+      itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
+                      << " according to projection #" << k << ". Delta is " << delta*180./itk::Math::pi
+                      << " degrees and should be more than half the beam angle, i.e. "
+                      << atan(halfDetectorWidth * invsid)*180./itk::Math::pi << " degrees.");
+      m_WarningMutex.Unlock();
+      }
 
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     typename WeightImageType::PointType point;

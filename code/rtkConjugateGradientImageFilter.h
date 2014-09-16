@@ -67,8 +67,8 @@ public:
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
   
-  itkSetMacro(MeasureExecutionTimes, bool)
-  itkGetMacro(MeasureExecutionTimes, bool)
+//  itkSetMacro(MeasureExecutionTimes, bool)
+//  itkGetMacro(MeasureExecutionTimes, bool)
 
   void SetA(ConjugateGradientOperatorPointerType _arg );
 
@@ -98,7 +98,7 @@ private:
   ConjugateGradientOperatorPointerType m_A;
 
   int  m_NumberOfIterations;
-  bool m_MeasureExecutionTimes;
+//  bool m_MeasureExecutionTimes;
 };
 } //namespace RTK
 

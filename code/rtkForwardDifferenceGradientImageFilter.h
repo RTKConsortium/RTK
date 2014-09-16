@@ -60,7 +60,7 @@ public:
   itkStaticConstMacro(InputImageDimension, unsigned int,
                       TInputImage::ImageDimension);
   itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
+                      TOuputImage::ImageDimension);
 
   /** Standard class typedefs. */
   typedef ForwardDifferenceGradientImageFilter Self;
@@ -83,14 +83,11 @@ public:
   itkTypeMacro(ForwardDifferenceGradientImageFilter, ImageToImageFilter);
 
   /** Image typedef support. */
-  typedef typename InputImageType::PixelType  InputPixelType;
-  typedef TOperatorValueType                  OperatorValueType;
-  typedef TOuputValue                         OutputValueType;
-  typedef typename OutputImageType::PixelType OutputPixelType;
-  typedef CovariantVector<
-    OutputValueType, itkGetStaticConstMacro(OutputImageDimension) >
-  CovariantVectorType;
-  typedef typename OutputImageType::RegionType OutputImageRegionType;
+  typedef TOperatorValueType                    OperatorValueType;
+  typedef TOuputValue                           OutputValueType;
+  typedef typename InputImageType::PixelType    InputPixelType;
+  typedef typename OutputImageType::PixelType   CovariantVectorType;
+  typedef typename OutputImageType::RegionType  OutputImageRegionType;
 
   /** ForwardDifferenceGradientImageFilter needs a larger input requested region than
    * the output requested region.  As such, ForwardDifferenceGradientImageFilter needs
@@ -119,6 +116,9 @@ public:
       performed. The vector components at unprocessed dimensions contain
       undetermined values */
   void SetDimensionsProcessed(bool* DimensionsProcessed);
+
+  /** Allows to change the default boundary condition */
+  void OverrideBoundaryCondition(ImageBoundaryCondition< TInputImage >* boundaryCondition);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -161,43 +161,33 @@ protected:
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             ThreadIdType threadId);
 
-  void BeforeThreadedGenerateData();
+  virtual void GenerateOutputInformation();
 
 private:
   ForwardDifferenceGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);      //purposely not implemented
 
-  virtual void GenerateOutputInformation();
-
-  // An overloaded method which may transform the gradient to a
-  // physical vector and converts to the correct output pixel type.
-  template <typename TValue>
-  void SetOutputPixel( ImageRegionIterator< VectorImage<TValue,OutputImageDimension> > &it, CovariantVectorType &gradient )
-  {
-    if ( this->m_UseImageDirection )
-      {
-      CovariantVectorType physicalGradient;
-      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, physicalGradient );
-      it.Set( OutputPixelType( physicalGradient.GetDataPointer(), InputImageDimension, false ) );
-      }
-    else
-      {
-      it.Set( OutputPixelType( gradient.GetDataPointer(), InputImageDimension, false ) );
-      }
-  }
+//  // An overloaded method which may transform the gradient to a
+//  // physical vector and converts to the correct output pixel type.
+//  template <typename TValue>
+//  void SetOutputPixel( ImageRegionIterator< VectorImage<TValue,OutputImageDimension> > &it, CovariantVectorType &gradient )
+//  {
+//    if ( this->m_UseImageDirection )
+//      {
+//      CovariantVectorType physicalGradient;
+//      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, physicalGradient );
+//      it.Set( OutputPixelType( physicalGradient.GetDataPointer(), InputImageDimension, false ) );
+//      }
+//    else
+//      {
+//      it.Set( OutputPixelType( gradient.GetDataPointer(), InputImageDimension, false ) );
+//      }
+//  }
 
   template <typename T >
   void SetOutputPixel( ImageRegionIterator< T > &it, CovariantVectorType &gradient )
   {
-    // This uses the more efficient set by reference method
-    if ( this->m_UseImageDirection )
-      {
-      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, it.Value() );
-      }
-    else
-      {
-      it.Value() = gradient;
-      }
+    it.Value() = gradient;
   }
 
 
@@ -211,6 +201,9 @@ private:
   // to be computed. The components on other dimensions
   // are set to zero
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
+
+  ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
+  bool                                                m_IsBoundaryConditionOverriden;
 };
 } // end namespace itk
 

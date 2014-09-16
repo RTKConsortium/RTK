@@ -38,11 +38,24 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
 {
   m_UseImageSpacing = true;
 
+  // default boundary condition
+  m_BoundaryCondition = new itk::ConstantBoundaryCondition<TInputImage>();
+  m_IsBoundaryConditionOverriden = false;
+
   // default behaviour is to process all dimensions
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
     m_DimensionsProcessed[dim] = true;
     }
+}
+
+template <class TInputImage, class TOutputImage>
+BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
+::~BackwardDifferenceDivergenceImageFilter()
+{
+  // If the boundary condition has been overriden, the memory
+  // m_BoundaryCondition points to will be released outside this filter
+  if (!m_IsBoundaryConditionOverriden) delete m_BoundaryCondition;
 }
 
 // This should be handled by an itkMacro, but it doesn't seem to work with pointer types
@@ -63,6 +76,15 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
   if(Modified) this->Modified();
 }
 
+template <class TInputImage, class TOutputImage>
+void
+BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
+::OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition)
+{
+  delete m_BoundaryCondition;
+  m_BoundaryCondition = boundaryCondition;
+  m_IsBoundaryConditionOverriden = true;
+}
 
 template <class TInputImage, class TOutputImage>
 void
@@ -162,7 +184,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
     // Compute the local differences around the central pixel
     for (unsigned int k = 0; k < dimsToProcess.size(); k++)
       {
-      div += (iit.GetPixel(c)[dimsToProcess[k]] - iit.GetPixel(c - strides[dimsToProcess[k]])[dimsToProcess[k]]) / m_SpacingCoeffs[dimsToProcess[k]];
+      div += (iit.GetPixel(c)[k] - iit.GetPixel(c - strides[dimsToProcess[k]])[k]) / m_SpacingCoeffs[dimsToProcess[k]];
       }
     oit.Set(div);
     ++oit;
@@ -175,6 +197,8 @@ void
 BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 ::AfterThreadedGenerateData()
 {
+  if (m_IsBoundaryConditionOverriden) return;
+
   std::vector<int> dimsToProcess;
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
@@ -186,6 +210,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
   // padding styles available in ITK.
   // This needs to be performed only if the output requested region contains
   // the borders of the image.
+  // It is ignored if the boundary condition has been overriden (this function returns before)
 
   typename TOutputImage::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
 
@@ -193,17 +218,17 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
     {
     // Create a slice region at the border of the largest possible region
     typename TOutputImage::RegionType slice = largest;
-      slice.SetSize(dimsToProcess[k], 1);
+    slice.SetSize(dimsToProcess[k], 1);
     slice.SetIndex(dimsToProcess[k], largest.GetSize()[dimsToProcess[k]] - 1);
 
-    // If it overlaps the output requested region, enforce boundary condition
+    // If it overlaps the output buffered region, enforce boundary condition
     // on the overlap
-    if ( slice.Crop( this->GetOutput()->GetRequestedRegion() ) )
+    if ( slice.Crop( this->GetOutput()->GetBufferedRegion() ) )
       {
       itk::ImageRegionIterator<TOutputImage> oit(this->GetOutput(), slice);
       itk::ImageRegionConstIterator<TInputImage> iit(this->GetInput(), slice);
 
-      oit.Set(oit.Get() - iit.Get()[dimsToProcess[k]] / m_SpacingCoeffs[dimsToProcess[k]]);
+      oit.Set(oit.Get() - iit.Get()[k] / m_SpacingCoeffs[dimsToProcess[k]]);
       ++oit;
       ++iit;
       }
