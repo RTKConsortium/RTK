@@ -43,10 +43,12 @@ ADD_TEST(rtkmotioncompensatedfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkmotioncompensa
 ADD_EXECUTABLE(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
 TARGET_LINK_LIBRARIES(rtkdisplaceddetectortest ${RTK_LIBRARIES})
 ADD_TEST(rtkdisplaceddetectortest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetectortest)
+ADD_CUDA_TEST(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
 
 ADD_EXECUTABLE(rtkshortscantest rtkshortscantest.cxx)
 TARGET_LINK_LIBRARIES(rtkshortscantest ${RTK_LIBRARIES})
 ADD_TEST(rtkshortscantest ${EXECUTABLE_OUTPUT_PATH}/rtkshortscantest)
+ADD_CUDA_TEST(rtkshortscantest rtkshortscantest.cxx)
 
 ADD_EXECUTABLE(rtkrampfiltertest rtkrampfiltertest.cxx)
 TARGET_LINK_LIBRARIES(rtkrampfiltertest ${RTK_LIBRARIES})
