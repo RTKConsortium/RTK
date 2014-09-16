@@ -32,8 +32,7 @@ template< typename TInputImage, typename TRealType, typename TOutputImage >
 MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 ::MagnitudeThresholdImageFilter()
 {
-    m_RequestedNumberOfThreads = this->GetNumberOfThreads();
-    m_Threshold = 0;
+  m_Threshold = 0;
 }
 
 template< typename TInputImage, typename TRealType, typename TOutputImage >
@@ -42,30 +41,26 @@ MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                        ThreadIdType threadId)
 {
-    itk::ImageRegionConstIterator< TInputImage >                 InputIt;
-    itk::ImageRegionIterator< TOutputImage >                     OutputIt;
+  itk::ImageRegionConstIterator< TInputImage >                 InputIt;
+  itk::ImageRegionIterator< TOutputImage >                     OutputIt;
 
-    // Support progress methods/callbacks
-    itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
+  // Support progress methods/callbacks
+  itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
 
-    InputIt = itk::ImageRegionConstIterator< TInputImage >(this->GetInput(), outputRegionForThread);
-    OutputIt = itk::ImageRegionIterator< TOutputImage >(this->GetOutput(), outputRegionForThread);
+  InputIt = itk::ImageRegionConstIterator< TInputImage >(this->GetInput(), outputRegionForThread);
+  OutputIt = itk::ImageRegionIterator< TOutputImage >(this->GetOutput(), outputRegionForThread);
 
-    while ( !InputIt.IsAtEnd() )
+  double norm;
+  while ( !InputIt.IsAtEnd() )
     {
-        double norm = 0;
-        for ( int i = 0; i < ImageDimension; ++i )
-        {
-            norm += InputIt.Get()[i] * InputIt.Get()[i];
-        }
-        norm = sqrt(norm);
+    norm = InputIt.Get().GetNorm();
 
-        if (norm > m_Threshold)
-            OutputIt.Set( m_Threshold * InputIt.Get() / norm);
+    if (norm > m_Threshold)
+        OutputIt.Set( m_Threshold * InputIt.Get() / norm);
 
-        ++InputIt;
-        ++OutputIt;
-        progress.CompletedPixel();
+    ++InputIt;
+    ++OutputIt;
+    progress.CompletedPixel();
     }
 }
 

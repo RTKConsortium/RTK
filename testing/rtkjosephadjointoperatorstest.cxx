@@ -1,66 +1,9 @@
-#include <itkImageRegionConstIterator.h>
-
-#include "rtkTestConfiguration.h"
-//#include "rtkDrawEllipsoidImageFilter.h"
-//#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkMacro.h"
+#include "rtkTest.h"
 #include "itkRandomImageSource.h"
 #include "rtkConstantImageSource.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
-
-//#ifdef USE_CUDA
-//  #include "rtkCudaBackProjectionImageFilter.h"
-//  #include "rtkCudaSARTConeBeamReconstructionFilter.h"
-//  #include "itkCudaImage.h"
-//#else
-//  #include "rtkSARTConeBeamReconstructionFilter.h"
-//#endif
-
-template<class TImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckScalarProducts(typename TImage::Pointer itkNotUsed(vol1), typename TImage::Pointer itkNotUsed(vol2), typename TImage::Pointer itkNotUsed(proj1), typename TImage::Pointer itkNotUsed(proj2))
-{
-}
-#else
-void CheckScalarProducts(typename TImage::Pointer vol1, typename TImage::Pointer vol2, typename TImage::Pointer proj1, typename TImage::Pointer proj2)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itVol1( vol1, vol1->GetBufferedRegion() );
-  ImageIteratorType itVol2( vol2, vol2->GetBufferedRegion() );
-  ImageIteratorType itProj1( proj1, proj1->GetBufferedRegion() );
-  ImageIteratorType itProj2( proj2, proj2->GetBufferedRegion() );
-
-  typename TImage::PixelType scalarProductVols, scalarProductProjs;
-  scalarProductVols = 0;
-  scalarProductProjs = 0;
-
-  while( !itVol1.IsAtEnd() )
-    {
-    scalarProductVols += itVol1.Get() * itVol2.Get();
-    ++itVol1;
-    ++itVol2;
-    }
-
-  while( !itProj1.IsAtEnd() )
-    {
-    scalarProductProjs += itProj1.Get() * itProj2.Get();
-    ++itProj1;
-    ++itProj2;
-    }
-  
-  // QI
-  double ratio = scalarProductVols / scalarProductProjs;
-  std::cout << "ratio = " << ratio << std::endl;
-
-  // Checking results
-  if (vcl_abs(ratio-1)>0.0001)
-  {
-    std::cerr << "Test Failed, ratio not valid! "
-              << ratio-1 << " instead of 0.0001" << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
-#endif
 
 /**
  * \file rtkjosephadjointoperatorstest.cxx
@@ -205,7 +148,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
 //  std::cout << "Updated Back Projection filter" << std::endl;
 
-  CheckScalarProducts<OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
+  CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

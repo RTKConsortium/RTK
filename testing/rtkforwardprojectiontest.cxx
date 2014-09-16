@@ -1,5 +1,4 @@
-
-#include "rtkTestConfiguration.h"
+#include "rtkTest.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
@@ -12,67 +11,17 @@
 #  include "rtkJosephForwardProjectionImageFilter.h"
 #endif
 
-template<class TImage1, class TImage2>
-#if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage1::Pointer itkNotUsed(recon), typename TImage2::Pointer itkNotUsed(ref))
-{
-}
-#else
-void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref)
-{
-  typedef itk::ImageRegionConstIterator<TImage1> ImageIteratorType1;
-  typedef itk::ImageRegionConstIterator<TImage2> ImageIteratorType2;
-  ImageIteratorType1 itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType2 itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  while( !itRef.IsAtEnd() )
-    {
-    typename TImage1::PixelType TestVal = itTest.Get();
-    typename TImage2::PixelType RefVal = itRef.Get();
-
-    if( TestVal != RefVal )
-      {
-      TestError += vcl_abs(RefVal - TestVal);
-      EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
-      }
-    ++itTest;
-    ++itRef;
-    }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/recon->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(255.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-  // QI
-  ErrorType QI = (255.0-ErrorPerPixel)/255.0;
-  std::cout << "QI = " << QI << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > 1.28)
-    {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 1.28" << std::endl;
-    exit( EXIT_FAILURE);
-    }
-  if (PSNR < 44.)
-    {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 44" << std::endl;
-    exit( EXIT_FAILURE);
-    }
-}
-#endif
+/**
+ * \file rtkforwardprojectiontest.cxx
+ *
+ * \brief Functional test for forward projection
+ *
+ * The test projects a volume filled with ones. The forward projector should
+ * then return the intersection of the ray with the box and it is compared
+ * with the analytical intersection of a box with a ray.
+ *
+ * \author Simon Rit and Marc Vila
+ */
 
 int main(int , char** )
 {
@@ -84,8 +33,6 @@ int main(int , char** )
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 #endif
-
-  //typedef itk::Image< OutputPixelType, Dimension > OutputImageType2;
 
   typedef itk::Vector<double, 3>                   VectorType;
 #if FAST_TESTS_NO_CHECKS
@@ -99,10 +46,6 @@ int main(int , char** )
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
-
-  // The test projects a volume filled with ones. The forward projector should
-  // then return the intersection of the ray with the box and it is compared
-  // with the analytical intersection of a box with a ray.
 
   // Create Joseph Forward Projector volume input.
   const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
@@ -142,7 +85,7 @@ int main(int , char** )
 
   // Joseph Forward Projection filter
 #ifdef USE_CUDA
-  typedef rtk::CudaForwardProjectionImageFilter JFPType;
+  typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
 #else
   typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
 #endif
@@ -153,6 +96,9 @@ int main(int , char** )
 
   // Ray Box Intersection filter (reference)
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
+#ifdef USE_CUDA
+  jfp->SetStepSize(10);
+#endif
   RBIType::Pointer rbi = RBIType::New();
   rbi->InPlaceOff();
   rbi->SetInput( projInput->GetOutput() );
@@ -186,9 +132,13 @@ int main(int , char** )
     jfp->SetGeometry(geometry);
     jfp->Update();
 
-    CheckImageQuality<OutputImageType, OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
+    CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput(), 1.28, 44.0, 255.0);
     std::cout << "\n\nTest of quarter #" << q << " PASSED! " << std::endl;
   }
+
+#ifdef USE_CUDA
+  jfp->SetStepSize(1);
+#endif
 
   std::cout << "\n\n****** Case 2: outer ray source ******" << std::endl;
   boxMax[2] = 126.0;
@@ -206,7 +156,7 @@ int main(int , char** )
   jfp->SetGeometry( geometry );
   jfp->Update();
 
-  CheckImageQuality<OutputImageType, OutputImageType>(rbi->GetOutput(), jfp->GetOutput());
+  CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 3: Shepp-Logan, outer ray source ******" << std::endl;
@@ -238,7 +188,7 @@ int main(int , char** )
   jfp->SetInput( 1, dsl->GetOutput() );
   jfp->Update();
 
-  CheckImageQuality<OutputImageType, OutputImageType>(slp->GetOutput(), jfp->GetOutput());
+  CheckImageQuality<OutputImageType>(slp->GetOutput(), jfp->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 4: Shepp-Logan, inner ray source ******" << std::endl;
@@ -252,7 +202,7 @@ int main(int , char** )
   jfp->SetGeometry( geometry );
   jfp->Update();
 
-  CheckImageQuality<OutputImageType, OutputImageType>(slp->GetOutput(), jfp->GetOutput());
+  CheckImageQuality<OutputImageType>(slp->GetOutput(), jfp->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

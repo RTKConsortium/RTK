@@ -38,6 +38,10 @@ template< typename TInputImage, typename TOperatorValueType, typename TOuputValu
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::ForwardDifferenceGradientImageFilter()
 {
+  // default boundary condition
+  m_BoundaryCondition = new ZeroFluxNeumannBoundaryCondition<TInputImage>();
+  m_IsBoundaryConditionOverriden = false;
+
   // default behaviour is to take into account both spacing and direction
   this->m_UseImageSpacing   = true;
   this->m_UseImageDirection = true;
@@ -55,7 +59,11 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::~ForwardDifferenceGradientImageFilter()
-{}
+{
+  // If the boundary condition has been overriden, the memory
+  // m_BoundaryCondition points to will be released outside this filter
+  if (!m_IsBoundaryConditionOverriden) delete m_BoundaryCondition;
+}
 
 // This should be handled by an itkMacro, but it doesn't seem to work with pointer types
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
@@ -73,6 +81,16 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
       }
     }
   if(Modified) this->Modified();
+}
+
+template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+void
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+::OverrideBoundaryCondition(ImageBoundaryCondition< TInputImage >* boundaryCondition)
+{
+  delete m_BoundaryCondition;
+  m_BoundaryCondition = boundaryCondition;
+  m_IsBoundaryConditionOverriden = true;
 }
 
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
@@ -133,25 +151,11 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
-::BeforeThreadedGenerateData()
-{
-  Superclass::BeforeThreadedGenerateData();
-  this->AllocateOutputs();
-  CovariantVectorType zero;
-  for (int dim=0; dim<TInputImage::ImageDimension; dim++)  zero[dim] = 0;
-  this->GetOutput()->FillBuffer(zero);
-}
-
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
-void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                        ThreadIdType threadId)
 {
   unsigned int    i;
   CovariantVectorType gradient;
-
-  ZeroFluxNeumannBoundaryCondition< InputImageType > nbc;
 
   ConstNeighborhoodIterator< InputImageType > nit;
   ImageRegionIterator< OutputImageType >      it;
@@ -165,9 +169,11 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
+//  std::vector<int> dimsNotToProcess;
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
     if(m_DimensionsProcessed[dim]) dimsToProcess.push_back(dim);
+//    else dimsNotToProcess.push_back(dim);
     }
 
   // Set up operators
@@ -228,18 +234,22 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     nit = ConstNeighborhoodIterator< InputImageType >(radius,
                                                       inputImage, *fit);
     it = ImageRegionIterator< OutputImageType >(outputImage, *fit);
-    nit.OverrideBoundaryCondition(&nbc);
+    nit.OverrideBoundaryCondition(m_BoundaryCondition);
     nit.GoToBegin();
 
     while ( !nit.IsAtEnd() )
       {
       for ( i = 0; i < dimsToProcess.size(); ++i )
         {
-        gradient[dimsToProcess[i]] = SIP(x_slice[dimsToProcess[i]], nit, op[dimsToProcess[i]]);
+        gradient[i] = SIP(x_slice[dimsToProcess[i]], nit, op[dimsToProcess[i]]);
         }
+//      for ( i = 0; i < dimsNotToProcess.size(); ++i )
+//        {
+//        gradient[dimsNotToProcess[i]] = 0;
+//        }
 
       // This method optionally performs a tansform for Physical
-      // coordiantes and potential conversion to a different output
+      // coordinates and potential conversion to a different output
       // pixel type.
       this->SetOutputPixel( it, gradient );
 

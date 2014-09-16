@@ -5,10 +5,6 @@
 #include "itkRandomImageSource.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"
 
-//#ifdef USE_CUDA
-//#else
-//#endif
-
 template<class TImage, class TGradient>
 #if FAST_TESTS_NO_CHECKS
 void CheckGradient(typename TImage::Pointer itkNotUsed(im), typename TGradient::Pointer itkNotUsed(grad), bool* itkNotUsed(dimensionsProcessed))
@@ -51,7 +47,7 @@ void CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad
     {
     for ( int k = 0; k < dimsToProcess.size(); k++ )
       {
-      AbsDiff = vnl_math_abs(iit.GetPixel(c + strides[dimsToProcess[k]]) - iit.GetPixel(c) - itGrad.Get()[dimsToProcess[k]] * grad->GetSpacing()[dimsToProcess[k]]);
+      AbsDiff = vnl_math_abs(iit.GetPixel(c + strides[dimsToProcess[k]]) - iit.GetPixel(c) - itGrad.Get()[k] * grad->GetSpacing()[k]);
 
       // Checking results
       if (AbsDiff > epsilon)
@@ -89,10 +85,13 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef double                                    OutputPixelType;
 
+  typedef itk::CovariantVector<OutputPixelType, 2> CovVecType;
 #ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage<CovVecType, Dimension> GradientImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::Image<CovVecType, Dimension> GradientImageType;
 #endif
 
   // Random image sources
@@ -132,7 +131,7 @@ int main(int, char** )
   // Update all sources
   TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
 
-  typedef rtk::ForwardDifferenceGradientImageFilter<OutputImageType> GradientFilterType;
+  typedef rtk::ForwardDifferenceGradientImageFilter<OutputImageType, OutputPixelType, OutputPixelType, GradientImageType> GradientFilterType;
   GradientFilterType::Pointer grad = GradientFilterType::New();
   grad->SetInput(randomVolumeSource->GetOutput());
 

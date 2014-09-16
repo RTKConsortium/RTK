@@ -31,8 +31,12 @@ ADD_SUBDIRECTORY(rtkextractshroudsignal)
 ADD_SUBDIRECTORY(rtkmedian)
 ADD_SUBDIRECTORY(rtklut)
 ADD_SUBDIRECTORY(rtktotalvariationdenoising)
+ADD_SUBDIRECTORY(rtkadmmwavelets)
 ADD_SUBDIRECTORY(rtkadmmtotalvariation)
+ADD_SUBDIRECTORY(rtkfourdrooster)
+ADD_SUBDIRECTORY(rtkfourdconjugategradient)
 ADD_SUBDIRECTORY(rtkconjugategradient)
+ADD_SUBDIRECTORY(rtkwaveletsdenoising)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 ADD_SUBDIRECTORY(rtkvarianobigeometry)

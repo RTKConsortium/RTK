@@ -32,22 +32,24 @@ int main(int argc, char * argv[])
   GGO(rtktotalvariationdenoising, args_info);
 
   typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  const unsigned int Dimension = 3; // Number of dimensions of the input image
+  const unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
   typedef itk::CudaImage< itk::CovariantVector 
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
+      < OutputPixelType, DimensionsProcessed >, Dimension >                GradientOutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
   typedef itk::Image< itk::CovariantVector 
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
+      < OutputPixelType, DimensionsProcessed >, Dimension >                GradientOutputImageType;
 #endif
   
   // Read input
   typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
+  reader->ReleaseDataFlagOn();
 
   // Apply total variation denoising
   typedef rtk::TotalVariationDenoisingBPDQImageFilter
@@ -58,14 +60,29 @@ int main(int argc, char * argv[])
   tv->SetNumberOfIterations(args_info.niter_arg);
 
   bool* dimsProcessed = new bool[Dimension];
+  int count = 0;
   for (unsigned int i=0; i<Dimension; i++)
     {
     if ((args_info.dim_given) && (args_info.dim_arg[i] == 0)) dimsProcessed[i] = false;
-    else dimsProcessed[i] = true;
-//    std::cout << dimsProcessed[i];
+    else
+      {
+      dimsProcessed[i] = true;
+      count++;
+      }
     }
-//  std::cout << std::endl;
+
+  // Check that the number of dimensions processed matches the size of the covariant vector
+  if (count != DimensionsProcessed)
+    {
+    itkGenericExceptionMacro( << "Size of covariant vector ("
+                              << DimensionsProcessed
+                              << ") does not match number of dimensions marked for processing ("
+                              << count
+                              << ")");
+    }
+
   tv->SetDimensionsProcessed(dimsProcessed);
+  tv->ReleaseDataFlagOn();
 
   // Write
   typedef itk::ImageFileWriter<OutputImageType> WriterType;
