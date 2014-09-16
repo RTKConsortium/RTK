@@ -29,9 +29,9 @@ float ToUntiltedCoordinateAtIsocenter(float tiltedCoord, float sdd, float sid, f
   // sidu is the distance between the source and the virtual untilted detector
   // l is the coordinate on the virtual detector parallel to the real detector
   // and passing at the isocenter
-  const double l = (tiltedCoord + px - sx) * sid / sdd + sx;
+  const float l = (tiltedCoord + px - sx) * sid / sdd + sx;
   // a is the angle between the virtual detector and the real detector
-  const double cosa = sx / sidu;
+  const float cosa = sx / sidu;
   // the following relation refers to a note by R. Clackdoyle, title
   // "Samping a tilted detector"
   return l * sid / (sidu - l * cosa);
