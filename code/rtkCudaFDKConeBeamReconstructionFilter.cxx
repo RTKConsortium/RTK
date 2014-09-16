@@ -22,10 +22,12 @@ rtk::CudaFDKConeBeamReconstructionFilter
 ::CudaFDKConeBeamReconstructionFilter()
 {
   // Create each filter which are specific for cuda
+  m_WeightFilter = WeightFilterType::New();
   m_RampFilter = RampFilterType::New();
   m_BackProjectionFilter = BackProjectionFilterType::New();
 
   //Permanent internal connections
+  m_WeightFilter->SetInput( m_ExtractFilter->GetOutput() );
   m_RampFilter->SetInput( m_WeightFilter->GetOutput() );
   m_BackProjectionFilter->SetInput( 1, m_RampFilter->GetOutput() );
 
