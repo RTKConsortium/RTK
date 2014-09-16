@@ -35,6 +35,8 @@ namespace rtk
  *
  * \see rtk::DisplacedDetectorImageFilter
  *
+ * \test rtkdisplaceddetectortest.cxx
+ *
  * \author peter
  * \version 0.1
  */

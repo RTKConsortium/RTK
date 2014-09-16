@@ -35,6 +35,8 @@ namespace rtk
  *
  * \see rtk::ParkerShortScanImageFilter
  *
+ * \test rtkshortscantest.cxx
+ *
  * \author peter
  * \version 0.1
  */
