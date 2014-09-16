@@ -29,9 +29,9 @@ float ToUntiltedCoordinateAtIsocenter(float tiltedCoord, float sdd, float sid, f
   // sidu is the distance between the source and the virtual untilted detector
   // l is the coordinate on the virtual detector parallel to the real detector
   // and passing at the isocenter
-  const double l = (tiltedCoord + px - sx) * sid / sdd + sx;
+  const float l = (tiltedCoord + px - sx) * sid / sdd + sx;
   // a is the angle between the virtual detector and the real detector
-  const double cosa = sx / sidu;
+  const float cosa = sx / sidu;
   // the following relation refers to a note by R. Clackdoyle, title
   // "Samping a tilted detector"
   return l * sid / (sidu - l * cosa);
@@ -79,7 +79,7 @@ void kernel_parker_weight(
   float beta = tex1Dfetch(tex_geometry, pIdx.z * 5 + 4);
   beta -= firstAngle;
   if (beta < 0)
-    beta += (2. * CUDART_PI_F);
+    beta += (2.f * CUDART_PI_F);
 
   // compute weight
   float weight = 0.;
