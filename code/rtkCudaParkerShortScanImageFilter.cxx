@@ -36,9 +36,12 @@ void
 CudaParkerShortScanImageFilter
 ::GPUGenerateData()
 {
+  float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  inBuffer += this->GetInput()->ComputeOffset( this->GetInput()->GetRequestedRegion().GetIndex() );
+  float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+
   const std::vector<double> rotationAngles = this->GetGeometry()->GetGantryAngles();
   std::vector<double> angularGaps = this->GetGeometry()->GetAngularGapsWithNext(rotationAngles);
-  const std::multimap<double,unsigned int> sortedAngles = this->GetGeometry()->GetSortedAngles(rotationAngles);
 
   // compute max. angular gap
   int maxAngularGapPos = 0;
@@ -50,20 +53,27 @@ CudaParkerShortScanImageFilter
   // NOTE: not a short scan if less than 20 degrees max gap
   if (this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0. ||
       angularGaps[maxAngularGapPos] < itk::Math::pi / 9.)
-  {
-    itkExceptionMacro("CudaParkerShortScanImageFilter::GPUGenerateData(): ERROR: not a short-scan!");
+    {
+    if ( outBuffer != inBuffer )
+      {
+      size_t count = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
+      count *= sizeof(ImageType::PixelType);
+      cudaMemcpy(outBuffer, inBuffer, count, cudaMemcpyDeviceToDevice);
+      }
     return;
-  }
+    }
+
+  const std::map<double,unsigned int> sortedAngles = this->GetGeometry()->GetUniqueSortedAngles( rotationAngles );
 
   // Compute delta between first and last angle where there is weighting required
   // First angle
-  std::multimap<double,unsigned int>::const_iterator itFirstAngle;
+  std::map<double,unsigned int>::const_iterator itFirstAngle;
   itFirstAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
   itFirstAngle = (++itFirstAngle == sortedAngles.end()) ? sortedAngles.begin() : itFirstAngle;
   itFirstAngle = (++itFirstAngle == sortedAngles.end()) ? sortedAngles.begin() : itFirstAngle;
   const double firstAngle = itFirstAngle->first;
   // Last angle
-  std::multimap<double,unsigned int>::const_iterator itLastAngle;
+  std::map<double,unsigned int>::const_iterator itLastAngle;
   itLastAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
   itLastAngle = (itLastAngle == sortedAngles.begin()) ? --sortedAngles.end() : --itLastAngle;
   double lastAngle = itLastAngle->first;
@@ -102,29 +112,25 @@ CudaParkerShortScanImageFilter
   proj_col[2] = this->GetInput()->GetDirection()[2][1] * this->GetInput()->GetSpacing()[1];
 
   int proj_size[3];
-  proj_size[0] = this->GetInput()->GetBufferedRegion().GetSize()[0];
-  proj_size[1] = this->GetInput()->GetBufferedRegion().GetSize()[1];
-  proj_size[2] = this->GetInput()->GetBufferedRegion().GetSize()[2];
+  proj_size[0] = this->GetInput()->GetRequestedRegion().GetSize()[0];
+  proj_size[1] = this->GetInput()->GetRequestedRegion().GetSize()[1];
+  proj_size[2] = this->GetInput()->GetRequestedRegion().GetSize()[2];
 
   // 2D matrix (numgeom * 3values) in one block for memcpy!
   // for each geometry, the following structure is used:
   // 0: sdd
   // 1: projection offset x
   // 2: gantry angle
-  int geomIdx = this->GetInput()->GetBufferedRegion().GetIndex()[2];
+  int geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
   float *geomMatrix = new float[proj_size[2] * 5];
   for (int g = 0; g < proj_size[2]; ++g)
-  {
+    {
     geomMatrix[g * 5 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
     geomMatrix[g * 5 + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
     geomMatrix[g * 5 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
     geomMatrix[g * 5 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
     geomMatrix[g * 5 + 4] = this->GetGeometry()->GetGantryAngles()[g + geomIdx];
-
-  }
-
-  float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+    }
 
   CUDA_parker_weight(
       proj_size,

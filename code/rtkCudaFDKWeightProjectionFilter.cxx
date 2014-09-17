@@ -76,9 +76,9 @@ CudaFDKWeightProjectionFilter
   proj_col[2] = this->GetInput()->GetDirection()[2][1] * this->GetInput()->GetSpacing()[1];
 
   int proj_size[3];
-  proj_size[0] = this->GetInput()->GetBufferedRegion().GetSize()[0];
-  proj_size[1] = this->GetInput()->GetBufferedRegion().GetSize()[1];
-  proj_size[2] = this->GetInput()->GetBufferedRegion().GetSize()[2];
+  proj_size[0] = this->GetInput()->GetRequestedRegion().GetSize()[0];
+  proj_size[1] = this->GetInput()->GetRequestedRegion().GetSize()[1];
+  proj_size[2] = this->GetInput()->GetRequestedRegion().GetSize()[2];
 
   // 2D matrix (numgeom * 6values) in one block for memcpy!
   // for each geometry, the following structure is used:
@@ -88,7 +88,7 @@ CudaFDKWeightProjectionFilter
   // 3: source offset x
   // 4: source offset y
   // 5: weight factor
-  int geomIdx = this->GetInput()->GetBufferedRegion().GetIndex()[2];
+  int geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
   float *geomMatrix = new float[proj_size[2] * 7];
   for (int g = 0; g < proj_size[2]; ++g)
   {
@@ -102,6 +102,7 @@ CudaFDKWeightProjectionFilter
   }
 
   float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  inBuffer += this->GetInput()->ComputeOffset( this->GetInput()->GetRequestedRegion().GetIndex() );
   float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
   CUDA_weight_projection(
