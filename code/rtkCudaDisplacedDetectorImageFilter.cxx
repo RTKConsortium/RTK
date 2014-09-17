@@ -40,18 +40,22 @@ CudaDisplacedDetectorImageFilter
   OutputImageRegionType overlapRegion = this->GetOutput()->GetRequestedRegion();
   overlapRegion.Crop(this->GetInput()->GetBufferedRegion());
 
+  float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  inBuffer += this->GetInput()->ComputeOffset( this->GetInput()->GetRequestedRegion().GetIndex() );
+  float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+
   // nothing to do
   if (fabs(this->GetInferiorCorner() + this->GetSuperiorCorner())
       < 0.1 * fabs(this->GetSuperiorCorner() - this->GetInferiorCorner()))
-  {
-    // if not in place, copy is required
-    if (!this->GetInPlace() || !this->CanRunInPlace())
     {
-      this->GetOutput()->Graft(this->GetInput());
-      return;
-    }
+    if ( outBuffer != inBuffer )
+      {
+      size_t count = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
+      count *= sizeof(ImageType::PixelType);
+      cudaMemcpy(outBuffer, inBuffer, count, cudaMemcpyDeviceToDevice);
+      }
     return;
-  }
+    }
 
   float proj_orig[3];
   proj_orig[0] = this->GetInput()->GetOrigin()[0];
@@ -106,8 +110,6 @@ CudaDisplacedDetectorImageFilter
     geomMatrix[g * 4 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
   }
 
-  float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
   CUDA_displaced_weight(
       proj_idx_in, proj_size_in, proj_idx_out, proj_size_out,
