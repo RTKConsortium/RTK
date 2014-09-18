@@ -40,9 +40,11 @@ CudaDisplacedDetectorImageFilter
   OutputImageRegionType overlapRegion = this->GetOutput()->GetRequestedRegion();
   overlapRegion.Crop(this->GetInput()->GetBufferedRegion());
 
+  // Put the two data pointers at the same location
   float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  inBuffer += this->GetInput()->ComputeOffset( this->GetInput()->GetRequestedRegion().GetIndex() );
+  inBuffer += this->GetInput()->ComputeOffset( overlapRegion.GetIndex() );
   float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  outBuffer += this->GetOutput()->ComputeOffset( this->GetOutput()->GetRequestedRegion().GetIndex() );
 
   // nothing to do
   if (fabs(this->GetInferiorCorner() + this->GetSuperiorCorner())
@@ -50,27 +52,28 @@ CudaDisplacedDetectorImageFilter
     {
     if ( outBuffer != inBuffer )
       {
-      size_t count = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
+      size_t count = this->GetOutput()->GetRequestedRegion().GetSize(0);
       count *= sizeof(ImageType::PixelType);
-      cudaMemcpy(outBuffer, inBuffer, count, cudaMemcpyDeviceToDevice);
+      for(unsigned int k=0; k<this->GetOutput()->GetRequestedRegion().GetSize(2); k++)
+        {
+        for(unsigned int j=0; j<this->GetOutput()->GetRequestedRegion().GetSize(1); j++)
+          {
+          cudaMemcpy(outBuffer, inBuffer, count, cudaMemcpyDeviceToDevice);
+          inBuffer += this->GetInput()->GetBufferedRegion().GetSize(0);
+          outBuffer += this->GetOutput()->GetBufferedRegion().GetSize(0);
+          }
+        inBuffer += (this->GetInput()->GetBufferedRegion().GetSize(1)-this->GetInput()->GetRequestedRegion().GetSize(1)) * this->GetInput()->GetBufferedRegion().GetSize(0);
+        outBuffer += (this->GetOutput()->GetBufferedRegion().GetSize(1)-this->GetOutput()->GetRequestedRegion().GetSize(1)) * this->GetOutput()->GetBufferedRegion().GetSize(0);
+        }
       }
     return;
     }
 
-  float proj_orig[3];
-  proj_orig[0] = this->GetInput()->GetOrigin()[0];
-  proj_orig[1] = this->GetInput()->GetOrigin()[1];
-  proj_orig[2] = this->GetInput()->GetOrigin()[2];
+  float proj_orig = this->GetOutput()->GetOrigin()[0];
 
-  float proj_row[3];
-  proj_row[0] = this->GetInput()->GetDirection()[0][0] * this->GetInput()->GetSpacing()[0];
-  proj_row[1] = this->GetInput()->GetDirection()[1][0] * this->GetInput()->GetSpacing()[0];
-  proj_row[2] = this->GetInput()->GetDirection()[2][0] * this->GetInput()->GetSpacing()[0];
+  float proj_row = this->GetOutput()->GetDirection()[0][0] * this->GetOutput()->GetSpacing()[0];
 
-  float proj_col[3];
-  proj_col[0] = this->GetInput()->GetDirection()[0][1] * this->GetInput()->GetSpacing()[1];
-  proj_col[1] = this->GetInput()->GetDirection()[1][1] * this->GetInput()->GetSpacing()[1];
-  proj_col[2] = this->GetInput()->GetDirection()[2][1] * this->GetInput()->GetSpacing()[1];
+  float proj_col = this->GetOutput()->GetDirection()[0][1] * this->GetOutput()->GetSpacing()[1];
 
   int proj_idx_in[3];
   proj_idx_in[0] = overlapRegion.GetIndex()[0];
@@ -82,25 +85,34 @@ CudaDisplacedDetectorImageFilter
   proj_size_in[1] = overlapRegion.GetSize()[1];
   proj_size_in[2] = overlapRegion.GetSize()[2];
 
+  int proj_size_in_buf[2];
+  proj_size_in_buf[0] = this->GetInput()->GetBufferedRegion().GetSize()[0];
+  proj_size_in_buf[1] = this->GetInput()->GetBufferedRegion().GetSize()[1];
+
   int proj_idx_out[3];
-  proj_idx_out[0] = this->GetOutput()->GetBufferedRegion().GetIndex()[0];
-  proj_idx_out[1] = this->GetOutput()->GetBufferedRegion().GetIndex()[1];
-  proj_idx_out[2] = this->GetOutput()->GetBufferedRegion().GetIndex()[2];
+  proj_idx_out[0] = this->GetOutput()->GetRequestedRegion().GetIndex()[0];
+  proj_idx_out[1] = this->GetOutput()->GetRequestedRegion().GetIndex()[1];
+  proj_idx_out[2] = this->GetOutput()->GetRequestedRegion().GetIndex()[2];
+
+  int proj_size_out_buf[2];
+  proj_size_out_buf[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
+  proj_size_out_buf[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
 
   int proj_size_out[3];
-  proj_size_out[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
-  proj_size_out[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
-  proj_size_out[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
+  proj_size_out[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
+  proj_size_out[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
+  proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
   double theta = vnl_math_min(-1. * this->GetInferiorCorner(), this->GetSuperiorCorner());
   bool isPositiveCase = (this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.) ? true : false;
 
-  // 2D matrix (numgeom * 3values) in one block for memcpy!
+  // 2D matrix (numgeom * 4 values) in one block for memcpy!
   // for each geometry, the following structure is used:
   // 0: sdd
-  // 1: projection offset x
-  // 2: gantry angle
-  int geomIdx = proj_idx_in[2];
+  // 1: source offset x
+  // 2: projection offset x
+  // 3: sid
+  int geomIdx = proj_idx_out[2];
   float *geomMatrix = new float[proj_size_out[2] * 4];
   for (int g = 0; g < proj_size_out[2]; ++g)
   {
@@ -112,7 +124,7 @@ CudaDisplacedDetectorImageFilter
 
 
   CUDA_displaced_weight(
-      proj_idx_in, proj_size_in, proj_idx_out, proj_size_out,
+      proj_idx_in, proj_size_in, proj_size_in_buf, proj_idx_out, proj_size_out, proj_size_out_buf,
       inBuffer, outBuffer,
       geomMatrix,
       theta, isPositiveCase,

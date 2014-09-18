@@ -21,13 +21,16 @@
 
 void
 CUDA_weight_projection(
+  int proj_idx[2],
   int proj_dim[3],
+  int proj_dim_buf_in[2],
+  int proj_dim_buf_out[2],
   float *dev_proj_in,
   float *dev_proj_out,
   float *geometries,
-  float proj_orig[3],
-  float proj_row [3],
-  float proj_col[3]
+  float proj_orig[2],
+  float proj_row [2],
+  float proj_col[2]
 );
 
 #endif //ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU

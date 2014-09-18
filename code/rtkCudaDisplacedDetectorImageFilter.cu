@@ -25,20 +25,10 @@
 texture<float, 1, cudaReadModeElementType> tex_geometry; // geometry texture
 
 inline __device__
-float3 TransformIndexToPhysicalPoint(int2 idx, float3 origin, float3 row, float3 column)
+float TransformIndexToPhysicalPoint(int2 idx, float origin, float row, float column)
 {
-  return make_float3(
-        origin.x + row.x * idx.x + column.x * idx.y,
-        origin.y + row.y * idx.x + column.y * idx.y,
-        origin.z + row.z * idx.x + column.z * idx.y
-        );
+  return origin + row * idx.x + column * idx.y;
 }
-
-//inline __device__
-//float ToUntiltedCoordinate(float tiltedCoord, float sdd, float sx, float px, float hyp)
-//{
-//  return hyp * (sdd * (tiltedCoord + px) / (sdd * sdd + (sx - (tiltedCoord + px)) * sx));
-//}
 
 inline __device__
 float ToUntiltedCoordinateAtIsocenter(float tiltedCoord, float sdd, float sid, float sx, float px, float sidu)
@@ -58,15 +48,17 @@ __global__
 void kernel_displaced_weight(
   int3 proj_idx_in,
   int3 proj_size_in,
+  int2 proj_size_in_buf,
   int3 proj_idx_out,
   int3 proj_size_out,
+  int2 proj_size_out_buf,
   float *dev_proj_in,
   float *dev_proj_out,
   float theta,
   bool isPositiveCase,
-  float3 proj_orig,    // projection origin
-  float3 proj_row,     // projection row direction & spacing
-  float3 proj_col      // projection col direction & spacing
+  float proj_orig,    // projection origin
+  float proj_row,     // projection row direction & spacing
+  float proj_col      // projection col direction & spacing
 )
 {
   // compute thread index
@@ -74,7 +66,7 @@ void kernel_displaced_weight(
   tIdx.x = blockIdx.x * blockDim.x + threadIdx.x;
   tIdx.y = blockIdx.y * blockDim.y + threadIdx.y;
   tIdx.z = blockIdx.z * blockDim.z + threadIdx.z;
-  long int tIdx_comp = tIdx.x + tIdx.y * proj_size_out.x + tIdx.z * proj_size_out.x * proj_size_out.y;
+  long int tIdx_comp = tIdx.x + tIdx.y * proj_size_out.x + tIdx.z * proj_size_out_buf.x * proj_size_out_buf.y;
 
   // check if outside of projection grid
   if (tIdx.x >= proj_size_out.x || tIdx.y >= proj_size_out.y || tIdx.z >= proj_size_out.z)
@@ -85,7 +77,7 @@ void kernel_displaced_weight(
                         tIdx.y + proj_idx_out.y,
                         tIdx.z + proj_idx_out.z);
   // combined proj. index -> use thread index in z because accessing memory only with this index
-  long int pIdx_comp = pIdx.x + pIdx.y * proj_size_in.x + tIdx.z * proj_size_in.x * proj_size_in.y;
+  long int pIdx_comp = pIdx.x + pIdx.y * proj_size_in_buf.x + tIdx.z * proj_size_in_buf.x * proj_size_in_buf.y;
 
   // check if outside overlapping region
   if (pIdx.x < proj_idx_in.x || pIdx.x >= (proj_idx_in.x + proj_size_in.x) ||
@@ -98,7 +90,7 @@ void kernel_displaced_weight(
   }
   else
   {
-    float3 pPoint = TransformIndexToPhysicalPoint(
+    float pPoint = TransformIndexToPhysicalPoint(
           make_int2(pIdx.x, pIdx.y), proj_orig, proj_row, proj_col);
 
     float sdd = tex1Dfetch(tex_geometry, tIdx.z * 4 + 0);
@@ -107,7 +99,7 @@ void kernel_displaced_weight(
     float sid = tex1Dfetch(tex_geometry, tIdx.z * 4 + 3);
 
     float hyp = sqrtf(sid * sid + sx * sx); // to untilted situation
-    float l = ToUntiltedCoordinateAtIsocenter(pPoint.x, sdd, sid, sx, px, hyp);
+    float l = ToUntiltedCoordinateAtIsocenter(pPoint, sdd, sid, sx, px, hyp);
     float invsdd = 0.f;
     float invden = 0.f;
     if (hyp != 0.f)
@@ -145,16 +137,18 @@ void
 CUDA_displaced_weight(
   int proj_idx_in[3], // overlapping input region index
   int proj_dim_in[3], // overlapping input region size
+  int proj_dim_in_buf[2], // input size of buffered region
   int proj_idx_out[3], // output region index
   int proj_dim_out[3], // output region size
+  int proj_dim_out_buf[2], // output size of buffered region
   float *dev_proj_in,
   float *dev_proj_out,
   float *geometries,
   float theta,
   bool isPositiveCase,
-  float proj_orig[3],
-  float proj_row [3],
-  float proj_col[3])
+  float proj_orig,
+  float proj_row,
+  float proj_col)
 {
   // copy geometry matrix to device, bind the matrix to the texture
   float *dev_geom;
@@ -177,14 +171,16 @@ CUDA_displaced_weight(
   kernel_displaced_weight <<< dimGrid, dimBlock >>> (
       make_int3(proj_idx_in[0], proj_idx_in[1], proj_idx_in[2]),
       make_int3(proj_dim_in[0], proj_dim_in[1], proj_dim_in[2]),
+      make_int2(proj_dim_in_buf[0], proj_dim_in_buf[1]),
       make_int3(proj_idx_out[0], proj_idx_out[1], proj_idx_out[2]),
       make_int3(proj_dim_out[0], proj_dim_out[1], proj_dim_out[2]),
+      make_int2(proj_dim_out_buf[0], proj_dim_out_buf[1]),
       dev_proj_in,
       dev_proj_out,
       theta, isPositiveCase,
-      make_float3(proj_orig[0], proj_orig[1], proj_orig[2]),
-      make_float3(proj_row[0], proj_row[1], proj_row[2]),
-      make_float3(proj_col[0], proj_col[1], proj_col[2])
+      proj_orig,
+      proj_row,
+      proj_col
       );
 
   // Unbind matrix texture
