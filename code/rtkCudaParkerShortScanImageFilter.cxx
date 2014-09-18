@@ -47,7 +47,7 @@ CudaParkerShortScanImageFilter
 
   // compute max. angular gap
   int maxAngularGapPos = 0;
-  for (int i = 1; i < angularGaps.size(); i++)
+  for (unsigned int i = 1; i < angularGaps.size(); i++)
     if(angularGaps[i] > angularGaps[maxAngularGapPos])
       maxAngularGapPos = i;
 
