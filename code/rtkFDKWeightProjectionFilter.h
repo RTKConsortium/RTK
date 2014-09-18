@@ -41,6 +41,9 @@ namespace rtk
  * accounted for.
  * \author Simon Rit
  *
+ * \test rtkfdktest.cxx, rtkrampfiltertest.cxx, rtkdisplaceddetectortest.cxx,
+ * rtkshortscantest.cxx, rtkfdkprojweightcompcudatest.cxx
+ *
  * \ingroup InPlaceImageFilter
  */
 

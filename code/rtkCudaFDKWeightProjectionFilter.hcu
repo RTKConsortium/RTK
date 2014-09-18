@@ -16,29 +16,21 @@
  *
  *=========================================================================*/
 
-#include "rtkCudaFDKConeBeamReconstructionFilter.h"
-
-rtk::CudaFDKConeBeamReconstructionFilter
-::CudaFDKConeBeamReconstructionFilter()
-{
-  // Create each filter which are specific for cuda
-  m_WeightFilter = WeightFilterType::New();
-  m_RampFilter = RampFilterType::New();
-  m_BackProjectionFilter = BackProjectionFilterType::New();
-
-  //Permanent internal connections
-  m_WeightFilter->SetInput( m_ExtractFilter->GetOutput() );
-  m_RampFilter->SetInput( m_WeightFilter->GetOutput() );
-  m_BackProjectionFilter->SetInput( 1, m_RampFilter->GetOutput() );
-
-  // Default parameters
-  m_BackProjectionFilter->InPlaceOn();
-  m_BackProjectionFilter->SetTranspose(false);
-}
+#ifndef ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
+#define ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
 
 void
-rtk::CudaFDKConeBeamReconstructionFilter
-::GPUGenerateData()
-{
-  CPUSuperclass::GenerateData();
-}
+CUDA_weight_projection(
+  int proj_idx[2],
+  int proj_dim[3],
+  int proj_dim_buf_in[2],
+  int proj_dim_buf_out[2],
+  float *dev_proj_in,
+  float *dev_proj_out,
+  float *geometries,
+  float proj_orig[2],
+  float proj_row [2],
+  float proj_col[2]
+);
+
+#endif //ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
