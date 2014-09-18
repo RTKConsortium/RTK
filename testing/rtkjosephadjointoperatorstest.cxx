@@ -1,3 +1,4 @@
+#include "rtkMacro.h"
 #include "rtkTest.h"
 #include "itkRandomImageSource.h"
 #include "rtkConstantImageSource.h"

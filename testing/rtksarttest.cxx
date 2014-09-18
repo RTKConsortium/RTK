@@ -165,5 +165,25 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
+  std::cout << "\n\n****** Voxel-Based Backprojector and gating ******" << std::endl;
+
+  sart->SetBackProjectionFilter( 0 ); // Voxel based
+  sart->SetForwardProjectionFilter( 0 ); // Joseph
+
+  // Generate arbitrary gating weights (select every third projection)
+  std::vector<float> gatingWeights;
+  for (unsigned int i=0; i<NumberOfProjectionImages; i++)
+    {
+      if ((i%3)==0) gatingWeights.push_back(1);
+      else gatingWeights.push_back(0);
+    }
+  sart->SetGatingWeights( gatingWeights );
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
+
+  CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+
   return EXIT_SUCCESS;
 }

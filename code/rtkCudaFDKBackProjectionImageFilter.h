@@ -67,7 +67,7 @@ protected:
   rtkcuda_EXPORT CudaFDKBackProjectionImageFilter();
   virtual ~CudaFDKBackProjectionImageFilter() {};
 
-  void GPUGenerateData();
+  virtual void GPUGenerateData();
 
 private:
   CudaFDKBackProjectionImageFilter(const Self&); //purposely not implemented

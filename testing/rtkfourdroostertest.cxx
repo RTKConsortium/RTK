@@ -273,7 +273,7 @@ int main(int, char** )
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName("signal.txt");
-  phaseReader->SetNumberOfReconstructedPhases( fourDSize[3] );
+  phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
   // Set the forward and back projection filters to be used
@@ -283,7 +283,7 @@ int main(int, char** )
   rooster->SetInputProjectionStack(pasteFilter->GetOutput());
   rooster->SetGeometry(geometry);
   rooster->SetWeights(phaseReader->GetOutput());
-  rooster->SetInputROI(roi->GetOutput());
+  rooster->SetMotionMask(roi->GetOutput());
   rooster->SetGeometry( geometry );
   rooster->SetCG_iterations( 2 );
   rooster->SetMainLoop_iterations( 2);
@@ -312,6 +312,7 @@ int main(int, char** )
 #endif
 
   itksys::SystemTools::RemoveFile("signal.txt");
+  delete[] Volumes;
 
   return EXIT_SUCCESS;
 }
