@@ -36,9 +36,11 @@ void
 CudaParkerShortScanImageFilter
 ::GPUGenerateData()
 {
+  // Put the two data pointers at the same location
   float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   inBuffer += this->GetInput()->ComputeOffset( this->GetInput()->GetRequestedRegion().GetIndex() );
   float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  outBuffer += this->GetOutput()->ComputeOffset( this->GetOutput()->GetRequestedRegion().GetIndex() );
 
   const std::vector<double> rotationAngles = this->GetGeometry()->GetGantryAngles();
   std::vector<double> angularGaps = this->GetGeometry()->GetAngularGapsWithNext(rotationAngles);
@@ -56,9 +58,19 @@ CudaParkerShortScanImageFilter
     {
     if ( outBuffer != inBuffer )
       {
-      size_t count = this->GetOutput()->GetRequestedRegion().GetNumberOfPixels();
+      size_t count = this->GetOutput()->GetRequestedRegion().GetSize(0);
       count *= sizeof(ImageType::PixelType);
-      cudaMemcpy(outBuffer, inBuffer, count, cudaMemcpyDeviceToDevice);
+      for(unsigned int k=0; k<this->GetOutput()->GetRequestedRegion().GetSize(2); k++)
+        {
+        for(unsigned int j=0; j<this->GetOutput()->GetRequestedRegion().GetSize(1); j++)
+          {
+          cudaMemcpy(outBuffer, inBuffer, count, cudaMemcpyDeviceToDevice);
+          inBuffer += this->GetInput()->GetBufferedRegion().GetSize(0);
+          outBuffer += this->GetOutput()->GetBufferedRegion().GetSize(0);
+          }
+        inBuffer += (this->GetInput()->GetBufferedRegion().GetSize(1)-this->GetInput()->GetRequestedRegion().GetSize(1)) * this->GetInput()->GetBufferedRegion().GetSize(0);
+        outBuffer += (this->GetOutput()->GetBufferedRegion().GetSize(1)-this->GetOutput()->GetRequestedRegion().GetSize(1)) * this->GetOutput()->GetBufferedRegion().GetSize(0);
+        }
       }
     return;
     }
@@ -96,25 +108,28 @@ CudaParkerShortScanImageFilter
                     << " degrees and should be more than half the beam angle, i.e. "
                     << atan(0.5 * detectorWidth * invsid) * 180. / itk::Math::pi << " degrees.");
 
-  float proj_orig[3];
-  proj_orig[0] = this->GetInput()->GetOrigin()[0];
-  proj_orig[1] = this->GetInput()->GetOrigin()[1];
-  proj_orig[2] = this->GetInput()->GetOrigin()[2];
+  float proj_orig = this->GetInput()->GetOrigin()[0];
 
-  float proj_row[3];
-  proj_row[0] = this->GetInput()->GetDirection()[0][0] * this->GetInput()->GetSpacing()[0];
-  proj_row[1] = this->GetInput()->GetDirection()[1][0] * this->GetInput()->GetSpacing()[0];
-  proj_row[2] = this->GetInput()->GetDirection()[2][0] * this->GetInput()->GetSpacing()[0];
+  float proj_row = this->GetInput()->GetDirection()[0][0] * this->GetInput()->GetSpacing()[0];
 
-  float proj_col[3];
-  proj_col[0] = this->GetInput()->GetDirection()[0][1] * this->GetInput()->GetSpacing()[1];
-  proj_col[1] = this->GetInput()->GetDirection()[1][1] * this->GetInput()->GetSpacing()[1];
-  proj_col[2] = this->GetInput()->GetDirection()[2][1] * this->GetInput()->GetSpacing()[1];
+  float proj_col = this->GetInput()->GetDirection()[0][1] * this->GetInput()->GetSpacing()[1];
+
+  int proj_idx[2];
+  proj_idx[0] = this->GetInput()->GetRequestedRegion().GetIndex()[0];
+  proj_idx[1] = this->GetInput()->GetRequestedRegion().GetIndex()[1];
 
   int proj_size[3];
   proj_size[0] = this->GetInput()->GetRequestedRegion().GetSize()[0];
   proj_size[1] = this->GetInput()->GetRequestedRegion().GetSize()[1];
   proj_size[2] = this->GetInput()->GetRequestedRegion().GetSize()[2];
+
+  int proj_size_buf_in[2];
+  proj_size_buf_in[0] = this->GetInput()->GetBufferedRegion().GetSize()[0];
+  proj_size_buf_in[1] = this->GetInput()->GetBufferedRegion().GetSize()[1];
+
+  int proj_size_buf_out[2];
+  proj_size_buf_out[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
+  proj_size_buf_out[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
 
   // 2D matrix (numgeom * 3values) in one block for memcpy!
   // for each geometry, the following structure is used:
@@ -133,7 +148,10 @@ CudaParkerShortScanImageFilter
     }
 
   CUDA_parker_weight(
+      proj_idx,
       proj_size,
+      proj_size_buf_in,
+      proj_size_buf_out,
       inBuffer, outBuffer,
       geomMatrix,
       delta, firstAngle,

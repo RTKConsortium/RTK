@@ -60,34 +60,44 @@ CudaFDKWeightProjectionFilter
     }
   }
 
-  float proj_orig[3];
+  float proj_orig[2];
   proj_orig[0] = this->GetInput()->GetOrigin()[0];
   proj_orig[1] = this->GetInput()->GetOrigin()[1];
-  proj_orig[2] = this->GetInput()->GetOrigin()[2];
 
-  float proj_row[3];
+  float proj_row[2];
   proj_row[0] = this->GetInput()->GetDirection()[0][0] * this->GetInput()->GetSpacing()[0];
   proj_row[1] = this->GetInput()->GetDirection()[1][0] * this->GetInput()->GetSpacing()[0];
-  proj_row[2] = this->GetInput()->GetDirection()[2][0] * this->GetInput()->GetSpacing()[0];
 
-  float proj_col[3];
+  float proj_col[2];
   proj_col[0] = this->GetInput()->GetDirection()[0][1] * this->GetInput()->GetSpacing()[1];
   proj_col[1] = this->GetInput()->GetDirection()[1][1] * this->GetInput()->GetSpacing()[1];
-  proj_col[2] = this->GetInput()->GetDirection()[2][1] * this->GetInput()->GetSpacing()[1];
+
+  int proj_idx[2];
+  proj_idx[0] = this->GetInput()->GetRequestedRegion().GetIndex()[0];
+  proj_idx[1] = this->GetInput()->GetRequestedRegion().GetIndex()[1];
 
   int proj_size[3];
   proj_size[0] = this->GetInput()->GetRequestedRegion().GetSize()[0];
   proj_size[1] = this->GetInput()->GetRequestedRegion().GetSize()[1];
   proj_size[2] = this->GetInput()->GetRequestedRegion().GetSize()[2];
 
-  // 2D matrix (numgeom * 6values) in one block for memcpy!
+  int proj_size_buf_in[2];
+  proj_size_buf_in[0] = this->GetInput()->GetBufferedRegion().GetSize()[0];
+  proj_size_buf_in[1] = this->GetInput()->GetBufferedRegion().GetSize()[1];
+
+  int proj_size_buf_out[2];
+  proj_size_buf_out[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
+  proj_size_buf_out[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
+
+  // 2D matrix (numgeom * 7 values) in one block for memcpy!
   // for each geometry, the following structure is used:
   // 0: sdd
-  // 1: projection offset x
-  // 2: projection offset y
-  // 3: source offset x
-  // 4: source offset y
-  // 5: weight factor
+  // 1: sid
+  // 2: projection offset x
+  // 3: projection offset y
+  // 4: source offset x
+  // 5: source offset y
+  // 6: weight factor
   int geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
   float *geomMatrix = new float[proj_size[2] * 7];
   for (int g = 0; g < proj_size[2]; ++g)
@@ -101,12 +111,17 @@ CudaFDKWeightProjectionFilter
     geomMatrix[g * 7 + 6] = tiltAngles[g + geomIdx];
   }
 
+  // Put the two data pointers at the same location
   float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   inBuffer += this->GetInput()->ComputeOffset( this->GetInput()->GetRequestedRegion().GetIndex() );
   float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  outBuffer += this->GetOutput()->ComputeOffset( this->GetOutput()->GetRequestedRegion().GetIndex() );
 
   CUDA_weight_projection(
+      proj_idx,
       proj_size,
+      proj_size_buf_in,
+      proj_size_buf_out,
       inBuffer, outBuffer,
       geomMatrix,
       proj_orig, proj_row, proj_col
