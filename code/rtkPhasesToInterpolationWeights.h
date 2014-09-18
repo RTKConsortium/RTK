@@ -58,7 +58,7 @@ public:
     //  itkGetObjectMacro(Array2D,Array2DType);
 
     /** Sets the number of phases to reconstruct */
-    void SetNumberOfReconstructedPhases(int n);
+    void SetNumberOfReconstructedFrames(int n);
 
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */
@@ -88,7 +88,7 @@ protected:
 private:
 
     Array2DType m_Array2D;
-    int         m_NumberReconstructedPhases;
+    int         m_NumberReconstructedFrames;
     bool        m_UnevenTemporalSpacing;
 
     PhasesToInterpolationWeights(const Self &);  //purposely not implemented

@@ -55,6 +55,25 @@ JosephBackProjectionImageFilter<TInputImage,
   // Allocate the output image
   this->AllocateOutputs();
 
+  // Initialize output region with input region in case the filter is not in
+  // place
+  if(this->GetInput() != this->GetOutput() )
+    {
+    // Iterators on volume input and output
+    typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
+    InputRegionIterator itVolIn(this->GetInput(0), this->GetInput()->GetBufferedRegion());
+
+    typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+    OutputRegionIterator itVolOut(this->GetOutput(), this->GetInput()->GetBufferedRegion());
+
+    while(!itVolIn.IsAtEnd() )
+      {
+      itVolOut.Set(itVolIn.Get() );
+      ++itVolIn;
+      ++itVolOut;
+      }
+    }
+
   // beginBuffer is pointing at point with index (0,0,0) in memory, even if
   // it is not in the allocated memory
   typename TOutputImage::PixelType *beginBuffer =

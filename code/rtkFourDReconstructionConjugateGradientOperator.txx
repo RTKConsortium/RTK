@@ -41,11 +41,14 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent connections
-  m_ExtractFilter->SetInput(m_ZeroMultiplyProjectionStackFilter->GetOutput());
+  m_ZeroMultiplyProjectionStackFilter->SetInput1(m_ExtractFilter->GetOutput());
 
   // Set constant parameters
   m_ZeroMultiplyVolumeSeriesFilter->SetConstant2(itk::NumericTraits<typename VolumeSeriesType::PixelType>::ZeroValue());
   m_ZeroMultiplyProjectionStackFilter->SetConstant2(itk::NumericTraits<typename ProjectionStackType::PixelType>::ZeroValue());
+
+  // Memory management options
+  m_ZeroMultiplyVolumeSeriesFilter->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -97,23 +100,29 @@ void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::InitializeConstantSource()
 {
-  int Dimension = 3;
+  unsigned int Dimension = 3;
 
   // Configure the constant image source that is connected to input 2 of the m_SingleProjToFourDFilter
   typename VolumeType::SizeType ConstantVolumeSourceSize;
   ConstantVolumeSourceSize.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    {
+    ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    }
 
   typename VolumeType::SpacingType ConstantVolumeSourceSpacing;
   ConstantVolumeSourceSpacing.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    { 
+    ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    }
 
   typename VolumeType::PointType ConstantVolumeSourceOrigin;
   ConstantVolumeSourceOrigin.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+    {
+    ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+    }
 
   typename VolumeType::DirectionType ConstantVolumeSourceDirection;
   ConstantVolumeSourceDirection.SetIdentity();
@@ -143,6 +152,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   else
 #endif
     m_InterpolationFilter = InterpolationFilterType::New();
+
 #ifdef RTK_USE_CUDA
   if (m_UseCudaSplat)
     m_SplatFilter = rtk::CudaSplatImageFilter::New();
@@ -152,18 +162,19 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // Set runtime connections
   m_ZeroMultiplyVolumeSeriesFilter->SetInput1(this->GetInputVolumeSeries());
-  m_ZeroMultiplyProjectionStackFilter->SetInput1(this->GetInputProjectionStack());
+  m_ExtractFilter->SetInput(this->GetInputProjectionStack());
 
   m_InterpolationFilter->SetInputVolume(m_ConstantVolumeSource1->GetOutput());
   m_InterpolationFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
 
-  m_ForwardProjectionFilter->SetInput(0, m_ExtractFilter->GetOutput());
+  m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionStackFilter->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, m_InterpolationFilter->GetOutput());
 
   m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
 
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource2->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilter->SetInPlace(false);
 
   m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyVolumeSeriesFilter->GetOutput());
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
@@ -209,13 +220,14 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   extractRegion.SetSize(Dimension-1, 1);
 
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+  typename VolumeSeriesType::Pointer pimg;
   for(int proj=0; proj<NumberProjs; proj++)
     {
 
     // After the first update, we need to use the output as input.
     if(proj>0)
       {
-      typename VolumeSeriesType::Pointer pimg = m_SplatFilter->GetOutput();
+      pimg = m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_SplatFilter->SetInputVolumeSeries( pimg );
       }
@@ -234,6 +246,18 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // Graft its output
   this->GraftOutput( m_SplatFilter->GetOutput() );
+
+  // Release the data in internal filters
+  pimg->ReleaseData();
+  m_ConstantVolumeSource1->GetOutput()->ReleaseData();
+  m_ConstantVolumeSource2->GetOutput()->ReleaseData();
+  m_ExtractFilter->GetOutput()->ReleaseData();
+  m_ZeroMultiplyVolumeSeriesFilter->GetOutput()->ReleaseData();
+  m_ZeroMultiplyProjectionStackFilter->GetOutput()->ReleaseData();
+  m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
+  m_InterpolationFilter->GetOutput()->ReleaseData();
+  m_BackProjectionFilter->GetOutput()->ReleaseData();
+  m_ForwardProjectionFilter->GetOutput()->ReleaseData();
 }
 
 }// end namespace

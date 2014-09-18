@@ -74,7 +74,11 @@ public:
   //
   // Allocate CPU and Cuda memory space
   //
+#if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 6)
   void Allocate();
+#else
+  void Allocate(bool initializePixels = false);
+#endif
 
   virtual void Initialize();
 
