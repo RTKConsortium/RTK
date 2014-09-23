@@ -20,6 +20,8 @@
 #define __rtkParkerShortScanImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
+#include <itkSimpleFastMutexLock.h>
+
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
 
@@ -35,7 +37,7 @@ namespace rtk
  * of its size. Otherwise, it does the weighting described in the publication
  * and zero pads the data on the nearest side to the center.
  *
- * \test rtkshortscantest.cxx
+ * \test rtkshortscantest.cxx, rtkshortscancompcudatest.cxx
  *
  * \author Simon Rit
  *
@@ -90,6 +92,8 @@ private:
    */
   double m_InferiorCorner;
   double m_SuperiorCorner;
+
+  itk::SimpleFastMutexLock m_WarningMutex;
 }; // end of class
 
 } // end namespace rtk
