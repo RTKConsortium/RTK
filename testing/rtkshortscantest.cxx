@@ -5,7 +5,11 @@
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkParkerShortScanImageFilter.h"
+#ifdef USE_CUDA
+#  include "rtkCudaParkerShortScanImageFilter.h"
+#else
+#  include "rtkParkerShortScanImageFilter.h"
+#endif
 
 /**
  * \file rtkshortscantest.cxx
@@ -24,7 +28,12 @@ int main(int , char** )
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
+#ifdef USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#endif
+
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
@@ -101,7 +110,11 @@ int main(int , char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
 
   // Short scan image filter
+#ifdef USE_CUDA
+  typedef rtk::CudaParkerShortScanImageFilter                PSSFType;
+#else
   typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
+#endif
   PSSFType::Pointer pssf = PSSFType::New();
   pssf->SetInput( slp->GetOutput() );
   pssf->SetGeometry( geometry );

@@ -20,6 +20,7 @@
 #define __rtkTest_h
 
 #include <itkImageRegionConstIterator.h>
+#include <itkImageFileWriter.h>
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkTestConfiguration.h"
 
@@ -74,6 +75,20 @@ void CheckImageQuality(typename TImage::Pointer recon,
   // QI
   ErrorType QI = (RefValueForPSNR-ErrorPerPixel)/RefValueForPSNR;
   std::cout << "QI = " << QI << std::endl;
+
+//  // It is often necessary to write the images and look at them
+//  // to understand why a given test fails. This portion of code
+//  // does that. It should be left here but commented out, since
+//  // it is only useful in specific debugging tasks
+//  typedef itk::ImageFileWriter<TImage> FileWriterType;
+//  typename FileWriterType::Pointer writer = FileWriterType::New();
+//  writer->SetInput(recon);
+//  writer->SetFileName("Reconstruction.mhd");
+//  writer->Update();
+//  writer->SetInput(ref);
+//  writer->SetFileName("Reference.mhd");
+//  writer->Update();
+//  // End of results writing
 
   // Checking results. As a comparison with NaN always returns false,
   // this design allows to detect NaN results and cause test failure
@@ -157,33 +172,57 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
   Image2IteratorType itIm2A( im2A, im2A->GetLargestPossibleRegion() );
   Image2IteratorType itIm2B( im2B, im2B->GetLargestPossibleRegion() );
 
-  typename TImage2::PixelType scalarProductGrads, scalarProductIms;
-  scalarProductGrads = 0;
-  scalarProductIms = 0;
+  typename TImage2::PixelType scalarProductT1, scalarProductT2;
+  scalarProductT1 = 0;
+  scalarProductT2 = 0;
 
   while( !itIm1A.IsAtEnd() )
     {
-    scalarProductGrads += itIm1A.Get() * itIm1B.Get();
+    scalarProductT1 += itIm1A.Get() * itIm1B.Get();
     ++itIm1A;
     ++itIm1B;
     }
 
   while( !itIm2A.IsAtEnd() )
     {
-    scalarProductIms += itIm2A.Get() * itIm2B.Get();
+    scalarProductT2 += itIm2A.Get() * itIm2B.Get();
     ++itIm2A;
     ++itIm2B;
     }
 
   // QI
-  double ratio = scalarProductGrads / scalarProductIms;
+  double ratio = scalarProductT1 / scalarProductT2;
   std::cout << "ratio = " << ratio << std::endl;
 
+//  // It is often necessary to write the images and look at them
+//  // to understand why a given test fails. This portion of code
+//  // does that. It should be left here but commented out, since
+//  // it is only useful in specific debugging tasks
+//  typedef itk::ImageFileWriter<TImage1> FileWriterType1;
+//  typename FileWriterType1::Pointer writer = FileWriterType1::New();
+//  writer->SetInput(im1A);
+//  writer->SetFileName("im1A.mhd");
+//  writer->Update();
+//  writer->SetInput(im1B);
+//  writer->SetFileName("im1B.mhd");
+//  writer->Update();
+
+//  typedef itk::ImageFileWriter<TImage2> FileWriterType2;
+//  typename FileWriterType2::Pointer writer2 = FileWriterType2::New();
+//  writer2->SetInput(im2A);
+//  writer2->SetFileName("im2A.mhd");
+//  writer2->Update();
+//  writer2->SetInput(im2B);
+//  writer2->SetFileName("im2B.mhd");
+//  writer2->Update();
+//  // End of results writing
+
+
   // Checking results
-  if (!(vcl_abs(ratio-1)<0.0001))
+  if (!(vcl_abs(ratio-1)<0.001))
   {
     std::cerr << "Test Failed, ratio not valid! "
-              << ratio << " instead of 1 +/- 0.0001" << std::endl;
+              << ratio << " instead of 1 +/- 0.001" << std::endl;
     exit( EXIT_FAILURE);
   }
 }

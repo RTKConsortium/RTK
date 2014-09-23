@@ -28,7 +28,7 @@
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "rtkDisplacedDetectorImageFilter.h"
-
+#include "rtkMultiplyByVectorImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
@@ -127,10 +127,11 @@ public:
     typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
             typename TOutputImage::ValueType, 
             typename TOutputImage::ValueType, 
-            TGradientOutputImage>                             GradientFilterType;
+            TGradientOutputImage>                                           GradientFilterType;
     typedef rtk::BackwardDifferenceDivergenceImageFilter
-        <TGradientOutputImage, TOutputImage>                  DivergenceFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>   DisplacedDetectorFilterType;
+        <TGradientOutputImage, TOutputImage>                                DivergenceFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
+    typedef rtk::MultiplyByVectorImageFilter<TOutputImage>                  GatingWeightsFilterType;
 
     /** Set the backprojection filter*/
     void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
@@ -143,6 +144,9 @@ public:
 
     /** Set the regularization parameter */
     itkSetMacro(Beta, float)
+
+    /** In the case of a gated reconstruction, set the gating weights */
+    void SetGatingWeights(std::vector<float> weights);
 
 protected:
     ADMMTotalVariationConjugateGradientOperator();
@@ -162,9 +166,15 @@ protected:
     typename DivergenceFilterType::Pointer            m_DivergenceFilter;
     typename GradientFilterType::Pointer              m_GradientFilter;
     typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+    typename GatingWeightsFilterType::Pointer         m_GatingWeightsFilter;
 
     ThreeDCircularProjectionGeometry::Pointer         m_Geometry;
     float                                             m_Beta;
+
+    /** Have gating weights been set ? If so, apply them, otherwise ignore
+     * the gating weights filter */
+    bool                m_IsGated;
+    std::vector<float>  m_GatingWeights;
 
     /** When the inputs have the same type, ITK checks whether they occupy the
     * same physical space or not. Obviously they dont, so we have to remove this check

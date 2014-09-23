@@ -68,7 +68,6 @@ namespace rtk
    * node [shape=box];
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
-   * AfterCG [label="", fixedsize="false", width=0, height=0, shape=none];
    * PSTFD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
@@ -78,9 +77,7 @@ namespace rtk
    * Input1 -> Displaced
    * Displaced -> PSTFD;
    * PSTFD -> ConjugateGradient;
-   * ConjugateGradient -> AfterCG [arrowhead=None];
-   * AfterCG -> Output;
-   * AfterCG -> AfterInput0 [style=dashed];
+   * ConjugateGradient -> Output;
    * }
    * \enddot
    *
