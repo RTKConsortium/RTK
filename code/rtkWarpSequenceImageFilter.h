@@ -37,65 +37,33 @@ namespace rtk
    * \dot
    * digraph WarpSequenceImageFilter {
    *
-   * Input0 [ label="Input 0 (Volume)"];
+   * Input0 [ label="Input 0 (Sequence of images)"];
    * Input0 [shape=Mdiamond];
-   * Input1 [label="Input 1 (Projections)"];
+   * Input1 [label="Input 1 (Sequence of MVFs)"];
    * Input1 [shape=Mdiamond];
-   * Output [label="Output (Volume)"];
+   * Output [label="Output (Sequence of images)"];
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
-   * ZeroMultiplyVolume [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * ZeroMultiplyGradient [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * BeforeZeroMultiplyVolume [label="", fixedsize="false", width=0, height=0, shape=none];
-   * AfterGradient [label="", fixedsize="false", width=0, height=0, shape=none];
-   * AfterZeroMultiplyGradient [label="", fixedsize="false", width=0, height=0, shape=none];
-   * Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
-   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
-   * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
-   * AddGradient [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
-   * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
-   * Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
-   * SubtractVolume [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
-   * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
-   * AfterConjugateGradient [label="", fixedsize="false", width=0, height=0, shape=none];
-   * GradientTwo [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
-   * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
-   * TVSoftThreshold [ label="rtk::SoftThresholdTVImageFilter" URL="\ref rtk::SoftThresholdTVImageFilter"];
-   * BeforeTVSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
-   * AfterTVSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
-   * SubtractTwo [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+   * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
+   * ExtractMVF [label="itk::ExtractImageFilter (for MVFs)" URL="\ref itk::ExtractImageFilter"];
+   * Warp [ label="itk::WarpImageFilter" URL="\ref itk::WarpImageFilter"];
+   * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
+   * Paste [ label="itk::PasteImageFilter" URL="\ref rtk::PasteImageFilter"];
+   * ConstantSource [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+   * BeforePaste [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterPaste [label="", fixedsize="false", width=0, height=0, shape=none];
    *
-   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
-   * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
-   * BeforeZeroMultiplyVolume -> Gradient;
-   * BeforeZeroMultiplyVolume -> ConjugateGradient;
-   * Input1 -> Displaced;
-   * Displaced -> BackProjection;
-   * Gradient -> AfterGradient [arrowhead=None];
-   * AfterGradient -> AddGradient;
-   * AfterGradient -> ZeroMultiplyGradient;
-   * ZeroMultiplyGradient -> AfterZeroMultiplyGradient [arrowhead=None];
-   * AfterZeroMultiplyGradient -> AddGradient;
-   * AfterZeroMultiplyGradient -> Subtract;
-   * AddGradient -> Divergence;
-   * Divergence -> Multiply;
-   * Multiply -> SubtractVolume;
-   * BackProjection -> SubtractVolume;
-   * SubtractVolume -> ConjugateGradient;
-   * ConjugateGradient -> AfterConjugateGradient;
-   * AfterConjugateGradient -> GradientTwo;
-   * GradientTwo -> Subtract;
-   * Subtract -> BeforeTVSoftThreshold [arrowhead=None];
-   * BeforeTVSoftThreshold -> TVSoftThreshold;
-   * BeforeTVSoftThreshold -> SubtractTwo;
-   * TVSoftThreshold -> AfterTVSoftThreshold [arrowhead=None];
-   * AfterTVSoftThreshold -> SubtractTwo;
-   *
-   * AfterTVSoftThreshold -> AfterGradient [style=dashed];
-   * SubtractTwo -> AfterZeroMultiplyGradient [style=dashed];
-   * AfterConjugateGradient -> BeforeZeroMultiplyVolume [style=dashed];
-   * AfterConjugateGradient -> Output [style=dashed];
+   * Input0 -> Extract;
+   * Input1 -> ExtractMVF;
+   * Extract -> Warp;
+   * ExtractMVF -> Warp;
+   * Warp -> Cast;
+   * Cast -> BeforePaste [arrowhead=None];
+   * BeforePaste -> Paste;
+   * Paste -> AfterPaste [arrowhead=None];
+   * AfterPaste -> BeforePaste [style=dashed];
+   * AfterPaste -> Output [style=dashed];
    * }
    * \enddot
    *
