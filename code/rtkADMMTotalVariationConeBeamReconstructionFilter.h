@@ -138,11 +138,11 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(ADMMTotalVariationConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter)
 
-    /** The 3D image to be updated */
-    void SetInputVolume(const TOutputImage* Volume);
+//    /** The 3D image to be updated */
+//    void SetInputVolume(const TOutputImage* Volume);
 
-    /** The gated measured projections */
-    void SetInputProjectionStack(const TOutputImage* Projection);
+//    /** The (gated) measured projections */
+//    void SetInputProjectionStack(const TOutputImage* Projection);
 
     typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >     ForwardProjectionFilterType;
     typedef typename ForwardProjectionFilterType::Pointer                       ForwardProjectionFilterPointer;
