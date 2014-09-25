@@ -205,6 +205,8 @@ protected:
 
     virtual void GenerateOutputInformation();
 
+    virtual void GenerateInputRequestedRegion();
+
     /** Member pointers to the filters used internally (for convenience)*/
     typename FourDCGFilterType::Pointer                     m_FourDCGFilter;
     typename ThresholdFilterType::Pointer                   m_PositivityFilter;

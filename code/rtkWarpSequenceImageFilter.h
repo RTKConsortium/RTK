@@ -20,6 +20,7 @@
 #define __rtkWarpSequenceImageFilter_h
 
 #include "rtkConstantImageSource.h"
+#include "rtkCyclicDeformationImageFilter.h"
 
 #include <itkWarpImageFilter.h>
 #include <itkExtractImageFilter.h>
@@ -67,7 +68,7 @@ namespace rtk
    * }
    * \enddot
    *
-   * \test rtk??.cxx
+   * \test rtkfourdroostertest.cxx
    *
    * \author Cyril Mory
    *
@@ -107,7 +108,7 @@ public:
     typedef itk::WarpImageFilter<TImage, TImage, TMVFImage>         WarpFilterType;
     typedef itk::LinearInterpolateImageFunction<TImage, double >    InterpolatorType;
     typedef itk::ExtractImageFilter<TImageSequence, TImage>         ExtractFilterType;
-    typedef itk::ExtractImageFilter<TMVFImageSequence, TMVFImage>   ExtractMVFFilterType;
+    typedef rtk::CyclicDeformationImageFilter<TMVFImage>            MVFInterpolatorType;
     typedef itk::PasteImageFilter<TImageSequence,TImageSequence>    PasteFilterType;
     typedef itk::CastImageFilter<TImage, TImageSequence>            CastFilterType;
     typedef rtk::ConstantImageSource<TImageSequence>                ConstantImageSourceType;
@@ -122,14 +123,13 @@ protected:
     /** Member pointers to the filters used internally (for convenience)*/
     typename WarpFilterType::Pointer          m_WarpFilter;
     typename ExtractFilterType::Pointer       m_ExtractFilter;
-    typename ExtractMVFFilterType::Pointer    m_ExtractMVFFilter;
+    typename MVFInterpolatorType::Pointer     m_MVFInterpolatorFilter;
     typename PasteFilterType::Pointer         m_PasteFilter;
     typename CastFilterType::Pointer          m_CastFilter;
     typename ConstantImageSourceType::Pointer m_ConstantSource;
 
     /** Extraction regions for both extract filters */
     typename TImageSequence::RegionType       m_ExtractAndPasteRegion;
-    typename TMVFImageSequence::RegionType    m_ExtractMVFRegion;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -139,6 +139,7 @@ protected:
     /** The volume and the projections must have different requested regions
     */
     void GenerateOutputInformation();
+    void GenerateInputRequestedRegion();
 
 private:
     WarpSequenceImageFilter(const Self &); //purposely not implemented
