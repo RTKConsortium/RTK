@@ -195,6 +195,44 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GenerateInputRequestedRegion()
+{
+  //Call the superclass' implementation of this method
+  Superclass::GenerateInputRequestedRegion();
+
+  //Get pointers to the input and output
+  typename VolumeSeriesType::Pointer input0Ptr  = const_cast<VolumeSeriesType *>(this->GetInput(0));
+  typename ProjectionStackType::Pointer input1Ptr  = this->GetInputProjectionStack();
+  typename VolumeType::Pointer input2Ptr  = this->GetInputROI();
+
+  input0Ptr->SetRequestedRegionToLargestPossibleRegion();
+  input1Ptr->SetRequestedRegionToLargestPossibleRegion();
+  input2Ptr->SetRequestedRegionToLargestPossibleRegion();
+
+  if (m_PerformWarping)
+    {
+    typename MVFSequenceImageType::Pointer input3Ptr  = this->GetForwardDisplacementField();
+    typename MVFSequenceImageType::Pointer input4Ptr  = this->GetBackwardDisplacementField();
+
+    input3Ptr->SetRequestedRegionToLargestPossibleRegion();
+    input4Ptr->SetRequestedRegionToLargestPossibleRegion();
+    }
+  else
+    {
+    // If the filter is used with m_PerformWarping = true, then with
+    // m_PerformWarping = false, it keeps requesting a region of the
+    // inputs 3 and 4, which by default may be larger than the largest
+    // possible region of these inputs (it is the largest possible region of
+    // the first input, and the sizes do not necessarily match).
+    // This occurs, for example, in the fourdroostercudatest.
+    this->RemoveInput(3);
+    this->RemoveInput(4);
+    }
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
   // Set some runtime connections
@@ -255,13 +293,10 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     if (i>0)
       {
         if (m_PerformWarping)
-          {
           pimg = m_WarpBack->GetOutput();
-          }
         else
-          {
           pimg = m_TVDenoisingTime->GetOutput();
-          }
+
       pimg->DisconnectPipeline();
       m_FourDCGFilter->SetInputVolumeSeries(pimg);
       }
