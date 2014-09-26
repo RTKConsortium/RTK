@@ -33,15 +33,21 @@ int main(int argc, char * argv[])
   GGO(rtkfourdrooster, args_info);
 
   typedef float OutputPixelType;
+  typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #else
   typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #endif
   typedef ProjectionStackType                   VolumeType;
+  typedef itk::ImageFileReader<  DVFSequenceImageType > DVFReaderType;
 
   // Projections reader
   typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
@@ -115,6 +121,23 @@ int main(int argc, char * argv[])
   rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetGammaSpace(args_info.gamma_space_arg);
   rooster->SetGammaTime(args_info.gamma_time_arg);
+
+  if ((args_info.dvf_given) && (args_info.idvf_given))
+    {
+    rooster->SetPerformWarping(true);
+
+    // Read DVF
+    DVFReaderType::Pointer dvfReader = DVFReaderType::New();
+    dvfReader->SetFileName( args_info.dvf_arg );
+    dvfReader->Update();
+    rooster->SetForwardDisplacementField(dvfReader->GetOutput());
+
+    // Read inverse DVF
+    DVFReaderType::Pointer idvfReader = DVFReaderType::New();
+    idvfReader->SetFileName( args_info.idvf_arg );
+    idvfReader->Update();
+    rooster->SetBackwardDisplacementField(idvfReader->GetOutput());
+    }
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
