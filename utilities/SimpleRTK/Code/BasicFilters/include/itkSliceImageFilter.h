@@ -20,7 +20,7 @@
 
 #include "itkImageToImageFilter.h"
 
-namespace rtk
+namespace itk
 {
 /** \class SliceImageFilter
  * \brief Slices an image based on a starting index and a stopping
