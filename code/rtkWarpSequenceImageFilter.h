@@ -47,7 +47,7 @@ namespace rtk
    *
    * node [shape=box];
    * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
-   * ExtractMVF [label="itk::ExtractImageFilter (for MVFs)" URL="\ref itk::ExtractImageFilter"];
+   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for MVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
    * Warp [ label="itk::WarpImageFilter" URL="\ref itk::WarpImageFilter"];
    * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
    * Paste [ label="itk::PasteImageFilter" URL="\ref rtk::PasteImageFilter"];
@@ -56,9 +56,9 @@ namespace rtk
    * AfterPaste [label="", fixedsize="false", width=0, height=0, shape=none];
    *
    * Input0 -> Extract;
-   * Input1 -> ExtractMVF;
+   * Input1 -> CyclicDeformation;
    * Extract -> Warp;
-   * ExtractMVF -> Warp;
+   * CyclicDeformation -> Warp;
    * Warp -> Cast;
    * Cast -> BeforePaste [arrowhead=None];
    * BeforePaste -> Paste;
