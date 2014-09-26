@@ -34,7 +34,7 @@
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
 
-namespace rtk
+namespace itk
 {
 /**
  *
