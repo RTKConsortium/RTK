@@ -3,6 +3,7 @@ from __future__ import print_function
 import SimpleRTK as srtk
 import sys
 import os
+import matplotlib.pyplot as plt
 
 if len ( sys.argv ) < 2:
     print( "Usage: RTKFirstReconstruction <output>" )
@@ -45,7 +46,7 @@ reiImage = rei.Execute(source)
   
 # Create reconstructed image
 constantImageSource2 = srtk.ConstantImageSource()
-sizeOutput = [ 256, 256,  256 ]
+sizeOutput = [ 64, 64, 64]
 constantImageSource2.SetOrigin( origin )
 constantImageSource2.SetSpacing( spacing )
 constantImageSource2.SetSize( sizeOutput )
@@ -60,6 +61,8 @@ feldkamp.SetHannCutFrequency(0.0);
 image = feldkamp.Execute(source2,reiImage) 
    
 pixelID = image.GetPixelIDValue()
+
+plt.imshow(srtk.GetArrayFromImage(image[32,:,:]))
 
 caster = srtk.CastImageFilter()
 caster.SetOutputPixelType( pixelID )
