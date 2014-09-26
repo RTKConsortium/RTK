@@ -207,6 +207,10 @@ protected:
 
     virtual void GenerateInputRequestedRegion();
 
+    // Inputs are not supposed to occupy the same physical space,
+    // so there is nothing to verify
+    virtual void VerifyInputInformation(){}
+
     /** Member pointers to the filters used internally (for convenience)*/
     typename FourDCGFilterType::Pointer                     m_FourDCGFilter;
     typename ThresholdFilterType::Pointer                   m_PositivityFilter;

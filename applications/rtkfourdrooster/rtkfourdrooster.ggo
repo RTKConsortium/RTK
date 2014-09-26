@@ -33,3 +33,7 @@ option "dimension" - "Size of a volume"                         int    multiple 
 option "spacing"   - "Spacing of a volume"                      double multiple no  default="1"
 option "direction" - "Direction of a volume"                    double multiple no
 option "frames"    - "Number of time frames in the 4D reconstruction"   int no default="10"
+
+section "Motion-compensation described in [ToBeWritten]"
+option "dvf"       - "Input 4D DVF"                       string    no
+option "idvf"      - "Input 4D inverse DVF"               string    no
