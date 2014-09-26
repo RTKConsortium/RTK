@@ -4,6 +4,7 @@ import SimpleRTK as srtk
 import sys
 import os
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 if len ( sys.argv ) < 2:
     print( "Usage: RTKFirstReconstruction <output>" )
@@ -23,7 +24,7 @@ for x in range(0,numberOfProjections):
   geometry.AddProjection(sid,sdd,angle,isox,isoy)
 
 constantImageSource = srtk.ConstantImageSource()
-origin = [ -127.0, -127.0, -127.0 ]
+origin = [ -127.5, -127.5, 0. ]
 sizeOutput = [ 256, 256,  numberOfProjections ]
 spacing = [ 1.0, 1.0, 1.0 ]
 constantImageSource.SetOrigin( origin )
@@ -46,7 +47,8 @@ reiImage = rei.Execute(source)
   
 # Create reconstructed image
 constantImageSource2 = srtk.ConstantImageSource()
-sizeOutput = [ 64, 64, 64]
+origin = [ -63.5, -63.5, -63.5 ]
+sizeOutput = [ 128, 128, 128 ]
 constantImageSource2.SetOrigin( origin )
 constantImageSource2.SetSpacing( spacing )
 constantImageSource2.SetSize( sizeOutput )
@@ -62,7 +64,7 @@ image = feldkamp.Execute(source2,reiImage)
    
 pixelID = image.GetPixelIDValue()
 
-plt.imshow(srtk.GetArrayFromImage(image[32,:,:]))
+plt.imshow(srtk.GetArrayFromImage(image[:,64,:]), cmap = cm.Greys_r)
 
 caster = srtk.CastImageFilter()
 caster.SetOutputPixelType( pixelID )
