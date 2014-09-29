@@ -335,7 +335,11 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_WarpBackProbe.Stop();
       }
     }
-  this->GraftOutput( m_TVDenoisingTime->GetOutput() );
+
+  if (m_PerformWarping)
+    this->GraftOutput( m_WarpBack->GetOutput() );
+  else
+    this->GraftOutput( m_TVDenoisingTime->GetOutput() );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
