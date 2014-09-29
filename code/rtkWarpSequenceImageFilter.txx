@@ -21,6 +21,11 @@
 
 #include "rtkWarpSequenceImageFilter.h"
 
+#include <itkImageFileWriter.h>
+#include <iostream>
+#include <sstream>
+#include <string>
+
 namespace rtk
 {
 
@@ -50,6 +55,7 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   m_ExtractFilter->SetDirectionCollapseToIdentity();
 
   // Set memory management parameters
+  m_CastFilter->SetInPlace(false);
 }
 
 template< typename TImageSequence, typename TMVFImageSequence, typename TImage, typename TMVFImage>
@@ -102,11 +108,13 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   m_ExtractFilter->SetExtractionRegion(m_ExtractAndPasteRegion);
   m_MVFInterpolatorFilter->SetFrame(0);
 
-  m_WarpFilter->SetOutputSpacing(m_ExtractFilter->GetOutput()->GetSpacing());
-  m_WarpFilter->SetOutputOrigin(m_ExtractFilter->GetOutput()->GetOrigin());
-
   m_ExtractFilter->UpdateOutputInformation();
   m_MVFInterpolatorFilter->UpdateOutputInformation();
+
+  m_WarpFilter->SetOutputSpacing(m_ExtractFilter->GetOutput()->GetSpacing());
+  m_WarpFilter->SetOutputOrigin(m_ExtractFilter->GetOutput()->GetOrigin());
+  m_WarpFilter->SetOutputSize(m_ExtractFilter->GetOutput()->GetLargestPossibleRegion().GetSize());
+
   m_CastFilter->UpdateOutputInformation();
 
   m_PasteFilter->SetSourceRegion(m_CastFilter->GetOutput()->GetLargestPossibleRegion());
@@ -160,12 +168,18 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
     m_ExtractFilter->SetExtractionRegion(m_ExtractAndPasteRegion);
     m_MVFInterpolatorFilter->SetFrame(frame);
 
+    // I do not understand at all why, but performing an UpdateLargestPossibleRegion
+    // on these two filters is absolutely necessary. Otherwise some unexpected
+    // motion occurs (if anyone finds out why, I'm all ears: write to cyril.mory@creatis.insa-lyon.fr)
+    m_MVFInterpolatorFilter->UpdateLargestPossibleRegion();
+    m_WarpFilter->UpdateLargestPossibleRegion();
+
     m_CastFilter->Update();
 
     m_PasteFilter->SetSourceRegion(m_CastFilter->GetOutput()->GetLargestPossibleRegion());
     m_PasteFilter->SetDestinationIndex(m_ExtractAndPasteRegion.GetIndex());
 
-    m_PasteFilter->Update();
+    m_PasteFilter->UpdateLargestPossibleRegion();
     }
   this->GraftOutput( m_PasteFilter->GetOutput() );
 }
