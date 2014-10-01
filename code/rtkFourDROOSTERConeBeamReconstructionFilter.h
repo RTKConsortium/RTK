@@ -24,6 +24,8 @@
 #include "rtkAverageOutOfROIImageFilter.h"
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #include "rtkWarpSequenceImageFilter.h"
+#include <itkSubtractImageFilter.h>
+#include <itkAddImageFilter.h>
 
 namespace rtk
 {
@@ -159,6 +161,8 @@ public:
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>         SpatialTVDenoisingFilterType;
     typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  WarpFilterType;
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>        TemporalTVDenoisingFilterType;
+    typedef itk::AddImageFilter<VolumeSeriesType>                                                           AddFilterType;
+    typedef itk::SubtractImageFilter<VolumeSeriesType>                                                      SubtractFilterType;
 
     /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
     void SetForwardProjectionFilter(int fwtype);
@@ -219,6 +223,8 @@ protected:
     typename WarpFilterType::Pointer                        m_WarpForward;
     typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
     typename WarpFilterType::Pointer                        m_WarpBack;
+    typename AddFilterType::Pointer                         m_AddFilter;
+    typename SubtractFilterType::Pointer                    m_SubtractFilter;
 
 private:
     FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented

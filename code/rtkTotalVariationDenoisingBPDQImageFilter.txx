@@ -122,7 +122,7 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
     if (m_DimensionsProcessed[dim])  numberOfDimensionsProcessed += 1.0;
     }
   // Beta must be smaller than 1 / (2 * NumberOfDimensionsProcessed) for the algorithm to converge
-  m_Beta = 1/(2 * numberOfDimensionsProcessed) - 0.001;
+  m_Beta = 1/(2 * numberOfDimensionsProcessed) * 0.9;
 
   m_MultiplyFilter->SetConstant2(m_Beta);
   m_MagnitudeThresholdFilter->SetThreshold(m_Gamma);
