@@ -315,9 +315,9 @@ CUDA_warp(int input_vol_dim[3],
   const int tBlock_z = 4;
 
   // Each element in the volume (each voxel) gets 1 thread
-  unsigned int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
-  unsigned int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
-  unsigned int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
+  unsigned int  blocksInX = (output_vol_dim[0]-1)/tBlock_x + 1;
+  unsigned int  blocksInY = (output_vol_dim[1]-1)/tBlock_y + 1;
+  unsigned int  blocksInZ = (output_vol_dim[2]-1)/tBlock_z + 1;
 
   if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
     {

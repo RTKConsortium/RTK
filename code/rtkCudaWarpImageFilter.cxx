@@ -19,6 +19,7 @@
 #include "rtkCudaWarpImageFilter.h"
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaWarpImageFilter.hcu"
+#include "rtkHomogeneousMatrix.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -42,6 +43,9 @@ CudaWarpImageFilter
   // Include non-zero index in matrix
   itk::Matrix<double, 4, 4> matrixIdxOutputVol;
   itk::Matrix<double, 4, 4> matrixIdxInputVol;
+  itk::Matrix<double, 4, 4> indexOutputToPPOutputMatrix;
+  itk::Matrix<double, 4, 4> indexOutputToIndexDVFMatrix;
+  itk::Matrix<double, 4, 4> PPInputToIndexInputMatrix;
   matrixIdxOutputVol.SetIdentity();
   matrixIdxInputVol.SetIdentity();
   for(unsigned int i=0; i<3; i++)
@@ -57,9 +61,9 @@ CudaWarpImageFilter
   inputVolumeSize[2] = this->GetInput(0)->GetBufferedRegion().GetSize()[2];
 
   int inputDVFSize[3];
-  inputDVFSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
-  inputDVFSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
-  inputDVFSize[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[2];
+  inputDVFSize[0] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[0];
+  inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
+  inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
 
   int outputVolumeSize[3];
   outputVolumeSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
@@ -67,14 +71,14 @@ CudaWarpImageFilter
   outputVolumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
   float *pinVol  = *(float**)( this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinDVF  = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
+  float *pinDVF  = *(float**)( this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *poutVol = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Transform matrices that we will need during the warping process
   indexOutputToPPOutputMatrix = rtk::GetIndexToPhysicalPointMatrix( this->GetOutput() ).GetVnlMatrix()
                               * matrixIdxOutputVol.GetVnlMatrix();
 
-  indexOutputToIndexDVFMatrix = rtk::GetPhysicalPointToIndexMatrix( this->GetInput(1) ).GetVnlMatrix()
+  indexOutputToIndexDVFMatrix = rtk::GetPhysicalPointToIndexMatrix( this->GetDisplacementField() ).GetVnlMatrix()
                               * rtk::GetIndexToPhysicalPointMatrix( this->GetOutput() ).GetVnlMatrix()
                               * matrixIdxOutputVol.GetVnlMatrix();
 
@@ -86,19 +90,19 @@ CudaWarpImageFilter
   float fPPInputToIndexInputMatrix[12];
   for (int j = 0; j < 12; j++)
     {
-    fIndexOutputToIndexDVFMatrix[j] = indexOutputToIndexDVFMatrix[j/4][j%4];
-    fPPInputToIndexInputMatrix[j] = PPInputToIndexInputMatrix[j/4][j%4];
-    fIndexOutputToPPOutputMatrix[j] = indexOutputToPPOutputMatrix[j/4][j%4];
+    fIndexOutputToIndexDVFMatrix[j] = (float) indexOutputToIndexDVFMatrix[j/4][j%4];
+    fPPInputToIndexInputMatrix[j] = (float) PPInputToIndexInputMatrix[j/4][j%4];
+    fIndexOutputToPPOutputMatrix[j] = (float) indexOutputToPPOutputMatrix[j/4][j%4];
     }
 
   // Run on GPU
   CUDA_warp(
-    inputVolumeSize[3],
-    inputDVFSize[3],
-    outputVolumeSize[3],
-    fIndexOutputToPPOutputMatrix[12],
-    fIndexOutputToIndexDVFMatrix[12],
-    fPPInputToIndexInputMatrix[12],
+    inputVolumeSize,
+    inputDVFSize,
+    outputVolumeSize,
+    fIndexOutputToPPOutputMatrix,
+    fIndexOutputToIndexDVFMatrix,
+    fPPInputToIndexInputMatrix,
     pinVol,
     pinDVF,
     poutVol
