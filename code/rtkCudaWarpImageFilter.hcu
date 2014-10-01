@@ -1,0 +1,35 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef __rtkCudaWarpImageFilter_hcu
+#define __rtkCudaWarpImageFilter_hcu
+
+void
+CUDA_warp(
+  int input_vol_dim[3],
+  int input_dvf_dim[3],
+  int output_vol_dim[3],
+  float IndexOutputToPPOutputMatrix[12],
+  float IndexOutputToIndexDVFMatrix[12],
+  float PPInputToIndexInputMatrix[12],
+  float *dev_input_vol,
+  float *dev_input_dvf,
+  float *dev_output_vol
+  );
+
+#endif
