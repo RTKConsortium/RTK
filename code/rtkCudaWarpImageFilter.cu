@@ -58,45 +58,71 @@ texture<float, 3, cudaReadModeElementType> tex_input_vol;
 __global__
 void kernel(float *dev_vol_out, int3 vol_dim, unsigned int Blocks_Y)
 {
-//  // CUDA 2.0 does not allow for a 3D grid, which severely
-//  // limits the manipulation of large 3D arrays of data.  The
-//  // following code is a hack to bypass this implementation
-//  // limitation.
-//  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-//  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-//  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-//  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-//  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  // CUDA 2.0 does not allow for a 3D grid, which severely
+  // limits the manipulation of large 3D arrays of data.  The
+  // following code is a hack to bypass this implementation
+  // limitation.
+  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
-//  if (i >= vol_dim.x || j >= vol_dim.y || k >= vol_dim.z)
-//    {
-//    return;
-//    }
+  if (i >= vol_dim.x || j >= vol_dim.y || k >= vol_dim.z)
+    {
+    return;
+    }
 
-//  // Index row major into the volume
-//  long int vol_idx = i + (j + k*vol_dim.y)*(vol_dim.x);
+  // Index row major into the volume
+  long int vol_idx = i + (j + k*vol_dim.y)*(vol_dim.x);
 
-//  float3 ip;
-//  float  voxel_data;
+  // Matrix multiply to get the index in the DVF texture of the current point in the output volume
+  float3 IndexInDVF;
+  IndexInDVF.x = tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 0)*i + tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 1)*j +
+         tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 2)*k + tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 3);
+  IndexInDVF.y = tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 4)*i + tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 5)*j +
+         tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 6)*k + tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 7);
+  IndexInDVF.z = tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 8)*i + tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 9)*j +
+         tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 10)*k + tex1Dfetch(tex_IndexOutputToIndexDVFMatrix, 11);
 
-//  // matrix multiply
-//  ip.x = tex1Dfetch(tex_matrix, 0)*i + tex1Dfetch(tex_matrix, 1)*j +
-//         tex1Dfetch(tex_matrix, 2)*k + tex1Dfetch(tex_matrix, 3);
-//  ip.y = tex1Dfetch(tex_matrix, 4)*i + tex1Dfetch(tex_matrix, 5)*j +
-//         tex1Dfetch(tex_matrix, 6)*k + tex1Dfetch(tex_matrix, 7);
-//  ip.z = tex1Dfetch(tex_matrix, 8)*i + tex1Dfetch(tex_matrix, 9)*j +
-//         tex1Dfetch(tex_matrix, 10)*k + tex1Dfetch(tex_matrix, 11);
+  // Get each component of the displacement vector by
+  // interpolation in the dvf
+  float3 Displacement;
+  Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
 
-//  // Change coordinate systems
-//  ip.z = 1 / ip.z;
-//  ip.x = ip.x * ip.z;
-//  ip.y = ip.y * ip.z;
+  // Matrix multiply to get the physical coordinates of the current point in the output volume
+  float3 PPinOutput;
+  PPinOutput.x = tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 0)*i + tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 1)*j +
+               tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 2)*k + tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 3);
+  PPinOutput.y = tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 4)*i + tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 5)*j +
+               tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 6)*k + tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 7);
+  PPinOutput.z = tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 8)*i + tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 9)*j +
+               tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 10)*k + tex1Dfetch(tex_IndexOutputToPPOutputMatrix, 11);
 
-//  // Get texture point, clip left to GPU
-//  voxel_data = tex2D(tex_xdvf, ip.x, ip.y);
+  // Get the index corresponding to the current physical point in output displaced by the displacement vector
+  float3 PPDisplaced;
+  PPDisplaced.x = PPinOutput.x + Displacement.x;
+  PPDisplaced.y = PPinOutput.y + Displacement.y;
+  PPDisplaced.z = PPinOutput.z + Displacement.z;
 
-//  // Place it into the volume
-//  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
+  float3 IndexInInput;
+  IndexInInput.x =  tex1Dfetch(tex_PPInputToIndexInputMatrix, 0) * PPDisplaced.x
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 1) * PPDisplaced.y
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 2) * PPDisplaced.z
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 3);
+  IndexInInput.y =  tex1Dfetch(tex_PPInputToIndexInputMatrix, 4) * PPDisplaced.x
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 5) * PPDisplaced.y
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 6) * PPDisplaced.z
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 7);
+  IndexInInput.z =  tex1Dfetch(tex_PPInputToIndexInputMatrix, 8) * PPDisplaced.x
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 9) * PPDisplaced.y
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 10)* PPDisplaced.z
+                  + tex1Dfetch(tex_PPInputToIndexInputMatrix, 11);
+
+  // Interpolate in the input and copy into the output
+  dev_vol_out[vol_idx] = tex3D(tex_input_vol, IndexInInput.x + 0.5f, IndexInInput.y + 0.5f, IndexInInput.z + 0.5f);
 }
 
 __global__
@@ -326,8 +352,7 @@ CUDA_warp(int input_vol_dim[3],
     dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
     dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
-
-    // Note: cbi->img AND cbi->matrix are passed via texture memory
+    // Note: the DVF and input image are passed via texture memory
     //-------------------------------------
     kernel <<< dimGrid, dimBlock >>> ( dev_output_vol,
                                        make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
@@ -338,13 +363,11 @@ CUDA_warp(int input_vol_dim[3],
     dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
     dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
-
-    // Note: cbi->img AND cbi->matrix are passed via texture memory
+    // Note: the DVF and input image are passed via texture memory
     //-------------------------------------
     kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
                                               make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
     }
-
 
   CUDA_CHECK_ERROR;
 
