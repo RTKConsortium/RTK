@@ -35,6 +35,9 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
 {
   this->SetNumberOfRequiredInputs(2);
 
+  // Set default member values
+  m_ForwardWarp = false;
+
   // Create the filters
   m_WarpFilter = WarpFilterType::New();
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
@@ -44,11 +47,9 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   m_PasteFilter = PasteFilterType::New();
   m_CastFilter = CastFilterType::New();
   m_ConstantSource = ConstantImageSourceType::New();
+  m_ForwardWarpFilter = ForwardWarpFilterType::New();
 
   // Set permanent connections
-  m_WarpFilter->SetInput(m_ExtractFilter->GetOutput());
-  m_WarpFilter->SetDisplacementField( m_MVFInterpolatorFilter->GetOutput() );
-  m_CastFilter->SetInput(m_WarpFilter->GetOutput());
   m_PasteFilter->SetSourceImage(m_CastFilter->GetOutput());
 
   // Set permanent parameters
@@ -85,6 +86,18 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   // Set runtime connections
   m_ExtractFilter->SetInput(this->GetInput(0));
   m_MVFInterpolatorFilter->SetInput(this->GetDisplacementField());
+  if (m_ForwardWarp)
+    {
+    m_ForwardWarpFilter->SetInput(m_ExtractFilter->GetOutput());
+    m_ForwardWarpFilter->SetDeformationField( m_MVFInterpolatorFilter->GetOutput() );
+    m_CastFilter->SetInput(m_ForwardWarpFilter->GetOutput());
+    }
+  else
+    {
+    m_WarpFilter->SetInput(m_ExtractFilter->GetOutput());
+    m_WarpFilter->SetDisplacementField( m_MVFInterpolatorFilter->GetOutput() );
+    m_CastFilter->SetInput(m_WarpFilter->GetOutput());
+    }
 
   // Generate a signal and pass it to the MVFInterpolator
   std::vector<double> signal;
@@ -111,9 +124,19 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   m_ExtractFilter->UpdateOutputInformation();
   m_MVFInterpolatorFilter->UpdateOutputInformation();
 
-  m_WarpFilter->SetOutputSpacing(m_ExtractFilter->GetOutput()->GetSpacing());
-  m_WarpFilter->SetOutputOrigin(m_ExtractFilter->GetOutput()->GetOrigin());
-  m_WarpFilter->SetOutputSize(m_ExtractFilter->GetOutput()->GetLargestPossibleRegion().GetSize());
+  if (m_ForwardWarp)
+    {
+      // Is something like this required ?
+//      m_ForwardWarpFilter->SetOutputSpacing(m_ExtractFilter->GetOutput()->GetSpacing());
+//      m_ForwardWarpFilter->SetOutputOrigin(m_ExtractFilter->GetOutput()->GetOrigin());
+//      m_ForwardWarpFilter->SetOutputSize(m_ExtractFilter->GetOutput()->GetLargestPossibleRegion().GetSize());
+    }
+  else
+    {
+    m_WarpFilter->SetOutputSpacing(m_ExtractFilter->GetOutput()->GetSpacing());
+    m_WarpFilter->SetOutputOrigin(m_ExtractFilter->GetOutput()->GetOrigin());
+    m_WarpFilter->SetOutputSize(m_ExtractFilter->GetOutput()->GetLargestPossibleRegion().GetSize());
+    }
 
   m_CastFilter->UpdateOutputInformation();
 
@@ -172,7 +195,10 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
     // on these two filters is absolutely necessary. Otherwise some unexpected
     // motion occurs (if anyone finds out why, I'm all ears: write to cyril.mory@creatis.insa-lyon.fr)
     m_MVFInterpolatorFilter->UpdateLargestPossibleRegion();
-    m_WarpFilter->UpdateLargestPossibleRegion();
+    if (m_ForwardWarp)
+      m_ForwardWarpFilter->UpdateLargestPossibleRegion();
+    else
+      m_WarpFilter->UpdateLargestPossibleRegion();
 
     m_CastFilter->Update();
 

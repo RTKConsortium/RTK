@@ -218,8 +218,7 @@ int main(int, char** )
   // Create vector field
   typedef itk::ImageRegionIteratorWithIndex< MVFSequenceImageType > IteratorType;
 
-  MVFSequenceImageType::Pointer forwardDeformationField = MVFSequenceImageType::New();
-  MVFSequenceImageType::Pointer backwardDeformationField = MVFSequenceImageType::New();
+  MVFSequenceImageType::Pointer deformationField = MVFSequenceImageType::New();
 
   MVFSequenceImageType::IndexType startMotion;
   startMotion[0] = 0; // first index on X
@@ -246,20 +245,14 @@ int main(int, char** )
   spacingMotion[2] = fourDSpacing[2];
   spacingMotion[3] = fourDSpacing[3];
 
-  forwardDeformationField->SetRegions( regionMotion );
-  forwardDeformationField->SetOrigin(originMotion);
-  forwardDeformationField->SetSpacing(spacingMotion);
-  forwardDeformationField->Allocate();
-
-  backwardDeformationField->SetRegions( regionMotion );
-  backwardDeformationField->SetOrigin(originMotion);
-  backwardDeformationField->SetSpacing(spacingMotion);
-  backwardDeformationField->Allocate();
+  deformationField->SetRegions( regionMotion );
+  deformationField->SetOrigin(originMotion);
+  deformationField->SetSpacing(spacingMotion);
+  deformationField->Allocate();
 
   // Vector Field initilization
   MVFVectorType vec;
-  IteratorType fwIt( forwardDeformationField, forwardDeformationField->GetLargestPossibleRegion() );
-  IteratorType bwIt( backwardDeformationField, backwardDeformationField->GetLargestPossibleRegion() );
+  IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
 
   MVFSequenceImageType::OffsetType mvfCenter;
   MVFSequenceImageType::IndexType toCenter;
@@ -267,21 +260,20 @@ int main(int, char** )
   mvfCenter[0] = sizeMotion[0]/2;
   mvfCenter[1] = sizeMotion[1]/2;
   mvfCenter[2] = sizeMotion[2]/2;
-  for ( fwIt.GoToBegin(); !fwIt.IsAtEnd(); ++fwIt)
+  for ( dvfIt.GoToBegin(); !dvfIt.IsAtEnd(); ++dvfIt)
     {
     vec.Fill(0.);
-    toCenter = fwIt.GetIndex() - mvfCenter;
+    toCenter = dvfIt.GetIndex() - mvfCenter;
 
     if (0.3 * toCenter[0] * toCenter[0] + toCenter[1] * toCenter[1] + toCenter[2] * toCenter[2] < 40)
       {
-      if(fwIt.GetIndex()[3]==0)
+      if(dvfIt.GetIndex()[3]==0)
         vec[0] = -8.;
       else
         vec[0] = 8.;
       }
-    fwIt.Set(vec);
-    bwIt.Set(-vec);
-    ++bwIt;
+    dvfIt.Set(vec);
+    ++dvfIt;
     }
 
   // Ground truth
@@ -382,8 +374,7 @@ int main(int, char** )
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
   rooster->SetMainLoop_iterations( 2);
   rooster->SetPerformWarping(true);
-  rooster->SetForwardDisplacementField(forwardDeformationField);
-  rooster->SetBackwardDisplacementField(backwardDeformationField);
+  rooster->SetDisplacementField(deformationField);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
