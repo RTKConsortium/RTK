@@ -28,7 +28,9 @@ CUDA_warp(
   float IndexOutputToIndexDVFMatrix[12],
   float PPInputToIndexInputMatrix[12],
   float *dev_input_vol,
-  float *dev_input_dvf,
+  float *dev_input_xdvf,
+  float *dev_input_ydvf,
+  float *dev_input_zdvf,
   float *dev_output_vol
   );
 
