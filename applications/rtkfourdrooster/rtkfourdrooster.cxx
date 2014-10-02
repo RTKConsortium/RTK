@@ -122,7 +122,7 @@ int main(int argc, char * argv[])
   rooster->SetGammaSpace(args_info.gamma_space_arg);
   rooster->SetGammaTime(args_info.gamma_time_arg);
 
-  if ((args_info.dvf_given) && (args_info.idvf_given))
+  if (args_info.dvf_given)
     {
     rooster->SetPerformWarping(true);
 
@@ -130,13 +130,7 @@ int main(int argc, char * argv[])
     DVFReaderType::Pointer dvfReader = DVFReaderType::New();
     dvfReader->SetFileName( args_info.dvf_arg );
     dvfReader->Update();
-    rooster->SetForwardDisplacementField(dvfReader->GetOutput());
-
-    // Read inverse DVF
-    DVFReaderType::Pointer idvfReader = DVFReaderType::New();
-    idvfReader->SetFileName( args_info.idvf_arg );
-    idvfReader->Update();
-    rooster->SetBackwardDisplacementField(idvfReader->GetOutput());
+    rooster->SetDisplacementField(dvfReader->GetOutput());
     }
 
   itk::TimeProbe readerProbe;

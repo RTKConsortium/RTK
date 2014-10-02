@@ -147,13 +147,9 @@ public:
     void SetMotionMask(const VolumeType* mask);
     typename VolumeType::Pointer            GetInputROI();
 
-    /** The motion vector field used to warp the sequence before TV denoising along time */
-    void SetForwardDisplacementField(const MVFSequenceImageType* MVFs);
-    typename MVFSequenceImageType::Pointer            GetForwardDisplacementField();
-
-    /** The motion vector field used to warp the sequence back after TV denoising along time */
-    void SetBackwardDisplacementField(const MVFSequenceImageType* MVFs);
-    typename MVFSequenceImageType::Pointer            GetBackwardDisplacementField();
+    /** The motion vector field used to warp the sequence before and after TV denoising along time */
+    void SetDisplacementField(const MVFSequenceImageType* MVFs);
+    typename MVFSequenceImageType::Pointer            GetDisplacementField();
 
     typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>  FourDCGFilterType;
     typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;

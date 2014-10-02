@@ -21,6 +21,7 @@
 
 #include "rtkConstantImageSource.h"
 #include "rtkCyclicDeformationImageFilter.h"
+#include "rtkForwardWarpImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkPasteImageFilter.h>
@@ -109,12 +110,17 @@ public:
     /** Get the motion vector field used in input 1 */
     typename TMVFImageSequence::Pointer GetDisplacementField();
 
+    /** Set/Get for m_ForwardWarp */
+    itkGetMacro(ForwardWarp, bool)
+    itkSetMacro(ForwardWarp, bool)
+
     /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
     typedef rtk::CudaWarpImageFilter                                WarpFilterType;
 #else
     typedef itk::WarpImageFilter<TImage, TImage, TMVFImage>         WarpFilterType;
 #endif
+    typedef rtk::ForwardWarpImageFilter<TImage, TImage, TMVFImage>  ForwardWarpFilterType;
     typedef itk::LinearInterpolateImageFunction<TImage, double >    InterpolatorType;
     typedef itk::ExtractImageFilter<TImageSequence, TImage>         ExtractFilterType;
     typedef rtk::CyclicDeformationImageFilter<TMVFImage>            MVFInterpolatorType;
@@ -131,6 +137,7 @@ protected:
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename WarpFilterType::Pointer          m_WarpFilter;
+    typename ForwardWarpFilterType::Pointer   m_ForwardWarpFilter;
     typename ExtractFilterType::Pointer       m_ExtractFilter;
     typename MVFInterpolatorType::Pointer     m_MVFInterpolatorFilter;
     typename PasteFilterType::Pointer         m_PasteFilter;
@@ -139,6 +146,9 @@ protected:
 
     /** Extraction regions for both extract filters */
     typename TImageSequence::RegionType       m_ExtractAndPasteRegion;
+
+    /** Perform a forward warping (using splat) instead of the standard backward warping */
+    bool m_ForwardWarp;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check

@@ -36,4 +36,3 @@ option "frames"    - "Number of time frames in the 4D reconstruction"   int no d
 
 section "Motion-compensation described in [ToBeWritten]"
 option "dvf"       - "Input 4D DVF"                       string    no
-option "idvf"      - "Input 4D inverse DVF"               string    no
