@@ -22,10 +22,15 @@
 #include "rtkConstantImageSource.h"
 #include "rtkCyclicDeformationImageFilter.h"
 
-#include <itkWarpImageFilter.h>
 #include <itkExtractImageFilter.h>
 #include <itkPasteImageFilter.h>
 #include <itkCastImageFilter.h>
+
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaWarpImageFilter.h"
+#else
+  #include <itkWarpImageFilter.h>
+#endif
 
 namespace rtk
 {
@@ -105,7 +110,11 @@ public:
     typename TMVFImageSequence::Pointer GetDisplacementField();
 
     /** Typedefs of internal filters */
+#ifdef RTK_USE_CUDA
+    typedef rtk::CudaWarpImageFilter                                WarpFilterType;
+#else
     typedef itk::WarpImageFilter<TImage, TImage, TMVFImage>         WarpFilterType;
+#endif
     typedef itk::LinearInterpolateImageFunction<TImage, double >    InterpolatorType;
     typedef itk::ExtractImageFilter<TImageSequence, TImage>         ExtractFilterType;
     typedef rtk::CyclicDeformationImageFilter<TMVFImage>            MVFInterpolatorType;

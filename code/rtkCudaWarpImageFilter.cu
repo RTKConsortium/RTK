@@ -126,9 +126,9 @@ void kernel_3Dgrid(float * dev_vol_out, int3 vol_dim)
   // Get each component of the displacement vector by
   // interpolation in the dvf
   float3 Displacement;
-  Displacement.x = tex3D(tex_xdvf, IndexInDVF.x, IndexInDVF.y, IndexInDVF.z);
-  Displacement.y = tex3D(tex_ydvf, IndexInDVF.x, IndexInDVF.y, IndexInDVF.z);
-  Displacement.z = tex3D(tex_zdvf, IndexInDVF.x, IndexInDVF.y, IndexInDVF.z);
+  Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
 
   // Matrix multiply to get the physical coordinates of the current point in the output volume
   float3 PPinOutput;
@@ -160,7 +160,7 @@ void kernel_3Dgrid(float * dev_vol_out, int3 vol_dim)
                   + tex1Dfetch(tex_PPInputToIndexInputMatrix, 11);
 
   // Interpolate in the input and copy into the output
-  dev_vol_out[vol_idx] = tex3D(tex_input_vol, IndexInInput.x, IndexInInput.y, IndexInInput.z);
+  dev_vol_out[vol_idx] = tex3D(tex_input_vol, IndexInInput.x + 0.5f, IndexInInput.y + 0.5f, IndexInInput.z + 0.5f);
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -178,7 +178,9 @@ CUDA_warp(int input_vol_dim[3],
     float IndexOutputToIndexDVFMatrix[12],
     float PPInputToIndexInputMatrix[12],
     float *dev_input_vol,
-    float *dev_input_dvf,
+    float *dev_input_xdvf,
+    float *dev_input_ydvf,
+    float *dev_input_zdvf,
     float *dev_output_vol)
 {
 
@@ -224,7 +226,7 @@ CUDA_warp(int input_vol_dim[3],
   // The best way to understand it is to read
   // http://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
   cudaMemcpy3DParms xCopyParams = {0};
-  xCopyParams.srcPtr   = make_cudaPitchedPtr(&dev_input_dvf[0], 3*sizeof(float), 1, input_dvf_dim[0] * input_dvf_dim[1]);
+  xCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_xdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
   xCopyParams.dstArray = (cudaArray*)array_xdvf;
   xCopyParams.extent   = dvfExtent;
   xCopyParams.kind     = cudaMemcpyDeviceToDevice;
@@ -232,7 +234,7 @@ CUDA_warp(int input_vol_dim[3],
   CUDA_CHECK_ERROR;
 
   cudaMemcpy3DParms yCopyParams = {0};
-  yCopyParams.srcPtr   = make_cudaPitchedPtr(&dev_input_dvf[1], 3*sizeof(float), 1, input_dvf_dim[0] * input_dvf_dim[1]);
+  yCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_ydvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
   yCopyParams.dstArray = (cudaArray*)array_ydvf;
   yCopyParams.extent   = dvfExtent;
   yCopyParams.kind     = cudaMemcpyDeviceToDevice;
@@ -240,7 +242,7 @@ CUDA_warp(int input_vol_dim[3],
   CUDA_CHECK_ERROR;
 
   cudaMemcpy3DParms zCopyParams = {0};
-  zCopyParams.srcPtr   = make_cudaPitchedPtr(&dev_input_dvf[2], 3*sizeof(float), 1, input_dvf_dim[0] * input_dvf_dim[1]);
+  zCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_zdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
   zCopyParams.dstArray = (cudaArray*)array_zdvf;
   zCopyParams.extent   = dvfExtent;
   zCopyParams.kind     = cudaMemcpyDeviceToDevice;
