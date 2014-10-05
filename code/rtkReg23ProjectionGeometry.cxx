@@ -108,7 +108,7 @@ bool rtk::Reg23ProjectionGeometry::FixAngles(double &outOfPlaneAngleRAD,
     ia = 0.;
     if (rm[2][1] < 0.)
       {
-      double oa = -M_PI_2;
+      double oa = -itk::Math::pi_over_2;
       double ga = atan2(rm[0][2], rm[0][0]);
       if (VerifyAngles(oa, ga, ia, rm))
         {
@@ -120,7 +120,7 @@ bool rtk::Reg23ProjectionGeometry::FixAngles(double &outOfPlaneAngleRAD,
       }
     else
       {
-      double oa = M_PI_2;
+      double oa = itk::Math::pi_over_2;
       double ga = atan2(rm[0][2], rm[0][0]);
       if (VerifyAngles(oa, ga, ia, rm))
         {
