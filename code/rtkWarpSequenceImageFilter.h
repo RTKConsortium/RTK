@@ -116,11 +116,11 @@ public:
 
     /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
-    typedef rtk::CudaWarpImageFilter                                WarpFilterType;
-#else
-    typedef itk::WarpImageFilter<TImage, TImage, TMVFImage>         WarpFilterType;
+    typedef rtk::CudaWarpImageFilter                                CudaWarpFilterType;
 #endif
+    typedef itk::WarpImageFilter<TImage, TImage, TMVFImage>         WarpFilterType;
     typedef rtk::ForwardWarpImageFilter<TImage, TImage, TMVFImage>  ForwardWarpFilterType;
+
     typedef itk::LinearInterpolateImageFunction<TImage, double >    InterpolatorType;
     typedef itk::ExtractImageFilter<TImageSequence, TImage>         ExtractFilterType;
     typedef rtk::CyclicDeformationImageFilter<TMVFImage>            MVFInterpolatorType;
@@ -137,7 +137,6 @@ protected:
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename WarpFilterType::Pointer          m_WarpFilter;
-    typename ForwardWarpFilterType::Pointer   m_ForwardWarpFilter;
     typename ExtractFilterType::Pointer       m_ExtractFilter;
     typename MVFInterpolatorType::Pointer     m_MVFInterpolatorFilter;
     typename PasteFilterType::Pointer         m_PasteFilter;

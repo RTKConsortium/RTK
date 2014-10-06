@@ -89,10 +89,12 @@ int main(int, char** )
   // Vector Field initilization
   DVFPixelType vec;
   vec.Fill(0.);
-  IteratorType inputIt( deformationField, deformationField->GetLargestPossibleRegion() );
-  for ( inputIt.GoToBegin(); !inputIt.IsAtEnd(); ++inputIt)
+  IteratorType defIt( deformationField, deformationField->GetLargestPossibleRegion() );
+  for ( defIt.GoToBegin(); !defIt.IsAtEnd(); ++defIt)
     {
-      vec[0] = -8.;
+      vec.Fill(0.);
+      vec[0] = 8.;
+      defIt.Set(vec);
     }
 
   // Create a reference object (in this case a 3D phantom reference).
@@ -129,19 +131,19 @@ int main(int, char** )
   typename WarpFilterType::Pointer warp = WarpFilterType::New();
   warp->SetInput(e2->GetOutput());
   warp->SetDisplacementField( deformationField );
-  warp->SetOutputSpacing(e2->GetOutput()->GetSpacing());
-  warp->SetOutputOrigin(e2->GetOutput()->GetOrigin());
-  warp->SetOutputSize(e2->GetOutput()->GetLargestPossibleRegion().GetSize());
+  warp->SetOutputParametersFromImage(e2->GetOutput());
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() );
 
   typedef rtk::ForwardWarpImageFilter<OutputImageType, OutputImageType, DVFImageType> ForwardWarpFilterType;
   typename ForwardWarpFilterType::Pointer forwardWarp = ForwardWarpFilterType::New();
   forwardWarp->SetInput(warp->GetOutput());
-  forwardWarp->SetDeformationField( deformationField );
-  forwardWarp->SetEdgePaddingValue(0.0);
+  forwardWarp->SetDisplacementField( deformationField );
+  forwardWarp->SetOutputParametersFromImage(warp->GetOutput());
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardWarp->Update() );
 
-  CheckImageQuality<OutputImageType>(forwardWarp->GetOutput(), e2->GetOutput(), 0.01, 22, 2.0);
+  CheckImageQuality<OutputImageType>(forwardWarp->GetOutput(), e2->GetOutput(), 0.1, 12, 2.0);
 
   std::cout << "Test PASSED! " << std::endl;
 
