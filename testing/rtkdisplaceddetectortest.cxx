@@ -5,7 +5,11 @@
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkDisplacedDetectorImageFilter.h"
+#ifdef USE_CUDA
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
+#else
+#  include "rtkDisplacedDetectorImageFilter.h"
+#endif
 
 /**
  * \file rtkdisplaceddetectortest.cxx
@@ -25,7 +29,12 @@ int main(int, char**)
 {
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
+#ifdef USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#endif
+
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
@@ -92,7 +101,11 @@ int main(int, char**)
   slp->SetInput( projectionsSource->GetOutput() );
 
   // Displaced detector weighting
+#ifdef USE_CUDA
+  typedef rtk::CudaDisplacedDetectorImageFilter DDFType;
+#else
   typedef rtk::DisplacedDetectorImageFilter<OutputImageType> DDFType;
+#endif
   DDFType::Pointer ddf = DDFType::New();
   ddf->SetInput( slp->GetOutput() );
 

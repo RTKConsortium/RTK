@@ -65,6 +65,9 @@ IF (RTK_USE_CUDA)
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
        rtkCudaFFTRampImageFilter.cu
+       rtkCudaFDKWeightProjectionFilter.cu
+       rtkCudaDisplacedDetectorImageFilter.cu
+       rtkCudaParkerShortScanImageFilter.cu
        rtkCudaForwardProjectionImageFilter.cu
        rtkCudaBackProjectionImageFilter.cu
        rtkCudaSplatImageFilter.cu
@@ -88,6 +91,9 @@ IF (RTK_USE_CUDA)
   ENDIF()
 
   ADD_LIBRARY(rtkcuda
+              rtkCudaFDKWeightProjectionFilter.cxx
+              rtkCudaDisplacedDetectorImageFilter.cxx
+              rtkCudaParkerShortScanImageFilter.cxx
               rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFFTRampImageFilter.cxx

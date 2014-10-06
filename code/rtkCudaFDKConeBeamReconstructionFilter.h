@@ -20,6 +20,7 @@
 #define __rtkCudaFDKConeBeamReconstructionFilter_h
 
 #include "rtkFDKConeBeamReconstructionFilter.h"
+#include "rtkCudaFDKWeightProjectionFilter.h"
 #include "rtkCudaFFTRampImageFilter.h"
 #include "rtkCudaFDKBackProjectionImageFilter.h"
 #include "rtkWin32Header.h"
@@ -53,6 +54,7 @@ public:
   typedef itk::SmartPointer<const Self>                                                              ConstPointer;
 
   /** Typedefs of subfilters which have been implemented with CUDA */
+  typedef rtk::CudaFDKWeightProjectionFilter    WeightFilterType;
   typedef rtk::CudaFFTRampImageFilter           RampFilterType;
   typedef rtk::CudaFDKBackProjectionImageFilter BackProjectionFilterType;
 
