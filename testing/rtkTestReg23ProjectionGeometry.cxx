@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
       for (std::size_t oa = 0; oa < outOfPlaneAngles.size(); ++oa)
       {
         for (std::size_t ia = 0; ia < inPlaneAngles.size(); ++ia)
-        {                              
+        {
           rtkProjectionsList->Clear(); // reduce required memory
 
           // "swirl" the device around (not only circular trajectory, spherical):

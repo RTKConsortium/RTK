@@ -19,6 +19,7 @@
 #ifndef __rtkParkerShortScanImageFilter_txx
 #define __rtkParkerShortScanImageFilter_txx
 
+#include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkMacro.h>
 

@@ -16,29 +16,24 @@
  *
  *=========================================================================*/
 
-#include "rtkCudaFDKConeBeamReconstructionFilter.h"
-
-rtk::CudaFDKConeBeamReconstructionFilter
-::CudaFDKConeBeamReconstructionFilter()
-{
-  // Create each filter which are specific for cuda
-  m_WeightFilter = WeightFilterType::New();
-  m_RampFilter = RampFilterType::New();
-  m_BackProjectionFilter = BackProjectionFilterType::New();
-
-  //Permanent internal connections
-  m_WeightFilter->SetInput( m_ExtractFilter->GetOutput() );
-  m_RampFilter->SetInput( m_WeightFilter->GetOutput() );
-  m_BackProjectionFilter->SetInput( 1, m_RampFilter->GetOutput() );
-
-  // Default parameters
-  m_BackProjectionFilter->InPlaceOn();
-  m_BackProjectionFilter->SetTranspose(false);
-}
+#ifndef ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU
+#define ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU
 
 void
-rtk::CudaFDKConeBeamReconstructionFilter
-::GPUGenerateData()
-{
-  CPUSuperclass::GenerateData();
-}
+CUDA_displaced_weight(
+  int proj_idx_in[3],
+  int proj_dim_in[3],
+  int proj_dim_in_buf[2],
+  int proj_idx_out[3],
+  int proj_dim_out[3],
+  int proj_dim_out_buf[2],
+  float *dev_proj_in,
+  float *dev_proj_out,
+  float *geometries,
+  float theta,
+  bool isPositiveCase,
+  float proj_orig,
+  float proj_row,
+  float proj_col);
+
+#endif //ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU
