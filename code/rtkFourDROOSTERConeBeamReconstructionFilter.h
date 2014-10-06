@@ -155,7 +155,7 @@ public:
     typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
     typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType>                                              AverageOutOfROIFilterType;
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>         SpatialTVDenoisingFilterType;
-    typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  WarpFilterType;
+    typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  WarpSequenceFilterType;
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>        TemporalTVDenoisingFilterType;
     typedef itk::AddImageFilter<VolumeSeriesType>                                                           AddFilterType;
     typedef itk::SubtractImageFilter<VolumeSeriesType>                                                      SubtractFilterType;
@@ -216,9 +216,9 @@ protected:
     typename ThresholdFilterType::Pointer                   m_PositivityFilter;
     typename AverageOutOfROIFilterType::Pointer             m_AverageOutOfROIFilter;
     typename SpatialTVDenoisingFilterType::Pointer          m_TVDenoisingSpace;
-    typename WarpFilterType::Pointer                        m_WarpForward;
+    typename WarpSequenceFilterType::Pointer                m_Warp;
     typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
-    typename WarpFilterType::Pointer                        m_WarpBack;
+    typename WarpSequenceFilterType::Pointer                m_ForwardWarp;
     typename AddFilterType::Pointer                         m_AddFilter;
     typename SubtractFilterType::Pointer                    m_SubtractFilter;
 
@@ -250,7 +250,7 @@ private:
     itk::TimeProbe m_TVSpaceProbe;
     itk::TimeProbe m_TVTimeProbe;
     itk::TimeProbe m_WarpForwardProbe;
-    itk::TimeProbe m_WarpBackProbe;
+    itk::TimeProbe m_WarpBackwardProbe;
 };
 } //namespace ITK
 

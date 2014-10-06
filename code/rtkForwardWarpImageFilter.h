@@ -15,106 +15,61 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+
 #ifndef __rtkForwardWarpImageFilter_h
 #define __rtkForwardWarpImageFilter_h
 
-//itk include
-#include "itkImageToImageFilter.h"
-#include "itkImage.h"
-#include "itkImageRegionIterator.h"
-#include "itkImageRegionIteratorWithIndex.h"
-#include "itkNumericTraits.h"
-#include "itkSimpleFastMutexLock.h"
+#include <itkWarpImageFilter.h>
 
 namespace rtk
 {
-  
-  template <  class InputImageType,  class OutputImageType,  class DeformationFieldType  >  
-  class ForwardWarpImageFilter : public itk::ImageToImageFilter<InputImageType, OutputImageType>
-  
-  {
-  public:
-    typedef ForwardWarpImageFilter     Self;
-    typedef itk::ImageToImageFilter<InputImageType,OutputImageType>     Superclass;
-    typedef itk::SmartPointer<Self>            Pointer;
-    typedef itk::SmartPointer<const Self>      ConstPointer;
 
-   
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);  
-  
-    /** Determine the image dimension. */
-    itkStaticConstMacro(ImageDimension, unsigned int,
-			InputImageType::ImageDimension );
-    itkStaticConstMacro(InputImageDimension, unsigned int,
-			OutputImageType::ImageDimension );
-    itkStaticConstMacro(DeformationFieldDimension, unsigned int,
-			DeformationFieldType::ImageDimension );
+/** \class ForwardWarpImageFilter
+ * \brief Warps an image using splat instead of interpolation
+ *
+ * Deforms an image using a Displacement Vector Field. Adjoint operator
+ * of the itkWarpImageFilter
+ *
+ * \test rtkfourdroostertest
+ *
+ * \author Cyril Mory
+ */
+template <class TInputImage,
+          class TOutputImage = TInputImage,
+          class TDVF = itk::Image< itk::CovariantVector<typename TInputImage::PixelType,
+                                                        TInputImage::ImageDimension >,
+                                   TInputImage::ImageDimension > >
+class ForwardWarpImageFilter :
+  public itk::WarpImageFilter< TInputImage, TOutputImage, TDVF >
+{
+public:
+  /** Standard class typedefs. */
+  typedef ForwardWarpImageFilter                                  Self;
+  typedef itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>   Superclass;
+  typedef itk::SmartPointer<Self>                                 Pointer;
+  typedef itk::SmartPointer<const Self>                           ConstPointer;
 
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self)
 
-    //Some other typedefs
-    typedef double CoordRepType;
-    typedef itk::Image<double, ImageDimension> WeightsImageType;
-    typedef itk::Image<itk::SimpleFastMutexLock, ImageDimension> MutexImageType;
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ForwardWarpImageFilter, Superclass)
 
-    /** Point type */
-    typedef itk::Point<CoordRepType,itkGetStaticConstMacro(ImageDimension)> PointType;
+protected:
+  ForwardWarpImageFilter();
+  ~ForwardWarpImageFilter() {}
 
-    /** Inherit some types from the superclass. */
-    typedef typename OutputImageType::IndexType        IndexType;
-    typedef typename OutputImageType::SizeType         SizeType;
-    typedef typename OutputImageType::PixelType        PixelType;
-    typedef typename OutputImageType::SpacingType      SpacingType;
-    
-    //Set & Get Methods (inline)
-    itkSetMacro( Verbose, bool);
-    itkSetMacro( EdgePaddingValue, PixelType );
-    itkSetMacro( DeformationField, typename DeformationFieldType::Pointer);
-    void SetNumberOfThreads(unsigned int r )
-    {
-      m_NumberOfThreadsIsGiven=true;
-      m_NumberOfThreads=r;
-    }
-    itkSetMacro(ThreadSafe, bool);
- 
-  
-    //ITK concept checking, why not?  
-#ifdef ITK_USE_CONCEPT_CHECKING
-    /** Begin concept checking */
-    itkConceptMacro(SameDimensionCheck1,
-		    (itk::Concept::SameDimension<ImageDimension, InputImageDimension>));
-    itkConceptMacro(SameDimensionCheck2,
-		    (itk::Concept::SameDimension<ImageDimension, DeformationFieldDimension>));
-    itkConceptMacro(InputHasNumericTraitsCheck,
-		    (itk::Concept::HasNumericTraits<typename InputImageType::PixelType>));
-    itkConceptMacro(DeformationFieldHasNumericTraitsCheck,
-		    (itk::Concept::HasNumericTraits<typename DeformationFieldType::PixelType::ValueType>));
-    /** End concept checking */
-#endif
+  virtual void GenerateData();
 
-  protected:
-    ForwardWarpImageFilter();
-    ~ForwardWarpImageFilter() {};
-    void GenerateData( );
-
-  
-  private:
-    bool m_Verbose;
-    bool m_NumberOfThreadsIsGiven;
-    unsigned int m_NumberOfThreads;
-    PixelType m_EdgePaddingValue;
-    typename DeformationFieldType::Pointer m_DeformationField;
-    bool m_ThreadSafe;
- 
-  };
-
-
-
-
+private:
+  ForwardWarpImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);                   //purposely not implemented
+};
 
 } // end namespace rtk
-#ifndef ITK_MANUAL_INSTANTIATION
+
+#ifndef rtk_MANUAL_INSTANTIATION
 #include "rtkForwardWarpImageFilter.txx"
 #endif
 
-#endif // #define __rtkForwardWarpImageFilter_h
+#endif
