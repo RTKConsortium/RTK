@@ -77,7 +77,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_PositivityFilter->ReleaseDataFlagOn();
   m_AverageOutOfROIFilter->ReleaseDataFlagOn();
   m_TVDenoisingSpace->ReleaseDataFlagOff(); // Output used twice
-  m_Warp->ReleaseDataFlagOn();
+  m_Warp->ReleaseDataFlagOff();
   m_TVDenoisingTime->ReleaseDataFlagOn();
   m_SubtractFilter->ReleaseDataFlagOn();
   m_ForwardWarp->ReleaseDataFlagOn();
