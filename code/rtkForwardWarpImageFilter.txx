@@ -133,8 +133,8 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
         {
         baseIndex[j] = itk::Math::Floor<int, double>(continuousIndexInInput[j]);
         distance[j] = continuousIndexInInput[j] - static_cast< double >(baseIndex[j]);
-        if ( (baseIndex[j] < outputPtr->GetRequestedRegion().GetIndex()[j]) ||
-             (baseIndex[j] >= outputPtr->GetRequestedRegion().GetIndex()[j] + outputPtr->GetRequestedRegion().GetSize()[j] - 1 ))
+        if ( (baseIndex[j] < outputPtr->GetRequestedRegion().GetIndex()[j] - 1) ||
+             (baseIndex[j] >= outputPtr->GetRequestedRegion().GetIndex()[j] + outputPtr->GetRequestedRegion().GetSize()[j] ))
           skip = true;
         }
 
@@ -164,10 +164,13 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
             upper >>= 1;
             }
 
-          // Perform splat with this weight, both in output and in the temporary
-          // image that accumulates weights
-          outputPtr->SetPixel(neighIndex, outputPtr->GetPixel(neighIndex) + overlap * inputIt.Get() );
-          accumulate->SetPixel(neighIndex, accumulate->GetPixel(neighIndex) + overlap);
+          if (outputPtr->GetRequestedRegion().IsInside(neighIndex))
+            {
+            // Perform splat with this weight, both in output and in the temporary
+            // image that accumulates weights
+            outputPtr->SetPixel(neighIndex, outputPtr->GetPixel(neighIndex) + overlap * inputIt.Get() );
+            accumulate->SetPixel(neighIndex, accumulate->GetPixel(neighIndex) + overlap);
+            }
           }
         }
 
