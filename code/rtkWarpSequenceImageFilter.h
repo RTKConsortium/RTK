@@ -21,7 +21,6 @@
 
 #include "rtkConstantImageSource.h"
 #include "rtkCyclicDeformationImageFilter.h"
-#include "rtkForwardWarpImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkPasteImageFilter.h>
@@ -29,8 +28,10 @@
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaWarpImageFilter.h"
+  #include "rtkCudaForwardWarpImageFilter.h"
 #else
   #include <itkWarpImageFilter.h>
+  #include "rtkForwardWarpImageFilter.h"
 #endif
 
 namespace rtk
@@ -117,6 +118,7 @@ public:
     /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
     typedef rtk::CudaWarpImageFilter                                CudaWarpFilterType;
+    typedef rtk::CudaForwardWarpImageFilter                         CudaForwardWarpFilterType;
 #endif
     typedef itk::WarpImageFilter<TImage, TImage, TMVFImage>         WarpFilterType;
     typedef rtk::ForwardWarpImageFilter<TImage, TImage, TMVFImage>  ForwardWarpFilterType;

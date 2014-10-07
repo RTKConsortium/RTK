@@ -79,17 +79,19 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
 {
   int Dimension = TImageSequence::ImageDimension;
 
+
+#ifdef RTK_USE_CUDA
   // Create the right warp filter (regular or forward)
+  if (m_ForwardWarp)
+    m_WarpFilter = CudaForwardWarpFilterType::New();
+  else
+    m_WarpFilter = CudaWarpFilterType::New();
+#else
   if (m_ForwardWarp)
     m_WarpFilter = ForwardWarpFilterType::New();
   else
-    {
-#ifdef RTK_USE_CUDA
-    m_WarpFilter = CudaWarpFilterType::New();
-#else
     m_WarpFilter = WarpFilterType::New();
 #endif
-    }
 
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
   m_WarpFilter->SetInterpolator(interpolator);
@@ -126,9 +128,6 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   m_ExtractFilter->UpdateOutputInformation();
   m_MVFInterpolatorFilter->UpdateOutputInformation();
 
-//  m_WarpFilter->SetOutputSpacing(m_ExtractFilter->GetOutput()->GetSpacing());
-//  m_WarpFilter->SetOutputOrigin(m_ExtractFilter->GetOutput()->GetOrigin());
-//  m_WarpFilter->SetOutputSize(m_ExtractFilter->GetOutput()->GetLargestPossibleRegion().GetSize());
   m_WarpFilter->SetOutputParametersFromImage(m_ExtractFilter->GetOutput());
 
   m_CastFilter->UpdateOutputInformation();
@@ -189,8 +188,6 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
 
     m_MVFInterpolatorFilter->SetFrame(frame);
     m_MVFInterpolatorFilter->UpdateLargestPossibleRegion();
-
-    //    m_WarpFilter->UpdateLargestPossibleRegion();
 
     m_CastFilter->Update();
 
