@@ -123,6 +123,9 @@ void kernel_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
   PPDisplaced.x = PPinInput.x + Displacement.x;
   PPDisplaced.y = PPinInput.y + Displacement.y;
   PPDisplaced.z = PPinInput.z + Displacement.z;
+//  PPDisplaced.x = PPinInput.x;
+//  PPDisplaced.y = PPinInput.y;
+//  PPDisplaced.z = PPinInput.z;
 
   float3 IndexInOutput;
   IndexInOutput.x =  tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 0) * PPDisplaced.x
@@ -149,14 +152,14 @@ void kernel_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
   Distance.y = IndexInOutput.y - BaseIndexInOutput.y;
   Distance.z = IndexInOutput.z - BaseIndexInOutput.z;
 
-  float weight000 = Distance.x       * Distance.y       * Distance.z;
-  float weight001 = Distance.x       * Distance.y       * (1 - Distance.z);
-  float weight010 = Distance.x       * (1 - Distance.y) * Distance.z;
-  float weight011 = Distance.x       * (1 - Distance.y) * (1 - Distance.z);
-  float weight100 = (1 - Distance.x) * Distance.y       * Distance.z;
-  float weight101 = (1 - Distance.x) * Distance.y       * (1 - Distance.z);
-  float weight110 = (1 - Distance.x) * (1 - Distance.y) * Distance.z;
-  float weight111 = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z);
+  float weight000 = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z);
+  float weight001 = (1 - Distance.x) * (1 - Distance.y) * Distance.z;
+  float weight010 = (1 - Distance.x) * Distance.y       * (1 - Distance.z);
+  float weight011 = (1 - Distance.x) * Distance.y       * Distance.z;
+  float weight100 = Distance.x       * (1 - Distance.y) * (1 - Distance.z);
+  float weight101 = Distance.x       * (1 - Distance.y) * Distance.z;
+  float weight110 = Distance.x       * Distance.y       * (1 - Distance.z);
+  float weight111 = Distance.x       * Distance.y       * Distance.z;
 
   // Compute indices in the volume
   long int out_idx000 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 0) * out_dim.x + (BaseIndexInOutput.z + 0) * out_dim.x * out_dim.y;
@@ -394,9 +397,9 @@ CUDA_ForwardWarp(int input_vol_dim[3],
                                             make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
                                             make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
 
-//  normalize_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
-//                                            dev_accumulate_weights,
-//                                            make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+  normalize_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
+                                            dev_accumulate_weights,
+                                            make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
 
   CUDA_CHECK_ERROR;
 
