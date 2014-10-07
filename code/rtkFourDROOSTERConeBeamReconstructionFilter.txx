@@ -352,14 +352,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
      << ' ' << m_TVSpaceProbe.GetUnit() << std::endl;
   if (m_PerformWarping)
     {
-    os << "  Warping volumes to average position: " << m_WarpForwardProbe.GetTotal()
-       << ' ' << m_WarpForwardProbe.GetUnit() << std::endl;
+    os << "  Warping volumes to average position: " << m_WarpBackwardProbe.GetTotal()
+       << ' ' << m_WarpBackwardProbe.GetUnit() << std::endl;
     }
   os << "  Temporal total variation denoising: " << m_TVTimeProbe.GetTotal()
      << ' ' << m_TVTimeProbe.GetUnit() << std::endl;
   if (m_PerformWarping)
     {
-    os << "  Warping volumes back from average position: " << m_WarpForwardProbe.GetTotal()
+    os << "  Warping corrections from average position: " << m_WarpForwardProbe.GetTotal()
        << ' ' << m_WarpForwardProbe.GetUnit() << std::endl;
     }
 }
