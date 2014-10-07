@@ -113,7 +113,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
 //    {
     while ( !inputIt.IsAtEnd() )
       {
-      // get the output image index
+      // get the input image index
       index = inputIt.GetIndex();
       inputPtr->TransformIndexToPhysicalPoint(index, point);
 
@@ -132,7 +132,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
       for ( unsigned int j = 0; j < TInputImage::ImageDimension; j++ )
         {
         baseIndex[j] = itk::Math::Floor<int, double>(continuousIndexInInput[j]);
-        distance[j] = index[j] - static_cast< double >(baseIndex[j]);
+        distance[j] = continuousIndexInInput[j] - static_cast< double >(baseIndex[j]);
         if ( (baseIndex[j] < outputPtr->GetRequestedRegion().GetIndex()[j]) ||
              (baseIndex[j] >= outputPtr->GetRequestedRegion().GetIndex()[j] + outputPtr->GetRequestedRegion().GetSize()[j] - 1 ))
           skip = true;
