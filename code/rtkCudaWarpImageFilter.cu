@@ -282,8 +282,7 @@ CUDA_warp(int input_vol_dim[3],
   CUDA_CHECK_ERROR;
 
   ///////////////////////////////////
-  // Do the same for the input volume, but no need
-  // to use stride tricks this time
+  // Do the same for the input volume
 
   // Extent stuff
   cudaExtent volExtent = make_cudaExtent(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]);
