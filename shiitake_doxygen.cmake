@@ -15,6 +15,7 @@ file(WRITE ${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake
   "set(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION}
   \"warning: Duplicate anchor RegistrationMetrics found\"
   \"rtkDigisensGeometryXMLFileReader.cxx:49: warning: member with no name found.\"
+  \"rtkUpsampleImageFilter.txx:105: warning: member ThreadedGenerateData belongs to two different groups. The second one found here will be ignored.\"
   )")
 CTEST_READ_CUSTOM_FILES("${CTEST_BINARY_DIRECTORY}")
 
