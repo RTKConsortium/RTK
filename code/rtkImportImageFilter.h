@@ -19,7 +19,6 @@
 #define __rtkImportImageFilter_h
 
 #include "itkImageSource.h"
-//#include "itkCudaImage.h"
 
 namespace rtk
 {
@@ -57,7 +56,6 @@ public:
   itkTypeMacro(ImportImageFilter, ImageSource);
 
   /** Index typedef support. An index is used to access pixel values. */
-  //typedef itk::Index< ImageDimension > IndexType;
   typedef itk::Index< TImage::ImageDimension > IndexType;
 
   /** Size typedef support. A size is used to define region bounds. */
@@ -114,7 +112,7 @@ public:
 
   /** Set the direction of the image
    * \sa GetDirection() */
-  virtual void SetDirection(const DirectionType direction);
+  virtual void SetDirection(const DirectionType & direction);
 
   /**  Get the direction of the image
    * \sa SetDirection */
@@ -153,8 +151,8 @@ private:
   DirectionType m_Direction;
 
   PixelType  *  m_ImportPointer;
-  bool                  m_FilterManageMemory;
-  SizeValueType         m_Size;
+  bool          m_FilterManageMemory;
+  SizeValueType m_Size;
 };
 } // end namespace itk
 

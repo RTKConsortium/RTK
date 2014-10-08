@@ -43,7 +43,7 @@ void CheckError(typename TImage::Pointer recon,
   while( !itTest.IsAtEnd() )
     {
       typename TImage::PixelType TestVal = itTest.Get();
-      TestError += vcl_abs(ref[k] - TestVal);
+      TestError += vcl_abs(ErrorType(ref[k] - TestVal));
       EnerError += vcl_pow(ErrorType(ref[k] - TestVal), 2.);
       ++itTest;
       ++k;
