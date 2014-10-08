@@ -2,6 +2,10 @@ WRAP_GGO(rtkwangdisplaceddetectorweighting_GGO_C rtkwangdisplaceddetectorweighti
 ADD_EXECUTABLE(rtkwangdisplaceddetectorweighting rtkwangdisplaceddetectorweighting.cxx ${rtkwangdisplaceddetectorweighting_GGO_C})
 TARGET_LINK_LIBRARIES(rtkwangdisplaceddetectorweighting RTK)
 
+IF(RTK_USE_CUDA)
+  TARGET_LINK_LIBRARIES(rtkwangdisplaceddetectorweighting rtkcuda)
+ENDIF()
+
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
   FOREACH(EXE_NAME rtkwangdisplaceddetectorweighting) 

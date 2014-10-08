@@ -20,8 +20,10 @@
 #include "rtkGgoFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkProjectionsReader.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#ifdef RTK_USE_CUDA
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
+#endif
 
 #include <itkImageFileWriter.h>
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -30,10 +32,23 @@ int main(int argc, char * argv[])
 {
   GGO(rtkwangdisplaceddetectorweighting, args_info);
 
+  // Check on hardware parameter
+#ifndef RTK_USE_CUDA
+  if(!strcmp(args_info.hardware_arg, "cuda") )
+    {
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+    }
+#endif
+
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#endif
 
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
@@ -52,8 +67,17 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Displaced detector weighting
+  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFCPUType;
+#ifdef RTK_USE_CUDA
+  typedef rtk::CudaDisplacedDetectorImageFilter DDFType;
+#else
   typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
-  DDFType::Pointer ddf = DDFType::New();
+#endif
+  DDFCPUType::Pointer ddf;
+  if(!strcmp(args_info.hardware_arg, "cuda") )
+    ddf = DDFType::New();
+  else
+    ddf = DDFCPUType::New();
   ddf->SetInput( reader->GetOutput() );
   ddf->SetGeometry( geometryReader->GetOutputObject() );
   if(args_info.minOffset_given && args_info.maxOffset_given)

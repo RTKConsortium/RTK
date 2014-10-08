@@ -25,10 +25,12 @@
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #ifdef RTK_USE_CUDA
-# include "rtkCudaFDKConeBeamReconstructionFilter.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
+#  include "rtkCudaParkerShortScanImageFilter.h"
+#  include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
 #ifdef RTK_USE_OPENCL
-# include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
+#  include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
 #endif
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
@@ -78,15 +80,49 @@ int main(int argc, char * argv[])
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
+  // Check on hardware parameter
+#ifndef RTK_USE_CUDA
+  if(!strcmp(args_info.hardware_arg, "cuda") )
+    {
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+    }
+#endif
+#ifndef RTK_USE_OPENCL
+   if(!strcmp(args_info.hardware_arg, "opencl") )
+     {
+     std::cerr << "The program has not been compiled with opencl option" << std::endl;
+     return EXIT_FAILURE;
+    }
+#endif
+
   // Displaced detector weighting
+  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFCPUType;
+#ifdef RTK_USE_CUDA
+  typedef rtk::CudaDisplacedDetectorImageFilter DDFType;
+#else
   typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
-  DDFType::Pointer ddf = DDFType::New();
+#endif
+  DDFCPUType::Pointer ddf;
+  if(!strcmp(args_info.hardware_arg, "cuda") )
+    ddf = DDFType::New();
+  else
+    ddf = DDFCPUType::New();
   ddf->SetInput( reader->GetOutput() );
   ddf->SetGeometry( geometryReader->GetOutputObject() );
 
   // Short scan image filter
+  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFCPUType;
+#ifdef RTK_USE_CUDA
+  typedef rtk::CudaParkerShortScanImageFilter PSSFType;
+#else
   typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
-  PSSFType::Pointer pssf = PSSFType::New();
+#endif
+  PSSFCPUType::Pointer pssf;
+  if(!strcmp(args_info.hardware_arg, "cuda") )
+    pssf = PSSFType::New();
+  else
+    pssf = PSSFCPUType::New();
   pssf->SetInput( ddf->GetOutput() );
   pssf->SetGeometry( geometryReader->GetOutputObject() );
   pssf->InPlaceOff();
@@ -149,28 +185,22 @@ int main(int argc, char * argv[])
       }
     pfeldkamp = feldkamp->GetOutput();
     }
+#ifdef RTK_USE_CUDA
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
-#ifdef RTK_USE_CUDA
     feldkampCUDA = FDKCUDAType::New();
     SET_FELDKAMP_OPTIONS( feldkampCUDA );
     pfeldkamp = feldkampCUDA->GetOutput();
-#else
-    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    return EXIT_FAILURE;
-#endif
     }
+#endif
+#ifdef RTK_USE_OPENCL
   else if(!strcmp(args_info.hardware_arg, "opencl") )
     {
-#ifdef RTK_USE_OPENCL
     feldkampOCL = FDKOPENCLType::New();
     SET_FELDKAMP_OPTIONS( feldkampOCL );
     pfeldkamp = feldkampOCL->GetOutput();
-#else
-    std::cerr << "The program has not been compiled with opencl option" << std::endl;
-    return EXIT_FAILURE;
-#endif
     }
+#endif
 
 
   // Streaming depending on streaming capability of writer
