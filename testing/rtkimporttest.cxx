@@ -1,7 +1,8 @@
 #include "rtkTest.h"
-
 #include "rtkImportImageFilter.h"
-#include "itkCudaImage.h"
+#ifdef USE_CUDA
+  #include "itkCudaImage.h"
+#endif
 
 /**
  * \file rtkimporttest.cxx
@@ -17,10 +18,10 @@
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
 void CheckError(typename TImage::Pointer itkNotUsed(recon),
-                       typename TPixel * itkNotUsed(ref),
-                       double itkNotUsed(ErrorPerPixelTolerance),
-                       double itkNotUsed(PSNRTolerance),
-                       double itkNotUsed(RefValueForPSNR))
+                typename TImage::PixelType *itkNotUsed(ref),
+                double itkNotUsed(ErrorPerPixelTolerance),
+                double itkNotUsed(PSNRTolerance),
+                double itkNotUsed(RefValueForPSNR))
 {
 }
 #else
@@ -117,6 +118,7 @@ int main(int , char** )
   CheckError< itk::Image<unsigned int, 2> >(vol->GetOutput(), &(vec_uint_2d[0]), 0.5, 2.0, 999.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+#ifdef USE_CUDA
   rtk::ImportImageFilter< itk::CudaImage<unsigned int,2> >::Pointer volCuda = rtk::ImportImageFilter< itk::CudaImage<unsigned int,2> >::New();
   volCuda->SetRegion(volRegion);
   volCuda->SetSpacing(itk::Vector<double, 2>(1.0) );
@@ -124,9 +126,9 @@ int main(int , char** )
   volCuda->Update();
 
   CheckError< itk::CudaImage<unsigned int, 2> >(volCuda->GetOutput(), &(vec_uint_2d[0]), 0.5, 2.0, 999.0);
-  delete [] vec_uint_2d;
   std::cout << "\n\nTest PASSED! " << std::endl;
-
+#endif
+  delete [] vec_uint_2d;
 
   std::cout << "\n\n****** Case 2: int ******" << std::endl;
 
@@ -151,6 +153,7 @@ int main(int , char** )
   CheckError< itk::Image<int, 2> >(volInt->GetOutput(), &(vec_int_2d[0]), 0.5, 2.0, 999.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+#ifdef USE_CUDA
   rtk::ImportImageFilter< itk::CudaImage<int,2> >::Pointer volIntCuda = rtk::ImportImageFilter< itk::CudaImage<int,2> >::New();
   volIntCuda->SetRegion(volIntRegion);
   volIntCuda->SetSpacing(itk::Vector<double, 2>(1.0) );
@@ -158,8 +161,9 @@ int main(int , char** )
   volIntCuda->Update();
 
   CheckError< itk::CudaImage<int, 2> >(volIntCuda->GetOutput(), &(vec_int_2d[0]), 0.5, 2.0, 999.0);
-  delete [] vec_int_2d;
   std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
+  delete [] vec_int_2d;
 
   std::cout << "\n\n****** Case 3: float ******" << std::endl;
 
@@ -184,6 +188,7 @@ int main(int , char** )
   CheckError< itk::Image<float, 2> >(volFloat->GetOutput(), &(vec_float_2d[0]), 0.5, 2.0, 1008.99);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+#ifdef USE_CUDA
   rtk::ImportImageFilter< itk::CudaImage<float,2> >::Pointer volFloatCuda = rtk::ImportImageFilter< itk::CudaImage<float,2> >::New();
   volFloatCuda->SetRegion(volFloatRegion);
   volFloatCuda->SetSpacing(itk::Vector<double, 2>(1.0) );
@@ -191,9 +196,9 @@ int main(int , char** )
   volFloatCuda->Update();
 
   CheckError< itk::CudaImage<float, 2> >(volFloatCuda->GetOutput(), &(vec_float_2d[0]), 0.5, 2.0, 1008.99);
-  delete [] vec_float_2d;
   std::cout << "\n\nTest PASSED! " << std::endl;
-
+#endif
+  delete [] vec_float_2d;
 
   std::cout << "\n\n****** Case 4: double ******" << std::endl;
 
@@ -218,6 +223,7 @@ int main(int , char** )
   CheckError< itk::Image<double, 2> >(volDouble->GetOutput(), &(vec_double_2d[0]), 0.5, 2.0, 1008.99);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+#ifdef USE_CUDA
   rtk::ImportImageFilter< itk::CudaImage<double,2> >::Pointer volDoubleCuda = rtk::ImportImageFilter< itk::CudaImage<double,2> >::New();
   volDoubleCuda->SetRegion(volDoubleRegion);
   volDoubleCuda->SetSpacing(itk::Vector<double, 2>(1.0) );
@@ -225,8 +231,9 @@ int main(int , char** )
   volDoubleCuda->Update();
 
   CheckError< itk::CudaImage<double, 2> >(volDoubleCuda->GetOutput(), &(vec_double_2d[0]), 0.5, 2.0, 1008.99);
-  delete [] vec_double_2d;
   std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
+  delete [] vec_double_2d;
 
   return EXIT_SUCCESS;
 }
