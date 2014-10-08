@@ -202,7 +202,7 @@ ImportImageFilter< TImage >
 template< typename TImage >
 void
 ImportImageFilter< TImage >
-::SetDirection(const DirectionType direction)
+::SetDirection(const DirectionType & direction)
 {
   bool modified = false;
 
