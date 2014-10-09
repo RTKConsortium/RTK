@@ -169,11 +169,11 @@ TotalVariationImageFilter< TInputImage >
 
   itk::ConstNeighborhoodIterator<TInputImage> iit(radius, input, outputRegionForThread);
   iit.GoToBegin();
-  itk::ZeroFluxNeumannBoundaryCondition<TInputImage>* boundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TInputImage>;
-  iit.OverrideBoundaryCondition(boundaryCondition);
+  itk::ZeroFluxNeumannBoundaryCondition<TInputImage> boundaryCondition;
+  iit.OverrideBoundaryCondition(&boundaryCondition);
 
   SizeValueType c = (SizeValueType) (iit.Size() / 2); // get offset of center pixel
-  SizeValueType* strides = new SizeValueType[ImageDimension]; // get offsets to access neighboring pixels
+  SizeValueType strides[ImageDimension]; // get offsets to access neighboring pixels
   for (int dim=0; dim<ImageDimension; dim++)
     {
     strides[dim] = iit.GetStride(dim);
