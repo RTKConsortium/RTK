@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright RTK Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+
 #ifndef __rtkImportImageFilter_h
 #define __rtkImportImageFilter_h
 
@@ -60,7 +61,7 @@ public:
 
   /** Size typedef support. A size is used to define region bounds. */
   typedef itk::Size< TImage::ImageDimension > SizeType;
-  typedef typename SizeType::SizeValueType SizeValueType;
+  typedef typename SizeType::SizeValueType    SizeValueType;
 
   /** Region typedef support. A region is used to specify a
    * subset of an image. */
