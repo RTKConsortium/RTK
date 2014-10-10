@@ -34,6 +34,7 @@ ADD_LIBRARY(RTK
             )
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RTK lpsolve55)
 #=========================================================
 
 #=========================================================
