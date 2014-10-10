@@ -524,7 +524,7 @@ SetLB:
         new_bound = BB->sc_bound;
     }
     /* Handle pure integers (non-SOS, non-SC, but Ok for GUB!) */
-    else if((BB->vartype == BB_INT)) {
+    else if(BB->vartype == BB_INT) {
       if(((ceil(BB->lastsolution) == BB->lastsolution)) ||    /* Skip branch 0 if the current solution is integer */
          (ceil(BB->lastsolution) >   /* Skip cases where the upper bound becomes violated */
           unscaled_value(lp, ult_upbo, K)+intmargin) ||
