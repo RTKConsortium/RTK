@@ -104,6 +104,7 @@ int main(int, char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
+  origin.Fill(0.);
   randomVolumeSource->SetOrigin( origin );
   randomVolumeSource->SetSpacing( spacing );
   randomVolumeSource->SetSize( size );
