@@ -126,6 +126,7 @@ CudaFDKWeightProjectionFilter
       geomMatrix,
       proj_orig, proj_row, proj_col
       );
+  delete[] geomMatrix;
 }
 
 }
