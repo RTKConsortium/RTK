@@ -25,6 +25,7 @@ namespace itk
 CudaDataManager::CudaDataManager()
 {
   m_ContextManager = CudaContextManager::GetInstance();
+  CUDA_CHECK(cuCtxSetCurrent(*(m_ContextManager->GetCurrentContext())));
   m_CPUBuffer = NULL;
   m_GPUBuffer = GPUMemPointer::New();
   this->Initialize();
