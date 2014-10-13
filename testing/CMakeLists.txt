@@ -214,6 +214,10 @@ ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
 
+ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
+TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
+ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
+
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
 if(NOT RTK_USE_CUDA)
