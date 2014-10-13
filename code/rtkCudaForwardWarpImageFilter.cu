@@ -408,6 +408,7 @@ CUDA_ForwardWarp(int input_vol_dim[3],
   cudaUnbindTexture (tex_ydvf);
   cudaUnbindTexture (tex_zdvf);
   CUDA_CHECK_ERROR;
+  cudaUnbindTexture (tex_IndexInputToPPInputMatrix);
   cudaUnbindTexture (tex_PPOutputToIndexOutputMatrix);
   cudaUnbindTexture (tex_IndexInputToIndexDVFMatrix);
   CUDA_CHECK_ERROR;
@@ -417,6 +418,9 @@ CUDA_ForwardWarp(int input_vol_dim[3],
   cudaFreeArray ((cudaArray*)array_ydvf);
   cudaFreeArray ((cudaArray*)array_zdvf);
   CUDA_CHECK_ERROR;
+  cudaFree (dev_accumulate_weights);
+  CUDA_CHECK_ERROR;
+  cudaFree (dev_IndexInputToPPInput);
   cudaFree (dev_PPOutputToIndexOutput);
   cudaFree (dev_IndexInputToIndexDVF);
   CUDA_CHECK_ERROR;
