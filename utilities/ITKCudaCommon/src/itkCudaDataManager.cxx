@@ -59,6 +59,19 @@ void CudaDataManager::Allocate()
     }
 }
 
+void CudaDataManager::ForceReleaseGPUBuffer()
+{
+  if (m_GPUBuffer)
+    {
+    #ifdef VERBOSE
+      std::cout << this << "::Release GPU buffer of size " << m_BufferSize << " Bytes" << " : " << m_GPUBuffer->GetPointer() << std::endl;
+    #endif
+    m_GPUBuffer->Release();
+    m_IsGPUBufferDirty = true;
+    m_IsCPUBufferDirty = false;
+    }
+}
+
 void CudaDataManager::SetCPUBufferPointer(void* ptr)
 {
   m_CPUBuffer = ptr;
