@@ -45,6 +45,7 @@ public:
   void Allocate(size_t bufferSize)
     {
     m_BufferSize = bufferSize;
+    CUDA_CHECK(cudaFree(m_GPUBuffer));
     CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
     }
 
