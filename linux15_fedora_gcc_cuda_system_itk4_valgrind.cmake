@@ -21,7 +21,7 @@ set(CONFIGURE_OPTIONS
 SET(ENV{VALGRIND_LIB} "/usr/lib64/valgrind")
 SET(CTEST_MEMORYCHECK_COMMAND /usr/bin/valgrind)
 SET(CTEST_MEMORYCHECK_COMMAND_OPTIONS "--gen-suppressions=all --child-silent-after-fork=yes -q --leak-check=yes --show-reachable=yes --workaround-gcc296-bugs=yes --num-callers=50 -v")
-SET(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "${CTEST_DASHBOARD_ROOT}/RTK/cmake/RTK.supp")
+SET(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "${CTEST_SCRIPT_DIRECTORY}/RTK.supp")
 SET(CONFIGURE_OPTIONS ${CONFIGURE_OPTIONS}
                       -DFAST_TESTS_NO_CHECKS=TRUE)
 set(dashboard_do_memcheck true)
