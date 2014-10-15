@@ -247,8 +247,8 @@ CUDA_forward_project( int projections_size[2],
   cudaBindTextureToArray(tex_vol, (cudaArray*)array_vol, channelDesc);
   CUDA_CHECK_ERROR;
 
-  static dim3 dimBlock  = dim3(16, 16, 1);
-  static dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
+  dim3 dimBlock  = dim3(16, 16, 1);
+  dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
 
   // Copy matrix and bind data to the texture
   float *dev_matrix;
