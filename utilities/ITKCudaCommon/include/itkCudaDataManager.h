@@ -45,7 +45,7 @@ public:
   void Allocate(size_t bufferSize)
     {
     m_BufferSize = bufferSize;
-    CUDA_CHECK(cuCtxSetCurrent(*(itk::CudaContextManager::GetInstance()->GetCurrentContext()))); // (peter) added this line
+    CUDA_CHECK(cudaFree(m_GPUBuffer));
     CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
     }
 
@@ -53,7 +53,6 @@ public:
     {
     if(m_GPUBuffer)
       {
-      CUDA_CHECK(cuCtxSetCurrent(*(itk::CudaContextManager::GetInstance()->GetCurrentContext()))); // (peter) added this line
       CUDA_CHECK(cudaFree(m_GPUBuffer));
       m_GPUBuffer = 0;
       }
