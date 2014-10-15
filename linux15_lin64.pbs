@@ -1,5 +1,5 @@
 #PBS -N rtk_dashboard
-#PBS -l walltime=02:59:00,nodes=1:ppn=8,vmem=10gb
+#PBS -l walltime=05:59:00,nodes=1:ppn=8,vmem=10gb
 #PBS -o /home/srit/tmp/rtk_dashboard.out
 #PBS -e /home/srit/tmp/rtk_dashboard.err
 #PBS -q gpu
@@ -24,4 +24,5 @@ ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk460.
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_cov.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_nofftw.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_valgrind.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4_valgrind.cmake -V
 

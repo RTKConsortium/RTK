@@ -1,0 +1,207 @@
+{
+   gengetopt
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:gengetopt_strdup
+   ...
+}
+{
+   gengetopt
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:update_multiple_arg
+   ...
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5P_create_prop
+   ...
+}
+{
+   HDF5  
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_malloc
+   ...
+}
+{
+   HDF5  
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5MM_xstrdup
+   ...
+}
+{
+   HDF5
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_malloc
+   ...
+}
+{
+   HDF5 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5L_register
+   ...
+}
+{
+   HDF5 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_reg_calloc
+   ...
+}
+{
+   HDF5 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5T_register
+   ...
+}
+{
+   HDF5 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:H5SL_insert_common
+   ...
+}
+{
+   HDF5 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FL_fac_init
+   ...
+}
+{
+   HDF5 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:H5I_register_type
+   ...
+}
+{
+   HDF5 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5FD_register
+   ...
+}
+{
+   HDF5 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:H5T_path_find
+   ...
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ... 
+   fun:cuInit
+   ...
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: possible 
+   ... 
+   fun:cuInit
+   ...
+}
+{
+   CUDA 
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   ...
+   fun:_dl_fini
+   fun:__run_exit_handlers
+   ... 
+}
+{
+   CUDA 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:cudaGetDeviceCount
+   ...
+}
+{
+   CUDA 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   obj:/usr/lib64/cuda/lib64/libcufft.so.5.0.35
+   fun:cufftPlan3d
+   ...
+}
+{
+   CUDA 
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:cuCtxCreate_v2
+   ...
+}
+{
+   OpenCL
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:clGetPlatformIDs
+   ...   
+}
+{
+   OpenCL
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:clGetPlatformIDs
+   ...   
+}
+{
+   OpenCL
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:_Z41CreateAndBuildOpenCLProgramFromSourceFileSsRKP11_cl_contextRP11_cl_program
+   ...   
+}
+{
+   OpenCL
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   ...
+}
+{
+   OpenCL
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   ...
+}
