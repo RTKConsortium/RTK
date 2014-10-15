@@ -26,15 +26,15 @@ namespace rtk
 
 template< typename TOutputImage >
 ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::ADMMWaveletsConeBeamReconstructionFilter()
+::ADMMWaveletsConeBeamReconstructionFilter():
+  m_Alpha(1),
+  m_Beta(1),
+  m_AL_iterations(10),
+  m_CG_iterations(3),
+  m_Order(3),
+  m_NumberOfLevels(5)
 {
   this->SetNumberOfRequiredInputs(2);
-
-  // Set the default values of member parameters
-  m_Alpha=1;
-  m_Beta=1;
-  m_AL_iterations=10;
-  m_CG_iterations=3;
 
   // Create the filters
   m_ZeroMultiplyFilter = MultiplyFilterType::New();

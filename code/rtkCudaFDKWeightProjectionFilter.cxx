@@ -100,6 +100,8 @@ CudaFDKWeightProjectionFilter
   // 6: weight factor
   int geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
   float *geomMatrix = new float[proj_size[2] * 7];
+  if(geomMatrix == NULL)
+     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
   {
     geomMatrix[g * 7 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
@@ -126,6 +128,8 @@ CudaFDKWeightProjectionFilter
       geomMatrix,
       proj_orig, proj_row, proj_col
       );
+
+  delete[] geomMatrix;
 }
 
 }

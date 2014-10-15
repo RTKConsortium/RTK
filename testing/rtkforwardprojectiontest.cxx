@@ -5,6 +5,9 @@
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
 
+#include <itkStreamingImageFilter.h>
+#include <itkImageRegionSplitterDirection.h>
+
 #ifdef USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
 #else
@@ -112,6 +115,16 @@ int main(int , char** )
   rbi->SetBoxMin(boxMin);
   rbi->SetBoxMax(boxMax);
 
+  // Streaming filter to test for unusual regions
+  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamingFilterType;
+  StreamingFilterType::Pointer stream = StreamingFilterType::New();
+  stream->SetInput(jfp->GetOutput());
+  stream->SetNumberOfStreamDivisions(9);
+
+  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+  splitter->SetDirection(2);
+  stream->SetRegionSplitter(splitter);
+
   std::cout << "\n\n****** Case 1: inner ray source ******" << std::endl;
   // The circle is divided in 4 quarters
   for(int q=0; q<4; q++) {
@@ -130,9 +143,9 @@ int main(int , char** )
     }
 
     jfp->SetGeometry(geometry);
-    jfp->Update();
+    stream->Update();
 
-    CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput(), 1.28, 44.0, 255.0);
+    CheckImageQuality<OutputImageType>(rbi->GetOutput(), stream->GetOutput(), 1.28, 44.0, 255.0);
     std::cout << "\n\nTest of quarter #" << q << " PASSED! " << std::endl;
   }
 
@@ -154,9 +167,9 @@ int main(int , char** )
   rbi->Update();
 
   jfp->SetGeometry( geometry );
-  jfp->Update();
+  stream->Update();
 
-  CheckImageQuality<OutputImageType>(rbi->GetOutput(), jfp->GetOutput(), 1.28, 44, 255.0);
+  CheckImageQuality<OutputImageType>(rbi->GetOutput(), stream->GetOutput(), 1.28, 44.0, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 3: Shepp-Logan, outer ray source ******" << std::endl;
@@ -186,9 +199,9 @@ int main(int , char** )
   
   // Forward projection
   jfp->SetInput( 1, dsl->GetOutput() );
-  jfp->Update();
+  stream->Update();
 
-  CheckImageQuality<OutputImageType>(slp->GetOutput(), jfp->GetOutput(), 1.28, 44, 255.0);
+  CheckImageQuality<OutputImageType>(slp->GetOutput(), stream->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 4: Shepp-Logan, inner ray source ******" << std::endl;
@@ -200,9 +213,9 @@ int main(int , char** )
   slp->Update();
 
   jfp->SetGeometry( geometry );
-  jfp->Update();
+  stream->Update();
 
-  CheckImageQuality<OutputImageType>(slp->GetOutput(), jfp->GetOutput(), 1.28, 44, 255.0);
+  CheckImageQuality<OutputImageType>(slp->GetOutput(), stream->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
