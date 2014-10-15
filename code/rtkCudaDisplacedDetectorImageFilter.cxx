@@ -114,6 +114,8 @@ CudaDisplacedDetectorImageFilter
   // 3: sid
   int geomIdx = proj_idx_out[2];
   float *geomMatrix = new float[proj_size_out[2] * 4];
+  if(geomMatrix == NULL)
+     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size_out[2]; ++g)
   {
     geomMatrix[g * 4 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
@@ -131,8 +133,7 @@ CudaDisplacedDetectorImageFilter
       proj_orig, proj_row, proj_col
       );
 
-  if (geomMatrix != NULL)
-    delete geomMatrix;
+  delete[] geomMatrix;
 }
 
 }
