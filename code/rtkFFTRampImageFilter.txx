@@ -35,6 +35,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::FFTRampImageFilter() :
   m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.),
   m_CosineCutFrequency(0.),m_HammingFrequency(0.), m_HannCutFrequencyY(0.),
+  m_RamLakCutFrequency(0.),m_SheppLoganCutFrequency(0.),
   m_BackupNumberOfThreads(1)
 {
 #if defined(USE_FFTWD)
@@ -373,6 +374,22 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHammingFrequency() ) );
     for(unsigned int i=0; i<ncut; i++, ++itK)
       itK.Set( itK.Get() * TFFTPrecision(0.54+0.46*(vcl_cos(vnl_math::pi*i/ncut))));
+    }
+  else if (this->GetRamLakCutFrequency() > 0.)
+    {
+    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetRamLakCutFrequency() ) );
+    for(unsigned int i=0; i<ncut; i++, ++itK) {}
+    }
+  else if (this->GetSheppLoganCutFrequency() > 0.)
+    {
+    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetSheppLoganCutFrequency() ) );
+    //sinc(0) --> is 1
+    ++itK;
+    for(unsigned int i=1; i<ncut; i++, ++itK)
+      {
+      double x = 0.5*vnl_math::pi*i / ncut;
+      itK.Set( itK.Get() * TFFTPrecision(vcl_sin(x) / x));
+      }
     }
   else
     {
