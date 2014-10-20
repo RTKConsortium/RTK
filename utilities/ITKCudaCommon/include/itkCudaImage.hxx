@@ -58,11 +58,8 @@ template <class TPixel, unsigned int VImageDimension>
   m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
   
-  // When we allocate both buffers are dirty as the image data can provided
-  // by GPU filters without going through the CPU memory first
-  // Setting only the flag so that no memory transfer is done as Allocate
-  // is called everytime the filter updates
-  //m_DataManager->SetGPUBufferDirty();
+  // When we allocate both buffers are dirty and set so to avoid useless transfers
+  // between GPU and CPU.
   m_DataManager->SetGPUDirtyFlag(true);
   m_DataManager->SetCPUDirtyFlag(true);
 
