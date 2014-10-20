@@ -17,6 +17,7 @@
 *=========================================================================*/
 
 #include "itkCudaDataManager.h"
+#include <itksys/SystemTools.hxx>
 //#define VERBOSE
 
 namespace itk
@@ -29,6 +30,13 @@ CudaDataManager::CudaDataManager()
   m_CPUBuffer = NULL;
   m_GPUBuffer = GPUMemPointer::New();
   this->Initialize();
+
+  m_ReleaseDirtyGPUBuffer = false;
+  std::string relString;
+  if( itksys::SystemTools::GetEnv("ITK_RELEASE_DIRTY_GPU_BUFFERS",relString) &&
+      (itksys::SystemTools::LowerCase(relString) == "true" ||
+       atoi( relString.c_str() ) !=0) )
+    m_ReleaseDirtyGPUBuffer = true;
 }
 
 CudaDataManager::~CudaDataManager()
@@ -59,6 +67,20 @@ void CudaDataManager::Allocate()
     }
 }
 
+void CudaDataManager::Free()
+{
+  m_Mutex.Lock();
+  if (m_GPUBuffer->GetBufferSize() > 0)
+    {
+#ifdef VERBOSE
+    std::cout << this << "::Freed GPU buffer of size " << m_GPUBuffer->GetBufferSize() << " Bytes" << " : " << m_GPUBuffer->GetPointer() << std::endl;
+#endif
+    m_GPUBuffer->Free();
+    m_IsGPUBufferDirty = true;
+    }
+  m_Mutex.Unlock();
+}
+
 void CudaDataManager::SetCPUBufferPointer(void* ptr)
 {
   m_CPUBuffer = ptr;
@@ -72,12 +94,16 @@ void CudaDataManager::SetCPUDirtyFlag(bool isDirty)
 void CudaDataManager::SetGPUDirtyFlag(bool isDirty)
 {
   m_IsGPUBufferDirty = isDirty;
+  if(isDirty && m_ReleaseDirtyGPUBuffer)
+    this->Free();
 }
 
 void CudaDataManager::SetGPUBufferDirty()
 {
   this->UpdateCPUBuffer();
   m_IsGPUBufferDirty = true;
+  if(m_ReleaseDirtyGPUBuffer)
+    this->Free();
 }
 
 void CudaDataManager::SetCPUBufferDirty()
@@ -88,8 +114,7 @@ void CudaDataManager::SetCPUBufferDirty()
 
 void CudaDataManager::UpdateCPUBuffer()
 {
-  MutexHolderType holder(m_Mutex);
-
+  m_Mutex.Lock();
   if(m_IsGPUBufferDirty)
     {
     m_IsCPUBufferDirty = false;
@@ -104,11 +129,12 @@ void CudaDataManager::UpdateCPUBuffer()
     CUDA_CHECK(cudaMemcpy(m_CPUBuffer, m_GPUBuffer->GetPointer(), m_BufferSize, cudaMemcpyDeviceToHost));
     m_IsCPUBufferDirty = false;
     }
+  m_Mutex.Unlock();
 }
 
 void CudaDataManager::UpdateGPUBuffer()
 {
-  MutexHolderType mutexHolder(m_Mutex);
+  m_Mutex.Lock();
   if (m_IsGPUBufferDirty && m_GPUBuffer)
     {
     this->Allocate(); // do the allocation
@@ -123,6 +149,7 @@ void CudaDataManager::UpdateGPUBuffer()
       }
     m_IsGPUBufferDirty = false;
     }
+  m_Mutex.Unlock();
 }
 
 void* CudaDataManager::GetGPUBufferPointer()

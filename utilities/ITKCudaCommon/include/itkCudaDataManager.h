@@ -49,12 +49,18 @@ public:
     CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
     }
 
+  void Free()
+    {
+    CUDA_CHECK(cudaFree(m_GPUBuffer));
+    m_GPUBuffer = 0;
+    m_BufferSize = 0;
+    }
+
   ~GPUMemPointer()
     {
     if(m_GPUBuffer)
       {
-      CUDA_CHECK(cudaFree(m_GPUBuffer));
-      m_GPUBuffer = 0;
+      this->Free();
       }
     }
 
@@ -111,8 +117,6 @@ public:
   itkNewMacro(Self);
   itkTypeMacro(CudaDataManager, Object);
 
-  typedef MutexLockHolder<SimpleFastMutexLock> MutexHolderType;
-
   /** total buffer size in bytes */
   void SetBufferSize(unsigned int num);
 
@@ -152,6 +156,7 @@ public:
   virtual void UpdateGPUBuffer();
 
   void Allocate();
+  void Free();
 
   /** Synchronize CPU and Cuda buffers (using dirty flags) */
   bool Update();
@@ -199,6 +204,9 @@ protected:
   /** checks if buffer needs to be updated */
   bool m_IsGPUBufferDirty;
   bool m_IsCPUBufferDirty;
+
+  /** whether gpu buffers from gpu memory should be released when dirty */
+  bool m_ReleaseDirtyGPUBuffer;
 
   /** Mutex lock to prevent r/w hazard for multithreaded code */
   SimpleFastMutexLock m_Mutex;
