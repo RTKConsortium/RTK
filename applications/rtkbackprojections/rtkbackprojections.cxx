@@ -27,6 +27,7 @@
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
+#  include "rtkCudaRayCastBackProjectionImageFilter.h"
 #endif
 #include "rtkCyclicDeformationImageFilter.h"
 
@@ -127,7 +128,14 @@ int main(int argc, char * argv[])
       return EXIT_FAILURE;
 #endif
       break;
-
+    case(bp_arg_CudaRayCastBackProjection):
+#ifdef RTK_USE_CUDA
+      bp = rtk::CudaRayCastBackProjectionImageFilter::New();
+#else
+      std::cerr << "The program has not been compiled with cuda option" << std::endl;
+      return EXIT_FAILURE;
+#endif
+      break;
     default:
     std::cerr << "Unhandled --method value." << std::endl;
     return EXIT_FAILURE;
