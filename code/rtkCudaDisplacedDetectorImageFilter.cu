@@ -77,7 +77,7 @@ void kernel_displaced_weight(
                         tIdx.y + proj_idx_out.y,
                         tIdx.z + proj_idx_out.z);
   // combined proj. index -> use thread index in z because accessing memory only with this index
-  long int pIdx_comp = pIdx.x + pIdx.y * proj_size_in_buf.x + tIdx.z * proj_size_in_buf.x * proj_size_in_buf.y;
+  long int pIdx_comp = (pIdx.x-proj_idx_in.x) + (pIdx.y-proj_idx_in.y) * proj_size_in_buf.x + (pIdx.z-proj_idx_in.z) * proj_size_in_buf.x * proj_size_in_buf.y;
 
   // check if outside overlapping region
   if (pIdx.x < proj_idx_in.x || pIdx.x >= (proj_idx_in.x + proj_size_in.x) ||
