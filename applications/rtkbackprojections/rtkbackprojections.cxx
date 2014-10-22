@@ -128,7 +128,7 @@ int main(int argc, char * argv[])
       return EXIT_FAILURE;
 #endif
       break;
-    case(bp_arg_CudaRayCastBackProjection):
+    case(bp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
       bp = rtk::CudaRayCastBackProjectionImageFilter::New();
 #else

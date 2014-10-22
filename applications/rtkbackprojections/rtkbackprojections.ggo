@@ -13,7 +13,7 @@ option "nsort"     - "Numeric sort for regular expression matches"              
 option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
 
 section "Projectors"
-option "bp"    - "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","NormalizedJoseph","CudaFDKBackProjection","CudaBackProjection","CudaRayCastBackProjection"  enum no default="VoxelBasedBackProjection"
+option "bp"    - "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","NormalizedJoseph","CudaFDKBackProjection","CudaBackProjection","CudaRayCast"  enum no default="VoxelBasedBackProjection"
 
 section "Warped backprojection"
 option "signal"    - "Signal file name"          string    no
