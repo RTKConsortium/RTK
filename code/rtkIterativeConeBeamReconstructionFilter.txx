@@ -82,7 +82,13 @@ namespace rtk
       case(3):
         bp = rtk::NormalizedJosephBackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
         break;
-
+      case(4):
+      #ifdef RTK_USE_CUDA
+        bp = rtk::CudaRayCastBackProjectionImageFilter::New();
+      #else
+        std::cerr << "The program has not been compiled with cuda option" << std::endl;
+      #endif
+        break;
       default:
         std::cerr << "Unhandled --back value." << std::endl;
       }
