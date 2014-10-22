@@ -1,5 +1,5 @@
 #PBS -N rtk_dashboard
-#PBS -l walltime=05:59:00,nodes=1:ppn=8,vmem=10gb
+#PBS -l walltime=05:59:00,nodes=1:ppn=8,mem=10gb
 #PBS -o /home/srit/tmp/rtk_dashboard.out
 #PBS -e /home/srit/tmp/rtk_dashboard.err
 #PBS -q gpu
