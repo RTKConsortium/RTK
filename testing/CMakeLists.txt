@@ -276,6 +276,8 @@ ADD_EXECUTABLE(rtkwaveletstest rtkwaveletstest.cxx)
 TARGET_LINK_LIBRARIES(rtkwaveletstest RTK)
 ADD_TEST(rtkwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkwaveletstest)
 
+ADD_CUDA_TEST(rtkcudaraycastadjointoperatorstest rtkcudaraycastadjointoperatorstest.cxx)
+
 # Test headers
 ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
 IF(RTK_USE_CUDA)
