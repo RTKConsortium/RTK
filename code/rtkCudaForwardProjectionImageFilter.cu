@@ -21,6 +21,7 @@
 *****************/
 #include "rtkConfiguration.h"
 #include "rtkCudaUtilities.hcu"
+#include "rtkCudaIntersectBox.hcu"
 #include "rtkCudaForwardProjectionImageFilter.hcu"
 
 /*****************
@@ -36,51 +37,6 @@
 *****************/
 #include <cuda.h>
 
-inline __host__ __device__ float3 operator-(float3 a, float3 b)
-{
-    return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-inline __host__ __device__ float3 fminf(float3 a, float3 b)
-{
-  return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
-}
-inline __host__ __device__ float3 fmaxf(float3 a, float3 b)
-{
-  return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
-}
-inline __host__ __device__ float dot(float3 a, float3 b)
-{ 
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-inline __host__ __device__ float3 operator/(float3 a, float3 b)
-{
-    return make_float3(a.x / b.x, a.y / b.y, a.z / b.z);
-}
-inline __host__ __device__ float3 operator/(float3 a, float b)
-{
-    return make_float3(a.x / b, a.y / b, a.z / b);
-}
-inline __host__ __device__ float3 operator*(float3 a, float3 b)
-{
-    return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
-}
-inline __host__ __device__ float3 operator*(float b, float3 a)
-{
-    return make_float3(b * a.x, b * a.y, b * a.z);
-}
-inline __host__ __device__ float3 operator+(float3 a, float3 b)
-{
-    return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-inline __host__ __device__ float3 operator+(float3 a, float b)
-{
-    return make_float3(a.x + b, a.y + b, a.z + b);
-}
-inline __host__ __device__ void operator+=(float3 &a, float3 b)
-{
-    a.x += b.x; a.y += b.y; a.z += b.z;
-}
-
 // TEXTURES AND CONSTANTS //
 
 texture<float, 3, cudaReadModeElementType> tex_vol;
@@ -94,11 +50,6 @@ __constant__ float3 c_spacing;
 __constant__ float c_tStep;
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
-struct Ray {
-        float3 o;  // origin
-        float3 d;  // direction
-};
-
 inline int iDivUp(int a, int b){
     return (a % b != 0) ? (a / b + 1) : (a / b);
 }
@@ -107,34 +58,6 @@ inline int iDivUp(int a, int b){
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_( S T A R T )_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-
-// Intersection function of a ray with a box, followed "slabs" method
-// http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
-__device__
-int intersectBox(Ray r, float *tnear, float *tfar)
-{
-    // Compute intersection of ray with all six bbox planes
-    float3 invR = make_float3(1.f / r.d.x, 1.f / r.d.y, 1.f / r.d.z);
-    float3 T1;
-    T1 = invR * (c_boxMin - r.o);
-    float3 T2;
-    T2 = invR * (c_boxMax - r.o);
-
-    // Re-order intersections to find smallest and largest on each axis
-    float3 tmin;
-    tmin = fminf(T2, T1);
-    float3 tmax;
-    tmax = fmaxf(T2, T1);
-
-    // Find the largest tmin and the smallest tmax
-    float largest_tmin = fmaxf(fmaxf(tmin.x, tmin.y), fmaxf(tmin.x, tmin.z));
-    float smallest_tmax = fminf(fminf(tmax.x, tmax.y), fminf(tmax.x, tmax.z));
-
-    *tnear = largest_tmin;
-    *tfar = smallest_tmax;
-
-    return smallest_tmax > largest_tmin;
-}
 
 // KERNEL kernel_forwardProject
 __global__
@@ -165,7 +88,7 @@ void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out)
 
   // Detect intersection with box
   float tnear, tfar;
-  if ( !intersectBox(ray, &tnear, &tfar) || tfar < 0.f )
+  if ( !intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f )
     {
     dev_proj_out[numThread] = dev_proj_in[numThread];
     }

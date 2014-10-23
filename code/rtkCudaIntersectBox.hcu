@@ -1,0 +1,61 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef __rtkCudaIntersectBox_hcu
+#define __rtkCudaIntersectBox_hcu
+
+#include "rtkWin32Header.h"
+#include "rtkCudaUtilities.hcu"
+
+struct Ray {
+        float3 o;  // origin
+        float3 d;  // direction
+};
+
+// Intersection function of a ray with a box, followed "slabs" method
+// http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
+// The function has to be explicitely inlined, otherwise "multiple definition" errors
+// will pop during linking. See http://choorucode.com/2011/03/15/cuda-device-function-in-header-file/
+// for more information
+__forceinline__ __device__
+int intersectBox(Ray r, float *tnear, float *tfar, float3 boxMin, float3 boxMax)
+{
+  // Compute intersection of ray with all six bbox planes
+  float3 invR = make_float3(1.f / r.d.x, 1.f / r.d.y, 1.f / r.d.z);
+  float3 T1;
+  T1 = invR * (boxMin - r.o);
+  float3 T2;
+  T2 = invR * (boxMax - r.o);
+
+  // Re-order intersections to find smallest and largest on each axis
+  float3 tmin;
+  tmin = fminf(T2, T1);
+  float3 tmax;
+  tmax = fmaxf(T2, T1);
+
+  // Find the largest tmin and the smallest tmax
+  float largest_tmin = fmaxf(fmaxf(tmin.x, tmin.y), fmaxf(tmin.x, tmin.z));
+  float smallest_tmax = fminf(fminf(tmax.x, tmax.y), fminf(tmax.x, tmax.z));
+
+  *tnear = largest_tmin;
+  *tfar = smallest_tmax;
+
+  return smallest_tmax > largest_tmin;
+}
+
+#endif
