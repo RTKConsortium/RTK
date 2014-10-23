@@ -29,6 +29,7 @@ CUDA_ray_cast_back_project(int projections_size[2],
     double source_position[3],
     float box_min[3],
     float box_max[3],
-    float spacing[3]);
+    float spacing[3],
+    bool normalize);
 
 #endif

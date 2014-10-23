@@ -30,7 +30,7 @@ namespace rtk
 
 CudaRayCastBackProjectionImageFilter
 ::CudaRayCastBackProjectionImageFilter():
-  m_StepSize(1)
+  m_StepSize(1),m_Normalize(true)
 {
 }
 
@@ -154,7 +154,8 @@ CudaRayCastBackProjectionImageFilter
                         (double*)&(source_position[0]),
                         boxMin,
                         boxMax,
-                        spacing);
+                        spacing,
+                        m_Normalize);
     }
 }
 

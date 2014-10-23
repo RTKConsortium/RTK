@@ -21,6 +21,7 @@
 *****************/
 #include "rtkConfiguration.h"
 #include "rtkCudaUtilities.hcu"
+#include "rtkCudaIntersectBox.hcu"
 #include "rtkCudaRayCastBackProjectionImageFilter.hcu"
 
 /*****************
@@ -35,51 +36,9 @@
 * CUDA #includes *
 *****************/
 #include <cuda.h>
+//#include <cuPrintf.cu>
+//#include <stdio.h>
 
-inline __host__ __device__ float3 operator-(float3 a, float3 b)
-{
-    return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-inline __host__ __device__ float3 fminf(float3 a, float3 b)
-{
-  return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
-}
-inline __host__ __device__ float3 fmaxf(float3 a, float3 b)
-{
-  return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
-}
-inline __host__ __device__ float dot(float3 a, float3 b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-inline __host__ __device__ float3 operator/(float3 a, float3 b)
-{
-    return make_float3(a.x / b.x, a.y / b.y, a.z / b.z);
-}
-inline __host__ __device__ float3 operator/(float3 a, float b)
-{
-    return make_float3(a.x / b, a.y / b, a.z / b);
-}
-inline __host__ __device__ float3 operator*(float3 a, float3 b)
-{
-    return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
-}
-inline __host__ __device__ float3 operator*(float b, float3 a)
-{
-    return make_float3(b * a.x, b * a.y, b * a.z);
-}
-inline __host__ __device__ float3 operator+(float3 a, float3 b)
-{
-    return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-inline __host__ __device__ float3 operator+(float3 a, float b)
-{
-    return make_float3(a.x + b, a.y + b, a.z + b);
-}
-inline __host__ __device__ void operator+=(float3 &a, float3 b)
-{
-    a.x += b.x; a.y += b.y; a.z += b.z;
-}
 
 // TEXTURES AND CONSTANTS //
 
@@ -94,11 +53,6 @@ __constant__ float c_tStep;
 __constant__ int3 c_volSize;
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
-struct Ray {
-        float3 o;  // origin
-        float3 d;  // direction
-};
-
 inline int iDivUp(int a, int b){
     return (a % b != 0) ? (a / b + 1) : (a / b);
 }
@@ -108,37 +62,113 @@ inline int iDivUp(int a, int b){
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_( S T A R T )_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-// Intersection function of a ray with a box, followed "slabs" method
-// http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
 __device__
-int intersectBox2(Ray r, float *tnear, float *tfar)
+void splat3D_getWeightsAndIndices(float3 pos, int3 floor_pos, int3 volSize, float *weights, long int *indices)
 {
-    // Compute intersection of ray with all six bbox planes
-    float3 invR = make_float3(1.f / r.d.x, 1.f / r.d.y, 1.f / r.d.z);
-    float3 T1;
-    T1 = invR * (c_boxMin - r.o);
-    float3 T2;
-    T2 = invR * (c_boxMax - r.o);
+  // Compute the weights
+  float3 Distance;
+  Distance.x = pos.x - floor_pos.x;
+  Distance.y = pos.y - floor_pos.y;
+  Distance.z = pos.z - floor_pos.z;
 
-    // Re-order intersections to find smallest and largest on each axis
-    float3 tmin;
-    tmin = fminf(T2, T1);
-    float3 tmax;
-    tmax = fmaxf(T2, T1);
+  weights[0] = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z); //weight000
+  weights[1] = (1 - Distance.x) * (1 - Distance.y) * Distance.z;       //weight001
+  weights[2] = (1 - Distance.x) * Distance.y       * (1 - Distance.z); //weight010
+  weights[3] = (1 - Distance.x) * Distance.y       * Distance.z;       //weight011
+  weights[4] = Distance.x       * (1 - Distance.y) * (1 - Distance.z); //weight100
+  weights[5] = Distance.x       * (1 - Distance.y) * Distance.z;       //weight101
+  weights[6] = Distance.x       * Distance.y       * (1 - Distance.z); //weight110
+  weights[7] = Distance.x       * Distance.y       * Distance.z;       //weight111
 
-    // Find the largest tmin and the smallest tmax
-    float largest_tmin = fmaxf(fmaxf(tmin.x, tmin.y), fmaxf(tmin.x, tmin.z));
-    float smallest_tmax = fminf(fminf(tmax.x, tmax.y), fminf(tmax.x, tmax.z));
-
-    *tnear = largest_tmin;
-    *tfar = smallest_tmax;
-
-    return smallest_tmax > largest_tmin;
+  // Compute indices in the volume
+  indices[0] = (floor_pos.x + 0) + (floor_pos.y + 0) * volSize.x + (floor_pos.z + 0) * volSize.x * volSize.y; //index000
+  indices[1] = (floor_pos.x + 0) + (floor_pos.y + 0) * volSize.x + (floor_pos.z + 1) * volSize.x * volSize.y; //index001
+  indices[2] = (floor_pos.x + 0) + (floor_pos.y + 1) * volSize.x + (floor_pos.z + 0) * volSize.x * volSize.y; //index010
+  indices[3] = (floor_pos.x + 0) + (floor_pos.y + 1) * volSize.x + (floor_pos.z + 1) * volSize.x * volSize.y; //index011
+  indices[4] = (floor_pos.x + 1) + (floor_pos.y + 0) * volSize.x + (floor_pos.z + 0) * volSize.x * volSize.y; //index100
+  indices[5] = (floor_pos.x + 1) + (floor_pos.y + 0) * volSize.x + (floor_pos.z + 1) * volSize.x * volSize.y; //index101
+  indices[6] = (floor_pos.x + 1) + (floor_pos.y + 1) * volSize.x + (floor_pos.z + 0) * volSize.x * volSize.y; //index110
+  indices[7] = (floor_pos.x + 1) + (floor_pos.y + 1) * volSize.x + (floor_pos.z + 1) * volSize.x * volSize.y; //index111
 }
+
+__device__
+void splat3D_safe(float toSplat,
+                  int3 floor_pos,
+                  int3 volSize,
+                  float *dev_accumulate_values,
+                  float *dev_accumulate_weights,
+                  float *weights,
+                  long int *indices)
+{
+  bool isIndexInVolume[8];
+
+  // Determine whether they are indeed in the volume
+  isIndexInVolume[0] = (floor_pos.x + 0 >= 0) && (floor_pos.x + 0 < volSize.x)
+                    && (floor_pos.y + 0 >= 0) && (floor_pos.y + 0 < volSize.y)
+                    && (floor_pos.z + 0 >= 0) && (floor_pos.z + 0 < volSize.z);
+
+  isIndexInVolume[1] = (floor_pos.x + 0 >= 0) && (floor_pos.x + 0 < volSize.x)
+                    && (floor_pos.y + 0 >= 0) && (floor_pos.y + 0 < volSize.y)
+                    && (floor_pos.z + 1 >= 0) && (floor_pos.z + 1 < volSize.z);
+
+  isIndexInVolume[2] = (floor_pos.x + 0 >= 0) && (floor_pos.x + 0 < volSize.x)
+                    && (floor_pos.y + 1 >= 0) && (floor_pos.y + 1 < volSize.y)
+                    && (floor_pos.z + 0 >= 0) && (floor_pos.z + 0 < volSize.z);
+
+  isIndexInVolume[3] = (floor_pos.x + 0 >= 0) && (floor_pos.x + 0 < volSize.x)
+                    && (floor_pos.y + 1 >= 0) && (floor_pos.y + 1 < volSize.y)
+                    && (floor_pos.z + 1 >= 0) && (floor_pos.z + 1 < volSize.z);
+
+  isIndexInVolume[4] = (floor_pos.x + 1 >= 0) && (floor_pos.x + 1 < volSize.x)
+                    && (floor_pos.y + 0 >= 0) && (floor_pos.y + 0 < volSize.y)
+                    && (floor_pos.z + 0 >= 0) && (floor_pos.z + 0 < volSize.z);
+
+  isIndexInVolume[5] = (floor_pos.x + 1 >= 0) && (floor_pos.x + 1 < volSize.x)
+                    && (floor_pos.y + 0 >= 0) && (floor_pos.y + 0 < volSize.y)
+                    && (floor_pos.z + 1 >= 0) && (floor_pos.z + 1 < volSize.z);
+
+  isIndexInVolume[6] = (floor_pos.x + 1 >= 0) && (floor_pos.x + 1 < volSize.x)
+                    && (floor_pos.y + 1 >= 0) && (floor_pos.y + 1 < volSize.y)
+                    && (floor_pos.z + 0 >= 0) && (floor_pos.z + 0 < volSize.z);
+
+  isIndexInVolume[7] = (floor_pos.x + 1 >= 0) && (floor_pos.x + 1 < volSize.x)
+                    && (floor_pos.y + 1 >= 0) && (floor_pos.y + 1 < volSize.y)
+                    && (floor_pos.z + 1 >= 0) && (floor_pos.z + 1 < volSize.z);
+
+  // Perform splat
+  for (unsigned int i=0; i<8; i++)
+    {
+    if (isIndexInVolume[i])
+      {
+      atomicAdd(&dev_accumulate_values[indices[i]], toSplat * weights[i]);
+      atomicAdd(&dev_accumulate_weights[indices[i]], weights[i]);
+      }
+//    else
+//      {
+//      cuPrintf("Not splatting in voxel with base index %d %d %d and offset %d\n", floor_pos.x, floor_pos.y, floor_pos.z, i);
+//      }
+    }
+}
+
+__device__
+void splat3D_unsafe(float toSplat,
+                    float *dev_accumulate_values,
+                    float *dev_accumulate_weights,
+                    float *weights,
+                    long int *indices)
+{
+  // Perform splat
+  for (unsigned int i=0; i<8; i++)
+    {
+    atomicAdd(&dev_accumulate_values[indices[i]], toSplat * weights[i]);
+    atomicAdd(&dev_accumulate_weights[indices[i]], weights[i]);
+    }
+}
+
 
 // KERNEL normalize
 __global__
-void kernel_normalize_and_add_to_output(float * dev_vol_out, float * dev_accumulate_weights, float * dev_accumulate_values)
+void kernel_normalize_and_add_to_output(float * dev_vol_out, float * dev_accumulate_weights, float * dev_accumulate_values, bool normalize)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -156,8 +186,13 @@ void kernel_normalize_and_add_to_output(float * dev_vol_out, float * dev_accumul
 
   // Divide the output volume's voxels by the accumulated splat weights
   // unless the accumulated splat weights are equal to zero
-  if (abs(dev_accumulate_weights[out_idx]) > eps)
-    dev_vol_out[out_idx] += (dev_accumulate_values[out_idx] / dev_accumulate_weights[out_idx]);
+  if (normalize)
+    {
+    if (abs(dev_accumulate_weights[out_idx]) > eps)
+      dev_vol_out[out_idx] += (dev_accumulate_values[out_idx] / dev_accumulate_weights[out_idx]);
+    }
+  else
+    dev_vol_out[out_idx] += dev_accumulate_values[out_idx];
 }
 
 // KERNEL kernel_ray_cast_back_project
@@ -189,7 +224,7 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
 
   // Detect intersection with box
   float tnear, tfar;
-  if ( intersectBox2(ray, &tnear, &tfar) && !(tfar < 0.f) )
+  if ( intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f))
     {
     if (tnear < 0.f)
       tnear = 0.f; // clamp to near plane
@@ -207,190 +242,32 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
 
     float  t;
 
-    bool isInVolume_out_idx000;
-    bool isInVolume_out_idx001;
-    bool isInVolume_out_idx010;
-    bool isInVolume_out_idx011;
-    bool isInVolume_out_idx100;
-    bool isInVolume_out_idx101;
-    bool isInVolume_out_idx110;
-    bool isInVolume_out_idx111;
+    float toSplat;
+    long int indices[8];
+    float weights[8];
+    int3 floor_pos;
 
-    long int out_idx000;
-    long int out_idx001;
-    long int out_idx010;
-    long int out_idx011;
-    long int out_idx100;
-    long int out_idx101;
-    long int out_idx110;
-    long int out_idx111;
-
-    float weight000;
-    float weight001;
-    float weight010;
-    float weight011;
-    float weight100;
-    float weight101;
-    float weight110;
-    float weight111;
-
-    for(t=tnear; t<=tfar; t+=vStep)
+    for(t=tnear; t<tfar; t+=vStep)
       {
-      // Compute the splat weights
-      int3 BaseIndexInOutput;
-      BaseIndexInOutput.x = floor(pos.x);
-      BaseIndexInOutput.y = floor(pos.y);
-      BaseIndexInOutput.z = floor(pos.z);
+      floor_pos.x = floor(pos.x);
+      floor_pos.y = floor(pos.y);
+      floor_pos.z = floor(pos.z);
 
-      float3 Distance;
-      Distance.x = pos.x - BaseIndexInOutput.x;
-      Distance.y = pos.y - BaseIndexInOutput.y;
-      Distance.z = pos.z - BaseIndexInOutput.z;
+      splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
 
-      weight000 = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z);
-      weight001 = (1 - Distance.x) * (1 - Distance.y) * Distance.z;
-      weight010 = (1 - Distance.x) * Distance.y       * (1 - Distance.z);
-      weight011 = (1 - Distance.x) * Distance.y       * Distance.z;
-      weight100 = Distance.x       * (1 - Distance.y) * (1 - Distance.z);
-      weight101 = Distance.x       * (1 - Distance.y) * Distance.z;
-      weight110 = Distance.x       * Distance.y       * (1 - Distance.z);
-      weight111 = Distance.x       * Distance.y       * Distance.z;
+      // Compute the value to be splatted
+      toSplat = dev_proj[numThread] * c_tStep;
 
-      // Compute indices in the volume
-      out_idx000 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 0) * c_volSize.x + (BaseIndexInOutput.z + 0) * c_volSize.x * c_volSize.y;
-      out_idx001 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 0) * c_volSize.x + (BaseIndexInOutput.z + 1) * c_volSize.x * c_volSize.y;
-      out_idx010 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 1) * c_volSize.x + (BaseIndexInOutput.z + 0) * c_volSize.x * c_volSize.y;
-      out_idx011 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 1) * c_volSize.x + (BaseIndexInOutput.z + 1) * c_volSize.x * c_volSize.y;
-      out_idx100 = (BaseIndexInOutput.x + 1) + (BaseIndexInOutput.y + 0) * c_volSize.x + (BaseIndexInOutput.z + 0) * c_volSize.x * c_volSize.y;
-      out_idx101 = (BaseIndexInOutput.x + 1) + (BaseIndexInOutput.y + 0) * c_volSize.x + (BaseIndexInOutput.z + 1) * c_volSize.x * c_volSize.y;
-      out_idx110 = (BaseIndexInOutput.x + 1) + (BaseIndexInOutput.y + 1) * c_volSize.x + (BaseIndexInOutput.z + 0) * c_volSize.x * c_volSize.y;
-      out_idx111 = (BaseIndexInOutput.x + 1) + (BaseIndexInOutput.y + 1) * c_volSize.x + (BaseIndexInOutput.z + 1) * c_volSize.x * c_volSize.y;
-
-      // Determine whether they are indeed in the volume
-      isInVolume_out_idx000 = (BaseIndexInOutput.x + 0 >= 0) && (BaseIndexInOutput.x + 0 < c_volSize.x)
-                                && (BaseIndexInOutput.y + 0 >= 0) && (BaseIndexInOutput.y + 0 < c_volSize.y)
-                                && (BaseIndexInOutput.z + 0 >= 0) && (BaseIndexInOutput.z + 0 < c_volSize.z);
-
-      isInVolume_out_idx001 = (BaseIndexInOutput.x + 0 >= 0) && (BaseIndexInOutput.x + 0 < c_volSize.x)
-                                && (BaseIndexInOutput.y + 0 >= 0) && (BaseIndexInOutput.y + 0 < c_volSize.y)
-                                && (BaseIndexInOutput.z + 1 >= 0) && (BaseIndexInOutput.z + 1 < c_volSize.z);
-
-      isInVolume_out_idx010 = (BaseIndexInOutput.x + 0 >= 0) && (BaseIndexInOutput.x + 0 < c_volSize.x)
-                                && (BaseIndexInOutput.y + 1 >= 0) && (BaseIndexInOutput.y + 1 < c_volSize.y)
-                                && (BaseIndexInOutput.z + 0 >= 0) && (BaseIndexInOutput.z + 0 < c_volSize.z);
-
-      isInVolume_out_idx011 = (BaseIndexInOutput.x + 0 >= 0) && (BaseIndexInOutput.x + 0 < c_volSize.x)
-                                && (BaseIndexInOutput.y + 1 >= 0) && (BaseIndexInOutput.y + 1 < c_volSize.y)
-                                && (BaseIndexInOutput.z + 1 >= 0) && (BaseIndexInOutput.z + 1 < c_volSize.z);
-
-      isInVolume_out_idx100 = (BaseIndexInOutput.x + 1 >= 0) && (BaseIndexInOutput.x + 1 < c_volSize.x)
-                                && (BaseIndexInOutput.y + 0 >= 0) && (BaseIndexInOutput.y + 0 < c_volSize.y)
-                                && (BaseIndexInOutput.z + 0 >= 0) && (BaseIndexInOutput.z + 0 < c_volSize.z);
-
-      isInVolume_out_idx101 = (BaseIndexInOutput.x + 1 >= 0) && (BaseIndexInOutput.x + 1 < c_volSize.x)
-                                && (BaseIndexInOutput.y + 0 >= 0) && (BaseIndexInOutput.y + 0 < c_volSize.y)
-                                && (BaseIndexInOutput.z + 1 >= 0) && (BaseIndexInOutput.z + 1 < c_volSize.z);
-
-      isInVolume_out_idx110 = (BaseIndexInOutput.x + 1 >= 0) && (BaseIndexInOutput.x + 1 < c_volSize.x)
-                                && (BaseIndexInOutput.y + 1 >= 0) && (BaseIndexInOutput.y + 1 < c_volSize.y)
-                                && (BaseIndexInOutput.z + 0 >= 0) && (BaseIndexInOutput.z + 0 < c_volSize.z);
-
-      isInVolume_out_idx111 = (BaseIndexInOutput.x + 1 >= 0) && (BaseIndexInOutput.x + 1 < c_volSize.x)
-                                && (BaseIndexInOutput.y + 1 >= 0) && (BaseIndexInOutput.y + 1 < c_volSize.y)
-                                && (BaseIndexInOutput.z + 1 >= 0) && (BaseIndexInOutput.z + 1 < c_volSize.z);
-
-      // Perform splat if voxel is indeed in output volume
-      float toBeWeighed = dev_proj[numThread] * c_tStep;
-
-      if (isInVolume_out_idx000)
-        {
-          atomicAdd(&dev_accumulate_values[out_idx000], toBeWeighed * weight000);
-          atomicAdd(&dev_accumulate_weights[out_idx000], weight000);
-        }
-      if (isInVolume_out_idx001)
-        {
-          atomicAdd(&dev_accumulate_values[out_idx001], toBeWeighed * weight001);
-          atomicAdd(&dev_accumulate_weights[out_idx001], weight001);
-        }
-      if (isInVolume_out_idx010)
-        {
-          atomicAdd(&dev_accumulate_values[out_idx010], toBeWeighed * weight010);
-          atomicAdd(&dev_accumulate_weights[out_idx010], weight010);
-        }
-      if (isInVolume_out_idx011)
-        {
-          atomicAdd(&dev_accumulate_values[out_idx011], toBeWeighed * weight011);
-          atomicAdd(&dev_accumulate_weights[out_idx011], weight011);
-        }
-      if (isInVolume_out_idx100)
-        {
-          atomicAdd(&dev_accumulate_values[out_idx100], toBeWeighed * weight100);
-          atomicAdd(&dev_accumulate_weights[out_idx100], weight100);
-        }
-      if (isInVolume_out_idx101)
-        {
-          atomicAdd(&dev_accumulate_values[out_idx101], toBeWeighed * weight101);
-          atomicAdd(&dev_accumulate_weights[out_idx101], weight101);
-        }
-      if (isInVolume_out_idx110)
-        {
-          atomicAdd(&dev_accumulate_values[out_idx110], toBeWeighed * weight110);
-          atomicAdd(&dev_accumulate_weights[out_idx110], weight110);
-        }
-      if (isInVolume_out_idx111)
-        {
-          atomicAdd(&dev_accumulate_values[out_idx111], toBeWeighed * weight111);
-          atomicAdd(&dev_accumulate_weights[out_idx111], weight111);
-        }
+      splat3D_safe(toSplat, floor_pos, c_volSize, dev_accumulate_values, dev_accumulate_weights, weights, indices);
+//      splat3D_unsafe(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
 
       // Move to next position
       pos += step;
       }
 
     // Last position
-    float toBeWeighed = dev_proj[numThread] * (tfar-t+halfVStep)/vStep * c_tStep;
-
-    if (isInVolume_out_idx000)
-      {
-        atomicAdd(&dev_accumulate_values[out_idx000], toBeWeighed * weight000);
-        atomicAdd(&dev_accumulate_weights[out_idx000], weight000);
-      }
-    if (isInVolume_out_idx001)
-      {
-        atomicAdd(&dev_accumulate_values[out_idx001], toBeWeighed * weight001);
-        atomicAdd(&dev_accumulate_weights[out_idx001], weight001);
-      }
-    if (isInVolume_out_idx010)
-      {
-        atomicAdd(&dev_accumulate_values[out_idx010], toBeWeighed * weight010);
-        atomicAdd(&dev_accumulate_weights[out_idx010], weight010);
-      }
-    if (isInVolume_out_idx011)
-      {
-        atomicAdd(&dev_accumulate_values[out_idx011], toBeWeighed * weight011);
-        atomicAdd(&dev_accumulate_weights[out_idx011], weight011);
-      }
-    if (isInVolume_out_idx100)
-      {
-        atomicAdd(&dev_accumulate_values[out_idx100], toBeWeighed * weight100);
-        atomicAdd(&dev_accumulate_weights[out_idx100], weight100);
-      }
-    if (isInVolume_out_idx101)
-      {
-        atomicAdd(&dev_accumulate_values[out_idx101], toBeWeighed * weight101);
-        atomicAdd(&dev_accumulate_weights[out_idx101], weight101);
-      }
-    if (isInVolume_out_idx110)
-      {
-        atomicAdd(&dev_accumulate_values[out_idx110], toBeWeighed * weight110);
-        atomicAdd(&dev_accumulate_weights[out_idx110], weight110);
-      }
-    if (isInVolume_out_idx111)
-      {
-        atomicAdd(&dev_accumulate_values[out_idx111], toBeWeighed * weight111);
-        atomicAdd(&dev_accumulate_weights[out_idx111], weight111);
-      }
-
+    toSplat = dev_proj[numThread] * c_tStep * (tfar - t + halfVStep) / vStep;
+    splat3D_safe(toSplat, floor_pos, c_volSize, dev_accumulate_values, dev_accumulate_weights, weights, indices);
     }
 }
 
@@ -411,7 +288,8 @@ CUDA_ray_cast_back_project( int projections_size[2],
                       double source_position[3],
                       float box_min[3],
                       float box_max[3],
-                      float spacing[3])
+                      float spacing[3],
+                      bool normalize)
 {
   // Copy matrix and bind data to the texture
   float *dev_matrix;
@@ -453,12 +331,17 @@ CUDA_ray_cast_back_project( int projections_size[2],
   dim3 dimBlock  = dim3(16, 16, 1);
   dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.y));
 
+//  cudaPrintfInit();
   kernel_ray_cast_back_project <<< dimGrid, dimBlock >>> (dev_accumulate_values, dev_proj, dev_accumulate_weights);
+//  cudaPrintfDisplay (stdout, true);
+//  cudaPrintfEnd ();
+
+  cudaDeviceSynchronize();
 
   dim3 dimBlockVol = dim3(16, 4, 4);
   dim3 dimGridVol = dim3(iDivUp(vol_size[0], dimBlockVol.x), iDivUp(vol_size[1], dimBlockVol.y), iDivUp(vol_size[2], dimBlockVol.z));
 
-  kernel_normalize_and_add_to_output <<< dimGridVol, dimBlockVol >>> ( dev_vol_out, dev_accumulate_weights, dev_accumulate_values);
+  kernel_normalize_and_add_to_output <<< dimGridVol, dimBlockVol >>> ( dev_vol_out, dev_accumulate_weights, dev_accumulate_values, normalize);
 
   CUDA_CHECK_ERROR;
 
