@@ -5,6 +5,10 @@
 #include "rtkSheppLoganPhantomFilter.h"
 
 #include <itkStreamingImageFilter.h>
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  #include <itkImageRegionSplitterDirection.h>
+#endif
+
 
 /**
  * \file rtkshortscancompcudatest.cxx
@@ -48,10 +52,10 @@ int main(int, char** )
   // Geometry
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
-  geometry->AddProjection(600., 1200., 0, 84., 35, 23, 15, 21, 26);
-  geometry->AddProjection(500., 800., 45, 21., 12, 16, 546, 14, 41);
-  geometry->AddProjection(700., 1800., 90, 68., 68, 54, 38, 35, 56);
-  geometry->AddProjection(900., 900., 130, 48., 35, 84, 10, 84, 59);
+  geometry->AddProjection(600., 700., 0.  , 84., 35, 23, 15, 21, 26);
+  geometry->AddProjection(500., 800., 45. , 21., 12, 16, 546, 14, 41);
+  geometry->AddProjection(700., 900., 90. , 68., 68, 54, 38, 35, 56);
+  geometry->AddProjection(900., 1000., 135., 48., 35, 84, 10, 84, 59);
 
   // Projections
   typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
@@ -98,7 +102,14 @@ int main(int, char** )
     typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamingType;
     StreamingType::Pointer streamingCUDA = StreamingType::New();
     streamingCUDA->SetInput( cudassf->GetOutput() );
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+    streamingCUDA->SetNumberOfStreamDivisions(4);
+    itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+    splitter->SetDirection(2);
+    streamingCUDA->SetRegionSplitter(splitter);
+#else
     streamingCUDA->SetNumberOfStreamDivisions(2);
+#endif
     TRY_AND_EXIT_ON_ITK_EXCEPTION( streamingCUDA->Update() );
 
     cpussf = CPUSSFType::New();
