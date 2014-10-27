@@ -7,7 +7,7 @@ set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
 set(dashboard_binary_name "RTK_lin64_gcc454_cuda40_itk4")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64_gcc_454")
 set(ENV{CUDA_BIN_PATH} "/home/srit/Download/cuda40/bin")
-set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia-304xx")
+set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia")
 set(CTEST_BUILD_FLAGS -j8)
 
 set(ENV{CC} "/home/srit/src/gcc/gcc454-install/bin/gcc")
