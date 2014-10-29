@@ -36,9 +36,6 @@
 * CUDA #includes *
 *****************/
 #include <cuda.h>
-//#include <cuPrintf.cu>
-//#include <stdio.h>
-
 
 // TEXTURES AND CONSTANTS //
 
@@ -80,82 +77,34 @@ void splat3D_getWeightsAndIndices(float3 pos, int3 floor_pos, int3 volSize, floa
   weights[6] = Distance.x       * Distance.y       * (1 - Distance.z); //weight110
   weights[7] = Distance.x       * Distance.y       * Distance.z;       //weight111
 
+  // Compute positions of sampling, taking into account the clamping
+  int3 pos_low;
+  pos_low.x = max(floor_pos.x, 0);
+  pos_low.y = max(floor_pos.y, 0);
+  pos_low.z = max(floor_pos.z, 0);
+
+  int3 pos_high;
+  pos_high.x = min(floor_pos.x + 1, volSize.x - 1);
+  pos_high.y = min(floor_pos.y + 1, volSize.y - 1);
+  pos_high.z = min(floor_pos.z + 1, volSize.z - 1);
+
   // Compute indices in the volume
-  indices[0] = (floor_pos.x + 0) + (floor_pos.y + 0) * volSize.x + (floor_pos.z + 0) * volSize.x * volSize.y; //index000
-  indices[1] = (floor_pos.x + 0) + (floor_pos.y + 0) * volSize.x + (floor_pos.z + 1) * volSize.x * volSize.y; //index001
-  indices[2] = (floor_pos.x + 0) + (floor_pos.y + 1) * volSize.x + (floor_pos.z + 0) * volSize.x * volSize.y; //index010
-  indices[3] = (floor_pos.x + 0) + (floor_pos.y + 1) * volSize.x + (floor_pos.z + 1) * volSize.x * volSize.y; //index011
-  indices[4] = (floor_pos.x + 1) + (floor_pos.y + 0) * volSize.x + (floor_pos.z + 0) * volSize.x * volSize.y; //index100
-  indices[5] = (floor_pos.x + 1) + (floor_pos.y + 0) * volSize.x + (floor_pos.z + 1) * volSize.x * volSize.y; //index101
-  indices[6] = (floor_pos.x + 1) + (floor_pos.y + 1) * volSize.x + (floor_pos.z + 0) * volSize.x * volSize.y; //index110
-  indices[7] = (floor_pos.x + 1) + (floor_pos.y + 1) * volSize.x + (floor_pos.z + 1) * volSize.x * volSize.y; //index111
+  indices[0] = pos_low.x  + pos_low.y  * volSize.x + pos_low.z  * volSize.x * volSize.y; //index000
+  indices[1] = pos_low.x  + pos_low.y  * volSize.x + pos_high.z * volSize.x * volSize.y; //index001
+  indices[2] = pos_low.x  + pos_high.y * volSize.x + pos_low.z  * volSize.x * volSize.y; //index010
+  indices[3] = pos_low.x  + pos_high.y * volSize.x + pos_high.z * volSize.x * volSize.y; //index011
+  indices[4] = pos_high.x + pos_low.y  * volSize.x + pos_low.z  * volSize.x * volSize.y; //index100
+  indices[5] = pos_high.x + pos_low.y  * volSize.x + pos_high.z * volSize.x * volSize.y; //index101
+  indices[6] = pos_high.x + pos_high.y * volSize.x + pos_low.z  * volSize.x * volSize.y; //index110
+  indices[7] = pos_high.x + pos_high.y * volSize.x + pos_high.z * volSize.x * volSize.y; //index111
 }
 
 __device__
-void splat3D_safe(float toSplat,
-                  int3 floor_pos,
-                  int3 volSize,
-                  float *dev_accumulate_values,
-                  float *dev_accumulate_weights,
-                  float *weights,
-                  long int *indices)
-{
-  bool isIndexInVolume[8];
-
-  // Determine whether they are indeed in the volume
-  isIndexInVolume[0] = (floor_pos.x + 0 >= 0) && (floor_pos.x + 0 < volSize.x)
-                    && (floor_pos.y + 0 >= 0) && (floor_pos.y + 0 < volSize.y)
-                    && (floor_pos.z + 0 >= 0) && (floor_pos.z + 0 < volSize.z);
-
-  isIndexInVolume[1] = (floor_pos.x + 0 >= 0) && (floor_pos.x + 0 < volSize.x)
-                    && (floor_pos.y + 0 >= 0) && (floor_pos.y + 0 < volSize.y)
-                    && (floor_pos.z + 1 >= 0) && (floor_pos.z + 1 < volSize.z);
-
-  isIndexInVolume[2] = (floor_pos.x + 0 >= 0) && (floor_pos.x + 0 < volSize.x)
-                    && (floor_pos.y + 1 >= 0) && (floor_pos.y + 1 < volSize.y)
-                    && (floor_pos.z + 0 >= 0) && (floor_pos.z + 0 < volSize.z);
-
-  isIndexInVolume[3] = (floor_pos.x + 0 >= 0) && (floor_pos.x + 0 < volSize.x)
-                    && (floor_pos.y + 1 >= 0) && (floor_pos.y + 1 < volSize.y)
-                    && (floor_pos.z + 1 >= 0) && (floor_pos.z + 1 < volSize.z);
-
-  isIndexInVolume[4] = (floor_pos.x + 1 >= 0) && (floor_pos.x + 1 < volSize.x)
-                    && (floor_pos.y + 0 >= 0) && (floor_pos.y + 0 < volSize.y)
-                    && (floor_pos.z + 0 >= 0) && (floor_pos.z + 0 < volSize.z);
-
-  isIndexInVolume[5] = (floor_pos.x + 1 >= 0) && (floor_pos.x + 1 < volSize.x)
-                    && (floor_pos.y + 0 >= 0) && (floor_pos.y + 0 < volSize.y)
-                    && (floor_pos.z + 1 >= 0) && (floor_pos.z + 1 < volSize.z);
-
-  isIndexInVolume[6] = (floor_pos.x + 1 >= 0) && (floor_pos.x + 1 < volSize.x)
-                    && (floor_pos.y + 1 >= 0) && (floor_pos.y + 1 < volSize.y)
-                    && (floor_pos.z + 0 >= 0) && (floor_pos.z + 0 < volSize.z);
-
-  isIndexInVolume[7] = (floor_pos.x + 1 >= 0) && (floor_pos.x + 1 < volSize.x)
-                    && (floor_pos.y + 1 >= 0) && (floor_pos.y + 1 < volSize.y)
-                    && (floor_pos.z + 1 >= 0) && (floor_pos.z + 1 < volSize.z);
-
-  // Perform splat
-  for (unsigned int i=0; i<8; i++)
-    {
-    if (isIndexInVolume[i])
-      {
-      atomicAdd(&dev_accumulate_values[indices[i]], toSplat * weights[i]);
-      atomicAdd(&dev_accumulate_weights[indices[i]], weights[i]);
-      }
-//    else
-//      {
-//      cuPrintf("Not splatting in voxel with base index %d %d %d and offset %d\n", floor_pos.x, floor_pos.y, floor_pos.z, i);
-//      }
-    }
-}
-
-__device__
-void splat3D_unsafe(float toSplat,
-                    float *dev_accumulate_values,
-                    float *dev_accumulate_weights,
-                    float *weights,
-                    long int *indices)
+void splat3D(float toSplat,
+             float *dev_accumulate_values,
+             float *dev_accumulate_weights,
+             float *weights,
+             long int *indices)
 {
   // Perform splat
   for (unsigned int i=0; i<8; i++)
@@ -224,7 +173,7 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
 
   // Detect intersection with box
   float tnear, tfar;
-  if ( intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f))
+  if ( intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f) )
     {
     if (tnear < 0.f)
       tnear = 0.f; // clamp to near plane
@@ -247,27 +196,29 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
     float weights[8];
     int3 floor_pos;
 
-    for(t=tnear; t<tfar; t+=vStep)
+    if (tfar - tnear > halfVStep)
       {
-      floor_pos.x = floor(pos.x);
-      floor_pos.y = floor(pos.y);
-      floor_pos.z = floor(pos.z);
+      for(t=tnear; t<=tfar; t+=vStep)
+        {
+        floor_pos.x = floor(pos.x);
+        floor_pos.y = floor(pos.y);
+        floor_pos.z = floor(pos.z);
 
-      splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
+        // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
+        splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
 
-      // Compute the value to be splatted
-      toSplat = dev_proj[numThread] * c_tStep;
+        // Compute the value to be splatted
+        toSplat = dev_proj[numThread] * c_tStep;
+        splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
 
-      splat3D_safe(toSplat, floor_pos, c_volSize, dev_accumulate_values, dev_accumulate_weights, weights, indices);
-//      splat3D_unsafe(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
+        // Move to next position
+        pos += step;
+        }
 
-      // Move to next position
-      pos += step;
+      // Last position
+      toSplat = dev_proj[numThread] * c_tStep * (tfar - t + halfVStep) / vStep;
+      splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
       }
-
-    // Last position
-    toSplat = dev_proj[numThread] * c_tStep * (tfar - t + halfVStep) / vStep;
-    splat3D_safe(toSplat, floor_pos, c_volSize, dev_accumulate_values, dev_accumulate_weights, weights, indices);
     }
 }
 
@@ -331,12 +282,10 @@ CUDA_ray_cast_back_project( int projections_size[2],
   dim3 dimBlock  = dim3(16, 16, 1);
   dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.y));
 
-//  cudaPrintfInit();
   kernel_ray_cast_back_project <<< dimGrid, dimBlock >>> (dev_accumulate_values, dev_proj, dev_accumulate_weights);
-//  cudaPrintfDisplay (stdout, true);
-//  cudaPrintfEnd ();
 
   cudaDeviceSynchronize();
+  CUDA_CHECK_ERROR;
 
   dim3 dimBlockVol = dim3(16, 4, 4);
   dim3 dimGridVol = dim3(iDivUp(vol_size[0], dimBlockVol.x), iDivUp(vol_size[1], dimBlockVol.y), iDivUp(vol_size[2], dimBlockVol.z));
