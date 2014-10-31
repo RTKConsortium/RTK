@@ -1,0 +1,10 @@
+package "rtk"
+version "Denoises a volume using Daubechies wavelets soft thresholding"
+
+option "verbose"   v "Verbose execution"                                         flag     off
+option "config"    - "Config file"                                               string   no
+option "input"     i "Input file name"                              string   yes
+option "output"    o "Input file name"                              string   yes
+option "order"     - "Order of the Daubechies wavelets"                          int   yes
+option "level"     l "Number of deconstruction levels"                           int   yes
+option "threshold" t "Threshold used in soft thresholding of the wavelets coefficients" float yes

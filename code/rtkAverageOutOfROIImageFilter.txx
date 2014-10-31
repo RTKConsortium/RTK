@@ -95,6 +95,9 @@ AverageOutOfROIImageFilter< TInputImage, TROI >
       ++ROIIterator;
       }
     }
+
+  // Release the data in internal filters
+  accumulateFilter->GetOutput()->ReleaseData();
 }
 
 } // end namespace itk

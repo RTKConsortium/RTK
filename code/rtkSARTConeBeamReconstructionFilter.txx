@@ -32,7 +32,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
   this->SetNumberOfRequiredInputs(2);
 
+  // Set default parameters
   m_EnforcePositivity = false;
+  m_IsGated = false;
   m_NumberOfIterations = 3;
   m_Lambda = 0.3;
 
@@ -42,6 +44,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_SubtractFilter = SubtractFilterType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
+  m_GatingWeightsFilter = GatingWeightsFilterType::New();
 
   // Create the filters required for correct weighting of the difference
   // projection
@@ -71,6 +74,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   // Default parameters
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
   m_ExtractFilterRayBox->SetDirectionCollapseToSubmatrix();
+  m_IsGated = false;
 }
 
 template<class TInputImage, class TOutputImage>
@@ -100,6 +104,15 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 template<class TInputImage, class TOutputImage>
 void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+::SetGatingWeights(std::vector<float> weights)
+{
+  m_GatingWeights = weights;
+  m_IsGated = true;
+}
+
+template<class TInputImage, class TOutputImage>
+void
+SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr =
@@ -108,8 +121,16 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   if ( !inputPtr )
     return;
 
-  m_ThresholdFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
-  m_ThresholdFilter->GetOutput()->PropagateRequestedRegion();
+  if(m_EnforcePositivity)
+    {
+    m_ThresholdFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
+    m_ThresholdFilter->GetOutput()->PropagateRequestedRegion();
+    }
+  else
+    {
+    m_BackProjectionFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
+    m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
+    }
 }
 
 template<class TInputImage, class TOutputImage>
@@ -130,7 +151,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput() );
   m_BackProjectionFilter->SetTranspose(false);
-  m_ThresholdFilter->SetInput(m_BackProjectionFilter->GetOutput() );
 
   m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
   m_ForwardProjectionFilter->SetInput( 1, this->GetInput(0) );
@@ -146,6 +166,13 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+
+  if (m_IsGated) // For gated SART, insert a gating filter into the pipeline
+    {
+    m_GatingWeightsFilter->SetInput1(m_DivideFilter->GetOutput());
+    m_GatingWeightsFilter->SetConstant2(1);
+    m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
+    }
 
   m_ConstantImageSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
   m_ConstantImageSource->SetConstant(0);
@@ -169,18 +196,25 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     {
     m_ThresholdFilter->SetOutsideValue(0);
     m_ThresholdFilter->ThresholdBelow(0);
+    m_ThresholdFilter->SetInput(m_BackProjectionFilter->GetOutput() );
+
+    // Update output information
+    m_ThresholdFilter->UpdateOutputInformation();
+    this->GetOutput()->SetOrigin( m_ThresholdFilter->GetOutput()->GetOrigin() );
+    this->GetOutput()->SetSpacing( m_ThresholdFilter->GetOutput()->GetSpacing() );
+    this->GetOutput()->SetDirection( m_ThresholdFilter->GetOutput()->GetDirection() );
+    this->GetOutput()->SetLargestPossibleRegion( m_ThresholdFilter->GetOutput()->GetLargestPossibleRegion() );
     }
   else
     {
-    m_ThresholdFilter->ThresholdBelow(itk::NumericTraits< typename ThresholdFilterType::PixelType >::NonpositiveMin());
+    // Update output information
+    m_BackProjectionFilter->UpdateOutputInformation();
+    this->GetOutput()->SetOrigin( m_BackProjectionFilter->GetOutput()->GetOrigin() );
+    this->GetOutput()->SetSpacing( m_BackProjectionFilter->GetOutput()->GetSpacing() );
+    this->GetOutput()->SetDirection( m_BackProjectionFilter->GetOutput()->GetDirection() );
+    this->GetOutput()->SetLargestPossibleRegion( m_BackProjectionFilter->GetOutput()->GetLargestPossibleRegion() );
     }
-  m_ThresholdFilter->UpdateOutputInformation();
 
-  // Update output information
-  this->GetOutput()->SetOrigin( m_ThresholdFilter->GetOutput()->GetOrigin() );
-  this->GetOutput()->SetSpacing( m_ThresholdFilter->GetOutput()->GetSpacing() );
-  this->GetOutput()->SetDirection( m_ThresholdFilter->GetOutput()->GetDirection() );
-  this->GetOutput()->SetLargestPossibleRegion( m_ThresholdFilter->GetOutput()->GetLargestPossibleRegion() );
 }
 
 template<class TInputImage, class TOutputImage>
@@ -209,6 +243,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   // Create the zero projection stack used as input by RayBoxIntersectionFilter
   m_ConstantImageSource->Update();
 
+  // Declare the image used in the main loop
+  typename TInputImage::Pointer pimg;
+
   // For each iteration, go over each projection
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
     {
@@ -217,7 +254,14 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       // After the first bp update, we need to use its output as input.
       if(iter+i)
         {
-        typename TInputImage::Pointer pimg = m_ThresholdFilter->GetOutput();
+        if (m_EnforcePositivity)
+          {
+          pimg = m_ThresholdFilter->GetOutput();
+          }
+        else
+          {
+          pimg = m_BackProjectionFilter->GetOutput();
+          }
         pimg->DisconnectPipeline();
         m_BackProjectionFilter->SetInput( pimg );
         m_ForwardProjectionFilter->SetInput(1, pimg );
@@ -227,6 +271,12 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       subsetRegion.SetIndex( Dimension-1, projOrder[i] );
       m_ExtractFilter->SetExtractionRegion(subsetRegion);
       m_ExtractFilterRayBox->SetExtractionRegion(subsetRegion);
+
+      // Set gating weight for the current projection
+      if (m_IsGated)
+        {
+        m_GatingWeightsFilter->SetConstant2(m_GatingWeights[i]);
+        }
 
       // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
@@ -261,6 +311,13 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_DivideFilter->Update();
       m_DivideProbe.Stop();
 
+      if (m_IsGated)
+        {
+        m_GatingProbe.Start();
+        m_GatingWeightsFilter->Update();
+        m_GatingProbe.Stop();
+        }
+
       m_DisplacedDetectorProbe.Start();
       m_DisplacedDetectorFilter->Update();
       m_DisplacedDetectorProbe.Stop();
@@ -269,12 +326,22 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_BackProjectionFilter->Update();
       m_BackProjectionProbe.Stop();
 
-      m_ThresholdProbe.Start();
-      m_ThresholdFilter->Update();
-      m_ThresholdProbe.Stop();
+      if (m_EnforcePositivity)
+        {
+        m_ThresholdProbe.Start();
+        m_ThresholdFilter->Update();
+        m_ThresholdProbe.Stop();
+        }
       }
     }
-  this->GraftOutput( m_ThresholdFilter->GetOutput() );
+  if (m_EnforcePositivity)
+    {
+    this->GraftOutput( m_ThresholdFilter->GetOutput() );
+    }
+  else
+    {
+    this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+    }
 }
 
 template<class TInputImage, class TOutputImage>
@@ -297,6 +364,8 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
      << ' ' << m_RayBoxProbe.GetUnit() << std::endl;
   os << "  Division: " << m_DivideProbe.GetTotal()
      << ' ' << m_DivideProbe.GetUnit() << std::endl;
+  os << "  Multiplication by the gating weights: " << m_GatingProbe.GetTotal()
+     << ' ' << m_GatingProbe.GetUnit() << std::endl;
   os << "  Displaced detector: " << m_DisplacedDetectorProbe.GetTotal()
      << ' ' << m_DisplacedDetectorProbe.GetUnit() << std::endl;
   os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
@@ -304,11 +373,6 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   if (m_EnforcePositivity)
     {  
     os << "  Positivity enforcement: " << m_ThresholdProbe.GetTotal()
-    << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
-    }
-  else
-    {
-    os << "  Positivity was not enforced, but passing through the filter still took: " << m_ThresholdProbe.GetTotal()
     << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
     }
 }

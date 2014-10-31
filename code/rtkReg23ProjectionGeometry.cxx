@@ -37,6 +37,12 @@ bool rtk::Reg23ProjectionGeometry::VerifyAngles(const double outOfPlaneAngleRAD,
   const double gantryAngleRAD, const double inPlaneAngleRAD,
   const Matrix3x3Type &referenceMatrix) const
 {
+  // Check if parameters are Nan. Fails if they are.
+  if(outOfPlaneAngleRAD != outOfPlaneAngleRAD ||
+     gantryAngleRAD != gantryAngleRAD ||
+     inPlaneAngleRAD != inPlaneAngleRAD)
+    return false;
+
   typedef itk::Euler3DTransform<double> EulerType;
 
   const Matrix3x3Type &rm = referenceMatrix; // shortcut
@@ -62,11 +68,12 @@ bool rtk::Reg23ProjectionGeometry::FixAngles(double &outOfPlaneAngleRAD,
   const Matrix3x3Type &rm = referenceMatrix; // shortcut
   const double EPSILON = 1e-6; // internal tolerance for comparison
 
-  if (fabs(fabs(rm[2][0]) - 1.) > EPSILON)
-  {
+  if (fabs(fabs(rm[2][1]) - 1.) > EPSILON)
+    {
     double oa, ga, ia;
 
     // @see Slabaugh, GG, "Computing Euler angles from a rotation matrix"
+    // but their convention is XYZ where we use the YXZ convention
 
     // first trial:
     oa = asin(rm[2][1]);
@@ -74,12 +81,12 @@ bool rtk::Reg23ProjectionGeometry::FixAngles(double &outOfPlaneAngleRAD,
     ga = atan2(-rm[2][0] / coa, rm[2][2] / coa);
     ia = atan2(-rm[0][1] / coa, rm[1][1] / coa);
     if (VerifyAngles(oa, ga, ia, rm))
-    {
+      {
       outOfPlaneAngleRAD = oa;
       gantryAngleRAD = ga;
       inPlaneAngleRAD = ia;
       return true;
-    }
+      }
 
     // second trial:
     oa = 3.1415926535897932384626433832795 /*PI*/ - asin(rm[2][1]);
@@ -87,15 +94,43 @@ bool rtk::Reg23ProjectionGeometry::FixAngles(double &outOfPlaneAngleRAD,
     ga = atan2(-rm[2][0] / coa, rm[2][2] / coa);
     ia = atan2(-rm[0][1] / coa, rm[1][1] / coa);
     if (VerifyAngles(oa, ga, ia, rm))
-    {
+      {
       outOfPlaneAngleRAD = oa;
       gantryAngleRAD = ga;
       inPlaneAngleRAD = ia;
       return true;
+      }
     }
-
-    return false;
-  }
+  else
+    {
+    // Gimbal lock, one angle in {ia,oa} has to be set randomly
+    double ia;
+    ia = 0.;
+    if (rm[2][1] < 0.)
+      {
+      double oa = -itk::Math::pi_over_2;
+      double ga = atan2(rm[0][2], rm[0][0]);
+      if (VerifyAngles(oa, ga, ia, rm))
+        {
+        outOfPlaneAngleRAD = oa;
+        gantryAngleRAD = ga;
+        inPlaneAngleRAD = ia;
+        return true;
+        }
+      }
+    else
+      {
+      double oa = itk::Math::pi_over_2;
+      double ga = atan2(rm[0][2], rm[0][0]);
+      if (VerifyAngles(oa, ga, ia, rm))
+        {
+        outOfPlaneAngleRAD = oa;
+        gantryAngleRAD = ga;
+        inPlaneAngleRAD = ia;
+        return true;
+        }
+      }
+    }
   return false;
 }
 

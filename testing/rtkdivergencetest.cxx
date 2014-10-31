@@ -30,10 +30,13 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef double                                    OutputPixelType;
 
+  typedef itk::CovariantVector<OutputPixelType, 2> CovVecType;
 #ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > ImageType;
+  typedef itk::CudaImage<CovVecType, Dimension> GradientImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > ImageType;
+  typedef itk::Image<CovVecType, Dimension> GradientImageType;
 #endif
 
   // Random image sources
@@ -89,7 +92,7 @@ int main(int, char** )
   computeGradientAlongDim[2] = true;
 
   // Compute the gradient of both volumes
-  typedef rtk::ForwardDifferenceGradientImageFilter<ImageType> GradientFilterType;
+  typedef rtk::ForwardDifferenceGradientImageFilter<ImageType, OutputPixelType, OutputPixelType, GradientImageType> GradientFilterType;
   GradientFilterType::Pointer grad1 = GradientFilterType::New();
   grad1->SetInput(randomVolumeSource1->GetOutput());
   grad1->SetDimensionsProcessed(computeGradientAlongDim);
@@ -100,7 +103,7 @@ int main(int, char** )
 
   // Now compute MINUS the divergence of grad2
   typedef rtk::BackwardDifferenceDivergenceImageFilter
-      <GradientFilterType::OutputImageType, ImageType> DivergenceFilterType;
+      <GradientImageType, ImageType> DivergenceFilterType;
   DivergenceFilterType::Pointer div = DivergenceFilterType::New();
   div->SetInput(grad2->GetOutput());
   div->SetDimensionsProcessed(computeGradientAlongDim);
@@ -113,7 +116,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( multiply->Update() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( grad1->Update() );
 
-  CheckScalarProducts<GradientFilterType::OutputImageType, ImageType>
+  CheckScalarProducts<GradientImageType, ImageType>
       (grad1->GetOutput(),
       grad2->GetOutput(),
       randomVolumeSource1->GetOutput(),

@@ -184,7 +184,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
     // Compute the local differences around the central pixel
     for (unsigned int k = 0; k < dimsToProcess.size(); k++)
       {
-      div += (iit.GetPixel(c)[dimsToProcess[k]] - iit.GetPixel(c - strides[dimsToProcess[k]])[dimsToProcess[k]]) / m_SpacingCoeffs[dimsToProcess[k]];
+      div += (iit.GetPixel(c)[k] - iit.GetPixel(c - strides[dimsToProcess[k]])[k]) / m_SpacingCoeffs[dimsToProcess[k]];
       }
     oit.Set(div);
     ++oit;
@@ -218,17 +218,17 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
     {
     // Create a slice region at the border of the largest possible region
     typename TOutputImage::RegionType slice = largest;
-      slice.SetSize(dimsToProcess[k], 1);
+    slice.SetSize(dimsToProcess[k], 1);
     slice.SetIndex(dimsToProcess[k], largest.GetSize()[dimsToProcess[k]] - 1);
 
-    // If it overlaps the output requested region, enforce boundary condition
+    // If it overlaps the output buffered region, enforce boundary condition
     // on the overlap
-    if ( slice.Crop( this->GetOutput()->GetRequestedRegion() ) )
+    if ( slice.Crop( this->GetOutput()->GetBufferedRegion() ) )
       {
       itk::ImageRegionIterator<TOutputImage> oit(this->GetOutput(), slice);
       itk::ImageRegionConstIterator<TInputImage> iit(this->GetInput(), slice);
 
-      oit.Set(oit.Get() - iit.Get()[dimsToProcess[k]] / m_SpacingCoeffs[dimsToProcess[k]]);
+      oit.Set(oit.Get() - iit.Get()[k] / m_SpacingCoeffs[dimsToProcess[k]]);
       ++oit;
       ++iit;
       }

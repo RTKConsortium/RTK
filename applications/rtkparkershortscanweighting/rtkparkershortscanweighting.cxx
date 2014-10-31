@@ -21,6 +21,9 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkParkerShortScanImageFilter.h"
+#ifdef RTK_USE_CUDA
+#  include "rtkCudaParkerShortScanImageFilter.h"
+#endif
 
 #include <itkImageFileWriter.h>
 
@@ -28,10 +31,23 @@ int main(int argc, char * argv[])
 {
   GGO(rtkparkershortscanweighting, args_info);
 
+  // Check on hardware parameter
+#ifndef RTK_USE_CUDA
+  if(!strcmp(args_info.hardware_arg, "cuda") )
+    {
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+    }
+#endif
+
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+#endif
 
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
@@ -50,11 +66,19 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Short scan image filter
+  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFCPUType;
+#ifdef RTK_USE_CUDA
+  typedef rtk::CudaParkerShortScanImageFilter PSSFType;
+#else
   typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
-  PSSFType::Pointer pssf = PSSFType::New();
+#endif
+  PSSFCPUType::Pointer pssf;
+  if(!strcmp(args_info.hardware_arg, "cuda") )
+    pssf = PSSFType::New();
+  else
+    pssf = PSSFCPUType::New();
   pssf->SetInput( reader->GetOutput() );
   pssf->SetGeometry( geometryReader->GetOutputObject() );
-  pssf->SetNumberOfThreads(1);
   pssf->InPlaceOff();
 
   // Write

@@ -31,6 +31,8 @@ namespace rtk
  * filtered backprojection reconstruction algorithms.
  * The weighting comprises:
  * - the 2D weighting of the FDK algorithm [Feldkamp, 1984],
+ * - its modification described in [Rit and Clackdoyle, CT meeting, 2014] for
+ *   tilted detector
  * - the correction of the ramp factor for divergent full scan,
  * - the angular weighting for the final 3D integral of FDK.
  * Note that SourceToDetectorDistance, SourceToDetectorIsocenter
@@ -38,6 +40,9 @@ namespace rtk
  * projection basis but InPlaneRotation and OutOfPlaneRotation are not
  * accounted for.
  * \author Simon Rit
+ *
+ * \test rtkfdktest.cxx, rtkrampfiltertest.cxx, rtkdisplaceddetectortest.cxx,
+ * rtkshortscantest.cxx, rtkfdkprojweightcompcudatest.cxx
  *
  * \ingroup InPlaceImageFilter
  */
@@ -81,7 +86,10 @@ private:
   void operator=(const Self&);            //purposely not implemented
 
   /** Angular weights for each projection */
-  std::vector<double> m_AngularWeightsAndRampFactor;
+  std::vector<double> m_ConstantProjectionFactor;
+
+  /** Tilt angles with respect to the conventional situation */
+  std::vector<double> m_TiltAngles;
 
   /** Geometrical description of the system */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
