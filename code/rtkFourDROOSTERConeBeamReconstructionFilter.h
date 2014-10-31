@@ -23,6 +23,7 @@
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkAverageOutOfROIImageFilter.h"
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
+#include "rtkTotalVariationDenoiseSequenceImageFilter.h"
 #include "rtkWarpSequenceImageFilter.h"
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageFilter.h>
@@ -154,7 +155,8 @@ public:
     typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>  FourDCGFilterType;
     typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
     typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType>                                              AverageOutOfROIFilterType;
-    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>         SpatialTVDenoisingFilterType;
+//    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>         SpatialTVDenoisingFilterType;
+    typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                 SpatialTVDenoisingFilterType;
     typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  WarpSequenceFilterType;
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>        TemporalTVDenoisingFilterType;
     typedef itk::AddImageFilter<VolumeSeriesType>                                                           AddFilterType;

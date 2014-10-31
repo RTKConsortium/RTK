@@ -50,13 +50,13 @@ magnitude_threshold_kernel(float * grad_x, float * grad_y, float * grad_z, float
 
   long int id   = (k     * c_Size.y + j)    * c_Size.x + i;
 
-  float sq_norm = grad_x[id] * grad_x[id] + grad_y[id] * grad_y[id] + grad_z[id] * grad_z[id];
-  if (sq_norm > (gamma * gamma))
+  float norm = sqrt(grad_x[id] * grad_x[id] + grad_y[id] * grad_y[id] + grad_z[id] * grad_z[id]);
+  if (norm > gamma )
     {
-    float ratio = sqrt(gamma * gamma / sq_norm);
-    grad_x[id] /= ratio;
-    grad_y[id] /= ratio;
-    grad_z[id] /= ratio;
+    float ratio = gamma / norm;
+    grad_x[id] *= ratio;
+    grad_y[id] *= ratio;
+    grad_z[id] *= ratio;
     }
 
 }
