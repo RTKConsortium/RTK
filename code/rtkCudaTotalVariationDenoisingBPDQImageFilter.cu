@@ -85,14 +85,14 @@ divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out)
   if (i == (c_Size.x - 1)) A.x = 0;
   else A.x = grad_x[id];
 
-  if (i == 0) B.y = 0;
+  if (j == 0) B.y = 0;
   else B.y = grad_y[id_y];
-  if (i == (c_Size.y - 1)) A.y = 0;
+  if (j == (c_Size.y - 1)) A.y = 0;
   else A.y = grad_y[id];
 
-  if (i == 0) B.z = 0;
+  if (k == 0) B.z = 0;
   else B.z = grad_z[id_z];
-  if (i == (c_Size.z - 1)) A.z = 0;
+  if (k == (c_Size.z - 1)) A.z = 0;
   else A.z = grad_z[id];
 
   out[id] = A.x - B.x + A.y - B.y + A.z - B.z;
@@ -106,7 +106,7 @@ gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z)
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
   unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
 
-  if (i >= (c_Size.x - 1) || j >= (c_Size.y - 1)  || k >= (c_Size.z - 1))
+  if (i >= c_Size.x || j >= c_Size.y  || k >= c_Size.z)
       return;
 
   long int id   = (k     * c_Size.y + j)    * c_Size.x + i;
@@ -114,9 +114,14 @@ gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z)
   long int id_y = (k     * c_Size.y + j + 1)* c_Size.x + i;
   long int id_z = ((k+1) * c_Size.y + j)    * c_Size.x + i;
 
-  grad_x[id] = in[id_x] - in[id];
-  grad_y[id] = in[id_y] - in[id];
-  grad_z[id] = in[id_z] - in[id];
+  if (i == (c_Size.x - 1)) grad_x[id] = 0;
+  else grad_x[id] = in[id_x] - in[id];
+
+  if (j == (c_Size.y - 1)) grad_y[id] = 0;
+  else grad_y[id] = in[id_y] - in[id];
+
+  if (k == (c_Size.z - 1)) grad_z[id] = 0;
+  else grad_z[id] = in[id_z] - in[id];
 }
 
 __global__
@@ -127,7 +132,7 @@ gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float *
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
   unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
 
-  if (i >= (c_Size.x - 1) || j >= (c_Size.y - 1)  || k >= (c_Size.z - 1))
+  if (i >= c_Size.x || j >= c_Size.y  || k >= c_Size.z)
       return;
 
   long int id   = (k     * c_Size.y + j)    * c_Size.x + i;
@@ -135,9 +140,9 @@ gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float *
   long int id_y = (k     * c_Size.y + j + 1)* c_Size.x + i;
   long int id_z = ((k+1) * c_Size.y + j)    * c_Size.x + i;
 
-  grad_x[id] -= (in[id_x] - in[id]);
-  grad_y[id] -= (in[id_y] - in[id]);
-  grad_z[id] -= (in[id_z] - in[id]);
+  if (i != (c_Size.x - 1)) grad_x[id] -= (in[id_x] - in[id]);
+  if (j != (c_Size.y - 1)) grad_y[id] -= (in[id_y] - in[id]);
+  if (k != (c_Size.z - 1)) grad_z[id] -= (in[id_z] - in[id]);
 }
 
 __global__
@@ -222,15 +227,15 @@ CUDA_total_variation(int size[3],
   multiply_by_beta_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_interm, beta);
   cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
-  std::cout << "Done multiplying" << std::endl;
+//  std::cout << "Done multiplying" << std::endl;
   gradient_kernel <<< dimGrid, dimBlock >>> ( dev_interm, dev_grad_x, dev_grad_y, dev_grad_z);
   cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
-  std::cout << "Done computing gradient" << std::endl;
+//  std::cout << "Done computing gradient" << std::endl;
   magnitude_threshold_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, gamma);
   cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
-  std::cout << "Done projecting gradient onto L2 ball of radius gamma" << std::endl;
+//  std::cout << "Done projecting gradient onto L2 ball of radius gamma" << std::endl;
 
   // Rest of the iterations
   for (int iter=0; iter<NumberOfIterations; iter++)
@@ -238,23 +243,23 @@ CUDA_total_variation(int size[3],
     divergence_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, dev_interm);
     cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-    std::cout << "Done computing divergence" << std::endl;
+//    std::cout << "Done computing divergence" << std::endl;
     subtract_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_interm, dev_out);
     cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-    std::cout << "Done subtracting" << std::endl;
+//    std::cout << "Done subtracting" << std::endl;
     multiply_by_beta_kernel <<< dimGrid, dimBlock >>> ( dev_out, dev_interm, beta);
     cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-    std::cout << "Done multiplying" << std::endl;
+//    std::cout << "Done multiplying" << std::endl;
     gradient_and_subtract_kernel <<< dimGrid, dimBlock >>> ( dev_interm, dev_grad_x, dev_grad_y, dev_grad_z);
     cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-    std::cout << "Done computing gradient and subtracting" << std::endl;
+//    std::cout << "Done computing gradient and subtracting" << std::endl;
     magnitude_threshold_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, gamma);
     cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-    std::cout << "Done projecting gradient onto L2 ball of radius gamma" << std::endl;
+//    std::cout << "Done projecting gradient onto L2 ball of radius gamma" << std::endl;
     }
 
   // Cleanup
