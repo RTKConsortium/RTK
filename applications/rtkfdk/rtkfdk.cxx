@@ -188,6 +188,12 @@ int main(int argc, char * argv[])
 #ifdef RTK_USE_CUDA
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
+    // Motion compensation not supported in cuda
+    if(args_info.signal_given && args_info.dvf_given)
+      {
+      itkGenericExceptionMacro(<< "Motion compensation is not supported in CUDA. Aborting");
+      }
+
     feldkampCUDA = FDKCUDAType::New();
     SET_FELDKAMP_OPTIONS( feldkampCUDA );
     pfeldkamp = feldkampCUDA->GetOutput();
