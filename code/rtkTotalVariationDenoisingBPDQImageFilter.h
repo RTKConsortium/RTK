@@ -169,6 +169,7 @@ protected:
   typename DivergenceFilterType::Pointer           m_DivergenceFilter;
 
   double m_Gamma;
+  double m_Beta;
   int    m_NumberOfIterations;
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
@@ -182,8 +183,6 @@ private:
 
   virtual void SetPipelineForFirstIteration();
   virtual void SetPipelineAfterFirstIteration();
-
-  double m_Beta;
 };
 
 } // end namespace itk

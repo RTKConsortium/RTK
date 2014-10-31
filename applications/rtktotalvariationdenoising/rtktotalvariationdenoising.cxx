@@ -19,13 +19,15 @@
 #include "rtktotalvariationdenoising_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
-#include "rtkTotalVariationDenoisingBPDQImageFilter.h"
+
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaTotalVariationDenoisingBPDQImageFilter.h"
+#else
+  #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
+#endif
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#ifdef RTK_USE_CUDA
-#include <itkCudaImage.h>
-#endif
 
 int main(int argc, char * argv[])
 {
@@ -39,10 +41,13 @@ int main(int argc, char * argv[])
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
   typedef itk::CudaImage< itk::CovariantVector 
       < OutputPixelType, DimensionsProcessed >, Dimension >                GradientOutputImageType;
+  typedef rtk::CudaTotalVariationDenoisingBPDQImageFilter                  TVDenoisingFilterType;
 #else
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
   typedef itk::Image< itk::CovariantVector 
       < OutputPixelType, DimensionsProcessed >, Dimension >                GradientOutputImageType;
+  typedef rtk::TotalVariationDenoisingBPDQImageFilter
+      <OutputImageType, GradientOutputImageType>                           TVDenoisingFilterType;
 #endif
   
   // Read input
@@ -52,8 +57,6 @@ int main(int argc, char * argv[])
   reader->ReleaseDataFlagOn();
 
   // Apply total variation denoising
-  typedef rtk::TotalVariationDenoisingBPDQImageFilter
-      <OutputImageType, GradientOutputImageType> TVDenoisingFilterType;
   TVDenoisingFilterType::Pointer tv = TVDenoisingFilterType::New();
   tv->SetInput(reader->GetOutput());
   tv->SetGamma(args_info.gamma_arg);
