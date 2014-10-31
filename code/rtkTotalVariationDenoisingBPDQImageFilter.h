@@ -43,37 +43,62 @@ namespace rtk
  * http://wiki.epfl.ch/bpdq#download
  *
  * \dot
- * digraph TotalVariationDenoisingBPDQImageFilter {
+ * digraph TotalVariationDenoisingBPDQImageFilter
+ * {
  *
- * Input [label="Input"];
- * Input [shape=Mdiamond];
- * Output [label="Output"];
- * Output [shape=Mdiamond];
+ * subgraph clusterFirstIteration
+ *   {
+ *   label="First iteration"
  *
- * node [shape=box];
- * ZeroMultiply [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
- * ZeroGradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
- * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
- * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
- * Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
- * Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
- * SubtractGradient [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
- * MagnitudeThreshold [ label="rtk::MagnitudeThresholdImageFilter" URL="\ref rtk::MagnitudeThresholdImageFilter"];
- * OutOfZeroGradient [label="", fixedsize="false", width=0, height=0, shape=none];
+ *   FI_Input [label="Input"];
+ *   FI_Input [shape=Mdiamond];
  *
- * Input -> ZeroMultiply;
- * Input -> Subtract;
- * ZeroMultiply -> ZeroGradient;
- * ZeroGradient -> OutOfZeroGradient [arrowhead=None];
- * OutOfZeroGradient -> Divergence;
- * OutOfZeroGradient -> SubtractGradient;
- * Divergence -> Subtract;
- * Subtract -> Multiply;
- * Multiply -> Gradient;
- * Gradient -> SubtractGradient;
- * SubtractGradient -> MagnitudeThreshold;
- * MagnitudeThreshold -> OutOfZeroGradient [style=dashed];
- * Subtract -> Output;
+ *   node [shape=box];
+ *   FI_Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
+ *   FI_Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+ *   FI_MagnitudeThreshold [ label="rtk::MagnitudeThresholdImageFilter" URL="\ref rtk::MagnitudeThresholdImageFilter"];
+ *   FI_OutOfMagnitudeTreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ *
+ *   FI_Input -> FI_Multiply;
+ *   FI_Multiply -> FI_Gradient;
+ *   FI_Gradient -> FI_MagnitudeThreshold;
+ *   FI_MagnitudeThreshold -> FI_OutOfMagnitudeTreshold [style=dashed];
+ *   }
+ *
+ * subgraph clusterAfterFirstIteration
+ *   {
+ *   label="After first iteration"
+ *
+ *   Input [label="Input"];
+ *   Input [shape=Mdiamond];
+ *   Output [label="Output"];
+ *   Output [shape=Mdiamond];
+ *
+ *   node [shape=box];
+ *   Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
+ *   Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+ *   Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
+ *   Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+ *   SubtractGradient [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+ *   MagnitudeThreshold [ label="rtk::MagnitudeThresholdImageFilter" URL="\ref rtk::MagnitudeThresholdImageFilter"];
+ *   OutOfSubtract [label="", fixedsize="false", width=0, height=0, shape=none];
+ *   OutOfMagnitudeTreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ *   BeforeDivergence [label="", fixedsize="false", width=0, height=0, shape=none];
+ *
+ *   Input -> Subtract;
+ *   Divergence -> Subtract;
+ *   Subtract -> OutOfSubtract;
+ *   OutOfSubtract -> Output;
+ *   OutOfSubtract -> Multiply;
+ *   Multiply -> Gradient;
+ *   Gradient -> SubtractGradient;
+ *   SubtractGradient -> MagnitudeThreshold;
+ *   MagnitudeThreshold -> OutOfMagnitudeTreshold;
+ *   OutOfMagnitudeTreshold -> BeforeDivergence [style=dashed, constraint=false];
+ *   BeforeDivergence -> Divergence;
+ *   BeforeDivergence -> SubtractGradient;
+ *   }
+ *
  * }
  * \enddot
  *
@@ -82,7 +107,7 @@ namespace rtk
  * \ingroup IntensityImageFilters
  */
 
-template< typename TOutputImage, typename TGradientOutputImage = 
+template< typename TOutputImage, typename TGradientImage =
     itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
     TOutputImage::ImageDimension > >
 class TotalVariationDenoisingBPDQImageFilter :
@@ -103,14 +128,16 @@ public:
   itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, ImageToImageFilter)
 
   /** Sub filter type definitions */
-  typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
-            typename TOutputImage::ValueType, typename TOutputImage::ValueType, 
-            TGradientOutputImage>                                                     GradientFilterType;
-  typedef itk::MultiplyImageFilter<TOutputImage>                                      MultiplyFilterType;
-  typedef itk::SubtractImageFilter<TOutputImage>                                      SubtractImageFilterType;
-  typedef itk::SubtractImageFilter<TGradientOutputImage>                              SubtractGradientFilterType;
-  typedef MagnitudeThresholdImageFilter<TGradientOutputImage>                         MagnitudeThresholdFilterType;
-  typedef BackwardDifferenceDivergenceImageFilter<TGradientOutputImage, TOutputImage> DivergenceFilterType;
+  typedef ForwardDifferenceGradientImageFilter
+            <TOutputImage,
+             typename TOutputImage::ValueType,
+             typename TOutputImage::ValueType,
+             TGradientImage>                                                      GradientFilterType;
+  typedef itk::MultiplyImageFilter<TOutputImage>                                  MultiplyFilterType;
+  typedef itk::SubtractImageFilter<TOutputImage>                                  SubtractImageFilterType;
+  typedef itk::SubtractImageFilter<TGradientImage>                                SubtractGradientFilterType;
+  typedef MagnitudeThresholdImageFilter<TGradientImage>                           MagnitudeThresholdFilterType;
+  typedef BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>   DivergenceFilterType;
 
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
@@ -133,27 +160,27 @@ protected:
 
   /** Sub filter pointers */
   typename GradientFilterType::Pointer             m_GradientFilter;
-  typename GradientFilterType::Pointer             m_ZeroGradientFilter;
   typename MultiplyFilterType::Pointer             m_MultiplyFilter;
-  typename MultiplyFilterType::Pointer             m_ZeroMultiplyFilter;
   typename SubtractImageFilterType::Pointer        m_SubtractFilter;
   typename SubtractGradientFilterType::Pointer     m_SubtractGradientFilter;
   typename MagnitudeThresholdFilterType::Pointer   m_MagnitudeThresholdFilter;
   typename DivergenceFilterType::Pointer           m_DivergenceFilter;
 
   double m_Gamma;
+  double m_Beta;
   int    m_NumberOfIterations;
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
   // In some cases, regularization must use periodic boundary condition
-  typename itk::ImageBoundaryCondition<TOutputImage, TOutputImage>                  * m_BoundaryConditionForGradientFilter;
-  typename itk::ImageBoundaryCondition<TGradientOutputImage, TGradientOutputImage>  * m_BoundaryConditionForDivergenceFilter;
+  typename itk::ImageBoundaryCondition<TOutputImage, TOutputImage>      * m_BoundaryConditionForGradientFilter;
+  typename itk::ImageBoundaryCondition<TGradientImage, TGradientImage>  * m_BoundaryConditionForDivergenceFilter;
 
 private:
   TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
-  double m_Beta;
+  virtual void SetPipelineForFirstIteration();
+  virtual void SetPipelineAfterFirstIteration();
 };
 
 } // end namespace itk
