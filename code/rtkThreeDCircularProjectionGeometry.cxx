@@ -108,6 +108,7 @@ void rtk::ThreeDCircularProjectionGeometry::Clear()
   m_GantryAngles.clear();
   m_OutOfPlaneAngles.clear();
   m_InPlaneAngles.clear();
+  m_SourceAngles.clear();
   m_SourceToIsocenterDistances.clear();
   m_SourceOffsetsX.clear();
   m_SourceOffsetsY.clear();
