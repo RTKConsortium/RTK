@@ -43,10 +43,6 @@ public:
   /** Copy constructor */
   WatcherForTimer(const WatcherForTimer &);
 
-  /** Default constructor. Only provided so that you can have
-   * std::vectors of WatcherForTimers. */
-  WatcherForTimer();
-
   /** operator=  */
   WatcherForTimer & operator=(const WatcherForTimer &);
 
@@ -57,12 +53,12 @@ public:
    *  WatcherForTimer */
   const char * GetNameOfClass()
   {
-    return ( m_Process.GetPointer() ? m_Process->GetNameOfClass() : "None" );
+    return ( m_Process? m_Process->GetNameOfClass() : "None" );
   }
 
   /** Methods to access member data */
   /** Get a pointer to the process object being watched. */
-  ProcessObject * GetProcess() { return m_Process.GetPointer(); }
+  const ProcessObject * GetProcess() const { return m_Process; }
 
 protected:
 
@@ -72,18 +68,25 @@ protected:
   /** Callback method to show the EndEvent */
   virtual void EndFilter();
 
+  /** Callback method to show the DeleteEvent */
+  virtual void DeleteFilter();
+
 
 private:
   unsigned int                m_IndexInGlobalTimer;
-  itk::ProcessObject::Pointer m_Process;
+  itk::ProcessObject*         m_Process;
 
   typedef SimpleMemberCommand< WatcherForTimer > CommandType;
   CommandType::Pointer m_StartFilterCommand;
   CommandType::Pointer m_EndFilterCommand;
+  CommandType::Pointer m_DeleteFilterCommand;
 
   unsigned long m_StartTag;
   unsigned long m_EndTag;
+  unsigned long m_DeleteTag;
 };
-} // end namespace itk
+
+
+} // end namespace rtk
 
 #endif

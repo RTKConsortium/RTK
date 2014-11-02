@@ -64,8 +64,8 @@ public:
   virtual void Clear(void);
 
 protected:
-  ProbeVector m_Probes;
-  IdVector m_Ids;
+  ProbeVector  m_Probes;
+  IdVector     m_Ids;
   IndentVector m_Indent;
   unsigned int m_CurrentIndent;
 };

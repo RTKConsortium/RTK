@@ -20,7 +20,7 @@
 
 namespace rtk
 {
-GlobalTimer::Pointer GlobalTimer:: m_Instance = ITK_NULLPTR;
+GlobalTimer::Pointer GlobalTimer::m_Instance = ITK_NULLPTR;
 
 /**
  * Prompting off by default
@@ -34,6 +34,9 @@ GlobalTimer
 GlobalTimer
 ::~GlobalTimer()
 {
+  if(m_Verbose)
+    this->Report(std::cout);
+  this->Clear();
 }
 
 void
@@ -86,8 +89,22 @@ GlobalTimer
 ::Watch(ProcessObject *o)
 {
   m_Mutex.Lock();
-  rtk::WatcherForTimer watcher(o);
-  m_Watchers.push_back(watcher);
+  rtk::WatcherForTimer *w = new rtk::WatcherForTimer(o);
+  m_Watchers.push_back(w);
+  m_Mutex.Unlock();
+}
+
+void
+GlobalTimer
+::Remove(const rtk::WatcherForTimer *w)
+{
+  m_Mutex.Lock();
+  std::vector<rtk::WatcherForTimer*>::iterator itw = std::find( m_Watchers.begin(), m_Watchers.end(), w);
+  if(itw != m_Watchers.end())
+    {
+    delete *itw;
+    m_Watchers.erase(itw);
+    }
   m_Mutex.Unlock();
 }
 
@@ -124,9 +141,7 @@ GlobalTimer
 ::Clear(void)
 {
   m_TimeProbesCollectorBase.Clear();
+  m_Watchers.clear();
 //  m_GlobalTimerProbesCollector.Clear();
 }
-
-
-
 } // end namespace itk
