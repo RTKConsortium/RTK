@@ -32,19 +32,18 @@ namespace rtk
  * \ingroup OSSystemObjects
  * \ingroup ITKCommon
  */
-using namespace itk;
 
-class ITKCommon_EXPORT GlobalTimer:public Object
+class ITKCommon_EXPORT GlobalTimer:public itk::Object
 {
 public:
   /** Standard class typedefs. */
-  typedef GlobalTimer               Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  typedef GlobalTimer                     Self;
+  typedef itk::Object                     Superclass;
+  typedef itk::SmartPointer< Self >       Pointer;
+  typedef itk::SmartPointer< const Self > ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GlobalTimer, Object)
+  itkTypeMacro(GlobalTimer, itk::Object)
 
   /** This is a singleton pattern New.  There will only be ONE
    * reference to a GlobalTimer object per process.  Clients that
@@ -77,6 +76,9 @@ public:
   /** Create a new watcher and store it */
   virtual void Watch(itk::ProcessObject *o);
 
+  /** Remove a watcher */
+  virtual void Remove(const rtk::WatcherForTimer *w);
+
 protected:
   GlobalTimer();
   virtual ~GlobalTimer();
@@ -84,14 +86,14 @@ protected:
   bool m_Verbose;
 
 //  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;
-  itk::TimeProbesCollectorBase    m_TimeProbesCollectorBase;
-  std::vector<rtk::WatcherForTimer> m_Watchers;
+  itk::TimeProbesCollectorBase       m_TimeProbesCollectorBase;
+  std::vector<rtk::WatcherForTimer*> m_Watchers;
 
 private:
   GlobalTimer(const Self &);   //purposely not implemented
   void operator=(const Self &); //purposely not implemented
 
-  static Pointer m_Instance;
+  static Pointer           m_Instance;
   itk::SimpleFastMutexLock m_Mutex;
 
 };
