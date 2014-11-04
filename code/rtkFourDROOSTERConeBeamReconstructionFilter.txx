@@ -78,7 +78,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_AverageOutOfROIFilter->ReleaseDataFlagOn();
   m_TVDenoisingSpace->ReleaseDataFlagOff(); // Output used twice
   m_Warp->ReleaseDataFlagOff();
-  m_TVDenoisingTime->ReleaseDataFlagOn();
+//  m_TVDenoisingTime->ReleaseDataFlagOn();
   m_SubtractFilter->ReleaseDataFlagOn();
   m_ForwardWarp->ReleaseDataFlagOn();
 }
@@ -319,7 +319,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       }
 
     m_TVTimeProbe.Start();
-    m_TVDenoisingTime->Update();
+    m_TVDenoisingTime->UpdateLargestPossibleRegion();
     m_TVTimeProbe.Stop();
 
     if (m_PerformWarping)

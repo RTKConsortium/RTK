@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaTotalVariationDenoisingBPDQImageFilter_h
-#define __rtkCudaTotalVariationDenoisingBPDQImageFilter_h
+#ifndef __rtkCudaLastDimensionTVDenoisingImageFilter_h
+#define __rtkCudaLastDimensionTVDenoisingImageFilter_h
 
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #include <itkCudaImageToImageFilter.h>
@@ -26,8 +26,9 @@
 namespace rtk
 {
 
-/** \class CudaTotalVariationDenoisingBPDQImageFilter
- * \brief Implements the TotalVariationDenoisingBPDQImageFilter on GPU.
+/** \class CudaLastDimensionTVDenoisingImageFilter
+ * \brief Implements the TotalVariationDenoisingBPDQImageFilter on GPU
+ * for a specific case : denoising only along the last dimension
  *
  *
  *
@@ -36,15 +37,15 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 
-  class ITK_EXPORT CudaTotalVariationDenoisingBPDQImageFilter :
-        public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-    TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,3>, itk::CudaImage< itk::CovariantVector < float, 3 >, 3 > > >
+  class ITK_EXPORT CudaLastDimensionTVDenoisingImageFilter :
+        public itk::CudaImageToImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
+    TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,4>, itk::CudaImage< itk::CovariantVector < float, 1 >, 4 > > >
 {
 public:
   /** Standard class typedefs. */
-  typedef rtk::CudaTotalVariationDenoisingBPDQImageFilter                               Self;
-  typedef itk::CudaImage<float,3>                                                       OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector < float, 3 >, 3 >                        GradientType;
+  typedef rtk::CudaLastDimensionTVDenoisingImageFilter                               Self;
+  typedef itk::CudaImage<float,4>                                                       OutputImageType;
+  typedef itk::CudaImage< itk::CovariantVector < float, 1 >, 4 >                        GradientType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter< OutputImageType, GradientType >  Superclass;
   typedef itk::SmartPointer<Self>                                                       Pointer;
   typedef itk::SmartPointer<const Self>                                                 ConstPointer;
@@ -53,17 +54,16 @@ public:
   itkNewMacro(Self)
 
   /** Runtime information support. */
-  itkTypeMacro(CudaTotalVariationDenoisingBPDQImageFilter, TotalVariationDenoisingBPDQImageFilter)
+  itkTypeMacro(CudaLastDimensionTVDenoisingImageFilter, TotalVariationDenoisingBPDQImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaTotalVariationDenoisingBPDQImageFilter();
-  ~CudaTotalVariationDenoisingBPDQImageFilter(){
-  }
+  rtkcuda_EXPORT CudaLastDimensionTVDenoisingImageFilter();
+  ~CudaLastDimensionTVDenoisingImageFilter(){}
 
   virtual void GPUGenerateData();
 
 private:
-  CudaTotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
+  CudaLastDimensionTVDenoisingImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
