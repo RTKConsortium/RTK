@@ -35,6 +35,7 @@
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaInterpolateImageFilter.h"
 #  include "rtkCudaSplatImageFilter.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
 #endif
 
 namespace rtk
