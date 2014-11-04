@@ -75,7 +75,8 @@ IF (RTK_USE_CUDA)
        rtkCudaWarpImageFilter.cu
        rtkCudaForwardWarpImageFilter.cu
        rtkCudaRayCastBackProjectionImageFilter.cu
-       rtkCudaTotalVariationDenoisingBPDQImageFilter.cu)
+       rtkCudaTotalVariationDenoisingBPDQImageFilter.cu
+       rtkCudaLastDimensionTVDenoisingImageFilter.cu)
        
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
@@ -109,7 +110,8 @@ IF (RTK_USE_CUDA)
 	      rtkCudaForwardWarpImageFilter.cxx
 	      rtkCudaRayCastBackProjectionImageFilter.cxx
 	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
-              ${rtkcuda_CUDA_WRAPPERS}
+	      rtkCudaLastDimensionTVDenoisingImageFilter.cxx
+	      ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
   TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} RTK ITKCudaCommon)
