@@ -30,8 +30,6 @@ void
 rtk::CudaLastDimensionTVDenoisingImageFilter
 ::GPUGenerateData()
 {
-  std::cout << "Performing temporal TV regul" << std::endl;
-
   this->GetOutput()->SetRegions(this->GetOutput()->GetLargestPossibleRegion());
   this->GetOutput()->Allocate();
 
