@@ -38,7 +38,6 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyVolumeSeriesFilter = MultiplyVolumeSeriesType::New();
   m_ZeroMultiplyProjectionStackFilter = MultiplyProjectionStackType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent connections
   m_ZeroMultiplyProjectionStackFilter->SetInput1(m_ExtractFilter->GetOutput());
@@ -159,6 +158,13 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   else
 #endif
     m_SplatFilter = SplatFilterType::New();
+
+#ifdef RTK_USE_CUDA
+  if (m_UseCudaSplat && m_UseCudaInterpolation)
+    m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+  else
+#endif
+    m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set runtime connections
   m_ZeroMultiplyVolumeSeriesFilter->SetInput1(this->GetInputVolumeSeries());
