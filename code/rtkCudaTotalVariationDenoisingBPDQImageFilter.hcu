@@ -22,11 +22,12 @@
 #include <vector_types.h>
 
 void
-CUDA_total_variation(int size[3],
-                   float* dev_in,
-                   float* dev_out,
-                   float gamma,
-                   float beta,
-                   int NumberOfIterations);
+CUDA_total_variation( int size[3],
+                      float spacing[3],
+                      float* dev_in,
+                      float* dev_out,
+                      float gamma,
+                      float beta,
+                      int NumberOfIterations);
 
 #endif

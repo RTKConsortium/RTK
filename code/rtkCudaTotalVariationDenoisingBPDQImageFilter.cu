@@ -28,6 +28,7 @@
 // TEXTURES AND CONSTANTS //
 
 __constant__ int3 c_Size;
+__constant__ float3 c_Spacing;
 
 inline int iDivUp(int a, int b){
     return (a % b != 0) ? (a / b + 1) : (a / b);
@@ -95,7 +96,9 @@ divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out)
   if (k == (c_Size.z - 1)) A.z = 0;
   else A.z = grad_z[id];
 
-  out[id] = A.x - B.x + A.y - B.y + A.z - B.z;
+  out[id] = (A.x - B.x) / c_Spacing.x
+          + (A.y - B.y) / c_Spacing.y
+          + (A.z - B.z) / c_Spacing.z;
 }
 
 __global__
@@ -115,13 +118,13 @@ gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z)
   long int id_z = ((k+1) * c_Size.y + j)    * c_Size.x + i;
 
   if (i == (c_Size.x - 1)) grad_x[id] = 0;
-  else grad_x[id] = in[id_x] - in[id];
+  else grad_x[id] = (in[id_x] - in[id]) / c_Spacing.x;
 
   if (j == (c_Size.y - 1)) grad_y[id] = 0;
-  else grad_y[id] = in[id_y] - in[id];
+  else grad_y[id] = (in[id_y] - in[id]) / c_Spacing.y;
 
   if (k == (c_Size.z - 1)) grad_z[id] = 0;
-  else grad_z[id] = in[id_z] - in[id];
+  else grad_z[id] = (in[id_z] - in[id]) / c_Spacing.z;
 }
 
 __global__
@@ -140,9 +143,9 @@ gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float *
   long int id_y = (k     * c_Size.y + j + 1)* c_Size.x + i;
   long int id_z = ((k+1) * c_Size.y + j)    * c_Size.x + i;
 
-  if (i != (c_Size.x - 1)) grad_x[id] -= (in[id_x] - in[id]);
-  if (j != (c_Size.y - 1)) grad_y[id] -= (in[id_y] - in[id]);
-  if (k != (c_Size.z - 1)) grad_z[id] -= (in[id_z] - in[id]);
+  if (i != (c_Size.x - 1)) grad_x[id] -= ((in[id_x] - in[id]) / c_Spacing.x);
+  if (j != (c_Size.y - 1)) grad_y[id] -= ((in[id_y] - in[id]) / c_Spacing.y);
+  if (k != (c_Size.z - 1)) grad_z[id] -= ((in[id_z] - in[id]) / c_Spacing.z);
 }
 
 __global__
@@ -184,15 +187,19 @@ subtract_kernel(float *in1, float* in2, float* out)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_total_variation(int size[3],
-                   float* dev_in,
-                   float* dev_out,
-                   float gamma,
-                   float beta,
-                   int NumberOfIterations)
+CUDA_total_variation( int size[3],
+                      float spacing[3],
+                      float* dev_in,
+                      float* dev_out,
+                      float gamma,
+                      float beta,
+                      int NumberOfIterations)
 {
   int3 dev_Size = make_int3(size[0], size[1], size[2]);
   cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int3));
+
+  float3 dev_Spacing = make_float3(spacing[0], spacing[1], spacing[2]);
+  cudaMemcpyToSymbol(c_Spacing, &dev_Spacing, sizeof(float3));
 
   // Reset output volume
   long int memorySizeOutput = size[0] * size[1] * size[2] * sizeof(float);

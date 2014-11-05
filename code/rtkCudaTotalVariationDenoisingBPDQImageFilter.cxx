@@ -32,15 +32,19 @@ rtk::CudaTotalVariationDenoisingBPDQImageFilter
 {
     int inputSize[3];
     int outputSize[3];
+    float inputSpacing[3];
+    float outputSpacing[3];
 
     for (int i=0; i<3; i++)
       {
       inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
       outputSize[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
+      inputSpacing[i] = this->GetInput()->GetSpacing()[i];
+      outputSpacing[i] = this->GetOutput()->GetSpacing()[i];
 
-      if (inputSize[i] != outputSize[i])
+      if ((inputSize[i] != outputSize[i]) || (inputSpacing[i] != outputSpacing[i]))
         {
-        std::cerr << "The CUDA Total Variation Denoising BPDQ filter can only handle input and output regions of equal size " << std::endl;
+        std::cerr << "The CUDA Total Variation Denoising BPDQ filter can only handle input and output regions of equal size and spacing" << std::endl;
         exit(1);
         }
       }
@@ -49,6 +53,7 @@ rtk::CudaTotalVariationDenoisingBPDQImageFilter
     float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
     CUDA_total_variation(inputSize,
+                         inputSpacing,
                          pin,
                          pout,
                          static_cast<float>(m_Gamma),
