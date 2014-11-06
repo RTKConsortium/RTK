@@ -47,6 +47,7 @@
 #include "rtkTiffLookupTableImageFilter.h"
 #include "rtkVarianObiRawImageFilter.h"
 #include "rtkXRadGeometryReader.h"
+#include "rtkGgoArgsInfoManager.h"
 
 //#ifdef USE_OPENCL
 //  #include "rtkOpenCLFDKBackProjectionImageFilter.h"
