@@ -28,11 +28,11 @@ namespace rtk
 /////////////////////////////////////////////////////////
 //Default Constructor
 template <class TImage>
-ReconstructImageFilter<TImage>::ReconstructImageFilter()
+ReconstructImageFilter<TImage>::ReconstructImageFilter():
+  m_NumberOfLevels(5),
+  m_Order(3),
+  m_PipelineConstructed(false)
 {
-  //Initialise private variables
-  this->m_NumberOfLevels     = 0;
-  this->m_PipelineConstructed = false;
 }
 
 
