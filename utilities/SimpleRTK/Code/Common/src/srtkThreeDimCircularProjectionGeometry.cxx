@@ -82,9 +82,9 @@ public:
     }
 
   /** Add the projection */
-  void AddProjection(float sid,float sdd,float angle,float isox,float isoy)
+  void AddProjection(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
     {
-    this->m_ProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy);
+    this->m_ProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
     }
 
 private:
@@ -136,10 +136,10 @@ const rtk::ThreeDCircularProjectionGeometry* ThreeDimCircularProjectionGeometry:
   }
 
 
-void ThreeDimCircularProjectionGeometry::AddProjection(float sid,float sdd,float angle,float isox,float isoy)
+void ThreeDimCircularProjectionGeometry::AddProjection(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy)
   {
   assert( m_PimpleThreeDimCircularProjectionGeometry );
-  this->m_PimpleThreeDimCircularProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy);
+  this->m_PimpleThreeDimCircularProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
   }
   
 std::string ThreeDimCircularProjectionGeometry::ToString( void ) const

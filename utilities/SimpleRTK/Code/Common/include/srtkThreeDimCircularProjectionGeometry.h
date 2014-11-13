@@ -77,7 +77,7 @@ public:
   /** Add the projection
    * @{
    */
-  void AddProjection(float sid,float sdd,float angle,float isox,float isoy);
+  void AddProjection(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.);
   /**@}*/
 
 
