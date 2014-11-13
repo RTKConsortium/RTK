@@ -57,6 +57,7 @@ public:
   typedef typename TInputImage::Superclass::Pointer         ProjectionsStackPointer;
   typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
   typedef typename GeometryType::Pointer                    GeometryPointer;
+  typedef enum {RADIUSINF,RADIUSSUP,RADIUSBOTH}             FOVRadiusType;
 
 
   /** Method for creation through the object factory. */
@@ -86,6 +87,18 @@ public:
   itkGetMacro(DisplacedDetector, bool);
   itkSetMacro(DisplacedDetector, bool);
 
+  /** Computes the radius r and the center (x,z) of the disk perpendicular to
+   * the y-axis that is covered by:
+   * - if RADIUSINF: the half plane defined by the line from the source to the
+   *   two inferior x index corners which cover the opposite two corners.
+   * - if RADIUSSUP: the half plane defined by the line from the source to the
+   *   two superior x index corners which cover the opposite two corners.
+   * - if RADIUSBOTH: the fan defined by the pairs of half planes.
+   * Returns true if it managed to find such a disk and false otherwise.
+   * The function may be called without out computing the output, but
+   * m_Geometry and ProjectionsStack must be set.*/
+  virtual bool ComputeFOVRadius(const FOVRadiusType type, double &x, double &z, double &r);
+
 protected:
   FieldOfViewImageFilter();
   virtual ~FieldOfViewImageFilter() {};
@@ -104,6 +117,8 @@ private:
   bool                    m_Mask;
   ProjectionsStackPointer m_ProjectionsStack;
   double                  m_Radius;
+  double                  m_CenterX;
+  double                  m_CenterZ;
   double                  m_HatTangentInf;
   double                  m_HatTangentSup;
   double                  m_HatHeightInf;
