@@ -35,6 +35,11 @@ IF(OPENCL_FOUND AND OPENCL_HAVE_GPU)
   ADD_TEST(rtkfdkopencltest ${EXECUTABLE_OUTPUT_PATH}/rtkfdkopencltest)
 ENDIF(OPENCL_FOUND AND OPENCL_HAVE_GPU)
 
+ADD_EXECUTABLE(rtkimporttest rtkimporttest.cxx)
+TARGET_LINK_LIBRARIES(rtkimporttest ${RTK_LIBRARIES})
+ADD_TEST(rtkimporttest ${EXECUTABLE_OUTPUT_PATH}/rtkimporttest)
+ADD_CUDA_TEST(rtkimport rtkimporttest.cxx)
+
 ADD_CUDA_TEST(rtkcropfilter rtkcroptest.cxx)
 
 ADD_EXECUTABLE(rtkmotioncompensatedfdktest rtkmotioncompensatedfdktest.cxx)
