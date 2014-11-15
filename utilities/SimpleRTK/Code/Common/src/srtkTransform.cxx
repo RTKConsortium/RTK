@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright RTK Consortium
+ *  Copyright Insight Software Consortium & RTK Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public:
   virtual unsigned int GetOutputDimension( void ) const = 0;
 
   // Set the fixed parameter for the transform, converting from the
-  // simpleITK std::vector to the ITK's array.
+  // simpleRTK std::vector to the ITK's array.
   void SetFixedParameters( const std::vector< double > &inParams )
     {
       itk::TransformBase::ParametersType p( inParams.size() );

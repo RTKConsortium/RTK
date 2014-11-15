@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright RTK Consortium
+ *  Copyright Insight Software Consortium & RTK Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -399,7 +399,7 @@ namespace simple
   private:
 
    /** Method called by certain constructors to convert ITK images
-     * into simpleITK ones.
+     * into simpleRTK ones.
      *
      * This is the single method which needs to be explicitly
      * instantiated to separate the internal ITK and Pimple image from

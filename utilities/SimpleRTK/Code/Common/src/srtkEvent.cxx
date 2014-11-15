@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright RTK Consortium
+ *  Copyright Insight Software Consortium & RTK Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-
 #include "srtkEvent.h"
 
 #define srtkEventToStringCaseMacro(n) case srtk##n##Event: return ( os << #n << "Event" )

@@ -59,26 +59,26 @@ Distribution.has_ext_modules =  always_has_ext_modules
 setup(
     name = 'SimpleRTK',
     version = get_pep386version(),
-    author = 'Insight Software Consortium',
-    author_email = 'insight-users@itk.org',
+    author = 'RTK Consortium',
+    author_email = 'rtk-users@public.kitware.com',
     packages= ['SimpleRTK'],
-    package_dir = {'SimpleRTK':r'@SIMPLEITK_PYTHON_PACKAGE_DIR@'},
-    package_data = {'SimpleRTK':[r'@SIMPLEITK_RELATIVE_BINARY_MODULE@']},
-    download_url = r'http://www.itk.org/SimpleRTKDoxygen/html/PyDownload.html',
+    package_dir = {'SimpleRTK':r'@SIMPLERTK_PYTHON_PACKAGE_DIR@'},
+    package_data = {'SimpleRTK':[r'@SIMPLERTK_RELATIVE_BINARY_MODULE@']},
+    download_url = r'http://www.optnrtk.org',
     platforms = [],
     zip_safe = False,
-    description = r'Simplified interface to the Insight Toolkit for image registration and segmentation',
-    long_description  = 'Provide an abstraction layer to ITK that enables developers\
-    and users to access the powerful features of the InsightToolkit in a more \
+    description = r'Simplified interface to the Reconstruction Toolkit for image reconstruction',
+    long_description  = 'Provide an abstraction layer to RTK that enables developers\
+    and users to access the powerful features of the Reconstruction Toolkit in a more \
     simplified manner.',
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 0.9 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Scientific/Engineering"
         ],
     license='Apache',
-    keywords = 'ITK InsightToolkit segmentation registration image',
-    url = r'http://simpleitk.org/'
+    keywords = 'RTK Reconstruction Toolkit',
+    url = r'http://openrtk.org/'
     )

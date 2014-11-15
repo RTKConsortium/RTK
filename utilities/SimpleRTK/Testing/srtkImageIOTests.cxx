@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright Insight Software Consortium
+*  Copyright Insight Software Consortium & RTK Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -141,8 +141,6 @@ TEST(IO,ReadWrite) {
   EXPECT_EQ ( md5, hasher.Execute ( image ) );
   hasher.SetHashFunction ( srtk::HashImageFilter::SHA1 );
   EXPECT_EQ ( sha1, hasher.Execute ( image ) );
-  // JIRA SIMPLEITK-459 reader does not report any progress
-  //EXPECT_EQ ( 1.0, progressCmd.m_Progress );
   EXPECT_EQ ( 0, abortCmd.m_Count );
   EXPECT_EQ ( 1, deleteCmd.m_Count );
   EXPECT_EQ ( 1, endCmd.m_Count );

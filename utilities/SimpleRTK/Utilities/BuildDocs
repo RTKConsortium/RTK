@@ -2,7 +2,7 @@
 
 # Sanity
 if [ ! -e Code/BasicFilters/json/ ]; then
-    echo "This script must be run for the root of SimpleITK's checkout (Utilities/BuildDocs <path to ITK-doxygen>)"
+    echo "This script must be run for the root of SimpleRTK's checkout (Utilities/BuildDocs <path to ITK-doxygen>)"
     exit 1
 fi
 
