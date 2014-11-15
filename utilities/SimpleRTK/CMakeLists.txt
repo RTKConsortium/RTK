@@ -138,9 +138,9 @@ set(SITK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
 
 
-set(JAR_FILE "simpleitk-${SimpleRTK_VERSION}.jar")
-set(JAVADOC_FILE "simpleitk-javadoc-${SimpleRTK_VERSION}.jar")
-set(JAVA_SOURCE_FILE "simpleitk-source-${SimpleRTK_VERSION}.jar")
+set(JAR_FILE "simplertk-${SimpleRTK_VERSION}.jar")
+set(JAVADOC_FILE "simplertk-javadoc-${SimpleRTK_VERSION}.jar")
+set(JAVA_SOURCE_FILE "simplertk-source-${SimpleRTK_VERSION}.jar")
 
 
 # Create cached list of all template components

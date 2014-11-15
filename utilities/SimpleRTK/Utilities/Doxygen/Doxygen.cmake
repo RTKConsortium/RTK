@@ -2,7 +2,7 @@
 # Build the documentation
 #
 
-option( BUILD_DOXYGEN "Build SimpleITK Doxygen" OFF )
+option( BUILD_DOXYGEN "Build SimpleRTK Doxygen" OFF )
  
 if (BUILD_DOXYGEN)
 

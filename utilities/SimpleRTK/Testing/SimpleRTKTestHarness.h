@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright Insight Software Consortium
+*  Copyright Insight Software Consortium & RTK Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public:
                                      const { return mOutputDirectory + "/" + filename; };
   std::string GetRuntimeDirectory () const { return mRuntimeDirectory; }
   std::string GetLibraryDirectory () const { return mLibraryDirectory; }
-  std::string GetBuildDirectory ()    const { return std::string ( SIMPLEITK_BINARY_DIR ); }
+  std::string GetBuildDirectory ()    const { return std::string ( SIMPLERTK_BINARY_DIR ); }
   std::string GetPathSeparator ()
     {
 #ifdef WIN32
@@ -108,7 +108,7 @@ public:
   std::vector<std::string> GetCSharpInterpreter ();
 
   std::string GetCSharpBinaryDirectory ()         { return std::string ( CSHARP_BINARY_DIRECTORY ); }
-  std::string GetSourceDirectory ()               { return std::string ( SIMPLEITK_SOURCE_DIR ); }
+  std::string GetSourceDirectory ()               { return std::string ( SIMPLERTK_SOURCE_DIR ); }
 
   bool FileExists ( const std::string &filename )
     {
@@ -124,7 +124,7 @@ public:
         return name;
 
       // fall back to source code path
-      name = std::string(SIMPLEITK_SOURCE_DIR) + "/Testing/Data/" + filename;
+      name = std::string(SIMPLERTK_SOURCE_DIR) + "/Testing/Data/" + filename;
 
       return name;
     };

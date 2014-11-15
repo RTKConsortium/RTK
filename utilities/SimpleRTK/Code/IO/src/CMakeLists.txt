@@ -6,11 +6,13 @@ set( SimpleRTKIOSource
   srtkImageSeriesReader.cxx
   srtkImportImageFilter.cxx
   srtkShow.cxx
+  srtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
   )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 include(${ITK_USE_FILE})
+include(${RTK_USE_FILE})
 
 add_library ( SimpleRTKIO ${SimpleRTKIOSource} )
 target_link_libraries ( SimpleRTKIO ${ITK_LIBRARIES} SimpleRTKCommon )

@@ -28,5 +28,7 @@
       "set_as_scalar" : 1,
       "itk_type" : "typename FilterType::ArrayType"
     }
-  ]
+  ],
+  "briefdescription" : "Slice a 3D volume to produce a 2D slice image.",
+  "detaileddescription" : "Slice a 3D volume to produce a 2D slice image."
 }
