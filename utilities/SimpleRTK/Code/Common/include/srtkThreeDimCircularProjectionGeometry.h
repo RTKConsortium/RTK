@@ -34,7 +34,7 @@ namespace simple
 class PimpleThreeDimCircularProjectionGeometry;
 
 /** \class ThreeDimCircularProjectionGeometry
- * \brief A simplified wrapper around a variety of RTK ThreeDimCircularProjectionGeometry.
+ * \brief A simplified wrapper around RTK's ThreeDCircularProjectionGeometry.
  *
  */
 class SRTKCommon_EXPORT ThreeDimCircularProjectionGeometry
@@ -42,15 +42,13 @@ class SRTKCommon_EXPORT ThreeDimCircularProjectionGeometry
 public:
   typedef ThreeDimCircularProjectionGeometry Self;
 
-  /** \brief By default a 3-d identity transform is constructed
+  /** \brief 
    */
   ThreeDimCircularProjectionGeometry( void );
   virtual ~ThreeDimCircularProjectionGeometry( void );
 
   /** \brief Copy constructor and assignment operator
-   *
-   * Performs a shallow copy of the internal ITK transform. A deep
-   * copy will be done if the transform in modified.
+   * Performs a shallow copy of the internal RTK Object.
    * @{
    */
   ThreeDimCircularProjectionGeometry &operator=( const ThreeDimCircularProjectionGeometry & );
@@ -58,21 +56,13 @@ public:
   /**@}*/
 
 
-  /** Get access to internal ITK data object.
-   *
-   * The return value should imediately be assigned to as
-   * itk::SmartPointer.
-   *
-   * In many cases the value may need to be dynamically casted to
-   * the the actual transform type.
-   *
+  /** Get access to internal RTK data object.
    * @{
    */
   rtk::ThreeDCircularProjectionGeometry* GetRTKBase( void );
   const rtk::ThreeDCircularProjectionGeometry* GetRTKBase( void ) const;
   /**@}*/
 
-  // todo get transform type
 
   /** Add the projection
    * @{
@@ -80,10 +70,11 @@ public:
   void AddProjection(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.);
   /**@}*/
 
-
-  // todo set identity
+  /** Return the current geometry as a string
+   * @{
+   */
   std::string ToString( void ) const;
-
+  /**@}*/
 
 protected:
 

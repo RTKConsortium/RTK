@@ -42,6 +42,7 @@
 #include "srtkImageSeriesReader.h"
 #include "srtkImageFileWriter.h"
 #include "srtkImportImageFilter.h"
+#include "srtkThreeDimCircularProjectionGeometryXMLFileWriter.h"
 
 #include "srtkHashImageFilter.h"
 #include "srtkPixelIDTypeLists.h"
