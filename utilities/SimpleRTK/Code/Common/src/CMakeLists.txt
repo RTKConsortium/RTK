@@ -3,7 +3,7 @@
   srtkImageExplicit.cxx
   srtkProcessObject.cxx
   srtkTransform.cxx
-  srtkThreeDimCircularProjectionGeometry.cxx
+  srtkThreeDCircularProjectionGeometry.cxx
   srtkCommand.cxx
   srtkFunctionCommand.cxx
   srtkPixelIDValues.cxx

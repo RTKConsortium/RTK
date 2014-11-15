@@ -132,7 +132,7 @@ namespace std
 %include "srtkPixelIDValues.h"
 %include "srtkImage.h"
 %include "srtkTransform.h"
-%include "srtkThreeDimCircularProjectionGeometry.h"
+%include "srtkThreeDCircularProjectionGeometry.h"
 %include "srtkCommand.h"
 %include "srtkInterpolator.h"
 //%include "srtkKernel.h"
@@ -164,7 +164,7 @@ namespace std
 %include "srtkImageReaderBase.h"
 %include "srtkImageSeriesReader.h"
 %include "srtkImageFileReader.h"
-%include "srtkThreeDimCircularProjectionGeometryXMLFileWriter.h"
+%include "srtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 
 // Basic Filters
 %include "srtkHashImageFilter.h"

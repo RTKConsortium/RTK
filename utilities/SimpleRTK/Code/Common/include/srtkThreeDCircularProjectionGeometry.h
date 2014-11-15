@@ -15,15 +15,15 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __srtkThreeDimCircularProjectionGeometry_h
-#define __srtkThreeDimCircularProjectionGeometry_h
+#ifndef __srtkThreeDCircularProjectionGeometry_h
+#define __srtkThreeDCircularProjectionGeometry_h
 
 #include "srtkCommon.h"
 #include "srtkExceptionObject.h"
 #include <vector>
 
 namespace rtk{
-  class ThreeDCircularProjectionGeometry;
+  template<unsigned int TDimension> class ProjectionGeometry;
 }
 
 namespace rtk
@@ -31,36 +31,36 @@ namespace rtk
 namespace simple
 {
 
-class PimpleThreeDimCircularProjectionGeometry;
+class PimpleThreeDCircularProjectionGeometry;
 
-/** \class ThreeDimCircularProjectionGeometry
+/** \class ThreeDCircularProjectionGeometry
  * \brief A simplified wrapper around RTK's ThreeDCircularProjectionGeometry.
  *
  */
-class SRTKCommon_EXPORT ThreeDimCircularProjectionGeometry
+class SRTKCommon_EXPORT ThreeDCircularProjectionGeometry
 {
 public:
-  typedef ThreeDimCircularProjectionGeometry Self;
+  typedef ThreeDCircularProjectionGeometry Self;
 
   /** \brief 
    */
-  ThreeDimCircularProjectionGeometry( void );
-  virtual ~ThreeDimCircularProjectionGeometry( void );
+  ThreeDCircularProjectionGeometry( void );
+  virtual ~ThreeDCircularProjectionGeometry( void );
 
   /** \brief Copy constructor and assignment operator
    * Performs a shallow copy of the internal RTK Object.
    * @{
    */
-  ThreeDimCircularProjectionGeometry &operator=( const ThreeDimCircularProjectionGeometry & );
-  ThreeDimCircularProjectionGeometry( const ThreeDimCircularProjectionGeometry & );
+  ThreeDCircularProjectionGeometry &operator=( const ThreeDCircularProjectionGeometry & );
+  ThreeDCircularProjectionGeometry( const ThreeDCircularProjectionGeometry & );
   /**@}*/
 
 
   /** Get access to internal RTK data object.
    * @{
    */
-  rtk::ThreeDCircularProjectionGeometry* GetRTKBase( void );
-  const rtk::ThreeDCircularProjectionGeometry* GetRTKBase( void ) const;
+  rtk::ProjectionGeometry<3>* GetRTKBase( void );
+  const rtk::ProjectionGeometry<3>* GetRTKBase( void ) const;
   /**@}*/
 
 
@@ -83,10 +83,10 @@ private:
   // As is the architecture of all SimpleRTK pimples,
   // this pointer should never be null and should always point to a
   // valid object
-  PimpleThreeDimCircularProjectionGeometry *m_PimpleThreeDimCircularProjectionGeometry;
+  PimpleThreeDCircularProjectionGeometry *m_PimpleThreeDCircularProjectionGeometry;
 };
 
 }
 }
 
-#endif // __srtkThreeDimCircularProjectionGeometry_h
+#endif // __srtkThreeDCircularProjectionGeometry_h

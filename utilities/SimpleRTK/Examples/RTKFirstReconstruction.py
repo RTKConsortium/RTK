@@ -3,15 +3,15 @@ from __future__ import print_function
 import SimpleRTK as srtk
 import sys
 import os
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+#import matplotlib.pyplot as plt
+#import matplotlib.cm as cm
 
 if len ( sys.argv ) < 2:
     print( "Usage: RTKFirstReconstruction <output>" )
     sys.exit ( 1 )
 
 # Defines the RTK geometry object
-geometry = srtk.ThreeDimCircularProjectionGeometry()
+geometry = srtk.ThreeDCircularProjectionGeometry()
 numberOfProjections = 360
 firstAngle = 0
 angularArc = 360
@@ -22,6 +22,11 @@ isoy = 0 # Y coordinate on the projection image of isocenter
 for x in range(0,numberOfProjections):
   angle = firstAngle + x * angularArc / numberOfProjections
   geometry.AddProjection(sid,sdd,angle,isox,isoy)
+
+# Writing the geometry
+geometrywriter = srtk.ThreeDCircularProjectionGeometryXMLFileWriter()
+geometrywriter.SetFileName ( sys.argv[2] )
+geometrywriter.Execute ( geometry );
 
 constantImageSource = srtk.ConstantImageSource()
 origin = [ -127.5, -127.5, 0. ]
@@ -64,7 +69,7 @@ image = feldkamp.Execute(source2,reiImage)
    
 pixelID = image.GetPixelIDValue()
 
-plt.imshow(srtk.GetArrayFromImage(image[:,64,:]), cmap = cm.Greys_r)
+#plt.imshow(srtk.GetArrayFromImage(image[:,64,:]), cmap = cm.Greys_r)
 
 caster = srtk.CastImageFilter()
 caster.SetOutputPixelType( pixelID )
