@@ -52,6 +52,10 @@ ADD_TEST(rtkdisplaceddetectortest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetector
 ADD_CUDA_TEST(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
 ADD_CUDA_TEST(rtkdisplaceddetectorcomp rtkdisplaceddetectorcompcudatest.cxx)
 
+ADD_EXECUTABLE(rtkdisplaceddetectorcompoffsettest rtkdisplaceddetectorcompoffsettest.cxx)
+TARGET_LINK_LIBRARIES(rtkdisplaceddetectorcompoffsettest ${RTK_LIBRARIES})
+ADD_TEST(rtkdisplaceddetectorcompoffsettest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetectorcompoffsettest)
+
 ADD_EXECUTABLE(rtkshortscantest rtkshortscantest.cxx)
 TARGET_LINK_LIBRARIES(rtkshortscantest ${RTK_LIBRARIES})
 ADD_TEST(rtkshortscantest ${EXECUTABLE_OUTPUT_PATH}/rtkshortscantest)
@@ -110,14 +114,14 @@ ADD_TEST(rtkmediantest ${EXECUTABLE_OUTPUT_PATH}/rtkmediantest)
 
 ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkamsterdamshroudtest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkamsterdamshroudtest 
+RTK_ADD_TEST(NAME rtkamsterdamshroudtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkamsterdamshroudtest
              DATA{Data/Baseline/AmsterdamShroud/Amsterdam.mha})
 
 ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)
 TARGET_LINK_LIBRARIES(rtkvariantest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkvariantest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest 
+RTK_ADD_TEST(NAME rtkvariantest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest
              DATA{Data/Input/Varian/raw.hnd,acqui.xml}
              DATA{Data/Baseline/Varian/attenuation.mha,geometry.xml})
 
@@ -137,8 +141,8 @@ RTK_ADD_TEST(NAME rtkluttest
 
 ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkimagxtest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest 
+RTK_ADD_TEST(NAME rtkimagxtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest
              DATA{Data/Input/ImagX/raw.xml,raw.raw}
              DATA{Data/Baseline/ImagX/attenuation.mha})
 
@@ -158,7 +162,7 @@ RTK_ADD_TEST(NAME rtkdigisenstest
 
 ADD_EXECUTABLE(rtkxradtest rtkxradtest.cxx)
 TARGET_LINK_LIBRARIES(rtkxradtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkxradtest 
+RTK_ADD_TEST(NAME rtkxradtest
              WORKING_DIRECTORY ${RTK_DATA_ROOT}/Input/XRad
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkxradtest
              DATA{Data/Input/XRad/flat.header,flat.img,dark.header,dark.img,SolidWater_HiGain1x1.header,SolidWater_HiGain1x1_firstProj.header,SolidWater_HiGain1x1_firstProj.img}
@@ -166,14 +170,14 @@ RTK_ADD_TEST(NAME rtkxradtest
 
 ADD_EXECUTABLE(rtkprojectgeometricphantomtest rtkprojectgeometricphantomtest.cxx)
 TARGET_LINK_LIBRARIES(rtkprojectgeometricphantomtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkprojectgeometricphantomtest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkprojectgeometricphantomtest 
+RTK_ADD_TEST(NAME rtkprojectgeometricphantomtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkprojectgeometricphantomtest
              DATA{Data/Input/GeometricPhantom/SheppLogan.txt})
 
 ADD_EXECUTABLE(rtkdrawgeometricphantomtest rtkdrawgeometricphantomtest.cxx)
 TARGET_LINK_LIBRARIES(rtkdrawgeometricphantomtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdrawgeometricphantomtest 
+RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdrawgeometricphantomtest
              DATA{Data/Input/GeometricPhantom/SheppLogan.txt}
              DATA{Data/Input/GeometricPhantom/Geometries.txt})
 
