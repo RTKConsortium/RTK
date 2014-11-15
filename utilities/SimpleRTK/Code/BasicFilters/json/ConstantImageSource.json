@@ -29,9 +29,9 @@
       "type" : "double",
 	  "default" : "0.0",
       "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "Gets and sets for Constant parameters",
+      "detaileddescriptionSet" : "Set the pixel value of the output.",
       "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : "Gets and sets for Constant parameters"
+      "detaileddescriptionGet" : "Get the pixel value of the output."
     },
     {
       "name" : "Origin",
@@ -39,6 +39,10 @@
       "dim_vec" : 1,
       "default" : "std::vector<double>(3, 0.0)",
       "itk_type" : "typename FilterType::PointType"
+	  "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the origin value of the output image.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the origin value of the output image."
     },
     {
       "name" : "Spacing",
@@ -46,15 +50,22 @@
       "dim_vec" : 1,
       "default" : "std::vector<double>(3, 1.0)",
       "itk_type" : "typename FilterType::SpacingType"
+	  "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the spacing value of the output image.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the spacing value of the output image."
     },
     {
       "name" : "Direction",
       "type" : "std::vector<double>",
       "default" : "std::vector<double>()",
-      "doc" : "Passing a zero sized array, defaults to identiy matrix. The size of the array must exactly match the direction matrix for the dimension of the image.",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the direction of the output image.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the direction of the output image."
       "custom_itk_cast" : "filter->SetDirection( VectorToITKDirection<typename FilterType::DirectionType>( this->m_Direction ) );"
     }
   ],
-  "briefdescription" : "Generate an n-dimensional image of a Gaussian.",
-  "detaileddescription" : "GaussianImageSourcegenerates an image of a Gaussian. m_Normalized determines whether or not the Gaussian is normalized (whether or not the sum over infinite space is 1.0) When creating an image, it is preferable tonotnormalize the Gaussian m_Scale scales the output of the Gaussian to span a range larger than 0->1, and is typically set to the maximum value of the output data type (for instance, 255 for uchars)\n\nThe output image may be of any dimension."
+  "briefdescription" : "Generate an n-dimensional image with constant pixel values.",
+  "detaileddescription" : "Generates an image with constant value. The filter is useful to allow streaming of large images with a constant source, e.g., a tomography reconstructed with a filtered backprojection algorithm."
 }
