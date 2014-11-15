@@ -28,7 +28,6 @@ namespace rtk
 {
 namespace simple
 {
-
 class PimpleThreeDimCircularProjectionGeometry
 {
 public:
@@ -60,7 +59,7 @@ public:
 
   PimpleThreeDimCircularProjectionGeometry *ShallowCopy( void ) const
     {
-      return new Self( this->m_ProjectionGeometry.GetPointer() );
+    return new Self( this->m_ProjectionGeometry.GetPointer() );
     }
 
   PimpleThreeDimCircularProjectionGeometry *DeepCopy( void ) const

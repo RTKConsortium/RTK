@@ -1,4 +1,3 @@
-
 add_subdirectory( src )
 
 configure_file( "src/srtkConfigure.h.in" "include/srtkConfigure.h" )
