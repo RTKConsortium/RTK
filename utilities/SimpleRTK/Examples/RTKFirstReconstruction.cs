@@ -28,7 +28,7 @@ namespace rtk.simple.examples {
                 }
 
                 // Defines the RTK geometry object
-                ThreeDimCircularProjectionGeometry geometry = new ThreeDimCircularProjectionGeometry();
+                ThreeDCircularProjectionGeometry geometry = new ThreeDCircularProjectionGeometry();
                 uint numberOfProjections = 360;
                 float firstAngle = 0;
                 float angularArc = 360;

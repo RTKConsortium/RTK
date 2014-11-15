@@ -23,7 +23,7 @@
 
 // todo this should be moved to a more local place
 #include "srtkTransform.h"
-#include "srtkThreeDimCircularProjectionGeometry.h"
+#include "srtkThreeDCircularProjectionGeometry.h"
 
 #if defined( SRTKDLL )
   #ifdef SimpleRTKBasicFilters0_EXPORTS

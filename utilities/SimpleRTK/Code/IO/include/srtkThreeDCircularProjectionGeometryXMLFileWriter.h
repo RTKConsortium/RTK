@@ -15,11 +15,11 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __srtkThreeDimCircularProjectionGeometryXMLFileWriter_h
-#define __srtkThreeDimCircularProjectionGeometryXMLFileWriter_h
+#ifndef __srtkThreeDCircularProjectionGeometryXMLFileWriter_h
+#define __srtkThreeDCircularProjectionGeometryXMLFileWriter_h
 
 #include "srtkMacro.h"
-#include "srtkThreeDimCircularProjectionGeometry.h"
+#include "srtkThreeDCircularProjectionGeometry.h"
 #include "srtkMemberFunctionFactory.h"
 #include "srtkIO.h"
 #include "srtkProcessObject.h"
@@ -29,31 +29,31 @@
 namespace rtk {
   namespace simple {
 
-    /** \class ThreeDimCircularProjectionGeometryXMLFileWriter
+    /** \class ThreeDCircularProjectionGeometryXMLFileWriter
      * \brief Write out an RTK 3D circular geometry as XML
      */
-    class SRTKIO_EXPORT ThreeDimCircularProjectionGeometryXMLFileWriter  :
+    class SRTKIO_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter  :
       public ProcessObject
     {
     public:
-      typedef ThreeDimCircularProjectionGeometryXMLFileWriter Self;
+      typedef ThreeDCircularProjectionGeometryXMLFileWriter Self;
 
       // function pointer type
-      typedef Self& (Self::*MemberFunctionType)( const ThreeDimCircularProjectionGeometry& );
+      typedef Self& (Self::*MemberFunctionType)( const ThreeDCircularProjectionGeometry& );
 
-      ThreeDimCircularProjectionGeometryXMLFileWriter( void );
+      ThreeDCircularProjectionGeometryXMLFileWriter( void );
 
       /** Print ourselves to string */
       virtual std::string ToString() const;
 
       /** return user readable name fo the filter */
-      virtual std::string GetName() const { return std::string("ThreeDimCircularProjectionGeometryXMLFileWriter"); }
+      virtual std::string GetName() const { return std::string("ThreeDCircularProjectionGeometryXMLFileWriter"); }
 
       Self& SetFileName ( std::string fileName );
       std::string GetFileName() const;
 
-      Self& Execute ( const ThreeDimCircularProjectionGeometry& );
-      Self& Execute ( const ThreeDimCircularProjectionGeometry& , const std::string &inFileName );
+      Self& Execute ( const ThreeDCircularProjectionGeometry& );
+      Self& Execute ( const ThreeDCircularProjectionGeometry& , const std::string &inFileName );
 
     private:
 
@@ -61,7 +61,7 @@ namespace rtk {
 
     };
 
-  SRTKIO_EXPORT void WriteXML ( const ThreeDimCircularProjectionGeometry& geometry, const std::string &fileName );
+  SRTKIO_EXPORT void WriteXML ( const ThreeDCircularProjectionGeometry& geometry, const std::string &fileName );
   }
 }
 

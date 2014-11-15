@@ -15,29 +15,29 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include "srtkThreeDimCircularProjectionGeometryXMLFileWriter.h"
+#include "srtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 #include <rtkThreeDCircularProjectionGeometryXMLFile.h>
 
 namespace rtk {
 namespace simple {
 
-void WriteXML ( const ThreeDimCircularProjectionGeometry& geometry, const std::string &inFileName )
+void WriteXML ( const ThreeDCircularProjectionGeometry& geometry, const std::string &inFileName )
   {
-  ThreeDimCircularProjectionGeometryXMLFileWriter writer;
+  ThreeDCircularProjectionGeometryXMLFileWriter writer;
   writer.Execute ( geometry, inFileName );
   }
 
 
-ThreeDimCircularProjectionGeometryXMLFileWriter::ThreeDimCircularProjectionGeometryXMLFileWriter()
+ThreeDCircularProjectionGeometryXMLFileWriter::ThreeDCircularProjectionGeometryXMLFileWriter()
   {
   // This is probably not needed
   //this->m_MemberFactory.reset( new detail::MemberFunctionFactory<MemberFunctionType>( this ) );
   }
 
-std::string ThreeDimCircularProjectionGeometryXMLFileWriter::ToString() const
+std::string ThreeDCircularProjectionGeometryXMLFileWriter::ToString() const
   {
   std::ostringstream out;
-  out << "rtk::simple::ThreeDimCircularProjectionGeometryXMLFileWriter";
+  out << "rtk::simple::ThreeDCircularProjectionGeometryXMLFileWriter";
   out << std::endl;
 
   out << "  FileName: \"";
@@ -47,34 +47,32 @@ std::string ThreeDimCircularProjectionGeometryXMLFileWriter::ToString() const
   return out.str();
   }
 
-ThreeDimCircularProjectionGeometryXMLFileWriter& ThreeDimCircularProjectionGeometryXMLFileWriter::SetFileName ( std::string fn )
+ThreeDCircularProjectionGeometryXMLFileWriter& ThreeDCircularProjectionGeometryXMLFileWriter::SetFileName ( std::string fn )
   {
   this->m_FileName = fn;
   return *this;
   }
 
-std::string ThreeDimCircularProjectionGeometryXMLFileWriter::GetFileName() const
+std::string ThreeDCircularProjectionGeometryXMLFileWriter::GetFileName() const
   {
   return this->m_FileName;
   }
 
-ThreeDimCircularProjectionGeometryXMLFileWriter& ThreeDimCircularProjectionGeometryXMLFileWriter
-::Execute ( const ThreeDimCircularProjectionGeometry& geometry, const std::string &inFileName )
+ThreeDCircularProjectionGeometryXMLFileWriter& ThreeDCircularProjectionGeometryXMLFileWriter
+::Execute ( const ThreeDCircularProjectionGeometry& geometry, const std::string &inFileName )
   {
   this->SetFileName( inFileName );
   return this->Execute( geometry );
   }
 
-ThreeDimCircularProjectionGeometryXMLFileWriter& ThreeDimCircularProjectionGeometryXMLFileWriter
-::Execute ( const ThreeDimCircularProjectionGeometry& geometry )
+ThreeDCircularProjectionGeometryXMLFileWriter& ThreeDCircularProjectionGeometryXMLFileWriter
+::Execute ( const ThreeDCircularProjectionGeometry& geometry )
   {
   typedef rtk::ThreeDCircularProjectionGeometryXMLFileWriter Writer;
   Writer::Pointer writer = Writer::New();
   writer->SetFilename ( this->m_FileName.c_str() );
 
-  writer->SetObject ( const_cast< ThreeDCircularProjectionGeometry * > (geometry.GetRTKBase()) );
-
-  //this->PreUpdate( writer.GetPointer() );
+  writer->SetObject ( const_cast<rtk::ThreeDCircularProjectionGeometry *>(dynamic_cast<const rtk::ThreeDCircularProjectionGeometry * > (geometry.GetRTKBase())) );
   writer->WriteFile();
 
   return *this;

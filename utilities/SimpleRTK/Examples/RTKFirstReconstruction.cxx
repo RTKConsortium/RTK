@@ -33,7 +33,7 @@ int main ( int argc, char* argv[] ) {
   }
 
   // Defines the RTK geometry object
-  srtk::ThreeDimCircularProjectionGeometry geometry;
+  srtk::ThreeDCircularProjectionGeometry geometry;
   unsigned int numberOfProjections = 360;
   float firstAngle = 0;
   float angularArc = 360;

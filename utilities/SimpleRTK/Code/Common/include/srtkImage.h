@@ -97,7 +97,7 @@ namespace simple
      * unaware of it, and may cause complication related to aliasing
      * and SimpleRTK copy on write policy.
      *
-     * If simpleITK does not support the image type, a compile-time
+     * If simpleRTK does not support the image type, a compile-time
      * error or assertion will fail.
      *
      * The ITK image must be fully buffered, and must have a zero

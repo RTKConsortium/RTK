@@ -8,15 +8,15 @@
   "pixel_types" : "RealPixelIDTypeList",
   "filter_type" : "rtk::FDKConeBeamReconstructionFilter<InputImageType>",
   "include_files" : [
-    "srtkThreeDimCircularProjectionGeometry.h"
+    "srtkThreeDCircularProjectionGeometry.h"
   ],
   "members" : [
 	{
       "name" : "Geometry",
-      "type" : "ThreeDimCircularProjectionGeometry*",
+      "type" : "ThreeDCircularProjectionGeometry*",
       "default" : "0",
-	  "itk_type" : "ThreeDimCircularProjectionGeometry",
-      "custom_itk_cast" : "filter->SetGeometry( this->m_Geometry->GetRTKBase() );\n",
+	  "itk_type" : "ThreeDCircularProjectionGeometry",
+      "custom_itk_cast" : "filter->SetGeometry( const_cast<rtk::ThreeDCircularProjectionGeometry*>(dynamic_cast<const rtk::ThreeDCircularProjectionGeometry*>(this->m_Geometry->GetRTKBase())) );\n",
       "doc" : "",
       "briefdescriptionSet" : "",
       "detaileddescriptionSet" : "Set the object pointer to projection geometry.",

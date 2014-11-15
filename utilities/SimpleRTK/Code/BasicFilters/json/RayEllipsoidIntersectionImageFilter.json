@@ -7,12 +7,12 @@
   "output_image_type" : "TImageType",
   "pixel_types" : "RealPixelIDTypeList",
   "include_files" : [
-    "srtkThreeDimCircularProjectionGeometry.h"
+    "srtkThreeDCircularProjectionGeometry.h"
   ],
   "members" : [
 	{
       "name" : "Geometry",
-      "type" : "ThreeDimCircularProjectionGeometry*",
+      "type" : "ThreeDCircularProjectionGeometry*",
       "default" : "0",
 	  "itk_type" : "typename FilterType::GeometryPointer",
       "custom_itk_cast" : "typename FilterType::GeometryType* itkTx;\n    if ( !(itkTx = dynamic_cast<typename FilterType::GeometryType *>(this->m_Geometry->GetRTKBase() )) ) {\n      srtkExceptionMacro( \"Unexpected error converting geometry\" );\n     }\n    else { filter->SetGeometry( itkTx ); }",
