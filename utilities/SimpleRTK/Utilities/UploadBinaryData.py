@@ -39,7 +39,7 @@ which can be installed with::
   pip install pydas
 
 Pass in the input binary files to be uploaded. These should be files
-located in the SimpleITK source tree. They will be uploaded and
+located in the SimpleRTK source tree. They will be uploaded and
 replaced with a *.md5 file that can be added to the current
 commit with "git add -- path/to/file.md5".
 """
@@ -83,11 +83,11 @@ def upload_to_midas(input_file, output_file, folders, session, communicator):
             if folder['name'] == child_name:
                 return folder
         return None
-    itk_community = communicator.get_community_by_name('ITK')
+    itk_community = communicator.get_community_by_name('RTK')
     itk_public = get_child_folder(itk_community, 'Public')
-    simpleitk = get_child_folder(itk_public, 'SimpleITK')
+    simplertk = get_child_folder(itk_public, 'SimpleRTK')
 
-    current_folder = simpleitk
+    current_folder = simplertk
     for folder in folders:
         child_folder = get_child_folder(current_folder, folder)
         if child_folder is None:
@@ -134,7 +134,7 @@ def upload_to_midas(input_file, output_file, folders, session, communicator):
 
 
 def find_git_dir(filepath):
-    """Find our best estimate of GIT_DIR to locate the root of the SimpleITK
+    """Find our best estimate of GIT_DIR to locate the root of the SimpleRTK
     repository."""
     filepath = os.path.abspath(filepath)
     head, tail = os.path.split(filepath)
@@ -144,7 +144,7 @@ def find_git_dir(filepath):
             return head
         previous_head = head
         head, tail = os.path.split(head)
-    print('Could not find the root of the SimpleITK repository!')
+    print('Could not find the root of the SimpleRTK repository!')
     sys.exit(1)
 
 

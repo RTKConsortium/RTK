@@ -295,12 +295,12 @@ endforeach()
 
 
 
-VariableListToCache( SimpleRTK_VARS  ep_simpleitk_cache )
-VariableListToArgs( SimpleRTKITK_VARS  ep_simpleitk_args )
+VariableListToCache( SimpleRTK_VARS  ep_simplertk_cache )
+VariableListToArgs( SimpleRTKITK_VARS  ep_simplertk_args )
 VariableListToCache( SITK_LANGUAGES_VARS  ep_languages_cache )
 VariableListToArgs( SITK_LANGUAGES_VARS  ep_languages_args )
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/SimpleRTK-build/CMakeCacheInit.txt" "${ep_simpleitk_cache}${ep_common_cache}\n${ep_languages_cache}" )
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/SimpleRTK-build/CMakeCacheInit.txt" "${ep_simplertk_cache}${ep_common_cache}\n${ep_languages_cache}" )
 
 set(proj SimpleRTK)
 ExternalProject_Add(${proj}
@@ -312,7 +312,7 @@ ExternalProject_Add(${proj}
   CMAKE_ARGS
     --no-warn-unused-cli
     -C "${CMAKE_CURRENT_BINARY_DIR}/SimpleRTK-build/CMakeCacheInit.txt"
-    ${ep_simpleitk_args}
+    ${ep_simplertk_args}
     ${ep_common_args}
     -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
     -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}\ ${CXX_ADDITIONAL_WARNING_FLAGS}

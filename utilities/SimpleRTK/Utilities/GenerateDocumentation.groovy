@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 /*=========================================================================
 *
-*  Copyright Insight Software Consortium
+*  Copyright Insight Software Consortium & RTK Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.codehaus.jackson.*
 import org.apache.log4j.*
 
 if ( this.args.size() != 2 ) {
-  println ( "usage: GenerateDocumentation <SimpleITKClass.json> <Path/To/ITK-build/With/Doxygen>" )
+  println ( "usage: GenerateDocumentation <SimpleRTKClass.json> <Path/To/ITK-build/With/Doxygen>" )
   System.exit ( 1 )
 }
 // Read the JSON definition

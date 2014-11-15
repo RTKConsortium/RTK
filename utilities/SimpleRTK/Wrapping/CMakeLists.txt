@@ -92,16 +92,16 @@ if ( WRAP_PYTHON )
   set(SWIG_MODULE_SimpleRTKPython_TARGET_NAME "${SWIG_MODULE_SimpleRTK_TARGET_NAME}")
 
   # Installation
-  set( SIMPLEITK_PYTHON_PACKAGE_DIR "${SimpleRTK_BINARY_DIR}/Wrapping" )
-  file( TO_NATIVE_PATH "${SIMPLEITK_PYTHON_PACKAGE_DIR}" SIMPLEITK_PYTHON_PACKAGE_DIR )
+  set( SIMPLERTK_PYTHON_PACKAGE_DIR "${SimpleRTK_BINARY_DIR}/Wrapping" )
+  file( TO_NATIVE_PATH "${SIMPLERTK_PYTHON_PACKAGE_DIR}" SIMPLERTK_PYTHON_PACKAGE_DIR )
   get_target_property( SWIG_MODULE_SimpleRTKPython_TARGET_LOCATION ${SWIG_MODULE_SimpleRTKPython_TARGET_NAME} OUTPUT_NAME )
   add_custom_command(
     TARGET ${SWIG_MODULE_SimpleRTKPython_TARGET_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${SWIG_MODULE_SimpleRTKPython_TARGET_NAME}>" "${CMAKE_CURRENT_BINARY_DIR}"
   )
-  get_target_property( SIMPLEITK_RELATIVE_BINARY_MODULE ${SWIG_MODULE_SimpleRTKPython_TARGET_NAME} LOCATION )
-  get_filename_component( SIMPLEITK_RELATIVE_BINARY_MODULE "${SIMPLEITK_RELATIVE_BINARY_MODULE}" NAME )
+  get_target_property( SIMPLERTK_RELATIVE_BINARY_MODULE ${SWIG_MODULE_SimpleRTKPython_TARGET_NAME} LOCATION )
+  get_filename_component( SIMPLERTK_RELATIVE_BINARY_MODULE "${SIMPLERTK_RELATIVE_BINARY_MODULE}" NAME )
 
 
   if ( SimpleRTK_DOC_FILES )
@@ -198,15 +198,15 @@ if ( WRAP_RUBY )
   include_directories ( ${RUBY_INCLUDE_DIRS} )
 
   # Run swig
-  set(CMAKE_SWIG_FLAGS -autorename -module simpleitk ${CMAKE_SWIG_GLOBAL_FLAGS})
+  set(CMAKE_SWIG_FLAGS -autorename -module simplertk ${CMAKE_SWIG_GLOBAL_FLAGS})
   set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
-  set(SWIG_MODULE_simpleitk_EXTRA_DEPS ${SWIG_EXTRA_DEPS}
+  set(SWIG_MODULE_simplertk_EXTRA_DEPS ${SWIG_EXTRA_DEPS}
      ${CMAKE_CURRENT_SOURCE_DIR}/Ruby.i)
 
-  SWIG_add_module ( simpleitk ruby SimpleRTK.i SimpleRTKRUBY_wrap.cxx )
-  SWIG_link_libraries ( simpleitk ${SimpleRTK_LIBRARIES} ${RUBY_LIBRARY})
+  SWIG_add_module ( simplertk ruby SimpleRTK.i SimpleRTKRUBY_wrap.cxx )
+  SWIG_link_libraries ( simplertk ${SimpleRTK_LIBRARIES} ${RUBY_LIBRARY})
   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/SimpleRTKRUBY_wrap.cxx  PROPERTIES COMPILE_FLAGS "-w")
-  srtk_strip_target( ${SWIG_MODULE_simpleitk_TARGET_NAME} )
+  srtk_strip_target( ${SWIG_MODULE_simplertk_TARGET_NAME} )
 
 endif()
 
@@ -260,7 +260,7 @@ if ( WRAP_JAVA )
   # Get the location of the extension directory
   string(REGEX REPLACE "include"  "jre/lib/ext" JAVA_EXTENSION_DIR ${JAVA_INCLUDE_PATH} )
 
-  # TODO: add new target to install simpleitk java
+  # TODO: add new target to install simplertk java
   # Add the install target
   # install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${JAR_FILE} DESTINATION ${JAVA_EXTENSION_DIR})
 
@@ -403,8 +403,8 @@ if ( WRAP_R )
 
   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/SimpleRTKR_wrap.cxx PROPERTIES COMPILE_FLAGS "-w")
 
-  get_target_property( SIMPLEITKR_BINARY_MODULE ${SWIG_MODULE_SimpleRTK_TARGET_NAME} LOCATION )
-  file(TO_NATIVE_PATH "${SIMPLEITKR_BINARY_MODULE}" SIMPLEITKR_NATIVE_BINARY_MODULE )
+  get_target_property( SIMPLERTKR_BINARY_MODULE ${SWIG_MODULE_SimpleRTK_TARGET_NAME} LOCATION )
+  file(TO_NATIVE_PATH "${SIMPLERTKR_BINARY_MODULE}" SIMPLERTKR_NATIVE_BINARY_MODULE )
 
 
   add_dependencies( ${SWIG_MODULE_SimpleRTK_TARGET_NAME} ConfigureFileBuildtime )

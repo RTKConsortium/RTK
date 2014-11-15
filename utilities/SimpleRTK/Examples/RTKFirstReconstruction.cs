@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright Insight Software Consortium
+*  Copyright RTK Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ namespace rtk.simple.examples {
                 }
 
                 // Defines the RTK geometry object
-                ThreeDimCircularProjectionGeometry geometry = new ThreeDimCircularProjectionGeometry();
+                ThreeDCircularProjectionGeometry geometry = new ThreeDCircularProjectionGeometry();
                 uint numberOfProjections = 360;
                 float firstAngle = 0;
                 float angularArc = 360;

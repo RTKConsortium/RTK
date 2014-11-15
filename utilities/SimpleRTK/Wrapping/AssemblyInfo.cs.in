@@ -19,9 +19,9 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("@SimpleRTK_VERSION_CSHARP_AssemblyVersion@")]
 [assembly: AssemblyTitle("@PROJECT_NAME@ C# @CSHARP_PLATFORM@ wrapper @SimpleRTK_VERSION@")]
-[assembly: AssemblyCopyright("Copyright Insight Software Consortium, Apache License, Version 2.0")]
+[assembly: AssemblyCopyright("Copyright RTK Consortium, Apache License, Version 2.0")]
 [assembly: AssemblyDescription("@PROJECT_NAME@ C# @CSHARP_PLATFORM@ wrapper @SimpleRTK_VERSION@, compiled with @CSHARP_TYPE@ @CSHARP_VERSION@, using RTK @RTK_VERSION_MAJOR@.@RTK_VERSION_MINOR@.@RTK_VERSION_PATCH@")]
-[assembly: AssemblyCompany("Insight Software Consortium")]
+[assembly: AssemblyCompany("RTK Consortium")]
 [assembly: AssemblyFileVersion("@SimpleRTK_VERSION@")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyTrademark("@PROJECT_NAME@")]

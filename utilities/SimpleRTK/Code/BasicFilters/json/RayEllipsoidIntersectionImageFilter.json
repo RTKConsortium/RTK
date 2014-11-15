@@ -7,20 +7,20 @@
   "output_image_type" : "TImageType",
   "pixel_types" : "RealPixelIDTypeList",
   "include_files" : [
-    "srtkThreeDimCircularProjectionGeometry.h"
+    "srtkThreeDCircularProjectionGeometry.h"
   ],
   "members" : [
 	{
       "name" : "Geometry",
-      "type" : "ThreeDimCircularProjectionGeometry*",
+      "type" : "ThreeDCircularProjectionGeometry*",
       "default" : "0",
 	  "itk_type" : "typename FilterType::GeometryPointer",
       "custom_itk_cast" : "typename FilterType::GeometryType* itkTx;\n    if ( !(itkTx = dynamic_cast<typename FilterType::GeometryType *>(this->m_Geometry->GetRTKBase() )) ) {\n      srtkExceptionMacro( \"Unexpected error converting geometry\" );\n     }\n    else { filter->SetGeometry( itkTx ); }",
       "doc" : "",
       "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "Set the radius of the neighborhood used to compute the median.",
+      "detaileddescriptionSet" : "Set the geometry input.",
       "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : "Get the radius of the neighborhood used to compute the median"
+      "detaileddescriptionGet" : "Get the geometry input."
     },
     {
       "name" : "Axis",
@@ -30,9 +30,9 @@
 	  "itk_type" : "typename FilterType::VectorType",
       "doc" : "",
       "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "Set the radius of the neighborhood used to compute the median.",
+      "detaileddescriptionSet" : "Set the axis of the ellipsoid.",
       "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : "Get the radius of the neighborhood used to compute the median"
+      "detaileddescriptionGet" : "Get the axis of the ellipsoid."
     },
 	{
       "name" : "Center",
@@ -42,29 +42,29 @@
 	  "itk_type" : "typename FilterType::VectorType",
       "doc" : "",
       "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "Set the radius of the neighborhood used to compute the median.",
+      "detaileddescriptionSet" : "Set the center of the ellipsoid.",
       "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : "Get the radius of the neighborhood used to compute the median"
+      "detaileddescriptionGet" : "Get the center of the ellipsoid."
     },
     {
       "name" : "Angle",
       "type" : "double",
       "default" : "0.0",
       "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "Set the value associated with the Foreground (or the object) on the binary input image and the Background .",
+      "detaileddescriptionSet" : "Set the angle of the ellipsoid.",
       "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : "Get the value associated with the Foreground (or the object) on the binary input image and the Background ."
+      "detaileddescriptionGet" : "Get the angle of the ellipsoid."
     }
 	{
       "name" : "Density",
       "type" : "double",
       "default" : "0.0",
       "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "Set the value associated with the Foreground (or the object) on the binary input image and the Background .",
+      "detaileddescriptionSet" : "Set the multiplicative constant of the volume.",
       "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : "Get the value associated with the Foreground (or the object) on the binary input image and the Background ."
+      "detaileddescriptionGet" : "Get the multiplicative constant of the volume."
     }
   ],
-  "briefdescription" : "Applies a version of the median filter optimized for binary images.",
-  "detaileddescription" : "This filter was contributed by Bjorn Hanch Sollie after identifying that the generic Median filter performed unnecessary operations when the input image is binary.\n\nThis filter computes an image where a given pixel is the median value of the pixels in a neighborhood about the corresponding input pixel. For the case of binary images the median can be obtained by simply counting the neighbors that are foreground.\n\nA median filter is one of the family of nonlinear filters. It is used to smooth an image without being biased by outliers or shot noise.\n\n\\see  Image\n\\see \n\\see  Neighborhood\n\\see \n\\see  NeighborhoodOperator\n\\see \n\\see  NeighborhoodIterator"
+  "briefdescription" : "Computes intersection of projection rays with ellipsoids.",
+  "detaileddescription" : "Computes intersection of projection rays with ellipsoids."
 }

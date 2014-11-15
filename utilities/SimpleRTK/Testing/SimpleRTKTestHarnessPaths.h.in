@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright Insight Software Consortium
+*  Copyright Insight Software Consortium & RTK Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@
 #endif
 
 #define EXECUTABLE_SUFFIX "@CMAKE_EXECUTABLE_SUFFIX@"
-#define SIMPLEITK_SOURCE_DIR "@SimpleRTK_SOURCE_DIR@"
-#define SIMPLEITK_BINARY_DIR "@SimpleRTK_BINARY_DIR@"
+#define SIMPLERTK_SOURCE_DIR "@SimpleRTK_SOURCE_DIR@"
+#define SIMPLERTK_BINARY_DIR "@SimpleRTK_BINARY_DIR@"
 #define TEST_HARNESS_TEMP_DIRECTORY "@TEST_HARNESS_TEMP_DIRECTORY@"
 #define TEST_HARNESS_DATA_DIRECTORY "@TEST_HARNESS_DATA_DIRECTORY@"
 #define PYTHON_EXECUTABLE_PATH "@VIRTUAL_PYTHON_EXECUTABLE@"

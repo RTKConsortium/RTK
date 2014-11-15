@@ -26,7 +26,7 @@
 #include "srtkVersion.h"
 #include "srtkImage.h"
 #include "srtkTransform.h"
-#include "srtkThreeDimCircularProjectionGeometry.h"
+#include "srtkThreeDCircularProjectionGeometry.h"
 #include "srtkShow.h"
 
 #include "srtkInterpolator.h"
@@ -42,6 +42,7 @@
 #include "srtkImageSeriesReader.h"
 #include "srtkImageFileWriter.h"
 #include "srtkImportImageFilter.h"
+#include "srtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 
 #include "srtkHashImageFilter.h"
 #include "srtkPixelIDTypeLists.h"
