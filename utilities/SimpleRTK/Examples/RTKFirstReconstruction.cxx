@@ -1,6 +1,6 @@
 /*=========================================================================
 *
-*  Copyright Insight Software Consortium
+*  Copyright RTK Consortium
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 *
 *=========================================================================*/
 
-// This one header will include all SimpleITK filters and external
+// This one header will include all SimpleRTK filters and external
 // objects.
 #include <SimpleRTK.h>
 #include <iostream>

@@ -3,11 +3,11 @@ from __future__ import print_function
 import SimpleRTK as srtk
 import sys
 import os
-#import matplotlib.pyplot as plt
-#import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
-if len ( sys.argv ) < 2:
-    print( "Usage: RTKFirstReconstruction <output>" )
+if len ( sys.argv ) < 3:
+    print( "Usage: RTKFirstReconstruction <outputimage> <outputgeometry>" )
     sys.exit ( 1 )
 
 # Defines the RTK geometry object
@@ -69,7 +69,7 @@ image = feldkamp.Execute(source2,reiImage)
    
 pixelID = image.GetPixelIDValue()
 
-#plt.imshow(srtk.GetArrayFromImage(image[:,64,:]), cmap = cm.Greys_r)
+plt.imshow(srtk.GetArrayFromImage(image[:,64,:]), cmap = cm.Greys_r)
 
 caster = srtk.CastImageFilter()
 caster.SetOutputPixelType( pixelID )

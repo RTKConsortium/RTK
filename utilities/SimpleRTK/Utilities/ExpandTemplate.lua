@@ -510,7 +510,7 @@ function expand(str, ...)
         end
       end
       error('syntax error in: '.. var, 2)
-    -- Add "include" option for SimpleITK
+    -- Add "include" option for SimpleRTK
     elseif cmd == 'include' then -- $(include xxx)
 
       filename = templateComponentDirectory .. "/" .. estring(strsub(var,e))
