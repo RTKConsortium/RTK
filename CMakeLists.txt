@@ -185,8 +185,14 @@ include_directories(
         utilities/lp_solve/bfp
         utilities/lp_solve/bfp/bfp_LUSOL
         utilities/lp_solve/bfp/bfp_LUSOL/LUSOL
-        utilities/lp_solve/colamd
-)
+        utilities/lp_solve/colamd)
+LIST(APPEND RTK_INCLUDE_DIRS
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/shared"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL/LUSOL"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/colamdcode")
 ADD_SUBDIRECTORY(code)
 
 #=========================================================
