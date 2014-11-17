@@ -66,7 +66,10 @@ denoise_oneD_TV_kernel(float *in, float* out, float beta, float gamma, int niter
     gradient[lindex] = interm[lindex + 1] - interm[lindex];
 
   // Magnitude threshold (in 1D, hard threshold on absolute value)
-  gradient[lindex] = fminf(gradient[lindex], gamma);
+  if (gradient[lindex] >= 0)
+    gradient[lindex] = fminf(gradient[lindex], gamma);
+  else
+    gradient[lindex] = fmaxf(gradient[lindex], -gamma);
 
   // Rest of the iterations
   for (int iter=0; iter<niter; iter++)
@@ -95,7 +98,10 @@ denoise_oneD_TV_kernel(float *in, float* out, float beta, float gamma, int niter
 
       // Magnitude threshold
       __syncthreads();
-      gradient[lindex] = fminf(gradient[lindex], gamma);
+      if (gradient[lindex] >= 0)
+        gradient[lindex] = fminf(gradient[lindex], gamma);
+      else
+        gradient[lindex] = fmaxf(gradient[lindex], -gamma);
     }
   // Done computing 1D TV for this buffer
   ////////////////////////////////////////////////////////
@@ -137,10 +143,7 @@ CUDA_total_variation_last_dimension(int size[4],
 
   dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
 
-  // Cuda does not easily support dynamic allocation of shared memory. Therefore
-  // we allocate arrays of fixed size of shared memory (16 floats) for each block.
-  // Check that the size along the last dimension is smaller than 16
-
+  // Dynamic allocation of shared memory
   denoise_oneD_TV_kernel <<< dimGrid, dimBlock, 4*sizeof(float)*size[3] >>> (dev_in, dev_out, beta, gamma, NumberOfIterations);
   CUDA_CHECK_ERROR;
 }
