@@ -2,6 +2,7 @@
 #include "rtkMacro.h"
 #include "rtkI0EstimationProjectionFilter.h"
 #include <itkRandomImageSource.h>
+#include <itkTimeProbe.h>
 
 /**
  * \file rtkI0estimationtest.cxx
@@ -13,16 +14,19 @@
 
 int main(int, char** )
 {
+	itk::TimeProbe clock;
+
   const unsigned int Dimension = 3;
 	typedef itk::Image<unsigned short, Dimension> ImageType;
+	typedef ImageType::Pointer ImageTypePtr;
 	
-	typedef rtk::I0EstimationProjectionFilter<4> I0FilterType;
+	typedef rtk::I0EstimationProjectionFilter<3> I0FilterType;
 	I0FilterType::Pointer i0est = I0FilterType::New();
 	
   // Constant image sources
   ImageType::SizeType size;
-	size[0] = 128;
-	size[1] = 200;
+	size[0] = 150;
+	size[1] = 150;
 	size[2] = 1;
 	ImageType::IndexType start;
 	start.Fill(0);
@@ -30,32 +34,45 @@ int main(int, char** )
 	region.SetIndex(start);
 	region.SetSize(size);
 		
-	ImageType::Pointer projSource = ImageType::New();
-	projSource->SetRegions(region);
-	projSource->Allocate();
-	projSource->FillBuffer(416);
-
+	I0FilterType::HistogramType::Pointer hist;
+	
 	typedef itk::RandomImageSource< ImageType > RandomImageSourceType;
 	RandomImageSourceType::Pointer randomSource = RandomImageSourceType::New();
-	randomSource->SetMin(320);
-	randomSource->SetMax(380);
 	randomSource->SetSize(size);
-	randomSource->Update();
 
-	i0est->SetInput(randomSource->GetOutput());
-	TRY_AND_EXIT_ON_ITK_EXCEPTION(i0est->UpdateOutputInformation());
+	i0est->UseRLSOn();
+	i0est->MedianOn();
+	i0est->UseTurboOff();
+	i0est->SetexpectedI0(23);
+	i0est->SetLambda(0.9);
 
-	for (unsigned int i = 0; i < 10; ++i)  {
+	unsigned short minv = 0;
+	unsigned short maxv = 0;
+	for (unsigned int i = 0; i < 10; ++i)  
+	{
+		minv = 3200 + 0 * i;
+		maxv = 3800 + 400 * i;
 
-		//i0est->SetInput(projSource);
+		std::cout << "Average = " << .5*(minv + maxv) << " - "<<minv <<" to "<<maxv<< std::endl;
+
+		randomSource->SetMin(minv);
+		randomSource->SetMax(maxv);
+		randomSource->Update();
+
 		i0est->SetInput(randomSource->GetOutput());
 
+		clock.Start();
+		
 		i0est->Update();
 
-		I0FilterType::HistogramType::Pointer hist;
-		hist = i0est->GetOutput();
+		clock.Stop();
 
-		//std::cout << hist << std::endl;
+
+		//hist = i0est->GetOutput();
+
+		std::cout << "Timing " << clock.GetMeanTime() << std::endl;
+		std::cout << "I0 ("<<i0est->GetNp()<<") = " << i0est->GetI0()<<" -  mean = "<<i0est->GetI0mean() << " RLS = "<<i0est->GetI0rls()<< std::endl;
+		std::cout << "I0 FWHM = " << i0est->GetI0fwhm() << std::endl;
 	}
 
 	/*typedef itk::ImageRegionIterator< I0FilterType::HistogramType > IteratorType;
@@ -66,6 +83,7 @@ int main(int, char** )
 	std::cout << std::endl;*/
 
   // If all succeed
-	  std::cout << "\n\nTest PASSED! " << std::endl;
+	std::cout << "\n\nTest PASSED! " << std::endl;
+
   return EXIT_SUCCESS;
 }
