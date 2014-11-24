@@ -34,7 +34,7 @@ int main(int, char** )
 	region.SetIndex(start);
 	region.SetSize(size);
 		
-	I0FilterType::HistogramType::Pointer hist;
+	//I0FilterType::HistogramType::Pointer hist;
 	
 	typedef itk::RandomImageSource< ImageType > RandomImageSourceType;
 	RandomImageSourceType::Pointer randomSource = RandomImageSourceType::New();
@@ -43,7 +43,7 @@ int main(int, char** )
 	i0est->UseRLSOn();
 	i0est->MedianOn();
 	i0est->UseTurboOff();
-	i0est->SetexpectedI0(23);
+	i0est->SetExpectedI0(23);
 	i0est->SetLambda(0.9);
 
 	unsigned short minv = 0;

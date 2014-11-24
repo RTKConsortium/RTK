@@ -48,7 +48,7 @@ int main(int argc, char * argv[])
 	ReaderType::Pointer reader = ReaderType::New();
 	reader->SetFileNames(names->GetFileNames());
 	reader->UpdateOutputInformation();
-	
+		
 	typedef itk::ExtractImageFilter<InputImageType, InputImageType> ExtractFilterType;
 	ExtractFilterType::Pointer extract = ExtractFilterType::New();
 	extract->InPlaceOff();
@@ -82,12 +82,12 @@ int main(int argc, char * argv[])
 	std::cout << imin << " " << imax << " " << istep << std::endl;
 	
 	OutputHistogramType::Pointer image;
-	
+
+	I0FilterType::Pointer i0est = I0FilterType::New();
 	for (unsigned int i = imin; i < imax; i+=istep)
 	{
-		I0FilterType::Pointer i0est = I0FilterType::New();
 		std::cout << "Image " << i << std::endl;
-		
+	
 		if (args_info.expected_arg != 65535){
 			i0est->SetExpectedI0(args_info.expected_arg);
 		}
@@ -107,7 +107,7 @@ int main(int argc, char * argv[])
 		extract->SetExtractionRegion(desiredRegion);
 				
 		try {
-			i0est->Update();
+			i0est->UpdateLargestPossibleRegion();
 		}
 		catch (itk::ExceptionObject & err) {
 			std::cerr << "ExceptionObject caught !" << std::endl;
@@ -129,8 +129,6 @@ int main(int argc, char * argv[])
 		I0buffer.push_back(i0est->GetI0fwhm());
 		Variables.push_back(i0est->GetI0rls());
 		Variables.push_back(i0est->GetI0sigma());
-
-		//i0est->GetOutput()->DisconnectPipeline();
 	}
 	
 	ofstream paramFile;

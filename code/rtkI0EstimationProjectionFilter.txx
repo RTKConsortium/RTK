@@ -249,9 +249,9 @@ void I0EstimationProjectionFilter<bitShift >::ThreadedGenerateData(const OutputI
 	int imin = m_Imin + int(threadId)*thrange;
 	int imax = imin+thrange;
 
-	m_mutex->Lock();
-	std::cout << (threadId) << " continues processing on " <<imin<<" "<<imax<< std::endl;
-	m_mutex->Unlock();
+	//m_mutex->Lock();
+	//std::cout << (threadId) << " continues processing on " <<imin<<" "<<imax<< std::endl;
+	//m_mutex->Unlock();
 		
 
 	for (int i = imin; i < imax; ++i) {
