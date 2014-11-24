@@ -3,11 +3,19 @@ version "Reads projection images and estimate the I0 value for each of them"
 
 option "verbose"  v "Verbose execution"                                         flag      off
 option "config"   - "Config file"                                               string    no
-option "output"   o "Output CSV file name with I0 values"                       string    yes
+option "output"   o "Output filename - not implemented"                         string    no
+option "debug"    d "Debug mode: output CSV file name with I0 estimates"        string    no
 
 section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
-option "bitshift"  s "Right shift on 16-bits inputs to get the histogram size"   int   no   default="1"
+option "path"      p "Path containing projections"                               string  yes
+option "regexp"    r "Regular expression to select projection files in path"     string  yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag    off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int     no   default="0"
+option "range"     - "Range of projection to analyse min,step,max"               int     multiple no default="0"
+
+section "Algorithm parameters"
+option "expected"  e "Expected I0 value"                                         int   no   default="65535"
+option "median"    m "size-3 linear median filtering"                            flag  off
+option "rls"       f "Recursive least square (RLS) fitering"                     flag  off
+option "lambda"    l "RLS forgetting factor "                                   double no default="0.7"
+option "turbo"     t "Process only 1 pixel over 2"                               flag  off

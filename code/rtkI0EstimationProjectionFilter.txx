@@ -20,6 +20,7 @@
 #define __rtkI0EstimationProjectionFilter_txx
 
 #include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
 #include <algorithm>
 
 namespace rtk
@@ -33,8 +34,6 @@ I0EstimationProjectionFilter<bitShift >::I0EstimationProjectionFilter()
 	m_histogram.resize(m_NBins, 0);
 	m_pastI0.resize(3, 0);
 
-	std::cout << "Histogram size: " << m_NBins << std::endl;
-
 	m_Median = true;
 	m_UseRLS = false;
 	m_UseTurbo = false;
@@ -47,8 +46,107 @@ I0EstimationProjectionFilter<bitShift >::I0EstimationProjectionFilter()
 	m_I0mean = 0.;
 	m_Lambda = 1.0;
 	m_dynThreshold = 20;
+}
+
+/*
+template < unsigned char bitShift >
+void I0EstimationProjectionFilter<bitShift >::GenerateOutputInformation()
+{
+	std::cout << "Generate Output" << std::endl;
+	// call the superclass' implementation of this method
+	Superclass::GenerateOutputInformation();
+	
+	// Get pointers to the input and output
+	InputImageConstPointer inputPtr = this->GetInput();
+	OutputImagePointer     outputPtr = this->GetOutput();
+
+	if (!outputPtr || !inputPtr) {
+		return;
+	}
+
+	// Compute the output spacing, size, and start index
+	const typename InputImageType::SpacingType &
+		inputSpacing = inputPtr->GetSpacing();
+	const typename InputImageType::SizeType &   inputSize =
+		inputPtr->GetLargestPossibleRegion().GetSize();
+	const typename InputImageType::IndexType &  inputStartIndex =
+		inputPtr->GetLargestPossibleRegion().GetIndex();
+	
+	typename OutputImageType::SpacingType outputSpacing;
+	outputSpacing[0] = float(1 << bitShift);
+	outputSpacing[1] = 1.0;
+	outputSpacing[2] = 1.0;
+
+	outputPtr->SetSpacing(outputSpacing);
+	
+	typename OutputImageType::SizeType outputSize;
+	unsigned idx = unsigned(float(m_NBins) / float(inputSize[0]));
+	outputSize[0] = inputSize[0];
+	outputSize[1] = idx;
+	outputSize[2] = 1;
+
+	typename OutputImageType::IndexType outputStartIndex;
+	outputStartIndex[0] = 0;
+	outputStartIndex[1] = 0;
+	outputStartIndex[2] = inputStartIndex[2];
+
+	// Set region
+	typename OutputImageType::RegionType outputRegion;
+	outputRegion.SetSize(outputSize);
+	outputRegion.SetIndex(outputStartIndex);
+	outputPtr->SetLargestPossibleRegion(outputRegion);
 
 }
+
+template < unsigned char bitShift >
+void I0EstimationProjectionFilter<bitShift >::PropagateRequestedRegion()
+{
+	std::cout << "Propagate region" << std::endl;
+}
+
+template < unsigned char bitShift >
+void I0EstimationProjectionFilter<bitShift >::GenerateInputRequestedRegion()
+{	
+	std::cout << "Generate Input req region" << std::endl;
+
+	// Call the superclass' implementation of this method
+	Superclass::GenerateInputRequestedRegion();
+
+	// Get pointers to the input and output
+	InputImagePointer  inputPtr = const_cast< InputImageType * >(this->GetInput());
+	OutputImagePointer outputPtr = this->GetOutput();
+
+	if (!inputPtr || !outputPtr) {
+		return;
+	}
+
+	std::cout << inputPtr->GetRequestedRegion().GetIndex() << std::endl;
+	std::cout << inputPtr->GetRequestedRegion().GetSize() << std::endl;
+	
+	const typename InputImageType::SpacingType &
+		inputSpacing = inputPtr->GetSpacing();
+	InputImageType::SizeType inputSize =
+		inputPtr->GetLargestPossibleRegion().GetSize();
+	const typename InputImageType::IndexType inputIndex =
+		inputPtr->GetLargestPossibleRegion().GetIndex();
+	
+	inputSize[0] = 1421;
+ inputSize[1] = 1420;
+
+	typename InputImageType::RegionType inputRequestedRegion;
+	inputRequestedRegion.SetIndex(inputIndex);
+	inputRequestedRegion.SetSize(inputSize);
+
+	inputPtr->SetLargestPossibleRegion(inputRequestedRegion);
+	inputPtr->SetRequestedRegion(inputRequestedRegion);
+	inputPtr->SetBufferedRegion(inputRequestedRegion);
+
+	std::cout << inputPtr->GetRequestedRegion().GetIndex() << std::endl;
+	std::cout << inputPtr->GetRequestedRegion().GetSize() << std::endl;
+	std::cout << inputPtr->GetLargestPossibleRegion().GetSize() << std::endl;
+	std::cout << inputPtr->GetBufferedRegion().GetSize() << std::endl;
+	
+}*/
 
 template < unsigned char bitShift >
 void I0EstimationProjectionFilter<bitShift >::BeforeThreadedGenerateData()
@@ -57,11 +155,9 @@ void I0EstimationProjectionFilter<bitShift >::BeforeThreadedGenerateData()
 	for (; it != m_histogram.end(); ++it)
 		*it = 0;
 
-	std::cout << "Number of threads : "<<this->GetNumberOfThreads() << std::endl;
-
 	m_Nthreads = this->GetNumberOfThreads();
 
-	ImageType::RegionType fullRegion = this->GetInput()->GetLargestPossibleRegion();
+	InputImageType::RegionType fullRegion = this->GetInput()->GetLargestPossibleRegion();
 	
 	m_Barrier = itk::Barrier::New();
 	m_Barrier->Initialize(m_Nthreads);
@@ -75,7 +171,7 @@ void I0EstimationProjectionFilter<bitShift >::ThreadedGenerateData(const OutputI
 	std::vector<unsigned > m_thHisto;  // Per-thread histogram
 	m_thHisto.resize(m_NBins, 0);
 
-	itk::ImageRegionConstIterator<ImageType> itIn(this->GetInput(), outputRegionForThread);
+	itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
 	
 	// Fill in its own histogram
 	itIn.GoToBegin();
@@ -113,24 +209,18 @@ void I0EstimationProjectionFilter<bitShift >::ThreadedGenerateData(const OutputI
 			while ((m_histogram[m_Imin] == 0) && (m_Imin >= 0)) {  // Get back
 				--m_Imin;
 			}
-			m_Imin
+			//m_Imin
 
 			// Compute histogram dynamic 
 			m_Irange = m_Imax - m_Imin;
 			m_dynamicUsage = 100.*float(m_Irange) / float(m_NBins);
-
-
-
-
+			
 			// If Imax near zeros - problem to be fixed
 			// If Imin near Imax - problem to be fixed
 
 			// If Imax very close to m_NBins then possible saturation
 			// If Imin far from 0 - high dark or very low attenuating objects
-
-
-
-
+			
 			int sum = 0;
 			for (unsigned int i = m_Imin; i < m_Imax; ++i) {
 				sum += m_histogram[i];
@@ -146,7 +236,6 @@ void I0EstimationProjectionFilter<bitShift >::ThreadedGenerateData(const OutputI
 	m_Barrier->Wait();
 	// This threads knows that every other thread has put its contribution to the histogram
 	
-	/*
 	m_mutex->Lock();
 	{
 		// Copy shared histogram back into its own only on valid range
@@ -169,24 +258,43 @@ void I0EstimationProjectionFilter<bitShift >::ThreadedGenerateData(const OutputI
 
 	}
 
-	*/
+	
 
 
-
-
-
+	
 }
 
 template < unsigned char bitShift >
 void I0EstimationProjectionFilter<bitShift >::AfterThreadedGenerateData()
 {
-	
+	// Add its results to shared histogram
+	itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), this->GetOutput()->GetLargestPossibleRegion());
+	unsigned idx = 0;
+	itOut.GoToBegin();
+	while (!itOut.IsAtEnd()) {
+		itOut.Set(0);
+		++itOut;
+	}
+	itOut.GoToBegin();
+	idx = 0;
+	while ((idx<(m_NBins - 1)) && (!itOut.IsAtEnd())) {
+		itOut.Set((unsigned int)(m_histogram[++idx]));
+		++itOut;
+	}
+
+
 	std::cout << "Detector dynamic usage " << m_dynamicUsage << std::endl;
 
-	// Search for a mode btw (min+max)/2 and max
-	unsigned i = (m_Imax >> 1);
-	unsigned short maxId = i;
-	unsigned maxVal = m_histogram[maxId];
+
+
+
+
+
+	// Search for the background mode in the last quarter of the histogram
+	unsigned startIdx = m_Imin + 3 * ((m_Imax + m_Imin) >> 2);
+	unsigned short i = startIdx;
+	unsigned short maxId = startIdx;
+	unsigned maxVal = m_histogram[startIdx];
 	while (i < m_Imax) {
 		if (m_histogram[i] >= maxVal) {
 			maxVal = m_histogram[i];
@@ -194,28 +302,30 @@ void I0EstimationProjectionFilter<bitShift >::AfterThreadedGenerateData()
 		}
 		++i;
 	}
-	//std::cout << maxId << " " << i << " " << maxVal << std::endl;
-	unsigned peakPos = unsigned((maxId + 1) << bitShift);
+	m_I0 = unsigned((maxId + 1) << bitShift);
+	// If estimated I0 at the boundaries, either startIdx or Imax then we missed smth or no background mode
 	
+	unsigned short widthval = unsigned short(float(maxVal>>1));
 	unsigned short lowBound = maxId;
-	while ((m_histogram[lowBound] > (maxVal >> 1)) && (lowBound > 0)) {
+	while ((m_histogram[lowBound] > widthval) && (lowBound > 0)) {
 		lowBound--;
 	}
 
 	unsigned short highBound = maxId;
-	while ((m_histogram[highBound] > (maxVal >> 1)) && (highBound < m_Imax)) {
+	while ((m_histogram[highBound] > widthval) && (highBound < m_Imax)) {
 		highBound++;
 	}
 
 	unsigned peakFwhm = ((highBound - lowBound) << bitShift);
-
-
+	m_I0fwhm = peakFwhm;
+	m_I0sigma = float(m_I0fwhm) / 2.3548f;
 
 	// Percentage of pixels in background: can be used to prevent/prepare occlusion
 	unsigned Ntotal = 0;
 	for (i = m_Imin; i < m_Imax; ++i)
 		Ntotal += m_histogram[i];
 
+	// Computes number of background pixels
 	unsigned Nback = 0;
 	for (i = (lowBound - peakFwhm); i < m_Imax; ++i)
 		Nback += m_histogram[i];
@@ -227,13 +337,20 @@ void I0EstimationProjectionFilter<bitShift >::AfterThreadedGenerateData()
 	m_highBound = highBound;
 	m_middle = (highBound + lowBound) >> 1;
 
-	m_I0 = peakPos;
+	// Update bounds
+	float lbd = 0.05;
+	m_lowBndRls = (m_Np > 1) ? float(m_lowBound*(1.0 - lbd) + float(m_lowBndRls)*lbd) : m_lowBound;
+	m_highBndRls = (m_Np > 1) ? float(m_highBound*(1.0 - lbd) + float(m_highBndRls)*lbd) : m_highBound;
+	m_middleRls = (m_Np > 1) ? float(m_middle*(1.0 - lbd) + float(m_middleRls)*lbd) : m_middle;
+
+
+	
 
 	if (m_Median) {
 		// Circular swap: I0[] ejected - only used for median filtering
 		m_pastI0[0] = m_pastI0[1];
 		m_pastI0[1] = m_pastI0[2];
-		m_pastI0[2] = peakPos;
+		m_pastI0[2] = m_I0;
 
 		// Use the median value on the three last estimates
 		if (m_Np >= 3) {
@@ -243,23 +360,28 @@ void I0EstimationProjectionFilter<bitShift >::AfterThreadedGenerateData()
 			if (b1 > b2) std::swap(b1, b2);
 			if (b2 > b3) std::swap(b2, b3);
 			if (b1 > b2) std::swap(b1, b2);
-			m_I0 = b2;
+			m_I0median = b2;
 		}
+	} else {
+		m_I0median = m_I0;
 	}
 
 	if (m_UseRLS) {
-		m_I0rls = (m_Np > 1) ? double(m_I0rls*(1.0 - m_Lambda) + peakPos*m_Lambda) : m_I0;
-		m_I0 = m_I0rls;
+		m_I0rls = (m_Np > 1) ? float(m_I0rls*(1.0 - m_Lambda) + float(m_I0median)*m_Lambda) : float(m_I0median);
+	} else {
+		m_I0rls = m_I0;
 	}
 
-	m_I0mean = double(m_I0*m_Np + peakPos) / double(m_Np + 1);
-
+	m_I0mean = unsigned short(float(m_I0median*m_Np + m_I0) / float(m_Np + 1));
+		
 	
-	
-	m_I0fwhm = peakFwhm;
 	
 	++m_Np;
-	
+
+	std::cout << "I0 " << m_I0 << std::endl;
+	std::cout << "N " << m_NBins << std::endl;
+	std::cout << "Np                 " << m_Np << std::endl;
+
 }
 
 } // end namespace rtk
