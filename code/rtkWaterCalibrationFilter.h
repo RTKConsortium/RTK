@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkWaterPrecorrectionFilter_h
-#define __rtkWaterPrecorrectionFilter_h
+#ifndef __rtkWaterCalibrationFilter_h
+#define __rtkWaterCalibrationFilter_h
 
 #include <vector>
 #include <itkImageToImageFilter.h>
@@ -27,60 +27,57 @@
 namespace rtk
 {
 
-/** \class WaterPrecorrectionFilter
- * \brief Performs the classical water precorrection for beam hardening
+/** \class WaterCalibrationFilter
+ * \brief Performs the weighting for the n-th order of water precorrection (calibration step)
  *
- * \test rtkwaterprecorrectiontest.cxx
+ * \test rtkwatercalibrationtest.cxx
  *
  * \author S. Brousmiche
  *
  * \ingroup ImageToImageFilter
  */
 
-template <unsigned int modelOrder>
-class ITK_EXPORT WaterPrecorrectionFilter :
+class ITK_EXPORT WaterCalibrationFilter :
 	public itk::ImageToImageFilter< itk::Image<float, 2>, itk::Image<float, 2> >
 {
 public:
 	typedef itk::Image<float, 2>              TImage;
 
   /** Standard class typedefs. */
-	typedef WaterPrecorrectionFilter                Self;
+	typedef WaterCalibrationFilter                  Self;
   typedef itk::ImageToImageFilter<TImage,TImage>  Superclass;
   typedef itk::SmartPointer<Self>                 Pointer;
   typedef itk::SmartPointer<const Self>           ConstPointer;
-	
-	typedef itk::Vector<float, modelOrder> VectorType;
 
-  /** Method for creation through the object factory. */
+	/** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-	itkTypeMacro(WaterPrecorrectionFilter, ImageToImageFilter);
+	itkTypeMacro(WaterCalibrationFilter, ImageToImageFilter);
 
   /** Get / Set the Median window that are going to be used during the operation */
-	itkGetMacro(Coefficients, VectorType);
-	itkSetMacro(Coefficients, VectorType);
+	itkGetMacro(Order, float);
+	itkSetMacro(Order, float);
 
 protected:
-	WaterPrecorrectionFilter();
-	virtual ~WaterPrecorrectionFilter() {};
+	WaterCalibrationFilter();
+	virtual ~WaterCalibrationFilter() {};
 
 	//virtual void BeforeThreadedGenerateData();
 	//virtual void AfterThreadedGenerateData();
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
 
 private:
-	WaterPrecorrectionFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+	WaterCalibrationFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);         //purposely not implemented
 
-	VectorType m_Coefficients;
+	float m_Order;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkWaterPrecorrectionFilter.cxx"
+#include "rtkWaterCalibrationFilter.cxx"
 #endif
 
 #endif

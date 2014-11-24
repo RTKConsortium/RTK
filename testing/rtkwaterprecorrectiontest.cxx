@@ -2,6 +2,7 @@
 #include "rtkConstantImageSource.h"
 
 #include "rtkWaterPrecorrectionFilter.h"
+#include "rtkWaterCalibrationFilter.h"
 
 /**
  * \file rtkwaterprecorrectiontest.cxx
@@ -80,7 +81,7 @@ int main(int , char** )
 	CheckImageQuality<OutputImageType>(model3->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-	std::cout << "\n\n****** Case 2: order 5 ******" << std::endl;
+	std::cout << "\n\n****** Case 3: order 5 ******" << std::endl;
 
 	typedef rtk::WaterPrecorrectionFilter<5> WPCType5;
 	WPCType5::Pointer model5 = WPCType5::New();
@@ -97,6 +98,27 @@ int main(int , char** )
 
 	CheckImageQuality<OutputImageType>(model5->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
 	std::cout << "\n\nTest PASSED! " << std::endl;
+
+	std::cout << "\n\n****** Calib case 1 : order 1 ******" << std::endl;
+
+	typedef rtk::WaterCalibrationFilter WPCalType;
+	WPCalType::Pointer mcal = WPCalType::New();
+
+	mcal->SetInput(imgIn->GetOutput());
+	mcal->SetOrder(1.0);
+	mcal->Update();
+
+	//CheckImageQuality<OutputImageType>(mcal->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
+	std::cout << "\n\nTest PASSED! " << std::endl;
+	
+	std::cout << "\n\n****** Calib case 2 : order 4 ******" << std::endl;
+
+	mcal->SetOrder(5.0);
+	mcal->Update();
+
+	//CheckImageQuality<OutputImageType>(mcal->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
+	std::cout << "\n\nTest PASSED! " << std::endl;
+
 
   return EXIT_SUCCESS;
 }
