@@ -62,7 +62,7 @@ int main(int argc, char * argv[])
 	extractSize[2] = 1;
 	InputImageType::IndexType start = subsetRegion.GetIndex();
 
-	typedef rtk::I0EstimationProjectionFilter<2> I0FilterType;
+	typedef rtk::I0EstimationProjectionFilter<4> I0FilterType;
 
 	std::vector<unsigned short> I0buffer;
 	std::vector<float> Variables;
@@ -74,11 +74,13 @@ int main(int argc, char * argv[])
 	unsigned int imin = 0;
 	unsigned int istep = 1;
 	unsigned int imax = (unsigned int)subsetRegion.GetSize()[2];
-	if ((args_info.range_arg[0] <= args_info.range_arg[2]) && (istep <= (args_info.range_arg[2] - args_info.range_arg[0]))) {
-		imin = args_info.range_arg[0];
-		istep = args_info.range_arg[1];
-		imax = std::min(unsigned(args_info.range_arg[2]), imax);
-	} 
+	if (args_info.range_given) {
+		if ((args_info.range_arg[0] <= args_info.range_arg[2]) && (istep <= (args_info.range_arg[2] - args_info.range_arg[0]))) {
+			imin = args_info.range_arg[0];
+			istep = args_info.range_arg[1];
+			imax = std::min(unsigned(args_info.range_arg[2]), imax);
+		}
+	}
 	std::cout << imin << " " << imax << " " << istep << std::endl;
 	
 	OutputHistogramType::Pointer image;

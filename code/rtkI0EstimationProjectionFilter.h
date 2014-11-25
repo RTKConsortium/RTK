@@ -104,9 +104,9 @@ public:
 
 	// Bind estimated value to expected one
 	// Expected I0 must be set accordingly
-//	itkSetMacro(BindToExpectedI0, bool);
-//	itkGetConstMacro(BindToExpectedI0, bool);
-//	itkBooleanMacro(BindToExpectedI0);
+	itkSetMacro(BindToExpectedI0, bool);
+	itkGetConstMacro(BindToExpectedI0, bool);
+	itkBooleanMacro(BindToExpectedI0);
 
 	itkGetMacro(I0, unsigned short)   // Estimation result
 
@@ -150,6 +150,7 @@ private:
 	bool m_Median;                          // Use median filtering
 	bool m_UseRLS;                          // Use RLS filtering
 	bool m_UseTurbo;                        // Use turbo (1 pixel/2)
+	bool m_BindToExpectedI0;
 	unsigned short m_ExpectedI0;            // Expected I0 value (obtained by detector calibration)
 	std::string m_DebugCSVFile;             // Save estimates in output CSV file
 	double m_Lambda;                        // Forgetting factor for RLS estimate

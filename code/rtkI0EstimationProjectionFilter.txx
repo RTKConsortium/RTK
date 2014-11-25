@@ -34,6 +34,7 @@ I0EstimationProjectionFilter<bitShift >::I0EstimationProjectionFilter()
 	m_histogram.resize(m_NBins, 0);
 	m_pastI0.resize(3, 0);
 
+	m_ExpectedI0 = 0;
 	m_Median = true;
 	m_UseRLS = false;
 	m_UseTurbo = false;
@@ -333,19 +334,16 @@ void I0EstimationProjectionFilter<bitShift >::AfterThreadedGenerateData()
 	float percent = 100.0*(float)Nback / (float)Ntotal;
 	std::cout << "Percentage : " << percent << std::endl;
 
-	m_lowBound = lowBound;
-	m_highBound = highBound;
+	m_lowBound = (lowBound<<bitShift);
+	m_highBound = (highBound << bitShift);
 	m_middle = (highBound + lowBound) >> 1;
 
 	// Update bounds
-	float lbd = 0.05;
+	float lbd = 0.9995;
 	m_lowBndRls = (m_Np > 1) ? float(m_lowBound*(1.0 - lbd) + float(m_lowBndRls)*lbd) : m_lowBound;
 	m_highBndRls = (m_Np > 1) ? float(m_highBound*(1.0 - lbd) + float(m_highBndRls)*lbd) : m_highBound;
 	m_middleRls = (m_Np > 1) ? float(m_middle*(1.0 - lbd) + float(m_middleRls)*lbd) : m_middle;
-
-
 	
-
 	if (m_Median) {
 		// Circular swap: I0[] ejected - only used for median filtering
 		m_pastI0[0] = m_pastI0[1];
@@ -366,8 +364,10 @@ void I0EstimationProjectionFilter<bitShift >::AfterThreadedGenerateData()
 		m_I0median = m_I0;
 	}
 
+	// TEST
+	m_Lambda = 0.9995;
 	if (m_UseRLS) {
-		m_I0rls = (m_Np > 1) ? float(m_I0rls*(1.0 - m_Lambda) + float(m_I0median)*m_Lambda) : float(m_I0median);
+		m_I0rls = (m_Np > 1) ? float(m_I0rls* m_Lambda + float(m_I0median)*(1.0-m_Lambda)) : float(m_I0median);
 	} else {
 		m_I0rls = m_I0;
 	}
@@ -378,7 +378,7 @@ void I0EstimationProjectionFilter<bitShift >::AfterThreadedGenerateData()
 	
 	++m_Np;
 
-	std::cout << "I0 " << m_I0 << std::endl;
+	std::cout << "I0 " << m_I0 << " - Uncertainty:" << m_I0sigma/float(m_I0) <<std::endl;
 	std::cout << "N " << m_NBins << std::endl;
 	std::cout << "Np                 " << m_Np << std::endl;
 
