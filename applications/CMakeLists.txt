@@ -44,6 +44,7 @@ ADD_SUBDIRECTORY(rtksimulatedgeometry)
 ADD_SUBDIRECTORY(rtkelektasynergygeometry)
 ADD_SUBDIRECTORY(rtkdigisensgeometry)
 ADD_SUBDIRECTORY(rtkxradgeometry)
+ADD_SUBDIRECTORY(rtkimagxgeometry)
 #=========================================================
 
 # Testing of the applications
