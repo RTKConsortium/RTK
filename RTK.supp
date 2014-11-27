@@ -1,20 +1,4 @@
 {
-   gengetopt
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   fun:gengetopt_strdup
-   ...
-}
-{
-   gengetopt
-   Memcheck:Leak
-   fun:malloc
-   ...
-   fun:update_multiple_arg
-   ...
-}
-{
    HDF5
    Memcheck:Leak
    match-leak-kinds: reachable
