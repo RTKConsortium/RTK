@@ -283,3 +283,8 @@ ENDIF(OPENCL_FOUND)
 TARGET_LINK_LIBRARIES(rtkheadertest ${RTK_LIBRARIES})
 ADD_TEST(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
 
+# Test the manager used to automatically clean up the gengetopt args_info structures
+ADD_EXECUTABLE(rtkargsinfomanagertest rtkargsinfomanagertest.cxx)
+TARGET_LINK_LIBRARIES(rtkargsinfomanagertest RTK)
+ADD_TEST(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest)
+
