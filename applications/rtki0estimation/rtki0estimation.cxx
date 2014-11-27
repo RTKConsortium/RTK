@@ -21,7 +21,6 @@
 #include "rtkGgoFunctions.h"
 
 #include <itkExtractImageFilter.h>
-#include <itkImageFileWriter.h>
 #include "rtkI0EstimationProjectionFilter.h"
 #include "rtkProjectionsReader.h"
 
@@ -62,46 +61,34 @@ int main(int argc, char * argv[])
 	extractSize[2] = 1;
 	InputImageType::IndexType start = subsetRegion.GetIndex();
 
-	typedef rtk::I0EstimationProjectionFilter<4> I0FilterType;
+	typedef rtk::I0EstimationProjectionFilter<2> I0FilterType;
 
 	std::vector<unsigned short> I0buffer;
-	std::vector<float> Variables;
 
-	std::vector<int> range_mod(3, 0.);
-	for (unsigned int i = 0; i < 3; i++)
-		range_mod[i] = args_info.range_arg[i];
-
-	unsigned int imin = 0;
+	unsigned int imin = 1;
 	unsigned int istep = 1;
 	unsigned int imax = (unsigned int)subsetRegion.GetSize()[2];
 	if (args_info.range_given) {
+
 		if ((args_info.range_arg[0] <= args_info.range_arg[2]) && (istep <= (args_info.range_arg[2] - args_info.range_arg[0]))) {
 			imin = args_info.range_arg[0];
 			istep = args_info.range_arg[1];
 			imax = std::min(unsigned(args_info.range_arg[2]), imax);
 		}
 	}
-	std::cout << imin << " " << imax << " " << istep << std::endl;
-	
-	OutputHistogramType::Pointer image;
 
 	I0FilterType::Pointer i0est = I0FilterType::New();
+
+	if (args_info.lambda_given) {
+		i0est->SetLambda(args_info.lambda_arg);
+	}
+	if (args_info.expected_arg != 65535){
+		i0est->SetExpectedI0(args_info.expected_arg);
+	}
+	i0est->SaveHistogramsOn();
+	
 	for (unsigned int i = imin; i < imax; i+=istep)
 	{
-		std::cout << "Image " << i << std::endl;
-	
-		if (args_info.expected_arg != 65535){
-			i0est->SetExpectedI0(args_info.expected_arg);
-		}
-		if (args_info.median_flag) {
-			i0est->MedianOn();
-		}
-		if (args_info.rls_flag){
-			i0est->UseRLSOn();
-		}
-		if (args_info.turbo_flag) {
-			i0est->UseTurboOn();
-		}
 		i0est->SetInput(extract->GetOutput());
 		
 		start[2] = i;
@@ -116,51 +103,21 @@ int main(int argc, char * argv[])
 			std::cerr << err << std::endl;
 			return EXIT_FAILURE;
 		}
-
-		image = i0est->GetOutput();
-
+		
 		I0buffer.push_back(i0est->GetI0());
-		I0buffer.push_back(i0est->GetI0mean());
-		I0buffer.push_back(i0est->GetImin());
-		I0buffer.push_back(i0est->GetImax());
-		I0buffer.push_back(i0est->GetIrange());
-		I0buffer.push_back(i0est->GetlowBound());
-		I0buffer.push_back(i0est->GethighBound());
-		I0buffer.push_back(i0est->GetlowBndRls());
-		I0buffer.push_back(i0est->GethighBndRls());
+		I0buffer.push_back(i0est->GetI0rls());
 		I0buffer.push_back(i0est->GetI0fwhm());
-		Variables.push_back(i0est->GetI0rls());
-		Variables.push_back(i0est->GetI0sigma());
 	}
 	
-	ofstream paramFile;
-	paramFile.open(args_info.debug_arg);
-	std::vector<unsigned short>::const_iterator it = I0buffer.begin();
-	for (; it != I0buffer.end(); ++it) {
-		paramFile << *it << ",";
+	if (args_info.debug_given) {
+		ofstream paramFile;
+		paramFile.open(args_info.debug_arg);
+		std::vector<unsigned short>::const_iterator it = I0buffer.begin();
+		for (; it != I0buffer.end(); ++it) {
+			paramFile << *it << ",";
+		}
+		paramFile.close();
 	}
-	paramFile.close();
-
-	char strvar[100] = "var_";
-	paramFile.open(std::strcat(strvar, args_info.debug_arg));
-	std::vector<float>::const_iterator itf = Variables.begin();
-	for (; itf != Variables.end(); ++itf) {
-		paramFile << *itf << ",";
-	}
-	paramFile.close();
 	
-	typedef itk::ImageFileWriter<OutputHistogramType> ImageWriter;
-	ImageWriter::Pointer writer = ImageWriter::New();
-	writer->SetFileName("Output.mhd");
-	writer->SetInput(image);
-	try {
-		writer->Update();
-	}
-	catch (itk::ExceptionObject & err) {
-		std::cerr << "ExceptionObject caught !" << std::endl;
-		std::cerr << err << std::endl;
-		return EXIT_FAILURE;
-	}
-
 	return EXIT_SUCCESS;
 }

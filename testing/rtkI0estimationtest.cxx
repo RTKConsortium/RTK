@@ -40,9 +40,6 @@ int main(int, char** )
 	RandomImageSourceType::Pointer randomSource = RandomImageSourceType::New();
 	randomSource->SetSize(size);
 
-	i0est->UseRLSOn();
-	i0est->MedianOn();
-	i0est->UseTurboOff();
 	i0est->SetExpectedI0(23);
 	i0est->SetLambda(0.9);
 
@@ -53,7 +50,7 @@ int main(int, char** )
 		minv = 3200 + 0 * i;
 		maxv = 3800 + 400 * i;
 
-		std::cout << "Average = " << .5*(minv + maxv) << " - "<<minv <<" to "<<maxv<< std::endl;
+		// std::cout << "Average = " << .5*(minv + maxv) << " - "<<minv <<" to "<<maxv<< std::endl;
 
 		randomSource->SetMin(minv);
 		randomSource->SetMax(maxv);
@@ -66,22 +63,8 @@ int main(int, char** )
 		i0est->Update();
 
 		clock.Stop();
-
-
-		//hist = i0est->GetOutput();
-
-		std::cout << "Timing " << clock.GetMeanTime() << std::endl;
-		std::cout << "I0 ("<<i0est->GetNp()<<") = " << i0est->GetI0()<<" -  mean = "<<i0est->GetI0mean() << " RLS = "<<i0est->GetI0rls()<< std::endl;
-		std::cout << "I0 FWHM = " << i0est->GetI0fwhm() << std::endl;
 	}
-
-	/*typedef itk::ImageRegionIterator< I0FilterType::HistogramType > IteratorType;
-	IteratorType it(hist, hist->GetLargestPossibleRegion());
-	it.GoToBegin();
-	for (int i = 0; i < 20; ++i, ++it) 
-		std::cout << it.Get() << " ";
-	std::cout << std::endl;*/
-
+	
   // If all succeed
 	std::cout << "\n\nTest PASSED! " << std::endl;
 

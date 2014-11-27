@@ -34,11 +34,8 @@ namespace rtk
 {
 
 /** \class I0EstimationProjectionFilter
- * \brief 
  *
- * The output is the image histogram
-
- * Won't work if saturation
+ * \brief Estimate the I0 value from the projection histograms
  *
  * \author Sebastien Brousmiche
  *
@@ -72,69 +69,38 @@ public:
 	typedef typename InputImageType::Pointer            InputImagePointer;
 	typedef typename InputImageType::ConstPointer       InputImageConstPointer;
 	
-
-	// Linear 3-value median filter
-	// Is true by default
-	itkSetMacro(Median, bool);
-	itkGetConstMacro(Median, bool);
-	itkBooleanMacro(Median);
-
-	// Is false by default
-	itkSetMacro(UseRLS, bool);
-	itkGetConstMacro(UseRLS, bool);
-	itkBooleanMacro(UseRLS);
-
-	// If RLS set On, uses Lambda=0.7 by default
-	itkSetMacro(Lambda, double)
-  itkGetMacro(Lambda, double)
-
-	// Use only 1 pixel over 2 when computing histogram
-	// Is false by default
-	itkSetMacro(UseTurbo, bool);
-	itkGetConstMacro(UseTurbo, bool);
-	itkBooleanMacro(UseTurbo);
-		
-	// Expected value from calibration
-	itkSetMacro(DebugCSVFile, string)
-	itkGetMacro(DebugCSVFile, string)
-
-	// Binding I distance
-//	itkSetMacro(BindingDistance, unsigned short)
-	//itkGetMacro(BindingDistance, unsigned short)
-
-	// Bind estimated value to expected one
-	// Expected I0 must be set accordingly
-	itkSetMacro(BindToExpectedI0, bool);
-	itkGetConstMacro(BindToExpectedI0, bool);
-	itkBooleanMacro(BindToExpectedI0);
-
+	// Main Output
 	itkGetMacro(I0, unsigned short)   // Estimation result
+	itkGetMacro(I0fwhm, unsigned short)
+	itkGetMacro(I0rls, unsigned short)
 
+	// Maximum encodable detector value if different from (2^16-1)
+	itkSetMacro(MaxPixelValue, unsigned short)
+	itkGetMacro(MaxPixelValue, unsigned short)
+
+	// Expected I0 value (as a result of a detector calibration)
 	itkSetMacro(ExpectedI0, unsigned short)
 	itkGetMacro(ExpectedI0, unsigned short)
 
-	//itkGetMacro(I0, unsigned short)
-	itkGetMacro(I0fwhm, unsigned short)
-	itkGetMacro(I0sigma, float)
-	itkGetMacro(I0mean, unsigned short)
-	itkGetMacro(I0rls, float)
-	itkGetMacro(Np, unsigned int)
-	itkGetMacro(Imin, unsigned short)
-	itkGetMacro(Imax, unsigned short)
-	itkGetMacro(Irange, unsigned short)
-	itkGetMacro(highBound, unsigned short)
-	itkGetMacro(lowBound, unsigned short)
-	itkGetMacro(lowBndRls, unsigned short)
-	itkGetMacro(highBndRls, unsigned short)
+	// RSL estimate coefficient
+	itkSetMacro(Lambda, float)
+	itkGetMacro(Lambda, float)
 
-	
+	// Write Histograms in a csv file
+	// Is false by default
+	itkSetMacro(Reset, bool);
+	itkGetConstMacro(Reset, bool);
+	itkBooleanMacro(Reset);
+
+	// Write Histograms in a csv file
+	// Is false by default
+	itkSetMacro(SaveHistograms, bool);
+	itkGetConstMacro(SaveHistograms, bool);
+	itkBooleanMacro(SaveHistograms);
+			
 protected:
 	I0EstimationProjectionFilter();
 	virtual ~I0EstimationProjectionFilter() {}
-
-	//virtual void GenerateOutputInformation();
-	//virtual void PropagateRequestedRegion();
-	//virtual void GenerateInputRequestedRegion();
 
   virtual void BeforeThreadedGenerateData();
 	
@@ -144,45 +110,31 @@ protected:
 
 private:
 	I0EstimationProjectionFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  void operator=(const Self&);               //purposely not implemented
 	
 	// Input variables 
-	bool m_Median;                          // Use median filtering
-	bool m_UseRLS;                          // Use RLS filtering
-	bool m_UseTurbo;                        // Use turbo (1 pixel/2)
-	bool m_BindToExpectedI0;
-	unsigned short m_ExpectedI0;            // Expected I0 value (obtained by detector calibration)
-	std::string m_DebugCSVFile;             // Save estimates in output CSV file
-	double m_Lambda;                        // Forgetting factor for RLS estimate
-
-	unsigned int m_NBins;
-	itk::MutexLock::Pointer m_mutex;
-	itk::Barrier::Pointer m_Barrier;
+	unsigned short m_ExpectedI0;            // Expected I0 value (as a result of a detector calibration)
+	unsigned short m_MaxPixelValue;         // Maximum encodable detector value if different from (2^16-1)
+	float m_Lambda;                         // RLS coefficient
+	bool m_SaveHistograms;                  // Save histograms in a output file
+	bool m_Reset;                           // Reset counters 
 	
-	unsigned short m_I0;                    // I0 estimate with no a priori
-	unsigned short m_I0fwhm;
-	float m_I0sigma;
-		
-	std::vector<unsigned > m_histogram;
+	// Secondary inputs
+	unsigned int m_NBins;                   // Histogram size, computed from 2^16 and bitshift
+	
+	// Main variables
+	std::vector<unsigned > m_histogram;     // compressed (bitshifted) histogram 
+	unsigned short m_I0;                    // I0 estimate with no a priori for each new image
+	unsigned short m_I0rls;                 // Updated RLS estimate 
+	unsigned short m_I0fwhm;                // FWHM of the I0 mode
 
-	unsigned short m_Imin, m_Imax, m_Irange;
-
-	unsigned short m_I0mean;                // Updated mean estimate (uniform weight over all previous estimates)
-	unsigned short m_I0median;              // Median estimate (purpose: increase robustness in case of bad I0 estimate)
-	float m_I0rls;                          // RLS estimate
-	float m_I0bounded;                      // I0 has maximum in the rls filter IO region
-	unsigned int m_Np;                      // Number of previous images
-
-	std::vector<unsigned short> m_pastI0;   // Three past estimate for median filtering
-	unsigned short m_lowBound;
-	unsigned short m_highBound;
-	unsigned short m_middle;
-	unsigned short m_lowBndRls, m_highBndRls, m_middleRls;
-
-	float m_dynamicUsage;    // %
-
-	unsigned m_dynThreshold;                  // Minimum number of pixels per bin used in estimation of Imin and Imax
-
+	// Secondary variables 
+	unsigned int m_Np;                      // Number of previously analyzed images
+	unsigned short m_Imin, m_Imax;          // Define the range of consistent pixels in histogram
+	unsigned m_dynThreshold;                // Detector values with a frequency of less than dynThreshold outside min/max are discarded
+	unsigned short m_lowBound, m_highBound; // Lower/Upper bounds of the I0 mode at half width
+	
+	itk::MutexLock::Pointer m_mutex;
 	int m_nsync;
 	int m_Nthreads;
 }; 

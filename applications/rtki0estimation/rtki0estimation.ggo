@@ -14,8 +14,5 @@ option "submatch"  - "Index of the submatch that will be used to sort matches"  
 option "range"     - "Range of projection to analyse min,step,max"               int     multiple no default="0"
 
 section "Algorithm parameters"
+option "lambda"    l "RLS estimate coefficient"                                  double no default="0.8"
 option "expected"  e "Expected I0 value"                                         int   no   default="65535"
-option "median"    m "size-3 linear median filtering"                            flag  off
-option "rls"       f "Recursive least square (RLS) fitering"                     flag  off
-option "lambda"    l "RLS forgetting factor "                                   double no default="0.7"
-option "turbo"     t "Process only 1 pixel over 2"                               flag  off
