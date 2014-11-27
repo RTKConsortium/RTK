@@ -17,6 +17,8 @@
  *=========================================================================*/
 #ifndef __rtkGgoArgsInfoManager_h
 #define __rtkGgoArgsInfoManager_h
+namespace rtk
+{
 template < class TArgsInfo, class TCleanupFunction = void (*)( TArgsInfo* ) >
 class args_info_manager
 {
@@ -34,4 +36,5 @@ class args_info_manager
     TArgsInfo * args_info_pointer;
     TCleanupFunction cleanup_function;
 };
+}
 #endif

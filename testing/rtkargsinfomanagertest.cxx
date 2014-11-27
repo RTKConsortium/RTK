@@ -29,10 +29,10 @@ int main(int argc, char** argv)
   args_info_test args_info_1, args_info_2;
 
   { // new scope - manager does cleanup on destruction
-  args_info_manager< args_info_test > manager_1( args_info_1, cleanup_function );
+  rtk::args_info_manager< args_info_test > manager_1( args_info_1, cleanup_function );
 
   cleanup_functor functor;
-  args_info_manager< args_info_test, cleanup_functor > manager_2( args_info_2, functor );
+  rtk::args_info_manager< args_info_test, cleanup_functor > manager_2( args_info_2, functor );
   }
 
   if( args_info_1.testVar )
