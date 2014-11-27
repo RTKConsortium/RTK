@@ -115,6 +115,10 @@ public:
     itkGetMacro(ForwardWarp, bool)
     itkSetMacro(ForwardWarp, bool)
 
+    /** Phase shift to simulate phase estimation errors */
+    itkSetMacro(PhaseShift, float)
+    itkGetMacro(PhaseShift, float)
+
     /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
     typedef rtk::CudaWarpImageFilter                                CudaWarpFilterType;
@@ -150,6 +154,7 @@ protected:
 
     /** Perform a forward warping (using splat) instead of the standard backward warping */
     bool m_ForwardWarp;
+    float m_PhaseShift;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check

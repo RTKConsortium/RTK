@@ -121,6 +121,7 @@ int main(int argc, char * argv[])
   rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetGammaSpace(args_info.gamma_space_arg);
   rooster->SetGammaTime(args_info.gamma_time_arg);
+  rooster->SetPhaseShift(args_info.shift_arg);
 
   if (args_info.dvf_given)
     {

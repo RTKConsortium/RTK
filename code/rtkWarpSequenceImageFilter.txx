@@ -105,10 +105,14 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
 
   // Generate a signal and pass it to the MVFInterpolator
   std::vector<double> signal;
+  float temp;
   int nbFrames = this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension - 1);
   for (int frame = 0; frame < nbFrames; frame ++)
     {
-    signal.push_back((float) frame / (float) nbFrames);
+    temp = (float) frame / (float) nbFrames + m_PhaseShift;
+    if (temp >= 1) temp = temp - 1;
+    if (temp <= 0) temp = temp + 1;
+    signal.push_back(temp);
     }
   m_MVFInterpolatorFilter->SetSignalVector(signal);
 

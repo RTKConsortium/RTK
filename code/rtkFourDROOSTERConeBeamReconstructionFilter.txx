@@ -243,6 +243,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     {
       m_Warp->SetInput(0, m_TVDenoisingSpace->GetOutput());
       m_Warp->SetDisplacementField(this->GetDisplacementField());
+      m_Warp->SetPhaseShift(m_PhaseShift);
 
       m_TVDenoisingTime->SetInput(m_Warp->GetOutput());
 
@@ -251,6 +252,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
       m_ForwardWarp->SetInput(0, m_SubtractFilter->GetOutput());
       m_ForwardWarp->SetDisplacementField(this->GetDisplacementField());
+      m_ForwardWarp->SetPhaseShift(m_PhaseShift);
 
       m_AddFilter->SetInput1(m_ForwardWarp->GetOutput());
       m_AddFilter->SetInput2(m_TVDenoisingSpace->GetOutput());
