@@ -73,15 +73,22 @@ void rtk::ImagXImageIO::ReadImageInformation()
     {
     SetDimensions(2, dynamic_cast<MetaDataIntType *>(dic["z"].GetPointer() )->GetMetaDataObjectValue() );
     SetSpacing(2, dynamic_cast<MetaDataDoubleType *>(dic["spacing_z"].GetPointer() )->GetMetaDataObjectValue() );
+    if(GetSpacing(2) == 0)
+      SetSpacing(2, 1);
     }
 
-  std::istringstream iss(
-    dynamic_cast<MetaDataStringType*>(dic["matrixTransform"].GetPointer() )->GetMetaDataObjectValue() );
   itk::Matrix<double, 4, 4> matrix;
-  for(unsigned int j=0; j<4; j++)
-    for(unsigned int i=0; i<4; i++)
-      iss >> matrix[j][i];
-  matrix /= matrix[3][3];
+  if(dic["matrixTransform"].GetPointer() == NULL)
+    matrix.SetIdentity();
+  else
+    {
+    std::istringstream iss(
+      dynamic_cast<MetaDataStringType*>(dic["matrixTransform"].GetPointer() )->GetMetaDataObjectValue() );
+    for(unsigned int j=0; j<4; j++)
+      for(unsigned int i=0; i<4; i++)
+        iss >> matrix[j][i];
+    matrix /= matrix[3][3];
+    }
 
   std::vector<double> direction;
   for(unsigned int i=0; i<GetNumberOfDimensions(); i++)
