@@ -111,7 +111,7 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
     {
     temp = (float) frame / (float) nbFrames + m_PhaseShift;
     if (temp >= 1) temp = temp - 1;
-    if (temp <= 0) temp = temp + 1;
+    if (temp < 0) temp = temp + 1;
     signal.push_back(temp);
     }
   m_MVFInterpolatorFilter->SetSignalVector(signal);
