@@ -7,7 +7,7 @@
 /**
  * \file rtkwaterprecorrectiontest.cxx
  *
- * \brief Functional test for the classes performing water precorrection
+ * \brief Functional test for the water precorrection class
  *
  * \author S. Brousmiche
  */
@@ -108,7 +108,6 @@ int main(int , char** )
 	mcal->SetOrder(1.0);
 	mcal->Update();
 
-	//CheckImageQuality<OutputImageType>(mcal->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
 	std::cout << "\n\nTest PASSED! " << std::endl;
 	
 	std::cout << "\n\n****** Calib case 2 : order 4 ******" << std::endl;
@@ -116,7 +115,6 @@ int main(int , char** )
 	mcal->SetOrder(5.0);
 	mcal->Update();
 
-	//CheckImageQuality<OutputImageType>(mcal->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
 	std::cout << "\n\nTest PASSED! " << std::endl;
 
 

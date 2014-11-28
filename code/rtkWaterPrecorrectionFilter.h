@@ -28,7 +28,7 @@ namespace rtk
 {
 
 /** \class WaterPrecorrectionFilter
- * \brief Performs the classical water precorrection for beam hardening
+ * \brief Performs the classical water precorrection for beam hardening (Kachelriess, Med. Phys. 2006)
  *
  * \test rtkwaterprecorrectiontest.cxx
  *
@@ -66,15 +66,13 @@ protected:
 	WaterPrecorrectionFilter();
 	virtual ~WaterPrecorrectionFilter() {};
 
-	//virtual void BeforeThreadedGenerateData();
-	//virtual void AfterThreadedGenerateData();
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
 
 private:
 	WaterPrecorrectionFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
-	VectorType m_Coefficients;
+	VectorType m_Coefficients;      // Correction coefficients
 };
 
 } // end namespace rtk

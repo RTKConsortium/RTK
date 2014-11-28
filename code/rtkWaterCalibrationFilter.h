@@ -28,7 +28,7 @@ namespace rtk
 {
 
 /** \class WaterCalibrationFilter
- * \brief Performs the weighting for the n-th order of water precorrection (calibration step)
+ * \brief Performs the weighting for the n-th order of water precorrection (Kachelriess, Med. Phys. 2006)
  *
  * \test rtkwatercalibrationtest.cxx
  *

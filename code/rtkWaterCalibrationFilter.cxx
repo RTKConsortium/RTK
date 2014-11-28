@@ -24,7 +24,7 @@
 
 #include "rtkWaterPrecorrectionFilter.h"
 
-typedef itk::Image<unsigned short, 2> TImage;
+typedef itk::Image<float, 2> TImage;
 
 namespace rtk
 {
