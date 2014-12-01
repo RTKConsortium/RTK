@@ -32,7 +32,6 @@ using namespace std;
 
 namespace rtk
 {
-
 /** \class I0EstimationProjectionFilter
  *
  * \brief Estimate the I0 value from the projection histograms
@@ -44,101 +43,108 @@ namespace rtk
  * \ingroup InPlaceImageFilter
  */
 
-template < unsigned char bitShift >
-class ITK_EXPORT I0EstimationProjectionFilter : 
-	public itk::ImageToImageFilter<itk::Image<unsigned short, 3>, itk::Image<unsigned int, 3> >
+template< unsigned char bitShift >
+class ITK_EXPORT I0EstimationProjectionFilter:
+  public         itk::ImageToImageFilter< itk::Image< unsigned short, 3 >, itk::Image< unsigned int, 3 > >
 {
 public:
   /** Standard class typedefs. */
-	typedef I0EstimationProjectionFilter<bitShift >            Self;
-	typedef itk::ImageToImageFilter<itk::Image<unsigned short, 3>, 
-		itk::Image<unsigned, 3> >                                Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef I0EstimationProjectionFilter< bitShift >                  Self;
+  typedef itk::ImageToImageFilter< itk::Image< unsigned short, 3 >,
+                                   itk::Image< unsigned, 3 > >      Superclass;
+  typedef itk::SmartPointer< Self >                                 Pointer;
+  typedef itk::SmartPointer< const Self >                           ConstPointer;
 
-	/** Method for creation through the object factory. */
-	itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-	/** Runtime information support. */
-	itkTypeMacro(I0EstimationProjectionFilter, ImageToImageFilter);
-  
-	/** Some convenient typedefs. */
-	typedef itk::Image<unsigned int, 3>                 OutputImageType;
-	typedef itk::Image<unsigned short, 3>               InputImageType;
-	typedef typename OutputImageType::Pointer           OutputImagePointer;
-	typedef typename InputImageType::Pointer            InputImagePointer;
-	typedef typename InputImageType::ConstPointer       InputImageConstPointer;
-	
-	// Main Output
-	itkGetMacro(I0, unsigned short)   // Estimation result
-	itkGetMacro(I0fwhm, unsigned short)
-	itkGetMacro(I0rls, unsigned short)
+  /** Runtime information support. */
+  itkTypeMacro(I0EstimationProjectionFilter, ImageToImageFilter);
 
-	// Maximum encodable detector value if different from (2^16-1)
-	itkSetMacro(MaxPixelValue, unsigned short)
-	itkGetMacro(MaxPixelValue, unsigned short)
+  /** Some convenient typedefs. */
+  typedef itk::Image< unsigned int, 3 >         OutputImageType;
+  typedef itk::Image< unsigned short, 3 >       InputImageType;
+  typedef typename OutputImageType::Pointer     OutputImagePointer;
+  typedef typename InputImageType::Pointer      InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
 
-	// Expected I0 value (as a result of a detector calibration)
-	itkSetMacro(ExpectedI0, unsigned short)
-	itkGetMacro(ExpectedI0, unsigned short)
+  /** Main Output: estimation result. */
+  itkGetMacro(I0, unsigned short)
+  itkGetMacro(I0fwhm, unsigned short)
+  itkGetMacro(I0rls, unsigned short)
 
-	// RSL estimate coefficient
-	itkSetMacro(Lambda, float)
-	itkGetMacro(Lambda, float)
+  /** Maximum encodable detector value if different from (2^16-1) */
+  itkSetMacro(MaxPixelValue, unsigned short)
+  itkGetMacro(MaxPixelValue, unsigned short)
 
-	// Write Histograms in a csv file
-	// Is false by default
-	itkSetMacro(Reset, bool);
-	itkGetConstMacro(Reset, bool);
-	itkBooleanMacro(Reset);
+  /** Expected I0 value (as a result of a detector calibration) */
+  itkSetMacro(ExpectedI0, unsigned short)
+  itkGetMacro(ExpectedI0, unsigned short)
 
-	// Write Histograms in a csv file
-	// Is false by default
-	itkSetMacro(SaveHistograms, bool);
-	itkGetConstMacro(SaveHistograms, bool);
-	itkBooleanMacro(SaveHistograms);
-			
+  /** RSL estimate coefficient */
+  itkSetMacro(Lambda, float)
+  itkGetMacro(Lambda, float)
+
+  /** Write Histograms in a csv file
+   * Is false by default */
+  itkSetMacro(Reset, bool);
+  itkGetConstMacro(Reset, bool);
+  itkBooleanMacro(Reset);
+
+  /** Write Histograms in a csv file
+   * Is false by default */
+  itkSetMacro(SaveHistograms, bool);
+  itkGetConstMacro(SaveHistograms, bool);
+  itkBooleanMacro(SaveHistograms);
 protected:
-	I0EstimationProjectionFilter();
-	virtual ~I0EstimationProjectionFilter() {}
+  I0EstimationProjectionFilter();
+  virtual ~I0EstimationProjectionFilter() {}
 
   virtual void BeforeThreadedGenerateData();
-	
-  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId);
 
-	virtual void AfterThreadedGenerateData();
+  virtual void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
+
+  virtual void AfterThreadedGenerateData();
 
 private:
-	I0EstimationProjectionFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-	
-	// Input variables 
-	unsigned short m_ExpectedI0;            // Expected I0 value (as a result of a detector calibration)
-	unsigned short m_MaxPixelValue;         // Maximum encodable detector value if different from (2^16-1)
-	float m_Lambda;                         // RLS coefficient
-	bool m_SaveHistograms;                  // Save histograms in a output file
-	bool m_Reset;                           // Reset counters 
-	
-	// Secondary inputs
-	unsigned int m_NBins;                   // Histogram size, computed from 2^16 and bitshift
-	
-	// Main variables
-	std::vector<unsigned > m_histogram;     // compressed (bitshifted) histogram 
-	unsigned short m_I0;                    // I0 estimate with no a priori for each new image
-	unsigned short m_I0rls;                 // Updated RLS estimate 
-	unsigned short m_I0fwhm;                // FWHM of the I0 mode
+  I0EstimationProjectionFilter(const Self &); //purposely not implemented
+  void operator=(const Self &);               //purposely not implemented
 
-	// Secondary variables 
-	unsigned int m_Np;                      // Number of previously analyzed images
-	unsigned short m_Imin, m_Imax;          // Define the range of consistent pixels in histogram
-	unsigned m_dynThreshold;                // Detector values with a frequency of less than dynThreshold outside min/max are discarded
-	unsigned short m_lowBound, m_highBound; // Lower/Upper bounds of the I0 mode at half width
-	
-	itk::MutexLock::Pointer m_mutex;
-	int m_nsync;
-	int m_Nthreads;
-}; 
+  // Input variables
+  unsigned short m_ExpectedI0;            // Expected I0 value (as a result of a
+                                          // detector calibration)
+  unsigned short m_MaxPixelValue;         // Maximum encodable detector value if
+                                          // different from (2^16-1)
+  float          m_Lambda;                // RLS coefficient
+  bool           m_SaveHistograms;        // Save histograms in a output file
+  bool           m_Reset;                 // Reset counters
 
+  // Secondary inputs
+  unsigned int m_NBins;                   // Histogram size, computed from 2^16
+                                          // and bitshift
+
+  // Main variables
+  std::vector< unsigned > m_Histogram;    // compressed (bitshifted) histogram
+  unsigned short          m_I0;           // I0 estimate with no a priori for
+                                          // each new image
+  unsigned short          m_I0rls;        // Updated RLS estimate
+  unsigned short          m_I0fwhm;       // FWHM of the I0 mode
+
+  // Secondary variables
+  unsigned int   m_Np;                    // Number of previously analyzed
+                                          // images
+  unsigned short m_Imin, m_Imax;          // Define the range of consistent
+                                          // pixels in histogram
+  unsigned       m_DynThreshold;          // Detector values with a frequency of
+                                          // less than dynThreshold outside
+                                          // min/max are discarded
+  unsigned short m_LowBound, m_HighBound; // Lower/Upper bounds of the I0 mode
+                                          // at half width
+
+  itk::MutexLock::Pointer m_Mutex;
+  int                     m_Nsync;
+  int                     m_Nthreads;
+};
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
