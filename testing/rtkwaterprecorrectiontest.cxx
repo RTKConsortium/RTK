@@ -1,8 +1,8 @@
 #include "rtkTest.h"
 #include "rtkConstantImageSource.h"
 
-#include "rtkWaterPrecorrectionFilter.h"
-#include "rtkWaterCalibrationFilter.h"
+#include "rtkWaterPrecorrectionImageFilter.h"
+#include "rtkWaterCalibrationImageFilter.h"
 
 /**
  * \file rtkwaterprecorrectiontest.cxx
@@ -51,7 +51,7 @@ int main(int , char** )
   
 	std::cout << "\n\n****** Case 1: order 2 ******" << std::endl;
 
-	typedef rtk::WaterPrecorrectionFilter<2> WPCType2;
+  typedef rtk::WaterPrecorrectionImageFilter<2> WPCType2;
 	WPCType2::Pointer model2 = WPCType2::New();
   
 	// Update median filter
@@ -67,7 +67,7 @@ int main(int , char** )
 
   std::cout << "\n\n****** Case 2: order 3 ******" << std::endl;
 
-	typedef rtk::WaterPrecorrectionFilter<3> WPCType3;
+  typedef rtk::WaterPrecorrectionImageFilter<3> WPCType3;
 	WPCType3::Pointer model3 = WPCType3::New();
 
 	itk::Vector<float, 3> c2;
@@ -83,7 +83,7 @@ int main(int , char** )
 
 	std::cout << "\n\n****** Case 3: order 5 ******" << std::endl;
 
-	typedef rtk::WaterPrecorrectionFilter<5> WPCType5;
+  typedef rtk::WaterPrecorrectionImageFilter<5> WPCType5;
 	WPCType5::Pointer model5 = WPCType5::New();
 
 	itk::Vector<float, 5> c3;
@@ -101,7 +101,7 @@ int main(int , char** )
 
 	std::cout << "\n\n****** Calib case 1 : order 1 ******" << std::endl;
 
-	typedef rtk::WaterCalibrationFilter WPCalType;
+  typedef rtk::WaterCalibrationImageFilter WPCalType;
 	WPCalType::Pointer mcal = WPCalType::New();
 
 	mcal->SetInput(imgIn->GetOutput());

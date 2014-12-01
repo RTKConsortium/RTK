@@ -16,40 +16,34 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkWaterCalibrationFilter_cxx
-#define __rtkWaterCalibrationFilter_cxx
-
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkWaterPrecorrectionFilter.h"
+#include "rtkWaterCalibrationImageFilter.h"
+#include "rtkWaterPrecorrectionImageFilter.h"
 
-typedef itk::Image<float, 2> TImage;
+typedef itk::Image< float, 2 > TImage;
 
 namespace rtk
 {
+WaterCalibrationImageFilter::WaterCalibrationImageFilter()
+{
+}
 
-	WaterCalibrationFilter::WaterCalibrationFilter()
-	{
-	}
+void WaterCalibrationImageFilter
+::ThreadedGenerateData( const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+{
+  itk::ImageRegionConstIterator< TImage > itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIterator< TImage >      itOut(this->GetOutput(), outputRegionForThread);
 
-	void WaterCalibrationFilter
-		::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId)
-	{
-		itk::ImageRegionConstIterator<TImage> itIn(this->GetInput(), outputRegionForThread);
-		itk::ImageRegionIterator<TImage>      itOut(this->GetOutput(), outputRegionForThread);
-
-		itIn.GoToBegin();
-		itOut.GoToBegin();
-		while (!itIn.IsAtEnd()){
-			float v = itIn.Get();
-			itOut.Set( std::powf(v, m_Order) );
-			++itIn;
-			++itOut;
-		}
-
-
-	}
+  itIn.GoToBegin();
+  itOut.GoToBegin();
+  while ( !itIn.IsAtEnd() )
+    {
+    float v = itIn.Get();
+    itOut.Set( std::powf(v, m_Order) );
+    ++itIn;
+    ++itOut;
+    }
+}
 } // end namespace rtk
-
-#endif // __rtkWaterCalibrationFilter_cxx
