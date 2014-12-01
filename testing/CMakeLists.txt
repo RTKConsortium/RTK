@@ -108,6 +108,10 @@ ADD_EXECUTABLE(rtkmediantest rtkmediantest.cxx)
 TARGET_LINK_LIBRARIES(rtkmediantest ${RTK_LIBRARIES})
 ADD_TEST(rtkmediantest ${EXECUTABLE_OUTPUT_PATH}/rtkmediantest)
 
+ADD_EXECUTABLE(rtkwaterprecorrectiontest rtkwaterprecorrectiontest.cxx)
+TARGET_LINK_LIBRARIES(rtkwaterprecorrectiontest ${RTK_LIBRARIES})
+ADD_TEST(rtkwaterprecorrectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkwaterprecorrectiontest)
+
 ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest 
