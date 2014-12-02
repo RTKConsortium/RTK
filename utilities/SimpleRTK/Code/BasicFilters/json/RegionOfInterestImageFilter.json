@@ -1,0 +1,37 @@
+{
+  "name" : "RegionOfInterestImageFilter",
+  "itk_name" : "RegionOfInterestImageFilter",
+  "template_code_filename" : "ImageFilter",
+  "template_test_filename" : "ImageFilter",
+  "number_of_inputs" : 1,
+  "doc" : "The RegionOfInterest filter extract an N-D image from an N-D image. If a 2-D image is desired then the Extract image filter should be used.",
+  "pixel_types" : "NonLabelPixelIDTypeList",
+  "members" : [
+    {
+      "name" : "Size",
+      "type" : "unsigned int",
+      "default" : "std::vector<unsigned int>(3, 1)",
+      "dim_vec" : 1,
+      "itk_type" : "typename InputImageType::SizeType",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "",
+      "custom_itk_cast" : ""
+    },
+    {
+      "name" : "Index",
+      "type" : "int",
+      "default" : "std::vector<int>(3, 0)",
+      "dim_vec" : 1,
+      "itk_type" : "typename InputImageType::IndexType",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "\todo the internal setting of the method need work!!!",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "",
+      "custom_itk_cast" : " typename InputImageType::RegionType itkRegion;\n  for( unsigned int i = 0; i < inImage1.GetDimension(); ++i )\n    {\n    itkRegion.SetIndex( i, m_Index[i] );\n    itkRegion.SetSize( i, m_Size[i] );\n    }\n  filter->SetRegionOfInterest( itkRegion );"
+    }
+  ],
+  "briefdescription" : "Extract a region of interest from the input image.",
+  "detaileddescription" : "This filter produces an output image of the same dimension as the input image. The user specifies the region of the input image that will be contained in the output image. The origin coordinates of the output images will be computed in such a way that if mapped to physical space, the output image will overlay the input image with perfect registration. In other words, a registration process between the output image and the input image will return an identity transform.\n\nIf you are interested in changing the dimension of the image, you may want to consider the ExtractImageFilter. For example for extracting a 2D image from a slice of a 3D image.\n\nThe region to extract is set using the method SetRegionOfInterest.\n\n\\see  ExtractImageFilter\n\\par Wiki Examples:\n\n\\li All Examples\n\n\\li Extract a portion of an image (region of interest)"
+}

@@ -15,7 +15,6 @@ INCLUDE(CTest)
 INCLUDE(cmake/RTKExternalData.cmake)
 #=========================================================
 
-
 ## Tell CMake to be quiet
 CMAKE_POLICY (SET CMP0003 NEW)
 
@@ -217,3 +216,10 @@ IF(BUILD_EXAMPLES)
 ENDIF(BUILD_EXAMPLES)
 
 ExternalData_Add_Target(rtkData)
+
+option(BUILD_SIMPLERTK "Build SimpleRTK Wrapping" OFF)
+IF(BUILD_SIMPLERTK)
+  # SimpleRTK is meant to be build separately, so we set the variables
+  SET(RTK_DIR ${CMAKE_BINARY_DIR})
+  include(utilities/SimpleRTK/SimpleRTKWithSwig.cmake)
+ENDIF(BUILD_SIMPLERTK)
