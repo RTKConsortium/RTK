@@ -63,7 +63,6 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_MultiplyFilter->SetInput1( m_DivergenceFilter->GetOutput() );
   m_SubtractVolumeFilter->SetInput2(m_MultiplyFilter->GetOutput());
   m_ConjugateGradientFilter->SetB(m_SubtractVolumeFilter->GetOutput());
-  m_ConjugateGradientFilter->SetNumberOfIterations(m_CG_iterations);
   m_GradientFilter2->SetInput(m_ConjugateGradientFilter->GetOutput());
   m_SubtractFilter1->SetInput1(m_GradientFilter2->GetOutput());
   m_SubtractFilter1->SetInput2(m_ZeroMultiplyGradientFilter->GetOutput());

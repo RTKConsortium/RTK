@@ -31,6 +31,7 @@ ADD_LIBRARY(RTK
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
+            rtkWaterCalibrationImageFilter.cxx
             )
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
@@ -72,7 +73,8 @@ IF (RTK_USE_CUDA)
        rtkCudaForwardProjectionImageFilter.cu
        rtkCudaBackProjectionImageFilter.cu
        rtkCudaSplatImageFilter.cu
-       rtkCudaInterpolateImageFilter.cu)
+       rtkCudaInterpolateImageFilter.cu
+       rtkCudaTotalVariationDenoisingBPDQImageFilter.cu)
        
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
@@ -102,6 +104,7 @@ IF (RTK_USE_CUDA)
               rtkCudaBackProjectionImageFilter.cxx
 	      rtkCudaSplatImageFilter.cxx
 	      rtkCudaInterpolateImageFilter.cxx
+	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
@@ -152,4 +155,3 @@ ENDIF(NOT RTK_INSTALL_NO_LIBRARIES)
 #=========================================================
 
 SET(RTK_LIBRARIES ${RTK_LIBRARIES} PARENT_SCOPE)
-

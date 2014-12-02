@@ -52,12 +52,14 @@ endif ()
 #   This script will modify CUDA_NVCC_FLAGS if system default is not gcc-4.3
 include (nvcc-check)
 
-set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
-      -gencode arch=compute_10,code=sm_10
-      -gencode arch=compute_11,code=sm_11
-      -gencode arch=compute_12,code=sm_12
-      -gencode arch=compute_13,code=sm_13
-    )
+if("${CUDA_VERSION}" LESS 6.5)
+  set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
+        -gencode arch=compute_10,code=sm_10
+        -gencode arch=compute_11,code=sm_11
+        -gencode arch=compute_12,code=sm_12
+        -gencode arch=compute_13,code=sm_13
+      )
+endif ()
 
 if("${CUDA_VERSION}" LESS 5.0)
  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}

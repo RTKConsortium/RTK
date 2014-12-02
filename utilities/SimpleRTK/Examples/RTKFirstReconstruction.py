@@ -48,8 +48,7 @@ rei.SetCenter(center)
 rei.SetAxis(semiprincipalaxis)
 rei.SetGeometry( geometry )
 reiImage = rei.Execute(source)
-  
-  
+
 # Create reconstructed image
 constantImageSource2 = srtk.ConstantImageSource()
 origin = [ -63.5, -63.5, -63.5 ]
@@ -66,11 +65,11 @@ feldkamp.SetGeometry( geometry );
 feldkamp.SetTruncationCorrection(0.0);
 feldkamp.SetHannCutFrequency(0.0);
 image = feldkamp.Execute(source2,reiImage) 
-   
-pixelID = image.GetPixelIDValue()
 
 plt.imshow(srtk.GetArrayFromImage(image[:,64,:]), cmap = cm.Greys_r)
+plt.show()
 
+pixelID = image.GetPixelIDValue()
 caster = srtk.CastImageFilter()
 caster.SetOutputPixelType( pixelID )
 image = caster.Execute( image )
