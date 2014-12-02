@@ -1,0 +1,8 @@
+$(if custom_set_input then
+OUT='  ${custom_set_input}'
+    else
+      for nimg=1,number_of_inputs do
+OUT= OUT .. 'filter->SetInput( ' .. nimg-1 .. ', image' .. nimg ..' );\n'
+end
+end)
+$(include ExecuteInternalSetITKFilterParameters.cxx.in)
