@@ -15,27 +15,30 @@
 typedef itk::Image<unsigned short, 2> ShortImageType;
 typedef itk::Image<float, 2> FloatImageType;
 
-void fillImageWithRawData(ShortImageType::Pointer image, unsigned short imageId)
+void fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
 {
-  itk::ImageRegionIterator<ShortImageType> it(image, image->GetLargestPossibleRegion());
+  itk::ImageRegionIterator<itk::Image<unsigned short, 2>> it(image, image->GetLargestPossibleRegion());
   it.GoToBegin();
+  unsigned short i = 0;
   while (!it.IsAtEnd()){
-    it.Set(imageId);
+    unsigned short I = (i%I0)+1;
+    it.Set(I);
+    ++it;
+    ++i;
   }
 }
 
 int main(int, char** )
 {
   itk::TimeProbe clock;
-
+  
   typedef rtk::LUTbasedVariableI0RawToAttImageFilter ConvertFilterType;
   ConvertFilterType::Pointer convert = ConvertFilterType::New();
   
   // Constant image sources
   ShortImageType::SizeType size;
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 1;
+  size[0] = 10;
+  size[1] = 10;
   ShortImageType::IndexType start;
   start.Fill(0);
   ShortImageType::RegionType region;
@@ -44,8 +47,7 @@ int main(int, char** )
   ShortImageType::SpacingType spacings;
   spacings[0] = 1.0;
   spacings[1] = 1.0;
-  spacings[2] = 1.0;
-
+  
   ShortImageType::Pointer rawImage = ShortImageType::New();
   rawImage->SetRegions(region);
   rawImage->SetSpacing(spacings);
@@ -55,9 +57,11 @@ int main(int, char** )
 
   for (unsigned short i = 0; i < 10; ++i)  
   {
-    fillImageWithRawData(rawImage, i);
+    unsigned short I0 = 10 * i + 1;
 
-    convert->SetI0(i);
+    fillImageWithRawData(rawImage, I0);
+
+    convert->SetI0(I0/2);
 
     clock.Start();
 
