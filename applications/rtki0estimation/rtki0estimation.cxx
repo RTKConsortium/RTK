@@ -28,96 +28,104 @@
 #include <algorithm>
 #include <string>
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
-	GGO(rtki0estimation, args_info);
+  GGO(rtki0estimation, args_info);
 
-	typedef unsigned short InputPixelType;
-	const unsigned int Dimension = 3;
-	typedef itk::Image< InputPixelType, Dimension > InputImageType;
-	typedef itk::Image< unsigned, Dimension > OutputHistogramType;
+  typedef unsigned short InputPixelType;
+  const unsigned int Dimension = 3;
+  typedef itk::Image< InputPixelType, Dimension > InputImageType;
+  typedef itk::Image< unsigned, Dimension >       OutputHistogramType;
 
-	typedef itk::RegularExpressionSeriesFileNames RegexpType;
-	RegexpType::Pointer names = RegexpType::New();
-	names->SetDirectory(args_info.path_arg);
-	names->SetNumericSort(args_info.nsort_flag);
-	names->SetRegularExpression(args_info.regexp_arg);
+  typedef itk::RegularExpressionSeriesFileNames RegexpType;
+  RegexpType::Pointer names = RegexpType::New();
+  names->SetDirectory(args_info.path_arg);
+  names->SetNumericSort(args_info.nsort_flag);
+  names->SetRegularExpression(args_info.regexp_arg);
 
-	typedef rtk::ProjectionsReader< InputImageType > ReaderType;
-	ReaderType::Pointer reader = ReaderType::New();
-	reader->SetFileNames(names->GetFileNames());
-	reader->UpdateOutputInformation();
-		
-	typedef itk::ExtractImageFilter<InputImageType, InputImageType> ExtractFilterType;
-	ExtractFilterType::Pointer extract = ExtractFilterType::New();
-	extract->InPlaceOff();
-	extract->SetDirectionCollapseToSubmatrix();
-	extract->SetInput(reader->GetOutput());
-	
-	ExtractFilterType::InputImageRegionType subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
-	subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
-	extract->SetInput(reader->GetOutput());
-	InputImageType::SizeType extractSize = subsetRegion.GetSize();
-	extractSize[2] = 1;
-	InputImageType::IndexType start = subsetRegion.GetIndex();
+  typedef rtk::ProjectionsReader< InputImageType > ReaderType;
+  ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileNames( names->GetFileNames() );
+  reader->UpdateOutputInformation();
 
-	typedef rtk::I0EstimationProjectionFilter<2> I0FilterType;
+  typedef itk::ExtractImageFilter< InputImageType, InputImageType > ExtractFilterType;
+  ExtractFilterType::Pointer extract = ExtractFilterType::New();
+  extract->InPlaceOff();
+  extract->SetDirectionCollapseToSubmatrix();
+  extract->SetInput( reader->GetOutput() );
 
-	std::vector<unsigned short> I0buffer;
+  ExtractFilterType::InputImageRegionType subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
+  subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
+  extract->SetInput( reader->GetOutput() );
+  InputImageType::SizeType extractSize = subsetRegion.GetSize();
+  extractSize[2] = 1;
+  InputImageType::IndexType start = subsetRegion.GetIndex();
 
-	unsigned int imin = 1;
-	unsigned int istep = 1;
-	unsigned int imax = (unsigned int)subsetRegion.GetSize()[2];
-	if (args_info.range_given) {
+  typedef rtk::I0EstimationProjectionFilter< 2 > I0FilterType;
 
-		if ((args_info.range_arg[0] <= args_info.range_arg[2]) && (istep <= (args_info.range_arg[2] - args_info.range_arg[0]))) {
-			imin = args_info.range_arg[0];
-			istep = args_info.range_arg[1];
-			imax = std::min(unsigned(args_info.range_arg[2]), imax);
-		}
-	}
+  std::vector< unsigned short > I0buffer;
 
-	I0FilterType::Pointer i0est = I0FilterType::New();
+  int istep         = 1;
+  unsigned int imin = 1;
+  unsigned int imax = (unsigned int)subsetRegion.GetSize()[2];
+  if ( args_info.range_given )
+    {
+    if ( ( args_info.range_arg[0] <= args_info.range_arg[2] )
+         && ( istep <= ( args_info.range_arg[2] - args_info.range_arg[0] ) ) )
+      {
+      imin = args_info.range_arg[0];
+      istep = args_info.range_arg[1];
+      imax = std::min(unsigned(args_info.range_arg[2]), imax);
+      }
+    }
 
-	if (args_info.lambda_given) {
-		i0est->SetLambda(args_info.lambda_arg);
-	}
-	if (args_info.expected_arg != 65535){
-		i0est->SetExpectedI0(args_info.expected_arg);
-	}
-	i0est->SaveHistogramsOn();
-	
-	for (unsigned int i = imin; i < imax; i+=istep)
-	{
-		i0est->SetInput(extract->GetOutput());
-		
-		start[2] = i;
-		InputImageType::RegionType desiredRegion(start, extractSize);
-		extract->SetExtractionRegion(desiredRegion);
-				
-		try {
-			i0est->UpdateLargestPossibleRegion();
-		}
-		catch (itk::ExceptionObject & err) {
-			std::cerr << "ExceptionObject caught !" << std::endl;
-			std::cerr << err << std::endl;
-			return EXIT_FAILURE;
-		}
-		
-		I0buffer.push_back(i0est->GetI0());
-		I0buffer.push_back(i0est->GetI0rls());
-		I0buffer.push_back(i0est->GetI0fwhm());
-	}
-	
-	if (args_info.debug_given) {
-		ofstream paramFile;
-		paramFile.open(args_info.debug_arg);
-		std::vector<unsigned short>::const_iterator it = I0buffer.begin();
-		for (; it != I0buffer.end(); ++it) {
-			paramFile << *it << ",";
-		}
-		paramFile.close();
-	}
-	
-	return EXIT_SUCCESS;
+  I0FilterType::Pointer i0est = I0FilterType::New();
+
+  if ( args_info.lambda_given )
+    {
+    i0est->SetLambda(args_info.lambda_arg);
+    }
+  if ( args_info.expected_arg != 65535 )
+    {
+    i0est->SetExpectedI0(args_info.expected_arg);
+    }
+  i0est->SaveHistogramsOn();
+
+  for ( unsigned int i = imin; i < imax; i += istep )
+    {
+    i0est->SetInput( extract->GetOutput() );
+
+    start[2] = i;
+    InputImageType::RegionType desiredRegion(start, extractSize);
+    extract->SetExtractionRegion(desiredRegion);
+
+    try
+      {
+      i0est->UpdateLargestPossibleRegion();
+      }
+    catch ( itk::ExceptionObject & err )
+      {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+      return EXIT_FAILURE;
+      }
+
+    I0buffer.push_back( i0est->GetI0() );
+    I0buffer.push_back( i0est->GetI0rls() );
+    I0buffer.push_back( i0est->GetI0fwhm() );
+    }
+
+  if ( args_info.debug_given )
+    {
+    ofstream paramFile;
+    paramFile.open(args_info.debug_arg);
+    std::vector< unsigned short >::const_iterator it = I0buffer.begin();
+    for (; it != I0buffer.end(); ++it )
+      {
+      paramFile << *it << ",";
+      }
+    paramFile.close();
+    }
+
+  return EXIT_SUCCESS;
 }
