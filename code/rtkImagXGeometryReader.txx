@@ -15,8 +15,10 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+
 #ifndef __rtkImagXGeometryReader_txx
 #define __rtkImagXGeometryReader_txx
+
 #include "rtkMacro.h"
 #include "rtkImagXXMLFileReader.h"
 #include <itkDOMNodeXMLReader.h>
@@ -55,7 +57,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
   {
     list_child[i]->GetAllAttributes(list);
     unsigned int k = 0;
-    for(list_it = list.begin(); list_it!= list.end(); list_it++, k++)
+    for(list_it = list.begin(); list_it != list.end(); list_it++, k++)
     {
       if( (*list_it).first.c_str() == std::string("axis") )
         axisName = (*list_it).second.c_str();
@@ -76,25 +78,34 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
           itk::DOMNode::AttributesListType list2;
           list_child3[n]->GetAllAttributes(list2);
           unsigned int m = 0;
-          for(list_it = list2.begin(); list_it!= list2.end(); list_it++, m++)
+          for(list_it = list2.begin(); list_it != list2.end(); list_it++, m++)
           {
-            if( ( list_child3[n]->GetName()==std::string("Px") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            if( ( list_child3[n]->GetName() == std::string("Px") ) &&
+                ( (*list_it).first.c_str() != std::string("MSE") ) )
               Px[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName()==std::string("Py") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Py") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Py[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName()==std::string("Pz") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Pz") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Pz[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName()==std::string("Rx") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Rx") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Rx[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName()==std::string("Ry") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Ry") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Ry[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName()==std::string("Rz") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Rz") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Rz[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName()==std::string("Tx") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Tx") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Tx[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName()==std::string("Ty") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Ty") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Ty[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName()==std::string("Tz") ) && ( (*list_it).first.c_str()!=std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Tz") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Tz[m-1] = std::atof( (*list_it).second.c_str() );
           }
         }
@@ -115,7 +126,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
   {
     list_child[i]->GetAllAttributes(list);
     unsigned int k = 0;
-    for(list_it = list.begin(); list_it!= list.end(); list_it++, k++)
+    for(list_it = list.begin(); list_it != list.end(); list_it++, k++)
     {
       if( (*list_it).first.c_str() == std::string("axis") )
         axisName = (*list_it).second.c_str();
@@ -131,7 +142,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
         itk::DOMNode::AttributesListType list2;
         list_child2[l]->GetAllAttributes(list2);
         unsigned int p = 0;
-        for(list_it = list2.begin(); list_it!= list2.end(); list_it++, k++)
+        for(list_it = list2.begin(); list_it != list2.end(); list_it++, k++)
         {
           if( (*list_it).first.c_str() == std::string("sdd") )
             sdd_s = (*list_it).second.c_str();

@@ -22,8 +22,6 @@
 // ITK
 #include <itkImageSeriesReader.h>
 #include <itkConfigure.h>
-#include <itkMetaDataObject.h>
-#include <itkGDCMImageIO.h>
 
 // RTK
 #include "rtkIOFactories.h"
@@ -139,6 +137,25 @@ void ProjectionsReader<TOutputImage>
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;
       }
+    else if( !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") )
+      {
+      /////////// ImagX (DICOM)
+      typedef unsigned short                                     InputPixelType;
+      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+
+      // Reader
+      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
+      typename ReaderType::Pointer reader = ReaderType::New();
+      reader->SetImageIO( imageIO );
+      reader->SetFileNames( this->GetFileNames() );
+      m_RawDataReader = reader;
+
+      // Convert raw to Projections
+      typedef rtk::ImagXRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+      rawFilter->SetInput( reader->GetOutput() );
+      m_RawToProjectionsFilter = rawFilter;
+      }
     else if( !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
       {
       typedef unsigned short                                     InputPixelType;
@@ -200,68 +217,18 @@ void ProjectionsReader<TOutputImage>
       {
       ///////////// Default: whatever the format, we assume that we directly
       // read the Projections
-      std::string tagkey, labelId, value;                 // Tag for Manufacturer's name
-      if (m_FileNames[0].find(".dcm")!=std::string::npos) // if dicom image case
-        {
-        imageIO = itk::GDCMImageIO::New();
-        // Reading manufacturer's name (iMagX case)
-        tagkey = "0008|0070";
-        itk::GDCMImageIO::GetLabelFromTag( tagkey, labelId );
-        }
-
       typedef itk::ImageSeriesReader< OutputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
       reader->SetImageIO( imageIO );
       reader->SetFileNames( this->GetFileNames() );
       m_RawDataReader = reader;
       m_RawToProjectionsFilter = reader;
-
-      if(dynamic_cast<itk::GDCMImageIO*>(imageIO.GetPointer()))
-        {
-        // Read just first projection
-        std::vector<std::string> firstProj;
-        firstProj.push_back(m_FileNames[0]);
-        reader->SetFileNames( firstProj );
-        // Necessary Update() to have access to tag value
-        reader->Update();
-
-        dynamic_cast<itk::GDCMImageIO*>(imageIO.GetPointer())->GetValueFromTag(tagkey, value);
-        if (value=="IBA ")
-          {
-          // Reading all iMagX projections
-          typedef unsigned short                                     InputPixelType;
-          typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
-
-          typedef itk::ImageSeriesReader< InputImageType > ReaderType;
-          typename ReaderType::Pointer reader = ReaderType::New();
-          reader->SetImageIO( imageIO );
-          reader->SetFileNames( this->GetFileNames() );
-          m_RawDataReader = reader;
-
-          // Convert raw to Projections
-          typedef rtk::ImagXRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
-          typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-          rawFilter->SetInput( reader->GetOutput() );
-          rawFilter->UpdateOutputInformation();
-          // Calculate Origin
-          float originX = (reader->GetOutput()->GetLargestPossibleRegion().GetSize()[0]-1)*(-0.5)*reader->GetOutput()->GetSpacing()[0];
-          float originY = (reader->GetOutput()->GetLargestPossibleRegion().GetSize()[1]-1)*(-0.5)*reader->GetOutput()->GetSpacing()[1];
-          // Set Origin
-          typename OutputImageType::PointType origin;
-          origin[0] = originX;
-          origin[1] = originY;
-          origin[2] = 0.f;
-          rawFilter->GetOutput()->SetOrigin(origin);
-          m_RawToProjectionsFilter = rawFilter;
-          }
-        else // Other manufacturers
-          // Reading all projections
-          reader->SetFileNames( this->GetFileNames() );
-        }
       }
+
     //Store imageIO to avoid creating the pipe more than necessary
     m_ImageIO = imageIO;
-  }
+    }
+
   // Release output data of m_RawDataReader if conversion occurs
   if ( m_RawDataReader != m_RawToProjectionsFilter )
     m_RawDataReader->ReleaseDataFlagOn();

@@ -19,6 +19,8 @@ ADD_LIBRARY(RTK
             rtkEdfImageIOFactory.cxx
             rtkImagXImageIO.cxx
             rtkImagXImageIOFactory.cxx
+            rtkDCMImagXImageIO.cxx
+            rtkDCMImagXImageIOFactory.cxx
             rtkImagXXMLFileReader.cxx
             rtkThreeDCircularProjectionGeometry.cxx
             rtkReg23ProjectionGeometry.cxx
@@ -61,8 +63,8 @@ ENDIF(RTK_USE_OPENCL)
 # Cuda library stuff
 IF (RTK_USE_CUDA)
   SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
-  SET (rtkcuda_CUDA_FILES 
-       rtkCudaCropImageFilter.cu 
+  SET (rtkcuda_CUDA_FILES
+       rtkCudaCropImageFilter.cu
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
        rtkCudaFFTRampImageFilter.cu
@@ -74,7 +76,7 @@ IF (RTK_USE_CUDA)
        rtkCudaSplatImageFilter.cu
        rtkCudaInterpolateImageFilter.cu
        rtkCudaTotalVariationDenoisingBPDQImageFilter.cu)
-       
+
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
   IF(WIN32)
@@ -101,9 +103,9 @@ IF (RTK_USE_CUDA)
               rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
-	      rtkCudaSplatImageFilter.cxx
-	      rtkCudaInterpolateImageFilter.cxx
-	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
+              rtkCudaSplatImageFilter.cxx
+              rtkCudaInterpolateImageFilter.cxx
+              rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)

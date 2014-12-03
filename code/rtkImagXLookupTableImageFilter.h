@@ -86,11 +86,8 @@ rtk::ImagXLookupTableImageFilter<TInputImage, TOutputImage>::ImagXLookupTableIma
   it.GoToBegin();
   while( !it.IsAtEnd() )
     {
-      if( (logRef - log(it.GetIndex()[0]+1.)) <= 0. )
-        it.Set (0.);
-      else
-        it.Set( logRef - log(it.GetIndex()[0]+1.) );
-      ++it;
+    it.Set( vnl_math_max( 0., logRef - log(it.GetIndex()[0]+1.) ) );
+    ++it;
     }
 
   // Set the lut to member and functor
