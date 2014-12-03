@@ -64,8 +64,6 @@ protected:
   WaterCalibrationImageFilter();
   virtual ~WaterCalibrationImageFilter() {}
 
-  //virtual void BeforeThreadedGenerateData();
-  //virtual void AfterThreadedGenerateData();
   virtual void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
 
 private:

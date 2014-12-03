@@ -16,8 +16,6 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLUTbasedVarI0RawToAttImageFilter_h
-
 #include "rtkLUTbasedVariableI0RawToAttImageFilter.h"
 
 #include <itkImageRegionConstIterator.h>
@@ -62,4 +60,3 @@ void LUTbasedVariableI0RawToAttImageFilter
 
 } // end namespace rtk
 
-#endif // __rtkLUTbasedVariableI0RawToAttImageFilter_cxx

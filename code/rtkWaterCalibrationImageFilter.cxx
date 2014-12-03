@@ -26,6 +26,7 @@ namespace rtk
 {
 WaterCalibrationImageFilter::WaterCalibrationImageFilter()
 {
+  m_Order = 1.0f;
 }
 
 void WaterCalibrationImageFilter
