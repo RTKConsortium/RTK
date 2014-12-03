@@ -34,8 +34,6 @@ int main(int, char** )
 	region.SetIndex(start);
 	region.SetSize(size);
 		
-	//I0FilterType::HistogramType::Pointer hist;
-	
 	typedef itk::RandomImageSource< ImageType > RandomImageSourceType;
 	RandomImageSourceType::Pointer randomSource = RandomImageSourceType::New();
 	randomSource->SetSize(size);
