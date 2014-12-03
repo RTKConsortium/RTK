@@ -1,0 +1,87 @@
+$(foreach members
+$(if enum then
+    OUT=OUT..'\
+\
+      typedef enum {'
+    for i = 1,#enum do
+        if( i > 1) then
+            OUT=OUT..','
+        end
+        OUT=OUT..enum[i]
+    end
+    if type then
+      OUT=OUT..'} ${type};'
+    else
+      OUT=OUT..'} ${name}Type;'
+    end
+end)
+$(if (not no_set_method) or (no_set_method == 0) then
+      OUT = '\
+      /**'
+      if briefdescriptionSet and (briefdescriptionSet:len() > 0) then
+         OUT=OUT .. '\
+       * \\brief ${briefdescriptionSet}'
+      end
+      if detaileddescriptionSet and (detaileddescriptionSet:len() > 0) then
+         OUT=OUT .. '\
+       * ${detaileddescriptionSet}'
+      end
+      OUT= OUT .. '\
+       */\
+      Self& Set${name} ('
+      if not type and enum then
+        OUT=OUT..' ${name}Type'
+      elseif dim_vec and (dim_vec == 1) then
+        OUT=OUT..' const std::vector<${type}> &'
+      else
+        OUT=OUT..' ${type}'
+      end
+      OUT=OUT..' ${name} ) { this->m_${name} = ${name}; return *this; }'
+  if dim_vec and ( set_as_scalar == 1 ) then
+    OUT = OUT .. '\
+\
+      /** Set the values of the ${name} vector all to value */\
+      Self& Set${name}( ${type} value ) { this->m_${name} = std::vector<${type}>(3, value); return *this; }\
+'
+  end
+  if type == "bool" and ( not dim_vec or not dim_vec == 1 ) then
+      OUT = OUT .. '\
+\
+      /** Set the value of ${name} to true or false respectfully. */\
+      Self& ${name}On() { return this->Set${name}(true); }\
+      Self& ${name}Off() { return this->Set${name}(false); }'
+  end
+end)
+$(if (not no_get_method) or (no_get_method == 0) then
+       OUT = '\
+      /**'
+      if briefdescriptionGet and (briefdescriptionGet:len() > 0)  then
+         OUT=OUT .. '\
+       * \\brief ${briefdescriptionGet}'
+      end
+      if detaileddescriptionGet and (detaileddescriptionGet:len() > 0) then
+         OUT=OUT .. '\
+       * ${detaileddescriptionGet}'
+      end
+      OUT= OUT .. '\
+       */\
+       '
+      if not type and enum then
+        OUT=OUT..' ${name}Type'
+      elseif dim_vec and (dim_vec == 1) then
+        OUT=OUT..' std::vector<${type}>'
+      else
+        OUT=OUT..' ${type}'
+      end
+      OUT=OUT..' Get${name}() const { return this->m_${name}; }'
+end))$(when measurements $(foreach measurements
+
+     /**$(if briefdescriptionGet and (briefdescriptionGet:len() > 0) then OUT=[[ \brief ${briefdescriptionGet}]]end)
+      *$(if detaileddescriptionGet and (detaileddescriptionGet:len() > 0) then OUT =[[
+      *  ${detaileddescriptionGet}
+      *]]end)
+      * This is a measurement. Its value is updated in the Execute
+      * methods, so the value will only be valid after an execution.
+      */
+      ${type} Get${name}() const { return this->m_${name}; };
+))
