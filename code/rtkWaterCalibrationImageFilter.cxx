@@ -22,8 +22,6 @@
 #include "rtkWaterCalibrationImageFilter.h"
 #include "rtkWaterPrecorrectionImageFilter.h"
 
-typedef itk::Image< float, 2 > TImage;
-
 namespace rtk
 {
 WaterCalibrationImageFilter::WaterCalibrationImageFilter()
@@ -33,8 +31,8 @@ WaterCalibrationImageFilter::WaterCalibrationImageFilter()
 void WaterCalibrationImageFilter
 ::ThreadedGenerateData( const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
-  itk::ImageRegionConstIterator< TImage > itIn(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator< TImage >      itOut(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionConstIterator< ImageType > itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIterator< ImageType >      itOut(this->GetOutput(), outputRegionForThread);
 
   itIn.GoToBegin();
   itOut.GoToBegin();
