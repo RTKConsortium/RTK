@@ -28,7 +28,10 @@ namespace rtk
 {
 template< unsigned int modelOrder >
 WaterPrecorrectionImageFilter< modelOrder >::WaterPrecorrectionImageFilter()
-{}
+{
+  m_Coefficients[0] = 0.0f;  // No correction by default
+  m_Coefficients[1] = 1.0f;
+}
 
 template< unsigned int modelOrder >
 void WaterPrecorrectionImageFilter< modelOrder >

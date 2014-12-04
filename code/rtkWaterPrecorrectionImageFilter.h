@@ -36,7 +36,7 @@ namespace rtk
  * \ingroup ImageToImageFilter
  */
 
-template< unsigned int modelOrder >
+template< unsigned int modelOrder = 2>
 class ITK_EXPORT WaterPrecorrectionImageFilter:
   public         itk::ImageToImageFilter< itk::Image< float, 2 >, itk::Image< float, 2 > >
 {

@@ -34,7 +34,7 @@ ADD_LIBRARY(RTK
             rtkIOFactories.cxx
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
             rtkWaterCalibrationImageFilter.cxx
-            )
+            rtkLUTbasedVariableI0RawToAttenuationImageFilter.cxx)
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 #=========================================================

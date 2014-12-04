@@ -18,8 +18,7 @@ int main(int, char** )
 
   const unsigned int Dimension = 3;
 	typedef itk::Image<unsigned short, Dimension> ImageType;
-	typedef ImageType::Pointer ImageTypePtr;
-	
+		
 	typedef rtk::I0EstimationProjectionFilter<3> I0FilterType;
 	I0FilterType::Pointer i0est = I0FilterType::New();
 	
@@ -34,8 +33,6 @@ int main(int, char** )
 	region.SetIndex(start);
 	region.SetSize(size);
 		
-	//I0FilterType::HistogramType::Pointer hist;
-	
 	typedef itk::RandomImageSource< ImageType > RandomImageSourceType;
 	RandomImageSourceType::Pointer randomSource = RandomImageSourceType::New();
 	randomSource->SetSize(size);

@@ -16,33 +16,46 @@
  *
  *=========================================================================*/
 
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkWaterCalibrationImageFilter.h"
-#include "rtkWaterPrecorrectionImageFilter.h"
-
 namespace rtk
 {
-WaterCalibrationImageFilter::WaterCalibrationImageFilter()
+
+LUTbasedVariableI0RawToAttenuationImageFilter::LUTbasedVariableI0RawToAttenuationImageFilter()
 {
-  m_Order = 1.0f;
+  m_LnILUT[0] = 0;
+  for (int i = 1; i < lutSize; ++i) {
+    m_LnILUT[i] = -log(float(i));
+  }
+
+  m_I0 = lutSize - 1;
+  m_LnI0 = log(float(m_I0));
 }
 
-void WaterCalibrationImageFilter
-::ThreadedGenerateData( const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+void LUTbasedVariableI0RawToAttenuationImageFilter::BeforeThreadedGenerateData()
 {
-  itk::ImageRegionConstIterator< ImageType > itIn(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator< ImageType >      itOut(this->GetOutput(), outputRegionForThread);
+  float i0 = float(m_I0);
+  m_LnI0 = log((i0 > 1) ? i0 : 1.0f);
+}
+
+void LUTbasedVariableI0RawToAttenuationImageFilter
+::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId)
+{
+  itk::ImageRegionConstIterator<InputImageType>  itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIterator<OutputImageType>      itOut(this->GetOutput(), outputRegionForThread);
 
   itIn.GoToBegin();
   itOut.GoToBegin();
-  while ( !itIn.IsAtEnd() )
+  while (!itIn.IsAtEnd())
     {
-    float v = itIn.Get();
-    itOut.Set( std::pow(v, m_Order) );
+    float value = m_LnI0 + m_LnILUT[itIn.Get()];
+    itOut.Set( (value>=0)?value:0.0f );
     ++itIn;
     ++itOut;
     }
 }
+
 } // end namespace rtk
