@@ -60,6 +60,41 @@ namespace rtk
    * \dot
    * digraph FourDROOSTERConeBeamReconstructionFilter {
    *
+   * subgraph clusterROOSTER
+   *    {
+   *    label="ROOSTER"
+   *
+   *    Input0 [ label="Input 0 (Input: 4D sequence of volumes)"];
+   *    Input0 [shape=Mdiamond];
+   *    Input1 [label="Input 1 (Projections)"];
+   *    Input1 [shape=Mdiamond];
+   *    Input2 [label="Input 2 (Motion mask)"];
+   *    Input2 [shape=Mdiamond];
+   *    Output [label="Output (Reconstruction: 4D sequence of volumes)"];
+   *    Output [shape=Mdiamond];
+   *
+   *    node [shape=box];
+   *    FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
+   *    Positivity [ label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
+   *    ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
+   *    TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   *    TVTime [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   *    AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+   *    AfterTVTime [label="", fixedsize="false", width=0, height=0, shape=none];
+   *
+   *    Input0 -> AfterInput0 [arrowhead=None];
+   *    AfterInput0 -> FourDCG;
+   *    Input1 -> FourDCG;
+   *    FourDCG -> Positivity;
+   *    Positivity -> ROI;
+   *    Input2 -> ROI;
+   *    ROI -> TVSpace;
+   *    TVSpace -> TVTime;
+   *    TVTime -> AfterTVTime [arrowhead=None];
+   *    AfterTVTime -> Output;
+   *    AfterTVTime -> AfterInput0 [style=dashed];
+   *    }
+   *
    * subgraph clusterMCROOSTER
    *    {
    *    label="Motion Compensated ROOSTER"
@@ -113,41 +148,7 @@ namespace rtk
    *    MC_AfterAdd -> MC_AfterInput0 [style=dashed];
    *    }
    *
-   * subgraph clusterROOSTER
-   *    {
-   *    label="ROOSTER"
-   *
-   *    Input0 [ label="Input 0 (Input: 4D sequence of volumes)"];
-   *    Input0 [shape=Mdiamond];
-   *    Input1 [label="Input 1 (Projections)"];
-   *    Input1 [shape=Mdiamond];
-   *    Input2 [label="Input 2 (Motion mask)"];
-   *    Input2 [shape=Mdiamond];
-   *    Output [label="Output (Reconstruction: 4D sequence of volumes)"];
-   *    Output [shape=Mdiamond];
-   *
-   *    node [shape=box];
-   *    FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
-   *    Positivity [ label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
-   *    ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
-   *    TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   *    TVTime [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   *    AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
-   *    AfterTVTime [label="", fixedsize="false", width=0, height=0, shape=none];
-   *
-   *    Input0 -> AfterInput0 [arrowhead=None];
-   *    AfterInput0 -> FourDCG;
-   *    Input1 -> FourDCG;
-   *    FourDCG -> Positivity;
-   *    Positivity -> ROI;
-   *    Input2 -> ROI;
-   *    ROI -> TVSpace;
-   *    TVSpace -> TVTime;
-   *    TVTime -> AfterTVTime [arrowhead=None];
-   *    AfterTVTime -> Output;
-   *    AfterTVTime -> AfterInput0 [style=dashed];
-   *    }
-   *}
+   * }
    * \enddot
    *
    * \test rtkfourdroostertest.cxx
