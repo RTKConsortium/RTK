@@ -22,7 +22,6 @@
 // ITK
 #include <itkImageSeriesReader.h>
 #include <itkConfigure.h>
-#include <itkGDCMImageIO.h>
 
 // RTK
 #include "rtkIOFactories.h"
@@ -218,14 +217,6 @@ void ProjectionsReader<TOutputImage>
       {
       ///////////// Default: whatever the format, we assume that we directly
       // read the Projections
-      std::string tagkey, labelId, value;                 // Tag for Manufacturer's name
-      if (m_FileNames[0].find(".dcm") != std::string::npos) // if dicom image case
-        {
-        imageIO = itk::GDCMImageIO::New();
-        // Reading manufacturer's name (iMagX case)
-        tagkey = "0008|0070";
-        itk::GDCMImageIO::GetLabelFromTag( tagkey, labelId );
-        }
 
       typedef itk::ImageSeriesReader< OutputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
