@@ -32,7 +32,7 @@ ADD_LIBRARY(RTK
             rtkIOFactories.cxx
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
             rtkWaterCalibrationImageFilter.cxx
-            rtkLUTbasedVariableI0RawToAttImageFilter.cxx)
+            rtkLUTbasedVariableI0RawToAttenuationImageFilter.cxx)
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 #=========================================================
@@ -61,8 +61,8 @@ ENDIF(RTK_USE_OPENCL)
 # Cuda library stuff
 IF (RTK_USE_CUDA)
   SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
-  SET (rtkcuda_CUDA_FILES 
-       rtkCudaCropImageFilter.cu 
+  SET (rtkcuda_CUDA_FILES
+       rtkCudaCropImageFilter.cu
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
        rtkCudaFFTRampImageFilter.cu
@@ -74,7 +74,7 @@ IF (RTK_USE_CUDA)
        rtkCudaSplatImageFilter.cu
        rtkCudaInterpolateImageFilter.cu
        rtkCudaTotalVariationDenoisingBPDQImageFilter.cu)
-       
+
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
   IF(WIN32)

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLUTbasedVarI0RawToAttImageFilter_h
-#define __rtkLUTbasedVarI0RawToAttImageFilter_h
+#ifndef __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
+#define __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkVector.h>
@@ -26,7 +26,7 @@
 
 namespace rtk
 {
-/** \class LUTbasedVariableI0RawToAttImageFilter
+/** \class LUTbasedVariableI0RawToAttenuationImageFilter
  * \brief Performs the conversion from raw data to attenuations
  *
  * \test rtklutbasedrawtoattenuationtest.cxx
@@ -38,25 +38,26 @@ namespace rtk
 
 const unsigned int lutSize = 65536;
 
-class LUTbasedVariableI0RawToAttImageFilter :
+class LUTbasedVariableI0RawToAttenuationImageFilter :
   public  itk::ImageToImageFilter< itk::Image< unsigned short, 2 >, itk::Image< float, 2 > >
 {
 public:
   /** Standard class typedefs. */
-  typedef LUTbasedVariableI0RawToAttImageFilter           Self;
-  typedef itk::ImageToImageFilter< itk::Image<unsigned short, 2> , itk::Image<float, 2>  > Superclass;
-  typedef itk::SmartPointer< Self >                       Pointer;
-  typedef itk::SmartPointer< const Self >                 ConstPointer;
-  typedef itk::Image< float, 2 >                          OutputImageType;
-  typedef OutputImageType::RegionType                     OutputImageRegionType;
-  typedef itk::Image< unsigned short, 2 >                 InputImageType;
-  typedef itk::Vector< float, lutSize >                   LutType;
+  typedef LUTbasedVariableI0RawToAttenuationImageFilter           Self;
+  typedef itk::ImageToImageFilter< itk::Image<unsigned short, 2>,
+                                   itk::Image<float, 2>  >        Superclass;
+  typedef itk::SmartPointer< Self >                               Pointer;
+  typedef itk::SmartPointer< const Self >                         ConstPointer;
+  typedef itk::Image< float, 2 >                                  OutputImageType;
+  typedef OutputImageType::RegionType                             OutputImageRegionType;
+  typedef itk::Image< unsigned short, 2 >                         InputImageType;
+  typedef itk::Vector< float, lutSize >                           LutType;
   
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LUTbasedVariableI0RawToAttImageFilter, ImageToImageFilter);
+  itkTypeMacro(LUTbasedVariableI0RawToAttenuationImageFilter, ImageToImageFilter);
 
   /** Air level I0
     */
@@ -64,20 +65,20 @@ public:
   itkSetMacro(I0, unsigned short);
 
 protected:
-  LUTbasedVariableI0RawToAttImageFilter();
-  virtual ~LUTbasedVariableI0RawToAttImageFilter() {}
+  LUTbasedVariableI0RawToAttenuationImageFilter();
+  virtual ~LUTbasedVariableI0RawToAttenuationImageFilter() {}
 
   virtual void BeforeThreadedGenerateData();
   virtual void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
 
 private:
-  LUTbasedVariableI0RawToAttImageFilter(const Self &); //purposely not implemented
+  LUTbasedVariableI0RawToAttenuationImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);                        //purposely not implemented
 
-  unsigned short m_I0;                                 // Air level I0
-  float m_lnI0;                                        // log(I0)
-  LutType m_LnILUT;                                    // LUT of ln(I) with I uint16
+  unsigned short m_I0;     // Air level I0
+  float          m_LnI0;   // log(I0)
+  LutType        m_LnILUT; // LUT of ln(I) with I uint16
 };
 } // end namespace rtk
 
-#endif // __rtkLUTbasedVariableI0RawToAttImageFilter_cxx_
+#endif // __rtkLUTbasedVariableI0RawToAttenuationImageFilter_cxx_

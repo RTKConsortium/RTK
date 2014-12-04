@@ -1,13 +1,13 @@
 #include "rtkTest.h"
 #include "rtkMacro.h"
-#include "rtkLUTbasedVariableI0RawToAttImageFilter.h"
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
 #include <itkTimeProbe.h>
 #include <itkImageRegionIterator.h>
 
 /**
  * \file rtklutbasedvarI0rawtoatttest.cxx
  *
- * \brief Test rtk::LUTbasedVariableI0RawToAttImageFilter
+ * \brief Test rtk::LUTbasedVariableI0RawToAttenuationImageFilter
  *
  * \author Sebastien Brousmiche
  */
@@ -17,7 +17,7 @@ typedef itk::Image<float, 2> FloatImageType;
 
 void fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
 {
-  itk::ImageRegionIterator<itk::Image<unsigned short, 2>> it(image, image->GetLargestPossibleRegion());
+  itk::ImageRegionIterator< ShortImageType > it(image, image->GetLargestPossibleRegion());
   it.GoToBegin();
   unsigned short i = 0;
   while (!it.IsAtEnd()){
@@ -32,7 +32,7 @@ int main(int, char** )
 {
   itk::TimeProbe clock;
   
-  typedef rtk::LUTbasedVariableI0RawToAttImageFilter ConvertFilterType;
+  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter ConvertFilterType;
   ConvertFilterType::Pointer convert = ConvertFilterType::New();
   
   // Constant image sources

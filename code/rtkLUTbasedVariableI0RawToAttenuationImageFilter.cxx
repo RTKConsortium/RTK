@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkLUTbasedVariableI0RawToAttImageFilter.h"
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
@@ -24,7 +24,7 @@
 namespace rtk
 {
 
-LUTbasedVariableI0RawToAttImageFilter::LUTbasedVariableI0RawToAttImageFilter()
+LUTbasedVariableI0RawToAttenuationImageFilter::LUTbasedVariableI0RawToAttenuationImageFilter()
 {
   m_LnILUT[0] = 0;
   for (int i = 1; i < lutSize; ++i) {
@@ -32,16 +32,16 @@ LUTbasedVariableI0RawToAttImageFilter::LUTbasedVariableI0RawToAttImageFilter()
   }
 
   m_I0 = lutSize - 1;
-  m_lnI0 = log(float(m_I0));
+  m_LnI0 = log(float(m_I0));
 }
 
-void LUTbasedVariableI0RawToAttImageFilter::BeforeThreadedGenerateData()
+void LUTbasedVariableI0RawToAttenuationImageFilter::BeforeThreadedGenerateData()
 {
   float i0 = float(m_I0);
-  m_lnI0 = log((i0 > 1) ? i0 : 1.0f);
+  m_LnI0 = log((i0 > 1) ? i0 : 1.0f);
 }
 
-void LUTbasedVariableI0RawToAttImageFilter
+void LUTbasedVariableI0RawToAttenuationImageFilter
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId)
 {
   itk::ImageRegionConstIterator<InputImageType>  itIn(this->GetInput(), outputRegionForThread);
@@ -50,13 +50,12 @@ void LUTbasedVariableI0RawToAttImageFilter
   itIn.GoToBegin();
   itOut.GoToBegin();
   while (!itIn.IsAtEnd())
-  {
-    float value = m_lnI0 + m_LnILUT[itIn.Get()];
+    {
+    float value = m_LnI0 + m_LnILUT[itIn.Get()];
     itOut.Set( (value>=0)?value:0.0f );
     ++itIn;
     ++itOut;
-  }
+    }
 }
 
 } // end namespace rtk
-
