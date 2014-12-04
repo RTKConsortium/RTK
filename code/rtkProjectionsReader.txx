@@ -201,7 +201,7 @@ void ProjectionsReader<TOutputImage>
       ///////////// Default: whatever the format, we assume that we directly
       // read the Projections
       std::string tagkey, labelId, value;                 // Tag for Manufacturer's name
-      if (m_FileNames[0].find(".dcm")!=std::string::npos) // if dicom image case
+      if (m_FileNames[0].find(".dcm") != std::string::npos) // if dicom image case
         {
         imageIO = itk::GDCMImageIO::New();
         // Reading manufacturer's name (iMagX case)
