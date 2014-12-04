@@ -16,32 +16,42 @@
  *
  *=========================================================================*/
 
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
+#ifndef __rtkDCMImagXImageIO_h
+#define __rtkDCMImagXImageIO_h
 
-#include "rtkWaterCalibrationImageFilter.h"
-#include "rtkWaterPrecorrectionImageFilter.h"
+#include <itkGDCMImageIO.h>
 
 namespace rtk
 {
-WaterCalibrationImageFilter::WaterCalibrationImageFilter()
-{
-}
 
-void WaterCalibrationImageFilter
-::ThreadedGenerateData( const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+/** \class DCMImagXImageIO
+ *
+ *
+ *
+ */
+class DCMImagXImageIO : public itk::GDCMImageIO
 {
-  itk::ImageRegionConstIterator< ImageType > itIn(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator< ImageType >      itOut(this->GetOutput(), outputRegionForThread);
+public:
+  /** Standard class typedefs. */
+  typedef DCMImagXImageIO         Self;
+  typedef itk::GDCMImageIO        Superclass;
+  typedef itk::SmartPointer<Self> Pointer;
 
-  itIn.GoToBegin();
-  itOut.GoToBegin();
-  while ( !itIn.IsAtEnd() )
-    {
-    float v = itIn.Get();
-    itOut.Set( std::pow(v, m_Order) );
-    ++itIn;
-    ++itOut;
-    }
-}
-} // end namespace rtk
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(DCMImagXImageIO, itk::GDCMImageIO);
+
+  virtual void ReadImageInformation();
+  virtual bool CanReadFile( const char* FileNameToRead );
+  virtual bool CanWriteFile(const char* filename);
+
+protected:
+  DCMImagXImageIO() {}
+  ~DCMImagXImageIO() {}
+};
+
+} // end namespace
+
+#endif

@@ -15,8 +15,10 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+
 #ifndef __rtkImagXGeometryReader_txx
 #define __rtkImagXGeometryReader_txx
+
 #include "rtkMacro.h"
 #include "rtkImagXXMLFileReader.h"
 #include <itkDOMNodeXMLReader.h>
@@ -62,7 +64,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
     }
 
     // If cbct axis then extract deformation model parameters
-    if( axisName == std::string("RADB-cbct-CW") )
+    if( axisName == std::string("CBCT") )
     {
       itk::DOMNode::ChildrenListType list_child2;
       list_child[i]->GetAllChildren(list_child2);
@@ -78,23 +80,32 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
           unsigned int m = 0;
           for(list_it = list2.begin(); list_it != list2.end(); list_it++, m++)
           {
-            if( ( list_child3[n]->GetName() == std::string("Px") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            if( ( list_child3[n]->GetName() == std::string("Px") ) &&
+                ( (*list_it).first.c_str() != std::string("MSE") ) )
               Px[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName() == std::string("Py") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Py") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Py[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName() == std::string("Pz") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Pz") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Pz[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName() == std::string("Rx") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Rx") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Rx[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName() == std::string("Ry") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Ry") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Ry[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName() == std::string("Rz") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Rz") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Rz[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName() == std::string("Tx") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Tx") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Tx[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName() == std::string("Ty") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Ty") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Ty[m-1] = std::atof( (*list_it).second.c_str() );
-            else if( ( list_child3[n]->GetName() == std::string("Tz") ) && ( (*list_it).first.c_str() != std::string("MSE") ) )
+            else if( ( list_child3[n]->GetName() == std::string("Tz") ) &&
+                     ( (*list_it).first.c_str() != std::string("MSE") ) )
               Tz[m-1] = std::atof( (*list_it).second.c_str() );
           }
         }
@@ -122,7 +133,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
     }
 
     // If cbct axis then extract sdd and sid parameters
-    if( axisName == std::string("RADB-cbct") )
+    if( axisName == std::string("CBCT") )
     {
       itk::DOMNode::ChildrenListType list_child2;
       list_child[i]->GetAllChildren(list_child2);

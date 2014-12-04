@@ -22,6 +22,7 @@
 #include <vector>
 #include <itkImageToImageFilter.h>
 
+#include "rtkWin32Header.h"
 #include "rtkConfiguration.h"
 
 namespace rtk
@@ -37,17 +38,17 @@ namespace rtk
  * \ingroup ImageToImageFilter
  */
 
-class ITK_EXPORT WaterCalibrationImageFilter:
-  public         itk::ImageToImageFilter< itk::Image< float, 2 >, itk::Image< float, 2 > >
+class RTK_EXPORT WaterCalibrationImageFilter:
+  public itk::ImageToImageFilter< itk::Image< float, 2 >, itk::Image< float, 2 > >
 {
 public:
-  typedef itk::Image< float, 2 > TImage;
+  typedef itk::Image< float, 2 > ImageType;
 
   /** Standard class typedefs. */
-  typedef WaterCalibrationImageFilter               Self;
-  typedef itk::ImageToImageFilter< TImage, TImage > Superclass;
-  typedef itk::SmartPointer< Self >                 Pointer;
-  typedef itk::SmartPointer< const Self >           ConstPointer;
+  typedef WaterCalibrationImageFilter                     Self;
+  typedef itk::ImageToImageFilter< ImageType, ImageType > Superclass;
+  typedef itk::SmartPointer< Self >                       Pointer;
+  typedef itk::SmartPointer< const Self >                 ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
