@@ -1,0 +1,61 @@
+SET (CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS   99)
+SET (CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 999)
+
+# test to ignore for memcheck
+SET (CTEST_CUSTOM_MEMCHECK_IGNORE
+  "ProcessObjectDeathTest.DeleteCommandActiveProcess"
+  )
+
+SET(CTEST_CUSTOM_COVERAGE_EXCLUDE
+ ${CTEST_CUSTOM_COVERAGE_EXCLUDE}
+
+ # Exclude try_compile sources from coverage results:
+ "/CMakeFiles/CMakeTmp/"
+
+ # Exclude files from the Testing directories
+ ".*/Testing/.*"
+
+ # Exclude files from the Utilities directories
+ ".*/Utilities/.*"
+
+ # exclude certain wrapping files
+ "/Wrapping/SimpleRTKLuaMain.cxx"
+ "/Wrapping/.*_wrap.cxx"
+ )
+
+SET(CTEST_CUSTOM_WARNING_EXCEPTION
+  ${CTEST_CUSTOM_WARNING_EXCEPTION}
+
+  # Ignore warning for files with no symbols
+  "warning LNK4221.*not define any previously undefined public symbols"
+  "warning LNK4221.*no public symbols found"
+  ".*ranlib:.*file:.*has no symbols"
+  "libtool:.*file:.*has no symbols"
+
+  # Ignore warning building SWIG
+  "Swig-prefix/src/Swig"
+  "parser.y.*warning"
+
+  # Ignore warning building PCRE
+  "PCRE-prefix/src/PCRE"
+
+  # Ignore apple warning
+  "ld.*warning.*duplicate dylib.*"
+
+  # Ignore warning from the SWIG wrapped file ( not much we can do about those )
+  ".*_wrap.cxx"
+
+  # Ignore warning in lua about the use of `tmpnam' is dangerous
+  "loslib"
+
+  # Ignore CSharp invalid version warning for dev
+  "warning CS1607.*The version number.*dev.*is invalid"
+  "warning CS1607.*The version.*dev.*is not in the normal"
+
+  # Warning when building R, issue related to make file
+  "warning: jobserver unavailable:"
+
+  # Warning when compiling ITK v4.5.1 with clang
+  "clang: warning: argument unused during.*-fno-ipa-cp-clone"
+)
+

@@ -108,6 +108,10 @@ ADD_EXECUTABLE(rtkmediantest rtkmediantest.cxx)
 TARGET_LINK_LIBRARIES(rtkmediantest ${RTK_LIBRARIES})
 ADD_TEST(rtkmediantest ${EXECUTABLE_OUTPUT_PATH}/rtkmediantest)
 
+ADD_EXECUTABLE(rtkwaterprecorrectiontest rtkwaterprecorrectiontest.cxx)
+TARGET_LINK_LIBRARIES(rtkwaterprecorrectiontest ${RTK_LIBRARIES})
+ADD_TEST(rtkwaterprecorrectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkwaterprecorrectiontest)
+
 ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest 
@@ -219,6 +223,10 @@ ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
 
+ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
+TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
+ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
+
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
 if(NOT RTK_USE_CUDA)
@@ -283,3 +291,7 @@ ENDIF(OPENCL_FOUND)
 TARGET_LINK_LIBRARIES(rtkheadertest ${RTK_LIBRARIES})
 ADD_TEST(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
 
+# Test the manager used to automatically clean up the gengetopt args_info structures
+ADD_EXECUTABLE(rtkargsinfomanagertest rtkargsinfomanagertest.cxx)
+TARGET_LINK_LIBRARIES(rtkargsinfomanagertest RTK)
+ADD_TEST(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest)

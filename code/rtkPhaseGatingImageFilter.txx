@@ -115,6 +115,24 @@ void PhaseGatingImageFilter<ProjectionStackType>::GenerateOutputInformation()
   outputLargestPossibleRegion.SetSize(Dimension-1, m_NbSelectedProjs);
 
   this->GetOutput()->SetLargestPossibleRegion(outputLargestPossibleRegion);
+
+  // Update output geometry
+  m_OutputGeometry->Clear();
+  for(unsigned int i=0; i < m_GatingWeights.size(); i++)
+    {
+    if (m_SelectedProjections[i])
+      {
+      m_OutputGeometry->AddProjectionInRadians( m_InputGeometry->GetSourceToIsocenterDistances()[i],
+                                                m_InputGeometry->GetSourceToDetectorDistances()[i],
+                                                m_InputGeometry->GetGantryAngles()[i],
+                                                m_InputGeometry->GetProjectionOffsetsX()[i],
+                                                m_InputGeometry->GetProjectionOffsetsY()[i],
+                                                m_InputGeometry->GetOutOfPlaneAngles()[i],
+                                                m_InputGeometry->GetInPlaneAngles()[i],
+                                                m_InputGeometry->GetSourceOffsetsX()[i],
+                                                m_InputGeometry->GetSourceOffsetsY()[i]);
+      }
+    }
 }
 
 template<typename ProjectionStackType>
@@ -210,16 +228,6 @@ void PhaseGatingImageFilter<ProjectionStackType>::GenerateData()
         pimg->DisconnectPipeline();
         PasteFilter->SetDestinationImage( pimg );
         }
-
-      m_OutputGeometry->AddProjectionInRadians( m_InputGeometry->GetSourceToIsocenterDistances()[i],
-                                                m_InputGeometry->GetSourceToDetectorDistances()[i],
-                                                m_InputGeometry->GetGantryAngles()[i],
-                                                m_InputGeometry->GetProjectionOffsetsX()[i],
-                                                m_InputGeometry->GetProjectionOffsetsY()[i],
-                                                m_InputGeometry->GetOutOfPlaneAngles()[i],
-                                                m_InputGeometry->GetInPlaneAngles()[i],
-                                                m_InputGeometry->GetSourceOffsetsX()[i],
-                                                m_InputGeometry->GetSourceOffsetsY()[i]);
 
       // Set the Extract Filter
       projRegion.SetIndex(Dimension - 1, i);
