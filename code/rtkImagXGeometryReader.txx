@@ -161,7 +161,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
   float gantryAngleRad = 0.f;
   float sid = std::atof(sid_s.c_str());
   float sdd = std::atof(sdd_s.c_str());
-  float deg2rad = float(M_PI)/180.f;
+  float deg2rad = float(itk::Math::pi)/180.f;
 
   // Projection matrices
   for(unsigned int noProj=0; noProj < m_ProjectionsFileNames.size(); noProj++)
