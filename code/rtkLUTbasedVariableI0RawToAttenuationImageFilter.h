@@ -19,10 +19,10 @@
 #ifndef __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 #define __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 
-#include <itkImageToImageFilter.h>
-#include <itkVector.h>
-
-#include "rtkConfiguration.h"
+#include "rtkLookupTableImageFilter.h"
+#include <itkNumericTraits.h>
+#include <itkAddImageFilter.h>
+#include <itkClampImageFilter.h>
 
 namespace rtk
 {
@@ -36,49 +36,54 @@ namespace rtk
  * \ingroup ImageToImageFilter
  */
 
-const unsigned int lutSize = 65536;
-
-class LUTbasedVariableI0RawToAttenuationImageFilter :
-  public  itk::ImageToImageFilter< itk::Image< unsigned short, 2 >, itk::Image< float, 2 > >
+template <class TInputImage, class TOutputImage>
+class LUTbasedVariableI0RawToAttenuationImageFilter:
+  public LookupTableImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
   typedef LUTbasedVariableI0RawToAttenuationImageFilter           Self;
-  typedef itk::ImageToImageFilter< itk::Image<unsigned short, 2>,
-                                   itk::Image<float, 2>  >        Superclass;
+  typedef LookupTableImageFilter<TInputImage, TOutputImage>       Superclass;
   typedef itk::SmartPointer< Self >                               Pointer;
   typedef itk::SmartPointer< const Self >                         ConstPointer;
-  typedef itk::Image< float, 2 >                                  OutputImageType;
-  typedef OutputImageType::RegionType                             OutputImageRegionType;
-  typedef itk::Image< unsigned short, 2 >                         InputImageType;
-  typedef itk::Vector< float, lutSize >                           LutType;
-  
+
+  typedef typename TInputImage::PixelType                   InputImagePixelType;
+  typedef typename TOutputImage::PixelType                  OutputImagePixelType;
+  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
+  typedef typename itk::AddImageFilter<LookupTableType,
+                                       LookupTableType>     AddLUTFilterType;
+  typedef typename itk::ClampImageFilter<LookupTableType,
+                                         LookupTableType>   ClampLUTFilterType;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LUTbasedVariableI0RawToAttenuationImageFilter, ImageToImageFilter);
+  itkTypeMacro(LUTbasedVariableI0RawToAttenuationImageFilter, LookupTableImageFilter);
 
   /** Air level I0
     */
-  itkGetMacro(I0, unsigned short);
-  itkSetMacro(I0, unsigned short);
+  itkGetMacro(I0, InputImagePixelType);
+  itkSetMacro(I0, InputImagePixelType);
+
+  virtual void BeforeThreadedGenerateData();
 
 protected:
   LUTbasedVariableI0RawToAttenuationImageFilter();
   virtual ~LUTbasedVariableI0RawToAttenuationImageFilter() {}
 
-  virtual void BeforeThreadedGenerateData();
-  virtual void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
-
 private:
   LUTbasedVariableI0RawToAttenuationImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                        //purposely not implemented
+  void operator=(const Self &);                                //purposely not implemented
 
-  unsigned short m_I0;     // Air level I0
-  float          m_LnI0;   // log(I0)
-  LutType        m_LnILUT; // LUT of ln(I) with I uint16
+  InputImagePixelType                  m_I0;
+  typename AddLUTFilterType::Pointer   m_AddLUTFilter;
+  typename ClampLUTFilterType::Pointer m_ClampLUTFilter;
 };
 } // end namespace rtk
 
-#endif // __rtkLUTbasedVariableI0RawToAttenuationImageFilter_cxx_
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.txx"
+#endif
+
+#endif

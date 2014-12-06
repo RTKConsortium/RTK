@@ -11,7 +11,7 @@ option "path"      p "Path containing projections"                              
 option "regexp"    r "Regular expression to select projection files in path"     string  yes
 option "nsort"     - "Numeric sort for regular expression matches"               flag    off
 option "submatch"  - "Index of the submatch that will be used to sort matches"   int     no   default="0"
-option "range"     - "Range of projection to analyse min,step,max"               int     multiple no default="0"
+option "range"     - "Range of projection to analyse min,step,max"               int     multiple no
 
 section "Algorithm parameters"
 option "lambda"    l "RLS estimate coefficient"                                  double no default="0.8"
