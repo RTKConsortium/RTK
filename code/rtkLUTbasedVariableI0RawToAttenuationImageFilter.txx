@@ -52,6 +52,7 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   // Mini pipeline for creating the lut.
   m_AddLUTFilter = AddLUTFilterType::New();
   m_ClampLUTFilter = ClampLUTFilterType::New();
+  m_AddLUTFilter->InPlaceOff();
   m_AddLUTFilter->SetInput1(lut);
   m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)m_I0, 1.) ) );
   m_ClampLUTFilter->SetInput( m_AddLUTFilter->GetOutput() );
