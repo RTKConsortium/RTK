@@ -2,6 +2,7 @@
 #include "rtkMacro.h"
 #include "rtkImagXGeometryReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkProjectionsReader.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 
@@ -20,16 +21,13 @@
 int main(int, char** )
 {
   // Image Type
-  typedef unsigned short OutputPixelType;
+  typedef float OutputPixelType;
   const unsigned int Dimension = 3;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
   // Generate projections names
   std::vector<std::string> FileNames;
   FileNames.push_back(std::string(RTK_DATA_ROOT) + std::string("/Input/ImagX/1.dcm"));
-  FileNames.push_back(std::string(RTK_DATA_ROOT) + std::string("/Input/ImagX/2.dcm"));
-  FileNames.push_back(std::string(RTK_DATA_ROOT) + std::string("/Input/ImagX/3.dcm"));
-  FileNames.push_back(std::string(RTK_DATA_ROOT) + std::string("/Input/ImagX/4.dcm"));
 
   // Create geometry reader
   rtk::ImagXGeometryReader<OutputImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<OutputImageType>::New();
@@ -51,7 +49,25 @@ int main(int, char** )
   // 1. Check geometries
   CheckGeometries(imagxReader->GetGeometry(), geoRefReader->GetOutputObject() );
 
-  // If all succeed
+  // 2. Check projections
+  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileNames( FileNames );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
+
+  // Reference projections reader
+  ReaderType::Pointer readerRef = ReaderType::New();
+  FileNames.clear();
+  FileNames.push_back( std::string(RTK_DATA_ROOT) +
+                       std::string("/Baseline/ImagX/attenuationDCM.mha") );
+  readerRef->SetFileNames( FileNames );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
+
+  // 2. Compare read projections
+  CheckImageQuality< OutputImageType >(reader->GetOutput(),
+                                       readerRef->GetOutput(),
+                                       1e-8, 100, 2.0);
+
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }

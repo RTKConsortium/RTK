@@ -140,8 +140,8 @@ ADD_EXECUTABLE(rtkimagxgeometrytest rtkimagxgeometrytest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxgeometrytest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkimagxgeometrytest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxgeometrytest
-             DATA{Data/Input/ImagX/calibration.xml,room.xml,1.dcm,2.dcm,3.dcm,4.dcm}
-             DATA{Data/Baseline/ImagX/geo.xml})
+             DATA{Data/Input/ImagX/calibration.xml,room.xml,1.dcm}
+             DATA{Data/Baseline/ImagX/geo.xml,attenuationDCM.mha})
 
 ADD_EXECUTABLE(rtkluttest rtkluttest.cxx)
 TARGET_LINK_LIBRARIES(rtkluttest ${RTK_LIBRARIES})
