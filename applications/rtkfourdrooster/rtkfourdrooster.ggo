@@ -13,12 +13,6 @@ option "gamma_time"  - "Regularization parameter along time. The higher, the smo
 option "gamma_space" - "Regularization parameter along space. The higher, the smoother"  double yes
 option "motionmask"  - "Region Of Interest file, binary image with ones where movement can occur and zeros elsewhere" string yes
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
-
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes
 

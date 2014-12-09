@@ -1,4 +1,4 @@
-WRAP_GGO(rtkwangdisplaceddetectorweighting_GGO_C rtkwangdisplaceddetectorweighting.ggo)
+WRAP_GGO(rtkwangdisplaceddetectorweighting_GGO_C rtkwangdisplaceddetectorweighting.ggo ../rtkinputprojections_section.ggo)
 ADD_EXECUTABLE(rtkwangdisplaceddetectorweighting rtkwangdisplaceddetectorweighting.cxx ${rtkwangdisplaceddetectorweighting_GGO_C})
 TARGET_LINK_LIBRARIES(rtkwangdisplaceddetectorweighting RTK)
 

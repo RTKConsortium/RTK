@@ -11,12 +11,6 @@ option "alpha"     - "Regularization parameter"         			 float               
 option "beta"      - "Augmented Lagrangian constraint multiplier"         	 float                        no   default="1"
 option "CGiter"     - "Number of nested iterations of conjugate gradient"       int                       no      default="5"
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
-
 section "Phase gating"
 option "phases"       - "File containing the phase of each projection"                                              string              no
 option "windowcenter" c "Target reconstruction phase"                                                               float   no default="0"

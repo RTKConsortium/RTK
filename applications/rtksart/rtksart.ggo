@@ -10,12 +10,6 @@ option "time"        t "Records elapsed time during the process"               f
 option "lambda"      l "Convergence factor"                                    double no   default="0.3"
 option "positivity"  - "Enforces positivity during the reconstruction"         flag   off
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
-
 section "Phase gating"
 option "phases"       - "File containing the phase of each projection"                                              string              no
 option "windowcenter" c "Target reconstruction phase"                                                               float   no default="0"

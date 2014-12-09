@@ -1,4 +1,4 @@
-WRAP_GGO(rtksubselect_GGO_C rtksubselect.ggo)
+WRAP_GGO(rtksubselect_GGO_C rtksubselect.ggo ../rtkinputprojections_section.ggo)
 ADD_EXECUTABLE(rtksubselect rtksubselect.cxx ${rtksubselect_GGO_C})
 TARGET_LINK_LIBRARIES(rtksubselect RTK)
 

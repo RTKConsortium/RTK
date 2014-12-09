@@ -6,12 +6,6 @@ option "config"    - "Config file"                                              
 option "geometry"  g  "XML geometry file name"                                   string   yes
 option "output"    o "Output projections file name"                              string   yes
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
-
 section "Projectors"
 option "bp"    - "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","NormalizedJoseph","CudaFDKBackProjection","CudaBackProjection" enum no default="VoxelBasedBackProjection"
 
