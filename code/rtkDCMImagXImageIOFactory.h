@@ -16,11 +16,11 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkImagXImageIOFactory_h
-#define __rtkImagXImageIOFactory_h
+#ifndef __rtkDCMImagXImageIOFactory_h
+#define __rtkDCMImagXImageIOFactory_h
 
 #include "rtkWin32Header.h"
-#include "rtkImagXImageIO.h"
+#include "rtkDCMImagXImageIO.h"
 #include <itkImageIOBase.h>
 #include <itkObjectFactoryBase.h>
 #include <itkVersion.h>
@@ -28,16 +28,16 @@
 namespace rtk
 {
 
-/** \class ImagXImageIOFactory
+/** \class DCMImagXImageIOFactory
  *
  * TODO
  *
  */
-class RTK_EXPORT ImagXImageIOFactory : public itk::ObjectFactoryBase
+class RTK_EXPORT DCMImagXImageIOFactory: public itk::ObjectFactoryBase
 {
 public:
   /** Standard class typedefs. */
-  typedef ImagXImageIOFactory           Self;
+  typedef DCMImagXImageIOFactory        Self;
   typedef itk::ObjectFactoryBase        Superclass;
   typedef itk::SmartPointer<Self>       Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
@@ -55,7 +55,7 @@ public:
   itkFactorylessNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ImagXImageIOFactory, ObjectFactoryBase);
+  itkTypeMacro(DCMImagXImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
   static void RegisterOneFactory(void) {
@@ -63,14 +63,14 @@ public:
   }
 
 protected:
-  ImagXImageIOFactory();
-  ~ImagXImageIOFactory() {}
-  typedef ImagXImageIOFactory myProductType;
+  DCMImagXImageIOFactory();
+  ~DCMImagXImageIOFactory() {}
+  typedef DCMImagXImageIOFactory myProductType;
   const myProductType* m_MyProduct;
-private:
-  ImagXImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);      //purposely not implemented
 
+private:
+  DCMImagXImageIOFactory(const Self&); //purposely not implemented
+  void operator=(const Self&);      //purposely not implemented
 };
 
 } // end namespace

@@ -165,6 +165,10 @@ public:
   /** Get lookup table. */
   itkGetObjectMacro(LookupTable, LookupTableType);
 
+  /** Update the LUT before using it to process the data in case it is the
+   * result of a pipeline. */
+  virtual void BeforeThreadedGenerateData();
+
 protected:
   LookupTableImageFilter() {}
   virtual ~LookupTableImageFilter() {}
@@ -177,5 +181,9 @@ private:
 };
 
 } // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkLookupTableImageFilter.txx"
+#endif
 
 #endif

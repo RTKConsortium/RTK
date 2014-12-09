@@ -31,10 +31,10 @@ void fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
 int main(int, char** )
 {
   itk::TimeProbe clock;
-  
-  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter ConvertFilterType;
+
+  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, FloatImageType> ConvertFilterType;
   ConvertFilterType::Pointer convert = ConvertFilterType::New();
-  
+
   // Constant image sources
   ShortImageType::SizeType size;
   size[0] = 10;
@@ -47,7 +47,7 @@ int main(int, char** )
   ShortImageType::SpacingType spacings;
   spacings[0] = 1.0;
   spacings[1] = 1.0;
-  
+
   ShortImageType::Pointer rawImage = ShortImageType::New();
   rawImage->SetRegions(region);
   rawImage->SetSpacing(spacings);
@@ -55,7 +55,7 @@ int main(int, char** )
 
   convert->SetInput(rawImage);
 
-  for (unsigned short i = 0; i < 10; ++i)  
+  for (unsigned short i = 0; i < 10; ++i)
   {
     unsigned short I0 = 10 * i + 1;
 
