@@ -204,16 +204,6 @@ TARGET_LINK_LIBRARIES(rtkfourdadjointoperatorstest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkfourdadjointoperatorstest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkfourdadjointoperatorstest
              DATA{Data/Input/Phases/phases_slow.txt})
-if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
- SET(testfullname rtkfourdadjointoperatorscudatest)
- ADD_EXECUTABLE(${testfullname} rtkfourdadjointoperatorstest.cxx)
- TARGET_LINK_LIBRARIES(${testfullname} ${RTK_LIBRARIES})
- SET_TARGET_PROPERTIES(${testfullname} PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
- RTK_ADD_TEST(NAME ${testfullname}
-              COMMAND ${EXECUTABLE_OUTPUT_PATH}/${testfullname}
-              DATA{Data/Input/Phases/phases_slow.txt})
-endif()
-		 
 
 ADD_EXECUTABLE(rtkinterpolatesplatadjointtest rtkinterpolatesplatadjointtest.cxx)
 TARGET_LINK_LIBRARIES(rtkinterpolatesplatadjointtest ${RTK_LIBRARIES})
