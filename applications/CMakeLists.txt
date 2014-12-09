@@ -56,10 +56,10 @@ if(BUILD_TESTING)
   set_tests_properties(rtkappprojectshepploganphantomtest PROPERTIES DEPENDS apprtksimulatedgeometrytest)
  
   if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
-    add_test(rtkappfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdk -g geo -p . -r sheppy.mha -o fdk_gpu.mha --hardware cuda)
-	set_tests_properties(rtkappfdktest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
+    add_test(rtkappfdkcudatest ${EXECUTABLE_OUTPUT_PATH}/rtkfdk -g geo -p . -r sheppy.mha -o fdk_gpu.mha --hardware cuda)
+	set_tests_properties(rtkappfdkcudatest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
     add_test(rtkappfdkchecktest ${EXECUTABLE_OUTPUT_PATH}/rtkcheckimagequality fdk_gpu.mha)
-    set_tests_properties(rtkappfdkchecktest PROPERTIES DEPENDS rtkappfdktest)
+    set_tests_properties(rtkappfdkchecktest PROPERTIES DEPENDS rtkappfdkcudatest)
   else()
     # Only run the software version if 
     if(NOT FAST_TESTS_NO_CHECKS)

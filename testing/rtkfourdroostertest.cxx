@@ -29,7 +29,7 @@ int main(int, char** )
 {
   typedef float                             OutputPixelType;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
   typedef itk::CudaImage< OutputPixelType, 3 >  VolumeType;
