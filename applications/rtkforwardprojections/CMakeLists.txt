@@ -1,4 +1,4 @@
-WRAP_GGO(rtkforwardprojections_GGO_C rtkforwardprojections.ggo)
+WRAP_GGO(rtkforwardprojections_GGO_C rtkforwardprojections.ggo ../rtk3Doutputimage_section.ggo)
 ADD_EXECUTABLE(rtkforwardprojections rtkforwardprojections.cxx ${rtkforwardprojections_GGO_C})
 TARGET_LINK_LIBRARIES(rtkforwardprojections RTK)
 
