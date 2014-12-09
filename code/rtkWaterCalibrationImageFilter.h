@@ -23,7 +23,6 @@
 #include <itkImageToImageFilter.h>
 
 #include "rtkWin32Header.h"
-#include "rtkConfiguration.h"
 
 namespace rtk
 {
@@ -38,7 +37,7 @@ namespace rtk
  * \ingroup ImageToImageFilter
  */
 
-class RTK_EXPORT WaterCalibrationImageFilter:
+class WaterCalibrationImageFilter:
   public itk::ImageToImageFilter< itk::Image< float, 2 >, itk::Image< float, 2 > >
 {
 public:
@@ -61,7 +60,7 @@ public:
   itkGetMacro(Order, float);
   itkSetMacro(Order, float);
 protected:
-  WaterCalibrationImageFilter();
+  RTK_EXPORT WaterCalibrationImageFilter();
   virtual ~WaterCalibrationImageFilter() {}
 
   virtual void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);

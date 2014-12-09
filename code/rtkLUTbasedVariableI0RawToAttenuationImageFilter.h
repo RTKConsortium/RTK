@@ -22,7 +22,7 @@
 #include <itkImageToImageFilter.h>
 #include <itkVector.h>
 
-#include "rtkConfiguration.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -65,7 +65,7 @@ public:
   itkSetMacro(I0, unsigned short);
 
 protected:
-  LUTbasedVariableI0RawToAttenuationImageFilter();
+  RTK_EXPORT LUTbasedVariableI0RawToAttenuationImageFilter();
   virtual ~LUTbasedVariableI0RawToAttenuationImageFilter() {}
 
   virtual void BeforeThreadedGenerateData();
