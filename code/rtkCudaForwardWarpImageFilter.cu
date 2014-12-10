@@ -70,6 +70,7 @@ void fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 
   // Index row major into the volume
   long int out_idx = i + (j + k*out_dim.y)*(out_dim.x);
   long int current_idx;
+  int radius = 3;
 
   float eps = 1e-6;
 
@@ -82,11 +83,11 @@ void fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 
     float sum = 0;
     float sum_weights = 0;
 
-    for (int delta_i =-2; delta_i < 2; delta_i++)
+    for (int delta_i =-radius; delta_i <= radius; delta_i++)
       {
-      for (int delta_j =-2; delta_j < 2; delta_j++)
+      for (int delta_j =-radius; delta_j <= radius; delta_j++)
         {
-        for (int delta_k =-2; delta_k < 2; delta_k++)
+        for (int delta_k =-radius; delta_k <= radius; delta_k++)
           {
           if (   (i + delta_i >= 0) && (i + delta_i < out_dim.x)
               && (j + delta_j >= 0) && (j + delta_j < out_dim.y)
