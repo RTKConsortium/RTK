@@ -59,6 +59,7 @@
     std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
     exit(1);                                                                                               \
     }                                                                                                      \
+  args_params.override = 0;                                                                                \
   args_params.initialize = 0;                                                                              \
   if (args_info.config_given)                                                                              \
     {                                                                                                      \
