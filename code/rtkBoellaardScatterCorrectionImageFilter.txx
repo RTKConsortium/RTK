@@ -106,6 +106,14 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
 }
 
 template <class TInputImage, class TOutputImage>
+unsigned int
+BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
+::SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion)
+{
+  return SplitRequestedRegion((int)i, (int)num, splitRegion);
+}
+
+template <class TInputImage, class TOutputImage>
 int
 BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
 ::SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion)
