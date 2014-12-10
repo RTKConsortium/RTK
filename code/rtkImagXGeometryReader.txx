@@ -141,7 +141,6 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
       {
         itk::DOMNode::AttributesListType list2;
         list_child2[l]->GetAllAttributes(list2);
-        unsigned int p = 0;
         for(list_it = list2.begin(); list_it != list2.end(); list_it++, k++)
         {
           if( (*list_it).first.c_str() == std::string("sdd") )
