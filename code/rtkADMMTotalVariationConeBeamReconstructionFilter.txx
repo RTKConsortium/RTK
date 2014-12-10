@@ -21,8 +21,6 @@
 
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 
-//#include "rtkJosephForwardProjectionImageFilter.h"
-
 namespace rtk
 {
 
@@ -37,13 +35,13 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_Beta=1;
   m_AL_iterations=10;
   m_CG_iterations=3;
-  m_MeasureExecutionTimes=false;
+  m_IsGated=false;
 
   // Create the filters
   m_ZeroMultiplyVolumeFilter = MultiplyVolumeFilterType::New();
   m_ZeroMultiplyGradientFilter = MultiplyGradientFilterType::New();
+  m_SubtractFilter1 = SubtractGradientsFilterType::New();
   m_SubtractFilter2 = SubtractGradientsFilterType::New();
-  m_SubtractFilter3 = SubtractGradientsFilterType::New();
   m_MultiplyFilter = MultiplyVolumeFilterType::New();
   m_GradientFilter1 = ImageGradientFilterType::New();
   m_GradientFilter2 = ImageGradientFilterType::New();
@@ -55,6 +53,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_GatingWeightsFilter = GatingWeightsFilterType::New();
 
   // Set permanent connections
   m_ZeroMultiplyGradientFilter->SetInput1(m_GradientFilter1->GetOutput());
@@ -64,14 +63,12 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_MultiplyFilter->SetInput1( m_DivergenceFilter->GetOutput() );
   m_SubtractVolumeFilter->SetInput2(m_MultiplyFilter->GetOutput());
   m_ConjugateGradientFilter->SetB(m_SubtractVolumeFilter->GetOutput());
-  m_ConjugateGradientFilter->SetNumberOfIterations(m_CG_iterations);
-  m_ConjugateGradientFilter->SetMeasureExecutionTimes(m_MeasureExecutionTimes);
   m_GradientFilter2->SetInput(m_ConjugateGradientFilter->GetOutput());
-  m_SubtractFilter2->SetInput1(m_GradientFilter2->GetOutput());
-  m_SubtractFilter2->SetInput2(m_ZeroMultiplyGradientFilter->GetOutput());
-  m_SoftThresholdFilter->SetInput(m_SubtractFilter2->GetOutput());
-  m_SubtractFilter3->SetInput1(m_SoftThresholdFilter->GetOutput());
-  m_SubtractFilter3->SetInput2(m_SubtractFilter2->GetOutput());
+  m_SubtractFilter1->SetInput1(m_GradientFilter2->GetOutput());
+  m_SubtractFilter1->SetInput2(m_ZeroMultiplyGradientFilter->GetOutput());
+  m_SoftThresholdFilter->SetInput(m_SubtractFilter1->GetOutput());
+  m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
+  m_SubtractFilter2->SetInput2(m_SubtractFilter1->GetOutput());
 
   // Set permanent parameters
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -87,9 +84,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_SubtractVolumeFilter->ReleaseDataFlagOn();
   m_ConjugateGradientFilter->ReleaseDataFlagOff(); // Output is f_k+1
   m_GradientFilter2->ReleaseDataFlagOn();
-  m_SubtractFilter2->ReleaseDataFlagOff(); // Output used in two filters
+  m_SubtractFilter1->ReleaseDataFlagOff(); // Output used in two filters
   m_SoftThresholdFilter->ReleaseDataFlagOff(); // Output is g_k+1
-  m_SubtractFilter3->ReleaseDataFlagOff(); //Output is d_k+1
+  m_SubtractFilter2->ReleaseDataFlagOff(); //Output is d_k+1
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
@@ -132,6 +129,15 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_MultiplyFilter->SetConstant2( (const float) currentBeta);
 }
 
+template< typename TOutputImage, typename TGradientOutputImage>
+void
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
+::SetGatingWeights(std::vector<float> weights)
+{
+  m_GatingWeights = weights;
+  m_IsGated = true;
+}
+
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
@@ -165,7 +171,20 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_CGOperator->SetInput(1, this->GetInput(1));
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_MultiplyFilter->SetConstant2( m_Beta );
-  m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
+  if (m_IsGated)
+    {
+    // Insert the gating filter into the pipeline
+    m_GatingWeightsFilter->SetInput(this->GetInput(1));
+    m_GatingWeightsFilter->SetVector(m_GatingWeights);
+    m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
+
+    // Also perform gating in the conjugate gradient operator
+    m_CGOperator->SetGatingWeights(m_GatingWeights);
+    }
+  else
+    {
+    m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
+    }
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
@@ -182,10 +201,10 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);
 
   // Have the last filter calculate its output information
-  m_SubtractFilter3->UpdateOutputInformation();
+  m_SubtractFilter2->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_SubtractFilter3->GetOutput() );
+  this->GetOutput()->CopyInformation( m_SubtractFilter2->GetOutput() );
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -193,32 +212,9 @@ void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateData()
 {
-  itk::TimeProbe ADMMTimeProbe;
-  if(m_MeasureExecutionTimes)
-    {
-    std::cout << "Starting ADMM initialization" << std::endl;
-    ADMMTimeProbe.Start();
-    }
-
-  float PreviousTimeTotal, TimeDifference;
-  PreviousTimeTotal = 0;
-  TimeDifference = 0;
-  if(m_MeasureExecutionTimes)
-    {
-    ADMMTimeProbe.Stop();
-    std::cout << "ADMM initialization took " << ADMMTimeProbe.GetTotal() << ' ' << ADMMTimeProbe.GetUnit() << std::endl;
-    PreviousTimeTotal = ADMMTimeProbe.GetTotal();
-    }
-
   for(unsigned int iter=0; iter < m_AL_iterations; iter++)
     {
     SetBetaForCurrentIteration(iter);
-
-    if(m_MeasureExecutionTimes)
-      {
-      std::cout << "Starting ADMM iteration "<< iter << std::endl;
-      ADMMTimeProbe.Start();
-      }
 
     // After the first update, we need to use some outputs as inputs
     if(iter>0)
@@ -231,29 +227,46 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
       g_k_plus_one->DisconnectPipeline();
       m_AddGradientsFilter->SetInput2(g_k_plus_one);
 
-      typename ImageGradientFilterType::OutputImageType::Pointer d_k_plus_one = m_SubtractFilter3->GetOutput();
+      typename ImageGradientFilterType::OutputImageType::Pointer d_k_plus_one = m_SubtractFilter2->GetOutput();
       d_k_plus_one->DisconnectPipeline();
       m_AddGradientsFilter->SetInput1(d_k_plus_one);
-      m_SubtractFilter2->SetInput2(d_k_plus_one);
+      m_SubtractFilter1->SetInput2(d_k_plus_one);
 
       // Recreate the links destroyed by DisconnectPipeline
       m_GradientFilter2->SetInput(m_ConjugateGradientFilter->GetOutput());
-      m_SubtractFilter3->SetInput1(m_SoftThresholdFilter->GetOutput());
+      m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
       }
 
-    std::cout << "ADMM iteration " << iter << std::endl;
-    m_SubtractFilter3->Update();
+    m_BeforeConjugateGradientProbe.Start();
+    m_SubtractVolumeFilter->Update();
+    m_BeforeConjugateGradientProbe.Stop();
 
-    if(m_MeasureExecutionTimes)
-      {
-      ADMMTimeProbe.Stop();
-      TimeDifference = ADMMTimeProbe.GetTotal() - PreviousTimeTotal;
-      std::cout << "ADMM iteration " << iter << " took " << TimeDifference << ' ' << ADMMTimeProbe.GetUnit() << std::endl;
-      PreviousTimeTotal = ADMMTimeProbe.GetTotal();
-      }
+    m_ConjugateGradientProbe.Start();
+    m_ConjugateGradientFilter->Update();
+    m_ConjugateGradientProbe.Stop();
 
+    m_TVSoftTresholdingProbe.Start();
+    m_SubtractFilter2->Update();
+    m_TVSoftTresholdingProbe.Stop();
     }
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+}
+
+template< typename TOutputImage, typename TGradientOutputImage>
+void
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
+::PrintTiming(std::ostream & os) const
+{
+  os << "ADMMWaveletsConeBeamReconstructionFilter timing:" << std::endl;
+  os << "  Before conjugate gradient (computation of the B of AX=B): "
+     << m_BeforeConjugateGradientProbe.GetTotal()
+     << ' ' << m_BeforeConjugateGradientProbe.GetUnit() << std::endl;
+  os << "  Conjugate gradient optimization: "
+     << m_ConjugateGradientProbe.GetTotal()
+     << ' ' << m_ConjugateGradientProbe.GetUnit() << std::endl;
+  os << "  TV soft thresholding: "
+     << m_TVSoftTresholdingProbe.GetTotal()
+     << ' ' << m_TVSoftTresholdingProbe.GetUnit() << std::endl;
 }
 
 }// end namespace

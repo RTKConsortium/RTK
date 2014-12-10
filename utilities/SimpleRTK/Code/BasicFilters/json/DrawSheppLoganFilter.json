@@ -1,0 +1,24 @@
+{
+  "name" : "DrawSheppLoganFilter",
+  "template_code_filename" : "RTKImageFilter",
+  "template_test_filename" : "ImageFilter",
+  "number_of_inputs" : 1,
+  "doc" : "",
+  "output_image_type" : "TImageType",
+  "pixel_types" : "RealPixelIDTypeList",
+  "filter_type" : "rtk::DrawSheppLoganFilter<InputImageType, InputImageType>",
+  "members" : [
+    {
+      "name" : "OriginOffset",
+      "type" : "double",
+      "default" : "std::vector<double>(3, 0)",
+      "dim_vec" : 1,
+	  "itk_type" : "typename FilterType::VectorType"
+    },
+    {
+      "name" : "PhantomScale",
+      "type" : "double",
+      "default" : "128."
+    }
+  ]
+}

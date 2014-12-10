@@ -18,6 +18,7 @@
 
 #include "rtkIOFactories.h"
 #include <itkImageIOFactory.h>
+#include <itkGDCMImageIOFactory.h>
 
 // Varian Obi includes
 #include "rtkHndImageIOFactory.h"
@@ -27,6 +28,7 @@
 
 // ImagX includes
 #include "rtkImagXImageIOFactory.h"
+#include "rtkDCMImagXImageIOFactory.h"
 
 // European Synchrotron Radiation Facility
 #include "rtkEdfImageIOFactory.h"
@@ -39,11 +41,21 @@ namespace rtk
 
 void RegisterIOFactories()
 {
+  // First unregister GDCMImageIO to let ImageXDCM
+  std::list< itk::ObjectFactoryBase * > fl = itk::GDCMImageIOFactory::GetRegisteredFactories();
+  for (std::list< itk::ObjectFactoryBase * >::iterator it = fl.begin(); it != fl.end(); ++it)
+    if (dynamic_cast<itk::GDCMImageIOFactory *>(*it))
+    {
+    itk::GDCMImageIOFactory::UnRegisterFactory(*it);
+    break;
+    }
   rtk::HndImageIOFactory::RegisterOneFactory();
   rtk::HisImageIOFactory::RegisterOneFactory();
   rtk::ImagXImageIOFactory::RegisterOneFactory();
+  rtk::DCMImagXImageIOFactory::RegisterOneFactory();
   rtk::EdfImageIOFactory::RegisterOneFactory();
   rtk::XRadImageIOFactory::RegisterOneFactory();
+  itk::GDCMImageIOFactory::RegisterOneFactory();
 }
 
 } //namespace rtk

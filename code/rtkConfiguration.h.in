@@ -28,8 +28,12 @@ namespace rtk
   typedef itk::ThreadIdType ThreadIdType;
 }
 
+#ifndef CUDA_FOUND
 #cmakedefine CUDA_FOUND
+#endif
+#ifndef OPENCL_FOUND
 #cmakedefine OPENCL_FOUND
+#endif
 #cmakedefine RTK_USE_CUDA
 #cmakedefine RTK_USE_OPENCL
 #cmakedefine RTK_BUILD_SHARED_LIBS 1

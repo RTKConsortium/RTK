@@ -188,7 +188,7 @@ void CudaCheckError(CUresult error, const char* filename, int lineno, const char
     // print error message
     std::ostringstream errorMsg;
     errorMsg << "Cuda Error #" << static_cast<int>(error) << std::endl;
-    std::cerr << errorMsg.str() << std::endl;
+    std::cerr << filename << ":" << lineno << " @ " << location << " : " << errorMsg.str() << std::endl;
     ::itk::ExceptionObject e_(filename, lineno, errorMsg.str().c_str(), location);
     throw e_;
     }

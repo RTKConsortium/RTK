@@ -22,6 +22,7 @@
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 #include "itkCudaImage.h"
 #include "itkCudaInPlaceImageFilter.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -40,28 +41,28 @@ class ITK_EXPORT CudaInterpolateImageFilter :
     InterpolatorWithKnownWeightsImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,4> > >
 {
 public:
-    /** Standard class typedefs. */
-    typedef rtk::CudaInterpolateImageFilter                             Self;
-    typedef rtk::InterpolatorWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
-    typedef itk::SmartPointer<Self>                            Pointer;
-    typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class typedefs. */
+  typedef rtk::CudaInterpolateImageFilter                             Self;
+  typedef rtk::InterpolatorWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
-    /** Standard New method. */
-    itkNewMacro(Self)
+  /** Standard New method. */
+  itkNewMacro(Self)
 
-    /** Runtime information support. */
-    itkTypeMacro(CudaInterpolateImageFilter, InterpolatorWithKnownWeightsImageFilter)
+  /** Runtime information support. */
+  itkTypeMacro(CudaInterpolateImageFilter, InterpolatorWithKnownWeightsImageFilter)
 
 protected:
-    CudaInterpolateImageFilter();
-    ~CudaInterpolateImageFilter(){
-    }
+  rtkcuda_EXPORT CudaInterpolateImageFilter();
+  ~CudaInterpolateImageFilter(){
+  }
 
-    virtual void GPUGenerateData();
+  virtual void GPUGenerateData();
 
 private:
-    CudaInterpolateImageFilter(const Self&); //purposely not implemented
-    void operator=(const Self&);         //purposely not implemented
+  CudaInterpolateImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

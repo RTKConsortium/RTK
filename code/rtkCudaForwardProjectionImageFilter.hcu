@@ -19,11 +19,14 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_hcu
 #define __rtkCudaForwardProjectionImageFilter_hcu
 
+#include "rtkWin32Header.h"
+
 void
-CUDA_forward_project( int projections_size[2],
+rtkcuda_EXPORT CUDA_forward_project( int projections_size[2],
                       int vol_size[3],
                       float matrix[12],
-                      float *dev_proj,
+                      float *dev_proj_in,
+                      float *dev_proj_out,
                       float *dev_vol,
                       float t_step,
                       double source_position[3],

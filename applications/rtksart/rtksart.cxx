@@ -22,6 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
+#include "rtkPhaseGatingImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -58,6 +59,20 @@ int main(int argc, char * argv[])
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
+  // Phase gating weights reader
+  typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
+  PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
+  if (args_info.phases_given)
+    {
+    phaseGating->SetFileName(args_info.phases_arg);
+    phaseGating->SetGatingWindowWidth(args_info.windowwidth_arg);
+    phaseGating->SetGatingWindowCenter(args_info.windowcenter_arg);
+    phaseGating->SetGatingWindowShape(args_info.windowshape_arg);
+    phaseGating->SetInputProjectionStack(reader->GetOutput());
+    phaseGating->SetInputGeometry(geometryReader->GetOutputObject());
+    phaseGating->Update();
+    }
+
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource< OutputImageType >::Pointer inputFilter;
   if(args_info.input_given)
@@ -81,21 +96,29 @@ int main(int argc, char * argv[])
   rtk::SARTConeBeamReconstructionFilter< OutputImageType >::Pointer sart =
       rtk::SARTConeBeamReconstructionFilter< OutputImageType >::New();
 
-  // Set the forward and back projection filters to be used inside admmFilter
+  // Set the forward and back projection filters
   sart->SetForwardProjectionFilter(args_info.fp_arg);
   sart->SetBackProjectionFilter(args_info.bp_arg);
-
   sart->SetInput( inputFilter->GetOutput() );
-  sart->SetInput(1, reader->GetOutput());
-  sart->SetGeometry( geometryReader->GetOutputObject() );
+  if (args_info.phases_given)
+    {
+    sart->SetInput(1, phaseGating->GetOutput());
+    sart->SetGeometry( phaseGating->GetOutputGeometry() );
+    sart->SetGatingWeights( phaseGating->GetGatingWeightsOnSelectedProjections() );
+    }
+  else
+    {
+    sart->SetInput(1, reader->GetOutput());
+    sart->SetGeometry( geometryReader->GetOutputObject() );
+    }
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetLambda( args_info.lambda_arg );
 
-  itk::TimeProbe readerProbe;
+  itk::TimeProbe totalTimeProbe;
   if(args_info.time_flag)
     {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
+    std::cout << "Recording elapsed time... " << std::endl << std::flush;
+    totalTimeProbe.Start();
     }
   if(args_info.positivity_flag)
     {
@@ -107,8 +130,8 @@ int main(int argc, char * argv[])
   if(args_info.time_flag)
     {
     sart->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+    totalTimeProbe.Stop();
+    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
     }
 
   // Write

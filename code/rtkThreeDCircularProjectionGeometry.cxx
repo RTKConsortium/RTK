@@ -86,8 +86,20 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
     this->GetMagnificationMatrices().back().GetVnlMatrix() *
     this->GetSourceTranslationMatrices().back().GetVnlMatrix()*
     this->GetRotationMatrices().back().GetVnlMatrix();
-
   this->AddMatrix(matrix);
+
+  // Calculate source angle
+  VectorType z;
+  z.Fill(0.);
+  z[2] = 1.;
+  HomogeneousVectorType sph = GetSourcePosition( m_GantryAngles.size()-1 );
+  VectorType sp( &(sph[0]) );
+  sp.Normalize();
+  double a = acos(sp*z);
+  if(sp[0] > 0.)
+    a = 2. * M_PI - a;
+  m_SourceAngles.push_back( ConvertAngleBetween0And2PIRadians(a) );
+
   this->Modified();
 }
 
@@ -96,6 +108,7 @@ void rtk::ThreeDCircularProjectionGeometry::Clear()
   m_GantryAngles.clear();
   m_OutOfPlaneAngles.clear();
   m_InPlaneAngles.clear();
+  m_SourceAngles.clear();
   m_SourceToIsocenterDistances.clear();
   m_SourceOffsetsX.clear();
   m_SourceOffsetsY.clear();
@@ -108,27 +121,6 @@ void rtk::ThreeDCircularProjectionGeometry::Clear()
   m_RotationMatrices.clear();
   m_SourceTranslationMatrices.clear();
   this->Modified();
-}
-
-const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetSourceAngles()
-{
-  unsigned int nProj = this->GetGantryAngles().size();
-  std::vector<double> sang;
-  VectorType z;
-  z.Fill(0.);
-  z[2] = 1.;
-  for(unsigned int iProj=0; iProj<nProj; iProj++)
-    {
-    HomogeneousVectorType sph = GetSourcePosition(iProj);
-
-    VectorType sp( &(sph[0]) );
-    sp.Normalize();
-    double a = acos(sp*z);
-    if(sp[0] > 0.)
-      a = 2. * M_PI - a;
-    sang.push_back( ConvertAngleBetween0And2PIRadians(a) );
-    }
-  return sang;
 }
 
 const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetTiltAngles()
@@ -148,6 +140,18 @@ const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::
 {
   unsigned int nProj = angles.size();
   std::multimap<double,unsigned int> sangles;
+  for(unsigned int iProj=0; iProj<nProj; iProj++)
+    {
+    double angle = angles[iProj];
+    sangles.insert(std::pair<double, unsigned int>(angle, iProj) );
+    }
+  return sangles;
+}
+
+const std::map<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> &angles)
+{
+  unsigned int nProj = angles.size();
+  std::map<double,unsigned int> sangles;
   for(unsigned int iProj=0; iProj<nProj; iProj++)
     {
     double angle = angles[iProj];

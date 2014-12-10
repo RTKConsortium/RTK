@@ -142,6 +142,7 @@ public:
   typedef rtk::ConstantImageSource<OutputImageType>                                          ConstantImageSourceType;
   typedef itk::ThresholdImageFilter<OutputImageType>                                         ThresholdFilterType;
   typedef rtk::DisplacedDetectorImageFilter<InputImageType>                                  DisplacedDetectorFilterType;
+  typedef itk::MultiplyImageFilter<InputImageType,InputImageType, InputImageType>            GatingWeightsFilterType;
 
 /** Standard New method. */
   itkNewMacro(Self);
@@ -173,6 +174,9 @@ public:
   /** Select the backprojection filter */
   void SetBackProjectionFilter (int _arg);
 
+  /** In the case of a gated SART, set the gating weights */
+  void SetGatingWeights(std::vector<float> weights);
+
 protected:
   SARTConeBeamReconstructionFilter();
   ~SARTConeBeamReconstructionFilter(){}
@@ -200,6 +204,7 @@ protected:
   typename ConstantImageSourceType::Pointer      m_ConstantImageSource;
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
   typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
+  typename GatingWeightsFilterType::Pointer      m_GatingWeightsFilter;
 
   bool m_EnforcePositivity;
 
@@ -218,6 +223,11 @@ private:
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
 
+  /** Have gating weights been set ? If so, apply them, otherwise ignore
+   * the gating weights filter */
+  bool                m_IsGated;
+  std::vector<float>  m_GatingWeights;
+
   /** Time probes */
   itk::TimeProbe m_ExtractProbe;
   itk::TimeProbe m_ZeroMultiplyProbe;
@@ -229,6 +239,7 @@ private:
   itk::TimeProbe m_DivideProbe;
   itk::TimeProbe m_BackProjectionProbe;
   itk::TimeProbe m_ThresholdProbe;
+  itk::TimeProbe m_GatingProbe;
 
 }; // end of class
 

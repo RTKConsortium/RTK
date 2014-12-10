@@ -18,7 +18,7 @@
 #ifndef __rtkInterpolatorWithKnownWeightsImageFilter_h
 #define __rtkInterpolatorWithKnownWeightsImageFilter_h
 
-#include "itkInPlaceImageFilter.h"
+#include "itkImageToImageFilter.h"
 #include "itkArray2D.h"
 #include "rtkConfiguration.h"
 
@@ -60,7 +60,7 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 template< typename VolumeType, typename VolumeSeriesType>
-class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeType, VolumeType >
+class InterpolatorWithKnownWeightsImageFilter : public itk::ImageToImageFilter< VolumeType, VolumeType >
 {
 public:
     /** Standard class typedefs. */

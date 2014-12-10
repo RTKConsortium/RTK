@@ -1,0 +1,17 @@
+
+  this->PreUpdate( filter.GetPointer() );
+
+  // Run the ITK filter and return the output as a SimpleRTK image
+  filter->Update();
+
+$(when measurements $(foreach measurements
+$(if custom_itk_cast then
+OUT=[[  ${custom_itk_cast}]]
+else
+OUT=[[  this->m_${name} = filter->Get${name}();]]
+end)
+))
+
+  typename FilterType::OutputImageType *itkOutImage = filter->GetOutput();
+  this->FixNonZeroIndex( itkOutImage );
+  return Image( itkOutImage );

@@ -25,6 +25,7 @@
 #include <iostream>
 #include <itkMacro.h>
 #include <rtkGlobalTimer.h>
+#include "rtkGgoArgsInfoManager.h"
 
 //--------------------------------------------------------------------
 /** \brief Debugging macro, displays name and content of a variable
@@ -45,12 +46,38 @@
  *
  * \ingroup Macro
  */
-#define GGO(ggo_filename, args_info)                                    \
-  args_info_##ggo_filename args_info;                                   \
-  cmdline_parser_##ggo_filename##2 (argc, argv, &args_info, 1, 1, 0);   \
-  if (args_info.config_given)                                           \
-    cmdline_parser_##ggo_filename##_configfile (args_info.config_arg, &args_info, 0, 0, 1); \
-  else cmdline_parser_##ggo_filename(argc, argv, &args_info);
+#define GGO(ggo_filename, args_info)                                                                       \
+  args_info_##ggo_filename args_info;                                                                      \
+  cmdline_parser_##ggo_filename##_params args_params;                                                      \
+  cmdline_parser_##ggo_filename##_params_init(&args_params);                                               \
+  args_params.print_errors = 1;                                                                            \
+  args_params.check_required = 0;                                                                          \
+  args_params.initialize = 1;                                                                              \
+  args_params.override = 1;                                                                                \
+  args_params.initialize = 1;                                                                              \
+  if(0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params) )                      \
+    {                                                                                                      \
+    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
+    exit(1);                                                                                               \
+    }                                                                                                      \
+  args_params.override = 0;                                                                                \
+  args_params.initialize = 0;                                                                              \
+  if (args_info.config_given)                                                                              \
+    {                                                                                                      \
+    if(0 != cmdline_parser_##ggo_filename##_config_file (args_info.config_arg, &args_info, &args_params) ) \
+      {                                                                                                    \
+      std::cerr << "Error in cmdline_parser_" #ggo_filename "_config_file" << std::endl;                   \
+      exit(1);                                                                                             \
+      }                                                                                                    \
+    }                                                                                                      \
+  args_params.check_required = 1;                                                                          \
+  if(0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params) )                      \
+    {                                                                                                      \
+    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
+    exit(1);                                                                                               \
+    }                                                                                                      \
+  rtk::args_info_manager< args_info_##ggo_filename >                                                       \
+     manager_object( args_info, cmdline_parser_##ggo_filename##_free );
 //--------------------------------------------------------------------
 
 //--------------------------------------------------------------------

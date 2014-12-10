@@ -15,7 +15,6 @@ INCLUDE(CTest)
 INCLUDE(cmake/RTKExternalData.cmake)
 #=========================================================
 
-
 ## Tell CMake to be quiet
 CMAKE_POLICY (SET CMP0003 NEW)
 
@@ -93,9 +92,18 @@ if(RTK_USE_OPENCL)
   ENDIF(OPENCL_LIBRARIES AND OPENCL_INCLUDE_DIRS)
 endif()
 
-option(RTK_USE_CUDA "Use CUDA for RTK" ON)
-if(RTK_USE_CUDA)
-  FIND_PACKAGE(CUDA_wrap REQUIRED)
+FIND_PACKAGE(CUDA_wrap)
+if(CUDA_FOUND)
+  SET(RTK_USE_CUDA_DEFAULT ON)
+else()
+  SET(RTK_USE_CUDA_DEFAULT OFF)
+endif()
+option(RTK_USE_CUDA "Use CUDA for RTK" ${RTK_USE_CUDA_DEFAULT})
+
+IF(RTK_USE_CUDA)
+  IF(NOT CUDA_FOUND)
+    FIND_PACKAGE(CUDA_wrap REQUIRED)
+  ENDIF()
   INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
 ENDIF()
 #=========================================================
@@ -194,3 +202,10 @@ IF(BUILD_EXAMPLES)
 ENDIF(BUILD_EXAMPLES)
 
 ExternalData_Add_Target(rtkData)
+
+option(BUILD_SIMPLERTK "Build SimpleRTK Wrapping" OFF)
+IF(BUILD_SIMPLERTK)
+  # SimpleRTK is meant to be build separately, so we set the variables
+  SET(RTK_DIR ${CMAKE_BINARY_DIR})
+  include(utilities/SimpleRTK/SimpleRTKWithSwig.cmake)
+ENDIF(BUILD_SIMPLERTK)

@@ -22,8 +22,8 @@
 #include <itkImageToImageFilter.h>
 #include <itkCropImageFilter.h>
 
-#include "rtkImagXLookupTableImageFilter.h"
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
 
 namespace rtk
 {
@@ -77,7 +77,8 @@ private:
 
   typedef itk::CropImageFilter<InputImageType, InputImageType>                       CropFilterType;
   typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
-  typedef rtk::ImagXLookupTableImageFilter<InputImageType, OutputImageType>          LookupTableFilterType;
+  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,
+                                                             OutputImageType>        LookupTableFilterType;
 
   typename LookupTableFilterType::Pointer m_LookupTableFilter;
   typename CropFilterType::Pointer        m_CropFilter;

@@ -1,0 +1,17 @@
+Image ${name}::Execute ( $(include ImageParameters.in) )
+{
+
+  PixelIDValueType type = image1.GetPixelIDValue();
+  unsigned int dimension = image1.GetDimension();
+
+  $(for inum=2,number_of_inputs do
+           OUT= OUT .. '\n    if ( type != image' .. inum .. '.GetPixelIDValue() || dimension != image' .. inum .. '.GetDimension() ) { srtkExceptionMacro ( "Image' .. inum .. ' for ${name} doesnt match type or dimension!" ); }'
+             end)
+
+    return this->m_MemberFactory->GetMemberFunction( type, dimension )( $(for inum=1,number_of_inputs do
+  if inum>1 then
+    OUT=OUT .. ', '
+  end
+  OUT= OUT .. 'image' .. inum
+                                                                          end) );
+}

@@ -155,7 +155,7 @@ public:
   virtual void SetLookupTable(LookupTableType* _arg) {
     //Idem as itkSetObjectMacro + call to functor SetLookupTableDataPointer
     itkDebugMacro("setting " << "LookupTable" " to " << _arg );
-    if (this->m_LookupTable != _arg) {
+    if (this->m_LookupTable != _arg || ( _arg && _arg->GetTimeStamp()>this->GetTimeStamp() ) ) {
       this->m_LookupTable = _arg;
       this->Modified();
       this->GetFunctor().SetLookupTable(_arg);
@@ -164,6 +164,10 @@ public:
 
   /** Get lookup table. */
   itkGetObjectMacro(LookupTable, LookupTableType);
+
+  /** Update the LUT before using it to process the data in case it is the
+   * result of a pipeline. */
+  virtual void BeforeThreadedGenerateData();
 
 protected:
   LookupTableImageFilter() {}
@@ -177,5 +181,9 @@ private:
 };
 
 } // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkLookupTableImageFilter.txx"
+#endif
 
 #endif

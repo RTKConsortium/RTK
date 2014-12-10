@@ -1,0 +1,54 @@
+#-----------------------------------------------------------------------------
+#
+# SimpleRTKConfig.cmake - SimpleRTK CMake configuration file for external
+# projects.
+#
+# This file is configured by SimpleRTK, imported into client projects by
+# find_package(SimpleRTK), and provides values for UseSimpleRTK.cmake.
+
+# This SimpleRTKConfig file is configured for the @SimpleRTKConfig_TREE@ tree
+
+# Compute this installation's prefix from this file's location:
+get_filename_component(_SimpleRTKConfig_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+@SimpleRTKConfig_CODE@
+# The C and C++ flags added by SimpleRTK to the cmake-configured flags.
+set(SimpleRTK_REQUIRED_C_FLAGS "@SimpleRTK_REQUIRED_C_FLAGS@")
+set(SimpleRTK_REQUIRED_CXX_FLAGS "@SimpleRTK_REQUIRED_CXX_FLAGS@")
+set(SimpleRTK_REQUIRED_LINK_FLAGS "@SimpleRTK_REQUIRED_LINK_FLAGS@")
+
+# The SimpleRTK include file directories.
+set(SimpleRTK_INCLUDE_DIRS "@SimpleRTKConfig_INCLUDE_DIRS@")
+
+# The SimpleRTK library directories.
+set(ITK_LIBRARY_DIRS "@ITK_LIBRARY_DIRS@")
+set(SimpleRTK_LIBRARY_DIRS "${ITK_LIBRARY_DIRS}")
+
+# The location of the UseITK.cmake file.
+set(SimpleRTK_USE_FILE "${_SimpleRTKConfig_DIR}/UseSimpleRTK.cmake")
+
+# Find the ITKTargets.cmake file (fallback code that needs to stay here only
+# temporarily - eventually ITK will export this value and this chunk can
+# disappear...)
+set(ITK_CONFIG_TARGETS_FILE "@ITK_CONFIG_TARGETS_FILE@")
+if(NOT ITK_CONFIG_TARGETS_FILE)
+  if(EXISTS "@ITK_DIR@/ITKTargets.cmake")
+    set(ITK_CONFIG_TARGETS_FILE "@ITK_DIR@/ITKTargets.cmake")
+  endif()
+endif()
+
+# Import ITK targets.
+if(NOT ITK_TARGETS_IMPORTED)
+  set(ITK_TARGETS_IMPORTED 1)
+  include("${ITK_CONFIG_TARGETS_FILE}")
+endif()
+
+# Import SimpleRTK targets.
+set(SimpleRTK_TARGETS_FILE "${_SimpleRTKConfig_DIR}/SimpleRTKTargets.cmake")
+if(NOT SimpleRTK_TARGETS_IMPORTED)
+  set(SimpleRTK_TARGETS_IMPORTED 1)
+  include("${SimpleRTK_TARGETS_FILE}")
+endif()
+
+# A list of all libraries for SimpleRTK.  Those listed here should
+# automatically pull in their dependencies via imported targets.
+set(SimpleRTK_LIBRARIES "@SimpleRTK_LIBRARIES@")

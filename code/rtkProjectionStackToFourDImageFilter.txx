@@ -38,11 +38,13 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // Create the filters
   m_ExtractFilter = ExtractFilterType::New();
   m_ConstantImageSource = ConstantImageSourceType::New();
-
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
 
   // Set constant parameters
   m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename VolumeSeriesType::PixelType>::ZeroValue());
+
+  // Set memory management options
+  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
@@ -94,23 +96,29 @@ void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::InitializeConstantSource()
 {
-  int Dimension = 3;
+  unsigned int Dimension = 3;
 
   // Configure the constant image source that is connected to input 2 of the m_SingleProjToFourDFilter
   typename VolumeType::SizeType constantImageSourceSize;
   constantImageSourceSize.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      constantImageSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    {
+    constantImageSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    }
 
   typename VolumeType::SpacingType constantImageSourceSpacing;
   constantImageSourceSpacing.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      constantImageSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    {
+    constantImageSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    }
 
   typename VolumeType::PointType constantImageSourceOrigin;
   constantImageSourceOrigin.Fill(0);
   for(unsigned int i=0; i < Dimension; i++)
-      constantImageSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+    {
+    constantImageSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+    }
 
   typename VolumeType::DirectionType constantImageSourceDirection;
   constantImageSourceDirection.SetIdentity();
@@ -133,6 +141,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_ExtractFilter->GetOutput());
+  m_BackProjectionFilter->SetInPlace(false);
 
   // Create and set the splat filter
 #ifdef RTK_USE_CUDA
@@ -140,7 +149,8 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
     m_SplatFilter = rtk::CudaSplatImageFilter::New();
   else
 #endif
-    m_SplatFilter = SplatFilterType::New();
+  
+  m_SplatFilter = SplatFilterType::New();
   m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyFilter->GetOutput());
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
 
@@ -151,10 +161,11 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Prepare the extract filter
   int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
-  int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-  if (NumberProjs != m_Weights.columns()){
-      std::cerr << "Size of interpolation weights array does not match the number of projections" << std::endl;
-  }
+  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+  if (NumberProjs != m_Weights.columns())
+    {
+    std::cerr << "Size of interpolation weights array does not match the number of projections" << std::endl;
+    }
 
   typename ExtractFilterType::InputImageRegionType subsetRegion;
   subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
@@ -201,14 +212,16 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   extractRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
   extractRegion.SetSize(Dimension-1, 1);
 
+  // Declare the pointer to a VolumeSeries that will be used in the pipeline
+  typename VolumeSeriesType::Pointer pimg;
+
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
   for(m_ProjectionNumber=0; m_ProjectionNumber<NumberProjs; m_ProjectionNumber++)
     {
-
     // After the first update, we need to use the output as input.
     if(m_ProjectionNumber>0)
       {
-      typename VolumeSeriesType::Pointer pimg = m_SplatFilter->GetOutput();
+      pimg = m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_SplatFilter->SetInputVolumeSeries( pimg );
       }
@@ -226,6 +239,13 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Graft its output
   this->GraftOutput( m_SplatFilter->GetOutput() );
+
+  // Release the data in internal filters
+  pimg->ReleaseData();
+  m_ZeroMultiplyFilter->GetOutput()->ReleaseData();
+  m_BackProjectionFilter->GetOutput()->ReleaseData();
+  m_ExtractFilter->GetOutput()->ReleaseData();
+  m_ConstantImageSource->GetOutput()->ReleaseData();
 }
 
 }// end namespace
