@@ -29,6 +29,7 @@
   #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #endif
 #include "rtkWarpSequenceImageFilter.h"
+#include "rtkUnwarpSequenceImageFilter.h"
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageFilter.h>
 
@@ -205,18 +206,17 @@ public:
     void SetDisplacementField(const MVFSequenceImageType* MVFs);
     typename MVFSequenceImageType::Pointer            GetDisplacementField();
 
-    typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>  FourDCGFilterType;
-    typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
-    typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType>                                              AverageOutOfROIFilterType;
-    typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                 SpatialTVDenoisingFilterType;
-    typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  WarpSequenceFilterType;
+    typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>    FourDCGFilterType;
+    typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
+    typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType>                                                AverageOutOfROIFilterType;
+    typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                   SpatialTVDenoisingFilterType;
+    typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>    WarpSequenceFilterType;
+    typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
 #ifdef RTK_USE_CUDA
-    typedef rtk::CudaLastDimensionTVDenoisingImageFilter                                                    TemporalTVDenoisingFilterType;
+    typedef rtk::CudaLastDimensionTVDenoisingImageFilter                                                      TemporalTVDenoisingFilterType;
 #else
-    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>        TemporalTVDenoisingFilterType;
+    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
 #endif
-    typedef itk::AddImageFilter<VolumeSeriesType>                                                           AddFilterType;
-    typedef itk::SubtractImageFilter<VolumeSeriesType>                                                      SubtractFilterType;
 
     /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
     void SetForwardProjectionFilter(int fwtype);
@@ -279,9 +279,7 @@ protected:
     typename SpatialTVDenoisingFilterType::Pointer          m_TVDenoisingSpace;
     typename WarpSequenceFilterType::Pointer                m_Warp;
     typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
-    typename WarpSequenceFilterType::Pointer                m_ForwardWarp;
-    typename AddFilterType::Pointer                         m_AddFilter;
-    typename SubtractFilterType::Pointer                    m_SubtractFilter;
+    typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
 
 private:
     FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented
@@ -311,8 +309,8 @@ private:
     itk::TimeProbe m_ROIProbe;
     itk::TimeProbe m_TVSpaceProbe;
     itk::TimeProbe m_TVTimeProbe;
-    itk::TimeProbe m_WarpForwardProbe;
-    itk::TimeProbe m_WarpBackwardProbe;
+    itk::TimeProbe m_WarpProbe;
+    itk::TimeProbe m_UnwarpProbe;
 };
 } //namespace ITK
 
