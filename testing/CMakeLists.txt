@@ -312,7 +312,3 @@ ADD_TEST(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
 ADD_EXECUTABLE(rtkargsinfomanagertest rtkargsinfomanagertest.cxx)
 TARGET_LINK_LIBRARIES(rtkargsinfomanagertest RTK)
 ADD_TEST(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest)
-<<<<<<< HEAD
-
-=======
->>>>>>> master

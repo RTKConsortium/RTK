@@ -105,7 +105,6 @@ IF (RTK_USE_CUDA)
               rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
-<<<<<<< HEAD
 	      rtkCudaSplatImageFilter.cxx
 	      rtkCudaInterpolateImageFilter.cxx
 	      rtkCudaWarpImageFilter.cxx
@@ -114,12 +113,6 @@ IF (RTK_USE_CUDA)
 	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
 	      rtkCudaLastDimensionTVDenoisingImageFilter.cxx
 	      ${rtkcuda_CUDA_WRAPPERS}
-=======
-              rtkCudaSplatImageFilter.cxx
-              rtkCudaInterpolateImageFilter.cxx
-              rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
-              ${rtkcuda_CUDA_WRAPPERS}
->>>>>>> master
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
   TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} RTK ITKCudaCommon)
