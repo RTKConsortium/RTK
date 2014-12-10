@@ -56,6 +56,57 @@ texture<float, 3, cudaReadModeElementType> tex_zdvf;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__
+void fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_dim)
+{
+  int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+
+  if (i >= out_dim.x || j >= out_dim.y || k >= out_dim.z)
+    {
+    return;
+    }
+
+  // Index row major into the volume
+  long int out_idx = i + (j + k*out_dim.y)*(out_dim.x);
+  long int current_idx;
+
+  float eps = 1e-6;
+
+  // If there is a hole in splat at this point
+  if (abs(dev_accumulate_weights[out_idx]) < eps)
+    {
+    // Replace it with the weighted mean of the neighbours
+    // (with dev_accumulate_weights as weights, so as to
+    // negate the contribution of neighbouring holes)
+    float sum = 0;
+    float sum_weights = 0;
+
+    for (int delta_i =-2; delta_i < 2; delta_i++)
+      {
+      for (int delta_j =-2; delta_j < 2; delta_j++)
+        {
+        for (int delta_k =-2; delta_k < 2; delta_k++)
+          {
+          if (   (i + delta_i >= 0) && (i + delta_i < out_dim.x)
+              && (j + delta_j >= 0) && (j + delta_j < out_dim.y)
+              && (k + delta_k >= 0) && (k + delta_k < out_dim.z))
+            {
+            current_idx = i + delta_i + (j + delta_j + (k + delta_k)*out_dim.y)*(out_dim.x);
+            sum += dev_vol_out[current_idx] * dev_accumulate_weights[current_idx];
+            sum_weights += dev_accumulate_weights[current_idx];
+            }
+          }
+        }
+      }
+    if (abs(sum_weights) > eps)
+      dev_vol_out[out_idx] = sum / sum_weights;
+    else
+      dev_vol_out[out_idx] = 0;
+    }
+}
+
+__global__
 void normalize_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_dim)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
@@ -306,8 +357,7 @@ CUDA_ForwardWarp(int input_vol_dim[3],
   cudaMalloc3DArray((cudaArray**)&array_zdvf, &channelDesc, dvfExtent);
   CUDA_CHECK_ERROR;
 
-  // Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
-  // The best way to understand it is to read
+  // Copy image data to arrays. For a nice explanation on make_cudaPitchedPtr, checkout
   // http://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
   cudaMemcpy3DParms xCopyParams = {0};
   xCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_xdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
@@ -396,11 +446,19 @@ CUDA_ForwardWarp(int input_vol_dim[3],
                                             dev_accumulate_weights,
                                             make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
                                             make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+  cudaDeviceSynchronize();
+  CUDA_CHECK_ERROR;
 
   normalize_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
-                                            dev_accumulate_weights,
-                                            make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+                                               dev_accumulate_weights,
+                                               make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+  cudaDeviceSynchronize();
+  CUDA_CHECK_ERROR;
 
+  fillHoles_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
+                                               dev_accumulate_weights,
+                                               make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
 
   // Unbind the image and projection matrix textures
