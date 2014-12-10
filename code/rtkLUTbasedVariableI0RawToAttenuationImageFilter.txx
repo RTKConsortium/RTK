@@ -42,7 +42,7 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   ++it;
   while( !it.IsAtEnd() )
     {
-    it.Set( -log( double(it.GetIndex()[0]) ) );
+    it.Set( -vcl_log( double(it.GetIndex()[0]) ) );
     ++it;
     }
 
@@ -51,16 +51,16 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
 
   // Mini pipeline for creating the lut.
   m_AddLUTFilter = AddLUTFilterType::New();
-  m_ClampLUTFilter = ClampLUTFilterType::New();
+  m_ThresholdLUTFilter = ThresholdLUTFilterType::New();
   m_AddLUTFilter->InPlaceOff();
   m_AddLUTFilter->SetInput1(lut);
   m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)m_I0, 1.) ) );
-  m_ClampLUTFilter->SetInput( m_AddLUTFilter->GetOutput() );
-  m_ClampLUTFilter->SetBounds(0., itk::NumericTraits<OutputImagePixelType>::max() );
-  m_ClampLUTFilter->Update();
+  m_ThresholdLUTFilter->SetInput( m_AddLUTFilter->GetOutput() );
+  m_ThresholdLUTFilter->ThresholdBelow(0.);
+  m_ThresholdLUTFilter->SetOutsideValue(0.);
 
   // Set the lut to member and functor
-  this->SetLookupTable( m_ClampLUTFilter->GetOutput() );
+  this->SetLookupTable( m_ThresholdLUTFilter->GetOutput() );
 }
 
 template <class TInputImage, class TOutputImage>

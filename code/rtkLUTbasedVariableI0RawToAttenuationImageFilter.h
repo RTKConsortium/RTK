@@ -22,7 +22,7 @@
 #include "rtkLookupTableImageFilter.h"
 #include <itkNumericTraits.h>
 #include <itkAddImageFilter.h>
-#include <itkClampImageFilter.h>
+#include <itkThresholdImageFilter.h>
 
 namespace rtk
 {
@@ -47,13 +47,11 @@ public:
   typedef itk::SmartPointer< Self >                               Pointer;
   typedef itk::SmartPointer< const Self >                         ConstPointer;
 
-  typedef typename TInputImage::PixelType                   InputImagePixelType;
-  typedef typename TOutputImage::PixelType                  OutputImagePixelType;
-  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
-  typedef typename itk::AddImageFilter<LookupTableType,
-                                       LookupTableType>     AddLUTFilterType;
-  typedef typename itk::ClampImageFilter<LookupTableType,
-                                         LookupTableType>   ClampLUTFilterType;
+  typedef typename TInputImage::PixelType                     InputImagePixelType;
+  typedef typename TOutputImage::PixelType                    OutputImagePixelType;
+  typedef typename Superclass::FunctorType::LookupTableType   LookupTableType;
+  typedef typename itk::AddImageFilter<LookupTableType>       AddLUTFilterType;
+  typedef typename itk::ThresholdImageFilter<LookupTableType> ThresholdLUTFilterType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -76,9 +74,9 @@ private:
   LUTbasedVariableI0RawToAttenuationImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);                                //purposely not implemented
 
-  InputImagePixelType                  m_I0;
-  typename AddLUTFilterType::Pointer   m_AddLUTFilter;
-  typename ClampLUTFilterType::Pointer m_ClampLUTFilter;
+  InputImagePixelType                      m_I0;
+  typename AddLUTFilterType::Pointer       m_AddLUTFilter;
+  typename ThresholdLUTFilterType::Pointer m_ThresholdLUTFilter;
 };
 } // end namespace rtk
 

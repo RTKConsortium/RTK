@@ -27,7 +27,9 @@ void
 LookupTableImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
+  // In case the lut is the result of a pipeline
   this->m_LookupTable->Update();
+  this->SetLookupTable( m_LookupTable );
 }
 
 }

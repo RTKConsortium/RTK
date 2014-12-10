@@ -155,7 +155,7 @@ public:
   virtual void SetLookupTable(LookupTableType* _arg) {
     //Idem as itkSetObjectMacro + call to functor SetLookupTableDataPointer
     itkDebugMacro("setting " << "LookupTable" " to " << _arg );
-    if (this->m_LookupTable != _arg) {
+    if (this->m_LookupTable != _arg || ( _arg && _arg->GetTimeStamp()>this->GetTimeStamp() ) ) {
       this->m_LookupTable = _arg;
       this->Modified();
       this->GetFunctor().SetLookupTable(_arg);
