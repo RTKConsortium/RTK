@@ -85,6 +85,7 @@ protected:
   /** Split the output's RequestedRegion into "num" pieces, returning
    * region "i" as "splitRegion". Reimplemented from ImageSource to ensure
    * that each thread covers entire projections. */
+  virtual unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion);
   virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
 
 private:

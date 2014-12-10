@@ -108,6 +108,14 @@ ADD_EXECUTABLE(rtkmediantest rtkmediantest.cxx)
 TARGET_LINK_LIBRARIES(rtkmediantest ${RTK_LIBRARIES})
 ADD_TEST(rtkmediantest ${EXECUTABLE_OUTPUT_PATH}/rtkmediantest)
 
+ADD_EXECUTABLE(rtkwaterprecorrectiontest rtkwaterprecorrectiontest.cxx)
+TARGET_LINK_LIBRARIES(rtkwaterprecorrectiontest ${RTK_LIBRARIES})
+ADD_TEST(rtkwaterprecorrectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkwaterprecorrectiontest)
+
+ADD_EXECUTABLE(rtklutbasedvarI0rawtoatttest rtklutbasedvarI0rawtoatttest.cxx)
+TARGET_LINK_LIBRARIES(rtklutbasedvarI0rawtoatttest ${RTK_LIBRARIES})
+ADD_TEST(rtklutbasedvarI0rawtoatttest ${EXECUTABLE_OUTPUT_PATH}/rtklutbasedvarI0rawtoatttest)
+
 ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest 
@@ -127,6 +135,13 @@ RTK_ADD_TEST(NAME rtkelektatest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest
              DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
              DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha})
+
+ADD_EXECUTABLE(rtkimagxgeometrytest rtkimagxgeometrytest.cxx)
+TARGET_LINK_LIBRARIES(rtkimagxgeometrytest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkimagxgeometrytest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxgeometrytest
+             DATA{Data/Input/ImagX/calibration.xml,room.xml,1.dcm}
+             DATA{Data/Baseline/ImagX/geo.xml,attenuationDCM.mha})
 
 ADD_EXECUTABLE(rtkluttest rtkluttest.cxx)
 TARGET_LINK_LIBRARIES(rtkluttest ${RTK_LIBRARIES})
@@ -223,6 +238,10 @@ ADD_EXECUTABLE(rtkwarptest rtkwarptest.cxx)
 TARGET_LINK_LIBRARIES(rtkwarptest ${RTK_LIBRARIES})
 ADD_TEST(rtkwarptest ${EXECUTABLE_OUTPUT_PATH}/rtkwarptest)
 
+ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
+TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
+ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
+
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
 if(NOT RTK_USE_CUDA)
@@ -293,4 +312,7 @@ ADD_TEST(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
 ADD_EXECUTABLE(rtkargsinfomanagertest rtkargsinfomanagertest.cxx)
 TARGET_LINK_LIBRARIES(rtkargsinfomanagertest RTK)
 ADD_TEST(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest)
+<<<<<<< HEAD
 
+=======
+>>>>>>> master

@@ -1,0 +1,17 @@
+{
+  "name" : "BitwiseNotImageFilter",
+  "itk_name" : "UnaryFunctorImageFilter",
+  "template_code_filename" : "ImageFilter",
+  "template_test_filename" : "ImageFilter",
+  "constant_type" : "double",
+  "include_files" : [
+    "itkBitwiseNotFunctor.h"
+  ],
+  "number_of_inputs" : 1,
+  "doc" : "Some global documentation",
+  "pixel_types" : "IntegerPixelIDTypeList",
+  "filter_type" : "itk::UnaryFunctorImageFilter< InputImageType, InputImageType, itk::Functor::BitwiseNot< typename InputImageType::PixelType,typename OutputImageType::PixelType> >",
+  "members" : [],
+  "briefdescription" : "Implements pixel-wise generic operation on one image.",
+  "detaileddescription" : "This class is parameterized over the type of the input image and the type of the output image. It is also parameterized by the operation to be applied, using a Functorstyle.\n\n UnaryFunctorImageFilterallows the output dimension of the filter to be larger than the input dimension. Thus subclasses of the UnaryFunctorImageFilter(like the CastImageFilter) can be used to promote a 2D image to a 3D image, etc.\n\n\\see  BinaryFunctorImageFilter TernaryFunctorImageFilter\n\\par Wiki Examples:\n\n\\li All Examples\n\n\\li Apply a custom operation to each pixel in an image"
+}

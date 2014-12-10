@@ -1,0 +1,13 @@
+$(if custom_methods and #custom_methods > 0 then
+OUT = [[
+
+
+$(foreach custom_methods
+      /** ${doc} */
+      ${return_type} ${name}( $(for inum=1,#parameters do
+                                if inum>1 then
+                                   OUT = OUT .. ', '
+                                end
+                                OUT = OUT .. parameters[inum].type .. ' ' .. parameters[inum].var_name
+                               end) );
+)]]end)

@@ -137,6 +137,25 @@ void ProjectionsReader<TOutputImage>
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;
       }
+    else if( !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") )
+      {
+      /////////// ImagX (DICOM)
+      typedef unsigned short                                     InputPixelType;
+      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+
+      // Reader
+      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
+      typename ReaderType::Pointer reader = ReaderType::New();
+      reader->SetImageIO( imageIO );
+      reader->SetFileNames( this->GetFileNames() );
+      m_RawDataReader = reader;
+
+      // Convert raw to Projections
+      typedef rtk::ImagXRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+      rawFilter->SetInput( reader->GetOutput() );
+      m_RawToProjectionsFilter = rawFilter;
+      }
     else if( !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
       {
       typedef unsigned short                                     InputPixelType;
@@ -198,6 +217,7 @@ void ProjectionsReader<TOutputImage>
       {
       ///////////// Default: whatever the format, we assume that we directly
       // read the Projections
+
       typedef itk::ImageSeriesReader< OutputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
       reader->SetImageIO( imageIO );
