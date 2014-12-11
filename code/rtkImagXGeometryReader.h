@@ -21,7 +21,6 @@
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -37,7 +36,7 @@ namespace rtk
  * \ingroup IOFilters
  */
 template< typename TInputImage >
-class RTK_EXPORT ImagXGeometryReader : public itk::LightProcessObject
+class ImagXGeometryReader : public itk::LightProcessObject
 {
 public:
   /** Standard typedefs */
@@ -93,7 +92,7 @@ public:
     }
 
 protected:
-  ImagXGeometryReader():m_Geometry(NULL), m_DetectorOffset(0.f) {};
+  ImagXGeometryReader(): m_Geometry(NULL), m_DetectorOffset(0.f) {};
 
   ~ImagXGeometryReader() {};
 
