@@ -27,11 +27,11 @@ namespace rtk
 /////////////////////////////////////////////////////////
 //Default Constructor
 template <class TImage>
-DeconstructImageFilter<TImage>::DeconstructImageFilter()
+DeconstructImageFilter<TImage>::DeconstructImageFilter():
+  m_NumberOfLevels(5),
+  m_Order(3),
+  m_PipelineConstructed(false)
 {
-  //Initialise private variables
-  this->m_NumberOfLevels     = 0;
-  this->m_PipelineConstructed = false;
 }
 
 /////////////////////////////////////////////////////////
@@ -108,7 +108,9 @@ void DeconstructImageFilter<TImage>
     {
     for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
       {
-      if ((int)floor(vectIndex / powerOfTwo)%2) m_PassVectors[vectIndex][dim] = ConvolutionFilterType::High;
+      // vectIndex / powerOfTwo is a division between unsigned ints, and will return the quotient
+      // of their euclidian division
+      if ((vectIndex / powerOfTwo)%2) m_PassVectors[vectIndex][dim] = ConvolutionFilterType::High;
       else m_PassVectors[vectIndex][dim] = ConvolutionFilterType::Low;
       }
     powerOfTwo *= 2;

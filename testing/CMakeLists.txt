@@ -26,6 +26,7 @@ ADD_EXECUTABLE(rtkfdktest rtkfdktest.cxx)
 TARGET_LINK_LIBRARIES(rtkfdktest ${RTK_LIBRARIES})
 ADD_TEST(rtkfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdktest)
 ADD_CUDA_TEST(rtkfdk rtkfdktest.cxx)
+ADD_CUDA_TEST(rtkfdkprojweightcomp rtkfdkprojweightcompcudatest.cxx)
 
 IF(OPENCL_FOUND AND OPENCL_HAVE_GPU)
   ADD_EXECUTABLE(rtkfdkopencltest rtkfdktest.cxx)
@@ -33,6 +34,11 @@ IF(OPENCL_FOUND AND OPENCL_HAVE_GPU)
   SET_TARGET_PROPERTIES(rtkfdkopencltest PROPERTIES COMPILE_FLAGS -DUSE_OPENCL)
   ADD_TEST(rtkfdkopencltest ${EXECUTABLE_OUTPUT_PATH}/rtkfdkopencltest)
 ENDIF(OPENCL_FOUND AND OPENCL_HAVE_GPU)
+
+ADD_EXECUTABLE(rtkimporttest rtkimporttest.cxx)
+TARGET_LINK_LIBRARIES(rtkimporttest ${RTK_LIBRARIES})
+ADD_TEST(rtkimporttest ${EXECUTABLE_OUTPUT_PATH}/rtkimporttest)
+ADD_CUDA_TEST(rtkimport rtkimporttest.cxx)
 
 ADD_CUDA_TEST(rtkcropfilter rtkcroptest.cxx)
 
@@ -43,10 +49,14 @@ ADD_TEST(rtkmotioncompensatedfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkmotioncompensa
 ADD_EXECUTABLE(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
 TARGET_LINK_LIBRARIES(rtkdisplaceddetectortest ${RTK_LIBRARIES})
 ADD_TEST(rtkdisplaceddetectortest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetectortest)
+ADD_CUDA_TEST(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
+ADD_CUDA_TEST(rtkdisplaceddetectorcomp rtkdisplaceddetectorcompcudatest.cxx)
 
 ADD_EXECUTABLE(rtkshortscantest rtkshortscantest.cxx)
 TARGET_LINK_LIBRARIES(rtkshortscantest ${RTK_LIBRARIES})
 ADD_TEST(rtkshortscantest ${EXECUTABLE_OUTPUT_PATH}/rtkshortscantest)
+ADD_CUDA_TEST(rtkshortscantest rtkshortscantest.cxx)
+ADD_CUDA_TEST(rtkshortscancomp rtkshortscancompcudatest.cxx)
 
 ADD_EXECUTABLE(rtkrampfiltertest rtkrampfiltertest.cxx)
 TARGET_LINK_LIBRARIES(rtkrampfiltertest ${RTK_LIBRARIES})
@@ -98,6 +108,14 @@ ADD_EXECUTABLE(rtkmediantest rtkmediantest.cxx)
 TARGET_LINK_LIBRARIES(rtkmediantest ${RTK_LIBRARIES})
 ADD_TEST(rtkmediantest ${EXECUTABLE_OUTPUT_PATH}/rtkmediantest)
 
+ADD_EXECUTABLE(rtkwaterprecorrectiontest rtkwaterprecorrectiontest.cxx)
+TARGET_LINK_LIBRARIES(rtkwaterprecorrectiontest ${RTK_LIBRARIES})
+ADD_TEST(rtkwaterprecorrectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkwaterprecorrectiontest)
+
+ADD_EXECUTABLE(rtklutbasedvarI0rawtoatttest rtklutbasedvarI0rawtoatttest.cxx)
+TARGET_LINK_LIBRARIES(rtklutbasedvarI0rawtoatttest ${RTK_LIBRARIES})
+ADD_TEST(rtklutbasedvarI0rawtoatttest ${EXECUTABLE_OUTPUT_PATH}/rtklutbasedvarI0rawtoatttest)
+
 ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest 
@@ -117,6 +135,13 @@ RTK_ADD_TEST(NAME rtkelektatest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest
              DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
              DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha})
+
+ADD_EXECUTABLE(rtkimagxgeometrytest rtkimagxgeometrytest.cxx)
+TARGET_LINK_LIBRARIES(rtkimagxgeometrytest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkimagxgeometrytest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxgeometrytest
+             DATA{Data/Input/ImagX/calibration.xml,room.xml,1.dcm}
+             DATA{Data/Baseline/ImagX/geo.xml,attenuationDCM.mha})
 
 ADD_EXECUTABLE(rtkluttest rtkluttest.cxx)
 TARGET_LINK_LIBRARIES(rtkluttest ${RTK_LIBRARIES})
@@ -209,6 +234,10 @@ ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
 
+ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
+TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
+ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
+
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
 if(NOT RTK_USE_CUDA)
@@ -273,3 +302,7 @@ ENDIF(OPENCL_FOUND)
 TARGET_LINK_LIBRARIES(rtkheadertest ${RTK_LIBRARIES})
 ADD_TEST(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
 
+# Test the manager used to automatically clean up the gengetopt args_info structures
+ADD_EXECUTABLE(rtkargsinfomanagertest rtkargsinfomanagertest.cxx)
+TARGET_LINK_LIBRARIES(rtkargsinfomanagertest RTK)
+ADD_TEST(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest)

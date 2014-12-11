@@ -129,7 +129,27 @@ public:
   /** Set/Get the Hann window frequency in Y direction. 0 (default) disables it */
   itkGetConstMacro(HannCutFrequencyY, double);
   itkSetMacro(HannCutFrequencyY, double);
-
+  
+  /** Set/Get the Ram-Lak window frequency (0...1). 0 (default) disable it.
+   * Equation and further explanation about Ram-Lak filter could be found in:
+   * 1. Fundamentals of 2D and 3D reconstruction (by Dr. Günter Lauritsch). 
+   *    http://campar.in.tum.de/twiki/pub/Chair/TeachingWs04IOIV/08CTReconstruction.pdf
+   * 2. Reconstruction. 
+   *    http://oftankonyv.reak.bme.hu/tiki-index.php?page=Reconstruction
+   */
+  itkGetConstMacro(RamLakCutFrequency, double);
+  itkSetMacro(RamLakCutFrequency, double);
+  
+  /** Set/Get the Shepp-Logan window frequency (0...1). 0 (default) disable it.
+   * Equation and further explanation about Shepp-Logan filter could be found in:
+   * 1. Fundamentals of 2D and 3D reconstruction (by Dr. Günter Lauritsch). 
+   *    http://campar.in.tum.de/twiki/pub/Chair/TeachingWs04IOIV/08CTReconstruction.pdf
+   * 2. Reconstruction. 
+   *    http://oftankonyv.reak.bme.hu/tiki-index.php?page=Reconstruction
+   */
+  itkGetConstMacro(SheppLoganCutFrequency, double);
+  itkSetMacro(SheppLoganCutFrequency, double);
+  
 protected:
   FFTRampImageFilter();
   ~FFTRampImageFilter(){}
@@ -190,6 +210,11 @@ private:
   double m_CosineCutFrequency;
   double m_HammingFrequency;
   double m_HannCutFrequencyY;
+  
+  /** Cut frequency of Ram-Lak and Shepp-Logan 
+    */
+  double m_RamLakCutFrequency;
+  double m_SheppLoganCutFrequency;
 
   int m_BackupNumberOfThreads;
 }; // end of class

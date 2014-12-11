@@ -1,0 +1,70 @@
+{
+  "name" : "RayEllipsoidIntersectionImageFilter",
+  "template_code_filename" : "ImageFilter",
+  "template_test_filename" : "ImageFilter",
+  "number_of_inputs" : 1,
+  "doc" : "",
+  "output_image_type" : "TImageType",
+  "pixel_types" : "RealPixelIDTypeList",
+  "include_files" : [
+    "srtkThreeDCircularProjectionGeometry.h"
+  ],
+  "members" : [
+	{
+      "name" : "Geometry",
+      "type" : "ThreeDCircularProjectionGeometry*",
+      "default" : "0",
+	  "itk_type" : "typename FilterType::GeometryPointer",
+      "custom_itk_cast" : "typename FilterType::GeometryType* itkTx;\n    if ( !(itkTx = dynamic_cast<typename FilterType::GeometryType *>(this->m_Geometry->GetRTKBase() )) ) {\n      srtkExceptionMacro( \"Unexpected error converting geometry\" );\n     }\n    else { filter->SetGeometry( itkTx ); }",
+      "doc" : "",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the geometry input.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the geometry input."
+    },
+    {
+      "name" : "Axis",
+      "type" : "double",
+      "default" : "std::vector<double>(3, 1)",
+      "dim_vec" : 1,
+	  "itk_type" : "typename FilterType::VectorType",
+      "doc" : "",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the axis of the ellipsoid.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the axis of the ellipsoid."
+    },
+	{
+      "name" : "Center",
+      "type" : "double",
+      "default" : "std::vector<double>(3, 1)",
+      "dim_vec" : 1,
+	  "itk_type" : "typename FilterType::VectorType",
+      "doc" : "",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the center of the ellipsoid.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the center of the ellipsoid."
+    },
+    {
+      "name" : "Angle",
+      "type" : "double",
+      "default" : "0.0",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the angle of the ellipsoid.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the angle of the ellipsoid."
+    }
+	{
+      "name" : "Density",
+      "type" : "double",
+      "default" : "0.0",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the multiplicative constant of the volume.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the multiplicative constant of the volume."
+    }
+  ],
+  "briefdescription" : "Computes intersection of projection rays with ellipsoids.",
+  "detaileddescription" : "Computes intersection of projection rays with ellipsoids."
+}

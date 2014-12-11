@@ -19,6 +19,8 @@ ADD_LIBRARY(RTK
             rtkEdfImageIOFactory.cxx
             rtkImagXImageIO.cxx
             rtkImagXImageIOFactory.cxx
+            rtkDCMImagXImageIO.cxx
+            rtkDCMImagXImageIOFactory.cxx
             rtkImagXXMLFileReader.cxx
             rtkThreeDCircularProjectionGeometry.cxx
             rtkReg23ProjectionGeometry.cxx
@@ -31,7 +33,7 @@ ADD_LIBRARY(RTK
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
-            )
+            rtkWaterCalibrationImageFilter.cxx)
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 #=========================================================
@@ -60,16 +62,20 @@ ENDIF(RTK_USE_OPENCL)
 # Cuda library stuff
 IF (RTK_USE_CUDA)
   SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
-  SET (rtkcuda_CUDA_FILES 
-       rtkCudaCropImageFilter.cu 
+  SET (rtkcuda_CUDA_FILES
+       rtkCudaCropImageFilter.cu
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
        rtkCudaFFTRampImageFilter.cu
+       rtkCudaFDKWeightProjectionFilter.cu
+       rtkCudaDisplacedDetectorImageFilter.cu
+       rtkCudaParkerShortScanImageFilter.cu
        rtkCudaForwardProjectionImageFilter.cu
        rtkCudaBackProjectionImageFilter.cu
        rtkCudaSplatImageFilter.cu
-       rtkCudaInterpolateImageFilter.cu)
-       
+       rtkCudaInterpolateImageFilter.cu
+       rtkCudaTotalVariationDenoisingBPDQImageFilter.cu)
+
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
   IF(WIN32)
@@ -88,13 +94,17 @@ IF (RTK_USE_CUDA)
   ENDIF()
 
   ADD_LIBRARY(rtkcuda
+              rtkCudaFDKWeightProjectionFilter.cxx
+              rtkCudaDisplacedDetectorImageFilter.cxx
+              rtkCudaParkerShortScanImageFilter.cxx
               rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
-	      rtkCudaSplatImageFilter.cxx
-	      rtkCudaInterpolateImageFilter.cxx
+              rtkCudaSplatImageFilter.cxx
+              rtkCudaInterpolateImageFilter.cxx
+              rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
@@ -145,4 +155,3 @@ ENDIF(NOT RTK_INSTALL_NO_LIBRARIES)
 #=========================================================
 
 SET(RTK_LIBRARIES ${RTK_LIBRARIES} PARENT_SCOPE)
-

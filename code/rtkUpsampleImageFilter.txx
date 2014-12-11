@@ -39,6 +39,8 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 {
   this->SetNumberOfRequiredInputs(1);
   this->m_Order = 0;
+  this->m_OutputSize.Fill(0);
+  this->m_OutputIndex.Fill(0);
 }
 
 /**
