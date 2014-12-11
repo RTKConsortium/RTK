@@ -19,10 +19,11 @@
 #ifndef __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 #define __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 
-#include "rtkLookupTableImageFilter.h"
 #include <itkNumericTraits.h>
 #include <itkAddImageFilter.h>
 #include <itkThresholdImageFilter.h>
+
+#include "rtkLookupTableImageFilter.h"
 
 namespace rtk
 {
@@ -67,7 +68,7 @@ public:
   virtual void BeforeThreadedGenerateData();
 
 protected:
-  RTK_EXPORT LUTbasedVariableI0RawToAttenuationImageFilter();
+  LUTbasedVariableI0RawToAttenuationImageFilter();
   virtual ~LUTbasedVariableI0RawToAttenuationImageFilter() {}
 
 private:
