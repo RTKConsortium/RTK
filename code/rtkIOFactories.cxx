@@ -47,7 +47,6 @@ void RegisterIOFactories()
     if (dynamic_cast<itk::GDCMImageIOFactory *>(*it))
     {
     itk::GDCMImageIOFactory::UnRegisterFactory(*it);
-    break;
     }
   rtk::HndImageIOFactory::RegisterOneFactory();
   rtk::HisImageIOFactory::RegisterOneFactory();
