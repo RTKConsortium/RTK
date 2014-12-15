@@ -82,8 +82,7 @@ void CudaImageDataManager< ImageType >::MakeCPUBufferUpToDate()
       errid = cudaMemcpy(m_CPUBuffer, m_GPUBuffer->GetPointer(), m_BufferSize, cudaMemcpyDeviceToHost);
       CudaCheckError(errid, __FILE__, __LINE__, ITK_LOCATION);
 
-      m_Image->GetTimeStamp().Modified();
-      this->SetTimeStamp(m_Image->GetTimeStamp());
+      m_Image->Modified();
 
       m_IsCPUBufferDirty = false;
       m_IsGPUBufferDirty = false;

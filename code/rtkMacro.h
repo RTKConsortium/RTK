@@ -51,7 +51,6 @@
   cmdline_parser_##ggo_filename##_params_init(&args_params);                                               \
   args_params.print_errors = 1;                                                                            \
   args_params.check_required = 0;                                                                          \
-  args_params.initialize = 1;                                                                              \
   args_params.override = 1;                                                                                \
   args_params.initialize = 1;                                                                              \
   if(0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params) )                      \
@@ -59,15 +58,17 @@
     std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
     exit(1);                                                                                               \
     }                                                                                                      \
-  args_params.override = 0;                                                                                \
-  args_params.initialize = 0;                                                                              \
-  if (args_info.config_given)                                                                              \
+  bool bConfig = args_info.config_given;                                                                   \
+  char *configFile = args_info.config_arg;                                                                 \
+  cmdline_parser_##ggo_filename##_free(&args_info);                                                        \
+  if (bConfig)                                                                                             \
     {                                                                                                      \
-    if(0 != cmdline_parser_##ggo_filename##_config_file (args_info.config_arg, &args_info, &args_params) ) \
+    if(0 != cmdline_parser_##ggo_filename##_config_file (configFile, &args_info, &args_params) )           \
       {                                                                                                    \
       std::cerr << "Error in cmdline_parser_" #ggo_filename "_config_file" << std::endl;                   \
       exit(1);                                                                                             \
       }                                                                                                    \
+    args_params.initialize = 0;                                                                            \
     }                                                                                                      \
   args_params.check_required = 1;                                                                          \
   if(0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params) )                      \

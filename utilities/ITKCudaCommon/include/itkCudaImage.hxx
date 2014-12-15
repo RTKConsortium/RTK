@@ -98,15 +98,6 @@ void CudaImage< TPixel, VImageDimension >::Initialize()
   m_DataManager->SetTimeStamp(this->GetTimeStamp());*/
 }
 
-/** If the class is modified we marke the GPUBuffer has dirty */
-template <class TPixel, unsigned int VImageDimension>
-void CudaImage< TPixel, VImageDimension >::Modified() const
-{
-  Superclass::Modified();
-  //m_DataManager->SetCPUDirtyFlag(false); // prevent the GPU to copy to the CPU
-  //m_DataManager->SetGPUBufferDirty();
-}
-
 template <class TPixel, unsigned int VImageDimension>
 void CudaImage< TPixel, VImageDimension >::SetBufferedRegion(const RegionType & region)
 {
