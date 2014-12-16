@@ -16,24 +16,29 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkWaterCalibrationImageFilter_txx
+#define __rtkWaterCalibrationImageFilter_txx
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
 #include "rtkWaterCalibrationImageFilter.h"
-#include "rtkWaterPrecorrectionImageFilter.h"
 
 namespace rtk
 {
-WaterCalibrationImageFilter::WaterCalibrationImageFilter()
+template <class TInputImage, class  TOutputImage>
+WaterCalibrationImageFilter<TInputImage,TOutputImage>
+::WaterCalibrationImageFilter()
 {
   m_Order = 1.0f;
 }
 
-void WaterCalibrationImageFilter
+template <class TInputImage, class  TOutputImage>
+void WaterCalibrationImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData( const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
-  itk::ImageRegionConstIterator< ImageType > itIn(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator< ImageType >      itOut(this->GetOutput(), outputRegionForThread);
+  typename itk::ImageRegionConstIterator< TInputImage > itIn(this->GetInput(), outputRegionForThread);
+  typename itk::ImageRegionIterator< TInputImage >      itOut(this->GetOutput(), outputRegionForThread);
 
   itIn.GoToBegin();
   itOut.GoToBegin();
@@ -46,3 +51,5 @@ void WaterCalibrationImageFilter
     }
 }
 } // end namespace rtk
+
+#endif

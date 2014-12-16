@@ -48,74 +48,74 @@ int main(int , char** )
   imgRef->Update();
 
   OutputImageType::Pointer output = imgIn->GetOutput();
-  
-	std::cout << "\n\n****** Case 1: order 2 ******" << std::endl;
+
+  std::cout << "\n\n****** Case 1: order 2 ******" << std::endl;
 
   typedef rtk::WaterPrecorrectionImageFilter<2> WPCType2;
-	WPCType2::Pointer model2 = WPCType2::New();
-  
-	// Update median filter
-	itk::Vector<float, 2> c1;
-	c1[0]=2.0;
-	c1[1]=2.0;
-	model2->SetInput(output);
-	model2->SetCoefficients(c1);
-	model2->Update();
+  WPCType2::Pointer model2 = WPCType2::New();
 
-	CheckImageQuality<OutputImageType>(model2->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
+  // Update median filter
+  itk::Vector<float, 2> c1;
+  c1[0]=2.0;
+  c1[1]=2.0;
+  model2->SetInput(output);
+  model2->SetCoefficients(c1);
+  model2->Update();
+
+  CheckImageQuality<OutputImageType>(model2->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: order 3 ******" << std::endl;
 
   typedef rtk::WaterPrecorrectionImageFilter<3> WPCType3;
-	WPCType3::Pointer model3 = WPCType3::New();
+  WPCType3::Pointer model3 = WPCType3::New();
 
-	itk::Vector<float, 3> c2;
-	c2[0] = 0.05;
-	c2[1] = 0.3;
-	c2[2] = 2.0;
-	model3->SetInput(imgIn->GetOutput());
-	model3->SetCoefficients(c2);
-	model3->Update();
+  itk::Vector<float, 3> c2;
+  c2[0] = 0.05;
+  c2[1] = 0.3;
+  c2[2] = 2.0;
+  model3->SetInput(imgIn->GetOutput());
+  model3->SetCoefficients(c2);
+  model3->Update();
 
-	CheckImageQuality<OutputImageType>(model3->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
+  CheckImageQuality<OutputImageType>(model3->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-	std::cout << "\n\n****** Case 3: order 5 ******" << std::endl;
+  std::cout << "\n\n****** Case 3: order 5 ******" << std::endl;
 
   typedef rtk::WaterPrecorrectionImageFilter<5> WPCType5;
-	WPCType5::Pointer model5 = WPCType5::New();
+  WPCType5::Pointer model5 = WPCType5::New();
 
-	itk::Vector<float, 5> c3;
-	c3[0] = 0.0687;
-	c3[1] = 2.5;
-	c3[2] = 0.6;
-	c3[3] = -0.2;
-	c3[4] = 0.1;
-	model5->SetInput(imgIn->GetOutput());
-	model5->SetCoefficients(c3);
-	model5->Update();
+  itk::Vector<float, 5> c3;
+  c3[0] = 0.0687;
+  c3[1] = 2.5;
+  c3[2] = 0.6;
+  c3[3] = -0.2;
+  c3[4] = 0.1;
+  model5->SetInput(imgIn->GetOutput());
+  model5->SetCoefficients(c3);
+  model5->Update();
 
-	CheckImageQuality<OutputImageType>(model5->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
-	std::cout << "\n\nTest PASSED! " << std::endl;
+  CheckImageQuality<OutputImageType>(model5->GetOutput(), imgRef->GetOutput(), 1.8, 51, 1011.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
-	std::cout << "\n\n****** Calib case 1 : order 1 ******" << std::endl;
+  std::cout << "\n\n****** Calib case 1 : order 1 ******" << std::endl;
 
-  typedef rtk::WaterCalibrationImageFilter WPCalType;
-	WPCalType::Pointer mcal = WPCalType::New();
+  typedef rtk::WaterCalibrationImageFilter<OutputImageType, OutputImageType> WPCalType;
+  WPCalType::Pointer mcal = WPCalType::New();
 
-	mcal->SetInput(imgIn->GetOutput());
-	mcal->SetOrder(1.0);
-	mcal->Update();
+  mcal->SetInput(imgIn->GetOutput());
+  mcal->SetOrder(1.0);
+  mcal->Update();
 
-	std::cout << "\n\nTest PASSED! " << std::endl;
-	
-	std::cout << "\n\n****** Calib case 2 : order 4 ******" << std::endl;
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
-	mcal->SetOrder(5.0);
-	mcal->Update();
+  std::cout << "\n\n****** Calib case 2 : order 4 ******" << std::endl;
 
-	std::cout << "\n\nTest PASSED! " << std::endl;
+  mcal->SetOrder(5.0);
+  mcal->Update();
+
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
 
   return EXIT_SUCCESS;

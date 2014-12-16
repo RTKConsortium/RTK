@@ -20,7 +20,7 @@
 #define __rtkWaterCalibrationImageFilter_h
 
 #include <vector>
-#include <itkImageToImageFilter.h>
+#include <itkInPlaceImageFilter.h>
 
 #include "rtkWin32Header.h"
 
@@ -37,30 +37,31 @@ namespace rtk
  * \ingroup ImageToImageFilter
  */
 
+template <class TInputImage, class TOutputImage = TInputImage>
 class WaterCalibrationImageFilter:
-  public itk::ImageToImageFilter< itk::Image< float, 2 >, itk::Image< float, 2 > >
+  public itk::InPlaceImageFilter<TInputImage>
 {
 public:
-  typedef itk::Image< float, 2 > ImageType;
-
   /** Standard class typedefs. */
-  typedef WaterCalibrationImageFilter                     Self;
-  typedef itk::ImageToImageFilter< ImageType, ImageType > Superclass;
-  typedef itk::SmartPointer< Self >                       Pointer;
-  typedef itk::SmartPointer< const Self >                 ConstPointer;
+  typedef WaterCalibrationImageFilter                       Self;
+  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer< Self >                         Pointer;
+  typedef itk::SmartPointer< const Self >                   ConstPointer;
+  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(WaterCalibrationImageFilter, ImageToImageFilter);
+  itkTypeMacro(WaterCalibrationImageFilter, InPlaceImageFilter);
 
   /** Get / Set the Median window that are going to be used during the operation
     */
   itkGetMacro(Order, float);
   itkSetMacro(Order, float);
+
 protected:
-  RTK_EXPORT WaterCalibrationImageFilter();
+  WaterCalibrationImageFilter();
   virtual ~WaterCalibrationImageFilter() {}
 
   virtual void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
@@ -72,5 +73,9 @@ private:
   float m_Order;
 };
 } // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkWaterCalibrationImageFilter.txx"
+#endif
 
 #endif
