@@ -74,7 +74,20 @@ template< unsigned char bitShift >
 void I0EstimationProjectionFilter< bitShift >::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                                                                     ThreadIdType threadId)
 {
-  itk::ImageRegionConstIterator< InputImageType > itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionConstIterator< ImageType > itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIterator<ImageType>        itOut(this->GetOutput(), outputRegionForThread);
+
+  itIn.GoToBegin();
+  itOut.GoToBegin();
+  if (this->GetInput() != this->GetOutput()) // If not in place, copy is required
+  {
+    while (!itIn.IsAtEnd())
+    {
+      itOut.Set(itIn.Get());
+      ++itIn;
+      ++itOut;
+    }
+  }
 
   // Computation of region histogram
 
@@ -140,7 +153,7 @@ void I0EstimationProjectionFilter< bitShift >::ThreadedGenerateData(const Output
       // If Imax very close to MaxPixelValue then possible saturation
       }
     }
-  m_Mutex->Unlock();
+  m_Mutex->Unlock();  
 }
 
 template< unsigned char bitShift >
@@ -185,6 +198,8 @@ void I0EstimationProjectionFilter< bitShift >::AfterThreadedGenerateData()
 
   m_LowBound = ( lowBound << bitShift );
   m_HighBound = ( highBound << bitShift );
+
+  std::cout << m_I0 << " " << m_I0fwhm << std::endl;
 
   ++m_Np;
 
