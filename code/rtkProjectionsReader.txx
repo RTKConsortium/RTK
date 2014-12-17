@@ -132,7 +132,7 @@ void ProjectionsReader<TOutputImage>
       m_RawDataReader = reader;
 
       // Convert raw to Projections
-      typedef rtk::ImagXRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typedef rtk::ImagXRawToAttenuationImageFilter<OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;
@@ -151,7 +151,7 @@ void ProjectionsReader<TOutputImage>
       m_RawDataReader = reader;
 
       // Convert raw to Projections
-      typedef rtk::ImagXRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typedef rtk::ImagXRawToAttenuationImageFilter<OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;

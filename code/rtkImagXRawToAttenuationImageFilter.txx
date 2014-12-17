@@ -24,13 +24,13 @@
 namespace rtk
 {
 
-template<class TInputImage, class TOutputImage>
+template<class TOutputImage, unsigned char bitShift>
 void
-ImagXRawToAttenuationImageFilter<TInputImage, TOutputImage>
+ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
 ::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr =
-    const_cast< TInputImage * >( this->GetInput() );
+    const_cast< InputImageType * >(this->GetInput());
   if ( !inputPtr )
     return;
 
@@ -39,17 +39,21 @@ ImagXRawToAttenuationImageFilter<TInputImage, TOutputImage>
   m_LookupTableFilter->GetOutput()->PropagateRequestedRegion();
 }
 
-template <class TInputImage, class TOutputImage>
-ImagXRawToAttenuationImageFilter<TInputImage, TOutputImage>
+template<class TOutputImage, unsigned char bitShift>
+ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
 ::ImagXRawToAttenuationImageFilter()
 {
   m_CropFilter = CropFilterType::New();
+  m_BinningFilter = BinningFilterType::New();
   m_ScatterFilter = ScatterFilterType::New();
+  m_I0estimationFilter = I0FilterType::New();
   m_LookupTableFilter = LookupTableFilterType::New();
 
   //Permanent internal connections
-  m_ScatterFilter->SetInput( m_CropFilter->GetOutput() );
-  m_LookupTableFilter->SetInput( m_ScatterFilter->GetOutput() );
+  m_BinningFilter->SetInput( m_CropFilter->GetOutput() )
+  m_ScatterFilter->SetInput( m_BinningFilter->GetOutput() );
+  m_I0estimationFilter->SetInput( m_ScatterFilter->GetOutput() );
+  m_LookupTableFilter->SetInput( m_I0estimationFilter->GetOutput() );
 
   //Default filter parameters
   typename CropFilterType::SizeType border = m_CropFilter->GetLowerBoundaryCropSize();
@@ -58,9 +62,9 @@ ImagXRawToAttenuationImageFilter<TInputImage, TOutputImage>
   m_CropFilter->SetBoundaryCropSize(border);
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TOutputImage, unsigned char bitShift>
 void
-ImagXRawToAttenuationImageFilter<TInputImage, TOutputImage>
+ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
 ::GenerateOutputInformation()
 {
   m_CropFilter->SetInput(this->GetInput() );
@@ -71,9 +75,9 @@ ImagXRawToAttenuationImageFilter<TInputImage, TOutputImage>
   this->GetOutput()->SetLargestPossibleRegion( m_LookupTableFilter->GetOutput()->GetLargestPossibleRegion() );
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TOutputImage, unsigned char bitShift>
 void
-ImagXRawToAttenuationImageFilter<TInputImage, TOutputImage>
+ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
 ::GenerateData()
 {
   m_CropFilter->SetInput(this->GetInput() );
