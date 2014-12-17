@@ -175,12 +175,7 @@ public:
 
   /** Graft the data and information from one CudaImage to another. */
   virtual void Graft(const DataObject *data);
-  /** Whenever the image has been modified, set the Cuda Buffer to dirty */
-  virtual void Modified() const;
   
-  itkSetMacro(TimeStamp,TimeStamp);
-  itkGetMacro(TimeStamp,TimeStamp);
-
 protected:
   CudaImage();
   virtual ~CudaImage();
@@ -191,8 +186,6 @@ private:
   CudaImage(const Self&);
   void operator=(const Self&);
   
-  TimeStamp                          m_TimeStamp;
-
   typename CudaImageDataManager< CudaImage >::Pointer m_DataManager;
 };
 

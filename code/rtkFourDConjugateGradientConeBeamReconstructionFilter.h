@@ -44,16 +44,16 @@ namespace rtk
    * 4D conjugate gradient reconstruction consists in iteratively
    * minimizing the following cost function:
    *
-   * Sum_over_theta || sqrt(D) (R_theta S_theta f - p_theta) ||_2^2
+   * \f[ \sum\limits_{\alpha} \| R_\alpha S_\alpha x - p_\alpha \|_2^2 \f]
    *
    * with
-   * - f a 4D series of 3D volumes, each one being the reconstruction
+   * - \f$ x \f$ a 4D series of 3D volumes, each one being the reconstruction
    * at a given respiratory/cardiac phase
-   * - p_theta is the projection measured at angle theta
-   * - S_theta an interpolation operator which, from the 3D + time sequence f,
-   * estimates the 3D volume through which projection p_theta has been acquired
-   * - R_theta is the X-ray transform (the forward projection operator) for angle theta
-   * - D the displaced detector weighting matrix
+   * - \f$ p_{\alpha} \f$ is the projection measured at angle \f$ \alpha \f$
+   * - \f$ S_{\alpha} \f$ an interpolation operator which, from the 3D + time sequence f,
+   * estimates the 3D volume through which projection \f$ p_{\alpha} \f$ has been acquired
+   * - \f$ R_{\alpha} \f$ is the X-ray transform (the forward projection operator) for angle \f$ \alpha \f$
+   * - \f$ D \f$ the displaced detector weighting matrix
    *
    * \dot
    * digraph FourDConjugateGradientConeBeamReconstructionFilter {
