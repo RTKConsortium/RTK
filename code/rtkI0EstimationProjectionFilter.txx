@@ -160,22 +160,23 @@ template< unsigned char bitShift >
 void I0EstimationProjectionFilter< bitShift >::AfterThreadedGenerateData()
 {
   // Search for the background mode in the last quarter of the histogram
-  unsigned       startIdx = ( m_Imin + 3 * ( ( m_Imax + m_Imin ) >> 2 ) ) >> bitShift;
+
+  unsigned       startIdx = (3 * (m_Imax >> 2)) >> bitShift;
   unsigned       idx = startIdx;
   unsigned short maxId = startIdx;
   unsigned       maxVal = m_Histogram[startIdx];
 
-  while ( idx < ( m_Imax >> bitShift ) )
+  while (idx < (m_Imax >> bitShift))
+  {
+    if (m_Histogram[idx] >= maxVal)
     {
-    if ( m_Histogram[idx] >= maxVal )
-      {
       maxVal = m_Histogram[idx];
       maxId = idx;
-      }
-    ++idx;
     }
-  m_I0 = unsigned( ( maxId + 1 ) << bitShift );
-  m_I0rls = ( m_Np > 1 ) ? (unsigned short)( (float)(m_I0rls * m_Lambda) + (float)(m_I0) * ( 1. - m_Lambda ) ) : m_I0;
+    ++idx;
+  }
+  m_I0 = unsigned((maxId) << bitShift);
+  m_I0rls = (m_Np > 1) ? (unsigned short)((float)(m_I0rls * m_Lambda) + (float)(m_I0)* (1. - m_Lambda)) : m_I0;
 
   // If estimated I0 at the boundaries, either startIdx or Imax then we missed
   // smth or no background mode
@@ -199,7 +200,7 @@ void I0EstimationProjectionFilter< bitShift >::AfterThreadedGenerateData()
   m_LowBound = ( lowBound << bitShift );
   m_HighBound = ( highBound << bitShift );
 
-  std::cout << m_I0 << " " << m_I0fwhm << std::endl;
+  std::cout << m_I0 << " " << m_I0fwhm << " " << m_LowBound << " " << m_HighBound << std::endl;
 
   ++m_Np;
 
