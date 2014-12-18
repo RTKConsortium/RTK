@@ -61,9 +61,7 @@ public:
   itkTypeMacro(I0EstimationProjectionFilter, ImageToImageFilter);
 
   /** Some convenient typedefs. */
-  //typedef itk::Image< unsigned int, 3 >         OutputImageType;
   typedef itk::Image< unsigned short, 3 >       ImageType;
-  //typedef typename OutputImageType::Pointer     OutputImagePointer;
   typedef typename InputImageType::Pointer      ImagePointer;
   typedef typename InputImageType::ConstPointer ImageConstPointer;
 

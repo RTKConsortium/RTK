@@ -19,9 +19,12 @@
 #ifndef __rtkImagXRawToAttenuationImageFilter_h
 #define __rtkImagXRawToAttenuationImageFilter_h
 
-#include <itkImageToImageFilte.h>
+#include <itkImageToImageFilter.h>
 #include <itkBinShrinkImageFilter.h>
 #include <itkCropImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkPasteImageFilter.h>
+#include <rtkConstantImageSource.h>
 
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
 #include "rtkI0EstimationProjectionFilter.h"
@@ -52,7 +55,7 @@ namespace rtk
 
     /** Some convenient typedefs. */
     typedef typename itk::Image<unsigned short, TOutputImage::ImageDimension>  InputImageType;
-    typedef TOutputImage                   OutputImageType;
+    typedef TOutputImage                                       OutputImageType;
 
     /** Standard New method. */
     itkNewMacro(Self);
@@ -63,9 +66,6 @@ namespace rtk
     ImagXRawToAttenuationImageFilter();
     ~ImagXRawToAttenuationImageFilter(){
     }
-
-    /** Apply changes to the input image requested region. */
-    virtual void GenerateInputRequestedRegion();
 
     void GenerateOutputInformation();
 
@@ -78,18 +78,29 @@ namespace rtk
     ImagXRawToAttenuationImageFilter(const Self&);
     void operator=(const Self&);
 
+    typedef itk::ExtractImageFilter<InputImageType, InputImageType>                    ExtractFilterType;
     typedef itk::CropImageFilter<InputImageType, InputImageType>                       CropFilterType;
     typedef itk::BinShrinkImageFilter<InputImageType, InputImageType>                  BinningFilterType;
     typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
     typedef rtk::I0EstimationProjectionFilter<bitShift>                                I0FilterType;
     typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,
                                                                OutputImageType>        LookupTableFilterType;
+    typedef rtk::ConstantImageSource<OutputImageType>                                  ConstantImageSourceType;
+    typedef itk::PasteImageFilter<OutputImageType, OutputImageType>                    PasteFilterType;
 
+    typename ExtractFilterType::Pointer     m_ExtractFilter;
     typename CropFilterType::Pointer        m_CropFilter;
     typename BinningFilterType::Pointer     m_BinningFilter;
     typename ScatterFilterType::Pointer     m_ScatterFilter;
     typename I0FilterType::Pointer          m_I0estimationFilter;
     typename LookupTableFilterType::Pointer m_LookupTableFilter;
+    typename PasteFilterType::Pointer       m_PasteFilter;
+    typename ConstantImageSourceType::Pointer m_ConstantSource;
+
+    /** Extraction regions for extract filter */
+    typename InputImageType::RegionType m_ExtractRegion;
+    typename InputImageType::RegionType m_PasteRegion;
+
   }; // end of class
 
 } // end namespace rtk

@@ -199,7 +199,7 @@ void I0EstimationProjectionFilter< bitShift >::AfterThreadedGenerateData()
 
   m_LowBound = ( lowBound << bitShift );
   m_HighBound = ( highBound << bitShift );
-
+  
   ++m_Np;
 
   if ( m_SaveHistograms )
