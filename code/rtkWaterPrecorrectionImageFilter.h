@@ -20,7 +20,7 @@
 #define __rtkWaterPrecorrectionImageFilter_h
 
 #include <vector>
-#include <itkImageToImageFilter.h>
+#include <itkInPlaceImageFilter.h>
 
 #include "rtkConfiguration.h"
 
@@ -36,20 +36,20 @@ namespace rtk
  * \ingroup ImageToImageFilter
  */
 
-template< unsigned int modelOrder = 2>
+template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_EXPORT WaterPrecorrectionImageFilter:
-  public         itk::ImageToImageFilter< itk::Image< float, 2 >, itk::Image< float, 2 > >
+    public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  typedef itk::Image< float, 2 > ImageType;
-
   /** Standard class typedefs. */
-  typedef WaterPrecorrectionImageFilter                   Self;
-  typedef itk::ImageToImageFilter< ImageType, ImageType > Superclass;
-  typedef itk::SmartPointer< Self >                       Pointer;
-  typedef itk::SmartPointer< const Self >                 ConstPointer;
+  typedef WaterPrecorrectionImageFilter                     Self;
+  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer< Self >                         Pointer;
+  typedef itk::SmartPointer< const Self >                   ConstPointer;
 
-  typedef itk::Vector< float, modelOrder > VectorType;
+  /** Convenient typedefs. */
+  typedef typename TOutputImage::RegionType OutputImageRegionType;
+  typedef std::vector< double >             VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -60,7 +60,15 @@ public:
   /** Get / Set the Median window that are going to be used during the operation
     */
   itkGetMacro(Coefficients, VectorType);
-  itkSetMacro(Coefficients, VectorType);
+  virtual void SetCoefficients (const VectorType _arg)
+    {
+    if ( this->m_Coefficients != _arg )
+      {
+      this->m_Coefficients = _arg;
+      this->Modified();
+      }
+    }
+
 protected:
   WaterPrecorrectionImageFilter();
   virtual ~WaterPrecorrectionImageFilter() {}
