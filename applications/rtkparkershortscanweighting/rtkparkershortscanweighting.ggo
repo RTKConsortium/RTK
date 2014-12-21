@@ -8,8 +8,3 @@ option "output"     o "Output file name"                                        
 option "hardware"   - "Hardware used for computation"                               values="cpu","cuda" no   default="cpu"
 option "divisions"  d "Streaming option: number of stream divisions"                int                 no   default="1"
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

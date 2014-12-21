@@ -5,13 +5,7 @@ option "verbose"  v "Verbose execution"                                         
 option "config"   - "Config file"                                               string    no
 option "output"   o "Output filename - not implemented"                         string    no
 option "debug"    d "Debug mode: output CSV file name with I0 estimates"        string    no
-
-section "Projections"
-option "path"      p "Path containing projections"                               string  yes
-option "regexp"    r "Regular expression to select projection files in path"     string  yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag    off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int     no   default="0"
-option "range"     - "Range of projection to analyse min,step,max"               int     multiple no
+option "range"    - "Range of projection to analyse min,step,max"               int     multiple no
 
 section "Algorithm parameters"
 option "lambda"    l "RLS estimate coefficient"                                  double no default="0.8"

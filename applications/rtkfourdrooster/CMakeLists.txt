@@ -1,4 +1,4 @@
-WRAP_GGO(rtkfourdrooster_GGO_C rtkfourdrooster.ggo)
+WRAP_GGO(rtkfourdrooster_GGO_C rtkfourdrooster.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo)
 ADD_EXECUTABLE(rtkfourdrooster rtkfourdrooster.cxx ${rtkfourdrooster_GGO_C})
 TARGET_LINK_LIBRARIES(rtkfourdrooster RTK)
 
