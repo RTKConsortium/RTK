@@ -109,6 +109,20 @@ void CheckImageQuality(typename TImage::Pointer recon,
 
 void CheckGeometries(GeometryType *g1, GeometryType *g2)
 {
+//  // It is often necessary to write the geometries and look at them
+//  // to understand why a given test fails. This portion of code
+//  // does that. It should be left here but commented out, since
+//  // it is only useful in specific debugging tasks
+//  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
+//    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
+//  xmlWriter->SetFilename("g1.xml");
+//  xmlWriter->SetObject(g1);
+//  xmlWriter->WriteFile();
+//  xmlWriter->SetFilename("g2.xml");
+//  xmlWriter->SetObject(g2);
+//  xmlWriter->WriteFile();
+//  // End of results writing
+
   const double e           = 1e-10;
   const unsigned int nproj = g1->GetGantryAngles().size();
   if(g2->GetGantryAngles().size() != nproj)
