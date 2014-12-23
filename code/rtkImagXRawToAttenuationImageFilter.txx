@@ -115,13 +115,13 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_CropFilter->Update();
 
   for (int frame = 0; frame < this->GetInput()->GetLargestPossibleRegion().GetSize(Dimension - 1); frame++)
-  {
-    if (frame > 0) // After the first frame, use the output of paste as input
     {
+    if (frame > 0) // After the first frame, use the output of paste as input
+      {
       pimg = m_PasteFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_PasteFilter->SetDestinationImage(pimg);
-    }
+      }
 
     m_ExtractRegion.SetIndex(Dimension - 1, frame);
     m_PasteRegion.SetIndex(Dimension - 1, frame);
@@ -139,7 +139,7 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
     m_PasteFilter->SetDestinationIndex(m_PasteRegion.GetIndex());
 
     m_PasteFilter->Update();
-  }
+    }
   this->GraftOutput(m_PasteFilter->GetOutput());
 }
 

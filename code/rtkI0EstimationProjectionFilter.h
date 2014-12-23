@@ -45,14 +45,14 @@ namespace rtk
 
 template< unsigned char bitShift >
 class ITK_EXPORT I0EstimationProjectionFilter:
-  public         itk::InPlaceImageFilter< itk::Image< unsigned short, 3 >>
+  public         itk::InPlaceImageFilter<itk::Image< unsigned short, 3> >
 {
 public:
   /** Standard class typedefs. */
-  typedef I0EstimationProjectionFilter< bitShift >                  Self;
-  typedef itk::InPlaceImageFilter< itk::Image< unsigned short, 3 >> Superclass;
-  typedef itk::SmartPointer< Self >                                 Pointer;
-  typedef itk::SmartPointer< const Self >                           ConstPointer;
+  typedef I0EstimationProjectionFilter<bitShift>                   Self;
+  typedef itk::InPlaceImageFilter<itk::Image< unsigned short, 3> > Superclass;
+  typedef itk::SmartPointer<Self>                                  Pointer;
+  typedef itk::SmartPointer<const Self>                            ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

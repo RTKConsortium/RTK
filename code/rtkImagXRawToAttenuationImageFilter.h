@@ -55,7 +55,7 @@ namespace rtk
 
     /** Some convenient typedefs. */
     typedef typename itk::Image<unsigned short, TOutputImage::ImageDimension>  InputImageType;
-    typedef TOutputImage                                       OutputImageType;
+    typedef TOutputImage                                                       OutputImageType;
 
     /** Standard New method. */
     itkNewMacro(Self);
@@ -88,13 +88,13 @@ namespace rtk
     typedef rtk::ConstantImageSource<OutputImageType>                                  ConstantImageSourceType;
     typedef itk::PasteImageFilter<OutputImageType, OutputImageType>                    PasteFilterType;
 
-    typename ExtractFilterType::Pointer     m_ExtractFilter;
-    typename CropFilterType::Pointer        m_CropFilter;
-    typename BinningFilterType::Pointer     m_BinningFilter;
-    typename ScatterFilterType::Pointer     m_ScatterFilter;
-    typename I0FilterType::Pointer          m_I0estimationFilter;
-    typename LookupTableFilterType::Pointer m_LookupTableFilter;
-    typename PasteFilterType::Pointer       m_PasteFilter;
+    typename ExtractFilterType::Pointer       m_ExtractFilter;
+    typename CropFilterType::Pointer          m_CropFilter;
+    typename BinningFilterType::Pointer       m_BinningFilter;
+    typename ScatterFilterType::Pointer       m_ScatterFilter;
+    typename I0FilterType::Pointer            m_I0estimationFilter;
+    typename LookupTableFilterType::Pointer   m_LookupTableFilter;
+    typename PasteFilterType::Pointer         m_PasteFilter;
     typename ConstantImageSourceType::Pointer m_ConstantSource;
 
     /** Extraction regions for extract filter */

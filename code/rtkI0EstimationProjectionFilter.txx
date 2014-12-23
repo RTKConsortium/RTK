@@ -80,14 +80,14 @@ void I0EstimationProjectionFilter< bitShift >::ThreadedGenerateData(const Output
   itIn.GoToBegin();
   itOut.GoToBegin();
   if (this->GetInput() != this->GetOutput()) // If not in place, copy is required
-  {
-    while (!itIn.IsAtEnd())
     {
+    while (!itIn.IsAtEnd())
+      {
       itOut.Set(itIn.Get());
       ++itIn;
       ++itOut;
+      }
     }
-  }
 
   // Computation of region histogram
 
@@ -153,7 +153,7 @@ void I0EstimationProjectionFilter< bitShift >::ThreadedGenerateData(const Output
       // If Imax very close to MaxPixelValue then possible saturation
       }
     }
-  m_Mutex->Unlock();  
+  m_Mutex->Unlock();
 }
 
 template< unsigned char bitShift >
@@ -199,7 +199,7 @@ void I0EstimationProjectionFilter< bitShift >::AfterThreadedGenerateData()
 
   m_LowBound = ( lowBound << bitShift );
   m_HighBound = ( highBound << bitShift );
-  
+
   ++m_Np;
 
   if ( m_SaveHistograms )
