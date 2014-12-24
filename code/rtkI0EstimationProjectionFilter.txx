@@ -25,8 +25,9 @@
 
 namespace rtk
 {
-template< unsigned char bitShift >
-I0EstimationProjectionFilter< bitShift >::I0EstimationProjectionFilter()
+template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
+::I0EstimationProjectionFilter()
 {
   m_NBins = (unsigned int)( 1 << ( 16 - bitShift ) );
 
@@ -51,8 +52,9 @@ I0EstimationProjectionFilter< bitShift >::I0EstimationProjectionFilter()
   m_Mutex = itk::MutexLock::New();
 }
 
-template< unsigned char bitShift >
-void I0EstimationProjectionFilter< bitShift >::BeforeThreadedGenerateData()
+template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
+::BeforeThreadedGenerateData()
 {
   std::vector< unsigned >::iterator it = m_Histogram.begin();
 
@@ -70,12 +72,13 @@ void I0EstimationProjectionFilter< bitShift >::BeforeThreadedGenerateData()
     }
 }
 
-template< unsigned char bitShift >
-void I0EstimationProjectionFilter< bitShift >::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                                                                    ThreadIdType threadId)
+template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
+::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                       ThreadIdType threadId)
 {
-  itk::ImageRegionConstIterator< ImageType > itIn(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator<ImageType>        itOut(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIterator<InputImageType>      itOut(this->GetOutput(), outputRegionForThread);
 
   itIn.GoToBegin();
   itOut.GoToBegin();
@@ -156,8 +159,9 @@ void I0EstimationProjectionFilter< bitShift >::ThreadedGenerateData(const Output
   m_Mutex->Unlock();
 }
 
-template< unsigned char bitShift >
-void I0EstimationProjectionFilter< bitShift >::AfterThreadedGenerateData()
+template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
+::AfterThreadedGenerateData()
 {
   // Search for the background mode in the last quarter of the histogram
 

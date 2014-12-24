@@ -78,11 +78,11 @@ namespace rtk
     ImagXRawToAttenuationImageFilter(const Self&);
     void operator=(const Self&);
 
-    typedef itk::ExtractImageFilter<InputImageType, InputImageType>                    ExtractFilterType;
-    typedef itk::CropImageFilter<InputImageType, InputImageType>                       CropFilterType;
-    typedef itk::BinShrinkImageFilter<InputImageType, InputImageType>                  BinningFilterType;
-    typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
-    typedef rtk::I0EstimationProjectionFilter<bitShift>                                I0FilterType;
+    typedef itk::ExtractImageFilter<InputImageType, InputImageType>                     ExtractFilterType;
+    typedef itk::CropImageFilter<InputImageType, InputImageType>                        CropFilterType;
+    typedef itk::BinShrinkImageFilter<InputImageType, InputImageType>                   BinningFilterType;
+    typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
+    typedef rtk::I0EstimationProjectionFilter<InputImageType, InputImageType, bitShift> I0FilterType;
     typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,
                                                                OutputImageType>        LookupTableFilterType;
     typedef rtk::ConstantImageSource<OutputImageType>                                  ConstantImageSourceType;
