@@ -163,7 +163,9 @@ namespace std
 %include "srtkImageFileWriter.h"
 %include "srtkImageReaderBase.h"
 %include "srtkImageSeriesReader.h"
+%include "srtkProjectionsReader.h"
 %include "srtkImageFileReader.h"
+%include "srtkThreeDCircularProjectionGeometryXMLFileReader.h"
 %include "srtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 
 // Basic Filters
