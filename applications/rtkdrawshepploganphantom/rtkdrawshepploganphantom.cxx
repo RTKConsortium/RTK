@@ -42,18 +42,25 @@ int main(int argc, char * argv[])
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawshepploganphantom>(constantImageSource, args_info);
 
-
   // Create a reference object (in this case a 3D phantom reference).
   typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  DSLType::VectorType offset(0.);
+  if(args_info.offset_given)
+    {
+    offset[0] = args_info.offset_arg[0];
+    offset[1] = args_info.offset_arg[1];
+    offset[2] = args_info.offset_arg[2];
+    }
   DSLType::Pointer dsl = DSLType::New();
   dsl->SetPhantomScale( args_info.phantomscale_arg );
   dsl->SetInput( constantImageSource->GetOutput() );
+  dsl->SetOriginOffset(offset);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // Add noise
   OutputImageType::Pointer output = dsl->GetOutput();
   if(args_info.noise_given)
-  {
+    {
     typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
     NIFType::Pointer noisy=NIFType::New();
     noisy->SetInput( output );
@@ -61,7 +68,7 @@ int main(int argc, char * argv[])
     noisy->SetStandardDeviation( args_info.noise_arg );
     TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() );
     output = noisy->GetOutput();
-  }
+    }
 
   // Write
   typedef itk::ImageFileWriter< OutputImageType > WriterType;
