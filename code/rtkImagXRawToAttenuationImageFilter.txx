@@ -114,7 +114,7 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   
   m_CropFilter->Update();
 
-  for (int frame = 0; frame < this->GetInput()->GetLargestPossibleRegion().GetSize(Dimension - 1); frame++)
+  for (unsigned int frame = 0; frame < this->GetInput()->GetLargestPossibleRegion().GetSize(Dimension - 1); frame++)
     {
     if (frame > 0) // After the first frame, use the output of paste as input
       {

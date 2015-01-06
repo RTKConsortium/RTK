@@ -75,7 +75,7 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 template< class TInputImage, class  TOutputImage, unsigned char bitShift >
 void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       ThreadIdType threadId)
+                       ThreadIdType itkNotUsed(threadId))
 {
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
   itk::ImageRegionIterator<InputImageType>      itOut(this->GetOutput(), outputRegionForThread);
