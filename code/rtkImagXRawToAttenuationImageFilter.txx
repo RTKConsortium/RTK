@@ -34,6 +34,7 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_ScatterFilter = ScatterFilterType::New();
   m_I0estimationFilter = I0FilterType::New();
   m_LookupTableFilter = LookupTableFilterType::New();
+  m_WpcFilter = WpcType::New();
   m_PasteFilter = PasteFilterType::New();
   m_ConstantSource = ConstantImageSourceType::New();
 
@@ -44,10 +45,11 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_ScatterFilter->SetInput(m_BinningFilter->GetOutput());
   m_I0estimationFilter->SetInput(m_ScatterFilter->GetOutput());
   m_LookupTableFilter->SetInput( m_I0estimationFilter->GetOutput() );
+  m_WpcFilter->SetInput(m_LookupTableFilter->GetOutput());
 
   // Set permanent connections
   m_PasteFilter->SetDestinationImage(m_ConstantSource->GetOutput());
-  m_PasteFilter->SetSourceImage(m_LookupTableFilter->GetOutput());
+  m_PasteFilter->SetSourceImage(m_WpcFilter->GetOutput());
 
   //Default filter parameters
   typename CropFilterType::SizeType border = m_CropFilter->GetLowerBoundaryCropSize();
@@ -58,6 +60,9 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_BinningFilter->SetShrinkFactor(0, 2);
   m_BinningFilter->SetShrinkFactor(1, 2);
   m_BinningFilter->SetShrinkFactor(2, 1);
+
+  std::vector< double > coef = { 0.0, 1.0, 0.0, 0.0};
+  m_WpcFilter->SetCoefficients(coef);
 }
 
 template<class TOutputImage, unsigned char bitShift>

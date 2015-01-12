@@ -29,6 +29,7 @@
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
 #include "rtkI0EstimationProjectionFilter.h"
 #include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
+#include "rtkWaterPrecorrectionImageFilter.h"
 
 namespace rtk
 {
@@ -85,6 +86,7 @@ namespace rtk
     typedef rtk::I0EstimationProjectionFilter<InputImageType, InputImageType, bitShift> I0FilterType;
     typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,
                                                                OutputImageType>        LookupTableFilterType;
+    typedef rtk::WaterPrecorrectionImageFilter<OutputImageType, OutputImageType>       WpcType;
     typedef rtk::ConstantImageSource<OutputImageType>                                  ConstantImageSourceType;
     typedef itk::PasteImageFilter<OutputImageType, OutputImageType>                    PasteFilterType;
 
@@ -94,6 +96,7 @@ namespace rtk
     typename ScatterFilterType::Pointer       m_ScatterFilter;
     typename I0FilterType::Pointer            m_I0estimationFilter;
     typename LookupTableFilterType::Pointer   m_LookupTableFilter;
+    typename WpcType::Pointer                 m_WpcFilter;
     typename PasteFilterType::Pointer         m_PasteFilter;
     typename ConstantImageSourceType::Pointer m_ConstantSource;
 
