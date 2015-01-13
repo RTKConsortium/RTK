@@ -28,8 +28,8 @@ template<class TOutputImage, unsigned char bitShift>
 ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
 ::ImagXRawToAttenuationImageFilter()
 {
-  m_CropFilter = CropFilterType::New();
   m_ExtractFilter = ExtractFilterType::New();
+  m_CropFilter = CropFilterType::New();
   m_BinningFilter = BinningFilterType::New();
   m_ScatterFilter = ScatterFilterType::New();
   m_I0estimationFilter = I0FilterType::New();
@@ -39,9 +39,9 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_ConstantSource = ConstantImageSourceType::New();
 
   //Permanent internal connections
-  m_ExtractFilter->SetInput(m_CropFilter->GetOutput());
-
-  m_BinningFilter->SetInput(m_ExtractFilter->GetOutput());
+  m_ExtractFilter->SetInput(this->GetInput());
+  m_CropFilter->SetInput(m_ExtractFilter->GetOutput());
+  m_BinningFilter->SetInput(m_CropFilter->GetOutput());
   m_ScatterFilter->SetInput(m_BinningFilter->GetOutput());
   m_I0estimationFilter->SetInput(m_ScatterFilter->GetOutput());
   m_LookupTableFilter->SetInput( m_I0estimationFilter->GetOutput() );
@@ -52,17 +52,20 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_PasteFilter->SetSourceImage(m_WpcFilter->GetOutput());
 
   //Default filter parameters
-  typename CropFilterType::SizeType border = m_CropFilter->GetLowerBoundaryCropSize();
-  border[0] = 4;
-  border[1] = 4;
-  m_CropFilter->SetBoundaryCropSize(border);
+  m_LowerBoundaryCropSize[0] = 0;
+  m_LowerBoundaryCropSize[1] = 0;
+  m_UpperBoundaryCropSize[0] = 0;
+  m_UpperBoundaryCropSize[1] = 0;
 
-  m_BinningFilter->SetShrinkFactor(0, 2);
-  m_BinningFilter->SetShrinkFactor(1, 2);
-  m_BinningFilter->SetShrinkFactor(2, 1);
+  m_BinningKernelSize.push_back(1);
+  m_BinningKernelSize.push_back(1);
+  m_BinningKernelSize.push_back(1); // Must stay at 1!
+  
+  m_ScatterToPrimaryRatio = 0.0;
+  m_AirThreshold = 10000.;         // BAD!
 
-  std::vector< double > coef = { 0.0, 1.0, 0.0, 0.0};
-  m_WpcFilter->SetCoefficients(coef);
+  m_WpcCoefficients.push_back(0.0);
+  m_WpcCoefficients.push_back(1.0);
 }
 
 template<class TOutputImage, unsigned char bitShift>
@@ -71,27 +74,33 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
 ::GenerateOutputInformation()
 {
   int Dimension = InputImageType::ImageDimension;
-
-  m_CropFilter->SetInput(this->GetInput());
-  m_CropFilter->UpdateOutputInformation();
-
+  
   // Set extraction regions and indices
-  m_ExtractRegion = m_CropFilter->GetOutput()->GetLargestPossibleRegion();
+  m_ExtractFilter->SetInput(this->GetInput());
+  m_ExtractRegion = this->GetInput()->GetLargestPossibleRegion();
   m_ExtractRegion.SetSize(Dimension - 1, 1);
   m_ExtractRegion.SetIndex(Dimension - 1, 0);
-
   m_ExtractFilter->SetExtractionRegion(m_ExtractRegion);
   m_ExtractFilter->UpdateOutputInformation();
   
+  m_CropFilter->SetInput(m_ExtractFilter->GetOutput());
+  m_CropFilter->SetUpperBoundaryCropSize(m_UpperBoundaryCropSize);
+  m_CropFilter->SetLowerBoundaryCropSize(m_LowerBoundaryCropSize);
+  m_CropFilter->UpdateOutputInformation();
+
+  m_BinningFilter->SetShrinkFactor(0, m_BinningKernelSize[0]);
+  m_BinningFilter->SetShrinkFactor(1, m_BinningKernelSize[1]);
+  m_BinningFilter->SetShrinkFactor(2, 1);
+  
   // Initialize the source
-  m_LookupTableFilter->UpdateOutputInformation();
-  m_ConstantSource->SetInformationFromImage(m_LookupTableFilter->GetOutput());
-  typename OutputImageType::SizeType size = m_LookupTableFilter->GetOutput()->GetLargestPossibleRegion().GetSize();
-  size[OutputImageType::ImageDimension - 1] = m_CropFilter->GetOutput()->GetLargestPossibleRegion().GetSize(OutputImageType::ImageDimension-1);
+  m_WpcFilter->UpdateOutputInformation();
+  m_ConstantSource->SetInformationFromImage(m_WpcFilter->GetOutput());
+  typename OutputImageType::SizeType size = m_WpcFilter->GetOutput()->GetLargestPossibleRegion().GetSize();
+  size[OutputImageType::ImageDimension - 1] = this->GetInput()->GetLargestPossibleRegion().GetSize(OutputImageType::ImageDimension - 1);
   m_ConstantSource->SetSize(size);
 
   // Set extraction regions and indices
-  m_PasteRegion = m_LookupTableFilter->GetOutput()->GetLargestPossibleRegion();
+  m_PasteRegion = m_WpcFilter->GetOutput()->GetLargestPossibleRegion();
   m_PasteRegion.SetSize(Dimension - 1, 1);
   m_PasteRegion.SetIndex(Dimension - 1, 0);
   
@@ -116,8 +125,12 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
 
   // Declare an image pointer to disconnect the output of paste
   typename OutputImageType::Pointer pimg;
-  
-  m_CropFilter->Update();
+    
+//  m_ScatterFilter->SetAirThreshold(m_AirThreshold);
+//  m_ScatterFilter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
+  m_WpcFilter->SetCoefficients(m_WpcCoefficients);
+
+  m_ExtractFilter->Update();
 
   for (unsigned int frame = 0; frame < this->GetInput()->GetLargestPossibleRegion().GetSize(Dimension - 1); frame++)
     {
@@ -137,7 +150,6 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
     m_I0estimationFilter->UpdateLargestPossibleRegion();
  
     m_LookupTableFilter->SetI0(m_I0estimationFilter->GetI0());
-
     m_LookupTableFilter->UpdateLargestPossibleRegion();
     
     m_PasteFilter->SetSourceRegion(m_LookupTableFilter->GetOutput()->GetLargestPossibleRegion());

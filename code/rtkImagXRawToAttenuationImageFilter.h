@@ -31,13 +31,17 @@
 #include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
 #include "rtkWaterPrecorrectionImageFilter.h"
 
+#include <vector>
+
+using namespace std;
+
 namespace rtk
 {
 
   /** \class ImagXRawToAttenuationImageFilter
   * \brief Convert raw ImagX data to attenuation images
   *
-  * \author Simon Rit
+  * \author Simon Rit, S. Brousmiche
   *
   * \ingroup ImageToImageFilter
   */
@@ -56,13 +60,59 @@ namespace rtk
 
     /** Some convenient typedefs. */
     typedef typename itk::Image<unsigned short, TOutputImage::ImageDimension>  InputImageType;
+    typedef typename InputImageType::SizeType                                  InputImageSizeType;
     typedef TOutputImage                                                       OutputImageType;
 
+    typedef std::vector< unsigned int >       BinParamType;
+    typedef std::vector< double >             WpcVectorType;
+        
     /** Standard New method. */
     itkNewMacro(Self);
 
     /** Runtime information support. */
     itkTypeMacro(ImagXRawToAttenuationImageFilter, itk::ImageToImageFilter);
+
+    /** Set the cropping sizes for the upper and lower boundaries. */
+    itkSetMacro(UpperBoundaryCropSize, InputImageSizeType);
+    itkGetMacro(UpperBoundaryCropSize, InputImageSizeType);
+    itkSetMacro(LowerBoundaryCropSize, InputImageSizeType);
+    itkGetMacro(LowerBoundaryCropSize, InputImageSizeType);
+
+    /** Set the binning kernel size. */
+    itkGetMacro(BinningKernelSize, BinParamType);
+    virtual void SetBinningKernelSize(const std::vector<unsigned int> binfactor) 
+    {
+      if (this->m_BinningKernelSize != binfactor)
+      {
+        this->m_BinningKernelSize = binfactor;
+        this->Modified();
+      }
+    }
+
+    /** Set the scatter correction parameters. */
+    itkGetMacro(AirThreshold, double);
+    itkGetMacro(ScatterToPrimaryRatio, double);
+    void SetScatterCorrectionParameters(const double airThreshold, const double scatterToPrimaryRatio) 
+    {
+      if ((this->m_AirThreshold != airThreshold) && (this->m_ScatterToPrimaryRatio != scatterToPrimaryRatio))
+      {
+        this->m_AirThreshold = airThreshold;
+        this->m_ScatterToPrimaryRatio = scatterToPrimaryRatio;
+        this->Modified();
+      }
+    }
+
+    /** Get / Set the Median window that are going to be used during the operation. */
+    itkGetMacro(WpcCoefficients, WpcVectorType);
+    virtual void SetWpcCoefficients(const WpcVectorType _arg)
+    {
+      if (this->m_WpcCoefficients != _arg)
+      {
+        this->m_WpcCoefficients = _arg;
+        this->Modified();
+      }
+    }
+    
   protected:
     ImagXRawToAttenuationImageFilter();
     ~ImagXRawToAttenuationImageFilter(){
@@ -104,6 +154,20 @@ namespace rtk
     typename InputImageType::RegionType m_ExtractRegion;
     typename InputImageType::RegionType m_PasteRegion;
 
+    /** Crop filter parameters */
+    InputImageSizeType m_LowerBoundaryCropSize;
+    InputImageSizeType m_UpperBoundaryCropSize;
+
+    /** Binning filter parameters */
+    BinParamType m_BinningKernelSize;
+
+    /** Scatter correction parameters */
+    double m_AirThreshold;
+    double m_ScatterToPrimaryRatio;
+
+    /** Water pre-correction parameters */
+    WpcVectorType m_WpcCoefficients;
+    
   }; // end of class
 
 } // end namespace rtk
