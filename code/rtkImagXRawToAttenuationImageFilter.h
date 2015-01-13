@@ -89,6 +89,13 @@ namespace rtk
       }
     }
 
+    /** Get / Set the I0 estimation parameters. */
+    itkSetMacro(ExpectedI0, unsigned short);
+    itkGetMacro(ExpectedI0, unsigned short);
+    itkSetMacro(ForceExpectedValue, bool);
+    itkGetConstMacro(ForceExpectedValue, bool);
+    itkBooleanMacro(ForceExpectedValue);
+
     /** Set the scatter correction parameters. */
     itkGetMacro(RelativeAirThreshold, double);
     itkGetMacro(ScatterToPrimaryRatio, double);
@@ -102,7 +109,7 @@ namespace rtk
       }
     }
 
-    /** Get / Set the Median window that are going to be used during the operation. */
+    /** Get / Set the water precorrection parameters. */
     itkGetMacro(WpcCoefficients, WpcVectorType);
     virtual void SetWpcCoefficients(const WpcVectorType _arg)
     {
@@ -160,6 +167,10 @@ namespace rtk
 
     /** Binning filter parameters */
     BinParamType m_BinningKernelSize;
+
+    /** I0 estimation parameters */
+    unsigned short m_ExpectedI0;
+    bool m_ForceExpectedValue;       // No reestimation of I0
 
     /** Scatter correction parameters */
     double m_RelativeAirThreshold;

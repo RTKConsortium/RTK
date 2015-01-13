@@ -61,6 +61,9 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_BinningKernelSize.push_back(1);
   m_BinningKernelSize.push_back(1); // Must stay at 1!
   
+  m_ForceExpectedValue = false;
+  m_ExpectedI0 = 65535;
+
   m_ScatterToPrimaryRatio = 0.0;
   m_RelativeAirThreshold = 1.;  
 
@@ -147,12 +150,16 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
     m_ExtractFilter->UpdateLargestPossibleRegion();
    
     m_I0estimationFilter->UpdateLargestPossibleRegion();
-    double I0 = m_I0estimationFilter->GetI0();
 
+    double I0 = m_I0estimationFilter->GetI0();
+    if (m_ForceExpectedValue) {
+      I0 = m_ExpectedI0;
+    }
+    
     double airThreshold = m_RelativeAirThreshold * I0;
     m_ScatterFilter->SetAirThreshold(airThreshold);
     m_ScatterFilter->UpdateLargestPossibleRegion();
- 
+
     m_LookupTableFilter->SetI0(I0);
     m_LookupTableFilter->UpdateLargestPossibleRegion();
     
