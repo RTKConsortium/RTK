@@ -90,13 +90,13 @@ namespace rtk
     }
 
     /** Set the scatter correction parameters. */
-    itkGetMacro(AirThreshold, double);
+    itkGetMacro(RelativeAirThreshold, double);
     itkGetMacro(ScatterToPrimaryRatio, double);
-    void SetScatterCorrectionParameters(const double airThreshold, const double scatterToPrimaryRatio) 
+    void SetScatterCorrectionParameters(const double relativeAirThreshold, const double scatterToPrimaryRatio)
     {
-      if ((this->m_AirThreshold != airThreshold) && (this->m_ScatterToPrimaryRatio != scatterToPrimaryRatio))
+      if ((this->m_RelativeAirThreshold != relativeAirThreshold) && (this->m_ScatterToPrimaryRatio != scatterToPrimaryRatio))
       {
-        this->m_AirThreshold = airThreshold;
+        this->m_RelativeAirThreshold = relativeAirThreshold;
         this->m_ScatterToPrimaryRatio = scatterToPrimaryRatio;
         this->Modified();
       }
@@ -162,7 +162,7 @@ namespace rtk
     BinParamType m_BinningKernelSize;
 
     /** Scatter correction parameters */
-    double m_AirThreshold;
+    double m_RelativeAirThreshold;
     double m_ScatterToPrimaryRatio;
 
     /** Water pre-correction parameters */

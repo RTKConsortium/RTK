@@ -31,8 +31,8 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_ExtractFilter = ExtractFilterType::New();
   m_CropFilter = CropFilterType::New();
   m_BinningFilter = BinningFilterType::New();
-  m_ScatterFilter = ScatterFilterType::New();
   m_I0estimationFilter = I0FilterType::New();
+  m_ScatterFilter = ScatterFilterType::New();
   m_LookupTableFilter = LookupTableFilterType::New();
   m_WpcFilter = WpcType::New();
   m_PasteFilter = PasteFilterType::New();
@@ -42,9 +42,9 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_ExtractFilter->SetInput(this->GetInput());
   m_CropFilter->SetInput(m_ExtractFilter->GetOutput());
   m_BinningFilter->SetInput(m_CropFilter->GetOutput());
+  m_I0estimationFilter->SetInput(m_BinningFilter->GetOutput());
   m_ScatterFilter->SetInput(m_BinningFilter->GetOutput());
-  m_I0estimationFilter->SetInput(m_ScatterFilter->GetOutput());
-  m_LookupTableFilter->SetInput( m_I0estimationFilter->GetOutput() );
+  m_LookupTableFilter->SetInput(m_I0estimationFilter->GetOutput());
   m_WpcFilter->SetInput(m_LookupTableFilter->GetOutput());
 
   // Set permanent connections
@@ -62,7 +62,7 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_BinningKernelSize.push_back(1); // Must stay at 1!
   
   m_ScatterToPrimaryRatio = 0.0;
-  m_AirThreshold = 10000.;         // BAD!
+  m_RelativeAirThreshold = 1.;  
 
   m_WpcCoefficients.push_back(0.0);
   m_WpcCoefficients.push_back(1.0);
@@ -126,8 +126,7 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   // Declare an image pointer to disconnect the output of paste
   typename OutputImageType::Pointer pimg;
     
-//  m_ScatterFilter->SetAirThreshold(m_AirThreshold);
-//  m_ScatterFilter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
+  m_ScatterFilter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
   m_WpcFilter->SetCoefficients(m_WpcCoefficients);
 
   m_ExtractFilter->Update();
@@ -148,8 +147,13 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
     m_ExtractFilter->UpdateLargestPossibleRegion();
    
     m_I0estimationFilter->UpdateLargestPossibleRegion();
+    double I0 = m_I0estimationFilter->GetI0();
+
+    double airThreshold = m_RelativeAirThreshold * I0;
+    m_ScatterFilter->SetAirThreshold(airThreshold);
+    m_ScatterFilter->UpdateLargestPossibleRegion();
  
-    m_LookupTableFilter->SetI0(m_I0estimationFilter->GetI0());
+    m_LookupTableFilter->SetI0(I0);
     m_LookupTableFilter->UpdateLargestPossibleRegion();
     
     m_PasteFilter->SetSourceRegion(m_LookupTableFilter->GetOutput()->GetLargestPossibleRegion());
