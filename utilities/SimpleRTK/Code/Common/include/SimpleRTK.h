@@ -40,8 +40,10 @@
 // IO classes
 #include "srtkImageFileReader.h"
 #include "srtkImageSeriesReader.h"
+#include "srtkProjectionsReader.h"
 #include "srtkImageFileWriter.h"
 #include "srtkImportImageFilter.h"
+#include "srtkThreeDCircularProjectionGeometryXMLFileReader.h"
 #include "srtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 
 #include "srtkHashImageFilter.h"

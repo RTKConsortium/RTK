@@ -1,0 +1,6 @@
+section "Input projections"
+option "path"      p "Path containing projections"                               string                       yes
+option "regexp"    r "Regular expression to select projection files in path"     string                       yes
+option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
+option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
+

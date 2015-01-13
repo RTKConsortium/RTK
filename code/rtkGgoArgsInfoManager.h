@@ -23,10 +23,10 @@ template < class TArgsInfo, class TCleanupFunction = void (*)( TArgsInfo* ) >
 class args_info_manager
 {
   public:
-    args_info_manager( TArgsInfo & args_info, TCleanupFunction cleanup_function)
+    args_info_manager( TArgsInfo & args_info, TCleanupFunction cf)
       {
       this->args_info_pointer = &args_info;
-      this->cleanup_function = cleanup_function;
+      this->cleanup_function = cf;
       }
     ~args_info_manager()
       {

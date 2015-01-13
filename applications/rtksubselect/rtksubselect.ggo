@@ -12,8 +12,3 @@ option "last"      l "Last projection index"                                    
 option "step"      s "Step between projections"                                  int          no  default="1"
 option "list"      - "List of projection indices to keep (0-based)"              int multiple no
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

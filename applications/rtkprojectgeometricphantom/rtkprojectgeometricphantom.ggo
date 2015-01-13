@@ -7,9 +7,3 @@ option "geometry"    g  "XML geometry file name"                                
 option "output"      o "Output projections file name"                              string   yes
 option "phantomfile" - "Configuration parameteres for the phantom"                 string no
 
-section "Projections parameters"
-option "origin"    - "Origin (default=centered)" double multiple no
-option "dimension" - "Dimension"                 int    multiple no  default="256"
-option "spacing"   - "Spacing"                   double multiple no  default="1"
-option "direction" - "Direction"                 double multiple no
-
