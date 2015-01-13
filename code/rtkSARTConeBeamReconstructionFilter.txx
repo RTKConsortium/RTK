@@ -42,16 +42,18 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
   m_SubtractFilter = SubtractFilterType::New();
+  m_AddFilter = AddFilterType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   m_GatingWeightsFilter = GatingWeightsFilterType::New();
+  m_ConstantVolumeSource = ConstantImageSourceType::New();
 
   // Create the filters required for correct weighting of the difference
   // projection
   m_ExtractFilterRayBox = ExtractFilterType::New();
   m_RayBoxFilter = RayBoxIntersectionFilterType::New();
   m_DivideFilter = DivideFilterType::New();
-  m_ConstantImageSource = ConstantImageSourceType::New();
+  m_ConstantProjectionStackSource = ConstantImageSourceType::New();
 
   // Create the filter that enforces positivity
   m_ThresholdFilter = ThresholdFilterType::New();
@@ -65,7 +67,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_MultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
   m_MultiplyFilter->SetInput2( m_SubtractFilter->GetOutput() );
 
-  m_ExtractFilterRayBox->SetInput(m_ConstantImageSource->GetOutput());
+  m_ExtractFilterRayBox->SetInput(m_ConstantProjectionStackSource->GetOutput());
   m_RayBoxFilter->SetInput(m_ExtractFilterRayBox->GetOutput());
   m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
   m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
@@ -75,6 +77,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
   m_ExtractFilterRayBox->SetDirectionCollapseToSubmatrix();
   m_IsGated = false;
+  m_NumberOfProjectionsPerSubset = 1; //Default is the SART behavior
 }
 
 template<class TInputImage, class TOutputImage>
@@ -148,9 +151,16 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
   // Links with the forward and back projection filters should be set here
   // and not in the constructor, as these filters are set at runtime
-  m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
+  m_ConstantVolumeSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(0)));
+  m_ConstantVolumeSource->SetConstant(0);
+  m_ConstantVolumeSource->UpdateOutputInformation();
+
+  m_BackProjectionFilter->SetInput ( 0, m_ConstantVolumeSource->GetOutput() );
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput() );
   m_BackProjectionFilter->SetTranspose(false);
+
+  m_AddFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+  m_AddFilter->SetInput2(this->GetInput(0));
 
   m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
   m_ForwardProjectionFilter->SetInput( 1, this->GetInput(0) );
@@ -174,9 +184,10 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
     }
 
-  m_ConstantImageSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
-  m_ConstantImageSource->SetConstant(0);
-  m_ConstantImageSource->UpdateOutputInformation();
+  m_ConstantProjectionStackSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
+  m_ConstantProjectionStackSource->SetConstant(0);
+  m_ConstantProjectionStackSource->UpdateOutputInformation();
+
 
   // Create the m_RayBoxFiltersectionImageFilter
   m_RayBoxFilter->SetGeometry(this->GetGeometry().GetPointer());
@@ -196,7 +207,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     {
     m_ThresholdFilter->SetOutsideValue(0);
     m_ThresholdFilter->ThresholdBelow(0);
-    m_ThresholdFilter->SetInput(m_BackProjectionFilter->GetOutput() );
+    m_ThresholdFilter->SetInput(m_AddFilter->GetOutput() );
 
     // Update output information
     m_ThresholdFilter->UpdateOutputInformation();
@@ -208,11 +219,11 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   else
     {
     // Update output information
-    m_BackProjectionFilter->UpdateOutputInformation();
-    this->GetOutput()->SetOrigin( m_BackProjectionFilter->GetOutput()->GetOrigin() );
-    this->GetOutput()->SetSpacing( m_BackProjectionFilter->GetOutput()->GetSpacing() );
-    this->GetOutput()->SetDirection( m_BackProjectionFilter->GetOutput()->GetDirection() );
-    this->GetOutput()->SetLargestPossibleRegion( m_BackProjectionFilter->GetOutput()->GetLargestPossibleRegion() );
+    m_AddFilter->UpdateOutputInformation();
+    this->GetOutput()->SetOrigin( m_AddFilter->GetOutput()->GetOrigin() );
+    this->GetOutput()->SetSpacing( m_AddFilter->GetOutput()->GetSpacing() );
+    this->GetOutput()->SetDirection( m_AddFilter->GetOutput()->GetDirection() );
+    this->GetOutput()->SetLargestPossibleRegion( m_AddFilter->GetOutput()->GetLargestPossibleRegion() );
     }
 
 }
@@ -238,10 +249,10 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     projOrder[i] = i;
   std::random_shuffle( projOrder.begin(), projOrder.end() );
 
-  m_MultiplyFilter->SetInput1( (const float)m_Lambda  );
+  m_MultiplyFilter->SetInput1( (const float) m_Lambda/(double)m_NumberOfProjectionsPerSubset  );
   
   // Create the zero projection stack used as input by RayBoxIntersectionFilter
-  m_ConstantImageSource->Update();
+  m_ConstantProjectionStackSource->Update();
 
   // Declare the image used in the main loop
   typename TInputImage::Pointer pimg;
@@ -249,22 +260,44 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   // For each iteration, go over each projection
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
     {
+    unsigned int projectionsProcessedInSubset = 0;
+
     for(unsigned int i = 0; i < nProj; i++)
       {
-      // After the first bp update, we need to use its output as input.
-      if(iter+i)
+      // When we reach the number of projections per subset:
+      // - plug the output of the pipeline back into the Forward projection filter
+      // - set the input of the Back projection filter to zero
+      // - reset the projectionsProcessedInSubset to zero
+      if (projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset)
         {
         if (m_EnforcePositivity)
-          {
           pimg = m_ThresholdFilter->GetOutput();
+        else
+          pimg = m_AddFilter->GetOutput();
+
+        pimg->DisconnectPipeline();
+
+        m_ForwardProjectionFilter->SetInput(1, pimg );
+        m_AddFilter->SetInput2(pimg);
+        m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+
+        projectionsProcessedInSubset = 0;
+        }
+
+      // Otherwise, just plug the output of the back projection filter
+      // back as its input
+      else
+        {
+        if (i)
+          {
+          pimg = m_BackProjectionFilter->GetOutput();
+          pimg->DisconnectPipeline();
+          m_BackProjectionFilter->SetInput(0, pimg);
           }
         else
           {
-          pimg = m_BackProjectionFilter->GetOutput();
+          m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
           }
-        pimg->DisconnectPipeline();
-        m_BackProjectionFilter->SetInput( pimg );
-        m_ForwardProjectionFilter->SetInput(1, pimg );
         }
 
       // Change projection subset
@@ -326,12 +359,23 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
       m_BackProjectionFilter->Update();
       m_BackProjectionProbe.Stop();
 
-      if (m_EnforcePositivity)
+      projectionsProcessedInSubset++;
+      if ((projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset) || (i == nProj - 1))
         {
-        m_ThresholdProbe.Start();
-        m_ThresholdFilter->Update();
-        m_ThresholdProbe.Stop();
+        m_AddFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+
+        m_AddProbe.Start();
+        m_AddFilter->Update();
+        m_AddProbe.Start();
+
+        if (m_EnforcePositivity)
+          {
+          m_ThresholdProbe.Start();
+          m_ThresholdFilter->Update();
+          m_ThresholdProbe.Stop();
+          }
         }
+
       }
     }
   if (m_EnforcePositivity)
@@ -340,7 +384,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     }
   else
     {
-    this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+    this->GraftOutput( m_AddFilter->GetOutput() );
     }
 }
 
@@ -370,6 +414,8 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
      << ' ' << m_DisplacedDetectorProbe.GetUnit() << std::endl;
   os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
      << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
+  os << "  Volume update: " << m_AddProbe.GetTotal()
+     << ' ' << m_AddProbe.GetUnit() << std::endl;
   if (m_EnforcePositivity)
     {  
     os << "  Positivity enforcement: " << m_ThresholdProbe.GetTotal()

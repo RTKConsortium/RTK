@@ -112,6 +112,7 @@ int main(int argc, char * argv[])
     sart->SetGeometry( geometryReader->GetOutputObject() );
     }
   sart->SetNumberOfIterations( args_info.niterations_arg );
+  sart->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
   sart->SetLambda( args_info.lambda_arg );
 
   itk::TimeProbe totalTimeProbe;

@@ -1,14 +1,15 @@
 package "sart"
 version "Reconstruct a 3D volume from a sequence of projections with Simulatenous Algebraic Reconstruction Technique [Andersen, 1984]."
 
-option "verbose"     v "Verbose execution"                                     flag   off
-option "config"      - "Config file"                                           string no
-option "geometry"    g "XML geometry file name"                                string yes
-option "output"      o "Output file name"                                      string yes
-option "niterations" n "Number of iterations"                                  int    no   default="5"
-option "time"        t "Records elapsed time during the process"               flag   off
-option "lambda"      l "Convergence factor"                                    double no   default="0.3"
-option "positivity"  - "Enforces positivity during the reconstruction"         flag   off
+option "verbose"        v "Verbose execution"                                     flag   off
+option "config"         - "Config file"                                           string no
+option "geometry"       g "XML geometry file name"                                string yes
+option "output"         o "Output file name"                                      string yes
+option "niterations"    n "Number of iterations"                                  int    no   default="5"
+option "time"           t "Records elapsed time during the process"               flag   off
+option "lambda"         l "Convergence factor"                                    double no   default="0.3"
+option "positivity"     - "Enforces positivity during the reconstruction"         flag   off
+option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (1 for SART, several for OSSART, all for SIRT)" int no default="1"
 
 section "Projections"
 option "path"      p "Path containing projections"                               string                       yes
