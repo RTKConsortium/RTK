@@ -39,7 +39,17 @@ namespace rtk
 {
 
   /** \class ImagXRawToAttenuationImageFilter
-  * \brief Convert raw ImagX data to attenuation images
+  * \brief Convert raw (uint16) projections into attenuation images using a classical conversion scheme
+  *
+  * The conversion scheme is composed of:
+  *    - Cropping: to remove inconsistent row/columns of the detector or reduce the reconstructed field-of-view
+  *    - Shrink with accumulation: to increase the signal-to-noise ratio and reduce the reconstuction pipeline load
+  *    - I0 estimation: evaluate the air level for each new projection, I0 can also be forced to an expected (calibrated) value
+  *                     With table or patient occlusion, it is recommended to use a calibrated I0
+  *    - Scatter correction: to remove a constant scatter contribution computed from an intensity threshold (to detect the air regions on
+  *                     the projection) and a scatter-to-primary ratio which is object and acquisition dependent
+  *    - Raw-to-attenuation conversion: from a lookup table, updated with the current I0 value
+  *    - Water precorrection: to correct for the beam-hardening under the water-equivalent assumption
   *
   * \author Simon Rit, S. Brousmiche
   *
@@ -72,13 +82,13 @@ namespace rtk
     /** Runtime information support. */
     itkTypeMacro(ImagXRawToAttenuationImageFilter, itk::ImageToImageFilter);
 
-    /** Set the cropping sizes for the upper and lower boundaries. */
+    /** Get / Set the cropping sizes for the upper and lower boundaries. */
     itkSetMacro(UpperBoundaryCropSize, InputImageSizeType);
     itkGetMacro(UpperBoundaryCropSize, InputImageSizeType);
     itkSetMacro(LowerBoundaryCropSize, InputImageSizeType);
     itkGetMacro(LowerBoundaryCropSize, InputImageSizeType);
 
-    /** Set the binning kernel size. */
+    /** Get / Set the binning kernel size. */
     itkGetMacro(BinningKernelSize, BinParamType);
     virtual void SetBinningKernelSize(const std::vector<unsigned int> binfactor) 
     {
@@ -96,7 +106,7 @@ namespace rtk
     itkGetConstMacro(ForceExpectedValue, bool);
     itkBooleanMacro(ForceExpectedValue);
 
-    /** Set the scatter correction parameters. */
+    /** Get / Set the scatter correction parameters. */
     itkGetMacro(RelativeAirThreshold, double);
     itkGetMacro(ScatterToPrimaryRatio, double);
     void SetScatterCorrectionParameters(const double relativeAirThreshold, const double scatterToPrimaryRatio)
@@ -139,8 +149,8 @@ namespace rtk
     typedef itk::ExtractImageFilter<InputImageType, InputImageType>                     ExtractFilterType;
     typedef itk::CropImageFilter<InputImageType, InputImageType>                        CropFilterType;
     typedef itk::BinShrinkImageFilter<InputImageType, InputImageType>                   BinningFilterType;
-    typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
     typedef rtk::I0EstimationProjectionFilter<InputImageType, InputImageType, bitShift> I0FilterType;
+    typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
     typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,
                                                                OutputImageType>        LookupTableFilterType;
     typedef rtk::WaterPrecorrectionImageFilter<OutputImageType, OutputImageType>       WpcType;
@@ -150,8 +160,8 @@ namespace rtk
     typename ExtractFilterType::Pointer       m_ExtractFilter;
     typename CropFilterType::Pointer          m_CropFilter;
     typename BinningFilterType::Pointer       m_BinningFilter;
-    typename ScatterFilterType::Pointer       m_ScatterFilter;
     typename I0FilterType::Pointer            m_I0estimationFilter;
+    typename ScatterFilterType::Pointer       m_ScatterFilter;
     typename LookupTableFilterType::Pointer   m_LookupTableFilter;
     typename WpcType::Pointer                 m_WpcFilter;
     typename PasteFilterType::Pointer         m_PasteFilter;
