@@ -54,8 +54,10 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   //Default filter parameters
   m_LowerBoundaryCropSize[0] = 0;
   m_LowerBoundaryCropSize[1] = 0;
+  m_LowerBoundaryCropSize[2] = 0;
   m_UpperBoundaryCropSize[0] = 0;
   m_UpperBoundaryCropSize[1] = 0;
+  m_UpperBoundaryCropSize[2] = 0;
 
   m_BinningKernelSize.push_back(1);
   m_BinningKernelSize.push_back(1);
