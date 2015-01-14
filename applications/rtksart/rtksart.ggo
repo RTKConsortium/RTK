@@ -10,6 +10,7 @@ option "time"        t "Records elapsed time during the process"               f
 option "lambda"      l "Convergence factor"                                    double no   default="0.3"
 option "positivity"  - "Enforces positivity during the reconstruction"         flag   off
 option "input"     i "Input volume"              string          no
+option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (1 for SART, several for OSSART, all for SIRT)" int no default="1"
 
 section "Phase gating"
 option "phases"       - "File containing the phase of each projection"                                              string              no
