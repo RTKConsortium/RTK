@@ -223,6 +223,10 @@ ADD_EXECUTABLE(rtkdivergencetest rtkdivergencetest.cxx)
 TARGET_LINK_LIBRARIES(rtkdivergencetest ${RTK_LIBRARIES})
 ADD_TEST(rtkdivergencetest ${EXECUTABLE_OUTPUT_PATH}/rtkdivergencetest)
 
+ADD_EXECUTABLE(rtklagcorrectiontest rtklagcorrectiontest.cxx)
+TARGET_LINK_LIBRARIES(rtklagcorrectiontest ${RTK_LIBRARIES})
+ADD_TEST(rtklagcorrectiontest ${EXECUTABLE_OUTPUT_PATH}/rtklagcorrectiontest)
+
 ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
