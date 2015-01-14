@@ -79,6 +79,14 @@ IF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
   ADD_TEST(rtkrampfilternofftwcudatest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfilternofftwcudatest)
 ENDIF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
 
+ADD_EXECUTABLE(rtkscatterglarefiltertest rtkscatterglarefiltertest.cxx)
+TARGET_LINK_LIBRARIES(rtkscatterglarefiltertest ${RTK_LIBRARIES})
+ADD_TEST(rtkscatterglarefiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkscatterglarefiltertest)
+
+ADD_EXECUTABLE(rtkscatterglarefilternofftwtest rtkscatterglarefiltertest.cxx)
+SET_TARGET_PROPERTIES(rtkscatterglarefilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
+TARGET_LINK_LIBRARIES(rtkscatterglarefilternofftwtest ${RTK_LIBRARIES})
+
 ADD_EXECUTABLE(rtkRaycastInterpolatorForwardProjectionTest rtkRaycastInterpolatorForwardProjectionTest.cxx)
 TARGET_LINK_LIBRARIES(rtkRaycastInterpolatorForwardProjectionTest ${RTK_LIBRARIES})
 ADD_TEST(rtkRaycastInterpolatorForwardProjectionTest ${EXECUTABLE_OUTPUT_PATH}/rtkRaycastInterpolatorForwardProjectionTest)
