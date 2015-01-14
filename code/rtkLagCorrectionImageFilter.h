@@ -54,75 +54,79 @@ namespace rtk
 */
 
 template< typename TImage, unsigned ModelOrder >
-class ITK_EXPORT LagCorrectionImageFilter : public itk::InPlaceImageFilter< TImage, TImage>
+class RTK_EXPORT LagCorrectionImageFilter : public itk::InPlaceImageFilter < TImage, TImage >
 {
 public:
-   
+
   /** Standard class typedefs. */
   typedef LagCorrectionImageFilter                   Self;
-	typedef itk::InPlaceImageFilter< TImage, TImage >  Superclass;
+  typedef itk::InPlaceImageFilter< TImage, TImage >  Superclass;
   typedef itk::SmartPointer< Self >                  Pointer;
-	typedef itk::SmartPointer< const Self >            ConstPointer;
-	
+  typedef itk::SmartPointer< const Self >            ConstPointer;
+
   /** Method for creation through the object factory. */
-	itkNewMacro(Self)
+  itkNewMacro(Self)
 
- /** Run-time type information (and related methods). */
-	itkTypeMacro(LagCorrectionImageFilter, ImageToImageFilter)
-		
-	typedef typename TImage::RegionType                ImageRegionType;
-	typedef typename TImage::SizeType                  ImageSizeType;
-	typedef typename TImage::PixelType                 PixelType;
-	typedef itk::Vector<float, ModelOrder>             VectorType;
-	typedef itk::RealTimeClock                         itkClockType;
-	typedef itk::RealTimeStamp::TimeRepresentationType itkTimeType;
-	typedef itk::Image<VectorType, 3>                  StateType;
-	typedef typename StateType::Pointer                StateTypePtr;
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(LagCorrectionImageFilter, ImageToImageFilter)
 
-	/** Get and Set the model parameters A*/
-	itkGetMacro(A, VectorType)
-	itkSetMacro(A, VectorType)
+  typedef typename TImage::RegionType                  ImageRegionType;
+  typedef typename TImage::SizeType                    ImageSizeType;
+  typedef typename TImage::PixelType                   PixelType;
+  typedef typename itk::Vector<float, ModelOrder>      VectorType;
+  typedef typename itk::Image<VectorType, 3>           StateType;
+  typedef typename StateType::Pointer                  StateTypePtr;
+  typedef typename std::vector<float>                  FloatVectorType;
 
-	/** Get and Set the model parameters A*/
-	itkGetMacro(B, VectorType)
-	itkSetMacro(B, VectorType)
+  /** Get / Set the model parameters A and B*/
+  itkGetMacro(A, VectorType)
+    itkGetMacro(B, VectorType)
+    virtual void SetCoefficients(const VectorType A, const VectorType B)
+  {
+    if ((this->m_A != A) && (this->m_B != B))
+    {
+      if ((A.Size() == ModelOrder) && (B.Size() == ModelOrder)) {}
+      this->m_A = A;
+      this->m_B = B;
+      this->Modified();
+      m_NewParamJustReceived = true;
+    }
+  }
 
-	void Initialize();
-
-	void ResetInternalState();
+  /** Get / Set the average (over each the projection) correction values */
+  itkGetMacro(AvgCorrections, FloatVectorType);
 
 protected:
   LagCorrectionImageFilter();
   virtual ~LagCorrectionImageFilter(){}
-  
-	virtual void BeforeThreadedGenerateData();
 
-	virtual void ThreadedGenerateData(const ImageRegionType & outputRegionForThread, ThreadIdType threadId);
-	
-	virtual void AfterThreadedGenerateData();
-	
-	VectorType m_A;           // a_n coefficients
-	VectorType m_B;           // b coefficients
-	VectorType m_expma;       // exp(-a)
-	VectorType m_bexpma;      // b exp(-a)
+  virtual void BeforeThreadedGenerateData();
+
+  virtual void ThreadedGenerateData(const ImageRegionType & outputRegionForThread, ThreadIdType threadId);
+
+  virtual void AfterThreadedGenerateData();
+
+  VectorType m_A;           // a_n coefficients
+  VectorType m_B;           // b coefficients
+  VectorType m_expma;       // exp(-a)
+  VectorType m_bexpma;      // b exp(-a)
 
 private:
   LagCorrectionImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
-	
-	ImageSizeType m_Size;
-	unsigned int m_M;         // Full size
-	StateTypePtr m_S;         // State variable
 
-	itk::SimpleFastMutexLock m_mutex;
+  unsigned int m_M;         // Projection size
+  StateTypePtr m_S;         // State variable
 
-	unsigned int m_ImageId;     // Image number
-	unsigned int m_nThreads;
+  itk::SimpleFastMutexLock m_mutex;
 
-	float m_thAvgCorr;
-	std::vector<float> m_avgCorrection; 
-	
-	itkClockType::Pointer m_clock;
+  unsigned int m_ImageId;     // Image counter (from parameters reception)
+  unsigned int m_nThreads;
+  bool m_NewParamJustReceived;
+  bool m_StatusMatrixAllocated;
+
+  float m_thAvgCorr;
+  FloatVectorType m_AvgCorrections;
 };
 
 } //namespace RTK
