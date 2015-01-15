@@ -22,11 +22,10 @@
 
 #include <math.h>
 #include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
+#include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageFileWriter.h>
 
 #include "rtkScatterGlareCorrectionImageFilter.h"
-#include <itkComplexToModulusImageFilter.h>
 
 #include "rtkTestConfiguration.h"
 
@@ -113,7 +112,7 @@ int main(int , char** )
     TRY_AND_EXIT_ON_ITK_EXCEPTION( SFilter->Update() )
 
     ImageType::Pointer outputI = SFilter->GetOutput();
-    itk::ImageRegionIteratorWithIndex<ImageType> itO(outputI, outputI->GetLargestPossibleRegion());
+    itk::ImageRegionConstIterator<ImageType> itO(outputI, outputI->GetLargestPossibleRegion());
     itO.GoToBegin();
     float sum = 0.0f;
     while (!itO.IsAtEnd()) {
