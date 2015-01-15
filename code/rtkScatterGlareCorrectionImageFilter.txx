@@ -24,6 +24,8 @@
 #include <itkRealToHalfHermitianForwardFFTImageFilter.h>
 #include <itkHalfHermitianToRealInverseFFTImageFilter.h>
 
+#include <itkComplexToModulusImageFilter.h>
+
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 
@@ -33,8 +35,8 @@ namespace rtk
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::ScatterGlareCorrectionImageFilter() :
-  m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_HannCutFrequency(0.),
-  m_HannCutFrequencyY(0.), m_BackupNumberOfThreads(1)
+  m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_BackupNumberOfThreads(1),
+  m_imageId(0)
 {
 #if defined(USE_FFTWD)
   if(typeid(TFFTPrecision).name() == typeid(double).name() )
@@ -65,11 +67,8 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   inputRegion.SetSize(0, this->GetOutput()->GetLargestPossibleRegion().GetSize(0) );
 
   // Also enlarge along dim 1 if hann is set in that direction
-  if(m_HannCutFrequencyY>0.)
-    {
-    inputRegion.SetIndex(1, this->GetOutput()->GetLargestPossibleRegion().GetIndex(1) );
-    inputRegion.SetSize(1, this->GetOutput()->GetLargestPossibleRegion().GetSize(1) );
-    }
+  inputRegion.SetIndex(1, this->GetOutput()->GetLargestPossibleRegion().GetIndex(1) );
+  inputRegion.SetSize(1, this->GetOutput()->GetLargestPossibleRegion().GetSize(1) );
   input->SetRequestedRegion( inputRegion );
 }
 
@@ -91,8 +90,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // If the following condition is met, multi-threading is left to the (i)fft
   // filter. Otherwise, one splits the image and a separate fft is performed
   // per thread.
-  if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 &&
-     this->GetHannCutFrequencyY() != 0.)
+  if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1)
     {
     m_BackupNumberOfThreads = this->GetNumberOfThreads();
     this->SetNumberOfThreads(1);
@@ -115,8 +113,7 @@ void
 ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::AfterThreadedGenerateData()
 {
-  if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 &&
-     this->GetHannCutFrequencyY() != 0.)
+  if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1)
     this->SetNumberOfThreads(m_BackupNumberOfThreads);
 }
 
@@ -125,44 +122,43 @@ void
 ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
-  // Pad image region enlarged along X
-  RegionType enlargedRegionX = outputRegionForThread;
-  enlargedRegionX.SetIndex(0, this->GetInput()->GetRequestedRegion().GetIndex(0) );
-  enlargedRegionX.SetSize(0, this->GetInput()->GetRequestedRegion().GetSize(0) );
-  enlargedRegionX.SetIndex(1, this->GetInput()->GetRequestedRegion().GetIndex(1) );
-  enlargedRegionX.SetSize(1, this->GetInput()->GetRequestedRegion().GetSize(1) );
-  FFTInputImagePointer paddedImage;
-  paddedImage = PadInputImageRegion(enlargedRegionX);
+  // Pad image region enlarged
+  RegionType enlargedRegion = outputRegionForThread;
+  enlargedRegion.SetIndex(0, this->GetInput()->GetRequestedRegion().GetIndex(0));
+  enlargedRegion.SetSize(0, this->GetInput()->GetRequestedRegion().GetSize(0));
+  enlargedRegion.SetIndex(1, this->GetInput()->GetRequestedRegion().GetIndex(1));
+  enlargedRegion.SetSize(1, this->GetInput()->GetRequestedRegion().GetSize(1));
+  SpacingType spacing = this->GetInput()->GetSpacing();
+  FFTInputImagePointer paddedImage = PadInputImageRegion(enlargedRegion, spacing);
 
   // FFT padded image
-  typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType > FFTType;
-  typename FFTType::Pointer fftI = FFTType::New();
+  ForwardFFTType::Pointer fftI = ForwardFFTType::New();
   fftI->SetInput( paddedImage );
   fftI->SetNumberOfThreads( m_BackupNumberOfThreads );
   fftI->Update();
 
-  // Get FFT ramp kernel
-  typename FFTOutputImageType::SizeType s;
-  s = paddedImage->GetLargestPossibleRegion().GetSize();
-  FFTOutputImagePointer fftK = this->GetFFTRampKernel(s[0], s[1]);
+  // Create the deconvolution kernel in spatial frequencies
+  if (!m_imageId) {
+    typename FFTOutputImageType::SizeType size = paddedImage->GetLargestPossibleRegion().GetSize();
+    m_KernelFFT = this->GetFFTDeconvolutionKernel(size, spacing);
+  }
 
   //Multiply line-by-line
-  itk::ImageRegionIterator<typename FFTType::OutputImageType> itI(fftI->GetOutput(),
+  itk::ImageRegionIterator<typename ForwardFFTType::OutputImageType> itI(fftI->GetOutput(),
                                                               fftI->GetOutput()->GetLargestPossibleRegion() );
-  itk::ImageRegionConstIterator<FFTOutputImageType> itK(fftK, fftK->GetLargestPossibleRegion() );
+  itk::ImageRegionConstIterator<FFTOutputImageType> itK(m_KernelFFT, m_KernelFFT->GetLargestPossibleRegion());
   itI.GoToBegin();
   while(!itI.IsAtEnd() ) {
     itK.GoToBegin();
     while(!itK.IsAtEnd() ) {
-      itI.Set(itI.Get() * itK.Get() );
+      itI.Set(itI.Get() / itK.Get() );
       ++itI;
       ++itK;
       }
     }
 
   //Inverse FFT image
-  typedef itk::HalfHermitianToRealInverseFFTImageFilter< typename FFTType::OutputImageType > IFFTType;
-  typename IFFTType::Pointer ifft = IFFTType::New();
+  InverseFFTType::Pointer ifft = InverseFFTType::New();
   ifft->SetInput( fftI->GetOutput() );
   ifft->SetNumberOfThreads( m_BackupNumberOfThreads );
   ifft->SetReleaseDataFlag( true );
@@ -179,19 +175,22 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     ++itS;
     ++itD;
     }
+
+  ++m_imageId;
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 typename ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTInputImagePointer
 ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::PadInputImageRegion(const RegionType &inputRegion)
+::PadInputImageRegion(const RegionType &inputRegion, const SpacingType &spacing)
 {
   UpdateTruncationMirrorWeights();
   RegionType paddedRegion = GetPaddedImageRegion(inputRegion);
 
-  // Create padded image (spacing and origin do not matter)
+  // Create padded image (origin do not matter)
   FFTInputImagePointer paddedImage = FFTInputImageType::New();
   paddedImage->SetRegions(paddedRegion);
+  paddedImage->SetSpacing(spacing);
   paddedImage->Allocate();
   paddedImage->FillBuffer(0);
 
@@ -258,19 +257,16 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   while( GreatestPrimeFactor( xPaddedSize ) > m_GreatestPrimeFactor )
     xPaddedSize++;
   paddedRegion.SetSize(0, xPaddedSize);
-  long zeroext = ( (long)xPaddedSize - (long)inputRegion.GetSize(0) ) / 2;
-  paddedRegion.SetIndex(0, inputRegion.GetIndex(0) - zeroext);
+  long zeroextx = ( (long)xPaddedSize - (long)inputRegion.GetSize(0) ) / 2;
+  paddedRegion.SetIndex(0, inputRegion.GetIndex(0) - zeroextx);
 
-  // Set y padding. Padding along Y is only required if
-  // - there is some windowing in the Y direction
-  // - the DFT requires the size to be the product of given prime factors
-  typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
-  if(this->GetHannCutFrequencyY()>0.)
-    yPaddedSize *= 2;
+  // Set y padding
+  typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1) * 2;
   while( GreatestPrimeFactor( yPaddedSize ) > m_GreatestPrimeFactor )
     yPaddedSize++;
   paddedRegion.SetSize(1, yPaddedSize);
-  paddedRegion.SetIndex(1, inputRegion.GetIndex(1) );
+  long zeroexty = ((long)yPaddedSize - (long)inputRegion.GetSize(1)) / 2;
+  paddedRegion.SetIndex(1, inputRegion.GetIndex(1) - zeroexty);
 
   return paddedRegion;
 }
@@ -290,7 +286,6 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::IsPrime( int n ) const
 {
   int last = (int)vcl_sqrt( double(n) );
-
   for( int x=2; x<=last; x++ )
     if( n%x == 0 )
       return false;
@@ -303,7 +298,6 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GreatestPrimeFactor( int n ) const
 {
   int v = 2;
-
   while( v <= n )
     if( n%v == 0 && IsPrime( v ) )
       n /= v;
@@ -315,108 +309,56 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 typename ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTOutputImagePointer
 ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::GetFFTRampKernel(const int width, const int height)
+::GetFFTDeconvolutionKernel(const SizeType size, const SpacingType spacing)
 {
-  // Allocate kernel
-  SizeType size;
-  size.Fill(1);
-  size[0] = width;
-  FFTInputImagePointer kernel = FFTInputImageType::New();
-  kernel->SetRegions( size );
-  kernel->Allocate();
-  kernel->FillBuffer(0.);
+  m_Kernel = FFTInputImageType::New();
+  m_Kernel->SetRegions(size);
+  m_Kernel->Allocate();
 
-  // Compute kernel in space domain (see Kak & Slaney, chapter 3 equation 61
-  // page 72) although spacing is not squared according to equation 69 page 75
-  double spacing = this->GetInput()->GetSpacing()[0];
-  IndexType ix,jx;
-  ix.Fill(0);
-  jx.Fill(0);
-  kernel->SetPixel(ix, 1./(4.*spacing) );
-  for(ix[0]=1, jx[0]=size[0]-1; ix[0] < typename IndexType::IndexValueType(size[0]/2); ix[0] += 2, jx[0] -= 2)
-    {
-    double v = ix[0] * vnl_math::pi;
-    v = -1. / (v * v * spacing);
-    kernel->SetPixel(ix, v);
-    kernel->SetPixel(jx, v);
+  float a3 = m_Coefficients[0]; 
+  float b3 = m_Coefficients[1]; 
+  float b3sq = b3*b3;
+  float dx = spacing[0];
+  float dy = spacing[1];
+
+  itk::ImageRegionIteratorWithIndex<FFTInputImageType> itK(m_Kernel, m_Kernel->GetLargestPossibleRegion());
+  itK.GoToBegin();
+  typename FFTInputImageType::IndexType idx;
+  while ( !itK.IsAtEnd() ) {
+    idx = itK.GetIndex();
+    float xx = (float)idx[0] - (float)size[0]/ 2.0f;
+    float yy = (float)idx[1] - (float)size[1]/ 2.0f;
+    float rr2 = (xx*xx + yy*yy);
+
+    float g = (a3*dx*dy / (2.0f * vnl_math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);    
+    if ((2 * idx[0] == size[0]) && ((2 * idx[1] == size[1]))) {
+      g += (1 - a3);
     }
+    itK.Set(g);
+    ++itK;
+  }
 
   // FFT kernel
-  typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType > FFTType;
-  typename FFTType::Pointer fftK = FFTType::New();
-  fftK->SetInput( kernel );
-  fftK->SetNumberOfThreads( 1 );
+  ForwardFFTType::Pointer fftK = ForwardFFTType::New();
+  fftK->SetInput(m_Kernel);
+  fftK->SetNumberOfThreads(1);
   fftK->Update();
-
-  // Windowing (if enabled)
-  typedef itk::ImageRegionIteratorWithIndex<typename FFTType::OutputImageType> IteratorType;
-  IteratorType itK(fftK->GetOutput(), fftK->GetOutput()->GetLargestPossibleRegion() );
-
-  unsigned int n = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
-
-  itK.GoToBegin();
-  const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency() ) );
-  for(unsigned int i=0; i<ncut; i++, ++itK)
-    itK.Set( itK.Get() * TFFTPrecision(0.5*(1+vcl_cos(vnl_math::pi*i/ncut))));
- 
-  for(; !itK.IsAtEnd(); ++itK)
-    {
-    itK.Set( itK.Get() * TFFTPrecision(0.) );
-    }
-
-  // Replicate and window if required
-  FFTOutputImagePointer result = fftK->GetOutput();
-  if(this->GetHannCutFrequencyY()>0.)
-    {
-    size.Fill(1);
-    size[0] = fftK->GetOutput()->GetLargestPossibleRegion().GetSize(0);
-    size[1] = height;
-
-    const unsigned int ncut = itk::Math::Round<double>( (height/2+1) * vnl_math_min(1.0, this->GetHannCutFrequencyY() ) );
-
-    result = FFTOutputImageType::New();
-    result->SetRegions( size );
-    result->Allocate();
-    result->FillBuffer(0.);
-
-    IteratorType itTwoDK(result, result->GetLargestPossibleRegion() );
-    for(unsigned int j=0; j<ncut; j++)
-      {
-      itK.GoToBegin();
-      const TFFTPrecision win( 0.5*( 1+vcl_cos(vnl_math::pi*j/ncut) ) );
-      for(unsigned int i=0; i<size[0]; ++itK, ++itTwoDK, i++)
-        {
-        itTwoDK.Set( win * itK.Get() );
-        }
-      }
-    itTwoDK.GoToReverseBegin();
-    for(unsigned int j=1; j<ncut; j++)
-      {
-      itK.GoToReverseBegin();
-      const TFFTPrecision win( 0.5*( 1+vcl_cos(vnl_math::pi*j/ncut) ) );
-      for(unsigned int i=0; i<size[0]; --itK, --itTwoDK, i++)
-        {
-        itTwoDK.Set( win * itK.Get() );
-        }
-      }
-    }
-
-  return result;
+  
+  return fftK->GetOutput();;
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
-void
-ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+void ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::UpdateTruncationMirrorWeights()
 {
   const unsigned int next = this->GetTruncationCorrectionExtent();
 
-  if ( (unsigned int) m_TruncationMirrorWeights.size() != next)
-    {
-    m_TruncationMirrorWeights.resize(next+1);
-    for(unsigned int i=0; i<next+1; i++)
-      m_TruncationMirrorWeights[i] = pow( sin( (next-i)*vnl_math::pi/(2*next-2) ), 0.75);
-    }
+  if ((unsigned int)m_TruncationMirrorWeights.size() != next)
+  {
+    m_TruncationMirrorWeights.resize(next + 1);
+    for (unsigned int i = 0; i < next + 1; i++)
+      m_TruncationMirrorWeights[i] = pow(sin((next - i)*vnl_math::pi / (2 * next - 2)), 0.75);
+  }
 }
 
 } // end namespace rtk

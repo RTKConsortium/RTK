@@ -23,6 +23,10 @@
 #include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
 
+#include "itkForwardFFTImageFilter.h"
+#include "itkInverseFFTImageFilter.h"
+#include <itkComplexToModulusImageFilter.h>
+
 namespace rtk
 {
 
@@ -61,6 +65,7 @@ public:
   typedef typename InputImageType::RegionType               RegionType;
   typedef typename InputImageType::IndexType                IndexType;
   typedef typename InputImageType::SizeType                 SizeType;
+  typedef typename InputImageType::SpacingType              SpacingType;
 
   typedef typename itk::Image<TFFTPrecision,
                               TInputImage::ImageDimension > FFTInputImageType;
@@ -68,6 +73,11 @@ public:
   typedef typename itk::Image<std::complex<TFFTPrecision>,
                               TInputImage::ImageDimension > FFTOutputImageType;
   typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
+
+  typedef typename itk::ForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType>  ForwardFFTType;
+  typedef typename itk::InverseFFTImageFilter< FFTOutputImageType, FFTInputImageType> InverseFFTType;
+
+  typedef typename std::vector<float>                       CoefficientVectorType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -114,14 +124,24 @@ public:
   itkGetConstMacro(TruncationCorrection, double);
   itkSetMacro(TruncationCorrection, double);
 
-  /** Set/Get the Hann window frequency. 0 (default) disables it */
-  itkGetConstMacro(HannCutFrequency, double);
-  itkSetMacro(HannCutFrequency, double);
+  itkGetConstMacro(Coefficients, CoefficientVectorType);
+  virtual void SetCoefficients(const CoefficientVectorType coefficients){
+    if (this->m_Coefficients != coefficients)
+    {
+      this->m_Coefficients = coefficients;
+      m_imageId = 0;       
+      this->Modified();
+    }
+  }
 
-  /** Set/Get the Hann window frequency in Y direction. 0 (default) disables it */
-  itkGetConstMacro(HannCutFrequencyY, double);
-  itkSetMacro(HannCutFrequencyY, double);
-    
+  /** Deconvolution Kernel (GSF in ref. paper)
+  */
+  itkGetConstMacro(KernelFFT, FFTOutputImagePointer);
+
+  /** Fourier transform of the deconvolution Kernel
+   */
+  itkGetConstMacro(Kernel, FFTInputImagePointer);
+   
 protected:
   ScatterGlareCorrectionImageFilter();
   ~ScatterGlareCorrectionImageFilter(){}
@@ -135,10 +155,8 @@ protected:
   virtual void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId );
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
-    * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
-    * centralRegion is the region of the returned image which corresponds to inputRegion.
     */
-  virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
+  virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion, const SpacingType &spacing);
   RegionType GetPaddedImageRegion(const RegionType &inputRegion);
 
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
@@ -147,9 +165,9 @@ protected:
 
   int GreatestPrimeFactor( int n ) const;
 
-  /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
-   *  Used in generate data functions.  */
-  FFTOutputImagePointer GetFFTRampKernel(const int width, const int height);
+  /** Create the deconvolution kernel
+  */
+  FFTOutputImagePointer GetFFTDeconvolutionKernel(const SizeType size, const SpacingType spacing);
 
   /** Pre compute weights for truncation correction in a lookup table. The index
     * is the distance to the original image border.
@@ -166,7 +184,7 @@ private:
   /** Percentage of the image width which is feathered with data to correct for truncation.
     * 0 means no correction.
     */
-  double                              m_TruncationCorrection;
+  double m_TruncationCorrection;
   int GetTruncationCorrectionExtent();
 
   /**
@@ -174,13 +192,11 @@ private:
    */
   int m_GreatestPrimeFactor;
 
-  /**
-   * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
-   * non-zero is used.
-   */
-  double m_HannCutFrequency;
-  double m_HannCutFrequencyY;
-  
+  FFTInputImagePointer  m_Kernel;
+  FFTOutputImagePointer m_KernelFFT;
+  CoefficientVectorType m_Coefficients;
+
+  int m_imageId;
   int m_BackupNumberOfThreads;
 }; // end of class
 
