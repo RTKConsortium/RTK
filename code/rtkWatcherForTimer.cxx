@@ -29,24 +29,20 @@ WatcherForTimer
   // Create a series of commands
   m_StartFilterCommand =      CommandType::New();
   m_EndFilterCommand =        CommandType::New();
+  m_DeleteFilterCommand =     CommandType::New();
 
   // Assign the callbacks
   m_StartFilterCommand->SetCallbackFunction(this,
                                             &WatcherForTimer::StartFilter);
   m_EndFilterCommand->SetCallbackFunction(this,
                                           &WatcherForTimer::EndFilter);
+  m_DeleteFilterCommand->SetCallbackFunction(this,
+                                             &WatcherForTimer::DeleteFilter);
 
   // Add the commands as observers
   m_StartTag = m_Process->AddObserver(StartEvent(), m_StartFilterCommand);
   m_EndTag = m_Process->AddObserver(EndEvent(), m_EndFilterCommand);
-}
-
-WatcherForTimer
-::WatcherForTimer() :
-  m_Process(NULL),
-  m_StartTag(0),
-  m_EndTag(0)
-{
+  m_DeleteTag = m_Process->AddObserver(DeleteEvent(), m_DeleteFilterCommand);
 }
 
 void
@@ -63,6 +59,25 @@ WatcherForTimer
   rtk::GlobalTimer::GetInstance()->Stop(m_IndexInGlobalTimer, m_Process->GetNameOfClass());
 }
 
+void
+WatcherForTimer
+::DeleteFilter()
+{
+  if ( m_StartFilterCommand )
+    {
+    m_Process->RemoveObserver(m_StartTag);
+    }
+  if ( m_EndFilterCommand )
+    {
+    m_Process->RemoveObserver(m_EndTag);
+    }
+  if ( m_DeleteFilterCommand )
+    {
+    m_Process->RemoveObserver(m_DeleteTag);
+    }
+  rtk::GlobalTimer::GetInstance()->Remove(this);
+}
+
 WatcherForTimer
 ::WatcherForTimer(const WatcherForTimer & watch)
 {
@@ -77,28 +92,37 @@ WatcherForTimer
       {
       m_Process->RemoveObserver(m_EndTag);
       }
+    if ( m_DeleteFilterCommand )
+      {
+      m_Process->RemoveObserver(m_DeleteTag);
+      }
     }
 
   // Initialize state
   m_Process = watch.m_Process;
   m_StartTag = 0;
   m_EndTag = 0;
+  m_DeleteTag = 0;
 
   // Create a series of commands
   if ( m_Process )
     {
     m_StartFilterCommand =      CommandType::New();
     m_EndFilterCommand =        CommandType::New();
+    m_DeleteFilterCommand =     CommandType::New();
 
     // Assign the callbacks
     m_StartFilterCommand->SetCallbackFunction(this,
                                               &WatcherForTimer::StartFilter);
     m_EndFilterCommand->SetCallbackFunction(this,
                                             &WatcherForTimer::EndFilter);
+    m_DeleteFilterCommand->SetCallbackFunction(this,
+                                               &WatcherForTimer::DeleteFilter);
 
     // Add the commands as observers
     m_StartTag = m_Process->AddObserver(StartEvent(), m_StartFilterCommand);
     m_EndTag = m_Process->AddObserver(EndEvent(), m_EndFilterCommand);
+    m_DeleteTag = m_Process->AddObserver(DeleteEvent(), m_DeleteFilterCommand);
     }
 }
 
@@ -119,6 +143,10 @@ WatcherForTimer
         {
         m_Process->RemoveObserver(m_EndTag);
         }
+      if ( m_DeleteFilterCommand )
+        {
+        m_Process->RemoveObserver(m_DeleteTag);
+        }
       }
 
     // Initialize state
@@ -126,41 +154,35 @@ WatcherForTimer
 
     m_StartTag = 0;
     m_EndTag = 0;
+    m_DeleteTag = 0;
 
     // Create a series of commands
     if ( m_Process )
       {
       m_StartFilterCommand =      CommandType::New();
       m_EndFilterCommand =        CommandType::New();
+      m_DeleteFilterCommand =     CommandType::New();
 
       // Assign the callbacks
       m_StartFilterCommand->SetCallbackFunction(this,
                                                 &WatcherForTimer::StartFilter);
       m_EndFilterCommand->SetCallbackFunction(this,
                                               &WatcherForTimer::EndFilter);
+      m_DeleteFilterCommand->SetCallbackFunction(this,
+                                                 &WatcherForTimer::DeleteFilter);
 
       // Add the commands as observers
       m_StartTag = m_Process->AddObserver(StartEvent(), m_StartFilterCommand);
       m_EndTag = m_Process->AddObserver(EndEvent(), m_EndFilterCommand);
+      m_DeleteTag = m_Process->AddObserver(DeleteEvent(), m_DeleteFilterCommand);
       }
-    }
+      }
   return *this;
 }
 
 WatcherForTimer
 ::~WatcherForTimer()
 {
-  // Remove any observers we have on the old process object
-  if ( m_Process )
-    {
-    if ( m_StartFilterCommand )
-      {
-      m_Process->RemoveObserver(m_StartTag);
-      }
-    if ( m_EndFilterCommand )
-      {
-      m_Process->RemoveObserver(m_EndTag);
-      }
-    }
 }
+
 } // end namespace itk

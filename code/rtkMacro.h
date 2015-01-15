@@ -16,16 +16,12 @@
  *
  *=========================================================================*/
 
-//#ifndef RTKMACRO_H
-//#define RTKMACRO_H
-
 #ifndef __rtkMacro_h
 #define __rtkMacro_h
 
 #include <iostream>
 #include <itkMacro.h>
 #include <rtkGlobalTimer.h>
-#include "rtkGgoArgsInfoManager.h"
 
 //--------------------------------------------------------------------
 /** \brief Debugging macro, displays name and content of a variable
@@ -46,38 +42,13 @@
  *
  * \ingroup Macro
  */
-#define GGO(ggo_filename, args_info)                                                                       \
-  args_info_##ggo_filename args_info;                                                                      \
-  cmdline_parser_##ggo_filename##_params args_params;                                                      \
-  cmdline_parser_##ggo_filename##_params_init(&args_params);                                               \
-  args_params.print_errors = 1;                                                                            \
-  args_params.check_required = 0;                                                                          \
-  args_params.initialize = 1;                                                                              \
-  args_params.override = 1;                                                                                \
-  args_params.initialize = 1;                                                                              \
-  if(0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params) )                      \
-    {                                                                                                      \
-    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
-    exit(1);                                                                                               \
-    }                                                                                                      \
-  args_params.override = 0;                                                                                \
-  args_params.initialize = 0;                                                                              \
-  if (args_info.config_given)                                                                              \
-    {                                                                                                      \
-    if(0 != cmdline_parser_##ggo_filename##_config_file (args_info.config_arg, &args_info, &args_params) ) \
-      {                                                                                                    \
-      std::cerr << "Error in cmdline_parser_" #ggo_filename "_config_file" << std::endl;                   \
-      exit(1);                                                                                             \
-      }                                                                                                    \
-    }                                                                                                      \
-  args_params.check_required = 1;                                                                          \
-  if(0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params) )                      \
-    {                                                                                                      \
-    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
-    exit(1);                                                                                               \
-    }                                                                                                      \
-  rtk::args_info_manager< args_info_##ggo_filename >                                                       \
-     manager_object( args_info, cmdline_parser_##ggo_filename##_free );
+#define GGO(ggo_filename, args_info)                                                        \
+  args_info_##ggo_filename args_info;                                                       \
+  cmdline_parser_##ggo_filename##2 (argc, argv, &args_info, 1, 1, 0);                       \
+  if (args_info.config_given)                                                               \
+    cmdline_parser_##ggo_filename##_configfile (args_info.config_arg, &args_info, 0, 0, 1); \
+  else cmdline_parser_##ggo_filename(argc, argv, &args_info);                               \
+  rtk::GlobalTimer::GetInstance()->SetVerbose(args_info.verbose_flag);
 //--------------------------------------------------------------------
 
 //--------------------------------------------------------------------
@@ -140,59 +111,57 @@
  */
 
 #undef itkSimpleNewMacro
-#define itkSimpleNewMacro(x)                                   \
-  static Pointer New(void)                                     \
-    {                                                          \
-    Pointer smartPtr = ::itk::ObjectFactory< x >::Create();    \
-    if ( smartPtr.GetPointer() == NULL )                \
-      {                                                        \
-      smartPtr = new x;                                        \
-      }                                                        \
-    smartPtr->UnRegister();                                    \
-    /* If smartPtr is a ProcessObject, watch it */                 \
-    itk::ProcessObject* processObjectPointer = NULL;                \
-    processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer());\
-    if (processObjectPointer != NULL) \
-      {\
-      smartPtr->Register(); \
-      rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer); \
-      }\
-    return smartPtr;                                           \
+#define itkSimpleNewMacro(x)                                                         \
+  static Pointer New(void)                                                           \
+    {                                                                                \
+    Pointer smartPtr = ::itk::ObjectFactory< x >::Create();                          \
+    if ( smartPtr.GetPointer() == ITK_NULLPTR )                                      \
+      {                                                                              \
+      smartPtr = new x;                                                              \
+      }                                                                              \
+    smartPtr->UnRegister();                                                          \
+    /* If smartPtr is a ProcessObject, watch it */                                   \
+    itk::ProcessObject* processObjectPointer = NULL;                                 \
+    processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer()); \
+    if (processObjectPointer != NULL)                                                \
+      {                                                                              \
+      rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer);                  \
+      }                                                                              \
+    return smartPtr;                                                                 \
     }
 
 #undef itkCreateAnotherMacro
-#define itkCreateAnotherMacro(x)                               \
-  virtual::itk::LightObject::Pointer CreateAnother(void) const \
-    {                                                          \
-    ::itk::LightObject::Pointer smartPtr;                      \
-    smartPtr = x::New().GetPointer();\
-    return smartPtr;                                           \
+#define itkCreateAnotherMacro(x)                                            \
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE \
+    {                                                                       \
+    ::itk::LightObject::Pointer smartPtr;                                   \
+    smartPtr = x::New().GetPointer();                                       \
+    return smartPtr;                                                        \
     }
 
 #undef itkFactorylessNewMacro
-#define itkFactorylessNewMacro(x)                              \
-  static Pointer New(void)                                     \
-    {                                                          \
-    Pointer smartPtr;                                          \
-    x *     rawPtr = new x;                                    \
-    smartPtr = rawPtr;                                         \
-    rawPtr->UnRegister();                                      \
-    /* If smartPtr is a ProcessObject, watch it */                 \
-    itk::ProcessObject* processObjectPointer = NULL;                \
-    processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer());\
-    if (processObjectPointer != NULL) \
-      {\
-      smartPtr->Register(); \
-      rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer); \
-      }\
-    return smartPtr;                                           \
-    }\
-  virtual::itk::LightObject::Pointer CreateAnother(void) const \
-    {                                                          \
-    ::itk::LightObject::Pointer smartPtr;                      \
-    smartPtr = x::New().GetPointer();                          \
-    return smartPtr;                                           \
+#define itkFactorylessNewMacro(x)                                                    \
+  static Pointer New(void)                                                           \
+    {                                                                                \
+    Pointer smartPtr;                                                                \
+    x *     rawPtr = new x;                                                          \
+    smartPtr = rawPtr;                                                               \
+    rawPtr->UnRegister();                                                            \
+    /* If smartPtr is a ProcessObject, watch it */                                   \
+    itk::ProcessObject* processObjectPointer = NULL;                                 \
+    processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer()); \
+    if (processObjectPointer != NULL)                                                \
+      {                                                                              \
+      rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer);                  \
+      }                                                                              \
+    return smartPtr;                                                                 \
+    }                                                                                \
+  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE          \
+    {                                                                                \
+    ::itk::LightObject::Pointer smartPtr;                                            \
+    smartPtr = x::New().GetPointer();                                                \
+    return smartPtr;                                                                 \
     }
 
 
-#endif // RTKMACRO_H
+#endif
