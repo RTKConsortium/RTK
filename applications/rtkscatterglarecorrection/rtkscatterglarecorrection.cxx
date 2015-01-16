@@ -87,11 +87,20 @@ int main(int argc, char *argv[])
   constantSource->SetInformationFromImage(SFilter->GetOutput());
   constantSource->SetSize(SFilter->GetOutput()->GetLargestPossibleRegion().GetSize());
   constantSource->UpdateOutputInformation();
+
+  ConstantImageSourceType::Pointer constantSourceIn = ConstantImageSourceType::New();
+  constantSourceIn->SetInformationFromImage(SFilter->GetOutput());
+  constantSourceIn->SetSize(SFilter->GetOutput()->GetLargestPossibleRegion().GetSize());
+  constantSourceIn->UpdateOutputInformation();
       
   typedef itk::PasteImageFilter <InputImageType, InputImageType > PasteImageFilterType;
   PasteImageFilterType::Pointer paste = PasteImageFilterType::New();
   paste->SetSourceImage(SFilter->GetOutput());
   paste->SetDestinationImage(constantSource->GetOutput());
+
+  PasteImageFilterType::Pointer pasteIn = PasteImageFilterType::New();
+  pasteIn->SetSourceImage(extract->GetOutput());
+  pasteIn->SetDestinationImage(constantSourceIn->GetOutput());
       
   InputImageType::SizeType inputSize = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
   int istep         = 1;
@@ -109,6 +118,7 @@ int main(int argc, char *argv[])
   }
   
   InputImageType::Pointer pimg;
+  InputImageType::Pointer pimgIn;
   int frameoutidx = 0;
   for (unsigned int frame = (imin-1); frame < imax; frame += istep, ++frameoutidx)
   {  
@@ -117,6 +127,10 @@ int main(int argc, char *argv[])
       pimg = paste->GetOutput();
       pimg->DisconnectPipeline();
       paste->SetDestinationImage(pimg);
+
+      pimgIn = pasteIn->GetOutput();
+      pimgIn->DisconnectPipeline();
+      pasteIn->SetDestinationImage(pimgIn);
     }
    
     start[2] = frame;
@@ -136,15 +150,25 @@ int main(int argc, char *argv[])
 
     paste->SetSourceImage(SFilter->GetOutput());
     paste->UpdateLargestPossibleRegion(); 
+
+    pasteIn->SetDestinationIndex(pasteRegion.GetIndex());
+    pasteIn->SetSourceRegion(extract->GetOutput()->GetLargestPossibleRegion());
+
+    pasteIn->SetSourceImage(extract->GetOutput());
+    pasteIn->UpdateLargestPossibleRegion();
   }
 
+  typedef itk::ImageFileWriter<InputImageType> FileWriterType;
+  FileWriterType::Pointer writer = FileWriterType::New();
   if (args_info.output_given) {
-    typedef itk::ImageFileWriter<InputImageType> FileWriterType;
-    FileWriterType::Pointer writer = FileWriterType::New();
-    writer->SetFileName( args_info.output_arg );
+    writer->SetFileName(args_info.output_arg);
     writer->SetInput(paste->GetOutput());
     writer->Update();
+
+    writer->SetFileName("input.mhd");
+    writer->SetInput(pasteIn->GetOutput());
+    writer->Update();
   }
-    
+
   return EXIT_SUCCESS;
 }
