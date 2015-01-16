@@ -65,8 +65,16 @@ int main(int argc, char *argv[])
   InputImageType::IndexType start = subsetRegion.GetIndex();
   extract->SetExtractionRegion(subsetRegion);
   
-  std::vector<float> coef = { 0.0787f, 106.244f };
-
+  std::vector<float> coef;
+  if (args_info.coefficients_given == 2) {
+    coef.push_back(args_info.coefficients_arg[0]);
+    coef.push_back(args_info.coefficients_arg[1]);
+  }
+  else {
+    coef.push_back(0.0787f);
+    coef.push_back(106.244f);
+  }
+   
   typedef rtk::ScatterGlareCorrectionImageFilter<InputImageType, InputImageType, float>   ScatterCorrectionType;
   ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
   SFilter->SetInput(extract->GetOutput());

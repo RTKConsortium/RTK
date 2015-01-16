@@ -7,5 +7,5 @@ option "output"   o "Output filename"                                           
 option "range"    - "Range of projections to correct min,step,max"              int     multiple no
 
 section "Algorithm parameters"
-option "coefficients"  -  "Deconvolution kernel coefficients"                   double   multiple no
+option "coefficients"  c  "Deconvolution kernel coefficients"                   float   multiple no
 
