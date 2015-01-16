@@ -51,12 +51,12 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
 
   //Default filter parameters
   typename CropFilterType::SizeType border = m_CropFilter->GetLowerBoundaryCropSize();
-  border[0] = 4;
-  border[1] = 4;
+  border[0] = 0;
+  border[1] = 0;
   m_CropFilter->SetBoundaryCropSize(border);
 
-  m_BinningFilter->SetShrinkFactor(0, 2);
-  m_BinningFilter->SetShrinkFactor(1, 2);
+  m_BinningFilter->SetShrinkFactor(0, 1);
+  m_BinningFilter->SetShrinkFactor(1, 1);
   m_BinningFilter->SetShrinkFactor(2, 1);
 }
 
