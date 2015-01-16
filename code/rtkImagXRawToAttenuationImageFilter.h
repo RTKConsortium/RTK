@@ -31,10 +31,6 @@
 #include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
 #include "rtkWaterPrecorrectionImageFilter.h"
 
-#include <vector>
-
-using namespace std;
-
 namespace rtk
 {
 
@@ -74,8 +70,8 @@ namespace rtk
     typedef TOutputImage                                                       OutputImageType;
 
     typedef std::vector< unsigned int >       BinParamType;
-    typedef std::vector< double >             WpcVectorType;
-        
+    typedef std::vector< double >             WaterPrecorrectionVectorType;
+
     /** Standard New method. */
     itkNewMacro(Self);
 
@@ -91,13 +87,13 @@ namespace rtk
     /** Get / Set the binning kernel size. */
     itkGetMacro(BinningKernelSize, BinParamType);
     virtual void SetBinningKernelSize(const std::vector<unsigned int> binfactor) 
-    {
-      if (this->m_BinningKernelSize != binfactor)
       {
+      if (this->m_BinningKernelSize != binfactor)
+        {
         this->m_BinningKernelSize = binfactor;
         this->Modified();
+        }
       }
-    }
 
     /** Get / Set the I0 estimation parameters. */
     itkSetMacro(ExpectedI0, unsigned short);
@@ -110,25 +106,25 @@ namespace rtk
     itkGetMacro(RelativeAirThreshold, double);
     itkGetMacro(ScatterToPrimaryRatio, double);
     void SetScatterCorrectionParameters(const double relativeAirThreshold, const double scatterToPrimaryRatio)
-    {
-      if ((this->m_RelativeAirThreshold != relativeAirThreshold) && (this->m_ScatterToPrimaryRatio != scatterToPrimaryRatio))
       {
+      if ((this->m_RelativeAirThreshold != relativeAirThreshold) && (this->m_ScatterToPrimaryRatio != scatterToPrimaryRatio))
+        {
         this->m_RelativeAirThreshold = relativeAirThreshold;
         this->m_ScatterToPrimaryRatio = scatterToPrimaryRatio;
         this->Modified();
+        }
       }
-    }
 
     /** Get / Set the water precorrection parameters. */
-    itkGetMacro(WpcCoefficients, WpcVectorType);
-    virtual void SetWpcCoefficients(const WpcVectorType _arg)
-    {
-      if (this->m_WpcCoefficients != _arg)
+    itkGetMacro(WaterPrecorrectionCoefficients, WaterPrecorrectionVectorType);
+    virtual void SetWaterPrecorrectionCoefficients(const WaterPrecorrectionVectorType _arg)
       {
-        this->m_WpcCoefficients = _arg;
+      if (this->m_WaterPrecorrectionCoefficients != _arg)
+        {
+        this->m_WaterPrecorrectionCoefficients = _arg;
         this->Modified();
+        }
       }
-    }
     
   protected:
     ImagXRawToAttenuationImageFilter();
@@ -153,7 +149,7 @@ namespace rtk
     typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
     typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,
                                                                OutputImageType>        LookupTableFilterType;
-    typedef rtk::WaterPrecorrectionImageFilter<OutputImageType, OutputImageType>       WpcType;
+    typedef rtk::WaterPrecorrectionImageFilter<OutputImageType, OutputImageType>       WaterPrecorrectionType;
     typedef rtk::ConstantImageSource<OutputImageType>                                  ConstantImageSourceType;
     typedef itk::PasteImageFilter<OutputImageType, OutputImageType>                    PasteFilterType;
 
@@ -163,7 +159,7 @@ namespace rtk
     typename I0FilterType::Pointer            m_I0estimationFilter;
     typename ScatterFilterType::Pointer       m_ScatterFilter;
     typename LookupTableFilterType::Pointer   m_LookupTableFilter;
-    typename WpcType::Pointer                 m_WpcFilter;
+    typename WaterPrecorrectionType::Pointer  m_WaterPrecorrectionFilter;
     typename PasteFilterType::Pointer         m_PasteFilter;
     typename ConstantImageSourceType::Pointer m_ConstantSource;
 
@@ -180,15 +176,15 @@ namespace rtk
 
     /** I0 estimation parameters */
     unsigned short m_ExpectedI0;
-    bool m_ForceExpectedValue;       // No reestimation of I0
+    bool           m_ForceExpectedValue; // No reestimation of I0
 
     /** Scatter correction parameters */
     double m_RelativeAirThreshold;
     double m_ScatterToPrimaryRatio;
 
     /** Water pre-correction parameters */
-    WpcVectorType m_WpcCoefficients;
-    
+    WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
+
   }; // end of class
 
 } // end namespace rtk

@@ -34,7 +34,7 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_I0estimationFilter = I0FilterType::New();
   m_ScatterFilter = ScatterFilterType::New();
   m_LookupTableFilter = LookupTableFilterType::New();
-  m_WpcFilter = WpcType::New();
+  m_WaterPrecorrectionFilter = WaterPrecorrectionType::New();
   m_PasteFilter = PasteFilterType::New();
   m_ConstantSource = ConstantImageSourceType::New();
 
@@ -45,11 +45,11 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_I0estimationFilter->SetInput(m_BinningFilter->GetOutput());
   m_ScatterFilter->SetInput(m_BinningFilter->GetOutput());
   m_LookupTableFilter->SetInput(m_I0estimationFilter->GetOutput());
-  m_WpcFilter->SetInput(m_LookupTableFilter->GetOutput());
+  m_WaterPrecorrectionFilter->SetInput(m_LookupTableFilter->GetOutput());
 
   // Set permanent connections
   m_PasteFilter->SetDestinationImage(m_ConstantSource->GetOutput());
-  m_PasteFilter->SetSourceImage(m_WpcFilter->GetOutput());
+  m_PasteFilter->SetSourceImage(m_WaterPrecorrectionFilter->GetOutput());
 
   //Default filter parameters
   m_LowerBoundaryCropSize[0] = 0;
@@ -67,10 +67,10 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_ExpectedI0 = 65535;
 
   m_ScatterToPrimaryRatio = 0.0;
-  m_RelativeAirThreshold = 1.;  
+  m_RelativeAirThreshold = 1.;
 
-  m_WpcCoefficients.push_back(0.0);
-  m_WpcCoefficients.push_back(1.0);
+  m_WaterPrecorrectionCoefficients.push_back(0.0);
+  m_WaterPrecorrectionCoefficients.push_back(1.0);
 }
 
 template<class TOutputImage, unsigned char bitShift>
@@ -98,14 +98,14 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   m_BinningFilter->SetShrinkFactor(2, 1);
   
   // Initialize the source
-  m_WpcFilter->UpdateOutputInformation();
-  m_ConstantSource->SetInformationFromImage(m_WpcFilter->GetOutput());
-  typename OutputImageType::SizeType size = m_WpcFilter->GetOutput()->GetLargestPossibleRegion().GetSize();
+  m_WaterPrecorrectionFilter->UpdateOutputInformation();
+  m_ConstantSource->SetInformationFromImage(m_WaterPrecorrectionFilter->GetOutput());
+  typename OutputImageType::SizeType size = m_WaterPrecorrectionFilter->GetOutput()->GetLargestPossibleRegion().GetSize();
   size[OutputImageType::ImageDimension - 1] = this->GetInput()->GetLargestPossibleRegion().GetSize(OutputImageType::ImageDimension - 1);
   m_ConstantSource->SetSize(size);
 
   // Set extraction regions and indices
-  m_PasteRegion = m_WpcFilter->GetOutput()->GetLargestPossibleRegion();
+  m_PasteRegion = m_WaterPrecorrectionFilter->GetOutput()->GetLargestPossibleRegion();
   m_PasteRegion.SetSize(Dimension - 1, 1);
   m_PasteRegion.SetIndex(Dimension - 1, 0);
   
@@ -132,7 +132,7 @@ ImagXRawToAttenuationImageFilter<TOutputImage, bitShift>
   typename OutputImageType::Pointer pimg;
     
   m_ScatterFilter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
-  m_WpcFilter->SetCoefficients(m_WpcCoefficients);
+  m_WaterPrecorrectionFilter->SetCoefficients(m_WaterPrecorrectionCoefficients);
 
   m_ExtractFilter->Update();
 
