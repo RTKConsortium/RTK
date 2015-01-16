@@ -24,6 +24,11 @@
 #include <itkExtractImageFilter.h>
 #include "rtkScatterGlareCorrectionImageFilter.h"
 #include "rtkProjectionsReader.h"
+#include <itkPasteImageFilter.h>
+#include <rtkConstantImageSource.h>
+#include <itkImageFileWriter.h>
+
+#include <itkMultiplyImageFilter.h>
 
 #include <vector>
 #include <algorithm>
@@ -33,18 +38,17 @@ int main(int argc, char *argv[])
 {
   GGO(rtkscatterglarecorrection, args_info);
 
-  typedef unsigned short InputPixelType;
+  typedef float InputPixelType;
   const unsigned int Dimension = 3;
   typedef itk::Image< InputPixelType, Dimension > InputImageType;
-  typedef itk::Image< unsigned, Dimension >       OutputHistogramType;
-
+  
   typedef itk::RegularExpressionSeriesFileNames RegexpType;
   RegexpType::Pointer names = RegexpType::New();
   names->SetDirectory(args_info.path_arg);
   names->SetNumericSort(args_info.nsort_flag);
   names->SetRegularExpression(args_info.regexp_arg);
 
-  typedef rtk::ProjectionsReader< InputImageType > ReaderType;
+  typedef rtk::ProjectionsReader< InputImageType > ReaderType;  // Warning: preprocess images
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
   reader->UpdateOutputInformation();
@@ -54,22 +58,34 @@ int main(int argc, char *argv[])
   extract->InPlaceOff();
   extract->SetDirectionCollapseToSubmatrix();
   extract->SetInput( reader->GetOutput() );
-
+  
   ExtractFilterType::InputImageRegionType subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
-  subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
-  extract->SetInput( reader->GetOutput() );
   InputImageType::SizeType extractSize = subsetRegion.GetSize();
   extractSize[2] = 1;
   InputImageType::IndexType start = subsetRegion.GetIndex();
-
-  typedef itk::PasteImageFilter <InputImageType, InputImageType > PasteImageFilterType;
-  PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
-
+  extract->SetExtractionRegion(subsetRegion);
+  
   std::vector<float> coef = { 0.0787f, 106.244f };
 
   typedef rtk::ScatterGlareCorrectionImageFilter<InputImageType, InputImageType, float>   ScatterCorrectionType;
   ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
-  
+  SFilter->SetInput(extract->GetOutput());
+  SFilter->SetTruncationCorrection(1.0);
+  SFilter->SetCoefficients(coef);
+  SFilter->UpdateOutputInformation();
+
+  typedef rtk::ConstantImageSource<InputImageType> ConstantImageSourceType;
+  ConstantImageSourceType::Pointer constantSource = ConstantImageSourceType::New();
+  constantSource->SetInformationFromImage(SFilter->GetOutput());
+  constantSource->SetSize(SFilter->GetOutput()->GetLargestPossibleRegion().GetSize());
+  constantSource->UpdateOutputInformation();
+      
+  typedef itk::PasteImageFilter <InputImageType, InputImageType > PasteImageFilterType;
+  PasteImageFilterType::Pointer paste = PasteImageFilterType::New();
+  paste->SetSourceImage(SFilter->GetOutput());
+  paste->SetDestinationImage(constantSource->GetOutput());
+      
+  InputImageType::SizeType inputSize = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
   int istep         = 1;
   unsigned int imin = 1;
   unsigned int imax = (unsigned int)subsetRegion.GetSize()[2];
@@ -84,30 +100,43 @@ int main(int argc, char *argv[])
     }
   }
   
-  SFilter->SetTruncationCorrection(0.5);
-  SFilter->SetCoefficients(coef);
-
-  for (unsigned int i = imin; i < imax; i += istep)
-  {
-    std::cout << "Image no " << i << std::endl;
-    SFilter->SetInput(extract->GetOutput());
-
-    start[2] = i;
+  InputImageType::Pointer pimg;
+  int frameoutidx = 0;
+  for (unsigned int frame = (imin-1); frame < imax; frame += istep, ++frameoutidx)
+  {  
+    if (frame > 0) // After the first frame, use the output of paste as input
+    {
+      pimg = paste->GetOutput();
+      pimg->DisconnectPipeline();
+      paste->SetDestinationImage(pimg);
+    }
+   
+    start[2] = frame;
     InputImageType::RegionType desiredRegion(start, extractSize);
     extract->SetExtractionRegion(desiredRegion);
 
-    try
-    {
-      SFilter->UpdateLargestPossibleRegion();
-    }
-    catch (itk::ExceptionObject & err)
-    {
-      std::cerr << "ExceptionObject caught !" << std::endl;
-      std::cerr << err << std::endl;
-      return EXIT_FAILURE;
-    }
+    SFilter->SetInput(extract->GetOutput());
+    SFilter->UpdateLargestPossibleRegion();
+        
+    // Set extraction regions and indices
+    InputImageType::RegionType pasteRegion = SFilter->GetOutput()->GetLargestPossibleRegion();
+    pasteRegion.SetSize(Dimension - 1, 1);
+    pasteRegion.SetIndex(Dimension - 1, frame);
+    
+    paste->SetDestinationIndex(pasteRegion.GetIndex());
+    paste->SetSourceRegion(SFilter->GetOutput()->GetLargestPossibleRegion());
 
+    paste->SetSourceImage(SFilter->GetOutput());
+    paste->UpdateLargestPossibleRegion(); 
   }
 
+  if (args_info.output_given) {
+    typedef itk::ImageFileWriter<InputImageType> FileWriterType;
+    FileWriterType::Pointer writer = FileWriterType::New();
+    writer->SetFileName( args_info.output_arg );
+    writer->SetInput(paste->GetOutput());
+    writer->Update();
+  }
+    
   return EXIT_SUCCESS;
 }

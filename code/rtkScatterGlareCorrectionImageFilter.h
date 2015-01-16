@@ -26,6 +26,7 @@
 #include "itkForwardFFTImageFilter.h"
 #include "itkInverseFFTImageFilter.h"
 #include <itkComplexToModulusImageFilter.h>
+#include <itkFFTShiftImageFilter.h>
 
 namespace rtk
 {
@@ -75,7 +76,8 @@ public:
   typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
 
   typedef typename itk::ForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType>  ForwardFFTType;
-  typedef typename itk::InverseFFTImageFilter< FFTOutputImageType, FFTInputImageType> InverseFFTType;
+  typedef typename itk::InverseFFTImageFilter< FFTOutputImageType, FFTInputImageType>  InverseFFTType;
+  typedef typename itk::FFTShiftImageFilter< FFTInputImageType, FFTInputImageType>      FFTShiftType;
 
   typedef typename std::vector<float>                       CoefficientVectorType;
 
@@ -186,7 +188,7 @@ private:
     */
   double m_TruncationCorrection;
   int GetTruncationCorrectionExtent();
-
+  
   /**
    * Greatest prime factor of the FFT input.
    */

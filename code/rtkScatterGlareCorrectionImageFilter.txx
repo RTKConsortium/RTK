@@ -25,9 +25,11 @@
 #include <itkHalfHermitianToRealInverseFFTImageFilter.h>
 
 #include <itkComplexToModulusImageFilter.h>
+#include <itkFFTShiftImageFilter.h>
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
+#include <itkImageFileWriter.h>
 
 namespace rtk
 {
@@ -90,11 +92,11 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // If the following condition is met, multi-threading is left to the (i)fft
   // filter. Otherwise, one splits the image and a separate fft is performed
   // per thread.
-  if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1)
-    {
+  if (this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1)
+  {
     m_BackupNumberOfThreads = this->GetNumberOfThreads();
     this->SetNumberOfThreads(1);
-    }
+  }
   else
     m_BackupNumberOfThreads = 1;
 
@@ -133,9 +135,10 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   // FFT padded image
   ForwardFFTType::Pointer fftI = ForwardFFTType::New();
-  fftI->SetInput( paddedImage );
-  fftI->SetNumberOfThreads( m_BackupNumberOfThreads );
+  fftI->SetInput(paddedImage);
+  fftI->SetNumberOfThreads(m_BackupNumberOfThreads);
   fftI->Update();
+  FFTOutputImageType::Pointer fftPadded = fftI->GetOutput();
 
   // Create the deconvolution kernel in spatial frequencies
   if (!m_imageId) {
@@ -143,29 +146,30 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     m_KernelFFT = this->GetFFTDeconvolutionKernel(size, spacing);
   }
 
-  //Multiply line-by-line
-  itk::ImageRegionIterator<typename ForwardFFTType::OutputImageType> itI(fftI->GetOutput(),
-                                                              fftI->GetOutput()->GetLargestPossibleRegion() );
+  // Inplace multiplication of the image fft and the kernel fft
+  itk::ImageRegionIterator<typename ForwardFFTType::OutputImageType> itI(fftPadded, fftPadded->GetLargestPossibleRegion());
   itk::ImageRegionConstIterator<FFTOutputImageType> itK(m_KernelFFT, m_KernelFFT->GetLargestPossibleRegion());
   itI.GoToBegin();
-  while(!itI.IsAtEnd() ) {
-    itK.GoToBegin();
-    while(!itK.IsAtEnd() ) {
-      itI.Set(itI.Get() / itK.Get() );
-      ++itI;
-      ++itK;
-      }
-    }
+  itK.GoToBegin();
+  while (!itI.IsAtEnd()) {
+    itI.Set(itI.Get() / itK.Get());
+    ++itI;
+    ++itK;
+  }
 
   //Inverse FFT image
   InverseFFTType::Pointer ifft = InverseFFTType::New();
-  ifft->SetInput( fftI->GetOutput() );
+  ifft->SetInput( fftPadded );
   ifft->SetNumberOfThreads( m_BackupNumberOfThreads );
   ifft->SetReleaseDataFlag( true );
   ifft->Update();
+    
+  FFTShiftType::Pointer fftshift = FFTShiftType::New();
+  fftshift->SetInput(ifft->GetOutput());
+  fftshift->Update();
 
   // Crop and paste result
-  itk::ImageRegionConstIterator<FFTInputImageType> itS(ifft->GetOutput(), outputRegionForThread);
+  itk::ImageRegionConstIterator<FFTInputImageType> itS(fftshift->GetOutput(), outputRegionForThread);
   itk::ImageRegionIterator<OutputImageType>        itD(this->GetOutput(), outputRegionForThread);
   itS.GoToBegin();
   itD.GoToBegin();
@@ -320,7 +324,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   float b3sq = b3*b3;
   float dx = spacing[0];
   float dy = spacing[1];
-
+  
   itk::ImageRegionIteratorWithIndex<FFTInputImageType> itK(m_Kernel, m_Kernel->GetLargestPossibleRegion());
   itK.GoToBegin();
   typename FFTInputImageType::IndexType idx;
