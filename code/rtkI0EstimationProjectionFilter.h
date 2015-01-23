@@ -19,7 +19,7 @@
 #ifndef __rtkI0EstimationProjectionFilter_h
 #define __rtkI0EstimationProjectionFilter_h
 
-#include <itkImageToImageFilter.h>
+#include <itkInPlaceImageFilter.h>
 #include <itkMutexLock.h>
 #include <itkBarrier.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -43,17 +43,18 @@ namespace rtk
  * \ingroup InPlaceImageFilter
  */
 
-template< unsigned char bitShift >
+template<class TInputImage = itk::Image< unsigned short, 3>,
+         class TOutputImage = TInputImage,
+         unsigned char bitShift = 2 >
 class ITK_EXPORT I0EstimationProjectionFilter:
-  public         itk::ImageToImageFilter< itk::Image< unsigned short, 3 >, itk::Image< unsigned int, 3 > >
+  public         itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef I0EstimationProjectionFilter< bitShift >                  Self;
-  typedef itk::ImageToImageFilter< itk::Image< unsigned short, 3 >,
-                                   itk::Image< unsigned, 3 > >      Superclass;
-  typedef itk::SmartPointer< Self >                                 Pointer;
-  typedef itk::SmartPointer< const Self >                           ConstPointer;
+  typedef I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift> Self;
+  typedef itk::InPlaceImageFilter<TInputImage, TOutputImage>                Superclass;
+  typedef itk::SmartPointer<Self>                                           Pointer;
+  typedef itk::SmartPointer<const Self>                                     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -62,11 +63,13 @@ public:
   itkTypeMacro(I0EstimationProjectionFilter, ImageToImageFilter);
 
   /** Some convenient typedefs. */
-  typedef itk::Image< unsigned int, 3 >         OutputImageType;
-  typedef itk::Image< unsigned short, 3 >       InputImageType;
-  typedef typename OutputImageType::Pointer     OutputImagePointer;
-  typedef typename InputImageType::Pointer      InputImagePointer;
-  typedef typename InputImageType::ConstPointer InputImageConstPointer;
+  typedef TInputImage                                InputImageType;
+  typedef typename InputImageType::Pointer           ImagePointer;
+  typedef typename InputImageType::ConstPointer      ImageConstPointer;
+  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
+  typedef typename InputImageType::PixelType         InputImagePixelType;
+
+  itkConceptMacro(InputImagePixelTypeIsInteger, (itk::Concept::IsInteger<InputImagePixelType>) );
 
   /** Main Output: estimation result. */
   itkGetMacro(I0, unsigned short)
@@ -96,6 +99,7 @@ public:
   itkSetMacro(SaveHistograms, bool);
   itkGetConstMacro(SaveHistograms, bool);
   itkBooleanMacro(SaveHistograms);
+
 protected:
   I0EstimationProjectionFilter();
   virtual ~I0EstimationProjectionFilter() {}
@@ -151,4 +155,4 @@ private:
 #include "rtkI0EstimationProjectionFilter.txx"
 #endif
 
-#endif // I0EstimationProjectionFilter.h
+#endif

@@ -20,70 +20,88 @@
 #define __rtkImagXRawToAttenuationImageFilter_h
 
 #include <itkImageToImageFilter.h>
+#include <itkBinShrinkImageFilter.h>
 #include <itkCropImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkPasteImageFilter.h>
+#include <rtkConstantImageSource.h>
 
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
+#include "rtkI0EstimationProjectionFilter.h"
 #include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
 
 namespace rtk
 {
 
-/** \class ImagXRawToAttenuationImageFilter
- * \brief Convert raw ImagX data to attenuation images
- *
- * \author Simon Rit
- *
- * \ingroup ImageToImageFilter
- */
+  /** \class ImagXRawToAttenuationImageFilter
+  * \brief Convert raw ImagX data to attenuation images
+  *
+  * \author Simon Rit
+  *
+  * \ingroup ImageToImageFilter
+  */
 
-template<class TInputImage, class TOutputImage=TInputImage>
-class ITK_EXPORT ImagXRawToAttenuationImageFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
-{
-public:
-  /** Standard class typedefs. */
-  typedef ImagXRawToAttenuationImageFilter                   Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  template<class TOutputImage, unsigned char bitShift = 2>
+  class ITK_EXPORT ImagXRawToAttenuationImageFilter :
+    public itk::ImageToImageFilter < typename itk::Image< unsigned short, TOutputImage::ImageDimension >, TOutputImage >
+  {
+  public:
+    /** Standard class typedefs. */
+    typedef ImagXRawToAttenuationImageFilter                   Self;
+    typedef itk::ImageToImageFilter<itk::Image<unsigned short, TOutputImage::ImageDimension>,
+                                    TOutputImage>              Superclass;
+    typedef itk::SmartPointer<Self>                            Pointer;
+    typedef itk::SmartPointer<const Self>                      ConstPointer;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage  InputImageType;
-  typedef TOutputImage OutputImageType;
+    /** Some convenient typedefs. */
+    typedef typename itk::Image<unsigned short, TOutputImage::ImageDimension>  InputImageType;
+    typedef TOutputImage                                                       OutputImageType;
 
-  /** Standard New method. */
-  itkNewMacro(Self);
+    /** Standard New method. */
+    itkNewMacro(Self);
 
-  /** Runtime information support. */
-  itkTypeMacro(ImagXRawToAttenuationImageFilter, itk::ImageToImageFilter);
-protected:
-  ImagXRawToAttenuationImageFilter();
-  ~ImagXRawToAttenuationImageFilter(){
-  }
+    /** Runtime information support. */
+    itkTypeMacro(ImagXRawToAttenuationImageFilter, itk::ImageToImageFilter);
+  protected:
+    ImagXRawToAttenuationImageFilter();
+    ~ImagXRawToAttenuationImageFilter(){
+    }
 
-  /** Apply changes to the input image requested region. */
-  virtual void GenerateInputRequestedRegion();
+    void GenerateOutputInformation();
 
-  void GenerateOutputInformation();
+    /** Single-threaded version of GenerateData.  This filter delegates
+    * to other filters. */
+    void GenerateData();
 
-  /** Single-threaded version of GenerateData.  This filter delegates
-   * to other filters. */
-  void GenerateData();
+  private:
+    //purposely not implemented
+    ImagXRawToAttenuationImageFilter(const Self&);
+    void operator=(const Self&);
 
-private:
-  //purposely not implemented
-  ImagXRawToAttenuationImageFilter(const Self&);
-  void operator=(const Self&);
+    typedef itk::ExtractImageFilter<InputImageType, InputImageType>                     ExtractFilterType;
+    typedef itk::CropImageFilter<InputImageType, InputImageType>                        CropFilterType;
+    typedef itk::BinShrinkImageFilter<InputImageType, InputImageType>                   BinningFilterType;
+    typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
+    typedef rtk::I0EstimationProjectionFilter<InputImageType, InputImageType, bitShift> I0FilterType;
+    typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,
+                                                               OutputImageType>        LookupTableFilterType;
+    typedef rtk::ConstantImageSource<OutputImageType>                                  ConstantImageSourceType;
+    typedef itk::PasteImageFilter<OutputImageType, OutputImageType>                    PasteFilterType;
 
-  typedef itk::CropImageFilter<InputImageType, InputImageType>                       CropFilterType;
-  typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType> ScatterFilterType;
-  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,
-                                                             OutputImageType>        LookupTableFilterType;
+    typename ExtractFilterType::Pointer       m_ExtractFilter;
+    typename CropFilterType::Pointer          m_CropFilter;
+    typename BinningFilterType::Pointer       m_BinningFilter;
+    typename ScatterFilterType::Pointer       m_ScatterFilter;
+    typename I0FilterType::Pointer            m_I0estimationFilter;
+    typename LookupTableFilterType::Pointer   m_LookupTableFilter;
+    typename PasteFilterType::Pointer         m_PasteFilter;
+    typename ConstantImageSourceType::Pointer m_ConstantSource;
 
-  typename LookupTableFilterType::Pointer m_LookupTableFilter;
-  typename CropFilterType::Pointer        m_CropFilter;
-  typename ScatterFilterType::Pointer     m_ScatterFilter;
-}; // end of class
+    /** Extraction regions for extract filter */
+    typename InputImageType::RegionType m_ExtractRegion;
+    typename InputImageType::RegionType m_PasteRegion;
+
+  }; // end of class
 
 } // end namespace rtk
 

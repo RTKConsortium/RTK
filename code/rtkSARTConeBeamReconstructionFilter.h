@@ -25,6 +25,7 @@
 #include <itkExtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
+#include <itkAddImageAdaptor.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 #include <itkTimeProbe.h>
 #include <itkThresholdImageFilter.h>
@@ -83,13 +84,21 @@ namespace rtk
  * 7 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  * 8 [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * 9 [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
+ * ConstantVolume [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+ * Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
  * OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
  * Threshold [ label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
  * OutofThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ * OutofBP [label="", fixedsize="false", width=0, height=0, shape=none];
+ * BeforeBP [label="", fixedsize="false", width=0, height=0, shape=none];
+ * BeforeAdd [label="", fixedsize="false", width=0, height=0, shape=none];
  * Input0 -> OutofInput0 [arrowhead=None];
  * OutofInput0 -> 1;
- * OutofInput0 -> BackProjection;
+ * OutofInput0 -> BeforeAdd [arrowhead=None];
+ * BeforeAdd -> Add;
+ * ConstantVolume -> BeforeBP [arrowhead=None];
+ * BeforeBP -> BackProjection;
  * 2 -> test[arrowhead=None];
  * test -> 3;
  * test -> 4;
@@ -103,9 +112,12 @@ namespace rtk
  * 8 -> 9;
  * 9 -> 6;
  * Displaced -> BackProjection;
- * BackProjection -> Threshold;
+ * BackProjection -> OutofBP [arrowhead=None];
+ * OutofBP -> Add;
+ * OutofBP -> BeforeBP [style=dashed, constraint=false];
+ * Add -> Threshold;
  * Threshold -> OutofThreshold [arrowhead=None];
- * OutofThreshold -> OutofInput0 [style=dashed];
+ * OutofThreshold -> OutofInput0 [headport="se", style=dashed];
  * OutofThreshold -> Output;
  * }
  * \enddot
@@ -136,6 +148,7 @@ public:
   typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >      MultiplyFilterType;
   typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >              ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                       SubtractFilterType;
+  typedef itk::AddImageFilter< OutputImageType, OutputImageType >                            AddFilterType;
   typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >                 BackProjectionFilterType;
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>               RayBoxIntersectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType> DivideFilterType;
@@ -159,6 +172,10 @@ public:
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
   itkSetMacro(NumberOfIterations, unsigned int);
+
+  /** Get / Set the number of projections per subset. Default is 1. */
+  itkGetMacro(NumberOfProjectionsPerSubset, unsigned int);
+  itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
   /** Get / Set the convergence factor. Default is 0.3. */
   itkGetMacro(Lambda, double);
@@ -197,11 +214,13 @@ protected:
   typename MultiplyFilterType::Pointer           m_ZeroMultiplyFilter;
   typename ForwardProjectionFilterType::Pointer  m_ForwardProjectionFilter;
   typename SubtractFilterType::Pointer           m_SubtractFilter;
+  typename AddFilterType::Pointer                m_AddFilter;
   typename MultiplyFilterType::Pointer           m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer     m_BackProjectionFilter;
   typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
   typename DivideFilterType::Pointer             m_DivideFilter;
-  typename ConstantImageSourceType::Pointer      m_ConstantImageSource;
+  typename ConstantImageSourceType::Pointer      m_ConstantProjectionStackSource;
+  typename ConstantImageSourceType::Pointer      m_ConstantVolumeSource;
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
   typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
   typename GatingWeightsFilterType::Pointer      m_GatingWeightsFilter;
@@ -209,6 +228,10 @@ protected:
   bool m_EnforcePositivity;
 
 private:
+  /** Number of projections processed before the volume is updated (1 for SART,
+   * several for OS-SART, all for SIRT) */
+  unsigned int m_NumberOfProjectionsPerSubset;
+
   //purposely not implemented
   SARTConeBeamReconstructionFilter(const Self&);
   void operator=(const Self&);
@@ -239,6 +262,7 @@ private:
   itk::TimeProbe m_DivideProbe;
   itk::TimeProbe m_BackProjectionProbe;
   itk::TimeProbe m_ThresholdProbe;
+  itk::TimeProbe m_AddProbe;
   itk::TimeProbe m_GatingProbe;
 
 }; // end of class
