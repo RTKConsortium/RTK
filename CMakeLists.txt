@@ -17,7 +17,9 @@ INCLUDE(cmake/RTKExternalData.cmake)
 
 ## Tell CMake to be quiet
 CMAKE_POLICY (SET CMP0003 NEW)
-CMAKE_POLICY (SET CMP0054 OLD)
+if(POLICY CMP0054)
+  CMAKE_POLICY (SET CMP0054 NEW)
+endif()
 
 ## Default to release
 IF (NOT CMAKE_BUILD_TYPE)
