@@ -44,7 +44,6 @@
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkTiffLookupTableImageFilter.h"
 #include "rtkVarianObiRawImageFilter.h"
 #include "rtkXRadGeometryReader.h"
 #include "rtkGgoArgsInfoManager.h"
@@ -69,7 +68,7 @@
  */
 
 int main(int , char**)
-{ 
+{
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }

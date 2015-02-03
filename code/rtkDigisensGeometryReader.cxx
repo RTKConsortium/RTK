@@ -18,7 +18,6 @@
 
 #include "rtkDigisensGeometryReader.h"
 #include "rtkDigisensGeometryXMLFileReader.h"
-#include "rtkMacro.h"
 
 #include <itkMetaDataObject.h>
 #include <itkVersor.h>
@@ -88,8 +87,6 @@ rtk::DigisensGeometryReader
     dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue();
   double projectionScalingX = detectorHorizontal[0] * totalWidth / (pixelWidth-1);
   double projectionScalingY = detectorVertical[1] * totalHeight / (pixelHeight-1);
-  DD(projectionScalingX)
-  DD(projectionScalingY)
 
   // Projection offset: the offset is given in the volume coordinate system =>
   // convert to

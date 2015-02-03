@@ -38,9 +38,6 @@
 #include "rtkImagXImageIOFactory.h"
 #include "rtkImagXRawToAttenuationImageFilter.h"
 
-// Tiff includes
-#include "rtkTiffLookupTableImageFilter.h"
-
 // European Synchrotron Radiation Facility
 #include "rtkEdfImageIOFactory.h"
 #include "rtkEdfRawToAttenuationImageFilter.h"
@@ -169,7 +166,7 @@ void ProjectionsReader<TOutputImage>
       m_RawDataReader = reader;
 
       // Convert raw to Projections
-      typedef rtk::TiffLookupTableImageFilter<InputImageType, OutputImageType> RawFilterType;
+      typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       rawFilter->SetInput( reader->GetOutput() );
       m_RawToProjectionsFilter = rawFilter;
