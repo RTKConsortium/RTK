@@ -62,8 +62,8 @@ public:
 
   /** Air level I0
     */
-  itkGetMacro(I0, InputImagePixelType);
-  itkSetMacro(I0, InputImagePixelType);
+  itkGetMacro(I0, double);
+  itkSetMacro(I0, double);
 
   virtual void BeforeThreadedGenerateData();
 
@@ -75,7 +75,7 @@ private:
   LUTbasedVariableI0RawToAttenuationImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);                                //purposely not implemented
 
-  InputImagePixelType                      m_I0;
+  double                                   m_I0;
   typename AddLUTFilterType::Pointer       m_AddLUTFilter;
   typename ThresholdLUTFilterType::Pointer m_ThresholdLUTFilter;
 };

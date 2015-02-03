@@ -24,6 +24,7 @@
 
 #include "rtkElektaSynergyLookupTableImageFilter.h"
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
 
 namespace rtk
 {
@@ -85,7 +86,7 @@ private:
   typedef itk::CropImageFilter<InputImageType, InputImageType>                                  CropFilterType;
   typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>            ScatterFilterType;
   typedef typename rtk::ElektaSynergyRawLookupTableImageFilter<OutputImageType::ImageDimension> RawLookupTableFilterType;
-  typedef rtk::ElektaSynergyLogLookupTableImageFilter<OutputImageType>                          LogLookupTableFilterType;
+  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,OutputImageType>    LogLookupTableFilterType;
 
   typename RawLookupTableFilterType::Pointer m_RawLookupTableFilter;
   typename LogLookupTableFilterType::Pointer m_LogLookupTableFilter;

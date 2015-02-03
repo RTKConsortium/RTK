@@ -122,55 +122,6 @@ private:
 
 };
 
-/** \class ElektaSynergyLogLookupTableImageFilter
- * \brief Second part of ElektaSynergyLookupTableImageFilter.
- *
- * The lookup table has been split in two to allow application of the scatter
- * correction algorithm in between. This second part takes the log of the ratio
- * with the reference value times -1.
- *
- * \test rtkelektatest.cxx
- *
- * \author Simon Rit
- *
- * \ingroup ImageToImageFilter
- */
-template <class TOutputImage>
-class ITK_EXPORT ElektaSynergyLogLookupTableImageFilter :
-    public LookupTableImageFilter< itk::Image<unsigned short, TOutputImage::ImageDimension>,
-                                   TOutputImage >
-{
-
-public:
-  /** Standard class typedefs. */
-  typedef ElektaSynergyLogLookupTableImageFilter                              Self;
-  typedef LookupTableImageFilter<itk::Image<unsigned short,
-                                            TOutputImage::ImageDimension>,
-                                 TOutputImage>                                Superclass;
-  typedef itk::SmartPointer<Self>                                             Pointer;
-  typedef itk::SmartPointer<const Self>                                       ConstPointer;
-
-  typedef unsigned short                                    InputImagePixelType;
-  typedef typename TOutputImage::PixelType                  OutputImagePixelType;
-  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
-
-  /** Method for creation through the object factory. */
-  itkNewMacro(Self);
-
-  /** Runtime information support. */
-  itkTypeMacro(ElektaSynergyLogLookupTableImageFilter, LookupTableImageFilter);
-
-protected:
-  ElektaSynergyLogLookupTableImageFilter();
-  virtual ~ElektaSynergyLogLookupTableImageFilter() {
-  }
-
-private:
-  ElektaSynergyLogLookupTableImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                         //purposely not implemented
-
-};
-
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION

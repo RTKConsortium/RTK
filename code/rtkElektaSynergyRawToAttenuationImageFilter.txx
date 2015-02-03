@@ -47,6 +47,7 @@ ElektaSynergyRawToAttenuationImageFilter<TInputImage, TOutputImage>
   m_RawLookupTableFilter = RawLookupTableFilterType::New();
   m_ScatterFilter = ScatterFilterType::New();
   m_LogLookupTableFilter = LogLookupTableFilterType::New();
+  m_LogLookupTableFilter->SetI0(m_LogLookupTableFilter->GetI0()+1.);
 
   //Permanent internal connections
   m_RawLookupTableFilter->SetInput( m_CropFilter->GetOutput() );

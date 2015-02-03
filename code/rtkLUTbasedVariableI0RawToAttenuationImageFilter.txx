@@ -42,7 +42,7 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   ++it;
   while( !it.IsAtEnd() )
     {
-    it.Set( -vcl_log( double(it.GetIndex()[0]) ) );
+    it.Set( -log( double(it.GetIndex()[0]) ) );
     ++it;
     }
 
@@ -54,7 +54,7 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   m_ThresholdLUTFilter = ThresholdLUTFilterType::New();
   m_AddLUTFilter->InPlaceOff();
   m_AddLUTFilter->SetInput1(lut);
-  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)m_I0, 1.) ) );
+  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max(m_I0, 1.) ) );
   m_ThresholdLUTFilter->SetInput( m_AddLUTFilter->GetOutput() );
   m_ThresholdLUTFilter->ThresholdBelow(0.);
   m_ThresholdLUTFilter->SetOutsideValue(0.);
@@ -68,7 +68,7 @@ void
 LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)m_I0, 1.) ) );
+  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max(m_I0, 1.) ) );
   Superclass::BeforeThreadedGenerateData(); // Update the LUT
 }
 
