@@ -32,8 +32,8 @@ LagCorrectionImageFilter<TImage, ModelOrder>::LagCorrectionImageFilter()
   this->SetNumberOfRequiredInputs(1);
   m_A.Fill(0.0f);
   m_B.Fill(0.0f);
-  m_expma.Fill(0.0f);
-  m_bexpma.Fill(0.0f);
+  m_ExpmA.Fill(0.0f);
+  m_BExpmA.Fill(0.0f);
 
   m_NewParamJustReceived = false;
   m_StatusMatrixAllocated = false;
@@ -45,11 +45,11 @@ void LagCorrectionImageFilter<TImage, ModelOrder>::BeforeThreadedGenerateData()
   // Initialization
   if (m_NewParamJustReceived) {
     int i = 0;
-    VectorType::Iterator itB = m_B.Begin();
-    for (VectorType::Iterator itA = m_A.Begin(); itA != m_A.End(); ++itA, ++itB, ++i) {
+    typename VectorType::Iterator itB = m_B.Begin();
+    for (typename VectorType::Iterator itA = m_A.Begin(); itA != m_A.End(); ++itA, ++itB, ++i) {
       float expma = expf(-*itA);
-      m_expma[i] = expma;
-      m_bexpma[i] = (*itB) * expma;
+      m_ExpmA[i] = expma;
+      m_BExpmA[i] = (*itB) * expma;
     }
 
     if (!m_StatusMatrixAllocated) {
@@ -69,14 +69,13 @@ void LagCorrectionImageFilter<TImage, ModelOrder>::BeforeThreadedGenerateData()
     m_NewParamJustReceived = false;
   }
 
-  m_nThreads = this->GetNumberOfThreads();
-  m_thAvgCorr = 0.0f;
+  m_ThAvgCorr = 0.0f;
 }
 
 template<typename TImage, unsigned ModelOrder>
 void LagCorrectionImageFilter<TImage, ModelOrder>::AfterThreadedGenerateData()
 {
-  m_AvgCorrections.push_back(m_thAvgCorr / (float)(m_nThreads * m_M));
+  m_AvgCorrections.push_back(m_ThAvgCorr / (float)(this->GetNumberOfThreads() * m_M));
   ++m_ImageId;
 }
 
@@ -84,11 +83,11 @@ template<typename TImage, unsigned ModelOrder>
 void LagCorrectionImageFilter<TImage, ModelOrder>::
   ThreadedGenerateData(const ImageRegionType & thRegion, ThreadIdType threadId)
 {
-  TImage::Pointer  inputPtr = const_cast<TImage *>(this->GetInput());
-  TImage::Pointer outputPtr = this->GetOutput();
+  typename TImage::Pointer  inputPtr = const_cast<TImage *>(this->GetInput());
+  typename TImage::Pointer outputPtr = this->GetOutput();
 
-  TImage::RegionType reg = thRegion;
-  TImage::IndexType start = thRegion.GetIndex();
+  typename TImage::RegionType reg = thRegion;
+  typename TImage::IndexType start = thRegion.GetIndex();
   start[2] = 0;
   reg.SetIndex(start);
 
@@ -108,7 +107,7 @@ void LagCorrectionImageFilter<TImage, ModelOrder>::
     // k is pixel id
     float c = 0.0f;
     for (unsigned int n = 0; n < ModelOrder; n++) {
-      c += m_bexpma[n] * S[n];
+      c += m_BExpmA[n] * S[n];
     }
     meanc += c;
 
@@ -122,7 +121,7 @@ void LagCorrectionImageFilter<TImage, ModelOrder>::
 
     // Update internal state Snk
     for (unsigned int n = 0; n < ModelOrder; n++) {
-      S[n] = xk + m_expma[n] * S[n];
+      S[n] = xk + m_ExpmA[n] * S[n];
     }
     itS.Set(S);
 
@@ -131,9 +130,9 @@ void LagCorrectionImageFilter<TImage, ModelOrder>::
     ++itS;
   }
 
-  m_mutex.Lock();
-  m_thAvgCorr += meanc;
-  m_mutex.Unlock();
+  m_Mutex.Lock();
+  m_ThAvgCorr += meanc;
+  m_Mutex.Unlock();
 }
 
 } // end namespace

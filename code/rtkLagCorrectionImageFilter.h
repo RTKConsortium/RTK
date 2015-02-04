@@ -35,15 +35,15 @@ namespace rtk
 /** \class LagCorrectionImageFilter
  * \brief Classical Linear Time Invariant Lag correction
  *
- * Recursive correction algorithm for detector decay characteristics. 
+ * Recursive correction algorithm for detector decay characteristics.
  * Based on [Hsieh, Proceedings of SPIE, 2000]
  *
  * The IRF (Impulse Response Function) is given by:
  *    \f$h(k)=b_0 \delta(k) + \sum_{n=1}^N b_n e^{-a_n k}\f$
- * where \f$k\f$ is the discrete time, \f$N\f$ is the model order (number of exponentials), 
+ * where \f$k\f$ is the discrete time, \f$N\f$ is the model order (number of exponentials),
  * \f$\delta(k)\f$ is the impulse function and the \f${a_n, b_n}_{n=1:N}\f$ parameters are respectively the exponential rates and
  * lag coefficients to be provided. The sum of all $b_n$ must be normalized such that h(0) equals 1.
- * 
+ *
  * The parameters are typically estimated from either RSRF (Rising Step RF) or FSRF (Falling Step RF) response functions.
  *
  * \test rtklagcorrectiontest.cxx
@@ -108,8 +108,8 @@ protected:
 
   VectorType m_A;           // a_n coefficients
   VectorType m_B;           // b coefficients
-  VectorType m_expma;       // exp(-a)
-  VectorType m_bexpma;      // b exp(-a)
+  VectorType m_ExpmA;       // exp(-a)
+  VectorType m_BExpmA;      // b exp(-a)
 
 private:
   LagCorrectionImageFilter(const Self &); //purposely not implemented
@@ -118,14 +118,13 @@ private:
   unsigned int m_M;         // Projection size
   StateTypePtr m_S;         // State variable
 
-  itk::SimpleFastMutexLock m_mutex;
+  itk::SimpleFastMutexLock m_Mutex;
 
   unsigned int m_ImageId;     // Image counter (from parameters reception)
-  unsigned int m_nThreads;
-  bool m_NewParamJustReceived;
-  bool m_StatusMatrixAllocated;
+  bool         m_NewParamJustReceived;
+  bool         m_StatusMatrixAllocated;
 
-  float m_thAvgCorr;
+  float           m_ThAvgCorr;
   FloatVectorType m_AvgCorrections;
 };
 
@@ -136,4 +135,3 @@ private:
 #endif
 
 #endif
-
