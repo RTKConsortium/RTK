@@ -39,12 +39,10 @@
 
 const unsigned Nprojections = 2;
 
-std::vector<float> coef = { 0.0787f, 106.244f };
-
 const unsigned int Dimension = 3;
 typedef itk::Image< float, Dimension >     ImageType;
 
-ImageType::Pointer createInputImage()
+ImageType::Pointer createInputImage(const std::vector<float> & coef)
 {
   ImageType::SizeType size;
   size[0] = 650;
@@ -101,11 +99,16 @@ int main(int , char** )
 {  
   typedef rtk::ScatterGlareCorrectionImageFilter<ImageType, ImageType, float>   ScatterCorrectionType;
   ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
- 
+
+  std::vector<float> coef;
+  coef.push_back(0.0787f);
+  coef.push_back(106.244f);
+
+
   SFilter->SetTruncationCorrection(0.5);
   SFilter->SetCoefficients(coef);
 
-  ImageType::Pointer testImage = createInputImage();
+  ImageType::Pointer testImage = createInputImage(coef);
   
   for (unsigned i = 0; i < Nprojections; ++i) {
     SFilter->SetInput(testImage);

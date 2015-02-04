@@ -131,7 +131,7 @@ public:
     if (this->m_Coefficients != coefficients)
     {
       this->m_Coefficients = coefficients;
-      m_imageId = 0;       
+      m_ImageId = 0;
       this->Modified();
     }
   }
@@ -143,7 +143,7 @@ public:
   /** Fourier transform of the deconvolution Kernel
    */
   itkGetConstMacro(Kernel, FFTInputImagePointer);
-   
+
 protected:
   ScatterGlareCorrectionImageFilter();
   ~ScatterGlareCorrectionImageFilter(){}
@@ -188,7 +188,7 @@ private:
     */
   double m_TruncationCorrection;
   int GetTruncationCorrectionExtent();
-  
+
   /**
    * Greatest prime factor of the FFT input.
    */
@@ -198,7 +198,7 @@ private:
   FFTOutputImagePointer m_KernelFFT;
   CoefficientVectorType m_Coefficients;
 
-  int m_imageId;
+  int m_ImageId;
   int m_BackupNumberOfThreads;
 }; // end of class
 

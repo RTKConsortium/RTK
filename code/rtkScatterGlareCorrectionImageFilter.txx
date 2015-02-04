@@ -38,7 +38,7 @@ template <class TInputImage, class TOutputImage, class TFFTPrecision>
 ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::ScatterGlareCorrectionImageFilter() :
   m_TruncationCorrection(0.), m_GreatestPrimeFactor(2), m_BackupNumberOfThreads(1),
-  m_imageId(0)
+  m_ImageId(0)
 {
 #if defined(USE_FFTWD)
   if(typeid(TFFTPrecision).name() == typeid(double).name() )
@@ -134,14 +134,14 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   FFTInputImagePointer paddedImage = PadInputImageRegion(enlargedRegion, spacing);
 
   // FFT padded image
-  ForwardFFTType::Pointer fftI = ForwardFFTType::New();
+  typename ForwardFFTType::Pointer fftI = ForwardFFTType::New();
   fftI->SetInput(paddedImage);
   fftI->SetNumberOfThreads(m_BackupNumberOfThreads);
   fftI->Update();
-  FFTOutputImageType::Pointer fftPadded = fftI->GetOutput();
+  typename FFTOutputImageType::Pointer fftPadded = fftI->GetOutput();
 
   // Create the deconvolution kernel in spatial frequencies
-  if (!m_imageId) {
+  if (!m_ImageId) {
     typename FFTOutputImageType::SizeType size = paddedImage->GetLargestPossibleRegion().GetSize();
     m_KernelFFT = this->GetFFTDeconvolutionKernel(size, spacing);
   }
@@ -158,13 +158,13 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   }
 
   //Inverse FFT image
-  InverseFFTType::Pointer ifft = InverseFFTType::New();
+  typename InverseFFTType::Pointer ifft = InverseFFTType::New();
   ifft->SetInput( fftPadded );
   ifft->SetNumberOfThreads( m_BackupNumberOfThreads );
   ifft->SetReleaseDataFlag( true );
   ifft->Update();
-    
-  FFTShiftType::Pointer fftshift = FFTShiftType::New();
+
+  typename FFTShiftType::Pointer fftshift = FFTShiftType::New();
   fftshift->SetInput(ifft->GetOutput());
   fftshift->Update();
 
@@ -180,7 +180,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     ++itD;
     }
 
-  ++m_imageId;
+  ++m_ImageId;
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -319,12 +319,12 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   m_Kernel->SetRegions(size);
   m_Kernel->Allocate();
 
-  float a3 = m_Coefficients[0]; 
-  float b3 = m_Coefficients[1]; 
+  float a3 = m_Coefficients[0];
+  float b3 = m_Coefficients[1];
   float b3sq = b3*b3;
   float dx = spacing[0];
   float dy = spacing[1];
-  
+
   itk::ImageRegionIteratorWithIndex<FFTInputImageType> itK(m_Kernel, m_Kernel->GetLargestPossibleRegion());
   itK.GoToBegin();
   typename FFTInputImageType::IndexType idx;
@@ -334,7 +334,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     float yy = (float)idx[1] - (float)size[1]/ 2.0f;
     float rr2 = (xx*xx + yy*yy);
 
-    float g = (a3*dx*dy / (2.0f * vnl_math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);    
+    float g = (a3*dx*dy / (2.0f * vnl_math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);
     if ((2 * idx[0] == size[0]) && ((2 * idx[1] == size[1]))) {
       g += (1 - a3);
     }
@@ -343,12 +343,12 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   }
 
   // FFT kernel
-  ForwardFFTType::Pointer fftK = ForwardFFTType::New();
+  typename ForwardFFTType::Pointer fftK = ForwardFFTType::New();
   fftK->SetInput(m_Kernel);
   fftK->SetNumberOfThreads(1);
   fftK->Update();
-  
-  return fftK->GetOutput();;
+
+  return fftK->GetOutput();
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
