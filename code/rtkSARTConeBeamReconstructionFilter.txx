@@ -226,6 +226,18 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     this->GetOutput()->SetLargestPossibleRegion( m_AddFilter->GetOutput()->GetLargestPossibleRegion() );
     }
 
+  // Set memory management flags
+  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
+  m_ForwardProjectionFilter->ReleaseDataFlagOn();
+  m_SubtractFilter->ReleaseDataFlagOn();
+  m_MultiplyFilter->ReleaseDataFlagOn();
+  m_RayBoxFilter->ReleaseDataFlagOn();
+  m_DivideFilter->ReleaseDataFlagOn();
+  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
+
+  if (m_EnforcePositivity)
+    m_AddFilter->ReleaseDataFlagOn();
+
 }
 
 template<class TInputImage, class TOutputImage>
