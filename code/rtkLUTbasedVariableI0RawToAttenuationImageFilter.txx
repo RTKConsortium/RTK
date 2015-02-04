@@ -21,6 +21,7 @@
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
+#include "rtkI0EstimationProjectionFilter.h"
 
 namespace rtk
 {
@@ -68,7 +69,17 @@ void
 LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max(m_I0, 1.) ) );
+  typedef rtk::I0EstimationProjectionFilter<TInputImage> I0EstimationType;
+  I0EstimationType * i0est = dynamic_cast<I0EstimationType*>( this->GetInput()->GetSource().GetPointer() );
+  if(i0est)
+    {
+    m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)i0est->GetI0(), 1.) ) );
+    }
+  else
+    {
+    m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max(m_I0, 1.) ) );
+    }
+
   Superclass::BeforeThreadedGenerateData(); // Update the LUT
 }
 
