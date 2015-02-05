@@ -21,6 +21,7 @@
 
 #include <itkImageToImageFilter.h>
 #include "itkBarrier.h"
+#include "rtkConfiguration.h"
 
 namespace rtk
 {
