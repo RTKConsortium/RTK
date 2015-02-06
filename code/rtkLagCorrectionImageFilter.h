@@ -24,10 +24,9 @@
 #include <itkArray.h>
 #include <itkSimpleFastMutexLock.h>
 #include <itkRealTimeClock.h>
-
 #include <vector>
 
-using namespace std;
+#include "rtkConfiguration.h"
 
 namespace rtk
 {
@@ -54,7 +53,7 @@ namespace rtk
 */
 
 template< typename TImage, unsigned ModelOrder >
-class RTK_EXPORT LagCorrectionImageFilter : public itk::InPlaceImageFilter < TImage, TImage >
+class ITK_EXPORT LagCorrectionImageFilter : public itk::InPlaceImageFilter < TImage, TImage >
 {
 public:
 
