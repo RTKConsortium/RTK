@@ -44,18 +44,16 @@ namespace rtk
  *
  */
 
-  using namespace itk;
-
 template< typename TInputImage >
 class TotalVariationImageFilter:
-  public ImageToImageFilter< TInputImage, TInputImage >
+  public itk::ImageToImageFilter< TInputImage, TInputImage >
 {
 public:
   /** Standard Self typedef */
   typedef TotalVariationImageFilter                      Self;
-  typedef ImageToImageFilter< TInputImage, TInputImage > Superclass;
-  typedef SmartPointer< Self >                           Pointer;
-  typedef SmartPointer< const Self >                     ConstPointer;
+  typedef itk::ImageToImageFilter< TInputImage, TInputImage > Superclass;
+  typedef itk::SmartPointer< Self >                           Pointer;
+  typedef itk::SmartPointer< const Self >                     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -76,13 +74,13 @@ public:
                       TInputImage::ImageDimension);
 
   /** Type to use for computations. */
-  typedef typename NumericTraits< PixelType >::RealType RealType;
+  typedef typename itk::NumericTraits< PixelType >::RealType RealType;
 
   /** Smart Pointer type to a DataObject. */
-  typedef typename DataObject::Pointer DataObjectPointer;
+  typedef typename itk::DataObject::Pointer DataObjectPointer;
 
   /** Type of DataObjects used for scalar outputs */
-  typedef SimpleDataObjectDecorator< RealType >  RealObjectType;
+  typedef itk::SimpleDataObjectDecorator< RealType >  RealObjectType;
 //  typedef SimpleDataObjectDecorator< PixelType > PixelObjectType;
 
   /** Return the computed Minimum. */
@@ -94,21 +92,21 @@ public:
 
   /** Make a DataObject of the correct type to be used as the specified
    * output. */
-  typedef ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
   virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
   itkConceptMacro( InputHasNumericTraitsCheck,
-                   ( Concept::HasNumericTraits< PixelType > ) );
+                   ( itk::Concept::HasNumericTraits< PixelType > ) );
   // End concept checking
 #endif
 
 protected:
   TotalVariationImageFilter();
   ~TotalVariationImageFilter(){}
-  void PrintSelf(std::ostream & os, Indent indent) const;
+  void PrintSelf(std::ostream & os, itk::Indent indent) const;
 
   /** Pass the input through unmodified. Do this by Grafting in the
    *  AllocateOutputs method.
@@ -125,21 +123,21 @@ protected:
   /** Multi-thread version GenerateData. */
   void  ThreadedGenerateData(const RegionType &
                              outputRegionForThread,
-                             ThreadIdType threadId);
+                             itk::ThreadIdType threadId);
 
   // Override since the filter needs all the data for the algorithm
   void GenerateInputRequestedRegion();
 
   // Override since the filter produces all of its output
-  void EnlargeOutputRequestedRegion(DataObject *data);
+  void EnlargeOutputRequestedRegion(itk::DataObject *data);
 
 private:
   TotalVariationImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);        //purposely not implemented
 
-  Array< RealType >       m_SumOfSquareRoots;
+  itk::Array< RealType >       m_SumOfSquareRoots;
 }; // end of class
-} // end namespace rtk and itk
+} // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkTotalVariationImageFilter.txx"

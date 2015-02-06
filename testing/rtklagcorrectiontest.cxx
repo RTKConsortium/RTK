@@ -5,8 +5,6 @@
 
 #include <vector>
 
-using namespace std;
-
 /**
  * \file rtklagcorrectiontest.cxx
  *

@@ -27,7 +27,6 @@
 
 namespace rtk
 {
-  using namespace itk;
 
 template< typename TInputImage >
 TotalVariationImageFilter< TInputImage >
@@ -41,13 +40,13 @@ TotalVariationImageFilter< TInputImage >
   // just a decorator around real type
     typename RealObjectType::Pointer output =
       static_cast< RealObjectType * >( this->MakeOutput(1).GetPointer() );
-    this->ProcessObject::SetNthOutput( 1, output.GetPointer() );
+    this->itk::ProcessObject::SetNthOutput( 1, output.GetPointer() );
 
-  this->GetTotalVariationOutput()->Set(NumericTraits< RealType >::Zero);
+  this->GetTotalVariationOutput()->Set(itk::NumericTraits< RealType >::Zero);
 }
 
 template< typename TInputImage >
-DataObject::Pointer
+itk::DataObject::Pointer
 TotalVariationImageFilter< TInputImage >
 ::MakeOutput(DataObjectPointerArraySizeType output)
 {
@@ -71,7 +70,7 @@ typename TotalVariationImageFilter< TInputImage >::RealObjectType *
 TotalVariationImageFilter< TInputImage >
 ::GetTotalVariationOutput()
 {
-  return static_cast< RealObjectType * >( this->ProcessObject::GetOutput(1) );
+  return static_cast< RealObjectType * >( this->itk::ProcessObject::GetOutput(1) );
 }
 
 template< typename TInputImage >
@@ -79,7 +78,7 @@ const typename TotalVariationImageFilter< TInputImage >::RealObjectType *
 TotalVariationImageFilter< TInputImage >
 ::GetTotalVariationOutput() const
 {
-  return static_cast< const RealObjectType * >( this->ProcessObject::GetOutput(1) );
+  return static_cast< const RealObjectType * >( this->itk::ProcessObject::GetOutput(1) );
 }
 
 template< typename TInputImage >
@@ -99,7 +98,7 @@ TotalVariationImageFilter< TInputImage >
 template< typename TInputImage >
 void
 TotalVariationImageFilter< TInputImage >
-::EnlargeOutputRequestedRegion(DataObject *data)
+::EnlargeOutputRequestedRegion(itk::DataObject *data)
 {
   Superclass::EnlargeOutputRequestedRegion(data);
   data->SetRequestedRegionToLargestPossibleRegion();
@@ -123,13 +122,13 @@ void
 TotalVariationImageFilter< TInputImage >
 ::BeforeThreadedGenerateData()
 {
-  ThreadIdType numberOfThreads = this->GetNumberOfThreads();
+  itk::ThreadIdType numberOfThreads = this->GetNumberOfThreads();
 
   // Resize the thread temporaries
   m_SumOfSquareRoots.SetSize(numberOfThreads);
 
   // Initialize the temporaries
-  m_SumOfSquareRoots.Fill(NumericTraits< RealType >::Zero);
+  m_SumOfSquareRoots.Fill(itk::NumericTraits< RealType >::Zero);
 }
 
 template< typename TInputImage >
@@ -138,10 +137,10 @@ TotalVariationImageFilter< TInputImage >
 ::AfterThreadedGenerateData()
 {
   RealType totalVariation = 0;
-  ThreadIdType numberOfThreads = this->GetNumberOfThreads();
+  itk::ThreadIdType numberOfThreads = this->GetNumberOfThreads();
 
   // Add up the results from all threads
-  for (ThreadIdType i = 0; i < numberOfThreads; i++ )
+  for (itk::ThreadIdType i = 0; i < numberOfThreads; i++ )
     {
     totalVariation += m_SumOfSquareRoots[i];
     }
@@ -154,14 +153,14 @@ template< typename TInputImage >
 void
 TotalVariationImageFilter< TInputImage >
 ::ThreadedGenerateData(const RegionType & outputRegionForThread,
-                       ThreadIdType threadId)
+                       itk::ThreadIdType threadId)
 {
-  const SizeValueType size0 = outputRegionForThread.GetSize(0);
+  const itk::SizeValueType size0 = outputRegionForThread.GetSize(0);
   if( size0 == 0)
     {
     return;
     }
-  RealType sumOfSquareRoots = NumericTraits< RealType >::Zero;
+  RealType sumOfSquareRoots = itk::NumericTraits< RealType >::Zero;
   typename TInputImage::ConstPointer input = this->GetInput(0);
 
   itk::Size<ImageDimension> radius;
@@ -172,8 +171,8 @@ TotalVariationImageFilter< TInputImage >
   itk::ZeroFluxNeumannBoundaryCondition<TInputImage> boundaryCondition;
   iit.OverrideBoundaryCondition(&boundaryCondition);
 
-  SizeValueType c = (SizeValueType) (iit.Size() / 2); // get offset of center pixel
-  SizeValueType strides[ImageDimension]; // get offsets to access neighboring pixels
+  itk::SizeValueType c = (itk::SizeValueType) (iit.Size() / 2); // get offset of center pixel
+  itk::SizeValueType strides[ImageDimension]; // get offsets to access neighboring pixels
   for (int dim=0; dim<ImageDimension; dim++)
     {
     strides[dim] = iit.GetStride(dim);
@@ -200,11 +199,11 @@ TotalVariationImageFilter< TInputImage >
 template< typename TInputImage >
 void
 TotalVariationImageFilter< TInputImage >
-::PrintSelf(std::ostream & os, Indent indent) const
+::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
   os << indent << "Total Variation: " << this->GetTotalVariation() << std::endl;
 }
-} // end namespace rtk and itk
+} // end namespace rtk
 #endif
