@@ -91,8 +91,8 @@ public:
   <TInputImage,TOutputImage,
   Functor::SoftThreshold< typename TInputImage::PixelType,
                           typename TOutputImage::PixelType> > Superclass;
-  typedef itk::SmartPointer<Self>                                  Pointer;
-  typedef itk::SmartPointer<const Self>                            ConstPointer;
+  typedef itk::SmartPointer<Self>                             Pointer;
+  typedef itk::SmartPointer<const Self>                       ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
