@@ -58,7 +58,6 @@
     std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
     exit(1);                                                                                               \
     }                                                                                                      \
-  bool bConfig = args_info.config_given;                                                                   \
   std::string configFile;                                                                                  \
   if(args_info.config_given)                                                                               \
     configFile = args_info.config_arg;                                                                     \
