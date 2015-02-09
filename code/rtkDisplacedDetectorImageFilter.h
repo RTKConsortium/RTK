@@ -49,7 +49,8 @@ namespace rtk
  * not relevant in the computation because the weighting is reproduced at
  * every gantry angle on each line of the projection images.
  *
- * \test rtkdisplaceddetectortest.cxx, rtkdisplaceddetectorcompcudatest.cxx
+ * \test rtkdisplaceddetectortest.cxx, rtkdisplaceddetectorcompcudatest.cxx,
+ * rtkdisplaceddetectorcompoffsettest.cxx
  *
  * \author Simon Rit
  *

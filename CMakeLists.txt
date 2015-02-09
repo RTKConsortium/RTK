@@ -161,7 +161,7 @@ if(NOT RTK_INSTALL_PACKAGE_DIR)
   set(RTK_INSTALL_PACKAGE_DIR "lib/cmake/RTK-${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}")
 endif()
 #=========================================================
-
+# Utilities
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/code")
 IF(RTK_USE_CUDA)
   LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/utilities/ITKCudaCommon/include/")
@@ -180,7 +180,21 @@ IF(RTK_USE_CUDA)
   ADD_SUBDIRECTORY(utilities/ITKCudaCommon)
   INCLUDE_DIRECTORIES(utilities/ITKCudaCommon/include)
 ENDIF(RTK_USE_CUDA)
-
+ADD_SUBDIRECTORY(utilities/lp_solve)
+include_directories(
+        utilities/lp_solve
+        utilities/lp_solve/shared
+        utilities/lp_solve/bfp
+        utilities/lp_solve/bfp/bfp_LUSOL
+        utilities/lp_solve/bfp/bfp_LUSOL/LUSOL
+        utilities/lp_solve/colamd)
+LIST(APPEND RTK_INCLUDE_DIRS
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/shared"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL/LUSOL"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/colamdcode")
 ADD_SUBDIRECTORY(code)
 
 #=========================================================
