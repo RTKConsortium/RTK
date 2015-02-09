@@ -89,6 +89,9 @@ if(NOT HAVE_ISNAN)
 	set_property(TARGET lpsolve55 APPEND PROPERTY COMPILE_DEFINITIONS NOISNAN)
 endif()
 
+STRING(REPLACE "-Wall" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+STRING(REPLACE "-Wall" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
 # Set version of library
 set_target_properties(lpsolve55 PROPERTIES VERSION ${LPSOLVE_VERSION}
                                            SOVERSION ${LPSOLVE_VERSION_MAJOR})
