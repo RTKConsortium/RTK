@@ -83,10 +83,7 @@ rtk::DigisensGeometryReader
   int pixelHeight = dynamic_cast<MetaDataIntegerType *>(dic["CAMERApixelHeight"].GetPointer() )->GetMetaDataObjectValue();
   typedef itk::MetaDataObject< double > MetaDataDoubleType;
   double totalWidth = dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalWidth"].GetPointer() )->GetMetaDataObjectValue();
-  double totalHeight =
-    dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue();
-  double projectionScalingX = detectorHorizontal[0] * totalWidth / (pixelWidth-1);
-  double projectionScalingY = detectorVertical[1] * totalHeight / (pixelHeight-1);
+  double totalHeight = dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue();
 
   // Projection offset: the offset is given in the volume coordinate system =>
   // convert to

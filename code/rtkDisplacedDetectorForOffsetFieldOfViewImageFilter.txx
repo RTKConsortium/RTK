@@ -165,7 +165,6 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
     double theta1 = -1. * theta2;
     theta1 += centerFOVAngle;
     theta2 += centerFOVAngle;
-    double thetacenter = 0.5*(theta1+theta2);
 
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     const double sx  = this->GetGeometry()->GetSourceOffsetsX()[itIn.GetIndex()[2]];

@@ -32,10 +32,10 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::FieldOfViewImageFilter():
   m_Geometry(NULL),
   m_Mask(false),
-  m_DisplacedDetector(false),
   m_Radius(-1),
   m_CenterX(0.),
-  m_CenterZ(0.)
+  m_CenterZ(0.),
+  m_DisplacedDetector(false)
 {
 }
 
@@ -249,9 +249,6 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     double mag = 1.;  // Parallel
     if(sdd!=0.)
       mag = sid/sdd;  // Divergent
-
-    const double projOffsetX = m_Geometry->GetProjectionOffsetsX()[k];
-    const double sourceOffsetX = m_Geometry->GetSourceOffsetsX()[k];
 
     const double projOffsetY = m_Geometry->GetProjectionOffsetsY()[k];
     const double sourceOffsetY = m_Geometry->GetSourceOffsetsY()[k];
