@@ -89,21 +89,20 @@ rtk::CudaFFTRampImageFilter
   if(inputDimension.y==1 && inputDimension.z>1) // Troubles cuda 3.2 and 4.0
     std::swap(inputDimension.y, inputDimension.z);
 
-  // Get FFT ramp kernel. Must be itk::Image because GetFFTRampKernel is not
+  // Get FFT ramp kernel. Must be itk::Image because GetFFTConvolutionKernel is not
   // compatible with itk::CudaImage + ITK 3.20.
-  FFTOutputImagePointer fftK;
   FFTOutputImageType::SizeType s = paddedImage->GetLargestPossibleRegion().GetSize();
-  fftK = this->GetFFTRampKernel(s[0], s[1]);
+  this->UpdateFFTConvolutionKernel(s);
 
   // Create the itk::CudaImage holding the kernel
-  FFTOutputImageType::RegionType kreg = fftK->GetLargestPossibleRegion();
+  FFTOutputImageType::RegionType kreg = this->m_KernelFFT->GetLargestPossibleRegion();
   CudaFFTOutputImagePointer fftKCUDA = CudaFFTOutputImageType::New();
   fftKCUDA->SetRegions(kreg);
   fftKCUDA->Allocate();
 
   // CUFFT scales by the number of element, correct for it in kernel.
   // Also transfer the kernel from the itk::Image to the itk::CudaImage.
-  itk::ImageRegionIterator<FFTOutputImageType> itKI(fftK, kreg);
+  itk::ImageRegionIterator<FFTOutputImageType> itKI(this->m_KernelFFT, kreg);
   itk::ImageRegionIterator<CudaFFTOutputImageType> itKO(fftKCUDA, kreg);
   FFTPrecisionType invNPixels = 1 / double(paddedImage->GetBufferedRegion().GetNumberOfPixels() );
   while(!itKO.IsAtEnd() )
@@ -116,8 +115,8 @@ rtk::CudaFFTRampImageFilter
   CudaImageType *cuPadImgP = dynamic_cast<CudaImageType*>(paddedImage.GetPointer());
 
   int2 kernelDimension;
-  kernelDimension.x = fftK->GetBufferedRegion().GetSize()[0];
-  kernelDimension.y = fftK->GetBufferedRegion().GetSize()[1];
+  kernelDimension.x = this->m_KernelFFT->GetBufferedRegion().GetSize()[0];
+  kernelDimension.y = this->m_KernelFFT->GetBufferedRegion().GetSize()[1];
   CUDA_fft_convolution(inputDimension,
                        kernelDimension,
                        *(float**)(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),

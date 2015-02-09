@@ -19,14 +19,8 @@
 #ifndef __rtkScatterGlareCorrectionImageFilter_h
 #define __rtkScatterGlareCorrectionImageFilter_h
 
-#include <itkImageToImageFilter.h>
-#include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
-
-#include "itkForwardFFTImageFilter.h"
-#include "itkInverseFFTImageFilter.h"
-#include <itkComplexToModulusImageFilter.h>
-#include <itkFFTShiftImageFilter.h>
+#include "rtkFFTConvolutionImageFilter.h"
 
 namespace rtk
 {
@@ -46,12 +40,14 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
 class ITK_EXPORT ScatterGlareCorrectionImageFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+    public rtk::FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
   /** Standard class typedefs. */
   typedef ScatterGlareCorrectionImageFilter                  Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
+  typedef rtk::FFTConvolutionImageFilter< TInputImage,
+                                          TOutputImage,
+                                          TFFTPrecision>     Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
@@ -59,147 +55,46 @@ public:
   typedef TInputImage                                       InputImageType;
   typedef TOutputImage                                      OutputImageType;
   typedef TFFTPrecision                                     FFTPrecisionType;
-  typedef typename InputImageType::Pointer                  InputImagePointer;
-  typedef typename InputImageType::PixelType                InputImagePixelType;
-  typedef typename OutputImageType::Pointer                 OutputImagePointer;
-  typedef typename OutputImageType::PixelType               OutputImagePixelType;
-  typedef typename InputImageType::RegionType               RegionType;
   typedef typename InputImageType::IndexType                IndexType;
   typedef typename InputImageType::SizeType                 SizeType;
-  typedef typename InputImageType::SpacingType              SpacingType;
 
-  typedef typename itk::Image<TFFTPrecision,
-                              TInputImage::ImageDimension > FFTInputImageType;
+  typedef typename Superclass::FFTInputImageType            FFTInputImageType;
   typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
-  typedef typename itk::Image<std::complex<TFFTPrecision>,
-                              TInputImage::ImageDimension > FFTOutputImageType;
+  typedef typename Superclass::FFTOutputImageType           FFTOutputImageType;
   typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
 
-  typedef typename itk::ForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType>  ForwardFFTType;
-  typedef typename itk::InverseFFTImageFilter< FFTOutputImageType, FFTInputImageType>  InverseFFTType;
-  typedef typename itk::FFTShiftImageFilter< FFTInputImageType, FFTInputImageType>      FFTShiftType;
-
   typedef typename std::vector<float>                       CoefficientVectorType;
-
-  /** ImageDimension constants */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(ScatterGlareCorrectionImageFilter, ImageToImageFilter);
-
-  /**
-   * Set/Get the greatest prime factor allowed on the size of the padded image.
-   * The filter increase the size of the image to reach a size with the greatest
-   * prime factor smaller or equal to the specified value. The default value is
-   * 13, which is the greatest prime number for which the FFT are precomputed
-   * in FFTW, and thus gives very good performance.
-   * A greatest prime factor of 2 produce a size which is a power of 2, and thus
-   * is suitable for vnl base fft filters.
-   * A greatest prime factor of 1 or less - typically 0 - disable the extra padding.
-   *
-   * Warning: this parameter is not used (and useful) only when ITK is built with
-   * FFTW support.
-   */
-  itkGetConstMacro(GreatestPrimeFactor, int);
-  itkSetMacro(GreatestPrimeFactor, int);
-
-#ifdef ITK_USE_CONCEPT_CHECKING
-  /** Begin concept checking */
-  itkConceptMacro(InputHasPixelTraitsCheck,
-                  (itk::Concept::HasPixelTraits<InputImagePixelType>) );
-  itkConceptMacro(InputHasNumericTraitsCheck,
-                  (itk::Concept::HasNumericTraits<InputImagePixelType>) );
-  /** End concept checking */
-#endif
-
-  /** Set/Get the percentage of the image widthfeathered with data to correct
-    * for truncation.
-    */
-  itkGetConstMacro(TruncationCorrection, double);
-  itkSetMacro(TruncationCorrection, double);
+  itkTypeMacro(ScatterGlareCorrectionImageFilter, FFTConvolutionImageFilter);
 
   itkGetConstMacro(Coefficients, CoefficientVectorType);
-  virtual void SetCoefficients(const CoefficientVectorType coefficients){
-    if (this->m_Coefficients != coefficients)
+  virtual void SetCoefficients(const CoefficientVectorType coefficients)
     {
+    if (this->m_Coefficients != coefficients)
+      {
       this->m_Coefficients = coefficients;
-      m_ImageId = 0;
       this->Modified();
+      }
     }
-  }
-
-  /** Deconvolution Kernel (GSF in ref. paper)
-  */
-  itkGetConstMacro(KernelFFT, FFTOutputImagePointer);
-
-  /** Fourier transform of the deconvolution Kernel
-   */
-  itkGetConstMacro(Kernel, FFTInputImagePointer);
 
 protected:
   ScatterGlareCorrectionImageFilter();
   ~ScatterGlareCorrectionImageFilter(){}
 
-  void GenerateInputRequestedRegion();
-
-  virtual void BeforeThreadedGenerateData();
-
-  virtual void AfterThreadedGenerateData();
-
-  virtual void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId );
-
-  /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
-    */
-  virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion, const SpacingType &spacing);
-  RegionType GetPaddedImageRegion(const RegionType &inputRegion);
-
-  void PrintSelf(std::ostream& os, itk::Indent indent) const;
-
-  bool IsPrime( int n ) const;
-
-  int GreatestPrimeFactor( int n ) const;
-
   /** Create the deconvolution kernel
   */
-  FFTOutputImagePointer GetFFTDeconvolutionKernel(const SizeType size, const SpacingType spacing);
-
-  /** Pre compute weights for truncation correction in a lookup table. The index
-    * is the distance to the original image border.
-    * Careful: the function is not thread safe but it does nothing if the weights have
-    * already been computed.
-    */
-  void UpdateTruncationMirrorWeights();
-  typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
+  virtual void UpdateFFTConvolutionKernel(const SizeType size);
 
 private:
   ScatterGlareCorrectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);     //purposely not implemented
 
-  /** Percentage of the image width which is feathered with data to correct for truncation.
-    * 0 means no correction.
-    */
-  double m_TruncationCorrection;
-  int GetTruncationCorrectionExtent();
-
-  /**
-   * Greatest prime factor of the FFT input.
-   */
-  int m_GreatestPrimeFactor;
-
-  FFTInputImagePointer  m_Kernel;
-  FFTOutputImagePointer m_KernelFFT;
   CoefficientVectorType m_Coefficients;
-
-  int m_ImageId;
-  int m_BackupNumberOfThreads;
+  CoefficientVectorType m_PreviousCoefficients;
 }; // end of class
 
 } // end namespace rtk
