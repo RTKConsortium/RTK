@@ -93,6 +93,7 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
   z.Fill(0.);
   z[2] = 1.;
   HomogeneousVectorType sph = GetSourcePosition( m_GantryAngles.size()-1 );
+  sph[1] = 0.; // Project position to central plane
   VectorType sp( &(sph[0]) );
   sp.Normalize();
   double a = acos(sp*z);
