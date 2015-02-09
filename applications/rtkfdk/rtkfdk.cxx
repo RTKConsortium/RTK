@@ -25,7 +25,8 @@
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #ifdef RTK_USE_CUDA
-#  include "rtkCudaDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
+//TODO #  include "rtkCudaDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 #  include "rtkCudaParkerShortScanImageFilter.h"
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
