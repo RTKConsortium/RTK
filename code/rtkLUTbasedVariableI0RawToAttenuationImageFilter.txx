@@ -21,6 +21,7 @@
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
+#include "rtkI0EstimationProjectionFilter.h"
 
 namespace rtk
 {
@@ -42,7 +43,7 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   ++it;
   while( !it.IsAtEnd() )
     {
-    it.Set( -vcl_log( double(it.GetIndex()[0]) ) );
+    it.Set( -log( double(it.GetIndex()[0]) ) );
     ++it;
     }
 
@@ -54,7 +55,7 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   m_ThresholdLUTFilter = ThresholdLUTFilterType::New();
   m_AddLUTFilter->InPlaceOff();
   m_AddLUTFilter->SetInput1(lut);
-  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)m_I0, 1.) ) );
+  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max(m_I0, 1.) ) );
   m_ThresholdLUTFilter->SetInput( m_AddLUTFilter->GetOutput() );
   m_ThresholdLUTFilter->ThresholdBelow(0.);
   m_ThresholdLUTFilter->SetOutsideValue(0.);
@@ -68,7 +69,17 @@ void
 LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)m_I0, 1.) ) );
+  typedef rtk::I0EstimationProjectionFilter<TInputImage> I0EstimationType;
+  I0EstimationType * i0est = dynamic_cast<I0EstimationType*>( this->GetInput()->GetSource().GetPointer() );
+  if(i0est)
+    {
+    m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)i0est->GetI0(), 1.) ) );
+    }
+  else
+    {
+    m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max(m_I0, 1.) ) );
+    }
+
   Superclass::BeforeThreadedGenerateData(); // Update the LUT
 }
 

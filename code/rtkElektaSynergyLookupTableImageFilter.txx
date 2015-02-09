@@ -92,34 +92,6 @@ ElektaSynergyRawLookupTableImageFilter<VImageDimension>
   this->SetLookupTable(lut);
 }
 
-template <class TOutputImage>
-ElektaSynergyLogLookupTableImageFilter<TOutputImage>
-::ElektaSynergyLogLookupTableImageFilter()
-{
-  // Create the lut
-  typename LookupTableType::Pointer lut = LookupTableType::New();
-  typename LookupTableType::SizeType size;
-  size[0] = itk::NumericTraits<InputImagePixelType>::max() -
-            itk::NumericTraits<InputImagePixelType>::min() + 1;
-  lut->SetRegions( size );
-  lut->Allocate();
-
-  // Iterate and set lut
-  OutputImagePixelType logRef = log(double(size[0]));
-  itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
-  it.GoToBegin();
-
-  //Conventional lookup table for the rest
-  while( !it.IsAtEnd() ) 
-    {
-    it.Set( logRef - log( double(it.GetIndex()[0]) ) );
-    ++it;
-    }
-
-  // Set the lut to member and functor
-  this->SetLookupTable(lut);
-}
-
 }
 
 #endif

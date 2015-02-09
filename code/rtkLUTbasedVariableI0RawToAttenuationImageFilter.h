@@ -30,9 +30,35 @@ namespace rtk
 /** \class LUTbasedVariableI0RawToAttenuationImageFilter
  * \brief Performs the conversion from raw data to attenuations
  *
+ * Performs the conversion from raw data to attenuations using a lookup table
+ * which is typically possible when the input type is 16-bit, e.g., unsigned
+ * short. The I0 value (intensity when there is no attenuation) is assumed to
+ * be constant and can be changed.
+ *
+ * If the input is of type I0EstimationProjectionFilter, then the member I0 is
+ * not used but the estimated value is automatically retrieved.
+ *
+ * The lookup table is obtained using the following mini-pipeline:
+ *
+ * digraph LookupTable {
+ *
+ *  Input2 [label="-ln(max(1,index))"]
+ *  Input [label="ln(max(1,m_I0))"]
+ *  Output [label="LookupTable", shape=Mdiamond];
+ *
+ *  node [shape=box];
+ *  Add [label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+ *  Thres [label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
+ *
+ *  Input2 -> Add
+ *  Input -> Add
+ *  Add -> Thres
+ *  Thres -> Output
+ * }
+ *
  * \test rtklutbasedrawtoattenuationtest.cxx
  *
- * \author S. Brousmiche
+ * \author S. Brousmiche, S. Rit
  *
  * \ingroup ImageToImageFilter
  */
@@ -62,8 +88,8 @@ public:
 
   /** Air level I0
     */
-  itkGetMacro(I0, InputImagePixelType);
-  itkSetMacro(I0, InputImagePixelType);
+  itkGetMacro(I0, double);
+  itkSetMacro(I0, double);
 
   virtual void BeforeThreadedGenerateData();
 
@@ -75,7 +101,7 @@ private:
   LUTbasedVariableI0RawToAttenuationImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);                                //purposely not implemented
 
-  InputImagePixelType                      m_I0;
+  double                                   m_I0;
   typename AddLUTFilterType::Pointer       m_AddLUTFilter;
   typename ThresholdLUTFilterType::Pointer m_ThresholdLUTFilter;
 };

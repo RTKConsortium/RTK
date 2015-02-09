@@ -116,6 +116,44 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
               << " file(s)..."
               << std::endl;
 
+  // Crop boundaries
+  typename TProjectionsReaderType::OutputImageSizeType upperCrop, lowerCrop;
+  upperCrop.Fill(0);
+  lowerCrop.Fill(0);
+  for(int i=0; i<args_info.lowercrop_given; i++)
+    lowerCrop[i] = args_info.lowercrop_arg[i];
+  reader->SetLowerBoundaryCropSize(lowerCrop);
+  for(int i=0; i<args_info.uppercrop_given; i++)
+    upperCrop[i] = args_info.uppercrop_arg[i];
+  reader->SetUpperBoundaryCropSize(upperCrop);
+
+  // Shrink / Binning
+  typename TProjectionsReaderType::ShrinkFactorsType binFactors;
+  binFactors.Fill(1);
+  for(int i=0; i<args_info.binning_given; i++)
+    binFactors[i] = args_info.binning_arg[i];
+  reader->SetShrinkFactors(binFactors);
+
+  // Boellaard scatter correction
+  if(args_info.spr_given)
+    reader->SetScatterToPrimaryRatio(args_info.spr_arg);
+  if(args_info.nonneg_given)
+    reader->SetNonNegativityConstraintThreshold(args_info.nonneg_arg);
+  if(args_info.airthres_given)
+    reader->SetAirThreshold(args_info.airthres_arg);
+
+  // I0
+  if(args_info.i0_given)
+    reader->SetI0(args_info.i0_arg);
+
+  // Water precorrection
+  if(args_info.wpc_given)
+    {
+    std::vector<double> coeffs;
+    coeffs.assign(args_info.wpc_arg, args_info.wpc_arg+args_info.wpc_given);
+    reader->SetWaterPrecorrectionCoefficients(coeffs);
+    }
+
   // Pass list to projections reader
   reader->SetFileNames( names->GetFileNames() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() );
