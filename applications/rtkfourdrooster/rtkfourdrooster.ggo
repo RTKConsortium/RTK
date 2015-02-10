@@ -21,3 +21,6 @@ option "shift"     - "Phase shift applied on the DVFs to simulate phase estimati
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
 option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
+
+section "Motion-compensation described in [ToBeWritten]"
+option "dvf"       - "Input 4D DVF"                       string    no
