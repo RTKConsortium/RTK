@@ -22,10 +22,6 @@
 #include <algorithm>
 #include <itkCenteredEuler3DTransform.h>
 
-#ifndef M_PI
-#define M_PI vnl_math::pi
-#endif
-
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
   double result = a-360*floor(a/360); // between -360 and 360
@@ -35,8 +31,8 @@ double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
 
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(const double a)
 {
-  double result = a-2*M_PI*floor( a / (2*M_PI) ); // between -2*PI and 2*PI
-  if(result<0) result += 2*M_PI;                  // between 0     and 2*PI
+  double result = a-2*vnl_math::pi*floor( a / (2*vnl_math::pi) ); // between -2*PI and 2*PI
+  if(result<0) result += 2*vnl_math::pi;                          // between 0     and 2*PI
   return result;
 }
 
@@ -93,11 +89,12 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
   z.Fill(0.);
   z[2] = 1.;
   HomogeneousVectorType sph = GetSourcePosition( m_GantryAngles.size()-1 );
+  sph[1] = 0.; // Project position to central plane
   VectorType sp( &(sph[0]) );
   sp.Normalize();
   double a = acos(sp*z);
   if(sp[0] > 0.)
-    a = 2. * M_PI - a;
+    a = 2. * vnl_math::pi - a;
   m_SourceAngles.push_back( ConvertAngleBetween0And2PIRadians(a) );
 
   this->Modified();
@@ -168,7 +165,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsW
 
   // Special management of single or empty dataset
   if(nProj==1)
-    angularGaps[0] = 2*M_PI;
+    angularGaps[0] = 2*vnl_math::pi;
   if(nProj<2)
     return angularGaps;
 
@@ -187,7 +184,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsW
     }
 
   //Last projection wraps the angle of the first one
-  angularGaps[curr->second] = 0.5 * ( sangles.begin()->first + 2*M_PI - curr->first );
+  angularGaps[curr->second] = 0.5 * ( sangles.begin()->first + 2*vnl_math::pi - curr->first );
 
   return angularGaps;
 }
@@ -200,7 +197,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
 
   // Special management of single or empty dataset
   if(nProj==1)
-    angularGaps[0] = M_PI;
+    angularGaps[0] = vnl_math::pi;
   if(nProj<2)
     return angularGaps;
 
@@ -214,7 +211,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
   next++;
 
   //First projection wraps the angle of the last one
-  angularGaps[curr->second] = 0.5 * ( next->first - sangles.rbegin()->first + 2*M_PI );
+  angularGaps[curr->second] = 0.5 * ( next->first - sangles.rbegin()->first + 2*vnl_math::pi );
   curr++; next++;
 
   //Rest of the angles
@@ -225,7 +222,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
     }
 
   //Last projection wraps the angle of the first one
-  angularGaps[curr->second] = 0.5 * ( sangles.begin()->first + 2*M_PI - prev->first );
+  angularGaps[curr->second] = 0.5 * ( sangles.begin()->first + 2*vnl_math::pi - prev->first );
 
   // FIXME: Trick for the half scan in parallel geometry case
   if(m_SourceToDetectorDistances[0]==0.)

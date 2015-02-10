@@ -31,7 +31,7 @@ template <class TInputImage, class TOutputImage>
 SoftThresholdImageFilter<TInputImage, TOutputImage>
 ::SoftThresholdImageFilter()
 {
-  this->SetThreshold(NumericTraits<InputPixelType>::Zero);
+  this->SetThreshold(itk::NumericTraits<InputPixelType>::Zero);
 }
 
 /**
@@ -46,6 +46,6 @@ SoftThresholdImageFilter<TInputImage, TOutputImage>
   this->Modified();
 }
 
-} // end namespace itk
+} // end namespace rtk
 
 #endif

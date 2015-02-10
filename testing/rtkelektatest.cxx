@@ -25,16 +25,16 @@ int main(int, char** )
   rtk::ElektaSynergyGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::ElektaSynergyGeometryReader::New();
   geoTargReader->SetDicomUID("1.3.46.423632.135428.1351013645.166");
-  geoTargReader->SetImageDbfFileName( std::string(RTK_DATA_ROOT) + 
+  geoTargReader->SetImageDbfFileName( std::string(RTK_DATA_ROOT) +
                                       std::string("/Input/Elekta/IMAGE.DBF") );
-  geoTargReader->SetFrameDbfFileName( std::string(RTK_DATA_ROOT) + 
+  geoTargReader->SetFrameDbfFileName( std::string(RTK_DATA_ROOT) +
                                       std::string("/Input/Elekta/FRAME.DBF") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) + 
+  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
                              std::string("/Baseline/Elekta/geometry.xml") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
@@ -85,9 +85,10 @@ int main(int, char** )
   raw->SetInput(r->GetOutput());
   raw->Update();
 
-  typedef rtk::ElektaSynergyLogLookupTableImageFilter<ImageType> LogLUTType;
+  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,ImageType> LogLUTType;
   LogLUTType::Pointer log = LogLUTType::New();
   log->SetInput(raw->GetOutput());
+  log->SetI0(log->GetI0()+1.);
   log->Update();
 
   // Compare the result of the full lut with the split lut

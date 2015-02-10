@@ -90,10 +90,10 @@ CudaParkerShortScanImageFilter
   itLastAngle = (itLastAngle == sortedAngles.begin()) ? --sortedAngles.end() : --itLastAngle;
   double lastAngle = itLastAngle->first;
   if (lastAngle < firstAngle)
-    lastAngle += 2*M_PI;
+    lastAngle += 2*vnl_math::pi;
   //Delta
-  double delta = 0.5 * (lastAngle - firstAngle - M_PI);
-  delta = delta - 2*M_PI* floor(delta / (2*M_PI)); // between -2*PI and 2*PI
+  double delta = 0.5 * (lastAngle - firstAngle - vnl_math::pi);
+  delta = delta - 2*vnl_math::pi* floor(delta / (2*vnl_math::pi)); // between -2*PI and 2*PI
 
   // check for enough data
   const int geomStart = this->GetInput()->GetBufferedRegion().GetIndex()[2];

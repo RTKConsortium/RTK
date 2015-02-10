@@ -25,8 +25,9 @@
 
 namespace rtk
 {
-template< unsigned char bitShift >
-I0EstimationProjectionFilter< bitShift >::I0EstimationProjectionFilter()
+template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
+::I0EstimationProjectionFilter()
 {
   m_NBins = (unsigned int)( 1 << ( 16 - bitShift ) );
 
@@ -51,8 +52,9 @@ I0EstimationProjectionFilter< bitShift >::I0EstimationProjectionFilter()
   m_Mutex = itk::MutexLock::New();
 }
 
-template< unsigned char bitShift >
-void I0EstimationProjectionFilter< bitShift >::BeforeThreadedGenerateData()
+template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
+::BeforeThreadedGenerateData()
 {
   std::vector< unsigned >::iterator it = m_Histogram.begin();
 
@@ -70,11 +72,25 @@ void I0EstimationProjectionFilter< bitShift >::BeforeThreadedGenerateData()
     }
 }
 
-template< unsigned char bitShift >
-void I0EstimationProjectionFilter< bitShift >::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                                                                    ThreadIdType threadId)
+template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
+::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                       ThreadIdType itkNotUsed(threadId))
 {
-  itk::ImageRegionConstIterator< InputImageType > itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIterator<InputImageType>      itOut(this->GetOutput(), outputRegionForThread);
+
+  itIn.GoToBegin();
+  itOut.GoToBegin();
+  if (this->GetInput() != this->GetOutput()) // If not in place, copy is required
+    {
+    while (!itIn.IsAtEnd())
+      {
+      itOut.Set(itIn.Get());
+      ++itIn;
+      ++itOut;
+      }
+    }
 
   // Computation of region histogram
 
@@ -143,26 +159,28 @@ void I0EstimationProjectionFilter< bitShift >::ThreadedGenerateData(const Output
   m_Mutex->Unlock();
 }
 
-template< unsigned char bitShift >
-void I0EstimationProjectionFilter< bitShift >::AfterThreadedGenerateData()
+template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
+::AfterThreadedGenerateData()
 {
   // Search for the background mode in the last quarter of the histogram
-  unsigned       startIdx = ( m_Imin + 3 * ( ( m_Imax + m_Imin ) >> 2 ) ) >> bitShift;
+
+  unsigned       startIdx = (3 * (m_Imax >> 2)) >> bitShift;
   unsigned       idx = startIdx;
   unsigned short maxId = startIdx;
   unsigned       maxVal = m_Histogram[startIdx];
 
-  while ( idx < ( m_Imax >> bitShift ) )
+  while (idx < (m_Imax >> bitShift))
+  {
+    if (m_Histogram[idx] >= maxVal)
     {
-    if ( m_Histogram[idx] >= maxVal )
-      {
       maxVal = m_Histogram[idx];
       maxId = idx;
-      }
-    ++idx;
     }
-  m_I0 = unsigned( ( maxId + 1 ) << bitShift );
-  m_I0rls = ( m_Np > 1 ) ? (unsigned short)( (float)(m_I0rls * m_Lambda) + (float)(m_I0) * ( 1. - m_Lambda ) ) : m_I0;
+    ++idx;
+  }
+  m_I0 = unsigned((maxId) << bitShift);
+  m_I0rls = (m_Np > 1) ? (unsigned short)((float)(m_I0rls * m_Lambda) + (float)(m_I0)* (1. - m_Lambda)) : m_I0;
 
   // If estimated I0 at the boundaries, either startIdx or Imax then we missed
   // smth or no background mode
@@ -190,7 +208,7 @@ void I0EstimationProjectionFilter< bitShift >::AfterThreadedGenerateData()
 
   if ( m_SaveHistograms )
     {
-    ofstream paramFile;
+    std::ofstream paramFile;
     paramFile.open("i0est_histogram.csv", std::ofstream::out | std::ofstream::app);
     std::vector< unsigned >::const_iterator itf = m_Histogram.begin();
     for (; itf != m_Histogram.end(); ++itf )

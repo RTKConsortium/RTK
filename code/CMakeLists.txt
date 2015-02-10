@@ -2,7 +2,7 @@
 # Propagate cmake options in a header file
 CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
   ${CMAKE_BINARY_DIR}/rtkConfiguration.h)
-SET (RTK_LIBRARIES RTK)
+SET (RTK_LIBRARIES RTK lpsolve55)
 #=========================================================
 
 #=========================================================
@@ -32,10 +32,10 @@ ADD_LIBRARY(RTK
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
-            rtkConvertEllipsoidToQuadricParametersFunction.cxx
-            rtkWaterCalibrationImageFilter.cxx)
+            rtkConvertEllipsoidToQuadricParametersFunction.cxx)
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RTK lpsolve55)
 #=========================================================
 
 #=========================================================

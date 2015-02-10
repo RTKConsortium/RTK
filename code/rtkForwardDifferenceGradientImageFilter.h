@@ -45,15 +45,13 @@ template <typename TPixelType, unsigned int VImageDimension > class VectorImage;
  * no. 1–2 (January 2004): 89–97.
  */
 
-using namespace itk;
-
 template< typename TInputImage,
           typename TOperatorValueType = float,
           typename TOuputValue = float,
-          typename TOuputImage = Image< CovariantVector
+          typename TOuputImage = itk::Image< itk::CovariantVector
         < TOuputValue, TInputImage::ImageDimension >, TInputImage::ImageDimension > >
 class ForwardDifferenceGradientImageFilter:
-  public ImageToImageFilter< TInputImage, TOuputImage >
+  public itk::ImageToImageFilter< TInputImage, TOuputImage >
 {
 public:
   /** Extract dimension from input image. */
@@ -72,9 +70,9 @@ public:
   typedef typename OutputImageType::Pointer OutputImagePointer;
 
   /** Standard class typedefs. */
-  typedef ImageToImageFilter< InputImageType, OutputImageType > Superclass;
-  typedef SmartPointer< Self >                                  Pointer;
-  typedef SmartPointer< const Self >                            ConstPointer;
+  typedef itk::ImageToImageFilter< InputImageType, OutputImageType > Superclass;
+  typedef itk::SmartPointer< Self >                                  Pointer;
+  typedef itk::SmartPointer< const Self >                            ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -118,14 +116,14 @@ public:
   void SetDimensionsProcessed(bool* DimensionsProcessed);
 
   /** Allows to change the default boundary condition */
-  void OverrideBoundaryCondition(ImageBoundaryCondition< TInputImage >* boundaryCondition);
+  void OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
   itkConceptMacro( InputConvertibleToOutputCheck,
-                   ( Concept::Convertible< InputPixelType, OutputValueType > ) );
+                   ( itk::Concept::Convertible< InputPixelType, OutputValueType > ) );
   itkConceptMacro( OutputHasNumericTraitsCheck,
-                   ( Concept::HasNumericTraits< OutputValueType > ) );
+                   ( itk::Concept::HasNumericTraits< OutputValueType > ) );
   // End concept checking
 #endif
 
@@ -146,7 +144,7 @@ public:
 protected:
   ForwardDifferenceGradientImageFilter();
   virtual ~ForwardDifferenceGradientImageFilter();
-  void PrintSelf(std::ostream & os, Indent indent) const;
+  void PrintSelf(std::ostream & os, itk::Indent indent) const;
 
   /** ForwardDifferenceGradientImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData()
@@ -159,7 +157,7 @@ protected:
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            ThreadIdType threadId);
+                            itk::ThreadIdType threadId);
 
   virtual void GenerateOutputInformation();
 
@@ -185,7 +183,7 @@ private:
 //  }
 
   template <typename T >
-  void SetOutputPixel( ImageRegionIterator< T > &it, CovariantVectorType &gradient )
+  void SetOutputPixel( itk::ImageRegionIterator< T > &it, CovariantVectorType &gradient )
   {
     it.Value() = gradient;
   }
@@ -202,8 +200,8 @@ private:
   // are set to zero
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
 
-  ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
-  bool                                                m_IsBoundaryConditionOverriden;
+  itk::ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
+  bool                                                     m_IsBoundaryConditionOverriden;
 };
 } // end namespace itk
 

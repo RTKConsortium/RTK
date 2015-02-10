@@ -22,6 +22,8 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
+#include "lp_lib.h"
+
 namespace rtk
 {
 
@@ -30,14 +32,195 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::FieldOfViewImageFilter():
   m_Geometry(NULL),
   m_Mask(false),
+  m_Radius(-1),
+  m_CenterX(0.),
+  m_CenterZ(0.),
   m_DisplacedDetector(false)
 {
+}
+
+template <class TInputImage, class TOutputImage>
+bool FieldOfViewImageFilter<TInputImage, TOutputImage>
+::ComputeFOVRadius(const FOVRadiusType type, double &x, double &z, double &r)
+{
+  m_ProjectionsStack->UpdateOutputInformation();
+  const unsigned int Dimension = TInputImage::ImageDimension;
+
+  // Compute projection stack indices of corners of inferior X index
+  m_ProjectionsStack->UpdateOutputInformation();
+  typename TInputImage::IndexType indexCornerInfX1, indexCornerInfX2;
+  indexCornerInfX1 = m_ProjectionsStack->GetLargestPossibleRegion().GetIndex();
+  indexCornerInfX2 = indexCornerInfX1;
+  indexCornerInfX2[1] += m_ProjectionsStack->GetLargestPossibleRegion().GetSize()[1]-1;
+
+  // Compute projection stack indices of corners of superior X index
+  typename TInputImage::IndexType indexCornerSupX1, indexCornerSupX2;
+  indexCornerSupX1 = indexCornerInfX1;
+  indexCornerSupX1[0] += m_ProjectionsStack->GetLargestPossibleRegion().GetSize()[0]-1;
+  indexCornerSupX2 = indexCornerInfX2;
+  indexCornerSupX2[0] += m_ProjectionsStack->GetLargestPossibleRegion().GetSize()[0]-1;
+
+  // To physical coordinates
+  typename TInputImage::PointType cornerInfX1, cornerInfX2, cornerSupX1, cornerSupX2;
+  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCornerInfX1, cornerInfX1);
+  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCornerInfX2, cornerInfX2);
+  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCornerSupX1, cornerSupX1);
+  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCornerSupX2, cornerSupX2);
+
+  // Build model for lpsolve with 3 variables: x, z and r
+  const int Ncol = 3;
+  lprec *lp = make_lp(0, Ncol);
+  if(lp == NULL)
+    itkExceptionMacro(<< "Couldn't construct 2 new models for the simplex solver");
+
+  // Objective: maximize r
+  if(!set_obj(lp, 3, 1.))
+    itkExceptionMacro(<< "Couldn't set objective in lpsolve");
+  set_maxim(lp);
+
+  set_add_rowmode(lp, TRUE);  // makes building the model faster if it is done rows by row
+
+  int colno[Ncol] = {1, 2, 3};
+  REAL row[Ncol];
+  for(unsigned int iProj=0; iProj<m_Geometry->GetGantryAngles().size(); iProj++)
+    {
+    if( m_Geometry->GetSourceToDetectorDistances()[iProj] == 0. )
+      itkExceptionMacro(<< "FIXME: parallel case is not handled");
+
+    typename GeometryType::HomogeneousVectorType sourcePosition;
+    sourcePosition = m_Geometry->GetSourcePosition(iProj);
+
+    typename GeometryType::ThreeDHomogeneousMatrixType matrix;
+    matrix =  m_Geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix();
+
+    // Compute point coordinate in volume depending on projection index
+    typename TInputImage::PointType cornerInfX1t, cornerInfX2t, cornerSupX1t, cornerSupX2t;
+    for(unsigned int i=0; i<Dimension; i++)
+      {
+      cornerInfX1t[i] = matrix[i][Dimension];
+      cornerInfX2t[i] = matrix[i][Dimension];
+      cornerSupX1t[i] = matrix[i][Dimension];
+      cornerSupX2t[i] = matrix[i][Dimension];
+      for(unsigned int j=0; j<Dimension; j++)
+        {
+        cornerInfX1t[i] += matrix[i][j] * cornerInfX1[j];
+        cornerInfX2t[i] += matrix[i][j] * cornerInfX2[j];
+        cornerSupX1t[i] += matrix[i][j] * cornerSupX1[j];
+        cornerSupX2t[i] += matrix[i][j] * cornerSupX2[j];
+        }
+      }
+
+    // Compute the equation of a line of the ax+by=c
+    // http://en.wikipedia.org/wiki/Linear_equation#Two-point_form
+    double aInf1 = cornerInfX1t[2] - sourcePosition[2];
+    double bInf1 = sourcePosition[0] - cornerInfX1t[0];
+    double cInf1 = sourcePosition[0] * cornerInfX1t[2] - cornerInfX1t[0] * sourcePosition[2];
+    double aInf2 = cornerInfX2t[2] - sourcePosition[2];
+    double bInf2 = sourcePosition[0] - cornerInfX2t[0];
+    double cInf2 = sourcePosition[0] * cornerInfX2t[2] - cornerInfX2t[0] * sourcePosition[2];
+    double aSup1 = cornerSupX1t[2] - sourcePosition[2];
+    double bSup1 = sourcePosition[0] - cornerSupX1t[0];
+    double cSup1 = sourcePosition[0] * cornerSupX1t[2] - cornerSupX1t[0] * sourcePosition[2];
+    double aSup2 = cornerSupX2t[2] - sourcePosition[2];
+    double bSup2 = sourcePosition[0] - cornerSupX2t[0];
+    double cSup2 = sourcePosition[0] * cornerSupX2t[2] - cornerSupX2t[0] * sourcePosition[2];
+
+    // Then compute the coefficient in front of r as suggested in
+    // http://www.ifor.math.ethz.ch/teaching/lectures/intro_ss11/Exercises/solutionEx11-12.pdf
+    double dInf1 = std::sqrt(aInf1*aInf1 + bInf1*bInf1);
+    double dInf2 = std::sqrt(aInf2*aInf2 + bInf2*bInf2);
+    double dSup1 = std::sqrt(aSup1*aSup1 + bSup1*bSup1);
+    double dSup2 = std::sqrt(aSup2*aSup2 + bSup2*bSup2);
+
+    // Check on corners
+    if( aInf1*cornerSupX1t[0] + bInf1*cornerSupX1t[2] >= cInf1 &&
+        aInf2*cornerSupX2t[0] + bInf2*cornerSupX2t[2] >= cInf2 )
+      {
+      aInf1 *= -1.; bInf1 *= -1.; cInf1 *= -1.;
+      aInf2 *= -1.; bInf2 *= -1.; cInf2 *= -1.;
+      }
+    else if( aSup1*cornerInfX1t[0] + bSup1*cornerInfX1t[2] >= cSup1 &&
+             aSup2*cornerInfX2t[0] + bSup2*cornerInfX2t[2] >= cSup2 )
+      {
+      aSup1 *= -1.; bSup1 *= -1.; cSup1 *= -1.;
+      aSup2 *= -1.; bSup2 *= -1.; cSup2 *= -1.;
+      }
+    else
+      {
+      itkExceptionMacro(<< "Error computing the FOV, unhandled detector rotation.");
+      }
+
+    // Now add the constraints of the form ax+by+dr<=c
+    if(type==RADIUSINF || type==RADIUSBOTH)
+      {
+      row[0] = aInf1; row[1] = bInf1; row[2] = dInf1;
+      if(!add_constraintex(lp, 3, row, colno, LE, cInf1))
+        itkExceptionMacro(<< "Couldn't add simplex constraint");
+      row[0] = aInf2; row[1] = bInf2; row[2] = dInf2;
+      if(!add_constraintex(lp, 3, row, colno, LE, cInf2))
+        itkExceptionMacro(<< "Couldn't add simplex constraint");
+      }
+    if(type==RADIUSSUP || type==RADIUSBOTH)
+      {
+      row[0] = aSup1; row[1] = bSup1; row[2] = dSup1;
+      if(!add_constraintex(lp, 3, row, colno, LE, cSup1))
+        itkExceptionMacro(<< "Couldn't add simplex constraint");
+      row[0] = aSup2; row[1] = bSup2; row[2] = dSup2;
+      if(!add_constraintex(lp, 3, row, colno, LE, cSup2))
+        itkExceptionMacro(<< "Couldn't add simplex constraint");
+      }
+    }
+
+  set_add_rowmode(lp, FALSE); // rowmode should be turned off again when done building the model
+
+  if(!set_unbounded(lp, 1) || !set_unbounded(lp, 2))
+    itkExceptionMacro(<< "Couldn't not set center to unbounded for simplex");
+
+  set_verbose(lp, IMPORTANT);
+
+  int ret = solve(lp);
+  if(ret)
+    {
+    delete_lp(lp);
+    return false;
+    }
+  else
+    {
+    get_variables(lp, row);
+    x = row[0];
+    z = row[1];
+    r = row[2];
+    }
+
+  delete_lp(lp);
+  return true;
 }
 
 template <class TInputImage, class TOutputImage>
 void FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
+  // The radius of the FOV is computed with linear programming.
+  if(m_DisplacedDetector)
+    {
+    // Two radii are computed and the largest is selected.
+    if( !ComputeFOVRadius(RADIUSINF, m_CenterX, m_CenterZ, m_Radius) )
+      m_Radius = -1.;
+
+    double x,z,r;
+    if( ComputeFOVRadius(RADIUSSUP, x, z, r) && r>m_Radius)
+      {
+      m_Radius = r;
+      m_CenterX = x;
+      m_CenterZ = z;
+      }
+    }
+  else
+    {
+    if(!ComputeFOVRadius(RADIUSBOTH, m_CenterX, m_CenterZ, m_Radius))
+      m_Radius = -1.;
+    }
+
   // Compute projection stack indices of corners
   m_ProjectionsStack->UpdateOutputInformation();
   typename TInputImage::IndexType indexCorner1;
@@ -57,7 +240,6 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
       std::swap(corner1[i], corner2[i]);
 
   // Go over projection stack, compute minimum radius and minimum tangent
-  m_Radius = itk::NumericTraits<double>::max();
   m_HatHeightSup = itk::NumericTraits<double>::max();
   m_HatHeightInf = itk::NumericTraits<double>::NonpositiveMin();
   for(unsigned int k=0; k<m_ProjectionsStack->GetLargestPossibleRegion().GetSize(2); k++)
@@ -67,25 +249,6 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     double mag = 1.;  // Parallel
     if(sdd!=0.)
       mag = sid/sdd;  // Divergent
-
-    const double projOffsetX = m_Geometry->GetProjectionOffsetsX()[k];
-    const double sourceOffsetX = m_Geometry->GetSourceOffsetsX()[k];
-    double r1 = vcl_abs( sourceOffsetX+mag*(corner1[0]+projOffsetX-sourceOffsetX) );
-    r1 *= sid/sqrt(sid*sid+r1*r1);
-    double r2 = vcl_abs( sourceOffsetX+mag*(corner2[0]+projOffsetX-sourceOffsetX) );
-    r2 *= sid/sqrt(sid*sid+r2*r2);
-    if(m_DisplacedDetector)
-      {
-      // The largest of the two radii counts (the short one is assumed to be
-      // compensated for by the displaced detector filter)
-      m_Radius = std::min( m_Radius, std::max(r1, r2) );
-      }
-    else
-      {
-      // The minimum of two radii counts in the general case
-      m_Radius = std::min( m_Radius, r1 );
-      m_Radius = std::min( m_Radius, r2 );
-      }
 
     const double projOffsetY = m_Geometry->GetProjectionOffsetsY()[k];
     const double sourceOffsetY = m_Geometry->GetSourceOffsetsY()[k];
@@ -111,7 +274,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType itkNotUsed(threadId) )
+                       ThreadIdType threadId )
 {
   typename TInputImage::DirectionType d = this->GetInput()->GetDirection();
   if( d[0][0]==1. && d[0][1]==0. && d[0][2]==0. &&
@@ -141,14 +304,17 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     typename TInputImage::PointType point = pointBase;
     for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
       {
-      double zsquare = point[2]*point[2];
+      double zsquare = m_CenterZ - point[2];
+      zsquare *= zsquare;
       point[1] = pointBase[1];
       for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++)
         {
         point[0] = pointBase[0];
         for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++)
           {
-          double radius = vcl_sqrt(point[0]*point[0] + zsquare);
+          double xsquare = m_CenterX - point[0];
+          xsquare *= xsquare;
+          double radius = vcl_sqrt( xsquare + zsquare);
           if ( radius <= m_Radius &&
                radius*m_HatTangentInf >= m_HatHeightInf - point[1] &&
                radius*m_HatTangentSup <= m_HatHeightSup - point[1])

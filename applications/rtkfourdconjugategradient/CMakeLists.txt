@@ -1,4 +1,4 @@
-WRAP_GGO(rtkfourdconjugategradient_GGO_C rtkfourdconjugategradient.ggo)
+WRAP_GGO(rtkfourdconjugategradient_GGO_C rtkfourdconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo)
 ADD_EXECUTABLE(rtkfourdconjugategradient rtkfourdconjugategradient.cxx ${rtkfourdconjugategradient_GGO_C})
 TARGET_LINK_LIBRARIES(rtkfourdconjugategradient RTK)
 

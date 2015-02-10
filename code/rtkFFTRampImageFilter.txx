@@ -331,16 +331,16 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // Compute kernel in space domain (see Kak & Slaney, chapter 3 equation 61
   // page 72) although spacing is not squared according to equation 69 page 75
   double spacing = this->GetInput()->GetSpacing()[0];
-  IndexType i,j;
-  i.Fill(0);
-  j.Fill(0);
-  kernel->SetPixel(i, 1./(4.*spacing) );
-  for(i[0]=1, j[0]=size[0]-1; i[0] < typename IndexType::IndexValueType(size[0]/2); i[0] += 2, j[0] -= 2)
+  IndexType ix,jx;
+  ix.Fill(0);
+  jx.Fill(0);
+  kernel->SetPixel(ix, 1./(4.*spacing) );
+  for(ix[0]=1, jx[0]=size[0]-1; ix[0] < typename IndexType::IndexValueType(size[0]/2); ix[0] += 2, jx[0] -= 2)
     {
-    double v = i[0] * vnl_math::pi;
+    double v = ix[0] * vnl_math::pi;
     v = -1. / (v * v * spacing);
-    kernel->SetPixel(i, v);
-    kernel->SetPixel(j, v);
+    kernel->SetPixel(ix, v);
+    kernel->SetPixel(jx, v);
     }
 
   // FFT kernel

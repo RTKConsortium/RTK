@@ -11710,6 +11710,44 @@ C++ includes: srtkImageReaderBase.h
 ";
 
 
+%feature("docstring") rtk::simple::ProjectionsReader "
+
+Read and convert to attenuation serie of projections into a SimpleRTK image
+
+
+
+See:
+ rtk::simple::ReadProjections for the procedural interface
+
+
+C++ includes: srtkProjectionsReader.h
+";
+
+%feature("docstring")  rtk::simple::ProjectionsReader::Execute "
+";
+
+%feature("docstring")  rtk::simple::ProjectionsReader::GetFileNames "
+";
+
+%feature("docstring")  rtk::simple::ProjectionsReader::GetName "
+
+return user readable name fo the filter
+
+";
+
+%feature("docstring")  rtk::simple::ProjectionsReader::ProjectionsReader "
+";
+
+%feature("docstring")  rtk::simple::ProjectionsReader::SetFileNames "
+";
+
+%feature("docstring")  rtk::simple::ProjectionsReader::ToString "
+
+Print ourselves to string
+
+";
+
+
 %feature("docstring") rtk::simple::ImageSeriesReader "
 
 Read series of image into a SimpleRTK image.

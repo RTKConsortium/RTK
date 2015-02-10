@@ -39,7 +39,7 @@ template< typename TInputImage, typename TRealType, typename TOutputImage >
 void
 MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       ThreadIdType threadId)
+                       itk::ThreadIdType threadId)
 {
   itk::ImageRegionConstIterator< TInputImage >                 InputIt;
   itk::ImageRegionIterator< TOutputImage >                     OutputIt;

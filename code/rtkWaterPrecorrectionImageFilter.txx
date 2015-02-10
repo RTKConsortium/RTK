@@ -26,21 +26,22 @@
 
 namespace rtk
 {
-template< unsigned int modelOrder >
-WaterPrecorrectionImageFilter< modelOrder >::WaterPrecorrectionImageFilter()
+template <class TInputImage, class  TOutputImage>
+WaterPrecorrectionImageFilter<TInputImage, TOutputImage>
+::WaterPrecorrectionImageFilter()
 {
-  m_Coefficients[0] = 0.0f;  // No correction by default
-  m_Coefficients[1] = 1.0f;
+  m_Coefficients.push_back(0.0);  // No correction by default
+  m_Coefficients.push_back(1.0);
 }
 
-template< unsigned int modelOrder >
-void WaterPrecorrectionImageFilter< modelOrder >
+template <class TInputImage, class  TOutputImage>
+void WaterPrecorrectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId)
 {
-  int csize = modelOrder;
+  const int csize = m_Coefficients.size();
 
-  itk::ImageRegionConstIterator< ImageType > itIn(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator< ImageType >      itOut(this->GetOutput(), outputRegionForThread);
+  typename itk::ImageRegionConstIterator< TInputImage > itIn(this->GetInput(), outputRegionForThread);
+  typename itk::ImageRegionIterator< TOutputImage >     itOut(this->GetOutput(), outputRegionForThread);
 
   if ( csize >= 3 )
     {
