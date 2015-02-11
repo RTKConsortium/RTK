@@ -59,7 +59,7 @@ set_property(TARGET lpsolve55 PROPERTY PUBLIC_HEADER
 	lp_wlp.h
 )
 
-target_include_directories(lpsolve55 PRIVATE
+include_directories(
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/shared"
 	"${CMAKE_CURRENT_SOURCE_DIR}/bfp"
