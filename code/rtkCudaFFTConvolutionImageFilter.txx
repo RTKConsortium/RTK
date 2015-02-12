@@ -16,16 +16,23 @@
  *
  *=========================================================================*/
 
-#include "rtkCudaFFTRampImageFilter.h"
-#include "rtkCudaFFTRampImageFilter.hcu"
+#ifndef __rtkCudaFFTConvolutionImageFilter_txx
+#define __rtkCudaFFTConvolutionImageFilter_txx
+
+#include "rtkCudaFFTConvolutionImageFilter.h"
+#include "rtkCudaFFTConvolutionImageFilter.hcu"
 
 #include "rtkCudaCropImageFilter.h"
 #include "rtkCudaCropImageFilter.hcu"
 
 #include <itkMacro.h>
 
-rtk::CudaFFTRampImageFilter
- ::CudaFFTRampImageFilter()
+namespace rtk
+{
+
+template<class TParentImageFilter>
+CudaFFTConvolutionImageFilter<TParentImageFilter>
+ ::CudaFFTConvolutionImageFilter()
  {
    // We use FFTW for the kernel so we need to do the same thing as in the parent
 #if defined(USE_FFTWF)
@@ -33,17 +40,18 @@ rtk::CudaFFTRampImageFilter
 #endif
  }
 
-rtk::CudaFFTRampImageFilter::FFTInputImagePointer
-rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
+template<class TParentImageFilter>
+typename CudaFFTConvolutionImageFilter<TParentImageFilter>::FFTInputImagePointer
+CudaFFTConvolutionImageFilter<TParentImageFilter>::PadInputImageRegion(const RegionType &inputRegion)
 {
   CudaImageType::RegionType inBuffRegion = this->GetInput()->GetBufferedRegion();
   if(inBuffRegion != this->GetInput()->GetRequestedRegion())
     {
-    itkExceptionMacro(<< "CudaFFTRampImageFilter assumes that input requested and buffered regions are equal.");
+    itkExceptionMacro(<< "CudaFFTConvolutionImageFilter assumes that input requested and buffered regions are equal.");
     }
 
-  UpdateTruncationMirrorWeights();
-  RegionType paddedRegion = GetPaddedImageRegion(inputRegion);
+  TParentImageFilter::UpdateTruncationMirrorWeights();
+  RegionType paddedRegion = TParentImageFilter::GetPaddedImageRegion(inputRegion);
 
   // Create padded image (spacing and origin do not matter)
   itk::CudaImage<float,3>::Pointer paddedImage = itk::CudaImage<float,3>::New();
@@ -70,13 +78,14 @@ rtk::CudaFFTRampImageFilter::PadInputImageRegion(const RegionType &inputRegion)
                sz_i,
                pin,
                pout,
-               m_TruncationMirrorWeights );
+               TParentImageFilter::m_TruncationMirrorWeights );
 
   return paddedImage.GetPointer();
 }
 
+template<class TParentImageFilter>
 void
-rtk::CudaFFTRampImageFilter
+CudaFFTConvolutionImageFilter<TParentImageFilter>
 ::GPUGenerateData()
 {
   // Pad image region
@@ -91,20 +100,21 @@ rtk::CudaFFTRampImageFilter
 
   // Get FFT ramp kernel. Must be itk::Image because GetFFTConvolutionKernel is not
   // compatible with itk::CudaImage + ITK 3.20.
-  FFTOutputImageType::SizeType s = paddedImage->GetLargestPossibleRegion().GetSize();
+  typename Superclass::FFTOutputImageType::SizeType s = paddedImage->GetLargestPossibleRegion().GetSize();
   this->UpdateFFTConvolutionKernel(s);
 
   // Create the itk::CudaImage holding the kernel
-  FFTOutputImageType::RegionType kreg = this->m_KernelFFT->GetLargestPossibleRegion();
+  typename Superclass::FFTOutputImageType::RegionType kreg = this->m_KernelFFT->GetLargestPossibleRegion();
   CudaFFTOutputImagePointer fftKCUDA = CudaFFTOutputImageType::New();
   fftKCUDA->SetRegions(kreg);
   fftKCUDA->Allocate();
 
   // CUFFT scales by the number of element, correct for it in kernel.
   // Also transfer the kernel from the itk::Image to the itk::CudaImage.
-  itk::ImageRegionIterator<FFTOutputImageType> itKI(this->m_KernelFFT, kreg);
+  itk::ImageRegionIterator<typename TParentImageFilter::FFTOutputImageType> itKI(this->m_KernelFFT, kreg);
   itk::ImageRegionIterator<CudaFFTOutputImageType> itKO(fftKCUDA, kreg);
-  FFTPrecisionType invNPixels = 1 / double(paddedImage->GetBufferedRegion().GetNumberOfPixels() );
+  typename TParentImageFilter::FFTPrecisionType invNPixels;
+  invNPixels = 1 / double(paddedImage->GetBufferedRegion().GetNumberOfPixels() );
   while(!itKO.IsAtEnd() )
     {
     itKO.Set(itKI.Get() * invNPixels );
@@ -123,10 +133,10 @@ rtk::CudaFFTRampImageFilter
                        *(float2**)(fftKCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 
   // CUDA Cropping and Graft Output
-  typedef rtk::CudaCropImageFilter CropFilter;
+  typedef CudaCropImageFilter CropFilter;
   CropFilter::Pointer cf = CropFilter::New();
-  OutputImageType::SizeType upCropSize, lowCropSize;
-  for(unsigned int i=0; i<OutputImageType::ImageDimension; i++)
+  typename Superclass::OutputImageType::SizeType upCropSize, lowCropSize;
+  for(unsigned int i=0; i<CudaImageType::ImageDimension; i++)
     {
     lowCropSize[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] -
                      paddedImage->GetLargestPossibleRegion().GetIndex()[i];
@@ -145,3 +155,7 @@ rtk::CudaFFTRampImageFilter
   cf->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
   this->GraftOutput(cf->GetOutput());
 }
+
+}
+
+#endif
