@@ -44,6 +44,7 @@ namespace rtk
  * The details of the mini-pipeline is provided below, note that dashed filters
  * are shunt if they are not required according to parameters.
  *
+ * \dot
  * digraph ProjectionsReader {
  *
  * Output [label="Output (Projections)", shape=Mdiamond];
@@ -83,6 +84,7 @@ namespace rtk
  *
  * {rank=same, XRad, EDF, Varian, LUT}
  * }
+ * \enddot
  *
  * \test rtkedftest.cxx, rtkelektatest.cxx, rtkimagxtest.cxx,
  * rtkdigisenstest.cxx, rtkxradtest.cxx, rtkvariantest.cxx
