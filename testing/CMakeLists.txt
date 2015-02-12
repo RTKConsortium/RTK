@@ -82,6 +82,7 @@ ENDIF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
 ADD_EXECUTABLE(rtkscatterglarefiltertest rtkscatterglarefiltertest.cxx)
 TARGET_LINK_LIBRARIES(rtkscatterglarefiltertest ${RTK_LIBRARIES})
 ADD_TEST(rtkscatterglarefiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkscatterglarefiltertest)
+ADD_CUDA_TEST(rtkscatterglarefilter rtkscatterglarefiltertest.cxx)
 
 ADD_EXECUTABLE(rtkscatterglarefilternofftwtest rtkscatterglarefiltertest.cxx)
 SET_TARGET_PROPERTIES(rtkscatterglarefilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)

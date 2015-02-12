@@ -25,7 +25,11 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageFileWriter.h>
 
-#include "rtkScatterGlareCorrectionImageFilter.h"
+#ifdef USE_CUDA
+# include "rtkCudaScatterGlareCorrectionImageFilter.h"
+#else
+# include "rtkScatterGlareCorrectionImageFilter.h"
+#endif
 
 #include "rtkTestConfiguration.h"
 
@@ -40,7 +44,11 @@
 const unsigned Nprojections = 2;
 
 const unsigned int Dimension = 3;
+#ifdef USE_CUDA
+typedef itk::CudaImage< float, Dimension > ImageType;
+#else
 typedef itk::Image< float, Dimension >     ImageType;
+#endif
 
 ImageType::Pointer createInputImage(const std::vector<float> & coef)
 {
@@ -91,13 +99,17 @@ ImageType::Pointer createInputImage(const std::vector<float> & coef)
   }
 
 //  std::cout << "Input :" << sum << std::endl;
-  
+
   return inputI;
 }
 
 int main(int , char** )
-{  
-  typedef rtk::ScatterGlareCorrectionImageFilter<ImageType, ImageType, float>   ScatterCorrectionType;
+{
+#ifdef USE_CUDA
+  typedef rtk::CudaScatterGlareCorrectionImageFilter                           ScatterCorrectionType;
+#else
+  typedef rtk::ScatterGlareCorrectionImageFilter<ImageType, ImageType, float>  ScatterCorrectionType;
+#endif
   ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
 
   std::vector<float> coef;
@@ -109,7 +121,7 @@ int main(int , char** )
   SFilter->SetCoefficients(coef);
 
   ImageType::Pointer testImage = createInputImage(coef);
-  
+
   for (unsigned i = 0; i < Nprojections; ++i) {
     SFilter->SetInput(testImage);
     TRY_AND_EXIT_ON_ITK_EXCEPTION( SFilter->Update() )
@@ -124,7 +136,7 @@ int main(int , char** )
     }
  //   std::cout << "Output :" << sum << std::endl;
   }
- 
+
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
