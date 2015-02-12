@@ -68,7 +68,7 @@ include_directories(
 	"${CMAKE_CURRENT_SOURCE_DIR}/colamd"
 )
 
-target_compile_definitions(lpsolve55 PUBLIC
+set_property(TARGET lpsolve55 APPEND PROPERTY COMPILE_DEFINITIONS
 	YY_NEVER_INTERACTIVE
 	PARSER_LP
 	INVERSE_ACTIVE=INVERSE_LUSOL
