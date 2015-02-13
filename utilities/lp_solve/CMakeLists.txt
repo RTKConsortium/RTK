@@ -76,11 +76,11 @@ set_property(TARGET lpsolve55 APPEND PROPERTY COMPILE_DEFINITIONS
 )
 
 if(WIN32)
-	target_compile_definitions(lpsolve55 PUBLIC
-		INLINE=static
+    set_property(TARGET lpsolve55 APPEND PROPERTY COMPILE_DEFINITIONS
+                INLINE=static
 		_USRDLL
 		WIN32
-	)
+    )
 endif()
 
 include(CheckSymbolExists)
