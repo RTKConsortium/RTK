@@ -82,7 +82,7 @@ namespace rtk
  *
  * Binning->WPC [label="Default"]
  *
- * {rank=same, XRad, EDF, Varian, LUT}
+ * {rank=same; XRad EDF Varian LUT}
  * }
  * \enddot
  *
