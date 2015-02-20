@@ -36,6 +36,7 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
   typename TOutputImage::RegionType splitRegion;
   m_Barrier = itk::Barrier::New();
   m_Barrier->Initialize( this->SplitRequestedRegion(0, this->GetNumberOfThreads(), splitRegion) );
+  m_DeformationUpdateError = false;
 }
 
 /**
@@ -95,10 +96,22 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
     m_Barrier->Wait();
     if(threadId==0)
       {
-      m_Deformation->SetFrame(iProj);
-      m_Deformation->Update();
+      try
+        {
+        m_Deformation->SetFrame(iProj);
+        m_Deformation->Update();
+        }
+      catch( itk::ExceptionObject & err )
+        {
+        m_DeformationUpdateError = true;
+        m_Barrier->Wait();
+        throw err;
+        }
       }
     m_Barrier->Wait();
+    if(m_DeformationUpdateError)
+      return;
+
     warpInterpolator->SetInputImage(m_Deformation->GetOutput());
 
     // Extract the current slice

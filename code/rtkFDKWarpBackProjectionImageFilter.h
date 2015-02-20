@@ -77,7 +77,7 @@ public:
   itkSetMacro(Deformation, DeformationPointer);
 
 protected:
-  FDKWarpBackProjectionImageFilter() {};
+  FDKWarpBackProjectionImageFilter():m_DeformationUpdateError(false) {};
   virtual ~FDKWarpBackProjectionImageFilter() {};
 
   virtual void BeforeThreadedGenerateData();
@@ -90,6 +90,7 @@ private:
 
   DeformationPointer    m_Deformation;
   itk::Barrier::Pointer m_Barrier;
+  bool                  m_DeformationUpdateError;
 };
 
 } // end namespace rtk

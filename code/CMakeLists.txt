@@ -78,7 +78,9 @@ IF (RTK_USE_CUDA)
        rtkCudaForwardWarpImageFilter.cu
        rtkCudaRayCastBackProjectionImageFilter.cu
        rtkCudaTotalVariationDenoisingBPDQImageFilter.cu
-       rtkCudaLastDimensionTVDenoisingImageFilter.cu)
+       rtkCudaLastDimensionTVDenoisingImageFilter.cu
+       rtkCudaConstantVolumeSource.cu
+       rtkCudaConstantVolumeSeriesSource.cu)
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
   IF(WIN32)
@@ -112,6 +114,8 @@ IF (RTK_USE_CUDA)
 	      rtkCudaRayCastBackProjectionImageFilter.cxx
 	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
 	      rtkCudaLastDimensionTVDenoisingImageFilter.cxx
+	      rtkCudaConstantVolumeSource.cxx
+	      rtkCudaConstantVolumeSeriesSource.cxx
 	      ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
@@ -124,7 +128,7 @@ ENDIF (RTK_USE_CUDA)
 IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
   # Generate RTKConfig.cmake for the install tree.
   SET (RTK_USE_FILE "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_PACKAGE_DIR}/UseRTK.cmake")
-  SET (RTK_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR}")
+  SET (RTK_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR};${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR}/lpsolve")
   SET (RTK_LIBRARY_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
   CONFIGURE_FILE (${PROJECT_SOURCE_DIR}/cmake/RTKConfig.cmake.in ${RTK_BINARY_DIR}/CMakeFiles/RTKConfig.cmake @ONLY)
   INSTALL(FILES ${RTK_BINARY_DIR}/CMakeFiles/RTKConfig.cmake
