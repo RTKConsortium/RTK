@@ -1,5 +1,6 @@
-package "sart"
-version "Reconstruct a 3D volume from a sequence of projections with Simulatenous Algebraic Reconstruction Technique [Andersen, 1984]."
+version ""
+package "rtksart"
+purpose "Reconstructs a 3D volume from a sequence of projections with Simulatenous Algebraic Reconstruction Technique [Andersen, 1984]."
 
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no

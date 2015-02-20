@@ -1,5 +1,6 @@
-package "rtk"
-version "Computes the reference of a 3D volume"
+version ""
+package "rtkdrawgeometricphantom"
+purpose "Computes a 3D voxelized phantom from a phantom description file"
 
 option "verbose"     v "Verbose execution"                           flag    off
 option "config"      - "Config file"                                 string  no

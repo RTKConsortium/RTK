@@ -1,5 +1,6 @@
-package "rtk"
-version "Performs a median filtering on a 2D image (pixeltype uint16)"
+version ""
+package "rtkmedian"
+purpose "Performs a median filtering on a 2D image (pixeltype uint16)"
 
 option "verbose"  v "Verbose execution"                              flag            off
 option "config"   - "Config file"                                    string          no

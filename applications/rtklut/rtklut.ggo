@@ -1,5 +1,6 @@
-package "rtk"
-version "Convert pixel intensities of projection images according to lookup table"
+version ""
+package "rtklut"
+purpose "Converts pixel intensities of projection images according to lookup table"
 
 option "verbose"   v "Verbose execution"                                         flag     off
 option "config"    - "Config file"                                               string   no

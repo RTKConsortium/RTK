@@ -1,5 +1,6 @@
-package "rtk"
-version "Computes the intersection length between rays of 2D projections and a 3D volume."
+version ""
+package "rtkrayquadricintersection"
+purpose "Computes the intersection length between rays of 2D projections and a 3D quadric"
 
 option "verbose"    v "Verbose execution"                                         flag     off
 option "config"     - "Config file"                                               string   no

@@ -1,5 +1,6 @@
-package "rtk"
-version "Performs an iterative 3D reconstruction with 3D TV regularization"
+version ""
+package "rtkadmmtotalvariation"
+purpose "Performs an iterative 3D reconstruction with 3D TV regularization"
 
 option "verbose"   v "Verbose execution"                                         flag                         off
 option "config"    - "Config file"                                               string                       no

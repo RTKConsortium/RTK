@@ -1,5 +1,6 @@
-package "rtk"
-version "Weight projection serie with parker weights for short scan with a divergent geometry."
+version ""
+package "rtkparkershortscanweighting"
+purpose "Weights projection stack with parker weights for short scan with a divergent geometry."
 
 option "verbose"    v "Verbose execution"                                           flag                off
 option "config"     - "Config file"                                                 string              no
