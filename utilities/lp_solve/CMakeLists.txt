@@ -59,7 +59,7 @@ set_property(TARGET lpsolve55 PROPERTY PUBLIC_HEADER
 	lp_wlp.h
 )
 
-target_include_directories(lpsolve55 PRIVATE
+include_directories(
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/shared"
 	"${CMAKE_CURRENT_SOURCE_DIR}/bfp"
@@ -68,7 +68,7 @@ target_include_directories(lpsolve55 PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}/colamd"
 )
 
-target_compile_definitions(lpsolve55 PUBLIC
+set_property(TARGET lpsolve55 APPEND PROPERTY COMPILE_DEFINITIONS
 	YY_NEVER_INTERACTIVE
 	PARSER_LP
 	INVERSE_ACTIVE=INVERSE_LUSOL
@@ -76,11 +76,11 @@ target_compile_definitions(lpsolve55 PUBLIC
 )
 
 if(WIN32)
-	target_compile_definitions(lpsolve55 PUBLIC
-		INLINE=static
+    set_property(TARGET lpsolve55 APPEND PROPERTY COMPILE_DEFINITIONS
+                INLINE=static
 		_USRDLL
 		WIN32
-	)
+    )
 endif()
 
 include(CheckSymbolExists)
@@ -104,6 +104,5 @@ IF(NOT RTK_INSTALL_NO_LIBRARIES)
     ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development
     PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR}/lpsolve"
   )
-  target_include_directories(lpsolve55 INTERFACE "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR}/lpsolve")
 ENDIF(NOT RTK_INSTALL_NO_LIBRARIES)
 
