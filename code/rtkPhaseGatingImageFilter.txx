@@ -31,7 +31,6 @@ namespace rtk
 template<typename ProjectionStackType>
 PhaseGatingImageFilter<ProjectionStackType>::PhaseGatingImageFilter()
 {
-  m_OutputGeometry = GeometryType::New();
   m_PhaseReader = PhaseReader::New();
 
   // Set default parameters
@@ -39,37 +38,6 @@ PhaseGatingImageFilter<ProjectionStackType>::PhaseGatingImageFilter()
   m_GatingWindowShape = 0;
   m_GatingWindowCenter = 0.5;
 }
-
-template<typename ProjectionStackType>
-void PhaseGatingImageFilter<ProjectionStackType>::SetInputProjectionStack(const ProjectionStackType* Projections)
-{
-  this->SetNthInput(0, const_cast<ProjectionStackType*>(Projections));
-}
-
-template<typename ProjectionStackType>
-typename ProjectionStackType::ConstPointer PhaseGatingImageFilter<ProjectionStackType>::GetInputProjectionStack()
-{
-  return static_cast< const ProjectionStackType * >
-          ( this->itk::ProcessObject::GetInput(0) );
-}
-
-template<typename ProjectionStackType>
-void PhaseGatingImageFilter<ProjectionStackType>::GenerateInputRequestedRegion()
-{
-  // call the superclass' implementation of this method
-  Superclass::GenerateInputRequestedRegion();
-
-  // get pointer to the input
-  typename Superclass::InputImagePointer inputPtr =
-          const_cast< ProjectionStackType * >( this->GetInput() );
-
-  if ( inputPtr )
-  {
-  // request the region of interest
-  inputPtr->SetRequestedRegionToLargestPossibleRegion();
-  }
-}
-
 
 template<typename ProjectionStackType>
 void PhaseGatingImageFilter<ProjectionStackType>::ComputeWeights()
@@ -101,7 +69,7 @@ void PhaseGatingImageFilter<ProjectionStackType>::ComputeWeights()
 template<typename ProjectionStackType>
 void PhaseGatingImageFilter<ProjectionStackType>::GenerateOutputInformation()
 {
-  m_PhaseReader->SetFileName(m_FileName);
+  m_PhaseReader->SetFileName(m_PhasesFileName);
   m_PhaseReader->SetFieldDelimiterCharacter( ';' );
   m_PhaseReader->HasRowHeadersOff();
   m_PhaseReader->HasColumnHeadersOff();
@@ -110,35 +78,7 @@ void PhaseGatingImageFilter<ProjectionStackType>::GenerateOutputInformation()
   ComputeWeights();
   SelectProjections();
 
-  unsigned int Dimension = this->GetInput(0)->GetImageDimension();
-  typename ProjectionStackType::RegionType outputLargestPossibleRegion = this->GetInput(0)->GetLargestPossibleRegion();
-  outputLargestPossibleRegion.SetSize(Dimension-1, m_NbSelectedProjs);
-
-  this->GetOutput()->SetLargestPossibleRegion(outputLargestPossibleRegion);
-
-  // Update output geometry
-  m_OutputGeometry->Clear();
-  for(unsigned int i=0; i < m_GatingWeights.size(); i++)
-    {
-    if (m_SelectedProjections[i])
-      {
-      m_OutputGeometry->AddProjectionInRadians( m_InputGeometry->GetSourceToIsocenterDistances()[i],
-                                                m_InputGeometry->GetSourceToDetectorDistances()[i],
-                                                m_InputGeometry->GetGantryAngles()[i],
-                                                m_InputGeometry->GetProjectionOffsetsX()[i],
-                                                m_InputGeometry->GetProjectionOffsetsY()[i],
-                                                m_InputGeometry->GetOutOfPlaneAngles()[i],
-                                                m_InputGeometry->GetInPlaneAngles()[i],
-                                                m_InputGeometry->GetSourceOffsetsX()[i],
-                                                m_InputGeometry->GetSourceOffsetsY()[i]);
-      }
-    }
-}
-
-template<typename ProjectionStackType>
-typename rtk::ThreeDCircularProjectionGeometry::Pointer PhaseGatingImageFilter<ProjectionStackType>::GetOutputGeometry()
-{
-  return m_OutputGeometry;
+  Superclass::GenerateOutputInformation();
 }
 
 template<typename ProjectionStackType>
@@ -166,8 +106,8 @@ void
 PhaseGatingImageFilter<ProjectionStackType>::SelectProjections()
 {
   float eps=0.0001;
-  m_SelectedProjections.resize(m_GatingWeights.size(), false);
-  m_NbSelectedProjs=0;
+  this->m_SelectedProjections.resize(m_GatingWeights.size(), false);
+  this->m_NbSelectedProjs=0;
   m_GatingWeightsOnSelectedProjections.clear();
 
   // Select only those projections that have non-zero weights to speed up computing
@@ -175,81 +115,11 @@ PhaseGatingImageFilter<ProjectionStackType>::SelectProjections()
     {
     if (m_GatingWeights[i]>eps)
       {
-      m_SelectedProjections[i]=true;
-      m_NbSelectedProjs++;
+      this->m_SelectedProjections[i]=true;
+      this->m_NbSelectedProjs++;
       m_GatingWeightsOnSelectedProjections.push_back(m_GatingWeights[i]);
       }
     }
-}
-
-template<typename ProjectionStackType>
-void PhaseGatingImageFilter<ProjectionStackType>::GenerateData()
-{
-  unsigned int Dimension = this->GetInput(0)->GetImageDimension();
-
-  // Prepare paste filter and constant image source
-  typename PasteFilterType::Pointer PasteFilter = PasteFilterType::New();
-  typename ExtractFilterType::Pointer ExtractFilter = ExtractFilterType::New();
-
-  // Create a stack of empty projection images
-  typename EmptyProjectionStackSourceType::Pointer EmptyProjectionStackSource = EmptyProjectionStackSourceType::New();
-  EmptyProjectionStackSource->SetOrigin(this->GetInputProjectionStack()->GetOrigin());
-  EmptyProjectionStackSource->SetSpacing(this->GetInputProjectionStack()->GetSpacing());
-  EmptyProjectionStackSource->SetDirection(this->GetInputProjectionStack()->GetDirection());
-  typename ProjectionStackType::SizeType ProjectionStackSize;
-  ProjectionStackSize = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize();
-  ProjectionStackSize[Dimension-1] = m_NbSelectedProjs;
-  EmptyProjectionStackSource->SetSize(ProjectionStackSize);
-  EmptyProjectionStackSource->SetConstant( 0. );
-  EmptyProjectionStackSource->Update();
-
-  // Set the extract filter
-  ExtractFilter->SetInput(this->GetInput(0));
-  typename ExtractFilterType::InputImageRegionType projRegion;
-  projRegion = this->GetInput(0)->GetLargestPossibleRegion();
-  projRegion.SetSize(Dimension-1, 1);
-  ExtractFilter->SetExtractionRegion(projRegion);
-
-  // Set the Paste filter
-  PasteFilter->SetSourceImage(ExtractFilter->GetOutput());
-  PasteFilter->SetDestinationImage(EmptyProjectionStackSource->GetOutput());
-
-  // Count the projections actually used in constructing the output
-  int counter=0;
-
-  for(unsigned int i=0; i < m_GatingWeights.size(); i++)
-    {
-    if (m_SelectedProjections[i])
-      {
-      // After the first update, we need to use the output as input.
-      if(counter>0)
-        {
-        typename ProjectionStackType::Pointer pimg = PasteFilter->GetOutput();
-        pimg->DisconnectPipeline();
-        PasteFilter->SetDestinationImage( pimg );
-        }
-
-      // Set the Extract Filter
-      projRegion.SetIndex(Dimension - 1, i);
-      ExtractFilter->SetExtractionRegion(projRegion);
-      ExtractFilter->UpdateLargestPossibleRegion();
-
-      // Set the Paste filter
-      PasteFilter->SetSourceRegion(ExtractFilter->GetOutput()->GetLargestPossibleRegion());
-      typename ProjectionStackType::IndexType DestinationIndex;
-      DestinationIndex.Fill(0);
-      DestinationIndex[Dimension-1]=counter;
-      PasteFilter->SetDestinationIndex(DestinationIndex);
-
-      // Update the filters
-      PasteFilter->UpdateLargestPossibleRegion();
-      PasteFilter->Update();
-
-      counter++;
-      }
-    }
-
-  this->GraftOutput( PasteFilter->GetOutput() );
 }
 
 }// end namespace

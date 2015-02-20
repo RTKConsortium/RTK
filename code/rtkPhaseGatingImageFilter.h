@@ -18,42 +18,29 @@
 #ifndef __rtkPhaseGatingImageFilter_h
 #define __rtkPhaseGatingImageFilter_h
 
-#include <itkPasteImageFilter.h>
-#include <itkExtractImageFilter.h>
+#include "rtkSubSelectImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkPhaseReader.h"
-#include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
 {
 template< typename ProjectionStackType>
-class PhaseGatingImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
+class PhaseGatingImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
     /** Standard class typedefs. */
-    typedef PhaseGatingImageFilter             Self;
-    typedef itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
+    typedef PhaseGatingImageFilter                    Self;
+    typedef SubSelectImageFilter<ProjectionStackType> Superclass;
+    typedef itk::SmartPointer< Self >                 Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(PhaseGatingImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(PhaseGatingImageFilter, SubSelectImageFilter)
 
-    /** The set of projections from which a subset will be extracted */
-    void SetInputProjectionStack(const ProjectionStackType* Projections);
-
-    typedef itk::PasteImageFilter<ProjectionStackType>                                  PasteFilterType;
-    typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>           ExtractFilterType;
-    typedef rtk::ConstantImageSource<ProjectionStackType>                               EmptyProjectionStackSourceType;
-    typedef rtk::ThreeDCircularProjectionGeometry                                       GeometryType;
-
-    itkSetMacro(InputGeometry, GeometryType::Pointer)
-    itkGetMacro(InputGeometry, GeometryType::Pointer)
-
-    itkSetMacro(FileName, std::string)
-    itkGetMacro(FileName, std::string)
+    itkSetMacro(PhasesFileName, std::string)
+    itkGetMacro(PhasesFileName, std::string)
 
     itkSetMacro(GatingWindowWidth, float)
     itkGetMacro(GatingWindowWidth, float)
@@ -67,15 +54,9 @@ public:
     std::vector<float> GetGatingWeights();
     std::vector<float> GetGatingWeightsOnSelectedProjections();
 
-    GeometryType::Pointer GetOutputGeometry();
-
 protected:
     PhaseGatingImageFilter();
     ~PhaseGatingImageFilter(){}
-
-    typename ProjectionStackType::ConstPointer GetInputProjectionStack();
-
-    virtual void GenerateInputRequestedRegion();
 
     virtual void GenerateOutputInformation();
 
@@ -85,24 +66,17 @@ protected:
 
     void SetPhases(std::vector<float> phases);
 
-    /** Does the real work. */
-    virtual void GenerateData();
-
     /** Member pointers to the filters used internally (for convenience)*/
     rtk::PhaseReader::Pointer m_PhaseReader;
 
     /** Member variables */
-    GeometryType::Pointer     m_InputGeometry;
-    GeometryType::Pointer     m_OutputGeometry;
     std::vector<float>        m_GatingWeights;
     std::vector<float>        m_GatingWeightsOnSelectedProjections;
     std::vector<float>        m_Phases;
-    std::vector<bool>         m_SelectedProjections;
-    int                       m_NbSelectedProjs;
     float                     m_GatingWindowWidth;
     float                     m_GatingWindowCenter;
     int                       m_GatingWindowShape;
-    std::string               m_FileName;
+    std::string               m_PhasesFileName;
 
 private:
     PhaseGatingImageFilter(const Self &); //purposely not implemented
