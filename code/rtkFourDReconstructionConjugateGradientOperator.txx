@@ -31,17 +31,10 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   // Set default behavior
   m_UseCudaInterpolation = false;
   m_UseCudaSplat = false;
+  m_UseCudaSources = false;
 
   // Create the filters
-  m_ConstantVolumeSource1 = ConstantVolumeSourceType::New();
-  m_ConstantVolumeSource2 = ConstantVolumeSourceType::New();
-  m_ConstantProjectionStackSource = ConstantProjectionStackSourceType::New();
-  m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
-
-  // Memory management options
-  m_ConstantVolumeSeriesSource->ReleaseDataFlagOn();
-  m_ConstantProjectionStackSource->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -131,9 +124,15 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
       = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize();
   ConstantProjectionStackSourceSize[Dimension - 1] = 1;
   m_ConstantProjectionStackSource->SetSize( ConstantProjectionStackSourceSize );
+  m_ConstantProjectionStackSource->SetConstant( 0. );
 
   // Configure the constant volume series source
   m_ConstantVolumeSeriesSource->SetInformationFromImage(this->GetInputVolumeSeries());
+  m_ConstantVolumeSeriesSource->SetConstant( 0. );
+
+  // Configure memory management options
+  m_ConstantProjectionStackSource->ReleaseDataFlagOn();
+  m_ConstantVolumeSeriesSource->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -141,20 +140,34 @@ void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
-  // Create the interpolation and splat filters at runtime
+  // Create the interpolation filter (first on CPU, and overwrite with the GPU version if CUDA requested)
+  m_InterpolationFilter = InterpolationFilterType::New();
 #ifdef RTK_USE_CUDA
   if (m_UseCudaInterpolation)
     m_InterpolationFilter = rtk::CudaInterpolateImageFilter::New();
-  else
 #endif
-    m_InterpolationFilter = InterpolationFilterType::New();
 
+  // Create the splat filter (first on CPU, and overwrite with the GPU version if CUDA requested)
+  m_SplatFilter = SplatFilterType::New();
 #ifdef RTK_USE_CUDA
   if (m_UseCudaSplat)
     m_SplatFilter = rtk::CudaSplatImageFilter::New();
-  else
 #endif
-    m_SplatFilter = SplatFilterType::New();
+
+  // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
+  m_ConstantVolumeSource1 = ConstantVolumeSourceType::New();
+  m_ConstantVolumeSource2 = ConstantVolumeSourceType::New();
+  m_ConstantProjectionStackSource = ConstantProjectionStackSourceType::New();
+  m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
+#ifdef RTK_USE_CUDA
+  if (m_UseCudaSources)
+    {
+    m_ConstantVolumeSource1 = rtk::CudaConstantVolumeSource::New();
+    m_ConstantVolumeSource2 = rtk::CudaConstantVolumeSource::New();
+    m_ConstantProjectionStackSource = rtk::CudaConstantVolumeSource::New();
+    m_ConstantVolumeSeriesSource = rtk::CudaConstantVolumeSeriesSource::New();
+    }
+#endif
 
   // Set runtime connections
   m_InterpolationFilter->SetInputVolume(m_ConstantVolumeSource1->GetOutput());
@@ -182,7 +195,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
-  // Initialize m_ConstantVolumeSource
+  // Initialize sources
   this->InitializeConstantSources();
 
   // Have the last filter calculate its output information

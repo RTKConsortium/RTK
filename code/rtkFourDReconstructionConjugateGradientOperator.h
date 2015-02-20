@@ -33,6 +33,8 @@
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaInterpolateImageFilter.h"
 #  include "rtkCudaSplatImageFilter.h"
+#  include "rtkCudaConstantVolumeSource.h"
+#  include "rtkCudaConstantVolumeSeriesSource.h"
 #endif
 
 namespace rtk
@@ -167,6 +169,8 @@ public:
     itkGetMacro(UseCudaInterpolation, bool)
     itkSetMacro(UseCudaSplat, bool)
     itkGetMacro(UseCudaSplat, bool)
+    itkSetMacro(UseCudaSources, bool)
+    itkGetMacro(UseCudaSources, bool)
 
     /** Macros that take care of implementing the Get and Set methods for Weights.*/
     itkGetMacro(Weights, itk::Array2D<float>)
@@ -202,6 +206,7 @@ protected:
     ThreeDCircularProjectionGeometry::Pointer             m_Geometry;
     bool                                                  m_UseCudaInterpolation;
     bool                                                  m_UseCudaSplat;
+    bool                                                  m_UseCudaSources;
     itk::Array2D<float>                                   m_Weights;
 
 private:
