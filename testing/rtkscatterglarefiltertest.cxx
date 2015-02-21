@@ -23,7 +23,6 @@
 #include <math.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
-#include <itkImageFileWriter.h>
 
 #ifdef USE_CUDA
 # include "rtkCudaScatterGlareCorrectionImageFilter.h"
@@ -41,14 +40,14 @@
  * \author Sebastien Brousmiche
  */
 
-const unsigned Nprojections = 2;
-
 const unsigned int Dimension = 3;
 #ifdef USE_CUDA
 typedef itk::CudaImage< float, Dimension > ImageType;
 #else
 typedef itk::Image< float, Dimension >     ImageType;
 #endif
+
+const float spikeValue = 12.341;
 
 ImageType::Pointer createInputImage(const std::vector<float> & coef)
 {
@@ -93,12 +92,14 @@ ImageType::Pointer createInputImage(const std::vector<float> & coef)
     float yy = (float)idx[1] - (float)size[1] / 2.0f;
     float rr2 = (xx*xx + yy*yy);
     float g = (a3*dx*dy / (2.0f * vnl_math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);
-    itK.Set(g);
+    if ((2 * idx[0] == size[0]) && ((2 * idx[1] == size[1]))) {
+      g += (1 - a3);
+    }
+    g = spikeValue * g; // The image is a spike at the central pixel convolved with the scatter PSF
+    itK.Set( g);
     sum += g;
     ++itK;
   }
-
-//  std::cout << "Input :" << sum << std::endl;
 
   return inputI;
 }
@@ -115,28 +116,38 @@ int main(int , char** )
   std::vector<float> coef;
   coef.push_back(0.0787f);
   coef.push_back(106.244f);
-
-
+  
   SFilter->SetTruncationCorrection(0.5);
   SFilter->SetCoefficients(coef);
 
   ImageType::Pointer testImage = createInputImage(coef);
+  SFilter->SetInput(testImage);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( SFilter->Update() )
 
-  for (unsigned i = 0; i < Nprojections; ++i) {
-    SFilter->SetInput(testImage);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( SFilter->Update() )
-
-    ImageType::Pointer outputI = SFilter->GetOutput();
-    itk::ImageRegionConstIterator<ImageType> itO(outputI, outputI->GetLargestPossibleRegion());
-    itO.GoToBegin();
-    float sum = 0.0f;
-    while (!itO.IsAtEnd()) {
-      sum += itO.Get();
-      ++itO;
+  ImageType::Pointer outputI = SFilter->GetOutput();
+  ImageType::SizeType size = outputI->GetLargestPossibleRegion().GetSize();
+  itk::ImageRegionConstIterator<ImageType> itO(outputI, outputI->GetLargestPossibleRegion());
+  itO.GoToBegin();
+    
+  ImageType::IndexType idx;
+  float sumBng = 0.0f;
+  float spikeValueOut = 0.0f;
+  while (!itO.IsAtEnd()) {
+    idx = itO.GetIndex();
+    if ((2 * idx[0] == size[0]) && ((2 * idx[1] == size[1]))) {
+      spikeValueOut += itO.Get();
+    } else {
+      sumBng += itO.Get();
     }
- //   std::cout << "Output :" << sum << std::endl;
+    ++itO;
   }
 
+  if (!( (std::abs(spikeValueOut - spikeValue) < 1e-2)&&(std::abs(sumBng)<1e-2) ))
+  {
+    std::cerr << "Test Failed! "<< std::endl;
+    exit(EXIT_FAILURE);
+  }
+  
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
