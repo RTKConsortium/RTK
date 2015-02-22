@@ -1,5 +1,6 @@
-package "rtk"
-version "Reads raw projection images, convert to attenuation, ramp filter and stack them in a single output image file"
+version ""
+package "rtkramp"
+purpose "Reads raw projection images, converts to attenuation, ramp filters and stacks them into a single output image file"
 
 option "verbose"  v "Verbose execution"                                         flag      off
 option "config"   - "Config file"                                               string    no

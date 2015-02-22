@@ -20,8 +20,6 @@
 
 #include "rtkConjugateGradientOperator.h"
 
-#include <itkMultiplyImageFilter.h>
-#include <itkExtractImageFilter.h>
 #include <itkArray2D.h>
 
 #include "rtkConstantImageSource.h"
@@ -35,6 +33,8 @@
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaInterpolateImageFilter.h"
 #  include "rtkCudaSplatImageFilter.h"
+#  include "rtkCudaConstantVolumeSource.h"
+#  include "rtkCudaConstantVolumeSeriesSource.h"
 #endif
 
 namespace rtk
@@ -85,37 +85,32 @@ namespace rtk
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
-   * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
-   * ZeroMultiplyProj [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * ZeroMultiply4D [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * Source1 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
-   * Source2 [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+   * SourceVol [ label="rtk::ConstantImageSource (volume)" URL="\ref rtk::ConstantImageSource"];
+   * SourceVol2 [ label="rtk::ConstantImageSource (volume)" URL="\ref rtk::ConstantImageSource"];
+   * SourceProj [ label="rtk::ConstantImageSource (projections)" URL="\ref itk::ConstantImageSource"];
+   * Source4D [ label="rtk::ConstantImageSource (4D)" URL="\ref itk::ConstantImageSource"];
    * ForwardProj [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
    * Interpolation [ label="InterpolatorWithKnownWeightsImageFilter" URL="\ref rtk::InterpolatorWithKnownWeightsImageFilter"];
    * BackProj [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * Splat [ label="rtk::SplatWithKnownWeightsImageFilter" URL="\ref rtk::SplatWithKnownWeightsImageFilter"];
    * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
-   * AfterZeroMultiply [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterSource4D [label="", fixedsize="false", width=0, height=0, shape=none];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
-   * Input0 -> AfterInput0 [arrowhead=None];
-   * AfterInput0 -> Interpolation;
-   * AfterInput0 -> ZeroMultiply4D;
-   * Source1 -> Interpolation;
+   * Input0 -> Interpolation;
+   * SourceVol -> Interpolation;
    * Interpolation -> ForwardProj;
-   * Source2 -> BackProj;
+   * SourceVol2 -> BackProj;
    * ForwardProj -> Displaced;
    * Displaced -> BackProj;
    * BackProj -> Splat;
    * Splat -> AfterSplat[arrowhead=None];
    * AfterSplat -> Output;
-   * AfterSplat -> AfterZeroMultiply[style=dashed];
-   * ZeroMultiply4D -> AfterZeroMultiply[arrowhead=None];
-   * AfterZeroMultiply -> Splat;
-   * Input1 -> Extract;
-   * Extract -> ZeroMultiplyProj;
-   * ZeroMultiplyProj -> ForwardProj;
+   * AfterSplat -> AfterSource4D[style=dashed, constraint=false];
+   * Source4D -> AfterSource4D[arrowhead=None];
+   * AfterSource4D -> Splat;
+   * SourceProj -> ForwardProj;
    * }
    * \enddot
    *
@@ -156,9 +151,8 @@ public:
     typedef rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>          InterpolationFilterType;
     typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>                 SplatFilterType;
     typedef rtk::ConstantImageSource<VolumeType>                                                ConstantVolumeSourceType;
-    typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>                   ExtractFilterType;
-    typedef itk::MultiplyImageFilter<VolumeSeriesType>                                          MultiplyVolumeSeriesType;
-    typedef itk::MultiplyImageFilter<ProjectionStackType>                                       MultiplyProjectionStackType;
+    typedef rtk::ConstantImageSource<ProjectionStackType>                                       ConstantProjectionStackSourceType;
+    typedef rtk::ConstantImageSource<VolumeSeriesType>                                          ConstantVolumeSeriesSourceType;
     typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                              DisplacedDetectorFilterType;
 
     /** Pass the backprojection filter to ProjectionStackToFourD*/
@@ -175,6 +169,8 @@ public:
     itkGetMacro(UseCudaInterpolation, bool)
     itkSetMacro(UseCudaSplat, bool)
     itkGetMacro(UseCudaSplat, bool)
+    itkSetMacro(UseCudaSources, bool)
+    itkGetMacro(UseCudaSources, bool)
 
     /** Macros that take care of implementing the Get and Set methods for Weights.*/
     itkGetMacro(Weights, itk::Array2D<float>)
@@ -194,24 +190,24 @@ protected:
     virtual void GenerateData();
 
     /** Initialize the ConstantImageSourceFilter */
-    void InitializeConstantSource();
+    void InitializeConstantSources();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename BackProjectionFilterType::Pointer        m_BackProjectionFilter;
-    typename ForwardProjectionFilterType::Pointer     m_ForwardProjectionFilter;
-    typename InterpolationFilterType::Pointer         m_InterpolationFilter;
-    typename SplatFilterType::Pointer                 m_SplatFilter;
-    typename ConstantVolumeSourceType::Pointer        m_ConstantVolumeSource1;
-    typename ConstantVolumeSourceType::Pointer        m_ConstantVolumeSource2;
-    typename ExtractFilterType::Pointer               m_ExtractFilter;
-    typename MultiplyVolumeSeriesType::Pointer        m_ZeroMultiplyVolumeSeriesFilter;
-    typename MultiplyProjectionStackType::Pointer     m_ZeroMultiplyProjectionStackFilter;
-    typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+    typename BackProjectionFilterType::Pointer            m_BackProjectionFilter;
+    typename ForwardProjectionFilterType::Pointer         m_ForwardProjectionFilter;
+    typename InterpolationFilterType::Pointer             m_InterpolationFilter;
+    typename SplatFilterType::Pointer                     m_SplatFilter;
+    typename ConstantVolumeSourceType::Pointer            m_ConstantVolumeSource1;
+    typename ConstantVolumeSourceType::Pointer            m_ConstantVolumeSource2;
+    typename ConstantProjectionStackSourceType::Pointer   m_ConstantProjectionStackSource;
+    typename ConstantVolumeSeriesSourceType::Pointer      m_ConstantVolumeSeriesSource;
+    typename DisplacedDetectorFilterType::Pointer         m_DisplacedDetectorFilter;
 
-    ThreeDCircularProjectionGeometry::Pointer         m_Geometry;
-    bool                                              m_UseCudaInterpolation;
-    bool                                              m_UseCudaSplat;
-    itk::Array2D<float>                               m_Weights;
+    ThreeDCircularProjectionGeometry::Pointer             m_Geometry;
+    bool                                                  m_UseCudaInterpolation;
+    bool                                                  m_UseCudaSplat;
+    bool                                                  m_UseCudaSources;
+    itk::Array2D<float>                                   m_Weights;
 
 private:
     FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented

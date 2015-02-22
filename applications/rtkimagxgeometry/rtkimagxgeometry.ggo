@@ -1,5 +1,6 @@
-package "rtk"
-version "Creates an RTK geometry file from an iMagX  acquisition."
+version ""
+package "rtkimagxgeometry"
+purpose "Creates an RTK geometry file from an iMagX  acquisition."
 
 option "config"      - "Config file"                       string no
 option "calibration" c "iMagX Calibration file"            string yes

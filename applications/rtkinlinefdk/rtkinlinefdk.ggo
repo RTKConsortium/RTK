@@ -1,5 +1,6 @@
-package "rtk"
-version "Simulates an FDK on-the-fly reconstruction with one thread for acquisition and one for reconstruction."
+version ""
+package "rtkinlinefdk"
+purpose "Simulates an FDK on-the-fly reconstruction with one thread for acquisition and one for reconstruction."
 
 option "verbose"   v "Verbose execution"                                         flag                         off
 option "config"    - "Config file"                                               string                       no

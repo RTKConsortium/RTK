@@ -26,6 +26,7 @@
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
+  #include "rtkCudaConstantVolumeSeriesSource.h"
 #endif
 #include <itkImageFileWriter.h>
 

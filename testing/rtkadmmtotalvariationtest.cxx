@@ -181,10 +181,10 @@ int main(int, char** )
   typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
   PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
 #if FAST_TESTS_NO_CHECKS
-  phaseGating->SetFileName(std::string(RTK_DATA_ROOT) +
+  phaseGating->SetPhasesFileName(std::string(RTK_DATA_ROOT) +
                            std::string("/Input/Phases/phases_3projs.txt"));
 #else
-  phaseGating->SetFileName(std::string(RTK_DATA_ROOT) +
+  phaseGating->SetPhasesFileName(std::string(RTK_DATA_ROOT) +
                            std::string("/Input/Phases/phases.txt"));
 #endif
   phaseGating->SetGatingWindowWidth(0.20);

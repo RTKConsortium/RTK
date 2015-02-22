@@ -74,8 +74,9 @@ IF (RTK_USE_CUDA)
        rtkCudaBackProjectionImageFilter.cu
        rtkCudaSplatImageFilter.cu
        rtkCudaInterpolateImageFilter.cu
-       rtkCudaTotalVariationDenoisingBPDQImageFilter.cu)
-
+       rtkCudaTotalVariationDenoisingBPDQImageFilter.cu
+       rtkCudaConstantVolumeSource.cu
+       rtkCudaConstantVolumeSeriesSource.cu)
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
   IF(WIN32)
@@ -105,6 +106,8 @@ IF (RTK_USE_CUDA)
               rtkCudaSplatImageFilter.cxx
               rtkCudaInterpolateImageFilter.cxx
               rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
+	      rtkCudaConstantVolumeSource.cxx
+	      rtkCudaConstantVolumeSeriesSource.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)

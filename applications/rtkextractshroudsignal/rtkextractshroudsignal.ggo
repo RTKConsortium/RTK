@@ -1,5 +1,6 @@
-package "rtk"
-version "Extract the breathing signal from a shroud image."
+version ""
+package "rtkextractshroudsignal"
+purpose "Extracts the breathing signal from a shroud image."
 
 option "config"     -   "Config file"                                 string                  no
 option "input"      i   "Input shroud image file name"		      string                  yes

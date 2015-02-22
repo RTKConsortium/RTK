@@ -1,5 +1,6 @@
-package "rtk"
-version "Reads raw projection images, convert to attenuation and stack them in a single output image file"
+version ""
+package "rtkprojections"
+purpose "Reads raw projection images, converts them to attenuation and stacks them into a single output image file"
 
 option "verbose"  v "Verbose execution"                                         flag      off
 option "config"   - "Config file"                                               string    no

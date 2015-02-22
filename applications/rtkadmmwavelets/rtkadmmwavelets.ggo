@@ -1,5 +1,6 @@
-package "rtk"
-version "Performs an iterative 3D reconstruction with Daubechies wavelets regularization"
+version ""
+package "rtkadmmwavelets"
+purpose "Performs an iterative 3D reconstruction with Daubechies wavelets regularization"
 
 option "verbose"   v "Verbose execution"                                         flag                         off
 option "config"    - "Config file"                                               string                       no

@@ -1,5 +1,6 @@
-package "rtk"
-version "Denoises a volume using Daubechies wavelets soft thresholding"
+version ""
+package "rtkwaveletsdenoising"
+purpose "Denoises a volume using Daubechies wavelets soft thresholding"
 
 option "verbose"   v "Verbose execution"                                         flag     off
 option "config"    - "Config file"                                               string   no
