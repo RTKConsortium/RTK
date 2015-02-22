@@ -66,7 +66,7 @@ IF (RTK_USE_CUDA)
        rtkCudaCropImageFilter.cu
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
-       rtkCudaFFTRampImageFilter.cu
+       rtkCudaFFTConvolutionImageFilter.cu
        rtkCudaFDKWeightProjectionFilter.cu
        rtkCudaDisplacedDetectorImageFilter.cu
        rtkCudaParkerShortScanImageFilter.cu
@@ -100,7 +100,6 @@ IF (RTK_USE_CUDA)
               rtkCudaParkerShortScanImageFilter.cxx
               rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
-              rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
               rtkCudaSplatImageFilter.cxx
