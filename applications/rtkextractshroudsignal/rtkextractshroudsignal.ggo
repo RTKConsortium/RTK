@@ -1,8 +1,14 @@
 package "rtk"
 version "Extract the breathing signal from a shroud image."
 
-option "config"     -   "Config file"                                   string  no
-option "input"      i   "Input shroud image file name"		        string  yes
-option "amplitude"  a   "Maximum breathing amplitude explored in mm"    double  no
-option "output"     o   "Output file name"                              string  yes
-option "method"     m   "Method to use (Reg1D or DynamicProgramming)"   string  default="Reg1D" no
+option "config"     -   "Config file"                                 string                  no
+option "input"      i   "Input shroud image file name"		      string                  yes
+option "amplitude"  a   "Maximum breathing amplitude explored in mm"  double                  no
+option "output"     o   "Output file name"                            string                  yes
+option "method"     m   "Method to use (Reg1D or DynamicProgramming)" string  default="Reg1D" no
+
+section "Phase extraction"
+option "phase"      p   "Output file name for the Hilbert phase signal"       string               no
+option "movavg"     -   "Moving average size applied before phase extraction" int     default="1"  no
+option "unsharp"    -   "Unsharp mask size applied before phase extraction"   int     default="55" no
+option "model"      -   "Phase model" values="LOCAL_PHASE","LINEAR_BETWEEN_MINIMA","LINEAR_BETWEEN_MAXIMA" enum no default="LINEAR_BETWEEN_MINIMA"
