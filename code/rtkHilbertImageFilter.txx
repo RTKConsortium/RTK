@@ -20,7 +20,11 @@
 #define __rtkHilbertImageFilter_txx
 
 #include <itkForwardFFTImageFilter.h>
-#include <itkFFTComplexToComplexImageFilter.h>
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7)
+# include <itkComplexToComplexFFTImageFilter.h>
+#else
+# include <itkFFTComplexToComplexImageFilter.h>
+#endif
 #include <itkImageRegionIteratorWithIndex.h>
 
 namespace rtk
@@ -62,9 +66,15 @@ HilbertImageFilter<TInputImage, TOutputImage>
 
   // Inverse FFT (although I had to set it to DIRECT to obtain the same as in Matlab,
   // I really don't know why)
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7)
+  typedef typename itk::ComplexToComplexFFTImageFilter<TOutputImage> InverseFFTFilterType;
+  typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
+  invFilt->SetTransformDirection(InverseFFTFilterType::FORWARD);
+#else
   typedef typename itk::FFTComplexToComplexImageFilter<TOutputImage> InverseFFTFilterType;
   typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
   invFilt->SetTransformDirection(InverseFFTFilterType::DIRECT);
+#endif
   invFilt->SetInput(fft);
   invFilt->Update();
 
