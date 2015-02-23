@@ -174,7 +174,7 @@ private:
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
-  /** Number of projections processed at a time. */
+  /** Number of conjugate gradient descent iterations */
   unsigned int m_NumberOfIterations;
 
 }; // end of class
