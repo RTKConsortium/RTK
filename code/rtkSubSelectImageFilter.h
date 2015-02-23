@@ -53,6 +53,8 @@ public:
     itkSetMacro(InputGeometry, GeometryType::Pointer)
     itkGetMacro(InputGeometry, GeometryType::Pointer)
 
+    itkGetMacro(SelectedProjections, std::vector<bool>)
+
     GeometryType::Pointer GetOutputGeometry();
 
 protected:
