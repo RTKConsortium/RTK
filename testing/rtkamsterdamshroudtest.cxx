@@ -213,7 +213,6 @@ int main(int, char** )
   reg1DFilter->Update();
   reg1DSignal = reg1DFilter->GetOutput();
 
-#if !(FAST_TESTS_NO_CHECKS)
   //Test Reference
   float reg1D[100] = {0, 4.5, 8.625, 12.25, 15, 16.875, 17.625, 17.375, 16.125, 13.875, 10.75, 7.125,
                       3, -1.25, -5.375, -9, -12.125, -14.25, -15.625, -16.125, -15.5, -13.75, -11, -7.5,
@@ -241,7 +240,6 @@ int main(int, char** )
     std::cerr << "Test FAILED! " << "Breathing signal does not match, absolute difference " << sum << " instead of 0." << std::endl;
     exit( EXIT_FAILURE);
   }
-#endif
 
   std::cout << "\n\n****** Case 3: Breathing signal calculated by DP algorithm ******\n" << std::endl;
 
@@ -254,7 +252,6 @@ int main(int, char** )
   DPFilter->Update();
   DPSignal = DPFilter->GetOutput();
 
-#if !(FAST_TESTS_NO_CHECKS)
   //Test Reference
   float DP[100] = {2.5, 7.5, 12.5, 15, 17.5, 20, 20, 20, 20, 17.5, 12.5, 10, 5, 0, -5, -7.5, -10,
                    -12.5, -15, -15, -15, -12.5, -10, -7.5, -2.5, 2.5, 7.5, 10, 15, 17.5, 20, 20,
@@ -278,7 +275,6 @@ int main(int, char** )
     std::cerr << "Test FAILED! " << "Breathing signal does not match, absolute difference " << sum << " instead of 0." << std::endl;
     exit( EXIT_FAILURE);
   }
-#endif
 
   std::cout << "\n\n****** Extract phase from case 3 ******\n" << std::endl;
 
@@ -373,5 +369,4 @@ int main(int, char** )
   }
 
   return EXIT_SUCCESS;
-
 }
