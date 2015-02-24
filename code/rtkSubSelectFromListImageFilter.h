@@ -29,7 +29,7 @@ class SubSelectFromListImageFilter : public SubSelectImageFilter<ProjectionStack
 {
 public:
     /** Standard class typedefs. */
-    typedef SubSelectFromListImageFilter                    Self;
+    typedef SubSelectFromListImageFilter              Self;
     typedef SubSelectImageFilter<ProjectionStackType> Superclass;
     typedef itk::SmartPointer< Self >                 Pointer;
 

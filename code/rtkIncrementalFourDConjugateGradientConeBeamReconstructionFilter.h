@@ -175,9 +175,9 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename std::vector<typename SubSelectType::Pointer>                  m_SubSelectFilters;
-  typename std::vector<typename PhasesToInterpolationWeights::Pointer>   m_PhasesFilters;
-  typename CGType::Pointer                                      m_CG;
+  typename std::vector<typename SubSelectType::Pointer>                   m_SubSelectFilters;
+  typename std::vector<typename PhasesToInterpolationWeights::Pointer>    m_PhasesFilters;
+  typename CGType::Pointer                                                m_CG;
 
   /** A vector containing as many vectors of booleans as the number of subsets. Each boolean
   indicates whether the corresponding projection is selected in the subset */
