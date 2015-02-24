@@ -100,6 +100,7 @@ AmsterdamShroudImageFilter<TInputImage>
     }
   m_DerivativeFilter->SetInput( this->GetInput() );
   m_PermuteFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion() );
+  m_PermuteFilter->GetOutput()->PropagateRequestedRegion();
 }
 
 template<class TInputImage>
@@ -111,6 +112,13 @@ AmsterdamShroudImageFilter<TInputImage>
   kernelWidth = m_ConvolutionFilter->GetKernelImage()->GetLargestPossibleRegion().GetSize()[1];
   if(kernelWidth != m_UnsharpMaskSize)
     UpdateUnsharpMaskKernel();
+
+  // If the convolution filter is not updated independently of the rest of the
+  // pipeline, there is a bug in the streaming and it does not behave as
+  // expected: the largest possible region is modified of the output of the
+  // convolution filter is modified! I don't have an explanation for this but
+  // this seems to fix the problem (SR).
+  m_ConvolutionFilter->Update();
   m_PermuteFilter->Update();
   this->GraftOutput( m_PermuteFilter->GetOutput() );
 }

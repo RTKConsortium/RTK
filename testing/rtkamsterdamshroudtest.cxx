@@ -11,6 +11,7 @@
 #include "rtkReg1DExtractShroudSignalImageFilter.h"
 #include "rtkDPExtractShroudSignalImageFilter.h"
 #include "rtkMacro.h"
+#include "rtkExtractPhaseImageFilter.h"
 
 /**
  * \file rtkamsterdamshroudtest.cxx
@@ -212,7 +213,6 @@ int main(int, char** )
   reg1DFilter->Update();
   reg1DSignal = reg1DFilter->GetOutput();
 
-#if !(FAST_TESTS_NO_CHECKS)
   //Test Reference
   float reg1D[100] = {0, 4.5, 8.625, 12.25, 15, 16.875, 17.625, 17.375, 16.125, 13.875, 10.75, 7.125,
                       3, -1.25, -5.375, -9, -12.125, -14.25, -15.625, -16.125, -15.5, -13.75, -11, -7.5,
@@ -240,7 +240,6 @@ int main(int, char** )
     std::cerr << "Test FAILED! " << "Breathing signal does not match, absolute difference " << sum << " instead of 0." << std::endl;
     exit( EXIT_FAILURE);
   }
-#endif
 
   std::cout << "\n\n****** Case 3: Breathing signal calculated by DP algorithm ******\n" << std::endl;
 
@@ -253,7 +252,6 @@ int main(int, char** )
   DPFilter->Update();
   DPSignal = DPFilter->GetOutput();
 
-#if !(FAST_TESTS_NO_CHECKS)
   //Test Reference
   float DP[100] = {2.5, 7.5, 12.5, 15, 17.5, 20, 20, 20, 20, 17.5, 12.5, 10, 5, 0, -5, -7.5, -10,
                    -12.5, -15, -15, -15, -12.5, -10, -7.5, -2.5, 2.5, 7.5, 10, 15, 17.5, 20, 20,
@@ -277,7 +275,98 @@ int main(int, char** )
     std::cerr << "Test FAILED! " << "Breathing signal does not match, absolute difference " << sum << " instead of 0." << std::endl;
     exit( EXIT_FAILURE);
   }
-#endif
+
+  std::cout << "\n\n****** Extract phase from case 3 ******\n" << std::endl;
+
+  //Check phase
+  typedef rtk::ExtractPhaseImageFilter< reg1DImageType > PhaseType;
+  PhaseType::Pointer phaseFilt = PhaseType::New();
+  phaseFilt->SetInput( DPSignal );
+  phaseFilt->SetUnsharpMaskSize( 53 );
+  std::cout << "Unsharp mask size is " << phaseFilt->GetUnsharpMaskSize() << std::endl;
+  phaseFilt->SetMovingAverageSize( 3 );
+  std::cout << "Moving average size is " << phaseFilt->GetMovingAverageSize() << std::endl;
+  phaseFilt->SetModel(PhaseType::LOCAL_PHASE);
+  phaseFilt->Update();
+  reg1DImageType *phase = phaseFilt->GetOutput();
+
+  //Checking for possible errors
+  float refLocalPhase[100] = {0.76, 0.80, 0.85, 0.89, 0.94, 0.98, 0.02, 0.06, 0.10, 0.14,
+                              0.18, 0.22, 0.26, 0.30, 0.34, 0.37, 0.40, 0.44, 0.47, 0.51,
+                              0.55, 0.59, 0.63, 0.66, 0.70, 0.75, 0.78, 0.82, 0.86, 0.90,
+                              0.95, 0.99, 0.03, 0.07, 0.11, 0.14, 0.18, 0.23, 0.28, 0.32,
+                              0.36, 0.40, 0.43, 0.48, 0.52, 0.56, 0.60, 0.64, 0.68, 0.72,
+                              0.76, 0.79, 0.83, 0.87, 0.91, 0.95, 0.98, 0.02, 0.06, 0.11,
+                              0.15, 0.19, 0.23, 0.27, 0.32, 0.36, 0.39, 0.43, 0.47, 0.51,
+                              0.55, 0.59, 0.63, 0.67, 0.71, 0.75, 0.79, 0.82, 0.86, 0.90,
+                              0.94, 0.98, 0.01, 0.05, 0.08, 0.12, 0.15, 0.19, 0.24, 0.28,
+                              0.32, 0.35, 0.39, 0.44, 0.49, 0.53, 0.58, 0.63, 0.68, 0.72 };
+  itk::ImageRegionConstIterator< reg1DImageType > itPhaseLocal( phase, phase->GetLargestPossibleRegion() );
+  for (sum=0, i=0; !itPhaseLocal.IsAtEnd(); ++itPhaseLocal, i++)
+    sum += vcl_abs(refLocalPhase[i] - itPhaseLocal.Get());
+  std::cout << "LOCAL_PHASE... ";
+  if ( sum <= 0.27 )
+    std::cout << "Test PASSED! " << std::endl;
+  else
+    {
+    std::cerr << "Test FAILED! Local phase does not match ref, absolute difference "
+              << sum << " instead of 0." << std::endl;
+    exit( EXIT_FAILURE);
+    }
+
+  phaseFilt->SetModel(PhaseType::LINEAR_BETWEEN_MAXIMA);
+  phaseFilt->Update();
+
+  float refMaxPhase[100] =   {0.77, 0.81, 0.85, 0.88, 0.92, 0.96, 0.00, 0.04, 0.08, 0.12,
+                              0.15, 0.19, 0.23, 0.27, 0.31, 0.35, 0.38, 0.42, 0.46, 0.50,
+                              0.54, 0.58, 0.62, 0.65, 0.69, 0.73, 0.77, 0.81, 0.85, 0.88,
+                              0.92, 0.96, 0.00, 0.04, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28,
+                              0.32, 0.36, 0.40, 0.44, 0.48, 0.52, 0.56, 0.60, 0.64, 0.68,
+                              0.72, 0.76, 0.80, 0.84, 0.88, 0.92, 0.96, 0.00, 0.04, 0.08,
+                              0.12, 0.16, 0.20, 0.24, 0.28, 0.32, 0.36, 0.40, 0.44, 0.48,
+                              0.52, 0.56, 0.60, 0.64, 0.68, 0.72, 0.76, 0.80, 0.84, 0.88,
+                              0.92, 0.96, 0.00, 0.04, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28,
+                              0.32, 0.36, 0.40, 0.44, 0.48, 0.52, 0.56, 0.60, 0.64, 0.68 };
+
+  itk::ImageRegionConstIterator< reg1DImageType > itPhaseMax( phase, phase->GetLargestPossibleRegion() );
+  for (sum=0, i=0; !itPhaseMax.IsAtEnd(); ++itPhaseMax, i++)
+    sum += vcl_abs(refMaxPhase[i] - itPhaseMax.Get());
+  std::cout << "LINEAR_BETWEEN_MAXIMA... ";
+  if ( sum <= 0.081 )
+    std::cout << "Test PASSED! " << std::endl;
+  else
+  {
+    std::cerr << "Test FAILED! Linear phase between max does not match ref, absolute difference "
+              << sum << " instead of 0." << std::endl;
+    exit( EXIT_FAILURE);
+  }
+
+  phaseFilt->SetModel(PhaseType::LINEAR_BETWEEN_MINIMA);
+  phaseFilt->Update();
+
+  float refMinPhase[100] =  { 0.24, 0.28, 0.32, 0.36, 0.40, 0.44, 0.48, 0.52, 0.56, 0.60,
+                              0.64, 0.68, 0.72, 0.76, 0.80, 0.84, 0.88, 0.92, 0.96, 0.00,
+                              0.04, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28, 0.32, 0.36, 0.40,
+                              0.44, 0.48, 0.52, 0.56, 0.60, 0.64, 0.68, 0.72, 0.76, 0.80,
+                              0.84, 0.88, 0.92, 0.96, 0.00, 0.04, 0.08, 0.12, 0.16, 0.20,
+                              0.24, 0.28, 0.32, 0.36, 0.40, 0.44, 0.48, 0.52, 0.56, 0.60,
+                              0.64, 0.68, 0.72, 0.76, 0.80, 0.84, 0.88, 0.92, 0.96, 0.00,
+                              0.04, 0.08, 0.12, 0.17, 0.21, 0.25, 0.29, 0.33, 0.38, 0.42,
+                              0.46, 0.50, 0.54, 0.58, 0.62, 0.67, 0.71, 0.75, 0.79, 0.83,
+                              0.88, 0.92, 0.96, 0.00, 0.04, 0.08, 0.12, 0.17, 0.21, 0.25 };
+
+  itk::ImageRegionConstIterator< reg1DImageType > itPhaseMin( phase, phase->GetLargestPossibleRegion() );
+  for (sum=0, i=0; !itPhaseMin.IsAtEnd(); ++itPhaseMin, i++)
+    sum += vcl_abs(refMinPhase[i] - itPhaseMin.Get());
+  std::cout << "LINEAR_BETWEEN_MINIMA... ";
+  if ( sum <= 0.076 )
+    std::cout << "Test PASSED! " << std::endl;
+  else
+  {
+    std::cerr << "Test FAILED! Linear phase between min does not match ref, absolute difference "
+              << sum << " instead of 0." << std::endl;
+    exit( EXIT_FAILURE);
+  }
 
   return EXIT_SUCCESS;
 }

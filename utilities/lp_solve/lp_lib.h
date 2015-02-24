@@ -56,7 +56,7 @@
 /* Define user program feature option switches                               */
 /* ------------------------------------------------------------------------- */
 
-# if defined _WIN32 && !defined __GNUC__
+# if !defined isnan && defined _WIN32 && !defined __GNUC__
 #  define isnan _isnan
 # endif
 #if defined NOISNAN
