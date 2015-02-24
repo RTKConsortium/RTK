@@ -80,6 +80,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 ::SetForwardProjectionFilter (int _arg)
 {
   m_CG->SetForwardProjectionFilter(_arg);
+  this->Modified();
 }
 
 
@@ -89,6 +90,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 ::SetBackProjectionFilter (int _arg)
 {
   m_CG->SetBackProjectionFilter(_arg);
+  this->Modified();
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
