@@ -19,11 +19,10 @@
 #ifndef __rtkHilbertImageFilter_txx
 #define __rtkHilbertImageFilter_txx
 
+#include <itkConfigure.h>
 #include <itkForwardFFTImageFilter.h>
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7)
 # include <itkComplexToComplexFFTImageFilter.h>
-#else
-# include <itkFFTComplexToComplexImageFilter.h>
 #endif
 #include <itkImageRegionIteratorWithIndex.h>
 
@@ -64,16 +63,27 @@ HilbertImageFilter<TInputImage, TOutputImage>
     ++it;
     }
 
-  // Inverse FFT (although I had to set it to DIRECT to obtain the same as in Matlab,
+  // Inverse FFT (although I had to set it to FORWARD to obtain the same as in Matlab,
   // I really don't know why)
+#if !defined(USE_FFTWD)
+  if(typeid(typename TOutputImage::PixelType).name() == typeid(double).name() )
+    {
+    itkExceptionMacro(<< "FFTW with double has not been activated in ITK, cannot run.");
+    }
+#endif
+#if !defined(USE_FFTWF)
+  if(typeid(typename TOutputImage::PixelType).name() == typeid(float).name() )
+    {
+    itkExceptionMacro(<< "FFTW with float has not been activated in ITK, cannot run.");
+    }
+#endif
+
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7)
   typedef typename itk::ComplexToComplexFFTImageFilter<TOutputImage> InverseFFTFilterType;
   typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
   invFilt->SetTransformDirection(InverseFFTFilterType::FORWARD);
 #else
-  typedef typename itk::FFTComplexToComplexImageFilter<TOutputImage> InverseFFTFilterType;
-  typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
-  invFilt->SetTransformDirection(InverseFFTFilterType::DIRECT);
+  itkExceptionMacro(<< "Only available for ITK versions greater than 4.7.");
 #endif
   invFilt->SetInput(fft);
   invFilt->Update();

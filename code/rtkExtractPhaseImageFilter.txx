@@ -85,10 +85,6 @@ ExtractPhaseImageFilter<TImage>
   hilbert->SetInput( sub->GetOutput() );
 
   // Take the linear phase of this signal
-#ifndef USE_FFTWD
-  itkExceptionMacro(<< "FFTW has not been activated in ITK, cannot run.");
-#endif
-
   typedef itk::ComplexToPhaseImageFilter< ComplexSignalType, TImage > PhaseType;
   typename PhaseType::Pointer phase = PhaseType::New();
   phase->SetInput( hilbert->GetOutput() );
