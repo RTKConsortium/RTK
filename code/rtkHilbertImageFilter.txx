@@ -82,13 +82,13 @@ HilbertImageFilter<TInputImage, TOutputImage>
   typedef typename itk::ComplexToComplexFFTImageFilter<TOutputImage> InverseFFTFilterType;
   typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
   invFilt->SetTransformDirection(InverseFFTFilterType::FORWARD);
-#else
-  itkExceptionMacro(<< "Only available for ITK versions greater than 4.7.");
-#endif
   invFilt->SetInput(fft);
   invFilt->Update();
 
   this->GraftOutput( invFilt->GetOutput() );
+#else
+  itkExceptionMacro(<< "Only available for ITK versions greater than 4.7.");
+#endif
 }
 
 } // end of namespace rtk
