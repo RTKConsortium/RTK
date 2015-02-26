@@ -83,6 +83,8 @@ void WaterPrecorrectionImageFilter<TInputImage,TOutputImage>
     while ( !itIn.IsAtEnd() )
       {
       itOut.Set( m_Coefficients[0] + itIn.Get() );
+      ++itIn;
+      ++itOut;
       }
     }
 }
