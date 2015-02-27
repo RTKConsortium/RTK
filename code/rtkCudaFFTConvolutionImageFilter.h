@@ -44,7 +44,7 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 template< class TParentImageFilter >
-class CudaFFTConvolutionImageFilter:
+class ITK_EXPORT CudaFFTConvolutionImageFilter:
   public itk::CudaImageToImageFilter< itk::CudaImage<float,3>,
                                       itk::CudaImage<float,3>,
                                       TParentImageFilter >
@@ -67,7 +67,7 @@ public:
   itkTypeMacro(CudaFFTConvolutionImageFilter, TParentImageFilter);
 
 protected:
-  rtkcuda_EXPORT CudaFFTConvolutionImageFilter();
+  CudaFFTConvolutionImageFilter();
   ~CudaFFTConvolutionImageFilter(){}
 
   virtual void GPUGenerateData();

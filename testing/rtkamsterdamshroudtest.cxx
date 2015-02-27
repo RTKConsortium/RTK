@@ -1,6 +1,7 @@
 
 #include <itkImageFileReader.h>
 #include <itkPasteImageFilter.h>
+#include <itkConfigure.h>
 
 #include "rtkTest.h"
 #include "rtkAmsterdamShroudImageFilter.h"
@@ -276,6 +277,7 @@ int main(int, char** )
     exit( EXIT_FAILURE);
   }
 
+#if defined(USE_FFTWD) && (ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7))
   std::cout << "\n\n****** Extract phase from case 3 ******\n" << std::endl;
 
   //Check phase
@@ -367,6 +369,7 @@ int main(int, char** )
               << sum << " instead of 0." << std::endl;
     exit( EXIT_FAILURE);
   }
+#endif
 
   return EXIT_SUCCESS;
 }
