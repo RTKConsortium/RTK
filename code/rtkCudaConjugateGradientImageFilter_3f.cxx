@@ -20,9 +20,7 @@
 #include "rtkCudaConjugateGradientImageFilter_3f.hcu"
 #include "rtkCudaConstantVolumeSource.h"
 
-
 #include <itkMacro.h>
-#include <itkImageFileWriter.h>
 
 rtk::CudaConjugateGradientImageFilter_3f
 ::CudaConjugateGradientImageFilter_3f()
@@ -50,7 +48,6 @@ rtk::CudaConjugateGradientImageFilter_3f
   CUDA_copy_X_3f(size, pin, pX);
 
   this->m_A->SetX(this->GetX());
-//  this->m_A->ReleaseDataFlagOn();
   this->m_A->Update();
 
   // Create a source to generate the intermediate images
@@ -80,12 +77,6 @@ rtk::CudaConjugateGradientImageFilter_3f
   // Compute, on GPU, R_zero = P_zero = this->GetB() - this->m_A->GetOutput()
   CUDA_subtract_3f(size, pB, pAOut, pP, pR);
 
-  typedef itk::ImageFileWriter< itk::CudaImage<float, 3> > WriterType;
-  typename WriterType::Pointer writer = WriterType::New();
-//  writer->SetInput(P_k);
-//  writer->SetFileName("P_zero_GPU.mha");
-//  writer->Update();
-
   for (int iter=0; iter<m_NumberOfIterations; iter++)
     {
     // Compute A * P_k
@@ -93,13 +84,6 @@ rtk::CudaConjugateGradientImageFilter_3f
     this->m_A->Update();
     AOut = this->m_A->GetOutput();
     AOut->DisconnectPipeline();
-
-    if (iter==2)
-      {
-      writer->SetInput(this->GetOutput());
-      writer->SetFileName("X2_GPU.mha");
-      writer->Update();
-      }
 
     float *pX = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
     float *pR = *(float**)( R_k->GetCudaDataManager()->GetGPUBufferPointer() );
