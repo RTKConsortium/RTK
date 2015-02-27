@@ -35,7 +35,11 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
 
   // Create the filters
   m_ZeroMultiplyVolumeFilter = MultiplyVolumeFilterType::New();
+#ifdef RTK_USE_CUDA
+  m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
+#else
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
+#endif
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();

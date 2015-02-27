@@ -28,6 +28,10 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkDisplacedDetectorImageFilter.h"
 
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaConjugateGradientImageFilter_3f.h"
+#endif
+
 namespace rtk
 {
   /** \class ConjugateGradientConeBeamReconstructionFilter

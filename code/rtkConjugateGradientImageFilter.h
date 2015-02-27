@@ -91,13 +91,15 @@ protected:
   /** Conjugate gradient requires the whole image */
   void GenerateInputRequestedRegion();
 
+  ConjugateGradientOperatorPointerType m_A;
+
+  int  m_NumberOfIterations;
+
 private:
   ConjugateGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
 
-  ConjugateGradientOperatorPointerType m_A;
 
-  int  m_NumberOfIterations;
 //  bool m_MeasureExecutionTimes;
 };
 } //namespace RTK
