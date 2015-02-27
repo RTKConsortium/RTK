@@ -19,7 +19,7 @@
 #ifndef __rtkReconstructionConjugateGradientOperator_h
 #define __rtkReconstructionConjugateGradientOperator_h
 
-#include <itkMultiplyImageFilter.h>
+#include "rtkConstantImageSource.h"
 
 #include "rtkConjugateGradientOperator.h"
 #include "rtkBackProjectionImageFilter.h"
@@ -27,6 +27,11 @@
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaDisplacedDetectorImageFilter.h"
+  #include "rtkCudaConstantVolumeSource.h"
+#endif
 
 namespace rtk
 {
@@ -59,19 +64,15 @@ namespace rtk
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
-   * ZeroMultiplyVolume [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * ZeroMultiplyProjections [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * BeforeZeroMultiplyVolume [label="", fixedsize="false", width=0, height=0, shape=none];
+   * ConstantVolumeSource [label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+   * ConstantProjectionsSource [label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
-   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
-   * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
-   * BeforeZeroMultiplyVolume -> ForwardProjection;
-   * Input1 -> ZeroMultiplyProjections;
-   * ZeroMultiplyProjections -> ForwardProjection;
-   * ZeroMultiplyVolume -> BackProjection;
+   * Input0 -> ForwardProjection;
+   * ConstantProjectionsSource -> ForwardProjection;
+   * ConstantVolumeSource -> BackProjection;
    * ForwardProjection -> Displaced;
    * Displaced -> BackProjection;
    * BackProjection -> Output;
@@ -108,7 +109,7 @@ public:
   typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
 
   typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
-  typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
+  typedef rtk::ConstantImageSource<TOutputImage>                          ConstantSourceType;
 
   /** Set the backprojection filter*/
   void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
@@ -130,9 +131,8 @@ protected:
   BackProjectionFilterPointer            m_BackProjectionFilter;
   ForwardProjectionFilterPointer         m_ForwardProjectionFilter;
 
-  typename MultiplyFilterType::Pointer              m_MultiplyFilter;
-  typename MultiplyFilterType::Pointer              m_ZeroMultiplyProjectionFilter;
-  typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
+  typename ConstantSourceType::Pointer              m_ConstantProjectionsSource;
+  typename ConstantSourceType::Pointer              m_ConstantVolumeSource;
   typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
 
   /** Member attributes */
