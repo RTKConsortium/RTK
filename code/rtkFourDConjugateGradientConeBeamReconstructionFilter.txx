@@ -25,6 +25,8 @@
 
 #include <algorithm>
 
+#include <itkImageFileWriter.h>
+
 namespace rtk
 {
 
@@ -38,11 +40,17 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_NumberOfIterations=3;
 
   // Create the filters
-  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
+
+#ifdef RTK_USE_CUDA
+  m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
+  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+#else
+  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+#endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Memory management options
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
@@ -138,6 +146,13 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   // Set runtime connections
   m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
   m_ConjugateGradientFilter->SetX(this->GetInputVolumeSeries());
+
+//  typedef itk::ImageFileWriter<VolumeSeriesType> WriterType;
+//  typename WriterType::Pointer writer = WriterType::New();
+//  writer->SetInput(this->GetInputVolumeSeries());
+//  writer->SetFileName("CGinput.mha");
+//  writer->Update();
+
   m_DisplacedDetectorFilter->SetInput(this->GetInputProjectionStack());
 
   // Links with the m_BackProjectionFilter should be set here and not
