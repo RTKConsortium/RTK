@@ -71,6 +71,7 @@ void SubSelectImageFilter<ProjectionStackType>::GenerateOutputInformation()
   typename ProjectionStackType::RegionType outputLargestPossibleRegion = this->GetInput(0)->GetLargestPossibleRegion();
   outputLargestPossibleRegion.SetSize(Dimension-1, m_NbSelectedProjs);
 
+  this->GetOutput()->CopyInformation( this->GetInput(0) );
   this->GetOutput()->SetLargestPossibleRegion(outputLargestPossibleRegion);
 
   // Update output geometry
