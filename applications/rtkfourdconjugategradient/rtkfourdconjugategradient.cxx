@@ -81,9 +81,9 @@ int main(int argc, char * argv[])
     // The only default it accepts is to set all components of a multiple argument to the same value.
     // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable value
     // which is why a "frames" argument is introduced
-    ConstantImageSourceType::SizeValueType * inputSize = const_cast<ConstantImageSourceType::SizeValueType *>(constantImageSource->GetSize());
+    ConstantImageSourceType::SizeType inputSize = constantImageSource->GetSize();
     inputSize[3] = args_info.frames_arg;
-    constantImageSource->Modified();
+    constantImageSource->SetSize(inputSize);
 
     inputFilter = constantImageSource;
     }
