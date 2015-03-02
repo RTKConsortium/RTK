@@ -102,7 +102,6 @@ int main(int argc, char *argv[])
   pasteIn->SetSourceImage(extract->GetOutput());
   pasteIn->SetDestinationImage(constantSourceIn->GetOutput());
       
-  InputImageType::SizeType inputSize = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
   int istep         = 1;
   unsigned int imin = 1;
   unsigned int imax = (unsigned int)subsetRegion.GetSize()[2];
