@@ -85,6 +85,7 @@ public:
 
   /** Set/Get size of the output image */
   itkSetMacro( Size, SizeType );
+  itkGetMacro( Size, SizeType );
   virtual void SetSize( SizeValueArrayType sizeArray );
   virtual const SizeValueType * GetSize() const;
 

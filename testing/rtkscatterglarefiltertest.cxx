@@ -92,7 +92,7 @@ ImageType::Pointer createInputImage(const std::vector<float> & coef)
     float yy = (float)idx[1] - (float)size[1] / 2.0f;
     float rr2 = (xx*xx + yy*yy);
     float g = (a3*dx*dy / (2.0f * vnl_math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);
-    if ((2 * idx[0] == size[0]) && ((2 * idx[1] == size[1]))) {
+    if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1]))) {
       g += (1 - a3);
     }
     g = spikeValue * g; // The image is a spike at the central pixel convolved with the scatter PSF
@@ -134,7 +134,7 @@ int main(int , char** )
   float spikeValueOut = 0.0f;
   while (!itO.IsAtEnd()) {
     idx = itO.GetIndex();
-    if ((2 * idx[0] == size[0]) && ((2 * idx[1] == size[1]))) {
+    if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1]))) {
       spikeValueOut += itO.Get();
     } else {
       sumBng += itO.Get();

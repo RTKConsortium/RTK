@@ -81,7 +81,7 @@ rtk::CudaConjugateGradientImageFilter_3f
   CUDA_subtract_3f(size, pB, pAOut, pP, pR);
 
   typedef itk::ImageFileWriter< itk::CudaImage<float, 3> > WriterType;
-  typename WriterType::Pointer writer = WriterType::New();
+  WriterType::Pointer writer = WriterType::New();
 //  writer->SetInput(P_k);
 //  writer->SetFileName("P_zero_GPU.mha");
 //  writer->Update();
