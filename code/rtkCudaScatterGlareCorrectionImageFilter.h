@@ -21,7 +21,6 @@
 
 #include "rtkScatterGlareCorrectionImageFilter.h"
 #include "rtkCudaFFTConvolutionImageFilter.h"
-
 namespace rtk
 {
 
@@ -57,7 +56,7 @@ public:
   itkTypeMacro(CudaScatterGlareCorrectionImageFilter, FFTRampImageFilter);
 
 protected:
-  rtkcuda_EXPORT CudaScatterGlareCorrectionImageFilter(){}
+  CudaScatterGlareCorrectionImageFilter(){}
   ~CudaScatterGlareCorrectionImageFilter(){}
 
 private:

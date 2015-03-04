@@ -16,23 +16,25 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaFFTRampImageFilter_hcu
-#define __rtkCudaFFTRampImageFilter_hcu
+#ifndef __rtkCudaFFTConvolutionImageFilter_hcu
+#define __rtkCudaFFTConvolutionImageFilter_hcu
 
 #include <vector_types.h>
 #include <vector>
+#include "rtkWin32Header.h"
 
 void
-CUDA_fft_convolution(const int3 &inputDimension,
-                     const int2 &kernelDimension,
-                     float *deviceProjection,
-                     float2 *deviceKernelFFT);
+rtkcuda_EXPORT CUDA_fft_convolution(const int3 &inputDimension,
+                                    const int2 &kernelDimension,
+                                    float *deviceProjection,
+                                    float2 *deviceKernelFFT);
+
 void
-CUDA_padding(const int3 &paddingIndex,
-             const uint3 &paddingSize,
-             const uint3 &inputSize,
-             float *deviceVolume,
-             float *devicePaddedVolume,
-             const std::vector<float> &mirrorWeights);
+rtkcuda_EXPORT CUDA_padding(const int3 &paddingIndex,
+                            const uint3 &paddingSize,
+                            const uint3 &inputSize,
+                            float *deviceVolume,
+                            float *devicePaddedVolume,
+                            const std::vector<float> &mirrorWeights);
 
 #endif
