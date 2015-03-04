@@ -30,6 +30,7 @@
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaConjugateGradientImageFilter_3f.h"
+  #include "rtkCudaDisplacedDetectorImageFilter.h"
 #endif
 
 namespace rtk

@@ -24,6 +24,7 @@
 #include "rtkIncrementalFourDConjugateGradientConeBeamReconstructionFilter.h"
 
 #include <algorithm>
+#include <itkImageFileWriter.h>
 
 namespace rtk
 {
@@ -165,6 +166,8 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 ::GenerateData()
 {
   typename VolumeSeriesType::Pointer pimg;
+//  typedef itk::ImageFileWriter<VolumeSeriesType> WriterType;
+//  typename WriterType::Pointer writer = WriterType::New();
 
   for (unsigned int ml_iter=0; ml_iter < m_NumberOfMainLoopIterations; ml_iter++)
     {
@@ -175,7 +178,13 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
         {
         pimg = m_CG->GetOutput();
         pimg->DisconnectPipeline();
+//        pimg->Modified();
         m_CG->SetInputVolumeSeries(pimg);
+//        m_CG->Modified();
+
+//        writer->SetInput(pimg);
+//        writer->SetFileName("CGinput.mha");
+//        writer->Update();
         }
 
       // Change to the next subset
@@ -183,6 +192,8 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
       m_CG->SetGeometry( m_SubSelectFilters[subset]->GetOutputGeometry() );
       m_CG->SetWeights(m_PhasesFilters[subset]->GetOutput());
       TRY_AND_EXIT_ON_ITK_EXCEPTION( m_CG->Update() );
+
+
       }
     }
 

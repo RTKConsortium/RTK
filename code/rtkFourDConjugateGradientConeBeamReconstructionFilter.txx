@@ -25,6 +25,8 @@
 
 #include <algorithm>
 
+#include <itkImageFileWriter.h>
+
 namespace rtk
 {
 
@@ -38,11 +40,17 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_NumberOfIterations=3;
 
   // Create the filters
-  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
+
+#ifdef RTK_USE_CUDA
+  m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
+  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+#else
+  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+#endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Memory management options
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
@@ -117,6 +125,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
     m_CGOperator->SetUseCudaSplat(true);
     m_CGOperator->SetUseCudaSources(true);
     m_ProjStackToFourDFilter->SetUseCudaSplat(true);
+    m_ProjStackToFourDFilter->SetUseCudaSources(true);
     }
 }
 
@@ -168,7 +177,14 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 {
   m_ConjugateGradientFilter->Update();
 
-  this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+  // Simply grafting the output of m_ConjugateGradientFilter to the main output
+  // is sufficient in most cases, but when this output is then disconnected and replugged,
+  // several images end up having the same CudaDataManager. The following solution is a
+  // workaround for this problem
+  typename VolumeSeriesType::Pointer pimg = m_ConjugateGradientFilter->GetOutput();
+  pimg->DisconnectPipeline();
+
+  this->GraftOutput( pimg);
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>

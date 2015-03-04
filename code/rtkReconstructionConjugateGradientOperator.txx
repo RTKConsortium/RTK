@@ -30,19 +30,23 @@ ReconstructionConjugateGradientOperator<TOutputImage>::ReconstructionConjugateGr
   this->SetNumberOfRequiredInputs(2);
 
   // Create filters
-  m_MultiplyFilter = MultiplyFilterType::New();
-  m_ZeroMultiplyProjectionFilter = MultiplyFilterType::New();
-  m_ZeroMultiplyVolumeFilter = MultiplyFilterType::New();
+#ifdef RTK_USE_CUDA
+  m_ConstantProjectionsSource = rtk::CudaConstantVolumeSource::New();
+  m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
+  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+#else
+  m_ConstantProjectionsSource = ConstantSourceType::New();
+  m_ConstantVolumeSource = ConstantSourceType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+#endif
 
   // Set permanent parameters
-  m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
 
   // Set memory management options
-  m_ZeroMultiplyProjectionFilter->ReleaseDataFlagOn();
-  m_ZeroMultiplyVolumeFilter->ReleaseDataFlagOn();
-  m_MultiplyFilter->ReleaseDataFlagOn();
+  m_ConstantProjectionsSource->ReleaseDataFlagOn();
+  m_ConstantVolumeSource->ReleaseDataFlagOn();
 }
 
 template< typename TOutputImage >
@@ -87,12 +91,12 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // Set runtime connections, and connections with
   // forward and back projection filters, which are set
   // at runtime
-  m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
+  m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
+  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_DisplacedDetectorFilter->SetInput( m_ForwardProjectionFilter->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
-  m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
-  m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
+  m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
+  m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
 
   // Set geometry
