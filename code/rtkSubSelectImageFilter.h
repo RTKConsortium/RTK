@@ -21,63 +21,95 @@
 #include <itkPasteImageFilter.h>
 #include <itkExtractImageFilter.h>
 #include "rtkConstantImageSource.h"
-#include "rtkPhaseReader.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
 {
+
+/** \class SubSelectImageFilter
+ * \brief Subselects projections from a stack of projections
+ *
+ * This abstract class takes as input a stack of projections and the
+ * corresponding geometry and creates an output stack of projections and
+ * its corresponding geometry using the two members m_NbSelectedProjs and
+ * m_SelectedProjections. The members must be set before
+ * GenerateOutputInformation is called. Streaming of the output is possible.
+ * The output is produced from the following mini-pipeline:
+ *
+ * \dot
+ * digraph SubSelectImageFilter {
+ * Input [label="Input (Projections)", shape=Mdiamond];
+ * Output [label="Output (Projections)", shape=Mdiamond];
+ *
+ * node [shape=box];
+ *
+ * Constant [label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ * Extract [label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ * Paste [label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
+ *
+ * Input->Extract
+ * Extract->Paste
+ * Paste->Output
+ * Constant->Paste
+ * }
+ * \enddot
+ *
+ * \test rtkadmmtotalvariationtest.cxx
+ *
+ * \author Simon Rit
+ */
 template< typename ProjectionStackType>
 class SubSelectImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef SubSelectImageFilter             Self;
-    typedef itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
+  /** Standard class typedefs. */
+  typedef SubSelectImageFilter                                              Self;
+  typedef itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType> Superclass;
+  typedef itk::SmartPointer< Self >                                         Pointer;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter)
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter)
+  /** The set of projections from which a subset will be extracted */
+  void SetInputProjectionStack(const ProjectionStackType* Projections);
+  typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
-    /** The set of projections from which a subset will be extracted */
-    void SetInputProjectionStack(const ProjectionStackType* Projections);
-    typename ProjectionStackType::ConstPointer GetInputProjectionStack();
+  typedef itk::PasteImageFilter<ProjectionStackType>                        PasteFilterType;
+  typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType> ExtractFilterType;
+  typedef rtk::ConstantImageSource<ProjectionStackType>                     EmptyProjectionStackSourceType;
+  typedef rtk::ThreeDCircularProjectionGeometry                             GeometryType;
 
-    typedef itk::PasteImageFilter<ProjectionStackType>                                  PasteFilterType;
-    typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>           ExtractFilterType;
-    typedef rtk::ConstantImageSource<ProjectionStackType>                               EmptyProjectionStackSourceType;
-    typedef rtk::ThreeDCircularProjectionGeometry                                       GeometryType;
+  itkSetMacro(InputGeometry, GeometryType::Pointer)
+  itkGetMacro(InputGeometry, GeometryType::Pointer)
 
-    itkSetMacro(InputGeometry, GeometryType::Pointer)
-    itkGetMacro(InputGeometry, GeometryType::Pointer)
+  itkGetMacro(SelectedProjections, std::vector<bool>)
 
-    itkGetMacro(SelectedProjections, std::vector<bool>)
-
-    GeometryType::Pointer GetOutputGeometry();
+  GeometryType::Pointer GetOutputGeometry();
 
 protected:
-    SubSelectImageFilter();
-    ~SubSelectImageFilter(){}
+  SubSelectImageFilter();
+  ~SubSelectImageFilter(){}
 
-    virtual void GenerateInputRequestedRegion();
+  virtual void GenerateInputRequestedRegion();
 
-    virtual void GenerateOutputInformation();
+  virtual void GenerateOutputInformation();
 
-    /** Does the real work. */
-    virtual void GenerateData();
+  /** Does the real work. */
+  virtual void GenerateData();
 
-    /** Member variables */
-    GeometryType::Pointer     m_InputGeometry;
-    GeometryType::Pointer     m_OutputGeometry;
-    std::vector<bool>         m_SelectedProjections;
-    int                       m_NbSelectedProjs;
+  /** Member variables */
+  GeometryType::Pointer     m_InputGeometry;
+  GeometryType::Pointer     m_OutputGeometry;
+  std::vector<bool>         m_SelectedProjections;
+  int                       m_NbSelectedProjs;
 
 private:
-    SubSelectImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
+  SubSelectImageFilter(const Self &); // purposely not implemented
+  void operator=(const Self &);       // purposely not implemented
 
+  typename EmptyProjectionStackSourceType::Pointer m_EmptyProjectionStackSource;
+  typename ExtractFilterType::Pointer              m_ExtractFilter;
+  typename PasteFilterType::Pointer                m_PasteFilter;
 };
 } //namespace ITK
 
