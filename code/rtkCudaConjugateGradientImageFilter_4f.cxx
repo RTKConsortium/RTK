@@ -16,26 +16,28 @@
  *
  *=========================================================================*/
 
-#include "rtkCudaConjugateGradientImageFilter_3f.h"
-#include "rtkCudaConjugateGradientImageFilter_3f.hcu"
-#include "rtkCudaConstantVolumeSource.h"
+#include "rtkCudaConjugateGradientImageFilter_4f.h"
+#include "rtkCudaConjugateGradientImageFilter_4f.hcu"
+#include "rtkCudaConstantVolumeSeriesSource.h"
 
 #include <itkMacro.h>
 
-rtk::CudaConjugateGradientImageFilter_3f
-::CudaConjugateGradientImageFilter_3f()
+#include <itkImageFileWriter.h>
+
+rtk::CudaConjugateGradientImageFilter_4f
+::CudaConjugateGradientImageFilter_4f()
 {
 }
 
 void
-rtk::CudaConjugateGradientImageFilter_3f
+rtk::CudaConjugateGradientImageFilter_4f
 ::GPUGenerateData()
 {
-  int size[3];
+  int size[4];
 
-  for (int i=0; i<3; i++)
+  for (int i=0; i<4; i++)
     {
-    size[i] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[i];
+      size[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
     }
 
   // Copy the input to the output (X_0 = input)
@@ -43,28 +45,28 @@ rtk::CudaConjugateGradientImageFilter_3f
   float *pX = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // On GPU, initialize the output to the input
-  CUDA_copy_X_3f(size, pin, pX);
+  CUDA_copy_X_4f(size, pin, pX);
 
   this->m_A->SetX(this->GetX());
   this->m_A->Update();
 
   // Create a source to generate the intermediate images
-  rtk::CudaConstantVolumeSource::Pointer source = rtk::CudaConstantVolumeSource::New();
+  rtk::CudaConstantVolumeSeriesSource::Pointer source = rtk::CudaConstantVolumeSeriesSource::New();
   source->SetInformationFromImage(this->GetOutput());
   source->SetConstant(0);
 
   // Initialize P_k
   source->Update();
-  itk::CudaImage<float, 3>::Pointer P_k = source->GetOutput();
+  itk::CudaImage<float, 4>::Pointer P_k = source->GetOutput();
   P_k->DisconnectPipeline();
 
   // Initialize R_k
   source->Update();
-  itk::CudaImage<float, 3>::Pointer R_k = source->GetOutput();
+  itk::CudaImage<float, 4>::Pointer R_k = source->GetOutput();
   R_k->DisconnectPipeline();
 
   // Initialize AOut
-  itk::CudaImage<float, 3>::Pointer AOut = this->m_A->GetOutput();
+  itk::CudaImage<float, 4>::Pointer AOut = this->m_A->GetOutput();
   AOut->DisconnectPipeline();
 
   float *pR = *(float**)( R_k->GetCudaDataManager()->GetGPUBufferPointer() );
@@ -73,7 +75,7 @@ rtk::CudaConjugateGradientImageFilter_3f
   float *pP = *(float**)( P_k->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Compute, on GPU, R_zero = P_zero = this->GetB() - this->m_A->GetOutput()
-  CUDA_subtract_3f(size, pB, pAOut, pP, pR);
+  CUDA_subtract_4f(size, pB, pAOut, pP, pR);
 
   for (int iter=0; iter<m_NumberOfIterations; iter++)
     {
@@ -90,12 +92,12 @@ rtk::CudaConjugateGradientImageFilter_3f
 
     // Compute, on GPU, alpha_k (only on GPU), X_k+1 (output), R_k+1, beta_k (only on GPU), P_k+1
     // The inputs are replaced by their next iterate
-    CUDA_conjugate_gradient_3f(size, pX, pR, pP, pAOut);
+    CUDA_conjugate_gradient_4f(size, pX, pR, pP, pAOut);
 
     P_k->Modified();
     }
 
-  P_k->ReleaseData();
-  R_k->ReleaseData();
-  AOut->ReleaseData();
+  P_k = NULL;
+  R_k = NULL;
+  AOut = NULL;
 }

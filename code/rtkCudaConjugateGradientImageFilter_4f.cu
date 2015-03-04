@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 // rtk includes
-#include "rtkCudaConjugateGradientImageFilter_3f.hcu"
+#include "rtkCudaConjugateGradientImageFilter_4f.hcu"
 #include "rtkCudaUtilities.hcu"
 
 #include <itkMacro.h>
@@ -27,12 +27,9 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-// for printf
-#include <stdio.h>
-
 // TEXTURES AND CONSTANTS //
 
-__constant__ int3 c_Size;
+__constant__ int4 c_Size;
 
 inline int iDivUp(int a, int b){
     return (a % b != 0) ? (a / b + 1) : (a / b);
@@ -46,13 +43,13 @@ inline int iDivUp(int a, int b){
 
 __global__
 void
-subtract_3f(float *in1, float* in2, float* out1, float* out2)
+subtract_4f(float *in1, float* in2, float* out1, float* out2)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
   unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
 
-  if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
+  if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z * c_Size.w)
       return;
 
   long int id = (k * c_Size.y + j) * c_Size.x + i;
@@ -64,13 +61,13 @@ subtract_3f(float *in1, float* in2, float* out1, float* out2)
 
 __global__
 void
-scale_then_add_3f(float *in1, float* in2, float scalar)
+scale_then_add_4f(float *in1, float* in2, float scalar)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
   unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
 
-  if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
+  if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z * c_Size.w)
       return;
 
   long int id = (k * c_Size.y + j) * c_Size.x + i;
@@ -85,30 +82,30 @@ scale_then_add_3f(float *in1, float* in2, float scalar)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_copy_X_3f(int size[3],
+CUDA_copy_X_4f(int size[4],
               float* in,
               float* out)
 {
-  int3 dev_Size = make_int3(size[0], size[1], size[2]);
-  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int3));
+  int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
+  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
 
   // Copy input volume to output
-  long int memorySizeOutput = size[0] * size[1] * size[2] * sizeof(float);
+  long int memorySizeOutput = size[0] * size[1] * size[2] * size[3] * sizeof(float);
   cudaMemcpy(out, in, memorySizeOutput, cudaMemcpyDeviceToDevice);
 }
 
 void
-CUDA_subtract_3f(int size[3],
+CUDA_subtract_4f(int size[4],
                  float* in1,
                  float* in2,
                  float* out1,
                  float* out2)
 {
-  int3 dev_Size = make_int3(size[0], size[1], size[2]);
-  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int3));
+  int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
+  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
 
   // Reset output volume
-  long int memorySizeOutput = size[0] * size[1] * size[2] * sizeof(float);
+  long int memorySizeOutput = size[0] * size[1] * size[2] * size[3] * sizeof(float);
   cudaMemset((void *)out1, 0, memorySizeOutput );
 
   // Thread Block Dimensions
@@ -116,17 +113,17 @@ CUDA_subtract_3f(int size[3],
 
   int blocksInX = iDivUp(size[0], dimBlock.x);
   int blocksInY = iDivUp(size[1], dimBlock.y);
-  int blocksInZ = iDivUp(size[2], dimBlock.z);
+  int blocksInZ = iDivUp(size[2] * size[3], dimBlock.z);
 
   dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
 
-  subtract_3f <<< dimGrid, dimBlock >>> ( in1, in2, out1, out2);
+  subtract_4f <<< dimGrid, dimBlock >>> ( in1, in2, out1, out2);
 
   CUDA_CHECK_ERROR;
 }
 
 void
-CUDA_conjugate_gradient_3f(int size[3],
+CUDA_conjugate_gradient_4f(int size[4],
                            float* Xk,
                            float* Rk,
                            float* Pk,
@@ -135,19 +132,19 @@ CUDA_conjugate_gradient_3f(int size[3],
   cublasHandle_t  handle;
   cublasCreate(&handle);
 
-  int3 dev_Size = make_int3(size[0], size[1], size[2]);
-  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int3));
+  int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
+  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
 
   // Thread Block Dimensions
   dim3 dimBlock = dim3(8, 8, 8);
 
   int blocksInX = iDivUp(size[0], dimBlock.x);
   int blocksInY = iDivUp(size[1], dimBlock.y);
-  int blocksInZ = iDivUp(size[2], dimBlock.z);
+  int blocksInZ = iDivUp(size[2] * size[3], dimBlock.z);
 
   dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
 
-  int numel = size[0] * size[1] * size[2];
+  int numel = size[0] * size[1] * size[2] * size[3];
 
   // Compute Rk_square = sum(Rk(:).^2) by cublas
   float Rk_square = 0;
@@ -173,5 +170,8 @@ CUDA_conjugate_gradient_3f(int size[3],
   float beta_k = Rkplusone_square / Rk_square;
 
   // Compute Pk+1 = Rk+1 + beta_k * Pk
-  scale_then_add_3f <<< dimGrid, dimBlock >>> ( Pk, Rk, beta_k);
+  scale_then_add_4f <<< dimGrid, dimBlock >>> ( Pk, Rk, beta_k);
+
+  CUDA_CHECK_ERROR;
+  cudaDeviceSynchronize();
 }
