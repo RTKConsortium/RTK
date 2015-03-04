@@ -37,15 +37,8 @@ rtk::CudaConjugateGradientImageFilter_4f
 
   for (int i=0; i<4; i++)
     {
-    size[i] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[i];
+      size[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
     }
-
-  // Initialization
-  typedef itk::ImageFileWriter< itk::CudaImage<float, 4> > WriterType;
-  typename WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(this->GetX());
-  writer->SetFileName("x_0.mha");
-  writer->Update();
 
   // Copy the input to the output (X_0 = input)
   float *pin = *(float**)( this->GetX()->GetCudaDataManager()->GetGPUBufferPointer() );
@@ -84,10 +77,6 @@ rtk::CudaConjugateGradientImageFilter_4f
   // Compute, on GPU, R_zero = P_zero = this->GetB() - this->m_A->GetOutput()
   CUDA_subtract_4f(size, pB, pAOut, pP, pR);
 
-  writer->SetInput(P_k);
-  writer->SetFileName("p_0.mha");
-  writer->Update();
-
   for (int iter=0; iter<m_NumberOfIterations; iter++)
     {
     // Compute A * P_k
@@ -105,7 +94,6 @@ rtk::CudaConjugateGradientImageFilter_4f
     // The inputs are replaced by their next iterate
     CUDA_conjugate_gradient_4f(size, pX, pR, pP, pAOut);
 
-    this->m_A->Modified();
     P_k->Modified();
     }
 

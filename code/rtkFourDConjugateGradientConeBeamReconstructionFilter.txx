@@ -125,6 +125,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
     m_CGOperator->SetUseCudaSplat(true);
     m_CGOperator->SetUseCudaSources(true);
     m_ProjStackToFourDFilter->SetUseCudaSplat(true);
+    m_ProjStackToFourDFilter->SetUseCudaSources(true);
     }
 }
 
@@ -146,13 +147,6 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   // Set runtime connections
   m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
   m_ConjugateGradientFilter->SetX(this->GetInputVolumeSeries());
-
-//  typedef itk::ImageFileWriter<VolumeSeriesType> WriterType;
-//  typename WriterType::Pointer writer = WriterType::New();
-//  writer->SetInput(this->GetInputVolumeSeries());
-//  writer->SetFileName("CGinput.mha");
-//  writer->Update();
-
   m_DisplacedDetectorFilter->SetInput(this->GetInputProjectionStack());
 
   // Links with the m_BackProjectionFilter should be set here and not
@@ -183,7 +177,14 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 {
   m_ConjugateGradientFilter->Update();
 
-  this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+  // Simply grafting the output of m_ConjugateGradientFilter to the main output
+  // is sufficient in most cases, but when this output is then disconnected and replugged,
+  // several images end up having the same CudaDataManager. The following solution is a
+  // workaround for this problem
+  typename VolumeSeriesType::Pointer pimg = m_ConjugateGradientFilter->GetOutput();
+  pimg->DisconnectPipeline();
+
+  this->GraftOutput( pimg);
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>

@@ -174,10 +174,6 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
     p_k_t_A_p_k += m_PktApkVector[i];
     }
   m_Alphak = m_SquaredNormR_k / (p_k_t_A_p_k + eps);
-  std::cout << "Rk_square = " << m_SquaredNormR_k << std::endl;
-  std::cout << "Pk_APk = " << p_k_t_A_p_k << std::endl;
-  std::cout << "alpha_k = " << m_Alphak << std::endl;
-  std::cout << "Rkplusone_square = " << m_SquaredNormR_kPlusOne << std::endl;
 }
 
 }// end namespace

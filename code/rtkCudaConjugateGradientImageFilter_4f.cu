@@ -27,9 +27,6 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-// for printf
-#include <stdio.h>
-
 // TEXTURES AND CONSTANTS //
 
 __constant__ int4 c_Size;
@@ -152,16 +149,13 @@ CUDA_conjugate_gradient_4f(int size[4],
   // Compute Rk_square = sum(Rk(:).^2) by cublas
   float Rk_square = 0;
   cublasSdot (handle, numel, Rk, 1, Rk, 1, &Rk_square);
-  printf("Rk_square = %f\n", Rk_square);
 
   // Compute alpha_k = Rk_square / sum(Pk(:) .* APk(:))
   float Pk_APk = 0;
   cublasSdot (handle, numel, Pk, 1, APk, 1, &Pk_APk);
-  printf("Pk_APk = %f\n", Pk_APk);
 
   const float alpha_k = Rk_square / Pk_APk;
   const float minus_alpha_k = -alpha_k;
-  printf("alpha_k = %f\n", alpha_k);
 
   // Compute Xk+1 = Xk + alpha_k * Pk
   cublasSaxpy(handle, numel, &alpha_k, Pk, 1, Xk, 1);
@@ -172,10 +166,8 @@ CUDA_conjugate_gradient_4f(int size[4],
   // Compute beta_k = sum(Rk+1(:).^2) / Rk_square
   float Rkplusone_square = 0;
   cublasSdot (handle, numel, Rk, 1, Rk, 1, &Rkplusone_square);
-  printf("Rkplusone_square = %f\n", Rkplusone_square);
 
   float beta_k = Rkplusone_square / Rk_square;
-  printf("beta_k = %f\n", beta_k);
 
   // Compute Pk+1 = Rk+1 + beta_k * Pk
   scale_then_add_4f <<< dimGrid, dimBlock >>> ( Pk, Rk, beta_k);

@@ -122,8 +122,6 @@ void ConjugateGradientGetP_kPlusOneImageFilter<TInputType>
 
   // Release data in internal filters
   m_MultiplyFilter->GetOutput()->ReleaseData();
-
-  std::cout << "beta_k = " << m_Betak << std::endl;
 }
 
 }// end namespace

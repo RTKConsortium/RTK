@@ -38,8 +38,6 @@ rtk::CudaConjugateGradientImageFilter_3f
     size[i] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[i];
     }
 
-  // Initialization
-
   // Copy the input to the output (X_0 = input)
   float *pin = *(float**)( this->GetX()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pX = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
@@ -94,7 +92,6 @@ rtk::CudaConjugateGradientImageFilter_3f
     // The inputs are replaced by their next iterate
     CUDA_conjugate_gradient_3f(size, pX, pR, pP, pAOut);
 
-    this->m_A->Modified();
     P_k->Modified();
     }
 
