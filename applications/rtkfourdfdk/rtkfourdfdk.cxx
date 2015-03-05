@@ -203,7 +203,7 @@ int main(int argc, char * argv[])
 
     itk::ImageRegionIterator<FourDOutputImageType> it4D(fourDConstantImageSource->GetOutput(),
                                                         region);
-    itk::ImageRegionIterator<OutputImageType>      it3D(streamerBP->GetOutput(),
+    itk::ImageRegionIterator<CPUOutputImageType>   it3D(streamerBP->GetOutput(),
                                                         streamerBP->GetOutput()->GetLargestPossibleRegion() );
     while(!it3D.IsAtEnd())
       {
