@@ -172,6 +172,9 @@ CUDA_conjugate_gradient_4f(int size[4],
   // Compute Pk+1 = Rk+1 + beta_k * Pk
   scale_then_add_4f <<< dimGrid, dimBlock >>> ( Pk, Rk, beta_k);
 
+  // Destroy Cublas context
+  cublasDestroy(handle);
+
   CUDA_CHECK_ERROR;
   cudaDeviceSynchronize();
 }

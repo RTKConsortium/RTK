@@ -174,4 +174,10 @@ CUDA_conjugate_gradient_3f(int size[3],
 
   // Compute Pk+1 = Rk+1 + beta_k * Pk
   scale_then_add_3f <<< dimGrid, dimBlock >>> ( Pk, Rk, beta_k);
+
+  // Destroy Cublas context
+  cublasDestroy(handle);
+
+  CUDA_CHECK_ERROR;
+  cudaDeviceSynchronize();
 }
