@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <itkMacro.h>
+#include <itkImageBase.h>
 #include "rtkGgoArgsInfoManager.h"
 
 //--------------------------------------------------------------------
@@ -100,7 +101,25 @@
               << " line " << __LINE__                                   \
               << std::endl;                                             \
     std::cerr << err << std::endl;                                      \
-    exit(EXIT_FAILURE);                                                 \
+    itk::InvalidRequestedRegionError* r;                                \
+    r = dynamic_cast<itk::InvalidRequestedRegionError*>(&err);          \
+    if(r)                                                               \
+      {                                                                 \
+      if( r->GetDataObject()->GetSource() )                             \
+        {                                                               \
+        std::cerr << "Invalid requested region error triggered by "     \
+                  << r->GetDataObject()->GetSource()->GetNameOfClass()  \
+                  << std::endl;                                         \
+      }                                                                 \
+      itk::ImageBase<3> *img;                                           \
+      img = dynamic_cast<itk::ImageBase<3>*>(r->GetDataObject());       \
+      if(img)                                                           \
+        {                                                               \
+        DD(img->GetRequestedRegion())                                   \
+        DD(img->GetLargestPossibleRegion())                             \
+        }                                                               \
+      }                                                                 \
+      exit(EXIT_FAILURE);                                               \
     }
 //--------------------------------------------------------------------
 

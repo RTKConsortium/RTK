@@ -20,59 +20,81 @@
 
 #include "rtkSubSelectImageFilter.h"
 
-#include <itkImageRegionIterator.h>
-#include <itkImageRegionConstIterator.h>
-
-#include "math.h"
-
 namespace rtk
 {
 
 template<typename ProjectionStackType>
-SubSelectImageFilter<ProjectionStackType>::SubSelectImageFilter()
+SubSelectImageFilter<ProjectionStackType>
+::SubSelectImageFilter():
+  m_OutputGeometry(GeometryType::New()),
+  m_EmptyProjectionStackSource(EmptyProjectionStackSourceType::New()),
+  m_ExtractFilter(ExtractFilterType::New()),
+  m_PasteFilter(PasteFilterType::New())
 {
-  m_OutputGeometry = GeometryType::New();
 }
 
 template<typename ProjectionStackType>
-void SubSelectImageFilter<ProjectionStackType>::SetInputProjectionStack(const ProjectionStackType* Projections)
+void SubSelectImageFilter<ProjectionStackType>
+::SetInputProjectionStack(const ProjectionStackType* Projections)
 {
   this->SetNthInput(0, const_cast<ProjectionStackType*>(Projections));
 }
 
 template<typename ProjectionStackType>
-typename ProjectionStackType::ConstPointer SubSelectImageFilter<ProjectionStackType>::GetInputProjectionStack()
+typename ProjectionStackType::ConstPointer
+SubSelectImageFilter<ProjectionStackType>
+::GetInputProjectionStack()
 {
   return static_cast< const ProjectionStackType * >
           ( this->itk::ProcessObject::GetInput(0) );
 }
 
 template<typename ProjectionStackType>
-void SubSelectImageFilter<ProjectionStackType>::GenerateInputRequestedRegion()
+void SubSelectImageFilter<ProjectionStackType>
+::GenerateInputRequestedRegion()
 {
-  // call the superclass' implementation of this method
-  Superclass::GenerateInputRequestedRegion();
+  const unsigned int Dimension = this->InputImageDimension;
 
-  // get pointer to the input
-  typename Superclass::InputImagePointer inputPtr =
-          const_cast< ProjectionStackType * >( this->GetInput() );
+  // Find first selected projection (if it exists)
+  unsigned int firstSel = 0;
+  for(firstSel = 0; firstSel<m_SelectedProjections.size() && !(m_SelectedProjections[firstSel]); firstSel++);
+  if( firstSel == m_SelectedProjections.size() )
+    {
+    itkGenericExceptionMacro(<< "No projection selected.");
+    }
 
-  if ( inputPtr )
-  {
-  // request the region of interest
-  inputPtr->SetRequestedRegionToLargestPossibleRegion();
-  }
+  // Only request the first projection at first
+  typename ExtractFilterType::InputImageRegionType projRegion;
+  projRegion = this->GetOutput()->GetRequestedRegion();
+  projRegion.SetSize(Dimension-1, 1);
+  projRegion.SetIndex(Dimension-1, firstSel);
+  m_ExtractFilter->SetExtractionRegion(projRegion);
+  m_ExtractFilter->UpdateOutputInformation();
+  m_ExtractFilter->GetOutput()->SetRequestedRegion(projRegion);
+  m_ExtractFilter->GetOutput()->PropagateRequestedRegion();
 }
 
 template<typename ProjectionStackType>
-void SubSelectImageFilter<ProjectionStackType>::GenerateOutputInformation()
+void SubSelectImageFilter<ProjectionStackType>
+::GenerateOutputInformation()
 {
   unsigned int Dimension = this->GetInput(0)->GetImageDimension();
   typename ProjectionStackType::RegionType outputLargestPossibleRegion = this->GetInput(0)->GetLargestPossibleRegion();
   outputLargestPossibleRegion.SetSize(Dimension-1, m_NbSelectedProjs);
 
-  this->GetOutput()->CopyInformation( this->GetInput(0) );
-  this->GetOutput()->SetLargestPossibleRegion(outputLargestPossibleRegion);
+  // Create a stack of empty projection images
+  typename ProjectionStackType::SizeType ProjectionStackSize;
+  ProjectionStackSize = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize();
+  ProjectionStackSize[Dimension-1] = m_NbSelectedProjs;
+  m_EmptyProjectionStackSource->SetInformationFromImage(this->GetInputProjectionStack());
+  m_EmptyProjectionStackSource->SetSize(ProjectionStackSize);
+  m_EmptyProjectionStackSource->UpdateOutputInformation();
+  this->GetOutput()->CopyInformation( m_EmptyProjectionStackSource->GetOutput() );
+
+  // Mini-pipeline connections
+  m_ExtractFilter->SetInput( this->GetInput() );
+  m_PasteFilter->SetSourceImage(m_ExtractFilter->GetOutput());
+  m_PasteFilter->SetDestinationImage(m_EmptyProjectionStackSource->GetOutput());
 
   // Update output geometry
   // NOTE : The output geometry must be computed here, not in the GenerateData(),
@@ -97,7 +119,9 @@ void SubSelectImageFilter<ProjectionStackType>::GenerateOutputInformation()
 }
 
 template<typename ProjectionStackType>
-typename rtk::ThreeDCircularProjectionGeometry::Pointer SubSelectImageFilter<ProjectionStackType>::GetOutputGeometry()
+typename rtk::ThreeDCircularProjectionGeometry::Pointer
+SubSelectImageFilter<ProjectionStackType>
+::GetOutputGeometry()
 {
   return m_OutputGeometry;
 }
@@ -107,32 +131,11 @@ void SubSelectImageFilter<ProjectionStackType>::GenerateData()
 {
   unsigned int Dimension = this->GetInput(0)->GetImageDimension();
 
-  // Prepare paste filter and constant image source
-  typename PasteFilterType::Pointer PasteFilter = PasteFilterType::New();
-  typename ExtractFilterType::Pointer ExtractFilter = ExtractFilterType::New();
-
-  // Create a stack of empty projection images
-  typename EmptyProjectionStackSourceType::Pointer EmptyProjectionStackSource = EmptyProjectionStackSourceType::New();
-  EmptyProjectionStackSource->SetOrigin(this->GetInputProjectionStack()->GetOrigin());
-  EmptyProjectionStackSource->SetSpacing(this->GetInputProjectionStack()->GetSpacing());
-  EmptyProjectionStackSource->SetDirection(this->GetInputProjectionStack()->GetDirection());
-  typename ProjectionStackType::SizeType ProjectionStackSize;
-  ProjectionStackSize = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize();
-  ProjectionStackSize[Dimension-1] = m_NbSelectedProjs;
-  EmptyProjectionStackSource->SetSize(ProjectionStackSize);
-  EmptyProjectionStackSource->SetConstant( 0. );
-  EmptyProjectionStackSource->Update();
-
   // Set the extract filter
-  ExtractFilter->SetInput(this->GetInput(0));
   typename ExtractFilterType::InputImageRegionType projRegion;
-  projRegion = this->GetInput(0)->GetLargestPossibleRegion();
+  projRegion = this->GetOutput()->GetRequestedRegion();
   projRegion.SetSize(Dimension-1, 1);
-  ExtractFilter->SetExtractionRegion(projRegion);
-
-  // Set the Paste filter
-  PasteFilter->SetSourceImage(ExtractFilter->GetOutput());
-  PasteFilter->SetDestinationImage(EmptyProjectionStackSource->GetOutput());
+  m_ExtractFilter->SetExtractionRegion(projRegion);
 
   // Count the projections actually used in constructing the output
   int counter=0;
@@ -144,32 +147,30 @@ void SubSelectImageFilter<ProjectionStackType>::GenerateData()
       // After the first update, we need to use the output as input.
       if(counter>0)
         {
-        typename ProjectionStackType::Pointer pimg = PasteFilter->GetOutput();
+        typename ProjectionStackType::Pointer pimg = m_PasteFilter->GetOutput();
         pimg->DisconnectPipeline();
-        PasteFilter->SetDestinationImage( pimg );
+        m_PasteFilter->SetDestinationImage( pimg );
         }
 
       // Set the Extract Filter
       projRegion.SetIndex(Dimension - 1, i);
-      ExtractFilter->SetExtractionRegion(projRegion);
-      ExtractFilter->UpdateLargestPossibleRegion();
+      m_ExtractFilter->SetExtractionRegion(projRegion);
 
       // Set the Paste filter
-      PasteFilter->SetSourceRegion(ExtractFilter->GetOutput()->GetLargestPossibleRegion());
-      typename ProjectionStackType::IndexType DestinationIndex;
-      DestinationIndex.Fill(0);
+      m_PasteFilter->SetSourceRegion( projRegion );
+      typename ProjectionStackType::IndexType DestinationIndex = projRegion.GetIndex();
       DestinationIndex[Dimension-1]=counter;
-      PasteFilter->SetDestinationIndex(DestinationIndex);
+      m_PasteFilter->SetDestinationIndex(DestinationIndex);
 
       // Update the filters
-      PasteFilter->UpdateLargestPossibleRegion();
-      PasteFilter->Update();
+      projRegion.SetIndex(Dimension - 1, counter);
+      m_PasteFilter->Update();
 
       counter++;
       }
     }
 
-  this->GraftOutput( PasteFilter->GetOutput() );
+  this->GraftOutput( m_PasteFilter->GetOutput() );
 }
 
 }// end namespace

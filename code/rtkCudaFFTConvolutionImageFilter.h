@@ -19,8 +19,6 @@
 #ifndef __rtkCudaFFTConvolutionImageFilter_h
 #define __rtkCudaFFTConvolutionImageFilter_h
 
-#include "rtkWin32Header.h"
-
 #include <itkCudaImage.h>
 #include <itkCudaImageToImageFilter.h>
 
