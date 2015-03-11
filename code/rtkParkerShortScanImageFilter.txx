@@ -23,10 +23,6 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkMacro.h>
 
-#ifndef M_PI
-#define M_PI vnl_math::pi
-#endif
-
 namespace rtk
 {
 
@@ -101,11 +97,11 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   double lastAngle = itLastAngle->first;
   if(lastAngle<firstAngle)
     {
-    lastAngle += 2*M_PI;
+    lastAngle += 2*vnl_math::pi;
     }
   //Delta
-  double delta = 0.5 * (lastAngle - firstAngle - M_PI);
-  delta = delta - 2*M_PI*floor( delta / (2*M_PI) ); // between -2*PI and 2*PI
+  double delta = 0.5 * (lastAngle - firstAngle - vnl_math::pi);
+  delta = delta - 2*vnl_math::pi*floor( delta / (2*vnl_math::pi) ); // between -2*PI and 2*PI
 
   // Pre-compute the two corners of the projection images
   typename TInputImage::IndexType id = this->GetInput()->GetLargestPossibleRegion().GetIndex();
@@ -146,7 +142,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     double beta = rotationAngles[ itIn.GetIndex()[2] ];
     beta = beta - firstAngle;
     if (beta<0)
-      beta += 2*M_PI;
+      beta += 2*vnl_math::pi;
 
     itWeights.GoToBegin();
     while(!itWeights.IsAtEnd() )

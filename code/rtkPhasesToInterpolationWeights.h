@@ -57,9 +57,6 @@ public:
     //  * the file has been parsed. */
     //  itkGetObjectMacro(Array2D,Array2DType);
 
-    /** Sets the number of phases to reconstruct */
-    void SetNumberOfReconstructedFrames(int n);
-
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */
     void Parse();
@@ -76,6 +73,13 @@ public:
     itkSetMacro(UnevenTemporalSpacing, bool)
     itkGetMacro(UnevenTemporalSpacing, bool)
 
+    /** Configure the filter to use uneven temporal spacing (finer temporal resolution during systole) */
+    itkSetMacro(NumberOfReconstructedFrames, int)
+    itkGetMacro(NumberOfReconstructedFrames, int)
+
+    /** Set/Get for a list of booleans indicating whether or not each projection must be selected */
+    void SetSelectedProjections(std::vector<bool> sprojs);
+    itkGetMacro(SelectedProjections, std::vector<bool>)
 
 protected:
 
@@ -87,9 +91,10 @@ protected:
 
 private:
 
-    Array2DType m_Array2D;
-    int         m_NumberReconstructedFrames;
-    bool        m_UnevenTemporalSpacing;
+    Array2DType         m_Array2D;
+    int                 m_NumberOfReconstructedFrames;
+    bool                m_UnevenTemporalSpacing;
+    std::vector<bool>   m_SelectedProjections;
 
     PhasesToInterpolationWeights(const Self &);  //purposely not implemented
     void operator=(const Self &);          //purposely not implemented

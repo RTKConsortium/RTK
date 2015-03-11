@@ -20,11 +20,16 @@
 #define __rtkProjectionsReader_txx
 
 // ITK
-#include <itkImageSeriesReader.h>
 #include <itkConfigure.h>
+#include <itkImageSeriesReader.h>
+#include <itkCropImageFilter.h>
+#include <itkBinShrinkImageFilter.h>
+#include <itkNumericTraits.h>
 
 // RTK
 #include "rtkIOFactories.h"
+#include "rtkBoellaardScatterCorrectionImageFilter.h"
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
 
 // Varian Obi includes
 #include "rtkHndImageIOFactory.h"
@@ -32,14 +37,10 @@
 
 // Elekta Synergy includes
 #include "rtkHisImageIOFactory.h"
-#include "rtkElektaSynergyRawToAttenuationImageFilter.h"
+#include "rtkElektaSynergyLookupTableImageFilter.h"
 
 // ImagX includes
 #include "rtkImagXImageIOFactory.h"
-#include "rtkImagXRawToAttenuationImageFilter.h"
-
-// Tiff includes
-#include "rtkTiffLookupTableImageFilter.h"
 
 // European Synchrotron Radiation Facility
 #include "rtkEdfImageIOFactory.h"
@@ -54,13 +55,35 @@ namespace rtk
 
 //--------------------------------------------------------------------
 template <class TOutputImage>
+ProjectionsReader<TOutputImage>
+::ProjectionsReader():
+  m_ImageIO(NULL),
+  m_AirThreshold(32000),
+  m_ScatterToPrimaryRatio(0.),
+  m_NonNegativityConstraintThreshold( itk::NumericTraits<double>::NonpositiveMin() ),
+  m_I0( itk::NumericTraits<double>::NonpositiveMin() )
+{
+  // Filters common to all input types and that do not depend on the input image type.
+  m_WaterPrecorrectionFilter = WaterPrecorrectionType::New();
+  m_StreamingFilter = StreamingType::New();
+
+  // Default values of parameters
+  m_LowerBoundaryCropSize.Fill(0);
+  m_UpperBoundaryCropSize.Fill(0);
+  m_ShrinkFactors.Fill(1);
+}
+
+//--------------------------------------------------------------------
+template <class TOutputImage>
 void ProjectionsReader<TOutputImage>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "RawDataReader: " << m_RawDataReader->GetNameOfClass() << std::endl;
-  os << indent << "RawToProjectionsFilter: " << m_RawToProjectionsFilter->GetNameOfClass() << std::endl;
+  if(m_RawDataReader.GetPointer())
+    os << indent << "RawDataReader: " << m_RawDataReader->GetNameOfClass() << std::endl;
+  if(m_RawToAttenuationFilter.GetPointer())
+    os << indent << "RawToProjectionsFilter: " << m_RawToAttenuationFilter->GetNameOfClass() << std::endl;
 }
 
 //--------------------------------------------------------------------
@@ -79,8 +102,47 @@ void ProjectionsReader<TOutputImage>
 
   if(m_ImageIO != imageIO)
     {
-    // In this block, we create a specific pipe depending on the type
-    if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
+    // In this block, we create the filters used depending on the input type
+
+    // Reset
+    m_RawDataReader = NULL;
+    m_ElektaRawFilter = NULL;
+    m_CropFilter = NULL;
+    m_BinningFilter = NULL;
+    m_ScatterFilter = NULL;
+    m_I0EstimationFilter = NULL;
+    m_RawToAttenuationFilter = NULL;
+
+    // Start creation
+    if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") ||
+        !strcmp(imageIO->GetNameOfClass(), "XRadImageIO"))
+      {
+      typedef unsigned short                                     InputPixelType;
+      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+
+      // Reader
+      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
+      typename ReaderType::Pointer reader = ReaderType::New();
+      m_RawDataReader = reader;
+
+      if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") )
+        {
+        /////////// ESRF
+        // Convert raw to Projections
+        typedef rtk::EdfRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
+        typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+        m_RawToAttenuationFilter = rawFilter;
+        }
+      if( !strcmp(imageIO->GetNameOfClass(), "XRadImageIO") )
+        {
+        /////////// XRad
+        // Convert raw to Projections
+        typedef rtk::XRadRawToAttenuationImageFilter<InputImageType, OutputImageType> XRadRawFilterType;
+        typename XRadRawFilterType::Pointer rawFilterXRad = XRadRawFilterType::New();
+        m_RawToAttenuationFilter = rawFilterXRad;
+        }
+      }
+    else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
       {
       /////////// Varian OBI
       typedef unsigned int                                       InputPixelType;
@@ -89,129 +151,81 @@ void ProjectionsReader<TOutputImage>
       // Reader
       typedef itk::ImageSeriesReader< InputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
-      reader->SetImageIO( imageIO );
-      reader->SetFileNames( this->GetFileNames() );
       m_RawDataReader = reader;
+
+      // Crop
+      typedef itk::CropImageFilter< InputImageType, InputImageType > CropType;
+      typename CropType::Pointer crop = CropType::New();
+      m_CropFilter = crop;
+
+      // Bin
+      typedef itk::BinShrinkImageFilter< InputImageType, InputImageType > BinType;
+      typename BinType::Pointer bin = BinType::New();
+      m_BinningFilter = bin;
+
+      // Scatter correction
+      typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
+      typename ScatterFilterType::Pointer scatter = ScatterFilterType::New();
+      m_ScatterFilter = scatter;
 
       // Convert raw to Projections
       typedef rtk::VarianObiRawImageFilter<InputImageType, OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-      rawFilter->SetInput( reader->GetOutput() );
-      m_RawToProjectionsFilter = rawFilter;
+      m_RawToAttenuationFilter = rawFilter;
       }
-    else if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") )
+    else if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
+             !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
+             !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
+             !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
       {
-      /////////// Elekta synergy
+      /////////// Elekta synergy, IBA / iMagX, TIFF
       typedef unsigned short                                     InputPixelType;
       typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
 
       // Reader
       typedef itk::ImageSeriesReader< InputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
-      reader->SetImageIO( imageIO );
-      reader->SetFileNames( this->GetFileNames() );
       m_RawDataReader = reader;
 
-      // Convert raw to Projections
-      typedef rtk::ElektaSynergyRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
-      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-      rawFilter->SetInput( reader->GetOutput() );
-      m_RawToProjectionsFilter = rawFilter;
-      }
-    else if( !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") )
-      {
-      /////////// ImagX
-      typedef unsigned short                                     InputPixelType;
-      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+      // Crop
+      typedef itk::CropImageFilter< InputImageType, InputImageType > CropType;
+      typename CropType::Pointer crop = CropType::New();
+      m_CropFilter = crop;
 
-      // Reader
-      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
-      typename ReaderType::Pointer reader = ReaderType::New();
-      reader->SetImageIO( imageIO );
-      reader->SetFileNames( this->GetFileNames() );
-      m_RawDataReader = reader;
+      // Elekta specific conversion of input raw data
+      if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") )
+        {
+        typedef rtk::ElektaSynergyRawLookupTableImageFilter<OutputImageDimension> ElektaRawType;
+        typename ElektaRawType::Pointer elekta = ElektaRawType::New();
+        m_ElektaRawFilter = elekta;
 
-      // Convert raw to Projections
-      typedef rtk::ImagXRawToAttenuationImageFilter<OutputImageType> RawFilterType;
-      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-      rawFilter->SetInput( reader->GetOutput() );
-      m_RawToProjectionsFilter = rawFilter;
-      }
-    else if( !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") )
-      {
-      /////////// ImagX (DICOM)
-      typedef unsigned short                                     InputPixelType;
-      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+        // Backward compatibility for default Elekta parameters
+        m_LowerBoundaryCropSize.Fill(4);
+        m_LowerBoundaryCropSize[2] = 0;
+        m_UpperBoundaryCropSize.Fill(4);
+        m_UpperBoundaryCropSize[2] = 0;
+        m_I0 = 65536;
+        }
 
-      // Reader
-      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
-      typename ReaderType::Pointer reader = ReaderType::New();
-      reader->SetImageIO( imageIO );
-      reader->SetFileNames( this->GetFileNames() );
-      m_RawDataReader = reader;
+      // Bin
+      typedef itk::BinShrinkImageFilter< InputImageType, InputImageType > BinType;
+      typename BinType::Pointer bin = BinType::New();
+      m_BinningFilter = bin;
+
+      // Scatter correction
+      typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
+      typename ScatterFilterType::Pointer scatter = ScatterFilterType::New();
+      m_ScatterFilter = scatter;
+
+      // I0 estimation filter (shunt from pipeline by default)
+      typedef rtk::I0EstimationProjectionFilter<InputImageType, InputImageType> I0EstimationFilterType;
+      typename I0EstimationFilterType::Pointer i0est = I0EstimationFilterType::New();
+      m_I0EstimationFilter = i0est;
 
       // Convert raw to Projections
-      typedef rtk::ImagXRawToAttenuationImageFilter<OutputImageType> RawFilterType;
+      typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-      rawFilter->SetInput( reader->GetOutput() );
-      m_RawToProjectionsFilter = rawFilter;
-      }
-    else if( !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
-      {
-      typedef unsigned short                                     InputPixelType;
-      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
-
-      // Reader
-      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
-      typename ReaderType::Pointer reader = ReaderType::New();
-      reader->SetImageIO( imageIO );
-      reader->SetFileNames( this->GetFileNames() );
-      m_RawDataReader = reader;
-
-      // Convert raw to Projections
-      typedef rtk::TiffLookupTableImageFilter<InputImageType, OutputImageType> RawFilterType;
-      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-      rawFilter->SetInput( reader->GetOutput() );
-      m_RawToProjectionsFilter = rawFilter;
-      }
-    else if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") )
-      {
-      /////////// ESRF
-      typedef unsigned short                                     InputPixelType;
-      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
-
-      // Reader
-      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
-      typename ReaderType::Pointer reader = ReaderType::New();
-      reader->SetImageIO( imageIO );
-      reader->SetFileNames( this->GetFileNames() );
-      m_RawDataReader = reader;
-
-      // Convert raw to Projections
-      typedef rtk::EdfRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
-      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-      rawFilter->SetInput( reader->GetOutput() );
-      rawFilter->SetFileNames( this->GetFileNames() );
-      m_RawToProjectionsFilter = rawFilter;
-      }
-    else if( !strcmp(imageIO->GetNameOfClass(), "XRadImageIO") )
-      {
-      /////////// XRad
-      typedef unsigned short                                     InputPixelType;
-      typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
-
-      // Reader
-      typedef itk::ImageSeriesReader< InputImageType > ReaderType;
-      typename ReaderType::Pointer reader = ReaderType::New();
-      reader->SetImageIO( imageIO );
-      reader->SetFileNames( this->GetFileNames() );
-      m_RawDataReader = reader;
-
-      // Convert raw to Projections
-      typedef rtk::XRadRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
-      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-      rawFilter->SetInput( reader->GetOutput() );
-      m_RawToProjectionsFilter = rawFilter;
+      m_RawToAttenuationFilter = rawFilter;
       }
     else
       {
@@ -220,27 +234,43 @@ void ProjectionsReader<TOutputImage>
 
       typedef itk::ImageSeriesReader< OutputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
-      reader->SetImageIO( imageIO );
-      reader->SetFileNames( this->GetFileNames() );
       m_RawDataReader = reader;
-      m_RawToProjectionsFilter = reader;
+
+      // Crop
+      typedef itk::CropImageFilter< OutputImageType, OutputImageType > CropType;
+      typename CropType::Pointer crop = CropType::New();
+      m_CropFilter = crop;
+
+      // Bin
+      typedef itk::BinShrinkImageFilter< OutputImageType, OutputImageType > BinType;
+      typename BinType::Pointer bin = BinType::New();
+      m_BinningFilter = bin;
       }
 
     //Store imageIO to avoid creating the pipe more than necessary
     m_ImageIO = imageIO;
     }
 
-  // Release output data of m_RawDataReader if conversion occurs
-  if ( m_RawDataReader != m_RawToProjectionsFilter )
-    m_RawDataReader->ReleaseDataFlagOn();
+  // Parameter propagation
+  if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") ||
+      !strcmp(imageIO->GetNameOfClass(), "XRadImageIO") ||
+      !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
+      !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
+      !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
+      !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
+    PropagateParametersToMiniPipeline< itk::Image<unsigned short, OutputImageDimension> >();
+  else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
+    PropagateParametersToMiniPipeline< itk::Image<unsigned int, OutputImageDimension> >();
+  else
+    PropagateParametersToMiniPipeline< OutputImageType >();
 
-  // Set output information as provided by the pipe
-  m_RawToProjectionsFilter->UpdateOutputInformation();
+  // Set output information as provided by the pipeline
+  m_StreamingFilter->UpdateOutputInformation();
   TOutputImage * output = this->GetOutput();
-  output->SetOrigin( m_RawToProjectionsFilter->GetOutput()->GetOrigin() );
-  output->SetSpacing( m_RawToProjectionsFilter->GetOutput()->GetSpacing() );
-  output->SetDirection( m_RawToProjectionsFilter->GetOutput()->GetDirection() );
-  output->SetLargestPossibleRegion( m_RawToProjectionsFilter->GetOutput()->GetLargestPossibleRegion() );
+  output->SetOrigin( m_StreamingFilter->GetOutput()->GetOrigin() );
+  output->SetSpacing( m_StreamingFilter->GetOutput()->GetSpacing() );
+  output->SetDirection( m_StreamingFilter->GetOutput()->GetDirection() );
+  output->SetLargestPossibleRegion( m_StreamingFilter->GetOutput()->GetLargestPossibleRegion() );
 }
 
 //--------------------------------------------------------------------
@@ -249,10 +279,189 @@ void ProjectionsReader<TOutputImage>
 ::GenerateData()
 {
   TOutputImage * output = this->GetOutput();
+  m_StreamingFilter->SetNumberOfStreamDivisions( output->GetRequestedRegion().GetSize(TOutputImage::ImageDimension-1) );
+  m_StreamingFilter->GetOutput()->SetRequestedRegion( output->GetRequestedRegion() );
+  m_StreamingFilter->Update();
+  this->GraftOutput( m_StreamingFilter->GetOutput() );
+}
 
-  m_RawToProjectionsFilter->GetOutput()->SetRequestedRegion( output->GetRequestedRegion() );
-  m_RawToProjectionsFilter->Update();
-  this->GraftOutput( m_RawToProjectionsFilter->GetOutput() );
+//--------------------------------------------------------------------
+template <class TOutputImage>
+template <class TInputImage>
+void ProjectionsReader<TOutputImage>
+::PropagateParametersToMiniPipeline()
+{
+  // Raw
+  typedef typename itk::ImageSeriesReader< TInputImage> RawType;
+  RawType *raw = dynamic_cast<RawType*>(m_RawDataReader.GetPointer());
+  assert(raw != NULL);
+  raw->SetFileNames( this->GetFileNames() );
+  raw->SetImageIO( m_ImageIO );
+  TInputImage *nextInput = raw->GetOutput();
+
+  // Crop
+  OutputImageSizeType defaultCropSize;
+  defaultCropSize.Fill(0);
+  if(m_LowerBoundaryCropSize != defaultCropSize || m_UpperBoundaryCropSize != defaultCropSize)
+    {
+    if(m_CropFilter.GetPointer() == NULL)
+      {
+        itkGenericExceptionMacro(<< "Can not crop images read with this input (not implemented)");
+      }
+    else
+      {
+      typedef itk::CropImageFilter< TInputImage, TInputImage > CropType;
+      CropType *crop = dynamic_cast<CropType*>(m_CropFilter.GetPointer());
+      assert(crop != NULL);
+      crop->SetLowerBoundaryCropSize(m_LowerBoundaryCropSize);
+      crop->SetUpperBoundaryCropSize(m_UpperBoundaryCropSize);
+      crop->SetInput(nextInput);
+      nextInput = crop->GetOutput();
+      }
+    }
+
+  // Elekta raw data converter
+  itk::ImageBase<OutputImageDimension> *nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
+  assert(nextInputBase != NULL);
+  ConnectElektaRawFilter(&nextInputBase);
+  nextInput = dynamic_cast<TInputImage *>(nextInputBase);
+  assert(nextInput != NULL);
+
+  // Binning
+  ShrinkFactorsType defaultShrinkFactors;
+  defaultShrinkFactors.Fill(1);
+  if(m_ShrinkFactors != defaultShrinkFactors)
+    {
+    if(m_BinningFilter.GetPointer() == NULL)
+      {
+        itkGenericExceptionMacro(<< "Can not bin / shrink images read with this input (not implemented)");
+      }
+    else
+      {
+      typedef itk::BinShrinkImageFilter< TInputImage, TInputImage > BinType;
+      BinType *bin = dynamic_cast<BinType*>(m_BinningFilter.GetPointer());
+      assert(bin != NULL);
+      bin->SetShrinkFactors(m_ShrinkFactors);
+      bin->SetInput(nextInput);
+      nextInput = bin->GetOutput();
+      }
+    }
+
+  // Boellaard scatter correction
+  if(m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin() ||
+     m_ScatterToPrimaryRatio != 0.)
+    {
+    if(m_ScatterFilter.GetPointer() == NULL)
+      {
+        itkGenericExceptionMacro(<< "Can not use Boellaard scatter correction with this input (not implemented)");
+      }
+    else
+      {
+      typedef rtk::BoellaardScatterCorrectionImageFilter<TInputImage, TInputImage>  ScatterFilterType;
+      ScatterFilterType *scatter = dynamic_cast<ScatterFilterType*>(m_ScatterFilter.GetPointer());
+      assert(scatter != NULL);
+      scatter->SetAirThreshold(m_AirThreshold);
+      scatter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
+      scatter->SetNonNegativityConstraintThreshold(m_NonNegativityConstraintThreshold);
+      scatter->SetInput(nextInput);
+      nextInput = scatter->GetOutput();
+      }
+    }
+
+  // LUTbasedVariableI0RawToAttenuationImageFilter
+  if( m_I0 != itk::NumericTraits<double>::NonpositiveMin() )
+    {
+    if(m_RawToAttenuationFilter.GetPointer() == NULL)
+      {
+      itkGenericExceptionMacro(<< "Can not use I0 in LUTbasedVariableI0RawToAttenuationImageFilter with this input (not implemented)");
+      }
+    else
+      {
+      itk::ImageBase<OutputImageDimension> *nextInputBase;
+      nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
+      assert(nextInputBase != NULL);
+      PropagateI0(&nextInputBase);
+      nextInput = dynamic_cast<TInputImage *>(nextInputBase);
+      assert(nextInput != NULL);
+      }
+    }
+
+  // Raw to attenuation filter, change of type
+  OutputImageType *output = NULL;
+  if(m_RawToAttenuationFilter.GetPointer() != NULL)
+    {
+    typedef itk::ImageToImageFilter<TInputImage, OutputImageType> IToIFilterType;
+    IToIFilterType * itoi = dynamic_cast<IToIFilterType*>( m_RawToAttenuationFilter.GetPointer() );
+    assert(itoi != NULL);
+    itoi->SetInput(nextInput);
+    output = itoi->GetOutput();
+
+    // Release output data of m_RawDataReader if conversion occurs
+    itoi->ReleaseDataFlagOn();
+    }
+  else
+    {
+    output = dynamic_cast<OutputImageType *>(nextInput);
+    assert(output != NULL);
+    }
+
+  // ESRF raw to attenuation converter also needs the filenames
+  typedef rtk::EdfRawToAttenuationImageFilter<TInputImage, OutputImageType> EdfRawFilterType;
+  EdfRawFilterType *edf = dynamic_cast<EdfRawFilterType*>( m_RawToAttenuationFilter.GetPointer() );
+  if(edf)
+    edf->SetFileNames( this->GetFileNames() );
+
+  // Water coefficients
+  if(m_WaterPrecorrectionCoefficients.size() != 0)
+    {
+    m_WaterPrecorrectionFilter->SetCoefficients(m_WaterPrecorrectionCoefficients);
+    m_WaterPrecorrectionFilter->SetInput(output);
+    output = m_WaterPrecorrectionFilter->GetOutput();
+    }
+
+  // Streaming image filter
+  m_StreamingFilter->SetInput( output );
+}
+
+//--------------------------------------------------------------------
+template <class TOutputImage>
+void ProjectionsReader<TOutputImage>
+::ConnectElektaRawFilter(itk::ImageBase<OutputImageDimension> **nextInputBase)
+{
+  if(m_ElektaRawFilter.GetPointer() != NULL)
+    {
+    typedef rtk::ElektaSynergyRawLookupTableImageFilter<OutputImageDimension> ElektaRawType;
+    ElektaRawType *elektaRaw = dynamic_cast<ElektaRawType*>(m_ElektaRawFilter.GetPointer());
+    assert(elektaRaw != NULL);
+    typedef typename itk::Image<unsigned short, OutputImageDimension> InputImageType;
+    InputImageType *nextInput = dynamic_cast<InputImageType*>(*nextInputBase);
+    elektaRaw->SetInput(nextInput);
+    *nextInputBase = elektaRaw->GetOutput();
+    }
+}
+
+//--------------------------------------------------------------------
+template <class TOutputImage>
+void ProjectionsReader<TOutputImage>
+::PropagateI0(itk::ImageBase<OutputImageDimension> **nextInputBase)
+{
+  typedef itk::Image<unsigned short, OutputImageDimension> InputImageType;
+  InputImageType *nextInput = dynamic_cast<InputImageType*>(*nextInputBase);
+  assert(nextInput != NULL);
+  if(m_I0==0)
+    {
+    typedef rtk::I0EstimationProjectionFilter< InputImageType, InputImageType > I0EstimationType;
+    I0EstimationType *i0est = dynamic_cast<I0EstimationType*>(m_I0EstimationFilter.GetPointer());
+    assert(i0est != NULL);
+    i0est->SetInput(nextInput);
+    *nextInputBase = i0est->GetOutput();
+    }
+
+  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter< InputImageType, OutputImageType > I0Type;
+  I0Type *i0 = dynamic_cast<I0Type*>(m_RawToAttenuationFilter.GetPointer());
+  assert(i0 != NULL);
+  i0->SetI0(m_I0);
+  // Pipeline connection for m_RawToAttenuationFilter is done after the call to this function
 }
 
 } //namespace rtk

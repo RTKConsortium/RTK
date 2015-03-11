@@ -28,8 +28,6 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 namespace rtk
 {
 /** \class I0EstimationProjectionFilter

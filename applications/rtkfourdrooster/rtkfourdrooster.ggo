@@ -1,5 +1,6 @@
-package "conjugate gradient"
-version "Reconstruct a 3D volume from a sequence of projections with a conjugate gradient technique"
+version ""
+package "rtkfourdrooster"
+purpose "Reconstructs a 3D + time sequence of volumes from a projection stack and a respiratory/cardiac signal, applying TV regularization in space and time, and restricting motion to a region of interest"
 
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no

@@ -178,9 +178,12 @@ void ConjugateGradientImageFilter<OutputImageType>
   this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
 
   // Release the data from internal filters
-  R_kPlusOne->ReleaseData();
-  P_kPlusOne->ReleaseData();
-  X_kPlusOne->ReleaseData();
+  if (m_NumberOfIterations > 1)
+    {
+    R_kPlusOne->ReleaseData();
+    P_kPlusOne->ReleaseData();
+    X_kPlusOne->ReleaseData();
+    }
   GetR_kPlusOne_Filter->GetOutput()->ReleaseData();
   GetP_kPlusOne_Filter->GetOutput()->ReleaseData();
   m_A->GetOutput()->ReleaseData();

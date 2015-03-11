@@ -21,10 +21,24 @@
 
 #include "rtkDPExtractShroudSignalImageFilter.h"
 #include "rtkReg1DExtractShroudSignalImageFilter.h"
+#include "rtkExtractPhaseImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkRawImageIO.h>
 #include <fstream>
+
+template<class TSignalType>
+void
+WriteSignalToTextFile(TSignalType *sig, const std::string &fileName)
+{
+  std::ofstream ofs( fileName.c_str() );
+  itk::ImageRegionConstIterator<TSignalType> it( sig, sig->GetLargestPossibleRegion() );
+  for (it.GoToBegin(); !it.IsAtEnd(); ++it)
+  {
+    ofs << it.Get() << std::endl;
+  }
+  ofs.close();
+}
 
 int main(int argc, char * argv[])
 {
@@ -54,7 +68,7 @@ int main(int argc, char * argv[])
     shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
     shroudFilter->SetInput( reader->GetOutput() );
     shroudFilter->SetAmplitude( args_info.amplitude_arg );
-    shroudFilter->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->Update() )
     shroudSignal = shroudFilter->GetOutput();
   }
   else if (std::string(args_info.method_arg) == "Reg1D")
@@ -62,7 +76,7 @@ int main(int argc, char * argv[])
     typedef rtk::Reg1DExtractShroudSignalImageFilter<InputPixelType, OutputPixelType> shroudFilterType;
     shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
     shroudFilter->SetInput( reader->GetOutput() );
-    shroudFilter->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->Update() )
     shroudSignal = shroudFilter->GetOutput();
   }
   else
@@ -71,14 +85,22 @@ int main(int argc, char * argv[])
     return 1;
   }
 
-  // Write
-  std::ofstream ofs(args_info.output_arg);
-  itk::ImageRegionConstIterator<OutputImageType> it( shroudSignal, shroudSignal->GetLargestPossibleRegion() );
-  for (it.GoToBegin(); !it.IsAtEnd(); ++it)
-  {
-    ofs << it.Get() << std::endl;
-  }
-  ofs.close();
+  // Write output signal
+  WriteSignalToTextFile(shroudSignal.GetPointer(), args_info.output_arg);
+
+  // Process phase signal if required
+  if(args_info.phase_given)
+    {
+    typedef rtk::ExtractPhaseImageFilter<OutputImageType> PhaseFilter;
+    PhaseFilter::Pointer phase = PhaseFilter::New();
+    phase->SetInput(shroudSignal);
+    phase->SetMovingAverageSize(args_info.movavg_arg);
+    phase->SetUnsharpMaskSize(args_info.unsharp_arg);
+    phase->SetModel((PhaseFilter::ModelType)args_info.model_arg);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( phase->Update() );
+
+    WriteSignalToTextFile(phase->GetOutput(), args_info.phase_arg);
+    }
 
   return EXIT_SUCCESS;
 }

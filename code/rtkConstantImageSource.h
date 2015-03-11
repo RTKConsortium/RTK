@@ -85,6 +85,7 @@ public:
 
   /** Set/Get size of the output image */
   itkSetMacro( Size, SizeType );
+  itkGetMacro( Size, SizeType );
   virtual void SetSize( SizeValueArrayType sizeArray );
   virtual const SizeValueType * GetSize() const;
 
@@ -120,10 +121,6 @@ protected:
 
   virtual void GenerateOutputInformation();
 
-private:
-  ConstantImageSource(const ConstantImageSource&); //purposely not implemented
-  void operator=(const ConstantImageSource&); //purposely not implemented
-
   SizeType       m_Size;
   SpacingType    m_Spacing;
   PointType      m_Origin;
@@ -131,6 +128,10 @@ private:
   IndexType      m_Index;
 
   typename TOutputImage::PixelType m_Constant;
+
+private:
+  ConstantImageSource(const ConstantImageSource&); //purposely not implemented
+  void operator=(const ConstantImageSource&); //purposely not implemented
 };
 
 } // end namespace rtk

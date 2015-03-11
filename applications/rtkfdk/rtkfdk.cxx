@@ -21,11 +21,12 @@
 #include "rtkConfiguration.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaDisplacedDetectorImageFilter.h"
+//TODO #  include "rtkCudaDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 #  include "rtkCudaParkerShortScanImageFilter.h"
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
@@ -93,21 +94,22 @@ int main(int argc, char * argv[])
      {
      std::cerr << "The program has not been compiled with opencl option" << std::endl;
      return EXIT_FAILURE;
-    }
+     }
 #endif
 
   // Displaced detector weighting
-  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFCPUType;
+  typedef rtk::DisplacedDetectorImageFilter< OutputImageType >                     DDFCPUType;
+  typedef rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType > DDFOFFFOVType;
 #ifdef RTK_USE_CUDA
   typedef rtk::CudaDisplacedDetectorImageFilter DDFType;
 #else
-  typedef rtk::DisplacedDetectorImageFilter< OutputImageType > DDFType;
+  typedef rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType > DDFType;
 #endif
   DDFCPUType::Pointer ddf;
   if(!strcmp(args_info.hardware_arg, "cuda") )
     ddf = DDFType::New();
   else
-    ddf = DDFCPUType::New();
+    ddf = DDFOFFFOVType::New();
   ddf->SetInput( reader->GetOutput() );
   ddf->SetGeometry( geometryReader->GetOutputObject() );
 
@@ -191,7 +193,8 @@ int main(int argc, char * argv[])
     // Motion compensation not supported in cuda
     if(args_info.signal_given && args_info.dvf_given)
       {
-      itkGenericExceptionMacro(<< "Motion compensation is not supported in CUDA. Aborting");
+      std::cerr << "Motion compensation is not supported in CUDA. Aborting" << std::endl;
+      return EXIT_FAILURE;
       }
 
     feldkampCUDA = FDKCUDAType::New();

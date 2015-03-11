@@ -20,10 +20,7 @@
 #define __rtkCudaFFTRampImageFilter_h
 
 #include "rtkFFTRampImageFilter.h"
-#include "rtkWin32Header.h"
-
-#include <itkCudaImage.h>
-#include <itkCudaImageToImageFilter.h>
+#include "rtkCudaFFTConvolutionImageFilter.h"
 
 namespace rtk
 {
@@ -38,16 +35,12 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 class CudaFFTRampImageFilter :
-  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-  FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
+  public CudaFFTConvolutionImageFilter< FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                                    CudaImageType;
-  typedef itk::CudaImage< std::complex<float>, 3 >                   CudaFFTOutputImageType;
-  typedef CudaFFTOutputImageType::Pointer                            CudaFFTOutputImagePointer;
   typedef CudaFFTRampImageFilter                                     Self;
-  typedef FFTRampImageFilter< CudaImageType, CudaImageType, double > Superclass;
+  typedef FFTRampImageFilter< CudaImageType, CudaImageType, float >  Superclass;
   typedef itk::SmartPointer<Self>                                    Pointer;
   typedef itk::SmartPointer<const Self>                              ConstPointer;
 
@@ -58,17 +51,12 @@ public:
   itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
 
 protected:
-  rtkcuda_EXPORT CudaFFTRampImageFilter();
+  rtkcuda_EXPORT CudaFFTRampImageFilter(){}
   ~CudaFFTRampImageFilter(){}
-
-  virtual void GPUGenerateData();
-
-  virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
 
 private:
   CudaFFTRampImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);         //purposely not implemented
-
 }; // end of class
 
 } // end namespace rtk

@@ -1,5 +1,6 @@
-package "rtk"
-version "Weight projection serie with parker weights for displaced detector geometry."
+version ""
+package "rtkwangdisplaceddetectorweighting"
+purpose "Weights projection stack with parker weights for displaced detector geometry."
 
 option "verbose"    v "Verbose execution"                                           flag                off
 option "config"     - "Config file"                                                 string              no

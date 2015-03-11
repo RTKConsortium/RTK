@@ -25,6 +25,8 @@
 
 #include <algorithm>
 
+#include <itkImageFileWriter.h>
+
 namespace rtk
 {
 
@@ -38,11 +40,17 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_NumberOfIterations=3;
 
   // Create the filters
-  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
+
+#ifdef RTK_USE_CUDA
+  m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
+  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+#else
+  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+#endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Memory management options
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
@@ -90,8 +98,11 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
     m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
     m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
     }
-  if (_arg == 2) // The forward projection filter runs on GPU. It is most efficient to also run the interpolation on GPU.
+  if (_arg == 2) // The forward projection filter runs on GPU. It is most efficient to also run the interpolation on GPU, and to use GPU constant image sources
+    {
     m_CGOperator->SetUseCudaInterpolation(true);
+    m_CGOperator->SetUseCudaSources(true);
+    }
 }
 
 
@@ -109,10 +120,12 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
     m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter( _arg );
     m_ProjStackToFourDFilter->SetBackProjectionFilter(m_BackProjectionFilterForB);
     }
-  if (_arg == 2) // The back projection filter runs on GPU. It is most efficient to also run the splat on GPU.
+  if (_arg == 2) // The back projection filter runs on GPU. It is most efficient to also run the splat on GPU, and to use GPU constant image sources
     {
     m_CGOperator->SetUseCudaSplat(true);
+    m_CGOperator->SetUseCudaSources(true);
     m_ProjStackToFourDFilter->SetUseCudaSplat(true);
+    m_ProjStackToFourDFilter->SetUseCudaSources(true);
     }
 }
 
@@ -164,7 +177,14 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 {
   m_ConjugateGradientFilter->Update();
 
-  this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+  // Simply grafting the output of m_ConjugateGradientFilter to the main output
+  // is sufficient in most cases, but when this output is then disconnected and replugged,
+  // several images end up having the same CudaDataManager. The following solution is a
+  // workaround for this problem
+  typename VolumeSeriesType::Pointer pimg = m_ConjugateGradientFilter->GetOutput();
+  pimg->DisconnectPipeline();
+
+  this->GraftOutput( pimg);
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>

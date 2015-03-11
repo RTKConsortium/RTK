@@ -30,6 +30,10 @@
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaConjugateGradientImageFilter_4f.h"
+  #include "rtkCudaDisplacedDetectorImageFilter.h"
+#endif
 
 namespace rtk
 {
@@ -174,7 +178,7 @@ private:
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
-  /** Number of projections processed at a time. */
+  /** Number of conjugate gradient descent iterations */
   unsigned int m_NumberOfIterations;
 
 }; // end of class

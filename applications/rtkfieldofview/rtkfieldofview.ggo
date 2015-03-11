@@ -1,5 +1,6 @@
-package "rtk"
-version "Computes the field of view of a reconstruction."
+version ""
+package "rtkfieldofview"
+purpose "Computes the field of view of a reconstruction."
 
 option "verbose"        v "Verbose execution"                                         flag     off
 option "config"         - "Config file"                                               string   no

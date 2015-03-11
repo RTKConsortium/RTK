@@ -1,5 +1,6 @@
-package "sart"
-version "Reconstruct a 3D volume from a sequence of projections with Simulatenous Algebraic Reconstruction Technique [Andersen, 1984]."
+version ""
+package "rtksart"
+purpose "Reconstructs a 3D volume from a sequence of projections with Simulatenous Algebraic Reconstruction Technique [Andersen, 1984]."
 
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no
@@ -13,7 +14,7 @@ option "input"     i "Input volume"              string          no
 option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (1 for SART, several for OSSART, all for SIRT)" int no default="1"
 
 section "Phase gating"
-option "phases"       - "File containing the phase of each projection"                                              string              no
+option "signal"       - "File containing the phase of each projection"                                              string              no
 option "windowcenter" c "Target reconstruction phase"                                                               float   no default="0"
 option "windowwidth"  w "Tolerance around the target phase to determine in-phase and out-of-phase projections"      float   no default="1"
 option "windowshape"  s "Shape of the gating window"     values="Rectangular","Triangular"                          enum    no default="Rectangular"

@@ -208,7 +208,7 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 
   if ( m_SaveHistograms )
     {
-    ofstream paramFile;
+    std::ofstream paramFile;
     paramFile.open("i0est_histogram.csv", std::ofstream::out | std::ofstream::app);
     std::vector< unsigned >::const_iterator itf = m_Histogram.begin();
     for (; itf != m_Histogram.end(); ++itf )
