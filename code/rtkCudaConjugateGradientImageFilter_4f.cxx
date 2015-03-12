@@ -22,8 +22,6 @@
 
 #include <itkMacro.h>
 
-#include <itkImageFileWriter.h>
-
 rtk::CudaConjugateGradientImageFilter_4f
 ::CudaConjugateGradientImageFilter_4f()
 {
@@ -97,7 +95,7 @@ rtk::CudaConjugateGradientImageFilter_4f
     P_k->Modified();
     }
 
-  P_k = NULL;
-  R_k = NULL;
-  AOut = NULL;
+  P_k->ReleaseData();
+  R_k->ReleaseData();
+  AOut->ReleaseData();
 }
