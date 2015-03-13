@@ -21,12 +21,13 @@
 #include <itkThresholdImageFilter.h>
 
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
-#include "rtkAverageOutOfROIImageFilter.h"
 #include "rtkTotalVariationDenoiseSequenceImageFilter.h"
 #ifdef RTK_USE_CUDA
   #include "rtkCudaLastDimensionTVDenoisingImageFilter.h"
+  #include "rtkCudaAverageOutOfROIImageFilter.h"
 #else
   #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
+  #include "rtkAverageOutOfROIImageFilter.h"
 #endif
 #include "rtkWarpSequenceImageFilter.h"
 #include "rtkUnwarpSequenceImageFilter.h"
@@ -202,6 +203,7 @@ public:
     void SetMotionMask(const VolumeType* mask);
     typename VolumeType::Pointer            GetInputROI();
 
+<<<<<<< HEAD
     /** The motion vector field used to warp the sequence before and after TV denoising along time */
     void SetDisplacementField(const MVFSequenceImageType* MVFs);
     typename MVFSequenceImageType::Pointer            GetDisplacementField();
@@ -217,6 +219,13 @@ public:
 #else
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
 #endif
+=======
+    typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>  FourDCGFilterType;
+    typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
+    typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                  AverageOutOfROIFilterType;
+    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>         SpatialTVDenoisingFilterType;
+    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>        TemporalTVDenoisingFilterType;
+>>>>>>> master
 
     /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
     void SetForwardProjectionFilter(int fwtype);

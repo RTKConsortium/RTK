@@ -40,6 +40,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_FourDCGFilter = FourDCGFilterType::New();
   m_PositivityFilter = ThresholdFilterType::New();
   m_AverageOutOfROIFilter = AverageOutOfROIFilterType::New();
+#ifdef RTK_USE_CUDA
+  m_AverageOutOfROIFilter = rtk::CudaAverageOutOfROIImageFilter::New();
+#endif
   m_TVDenoisingSpace = SpatialTVDenoisingFilterType::New();
   m_Warp = WarpSequenceFilterType::New();
   m_TVDenoisingTime = TemporalTVDenoisingFilterType::New();
