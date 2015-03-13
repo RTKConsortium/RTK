@@ -83,6 +83,15 @@ IF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
   ADD_TEST(rtkrampfilternofftwcudatest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfilternofftwcudatest)
 ENDIF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
 
+ADD_EXECUTABLE(rtkscatterglarefiltertest rtkscatterglarefiltertest.cxx)
+TARGET_LINK_LIBRARIES(rtkscatterglarefiltertest ${RTK_LIBRARIES})
+ADD_TEST(rtkscatterglarefiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkscatterglarefiltertest)
+ADD_CUDA_TEST(rtkscatterglarefilter rtkscatterglarefiltertest.cxx)
+
+ADD_EXECUTABLE(rtkscatterglarefilternofftwtest rtkscatterglarefiltertest.cxx)
+SET_TARGET_PROPERTIES(rtkscatterglarefilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
+TARGET_LINK_LIBRARIES(rtkscatterglarefilternofftwtest ${RTK_LIBRARIES})
+
 ADD_EXECUTABLE(rtkRaycastInterpolatorForwardProjectionTest rtkRaycastInterpolatorForwardProjectionTest.cxx)
 TARGET_LINK_LIBRARIES(rtkRaycastInterpolatorForwardProjectionTest ${RTK_LIBRARIES})
 ADD_TEST(rtkRaycastInterpolatorForwardProjectionTest ${EXECUTABLE_OUTPUT_PATH}/rtkRaycastInterpolatorForwardProjectionTest)
@@ -199,6 +208,11 @@ TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdconjugategradienttest)
 ADD_CUDA_TEST(rtkfourdconjugategradient rtkfourdconjugategradienttest.cxx)
 
+ADD_EXECUTABLE(rtkincrementalfourdconjugategradienttest rtkincrementalfourdconjugategradienttest.cxx)
+TARGET_LINK_LIBRARIES(rtkincrementalfourdconjugategradienttest ${RTK_LIBRARIES})
+ADD_TEST(rtkincrementalfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdconjugategradienttest)
+ADD_CUDA_TEST(rtkincrementalfourdconjugategradient rtkincrementalfourdconjugategradienttest.cxx)
+
 ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
 TARGET_LINK_LIBRARIES(rtkjosephadjointoperatorstest ${RTK_LIBRARIES})
 ADD_TEST(rtkjosephadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkjosephadjointoperatorstest)
@@ -242,6 +256,10 @@ ADD_TEST(rtkwarptest ${EXECUTABLE_OUTPUT_PATH}/rtkwarptest)
 ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
 TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
 ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
+
+ADD_EXECUTABLE(rtkselectoneprojpercycletest rtkselectoneprojpercycletest.cxx)
+TARGET_LINK_LIBRARIES(rtkselectoneprojpercycletest ${RTK_LIBRARIES})
+ADD_TEST(rtkselectoneprojpercycletest ${EXECUTABLE_OUTPUT_PATH}/rtkselectoneprojpercycletest)
 
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter

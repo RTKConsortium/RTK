@@ -1,5 +1,6 @@
-package "rtk"
-version "Weight projection serie with 2D weights of Feldkamp cone-beam reconstruction algorithm."
+version ""
+package "rtkfdktwodweights"
+purpose "Weights projection stack with 2D weights of Feldkamp cone-beam reconstruction algorithm."
 
 option "verbose"   v "Verbose execution"                                         flag                off
 option "config"    - "Config file"                                               string              no

@@ -62,9 +62,9 @@ int main(int argc, char * argv[])
   // Phase gating weights reader
   typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
   PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
-  if (args_info.phases_given)
+  if (args_info.signal_given)
     {
-    phaseGating->SetFileName(args_info.phases_arg);
+    phaseGating->SetPhasesFileName(args_info.signal_arg);
     phaseGating->SetGatingWindowWidth(args_info.windowwidth_arg);
     phaseGating->SetGatingWindowCenter(args_info.windowcenter_arg);
     phaseGating->SetGatingWindowShape(args_info.windowshape_arg);
@@ -100,7 +100,7 @@ int main(int argc, char * argv[])
   sart->SetForwardProjectionFilter(args_info.fp_arg);
   sart->SetBackProjectionFilter(args_info.bp_arg);
   sart->SetInput( inputFilter->GetOutput() );
-  if (args_info.phases_given)
+  if (args_info.signal_given)
     {
     sart->SetInput(1, phaseGating->GetOutput());
     sart->SetGeometry( phaseGating->GetOutputGeometry() );

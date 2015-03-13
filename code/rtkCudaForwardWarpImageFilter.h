@@ -46,17 +46,17 @@ class CudaForwardWarpImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                             ImageType;
-  typedef itk::CovariantVector<float, 3>                      DisplacementVectorType;
-  typedef itk::CudaImage<DisplacementVectorType, 3>           DVFType;
-  typedef ForwardWarpImageFilter< ImageType, ImageType, DVFType>     ForwardWarpImageFilterType;
-  typedef CudaForwardWarpImageFilter                                 Self;
+  typedef itk::CudaImage<float,3>                                 ImageType;
+  typedef itk::CovariantVector<float, 3>                          DisplacementVectorType;
+  typedef itk::CudaImage<DisplacementVectorType, 3>               DVFType;
+  typedef ForwardWarpImageFilter< ImageType, ImageType, DVFType>  ForwardWarpImageFilterType;
+  typedef CudaForwardWarpImageFilter                              Self;
   typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     ForwardWarpImageFilterType>                     Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
+                     ForwardWarpImageFilterType>                  Superclass;
+  typedef itk::SmartPointer<Self>                                 Pointer;
+  typedef itk::SmartPointer<const Self>                           ConstPointer;
 
-  typedef ImageType::RegionType            OutputImageRegionType;
+  typedef ImageType::RegionType                                   OutputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

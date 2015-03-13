@@ -1,5 +1,6 @@
-package "rtk"
-version "Projects a volume according to a geometry file."
+version ""
+package "rtkforwardprojections"
+purpose "Projects a volume according to a geometry file."
 
 option "verbose"   v "Verbose execution"                                         flag     off
 option "config"    - "Config file"                                               string   no

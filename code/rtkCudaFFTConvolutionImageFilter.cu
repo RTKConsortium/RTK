@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 // rtk includes
-#include "rtkCudaFFTRampImageFilter.hcu"
+#include "rtkCudaFFTConvolutionImageFilter.hcu"
 #include "rtkCudaUtilities.hcu"
 
 #include <itkMacro.h>
@@ -148,7 +148,7 @@ padding_kernel(float *input,
                const uint3 inputDim,
                const unsigned int Blocks_Y,
                float *truncationWeights,
-               unsigned int sizeWeights)
+               size_t sizeWeights)
 {
   unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
@@ -207,7 +207,7 @@ CUDA_padding(const int3 &paddingIndex,
   float *weights_d = NULL;
   if( mirrorWeights.size() )
     {
-    int size = mirrorWeights.size() * sizeof(float);
+    size_t size = mirrorWeights.size() * sizeof(float);
     cudaMalloc((void **) &weights_d, size);
     cudaMemcpy(weights_d, &(mirrorWeights[0]), size, cudaMemcpyHostToDevice);
     }

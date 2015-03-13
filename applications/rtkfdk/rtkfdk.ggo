@@ -1,5 +1,6 @@
-package "rtk"
-version "Reconstruct a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984]."
+version ""
+package "rtkfdk"
+purpose "Reconstructs a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984]."
 
 option "verbose"    v "Verbose execution"                                           flag                         off
 option "config"     - "Config file"                                                 string                       no

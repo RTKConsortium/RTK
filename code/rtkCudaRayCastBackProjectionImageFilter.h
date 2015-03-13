@@ -48,19 +48,19 @@ class CudaRayCastBackProjectionImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                          ImageType;
-  typedef BackProjectionImageFilter< ImageType, ImageType> BackProjectionImageFilterType;
-  typedef CudaRayCastBackProjectionImageFilter                    Self;
+  typedef itk::CudaImage<float,3>                           ImageType;
+  typedef BackProjectionImageFilter< ImageType, ImageType>  BackProjectionImageFilterType;
+  typedef CudaRayCastBackProjectionImageFilter              Self;
   typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     BackProjectionImageFilterType>        Superclass;
-  typedef itk::SmartPointer<Self>                          Pointer;
-  typedef itk::SmartPointer<const Self>                    ConstPointer;
+                     BackProjectionImageFilterType>         Superclass;
+  typedef itk::SmartPointer<Self>                           Pointer;
+  typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef ImageType::RegionType            OutputImageRegionType;
-  typedef itk::CudaImage<float, 2>         ProjectionImageType;
-  typedef ProjectionImageType::Pointer     ProjectionImagePointer;
-  typedef rtk::ThreeDCircularProjectionGeometry                  GeometryType;
-  typedef typename GeometryType::Pointer                         GeometryPointer;
+  typedef ImageType::RegionType                             OutputImageRegionType;
+  typedef itk::CudaImage<float, 2>                          ProjectionImageType;
+  typedef ProjectionImageType::Pointer                      ProjectionImagePointer;
+  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
+  typedef typename GeometryType::Pointer                    GeometryPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

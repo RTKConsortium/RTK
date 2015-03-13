@@ -1,5 +1,6 @@
-package "rtk"
-version "Creates an RTK geometry file from an Elekta Synergy acquisition."
+version ""
+package "rtkelektasynergygeometry"
+purpose "Creates an RTK geometry file from an Elekta Synergy acquisition."
 
 option "config"    - "Config file"                       string no
 option "image_db"  i "Image table filename"              string yes

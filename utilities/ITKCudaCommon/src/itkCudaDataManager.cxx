@@ -18,7 +18,6 @@
 
 #include "itkCudaDataManager.h"
 #include <itksys/SystemTools.hxx>
-//#define VERBOSE
 
 namespace itk
 {
@@ -60,9 +59,6 @@ void CudaDataManager::Allocate()
   if (m_BufferSize > 0 && m_GPUBuffer->GetBufferSize() != m_BufferSize)
     {
     m_GPUBuffer->Allocate(m_BufferSize);
-    #ifdef VERBOSE
-      std::cout << this << "::Allocate Create GPU buffer of size " << m_BufferSize << " Bytes" << " : " << m_GPUBuffer->GetPointer() << std::endl;
-    #endif
     m_IsGPUBufferDirty = true;
     }
 }
@@ -72,9 +68,6 @@ void CudaDataManager::Free()
   m_Mutex.Lock();
   if (m_GPUBuffer->GetBufferSize() > 0)
     {
-#ifdef VERBOSE
-    std::cout << this << "::Freed GPU buffer of size " << m_GPUBuffer->GetBufferSize() << " Bytes" << " : " << m_GPUBuffer->GetPointer() << std::endl;
-#endif
     m_GPUBuffer->Free();
     m_IsGPUBufferDirty = true;
     }

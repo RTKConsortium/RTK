@@ -1,5 +1,6 @@
-package "rtk"
-version "Subselect a few projections from a list of projection files and a geometry file."
+version ""
+package "rtksubselect"
+purpose "Subselects a few projections from a list of projection files and a geometry file."
 
 option "verbose"       v "Verbose execution"                                         flag         off
 option "config"        - "Config file"                                               string       no

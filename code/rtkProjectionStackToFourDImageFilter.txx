@@ -34,17 +34,10 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   m_ProjectionNumber = 0;
   m_UseCudaSplat = false;
+  m_UseCudaSources = false;
 
   // Create the filters
   m_ExtractFilter = ExtractFilterType::New();
-  m_ConstantImageSource = ConstantImageSourceType::New();
-  m_ZeroMultiplyFilter = MultiplyFilterType::New();
-
-  // Set constant parameters
-  m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename VolumeSeriesType::PixelType>::ZeroValue());
-
-  // Set memory management options
-  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
@@ -98,36 +91,34 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 {
   unsigned int Dimension = 3;
 
-  // Configure the constant image source that is connected to input 2 of the m_SingleProjToFourDFilter
-  typename VolumeType::SizeType constantImageSourceSize;
-  constantImageSourceSize.Fill(0);
+  // Configure the constant volume sources
+  typename VolumeType::SizeType ConstantVolumeSourceSize;
+  typename VolumeType::SpacingType ConstantVolumeSourceSpacing;
+  typename VolumeType::PointType ConstantVolumeSourceOrigin;
+  typename VolumeType::DirectionType ConstantVolumeSourceDirection;
+
+  ConstantVolumeSourceSize.Fill(0);
+  ConstantVolumeSourceSpacing.Fill(0);
+  ConstantVolumeSourceOrigin.Fill(0);
+
   for(unsigned int i=0; i < Dimension; i++)
     {
-    constantImageSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
     }
+  ConstantVolumeSourceDirection.SetIdentity();
 
-  typename VolumeType::SpacingType constantImageSourceSpacing;
-  constantImageSourceSpacing.Fill(0);
-  for(unsigned int i=0; i < Dimension; i++)
-    {
-    constantImageSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
-    }
+  m_ConstantVolumeSource->SetOrigin( ConstantVolumeSourceOrigin );
+  m_ConstantVolumeSource->SetSpacing( ConstantVolumeSourceSpacing );
+  m_ConstantVolumeSource->SetDirection( ConstantVolumeSourceDirection );
+  m_ConstantVolumeSource->SetSize( ConstantVolumeSourceSize );
+  m_ConstantVolumeSource->SetConstant( 0. );
 
-  typename VolumeType::PointType constantImageSourceOrigin;
-  constantImageSourceOrigin.Fill(0);
-  for(unsigned int i=0; i < Dimension; i++)
-    {
-    constantImageSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
-    }
-
-  typename VolumeType::DirectionType constantImageSourceDirection;
-  constantImageSourceDirection.SetIdentity();
-
-  m_ConstantImageSource->SetOrigin( constantImageSourceOrigin );
-  m_ConstantImageSource->SetSpacing( constantImageSourceSpacing );
-  m_ConstantImageSource->SetDirection( constantImageSourceDirection );
-  m_ConstantImageSource->SetSize( constantImageSourceSize );
-  m_ConstantImageSource->SetConstant( 0. );
+  // Configure the constant volume series source
+  m_ConstantVolumeSeriesSource->SetInformationFromImage(this->GetInputVolumeSeries());
+  m_ConstantVolumeSeriesSource->SetConstant( 0. );
+  m_ConstantVolumeSeriesSource->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
@@ -135,27 +126,42 @@ void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::GenerateOutputInformation()
 {
-  // Set runtime connections
-  m_ExtractFilter->SetInput(this->GetInputProjectionStack());
-  m_ZeroMultiplyFilter->SetInput1(this->GetInputVolumeSeries());
-
-  m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_ExtractFilter->GetOutput());
-  m_BackProjectionFilter->SetInPlace(false);
 
   // Create and set the splat filter
+  m_SplatFilter = SplatFilterType::New();
 #ifdef RTK_USE_CUDA
   if (m_UseCudaSplat)
     m_SplatFilter = rtk::CudaSplatImageFilter::New();
-  else
 #endif
   
-  m_SplatFilter = SplatFilterType::New();
-  m_SplatFilter->SetInputVolumeSeries(m_ZeroMultiplyFilter->GetOutput());
+  // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
+  m_ConstantVolumeSource = ConstantVolumeSourceType::New();
+  m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+#ifdef RTK_USE_CUDA
+  if (m_UseCudaSources)
+    {
+    m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
+    m_ConstantVolumeSeriesSource = rtk::CudaConstantVolumeSeriesSource::New();
+    }
+  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+#endif
+
+  // Set runtime connections
+  m_ExtractFilter->SetInput(this->GetInputProjectionStack());
+
+  m_DisplacedDetectorFilter->SetInput(m_ExtractFilter->GetOutput());
+
+  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilter->SetInPlace(false);
+
+  m_SplatFilter->SetInputVolumeSeries(m_ConstantVolumeSeriesSource->GetOutput());
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
 
   // Set runtime parameters
   m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
+  m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
   m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
   m_SplatFilter->SetWeights(m_Weights);
 
@@ -242,10 +248,10 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Release the data in internal filters
   pimg->ReleaseData();
-  m_ZeroMultiplyFilter->GetOutput()->ReleaseData();
+  m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   m_BackProjectionFilter->GetOutput()->ReleaseData();
   m_ExtractFilter->GetOutput()->ReleaseData();
-  m_ConstantImageSource->GetOutput()->ReleaseData();
+  m_ConstantVolumeSource->GetOutput()->ReleaseData();
 }
 
 }// end namespace

@@ -66,7 +66,7 @@ IF (RTK_USE_CUDA)
        rtkCudaCropImageFilter.cu
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
-       rtkCudaFFTRampImageFilter.cu
+       rtkCudaFFTConvolutionImageFilter.cu
        rtkCudaFDKWeightProjectionFilter.cu
        rtkCudaDisplacedDetectorImageFilter.cu
        rtkCudaParkerShortScanImageFilter.cu
@@ -80,7 +80,9 @@ IF (RTK_USE_CUDA)
        rtkCudaTotalVariationDenoisingBPDQImageFilter.cu
        rtkCudaLastDimensionTVDenoisingImageFilter.cu
        rtkCudaConstantVolumeSource.cu
-       rtkCudaConstantVolumeSeriesSource.cu)
+       rtkCudaConstantVolumeSeriesSource.cu
+       rtkCudaConjugateGradientImageFilter_3f.cu
+       rtkCudaConjugateGradientImageFilter_4f.cu)
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
   IF(WIN32)
@@ -104,7 +106,6 @@ IF (RTK_USE_CUDA)
               rtkCudaParkerShortScanImageFilter.cxx
               rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
-              rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
 	      rtkCudaSplatImageFilter.cxx
@@ -116,10 +117,12 @@ IF (RTK_USE_CUDA)
 	      rtkCudaLastDimensionTVDenoisingImageFilter.cxx
 	      rtkCudaConstantVolumeSource.cxx
 	      rtkCudaConstantVolumeSeriesSource.cxx
+              rtkCudaConjugateGradientImageFilter_3f.cxx
+              rtkCudaConjugateGradientImageFilter_4f.cxx
 	      ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
-  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} RTK ITKCudaCommon)
+  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_cublas_LIBRARY} RTK ITKCudaCommon)
 ENDIF (RTK_USE_CUDA)
 #=========================================================
 

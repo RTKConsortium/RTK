@@ -16,23 +16,28 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaFFTRampImageFilter_hcu
-#define __rtkCudaFFTRampImageFilter_hcu
+#ifndef __rtkCudaConjugateGradientImageFilter_4f_hcu
+#define __rtkCudaConjugateGradientImageFilter_4f_hcu
 
 #include <vector_types.h>
-#include <vector>
 
 void
-CUDA_fft_convolution(const int3 &inputDimension,
-                     const int2 &kernelDimension,
-                     float *deviceProjection,
-                     float2 *deviceKernelFFT);
+CUDA_copy_X_4f(int size[4],
+              float* in,
+              float* out);
+
 void
-CUDA_padding(const int3 &paddingIndex,
-             const uint3 &paddingSize,
-             const uint3 &inputSize,
-             float *deviceVolume,
-             float *devicePaddedVolume,
-             const std::vector<float> &mirrorWeights);
+CUDA_subtract_4f(int size[4],
+                 float* in1,
+                 float* in2,
+                 float* out1,
+                 float* out2);
+
+void
+CUDA_conjugate_gradient_4f(int size[4],
+                           float* Xk,
+                           float* Rk,
+                           float* Pk,
+                           float* APk);
 
 #endif

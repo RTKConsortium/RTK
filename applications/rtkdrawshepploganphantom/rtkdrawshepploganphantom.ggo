@@ -1,5 +1,6 @@
-package "rtk"
-version "Computes the intersection length between rays of 2D projections and a 3D volume."
+version ""
+package "rtkdrawshepploganphantom"
+purpose "Computes a 3D voxelized Shepp & Logan phantom with noise [http://www.slaney.org/pct/pct-errata.html]"
 
 option "config"       - "Config file"                               string          no
 option "output"       o "Output projections file name"              string          yes

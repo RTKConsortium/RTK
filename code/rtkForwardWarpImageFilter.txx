@@ -16,6 +16,9 @@
  *
  *=========================================================================*/
 
+#ifndef __rtkForwardWarpImageFilter_txx
+#define __rtkForwardWarpImageFilter_txx
+
 #include "rtkForwardWarpImageFilter.h"
 #include "rtkHomogeneousMatrix.h"
 
@@ -196,3 +199,5 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
 }
 
 } // end namespace rtk
+
+#endif //__rtkForwardWarpImageFilter_txx

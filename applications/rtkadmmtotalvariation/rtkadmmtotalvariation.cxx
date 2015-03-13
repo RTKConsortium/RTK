@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
   PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
   if (args_info.phases_given)
     {
-    phaseGating->SetFileName(args_info.phases_arg);
+    phaseGating->SetPhasesFileName(args_info.phases_arg);
     phaseGating->SetGatingWindowWidth(args_info.windowwidth_arg);
     phaseGating->SetGatingWindowCenter(args_info.windowcenter_arg);
     phaseGating->SetGatingWindowShape(args_info.windowshape_arg);

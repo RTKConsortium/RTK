@@ -153,7 +153,7 @@ protected:
     typename TImageSequence::RegionType       m_ExtractAndPasteRegion;
 
     /** Perform a forward warping (using splat) instead of the standard backward warping */
-    bool m_ForwardWarp;
+    bool  m_ForwardWarp;
     float m_PhaseShift;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning

@@ -25,11 +25,13 @@
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkFourDReconstructionConjugateGradientOperator.h"
 #include "rtkProjectionStackToFourDImageFilter.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaConjugateGradientImageFilter_4f.h"
+#endif
 
 namespace rtk
 {
@@ -69,13 +71,11 @@ namespace rtk
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * PSTFD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
-   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
    * Input0 -> AfterInput0 [arrowhead=None];
    * AfterInput0 -> ConjugateGradient;
    * Input0 -> PSTFD;
-   * Input1 -> Displaced
-   * Displaced -> PSTFD;
+   * Input1 -> PSTFD;
    * PSTFD -> ConjugateGradient;
    * ConjugateGradient -> Output;
    * }
@@ -110,7 +110,6 @@ public:
   typedef rtk::ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
   typedef rtk::FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
   typedef rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                                    DisplacedDetectorFilterType;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -164,7 +163,6 @@ protected:
   typename ConjugateGradientFilterType::Pointer     m_ConjugateGradientFilter;
   typename CGOperatorFilterType::Pointer            m_CGOperator;
   typename ProjStackToFourDFilterType::Pointer      m_ProjStackToFourDFilter;
-  typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
 
 private:
   //purposely not implemented
@@ -174,7 +172,7 @@ private:
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
-  /** Number of projections processed at a time. */
+  /** Number of conjugate gradient descent iterations */
   unsigned int m_NumberOfIterations;
 
 }; // end of class

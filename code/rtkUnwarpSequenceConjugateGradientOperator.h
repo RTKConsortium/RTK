@@ -68,7 +68,7 @@ class UnwarpSequenceConjugateGradientOperator : public ConjugateGradientOperator
 public:
     /** Standard class typedefs. */
     typedef UnwarpSequenceConjugateGradientOperator       Self;
-    typedef ConjugateGradientOperator< TImageSequence >  Superclass;
+    typedef ConjugateGradientOperator< TImageSequence >   Superclass;
     typedef itk::SmartPointer< Self >                     Pointer;
 
     /** Method for creation through the object factory. */
