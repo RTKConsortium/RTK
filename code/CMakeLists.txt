@@ -78,7 +78,9 @@ IF (RTK_USE_CUDA)
        rtkCudaConstantVolumeSource.cu
        rtkCudaConstantVolumeSeriesSource.cu
        rtkCudaConjugateGradientImageFilter_3f.cu
-       rtkCudaConjugateGradientImageFilter_4f.cu)
+       rtkCudaConjugateGradientImageFilter_4f.cu
+       rtkCudaAverageOutOfROIImageFilter.cu
+       )
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
   IF(WIN32)
@@ -111,6 +113,7 @@ IF (RTK_USE_CUDA)
 	      rtkCudaConstantVolumeSeriesSource.cxx
               rtkCudaConjugateGradientImageFilter_3f.cxx
               rtkCudaConjugateGradientImageFilter_4f.cxx
+	      rtkCudaAverageOutOfROIImageFilter.cxx
 	      ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)

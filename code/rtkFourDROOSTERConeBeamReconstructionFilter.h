@@ -22,6 +22,9 @@
 
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkAverageOutOfROIImageFilter.h"
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaAverageOutOfROIImageFilter.h"
+#endif
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 
 namespace rtk
@@ -118,7 +121,7 @@ public:
 
     typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>  FourDCGFilterType;
     typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
-    typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType>                                              AverageOutOfROIFilterType;
+    typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                  AverageOutOfROIFilterType;
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>         SpatialTVDenoisingFilterType;
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>        TemporalTVDenoisingFilterType;
 
