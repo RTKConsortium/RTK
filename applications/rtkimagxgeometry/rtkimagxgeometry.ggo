@@ -1,4 +1,3 @@
-version ""
 package "rtkimagxgeometry"
 purpose "Creates an RTK geometry file from an iMagX  acquisition."
 

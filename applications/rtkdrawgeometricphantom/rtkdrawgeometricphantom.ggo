@@ -1,4 +1,3 @@
-version ""
 package "rtkdrawgeometricphantom"
 purpose "Computes a 3D voxelized phantom from a phantom description file"
 

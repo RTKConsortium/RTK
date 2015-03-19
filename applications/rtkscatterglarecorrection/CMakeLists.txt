@@ -1,4 +1,4 @@
-WRAP_GGO(rtkscatterglarecorrection_GGO_C rtkscatterglarecorrection.ggo ../rtkinputprojections_section.ggo)
+WRAP_GGO(rtkscatterglarecorrection_GGO_C rtkscatterglarecorrection.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkscatterglarecorrection rtkscatterglarecorrection.cxx ${rtkscatterglarecorrection_GGO_C})
 TARGET_LINK_LIBRARIES(rtkscatterglarecorrection RTK)
 

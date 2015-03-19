@@ -1,4 +1,3 @@
-version ""
 package "rtkfourdconjugategradient"
 purpose "Reconstructs a 3D + time sequence of volumes from a projection stack and a respiratory/cardiac signal, with a conjugate gradient technique"
 

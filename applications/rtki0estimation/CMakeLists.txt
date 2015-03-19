@@ -1,4 +1,4 @@
-WRAP_GGO(rtki0estimation_GGO_C rtki0estimation.ggo ../rtkinputprojections_section.ggo)
+WRAP_GGO(rtki0estimation_GGO_C rtki0estimation.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtki0estimation rtki0estimation.cxx ${rtki0estimation_GGO_C})
 TARGET_LINK_LIBRARIES(rtki0estimation RTK)
 

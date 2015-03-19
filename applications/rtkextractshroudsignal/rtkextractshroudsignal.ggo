@@ -1,4 +1,3 @@
-version ""
 package "rtkextractshroudsignal"
 purpose "Extracts the breathing signal from a shroud image."
 

@@ -1,4 +1,3 @@
-version ""
 package "rtklut"
 purpose "Converts pixel intensities of projection images according to lookup table"
 

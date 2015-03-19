@@ -1,4 +1,3 @@
-version ""
 package "rtkwaveletsdenoising"
 purpose "Denoises a volume using Daubechies wavelets soft thresholding"
 

@@ -1,4 +1,3 @@
-version ""
 package "rtkelektasynergygeometry"
 purpose "Creates an RTK geometry file from an Elekta Synergy acquisition."
 

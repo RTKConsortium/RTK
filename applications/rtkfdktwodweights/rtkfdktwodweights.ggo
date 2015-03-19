@@ -1,4 +1,3 @@
-version ""
 package "rtkfdktwodweights"
 purpose "Weights projection stack with 2D weights of Feldkamp cone-beam reconstruction algorithm."
 

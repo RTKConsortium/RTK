@@ -1,4 +1,3 @@
-version ""
 package "rtkfourdfdk"
 purpose "Reconstructs a 4D volume from a sequence of projections using FDK with one projection per respiratory cycle in each frame."
 
