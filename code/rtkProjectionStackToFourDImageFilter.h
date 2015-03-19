@@ -25,11 +25,13 @@
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-#  include "rtkCudaSplatImageFilter.h"
-#  include "rtkCudaConstantVolumeSource.h"
-#  include "rtkCudaConstantVolumeSeriesSource.h"
+  #include "rtkCudaSplatImageFilter.h"
+  #include "rtkCudaConstantVolumeSource.h"
+  #include "rtkCudaConstantVolumeSeriesSource.h"
+  #include "rtkCudaDisplacedDetectorImageFilter.h"
 #endif
 
 namespace rtk
@@ -74,6 +76,7 @@ namespace rtk
    *
    * node [shape=box];
    * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+   * DisplacedDetector [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * VolumeSeriesSource [ label="rtk::ConstantImageSource (4D)" URL="\ref rtk::ConstantImageSource"];
    * AfterSource4D [label="", fixedsize="false", width=0, height=0, shape=none];
    * Source [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
@@ -85,7 +88,8 @@ namespace rtk
    * Input0 -> VolumeSeriesSource [style=invis];
    * VolumeSeriesSource -> AfterSource4D[arrowhead=None];
    * AfterSource4D -> Splat;
-   * Extract -> Backproj;
+   * Extract -> DisplacedDetector;
+   * DisplacedDetector -> Backproj;
    * Source -> Backproj;
    * Backproj -> Splat;
    * Splat -> AfterSplat[arrowhead=None];
@@ -131,6 +135,7 @@ public:
     typedef rtk::ConstantImageSource< VolumeType >                                ConstantVolumeSourceType;
     typedef rtk::ConstantImageSource< VolumeSeriesType >                          ConstantVolumeSeriesSourceType;
     typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>   SplatFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                DisplacedDetectorFilterType;
 
     typedef rtk::ThreeDCircularProjectionGeometry                                 GeometryType;
 
@@ -172,6 +177,7 @@ protected:
     typename ExtractFilterType::Pointer                     m_ExtractFilter;
     typename ConstantVolumeSourceType::Pointer              m_ConstantVolumeSource;
     typename ConstantVolumeSeriesSourceType::Pointer        m_ConstantVolumeSeriesSource;
+    typename DisplacedDetectorFilterType::Pointer           m_DisplacedDetectorFilter;
 
     /** Other member variables */
     itk::Array2D<float>                                     m_Weights;
