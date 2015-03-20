@@ -48,11 +48,13 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
   // Geometry size check
   const unsigned int Dimension = TInputImage::ImageDimension;
-  if(this->m_Geometry->GetMatrices().size() != this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1))
+  const int lastProjIndex = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1) +
+                            this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
+  if( (int) this->m_Geometry->GetMatrices().size() < lastProjIndex)
     {
     itkExceptionMacro( << "Mismatch between the number of projections and the geometry entries. "
-                       << "Geometry has " << this->m_Geometry->GetMatrices().size() << " entries. "
-                       << "Stack of projections contains " << inputPtr1->GetLargestPossibleRegion().GetSize(Dimension-1) << " projections.");
+                       << "Geometry has " << this->m_Geometry->GetMatrices().size() << " entries, which is less than the "
+                       << "last index of the projections stack, i.e., " << lastProjIndex << ".");
     }
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
