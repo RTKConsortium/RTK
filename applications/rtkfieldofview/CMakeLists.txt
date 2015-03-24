@@ -1,4 +1,4 @@
-WRAP_GGO(rtkfieldofview_GGO_C rtkfieldofview.ggo ../rtkinputprojections_section.ggo)
+WRAP_GGO(rtkfieldofview_GGO_C rtkfieldofview.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkfieldofview rtkfieldofview.cxx ${rtkfieldofview_GGO_C})
 TARGET_LINK_LIBRARIES(rtkfieldofview RTK)
 

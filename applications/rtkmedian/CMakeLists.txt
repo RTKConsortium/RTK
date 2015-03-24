@@ -1,4 +1,4 @@
-WRAP_GGO(rtkmedian_GGO_C rtkmedian.ggo)
+WRAP_GGO(rtkmedian_GGO_C rtkmedian.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkmedian rtkmedian.cxx ${rtkmedian_GGO_C})
 TARGET_LINK_LIBRARIES(rtkmedian RTK)
 

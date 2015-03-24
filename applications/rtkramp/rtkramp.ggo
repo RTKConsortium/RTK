@@ -1,4 +1,3 @@
-version ""
 package "rtkramp"
 purpose "Reads raw projection images, converts to attenuation, ramp filters and stacks them into a single output image file"
 

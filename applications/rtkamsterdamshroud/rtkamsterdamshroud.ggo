@@ -1,4 +1,3 @@
-version ""
 package "rtkamsterdamshroud"
 purpose "Creates an Amsterdam Shroud image from a sequence of projections [Zijp et al, ICCR, 2004]."
 

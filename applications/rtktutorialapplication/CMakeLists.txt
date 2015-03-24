@@ -1,4 +1,4 @@
-WRAP_GGO(rtktutorialapplication_GGO_C rtktutorialapplication.ggo)
+WRAP_GGO(rtktutorialapplication_GGO_C rtktutorialapplication.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtktutorialapplication rtktutorialapplication.cxx ${rtktutorialapplication_GGO_C})
 TARGET_LINK_LIBRARIES(rtktutorialapplication RTK)
 

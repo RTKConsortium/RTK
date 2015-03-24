@@ -1,5 +1,5 @@
 package "rtktutorialapplication"
-version "A simple application you can use to train yourself to writing rtk programs"
+purpose "A simple application you can use to train yourself to writing rtk programs"
 
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no

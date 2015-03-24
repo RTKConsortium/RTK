@@ -32,8 +32,8 @@ ENDIF(BUILD_TESTING)
 #=========================================================
 
 #=========================================================
-SET(RTK_VERSION_MAJOR "0")
-SET(RTK_VERSION_MINOR "1")
+SET(RTK_VERSION_MAJOR "1")
+SET(RTK_VERSION_MINOR "0")
 SET(RTK_VERSION_PATCH "0")
 
 #=========================================================

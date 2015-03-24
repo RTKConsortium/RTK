@@ -1,4 +1,3 @@
-version ""
 package "rtkrayquadricintersection"
 purpose "Computes the intersection length between rays of 2D projections and a 3D quadric"
 

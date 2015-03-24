@@ -1,4 +1,3 @@
-version ""
 package "rtksimulatedgeometry"
 purpose "Creates an RTK geometry file from simulated/regular trajectory."
 

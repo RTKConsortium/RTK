@@ -1,4 +1,3 @@
-version ""
 package "rtkconjugategradient"
 purpose "Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique"
 

@@ -1,4 +1,3 @@
-version ""
 package "rtktotalvariationdenoising"
 purpose "Performs total variation denoising along the specified dimensions of a 3D image."
 

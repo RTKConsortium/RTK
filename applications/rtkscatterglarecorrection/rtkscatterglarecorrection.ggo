@@ -1,5 +1,5 @@
-package "rtk"
-version "Reads projection images and correct them for scatter glare"
+package "rtkscatterglarecorrection"
+purpose "Reads projection images and correct them for scatter glare"
 
 option "verbose"  v "Verbose execution"                                         flag      off
 option "config"   - "Config file"                                               string    no

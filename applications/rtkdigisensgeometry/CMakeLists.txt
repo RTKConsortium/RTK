@@ -1,4 +1,4 @@
-WRAP_GGO(rtkdigisensgeometry_GGO_C rtkdigisensgeometry.ggo)
+WRAP_GGO(rtkdigisensgeometry_GGO_C rtkdigisensgeometry.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkdigisensgeometry rtkdigisensgeometry.cxx ${rtkdigisensgeometry_GGO_C})
 TARGET_LINK_LIBRARIES(rtkdigisensgeometry RTK)
 
