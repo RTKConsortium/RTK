@@ -1,4 +1,3 @@
-version ""
 package "rtkfourdrooster"
 purpose "Reconstructs a 3D + time sequence of volumes from a projection stack and a respiratory/cardiac signal, applying TV regularization in space and time, and restricting motion to a region of interest"
 

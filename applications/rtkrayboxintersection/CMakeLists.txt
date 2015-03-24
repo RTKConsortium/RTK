@@ -1,4 +1,4 @@
-WRAP_GGO(rtkrayboxintersection_GGO_C rtkrayboxintersection.ggo ../rtk3Doutputimage_section.ggo)
+WRAP_GGO(rtkrayboxintersection_GGO_C rtkrayboxintersection.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkrayboxintersection rtkrayboxintersection.cxx ${rtkrayboxintersection_GGO_C})
 TARGET_LINK_LIBRARIES(rtkrayboxintersection RTK)
 

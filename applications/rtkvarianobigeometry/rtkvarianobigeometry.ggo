@@ -1,4 +1,3 @@
-version ""
 package "rtkvarianobigeometry"
 purpose "Creates an RTK geometry file from a Varian OBI acquisition."
 

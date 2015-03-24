@@ -1,4 +1,3 @@
-version ""
 package "rtkfieldofview"
 purpose "Computes the field of view of a reconstruction."
 

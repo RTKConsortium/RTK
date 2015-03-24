@@ -1,4 +1,3 @@
-version ""
 package "rtkmedian"
 purpose "Performs a median filtering on a 2D image (pixeltype uint16)"
 

@@ -1,4 +1,3 @@
-version ""
 package "rtkparkershortscanweighting"
 purpose "Weights projection stack with parker weights for short scan with a divergent geometry."
 

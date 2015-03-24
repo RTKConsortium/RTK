@@ -1,4 +1,3 @@
-version ""
 package "rtkprojections"
 purpose "Reads raw projection images, converts them to attenuation and stacks them into a single output image file"
 

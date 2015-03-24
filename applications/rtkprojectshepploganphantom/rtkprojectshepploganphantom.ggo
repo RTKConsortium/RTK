@@ -1,4 +1,3 @@
-version ""
 package "rtkprojectshepploganphantom"
 purpose "Computes projections through a 3D Shepp & Logan phantom, according to a geometry"
 

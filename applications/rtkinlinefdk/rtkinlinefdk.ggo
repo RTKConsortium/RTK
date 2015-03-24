@@ -1,4 +1,3 @@
-version ""
 package "rtkinlinefdk"
 purpose "Simulates an FDK on-the-fly reconstruction with one thread for acquisition and one for reconstruction."
 

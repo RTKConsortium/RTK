@@ -1,4 +1,4 @@
-WRAP_GGO(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo)
+WRAP_GGO(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtksimulatedgeometry rtksimulatedgeometry.cxx ${rtksimulatedgeometry_GGO_C})
 TARGET_LINK_LIBRARIES(rtksimulatedgeometry RTK)
 

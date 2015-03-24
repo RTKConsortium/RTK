@@ -1,4 +1,3 @@
-version ""
 package "rtkadmmwavelets"
 purpose "Performs an iterative 3D reconstruction with Daubechies wavelets regularization"
 

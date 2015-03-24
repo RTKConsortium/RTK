@@ -1,4 +1,3 @@
-version ""
 package "rtkforwardprojections"
 purpose "Projects a volume according to a geometry file."
 

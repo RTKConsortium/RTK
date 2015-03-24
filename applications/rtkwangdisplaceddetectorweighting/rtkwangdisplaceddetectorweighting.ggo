@@ -1,4 +1,3 @@
-version ""
 package "rtkwangdisplaceddetectorweighting"
 purpose "Weights projection stack with parker weights for displaced detector geometry."
 

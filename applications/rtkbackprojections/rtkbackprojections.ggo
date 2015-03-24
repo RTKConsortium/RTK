@@ -1,5 +1,4 @@
-version ""
-package "rtkbackprojection"
+package "rtkbackprojections"
 purpose "Backprojects a volume according to a geometry file."
 
 option "verbose"   v "Verbose execution"                                         flag     off

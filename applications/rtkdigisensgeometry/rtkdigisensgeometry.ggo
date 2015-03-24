@@ -1,4 +1,3 @@
-version ""
 package "rtkdigisensgeometry"
 purpose "Creates an RTK geometry file from a Digisens geometry calibration."
 

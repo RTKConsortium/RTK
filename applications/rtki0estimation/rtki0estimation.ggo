@@ -1,4 +1,3 @@
-version ""
 package "rtki0estimation"
 purpose "Reads projection images and estimates the I0 value for each of them"
 
