@@ -25,6 +25,7 @@
 #include "rtkConjugateGradientOperator.h"
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkForwardProjectionImageFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 
@@ -68,6 +69,7 @@ namespace rtk
    * Multiply [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
    * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
@@ -76,7 +78,8 @@ namespace rtk
    * Input1 -> ZeroMultiplyProjections;
    * ZeroMultiplyProjections -> ForwardProjection;
    * ZeroMultiplyVolume -> BackProjection;
-   * ForwardProjection -> BackProjection;
+   * ForwardProjection -> Displaced;
+   * Displaced -> BackProjection;
    * BackProjection -> Add;
    * Multiply -> Add;
    * Add -> Output;
@@ -115,6 +118,8 @@ public:
     typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
     typedef itk::AddImageFilter<TOutputImage>                               AddFilterType;
 
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
+
     /** Set the backprojection filter*/
     void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
 
@@ -142,6 +147,7 @@ protected:
     typename MultiplyFilterType::Pointer              m_MultiplyFilter;
     typename MultiplyFilterType::Pointer              m_ZeroMultiplyProjectionFilter;
     typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
+    typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
 
     float m_Beta;
 

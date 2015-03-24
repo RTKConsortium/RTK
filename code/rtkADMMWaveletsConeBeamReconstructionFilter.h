@@ -30,6 +30,7 @@
 #include "rtkADMMWaveletsConjugateGradientOperator.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {
@@ -74,13 +75,15 @@ namespace rtk
    * BeforeSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
    * SubtractTwo [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
    * Input0 -> BeforeZeroMultiply [arrowhead=None];
    * BeforeZeroMultiply -> ZeroMultiply;
    * BeforeZeroMultiply -> G;
    * ZeroMultiply -> AfterZeroMultiply;
    * BeforeZeroMultiply -> ConjugateGradient;
-   * Input1 -> BackProjection;
+   * Input1 -> Displaced;
+   * Displaced -> BackProjection;
    * AfterZeroMultiply -> D;
    * AfterZeroMultiply -> BackProjection;
    * D -> Add;
@@ -117,9 +120,9 @@ class ADMMWaveletsConeBeamReconstructionFilter : public rtk::IterativeConeBeamRe
 {
 public:
     /** Standard class typedefs. */
-    typedef ADMMWaveletsConeBeamReconstructionFilter             Self;
-    typedef itk::ImageToImageFilter<TOutputImage, TOutputImage>  Superclass;
-    typedef itk::SmartPointer< Self >                            Pointer;
+    typedef ADMMWaveletsConeBeamReconstructionFilter                            Self;
+    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>   Superclass;
+    typedef itk::SmartPointer< Self >                                           Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -141,6 +144,7 @@ public:
     typedef itk::MultiplyImageFilter<TOutputImage>                                        MultiplyFilterType;
     typedef rtk::ADMMWaveletsConjugateGradientOperator<TOutputImage>                      CGOperatorFilterType;
     typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TOutputImage>             SoftThresholdFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                               DisplacedDetectorFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -191,6 +195,7 @@ protected:
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilterForConjugateGradient;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
