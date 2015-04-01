@@ -40,12 +40,13 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_FourDCGFilter = FourDCGFilterType::New();
   m_PositivityFilter = ThresholdFilterType::New();
   m_AverageOutOfROIFilter = AverageOutOfROIFilterType::New();
+  m_TVDenoisingTime = TemporalTVDenoisingFilterType::New();
 #ifdef RTK_USE_CUDA
   m_AverageOutOfROIFilter = rtk::CudaAverageOutOfROIImageFilter::New();
+  m_TVDenoisingTime = rtk::CudaLastDimensionTVDenoisingImageFilter::New();
 #endif
   m_TVDenoisingSpace = SpatialTVDenoisingFilterType::New();
   m_Warp = WarpSequenceFilterType::New();
-  m_TVDenoisingTime = TemporalTVDenoisingFilterType::New();
   m_Unwarp = UnwarpSequenceFilterType::New();
 
   // Set permanent connections
@@ -73,7 +74,6 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   // Set memory management parameters
   m_FourDCGFilter->ReleaseDataFlagOn();
   m_PositivityFilter->SetInPlace(true);
-  m_PositivityFilter->ReleaseDataFlagOn();
   m_AverageOutOfROIFilter->ReleaseDataFlagOn();
   m_TVDenoisingSpace->ReleaseDataFlagOn();
   m_Warp->ReleaseDataFlagOn();

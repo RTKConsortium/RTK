@@ -209,15 +209,11 @@ public:
 
     typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>    FourDCGFilterType;
     typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
-    typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                  AverageOutOfROIFilterType;
+    typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                    AverageOutOfROIFilterType;
     typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                   SpatialTVDenoisingFilterType;
     typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>    WarpSequenceFilterType;
-    typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
-#ifdef RTK_USE_CUDA
-    typedef rtk::CudaLastDimensionTVDenoisingImageFilter                                                      TemporalTVDenoisingFilterType;
-#else
     typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
-#endif
+    typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
 
     /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
     void SetForwardProjectionFilter(int fwtype);
