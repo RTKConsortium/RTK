@@ -177,11 +177,6 @@ IF(ITK_VERSION_MINOR LESS "5")
   INCLUDE_DIRECTORIES(BEFORE utilities/itkBinShrinkImageFilter)
 ENDIF()
 
-# The itkWarpImageFilter has members that are private
-# while they should be protected. Use this slightly modified
-# version instead, until the problem is fixed
-INCLUDE_DIRECTORIES(BEFORE utilities/itkWarpImageFilter)
-
 IF(RTK_USE_CUDA)
   ADD_SUBDIRECTORY(utilities/ITKCudaCommon)
   INCLUDE_DIRECTORIES(utilities/ITKCudaCommon/include)

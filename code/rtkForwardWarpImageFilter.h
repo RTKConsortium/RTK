@@ -49,6 +49,15 @@ public:
   typedef itk::SmartPointer<Self>                                 Pointer;
   typedef itk::SmartPointer<const Self>                           ConstPointer;
 
+  /** Displacement type */
+  typedef TDVF                                      DisplacementFieldType;
+  typedef typename DisplacementFieldType::Pointer   DisplacementFieldPointer;
+  typedef typename DisplacementFieldType::PixelType DisplacementType;
+
+  /** Point type */
+  typedef double                                                   CoordRepType;
+  typedef itk::Point< CoordRepType, itkGetStaticConstMacro(ImageDimension) > PointType;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
@@ -60,6 +69,12 @@ protected:
   ~ForwardWarpImageFilter() {}
 
   virtual void GenerateData();
+
+  // Redefine stuff that is private in the Superclass
+  void Protected_EvaluateDisplacementAtPhysicalPoint(const PointType & p, DisplacementType &output);
+  bool                                m_Protected_DefFieldSizeSame;
+  typename TOutputImage::IndexType    m_Protected_StartIndex;
+  typename TOutputImage::IndexType    m_Protected_EndIndex;
 
 private:
   ForwardWarpImageFilter(const Self&); //purposely not implemented
