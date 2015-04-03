@@ -44,6 +44,7 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   m_PasteFilter = PasteFilterType::New();
   m_CastFilter = CastFilterType::New();
   m_ConstantSource = ConstantImageSourceType::New();
+  m_PhaseShift = 0;
 
   // Set permanent connections
   m_PasteFilter->SetSourceImage(m_CastFilter->GetOutput());

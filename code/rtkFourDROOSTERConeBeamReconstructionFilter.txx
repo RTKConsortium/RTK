@@ -35,6 +35,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_MainLoop_iterations=2;
   m_CG_iterations=2;
   m_PerformWarping=false;
+  m_PhaseShift = 0;
 
   // Create the filters
   m_FourDCGFilter = FourDCGFilterType::New();
