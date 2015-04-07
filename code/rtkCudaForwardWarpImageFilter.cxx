@@ -38,8 +38,6 @@ void
 CudaForwardWarpImageFilter
 ::GPUGenerateData()
 {
-  const unsigned int Dimension = ImageType::ImageDimension;
-
   // Include non-zero index in matrix
   itk::Matrix<double, 4, 4> matrixIdxOutputVol;
   itk::Matrix<double, 4, 4> matrixIdxInputVol;
