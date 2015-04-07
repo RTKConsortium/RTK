@@ -128,7 +128,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( e2->Update() )
 
   typedef itk::WarpImageFilter<OutputImageType, OutputImageType, DVFImageType> WarpFilterType;
-  typename WarpFilterType::Pointer warp = WarpFilterType::New();
+  WarpFilterType::Pointer warp = WarpFilterType::New();
   warp->SetInput(e2->GetOutput());
   warp->SetDisplacementField( deformationField );
   warp->SetOutputParametersFromImage(e2->GetOutput());
@@ -136,7 +136,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() );
 
   typedef rtk::ForwardWarpImageFilter<OutputImageType, OutputImageType, DVFImageType> ForwardWarpFilterType;
-  typename ForwardWarpFilterType::Pointer forwardWarp = ForwardWarpFilterType::New();
+  ForwardWarpFilterType::Pointer forwardWarp = ForwardWarpFilterType::New();
   forwardWarp->SetInput(warp->GetOutput());
   forwardWarp->SetDisplacementField( deformationField );
   forwardWarp->SetOutputParametersFromImage(warp->GetOutput());
