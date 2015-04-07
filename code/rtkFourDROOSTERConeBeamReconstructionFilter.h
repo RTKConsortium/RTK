@@ -222,7 +222,7 @@ public:
   void SetBackProjectionFilter(int bptype);
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
-  void SetWeights(const itk::Array2D<float> _arg);
+  virtual void SetWeights(const itk::Array2D<float> _arg);
 
   void PrintTiming(std::ostream& os) const;
 
@@ -260,6 +260,8 @@ protected:
 
   /** Does the real work. */
   virtual void GenerateData();
+
+  virtual void PreparePipeline();
 
   virtual void GenerateOutputInformation();
 

@@ -183,6 +183,37 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::PreparePipeline()
+{
+  m_AverageOutOfROIFilter->SetROI(this->GetInputROI());
+
+  m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
+
+  m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
+  m_TVDenoisingSpace->SetGamma(this->m_GammaSpace);
+
+  m_TVDenoisingTime->SetNumberOfIterations(this->m_TV_iterations);
+  m_TVDenoisingTime->SetGamma(this->m_GammaTime);
+
+  // If requested, plug the warp filters into the pipeline
+  if (m_PerformWarping)
+    {
+    m_Warp->SetDisplacementField(this->GetDisplacementField());
+    m_Warp->SetPhaseShift(m_PhaseShift);
+
+    m_TVDenoisingTime->SetInput(m_Warp->GetOutput());
+    m_TVDenoisingTime->ReleaseDataFlagOn();
+
+    m_Unwarp->SetInput(0, m_TVDenoisingTime->GetOutput());
+    m_Unwarp->SetDisplacementField(this->GetDisplacementField());
+    m_Unwarp->SetPhaseShift(m_PhaseShift);
+    m_Unwarp->SetNumberOfIterations(4);
+    }
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateInputRequestedRegion()
 {
   //Call the superclass' implementation of this method
@@ -220,35 +251,19 @@ void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  this->PreparePipeline();
+
   // Set some runtime connections
   m_FourDCGFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_FourDCGFilter->SetInputProjectionStack(this->GetInputProjectionStack());
-  m_AverageOutOfROIFilter->SetROI(this->GetInputROI());
 
   // Set runtime parameters
   m_FourDCGFilter->SetGeometry(this->m_Geometry);
-  m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
-
-  m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
-  m_TVDenoisingSpace->SetGamma(this->m_GammaSpace);
-
-  m_TVDenoisingTime->SetNumberOfIterations(this->m_TV_iterations);
-  m_TVDenoisingTime->SetGamma(this->m_GammaTime);
 
   // If requested, plug the warp filters into the pipeline
   if (m_PerformWarping)
     {
       m_Warp->SetInput(0, m_TVDenoisingSpace->GetOutput());
-      m_Warp->SetDisplacementField(this->GetDisplacementField());
-      m_Warp->SetPhaseShift(m_PhaseShift);
-
-      m_TVDenoisingTime->SetInput(m_Warp->GetOutput());
-      m_TVDenoisingTime->ReleaseDataFlagOn();
-
-      m_Unwarp->SetInput(0, m_TVDenoisingTime->GetOutput());
-      m_Unwarp->SetDisplacementField(this->GetDisplacementField());
-      m_Unwarp->SetPhaseShift(m_PhaseShift);
-      m_Unwarp->SetNumberOfIterations(4);
 
       // Have the last filter calculate its output information
       m_Unwarp->UpdateOutputInformation();
