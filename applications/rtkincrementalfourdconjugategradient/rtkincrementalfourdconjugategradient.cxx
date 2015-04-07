@@ -100,8 +100,8 @@ int main(int argc, char * argv[])
   IncrementalCGFilterType::Pointer incrementalCG = IncrementalCGFilterType::New();
   incrementalCG->SetForwardProjectionFilter(args_info.fp_arg);
   incrementalCG->SetBackProjectionFilter(args_info.bp_arg);
-  incrementalCG->SetNumberOfMainLoopIterations( args_info.niterations_arg );
-  incrementalCG->SetNumberOfNestedCGIterations( args_info.nested_arg );
+  incrementalCG->SetMainLoop_iterations( args_info.niterations_arg );
+  incrementalCG->SetCG_iterations( args_info.nested_arg );
   incrementalCG->SetInputVolumeSeries(inputFilter->GetOutput() );
   incrementalCG->SetInputProjectionStack(reader->GetOutput() );
   incrementalCG->SetPhasesFileName( args_info.signal_arg );
