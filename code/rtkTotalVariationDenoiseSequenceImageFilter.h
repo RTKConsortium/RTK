@@ -51,7 +51,7 @@ namespace rtk
    * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
    * TVDenoising [ label="rtk::TotalVariationDenoisingBPDQImageFilter" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
    * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
-   * Paste [ label="itk::PasteImageFilter" URL="\ref rtk::PasteImageFilter"];
+   * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
    * ConstantSource [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
    * BeforePaste [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterPaste [label="", fixedsize="false", width=0, height=0, shape=none];
