@@ -84,7 +84,7 @@ namespace rtk
    *    AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    *    AfterTVTime [label="", fixedsize="false", width=0, height=0, shape=none];
    *
-   *    Input0 -> AfterInput0 [arrowhead=None];
+   *    Input0 -> AfterInput0 [arrowhead=none];
    *    AfterInput0 -> FourDCG;
    *    Input1 -> FourDCG;
    *    FourDCG -> Positivity;
@@ -92,7 +92,7 @@ namespace rtk
    *    Input2 -> ROI;
    *    ROI -> TVSpace;
    *    TVSpace -> TVTime;
-   *    TVTime -> AfterTVTime [arrowhead=None];
+   *    TVTime -> AfterTVTime [arrowhead=none];
    *    AfterTVTime -> Output;
    *    AfterTVTime -> AfterInput0 [style=dashed];
    *    }
@@ -127,14 +127,14 @@ namespace rtk
    *    MC_AfterTVSpace [label="", fixedsize="false", width=0, height=0, shape=none];
    *    MC_AfterAdd [label="", fixedsize="false", width=0, height=0, shape=none];
    *
-   *    MC_Input0 -> MC_AfterInput0 [arrowhead=None];
+   *    MC_Input0 -> MC_AfterInput0 [arrowhead=none];
    *    MC_AfterInput0 -> MC_FourDCG;
    *    MC_Input1 -> MC_FourDCG;
    *    MC_FourDCG -> MC_Positivity;
    *    MC_Positivity -> MC_ROI;
    *    MC_Input2 -> MC_ROI;
    *    MC_ROI -> MC_TVSpace;
-   *    MC_TVSpace -> MC_AfterTVSpace [arrowhead=None];
+   *    MC_TVSpace -> MC_AfterTVSpace [arrowhead=none];
    *    MC_AfterTVSpace -> MC_BackwardWarp;
    *    MC_AfterTVSpace -> MC_Add;
    *    MC_Input3 -> MC_BackwardWarp;
@@ -145,7 +145,7 @@ namespace rtk
    *    MC_Subtract -> MC_ForwardWarp;
    *    MC_Input3 -> MC_ForwardWarp;
    *    MC_ForwardWarp -> MC_Add;
-   *    MC_Add -> MC_AfterAdd [arrowhead=None];
+   *    MC_Add -> MC_AfterAdd [arrowhead=none];
    *    MC_AfterAdd -> MC_Output;
    *    MC_AfterAdd -> MC_AfterInput0 [style=dashed];
    *    }

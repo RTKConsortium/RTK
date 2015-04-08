@@ -72,7 +72,7 @@ namespace rtk
    * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * PSTFD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
    *
-   * Input0 -> AfterInput0 [arrowhead=None];
+   * Input0 -> AfterInput0 [arrowhead=none];
    * AfterInput0 -> ConjugateGradient;
    * Input0 -> PSTFD;
    * Input1 -> PSTFD;

@@ -59,9 +59,9 @@ namespace rtk
    * Input0 -> Extract;
    * Extract -> TVDenoising;
    * TVDenoising -> Cast;
-   * Cast -> BeforePaste [arrowhead=None];
+   * Cast -> BeforePaste [arrowhead=none];
    * BeforePaste -> Paste;
-   * Paste -> AfterPaste [arrowhead=None];
+   * Paste -> AfterPaste [arrowhead=none];
    * AfterPaste -> BeforePaste [style=dashed];
    * AfterPaste -> Output [style=dashed];
    * }

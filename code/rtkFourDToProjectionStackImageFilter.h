@@ -79,13 +79,13 @@ namespace rtk
    * Input0 -> Multiply;
    * Multiply -> Extract;
    * Extract -> ForwardProj;
-   * Input0 -> BeforePaste[arrowhead=None];
+   * Input0 -> BeforePaste[arrowhead=none];
    * BeforePaste -> Paste;
    * Source -> Interpolation;
    * Input1 -> Interpolation;
    * Interpolation -> ForwardProj;
    * ForwardProj -> Paste;
-   * Paste -> AfterPaste[arrowhead=None];
+   * Paste -> AfterPaste[arrowhead=none];
    * AfterPaste -> Output;
    * AfterPaste -> BeforePaste [style=dashed, constraint=false];
    * }

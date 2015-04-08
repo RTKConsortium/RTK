@@ -106,10 +106,10 @@ namespace rtk
    * ForwardProj -> Displaced;
    * Displaced -> BackProj;
    * BackProj -> Splat;
-   * Splat -> AfterSplat[arrowhead=None];
+   * Splat -> AfterSplat[arrowhead=none];
    * AfterSplat -> Output;
    * AfterSplat -> AfterSource4D[style=dashed, constraint=false];
-   * Source4D -> AfterSource4D[arrowhead=None];
+   * Source4D -> AfterSource4D[arrowhead=none];
    * AfterSource4D -> Splat;
    * SourceProj -> ForwardProj;
    * }

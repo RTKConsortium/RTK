@@ -86,13 +86,13 @@ namespace rtk
    *
    * Input1 -> Extract;
    * Input0 -> VolumeSeriesSource [style=invis];
-   * VolumeSeriesSource -> AfterSource4D[arrowhead=None];
+   * VolumeSeriesSource -> AfterSource4D[arrowhead=none];
    * AfterSource4D -> Splat;
    * Extract -> DisplacedDetector;
    * DisplacedDetector -> Backproj;
    * Source -> Backproj;
    * Backproj -> Splat;
-   * Splat -> AfterSplat[arrowhead=None];
+   * Splat -> AfterSplat[arrowhead=none];
    * AfterSplat -> Output;
    * AfterSplat -> AfterSource4D[style=dashed, constraint=none];
    * }

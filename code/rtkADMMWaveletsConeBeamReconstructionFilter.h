@@ -77,7 +77,7 @@ namespace rtk
    * SubtractTwo [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
-   * Input0 -> BeforeZeroMultiply [arrowhead=None];
+   * Input0 -> BeforeZeroMultiply [arrowhead=none];
    * BeforeZeroMultiply -> ZeroMultiply;
    * BeforeZeroMultiply -> G;
    * ZeroMultiply -> AfterZeroMultiply;
@@ -95,10 +95,10 @@ namespace rtk
    * AddTwo -> ConjugateGradient;
    * ConjugateGradient -> AfterConjugateGradient;
    * AfterConjugateGradient -> Subtract;
-   * Subtract -> BeforeSoftThreshold [arrowhead=None];
+   * Subtract -> BeforeSoftThreshold [arrowhead=none];
    * BeforeSoftThreshold -> SoftThreshold;
    * BeforeSoftThreshold -> SubtractTwo;
-   * SoftThreshold -> AfterSoftThreshold [arrowhead=None];
+   * SoftThreshold -> AfterSoftThreshold [arrowhead=none];
    * AfterSoftThreshold -> SubtractTwo;
    *
    * AfterSoftThreshold -> G [style=dashed, constraint=false];

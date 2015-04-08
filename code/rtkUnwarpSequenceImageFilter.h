@@ -49,7 +49,7 @@ namespace rtk
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterInput1 [label="", fixedsize="false", width=0, height=0, shape=none];
    *
-   * Input0 -> AfterInput0 [arrowhead=None];
+   * Input0 -> AfterInput0 [arrowhead=none];
    * AfterInput0 -> ZeroMultiplyVolumeSequence;
    * AfterInput0 -> WarpSequenceForward;
    * Input1 -> AfterInput1;
