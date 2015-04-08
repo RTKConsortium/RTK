@@ -164,150 +164,153 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class FourDROOSTERConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef FourDROOSTERConeBeamReconstructionFilter             Self;
-    typedef rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
-    typedef ProjectionStackType              VolumeType;
-    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1> CovariantVectorForSpatialGradient;
-    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1> CovariantVectorForTemporalGradient;
-    typedef CovariantVectorForSpatialGradient MVFVectorType;
+  /** Standard class typedefs. */
+  typedef FourDROOSTERConeBeamReconstructionFilter                                          Self;
+  typedef rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> Superclass;
+  typedef itk::SmartPointer< Self >                                                         Pointer;
+  typedef ProjectionStackType                                                               VolumeType;
+  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1> CovariantVectorForSpatialGradient;
+  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>                                    CovariantVectorForTemporalGradient;
+  typedef CovariantVectorForSpatialGradient                                                                 MVFVectorType;
 
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension> SpatialGradientImageType;
-    typedef itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension> TemporalGradientImageType;
-    typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension> MVFSequenceImageType;
-    typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension - 1> MVFImageType;
+  typedef itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>   SpatialGradientImageType;
+  typedef itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>  TemporalGradientImageType;
+  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension>                       MVFSequenceImageType;
+  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension - 1>                   MVFImageType;
 #else
-    typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension> SpatialGradientImageType;
-    typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension> TemporalGradientImageType;
-    typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension> MVFSequenceImageType;
-    typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension - 1> MVFImageType;
+  typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>       SpatialGradientImageType;
+  typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>      TemporalGradientImageType;
+  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension>                           MVFSequenceImageType;
+  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension - 1>                       MVFImageType;
 #endif
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self)
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(FourDROOSTERConeBeamReconstructionFilter, itk::ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(FourDROOSTERConeBeamReconstructionFilter, itk::ImageToImageFilter)
 
-    /** The 4D image to be updated.*/
-    void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
-    typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
+  /** The 4D image to be updated.*/
+  void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
+  typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
 
-    /** The stack of measured projections */
-    void SetInputProjectionStack(const ProjectionStackType* Projection);
-    typename ProjectionStackType::Pointer   GetInputProjectionStack();
+  /** The stack of measured projections */
+  void SetInputProjectionStack(const ProjectionStackType* Projection);
+  typename ProjectionStackType::Pointer   GetInputProjectionStack();
 
-    /** The region of interest outside of which all movement is removed */
-    void SetMotionMask(const VolumeType* mask);
-    typename VolumeType::Pointer            GetInputROI();
+  /** The region of interest outside of which all movement is removed */
+  void SetMotionMask(const VolumeType* mask);
+  typename VolumeType::Pointer            GetInputROI();
 
-    /** The motion vector field used to warp the sequence before and after TV denoising along time */
-    void SetDisplacementField(const MVFSequenceImageType* MVFs);
-    typename MVFSequenceImageType::Pointer            GetDisplacementField();
+  /** The motion vector field used to warp the sequence before and after TV denoising along time */
+  void SetDisplacementField(const MVFSequenceImageType* MVFs);
+  typename MVFSequenceImageType::Pointer            GetDisplacementField();
 
-    typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>    FourDCGFilterType;
-    typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
-    typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                    AverageOutOfROIFilterType;
-    typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                   SpatialTVDenoisingFilterType;
-    typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>    WarpSequenceFilterType;
-    typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
-    typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
+  typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>    FourDCGFilterType;
+  typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
+  typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                    AverageOutOfROIFilterType;
+  typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                   SpatialTVDenoisingFilterType;
+  typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>    WarpSequenceFilterType;
+  typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
+  typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
 
-    /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
-    void SetForwardProjectionFilter(int fwtype);
+  /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
+  void SetForwardProjectionFilter(int fwtype);
 
-    /** Pass the backprojection filter to ProjectionStackToFourD*/
-    void SetBackProjectionFilter(int bptype);
+  /** Pass the backprojection filter to ProjectionStackToFourD*/
+  void SetBackProjectionFilter(int bptype);
 
-    /** Pass the interpolation weights to SingleProjectionToFourDFilter */
-    void SetWeights(const itk::Array2D<float> _arg);
+  /** Pass the interpolation weights to SingleProjectionToFourDFilter */
+  virtual void SetWeights(const itk::Array2D<float> _arg);
 
-    void PrintTiming(std::ostream& os) const;
+  void PrintTiming(std::ostream& os) const;
 
-    // Main loop iterations
-    itkSetMacro(MainLoop_iterations, int)
-    itkGetMacro(MainLoop_iterations, int)
+  // Main loop iterations
+  itkSetMacro(MainLoop_iterations, int)
+  itkGetMacro(MainLoop_iterations, int)
 
-    // Conjugate gradient iterations
-    itkSetMacro(CG_iterations, int)
-    itkGetMacro(CG_iterations, int)
+  // Conjugate gradient iterations
+  itkSetMacro(CG_iterations, int)
+  itkGetMacro(CG_iterations, int)
 
-    // TV filter parameters
-    itkSetMacro(GammaSpace, float)
-    itkGetMacro(GammaSpace, float)
+  // TV filter parameters
+  itkSetMacro(GammaSpace, float)
+  itkGetMacro(GammaSpace, float)
 
-    itkSetMacro(GammaTime, float)
-    itkGetMacro(GammaTime, float)
+  itkSetMacro(GammaTime, float)
+  itkGetMacro(GammaTime, float)
 
-    itkSetMacro(PhaseShift, float)
-    itkGetMacro(PhaseShift, float)
+  itkSetMacro(PhaseShift, float)
+  itkGetMacro(PhaseShift, float)
 
-    itkSetMacro(TV_iterations, int)
-    itkGetMacro(TV_iterations, int)
+  itkSetMacro(TV_iterations, int)
+  itkGetMacro(TV_iterations, int)
 
-    itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
-    itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
+  itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
+  itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
 
-    // Boolean : should warping be performed ?
-    itkSetMacro(PerformWarping, bool)
-    itkGetMacro(PerformWarping, bool)
+  // Boolean : should warping be performed ?
+  itkSetMacro(PerformWarping, bool)
+  itkGetMacro(PerformWarping, bool)
 
 protected:
-    FourDROOSTERConeBeamReconstructionFilter();
-    ~FourDROOSTERConeBeamReconstructionFilter(){}
+  FourDROOSTERConeBeamReconstructionFilter();
+  ~FourDROOSTERConeBeamReconstructionFilter(){}
 
-    /** Does the real work. */
-    virtual void GenerateData();
+  /** Does the real work. */
+  virtual void GenerateData();
 
-    virtual void GenerateOutputInformation();
+  virtual void PreparePipeline();
 
-    virtual void GenerateInputRequestedRegion();
+  virtual void GenerateOutputInformation();
 
-    // Inputs are not supposed to occupy the same physical space,
-    // so there is nothing to verify
-    virtual void VerifyInputInformation(){}
+  virtual void GenerateInputRequestedRegion();
 
-    /** Member pointers to the filters used internally (for convenience)*/
-    typename FourDCGFilterType::Pointer                     m_FourDCGFilter;
-    typename ThresholdFilterType::Pointer                   m_PositivityFilter;
-    typename AverageOutOfROIFilterType::Pointer             m_AverageOutOfROIFilter;
-    typename SpatialTVDenoisingFilterType::Pointer          m_TVDenoisingSpace;
-    typename WarpSequenceFilterType::Pointer                m_Warp;
-    typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
-    typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
+  // Inputs are not supposed to occupy the same physical space,
+  // so there is nothing to verify
+  virtual void VerifyInputInformation(){}
+
+  /** Member pointers to the filters used internally (for convenience)*/
+  typename FourDCGFilterType::Pointer                     m_FourDCGFilter;
+  typename ThresholdFilterType::Pointer                   m_PositivityFilter;
+  typename AverageOutOfROIFilterType::Pointer             m_AverageOutOfROIFilter;
+  typename SpatialTVDenoisingFilterType::Pointer          m_TVDenoisingSpace;
+  typename WarpSequenceFilterType::Pointer                m_Warp;
+  typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
+  typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
+
+  // Boolean : should warping be performed ?
+  bool  m_PerformWarping;
+
+  // Regularization parameters
+  float m_GammaSpace;
+  float m_GammaTime;
+  float m_PhaseShift;
+  bool  m_DimensionsProcessedForTVSpace[VolumeSeriesType::ImageDimension];
+  bool  m_DimensionsProcessedForTVTime[VolumeSeriesType::ImageDimension];
+
+  // Iterations
+  int   m_MainLoop_iterations;
+  int   m_CG_iterations;
+  int   m_TV_iterations;
+
+  // Geometry
+  typename rtk::ThreeDCircularProjectionGeometry::Pointer m_Geometry;
+
+  /** Time probes */
+  itk::TimeProbe m_CGProbe;
+  itk::TimeProbe m_PositivityProbe;
+  itk::TimeProbe m_ROIProbe;
+  itk::TimeProbe m_TVSpaceProbe;
+  itk::TimeProbe m_TVTimeProbe;
+  itk::TimeProbe m_WarpProbe;
+  itk::TimeProbe m_UnwarpProbe;
 
 private:
-    FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
+  FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented
+  void operator=(const Self &);  //purposely not implemented
 
-    // Boolean : should warping be performed ?
-    bool m_PerformWarping;
-
-    // Regularization parameters
-    float m_GammaSpace;
-    float m_GammaTime;
-    float m_PhaseShift;
-    bool m_DimensionsProcessedForTVSpace[VolumeSeriesType::ImageDimension];
-    bool m_DimensionsProcessedForTVTime[VolumeSeriesType::ImageDimension];
-
-    // Iterations
-    int   m_MainLoop_iterations;
-    int   m_CG_iterations;
-    int   m_TV_iterations;
-
-    // Geometry
-    typename rtk::ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-
-    /** Time probes */
-    itk::TimeProbe m_CGProbe;
-    itk::TimeProbe m_PositivityProbe;
-    itk::TimeProbe m_ROIProbe;
-    itk::TimeProbe m_TVSpaceProbe;
-    itk::TimeProbe m_TVTimeProbe;
-    itk::TimeProbe m_WarpProbe;
-    itk::TimeProbe m_UnwarpProbe;
 };
 } //namespace ITK
 

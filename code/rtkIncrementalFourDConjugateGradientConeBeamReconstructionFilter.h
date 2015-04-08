@@ -134,12 +134,12 @@ public:
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
 
   /** Get / Set the number of iterations */
-  itkGetMacro(NumberOfMainLoopIterations, unsigned int)
-  itkSetMacro(NumberOfMainLoopIterations, unsigned int)
+  itkGetMacro(MainLoop_iterations, unsigned int)
+  itkSetMacro(MainLoop_iterations, unsigned int)
 
   /** Get / Set the number of iterations */
-  itkGetMacro(NumberOfNestedCGIterations, unsigned int)
-  itkSetMacro(NumberOfNestedCGIterations, unsigned int)
+  itkGetMacro(CG_iterations, unsigned int)
+  itkSetMacro(CG_iterations, unsigned int)
 
   /** Set/Get the 4D image to be updated.*/
   void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
@@ -187,8 +187,8 @@ protected:
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
   /** Number of iterations */
-  unsigned int m_NumberOfMainLoopIterations; //Main loop
-  unsigned int m_NumberOfNestedCGIterations; //Conjugate gradient iterations each time a subset is processed
+  unsigned int m_MainLoop_iterations; //Main loop
+  unsigned int m_CG_iterations; //Conjugate gradient iterations each time a subset is processed
 
   /** Number of projections in each subset (given by user), and number of subsets (computed) */
   unsigned int m_NumberOfProjectionsPerSubset;

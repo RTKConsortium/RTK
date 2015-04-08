@@ -300,6 +300,14 @@ if(NOT RTK_USE_CUDA)
 endif()
 ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
 
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkincrementalfourdroostertest rtkincrementalfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkincrementalfourdroostertest ${RTK_LIBRARIES})
+  ADD_TEST(rtkincrementalfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdroostertest)
+endif()
+ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
 
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
