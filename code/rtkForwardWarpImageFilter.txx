@@ -229,11 +229,11 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
 
       this->Protected_EvaluateDisplacementAtPhysicalPoint(point, displacement);
 
-      itk::ContinuousIndex< double, TInputImage::ImageDimension > continuousIndexInInput;
+      itk::ContinuousIndex< double, TInputImage::ImageDimension > continuousIndexInOutput;
       for ( unsigned int j = 0; j < TInputImage::ImageDimension; j++ )
         point[j] += displacement[j];
 
-      inputPtr->TransformPhysicalPointToContinuousIndex(point, continuousIndexInInput);
+      outputPtr->TransformPhysicalPointToContinuousIndex(point, continuousIndexInOutput);
 
       // compute the base index in output, ie the closest index below point
       // Check if the baseIndex is in the output's requested region, otherwise skip the splat part
@@ -241,8 +241,8 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
 
       for ( unsigned int j = 0; j < TInputImage::ImageDimension; j++ )
         {
-        baseIndex[j] = itk::Math::Floor<int, double>(continuousIndexInInput[j]);
-        distance[j] = continuousIndexInInput[j] - static_cast< double >(baseIndex[j]);
+        baseIndex[j] = itk::Math::Floor<int, double>(continuousIndexInOutput[j]);
+        distance[j] = continuousIndexInOutput[j] - static_cast< double >(baseIndex[j]);
         if ( (baseIndex[j] < outputPtr->GetRequestedRegion().GetIndex()[j] - 1) ||
              (baseIndex[j] >= outputPtr->GetRequestedRegion().GetIndex()[j] + outputPtr->GetRequestedRegion().GetSize()[j] ))
           skip = true;
