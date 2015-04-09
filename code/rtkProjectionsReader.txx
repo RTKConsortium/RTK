@@ -25,6 +25,7 @@
 #include <itkCropImageFilter.h>
 #include <itkBinShrinkImageFilter.h>
 #include <itkNumericTraits.h>
+#include <itkChangeInformationImageFilter.h>
 
 // RTK
 #include "rtkIOFactories.h"
@@ -68,6 +69,9 @@ ProjectionsReader<TOutputImage>
   m_StreamingFilter = StreamingType::New();
 
   // Default values of parameters
+  m_Spacing.Fill( itk::NumericTraits<typename OutputImageType::SpacingValueType>::max() );
+  m_Origin.Fill( itk::NumericTraits<typename OutputImageType::PointValueType>::max() );
+  m_Direction.Fill( itk::NumericTraits<typename OutputImageType::PointValueType>::max() );
   m_LowerBoundaryCropSize.Fill(0);
   m_UpperBoundaryCropSize.Fill(0);
   m_ShrinkFactors.Fill(1);
@@ -102,10 +106,14 @@ void ProjectionsReader<TOutputImage>
 
   if(m_ImageIO != imageIO)
     {
+    imageIO->SetFileName( m_FileNames[0].c_str() );
+    imageIO->ReadImageInformation();
+
     // In this block, we create the filters used depending on the input type
 
     // Reset
     m_RawDataReader = NULL;
+    m_ChangeInformationFilter = NULL;
     m_ElektaRawFilter = NULL;
     m_CropFilter = NULL;
     m_BinningFilter = NULL;
@@ -153,6 +161,11 @@ void ProjectionsReader<TOutputImage>
       typename ReaderType::Pointer reader = ReaderType::New();
       m_RawDataReader = reader;
 
+      // Change information
+      typedef itk::ChangeInformationImageFilter< InputImageType > ChangeInfoType;
+      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      m_ChangeInformationFilter = cif;
+
       // Crop
       typedef itk::CropImageFilter< InputImageType, InputImageType > CropType;
       typename CropType::Pointer crop = CropType::New();
@@ -176,7 +189,8 @@ void ProjectionsReader<TOutputImage>
     else if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
              !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
              !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
-             !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
+             !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") ||
+             imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
       {
       /////////// Elekta synergy, IBA / iMagX, TIFF
       typedef unsigned short                                     InputPixelType;
@@ -186,6 +200,11 @@ void ProjectionsReader<TOutputImage>
       typedef itk::ImageSeriesReader< InputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
       m_RawDataReader = reader;
+
+      // Change information
+      typedef itk::ChangeInformationImageFilter< InputImageType > ChangeInfoType;
+      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      m_ChangeInformationFilter = cif;
 
       // Crop
       typedef itk::CropImageFilter< InputImageType, InputImageType > CropType;
@@ -236,6 +255,11 @@ void ProjectionsReader<TOutputImage>
       typename ReaderType::Pointer reader = ReaderType::New();
       m_RawDataReader = reader;
 
+      // Change information
+      typedef itk::ChangeInformationImageFilter< OutputImageType > ChangeInfoType;
+      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      m_ChangeInformationFilter = cif;
+
       // Crop
       typedef itk::CropImageFilter< OutputImageType, OutputImageType > CropType;
       typename CropType::Pointer crop = CropType::New();
@@ -257,7 +281,8 @@ void ProjectionsReader<TOutputImage>
       !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
-      !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") )
+      !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") ||
+      imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
     PropagateParametersToMiniPipeline< itk::Image<unsigned short, OutputImageDimension> >();
   else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
     PropagateParametersToMiniPipeline< itk::Image<unsigned int, OutputImageDimension> >();
@@ -298,6 +323,44 @@ void ProjectionsReader<TOutputImage>
   raw->SetFileNames( this->GetFileNames() );
   raw->SetImageIO( m_ImageIO );
   TInputImage *nextInput = raw->GetOutput();
+
+  // Image information
+  OutputImageSpacingType defaultSpacing;
+  defaultSpacing.Fill( itk::NumericTraits<typename OutputImageType::SpacingValueType>::max() );
+  OutputImagePointType defaultOrigin;
+  defaultOrigin.Fill( itk::NumericTraits<typename OutputImageType::PointValueType>::max() );
+  OutputImageDirectionType defaultDirection;
+  defaultDirection.Fill( itk::NumericTraits<typename OutputImageType::PointValueType>::max() );
+  if(m_Spacing != defaultSpacing || m_Origin != defaultOrigin || m_Direction != defaultDirection)
+    {
+    if(m_ChangeInformationFilter.GetPointer() == NULL)
+      {
+        itkGenericExceptionMacro(<< "Can not change image information with this input (not implemented)");
+      }
+    else
+      {
+      typedef itk::ChangeInformationImageFilter< TInputImage > ChangeInfoType;
+      ChangeInfoType *cif = dynamic_cast<ChangeInfoType*>(m_ChangeInformationFilter.GetPointer());
+      assert(cif != NULL);
+      if(m_Spacing != defaultSpacing)
+        {
+        cif->SetOutputSpacing(m_Spacing);
+        cif->ChangeSpacingOn();
+        }
+      if(m_Origin != defaultOrigin)
+        {
+        cif->SetOutputOrigin(m_Origin);
+        cif->ChangeOriginOn();
+        }
+      if(m_Direction != defaultDirection)
+        {
+        cif->SetOutputDirection(m_Direction);
+        cif->ChangeDirectionOn();
+        }
+      cif->SetInput(nextInput);
+      nextInput = cif->GetOutput();
+      }
+    }
 
   // Crop
   OutputImageSizeType defaultCropSize;

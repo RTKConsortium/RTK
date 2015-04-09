@@ -52,6 +52,7 @@ namespace rtk
  * node [shape=box];
  * Raw [label="itk::ImageSeriesReader" URL="\ref itk::ImageSeriesReader"];
  * ElektaRaw [label="rtk::ElektaSynergyRawLookupTableImageFilter" URL="\ref rtk::ElektaSynergyRawLookupTableImageFilter"];
+ * ChangeInformation [label="itk::ChangeInformationImageFilter" URL="\ref itk::ChangeInformationImageFilter" style=dashed];
  * Crop [label="itk::CropImageFilter" URL="\ref itk::CropImageFilter" style=dashed];
  * Binning [label="itk::BinShrinkImageFilter" URL="\ref itk::BinShrinkImageFilter" style=dashed];
  * Scatter [label="rtk::BoellaardScatterCorrectionImageFilter" URL="\ref rtk::BoellaardScatterCorrectionImageFilter" style=dashed];
@@ -63,7 +64,8 @@ namespace rtk
  * EDF [label="rtk::EdfRawToAttenuationImageFilter"  URL="\ref rtk::EdfRawToAttenuationImageFilter"];
  * XRad [label="rtk::XRadRawToAttenuationImageFilter"  URL="\ref rtk::XRadRawToAttenuationImageFilter"];
  *
- * Raw->Crop [label="Default"]
+ * Raw->ChangeInformation [label="Default"]
+ * ChangeInformation->Crop
  * Crop->ElektaRaw [label="Elekta"]
  * ElektaRaw->Binning
  * Crop->Binning [label="Default"]
@@ -109,11 +111,14 @@ public:
   itkTypeMacro(ProjectionsReader, itk::ImageSource);
 
   /** Some convenient typedefs. */
-  typedef TOutputImage                         OutputImageType;
-  typedef typename OutputImageType::Pointer    OutputImagePointer;
-  typedef typename OutputImageType::RegionType OutputImageRegionType;
-  typedef typename OutputImageType::PixelType  OutputImagePixelType;
-  typedef typename OutputImageType::SizeType   OutputImageSizeType;
+  typedef TOutputImage                             OutputImageType;
+  typedef typename OutputImageType::Pointer        OutputImagePointer;
+  typedef typename OutputImageType::RegionType     OutputImageRegionType;
+  typedef typename OutputImageType::PixelType      OutputImagePixelType;
+  typedef typename OutputImageType::DirectionType  OutputImageDirectionType;
+  typedef typename OutputImageType::SpacingType    OutputImageSpacingType;
+  typedef typename OutputImageType::PointType      OutputImagePointType;
+  typedef typename OutputImageType::SizeType       OutputImageSizeType;
 
   typedef std::vector<std::string>                                      FileNamesContainer;
   typedef itk::FixedArray< unsigned int, TOutputImage::ImageDimension > ShrinkFactorsType;
@@ -142,6 +147,16 @@ public:
     {
     return m_FileNames;
     }
+
+  /** Set/Get the new image information for the input projections before any pre-processing. */
+  itkSetMacro(Origin, OutputImagePointType);
+  itkGetConstMacro(Origin, OutputImagePointType);
+
+  itkSetMacro(Spacing, OutputImageSpacingType);
+  itkGetConstMacro(Spacing, OutputImageSpacingType);
+
+  itkSetMacro(Direction, OutputImageDirectionType);
+  itkGetConstMacro(Direction, OutputImageDirectionType);
 
   /** Set/Get the cropping sizes for the upper and lower boundaries. */
   itkSetMacro(UpperBoundaryCropSize, OutputImageSizeType);
@@ -213,6 +228,7 @@ private:
   itk::ProcessObject::Pointer m_RawDataReader;
 
   /** Pointers for pre-processing filters that are created only when required. */
+  itk::ProcessObject::Pointer m_ChangeInformationFilter;
   itk::ProcessObject::Pointer m_ElektaRawFilter;
   itk::ProcessObject::Pointer m_CropFilter;
   itk::ProcessObject::Pointer m_BinningFilter;
@@ -233,6 +249,9 @@ private:
   /** Copy of parameters for the mini-pipeline. Parameters are checked and
    * propagated when required in the GenerateOutputInformation. Refer to the
    * documentation of the corresponding filter for more information. */
+  OutputImagePointType         m_Origin;
+  OutputImageSpacingType       m_Spacing;
+  OutputImageDirectionType     m_Direction;
   OutputImageSizeType          m_LowerBoundaryCropSize;
   OutputImageSizeType          m_UpperBoundaryCropSize;
   ShrinkFactorsType            m_ShrinkFactors;
