@@ -210,6 +210,17 @@
    ...
 }
 {
+   cublas 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/local/cuda-6.5/targets/x86_64-linux/lib/libcublas.so.6.5.14
+   obj:/usr/local/cuda-6.5/targets/x86_64-linux/lib/libcublas.so.6.5.14
+   obj:/usr/local/cuda-6.5/targets/x86_64-linux/lib/libcublas.so.6.5.14
+   obj:/usr/local/cuda-6.5/targets/x86_64-linux/lib/libcublas.so.6.5.14
+   ...
+}
+{
    OpenCL
    Memcheck:Leak
    ...
@@ -237,6 +248,33 @@
    Memcheck:Leak
    ...
    fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   ...
+}
+{
+   lpsolve
+   Memcheck:Leak
+   ...
+   fun:dlopen@@GLIBC_2.2.5
+   fun:load_BLAS
+   fun:make_lp
+   ...
+}
+{
+   fftw
+   Memcheck:Leak
+   ...
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.2.5
+   fun:fftw_spawn_loop
+   ...
+}
+{
+   fftw
+   Memcheck:Leak
+   ...
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.2.5
+   fun:fftwf_spawn_loop
    ...
 }
 
