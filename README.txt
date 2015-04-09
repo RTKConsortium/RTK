@@ -6,8 +6,8 @@ Links
 
  * Homepage: http://www.openrtk.org
  * Download: http://www.openrtk.org/RTK/resources/software.html
- * Mailing List: http://public.kitware.com/cgi-bin/mailman/listinfo/rtk-users
- * Help: http://wiki.openrtk.org/index.php/Main_Page
+ * Mailing List: http://public.kitware.com/mailman/listinfo/rtk-users
+ * Help: http://wiki.openrtk.org
 
 
 Copyright RTK Consortium
