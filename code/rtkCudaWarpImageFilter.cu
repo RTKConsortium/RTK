@@ -376,8 +376,9 @@ CUDA_warp(int input_vol_dim[3],
   cudaUnbindTexture (tex_zdvf);
   cudaUnbindTexture (tex_input_vol);
   CUDA_CHECK_ERROR;
-  cudaUnbindTexture (tex_PPInputToIndexInputMatrix);
+  cudaUnbindTexture (tex_IndexOutputToPPOutputMatrix);
   cudaUnbindTexture (tex_IndexOutputToIndexDVFMatrix);
+  cudaUnbindTexture (tex_PPInputToIndexInputMatrix);
   CUDA_CHECK_ERROR;
 
   // Cleanup
@@ -386,7 +387,8 @@ CUDA_warp(int input_vol_dim[3],
   cudaFreeArray ((cudaArray*)array_zdvf);
   cudaFreeArray ((cudaArray*)array_input_vol);
   CUDA_CHECK_ERROR;
-  cudaFree (dev_PPInputToIndexInput);
+  cudaFree (dev_IndexOutputToPPOutput);
   cudaFree (dev_IndexOutputToIndexDVF);
+  cudaFree (dev_PPInputToIndexInput);
   CUDA_CHECK_ERROR;
 }
