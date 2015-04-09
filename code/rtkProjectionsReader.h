@@ -69,7 +69,7 @@ namespace rtk
  * Crop->ElektaRaw [label="Elekta"]
  * ElektaRaw->Binning
  * Crop->Binning [label="Default"]
- * Binning->Scatter [label="Elekta, Varian, IBA"]
+ * Binning->Scatter [label="Elekta, Varian, IBA, ushort"]
  * Scatter->I0est [label="Default"]
  * I0est->LUT
  * LUT->WPC
