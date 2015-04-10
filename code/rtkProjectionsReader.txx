@@ -425,7 +425,8 @@ void ProjectionsReader<TOutputImage>
       assert(scatter != NULL);
       scatter->SetAirThreshold(m_AirThreshold);
       scatter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
-      scatter->SetNonNegativityConstraintThreshold(m_NonNegativityConstraintThreshold);
+      if(m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin())
+        scatter->SetNonNegativityConstraintThreshold(m_NonNegativityConstraintThreshold);
       scatter->SetInput(nextInput);
       nextInput = scatter->GetOutput();
       }
