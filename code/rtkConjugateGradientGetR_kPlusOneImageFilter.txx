@@ -29,7 +29,10 @@ namespace rtk
 {
 
 template< typename TInputType>
-ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::ConjugateGradientGetR_kPlusOneImageFilter()
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::ConjugateGradientGetR_kPlusOneImageFilter():
+    m_Alphak(0.),
+    m_SquaredNormR_k(0.),
+    m_SquaredNormR_kPlusOne(0.)
 {
     this->SetNumberOfRequiredInputs(3);
 }
