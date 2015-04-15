@@ -8,4 +8,5 @@ option "output"         o "Output projections file name"                        
 option "reconstruction" - "Reconstruction file unmasked"                              string   yes
 option "mask"           m "Output a binary mask instead of a masked image"            flag     off
 option "displaced"      d "Assume that a displaced detector has been used"            flag     off
-
+option "bp"             b "Slow alternative for non cylindrical FOVs:\
+ backproject projections filled with ones and threshold result."                      flag     off
