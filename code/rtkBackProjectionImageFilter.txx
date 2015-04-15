@@ -143,6 +143,14 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 }
 
+template <class TInputImage, class TOutputImage>
+void
+BackProjectionImageFilter<TInputImage,TOutputImage>
+::BeforeThreadedGenerateData()
+{
+  this->SetTranspose(true);
+}
+
 /**
  * GenerateData performs the accumulation
  */
