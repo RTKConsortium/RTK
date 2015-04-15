@@ -154,7 +154,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
   typename Superclass::InputImageConstPointer  inputPtr = this->GetInput();
   typename Superclass::OutputImagePointer      outputPtr = this->GetOutput();
 
-  outputPtr->SetRegions(outputPtr->GetLargestPossibleRegion());
+  outputPtr->SetRegions(outputPtr->GetRequestedRegion());
   outputPtr->Allocate();
   outputPtr->FillBuffer(0);
 
@@ -167,7 +167,8 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
 
   // iterator for the output image
   itk::ImageRegionConstIteratorWithIndex< TOutputImage > inputIt(
-        inputPtr, inputPtr->GetLargestPossibleRegion());
+        inputPtr, inputPtr->GetBufferedRegion());
+  itk::ImageRegionIterator< DisplacementFieldType >  fieldIt(fieldPtr, fieldPtr->GetBufferedRegion());
   typename TOutputImage::IndexType        index;
   typename TOutputImage::IndexType        baseIndex;
   typename TOutputImage::IndexType        neighIndex;
@@ -178,168 +179,138 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
 
   unsigned int numNeighbors(1 << TInputImage::ImageDimension);
 
-  // I suspect there is a bug in the ITK code, as m_DefFieldSizeSame
-  // is computed without taking origin, spacing and transformation into
-  // account. So I commented out the optimized part and used the most generic one
+  // There is a bug in the ITK WarpImageFilter: m_DefFieldSizeSame
+  // is computed without taking origin, spacing and direction into
+  // account. So we perform a more thorough comparison between
+  // output and DVF than in itkWarpImageFilter::BeforeThreadedGenerateData()
+  bool skipEvaluateDisplacementAtContinuousIndex =
+      ( (outputPtr->GetLargestPossibleRegion() == this->GetDisplacementField()->GetLargestPossibleRegion())
+     && (outputPtr->GetSpacing() == this->GetDisplacementField()->GetSpacing())
+     && (outputPtr->GetOrigin() == this->GetDisplacementField()->GetOrigin())
+     && (outputPtr->GetDirection() == this->GetDisplacementField()->GetDirection())   );
 
-//  if ( this->m_DefFieldSizeSame )
-//    {
-//    // iterator for the deformation field
-//    ImageRegionIterator< DisplacementFieldType >
-//    fieldIt(fieldPtr, outputRegionForThread);
+  while ( !inputIt.IsAtEnd() )
+    {
+    // get the input image index
+    index = inputIt.GetIndex();
+    inputPtr->TransformIndexToPhysicalPoint(index, point);
 
-//    while ( !outputIt.IsAtEnd() )
-//      {
-//      // get the output image index
-//      index = outputIt.GetIndex();
-//      outputPtr->TransformIndexToPhysicalPoint(index, point);
-
-//      // get the required displacement
-//      displacement = fieldIt.Get();
-
-//      // compute the required input image point
-//      for ( unsigned int j = 0; j < ImageDimension; j++ )
-//        {
-//        point[j] += displacement[j];
-//        }
-
-//      // get the interpolated value
-//      if ( m_Interpolator->IsInsideBuffer(point) )
-//        {
-//        PixelType value =
-//          static_cast< PixelType >( m_Interpolator->Evaluate(point) );
-//        outputIt.Set(value);
-//        }
-//      else
-//        {
-//        outputIt.Set(m_EdgePaddingValue);
-//        }
-//      ++outputIt;
-//      ++fieldIt;
-//      progress.CompletedPixel();
-//      }
-//    }
-//  else
-//    {
-    while ( !inputIt.IsAtEnd() )
-      {
-      // get the input image index
-      index = inputIt.GetIndex();
-      inputPtr->TransformIndexToPhysicalPoint(index, point);
-
+    if (skipEvaluateDisplacementAtContinuousIndex)
+      displacement = fieldIt.Get();
+    else
       this->Protected_EvaluateDisplacementAtPhysicalPoint(point, displacement);
 
-      itk::ContinuousIndex< double, TInputImage::ImageDimension > continuousIndexInInput;
-      for ( unsigned int j = 0; j < TInputImage::ImageDimension; j++ )
-        point[j] += displacement[j];
+    for ( unsigned int j = 0; j < TInputImage::ImageDimension; j++ )
+      point[j] += displacement[j];
 
-      inputPtr->TransformPhysicalPointToContinuousIndex(point, continuousIndexInInput);
+    itk::ContinuousIndex< double, TInputImage::ImageDimension > continuousIndexInOutput;
+    outputPtr->TransformPhysicalPointToContinuousIndex(point, continuousIndexInOutput);
 
-      // compute the base index in output, ie the closest index below point
-      // Check if the baseIndex is in the output's requested region, otherwise skip the splat part
-      bool skip = false;
+    // compute the base index in output, ie the closest index below point
+    // Check if the baseIndex is in the output's requested region, otherwise skip the splat part
+    bool skip = false;
 
-      for ( unsigned int j = 0; j < TInputImage::ImageDimension; j++ )
+    for ( unsigned int j = 0; j < TInputImage::ImageDimension; j++ )
+      {
+      baseIndex[j] = itk::Math::Floor<int, double>(continuousIndexInOutput[j]);
+      distance[j] = continuousIndexInOutput[j] - static_cast< double >(baseIndex[j]);
+      if ( (baseIndex[j] < outputPtr->GetRequestedRegion().GetIndex()[j] - 1) ||
+           (baseIndex[j] >= outputPtr->GetRequestedRegion().GetIndex()[j] + outputPtr->GetRequestedRegion().GetSize()[j] ))
+        skip = true;
+      }
+
+    if (!skip)
+      {
+      // get the splat weights as the overlapping areas between
+      for ( unsigned int counter = 0; counter < numNeighbors; counter++ )
         {
-        baseIndex[j] = itk::Math::Floor<int, double>(continuousIndexInInput[j]);
-        distance[j] = continuousIndexInInput[j] - static_cast< double >(baseIndex[j]);
-        if ( (baseIndex[j] < outputPtr->GetRequestedRegion().GetIndex()[j] - 1) ||
-             (baseIndex[j] >= outputPtr->GetRequestedRegion().GetIndex()[j] + outputPtr->GetRequestedRegion().GetSize()[j] ))
-          skip = true;
-        }
+        double       overlap = 1.0;    // fraction overlap
+        unsigned int upper = counter;  // each bit indicates upper/lower neighbour
 
-      if (!skip)
-        {
-        // get the splat weights as the overlapping areas between
-        for ( unsigned int counter = 0; counter < numNeighbors; counter++ )
+        // get neighbor weights as the fraction of overlap
+        // of the neighbor pixels with a pixel centered on point
+        for ( unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++ )
           {
-          double       overlap = 1.0;    // fraction overlap
-          unsigned int upper = counter;  // each bit indicates upper/lower neighbour
-
-          // get neighbor weights as the fraction of overlap
-          // of the neighbor pixels with a pixel centered on point
-          for ( unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++ )
+          if ( upper & 1 )
             {
-            if ( upper & 1 )
-              {
-              neighIndex[dim] = baseIndex[dim] + 1;
-              overlap *= distance[dim];
-              }
-            else
-              {
-              neighIndex[dim] = baseIndex[dim];
-              overlap *= 1.0 - distance[dim];
-              }
-
-            upper >>= 1;
+            neighIndex[dim] = baseIndex[dim] + 1;
+            overlap *= distance[dim];
+            }
+          else
+            {
+            neighIndex[dim] = baseIndex[dim];
+            overlap *= 1.0 - distance[dim];
             }
 
-          if (outputPtr->GetRequestedRegion().IsInside(neighIndex))
-            {
-            // Perform splat with this weight, both in output and in the temporary
-            // image that accumulates weights
-            outputPtr->SetPixel(neighIndex, outputPtr->GetPixel(neighIndex) + overlap * inputIt.Get() );
-            accumulate->SetPixel(neighIndex, accumulate->GetPixel(neighIndex) + overlap);
-            }
+          upper >>= 1;
           }
-        }
 
-      ++inputIt;
-      }
-
-    // Divide the output by the accumulated weights, if they are non-zero
-    itk::ImageRegionIterator< TOutputImage > outputIt(outputPtr, outputPtr->GetRequestedRegion());
-    itk::ImageRegionIterator< TOutputImage > accIt(accumulate, outputPtr->GetRequestedRegion());
-    while ( !outputIt.IsAtEnd() )
-      {
-      if (accIt.Get())
-        outputIt.Set(outputIt.Get() / accIt.Get());
-
-      ++outputIt;
-      ++accIt;
-      }
-
-    // Replace the holes with the weighted mean of their neighbors
-    itk::Size<TOutputImage::ImageDimension> radius;
-    radius.Fill(3);
-    unsigned int pixelsInNeighborhood = 1;
-    for (unsigned int dim=0; dim< TOutputImage::ImageDimension; dim++)
-      pixelsInNeighborhood *= 2 * radius[dim] + 1;
-
-    itk::NeighborhoodIterator< TOutputImage > outputIt2(radius, outputPtr, outputPtr->GetRequestedRegion());
-    itk::NeighborhoodIterator< TOutputImage > accIt2(radius, accumulate, outputPtr->GetRequestedRegion());
-
-    itk::ZeroFluxNeumannBoundaryCondition<TInputImage> zeroFlux;
-    outputIt2.OverrideBoundaryCondition(&zeroFlux);
-
-    itk::ConstantBoundaryCondition<TInputImage> constant;
-    accIt2.OverrideBoundaryCondition(&constant);
-
-    while ( !outputIt2.IsAtEnd() )
-      {
-      if (!accIt2.GetCenterPixel())
-        {
-        // Compute the mean of the neighboring pixels, weighted by the accumulated weights
-        typename TOutputImage::PixelType value = 0;
-        typename TOutputImage::PixelType weight = 0;
-        for (unsigned int idx=0; idx<pixelsInNeighborhood; idx++)
+        if (outputPtr->GetRequestedRegion().IsInside(neighIndex))
           {
-          value += accIt2.GetPixel(idx) * outputIt2.GetPixel(idx);
-          weight += accIt2.GetPixel(idx);
+          // Perform splat with this weight, both in output and in the temporary
+          // image that accumulates weights
+          outputPtr->SetPixel(neighIndex, outputPtr->GetPixel(neighIndex) + overlap * inputIt.Get() );
+          accumulate->SetPixel(neighIndex, accumulate->GetPixel(neighIndex) + overlap);
           }
-
-        // Replace the hole with this value, or zero (if all surrounding pixels were holes)
-        if (weight)
-          outputIt2.SetCenterPixel(value / weight);
-        else
-          outputIt2.SetCenterPixel(0);
         }
-      ++outputIt2;
-      ++accIt2;
       }
+
+    ++inputIt;
+    ++fieldIt;
+    }
+
+  // Divide the output by the accumulated weights, if they are non-zero
+  itk::ImageRegionIterator< TOutputImage > outputIt(outputPtr, outputPtr->GetRequestedRegion());
+  itk::ImageRegionIterator< TOutputImage > accIt(accumulate, outputPtr->GetRequestedRegion());
+  while ( !outputIt.IsAtEnd() )
+    {
+    if (accIt.Get())
+      outputIt.Set(outputIt.Get() / accIt.Get());
+
+    ++outputIt;
+    ++accIt;
+    }
+
+  // Replace the holes with the weighted mean of their neighbors
+  itk::Size<TOutputImage::ImageDimension> radius;
+  radius.Fill(3);
+  unsigned int pixelsInNeighborhood = 1;
+  for (unsigned int dim=0; dim< TOutputImage::ImageDimension; dim++)
+    pixelsInNeighborhood *= 2 * radius[dim] + 1;
+
+  itk::NeighborhoodIterator< TOutputImage > outputIt2(radius, outputPtr, outputPtr->GetRequestedRegion());
+  itk::NeighborhoodIterator< TOutputImage > accIt2(radius, accumulate, outputPtr->GetRequestedRegion());
+
+  itk::ZeroFluxNeumannBoundaryCondition<TInputImage> zeroFlux;
+  outputIt2.OverrideBoundaryCondition(&zeroFlux);
+
+  itk::ConstantBoundaryCondition<TInputImage> constant;
+  accIt2.OverrideBoundaryCondition(&constant);
+
+  while ( !outputIt2.IsAtEnd() )
+    {
+    if (!accIt2.GetCenterPixel())
+      {
+      // Compute the mean of the neighboring pixels, weighted by the accumulated weights
+      typename TOutputImage::PixelType value = 0;
+      typename TOutputImage::PixelType weight = 0;
+      for (unsigned int idx=0; idx<pixelsInNeighborhood; idx++)
+        {
+        value += accIt2.GetPixel(idx) * outputIt2.GetPixel(idx);
+        weight += accIt2.GetPixel(idx);
+        }
+
+      // Replace the hole with this value, or zero (if all surrounding pixels were holes)
+      if (weight)
+        outputIt2.SetCenterPixel(value / weight);
+      else
+        outputIt2.SetCenterPixel(0);
+      }
+    ++outputIt2;
+    ++accIt2;
+    }
 
   Superclass::AfterThreadedGenerateData();
-//    }
 }
 
 } // end namespace rtk
