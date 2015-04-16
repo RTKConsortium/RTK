@@ -149,12 +149,30 @@ IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Projection
         }
       if (costTerm == m_NumberOfSubsets + 1)
         {
+        if (this->m_PerformWarping)
+          {
+          // Warp all frames to a single phase
+          this->m_Warp->SetInput( pimg );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( this->m_Warp->Update(); );
+          pimg = this->m_Warp->GetOutput();
+          pimg->DisconnectPipeline();
+          }
+
         // Temporal TV
         this->m_TVDenoisingTime->SetGamma(this->m_GammaTime * alpha_k);
         this->m_TVDenoisingTime->SetInput( pimg );
         TRY_AND_EXIT_ON_ITK_EXCEPTION( this->m_TVDenoisingTime->Update() );
         pimg = this->m_TVDenoisingTime->GetOutput();
         pimg->DisconnectPipeline();
+
+        if (this->m_PerformWarping)
+          {
+          // Warp all frames back
+          this->m_Unwarp->SetInput( pimg );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( this->m_Unwarp->Update(); );
+          pimg = this->m_Unwarp->GetOutput();
+          pimg->DisconnectPipeline();
+          }
         }
 
       // Apply one constraint
