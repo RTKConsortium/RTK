@@ -109,12 +109,12 @@ CudaRayCastBackProjectionImageFilter
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
     // Account for system rotations
-    typename GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
+    GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
     volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(0) );
 
     // Compute matrix to translate the pixel indices on the volume and the detector
     // if the Requested region has non-zero index
-    typename GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
+    GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
     projIndexTranslation.SetIdentity();
     volIndexTranslation.SetIdentity();
     for(unsigned int i=0; i<3; i++)
@@ -124,7 +124,7 @@ CudaRayCastBackProjectionImageFilter
       }
 
     // Compute matrix to transform projection index to volume index
-    typename GeometryType::ThreeDHomogeneousMatrixType d_matrix;
+    GeometryType::ThreeDHomogeneousMatrixType d_matrix;
     d_matrix =
       volIndexTranslation.GetVnlMatrix() *
       volPPToIndex.GetVnlMatrix() *

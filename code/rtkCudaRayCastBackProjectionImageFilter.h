@@ -60,7 +60,7 @@ public:
   typedef itk::CudaImage<float, 2>                          ProjectionImageType;
   typedef ProjectionImageType::Pointer                      ProjectionImagePointer;
   typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::Pointer                    GeometryPointer;
+  typedef GeometryType::Pointer                             GeometryPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
