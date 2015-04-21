@@ -44,7 +44,6 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
   m_PasteFilter->SetSourceImage(m_CastFilter->GetOutput());
 
   // Set default behavior to spatial regularization
-  m_DimensionsProcessed[TImageSequence::ImageDimension-1] = false;
   for (unsigned int dim=0; dim < TImageSequence::ImageDimension-1; dim++)
     m_DimensionsProcessed[dim]=true;
 
