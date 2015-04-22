@@ -128,7 +128,7 @@ void rtk::EdfImageIO::ReadImageInformation()
                                 << "\"");
       }
     datalen = edf_datatype_table[k].sajzof;
-    switch(k) {
+    switch(edf_datatype_table[k].value) {
       case U_CHAR_DATATYPE:
         SetComponentType(itk::ImageIOBase::UCHAR);
         break;
