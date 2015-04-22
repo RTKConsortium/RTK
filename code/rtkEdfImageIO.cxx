@@ -203,7 +203,12 @@ void rtk::EdfImageIO::ReadImageInformation()
 
   double spacing = 1.;
   if ( (p = edf_findInHeader(header, "optic_used") ) )
+    {
     spacing = atof(p);
+    if(spacing == 0.)
+      spacing = 1.;
+    }
+
 
   free(header);
   gzclose(inp);
