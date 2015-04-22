@@ -133,6 +133,11 @@ void ProjectionsReader<TOutputImage>
       typename ReaderType::Pointer reader = ReaderType::New();
       m_RawDataReader = reader;
 
+      // Change information
+      typedef itk::ChangeInformationImageFilter< InputImageType > ChangeInfoType;
+      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      m_ChangeInformationFilter = cif;
+
       if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") )
         {
         /////////// ESRF
