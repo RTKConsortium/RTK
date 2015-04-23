@@ -10,3 +10,4 @@ option "mask"           m "Output a binary mask instead of a masked image"      
 option "displaced"      d "Assume that a displaced detector has been used"            flag     off
 option "bp"             b "Slow alternative for non cylindrical FOVs:\
  backproject projections filled with ones and threshold result."                      flag     off
+option "hardware"       - "Hardware used for computation (with --bp only)" values="cpu","cuda" no   default="cpu"

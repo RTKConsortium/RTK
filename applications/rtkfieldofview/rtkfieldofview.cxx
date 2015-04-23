@@ -23,6 +23,9 @@
 #include "rtkFieldOfViewImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkBackProjectionImageFilter.h"
+#ifdef RTK_USE_CUDA
+#  include "rtkCudaBackProjectionImageFilter.h"
+#endif
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -37,7 +40,20 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  // Check on hardware parameter
+#ifndef RTK_USE_CUDA
+  if(!strcmp(args_info.hardware_arg, "cuda") )
+    {
+    std::cerr << "The program has not been compiled with cuda option" << std::endl;
+    return EXIT_FAILURE;
+    }
+#endif
+
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
+  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+#endif
 
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
@@ -91,7 +107,11 @@ int main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() );
     TRY_AND_EXIT_ON_ITK_EXCEPTION( unmasked_reconstruction->UpdateOutputInformation() );
 
+#ifdef RTK_USE_CUDA
+    typedef itk::CudaImage<float, 3> MaskImgType;
+#else
     typedef itk::Image<unsigned short, 3> MaskImgType;
+#endif
     typedef rtk::ConstantImageSource<MaskImgType> ConstantType;
     ConstantType::Pointer ones = ConstantType::New();
     ones->SetConstant(1);
@@ -103,6 +123,11 @@ int main(int argc, char * argv[])
 
     typedef rtk::BackProjectionImageFilter<MaskImgType, MaskImgType> BPType;
     BPType::Pointer bp = BPType::New();
+#ifdef RTK_USE_CUDA
+    typedef rtk::CudaBackProjectionImageFilter BPCudaType;
+    if(!strcmp(args_info.hardware_arg, "cuda") )
+      bp = BPCudaType::New();
+#endif
     bp->SetInput(zeroVol->GetOutput());
     bp->SetInput(1, ones->GetOutput());
     bp->SetGeometry(geometryReader->GetOutputObject());

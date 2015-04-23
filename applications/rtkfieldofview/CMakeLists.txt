@@ -2,6 +2,10 @@ WRAP_GGO(rtkfieldofview_GGO_C rtkfieldofview.ggo ../rtkinputprojections_section.
 ADD_EXECUTABLE(rtkfieldofview rtkfieldofview.cxx ${rtkfieldofview_GGO_C})
 TARGET_LINK_LIBRARIES(rtkfieldofview RTK)
 
+IF(RTK_USE_CUDA)
+  TARGET_LINK_LIBRARIES(rtkfieldofview rtkcuda)
+ENDIF()
+
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
   FOREACH(EXE_NAME rtkfieldofview) 
