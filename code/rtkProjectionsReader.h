@@ -76,7 +76,7 @@ namespace rtk
  * Scatter->Varian [label="Varian"]
  * Varian->WPC
  * EDF->WPC
- * ChangeInformation->EDF [label="edf"]
+ * ChangeInformation->EDF [label="edf short"]
  * XRad->WPC
  * ChangeInformation->XRad [label="XRad"]
  * WPC->Streaming
