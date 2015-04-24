@@ -150,6 +150,8 @@ protected:
 
   virtual void GenerateOutputInformation();
 
+  virtual void GenerateInputRequestedRegion();
+
   virtual void GenerateData();
 
   /** The two inputs should not be in the same space so there is nothing

@@ -220,12 +220,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   Superclass::GenerateInputRequestedRegion();
 
   //Get pointers to the input and output
-  typename VolumeSeriesType::Pointer input0Ptr  = const_cast<VolumeSeriesType *>(this->GetInput(0));
-  typename ProjectionStackType::Pointer input1Ptr  = this->GetInputProjectionStack();
   typename VolumeType::Pointer input2Ptr  = this->GetInputROI();
 
-  input0Ptr->SetRequestedRegionToLargestPossibleRegion();
-  input1Ptr->SetRequestedRegionToLargestPossibleRegion();
+  m_FourDCGFilter->PropagateRequestedRegion(m_FourDCGFilter->GetOutput());
   input2Ptr->SetRequestedRegionToLargestPossibleRegion();
 
   if (m_PerformWarping)

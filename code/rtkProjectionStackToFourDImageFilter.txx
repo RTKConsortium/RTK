@@ -126,7 +126,6 @@ void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::GenerateOutputInformation()
 {
-
   // Create and set the splat filter
   m_SplatFilter = SplatFilterType::New();
 #ifdef RTK_USE_CUDA
@@ -160,6 +159,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
 
   // Set runtime parameters
+  m_ProjectionNumber = 0;
   m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
   m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
   m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
@@ -203,7 +203,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // Input 1 is the stack of projections
   typename ProjectionStackType::Pointer inputPtr1 = static_cast< ProjectionStackType * >
             ( this->itk::ProcessObject::GetInput(1) );
-  inputPtr1->SetRequestedRegionToLargestPossibleRegion();
+  inputPtr1->SetRequestedRegion(this->m_BackProjectionFilter->GetInput(1)->GetRequestedRegion());
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
