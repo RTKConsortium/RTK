@@ -192,7 +192,7 @@ void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::GenerateInputRequestedRegion()
 {
-  // Input 0 is the stack of projections
+  // Input 0 is the volume series we update
   typename VolumeSeriesType::Pointer  inputPtr0 = const_cast< VolumeSeriesType * >( this->GetInput(0) );
   if ( !inputPtr0 )
     {
@@ -200,7 +200,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
     }
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
-  // Input 1 is the volume series we update
+  // Input 1 is the stack of projections
   typename ProjectionStackType::Pointer inputPtr1 = static_cast< ProjectionStackType * >
             ( this->itk::ProcessObject::GetInput(1) );
   inputPtr1->SetRequestedRegionToLargestPossibleRegion();
