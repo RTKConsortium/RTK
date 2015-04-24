@@ -96,6 +96,16 @@ public:
       return this->m_ProjectionGeometry->GetInPlaneAngles();
     }
 
+  const std::vector<double> &GetSourceAngles() const
+    {
+      return this->m_ProjectionGeometry->GetSourceAngles();
+    }
+
+  const std::vector<double> &GetTiltAngles() const
+    {
+      return this->m_ProjectionGeometry->GetTiltAngles();
+    }
+
   const std::vector<double> &GetSourceToIsocenterDistances() const
     {
       return this->m_ProjectionGeometry->GetSourceToIsocenterDistances();
@@ -206,6 +216,18 @@ const std::vector<double> &ThreeDCircularProjectionGeometry::GetInPlaneAngles() 
   {
     assert( m_PimpleThreeDCircularProjectionGeometry );
     return this->m_PimpleThreeDCircularProjectionGeometry->GetInPlaneAngles();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetSourceAngles() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetSourceAngles();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetTiltAngles() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetTiltAngles();
   }
 
 const std::vector<double> &ThreeDCircularProjectionGeometry::GetSourceToIsocenterDistances() const
