@@ -111,7 +111,7 @@ public:
   /** Get a vector containing the source angles in radians. The source angle is
    * defined as the angle between the z-axis and the isocenter-source line
    * projected on the central plane. */
-  const std::vector<double> GetSourceAngles() const {
+  const std::vector<double> &GetSourceAngles() const {
     return this->m_SourceAngles;
   }
 

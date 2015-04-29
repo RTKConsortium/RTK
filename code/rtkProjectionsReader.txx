@@ -122,8 +122,9 @@ void ProjectionsReader<TOutputImage>
     m_RawToAttenuationFilter = NULL;
 
     // Start creation
-    if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") ||
-        !strcmp(imageIO->GetNameOfClass(), "XRadImageIO"))
+    if( (!strcmp(imageIO->GetNameOfClass(), "EdfImageIO") &&
+               imageIO->GetComponentType() == itk::ImageIOBase::USHORT) ||
+             !strcmp(imageIO->GetNameOfClass(), "XRadImageIO"))
       {
       typedef unsigned short                                     InputPixelType;
       typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
@@ -132,6 +133,11 @@ void ProjectionsReader<TOutputImage>
       typedef itk::ImageSeriesReader< InputImageType > ReaderType;
       typename ReaderType::Pointer reader = ReaderType::New();
       m_RawDataReader = reader;
+
+      // Change information
+      typedef itk::ChangeInformationImageFilter< InputImageType > ChangeInfoType;
+      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      m_ChangeInformationFilter = cif;
 
       if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") )
         {
@@ -276,8 +282,7 @@ void ProjectionsReader<TOutputImage>
     }
 
   // Parameter propagation
-  if( !strcmp(imageIO->GetNameOfClass(), "EdfImageIO") ||
-      !strcmp(imageIO->GetNameOfClass(), "XRadImageIO") ||
+  if( !strcmp(imageIO->GetNameOfClass(), "XRadImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
