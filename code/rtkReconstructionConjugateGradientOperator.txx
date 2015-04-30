@@ -43,6 +43,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>::ReconstructionConjugateGr
   // Set permanent parameters
   m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management options
   m_ConstantProjectionsSource->ReleaseDataFlagOn();

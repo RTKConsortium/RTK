@@ -78,6 +78,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ExtractFilterRayBox->SetDirectionCollapseToSubmatrix();
   m_IsGated = false;
   m_NumberOfProjectionsPerSubset = 1; //Default is the SART behavior
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
 
 template<class TInputImage, class TOutputImage>

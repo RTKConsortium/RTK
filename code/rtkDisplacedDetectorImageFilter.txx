@@ -33,7 +33,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   m_MaximumOffset(0.),
   m_OffsetsSet(false),
   m_InferiorCorner(0.),
-  m_SuperiorCorner(0.)
+  m_SuperiorCorner(0.),
+  m_PadOnTruncatedSide(true)
 {
 }
 
@@ -136,8 +137,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
                              << " Corner inf=" << m_InferiorCorner
                              << " and corner sup=" << m_SuperiorCorner);
     }
-  // Case 2: Not displaced, nothing to do
-  else if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
+  // Case 2: Not displaced, or explicit request not to pad: default outputLargestPossibleRegion is fine
+  else if( (fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner)) || !m_PadOnTruncatedSide)
     {
     this->SetInPlace( true );
     }

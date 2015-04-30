@@ -35,6 +35,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // Create the filters
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -223,21 +224,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // The projection stack need not be loaded in memory, is it only used to configure the
   // constantProjectionStackSource with the correct information
-  // Set its requested region to zero
-  typename ProjectionStackType::RegionType zeroRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  typename ProjectionStackType::IndexType zeroIndex;
-  zeroIndex.Fill(0);
-  zeroRegion.SetIndex(zeroIndex);
-  typename ProjectionStackType::SizeType zeroSize;
-  zeroSize.Fill(0);
-  zeroRegion.SetSize(zeroSize);
-
-  typename ProjectionStackType::Pointer  inputPtr1 = const_cast< ProjectionStackType * >( this->GetInputProjectionStack().GetPointer() );
-  if ( !inputPtr1 )
-    {
-    return;
-    }
-  inputPtr1->SetRequestedRegion(zeroRegion);
+  // Leave its requested region unchanged (set by the other filters that need it)
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>

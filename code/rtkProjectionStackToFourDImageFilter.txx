@@ -164,6 +164,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
   m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
   m_SplatFilter->SetWeights(m_Weights);
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Prepare the extract filter
   int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
@@ -192,13 +193,9 @@ void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::GenerateInputRequestedRegion()
 {
-  // Input 0 is the volume series we update
-  typename VolumeSeriesType::Pointer  inputPtr0 = const_cast< VolumeSeriesType * >( this->GetInput(0) );
-  if ( !inputPtr0 )
-    {
-    return;
-    }
-  inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+  // The 4D input volume need not be loaded in memory, is it only used to configure the
+  // m_ConstantVolumeSeriesSource with the correct information
+  // Leave its requested region unchanged (set by the other filters that need it)
 
   // Calculation of the requested region on input 1 is left to the back projection filter
   this->m_BackProjectionFilter->PropagateRequestedRegion(this->m_BackProjectionFilter->GetOutput());
