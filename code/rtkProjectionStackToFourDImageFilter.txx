@@ -200,10 +200,8 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
     }
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
-  // Input 1 is the stack of projections
-  typename ProjectionStackType::Pointer inputPtr1 = static_cast< ProjectionStackType * >
-            ( this->itk::ProcessObject::GetInput(1) );
-  inputPtr1->SetRequestedRegion(this->m_BackProjectionFilter->GetInput(1)->GetRequestedRegion());
+  // Calculation of the requested region on input 1 is left to the back projection filter
+  this->m_BackProjectionFilter->PropagateRequestedRegion(this->m_BackProjectionFilter->GetOutput());
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>

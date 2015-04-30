@@ -187,6 +187,9 @@ protected:
     /** Builds the pipeline and computes output information */
     virtual void GenerateOutputInformation();
 
+    /** Computes the requested region of input images */
+    virtual void GenerateInputRequestedRegion();
+
     /** Does the real work. */
     virtual void GenerateData();
 
