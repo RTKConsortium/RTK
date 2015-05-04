@@ -29,12 +29,12 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 ::DisplacedDetectorImageFilter():
+  m_PadOnTruncatedSide(true),
   m_MinimumOffset(0.),
   m_MaximumOffset(0.),
   m_OffsetsSet(false),
   m_InferiorCorner(0.),
-  m_SuperiorCorner(0.),
-  m_PadOnTruncatedSide(true)
+  m_SuperiorCorner(0.)
 {
 }
 
