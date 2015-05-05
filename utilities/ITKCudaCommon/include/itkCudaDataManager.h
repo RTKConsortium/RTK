@@ -183,9 +183,16 @@ public:
   /** Get Cuda buffer pointer */
   void* GetGPUBufferPointer();
 
-  /** Get Cuda buffer pointer */
+  /** Get CPU buffer pointer */
   void* GetCPUBufferPointer();
-  
+
+  /** Get Cuda buffer size without calling GetGPUBufferPointer, which
+   * which would trigger an unwanted CPU -> GPU memory transfer */
+  size_t GetGPUBufferSize()
+    {
+    return m_GPUBuffer->GetBufferSize();
+    }
+
   itkSetMacro(TimeStamp,TimeStamp);
   itkGetMacro(TimeStamp,TimeStamp);
 
