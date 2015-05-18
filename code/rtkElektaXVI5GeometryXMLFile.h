@@ -47,7 +47,7 @@ class RTK_EXPORT ElektaXVI5GeometryXMLFileReader :
 {
 public:
   /** Standard typedefs */
-  typedef ElektaXVI5GeometryXMLFileReader      Self;
+  typedef ElektaXVI5GeometryXMLFileReader                    Self;
   typedef itk::XMLReader< ThreeDCircularProjectionGeometry > Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
 

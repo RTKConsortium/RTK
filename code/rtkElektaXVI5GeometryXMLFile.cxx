@@ -16,9 +16,6 @@
  *
  *=========================================================================*/
 
-#ifndef _rtkElektaXVI5GeometryXMLFile_cxx
-#define _rtkElektaXVI5GeometryXMLFile_cxx
-
 #include "rtkElektaXVI5GeometryXMLFile.h"
 
 #include <itksys/SystemTools.hxx>
@@ -31,7 +28,7 @@ namespace rtk
 {
 
 ElektaXVI5GeometryXMLFileReader::
-	ElektaXVI5GeometryXMLFileReader() :
+  ElektaXVI5GeometryXMLFileReader() :
   m_Geometry(GeometryType::New() ),
   m_CurCharacterData(""),
   m_InPlaneAngle(0.),
@@ -76,37 +73,37 @@ StartElement(const char * itkNotUsed(name))
 void
 ElektaXVI5GeometryXMLFileReader::
 EndElement(const char *name)
-{	
-	if (itksys::SystemTools::Strucmp(name, "GantryAngle") == 0 ||
-		itksys::SystemTools::Strucmp(name, "Angle") == 0) // Second one for backward compatibility
-	{
-		m_GantryAngle = atof(this->m_CurCharacterData.c_str());
-		if (m_GantryAngle < 0)
-			m_GantryAngle = m_GantryAngle + 360.0;
-	}
-		
-	//Regarding PanelOffset, XVI5 specifies position of the center(UCentre, VCentre) instead of offset.
-	//Therefore, negation is required to get classical m_ProjectionOffsetX and m_ProjectionOffsetY values.
-	if (itksys::SystemTools::Strucmp(name, "UCentre") == 0)
-		m_ProjectionOffsetX = atof(this->m_CurCharacterData.c_str()) * -1.0;
+{
+  if (itksys::SystemTools::Strucmp(name, "GantryAngle") == 0 ||
+    itksys::SystemTools::Strucmp(name, "Angle") == 0) // Second one for backward compatibility
+  {
+    m_GantryAngle = atof(this->m_CurCharacterData.c_str());
+    if (m_GantryAngle < 0)
+      m_GantryAngle = m_GantryAngle + 360.0;
+  }
 
-	if (itksys::SystemTools::Strucmp(name, "VCentre") == 0)
-	{
-		m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str()) * -1.0;		
-	}
+  //Regarding PanelOffset, XVI5 specifies position of the center(UCentre, VCentre) instead of offset.
+  //Therefore, negation is required to get classical m_ProjectionOffsetX and m_ProjectionOffsetY values.
+  if (itksys::SystemTools::Strucmp(name, "UCentre") == 0)
+    m_ProjectionOffsetX = atof(this->m_CurCharacterData.c_str()) * -1.0;
 
-	if (itksys::SystemTools::Strucmp(name, "Frame") == 0)
-	{
-		this->m_OutputObject->AddProjection(m_SourceToIsocenterDistance,
-			m_SourceToDetectorDistance,
-			m_GantryAngle,
-			m_ProjectionOffsetX,
-			m_ProjectionOffsetY,
-			m_OutOfPlaneAngle,
-			m_InPlaneAngle,
-			m_SourceOffsetX,
-			m_SourceOffsetY);
-	}  
+  if (itksys::SystemTools::Strucmp(name, "VCentre") == 0)
+  {
+    m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str()) * -1.0;
+  }
+
+  if (itksys::SystemTools::Strucmp(name, "Frame") == 0)
+  {
+    this->m_OutputObject->AddProjection(m_SourceToIsocenterDistance,
+      m_SourceToDetectorDistance,
+      m_GantryAngle,
+      m_ProjectionOffsetX,
+      m_ProjectionOffsetY,
+      m_OutOfPlaneAngle,
+      m_InPlaneAngle,
+      m_SourceOffsetX,
+      m_SourceOffsetY);
+  }
 }
 
 void
@@ -118,4 +115,3 @@ CharacterDataHandler(const char *inData, int inLength)
 }
 
 }
-#endif
