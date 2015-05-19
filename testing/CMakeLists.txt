@@ -146,8 +146,8 @@ ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkelektatest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest
-             DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
-             DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha})
+             DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his,_Frames.xml}
+             DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha,geometry5.xml})
 
 ADD_EXECUTABLE(rtkluttest rtkluttest.cxx)
 TARGET_LINK_LIBRARIES(rtkluttest ${RTK_LIBRARIES})
