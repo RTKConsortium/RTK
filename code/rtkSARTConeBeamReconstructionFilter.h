@@ -94,13 +94,13 @@ namespace rtk
  * OutofBP [label="", fixedsize="false", width=0, height=0, shape=none];
  * BeforeBP [label="", fixedsize="false", width=0, height=0, shape=none];
  * BeforeAdd [label="", fixedsize="false", width=0, height=0, shape=none];
- * Input0 -> OutofInput0 [arrowhead=None];
+ * Input0 -> OutofInput0 [arrowhead=none];
  * OutofInput0 -> ForwardProject;
- * OutofInput0 -> BeforeAdd [arrowhead=None];
+ * OutofInput0 -> BeforeAdd [arrowhead=none];
  * BeforeAdd -> Add;
- * ConstantVolume -> BeforeBP [arrowhead=None];
+ * ConstantVolume -> BeforeBP [arrowhead=none];
  * BeforeBP -> BackProjection;
- * Extract -> AfterExtract[arrowhead=None];
+ * Extract -> AfterExtract[arrowhead=none];
  * AfterExtract -> MultiplyByZero;
  * AfterExtract -> Subtract;
  * MultiplyByZero -> ForwardProject;
@@ -114,11 +114,11 @@ namespace rtk
  * ExtractConstantProjection -> RayBox;
  * RayBox -> Divide;
  * Displaced -> BackProjection;
- * BackProjection -> OutofBP [arrowhead=None];
+ * BackProjection -> OutofBP [arrowhead=none];
  * OutofBP -> Add;
  * OutofBP -> BeforeBP [style=dashed, constraint=false];
  * Add -> Threshold;
- * Threshold -> OutofThreshold [arrowhead=None];
+ * Threshold -> OutofThreshold [arrowhead=none];
  * OutofThreshold -> OutofInput0 [headport="se", style=dashed];
  * OutofThreshold -> Output;
  * }

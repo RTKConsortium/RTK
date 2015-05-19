@@ -85,6 +85,7 @@ private:
   void operator=(const Self&);
 
   double             m_StepSize;
+  bool               m_UseCudaTexture;
 }; // end of class
 
 } // end namespace rtk

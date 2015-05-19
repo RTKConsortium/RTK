@@ -29,6 +29,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 ::DisplacedDetectorImageFilter():
+  m_PadOnTruncatedSide(true),
   m_MinimumOffset(0.),
   m_MaximumOffset(0.),
   m_OffsetsSet(false),
@@ -136,8 +137,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
                              << " Corner inf=" << m_InferiorCorner
                              << " and corner sup=" << m_SuperiorCorner);
     }
-  // Case 2: Not displaced, nothing to do
-  else if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
+  // Case 2: Not displaced, or explicit request not to pad: default outputLargestPossibleRegion is fine
+  else if( (fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner)) || !m_PadOnTruncatedSide)
     {
     this->SetInPlace( true );
     }

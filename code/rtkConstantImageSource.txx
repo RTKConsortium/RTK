@@ -116,7 +116,7 @@ ConstantImageSource<TOutputImage>
 template <class TOutputImage>
 void
 ConstantImageSource<TOutputImage>
-::SetInformationFromImage(const TOutputImage* image)
+::SetInformationFromImage(const typename TOutputImage::Superclass* image)
 {
   this->SetSize( image->GetLargestPossibleRegion().GetSize() );
   this->SetIndex( image->GetLargestPossibleRegion().GetIndex() );

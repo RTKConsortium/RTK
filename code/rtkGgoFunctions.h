@@ -116,6 +116,33 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
               << " file(s)..."
               << std::endl;
 
+  // Change image information
+  const unsigned int Dimension = TProjectionsReaderType::OutputImageType::GetImageDimension();
+  typename TProjectionsReaderType::OutputImageDirectionType direction;
+  if(args_info.newdirection_given)
+    {
+    direction.Fill(args_info.newdirection_arg[0]);
+    for(int i=0; i<args_info.newdirection_given; i++)
+      direction[i/Dimension][i%Dimension] = args_info.newdirection_arg[i];
+    reader->SetDirection(direction);
+    }
+  typename TProjectionsReaderType::OutputImageSpacingType spacing;
+  if(args_info.newspacing_given)
+    {
+    spacing.Fill(args_info.newspacing_arg[0]);
+    for(int i=0; i<args_info.newspacing_given; i++)
+      spacing[i] = args_info.newspacing_arg[i];
+    reader->SetSpacing(spacing);
+    }
+  typename TProjectionsReaderType::OutputImagePointType origin;
+  if(args_info.neworigin_given)
+    {
+    direction.Fill(args_info.neworigin_arg[0]);
+    for(int i=0; i<args_info.neworigin_given; i++)
+      origin[i] = args_info.neworigin_arg[i];
+    reader->SetOrigin(origin);
+    }
+
   // Crop boundaries
   typename TProjectionsReaderType::OutputImageSizeType upperCrop, lowerCrop;
   upperCrop.Fill(0);

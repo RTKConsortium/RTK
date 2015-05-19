@@ -128,7 +128,7 @@ void rtk::EdfImageIO::ReadImageInformation()
                                 << "\"");
       }
     datalen = edf_datatype_table[k].sajzof;
-    switch(k) {
+    switch(edf_datatype_table[k].value) {
       case U_CHAR_DATATYPE:
         SetComponentType(itk::ImageIOBase::UCHAR);
         break;
@@ -203,7 +203,12 @@ void rtk::EdfImageIO::ReadImageInformation()
 
   double spacing = 1.;
   if ( (p = edf_findInHeader(header, "optic_used") ) )
+    {
     spacing = atof(p);
+    if(spacing == 0.)
+      spacing = 1.;
+    }
+
 
   free(header);
   gzclose(inp);

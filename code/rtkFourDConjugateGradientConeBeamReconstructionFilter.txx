@@ -165,6 +165,18 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   this->GetOutput()->CopyInformation( m_ConjugateGradientFilter->GetOutput() );
 }
 
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GenerateInputRequestedRegion()
+{
+  //Call the superclass' implementation of this method
+  Superclass::GenerateInputRequestedRegion();
+
+  this->m_ProjStackToFourDFilter->PropagateRequestedRegion(this->m_ProjStackToFourDFilter->GetOutput());
+}
+
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>

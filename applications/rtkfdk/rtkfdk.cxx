@@ -205,6 +205,12 @@ int main(int argc, char * argv[])
 #ifdef RTK_USE_OPENCL
   else if(!strcmp(args_info.hardware_arg, "opencl") )
     {
+    if(args_info.signal_given && args_info.dvf_given)
+      {
+      std::cerr << "Motion compensation is not supported in OpenCL. Aborting" << std::endl;
+      return EXIT_FAILURE;
+      }
+
     feldkampOCL = FDKOPENCLType::New();
     SET_FELDKAMP_OPTIONS( feldkampOCL );
     pfeldkamp = feldkampOCL->GetOutput();

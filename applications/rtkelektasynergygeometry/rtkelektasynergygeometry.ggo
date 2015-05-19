@@ -1,9 +1,10 @@
 package "rtkelektasynergygeometry"
 purpose "Creates an RTK geometry file from an Elekta Synergy acquisition."
 
-option "config"    - "Config file"                       string no
-option "image_db"  i "Image table filename"              string yes
-option "frame_db"  f "Frame table filename"              string yes
-option "dicom_uid" u "Dicom uid of the acquisition"      string yes
-option "output"    o "Output file name"                  string yes
+option "config"    - "Config file"                          string no
+option "image_db"  i "Image table filename (prior to XVI5)" string no
+option "frame_db"  f "Frame table filename (prior to XVI5)" string no
+option "xml"       x "XML file name (starting with XVI5)"   string no
+option "dicom_uid" u "Dicom uid of the acquisition"         string no
+option "output"    o "Output file name"                     string yes
 

@@ -126,7 +126,6 @@ void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::GenerateOutputInformation()
 {
-
   // Create and set the splat filter
   m_SplatFilter = SplatFilterType::New();
 #ifdef RTK_USE_CUDA
@@ -160,10 +159,12 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
 
   // Set runtime parameters
+  m_ProjectionNumber = 0;
   m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
   m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
   m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
   m_SplatFilter->SetWeights(m_Weights);
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Prepare the extract filter
   int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
@@ -192,18 +193,12 @@ void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::GenerateInputRequestedRegion()
 {
-  // Input 0 is the stack of projections
-  typename VolumeSeriesType::Pointer  inputPtr0 = const_cast< VolumeSeriesType * >( this->GetInput(0) );
-  if ( !inputPtr0 )
-    {
-    return;
-    }
-  inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+  // The 4D input volume need not be loaded in memory, is it only used to configure the
+  // m_ConstantVolumeSeriesSource with the correct information
+  // Leave its requested region unchanged (set by the other filters that need it)
 
-  // Input 1 is the volume series we update
-  typename ProjectionStackType::Pointer inputPtr1 = static_cast< ProjectionStackType * >
-            ( this->itk::ProcessObject::GetInput(1) );
-  inputPtr1->SetRequestedRegionToLargestPossibleRegion();
+  // Calculation of the requested region on input 1 is left to the back projection filter
+  this->m_BackProjectionFilter->PropagateRequestedRegion(this->m_BackProjectionFilter->GetOutput());
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>

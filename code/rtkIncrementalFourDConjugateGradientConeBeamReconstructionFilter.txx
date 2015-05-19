@@ -36,8 +36,8 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
   this->SetNumberOfRequiredInputs(2);
 
   // Set the default values of member parameters
-  m_NumberOfMainLoopIterations=3;
-  m_NumberOfNestedCGIterations=2;
+  m_MainLoop_iterations=3;
+  m_CG_iterations=2;
   m_NumberOfProjectionsPerSubset=0;
   m_NumberOfSubsets=1;
 
@@ -151,7 +151,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
   // Set the conjugate gradient filter to reconstruct from the first subset
   m_CG->SetInputProjectionStack(m_SubSelectFilters[0]->GetOutput());
   m_CG->SetInputVolumeSeries(this->GetInputVolumeSeries());
-  m_CG->SetNumberOfIterations(m_NumberOfNestedCGIterations);
+  m_CG->SetNumberOfIterations(m_CG_iterations);
   m_CG->SetGeometry(m_SubSelectFilters[0]->GetOutputGeometry());
   m_CG->SetWeights(m_PhasesFilters[0]->GetOutput());
 
@@ -169,7 +169,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 //  typedef itk::ImageFileWriter<VolumeSeriesType> WriterType;
 //  typename WriterType::Pointer writer = WriterType::New();
 
-  for (unsigned int ml_iter=0; ml_iter < m_NumberOfMainLoopIterations; ml_iter++)
+  for (unsigned int ml_iter=0; ml_iter < m_MainLoop_iterations; ml_iter++)
     {
     for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset++)
       {

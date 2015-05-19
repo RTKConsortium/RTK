@@ -74,7 +74,7 @@ namespace rtk
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
-   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
+   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=none];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
    * BeforeZeroMultiplyVolume -> ForwardProjection;
    * BeforeZeroMultiplyVolume -> Gradient;

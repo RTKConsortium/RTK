@@ -35,6 +35,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // Create the filters
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -154,6 +155,13 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
     m_SplatFilter = rtk::CudaSplatImageFilter::New();
 #endif
 
+  // Create the displaced detector filter (first on CPU, and overwrite with the GPU version if CUDA requested)
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+#ifdef RTK_USE_CUDA
+  if (m_UseCudaSplat && m_UseCudaInterpolation)
+    m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+#endif
+
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_ConstantVolumeSource1 = ConstantVolumeSourceType::New();
   m_ConstantVolumeSource2 = ConstantVolumeSourceType::New();
@@ -205,6 +213,20 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   this->GetOutput()->CopyInformation( m_SplatFilter->GetOutput() );
 }
 
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
+::GenerateInputRequestedRegion()
+{
+  // Let the internal filters compute the input requested region
+  m_SplatFilter->PropagateRequestedRegion(m_SplatFilter->GetOutput());
+
+  // The projection stack need not be loaded in memory, is it only used to configure the
+  // constantProjectionStackSource with the correct information
+  // Leave its requested region unchanged (set by the other filters that need it)
+}
+
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
@@ -220,7 +242,6 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   typename VolumeSeriesType::Pointer pimg;
   for(int proj=0; proj<NumberProjs; proj++)
     {
-
     // After the first update, we need to use the output as input.
     if(proj>0)
       {

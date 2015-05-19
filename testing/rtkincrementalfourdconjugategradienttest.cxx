@@ -260,8 +260,8 @@ int main(int, char** )
   conjugategradient->SetInputVolumeSeries(fourdSource->GetOutput() );
   conjugategradient->SetInputProjectionStack(pasteFilter->GetOutput());
   conjugategradient->SetGeometry(geometry);
-  conjugategradient->SetNumberOfMainLoopIterations(3);
-  conjugategradient->SetNumberOfNestedCGIterations(2);
+  conjugategradient->SetMainLoop_iterations(3);
+  conjugategradient->SetCG_iterations(2);
   conjugategradient->SetPhasesFileName("signal.txt");
   conjugategradient->SetNumberOfProjectionsPerSubset(5);
 

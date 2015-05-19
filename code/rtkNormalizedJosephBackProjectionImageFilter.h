@@ -51,7 +51,7 @@ namespace rtk
  * Divide [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
  * Add [ label="itk::AddImageFilter (by lambda)" URL="\ref itk::AddImageFilter"];
  * OutofConstantVolumeSource [label="", fixedsize="false", width=0, height=0, shape=none];
- * ConstantVolumeSource -> OutofConstantVolumeSource [arrowhead=None];
+ * ConstantVolumeSource -> OutofConstantVolumeSource [arrowhead=none];
  * OutofConstantVolumeSource -> BackProjection [ label="#0"];
  * OutofConstantVolumeSource -> BackProjectionOfConstant [ label="#0"];
  * Input1 -> BackProjection [ label="#1"];

@@ -249,6 +249,10 @@ ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
 
+ADD_EXECUTABLE(rtkwarptest rtkwarptest.cxx)
+TARGET_LINK_LIBRARIES(rtkwarptest ${RTK_LIBRARIES})
+ADD_TEST(rtkwarptest ${EXECUTABLE_OUTPUT_PATH}/rtkwarptest)
+
 ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
 TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
 ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
@@ -296,6 +300,14 @@ if(NOT RTK_USE_CUDA)
 endif()
 ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
 
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkincrementalfourdroostertest rtkincrementalfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkincrementalfourdroostertest ${RTK_LIBRARIES})
+  ADD_TEST(rtkincrementalfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdroostertest)
+endif()
+ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
 
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
@@ -309,6 +321,8 @@ ADD_CUDA_TEST(rtkadmmwavelets rtkadmmwaveletstest.cxx)
 ADD_EXECUTABLE(rtkwaveletstest rtkwaveletstest.cxx)
 TARGET_LINK_LIBRARIES(rtkwaveletstest RTK)
 ADD_TEST(rtkwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkwaveletstest)
+
+ADD_CUDA_TEST(rtkcudaraycastadjointoperatorstest rtkcudaraycastadjointoperatorstest.cxx)
 
 # Test headers
 FILE(GLOB RTK_ALL_HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/code "${PROJECT_SOURCE_DIR}/code/rtk*.h")

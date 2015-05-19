@@ -34,22 +34,26 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_TV_iterations=2;
   m_MainLoop_iterations=2;
   m_CG_iterations=2;
+  m_PerformWarping=false;
+  m_PhaseShift = 0;
 
   // Create the filters
   m_FourDCGFilter = FourDCGFilterType::New();
   m_PositivityFilter = ThresholdFilterType::New();
   m_AverageOutOfROIFilter = AverageOutOfROIFilterType::New();
+  m_TVDenoisingTime = TemporalTVDenoisingFilterType::New();
 #ifdef RTK_USE_CUDA
   m_AverageOutOfROIFilter = rtk::CudaAverageOutOfROIImageFilter::New();
+  m_TVDenoisingTime = rtk::CudaLastDimensionTVDenoisingImageFilter::New();
 #endif
   m_TVDenoisingSpace = SpatialTVDenoisingFilterType::New();
-  m_TVDenoisingTime = TemporalTVDenoisingFilterType::New();
+  m_Warp = WarpSequenceFilterType::New();
+  m_Unwarp = UnwarpSequenceFilterType::New();
 
   // Set permanent connections
   m_PositivityFilter->SetInput(m_FourDCGFilter->GetOutput());
   m_AverageOutOfROIFilter->SetInput(m_PositivityFilter->GetOutput());
   m_TVDenoisingSpace->SetInput(m_AverageOutOfROIFilter->GetOutput());
-  m_TVDenoisingTime->SetInput(m_TVDenoisingSpace->GetOutput());
 
   // Set constant parameters
   m_DimensionsProcessedForTVSpace[0]=true;
@@ -71,9 +75,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   // Set memory management parameters
   m_FourDCGFilter->ReleaseDataFlagOn();
   m_PositivityFilter->SetInPlace(true);
-  m_PositivityFilter->ReleaseDataFlagOn();
   m_AverageOutOfROIFilter->ReleaseDataFlagOn();
   m_TVDenoisingSpace->ReleaseDataFlagOn();
+  m_Warp->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -101,6 +105,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetDisplacementField(const MVFSequenceImageType* MVFs)
+{
+  this->SetNthInput(3, const_cast<MVFSequenceImageType*>(MVFs));
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
 typename VolumeSeriesType::ConstPointer
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GetInputVolumeSeries()
@@ -125,6 +137,15 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
   return static_cast< VolumeType * >
           ( this->itk::ProcessObject::GetInput(2) );
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::Pointer
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GetDisplacementField()
+{
+  return static_cast< MVFSequenceImageType * >
+          ( this->itk::ProcessObject::GetInput(3) );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -162,15 +183,10 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GenerateOutputInformation()
+::PreparePipeline()
 {
-  // Set runtime connections
-  m_FourDCGFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
-  m_FourDCGFilter->SetInputProjectionStack(this->GetInputProjectionStack());
   m_AverageOutOfROIFilter->SetROI(this->GetInputROI());
 
-  // Set runtime parameters
-  m_FourDCGFilter->SetGeometry(this->m_Geometry);
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
 
   m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
@@ -179,11 +195,89 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_TVDenoisingTime->SetNumberOfIterations(this->m_TV_iterations);
   m_TVDenoisingTime->SetGamma(this->m_GammaTime);
 
-  // Have the last filter calculate its output information
-  m_TVDenoisingTime->UpdateOutputInformation();
+  // If requested, plug the warp filters into the pipeline
+  if (m_PerformWarping)
+    {
+    m_Warp->SetDisplacementField(this->GetDisplacementField());
+    m_Warp->SetPhaseShift(m_PhaseShift);
 
-  // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_TVDenoisingTime->GetOutput() );
+    m_TVDenoisingTime->SetInput(m_Warp->GetOutput());
+    m_TVDenoisingTime->ReleaseDataFlagOn();
+
+    m_Unwarp->SetInput(0, m_TVDenoisingTime->GetOutput());
+    m_Unwarp->SetDisplacementField(this->GetDisplacementField());
+    m_Unwarp->SetPhaseShift(m_PhaseShift);
+    m_Unwarp->SetNumberOfIterations(4);
+    }
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GenerateInputRequestedRegion()
+{
+  //Call the superclass' implementation of this method
+  Superclass::GenerateInputRequestedRegion();
+
+  //Get pointers to the input and output
+  typename VolumeType::Pointer input2Ptr  = this->GetInputROI();
+
+  m_FourDCGFilter->PropagateRequestedRegion(m_FourDCGFilter->GetOutput());
+  input2Ptr->SetRequestedRegionToLargestPossibleRegion();
+
+  if (m_PerformWarping)
+    {
+    typename MVFSequenceImageType::Pointer input3Ptr  = this->GetDisplacementField();
+
+    input3Ptr->SetRequestedRegionToLargestPossibleRegion();
+    }
+  else
+    {
+    // If the filter is used with m_PerformWarping = true, then with
+    // m_PerformWarping = false, it keeps requesting a region of the
+    // input DVF, which by default may be larger than the largest
+    // possible region of the DVF (it is the largest possible region of
+    // the first input, and the sizes do not necessarily match).
+    // This occurs, for example, in the fourdroostercudatest.
+    this->RemoveInput(3);
+    }
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GenerateOutputInformation()
+{
+  this->PreparePipeline();
+
+  // Set some runtime connections
+  m_FourDCGFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
+  m_FourDCGFilter->SetInputProjectionStack(this->GetInputProjectionStack());
+
+  // Set runtime parameters
+  m_FourDCGFilter->SetGeometry(this->m_Geometry);
+
+  // If requested, plug the warp filters into the pipeline
+  if (m_PerformWarping)
+    {
+      m_Warp->SetInput(0, m_TVDenoisingSpace->GetOutput());
+
+      // Have the last filter calculate its output information
+      m_Unwarp->UpdateOutputInformation();
+
+      // Copy it as the output information of the composite filter
+      this->GetOutput()->CopyInformation( m_Unwarp->GetOutput() );
+    }
+  else
+    {
+    m_TVDenoisingTime->SetInput(m_TVDenoisingSpace->GetOutput());
+
+    // Have the last filter calculate its output information
+    m_TVDenoisingTime->UpdateOutputInformation();
+
+    // Copy it as the output information of the composite filter
+    this->GetOutput()->CopyInformation( m_TVDenoisingTime->GetOutput() );
+    }
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -191,12 +285,19 @@ void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
+  // Declare the pointer that will be used to plug the output back as input
+  typename VolumeSeriesType::Pointer pimg;
+
   for (int i=0; i<m_MainLoop_iterations; i++)
     {
     // After the first iteration, we need to use the output as input
     if (i>0)
       {
-      typename VolumeSeriesType::Pointer pimg = m_TVDenoisingTime->GetOutput();
+        if (m_PerformWarping)
+          pimg = m_Unwarp->GetOutput();
+        else
+          pimg = m_TVDenoisingTime->GetOutput();
+
       pimg->DisconnectPipeline();
       m_FourDCGFilter->SetInputVolumeSeries(pimg);
       }
@@ -217,11 +318,29 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_TVDenoisingSpace->Update();
     m_TVSpaceProbe.Stop();
 
+    if (m_PerformWarping)
+      {
+      m_WarpProbe.Start();
+      m_Warp->Update();
+      m_WarpProbe.Stop();
+      }
+
     m_TVTimeProbe.Start();
-    m_TVDenoisingTime->Update();
+    m_TVDenoisingTime->UpdateLargestPossibleRegion();
     m_TVTimeProbe.Stop();
+
+    if (m_PerformWarping)
+      {
+      m_UnwarpProbe.Start();
+      m_Unwarp->Update();
+      m_UnwarpProbe.Stop();
+      }
     }
-  this->GraftOutput( m_TVDenoisingTime->GetOutput() );
+
+  if (m_PerformWarping)
+    this->GraftOutput( m_Unwarp->GetOutput() );
+  else
+    this->GraftOutput( m_TVDenoisingTime->GetOutput() );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -238,8 +357,18 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
      << ' ' << m_ROIProbe.GetUnit() << std::endl;
   os << "  Spatial total variation denoising: " << m_TVSpaceProbe.GetTotal()
      << ' ' << m_TVSpaceProbe.GetUnit() << std::endl;
+  if (m_PerformWarping)
+    {
+    os << "  Warping volumes to average position: " << m_WarpProbe.GetTotal()
+       << ' ' << m_WarpProbe.GetUnit() << std::endl;
+    }
   os << "  Temporal total variation denoising: " << m_TVTimeProbe.GetTotal()
      << ' ' << m_TVTimeProbe.GetUnit() << std::endl;
+  if (m_PerformWarping)
+    {
+    os << "  Warping corrections from average position: " << m_UnwarpProbe.GetTotal()
+       << ' ' << m_UnwarpProbe.GetUnit() << std::endl;
+    }
 }
 
 }// end namespace

@@ -27,14 +27,6 @@
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage>
-void
-FDKBackProjectionImageFilter<TInputImage,TOutputImage>
-::BeforeThreadedGenerateData()
-{
-  this->SetTranspose(true);
-}
-
 /**
  * GenerateData performs the accumulation
  */

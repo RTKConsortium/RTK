@@ -10,6 +10,7 @@ ADD_LIBRARY(RTK
             rtkHisImageIO.cxx
             rtkHisImageIOFactory.cxx
             rtkElektaSynergyGeometryReader.cxx
+            rtkElektaXVI5GeometryXMLFile.cxx
             rtkDbf.cxx
             rtkHndImageIO.cxx
             rtkHndImageIOFactory.cxx
@@ -74,7 +75,11 @@ IF (RTK_USE_CUDA)
        rtkCudaBackProjectionImageFilter.cu
        rtkCudaSplatImageFilter.cu
        rtkCudaInterpolateImageFilter.cu
+       rtkCudaWarpImageFilter.cu
+       rtkCudaForwardWarpImageFilter.cu
+       rtkCudaRayCastBackProjectionImageFilter.cu
        rtkCudaTotalVariationDenoisingBPDQImageFilter.cu
+       rtkCudaLastDimensionTVDenoisingImageFilter.cu
        rtkCudaConstantVolumeSource.cu
        rtkCudaConstantVolumeSeriesSource.cu
        rtkCudaConjugateGradientImageFilter_3f.cu
@@ -106,9 +111,13 @@ IF (RTK_USE_CUDA)
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
-              rtkCudaSplatImageFilter.cxx
-              rtkCudaInterpolateImageFilter.cxx
-              rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
+	      rtkCudaSplatImageFilter.cxx
+	      rtkCudaInterpolateImageFilter.cxx
+	      rtkCudaWarpImageFilter.cxx
+	      rtkCudaForwardWarpImageFilter.cxx
+	      rtkCudaRayCastBackProjectionImageFilter.cxx
+	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
+	      rtkCudaLastDimensionTVDenoisingImageFilter.cxx
 	      rtkCudaConstantVolumeSource.cxx
 	      rtkCudaConstantVolumeSeriesSource.cxx
               rtkCudaConjugateGradientImageFilter_3f.cxx

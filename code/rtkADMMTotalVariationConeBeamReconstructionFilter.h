@@ -81,17 +81,17 @@ namespace rtk
    * AfterTVSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
    * SubtractTwo [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    *
-   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
+   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=none];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
    * BeforeZeroMultiplyVolume -> Gradient;
    * BeforeZeroMultiplyVolume -> ConjugateGradient;
    * ZeroMultiplyVolume -> BackProjection;
    * Input1 -> Displaced;
    * Displaced -> BackProjection;
-   * Gradient -> AfterGradient [arrowhead=None];
+   * Gradient -> AfterGradient [arrowhead=none];
    * AfterGradient -> AddGradient;
    * AfterGradient -> ZeroMultiplyGradient;
-   * ZeroMultiplyGradient -> AfterZeroMultiplyGradient [arrowhead=None];
+   * ZeroMultiplyGradient -> AfterZeroMultiplyGradient [arrowhead=none];
    * AfterZeroMultiplyGradient -> AddGradient;
    * AfterZeroMultiplyGradient -> Subtract;
    * AddGradient -> Divergence;
@@ -102,10 +102,10 @@ namespace rtk
    * ConjugateGradient -> AfterConjugateGradient;
    * AfterConjugateGradient -> GradientTwo;
    * GradientTwo -> Subtract;
-   * Subtract -> BeforeTVSoftThreshold [arrowhead=None];
+   * Subtract -> BeforeTVSoftThreshold [arrowhead=none];
    * BeforeTVSoftThreshold -> TVSoftThreshold;
    * BeforeTVSoftThreshold -> SubtractTwo;
-   * TVSoftThreshold -> AfterTVSoftThreshold [arrowhead=None];
+   * TVSoftThreshold -> AfterTVSoftThreshold [arrowhead=none];
    * AfterTVSoftThreshold -> SubtractTwo;
    *
    * AfterTVSoftThreshold -> AfterGradient [style=dashed];

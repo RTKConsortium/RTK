@@ -80,7 +80,7 @@ namespace rtk {
  * AfterPad0 [label="", fixedsize="false", width=0, height=0, shape=none];
  * AfterPad1 [label="", fixedsize="false", width=0, height=0, shape=none];
  * Input -> Pad1;
- * Pad1 -> AfterPad1 [arrowhead=None];
+ * Pad1 -> AfterPad1 [arrowhead=none];
  * AfterPad1 -> Conv4;
  * AfterPad1 -> Conv5;
  * AfterPad1 -> Conv6;
@@ -90,7 +90,7 @@ namespace rtk {
  * Conv6 -> Down6;
  * Conv7 -> Down7;
  * Down4 -> Pad0;
- * Pad0 -> AfterPad0 [arrowhead=None];
+ * Pad0 -> AfterPad0 [arrowhead=none];
  * AfterPad0 -> Conv0;
  * AfterPad0 -> Conv1;
  * AfterPad0 -> Conv2;

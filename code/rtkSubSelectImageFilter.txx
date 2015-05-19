@@ -164,7 +164,7 @@ void SubSelectImageFilter<ProjectionStackType>::GenerateData()
 
       // Update the filters
       projRegion.SetIndex(Dimension - 1, counter);
-      m_PasteFilter->Update();
+      m_PasteFilter->UpdateLargestPossibleRegion();
 
       counter++;
       }

@@ -4,13 +4,12 @@ set(LPSOLVE_VERSION_PATCH 2)
 set(LPSOLVE_VERSION ${LPSOLVE_VERSION_MAJOR}.${LPSOLVE_VERSION_MINOR}.${LPSOLVE_VERSION_PATCH})
 
 # Set up install directories
-add_library(lpsolve55 SHARED
+add_library(lpsolve55
 	lp_MDO.c
 	shared/commonlib.c
 	shared/mmio.c
 	shared/myblas.c
 	ini.c
-	fortify.c
 	colamd/colamd.c
 	lp_rlp.c
 	lp_crash.c

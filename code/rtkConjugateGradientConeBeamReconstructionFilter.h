@@ -67,7 +67,7 @@ namespace rtk
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    *
-   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
+   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=none];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
    * BeforeZeroMultiplyVolume -> ConjugateGradient;
    * Input1 -> Displaced;

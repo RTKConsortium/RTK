@@ -85,6 +85,8 @@ protected:
   /** Apply changes to the input image requested region. */
   virtual void GenerateInputRequestedRegion();
 
+  virtual void BeforeThreadedGenerateData();
+
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]

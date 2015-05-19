@@ -33,6 +33,7 @@
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaInterpolateImageFilter.h"
 #  include "rtkCudaSplatImageFilter.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
 #  include "rtkCudaConstantVolumeSource.h"
 #  include "rtkCudaConstantVolumeSeriesSource.h"
 #endif
@@ -105,10 +106,10 @@ namespace rtk
    * ForwardProj -> Displaced;
    * Displaced -> BackProj;
    * BackProj -> Splat;
-   * Splat -> AfterSplat[arrowhead=None];
+   * Splat -> AfterSplat[arrowhead=none];
    * AfterSplat -> Output;
    * AfterSplat -> AfterSource4D[style=dashed, constraint=false];
-   * Source4D -> AfterSource4D[arrowhead=None];
+   * Source4D -> AfterSource4D[arrowhead=none];
    * AfterSource4D -> Splat;
    * SourceProj -> ForwardProj;
    * }
@@ -185,6 +186,9 @@ protected:
 
     /** Builds the pipeline and computes output information */
     virtual void GenerateOutputInformation();
+
+    /** Computes the requested region of input images */
+    virtual void GenerateInputRequestedRegion();
 
     /** Does the real work. */
     virtual void GenerateData();
