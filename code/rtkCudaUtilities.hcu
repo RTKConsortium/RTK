@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 #include <itkMacro.h>
+#include <cuda.h>
 
 #define CUDA_CHECK_ERROR \
     { \
@@ -44,6 +45,7 @@
 
 std::vector<int> GetListOfCudaDevices();
 std::pair<int,int> GetCudaComputeCapability(int device);
+size_t GetFreeGPUGlobalMemory(int device);
 
 inline __host__ __device__ float3 operator-(float3 a, float3 b)
 {
