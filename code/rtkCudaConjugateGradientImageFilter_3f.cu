@@ -27,9 +27,6 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-// for printf
-#include <stdio.h>
-
 // TEXTURES AND CONSTANTS //
 
 __constant__ int3 c_Size;
@@ -46,7 +43,7 @@ inline int iDivUp(int a, int b){
 
 __global__
 void
-subtract_3f(float *in1, float* in2, float* out1, float* out2)
+subtract_3f(float *in1, float* in2, float* out)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -57,9 +54,7 @@ subtract_3f(float *in1, float* in2, float* out1, float* out2)
 
   long int id = (k * c_Size.y + j) * c_Size.x + i;
 
-  float out = in1[id] - in2[id];
-  out1[id] = out;
-  out2[id] = out;
+  out[id] = in1[id] - in2[id];
 }
 
 __global__
@@ -85,7 +80,7 @@ scale_then_add_3f(float *in1, float* in2, float scalar)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_copy_X_3f(int size[3],
+CUDA_copy_3f(int size[3],
               float* in,
               float* out)
 {
@@ -101,15 +96,14 @@ void
 CUDA_subtract_3f(int size[3],
                  float* in1,
                  float* in2,
-                 float* out1,
-                 float* out2)
+                 float* out)
 {
   int3 dev_Size = make_int3(size[0], size[1], size[2]);
   cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int3));
 
   // Reset output volume
   long int memorySizeOutput = size[0] * size[1] * size[2] * sizeof(float);
-  cudaMemset((void *)out1, 0, memorySizeOutput );
+  cudaMemset((void *)out, 0, memorySizeOutput );
 
   // Thread Block Dimensions
   dim3 dimBlock = dim3(8, 8, 8);
@@ -120,7 +114,7 @@ CUDA_subtract_3f(int size[3],
 
   dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
 
-  subtract_3f <<< dimGrid, dimBlock >>> ( in1, in2, out1, out2);
+  subtract_3f <<< dimGrid, dimBlock >>> ( in1, in2, out);
 
   CUDA_CHECK_ERROR;
 }

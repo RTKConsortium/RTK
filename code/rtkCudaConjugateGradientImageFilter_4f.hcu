@@ -22,7 +22,7 @@
 #include <vector_types.h>
 
 void
-CUDA_copy_X_4f(int size[4],
+CUDA_copy_4f(int size[4],
               float* in,
               float* out);
 
@@ -30,8 +30,7 @@ void
 CUDA_subtract_4f(int size[4],
                  float* in1,
                  float* in2,
-                 float* out1,
-                 float* out2);
+                 float* out);
 
 void
 CUDA_conjugate_gradient_4f(int size[4],
