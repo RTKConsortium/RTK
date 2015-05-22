@@ -44,7 +44,7 @@ namespace rtk
    *
    * node [shape=box];
    * ZeroMultiplyVolumeSequence [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * WarpSequenceForward [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
+   * WarpSequenceForward [label="rtk::WarpSequenceImageFilter (forward)" URL="\ref rtk::WarpSequenceImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterInput1 [label="", fixedsize="false", width=0, height=0, shape=none];
