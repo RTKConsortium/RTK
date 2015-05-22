@@ -86,7 +86,7 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
   typename VolumeSeriesType::IndexValueType maxi =
       inputPtr1->GetLargestPossibleRegion().GetIndex(VolumeSeriesType::ImageDimension - 1);
   typename VolumeSeriesType::IndexValueType mini =
-      mini + inputPtr1->GetLargestPossibleRegion().GetSize(VolumeSeriesType::ImageDimension - 1);
+      maxi + inputPtr1->GetLargestPossibleRegion().GetSize(VolumeSeriesType::ImageDimension - 1);
   for (unsigned int frame=0; frame<m_Weights.rows(); frame++)
     {
     if (m_Weights[frame][m_ProjectionNumber] != 0)
