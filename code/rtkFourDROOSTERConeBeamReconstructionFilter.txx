@@ -36,6 +36,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_CG_iterations=2;
   m_PerformWarping=false;
   m_PhaseShift = 0;
+  m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
 
   // Create the filters
   m_FourDCGFilter = FourDCGFilterType::New();
@@ -188,6 +189,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_AverageOutOfROIFilter->SetROI(this->GetInputROI());
 
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
+  m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
 
   m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
   m_TVDenoisingSpace->SetGamma(this->m_GammaSpace);

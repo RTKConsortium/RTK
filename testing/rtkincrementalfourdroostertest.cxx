@@ -388,6 +388,7 @@ int main(int, char** )
   incrementalRooster->SetBackProjectionFilter( 2 ); // Cuda voxel based
   incrementalRooster->SetForwardProjectionFilter( 2 ); // Cuda ray cast
   incrementalRooster->SetPerformWarping( false );
+  incrementalRooster->SetCudaConjugateGradient(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( incrementalRooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(incrementalRooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);

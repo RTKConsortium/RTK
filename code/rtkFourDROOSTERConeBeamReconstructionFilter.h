@@ -254,6 +254,10 @@ public:
   itkSetMacro(PerformWarping, bool)
   itkGetMacro(PerformWarping, bool)
 
+  /** Get / Set whether conjugate gradient should be performed on GPU */
+  itkGetMacro(CudaConjugateGradient, bool)
+  itkSetMacro(CudaConjugateGradient, bool)
+
 protected:
   FourDROOSTERConeBeamReconstructionFilter();
   ~FourDROOSTERConeBeamReconstructionFilter(){}
@@ -280,8 +284,11 @@ protected:
   typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
   typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
 
-  // Boolean : should warping be performed ?
+  // Booleans :
+  // should warping be performed ?
+  // should conjugate gradient be performed on GPU ?
   bool  m_PerformWarping;
+  bool  m_CudaConjugateGradient;
 
   // Regularization parameters
   float m_GammaSpace;

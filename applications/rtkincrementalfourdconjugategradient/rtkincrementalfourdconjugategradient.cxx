@@ -107,6 +107,7 @@ int main(int argc, char * argv[])
   incrementalCG->SetPhasesFileName( args_info.signal_arg );
   incrementalCG->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
   incrementalCG->SetGeometry( geometryReader->GetOutputObject() );
+  incrementalCG->SetCudaConjugateGradient(args_info.cudacg_flag);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( incrementalCG->Update() );
 

@@ -99,6 +99,7 @@ IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Projection
   this->m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
   this->m_FourDCGFilter->SetGeometry(m_SubSelectFilters[0]->GetOutputGeometry());
   this->m_FourDCGFilter->SetWeights(m_PhasesFilters[0]->GetOutput());
+  this->m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
 
   // Compute output information
   this->m_FourDCGFilter->UpdateOutputInformation();

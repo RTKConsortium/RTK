@@ -279,6 +279,7 @@ int main(int, char** )
 
   conjugategradient->SetBackProjectionFilter( 2 ); // Cuda voxel based
   conjugategradient->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  conjugategradient->SetCudaConjugateGradient(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<VolumeSeriesType>(conjugategradient->GetOutput(), join->GetOutput(), 0.4, 12, 2.0);

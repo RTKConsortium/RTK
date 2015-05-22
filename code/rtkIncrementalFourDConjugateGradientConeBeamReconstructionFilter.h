@@ -162,6 +162,10 @@ public:
   itkGetMacro(NumberOfProjectionsPerSubset, unsigned int)
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int)
 
+  /** Get / Set whether conjugate gradient should be performed on GPU */
+  itkGetMacro(CudaConjugateGradient, bool)
+  itkSetMacro(CudaConjugateGradient, bool)
+
 protected:
   IncrementalFourDConjugateGradientConeBeamReconstructionFilter();
   ~IncrementalFourDConjugateGradientConeBeamReconstructionFilter(){}
@@ -196,6 +200,9 @@ protected:
 
   /** Name of the file containing the phases */
   std::string m_PhasesFileName;
+
+  /** Should conjugate gradient be performed on GPU ? */
+  bool  m_CudaConjugateGradient;
 
 private:
   //purposely not implemented

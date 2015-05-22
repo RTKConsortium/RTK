@@ -127,6 +127,10 @@ public:
   itkGetMacro(NumberOfIterations, unsigned int)
   itkSetMacro(NumberOfIterations, unsigned int)
 
+  /** Get / Set whether conjugate gradient should be performed on GPU */
+  itkGetMacro(CudaConjugateGradient, bool)
+  itkSetMacro(CudaConjugateGradient, bool)
+
   /** Set/Get the 4D image to be updated.*/
   void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
   typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
@@ -165,6 +169,8 @@ protected:
   typename ConjugateGradientFilterType::Pointer     m_ConjugateGradientFilter;
   typename CGOperatorFilterType::Pointer            m_CGOperator;
   typename ProjStackToFourDFilterType::Pointer      m_ProjStackToFourDFilter;
+
+  bool m_CudaConjugateGradient;
 
 private:
   //purposely not implemented

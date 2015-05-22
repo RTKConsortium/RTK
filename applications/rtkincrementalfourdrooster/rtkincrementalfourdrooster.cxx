@@ -116,6 +116,7 @@ int main(int argc, char * argv[])
   incrementalRooster->SetGammaTime(args_info.gamma_time_arg);
   incrementalRooster->SetNumberOfProjectionsPerSubset(args_info.nprojpersubset_arg);
   incrementalRooster->SetKzero(args_info.kzero_arg);
+  incrementalRooster->SetCudaConjugateGradient(args_info.cudacg_flag);
 
   if (args_info.dvf_given)
     {
