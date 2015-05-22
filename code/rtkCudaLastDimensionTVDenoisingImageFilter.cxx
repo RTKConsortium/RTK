@@ -24,14 +24,15 @@
 rtk::CudaLastDimensionTVDenoisingImageFilter
 ::CudaLastDimensionTVDenoisingImageFilter()
 {
+  this->SetInPlace(true);
 }
 
 void
 rtk::CudaLastDimensionTVDenoisingImageFilter
 ::GPUGenerateData()
 {
-  this->GetOutput()->SetRegions(this->GetOutput()->GetLargestPossibleRegion());
-  this->GetOutput()->Allocate();
+  // Allocate the output image
+  this->AllocateOutputs();
 
   int inputSize[4];
   int outputSize[4];

@@ -29,6 +29,7 @@
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #include <itkPeriodicBoundaryCondition.h>
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {
@@ -113,13 +114,13 @@ template< typename TOutputImage, typename TGradientImage =
     itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
     TOutputImage::ImageDimension > >
 class TotalVariationDenoisingBPDQImageFilter :
-        public itk::ImageToImageFilter< TOutputImage, TOutputImage >
+        public itk::InPlaceImageFilter< TOutputImage, TOutputImage >
 {
 public:
 
   /** Standard class typedefs. */
   typedef TotalVariationDenoisingBPDQImageFilter               Self;
-  typedef itk::ImageToImageFilter< TOutputImage, TOutputImage> Superclass;
+  typedef itk::InPlaceImageFilter< TOutputImage, TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                              Pointer;
   typedef itk::SmartPointer<const Self>                        ConstPointer;
 

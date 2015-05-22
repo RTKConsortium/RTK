@@ -200,6 +200,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     {
     m_Warp->SetDisplacementField(this->GetDisplacementField());
     m_Warp->SetPhaseShift(m_PhaseShift);
+    m_Warp->ReleaseDataFlagOn();
 
     m_TVDenoisingTime->SetInput(m_Warp->GetOutput());
     m_TVDenoisingTime->ReleaseDataFlagOn();
@@ -293,13 +294,16 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     // After the first iteration, we need to use the output as input
     if (i>0)
       {
-        if (m_PerformWarping)
-          pimg = m_Unwarp->GetOutput();
-        else
-          pimg = m_TVDenoisingTime->GetOutput();
+      if (m_PerformWarping)
+        pimg = m_Unwarp->GetOutput();
+      else
+        pimg = m_TVDenoisingTime->GetOutput();
 
       pimg->DisconnectPipeline();
       m_FourDCGFilter->SetInputVolumeSeries(pimg);
+
+      // The input volume is no longer needed on the GPU, so we transfer it back to the CPU
+      this->GetInputVolumeSeries()->GetCudaDataManager()->GetCPUBufferPointer();
       }
 
     m_CGProbe.Start();

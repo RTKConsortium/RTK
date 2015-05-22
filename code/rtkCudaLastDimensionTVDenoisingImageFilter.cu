@@ -128,10 +128,6 @@ CUDA_total_variation_last_dimension(int size[4],
   int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
   cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
 
-  // Reset output volume
-  long int memorySizeOutput = size[0] * size[1] * size[2] * size[3] * sizeof(float);
-  cudaMemset((void *)dev_out, 0, memorySizeOutput );
-
   // Thread Block Dimensions
   // Create one thread block per voxel of the 3D volume.
   // Each thread block handles a single 1D temporal vector

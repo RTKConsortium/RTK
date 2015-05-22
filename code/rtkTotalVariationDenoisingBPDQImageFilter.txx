@@ -31,6 +31,9 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   m_Gamma = 1.0;
   m_NumberOfIterations = 1;
 
+  // This is an InPlace filter only for the subclasses to have the possibility to run in place
+  this->SetInPlace(false);
+
   // Default behaviour is to process all dimensions
   for (int dim = 0; dim < TOutputImage::ImageDimension; dim++)
     {
