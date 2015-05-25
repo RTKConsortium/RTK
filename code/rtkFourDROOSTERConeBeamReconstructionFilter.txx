@@ -305,7 +305,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_FourDCGFilter->SetInputVolumeSeries(pimg);
 
       // The input volume is no longer needed on the GPU, so we transfer it back to the CPU
-      this->GetInputVolumeSeries()->GetCudaDataManager()->GetCPUBufferPointer();
+      this->GetInputVolumeSeries()->GetBufferPointer();
       }
 
     m_CGProbe.Start();
