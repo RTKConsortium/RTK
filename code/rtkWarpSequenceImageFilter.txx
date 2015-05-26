@@ -202,6 +202,10 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
     m_PasteFilter->UpdateLargestPossibleRegion();
     }
   this->GraftOutput( m_PasteFilter->GetOutput() );
+
+  m_ExtractFilter->GetOutput()->ReleaseData();
+  m_WarpFilter->GetOutput()->ReleaseData();
+  m_CastFilter->GetOutput()->ReleaseData();
 }
 
 

@@ -40,6 +40,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
   m_CG_iterations=2;
   m_NumberOfProjectionsPerSubset=0;
   m_NumberOfSubsets=1;
+  m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
 
   // Create the filters
   m_CG = CGType::New();
@@ -154,6 +155,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
   m_CG->SetNumberOfIterations(m_CG_iterations);
   m_CG->SetGeometry(m_SubSelectFilters[0]->GetOutputGeometry());
   m_CG->SetWeights(m_PhasesFilters[0]->GetOutput());
+  m_CG->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
 
   // Compute output information
   m_CG->UpdateOutputInformation();
@@ -166,8 +168,6 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 ::GenerateData()
 {
   typename VolumeSeriesType::Pointer pimg;
-//  typedef itk::ImageFileWriter<VolumeSeriesType> WriterType;
-//  typename WriterType::Pointer writer = WriterType::New();
 
   for (unsigned int ml_iter=0; ml_iter < m_MainLoop_iterations; ml_iter++)
     {
@@ -178,13 +178,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
         {
         pimg = m_CG->GetOutput();
         pimg->DisconnectPipeline();
-//        pimg->Modified();
         m_CG->SetInputVolumeSeries(pimg);
-//        m_CG->Modified();
-
-//        writer->SetInput(pimg);
-//        writer->SetFileName("CGinput.mha");
-//        writer->Update();
         }
 
       // Change to the next subset
@@ -192,8 +186,6 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
       m_CG->SetGeometry( m_SubSelectFilters[subset]->GetOutputGeometry() );
       m_CG->SetWeights(m_PhasesFilters[subset]->GetOutput());
       TRY_AND_EXIT_ON_ITK_EXCEPTION( m_CG->Update() );
-
-
       }
     }
 

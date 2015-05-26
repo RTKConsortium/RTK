@@ -8,6 +8,7 @@ option "output"      o "Output file name"                                       
 option "niterations" n "Number of iterations of the main loop. Each one processes all subsets once"       int    no   default="5"
 option "nested"      - "Number of nested CG iterations performed on each subset at each main loop iter"   int    no   default="2"
 option "time"        t "Records elapsed time during the process"                                          flag   off
+option "cudacg"      - "Perform conjugate gradient calculations on GPU"                                   flag   off
 option "input"       i "Input volume"                                                                     string no
 option "nprojpersubset" - "Number of projections processed at each update of the reconstructed volume (several for OS-4DCG, all for regular 4DCG). 0 means all" int no default="0"
 

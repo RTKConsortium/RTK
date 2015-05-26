@@ -43,7 +43,7 @@ rtk::CudaConjugateGradientImageFilter_4f
   float *pX = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // On GPU, initialize the output to the input
-  CUDA_copy_X_4f(size, pin, pX);
+  CUDA_copy_4f(size, pin, pX);
 
   this->m_A->SetX(this->GetX());
   this->m_A->Update();
@@ -52,11 +52,6 @@ rtk::CudaConjugateGradientImageFilter_4f
   rtk::CudaConstantVolumeSeriesSource::Pointer source = rtk::CudaConstantVolumeSeriesSource::New();
   source->SetInformationFromImage(this->GetOutput());
   source->SetConstant(0);
-
-  // Initialize P_k
-  source->Update();
-  itk::CudaImage<float, 4>::Pointer P_k = source->GetOutput();
-  P_k->DisconnectPipeline();
 
   // Initialize R_k
   source->Update();
@@ -70,10 +65,23 @@ rtk::CudaConjugateGradientImageFilter_4f
   float *pR = *(float**)( R_k->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pB = *(float**)( this->GetB()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pAOut = *(float**)( AOut->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pP = *(float**)( P_k->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Compute, on GPU, R_zero = P_zero = this->GetB() - this->m_A->GetOutput()
-  CUDA_subtract_4f(size, pB, pAOut, pP, pR);
+  CUDA_subtract_4f(size, pB, pAOut, pR);
+
+  // B is now useless, and the memory it takes on the GPU is critical.
+  // Transfer it back to the CPU memory (note that this will only
+  // release GPU memory if with ITK_RELEASE_DIRTY_GPU_BUFFERS is set to true)
+  this->GetB()->GetCudaDataManager()->GetCPUBufferPointer();
+
+  // Initialize P_k
+  source->Update();
+  itk::CudaImage<float, 4>::Pointer P_k = source->GetOutput();
+  P_k->DisconnectPipeline();
+  float *pP = *(float**)( P_k->GetCudaDataManager()->GetGPUBufferPointer() );
+
+  // P0 = R0
+  CUDA_copy_4f(size, pR, pP);
 
   for (int iter=0; iter<m_NumberOfIterations; iter++)
     {

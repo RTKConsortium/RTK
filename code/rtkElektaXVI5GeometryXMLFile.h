@@ -38,7 +38,8 @@ namespace rtk
  * SAD = 1000 mm, SID = 1536 mm are hard-coded since _Frame.xml doesn't include these values.
  * Regarding PanelOffset, XVI5 specifies position of the center (UCentre, VCentre) instead of offset.
  * Therefore, negation is required to get classical m_ProjectionOffsetX and m_ProjectionOffsetY values.
- * \contributed by Yang K Park (theday79@gmail.com), 2015/05/15
+ *
+ * \author Yang K Park (theday79@gmail.com)
  *
  * \ingroup IOFilters
  */

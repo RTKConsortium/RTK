@@ -9,6 +9,7 @@ option "niter"       n "Number of main loop iterations"                        i
 option "cgiter"      - "Number of conjugate gradient nested iterations"        int    no   default="4"
 option "tviter"      - "Number of total variation nested iterations"           int    no   default="10"
 option "time"        t "Records elapsed time during the process"               flag   off
+option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
 option "gamma_time"  - "Regularization parameter along time. The higher, the smoother"  double yes
 option "gamma_space" - "Regularization parameter along space. The higher, the smoother"  double yes
 option "motionmask"  - "Region Of Interest file, binary image with ones where movement can occur and zeros elsewhere" string yes

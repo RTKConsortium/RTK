@@ -36,6 +36,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_CG_iterations=2;
   m_PerformWarping=false;
   m_PhaseShift = 0;
+  m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
 
   // Create the filters
   m_FourDCGFilter = FourDCGFilterType::New();
@@ -188,6 +189,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_AverageOutOfROIFilter->SetROI(this->GetInputROI());
 
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
+  m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
 
   m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
   m_TVDenoisingSpace->SetGamma(this->m_GammaSpace);
@@ -200,6 +202,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     {
     m_Warp->SetDisplacementField(this->GetDisplacementField());
     m_Warp->SetPhaseShift(m_PhaseShift);
+    m_Warp->ReleaseDataFlagOn();
 
     m_TVDenoisingTime->SetInput(m_Warp->GetOutput());
     m_TVDenoisingTime->ReleaseDataFlagOn();
@@ -293,13 +296,16 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     // After the first iteration, we need to use the output as input
     if (i>0)
       {
-        if (m_PerformWarping)
-          pimg = m_Unwarp->GetOutput();
-        else
-          pimg = m_TVDenoisingTime->GetOutput();
+      if (m_PerformWarping)
+        pimg = m_Unwarp->GetOutput();
+      else
+        pimg = m_TVDenoisingTime->GetOutput();
 
       pimg->DisconnectPipeline();
       m_FourDCGFilter->SetInputVolumeSeries(pimg);
+
+      // The input volume is no longer needed on the GPU, so we transfer it back to the CPU
+      this->GetInputVolumeSeries()->GetBufferPointer();
       }
 
     m_CGProbe.Start();

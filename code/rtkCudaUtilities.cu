@@ -41,6 +41,33 @@ std::pair<int,int> GetCudaComputeCapability(int device)
 {
   struct cudaDeviceProp properties;
   if (cudaGetDeviceProperties(&properties, device) != cudaSuccess)
-    itkGenericExceptionMacro(<< "Unvalid CUDA device");
+    itkGenericExceptionMacro(<< "Invalid CUDA device");
   return std::make_pair(properties.major, properties.minor);
+}
+
+size_t GetFreeGPUGlobalMemory(int device)
+{
+  // The return result of cuda utility methods are stored in a CUresult
+  CUresult result;
+
+  //create cuda context
+  CUcontext cudaContext;
+  result = cuCtxCreate(&cudaContext, CU_CTX_SCHED_AUTO, device);
+  if(result != CUDA_SUCCESS)
+    {
+    itkGenericExceptionMacro(<< "Could not create context on this CUDA device");
+    }
+
+  //get the amount of free memory on the graphics card
+  size_t free;
+  size_t total;
+  result = cuMemGetInfo(&free, &total);
+  if(result != CUDA_SUCCESS)
+    {
+    itkGenericExceptionMacro(<< "Could not obtain information on free memory on this CUDA device");
+    }
+
+  cuCtxDestroy_v2(cudaContext);
+
+  return free;
 }

@@ -43,7 +43,7 @@ inline int iDivUp(int a, int b){
 
 __global__
 void
-subtract_4f(float *in1, float* in2, float* out1, float* out2)
+subtract_4f(float *in1, float* in2, float* out)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -54,9 +54,7 @@ subtract_4f(float *in1, float* in2, float* out1, float* out2)
 
   long int id = (k * c_Size.y + j) * c_Size.x + i;
 
-  float out = in1[id] - in2[id];
-  out1[id] = out;
-  out2[id] = out;
+  out[id] = in1[id] - in2[id];
 }
 
 __global__
@@ -82,7 +80,7 @@ scale_then_add_4f(float *in1, float* in2, float scalar)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_copy_X_4f(int size[4],
+CUDA_copy_4f(int size[4],
               float* in,
               float* out)
 {
@@ -98,15 +96,14 @@ void
 CUDA_subtract_4f(int size[4],
                  float* in1,
                  float* in2,
-                 float* out1,
-                 float* out2)
+                 float* out)
 {
   int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
   cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
 
   // Reset output volume
   long int memorySizeOutput = size[0] * size[1] * size[2] * size[3] * sizeof(float);
-  cudaMemset((void *)out1, 0, memorySizeOutput );
+  cudaMemset((void *)out, 0, memorySizeOutput );
 
   // Thread Block Dimensions
   dim3 dimBlock = dim3(8, 8, 8);
@@ -117,7 +114,7 @@ CUDA_subtract_4f(int size[4],
 
   dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
 
-  subtract_4f <<< dimGrid, dimBlock >>> ( in1, in2, out1, out2);
+  subtract_4f <<< dimGrid, dimBlock >>> ( in1, in2, out);
 
   CUDA_CHECK_ERROR;
 }

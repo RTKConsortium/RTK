@@ -20,7 +20,7 @@
 #define __rtkCudaLastDimensionTVDenoisingImageFilter_h
 
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
-#include <itkCudaImageToImageFilter.h>
+#include <itkCudaInPlaceImageFilter.h>
 #include "rtkWin32Header.h"
 
 namespace rtk
@@ -38,7 +38,7 @@ namespace rtk
  */
 
   class ITK_EXPORT CudaLastDimensionTVDenoisingImageFilter :
-        public itk::CudaImageToImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
+        public itk::CudaInPlaceImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
     TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,4>, itk::CudaImage< itk::CovariantVector < float, 1 >, 4 > > >
 {
 public:

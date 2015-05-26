@@ -45,4 +45,7 @@ rtk::CudaAverageOutOfROIImageFilter
                              pin,
                              pout,
                              proi);
+
+    //Transfer the ROI volume back to the CPU memory to save space on the GPU
+    this->GetROI()->GetCudaDataManager()->GetCPUBufferPointer();
 }

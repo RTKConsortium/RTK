@@ -38,16 +38,11 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
   // Set the default values of member parameters
   m_NumberOfIterations=3;
+  m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
 
   // Create the filters
   m_CGOperator = CGOperatorFilterType::New();
-
-#ifdef RTK_USE_CUDA
-  m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
-#else
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
-#endif
-  m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
 
   // Memory management options
@@ -141,6 +136,13 @@ void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  // Set the Conjugate Gradient filter (either on CPU or GPU depending on user's choice)
+#ifdef RTK_USE_CUDA
+  if (m_CudaConjugateGradient)
+    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
+#endif
+  m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
+
   // Set runtime connections
   m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
   m_ConjugateGradientFilter->SetX(this->GetInputVolumeSeries());

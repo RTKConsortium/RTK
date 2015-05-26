@@ -158,6 +158,10 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
     m_PasteFilter->UpdateLargestPossibleRegion();
     }
   this->GraftOutput( m_PasteFilter->GetOutput() );
+
+  m_ExtractFilter->GetOutput()->ReleaseData();
+  m_TVDenoisingFilter->GetOutput()->ReleaseData();
+  m_CastFilter->GetOutput()->ReleaseData();
 }
 
 
