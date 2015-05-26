@@ -184,6 +184,11 @@ void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
+  m_ProjStackToFourDFilter->Update();
+
+  // If m_ProjStackToFourDFilter->GetOutput() is stored in an itk::CudaImage, make sure its data is transferred on the CPU
+  this->m_ProjStackToFourDFilter->GetOutput()->GetBufferPointer();
+
   m_ConjugateGradientFilter->Update();
 
   // Simply grafting the output of m_ConjugateGradientFilter to the main output

@@ -275,6 +275,9 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_InterpolationFilter->GetOutput()->ReleaseData();
   m_BackProjectionFilter->GetOutput()->ReleaseData();
   m_ForwardProjectionFilter->GetOutput()->ReleaseData();
+
+  // Send the input back onto the CPU
+  this->GetInputVolumeSeries()->GetBufferPointer();
 }
 
 }// end namespace
