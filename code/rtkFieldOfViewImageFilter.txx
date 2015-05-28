@@ -20,7 +20,7 @@
 #define __rtkFieldOfViewImageFilter_txx
 
 #include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
+#include <itkImageRegionConstIteratorWithIndex.h>
 
 #include "lp_lib.h"
 
