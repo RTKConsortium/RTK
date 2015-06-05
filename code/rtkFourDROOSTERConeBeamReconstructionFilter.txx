@@ -35,8 +35,11 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_MainLoop_iterations=2;
   m_CG_iterations=2;
   m_PerformWarping=false;
+  m_WaveletsSpatialDenoising=false;
   m_PhaseShift = 0;
   m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
+  m_Order = 5;
+  m_NumberOfLevels = 3;
 
   // Create the filters
   m_FourDCGFilter = FourDCGFilterType::New();
@@ -48,13 +51,13 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_TVDenoisingTime = rtk::CudaLastDimensionTVDenoisingImageFilter::New();
 #endif
   m_TVDenoisingSpace = SpatialTVDenoisingFilterType::New();
+  m_WaveletsDenoisingSpace = SpatialWaveletsDenoisingFilterType::New();
   m_Warp = WarpSequenceFilterType::New();
   m_Unwarp = UnwarpSequenceFilterType::New();
 
   // Set permanent connections
   m_PositivityFilter->SetInput(m_FourDCGFilter->GetOutput());
   m_AverageOutOfROIFilter->SetInput(m_PositivityFilter->GetOutput());
-  m_TVDenoisingSpace->SetInput(m_AverageOutOfROIFilter->GetOutput());
 
   // Set constant parameters
   m_DimensionsProcessedForTVSpace[0]=true;
@@ -78,6 +81,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_PositivityFilter->SetInPlace(true);
   m_AverageOutOfROIFilter->ReleaseDataFlagOn();
   m_TVDenoisingSpace->ReleaseDataFlagOn();
+  m_WaveletsDenoisingSpace->ReleaseDataFlagOn();
   m_Warp->ReleaseDataFlagOn();
 }
 
@@ -191,8 +195,19 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
 
-  m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
-  m_TVDenoisingSpace->SetGamma(this->m_GammaSpace);
+  if (m_WaveletsSpatialDenoising)
+    {
+    m_WaveletsDenoisingSpace->SetInput(m_AverageOutOfROIFilter->GetOutput());
+    m_WaveletsDenoisingSpace->SetOrder(m_Order);
+    m_WaveletsDenoisingSpace->SetThreshold(m_GammaSpace); // Use the gamma space parameter as the soft threshold
+    m_WaveletsDenoisingSpace->SetNumberOfLevels(m_NumberOfLevels);
+    }
+  else
+    {
+    m_TVDenoisingSpace->SetInput(m_AverageOutOfROIFilter->GetOutput());
+    m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
+    m_TVDenoisingSpace->SetGamma(this->m_GammaSpace);
+    }
 
   m_TVDenoisingTime->SetNumberOfIterations(this->m_TV_iterations);
   m_TVDenoisingTime->SetGamma(this->m_GammaTime);
@@ -263,17 +278,23 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   // If requested, plug the warp filters into the pipeline
   if (m_PerformWarping)
     {
+    if (m_WaveletsSpatialDenoising)
+      m_Warp->SetInput(0, m_WaveletsDenoisingSpace->GetOutput());
+    else
       m_Warp->SetInput(0, m_TVDenoisingSpace->GetOutput());
 
-      // Have the last filter calculate its output information
-      m_Unwarp->UpdateOutputInformation();
+    // Have the last filter calculate its output information
+    m_Unwarp->UpdateOutputInformation();
 
-      // Copy it as the output information of the composite filter
-      this->GetOutput()->CopyInformation( m_Unwarp->GetOutput() );
+    // Copy it as the output information of the composite filter
+    this->GetOutput()->CopyInformation( m_Unwarp->GetOutput() );
     }
   else
     {
-    m_TVDenoisingTime->SetInput(m_TVDenoisingSpace->GetOutput());
+    if (m_WaveletsSpatialDenoising)
+      m_TVDenoisingTime->SetInput(m_WaveletsDenoisingSpace->GetOutput());
+    else
+      m_TVDenoisingTime->SetInput(m_TVDenoisingSpace->GetOutput());
 
     // Have the last filter calculate its output information
     m_TVDenoisingTime->UpdateOutputInformation();
@@ -320,9 +341,12 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_AverageOutOfROIFilter->Update();
     m_ROIProbe.Stop();
 
-    m_TVSpaceProbe.Start();
-    m_TVDenoisingSpace->Update();
-    m_TVSpaceProbe.Stop();
+    m_DenoisingSpaceProbe.Start();
+    if (m_WaveletsSpatialDenoising)
+      m_WaveletsDenoisingSpace->Update();
+    else
+      m_TVDenoisingSpace->Update();
+    m_DenoisingSpaceProbe.Stop();
 
     if (m_PerformWarping)
       {
@@ -361,8 +385,8 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
      << ' ' << m_PositivityProbe.GetUnit() << std::endl;
   os << "  Averaging along time outside the ROI where movement is allowed: " << m_ROIProbe.GetTotal()
      << ' ' << m_ROIProbe.GetUnit() << std::endl;
-  os << "  Spatial total variation denoising: " << m_TVSpaceProbe.GetTotal()
-     << ' ' << m_TVSpaceProbe.GetUnit() << std::endl;
+  os << "  Spatial denoising: " << m_DenoisingSpaceProbe.GetTotal()
+     << ' ' << m_DenoisingSpaceProbe.GetUnit() << std::endl;
   if (m_PerformWarping)
     {
     os << "  Warping volumes to average position: " << m_WarpProbe.GetTotal()

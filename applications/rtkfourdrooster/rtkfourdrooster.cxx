@@ -121,6 +121,16 @@ int main(int argc, char * argv[])
   rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetGammaSpace(args_info.gamma_space_arg);
   rooster->SetGammaTime(args_info.gamma_time_arg);
+  if (args_info.order_given)
+    {
+    rooster->SetWaveletsSpatialDenoising(true);
+    rooster->SetOrder(args_info.order_arg);
+    }
+  if (args_info.levels_given)
+    {
+    rooster->SetWaveletsSpatialDenoising(true);
+    rooster->SetNumberOfLevels(args_info.levels_arg);
+    }
   rooster->SetPhaseShift(args_info.shift_arg);
   rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
 

@@ -11,9 +11,11 @@ option "tviter"      - "Number of total variation nested iterations"           i
 option "time"        t "Records elapsed time during the process"               flag   off
 option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
 option "gamma_time"  - "Regularization parameter along time. The higher, the smoother"  double yes
-option "gamma_space" - "Regularization parameter along space. The higher, the smoother"  double yes
+option "gamma_space" - "Regularization parameter along space. The higher, the smoother (if order and/or levels are provided, wavelets regularization is used instead of TV"  double yes
 option "motionmask"  - "Region Of Interest file, binary image with ones where movement can occur and zeros elsewhere" string yes
 option "input"       i "Input volume"                                          string no
+option "order"       - "The order of the Daubechies wavelets used for spatial regularization"                    int                       no default="3"
+option "levels"      - "The number of decomposition levels in the wavelets transform used for spatial regularization" int                  no default="5"
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes

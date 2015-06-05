@@ -358,21 +358,23 @@ int main(int, char** )
   rooster->SetGammaSpace(1);
   rooster->SetGammaTime(0.1);
 
-  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector and wavelets spatial denoising ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 0 ); // Voxel based
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
   rooster->SetPerformWarping(false);
+  rooster->SetWaveletsSpatialDenoising(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Voxel-Based Backprojector and motion compensation ******" << std::endl;
+  std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, TV spatial denoising and motion compensation ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 0 ); // Voxel based
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
   rooster->SetMainLoop_iterations( 2);
+  rooster->SetWaveletsSpatialDenoising(false);
   rooster->SetPerformWarping(true);
   rooster->SetDisplacementField(deformationField);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
@@ -381,7 +383,7 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector, TV spatial denoising ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 2 ); // Cuda voxel based
   rooster->SetForwardProjectionFilter( 2 ); // Cuda ray cast

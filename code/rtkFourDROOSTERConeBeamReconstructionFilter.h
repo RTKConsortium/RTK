@@ -29,6 +29,7 @@
   #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
   #include "rtkAverageOutOfROIImageFilter.h"
 #endif
+#include "rtkDaubechiesWaveletsDenoiseSequenceImageFilter.h"
 #include "rtkWarpSequenceImageFilter.h"
 #include "rtkUnwarpSequenceImageFilter.h"
 #include <itkSubtractImageFilter.h>
@@ -211,6 +212,7 @@ public:
   typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
   typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                    AverageOutOfROIFilterType;
   typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                   SpatialTVDenoisingFilterType;
+  typedef rtk::DaubechiesWaveletsDenoiseSequenceImageFilter<VolumeSeriesType>                               SpatialWaveletsDenoisingFilterType;
   typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>    WarpSequenceFilterType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
   typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
@@ -258,6 +260,18 @@ public:
   itkGetMacro(CudaConjugateGradient, bool)
   itkSetMacro(CudaConjugateGradient, bool)
 
+  /** Get / Set whether Daubechies wavelets should replace TV in spatial denoising*/
+  itkGetMacro(WaveletsSpatialDenoising, bool)
+  itkSetMacro(WaveletsSpatialDenoising, bool)
+
+  /** Set the number of levels of the wavelets decomposition */
+  itkGetMacro(NumberOfLevels, unsigned int)
+  itkSetMacro(NumberOfLevels, unsigned int)
+
+  /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
+  itkGetMacro(Order, unsigned int)
+  itkSetMacro(Order, unsigned int)
+
 protected:
   FourDROOSTERConeBeamReconstructionFilter();
   ~FourDROOSTERConeBeamReconstructionFilter(){}
@@ -280,6 +294,7 @@ protected:
   typename ThresholdFilterType::Pointer                   m_PositivityFilter;
   typename AverageOutOfROIFilterType::Pointer             m_AverageOutOfROIFilter;
   typename SpatialTVDenoisingFilterType::Pointer          m_TVDenoisingSpace;
+  typename SpatialWaveletsDenoisingFilterType::Pointer    m_WaveletsDenoisingSpace;
   typename WarpSequenceFilterType::Pointer                m_Warp;
   typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
   typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
@@ -287,8 +302,10 @@ protected:
   // Booleans :
   // should warping be performed ?
   // should conjugate gradient be performed on GPU ?
+  // should wavelets replace TV in spatial denoising ?
   bool  m_PerformWarping;
   bool  m_CudaConjugateGradient;
+  bool  m_WaveletsSpatialDenoising;
 
   // Regularization parameters
   float m_GammaSpace;
@@ -296,6 +313,10 @@ protected:
   float m_PhaseShift;
   bool  m_DimensionsProcessedForTVSpace[VolumeSeriesType::ImageDimension];
   bool  m_DimensionsProcessedForTVTime[VolumeSeriesType::ImageDimension];
+
+  /** Information for the wavelets denoising filter */
+  unsigned int    m_Order;
+  bool            m_NumberOfLevels;
 
   // Iterations
   int   m_MainLoop_iterations;
@@ -309,7 +330,7 @@ protected:
   itk::TimeProbe m_CGProbe;
   itk::TimeProbe m_PositivityProbe;
   itk::TimeProbe m_ROIProbe;
-  itk::TimeProbe m_TVSpaceProbe;
+  itk::TimeProbe m_DenoisingSpaceProbe;
   itk::TimeProbe m_TVTimeProbe;
   itk::TimeProbe m_WarpProbe;
   itk::TimeProbe m_UnwarpProbe;
