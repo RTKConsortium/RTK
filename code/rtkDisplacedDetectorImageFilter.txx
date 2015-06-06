@@ -86,9 +86,6 @@ void
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
-  // call the superclass' implementation of this method
-  Superclass::GenerateOutputInformation();
-
   // get pointers to the input and output
   typename Superclass::InputImagePointer  inputPtr  = const_cast< TInputImage * >( this->GetInput() );
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
@@ -97,6 +94,12 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     {
     return;
     }
+
+  // Copy the meta data for this data type
+  outputPtr->SetSpacing( inputPtr->GetSpacing() );
+  outputPtr->SetOrigin( inputPtr->GetOrigin() );
+  outputPtr->SetDirection( inputPtr->GetDirection() );
+  outputPtr->SetNumberOfComponentsPerPixel( inputPtr->GetNumberOfComponentsPerPixel() );
 
   typename TOutputImage::RegionType outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
 

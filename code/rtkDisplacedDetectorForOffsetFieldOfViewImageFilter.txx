@@ -24,7 +24,6 @@
 #include <itkImageRegionIterator.h>
 
 #include "rtkFieldOfViewImageFilter.h"
-#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -47,9 +46,6 @@ void
 DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
-  // call the superclass' implementation of this method
-  Superclass::Superclass::GenerateOutputInformation();
-
   // get pointers to the input and output
   typename Superclass::Superclass::InputImagePointer  inputPtr  = const_cast< TInputImage * >( this->GetInput() );
   typename Superclass::Superclass::OutputImagePointer outputPtr = this->GetOutput();
@@ -58,6 +54,13 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
     {
     return;
     }
+
+  // Copy the meta data for this data type
+  outputPtr->SetSpacing( inputPtr->GetSpacing() );
+  outputPtr->SetOrigin( inputPtr->GetOrigin() );
+  outputPtr->SetDirection( inputPtr->GetDirection() );
+  outputPtr->SetNumberOfComponentsPerPixel( inputPtr->GetNumberOfComponentsPerPixel() );
+
   typename TOutputImage::RegionType outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
 
   typedef typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
