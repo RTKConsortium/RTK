@@ -316,7 +316,7 @@ protected:
 
   /** Information for the wavelets denoising filter */
   unsigned int    m_Order;
-  bool            m_NumberOfLevels;
+  unsigned int    m_NumberOfLevels;
 
   // Iterations
   int   m_MainLoop_iterations;
