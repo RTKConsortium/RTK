@@ -128,7 +128,7 @@ protected:
     /** Information for the wavelets denoising filter */
     unsigned int    m_Order;
     float           m_Threshold;
-    bool            m_NumberOfLevels;
+    unsigned int    m_NumberOfLevels;
 
 private:
     DaubechiesWaveletsDenoiseSequenceImageFilter(const Self &); //purposely not implemented
