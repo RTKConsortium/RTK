@@ -355,7 +355,6 @@ int main(int, char** )
   rooster->SetCG_iterations( 2 );
   rooster->SetMainLoop_iterations( 2);
   rooster->SetTV_iterations( 3 );
-  rooster->SetGammaSpace(1);
   rooster->SetGammaTime(0.1);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector and wavelets spatial denoising ******" << std::endl;
@@ -364,6 +363,9 @@ int main(int, char** )
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
   rooster->SetPerformWarping(false);
   rooster->SetWaveletsSpatialDenoising(true);
+  rooster->SetGammaSpace(0.1);
+  rooster->SetNumberOfLevels(3);
+  rooster->SetOrder(3);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
@@ -376,6 +378,7 @@ int main(int, char** )
   rooster->SetMainLoop_iterations( 2);
   rooster->SetWaveletsSpatialDenoising(false);
   rooster->SetPerformWarping(true);
+  rooster->SetGammaSpace(1);
   rooster->SetDisplacementField(deformationField);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
