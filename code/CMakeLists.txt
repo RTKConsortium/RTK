@@ -62,7 +62,7 @@ ENDIF(RTK_USE_OPENCL)
 #=========================================================
 # Cuda library stuff
 IF (RTK_USE_CUDA)
-  SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
+  SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda ITKCudaCommon ${CUDA_CUDA_LIBRARY})
   SET (rtkcuda_CUDA_FILES
        rtkCudaCropImageFilter.cu
        rtkCudaUtilities.cu
