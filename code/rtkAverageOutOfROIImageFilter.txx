@@ -88,6 +88,41 @@ AverageOutOfROIImageFilter< TInputImage, TROI >
 template< class TInputImage, class TROI >
 void
 AverageOutOfROIImageFilter< TInputImage, TROI >
+::GenerateOutputInformation()
+{
+  Superclass::GenerateOutputInformation();
+
+  // Check whether the ROI has the same information as the input image
+  typename TROI::SizeType ROISize = this->GetROI()->GetLargestPossibleRegion().GetSize();
+  typename TROI::SpacingType ROISpacing = this->GetROI()->GetSpacing();
+  typename TROI::PointType ROIOrigin = this->GetROI()->GetOrigin();
+  typename TROI::DirectionType ROIDirection = this->GetROI()->GetDirection();
+
+  bool isInformationInconsistent;
+  isInformationInconsistent = false;
+
+  for (unsigned int dim=0; dim<TROI::ImageDimension; dim++)
+    {
+    if (ROISize[dim] != this->GetInput(0)->GetLargestPossibleRegion().GetSize()[dim])
+      isInformationInconsistent = true;
+    if (ROISpacing[dim] != this->GetInput(0)->GetSpacing()[dim])
+      isInformationInconsistent = true;
+    if (ROIOrigin[dim] != this->GetInput(0)->GetOrigin()[dim])
+      isInformationInconsistent = true;
+    for (unsigned int i=0; i<TROI::ImageDimension; i++)
+      {
+      if (ROIDirection(dim, i) != this->GetInput(0)->GetDirection()(dim, i))
+        isInformationInconsistent = true;
+      }
+    }
+
+  if(isInformationInconsistent)
+    itkGenericExceptionMacro(<< "In AverageOutOfROIImageFilter: information of ROI image does not match input image");
+}
+
+template< class TInputImage, class TROI >
+void
+AverageOutOfROIImageFilter< TInputImage, TROI >
 ::ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
   // Walks the first frame of the outputRegionForThread
