@@ -50,10 +50,6 @@ __constant__ float c_tStep;
 __constant__ int3 c_volSize;
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
-inline int iDivUp(int a, int b){
-    return (a % b != 0) ? (a / b + 1) : (a / b);
-}
-
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_( S T A R T )_
