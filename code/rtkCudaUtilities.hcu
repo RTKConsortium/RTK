@@ -91,5 +91,13 @@ inline __host__ __device__ void operator+=(float3 &a, float3 b)
 {
     a.x += b.x; a.y += b.y; a.z += b.z;
 }
+inline __host__ __device__ int iDivUp(int a, int b)
+{
+  return (a % b != 0) ? (a / b + 1) : (a / b);
+}
+inline __host__ __device__ float dot_vector(float3 u, float3 v)
+{
+    return u.x*v.x + u.y*v.y + u.z*v.z;
+}
 
 #endif
