@@ -140,6 +140,10 @@ macro(generate_filter_source)
 
   # Glob all json files in the current directory
   file ( GLOB json_config_files ${generated_code_input_path}/json/[a-zA-Z]*.json)
+  file ( GLOB cuda_json_config_files "${generated_code_input_path}/json/Cuda[a-zA-Z]*.json")
+  if(NOT RTK_USE_CUDA)
+    list(REMOVE_ITEM json_config_files ${cuda_json_config_files}) 
+  endif()
 
   # Loop through json files and expand each one
   foreach ( f ${json_config_files} )

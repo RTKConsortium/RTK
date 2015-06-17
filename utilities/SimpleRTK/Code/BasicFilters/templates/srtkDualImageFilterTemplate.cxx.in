@@ -126,7 +126,12 @@ Image ${name}::DualExecuteInternal ( $(for inum=1,number_of_inputs do
   typedef ${output_image_type} OutputImageType;]]
   elseif output_pixel_type then
   OUT=[[// Define output image type
-  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;]]
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
+#else
+  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension >     OutputImageType;
+#endif
+    ]]
   else
   OUT=[[typedef InputImageType OutputImageType;]]
   end)
@@ -152,17 +157,26 @@ ${name}::DualExecuteInternalVector ( $(for inum=1,number_of_inputs do
   OUT= OUT .. 'const Image& inImage' .. inum
   end ) )
 {
-  typedef TImageType                                                               VectorInputImageType;
-  typedef typename VectorInputImageType::InternalPixelType                         ComponentType;
-  typedef typename itk::Image<ComponentType, VectorInputImageType::ImageDimension> ComponentImageType;
+  typedef TImageType                                                                   VectorInputImageType;
+  typedef typename VectorInputImageType::InternalPixelType                             ComponentType;
+#ifdef RTK_USE_CUDA
+  typedef typename itk::CudaImage<ComponentType, VectorInputImageType::ImageDimension> ComponentImageType;
+#else
+  typedef typename itk::Image<ComponentType, VectorInputImageType::ImageDimension>     ComponentImageType;
+#endif
+
   // we must define the input and output image types
   // they should be the same as the scalar execute internal method
   typedef ComponentImageType   InputImageType;
 ]]
 if vector_pixel_types_by_component2 then OUT = OUT..[[
-  typedef TImageType2                                                                VectorInputImageType2;
-  typedef typename VectorInputImageType2::InternalPixelType                          ComponentType2;
-  typedef typename itk::Image<ComponentType2, VectorInputImageType2::ImageDimension> ComponentImageType2;
+  typedef TImageType2                                                                    VectorInputImageType2;
+  typedef typename VectorInputImageType2::InternalPixelType                              ComponentType2;
+#ifdef RTK_USE_CUDA
+  typedef typename itk::CudaImage<ComponentType2, VectorInputImageType2::ImageDimension> ComponentImageType2;
+#else
+  typedef typename itk::Image<ComponentType2, VectorInputImageType2::ImageDimension>     ComponentImageType2;
+#endif
   typedef ComponentImageType2  InputImageType2;]]
 else
    OUT= OUT..[[
@@ -175,7 +189,12 @@ OUT=OUT..[[
 elseif output_pixel_type then
 OUT=OUT..[[
   // Define output image type
-  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;]]
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
+#else
+  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension >     OutputImageType;
+#endif
+    ]]
 else
   OUT=OUT..[[
   // Define output image type
