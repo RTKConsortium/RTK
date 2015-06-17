@@ -1,0 +1,49 @@
+{
+  "name" : "CudaFDKConeBeamReconstructionFilter",
+  "template_code_filename" : "RTKImageFilter",
+  "template_test_filename" : "ImageFilter",
+  "number_of_inputs" : 2,
+  "doc" : "",
+  "output_image_type" : "TImageType",
+  "pixel_types" : "typelist::MakeTypeList< BasicPixelID<float> >::Type",
+  "filter_type" : "rtk::CudaFDKConeBeamReconstructionFilter",
+  "include_files" : [
+    "srtkThreeDCircularProjectionGeometry.h"
+  ],
+  "members" : [
+	{
+      "name" : "Geometry",
+      "type" : "ThreeDCircularProjectionGeometry*",
+      "default" : "0",
+	  "itk_type" : "ThreeDCircularProjectionGeometry",
+      "custom_itk_cast" : "filter->SetGeometry( const_cast<rtk::ThreeDCircularProjectionGeometry*>(dynamic_cast<const rtk::ThreeDCircularProjectionGeometry*>(this->m_Geometry->GetRTKBase())) );\n",
+      "doc" : "",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the object pointer to projection geometry.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the object pointer to projection geometry."
+    },
+    {
+      "name" : "TruncationCorrection",
+      "type" : "double",
+      "default" : "0.0",
+	  "custom_itk_cast" : "filter->GetRampFilter()->SetTruncationCorrection( this->m_TruncationCorrection );\n",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the percentage of the image widthfeathered with data to correct for truncation.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get he percentage of the image widthfeathered with data to correct for truncation."
+    },
+	{
+      "name" : "HannCutFrequency",
+      "type" : "double",
+      "default" : "0.0",
+	  "custom_itk_cast" : "filter->GetRampFilter()->SetHannCutFrequency( this->m_HannCutFrequency );\n",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the Hann window frequency.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the Hann window frequency."
+    }
+  ],
+  "briefdescription" : "Implements Feldkamp, David and Kress cone-beam reconstruction.",
+  "detaileddescription" : "CudaFDKConeBeamReconstructionFilter is a mini-pipeline filter which combines the different steps of the FDK cone-beam reconstruction filter: \n\n - rtk::FDKWeightProjectionFilter for 2D weighting of the projections, \n\n - rtk::FFTRampImageFilter for ramp filtering, \n\n - rtk::FDKBackProjectionImageFilter for backprojection.\n\n The input stack of projections is processed piece by piece (the size is controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter to extract sub-stacks."
+}
