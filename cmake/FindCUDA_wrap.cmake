@@ -75,6 +75,9 @@ else()
      )
 endif()
 
+# Propagate some flags to the CUDA host compiler
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler ${CUDA_CXX_FLAGS}")
+
 if(CUDA_FOUND)
   try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
          ${CMAKE_BINARY_DIR} 
