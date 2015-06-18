@@ -61,7 +61,7 @@ constantImageSource2.SetConstant(0.0)
 source2 = constantImageSource2.Execute()
 
 print("Performing reconstruction")
-feldkamp = srtk.FDKConeBeamReconstructionFilter()
+feldkamp = srtk.CudaFDKConeBeamReconstructionFilter()
 feldkamp.SetGeometry( geometry );
 feldkamp.SetTruncationCorrection(0.0);
 feldkamp.SetHannCutFrequency(0.0);
