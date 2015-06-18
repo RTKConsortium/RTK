@@ -101,7 +101,7 @@ public:
       return this->m_ProjectionGeometry->GetSourceAngles();
     }
 
-  const std::vector<double> &GetTiltAngles() const
+  const std::vector<double> GetTiltAngles() const
     {
       return this->m_ProjectionGeometry->GetTiltAngles();
     }
@@ -224,7 +224,7 @@ const std::vector<double> &ThreeDCircularProjectionGeometry::GetSourceAngles() c
     return this->m_PimpleThreeDCircularProjectionGeometry->GetSourceAngles();
   }
 
-const std::vector<double> &ThreeDCircularProjectionGeometry::GetTiltAngles() const
+const std::vector<double> ThreeDCircularProjectionGeometry::GetTiltAngles() const
   {
     assert( m_PimpleThreeDCircularProjectionGeometry );
     return this->m_PimpleThreeDCircularProjectionGeometry->GetTiltAngles();
