@@ -18,10 +18,15 @@
 #ifndef __srtkPixelIDTypes_h
 #define __srtkPixelIDTypes_h
 
+#include "rtkConfiguration.h"
 
 namespace itk
 {
+#ifdef RTK_USE_CUDA
+template <typename TPixelType, unsigned int VImageDimension> class CudaImage;
+#else
 template <typename TPixelType, unsigned int VImageDimension> class Image;
+#endif
 template <typename TPixelType, unsigned int VImageDimension > class VectorImage;
 template < typename TLabelObject > class LabelMap;
 template < typename TLabelObject, unsigned int VImageDimension > class LabelObject;
@@ -103,7 +108,11 @@ template <typename TPixelIDType, unsigned int VImageDimension> struct PixelIDToI
 template <typename TPixelType, unsigned int VImageDimension>
 struct PixelIDToImageType< BasicPixelID<TPixelType> , VImageDimension >
 {
-  typedef itk::Image< TPixelType, VImageDimension > ImageType;
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< TPixelType, VImageDimension > ImageType;
+#else
+  typedef itk::Image< TPixelType, VImageDimension >     ImageType;
+#endif
 };
 
 template <typename TVectorPixelType, unsigned int VImageDimension>
@@ -135,8 +144,13 @@ struct PixelIDToImageType< LabelPixelID< TLabelType >, VImageDimension >
  * @{ */
 template <typename TImageType> struct ImageTypeToPixelID;
 
+#ifdef RTK_USE_CUDA
+template <typename TPixelType, unsigned int VImageDimension>
+struct ImageTypeToPixelID< itk::CudaImage< TPixelType, VImageDimension> >
+#else
 template <typename TPixelType, unsigned int VImageDimension>
 struct ImageTypeToPixelID< itk::Image< TPixelType, VImageDimension> >
+#endif
 {
   typedef BasicPixelID<TPixelType > PixelIDType;
 };

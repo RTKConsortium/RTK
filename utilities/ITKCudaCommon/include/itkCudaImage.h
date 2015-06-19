@@ -71,6 +71,17 @@ public:
 
   typedef NeighborhoodAccessorFunctor< Self >   NeighborhoodAccessorFunctorType;
 
+  /**
+   * example usage:
+   * typedef typename ImageType::template Rebind< float >::Type OutputImageType;
+   *
+   */
+  template <typename UPixelType, unsigned int UImageDimension = VImageDimension>
+  struct Rebind
+    {
+      typedef itk::CudaImage<UPixelType, UImageDimension>  Type;
+    };
+
   //
   // Allocate CPU and Cuda memory space
   //

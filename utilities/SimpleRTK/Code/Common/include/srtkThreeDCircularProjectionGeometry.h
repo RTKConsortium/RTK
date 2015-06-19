@@ -67,7 +67,7 @@ public:
   const std::vector<double> &GetOutOfPlaneAngles() const;
   const std::vector<double> &GetInPlaneAngles() const;
   const std::vector<double> &GetSourceAngles() const;
-  const std::vector<double> &GetTiltAngles() const;
+  const std::vector<double>  GetTiltAngles() const;
   const std::vector<double> &GetSourceToIsocenterDistances() const;
   const std::vector<double> &GetSourceOffsetsX() const;
   const std::vector<double> &GetSourceOffsetsY() const;

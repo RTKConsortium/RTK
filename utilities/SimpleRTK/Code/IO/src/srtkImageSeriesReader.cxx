@@ -21,6 +21,10 @@
 
 #include "srtkImageSeriesReader.h"
 
+#include <rtkConfiguration.h>
+#ifdef RTK_USE_CUDA
+# include <itkCudaImage.h>
+#endif
 #include <itkImageIOBase.h>
 #include <itkImageSeriesReader.h>
 

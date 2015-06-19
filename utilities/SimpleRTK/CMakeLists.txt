@@ -66,6 +66,7 @@ endif()
 
 find_package(RTK REQUIRED ) # the modules needed can be listed here as required components
 if(RTK_FOUND)
+  INCLUDE(${RTK_USE_FILE})
   link_directories( "${RTK_LIBRARY_DIRS}")
 endif()
 

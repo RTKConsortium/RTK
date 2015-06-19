@@ -23,6 +23,10 @@
 
 #include "srtkCastImageFilter.h"
 
+#include <rtkConfiguration.h>
+#ifdef RTK_USE_CUDA
+# include <itkCudaImage.h>
+#endif
 #include <itkComposeImageFilter.h>
 #include <itkLabelImageToLabelMapFilter.h>
 #include <itkLabelMapToLabelImageFilter.h>
@@ -99,7 +103,11 @@ Image CastImageFilter::ExecuteInternalToLabel( const Image& inImage )
   typedef typename OutputImageType::LabelObjectType LabelObjectType;
   typedef typename LabelObjectType::LabelType       LabelType;
 
-  typedef itk::Image<LabelType, InputImageType::ImageDimension> LabelImageType;
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<LabelType, InputImageType::ImageDimension> LabelImageType;
+#else
+  typedef itk::Image<LabelType, InputImageType::ImageDimension>     LabelImageType;
+#endif
 
   typename InputImageType::ConstPointer image = this->CastImageToITK<InputImageType>( inImage );
 

@@ -18,6 +18,10 @@
 
 #include "srtkImageFileWriter.h"
 
+#include <rtkConfiguration.h>
+#ifdef RTK_USE_CUDA
+# include <itkCudaImage.h>
+#endif
 #include <itkImageIOBase.h>
 #include <itkImageFileWriter.h>
 #include <itkImageRegionIterator.h>
