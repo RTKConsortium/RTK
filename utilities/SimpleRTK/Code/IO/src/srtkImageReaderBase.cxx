@@ -22,6 +22,10 @@
 
 // Include the Transform IO here, so that the IO factory registration
 // will occour.
+#include <rtkConfiguration.h>
+#ifdef RTK_USE_CUDA
+# include <itkCudaImage.h>
+#endif
 #include <itkTransformFileReader.h>
 #include <itkTransformFileWriter.h>
 
@@ -122,6 +126,40 @@ ImageReaderBase
 {
   const unsigned int UnusedDimension = 2;
 
+#ifdef RTK_USE_CUDA
+  switch(componentType)
+    {
+    case itk::ImageIOBase::CHAR:
+      return ImageTypeToPixelIDValue< itk::CudaImage<int8_t, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::UCHAR:
+      return ImageTypeToPixelIDValue< itk::CudaImage<uint8_t, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::SHORT:
+      return ImageTypeToPixelIDValue< itk::CudaImage<int16_t, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::USHORT:
+      return ImageTypeToPixelIDValue< itk::CudaImage<uint16_t, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::INT:
+      return ImageTypeToPixelIDValue< itk::CudaImage<int32_t, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::UINT:
+      return ImageTypeToPixelIDValue< itk::CudaImage<uint32_t, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::LONG:
+      return ImageTypeToPixelIDValue< itk::CudaImage<long, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::ULONG:
+      return ImageTypeToPixelIDValue< itk::CudaImage<unsigned long, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::FLOAT:
+      return ImageTypeToPixelIDValue< itk::CudaImage<float, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::DOUBLE:
+      return ImageTypeToPixelIDValue< itk::CudaImage<double, UnusedDimension> >::Result;
+      break;
+#else
   switch(componentType)
     {
     case itk::ImageIOBase::CHAR:
@@ -154,6 +192,7 @@ ImageReaderBase
     case itk::ImageIOBase::DOUBLE:
       return ImageTypeToPixelIDValue< itk::Image<double, UnusedDimension> >::Result;
       break;
+#endif
     case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
     default:
       assert( false ); // should never get here unless we forgot a type
@@ -170,12 +209,21 @@ ImageReaderBase
 
   switch(componentType)
     {
+#ifdef RTK_USE_CUDA
+    case itk::ImageIOBase::FLOAT:
+      return ImageTypeToPixelIDValue< itk::CudaImage<std::complex<float>, UnusedDimension> >::Result;
+      break;
+    case itk::ImageIOBase::DOUBLE:
+      return ImageTypeToPixelIDValue< itk::CudaImage<std::complex<double>, UnusedDimension> >::Result;
+      break;
+#else
     case itk::ImageIOBase::FLOAT:
       return ImageTypeToPixelIDValue< itk::Image<std::complex<float>, UnusedDimension> >::Result;
       break;
     case itk::ImageIOBase::DOUBLE:
       return ImageTypeToPixelIDValue< itk::Image<std::complex<double>, UnusedDimension> >::Result;
       break;
+#endif
     case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
     default:
       srtkExceptionMacro( "Only Complex image with float and double are supported!" );

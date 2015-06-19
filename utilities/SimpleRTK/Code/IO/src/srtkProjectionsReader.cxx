@@ -21,6 +21,10 @@
 
 #include "srtkProjectionsReader.h"
 
+#include <rtkConfiguration.h>
+#ifdef RTK_USE_CUDA
+# include <itkCudaImage.h>
+#endif
 #include <rtkProjectionsReader.h>
 #include <itkChangeInformationImageFilter.h>
 

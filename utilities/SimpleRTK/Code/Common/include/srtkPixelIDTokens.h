@@ -44,9 +44,15 @@ struct IsBasic< BasicPixelID<TPixelType> >
   typedef typename TrueType::value_type ValueType;
   typedef typename TrueType::type       Type;
 };
+#ifdef RTK_USE_CUDA
+template <typename TPixelType, unsigned int VImageDimension>
+struct IsBasic< itk::CudaImage< TPixelType, VImageDimension> >
+  : public IsBasic< typename ImageTypeToPixelID< itk::CudaImage<TPixelType, VImageDimension> >::PixelIDType >
+#else
 template <typename TPixelType, unsigned int VImageDimension>
 struct IsBasic< itk::Image< TPixelType, VImageDimension> >
   : public IsBasic< typename ImageTypeToPixelID< itk::Image<TPixelType, VImageDimension> >::PixelIDType >
+#endif
 {};
 
 
@@ -97,9 +103,15 @@ struct IsInstantiated
   typedef typename nsstd::integral_constant<bool, Value>::value_type ValueType;
   typedef typename nsstd::integral_constant<bool, Value>::type       Type;
 };
+#ifdef RTK_USE_CUDA
+template <typename TPixelType, unsigned int VImageDimension>
+struct IsInstantiated< itk::CudaImage< TPixelType, VImageDimension> >
+  : public IsInstantiated< typename ImageTypeToPixelID< itk::CudaImage<TPixelType, VImageDimension> >::PixelIDType >
+#else
 template <typename TPixelType, unsigned int VImageDimension>
 struct IsInstantiated< itk::Image< TPixelType, VImageDimension> >
   : public IsInstantiated< typename ImageTypeToPixelID< itk::Image<TPixelType, VImageDimension> >::PixelIDType >
+#endif
 {};
 template <typename TPixelType, unsigned int VImageDimension>
 struct IsInstantiated< itk::VectorImage< TPixelType, VImageDimension> >

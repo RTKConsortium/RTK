@@ -17,6 +17,10 @@
  *=========================================================================*/
 #include "srtkHashImageFilter.h"
 #include "srtkCastImageFilter.h"
+#include "rtkConfiguration.h"
+#ifdef RTK_USE_CUDA
+# include "itkCudaImage.h"
+#endif
 #include "itkHashImageFilter.h"
 #include "itkVectorImage.h"
 #include "itkLabelMap.h"
@@ -80,7 +84,11 @@ namespace rtk {
     {
       typedef TLabelImageType LabelImageType;
 
-      typedef itk::Image< typename LabelImageType::PixelType, LabelImageType::ImageDimension > ScalarImageType;
+#ifdef RTK_USE_CUDA
+      typedef itk::CudaImage< typename LabelImageType::PixelType, LabelImageType::ImageDimension > ScalarImageType;
+#else
+      typedef itk::Image< typename LabelImageType::PixelType, LabelImageType::ImageDimension >     ScalarImageType;
+#endif
 
       // The image id for a scalar image of the label map image
       PixelIDValueEnum scalarID = static_cast<PixelIDValueEnum>(PixelIDToPixelIDValue< typename ImageTypeToPixelID<ScalarImageType>::PixelIDType >::Result);
