@@ -8,8 +8,14 @@ cd /tmp/itk
 BUILDTYPE=Release
 if test $# -gt 3
 then
-	git checkout v${1}.${2}.${3}
-	DIRNAME=itk${1}${2}${3}-${4}
+	if test "${3}" == ""
+	then
+		git checkout v${1}.${2}
+		DIRNAME=itk${1}${2}-${4}
+	else
+		git checkout v${1}.${2}.${3}
+		DIRNAME=itk${1}${2}${3}-${4}
+	fi
 	BUILDTYPE=${4}
 elif test $# -gt 2
 then
