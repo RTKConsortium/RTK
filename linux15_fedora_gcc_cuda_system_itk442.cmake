@@ -6,7 +6,7 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
 set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk442")
 set(ENV{ITK_DIR} "/home/srit/src/itk442/lin64-dg/lib/cmake/ITK-4.4")
-set(ENV{CUDA_BIN_PATH} "/usr/local/cuda-6.5/bin")
+set(ENV{CUDA_BIN_PATH} "/usr/bin")
 set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia")
 set(CTEST_BUILD_FLAGS -j8)
 
@@ -14,8 +14,9 @@ set(CTEST_BUILD_FLAGS -j8)
 set(ENV{LD_LIBRARY_PATH} "/usr/lib64/nvidia:$ENV{LD_LIBRARY_PATH}")
 set(CONFIGURE_OPTIONS
    -DOPENCL_LIBRARIES:PATH=/usr/lib64/nvidia/libOpenCL.so.1
-   -DOPENCL_INCLUDE_DIRS:PATH=/usr/local/cuda-6.5/include
+   -DOPENCL_INCLUDE_DIRS:PATH=/usr/include
    -DRTK_USE_CUDA:BOOL=ON
+   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/nvidia/libcuda.so.1
    -DRTK_USE_OPENCL:BOOL=ON
   )
 
