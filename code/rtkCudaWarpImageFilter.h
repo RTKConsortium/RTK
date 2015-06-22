@@ -45,15 +45,15 @@ class CudaWarpImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                             ImageType;
-  typedef itk::CovariantVector<float, 3>                      DisplacementVectorType;
-  typedef itk::CudaImage<DisplacementVectorType, 3>           DVFType;
-  typedef itk::WarpImageFilter< ImageType, ImageType, DVFType>     WarpImageFilterType;
-  typedef CudaWarpImageFilter                                 Self;
+  typedef itk::CudaImage<float,3>                              ImageType;
+  typedef itk::CovariantVector<float, 3>                       DisplacementVectorType;
+  typedef itk::CudaImage<DisplacementVectorType, 3>            DVFType;
+  typedef itk::WarpImageFilter< ImageType, ImageType, DVFType> WarpImageFilterType;
+  typedef CudaWarpImageFilter                                  Self;
   typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     WarpImageFilterType>                     Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
+                     WarpImageFilterType>                      Superclass;
+  typedef itk::SmartPointer<Self>                              Pointer;
+  typedef itk::SmartPointer<const Self>                        ConstPointer;
 
   typedef ImageType::RegionType            OutputImageRegionType;
 
