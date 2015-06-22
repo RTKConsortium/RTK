@@ -17,5 +17,9 @@ set(ENV{LD_LIBRARY_PATH} "/home/srit/src/gcc/gcc472-install/lib:$ENV{LD_LIBRARY_
 set(ENV{PATH} "/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/srit/src/gcc/gcc436-install/bin")
 set(ENV{PATH} "/home/srit/src/gcc/gcc472-install/bin:$ENV{PATH}")
 
+set(CONFIGURE_OPTIONS
+   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/nvidia/libcuda.so.1
+  )
+
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 
