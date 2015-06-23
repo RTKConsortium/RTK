@@ -122,7 +122,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
   if(args_info.newdirection_given)
     {
     direction.Fill(args_info.newdirection_arg[0]);
-    for(int i=0; i<args_info.newdirection_given; i++)
+    for(unsigned int i=0; i<args_info.newdirection_given; i++)
       direction[i/Dimension][i%Dimension] = args_info.newdirection_arg[i];
     reader->SetDirection(direction);
     }
@@ -130,7 +130,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
   if(args_info.newspacing_given)
     {
     spacing.Fill(args_info.newspacing_arg[0]);
-    for(int i=0; i<args_info.newspacing_given; i++)
+    for(unsigned int i=0; i<args_info.newspacing_given; i++)
       spacing[i] = args_info.newspacing_arg[i];
     reader->SetSpacing(spacing);
     }
@@ -138,7 +138,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
   if(args_info.neworigin_given)
     {
     direction.Fill(args_info.neworigin_arg[0]);
-    for(int i=0; i<args_info.neworigin_given; i++)
+    for(unsigned int i=0; i<args_info.neworigin_given; i++)
       origin[i] = args_info.neworigin_arg[i];
     reader->SetOrigin(origin);
     }
@@ -147,17 +147,17 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
   typename TProjectionsReaderType::OutputImageSizeType upperCrop, lowerCrop;
   upperCrop.Fill(0);
   lowerCrop.Fill(0);
-  for(int i=0; i<args_info.lowercrop_given; i++)
+  for(unsigned int i=0; i<args_info.lowercrop_given; i++)
     lowerCrop[i] = args_info.lowercrop_arg[i];
   reader->SetLowerBoundaryCropSize(lowerCrop);
-  for(int i=0; i<args_info.uppercrop_given; i++)
+  for(unsigned int i=0; i<args_info.uppercrop_given; i++)
     upperCrop[i] = args_info.uppercrop_arg[i];
   reader->SetUpperBoundaryCropSize(upperCrop);
 
   // Shrink / Binning
   typename TProjectionsReaderType::ShrinkFactorsType binFactors;
   binFactors.Fill(1);
-  for(int i=0; i<args_info.binning_given; i++)
+  for(unsigned int i=0; i<args_info.binning_given; i++)
     binFactors[i] = args_info.binning_arg[i];
   reader->SetShrinkFactors(binFactors);
 
