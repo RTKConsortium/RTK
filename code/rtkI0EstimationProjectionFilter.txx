@@ -170,7 +170,7 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
   unsigned short maxId = startIdx;
   unsigned       maxVal = m_Histogram[startIdx];
 
-  while (idx < (m_Imax >> bitShift))
+  while (idx < (unsigned)(m_Imax >> bitShift))
   {
     if (m_Histogram[idx] >= maxVal)
     {
