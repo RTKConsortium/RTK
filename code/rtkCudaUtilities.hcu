@@ -19,10 +19,12 @@
 #ifndef __rtkCudaUtilities_hcu
 #define __rtkCudaUtilities_hcu
 
-#include <math.h>
-#define __CUDA_INTERNAL_COMPILATION__
-#include <math_functions.h>
-#undef __CUDA_INTERNAL_COMPILATION__
+#ifdef _WIN32
+# include <math.h>
+# define __CUDA_INTERNAL_COMPILATION__
+# include <math_functions.h>
+# undef __CUDA_INTERNAL_COMPILATION__
+#endif
 
 #include <cuda_runtime_api.h>
 #include <string>
