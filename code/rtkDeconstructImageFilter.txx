@@ -52,17 +52,16 @@ void DeconstructImageFilter<TImage>
   this->Modified();
 
   //Set required number of outputs
-  unsigned int requiredNumberOfOutputs = this->CalculateNumberOfOutputs();
+  int requiredNumberOfOutputs = this->CalculateNumberOfOutputs();
   this->SetNumberOfRequiredOutputs(requiredNumberOfOutputs);
 
   //Make actual outputs and required outputs match
   int actualNumberOfOutputs = this->GetNumberOfOutputs();
-  int idx;
 
   if (actualNumberOfOutputs < requiredNumberOfOutputs)
     {
     //Add extra outputs
-    for (idx = actualNumberOfOutputs; idx < requiredNumberOfOutputs; idx++)
+    for (int idx = actualNumberOfOutputs; idx < requiredNumberOfOutputs; idx++)
       {
       typename itk::DataObject::Pointer output = this->MakeOutput(idx);
       this->SetNthOutput(idx, output.GetPointer());
@@ -71,7 +70,7 @@ void DeconstructImageFilter<TImage>
   else if (actualNumberOfOutputs > requiredNumberOfOutputs)
   {
   //Remove extra outputs
-  for (idx = (actualNumberOfOutputs-1); idx >= requiredNumberOfOutputs; idx--)
+  for (int idx = (actualNumberOfOutputs-1); idx >= requiredNumberOfOutputs; idx--)
     {
     if (idx < 0){break;}
     this->RemoveOutput(idx);
@@ -104,7 +103,7 @@ void DeconstructImageFilter<TImage>
 
   // Fill it with the right values
   unsigned int powerOfTwo = 1;
-  for (unsigned int dim = 0; dim<dimension; dim++)
+  for (int dim = 0; dim<dimension; dim++)
     {
     for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
       {
@@ -160,7 +159,7 @@ void DeconstructImageFilter<TImage>
   // Cascade pipeline
   // Set all the filters and connect them together
   unsigned int *downsamplingFactors = new unsigned int[dimension];
-  for (unsigned int d=0; d<dimension; d++) downsamplingFactors[d]=2;
+  for (int d=0; d<dimension; d++) downsamplingFactors[d]=2;
 
   for (unsigned int l=0; l<m_NumberOfLevels; l++)
     {

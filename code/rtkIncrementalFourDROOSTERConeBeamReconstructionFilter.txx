@@ -117,7 +117,7 @@ IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Projection
   unsigned int constraintIndex = 0;
 
   // Real work
-  for (unsigned int ml_iter=0; ml_iter < this->m_MainLoop_iterations; ml_iter++)
+  for (int ml_iter=0; ml_iter < this->m_MainLoop_iterations; ml_iter++)
     {
     for (unsigned int costTerm = 0; costTerm < m_NumberOfSubsets + 2; costTerm++)
       {

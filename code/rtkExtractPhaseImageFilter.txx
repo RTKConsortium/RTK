@@ -129,7 +129,7 @@ ExtractPhaseImageFilter<TImage>
   if(m_MinimaPositions[currMinPos] < m_MaximaPositions.front())
     {
     // Before first maximum
-    for(unsigned int i=0; i<m_MaximaPositions.front(); i++)
+    for(int i=0; i<m_MaximaPositions.front(); i++)
       if(sig[i] < sig[ m_MinimaPositions[currMinPos] ])
         m_MinimaPositions[currMinPos] = i;
     currMinPos++;
@@ -137,14 +137,14 @@ ExtractPhaseImageFilter<TImage>
   for(unsigned int j=1; j<m_MaximaPositions.size(); j++, currMinPos++)
     {
     // Between maxima
-    for(unsigned int i=m_MaximaPositions[j-1]; i<m_MaximaPositions[j]; i++)
+    for(int i=m_MaximaPositions[j-1]; i<m_MaximaPositions[j]; i++)
       if(sig[i] < sig[ m_MinimaPositions[currMinPos] ])
         m_MinimaPositions[currMinPos] = i;
     }
   if(m_MinimaPositions.back() > m_MaximaPositions.back())
     {
     // After last maximum
-    for(unsigned int i=m_MaximaPositions.back(); i<nsig; i++)
+    for(int i=m_MaximaPositions.back(); i<nsig; i++)
       if(sig[i] < sig[ m_MinimaPositions[currMinPos] ])
         m_MinimaPositions[currMinPos] = i;
     }
@@ -154,7 +154,7 @@ ExtractPhaseImageFilter<TImage>
   if(m_MaximaPositions[currMaxPos] < m_MinimaPositions.front())
     {
     // Before first minimum
-    for(unsigned int i=0; i<m_MinimaPositions.front(); i++)
+    for(int i=0; i<m_MinimaPositions.front(); i++)
       if(sig[i] > sig[ m_MaximaPositions[currMaxPos] ])
         m_MaximaPositions[currMaxPos] = i;
     currMaxPos++;
@@ -162,14 +162,14 @@ ExtractPhaseImageFilter<TImage>
   for(unsigned int j=1; j<m_MinimaPositions.size(); j++, currMaxPos++)
     {
     // Between minima
-    for(unsigned int i=m_MinimaPositions[j-1]; i<m_MinimaPositions[j]; i++)
+    for(int i=m_MinimaPositions[j-1]; i<m_MinimaPositions[j]; i++)
       if(sig[i] > sig[ m_MaximaPositions[currMaxPos] ])
         m_MaximaPositions[currMaxPos] = i;
     }
   if(m_MaximaPositions.back() > m_MinimaPositions.back())
     {
     // After last minimum
-    for(unsigned int i=m_MinimaPositions.back(); i<nsig; i++)
+    for(int i=m_MinimaPositions.back(); i<nsig; i++)
       if(sig[i] > sig[ m_MaximaPositions[currMaxPos] ])
         m_MaximaPositions[currMaxPos] = i;
     }
@@ -232,7 +232,7 @@ ExtractPhaseImageFilter<TImage>
 
  // After the last position
  slope = 1./(positions.back()-positions[positions.size()-2]);
- for(int i=positions.back(); i<this->GetOutput()->GetLargestPossibleRegion().GetSize(0); i++, ++it)
+ for(unsigned int i=positions.back(); i<this->GetOutput()->GetLargestPossibleRegion().GetSize(0); i++, ++it)
    {
    phase = slope * (i-positions[positions.size()-2]);
    phase -= itk::Math::Floor<typename TImage::PixelType>(phase);

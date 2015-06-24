@@ -70,7 +70,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>
 
   os << i << "m_Order=" << this->GetOrder() << std::endl;
   os << i << "m_Pass=" << std::endl;
-  for (unsigned int dim=0; dim<TImage::ImageDimension; dim++)
+  for (int dim=0; dim<TImage::ImageDimension; dim++)
     {
     os << i << i << this->m_Pass[dim] << std::endl;
     }
@@ -253,11 +253,11 @@ void
 DaubechiesWaveletsConvolutionImageFilter<TImage>
 ::GenerateData()
 {
-  unsigned int dim = TImage::ImageDimension;
+  int dim = TImage::ImageDimension;
 
   // Create a vector holding the coefficients along each direction
   CoefficientVector *coeffs = new CoefficientVector[dim];
-  for(unsigned int d=0; d<dim; d++)
+  for(int d=0; d<dim; d++)
     {
     if (m_Type == Self::Deconstruct)
       {
