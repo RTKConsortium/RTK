@@ -30,16 +30,16 @@ CudaDataManager::CudaDataManager()
   m_GPUBuffer = GPUMemPointer::New();
   this->Initialize();
 
-  m_ReleaseDirtyGPUBuffer = false;
+  m_ReleaseDirtyGPUBuffer = true;
   std::string relString;
   if( itksys::SystemTools::GetEnv("ITK_RELEASE_DIRTY_GPU_BUFFERS",relString) &&
-      (itksys::SystemTools::LowerCase(relString) == "true" ||
+      (itksys::SystemTools::LowerCase(relString) == "false" ||
        atoi( relString.c_str() ) !=0) )
     {
 #ifdef VERBOSE
     std::cout << "Releasing dirty GPU buffer" << std::endl;
 #endif
-    m_ReleaseDirtyGPUBuffer = true;
+    m_ReleaseDirtyGPUBuffer = false;
     }
 }
 

@@ -70,8 +70,7 @@ rtk::CudaConjugateGradientImageFilter_3f
   CUDA_subtract_3f(size, pB, pAOut, pR);
 
   // B is now useless, and the memory it takes on the GPU is critical.
-  // Transfer it back to the CPU memory (note that this will only
-  // release GPU memory if with ITK_RELEASE_DIRTY_GPU_BUFFERS is set to true)
+  // Transfer it back to the CPU memory
   this->GetB()->GetCudaDataManager()->GetCPUBufferPointer();
 
   // Initialize P_k
