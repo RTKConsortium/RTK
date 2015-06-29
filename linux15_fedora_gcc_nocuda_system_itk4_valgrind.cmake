@@ -5,7 +5,7 @@ set(CTEST_BUILD_CONFIGURATION RelWithDebInfo)
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
 set(dashboard_binary_name "RTK_lin64_gcc_nocuda_system_itk4_valgrind")
-set(ENV{ITK_DIR} "/home/srit/src/itk452-RelWithDebInfo/lin64-dg")
+set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-dg")
 set(CTEST_BUILD_FLAGS -j8)
 
 SET(ENV{VALGRIND_LIB} "/usr/lib64/valgrind")
