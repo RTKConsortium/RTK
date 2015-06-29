@@ -14,10 +14,10 @@ git clone git://github.com/SimonRit/RTK.git /tmp/RTK_dashboard/RTK
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda41_itk4.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda42_itk4.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda50_itk4.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda60_itk4.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda70_itk4.cmake
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda70_itk4_sharedlibs.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4.cmake -V
-ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk420.cmake -V
-ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk430.cmake -V
-ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk460.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_cov.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_nofftw.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_valgrind.cmake -V
@@ -30,4 +30,7 @@ export PATH=/home/srit/src/cmake/lin64-dg-v312-gcc450/bin:$PATH
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc450_cuda40_itk4.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc454_cuda40_itk4.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc472_cuda40_itk4.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk420.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk430.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk460.cmake -V
 
