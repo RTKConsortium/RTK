@@ -22,9 +22,9 @@
 /*****************
 *  rtk #includes *
 *****************/
+#include "rtkCudaUtilities.hcu"
 #include "rtkConfiguration.h"
 #include "rtkCudaBackProjectionImageFilter.hcu"
-#include "rtkCudaUtilities.hcu"
 
 /*****************
 *  C   #includes *

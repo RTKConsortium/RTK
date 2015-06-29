@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 // rtk includes
-#include "rtkCudaFFTConvolutionImageFilter.hcu"
 #include "rtkCudaUtilities.hcu"
+#include "rtkCudaFFTConvolutionImageFilter.hcu"
 
 #include <itkMacro.h>
 
