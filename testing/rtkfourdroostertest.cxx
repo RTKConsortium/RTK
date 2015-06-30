@@ -273,7 +273,6 @@ int main(int, char** )
         vec[0] = 8.;
       }
     dvfIt.Set(vec);
-    ++dvfIt;
     }
 
   // Ground truth
