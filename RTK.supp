@@ -1,9 +1,19 @@
 {
-   HDF5
+   pthread
+   Memcheck:Leak
+   ...
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.2.5
+   ...
+}
+{
+   dll
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   fun:H5P_create_prop
+   obj:/usr/lib64/libstdc++.so.6.0.21
+   fun:call_init.part.0
+   fun:_dl_init
    ...
 }
 {
@@ -11,47 +21,7 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   fun:H5FL_fac_malloc
-   ...
-}
-{
-   HDF5
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:H5MM_xstrdup
-   ...
-}
-{
-   HDF5
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:H5FL_reg_malloc
-   ...
-}
-{
-   HDF5
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:H5L_register
-   ...
-}
-{
-   HDF5
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:H5FL_reg_calloc
-   ...
-}
-{
-   HDF5
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:H5T_register
+   fun:H5*
    ...
 }
 {
@@ -59,15 +29,7 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:realloc
-   fun:H5SL_insert_common
-   ...
-}
-{
-   HDF5
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:H5FL_fac_init
+   fun:H5*
    ...
 }
 {
@@ -75,23 +37,15 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:calloc
-   fun:H5I_register_type
+   fun:H5*
    ...
 }
 {
-   HDF5
+   CUDA
    Memcheck:Leak
    match-leak-kinds: reachable
-   fun:malloc
-   fun:H5FD_register
    ...
-}
-{
-   HDF5
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:H5T_path_find
+   fun:cudaFree
    ...
 }
 {
@@ -108,16 +62,6 @@
    match-leak-kinds: possible
    ...
    fun:cuInit
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:_Znwm
-   ...
-   fun:_dl_fini
-   fun:__run_exit_handlers
    ...
 }
 {
@@ -148,8 +92,31 @@
 }
 {
    CUDA
+   Memcheck:Value8
+   ...
+   fun:cuCtxCreate_v2
+   ...
+}
+{
+   CUDA
+   Memcheck:Cond
+   ...
+   fun:cuCtxCreate_v2
+   ...
+}
+{
+   CUDA
    Memcheck:Leak
    match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:cuCtxCreate_v2
+   ...
+}
+{
+   CUDA
+   Memcheck:Leak
+   match-leak-kinds: definite
    fun:calloc
    ...
    fun:cuCtxCreate_v2
@@ -210,14 +177,14 @@
    ...
 }
 {
-   cublas 
+   cublas
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/usr/local/cuda-6.5/targets/x86_64-linux/lib/libcublas.so.6.5.14
-   obj:/usr/local/cuda-6.5/targets/x86_64-linux/lib/libcublas.so.6.5.14
-   obj:/usr/local/cuda-6.5/targets/x86_64-linux/lib/libcublas.so.6.5.14
-   obj:/usr/local/cuda-6.5/targets/x86_64-linux/lib/libcublas.so.6.5.14
+   obj:/usr/lib64/libcublas.so.6.5.19
+   obj:/usr/lib64/libcublas.so.6.5.19
+   obj:/usr/lib64/libcublas.so.6.5.19
+   obj:/usr/lib64/libcublas.so.6.5.19
    ...
 }
 {
@@ -255,26 +222,8 @@
    Memcheck:Leak
    ...
    fun:dlopen@@GLIBC_2.2.5
-   fun:load_BLAS
+   fun:load_BLAS.part.0
    fun:make_lp
-   ...
-}
-{
-   fftw
-   Memcheck:Leak
-   ...
-   fun:_dl_allocate_tls
-   fun:pthread_create@@GLIBC_2.2.5
-   fun:fftw_spawn_loop
-   ...
-}
-{
-   fftw
-   Memcheck:Leak
-   ...
-   fun:_dl_allocate_tls
-   fun:pthread_create@@GLIBC_2.2.5
-   fun:fftwf_spawn_loop
    ...
 }
 
