@@ -25,7 +25,18 @@ namespace itk
 CudaDataManager::CudaDataManager()
 {
   m_ContextManager = CudaContextManager::GetInstance();
-  CUDA_CHECK(cuCtxSetCurrent(*(m_ContextManager->GetCurrentContext())));
+
+  // Creating the context in the constructor allows avoiding a memory leak.
+  // However, the cuda data manager is created even if there is no use of CUDA
+  // software and sometimes one compiles RTK with CUDA but wants to use it
+  // without CUDA. So if the context pointer is NULL, which indicates that there
+  // is no CUDA device available, we just do not set the context (SR). This fixes
+  // the problem reported here:
+  // http://public.kitware.com/pipermail/rtk-users/2015-July/000570.html
+  CUcontext *ctx = m_ContextManager->GetCurrentContext();
+  if(ctx)
+    CUDA_CHECK(cuCtxSetCurrent(*ctx));
+
   m_CPUBuffer = NULL;
   m_GPUBuffer = GPUMemPointer::New();
   this->Initialize();
@@ -142,7 +153,7 @@ void CudaDataManager::UpdateGPUBuffer()
 #ifdef VERBOSE
       std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer->GetPointer() << " : " << m_BufferSize << std::endl;
 #endif
-      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context 
+      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
       CUDA_CHECK(cudaMemcpy(m_GPUBuffer->GetPointer(), m_CPUBuffer, m_BufferSize, cudaMemcpyHostToDevice));
       }
     m_IsGPUBufferDirty = false;

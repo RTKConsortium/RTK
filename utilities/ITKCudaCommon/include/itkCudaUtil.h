@@ -81,8 +81,6 @@ class ITK_EXPORT kernel                  \
  */
 int CudaGetLocalBlockSize(unsigned int ImageDim);
 
-std::vector<int> GetListOfCudaDevices();
-
 std::pair<int, int> GetCudaComputeCapability(int device);
 
 /** Get the devices that are available */
