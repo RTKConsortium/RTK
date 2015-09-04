@@ -35,6 +35,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_MainLoop_iterations=2;
   m_CG_iterations=2;
   m_PerformWarping=false;
+  m_ComputeInverseWarpingByConjugateGradient=true;
   m_WaveletsSpatialDenoising=false;
   m_PhaseShift = 0;
   m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
@@ -54,6 +55,12 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_WaveletsDenoisingSpace = SpatialWaveletsDenoisingFilterType::New();
   m_Warp = WarpSequenceFilterType::New();
   m_Unwarp = UnwarpSequenceFilterType::New();
+  m_InverseWarp = WarpSequenceFilterType::New();
+
+  // We create both the Unwarp and the InverseWarp filters,
+  // and connect and set only the relevant one
+  // when we know whether inverse warping is performed
+  // by conjugate gradient or with an inverse vector field
 
   // Set permanent connections
   m_PositivityFilter->SetInput(m_FourDCGFilter->GetOutput());
@@ -118,6 +125,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetInverseDisplacementField(const MVFSequenceImageType* MVFs)
+{
+  this->SetNthInput(4, const_cast<MVFSequenceImageType*>(MVFs));
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
 typename VolumeSeriesType::ConstPointer
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GetInputVolumeSeries()
@@ -151,6 +166,15 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
   return static_cast< MVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(3) );
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::Pointer
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GetInverseDisplacementField()
+{
+  return static_cast< MVFSequenceImageType * >
+          ( this->itk::ProcessObject::GetInput(4) );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -222,10 +246,19 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_TVDenoisingTime->SetInput(m_Warp->GetOutput());
     m_TVDenoisingTime->ReleaseDataFlagOn();
 
-    m_Unwarp->SetInput(0, m_TVDenoisingTime->GetOutput());
-    m_Unwarp->SetDisplacementField(this->GetDisplacementField());
-    m_Unwarp->SetPhaseShift(m_PhaseShift);
-    m_Unwarp->SetNumberOfIterations(4);
+    if (m_ComputeInverseWarpingByConjugateGradient)
+      {
+      m_Unwarp->SetNumberOfIterations(4);
+      m_Unwarp->SetInput(0, m_TVDenoisingTime->GetOutput());
+      m_Unwarp->SetDisplacementField(this->GetDisplacementField());
+      m_Unwarp->SetPhaseShift(m_PhaseShift);
+      }
+    else
+      {
+      m_InverseWarp->SetInput(0, m_TVDenoisingTime->GetOutput());
+      m_InverseWarp->SetDisplacementField(this->GetInverseDisplacementField());
+      m_InverseWarp->SetPhaseShift(m_PhaseShift);
+      }
     }
 }
 
@@ -246,18 +279,24 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   if (m_PerformWarping)
     {
     typename MVFSequenceImageType::Pointer input3Ptr  = this->GetDisplacementField();
-
     input3Ptr->SetRequestedRegionToLargestPossibleRegion();
+
+    if (!m_ComputeInverseWarpingByConjugateGradient)
+      {
+      typename MVFSequenceImageType::Pointer input4Ptr  = this->GetInverseDisplacementField();
+      input4Ptr->SetRequestedRegionToLargestPossibleRegion();
+      }
     }
   else
     {
-    // If the filter is used with m_PerformWarping = true, then with
+    // If the filter is used with m_PerformWarping = true, and then with
     // m_PerformWarping = false, it keeps requesting a region of the
     // input DVF, which by default may be larger than the largest
     // possible region of the DVF (it is the largest possible region of
     // the first input, and the sizes do not necessarily match).
     // This occurs, for example, in the fourdroostercudatest.
     this->RemoveInput(3);
+    this->RemoveInput(4);
     }
 }
 
@@ -284,10 +323,17 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_Warp->SetInput(0, m_TVDenoisingSpace->GetOutput());
 
     // Have the last filter calculate its output information
-    m_Unwarp->UpdateOutputInformation();
-
-    // Copy it as the output information of the composite filter
-    this->GetOutput()->CopyInformation( m_Unwarp->GetOutput() );
+    // and copy it as the output information of the composite filter
+    if (m_ComputeInverseWarpingByConjugateGradient)
+      {
+      m_Unwarp->UpdateOutputInformation();
+      this->GetOutput()->CopyInformation( m_Unwarp->GetOutput() );
+      }
+    else
+      {
+      m_InverseWarp->UpdateOutputInformation();
+      this->GetOutput()->CopyInformation( m_InverseWarp->GetOutput() );
+      }
     }
   else
     {
@@ -318,7 +364,12 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     if (i>0)
       {
       if (m_PerformWarping)
-        pimg = m_Unwarp->GetOutput();
+        {
+        if (m_ComputeInverseWarpingByConjugateGradient)
+          pimg = m_Unwarp->GetOutput();
+        else
+          pimg = m_InverseWarp->GetOutput();
+        }
       else
         pimg = m_TVDenoisingTime->GetOutput();
 
@@ -362,13 +413,23 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     if (m_PerformWarping)
       {
       m_UnwarpProbe.Start();
-      m_Unwarp->Update();
+
+      if (m_ComputeInverseWarpingByConjugateGradient)
+        m_Unwarp->Update();
+      else
+        m_InverseWarp->Update();
+
       m_UnwarpProbe.Stop();
       }
     }
 
   if (m_PerformWarping)
-    this->GraftOutput( m_Unwarp->GetOutput() );
+    {
+    if (m_ComputeInverseWarpingByConjugateGradient)
+      this->GraftOutput( m_Unwarp->GetOutput() );
+    else
+      this->GraftOutput( m_InverseWarp->GetOutput() );
+    }
   else
     this->GraftOutput( m_TVDenoisingTime->GetOutput() );
 }
@@ -396,7 +457,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
      << ' ' << m_TVTimeProbe.GetUnit() << std::endl;
   if (m_PerformWarping)
     {
-    os << "  Warping corrections from average position: " << m_UnwarpProbe.GetTotal()
+    os << "  Warping volumes back from average position: " << m_UnwarpProbe.GetTotal()
        << ' ' << m_UnwarpProbe.GetUnit() << std::endl;
     }
 }

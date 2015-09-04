@@ -143,6 +143,17 @@ int main(int argc, char * argv[])
     dvfReader->SetFileName( args_info.dvf_arg );
     dvfReader->Update();
     rooster->SetDisplacementField(dvfReader->GetOutput());
+
+    if (args_info.idvf_given)
+      {
+      rooster->SetComputeInverseWarpingByConjugateGradient(false);
+
+      // Read inverse DVF if provided
+      DVFReaderType::Pointer idvfReader = DVFReaderType::New();
+      idvfReader->SetFileName( args_info.idvf_arg );
+      idvfReader->Update();
+      rooster->SetInverseDisplacementField(idvfReader->GetOutput());
+      }
     }
 
   itk::TimeProbe readerProbe;

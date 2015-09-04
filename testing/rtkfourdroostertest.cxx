@@ -215,10 +215,11 @@ int main(int, char** )
     signalFile << (noProj % 8) / 8. << std::endl;
     }
 
-  // Create vector field
+  // Create a vector field and its (very rough) inverse
   typedef itk::ImageRegionIteratorWithIndex< MVFSequenceImageType > IteratorType;
 
   MVFSequenceImageType::Pointer deformationField = MVFSequenceImageType::New();
+  MVFSequenceImageType::Pointer inverseDeformationField = MVFSequenceImageType::New();
 
   MVFSequenceImageType::IndexType startMotion;
   startMotion[0] = 0; // first index on X
@@ -250,9 +251,15 @@ int main(int, char** )
   deformationField->SetSpacing(spacingMotion);
   deformationField->Allocate();
 
+  inverseDeformationField->SetRegions( regionMotion );
+  inverseDeformationField->SetOrigin(originMotion);
+  inverseDeformationField->SetSpacing(spacingMotion);
+  inverseDeformationField->Allocate();
+
   // Vector Field initilization
   MVFVectorType vec;
   IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
+  IteratorType idvfIt( inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion() );
 
   MVFSequenceImageType::OffsetType mvfCenter;
   MVFSequenceImageType::IndexType toCenter;
@@ -260,7 +267,7 @@ int main(int, char** )
   mvfCenter[0] = sizeMotion[0]/2;
   mvfCenter[1] = sizeMotion[1]/2;
   mvfCenter[2] = sizeMotion[2]/2;
-  for ( dvfIt.GoToBegin(); !dvfIt.IsAtEnd(); ++dvfIt)
+  while (!dvfIt.IsAtEnd())
     {
     vec.Fill(0.);
     toCenter = dvfIt.GetIndex() - mvfCenter;
@@ -273,6 +280,10 @@ int main(int, char** )
         vec[0] = 8.;
       }
     dvfIt.Set(vec);
+    idvfIt.Set(-vec);
+
+    ++dvfIt;
+    ++idvfIt;
     }
 
   // Ground truth
@@ -370,13 +381,14 @@ int main(int, char** )
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, TV spatial denoising and motion compensation ******" << std::endl;
+  std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, TV spatial denoising and motion compensation. Inverse warping by conjugate gradient ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 0 ); // Voxel based
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
   rooster->SetMainLoop_iterations( 2);
   rooster->SetWaveletsSpatialDenoising(false);
   rooster->SetPerformWarping(true);
+  rooster->SetComputeInverseWarpingByConjugateGradient(true);
   rooster->SetGammaSpace(1);
   rooster->SetDisplacementField(deformationField);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
@@ -384,8 +396,24 @@ int main(int, char** )
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector, TV spatial denoising and motion compensation. Inverse warping by warping with approximate inverse DVF ******" << std::endl;
+
+  rooster->SetBackProjectionFilter( 0 ); // Voxel based
+  rooster->SetForwardProjectionFilter( 0 ); // Joseph
+  rooster->SetMainLoop_iterations( 2);
+  rooster->SetWaveletsSpatialDenoising(false);
+  rooster->SetPerformWarping(true);
+  rooster->SetComputeInverseWarpingByConjugateGradient(false);
+  rooster->SetGammaSpace(1);
+  rooster->SetDisplacementField(deformationField);
+  rooster->SetInverseDisplacementField(inverseDeformationField);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+
+  CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector, TV spatial denoising ******" << std::endl;
+  std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector, TV spatial denoising ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 2 ); // Cuda voxel based
   rooster->SetForwardProjectionFilter( 2 ); // Cuda ray cast

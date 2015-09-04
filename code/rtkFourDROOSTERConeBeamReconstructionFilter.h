@@ -204,9 +204,11 @@ public:
   void SetMotionMask(const VolumeType* mask);
   typename VolumeType::Pointer            GetInputROI();
 
-  /** The motion vector field used to warp the sequence before and after TV denoising along time */
+  /** The motion vector fields used to warp the sequence before and after TV denoising along time */
   void SetDisplacementField(const MVFSequenceImageType* MVFs);
+  void SetInverseDisplacementField(const MVFSequenceImageType* MVFs);
   typename MVFSequenceImageType::Pointer            GetDisplacementField();
+  typename MVFSequenceImageType::Pointer            GetInverseDisplacementField();
 
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>    FourDCGFilterType;
   typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
@@ -252,9 +254,12 @@ public:
   itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
   itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
 
-  // Boolean : should warping be performed ?
+  // Booleans : should warping be performed ? how should inverse warping be performed ?
   itkSetMacro(PerformWarping, bool)
   itkGetMacro(PerformWarping, bool)
+
+  itkSetMacro(ComputeInverseWarpingByConjugateGradient, bool)
+  itkGetMacro(ComputeInverseWarpingByConjugateGradient, bool)
 
   /** Get / Set whether conjugate gradient should be performed on GPU */
   itkGetMacro(CudaConjugateGradient, bool)
@@ -298,12 +303,14 @@ protected:
   typename WarpSequenceFilterType::Pointer                m_Warp;
   typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
   typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
+  typename WarpSequenceFilterType::Pointer                m_InverseWarp;
 
   // Booleans :
   // should warping be performed ?
   // should conjugate gradient be performed on GPU ?
   // should wavelets replace TV in spatial denoising ?
   bool  m_PerformWarping;
+  bool  m_ComputeInverseWarpingByConjugateGradient;
   bool  m_CudaConjugateGradient;
   bool  m_WaveletsSpatialDenoising;
 
