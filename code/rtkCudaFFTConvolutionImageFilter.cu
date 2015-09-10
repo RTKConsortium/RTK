@@ -170,15 +170,18 @@ padding_kernel(float *input,
   // central part in CPU code
   else if (i>=0 && i<inputDim.x)
     output[out_idx] = input[i + (j + k*inputDim.y) * inputDim.x];
-  // left mirroring
+  // left mirroring (equation 3a in [Ohnesorge et al, Med Phys, 2000])
   else if (i<0 && -i<sizeWeights)
-    output[out_idx] = input[-i + (j + k*inputDim.y) * inputDim.x] * truncationWeights[-i];
-  // right mirroring
+    {
+    int begRow = (j + k*inputDim.y) * inputDim.x;
+    output[out_idx] = (2*input[begRow+1]-input[-i + begRow]) * truncationWeights[-i];
+    }
+  // right mirroring (equation 3b in [Ohnesorge et al, Med Phys, 2000])
   else if (i-inputDim.x<sizeWeights)
     {
     unsigned int borderDist = i-inputDim.x+1;
-    i = inputDim.x-1-borderDist;
-    output[out_idx] = input[i + (j + k*inputDim.y) * inputDim.x] * truncationWeights[borderDist];
+    int endRow = inputDim.x-1 + (j + k*inputDim.y) * inputDim.x;
+    output[out_idx] = (2*input[endRow]-input[endRow-borderDist]) * truncationWeights[borderDist];
     }
   // zero padding
   else

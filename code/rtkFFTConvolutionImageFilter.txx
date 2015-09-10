@@ -33,10 +33,10 @@ namespace rtk
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::FFTConvolutionImageFilter() :
-  m_KernelDimension(1),
   m_TruncationCorrection(0.),
   m_GreatestPrimeFactor(2),
-  m_BackupNumberOfThreads(1)
+  m_BackupNumberOfThreads(1),
+  m_KernelDimension(1)
 {
 #if defined(USE_FFTWD)
   if(typeid(TFFTPrecision).name() == typeid(double).name() )
@@ -201,35 +201,50 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   if(next)
     {
     typename FFTInputImageType::IndexType idx;
+    typename FFTInputImageType::IndexType iidx;   // Reference point (SA / SE)
     typename FFTInputImageType::IndexType::IndexValueType borderDist=0, rightIdx=0;
 
-    // Mirror left
+    // Mirror left (equation 3a in [Ohnesorge et al, Med Phys, 2000])
     RegionType leftRegion = inputRegion;
     leftRegion.SetIndex(0, inputRegion.GetIndex(0)-next);
     leftRegion.SetSize(0, next);
     itk::ImageRegionIteratorWithIndex<FFTInputImageType> itLeft(paddedImage, leftRegion);
     while(!itLeft.IsAtEnd() )
       {
-      idx = itLeft.GetIndex();
-      borderDist = inputRegion.GetIndex(0)-idx[0];
-      idx[0] = inputRegion.GetIndex(0) + borderDist;
-      itLeft.Set(m_TruncationMirrorWeights[ borderDist ] * this->GetInput()->GetPixel(idx) );
-      ++itLeft;
+      iidx = itLeft.GetIndex();
+      iidx[0] = leftRegion.GetIndex(0)+leftRegion.GetSize(0)+1;
+      TFFTPrecision SA = this->GetInput()->GetPixel(iidx);
+      for(unsigned int i=0;
+                       i<leftRegion.GetSize(0);
+                       i++, ++itLeft)
+        {
+        idx = itLeft.GetIndex();
+        borderDist = inputRegion.GetIndex(0)-idx[0];
+        idx[0] = inputRegion.GetIndex(0) + borderDist;
+        itLeft.Set(m_TruncationMirrorWeights[ borderDist ] * (2.0*SA-this->GetInput()->GetPixel(idx)) );
+        }
       }
 
-    // Mirror right
+    // Mirror right (equation 3b in [Ohnesorge et al, Med Phys, 2000])
     RegionType rightRegion = inputRegion;
     rightRegion.SetIndex(0, inputRegion.GetIndex(0)+inputRegion.GetSize(0) );
     rightRegion.SetSize(0, next);
     itk::ImageRegionIteratorWithIndex<FFTInputImageType> itRight(paddedImage, rightRegion);
     while(!itRight.IsAtEnd() )
       {
-      idx = itRight.GetIndex();
-      rightIdx = inputRegion.GetIndex(0)+inputRegion.GetSize(0)-1;
-      borderDist = idx[0]-rightIdx;
-      idx[0] = rightIdx - borderDist;
-      itRight.Set(m_TruncationMirrorWeights[ borderDist ] * this->GetInput()->GetPixel(idx) );
-      ++itRight;
+      iidx = itRight.GetIndex();
+      iidx[0] = rightRegion.GetIndex(0)-1;
+      TFFTPrecision SE = this->GetInput()->GetPixel(iidx);
+      for(unsigned int i=0;
+                       i<rightRegion.GetSize(0);
+                       i++, ++itRight)
+        {
+        idx = itRight.GetIndex();
+        rightIdx = inputRegion.GetIndex(0)+inputRegion.GetSize(0)-1;
+        borderDist = idx[0]-rightIdx;
+        idx[0] = rightIdx - borderDist;
+        itRight.Set(m_TruncationMirrorWeights[ borderDist ] * (2.0*SE-this->GetInput()->GetPixel(idx)) );
+        }
       }
     }
 
@@ -238,7 +253,8 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   itk::ImageRegionIterator<FFTInputImageType>   itD(paddedImage, inputRegion);
   itS.GoToBegin();
   itD.GoToBegin();
-  while(!itS.IsAtEnd() ) {
+  while(!itS.IsAtEnd() )
+    {
     itD.Set(itS.Get() );
     ++itS;
     ++itD;
