@@ -70,13 +70,13 @@ public:
                      const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
   /** Idem with angles in radians. */
-  void AddProjectionInRadians(const double sid, const double sdd, const double gantryAngle,
-                              const double projOffsetX=0., const double projOffsetY=0.,
-                              const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
-                              const double sourceOffsetX=0., const double sourceOffsetY=0.);
+  virtual void AddProjectionInRadians(const double sid, const double sdd, const double gantryAngle,
+                                      const double projOffsetX=0., const double projOffsetY=0.,
+                                      const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
+                                      const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
   /** Empty the geometry object. */
-  void Clear();
+  virtual void Clear();
 
   /** Get the vector of geometry parameters (one per projection). Angles are
    * in radians.*/
