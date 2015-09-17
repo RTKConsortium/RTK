@@ -67,6 +67,9 @@ public:
     return this->m_Matrices;
   }
 
+  /** Empty the geometry object. */
+  virtual void Clear();
+
 protected:
   ProjectionGeometry(){};
   virtual ~ProjectionGeometry(){};
