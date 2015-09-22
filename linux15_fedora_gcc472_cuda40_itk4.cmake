@@ -18,7 +18,7 @@ set(ENV{PATH} "/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/hom
 set(ENV{PATH} "/home/srit/src/gcc/gcc472-install/bin:$ENV{PATH}")
 
 set(CONFIGURE_OPTIONS
-   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/nvidia/libcuda.so.1
+   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/libcuda.so
   )
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")

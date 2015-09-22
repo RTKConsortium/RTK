@@ -16,7 +16,7 @@ set(CONFIGURE_OPTIONS
    -DOPENCL_LIBRARIES:PATH=/usr/lib64/nvidia/libOpenCL.so.1
    -DOPENCL_INCLUDE_DIRS:PATH=/usr/include
    -DRTK_USE_CUDA:BOOL=ON
-   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/nvidia/libcuda.so.1
+   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/libcuda.so
    -DRTK_USE_OPENCL:BOOL=ON
   )
 

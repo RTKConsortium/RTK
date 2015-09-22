@@ -11,7 +11,7 @@ set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia")
 set(CTEST_BUILD_FLAGS -j8)
 
 set(CONFIGURE_OPTIONS
-   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/nvidia/libcuda.so.1
+   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/libcuda.so
    -DBUILD_SHARED_LIBS:BOOL=ON
   )
 
