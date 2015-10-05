@@ -45,6 +45,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   // Create the filters
   m_FourDCGFilter = FourDCGFilterType::New();
   m_PositivityFilter = ThresholdFilterType::New();
+  m_ResampleFilter = ResampleFilterType::New();
   m_AverageOutOfROIFilter = AverageOutOfROIFilterType::New();
   m_TVDenoisingTime = TemporalTVDenoisingFilterType::New();
 #ifdef RTK_USE_CUDA
@@ -214,7 +215,38 @@ void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::PreparePipeline()
 {
-  m_AverageOutOfROIFilter->SetROI(this->GetInputROI());
+  const int Dimension = VolumeType::ImageDimension;
+
+  m_ResampleFilter->SetInput(this->GetInputROI());
+  m_AverageOutOfROIFilter->SetROI(m_ResampleFilter->GetOutput());
+
+  // Set the resample filter
+  typedef itk::IdentityTransform<double, Dimension> TransformType;
+  typedef itk::NearestNeighborInterpolateImageFunction<VolumeType, double> InterpolatorType;
+  m_ResampleFilter->SetInterpolator(InterpolatorType::New());
+  m_ResampleFilter->SetTransform(TransformType::New());
+  typename VolumeType::SizeType VolumeSize;
+  typename VolumeType::SpacingType VolumeSpacing;
+  typename VolumeType::PointType VolumeOrigin;
+  typename VolumeType::DirectionType VolumeDirection;
+  VolumeSize.Fill(0);
+  VolumeSpacing.Fill(0);
+  VolumeOrigin.Fill(0);
+  VolumeDirection.Fill(0);
+  for (int i=0; i<Dimension; i++)
+    {
+    VolumeSize[i] = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    VolumeSpacing[i] = this->GetInputVolumeSeries()->GetSpacing()[i];
+    VolumeOrigin[i] = this->GetInputVolumeSeries()->GetOrigin()[i];
+    for (int j=0; j<Dimension; j++)
+      {
+      VolumeDirection(i,j) = this->GetInputVolumeSeries()->GetDirection()(i,j);
+      }
+    }
+  m_ResampleFilter->SetSize(VolumeSize);
+  m_ResampleFilter->SetOutputSpacing(VolumeSpacing);
+  m_ResampleFilter->SetOutputOrigin(VolumeOrigin);
+  m_ResampleFilter->SetOutputDirection(VolumeDirection);
 
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
