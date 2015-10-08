@@ -102,6 +102,8 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
 
 void rtk::ThreeDCircularProjectionGeometry::Clear()
 {
+  Superclass::Clear();
+
   m_GantryAngles.clear();
   m_OutOfPlaneAngles.clear();
   m_InPlaneAngles.clear();

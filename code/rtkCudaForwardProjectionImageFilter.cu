@@ -19,8 +19,8 @@
 /*****************
 *  rtk #includes *
 *****************/
-#include "rtkConfiguration.h"
 #include "rtkCudaUtilities.hcu"
+#include "rtkConfiguration.h"
 #include "rtkCudaIntersectBox.hcu"
 #include "rtkCudaForwardProjectionImageFilter.hcu"
 

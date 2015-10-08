@@ -225,11 +225,17 @@ void ProjectionsReader<TOutputImage>
         m_ElektaRawFilter = elekta;
 
         // Backward compatibility for default Elekta parameters
-        m_LowerBoundaryCropSize.Fill(4);
-        m_LowerBoundaryCropSize[2] = 0;
-        m_UpperBoundaryCropSize.Fill(4);
-        m_UpperBoundaryCropSize[2] = 0;
-        m_I0 = 65536;
+        OutputImageSizeType defaultCropSize;
+        defaultCropSize.Fill(0);
+        if(m_LowerBoundaryCropSize == defaultCropSize && m_UpperBoundaryCropSize == defaultCropSize)
+          {
+          m_LowerBoundaryCropSize.Fill(4);
+          m_LowerBoundaryCropSize[2] = 0;
+          m_UpperBoundaryCropSize.Fill(4);
+          m_UpperBoundaryCropSize[2] = 0;
+          }
+        if( m_I0 == itk::NumericTraits<double>::NonpositiveMin() )
+          m_I0 = 65536;
         }
 
       // Bin
@@ -446,7 +452,6 @@ void ProjectionsReader<TOutputImage>
       }
     else
       {
-      itk::ImageBase<OutputImageDimension> *nextInputBase;
       nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
       assert(nextInputBase != NULL);
       PropagateI0(&nextInputBase);

@@ -215,7 +215,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
       baseIndex[j] = itk::Math::Floor<int, double>(continuousIndexInOutput[j]);
       distance[j] = continuousIndexInOutput[j] - static_cast< double >(baseIndex[j]);
       if ( (baseIndex[j] < outputPtr->GetRequestedRegion().GetIndex()[j] - 1) ||
-           (baseIndex[j] >= outputPtr->GetRequestedRegion().GetIndex()[j] + outputPtr->GetRequestedRegion().GetSize()[j] ))
+           (baseIndex[j] >= outputPtr->GetRequestedRegion().GetIndex()[j] + (int)outputPtr->GetRequestedRegion().GetSize()[j] ))
         skip = true;
       }
 

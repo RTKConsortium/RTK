@@ -21,7 +21,6 @@
 
 namespace rtk {
 
-//--------------------------------------------------------------------
 template< unsigned int TDimension >
 void
 ProjectionGeometry< TDimension >
@@ -33,6 +32,15 @@ ProjectionGeometry< TDimension >
     os << indent << "Matrix #" << i << ": "
        << m_Matrices[i] << std::endl;
     }
+}
+
+template< unsigned int TDimension >
+void
+ProjectionGeometry< TDimension >
+::Clear()
+{
+  m_Matrices.clear();
+  this->Modified();
 }
 
 }

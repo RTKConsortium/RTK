@@ -84,7 +84,7 @@ void ReconstructImageFilter<TImage>
 
   // Fill it with the right values
   unsigned int powerOfTwo = 1;
-  for (unsigned int dim = 0; dim<dimension; dim++)
+  for (int dim = 0; dim<dimension; dim++)
     {
     for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
       {
@@ -140,7 +140,7 @@ void ReconstructImageFilter<TImage>
     // Cascade pipeline
     // Set all the filters and connect them together
     unsigned int *upsamplingFactors = new unsigned int[dimension];
-    for (unsigned int d=0; d<dimension; d++) upsamplingFactors[d]=2;
+    for (int d=0; d<dimension; d++) upsamplingFactors[d]=2;
 
     for (unsigned int l=0; l<m_NumberOfLevels; l++)
       {

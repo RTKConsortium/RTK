@@ -230,6 +230,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 
     if( m_SuperiorCorner+m_InferiorCorner > 0. )
       {
+      itWeights.GoToBegin();
       while(!itWeights.IsAtEnd() )
         {
         const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);

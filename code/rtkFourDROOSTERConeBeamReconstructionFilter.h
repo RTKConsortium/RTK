@@ -35,6 +35,11 @@
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageFilter.h>
 
+#include <itkResampleImageFilter.h>
+#include <itkNearestNeighborInterpolateImageFunction.h>
+#include <itkIdentityTransform.h>
+
+
 namespace rtk
 {
   /** \class FourDROOSTERConeBeamReconstructionFilter
@@ -79,6 +84,7 @@ namespace rtk
    *    node [shape=box];
    *    FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
    *    Positivity [ label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
+   *    Resample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
    *    ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
    *    TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
    *    TVTime [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
@@ -90,7 +96,8 @@ namespace rtk
    *    Input1 -> FourDCG;
    *    FourDCG -> Positivity;
    *    Positivity -> ROI;
-   *    Input2 -> ROI;
+   *    Input2 -> Resample;
+   *    Resample -> ROI;
    *    ROI -> TVSpace;
    *    TVSpace -> TVTime;
    *    TVTime -> AfterTVTime [arrowhead=none];
@@ -116,6 +123,7 @@ namespace rtk
    *    node [shape=box];
    *    MC_FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
    *    MC_Positivity [ label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
+   *    MC_Resample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
    *    MC_ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
    *    MC_TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
    *    MC_BackwardWarp [ label="rtk::WarpSequenceImageFilter (interpolate)" URL="\ref rtk::WarpSequenceImageFilter"];
@@ -133,7 +141,8 @@ namespace rtk
    *    MC_Input1 -> MC_FourDCG;
    *    MC_FourDCG -> MC_Positivity;
    *    MC_Positivity -> MC_ROI;
-   *    MC_Input2 -> MC_ROI;
+   *    MC_Input2 -> MC_Resample;
+   *    MC_Resample -> MC_ROI;
    *    MC_ROI -> MC_TVSpace;
    *    MC_TVSpace -> MC_AfterTVSpace [arrowhead=none];
    *    MC_AfterTVSpace -> MC_BackwardWarp;
@@ -204,12 +213,15 @@ public:
   void SetMotionMask(const VolumeType* mask);
   typename VolumeType::Pointer            GetInputROI();
 
-  /** The motion vector field used to warp the sequence before and after TV denoising along time */
+  /** The motion vector fields used to warp the sequence before and after TV denoising along time */
   void SetDisplacementField(const MVFSequenceImageType* MVFs);
+  void SetInverseDisplacementField(const MVFSequenceImageType* MVFs);
   typename MVFSequenceImageType::Pointer            GetDisplacementField();
+  typename MVFSequenceImageType::Pointer            GetInverseDisplacementField();
 
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>    FourDCGFilterType;
   typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
+  typedef itk::ResampleImageFilter<VolumeType, VolumeType>                                                  ResampleFilterType;
   typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                    AverageOutOfROIFilterType;
   typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                   SpatialTVDenoisingFilterType;
   typedef rtk::DaubechiesWaveletsDenoiseSequenceImageFilter<VolumeSeriesType>                               SpatialWaveletsDenoisingFilterType;
@@ -252,9 +264,12 @@ public:
   itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
   itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
 
-  // Boolean : should warping be performed ?
+  // Booleans : should warping be performed ? how should inverse warping be performed ?
   itkSetMacro(PerformWarping, bool)
   itkGetMacro(PerformWarping, bool)
+
+  itkSetMacro(ComputeInverseWarpingByConjugateGradient, bool)
+  itkGetMacro(ComputeInverseWarpingByConjugateGradient, bool)
 
   /** Get / Set whether conjugate gradient should be performed on GPU */
   itkGetMacro(CudaConjugateGradient, bool)
@@ -292,18 +307,22 @@ protected:
   /** Member pointers to the filters used internally (for convenience)*/
   typename FourDCGFilterType::Pointer                     m_FourDCGFilter;
   typename ThresholdFilterType::Pointer                   m_PositivityFilter;
+  typename ResampleFilterType::Pointer                    m_ResampleFilter;
   typename AverageOutOfROIFilterType::Pointer             m_AverageOutOfROIFilter;
   typename SpatialTVDenoisingFilterType::Pointer          m_TVDenoisingSpace;
   typename SpatialWaveletsDenoisingFilterType::Pointer    m_WaveletsDenoisingSpace;
   typename WarpSequenceFilterType::Pointer                m_Warp;
   typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
   typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
+  typename WarpSequenceFilterType::Pointer                m_InverseWarp;
+
 
   // Booleans :
   // should warping be performed ?
   // should conjugate gradient be performed on GPU ?
   // should wavelets replace TV in spatial denoising ?
   bool  m_PerformWarping;
+  bool  m_ComputeInverseWarpingByConjugateGradient;
   bool  m_CudaConjugateGradient;
   bool  m_WaveletsSpatialDenoising;
 

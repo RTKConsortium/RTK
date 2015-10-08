@@ -41,12 +41,37 @@ namespace rtk
    * of a reconstruction method based on compressed sensing. The method attempts
    * to find the f that minimizes || Rf -p ||_2^2 + alpha * || W(f) ||_1, with R the
    * forward projection operator, p the measured projections, and W the
-   * Daubechies wavelets transform.
-   * Details on the method and the calculations can be found in
+   * Daubechies wavelets transform. Note that since Daubechies wavelets are orthogonal,
+   * \f$ W^{T} = W^{-1} \f$
+   * Details on the method and the calculations can be found on page 53 of
    *
-   * Mory, C., B. Zhang, V. Auvray, M. Grass, D. Schafer, F. Peyrin, S. Rit, P. Douek,
-   * and L. Boussel. “ECG-Gated C-Arm Computed Tomography Using L1 Regularization.”
-   * In Proceedings of the 20th European Signal Processing Conference (EUSIPCO), 2728–32, 2012.
+   * Mory, C. “Cardiac C-Arm Computed Tomography”, PhD thesis, 2014.
+   * https://hal.inria.fr/tel-00985728/document
+   *
+   * \f$ f_{k+1} \f$ is obtained by linear conjugate solving the following:
+   * \f[ ( R^T R + \beta I ) f = R^T p + \beta W^{-1} ( g_k + d_k ) \f]
+   *
+   * \f$ g_{k+1} \f$ is obtained by soft thresholding:
+   * \f[ g_{k+1} = ST_{ \frac{\alpha}{2 \beta} } ( W f_{k+1} - d_k ) \f]
+   *
+   * \f$ d_{k+1} \f$ is a simple subtraction:
+   * \f[ d_{k+1} = g_{k+1} - ( W f_{k+1} - d_k) \f]
+   *
+   * In ITK, it is much easier to store a volume than its wavelets decomposition.
+   * Therefore, we store \f$ g'_k = W^{-1} g_k \f$ and \f$ d'_k = W^{-1} d_k \f$
+   * instead of \f$ g_k \f$ and \f$ d_k \f$. The above algorithm can therefore be re-written as follows:
+   *
+   * \f$ f_{k+1} \f$ is obtained by linear conjugate solving the following:
+   * \f[ ( R^T R + \beta I ) f = R^T p + \beta ( g'_k + d'_k ) \f]
+   *
+   * \f$ g'_{k+1} \f$ is obtained by soft thresholding:
+   * \f[ g'_{k+1} = W^{-1} ( ST_{ \frac{\alpha}{2 \beta} } W( f_{k+1} - d'_k )) \f]
+   *
+   * \f$ d'_{k+1} \f$ is a simple subtraction:
+   * \f[ d'_{k+1} = g'_{k+1} - ( f_{k+1} - d'_k) \f]
+   *
+   * The wavelet decomposition and reconstruction steps are therefore performed only for
+   * soft thresholding.
    *
    * \dot
    * digraph ADMMWaveletsConeBeamReconstructionFilter {
@@ -79,30 +104,29 @@ namespace rtk
    *
    * Input0 -> BeforeZeroMultiply [arrowhead=none];
    * BeforeZeroMultiply -> ZeroMultiply;
-   * BeforeZeroMultiply -> G;
+   * BeforeZeroMultiply -> G [label="g'_0"];
    * ZeroMultiply -> AfterZeroMultiply;
-   * BeforeZeroMultiply -> ConjugateGradient;
+   * BeforeZeroMultiply -> ConjugateGradient [label="f_0"];
    * Input1 -> Displaced;
    * Displaced -> BackProjection;
-   * AfterZeroMultiply -> D;
+   * AfterZeroMultiply -> D [label="d'_0"];
    * AfterZeroMultiply -> BackProjection;
    * D -> Add;
    * G -> Add;
    * D -> Subtract;
-   * Add -> Multiply;
-   * Multiply -> AddTwo;
+   * Add -> Multiply [label="d'_k + g'_k"];
+   * Multiply -> AddTwo [label="beta (d'_k + g'_k)"];
    * BackProjection -> AddTwo;
-   * AddTwo -> ConjugateGradient;
-   * ConjugateGradient -> AfterConjugateGradient;
+   * AddTwo -> ConjugateGradient [label="b"];
+   * ConjugateGradient -> AfterConjugateGradient [label="f_k+1"];
    * AfterConjugateGradient -> Subtract;
-   * Subtract -> BeforeSoftThreshold [arrowhead=none];
+   * Subtract -> BeforeSoftThreshold [arrowhead=none, label="f_k+1 - d'k"];
    * BeforeSoftThreshold -> SoftThreshold;
    * BeforeSoftThreshold -> SubtractTwo;
    * SoftThreshold -> AfterSoftThreshold [arrowhead=none];
-   * AfterSoftThreshold -> SubtractTwo;
-   *
+   * AfterSoftThreshold -> SubtractTwo [label="g'_k+1"];
    * AfterSoftThreshold -> G [style=dashed, constraint=false];
-   * SubtractTwo -> D [style=dashed];
+   * SubtractTwo -> D [style=dashed, label="d'_k+1"];
    * AfterConjugateGradient -> BeforeZeroMultiply [style=dashed];
    * AfterConjugateGradient -> Output [style=dashed];
    * }

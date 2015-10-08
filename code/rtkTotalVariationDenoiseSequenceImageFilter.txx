@@ -134,7 +134,7 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
   // Declare an image pointer to disconnect the output of paste
   typename TImageSequence::Pointer pimg;
 
-  for (int frame=0; frame<this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension-1); frame++)
+  for (unsigned int frame=0; frame<this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension-1); frame++)
     {
     if (frame > 0) // After the first frame, use the output of paste as input
       {

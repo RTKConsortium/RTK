@@ -203,6 +203,11 @@ TARGET_LINK_LIBRARIES(rtksarttest ${RTK_LIBRARIES})
 ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
 ADD_CUDA_TEST(rtksart rtksarttest.cxx)
 
+ADD_EXECUTABLE(rtkfourdsarttest rtkfourdsarttest.cxx)
+TARGET_LINK_LIBRARIES(rtkfourdsarttest ${RTK_LIBRARIES})
+ADD_TEST(rtkfourdsarttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdsarttest)
+ADD_CUDA_TEST(rtkfourdsart rtkfourdsarttest.cxx)
+
 ADD_EXECUTABLE(rtkfourdconjugategradienttest rtkfourdconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdconjugategradienttest)

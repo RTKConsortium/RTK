@@ -17,9 +17,9 @@
  *=========================================================================*/
 
 // rtk includes
+#include "rtkCudaUtilities.hcu"
 #include "rtkConfiguration.h"
 #include "rtkCudaCropImageFilter.hcu"
-#include "rtkCudaUtilities.hcu"
 
 // cuda includes
 #include <cuda.h>

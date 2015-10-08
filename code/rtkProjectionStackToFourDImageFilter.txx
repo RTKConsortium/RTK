@@ -158,27 +158,26 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_SplatFilter->SetInputVolumeSeries(m_ConstantVolumeSeriesSource->GetOutput());
   m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
 
+  // Prepare the extract filter
+  int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
+//  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+//  if (NumberProjs != m_Weights.columns())
+//    {
+//    std::cerr << "Size of interpolation weights array does not match the number of projections" << std::endl;
+//    }
+
+  typename ExtractFilterType::InputImageRegionType subsetRegion;
+  subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
+  subsetRegion.SetSize(Dimension-1, 1);
+  m_ProjectionNumber = subsetRegion.GetIndex(Dimension-1);
+  m_ExtractFilter->SetExtractionRegion(subsetRegion);
+
   // Set runtime parameters
-  m_ProjectionNumber = 0;
   m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
   m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
   m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
   m_SplatFilter->SetWeights(m_Weights);
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
-
-  // Prepare the extract filter
-  int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
-  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-  if (NumberProjs != m_Weights.columns())
-    {
-    std::cerr << "Size of interpolation weights array does not match the number of projections" << std::endl;
-    }
-
-  typename ExtractFilterType::InputImageRegionType subsetRegion;
-  subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
-  subsetRegion.SetSize(Dimension-1, 1);
-  subsetRegion.SetIndex(Dimension-1, m_ProjectionNumber);
-  m_ExtractFilter->SetExtractionRegion(subsetRegion);
 
   // Have the last filter calculate its output information
   this->InitializeConstantSource();
@@ -196,6 +195,8 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // The 4D input volume need not be loaded in memory, is it only used to configure the
   // m_ConstantVolumeSeriesSource with the correct information
   // Leave its requested region unchanged (set by the other filters that need it)
+
+//  this->m_BackProjectionFilter->GetInput(1)->Print(std::cout);
 
   // Calculation of the requested region on input 1 is left to the back projection filter
   this->m_BackProjectionFilter->PropagateRequestedRegion(this->m_BackProjectionFilter->GetOutput());
@@ -216,11 +217,12 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // Declare the pointer to a VolumeSeries that will be used in the pipeline
   typename VolumeSeriesType::Pointer pimg;
 
-  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-  for(m_ProjectionNumber=0; m_ProjectionNumber<NumberProjs; m_ProjectionNumber++)
+  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
+  int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
+  for(m_ProjectionNumber=FirstProj; m_ProjectionNumber<FirstProj+NumberProjs; m_ProjectionNumber++)
     {
     // After the first update, we need to use the output as input.
-    if(m_ProjectionNumber>0)
+    if(m_ProjectionNumber>FirstProj)
       {
       pimg = m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
@@ -242,7 +244,8 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   this->GraftOutput( m_SplatFilter->GetOutput() );
 
   // Release the data in internal filters
-  pimg->ReleaseData();
+  if(pimg.IsNotNull())
+    pimg->ReleaseData();
   m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   m_BackProjectionFilter->GetOutput()->ReleaseData();
   m_ExtractFilter->GetOutput()->ReleaseData();

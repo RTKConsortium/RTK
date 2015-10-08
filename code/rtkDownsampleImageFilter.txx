@@ -199,7 +199,7 @@ DownsampleImageFilter<TInputImage,TOutputImage>
     while(!outIt.IsAtEnd())
       {
       outIt.Set(inIt.Get());
-      for (int i=0; i<m_Factors[0]; i++) ++inIt;
+      for (unsigned int i=0; i<m_Factors[0]; i++) ++inIt;
       ++outIt;
 
       progress.CompletedPixel();

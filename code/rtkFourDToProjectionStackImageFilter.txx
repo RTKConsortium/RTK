@@ -32,20 +32,15 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::FourDT
   m_ProjectionNumber = 0;
 
   // Create the filters that can be created (all but the forward projection filter)
-  m_ExtractFilter = ExtractFilterType::New();
   m_PasteFilter = PasteFilterType::New();
   m_InterpolationFilter = InterpolatorFilterType::New();
-  m_ConstantSource = ConstantSourceType::New();
-  m_ZeroMultiplyFilter = MultiplyFilterType::New();
+  m_ConstantVolumeSource = ConstantVolumeSourceType::New();
+  m_ConstantProjectionStackSource = ConstantProjectionStackSourceType::New();
 
-  // Set constant parameters
-  m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename ProjectionStackType::PixelType>::ZeroValue());
-
-  // Set permanent connections
-  m_ExtractFilter->SetInput(m_ZeroMultiplyFilter->GetOutput());
+  // Set parameters
+  m_PasteFilter->SetInPlace(true);
 
   // Set memory management flags
-  m_ZeroMultiplyFilter->ReleaseDataFlagOn();
   m_InterpolationFilter->ReleaseDataFlagOn();
 }
 
@@ -110,34 +105,35 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 template< typename ProjectionStackType, typename VolumeSeriesType>
 void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
-::InitializeConstantSource()
+::InitializeConstantVolumeSource()
 {
-  int Dimension = 3;
+  // Set the volume source
+  int VolumeDimension = VolumeType::ImageDimension;
 
-  typename ProjectionStackType::SizeType constantImageSourceSize;
-  constantImageSourceSize.Fill(0);
-  for(int i=0; i < Dimension; i++)
-      constantImageSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+  typename VolumeType::SizeType constantVolumeSourceSize;
+  constantVolumeSourceSize.Fill(0);
+  for(int i=0; i < VolumeDimension; i++)
+      constantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
 
-  typename ProjectionStackType::SpacingType constantImageSourceSpacing;
-  constantImageSourceSpacing.Fill(0);
-  for(int i=0; i < Dimension; i++)
-      constantImageSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+  typename VolumeType::SpacingType constantVolumeSourceSpacing;
+  constantVolumeSourceSpacing.Fill(0);
+  for(int i=0; i < VolumeDimension; i++)
+      constantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
 
-  typename ProjectionStackType::PointType constantImageSourceOrigin;
-  constantImageSourceOrigin.Fill(0);
-  for(int i=0; i < Dimension; i++)
-      constantImageSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+  typename VolumeType::PointType constantVolumeSourceOrigin;
+  constantVolumeSourceOrigin.Fill(0);
+  for(int i=0; i < VolumeDimension; i++)
+      constantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
 
-  typename ProjectionStackType::DirectionType constantImageSourceDirection;
-  constantImageSourceDirection.SetIdentity();
+  typename VolumeType::DirectionType constantVolumeSourceDirection;
+  constantVolumeSourceDirection.SetIdentity();
 
-  m_ConstantSource->SetOrigin( constantImageSourceOrigin );
-  m_ConstantSource->SetSpacing( constantImageSourceSpacing );
-  m_ConstantSource->SetDirection( constantImageSourceDirection );
-  m_ConstantSource->SetSize( constantImageSourceSize );
-  m_ConstantSource->SetConstant( 0. );
-  m_ConstantSource->Update();
+  m_ConstantVolumeSource->SetOrigin( constantVolumeSourceOrigin );
+  m_ConstantVolumeSource->SetSpacing( constantVolumeSourceSpacing );
+  m_ConstantVolumeSource->SetDirection( constantVolumeSourceDirection );
+  m_ConstantVolumeSource->SetSize( constantVolumeSourceSize );
+  m_ConstantVolumeSource->SetConstant( 0. );
+  m_ConstantVolumeSource->Update();
 }
 
 template< typename ProjectionStackType, typename VolumeSeriesType>
@@ -145,37 +141,36 @@ void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 ::GenerateOutputInformation()
 {
+  this->InitializeConstantVolumeSource();
+
+  int ProjectionStackDimension = ProjectionStackType::ImageDimension;
+  m_PasteRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
+  m_PasteRegion.SetSize(ProjectionStackDimension - 1, 1);
+  m_ProjectionNumber = m_PasteRegion.GetIndex(ProjectionStackDimension - 1);
+
+  // Set the projection stack source
+  m_ConstantProjectionStackSource->SetInformationFromImage(this->GetInputProjectionStack());
+  m_ConstantProjectionStackSource->SetSize(m_PasteRegion.GetSize());
+  m_ConstantProjectionStackSource->SetConstant( 0. );
+
   // Connect the filters
-  m_ZeroMultiplyFilter->SetInput1(this->GetInputProjectionStack());
   m_InterpolationFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
-  m_InterpolationFilter->SetInputVolume(m_ConstantSource->GetOutput());
+  m_InterpolationFilter->SetInputVolume(m_ConstantVolumeSource->GetOutput());
   m_PasteFilter->SetDestinationImage(this->GetInputProjectionStack());
 
   // Connections with the Forward projection filter can only be set at runtime
-  m_ForwardProjectionFilter->SetInput(0, m_ExtractFilter->GetOutput());
+  m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionStackSource->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, m_InterpolationFilter->GetOutput());
   m_PasteFilter->SetSourceImage(m_ForwardProjectionFilter->GetOutput());
 
   // Set runtime parameters
-  int Dimension = ProjectionStackType::ImageDimension; // Dimension = 3
   m_InterpolationFilter->SetWeights(m_Weights);
+  m_InterpolationFilter->SetProjectionNumber(m_ProjectionNumber);
   m_ForwardProjectionFilter->SetGeometry(m_Geometry);
-
-  typename ProjectionStackType::RegionType extractRegion;
-  extractRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  extractRegion.SetSize(Dimension-1, 1);
-  extractRegion.SetIndex(Dimension-1, m_ProjectionNumber);
-  m_ExtractFilter->SetExtractionRegion(extractRegion);
-
-  typename ProjectionStackType::RegionType PasteSourceRegion;
-  PasteSourceRegion.SetSize(extractRegion.GetSize());
-  PasteSourceRegion.SetIndex(extractRegion.GetIndex());
-  PasteSourceRegion.SetIndex(Dimension-1, 0);
-  m_PasteFilter->SetSourceRegion(PasteSourceRegion);
-  m_PasteFilter->SetDestinationIndex(extractRegion.GetIndex());
+  m_PasteFilter->SetSourceRegion(m_PasteRegion);
+  m_PasteFilter->SetDestinationIndex(m_PasteRegion.GetIndex());
 
   // Have the last filter calculate its output information
-  this->InitializeConstantSource();
   m_PasteFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
@@ -187,7 +182,7 @@ void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 ::GenerateInputRequestedRegion()
 {
-  // Input 0 is the stack of projections
+  // Input 0 is the stack of projections we update
   typename ProjectionStackType::Pointer  inputPtr0 = const_cast< ProjectionStackType * >( this->GetInput(0) );
   if ( !inputPtr0 )
     {
@@ -195,7 +190,7 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
     }
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
-  // Input 1 is the volume series we update
+  // Input 1 is the volume series
   typename VolumeSeriesType::Pointer inputPtr1 = static_cast< VolumeSeriesType * >
             ( this->itk::ProcessObject::GetInput(1) );
   inputPtr1->SetRequestedRegionToLargestPossibleRegion();
@@ -206,32 +201,33 @@ void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 ::GenerateData()
 {
-  int Dimension = ProjectionStackType::ImageDimension;
+  int ProjectionStackDimension = ProjectionStackType::ImageDimension;
 
-  // Set the Extract filter
-  typename ProjectionStackType::RegionType extractRegion;
-  extractRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  extractRegion.SetSize(Dimension-1, 1);
-
-  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-  for(m_ProjectionNumber=0; m_ProjectionNumber<NumberProjs; m_ProjectionNumber++)
+  int NumberProjs = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(ProjectionStackDimension-1);
+  int FirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(ProjectionStackDimension-1);
+  for(m_ProjectionNumber=FirstProj; m_ProjectionNumber<FirstProj+NumberProjs; m_ProjectionNumber++)
     {
 
     // After the first update, we need to use the output as input.
-    if(m_ProjectionNumber>0)
+    if(m_ProjectionNumber>FirstProj)
       {
       typename ProjectionStackType::Pointer pimg = m_PasteFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_PasteFilter->SetDestinationImage( pimg );
       }
 
-    // Set the Extract Filter
-    extractRegion.SetIndex(Dimension-1, m_ProjectionNumber);
-    m_ExtractFilter->SetExtractionRegion(extractRegion);
+    // Update the paste region
+    m_PasteRegion.SetIndex(ProjectionStackDimension-1, m_ProjectionNumber);
 
-    // Set the Paste Filter
-    m_PasteFilter->SetSourceRegion(extractRegion);
-    m_PasteFilter->SetDestinationIndex(extractRegion.GetIndex());
+    // Set the projection stack source
+    m_ConstantProjectionStackSource->SetIndex(m_PasteRegion.GetIndex());
+
+    // Set the Paste Filter. Since its output has been disconnected
+    // we need to set its RequestedRegion manually (it will never
+    // be updated by a downstream filter)
+    m_PasteFilter->SetSourceRegion(m_PasteRegion);
+    m_PasteFilter->SetDestinationIndex(m_PasteRegion.GetIndex());
+    m_PasteFilter->GetOutput()->SetRequestedRegion(m_PasteFilter->GetDestinationImage()->GetLargestPossibleRegion());
 
     // Set the Interpolation filter
     m_InterpolationFilter->SetProjectionNumber(m_ProjectionNumber);

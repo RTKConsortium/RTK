@@ -31,7 +31,7 @@ UnwarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   this->SetNumberOfRequiredInputs(2);
 
   // Set the default values of member parameters
-  m_NumberOfIterations=4;
+  m_NumberOfIterations=2;
   m_PhaseShift = 0;
 
   // Create the filters

@@ -148,10 +148,10 @@ void rtk::EdfImageIO::ReadImageInformation()
         SetComponentType(itk::ImageIOBase::INT);
         break;
       case U_L_INT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::ULONG);
+        SetComponentType(itk::ImageIOBase::UINT);
         break;
       case L_INT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::LONG);
+        SetComponentType(itk::ImageIOBase::INT);
         break;
       case FLOAT_DATATYPE:
         SetComponentType(itk::ImageIOBase::FLOAT);
@@ -264,8 +264,8 @@ void rtk::EdfImageIO::Read(void * buffer)
     else if itkReadRawBytesAfterSwappingMacro( unsigned char, UCHAR )
     else if itkReadRawBytesAfterSwappingMacro( unsigned int, UINT )
     else if itkReadRawBytesAfterSwappingMacro( int, INT )
-    else if itkReadRawBytesAfterSwappingMacro( unsigned int, ULONG )
-    else if itkReadRawBytesAfterSwappingMacro( int, LONG )
+    else if itkReadRawBytesAfterSwappingMacro( unsigned int, UINT )
+    else if itkReadRawBytesAfterSwappingMacro( int, INT )
     else if itkReadRawBytesAfterSwappingMacro( float, FLOAT )
     else if itkReadRawBytesAfterSwappingMacro( double, DOUBLE );
     }
