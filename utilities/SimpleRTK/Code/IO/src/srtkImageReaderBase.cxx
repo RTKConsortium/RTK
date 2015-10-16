@@ -36,10 +36,18 @@
 #include <itkImage.h>
 #include <itkImageIOBase.h>
 #include <itkImageIOFactory.h>
+#include "rtkIOFactories.h"
 
 namespace rtk {
 namespace simple {
 
+ImageReaderBase
+::ImageReaderBase()
+{
+  static bool firstTime = true;
+  if(firstTime)
+    rtk::RegisterIOFactories();
+}
 
 itk::SmartPointer<itk::ImageIOBase>
 ImageReaderBase
