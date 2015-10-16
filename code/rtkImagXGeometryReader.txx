@@ -224,7 +224,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
 
     m_Geometry->AddProjection(sourceToIsocenterDistance,
                               sourceToDetectorDistance,
-                              gAngle,
+                              gAngle-90,
                               projectionOffsetX,
                               projectionOffsetY,
                               outOfPlaneAngle,
