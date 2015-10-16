@@ -22,8 +22,8 @@
 namespace rtk
 {
 
-template <unsigned int VImageDimension>
-ElektaSynergyRawLookupTableImageFilter<VImageDimension>
+template <class TInputImage, class TOutputImage>
+ElektaSynergyRawLookupTableImageFilter<TInputImage, TOutputImage>
 ::ElektaSynergyRawLookupTableImageFilter()
 {
   // Create the lut

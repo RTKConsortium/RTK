@@ -102,7 +102,7 @@ int main(int, char** )
   full->SetInput(r->GetOutput());
   full->Update();
 
-  typedef rtk::ElektaSynergyRawLookupTableImageFilter<3> RawLUTType;
+  typedef rtk::ElektaSynergyRawLookupTableImageFilter<InputImageType, InputImageType> RawLUTType;
   RawLUTType::Pointer raw = RawLUTType::New();
   raw->SetInput(r->GetOutput());
   raw->Update();

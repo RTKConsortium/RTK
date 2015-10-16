@@ -1,0 +1,11 @@
+{
+  "name" : "ElektaSynergyRawLookupTableImageFilter",
+  "template_code_filename" : "ImageFilter",
+  "template_test_filename" : "Filter",
+  "number_of_inputs" : 1,
+  "number_of_outputs" : 1,
+  "output_image_type" : "TImageType",
+  "pixel_types" : "typelist::MakeTypeList< BasicPixelID<uint16_t> >::Type",
+  "filter_type" : "rtk::ElektaSynergyRawLookupTableImageFilter<InputImageType, InputImageType>",
+  "members" : []
+}

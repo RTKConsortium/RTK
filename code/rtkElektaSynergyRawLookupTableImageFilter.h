@@ -38,22 +38,22 @@ namespace rtk
  *
  * \ingroup ImageToImageFilter
  */
-template <unsigned int VImageDimension = 2>
+template < class TInputImage  = itk::Image<unsigned short, 2>,
+           class TOutputImage = itk::Image<unsigned short, 2> >
 class ITK_EXPORT ElektaSynergyRawLookupTableImageFilter :
-    public LookupTableImageFilter< itk::Image<unsigned short, VImageDimension>,
-                                   itk::Image<unsigned short, VImageDimension> >
+    public LookupTableImageFilter< TInputImage, TOutputImage >
 {
 
 public:
   /** Standard class typedefs. */
-  typedef ElektaSynergyRawLookupTableImageFilter                                Self;
-  typedef LookupTableImageFilter< itk::Image<unsigned short, VImageDimension>,
-                                  itk::Image<unsigned short, VImageDimension> > Superclass;
-  typedef itk::SmartPointer<Self>                                 Pointer;
-  typedef itk::SmartPointer<const Self>                           ConstPointer;
+  typedef ElektaSynergyRawLookupTableImageFilter Self;
+  typedef LookupTableImageFilter< TInputImage,
+                                  TOutputImage > Superclass;
+  typedef itk::SmartPointer<Self>                Pointer;
+  typedef itk::SmartPointer<const Self>          ConstPointer;
 
-  typedef unsigned short                           InputImagePixelType;
-  typedef unsigned short                           OutputImagePixelType;
+  typedef typename TInputImage::PixelType        InputImagePixelType;
+  typedef typename TOutputImage::PixelType       OutputImagePixelType;
   typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
 
   /** Method for creation through the object factory. */
@@ -61,6 +61,12 @@ public:
 
   /** Runtime information support. */
   itkTypeMacro(ElektaSynergyRawLookupTableImageFilter, LookupTableImageFilter);
+
+#ifdef ITK_USE_CONCEPT_CHECKING
+  // Begin concept checking
+  itkConceptMacro( SameTypeCheck,
+                   ( itk::Concept::SameType< InputImagePixelType, unsigned short > ) );
+#endif
 
 protected:
   ElektaSynergyRawLookupTableImageFilter();

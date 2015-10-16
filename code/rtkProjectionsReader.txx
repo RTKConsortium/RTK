@@ -221,7 +221,8 @@ void ProjectionsReader<TOutputImage>
       // Elekta specific conversion of input raw data
       if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") )
         {
-        typedef rtk::ElektaSynergyRawLookupTableImageFilter<OutputImageDimension> ElektaRawType;
+        typedef rtk::ElektaSynergyRawLookupTableImageFilter< itk::Image<unsigned short, OutputImageDimension>,
+                                                             itk::Image<unsigned short, OutputImageDimension> > ElektaRawType;
         typename ElektaRawType::Pointer elekta = ElektaRawType::New();
         m_ElektaRawFilter = elekta;
 
@@ -505,7 +506,8 @@ void ProjectionsReader<TOutputImage>
 {
   if(m_ElektaRawFilter.GetPointer() != NULL)
     {
-    typedef rtk::ElektaSynergyRawLookupTableImageFilter<OutputImageDimension> ElektaRawType;
+    typedef rtk::ElektaSynergyRawLookupTableImageFilter< itk::Image<unsigned short, OutputImageDimension>,
+                                                         itk::Image<unsigned short, OutputImageDimension> > ElektaRawType;
     ElektaRawType *elektaRaw = dynamic_cast<ElektaRawType*>(m_ElektaRawFilter.GetPointer());
     assert(elektaRaw != NULL);
     typedef typename itk::Image<unsigned short, OutputImageDimension> InputImageType;
