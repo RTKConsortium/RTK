@@ -16,15 +16,15 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkElektaSynergyLookupTableImageFilter_txx
-#define __rtkElektaSynergyLookupTableImageFilter_txx
+#ifndef __rtkElektaSynergyRawLookupTableImageFilter_txx
+#define __rtkElektaSynergyRawLookupTableImageFilter_txx
 
 namespace rtk
 {
 
-template <class TOutputImage>
-ElektaSynergyLookupTableImageFilter<TOutputImage>
-::ElektaSynergyLookupTableImageFilter()
+template <unsigned int VImageDimension>
+ElektaSynergyRawLookupTableImageFilter<VImageDimension>
+::ElektaSynergyRawLookupTableImageFilter()
 {
   // Create the lut
   typename LookupTableType::Pointer lut = LookupTableType::New();
@@ -35,24 +35,22 @@ ElektaSynergyLookupTableImageFilter<TOutputImage>
   lut->Allocate();
 
   // Iterate and set lut
-  OutputImagePixelType logRef;
-  logRef = log(OutputImagePixelType(size[0]) );
   itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
   it.GoToBegin();
 
   //First value takes value of pixel #1
-  it.Set( logRef - log( OutputImagePixelType(size[0]-1) ) );
+  it.Set( OutputImagePixelType(size[0]-1) );
   ++it;
 
   //Conventional lookup table for the rest
   while( !it.IsAtEnd() ) {
-    it.Set( logRef - log( OutputImagePixelType(size[0]-it.GetIndex()[0]) ) );
+    it.Set( OutputImagePixelType(size[0]-it.GetIndex()[0]) );
     ++it;
     }
 
   //Last value takes value of pixel #1
   --it;
-  it.Set( logRef - log( OutputImagePixelType(size[0]-1) ) );
+  it.Set( OutputImagePixelType(size[0]-1) );
 
   // Set the lut to member and functor
   this->SetLookupTable(lut);

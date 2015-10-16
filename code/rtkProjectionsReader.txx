@@ -38,6 +38,7 @@
 
 // Elekta Synergy includes
 #include "rtkHisImageIOFactory.h"
+#include "rtkElektaSynergyRawLookupTableImageFilter.h"
 #include "rtkElektaSynergyLookupTableImageFilter.h"
 
 // ImagX includes
