@@ -52,6 +52,7 @@ public:
   PimpleThreeDCircularProjectionGeometry &operator=( const PimpleThreeDCircularProjectionGeometry &s )
     {
     m_ProjectionGeometry = s.m_ProjectionGeometry;
+    return *this;
     }
 
   ProjectionGeometryType::Pointer GetProjectionGeometry( void ) { return this->m_ProjectionGeometry.GetPointer(); }

@@ -52,8 +52,8 @@ namespace rtk {
       Self& SetFileName ( std::string fileName );
       std::string GetFileName() const;
 
-      ThreeDCircularProjectionGeometry& Execute ( );
-      ThreeDCircularProjectionGeometry& Execute ( const std::string &inFileName );
+      ThreeDCircularProjectionGeometry Execute ( );
+      ThreeDCircularProjectionGeometry Execute ( const std::string &inFileName );
 
     private:
 
@@ -61,7 +61,7 @@ namespace rtk {
       ThreeDCircularProjectionGeometry m_Geometry;
     };
 
-  SRTKIO_EXPORT ThreeDCircularProjectionGeometry& ReadXML ( const std::string &fileName );
+  SRTKIO_EXPORT ThreeDCircularProjectionGeometry ReadXML ( const std::string &fileName );
   }
 }
 

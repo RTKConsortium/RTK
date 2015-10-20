@@ -21,7 +21,7 @@
 namespace rtk {
 namespace simple {
 
-ThreeDCircularProjectionGeometry& ReadXML ( const std::string &inFileName )
+ThreeDCircularProjectionGeometry ReadXML ( const std::string &inFileName )
   {
   ThreeDCircularProjectionGeometryXMLFileReader reader;
   return reader.Execute ( inFileName );
@@ -58,14 +58,14 @@ std::string ThreeDCircularProjectionGeometryXMLFileReader::GetFileName() const
   return this->m_FileName;
   }
 
-ThreeDCircularProjectionGeometry& ThreeDCircularProjectionGeometryXMLFileReader
+ThreeDCircularProjectionGeometry ThreeDCircularProjectionGeometryXMLFileReader
 ::Execute ( const std::string &inFileName )
   {
   this->SetFileName( inFileName );
   return this->Execute();
   }
 
-ThreeDCircularProjectionGeometry& ThreeDCircularProjectionGeometryXMLFileReader
+ThreeDCircularProjectionGeometry ThreeDCircularProjectionGeometryXMLFileReader
 ::Execute ()
   {
   typedef rtk::ThreeDCircularProjectionGeometryXMLFileReader Reader;
