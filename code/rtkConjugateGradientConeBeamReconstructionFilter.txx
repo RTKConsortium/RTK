@@ -32,25 +32,27 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
+  m_IsWeighted=false;
 
   // Create the filters
-  m_ZeroMultiplyVolumeFilter = MultiplyVolumeFilterType::New();
 #ifdef RTK_USE_CUDA
   m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
   m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+  m_ConstantImageSource     = rtk::CudaConstantVolumeSource::New();
 #else
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_ConstantImageSource     = ConstantImageSourceType::New();
 #endif
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
 
   // Set permanent parameters
-  m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_ConstantImageSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management parameters
-  m_ZeroMultiplyVolumeFilter->ReleaseDataFlagOn();
+  m_ConstantImageSource->ReleaseDataFlagOn();
 }
 
 template< typename TOutputImage>
@@ -98,6 +100,18 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   if ( !inputPtr1 )
       return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+
+  if (m_IsWeighted)
+    {
+    this->SetNumberOfRequiredInputs(3);
+
+    // Input 2 is the weights map, if any
+    typename Superclass::InputImagePointer  inputPtr2 =
+            const_cast< TOutputImage * >( this->GetInput(2) );
+    if ( !inputPtr2 )
+        return;
+    inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
+    }
 }
 
 template< typename TOutputImage>
@@ -106,16 +120,27 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections
-  m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
+  m_ConstantImageSource->SetInformationFromImage(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1));
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
-  m_BackProjectionFilterForB->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  m_BackProjectionFilterForB->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilterForB->SetInput(0, m_ConstantImageSource->GetOutput());
   m_ConjugateGradientFilter->SetB(m_BackProjectionFilterForB->GetOutput());
+  if (m_IsWeighted)
+    {
+    m_MultiplyFilter = MultiplyFilterType::New();
+    m_MultiplyFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
+    m_MultiplyFilter->SetInput2(this->GetInput(2));
+    m_CGOperator->SetInput(2, this->GetInput(2));
+    m_BackProjectionFilterForB->SetInput(1, m_MultiplyFilter->GetOutput());
+    }
+  else
+    {
+    m_BackProjectionFilterForB->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+    }
 
   // For the same reason, set geometry now
   m_CGOperator->SetGeometry(this->m_Geometry);
@@ -124,6 +149,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
+  m_CGOperator->SetIsWeighted(m_IsWeighted);
 
   // Have the last filter calculate its output information
   m_ConjugateGradientFilter->UpdateOutputInformation();

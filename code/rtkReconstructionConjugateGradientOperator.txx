@@ -39,6 +39,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>::ReconstructionConjugateGr
   m_ConstantVolumeSource = ConstantSourceType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 #endif
+  m_MultiplyFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
   m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -82,6 +83,18 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     const_cast< TOutputImage * >( this->GetInput(1) );
   if ( !inputPtr1 ) return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+
+  if (m_IsWeighted)
+    {
+    this->SetNumberOfRequiredInputs(3);
+
+    // Input 2 is the weights map, if any
+    typename Superclass::InputImagePointer  inputPtr2 =
+            const_cast< TOutputImage * >( this->GetInput(2) );
+    if ( !inputPtr2 )
+        return;
+    inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
+    }
 }
 
 template< typename TOutputImage >
@@ -95,10 +108,20 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_DisplacedDetectorFilter->SetInput( m_ForwardProjectionFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
+
+  if (m_IsWeighted)
+    {
+    m_MultiplyFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
+    m_MultiplyFilter->SetInput2(this->GetInput(2));
+    m_BackProjectionFilter->SetInput(1, m_MultiplyFilter->GetOutput());
+    }
+  else
+    {
+    m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+    }
 
   // Set geometry
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);

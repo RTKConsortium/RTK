@@ -19,6 +19,8 @@
 #ifndef __rtkReconstructionConjugateGradientOperator_h
 #define __rtkReconstructionConjugateGradientOperator_h
 
+#include <itkMultiplyImageFilter.h>
+
 #include "rtkConstantImageSource.h"
 
 #include "rtkConjugateGradientOperator.h"
@@ -60,6 +62,8 @@ namespace rtk
    * Input0 [shape=Mdiamond];
    * Input1 [label="Input 1 (Projections)"];
    * Input1 [shape=Mdiamond];
+   * Input2 [label="Input 2 (Weights)"];
+   * Input2 [shape=Mdiamond];
    * Output [label="Output (Volume)"];
    * Output [shape=Mdiamond];
    *
@@ -69,12 +73,15 @@ namespace rtk
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
+   * Multiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    *
    * Input0 -> ForwardProjection;
    * ConstantProjectionsSource -> ForwardProjection;
    * ConstantVolumeSource -> BackProjection;
    * ForwardProjection -> Displaced;
-   * Displaced -> BackProjection;
+   * Displaced -> Multiply;
+   * Input2 -> Multiply;
+   * Multiply -> BackProjection;
    * BackProjection -> Output;
    *
    * }
@@ -110,6 +117,7 @@ public:
 
   typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
   typedef rtk::ConstantImageSource<TOutputImage>                          ConstantSourceType;
+  typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
 
   /** Set the backprojection filter*/
   void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
@@ -119,6 +127,10 @@ public:
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
+
+  /** If IsWeighted, perform weighted least squares optimization instead of unweighted */
+  itkSetMacro(IsWeighted, bool)
+  itkGetMacro(IsWeighted, bool)
 
 protected:
   ReconstructionConjugateGradientOperator();
@@ -134,9 +146,11 @@ protected:
   typename ConstantSourceType::Pointer              m_ConstantProjectionsSource;
   typename ConstantSourceType::Pointer              m_ConstantVolumeSource;
   typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyFilter;
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
+  bool                                              m_IsWeighted; //Weighted least squares ?
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */

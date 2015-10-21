@@ -8,6 +8,7 @@ option "output"      o "Output file name"                                      s
 option "niterations" n "Number of iterations"                                  int    no   default="5"
 option "time"        t "Records elapsed time during the process"               flag   off
 option "input"       i "Input volume"                                          string no
+option "weights"     w "Weights file for Weighted Least Squares"               string no
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
