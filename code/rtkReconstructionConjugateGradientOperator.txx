@@ -25,7 +25,10 @@ namespace rtk
 {
 
 template< typename TOutputImage>
-ReconstructionConjugateGradientOperator<TOutputImage>::ReconstructionConjugateGradientOperator()
+ReconstructionConjugateGradientOperator<TOutputImage>
+::ReconstructionConjugateGradientOperator():
+  m_Geometry(NULL),
+  m_IsWeighted(false)
 {
   this->SetNumberOfRequiredInputs(2);
 
