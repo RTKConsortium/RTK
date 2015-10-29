@@ -110,6 +110,7 @@ IF (RTK_USE_CUDA)
               rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
+	      rtkCudaIterativeFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
 	      rtkCudaSplatImageFilter.cxx
 	      rtkCudaInterpolateImageFilter.cxx
