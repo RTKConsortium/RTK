@@ -167,6 +167,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   ifft->SetInput( fftI->GetOutput() );
   ifft->SetNumberOfThreads( m_BackupNumberOfThreads );
   ifft->SetReleaseDataFlag( true );
+  ifft->SetActualXDimensionIsOdd( paddedImage->GetLargestPossibleRegion().GetSize(0) % 2 );
   ifft->Update();
 
   // Crop and paste result
