@@ -82,7 +82,7 @@ void DrawCubeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const 
     if(point[0]<cube.semiprincipalaxis[0] && point[0]>cube.semiprincipalaxis[1] &&
        point[1]<cube.semiprincipalaxis[2] && point[1]>cube.semiprincipalaxis[3] &&
        point[2]<cube.semiprincipalaxis[4] && point[2]>cube.semiprincipalaxis[5])
-      itOut.Set( cube.density + itIn.Get() );
+      itOut.Set( cube.density );
     else
       itOut.Set( itIn.Get() );
     ++itIn;

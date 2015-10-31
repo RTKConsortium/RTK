@@ -81,7 +81,7 @@ void DrawCylinderImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(co
                           sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
                           sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
     if(QuadricEllip<0)
-      itOut.Set(Cylinder.density + itIn.Get());
+      itOut.Set(Cylinder.density );
     else
       itOut.Set( itIn.Get() );
     ++itIn;

@@ -6,7 +6,7 @@ SET (RTK_LIBRARIES RTK lpsolve55)
 #=========================================================
 
 #=========================================================
-ADD_LIBRARY(RTK
+ADD_LIBRARY(RTK 
             rtkHisImageIO.cxx
             rtkHisImageIOFactory.cxx
             rtkElektaSynergyGeometryReader.cxx
@@ -33,7 +33,9 @@ ADD_LIBRARY(RTK
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
-            rtkConvertEllipsoidToQuadricParametersFunction.cxx)
+            rtkConvertEllipsoidToQuadricParametersFunction.cxx
+            rtkDrawSpatialObject.cxx
+            )
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 TARGET_LINK_LIBRARIES(RTK lpsolve55)
