@@ -19,9 +19,8 @@
 #ifndef __rtkDrawCylinderImageFilter_h
 #define __rtkDrawCylinderImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
 
-#include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDrawImageFilter.h"
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkConfiguration.h"
 #include <vector>
@@ -38,64 +37,93 @@ namespace rtk
  *
  * \ingroup InPlaceImageFilter
  */
-template <class TInputImage, class TOutputImage>
-class ITK_EXPORT DrawCylinderImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
-{
-public:
+  template <class TInputImage, 
+            class TOutputImage, 
+	    typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
+                                                    typename TInputImage::PixelType,
+                                                    typename TOutputImage::PixelType>
+                                                    >
+  class DrawCylinderImageFilter : 
+  public DrawImageFilter< TInputImage,
+                         TOutputImage, 
+			 DrawCylinderSpatialObject,
+			 TFunction
+			 >
+  {
+       public:
   /** Standard class typedefs. */
-  typedef DrawCylinderImageFilter                           Self;
+  typedef DrawCylinderImageFilter                               Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
-
+  
   typedef itk::Vector<double,3>                             VectorType;
-
   typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
-  struct FigureType
+ 
+
+  
+  void SetAxis(VectorType Axis)
   {
-    FigureType():angle(0.),density(0.){};
-    VectorType semiprincipalaxis;
-    VectorType center;
-    double     angle;
-    double     density;
-  };
+    if ( Axis == this->m_spatialObject.m_Axis )
+      {
+      return;
+      }
+    this->m_spatialObject.m_Axis = Axis;
+    this->m_spatialObject.sqpFunctor->Translate(this->m_spatialObject.m_Axis);
+    this->m_spatialObject.sqpFunctor->Rotate(this->m_spatialObject.m_Angle, this->m_spatialObject.m_Center);
+    this->Modified();
+  }  
+  
+  
+   void SetCenter(VectorType Center)
+  {
+    if ( Center == this->m_spatialObject.m_Center )
+      {
+      return;
+      }
+    this->m_spatialObject.m_Center = Center;
+    this->m_spatialObject.sqpFunctor->Translate(this->m_spatialObject.m_Axis);
+    this->m_spatialObject.sqpFunctor->Rotate(this->m_spatialObject.m_Angle, this->m_spatialObject.m_Center);
+    this->Modified();
+  }
+  
+  void SetAngle(double Angle)
+  {
+    if ( Angle == this->m_spatialObject.m_Angle )
+      {
+      return;
+      }
+    this->m_spatialObject.m_Angle = Angle;
+    this->m_spatialObject.sqpFunctor->Translate(this->m_spatialObject.m_Axis);
+    this->m_spatialObject.sqpFunctor->Rotate(this->m_spatialObject.m_Angle, this->m_spatialObject.m_Center);
+    this->Modified();
+  }
+  
+  
+  
+  
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawCylinderImageFilter, InPlaceImageFilter);
-
-  /** Multiplicative Scaling factor for the phantom parameters described in
-   * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(Density, double);
-  itkGetMacro(Density, double);
-
-  itkSetMacro(Angle, double);
-  itkGetMacro(Angle, double);
-
-  itkSetMacro(Axis, VectorType);
-  itkGetMacro(Axis, VectorType);
-
-  itkSetMacro(Center, VectorType);
-  itkGetMacro(Center, VectorType);
-
-protected:
+  itkTypeMacro(DrawCylinderImageFilter, DrawImageFilter);
+  
+  protected:
   DrawCylinderImageFilter();
   virtual ~DrawCylinderImageFilter() {};
-
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
-
-private:
-  DrawCylinderImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
-  VectorType     m_Axis;
-  VectorType     m_Center;
-  double         m_Density;
-  double         m_Angle;
-};
+//   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+    
+  
+  
+  
+  private:
+      DrawCylinderImageFilter(const Self&); //purposely not implemented
+      void operator=(const Self&);            //purposely not implemented
+ 
+  
+  
+  }; 
 
 } // end namespace rtk
 

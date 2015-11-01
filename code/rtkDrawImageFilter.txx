@@ -49,9 +49,7 @@ void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>::Thre
   const    TInputImage *           input = this->GetInput();
 
   typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
-  typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
-  
-  std::cout << "C++::DrawImageFilter::ThreadedGenerateData " << std::endl;
+  typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread); 
   
 
   while( !itOut.IsAtEnd() )
@@ -69,26 +67,6 @@ void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>::Thre
   
 }
 
-
-template <class TInputImage, class TOutputImage, typename TFunction>
-myDrawCylinderImageFilter<TInputImage, TOutputImage, TFunction>
-::myDrawCylinderImageFilter()
-{
-  std::cout << "C++::myDrawCylinderImageFilter::myDrawCylinderImageFilter " << std::endl;
-  this->m_spatialObject.sqpFunctor = EQPFunctionType::New();
-  this->m_spatialObject.sqpFunctor->SetFigure("Cylinder");
-}
-
-
-// template <class TInputImage, class TOutputImage>
-// void myDrawCylinderImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-//                                                                               ThreadIdType threadId )
-// { 
-//   
-//   
-//   std::cout << "C++::myDrawCylinderImageFilter::ThreadedGenerateData (" << threadId << ")" << std::endl;
-//   DrawImageFilter<TInputImage, TOutputImage, DrawCylinderSpatialObject>::ThreadedGenerateData(outputRegionForThread, threadId);
-// }
 
 
 
