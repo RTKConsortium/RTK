@@ -31,8 +31,8 @@
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage, class TSpatialObject>
-DrawImageFilter<TInputImage, TOutputImage, TSpatialObject>
+template <class TInputImage, class TOutputImage, class TSpatialObject, typename TFunction>
+DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
 ::DrawImageFilter()
 {
 
@@ -40,8 +40,8 @@ DrawImageFilter<TInputImage, TOutputImage, TSpatialObject>
 
 
 
-template <class TInputImage, class TOutputImage, class TSpatialObject>
-void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
+template <class TInputImage, class TOutputImage, class TSpatialObject, typename TFunction>
+void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                                                                               ThreadIdType itkNotUsed(threadId) )
 {
   
@@ -59,7 +59,7 @@ void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject>::ThreadedGenerat
     this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
     
     if(m_spatialObject.IsInside(point))
-      itOut.Set( m_Density );
+      itOut.Set( m_Fillerfunctor( m_Density, itIn.Get() ));
     else
       itOut.Set( itIn.Get() );
     ++itIn;
@@ -70,8 +70,8 @@ void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject>::ThreadedGenerat
 }
 
 
-template <class TInputImage, class TOutputImage>
-myDrawCylinderImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage, typename TFunction>
+myDrawCylinderImageFilter<TInputImage, TOutputImage, TFunction>
 ::myDrawCylinderImageFilter()
 {
   std::cout << "C++::myDrawCylinderImageFilter::myDrawCylinderImageFilter " << std::endl;

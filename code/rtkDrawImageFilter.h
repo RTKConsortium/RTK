@@ -24,11 +24,52 @@
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkDrawSpatialObject.h"
 
+#include "itkAddImageFilter.h"
 
 namespace rtk
 {
+  
+  namespace Functor
+{
+/**
+ * \class Discard
+ * \brief
+ * \ingroup ITKImageIntensity
+ */
+template< typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1 >
+class Discard
+{
+public:
+  
+  Discard() {}
+  ~Discard() {}
+  bool operator!=(const Discard &) const
+  {
+    return false;
+  }
 
-  template <class TInputImage, class TOutputImage, class TSpatialObject>
+  bool operator==(const Discard & other) const
+  {
+    return !( *this != other );
+  }
+
+  inline TOutput operator()(const TInput1 & A, const TInput2 itkNotUsed(&B)) const
+  {   
+
+    return static_cast< TOutput >( A );
+  }
+};
+}
+  
+  
+  
+  
+
+  template <class TInputImage, 
+            class TOutputImage, 
+	    class TSpatialObject, 
+	    typename TFunction 
+            >
 class ITK_EXPORT DrawImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>  
   {
@@ -60,6 +101,7 @@ class ITK_EXPORT DrawImageFilter :
   virtual ~DrawImageFilter() {};  
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
   TSpatialObject m_spatialObject;
+  TFunction m_Fillerfunctor;
   
   
   
@@ -72,9 +114,18 @@ class ITK_EXPORT DrawImageFilter :
   };
   
   
-  template <class TInputImage, class TOutputImage>
+  template <class TInputImage, 
+            class TOutputImage, 
+	    typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
+                                                    typename TInputImage::PixelType,
+                                                    typename TOutputImage::PixelType>
+                                                    >
   class myDrawCylinderImageFilter : 
-  public DrawImageFilter<TInputImage, TOutputImage, DrawCylinderSpatialObject>
+  public DrawImageFilter< TInputImage,
+                         TOutputImage, 
+			 DrawCylinderSpatialObject,
+			 TFunction
+			 >
   {
        public:
   /** Standard class typedefs. */
@@ -122,6 +173,18 @@ class ITK_EXPORT DrawImageFilter :
     this->Modified();
   }
   
+  void SetAngle(double Angle)
+  {
+    if ( Angle == this->m_spatialObject.m_Angle )
+      {
+      return;
+      }
+    this->m_spatialObject.m_Angle = Angle;
+    this->m_spatialObject.sqpFunctor->Translate(this->m_spatialObject.m_Axis);
+    this->m_spatialObject.sqpFunctor->Rotate(this->m_spatialObject.m_Angle, this->m_spatialObject.m_Center);
+    this->Modified();
+  }
+  
   
   
   
@@ -145,10 +208,8 @@ class ITK_EXPORT DrawImageFilter :
  
   
   
-  };
-  
-//template <typename T, typename D>
-//  using CylinderDrawImageFilter = DrawImageFilter<T,D,CylinderDrawSpatialObject<>>;
+  }; 
+
   
 } // end namespace rtk
 
