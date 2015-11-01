@@ -35,7 +35,7 @@ template <class TInputImage, class TOutputImage, class TSpatialObject, typename 
 DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
 ::DrawImageFilter()
 {
-
+  m_Density = 1.;
 }
 
 

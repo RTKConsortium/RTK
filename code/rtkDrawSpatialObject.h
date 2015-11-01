@@ -24,38 +24,18 @@
 
 
 namespace rtk
-
 {
-
 
 class DrawSpatialObject //: public itk::DataObject
 {
   
-public:
-  
-  
+public:  
   typedef double ScalarType;
   
   DrawSpatialObject(){};
   
   
-//   typedef DrawSpatialObject               Self;
-//   typedef itk::DataObject                  Superclass;
-  
-//   typedef itk::SmartPointer< Self >       Pointer;
-//   typedef itk::SmartPointer< const Self > ConstPointer;
-  
-  
-  /** Method for creation through the object factory. */
-  //itkNewMacro(Self);
-
-  /** Run-time type information (and related methods). */
-  //itkTypeMacro(DrawSpatialObject, DataObject); 
-  
-  
-  
-  typedef itk::Point< ScalarType, 3 > PointType;
-  
+  typedef itk::Point< ScalarType, 3 > PointType; 
   
   
   
@@ -73,23 +53,11 @@ class DrawCylinderSpatialObject : public DrawSpatialObject
   
   
   DrawCylinderSpatialObject();
-  
-  
-//   typedef CylinderDrawSpatialObject               Self;
-//   typedef DrawSpatialObject                  Superclass;
-//   
-//   typedef itk::SmartPointer< Self >       Pointer;
-//   typedef itk::SmartPointer< const Self > ConstPointer;
+ 
   
   typedef itk::Point< ScalarType, 3 > PointType;
   typedef itk::Vector<double,3>                             VectorType;
-  
-  
-   /** Method for creation through the object factory. */
-//   itkNewMacro(Self);
 
-  /** Run-time type information (and related methods). */
-//   itkTypeMacro(CylinderDrawSpatialObject, DrawSpatialObject);
 
 /** Returns true if a point is inside the object. */
   virtual bool IsInside(const PointType & point) const;    
@@ -98,10 +66,7 @@ public:
   EQPFunctionType::Pointer sqpFunctor;
   VectorType     m_Axis;
   VectorType     m_Center;
-  ScalarType     m_Angle;
-  
-  
-  
+  ScalarType     m_Angle;  
   
 };
 
