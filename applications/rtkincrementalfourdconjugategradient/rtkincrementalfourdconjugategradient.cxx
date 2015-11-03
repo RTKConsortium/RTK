@@ -84,6 +84,16 @@ int main(int argc, char * argv[])
     inputSize[3] = args_info.frames_arg;
     constantImageSource->SetSize(inputSize);
 
+    // Copy output image's information from an existing file, if requested
+    if (args_info.like_given)
+      {
+      typedef itk::ImageFileReader<  VolumeSeriesType > LikeReaderType;
+      LikeReaderType::Pointer likeReader = LikeReaderType::New();
+      likeReader->SetFileName( args_info.like_arg );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( likeReader->UpdateOutputInformation() );
+      constantImageSource->SetInformationFromImage(likeReader->GetOutput());
+      }
+
     inputFilter = constantImageSource;
     }
   inputFilter->Update();
