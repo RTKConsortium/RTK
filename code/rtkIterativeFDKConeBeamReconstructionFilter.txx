@@ -167,11 +167,22 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
     {
     m_MultiplyFilter->Update();
 
-    p_vol = m_FDKFilter->GetOutput();
+    // Use previous iteration's result as input volume in next iteration
+    if(m_EnforcePositivity)
+      p_vol = m_ThresholdFilter->GetOutput();
+    else
+      p_vol = m_FDKFilter->GetOutput();
     p_vol->DisconnectPipeline();
     m_FDKFilter->SetInput( 0, p_vol );
-    m_ThresholdFilter->SetInput( m_FDKFilter->GetOutput() );
 
+    // Recreate broken link
+    if(m_EnforcePositivity)
+      m_ForwardProjectionFilter->SetInput(1, m_ThresholdFilter->GetOutput() );
+    else
+      m_ForwardProjectionFilter->SetInput(1, m_FDKFilter->GetOutput() );
+
+    // Use correction projections as input projections in next iteration
+    // No broken link to re-create
     p_projs = m_MultiplyFilter->GetOutput();
     p_projs->DisconnectPipeline();
     m_DisplacedDetectorFilter->SetInput( p_projs );

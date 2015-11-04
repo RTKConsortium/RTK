@@ -37,25 +37,12 @@ namespace rtk
  * \brief Implements the Iterative FDK
  *
  * IterativeFDKConeBeamReconstructionFilter is a composite filter which combines
- * the different steps of the SART cone-beam reconstruction, mainly:
- * - ExtractFilterType to work on one projection at a time
- * - ForwardProjectionImageFilter,
- * - SubtractImageFilter,
- * - BackProjectionImageFilter.
- * The input stack of projections is processed piece by piece (the size is
- * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
- * to extract sub-stacks.
- *
- * Two weighting steps must be applied when processing a given projection:
- * - each pixel of the forward projection must be divided by the total length of the
- * intersection between the ray and the reconstructed volume. This weighting step
- * is performed using the part of the pipeline that contains RayBoxIntersectionImageFilter
- * - each voxel of the back projection must be divided by the value it would take if
- * a projection filled with ones was being reprojected. This weighting step is not
- * performed when using a voxel-based back projection, as the weights are all equal to one
- * in this case. When using a ray-based backprojector, typically Joseph,it must be performed.
- * It is implemented in NormalizedJosephBackProjectionImageFilter, which
- * is used in the SART pipeline.
+ * the different steps of the iterative FDK cone-beam reconstruction, mainly:
+ * - FDK reconstruction,
+ * - Forward projection,
+ * - Difference between the calculated projections and the input ones,
+ * - Multiplication by a small constant
+ * This "projections correction" is used at the next iteration to improve the FDK.
  *
  * \dot
  * digraph IterativeFDKConeBeamReconstructionFilter {
@@ -68,54 +55,37 @@ namespace rtk
  * Output [shape=Mdiamond];
  *
  * node [shape=box];
- * ForwardProject [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
- * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
- * MultiplyByZero [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
- * AfterExtract [label="", fixedsize="false", width=0, height=0, shape=none];
- * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
- * MultiplyByLambda [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
- * Divide [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
- * GatingWeight [ label="itk::MultiplyImageFilter (by gating weight)" URL="\ref itk::MultiplyImageFilter", style=dashed];
  * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
- * ConstantProjectionStack [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
- * ExtractConstantProjection [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
- * RayBox [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
- * ConstantVolume [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
- * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
- * Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
- * OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+ * Parker [ label="rtk::ParkerShortScanImageFilter" URL="\ref rtk::ParkerShortScanImageFilter"];
+ * FDK [ label="rtk::FDKConeBeamReconstructionFilter" URL="\ref rtk::FDKConeBeamReconstructionFilter"];
+ * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+ * Multiply [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
+ * ConstantProjectionStack [ label="rtk::ConstantImageSource (projections)" URL="\ref rtk::ConstantImageSource"];
+ * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
  * Threshold [ label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
- * OutofThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
- * OutofBP [label="", fixedsize="false", width=0, height=0, shape=none];
- * BeforeBP [label="", fixedsize="false", width=0, height=0, shape=none];
- * BeforeAdd [label="", fixedsize="false", width=0, height=0, shape=none];
- * Input0 -> OutofInput0 [arrowhead=none];
- * OutofInput0 -> ForwardProject;
- * OutofInput0 -> BeforeAdd [arrowhead=none];
- * BeforeAdd -> Add;
- * ConstantVolume -> BeforeBP [arrowhead=none];
- * BeforeBP -> BackProjection;
- * Extract -> AfterExtract[arrowhead=none];
- * AfterExtract -> MultiplyByZero;
- * AfterExtract -> Subtract;
- * MultiplyByZero -> ForwardProject;
- * Input1 -> Extract;
- * ForwardProject -> Subtract;
- * Subtract -> MultiplyByLambda;
- * MultiplyByLambda -> Divide;
- * Divide -> GatingWeight;
- * GatingWeight -> Displaced;
- * ConstantProjectionStack -> ExtractConstantProjection;
- * ExtractConstantProjection -> RayBox;
- * RayBox -> Divide;
- * Displaced -> BackProjection;
- * BackProjection -> OutofBP [arrowhead=none];
- * OutofBP -> Add;
- * OutofBP -> BeforeBP [style=dashed, constraint=false];
- * Add -> Threshold;
- * Threshold -> OutofThreshold [arrowhead=none];
- * OutofThreshold -> OutofInput0 [headport="se", style=dashed];
- * OutofThreshold -> Output;
+ *
+ * AfterInput1 [label="", fixedsize="false", width=0, height=0, shape=none];
+ * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+ * AfterThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ * AfterMultiply [label="", fixedsize="false", width=0, height=0, shape=none];
+ *
+ * Input1 -> AfterInput1 [arrowhead=none];
+ * AfterInput1 -> Displaced;
+ * Displaced -> Parker;
+ * Parker -> FDK;
+ * Input0 -> AfterInput0;
+ * AfterInput0 -> FDK;
+ * ConstantProjectionStack -> ForwardProjection;
+ * FDK -> Threshold;
+ * Threshold -> AfterThreshold [arrowhead=none];
+ * AfterThreshold -> ForwardProjection;
+ * AfterInput1 -> Subtract;
+ * ForwardProjection -> Subtract;
+ * Subtract -> Multiply;
+ * AfterThreshold -> Output;
+ * AfterThreshold -> AfterInput0 [style=dashed, constraint=false];
+ * Multiply -> AfterMultiply;
+ * AfterMultiply -> AfterInput1 [style=dashed, constraint=false];
  * }
  * \enddot
  *
