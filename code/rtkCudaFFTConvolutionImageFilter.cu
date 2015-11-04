@@ -177,7 +177,7 @@ padding_kernel(float *input,
     output[out_idx] = (2*input[begRow+1]-input[-i + begRow]) * truncationWeights[-i];
     }
   // right mirroring (equation 3b in [Ohnesorge et al, Med Phys, 2000])
-  else if (i-inputDim.x<sizeWeights)
+  else if ((i>=inputDim.x) && (i-inputDim.x+1)<sizeWeights)
     {
     unsigned int borderDist = i-inputDim.x+1;
     int endRow = inputDim.x-1 + (j + k*inputDim.y) * inputDim.x;
