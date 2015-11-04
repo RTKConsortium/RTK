@@ -179,16 +179,6 @@ int main(int argc, char * argv[])
   fourDInputSize[3] = args_info.frames_arg;
   fourDConstantImageSource->SetSize(fourDInputSize);
 
-  // Copy output image's information from an existing file, if requested
-  if (args_info.like_given)
-    {
-    typedef itk::ImageFileReader<  FourDOutputImageType > LikeReaderType;
-    LikeReaderType::Pointer likeReader = LikeReaderType::New();
-    likeReader->SetFileName( args_info.like_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( likeReader->UpdateOutputInformation() );
-    fourDConstantImageSource->SetInformationFromImage(likeReader->GetOutput());
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION(fourDConstantImageSource->Update())
 
   // Go over each frame, reconstruct 3D frame and paste with iterators in 4D image

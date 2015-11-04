@@ -86,17 +86,6 @@ int main(int argc, char * argv[])
     typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmwavelets>(constantImageSource, args_info);
-
-    // Copy output image's information from an existing file, if requested
-    if (args_info.like_given)
-      {
-      typedef itk::ImageFileReader<  OutputImageType > LikeReaderType;
-      LikeReaderType::Pointer likeReader = LikeReaderType::New();
-      likeReader->SetFileName( args_info.like_arg );
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( likeReader->UpdateOutputInformation() );
-      constantImageSource->SetInformationFromImage(likeReader->GetOutput());
-      }
-
     inputFilter = constantImageSource;
     }
 
