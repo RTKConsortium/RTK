@@ -19,6 +19,7 @@
 #define __rtkSelectOneProjectionPerCycleImageFilter_txx
 
 #include "rtkSelectOneProjectionPerCycleImageFilter.h"
+#include <itkCSVArray2DFileReader.h>
 
 namespace rtk
 {
@@ -31,35 +32,19 @@ SelectOneProjectionPerCycleImageFilter<ProjectionStackType>
 }
 
 template<typename ProjectionStackType>
-void
-SelectOneProjectionPerCycleImageFilter<ProjectionStackType>
-::SetSignalFilename (const std::string _arg)
-{
-  itkDebugMacro("setting SignalFilename to " << _arg);
-  if ( this->m_SignalFilename != _arg )
-    {
-    this->m_SignalFilename = _arg;
-    this->Modified();
-
-    std::ifstream is( _arg.c_str() );
-    if( !is.is_open() )
-      {
-      itkGenericExceptionMacro(<< "Could not open signal file " << m_SignalFilename);
-      }
-
-    double value;
-    while( !is.eof() )
-      {
-      is >> value;
-      m_Signal.push_back(value);
-      }
-    }
-}
-
-template<typename ProjectionStackType>
 void SelectOneProjectionPerCycleImageFilter<ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  // Read signal file
+  typedef itk::CSVArray2DFileReader<double> ReaderType;
+  ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileName( m_SignalFilename );
+  reader->SetFieldDelimiterCharacter( ';' );
+  reader->HasRowHeadersOff();
+  reader->HasColumnHeadersOff();
+  reader->Update();
+  m_Signal = reader->GetArray2DDataObject()->GetColumn(0);
+
   this->m_NbSelectedProjs = 0;
   this->m_SelectedProjections.resize(m_Signal.size());
   std::fill(this->m_SelectedProjections.begin(), this->m_SelectedProjections.end(), false);
