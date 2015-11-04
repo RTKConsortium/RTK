@@ -4,4 +4,4 @@ option "dimension" - "Dimension"                                       int    mu
 option "spacing"   - "Spacing"                                         double multiple no  default="1"
 option "direction" - "Direction"                                       double multiple no
 option "frames"    - "Number of time frames in the 4D reconstruction"  int             no  default="10"
-
+option "like"      - "Copy information from this image (origin, dimension, spacing, direction, frames)"  string no
