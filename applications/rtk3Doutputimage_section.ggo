@@ -3,4 +3,4 @@ option "origin"    - "Origin (default=centered)" double multiple no
 option "dimension" - "Dimension"                 int    multiple no  default="256"
 option "spacing"   - "Spacing"                   double multiple no  default="1"
 option "direction" - "Direction"                 double multiple no
-
+option "like"      - "Copy information from this image (origin, dimension, spacing, direction)"  string no
