@@ -53,7 +53,7 @@ public:
   itkNewMacro(Self)
 
   /** Runtime information support. */
-  itkTypeMacro(CudaTotalVariationDenoisingBPDQImageFilter, InterpolatorWithKnownWeightsImageFilter)
+  itkTypeMacro(CudaTotalVariationDenoisingBPDQImageFilter, TotalVariationDenoisingBPDQImageFilter)
 
 protected:
   rtkcuda_EXPORT CudaTotalVariationDenoisingBPDQImageFilter();

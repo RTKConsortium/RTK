@@ -146,6 +146,18 @@ CyclicDeformationImageFilter<TOutputImage>
     }
 }
 
+template <class TOutputImage>
+void
+CyclicDeformationImageFilter<TOutputImage>
+::SetSignalVector (std::vector<double> _arg)
+{
+  if ( m_Signal != _arg )
+    {
+    m_Signal = _arg;
+    this->Modified();
+    }
+}
+
 } // end namespace rtk
 
 #endif

@@ -1,5 +1,5 @@
-package "rtk"
-version "Creates an RTK geometry file from an acquisition exported on the XRad system."
+package "rtkxradgeometry"
+purpose "Creates an RTK geometry file from an acquisition exported on the XRad system."
 
 option "verbose"   v "Verbose execution"                 flag   off
 option "config"    - "Config file"                       string no

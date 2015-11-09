@@ -1,5 +1,5 @@
 #=========================================================
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.4 FATAL_ERROR)
 if(WIN32 OR NOT EXISTS /dev/urandom)
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 endif()
@@ -17,6 +17,9 @@ INCLUDE(cmake/RTKExternalData.cmake)
 
 ## Tell CMake to be quiet
 CMAKE_POLICY (SET CMP0003 NEW)
+if(POLICY CMP0054)
+  CMAKE_POLICY (SET CMP0054 NEW)
+endif()
 
 ## Default to release
 IF (NOT CMAKE_BUILD_TYPE)
@@ -29,7 +32,7 @@ ENDIF(BUILD_TESTING)
 #=========================================================
 
 #=========================================================
-SET(RTK_VERSION_MAJOR "0")
+SET(RTK_VERSION_MAJOR "1")
 SET(RTK_VERSION_MINOR "1")
 SET(RTK_VERSION_PATCH "0")
 
@@ -158,10 +161,11 @@ if(NOT RTK_INSTALL_PACKAGE_DIR)
   set(RTK_INSTALL_PACKAGE_DIR "lib/cmake/RTK-${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}")
 endif()
 #=========================================================
-
+# Utilities
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/code")
 IF(RTK_USE_CUDA)
   LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/utilities/ITKCudaCommon/include/")
+  LIST(APPEND RTK_INCLUDE_DIRS ${CUDA_TOOLKIT_INCLUDE})
 ENDIF(RTK_USE_CUDA)
 LIST(APPEND RTK_INCLUDE_DIRS "${PROJECT_BINARY_DIR}")
 INCLUDE_DIRECTORIES(${RTK_INCLUDE_DIRS})
@@ -177,7 +181,21 @@ IF(RTK_USE_CUDA)
   ADD_SUBDIRECTORY(utilities/ITKCudaCommon)
   INCLUDE_DIRECTORIES(utilities/ITKCudaCommon/include)
 ENDIF(RTK_USE_CUDA)
-
+ADD_SUBDIRECTORY(utilities/lp_solve)
+include_directories(
+        utilities/lp_solve
+        utilities/lp_solve/shared
+        utilities/lp_solve/bfp
+        utilities/lp_solve/bfp/bfp_LUSOL
+        utilities/lp_solve/bfp/bfp_LUSOL/LUSOL
+        utilities/lp_solve/colamd)
+LIST(APPEND RTK_INCLUDE_DIRS
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/shared"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL/LUSOL"
+    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/colamdcode")
 ADD_SUBDIRECTORY(code)
 
 #=========================================================

@@ -70,6 +70,7 @@ public:
       The signal file is a text file containing one line per frame. */
   itkGetMacro(SignalFilename, std::string);
   virtual void SetSignalFilename (const std::string _arg);
+  virtual void SetSignalVector (std::vector<double> _arg);
 
   /** Get / Set the frame number. The number is used to lookup in the signal file
    * which phase value should be used to interpolate. */

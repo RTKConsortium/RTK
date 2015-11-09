@@ -52,6 +52,10 @@ ADD_TEST(rtkdisplaceddetectortest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetector
 ADD_CUDA_TEST(rtkdisplaceddetectortest rtkdisplaceddetectortest.cxx)
 ADD_CUDA_TEST(rtkdisplaceddetectorcomp rtkdisplaceddetectorcompcudatest.cxx)
 
+ADD_EXECUTABLE(rtkdisplaceddetectorcompoffsettest rtkdisplaceddetectorcompoffsettest.cxx)
+TARGET_LINK_LIBRARIES(rtkdisplaceddetectorcompoffsettest ${RTK_LIBRARIES})
+ADD_TEST(rtkdisplaceddetectorcompoffsettest ${EXECUTABLE_OUTPUT_PATH}/rtkdisplaceddetectorcompoffsettest)
+
 ADD_EXECUTABLE(rtkshortscantest rtkshortscantest.cxx)
 TARGET_LINK_LIBRARIES(rtkshortscantest ${RTK_LIBRARIES})
 ADD_TEST(rtkshortscantest ${EXECUTABLE_OUTPUT_PATH}/rtkshortscantest)
@@ -78,6 +82,15 @@ IF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
   SET_TARGET_PROPERTIES(rtkrampfilternofftwcudatest PROPERTIES COMPILE_FLAGS "-DUSE_CUDA -DRAMP_FILTER_TEST_WITHOUT_FFTW")
   ADD_TEST(rtkrampfilternofftwcudatest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfilternofftwcudatest)
 ENDIF(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+
+ADD_EXECUTABLE(rtkscatterglarefiltertest rtkscatterglarefiltertest.cxx)
+TARGET_LINK_LIBRARIES(rtkscatterglarefiltertest ${RTK_LIBRARIES})
+ADD_TEST(rtkscatterglarefiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkscatterglarefiltertest)
+ADD_CUDA_TEST(rtkscatterglarefilter rtkscatterglarefiltertest.cxx)
+
+ADD_EXECUTABLE(rtkscatterglarefilternofftwtest rtkscatterglarefiltertest.cxx)
+SET_TARGET_PROPERTIES(rtkscatterglarefilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
+TARGET_LINK_LIBRARIES(rtkscatterglarefilternofftwtest ${RTK_LIBRARIES})
 
 ADD_EXECUTABLE(rtkRaycastInterpolatorForwardProjectionTest rtkRaycastInterpolatorForwardProjectionTest.cxx)
 TARGET_LINK_LIBRARIES(rtkRaycastInterpolatorForwardProjectionTest ${RTK_LIBRARIES})
@@ -118,14 +131,14 @@ ADD_TEST(rtklutbasedvarI0rawtoatttest ${EXECUTABLE_OUTPUT_PATH}/rtklutbasedvarI0
 
 ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkamsterdamshroudtest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkamsterdamshroudtest 
+RTK_ADD_TEST(NAME rtkamsterdamshroudtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkamsterdamshroudtest
              DATA{Data/Baseline/AmsterdamShroud/Amsterdam.mha})
 
 ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)
 TARGET_LINK_LIBRARIES(rtkvariantest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkvariantest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest 
+RTK_ADD_TEST(NAME rtkvariantest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest
              DATA{Data/Input/Varian/raw.hnd,acqui.xml}
              DATA{Data/Baseline/Varian/attenuation.mha,geometry.xml})
 
@@ -133,15 +146,8 @@ ADD_EXECUTABLE(rtkelektatest rtkelektatest.cxx)
 TARGET_LINK_LIBRARIES(rtkelektatest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkelektatest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkelektatest
-             DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his}
-             DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha})
-
-ADD_EXECUTABLE(rtkimagxgeometrytest rtkimagxgeometrytest.cxx)
-TARGET_LINK_LIBRARIES(rtkimagxgeometrytest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkimagxgeometrytest
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxgeometrytest
-             DATA{Data/Input/ImagX/calibration.xml,room.xml,1.dcm}
-             DATA{Data/Baseline/ImagX/geo.xml,attenuationDCM.mha})
+             DATA{Data/Input/Elekta/FRAME.DBF,IMAGE.DBF,raw.his,_Frames.xml}
+             DATA{Data/Baseline/Elekta/geometry.xml,attenuation.mha,geometry5.xml})
 
 ADD_EXECUTABLE(rtkluttest rtkluttest.cxx)
 TARGET_LINK_LIBRARIES(rtkluttest ${RTK_LIBRARIES})
@@ -152,10 +158,10 @@ RTK_ADD_TEST(NAME rtkluttest
 
 ADD_EXECUTABLE(rtkimagxtest rtkimagxtest.cxx)
 TARGET_LINK_LIBRARIES(rtkimagxtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkimagxtest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest 
-             DATA{Data/Input/ImagX/raw.xml,raw.raw}
-             DATA{Data/Baseline/ImagX/attenuation.mha})
+RTK_ADD_TEST(NAME rtkimagxtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkimagxtest
+             DATA{Data/Input/ImagX/calibration.xml,room.xml,raw.xml,raw.raw,1.dcm}
+             DATA{Data/Baseline/ImagX/geo.xml,attenuation.mha,attenuationDCM.mha})
 
 ADD_EXECUTABLE(rtkedftest rtkedftest.cxx)
 TARGET_LINK_LIBRARIES(rtkedftest ${RTK_LIBRARIES})
@@ -173,7 +179,7 @@ RTK_ADD_TEST(NAME rtkdigisenstest
 
 ADD_EXECUTABLE(rtkxradtest rtkxradtest.cxx)
 TARGET_LINK_LIBRARIES(rtkxradtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkxradtest 
+RTK_ADD_TEST(NAME rtkxradtest
              WORKING_DIRECTORY ${RTK_DATA_ROOT}/Input/XRad
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkxradtest
              DATA{Data/Input/XRad/flat.header,flat.img,dark.header,dark.img,SolidWater_HiGain1x1.header,SolidWater_HiGain1x1_firstProj.header,SolidWater_HiGain1x1_firstProj.img}
@@ -181,14 +187,14 @@ RTK_ADD_TEST(NAME rtkxradtest
 
 ADD_EXECUTABLE(rtkprojectgeometricphantomtest rtkprojectgeometricphantomtest.cxx)
 TARGET_LINK_LIBRARIES(rtkprojectgeometricphantomtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkprojectgeometricphantomtest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkprojectgeometricphantomtest 
+RTK_ADD_TEST(NAME rtkprojectgeometricphantomtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkprojectgeometricphantomtest
              DATA{Data/Input/GeometricPhantom/SheppLogan.txt})
 
 ADD_EXECUTABLE(rtkdrawgeometricphantomtest rtkdrawgeometricphantomtest.cxx)
 TARGET_LINK_LIBRARIES(rtkdrawgeometricphantomtest ${RTK_LIBRARIES})
-RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest 
-             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdrawgeometricphantomtest 
+RTK_ADD_TEST(NAME rtkdrawgeometricphantomtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdrawgeometricphantomtest
              DATA{Data/Input/GeometricPhantom/SheppLogan.txt}
              DATA{Data/Input/GeometricPhantom/Geometries.txt})
 
@@ -197,10 +203,20 @@ TARGET_LINK_LIBRARIES(rtksarttest ${RTK_LIBRARIES})
 ADD_TEST(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
 ADD_CUDA_TEST(rtksart rtksarttest.cxx)
 
+ADD_EXECUTABLE(rtkfourdsarttest rtkfourdsarttest.cxx)
+TARGET_LINK_LIBRARIES(rtkfourdsarttest ${RTK_LIBRARIES})
+ADD_TEST(rtkfourdsarttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdsarttest)
+ADD_CUDA_TEST(rtkfourdsart rtkfourdsarttest.cxx)
+
 ADD_EXECUTABLE(rtkfourdconjugategradienttest rtkfourdconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdconjugategradienttest)
 ADD_CUDA_TEST(rtkfourdconjugategradient rtkfourdconjugategradienttest.cxx)
+
+ADD_EXECUTABLE(rtkincrementalfourdconjugategradienttest rtkincrementalfourdconjugategradienttest.cxx)
+TARGET_LINK_LIBRARIES(rtkincrementalfourdconjugategradienttest ${RTK_LIBRARIES})
+ADD_TEST(rtkincrementalfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdconjugategradienttest)
+ADD_CUDA_TEST(rtkincrementalfourdconjugategradient rtkincrementalfourdconjugategradienttest.cxx)
 
 ADD_EXECUTABLE(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
 TARGET_LINK_LIBRARIES(rtkjosephadjointoperatorstest ${RTK_LIBRARIES})
@@ -230,13 +246,25 @@ ADD_EXECUTABLE(rtkdivergencetest rtkdivergencetest.cxx)
 TARGET_LINK_LIBRARIES(rtkdivergencetest ${RTK_LIBRARIES})
 ADD_TEST(rtkdivergencetest ${EXECUTABLE_OUTPUT_PATH}/rtkdivergencetest)
 
+ADD_EXECUTABLE(rtklagcorrectiontest rtklagcorrectiontest.cxx)
+TARGET_LINK_LIBRARIES(rtklagcorrectiontest ${RTK_LIBRARIES})
+ADD_TEST(rtklagcorrectiontest ${EXECUTABLE_OUTPUT_PATH}/rtklagcorrectiontest)
+
 ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradienttest)
 
+ADD_EXECUTABLE(rtkwarptest rtkwarptest.cxx)
+TARGET_LINK_LIBRARIES(rtkwarptest ${RTK_LIBRARIES})
+ADD_TEST(rtkwarptest ${EXECUTABLE_OUTPUT_PATH}/rtkwarptest)
+
 ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
 TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
 ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
+
+ADD_EXECUTABLE(rtkselectoneprojpercycletest rtkselectoneprojpercycletest.cxx)
+TARGET_LINK_LIBRARIES(rtkselectoneprojpercycletest ${RTK_LIBRARIES})
+ADD_TEST(rtkselectoneprojpercycletest ${EXECUTABLE_OUTPUT_PATH}/rtkselectoneprojpercycletest)
 
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
@@ -277,6 +305,14 @@ if(NOT RTK_USE_CUDA)
 endif()
 ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
 
+# We cannot compile this test using CPU if GPU is present
+# This is because of rtkIterativeConeBeamReconstructionFilter
+if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkincrementalfourdroostertest rtkincrementalfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkincrementalfourdroostertest ${RTK_LIBRARIES})
+  ADD_TEST(rtkincrementalfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdroostertest)
+endif()
+ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
 
 # We cannot compile this test using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
@@ -291,14 +327,40 @@ ADD_EXECUTABLE(rtkwaveletstest rtkwaveletstest.cxx)
 TARGET_LINK_LIBRARIES(rtkwaveletstest RTK)
 ADD_TEST(rtkwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkwaveletstest)
 
+ADD_CUDA_TEST(rtkcudaraycastadjointoperatorstest rtkcudaraycastadjointoperatorstest.cxx)
+
 # Test headers
-ADD_EXECUTABLE(rtkheadertest rtkheadertest.cxx)
+FILE(GLOB RTK_ALL_HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/code "${PROJECT_SOURCE_DIR}/code/rtk*.h")
+FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx "#ifdef USE_CUDA\n")
+FILE(GLOB RTK_CUDA_HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/code "${PROJECT_SOURCE_DIR}/code/rtkCuda*.h")
+FOREACH(RTK_CUDA_HEADER ${RTK_CUDA_HEADERS})
+  FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx "# include \"${RTK_CUDA_HEADER}\"\n")
+  LIST(REMOVE_ITEM RTK_ALL_HEADERS ${RTK_CUDA_HEADER})
+ENDFOREACH()
+FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx "#endif //USE_CUDA\n")
+
+FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx "#ifdef USE_OPENCL\n")
+FILE(GLOB RTK_OPENCL_HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/code "${PROJECT_SOURCE_DIR}/code/rtkOpenCL*.h")
+FOREACH(RTK_OPENCL_HEADER ${RTK_OPENCL_HEADERS})
+  FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx "# include \"${RTK_OPENCL_HEADER}\"\n")
+  LIST(REMOVE_ITEM RTK_ALL_HEADERS ${RTK_OPENCL_HEADER})
+ENDFOREACH()
+FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx "#endif //USE_OPENCL\n")
+
+FOREACH(RTK_ALL_HEADER ${RTK_ALL_HEADERS})
+  FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx "#include \"${RTK_ALL_HEADER}\"\n")
+ENDFOREACH()
+FILE(READ rtkheadertestfooter.cxx RTKHEADERTESTFOOTER)
+FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx "\n\n${RTKHEADERTESTFOOTER}")
+
+ADD_EXECUTABLE(rtkheadertest ${CMAKE_CURRENT_BINARY_DIR}/rtkheadertest.cxx)
 IF(RTK_USE_CUDA)
   SET_TARGET_PROPERTIES(rtkheadertest PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
-ENDIF(RTK_USE_CUDA)
-IF(OPENCL_FOUND)
+ENDIF()
+IF(RTK_USE_OPENCL)
   SET_TARGET_PROPERTIES(rtkheadertest PROPERTIES COMPILE_FLAGS -DUSE_OPENCL)
-ENDIF(OPENCL_FOUND)
+ENDIF()
+
 TARGET_LINK_LIBRARIES(rtkheadertest ${RTK_LIBRARIES})
 ADD_TEST(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
 

@@ -1,0 +1,20 @@
+package "rtkfourdfdk"
+purpose "Reconstructs a 4D volume from a sequence of projections using FDK with one projection per respiratory cycle in each frame."
+
+option "verbose"    v "Verbose execution"                                           flag                off
+option "config"     - "Config file"                                                 string              no
+option "geometry"   g "XML geometry file name"                                      string              yes
+option "output"     o "Output file name"                                            string              yes
+option "hardware"   - "Hardware used for computation"                               values="cpu","cuda" no   default="cpu"
+option "lowmem"     l "Load only one projection per thread in memory"               flag                off
+option "divisions"  d "Streaming option: number of stream divisions of the CT"      int                 no   default="1"
+option "subsetsize" - "Streaming option: number of projections processed at a time" int                 no   default="16"
+
+section "Ramp filter"
+option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"
+option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
+option "hannY"     - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
+
+section "Phase gating"
+option "signal"    - "File containing the phase of each projection"                 string              yes
+

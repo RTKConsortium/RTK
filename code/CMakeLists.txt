@@ -2,7 +2,7 @@
 # Propagate cmake options in a header file
 CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkConfiguration.h.in
   ${CMAKE_BINARY_DIR}/rtkConfiguration.h)
-SET (RTK_LIBRARIES RTK)
+SET (RTK_LIBRARIES RTK lpsolve55)
 #=========================================================
 
 #=========================================================
@@ -10,6 +10,7 @@ ADD_LIBRARY(RTK
             rtkHisImageIO.cxx
             rtkHisImageIOFactory.cxx
             rtkElektaSynergyGeometryReader.cxx
+            rtkElektaXVI5GeometryXMLFile.cxx
             rtkDbf.cxx
             rtkHndImageIO.cxx
             rtkHndImageIOFactory.cxx
@@ -32,13 +33,13 @@ ADD_LIBRARY(RTK
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
-            rtkConvertEllipsoidToQuadricParametersFunction.cxx
             rtkGlobalTimer.cxx
 	    rtkGlobalTimerProbesCollector.cxx
 	    rtkWatcherForTimer.cxx
-            rtkWaterCalibrationImageFilter.cxx)
+            rtkConvertEllipsoidToQuadricParametersFunction.cxx)
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
+TARGET_LINK_LIBRARIES(RTK lpsolve55)
 #=========================================================
 
 #=========================================================
@@ -64,12 +65,12 @@ ENDIF(RTK_USE_OPENCL)
 #=========================================================
 # Cuda library stuff
 IF (RTK_USE_CUDA)
-  SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda)
+  SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda ITKCudaCommon ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY} ${CUDA_CUFFT_LIBRARIES})
   SET (rtkcuda_CUDA_FILES
        rtkCudaCropImageFilter.cu
        rtkCudaUtilities.cu
        rtkCudaFDKBackProjectionImageFilter.cu
-       rtkCudaFFTRampImageFilter.cu
+       rtkCudaFFTConvolutionImageFilter.cu
        rtkCudaFDKWeightProjectionFilter.cu
        rtkCudaDisplacedDetectorImageFilter.cu
        rtkCudaParkerShortScanImageFilter.cu
@@ -77,8 +78,17 @@ IF (RTK_USE_CUDA)
        rtkCudaBackProjectionImageFilter.cu
        rtkCudaSplatImageFilter.cu
        rtkCudaInterpolateImageFilter.cu
-       rtkCudaTotalVariationDenoisingBPDQImageFilter.cu)
-  
+       rtkCudaWarpImageFilter.cu
+       rtkCudaForwardWarpImageFilter.cu
+       rtkCudaRayCastBackProjectionImageFilter.cu
+       rtkCudaTotalVariationDenoisingBPDQImageFilter.cu
+       rtkCudaLastDimensionTVDenoisingImageFilter.cu
+       rtkCudaConstantVolumeSource.cu
+       rtkCudaConstantVolumeSeriesSource.cu
+       rtkCudaConjugateGradientImageFilter_3f.cu
+       rtkCudaConjugateGradientImageFilter_4f.cu
+       rtkCudaAverageOutOfROIImageFilter.cu
+       )
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
   IF(WIN32)
@@ -102,16 +112,24 @@ IF (RTK_USE_CUDA)
               rtkCudaParkerShortScanImageFilter.cxx
               rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
-              rtkCudaFFTRampImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
 	      rtkCudaSplatImageFilter.cxx
 	      rtkCudaInterpolateImageFilter.cxx
+	      rtkCudaWarpImageFilter.cxx
+	      rtkCudaForwardWarpImageFilter.cxx
+	      rtkCudaRayCastBackProjectionImageFilter.cxx
 	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
-              ${rtkcuda_CUDA_WRAPPERS}
+	      rtkCudaLastDimensionTVDenoisingImageFilter.cxx
+	      rtkCudaConstantVolumeSource.cxx
+	      rtkCudaConstantVolumeSeriesSource.cxx
+              rtkCudaConjugateGradientImageFilter_3f.cxx
+              rtkCudaConjugateGradientImageFilter_4f.cxx
+	      rtkCudaAverageOutOfROIImageFilter.cxx
+	      ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
-  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} RTK ITKCudaCommon)
+  TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_cublas_LIBRARY} RTK ITKCudaCommon)
 ENDIF (RTK_USE_CUDA)
 #=========================================================
 
@@ -120,7 +138,7 @@ ENDIF (RTK_USE_CUDA)
 IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
   # Generate RTKConfig.cmake for the install tree.
   SET (RTK_USE_FILE "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_PACKAGE_DIR}/UseRTK.cmake")
-  SET (RTK_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR}")
+  SET (RTK_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR};${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR}/lpsolve")
   SET (RTK_LIBRARY_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
   CONFIGURE_FILE (${PROJECT_SOURCE_DIR}/cmake/RTKConfig.cmake.in ${RTK_BINARY_DIR}/CMakeFiles/RTKConfig.cmake @ONLY)
   INSTALL(FILES ${RTK_BINARY_DIR}/CMakeFiles/RTKConfig.cmake

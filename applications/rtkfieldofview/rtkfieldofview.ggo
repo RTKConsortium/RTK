@@ -1,5 +1,5 @@
-package "rtk"
-version "Computes the field of view of a reconstruction."
+package "rtkfieldofview"
+purpose "Computes the field of view of a reconstruction."
 
 option "verbose"        v "Verbose execution"                                         flag     off
 option "config"         - "Config file"                                               string   no
@@ -8,9 +8,6 @@ option "output"         o "Output projections file name"                        
 option "reconstruction" - "Reconstruction file unmasked"                              string   yes
 option "mask"           m "Output a binary mask instead of a masked image"            flag     off
 option "displaced"      d "Assume that a displaced detector has been used"            flag     off
-
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
+option "bp"             b "Slow alternative for non cylindrical FOVs:\
+ backproject projections filled with ones and threshold result."                      flag     off
+option "hardware"       - "Hardware used for computation (with --bp only)" values="cpu","cuda" no   default="cpu"

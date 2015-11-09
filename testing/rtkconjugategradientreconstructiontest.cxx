@@ -163,5 +163,16 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
+  std::cout << "\n\n****** Case 4: Joseph Backprojector, weighted least squares  ******" << std::endl;
+
+  // We use the projections themselves as weights map
+  conjugategradient->SetInput(2, rei->GetOutput());
+
+  conjugategradient->SetBackProjectionFilter( 1 );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
+
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
   return EXIT_SUCCESS;
 }

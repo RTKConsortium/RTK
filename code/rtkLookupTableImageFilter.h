@@ -94,6 +94,7 @@ LUT<TInput, TOutput>
 }
 
 template<>
+inline
 float
 LUT<float, float>
 ::operator()( const float & val ) const {
@@ -103,6 +104,7 @@ LUT<float, float>
 }
 
 template<>
+inline
 double
 LUT<double, double>
 ::operator()( const double & val ) const {

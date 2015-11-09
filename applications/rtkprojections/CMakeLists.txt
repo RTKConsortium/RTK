@@ -1,4 +1,4 @@
-WRAP_GGO(rtkprojections_GGO_C rtkprojections.ggo)
+WRAP_GGO(rtkprojections_GGO_C rtkprojections.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkprojections rtkprojections.cxx ${rtkprojections_GGO_C})
 TARGET_LINK_LIBRARIES(rtkprojections RTK)
 

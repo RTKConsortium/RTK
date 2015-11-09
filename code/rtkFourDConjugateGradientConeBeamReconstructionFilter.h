@@ -25,11 +25,13 @@
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkFourDReconstructionConjugateGradientOperator.h"
 #include "rtkProjectionStackToFourDImageFilter.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaConjugateGradientImageFilter_4f.h"
+#endif
 
 namespace rtk
 {
@@ -44,16 +46,16 @@ namespace rtk
    * 4D conjugate gradient reconstruction consists in iteratively
    * minimizing the following cost function:
    *
-   * Sum_over_theta || sqrt(D) (R_theta S_theta f - p_theta) ||_2^2
+   * \f[ \sum\limits_{\alpha} \| R_\alpha S_\alpha x - p_\alpha \|_2^2 \f]
    *
    * with
-   * - f a 4D series of 3D volumes, each one being the reconstruction
+   * - \f$ x \f$ a 4D series of 3D volumes, each one being the reconstruction
    * at a given respiratory/cardiac phase
-   * - p_theta is the projection measured at angle theta
-   * - S_theta an interpolation operator which, from the 3D + time sequence f,
-   * estimates the 3D volume through which projection p_theta has been acquired
-   * - R_theta is the X-ray transform (the forward projection operator) for angle theta
-   * - D the displaced detector weighting matrix
+   * - \f$ p_{\alpha} \f$ is the projection measured at angle \f$ \alpha \f$
+   * - \f$ S_{\alpha} \f$ an interpolation operator which, from the 3D + time sequence f,
+   * estimates the 3D volume through which projection \f$ p_{\alpha} \f$ has been acquired
+   * - \f$ R_{\alpha} \f$ is the X-ray transform (the forward projection operator) for angle \f$ \alpha \f$
+   * - \f$ D \f$ the displaced detector weighting matrix
    *
    * \dot
    * digraph FourDConjugateGradientConeBeamReconstructionFilter {
@@ -69,13 +71,11 @@ namespace rtk
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * PSTFD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
-   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
-   * Input0 -> AfterInput0 [arrowhead=None];
+   * Input0 -> AfterInput0 [arrowhead=none];
    * AfterInput0 -> ConjugateGradient;
    * Input0 -> PSTFD;
-   * Input1 -> Displaced
-   * Displaced -> PSTFD;
+   * Input1 -> PSTFD;
    * PSTFD -> ConjugateGradient;
    * ConjugateGradient -> Output;
    * }
@@ -110,7 +110,6 @@ public:
   typedef rtk::ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
   typedef rtk::FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
   typedef rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                                    DisplacedDetectorFilterType;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -127,6 +126,10 @@ public:
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int)
   itkSetMacro(NumberOfIterations, unsigned int)
+
+  /** Get / Set whether conjugate gradient should be performed on GPU */
+  itkGetMacro(CudaConjugateGradient, bool)
+  itkSetMacro(CudaConjugateGradient, bool)
 
   /** Set/Get the 4D image to be updated.*/
   void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
@@ -151,6 +154,8 @@ protected:
 
   virtual void GenerateOutputInformation();
 
+  virtual void GenerateInputRequestedRegion();
+
   virtual void GenerateData();
 
   /** The two inputs should not be in the same space so there is nothing
@@ -164,7 +169,8 @@ protected:
   typename ConjugateGradientFilterType::Pointer     m_ConjugateGradientFilter;
   typename CGOperatorFilterType::Pointer            m_CGOperator;
   typename ProjStackToFourDFilterType::Pointer      m_ProjStackToFourDFilter;
-  typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+
+  bool m_CudaConjugateGradient;
 
 private:
   //purposely not implemented
@@ -174,7 +180,7 @@ private:
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
-  /** Number of projections processed at a time. */
+  /** Number of conjugate gradient descent iterations */
   unsigned int m_NumberOfIterations;
 
 }; // end of class

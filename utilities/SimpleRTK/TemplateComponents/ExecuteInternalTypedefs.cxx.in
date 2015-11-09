@@ -11,7 +11,12 @@ OUT=OUT .. '  typedef TImageType     InputImageType' .. nimg .. ';\n'
   typedef ${output_image_type} OutputImageType;]]
   elseif output_pixel_type then
   OUT=[[// Define output image type
-  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;]]
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
+#else
+  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
+#endif
+  ]]
   else
   OUT=[[typedef InputImageType OutputImageType;]]
   end)

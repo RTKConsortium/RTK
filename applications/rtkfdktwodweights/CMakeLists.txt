@@ -1,4 +1,4 @@
-WRAP_GGO(rtkfdktwodweights_GGO_C rtkfdktwodweights.ggo)
+WRAP_GGO(rtkfdktwodweights_GGO_C rtkfdktwodweights.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkfdktwodweights rtkfdktwodweights.cxx ${rtkfdktwodweights_GGO_C})
 TARGET_LINK_LIBRARIES(rtkfdktwodweights RTK)
 

@@ -27,6 +27,13 @@
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkConstantImageSource.h"
+
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaConjugateGradientImageFilter_3f.h"
+  #include "rtkCudaDisplacedDetectorImageFilter.h"
+  #include "rtkCudaConstantVolumeSource.h"
+#endif
 
 namespace rtk
 {
@@ -52,28 +59,30 @@ namespace rtk
    * Input0 [shape=Mdiamond];
    * Input1 [label="Input 1 (Projections)"];
    * Input1 [shape=Mdiamond];
+   * Input2 [label="Input 2 (Weights)"];
+   * Input2 [shape=Mdiamond];
    * Output [label="Output (Volume)"];
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
-   * ZeroMultiplyVolume [label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * BeforeZeroMultiplyVolume [label="", fixedsize="false", width=0, height=0, shape=none];
+   * Multiply [label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
+   * Source [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
    *
-   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
-   * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
-   * BeforeZeroMultiplyVolume -> ConjugateGradient;
+   * Input0 -> ConjugateGradient;
    * Input1 -> Displaced;
-   * Displaced -> BackProjection;
-   * ZeroMultiplyVolume -> BackProjection;
+   * Input2 -> Multiply;
+   * Displaced -> Multiply;
+   * Multiply -> BackProjection;
+   * Source -> BackProjection;
    * BackProjection -> ConjugateGradient;
    * ConjugateGradient -> Output;
    * }
    * \enddot
    *
-   * \test rtksirttest.cxx
+   * \test rtkconjugategradientreconstructiontest.cxx
    *
    * \author Cyril Mory
    *
@@ -105,9 +114,10 @@ public:
     typedef typename ForwardProjectionFilterType::Pointer                    ForwardProjectionFilterPointer;
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                  ConjugateGradientFilterType;
-    typedef itk::MultiplyImageFilter<TOutputImage>                           MultiplyVolumeFilterType;
+    typedef itk::MultiplyImageFilter<TOutputImage>                           MultiplyFilterType;
     typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>       CGOperatorFilterType;
     typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                  DisplacedDetectorFilterType;
+    typedef rtk::ConstantImageSource<TOutputImage>                           ConstantImageSourceType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -124,6 +134,10 @@ public:
     itkSetMacro(MeasureExecutionTimes, bool)
     itkGetMacro(MeasureExecutionTimes, bool)
 
+    /** If IsWeighted, perform weighted least squares optimization instead of unweighted */
+    itkSetMacro(IsWeighted, bool)
+    itkGetMacro(IsWeighted, bool)
+
 protected:
     ConjugateGradientConeBeamReconstructionFilter();
     ~ConjugateGradientConeBeamReconstructionFilter(){}
@@ -132,13 +146,14 @@ protected:
     virtual void GenerateData();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename MultiplyVolumeFilterType::Pointer                                  m_ZeroMultiplyVolumeFilter;
+    typename MultiplyFilterType::Pointer                                        m_MultiplyFilter;
     typename ConjugateGradientFilterType::Pointer                               m_ConjugateGradientFilter;
     typename CGOperatorFilterType::Pointer                                      m_CGOperator;
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForB;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
+    typename ConstantImageSourceType::Pointer                                   m_ConstantImageSource;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -158,6 +173,7 @@ private:
 
     int   m_NumberOfIterations;
     bool  m_MeasureExecutionTimes;
+    bool  m_IsWeighted;
 
 };
 } //namespace ITK

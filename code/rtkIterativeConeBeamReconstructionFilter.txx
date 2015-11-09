@@ -49,12 +49,12 @@ namespace rtk
       #ifdef RTK_USE_CUDA
         fw = rtk::CudaForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
       #else
-        std::cerr << "The program has not been compiled with cuda option" << std::endl;
+        itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
       break;
 
       default:
-        std::cerr << "Unhandled --forward value." << std::endl;
+        itkGenericExceptionMacro(<< "Unhandled --fp value.");
       }
     return fw;
   }
@@ -76,15 +76,21 @@ namespace rtk
       #ifdef RTK_USE_CUDA
         bp = rtk::CudaBackProjectionImageFilter::New();
       #else
-        std::cerr << "The program has not been compiled with cuda option" << std::endl;
+        itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
       break;
       case(3):
         bp = rtk::NormalizedJosephBackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
         break;
-
+      case(4):
+      #ifdef RTK_USE_CUDA
+        bp = rtk::CudaRayCastBackProjectionImageFilter::New();
+      #else
+        itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
+      #endif
+        break;
       default:
-        std::cerr << "Unhandled --back value." << std::endl;
+        itkGenericExceptionMacro(<< "Unhandled --bp value.");
       }
     return bp;
   }

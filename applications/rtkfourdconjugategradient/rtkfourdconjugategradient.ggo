@@ -1,5 +1,5 @@
-package "conjugate gradient"
-version "Reconstruct a 3D volume from a sequence of projections with a conjugate gradient technique"
+package "rtkfourdconjugategradient"
+purpose "Reconstructs a 3D + time sequence of volumes from a projection stack and a respiratory/cardiac signal, with a conjugate gradient technique"
 
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no
@@ -7,24 +7,12 @@ option "geometry"    g "XML geometry file name"                                s
 option "output"      o "Output file name"                                      string yes
 option "niterations" n "Number of iterations"                                  int    no   default="5"
 option "time"        t "Records elapsed time during the process"               flag   off
-
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
+option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
+option "input"       i "Input volume"                                          string no
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph" enum no default="VoxelBasedBackProjection"
-
-section "Volume properties"
-option "input"     i "Input volume"              string          no
-option "origin"    - "Origin (default=centered)" double multiple no
-option "dimension" - "Dimension"                 int    multiple no  default="256"
-option "spacing"   - "Spacing"                   double multiple no  default="1"
-option "direction" - "Direction"                 double multiple no
-option "frames"    - "Number of time frames in the 4D reconstruction"   int no default="10"
+option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"

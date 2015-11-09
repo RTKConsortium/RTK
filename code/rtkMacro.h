@@ -21,7 +21,9 @@
 
 #include <iostream>
 #include <itkMacro.h>
-#include <rtkGlobalTimer.h>
+#include <itkImageBase.h>
+#include "rtkGgoArgsInfoManager.h"
+#include "rtkGlobalTimer.h"
 
 //--------------------------------------------------------------------
 /** \brief Debugging macro, displays name and content of a variable
@@ -42,12 +44,40 @@
  *
  * \ingroup Macro
  */
-#define GGO(ggo_filename, args_info)                                                        \
-  args_info_##ggo_filename args_info;                                                       \
-  cmdline_parser_##ggo_filename##2 (argc, argv, &args_info, 1, 1, 0);                       \
-  if (args_info.config_given)                                                               \
-    cmdline_parser_##ggo_filename##_configfile (args_info.config_arg, &args_info, 0, 0, 1); \
-  else cmdline_parser_##ggo_filename(argc, argv, &args_info);                               \
+#define GGO(ggo_filename, args_info)                                                                       \
+  args_info_##ggo_filename args_info;                                                                      \
+  cmdline_parser_##ggo_filename##_params args_params;                                                      \
+  cmdline_parser_##ggo_filename##_params_init(&args_params);                                               \
+  args_params.print_errors = 1;                                                                            \
+  args_params.check_required = 0;                                                                          \
+  args_params.override = 1;                                                                                \
+  args_params.initialize = 1;                                                                              \
+  if(0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params) )                      \
+    {                                                                                                      \
+    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
+    exit(1);                                                                                               \
+    }                                                                                                      \
+  std::string configFile;                                                                                  \
+  if(args_info.config_given)                                                                               \
+    configFile = args_info.config_arg;                                                                     \
+  cmdline_parser_##ggo_filename##_free(&args_info);                                                        \
+  if (configFile != "")                                                                                    \
+    {                                                                                                      \
+    if(0 != cmdline_parser_##ggo_filename##_config_file (configFile.c_str(), &args_info, &args_params) )   \
+      {                                                                                                    \
+      std::cerr << "Error in cmdline_parser_" #ggo_filename "_config_file" << std::endl;                   \
+      exit(1);                                                                                             \
+      }                                                                                                    \
+    args_params.initialize = 0;                                                                            \
+    }                                                                                                      \
+  args_params.check_required = 1;                                                                          \
+  if(0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params) )                      \
+    {                                                                                                      \
+    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                             \
+    exit(1);                                                                                               \
+    }                                                                                                      \
+  rtk::args_info_manager< args_info_##ggo_filename >                                                       \
+     manager_object( args_info, cmdline_parser_##ggo_filename##_free );                                    \
   rtk::GlobalTimer::GetInstance()->SetVerbose(args_info.verbose_flag);
 //--------------------------------------------------------------------
 
@@ -70,7 +100,25 @@
               << " line " << __LINE__                                   \
               << std::endl;                                             \
     std::cerr << err << std::endl;                                      \
-    exit(EXIT_FAILURE);                                                 \
+    itk::InvalidRequestedRegionError* r;                                \
+    r = dynamic_cast<itk::InvalidRequestedRegionError*>(&err);          \
+    if(r)                                                               \
+      {                                                                 \
+      if( r->GetDataObject()->GetSource() )                             \
+        {                                                               \
+        std::cerr << "Invalid requested region error triggered by "     \
+                  << r->GetDataObject()->GetSource()->GetNameOfClass()  \
+                  << std::endl;                                         \
+      }                                                                 \
+      itk::ImageBase<3> *img;                                           \
+      img = dynamic_cast<itk::ImageBase<3>*>(r->GetDataObject());       \
+      if(img)                                                           \
+        {                                                               \
+        DD(img->GetRequestedRegion())                                   \
+        DD(img->GetLargestPossibleRegion())                             \
+        }                                                               \
+      }                                                                 \
+      exit(EXIT_FAILURE);                                               \
     }
 //--------------------------------------------------------------------
 

@@ -18,7 +18,11 @@
 #ifndef __rtkAverageOutOfROIImageFilter_h
 #define __rtkAverageOutOfROIImageFilter_h
 
-#include "itkAccumulateImageFilter.h"
+#include "itkInPlaceImageFilter.h"
+
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  #include <itkImageRegionSplitterDirection.h>
+#endif
 
 namespace rtk
 {
@@ -44,7 +48,7 @@ namespace rtk
 template< class TInputImage,
           class TROI = itk::Image< typename TInputImage::PixelType, TInputImage::ImageDimension -1 > >
 
-class AverageOutOfROIImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
+class AverageOutOfROIImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
     /** Standard class typedefs. */
@@ -57,12 +61,10 @@ public:
     itkNewMacro(Self)
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(AverageOutOfROIImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(AverageOutOfROIImageFilter, itk::InPlaceImageFilter)
 
     /** The image containing the weights applied to the temporal components */
     void SetROI(const TROI* Map);
-
-    typedef itk::AccumulateImageFilter<TInputImage, TInputImage> AccumulateFilterType;
 
 protected:
     AverageOutOfROIImageFilter();
@@ -70,8 +72,17 @@ protected:
 
     typename TROI::Pointer GetROI();
 
+    virtual void GenerateOutputInformation();
+
     /** Does the real work. */
-    virtual void GenerateData();
+    virtual void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+    virtual void BeforeThreadedGenerateData();
+
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+    /** Splits the OutputRequestedRegion along the first direction, not the last */
+    virtual const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
+    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+#endif
 
 private:
     AverageOutOfROIImageFilter(const Self &); //purposely not implemented

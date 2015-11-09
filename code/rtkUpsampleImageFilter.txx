@@ -201,7 +201,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
       while(!inIt.IsAtEnd())
         {
         outIt.Set(inIt.Get());
-        for (int i=0; i<m_Factors[0]; i++) ++outIt;
+        for (unsigned int i=0; i<m_Factors[0]; i++) ++outIt;
         ++inIt;
 
         progress.CompletedPixel();

@@ -59,33 +59,30 @@ namespace rtk
    * \dot
    * digraph FourDToProjectionStackImageFilter {
    *
-   * Input0 [ label="Input 0 (Projections)"];
-   * Input0 [shape=Mdiamond];
    * Input1 [label="Input 1 (Input: 4D sequence of volumes)"];
    * Input1 [shape=Mdiamond];
+   * Input0 [ label="Input 0 (Projections)"];
+   * Input0 [shape=Mdiamond];
    * Output [label="Output (Output projections)"];
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
-   * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
-   * Multiply [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * BeforePaste [label="", fixedsize="false", width=0, height=0, shape=none];
-   * Source [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+   * FourDSource [ label="rtk::ConstantImageSource (4D volume)" URL="\ref rtk::ConstantImageSource"];
+   * ProjectionSource [ label="rtk::ConstantImageSource (projections)" URL="\ref rtk::ConstantImageSource"];
    * ForwardProj [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
    * Interpolation [ label="rtk::InterpolatorWithKnownWeightsImageFilter" URL="\ref rtk::InterpolatorWithKnownWeightsImageFilter"];
+   * BeforePaste [label="", fixedsize="false", width=0, height=0, shape=none];
    * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
    * AfterPaste [label="", fixedsize="false", width=0, height=0, shape=none];
    *
-   * Input0 -> Multiply;
-   * Multiply -> Extract;
-   * Extract -> ForwardProj;
-   * Input0 -> BeforePaste[arrowhead=None];
+   * ProjectionSource -> ForwardProj;
    * BeforePaste -> Paste;
-   * Source -> Interpolation;
+   * FourDSource -> Interpolation;
    * Input1 -> Interpolation;
    * Interpolation -> ForwardProj;
+   * Input0 -> BeforePaste[arrowhead=none];
    * ForwardProj -> Paste;
-   * Paste -> AfterPaste[arrowhead=None];
+   * Paste -> AfterPaste[arrowhead=none];
    * AfterPaste -> Output;
    * AfterPaste -> BeforePaste [style=dashed, constraint=false];
    * }
@@ -125,11 +122,10 @@ public:
 
     /** Typedefs for the sub filters */
     typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >   ForwardProjectionFilterType;
-    typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>               ExtractFilterType;
     typedef itk::PasteImageFilter<ProjectionStackType, ProjectionStackType>                 PasteFilterType;
     typedef rtk::InterpolatorWithKnownWeightsImageFilter< VolumeType, VolumeSeriesType>     InterpolatorFilterType;
-    typedef rtk::ConstantImageSource<VolumeType>                                            ConstantSourceType;
-    typedef itk::MultiplyImageFilter<ProjectionStackType>                                   MultiplyFilterType;
+    typedef rtk::ConstantImageSource<VolumeType>                                            ConstantVolumeSourceType;
+    typedef rtk::ConstantImageSource<ProjectionStackType>                                   ConstantProjectionStackSourceType;
     typedef rtk::ThreeDCircularProjectionGeometry                                           GeometryType;
 
     /** Set the ForwardProjection filter */
@@ -142,7 +138,7 @@ public:
     void SetWeights(const itk::Array2D<float> _arg);
 
     /** Initializes the empty volume source, set it and update it */
-    void InitializeConstantSource();
+    void InitializeConstantVolumeSource();
 
 protected:
     FourDToProjectionStackImageFilter();
@@ -159,17 +155,17 @@ protected:
     virtual void GenerateInputRequestedRegion();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename ExtractFilterType::Pointer                     m_ExtractFilter;
     typename PasteFilterType::Pointer                       m_PasteFilter;
     typename InterpolatorFilterType::Pointer                m_InterpolationFilter;
-    typename ConstantSourceType::Pointer                    m_ConstantSource;
+    typename ConstantVolumeSourceType::Pointer              m_ConstantVolumeSource;
+    typename ConstantProjectionStackSourceType::Pointer     m_ConstantProjectionStackSource;
     typename ForwardProjectionFilterType::Pointer           m_ForwardProjectionFilter;
-    typename MultiplyFilterType::Pointer                    m_ZeroMultiplyFilter;
 
     /** Other member variables */
-    itk::Array2D<float>                                     m_Weights;
-    GeometryType::Pointer                                   m_Geometry;
-    int                                                     m_ProjectionNumber;
+    itk::Array2D<float>                                                 m_Weights;
+    GeometryType::Pointer                                               m_Geometry;
+    int                                                                 m_ProjectionNumber;
+    typename ConstantProjectionStackSourceType::OutputImageRegionType   m_PasteRegion;
 
 private:
     FourDToProjectionStackImageFilter(const Self &); //purposely not implemented

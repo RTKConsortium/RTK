@@ -1,4 +1,4 @@
-WRAP_GGO(rtksart_GGO_C rtksart.ggo)
+WRAP_GGO(rtksart_GGO_C rtksart.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtksart rtksart.cxx ${rtksart_GGO_C})
 TARGET_LINK_LIBRARIES(rtksart RTK)
 

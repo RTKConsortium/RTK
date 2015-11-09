@@ -1,5 +1,5 @@
-package "rtk"
-version "Reads raw projection images, convert to attenuation, ramp filter and stack them in a single output image file"
+package "rtkramp"
+purpose "Reads raw projection images, converts to attenuation, ramp filters and stacks them into a single output image file"
 
 option "verbose"  v "Verbose execution"                                         flag      off
 option "config"   - "Config file"                                               string    no
@@ -9,8 +9,3 @@ option "hardware" - "Hardware used for computation"                             
 option "hann"     - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double    no   default="0.0"
 option "hannY"    - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double    no   default="0.0"
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

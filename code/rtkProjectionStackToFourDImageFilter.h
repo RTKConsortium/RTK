@@ -19,17 +19,19 @@
 #define __rtkProjectionStackToFourDImageFilter_h
 
 #include <itkExtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkArray2D.h>
 
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkConstantImageSource.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-#include "rtkCudaSplatImageFilter.h"
+  #include "rtkCudaSplatImageFilter.h"
+  #include "rtkCudaConstantVolumeSource.h"
+  #include "rtkCudaConstantVolumeSeriesSource.h"
+  #include "rtkCudaDisplacedDetectorImageFilter.h"
 #endif
 
 namespace rtk
@@ -65,32 +67,34 @@ namespace rtk
    * \dot
    * digraph ProjectionStackToFourDImageFilter {
    *
-   * Input0 [ label="Input 0 (Input: 4D sequence of volumes)"];
-   * Input0 [shape=Mdiamond];
    * Input1 [label="Input 1 (Projections)"];
    * Input1 [shape=Mdiamond];
+   * Input0 [ label="Input 0 (Input: 4D sequence of volumes)"];
+   * Input0 [shape=Mdiamond];
    * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
    * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
-   * Multiply [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
-   * AfterZeroMultiply [label="", fixedsize="false", width=0, height=0, shape=none];
+   * DisplacedDetector [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
+   * VolumeSeriesSource [ label="rtk::ConstantImageSource (4D)" URL="\ref rtk::ConstantImageSource"];
+   * AfterSource4D [label="", fixedsize="false", width=0, height=0, shape=none];
    * Source [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
    * Backproj [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * Splat [ label="rtk::SplatWithKnownWeightsImageFilter" URL="\ref rtk::SplatWithKnownWeightsImageFilter"];
    * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];
    *
    * Input1 -> Extract;
-   * Input0 -> Multiply;
-   * Multiply -> AfterZeroMultiply[arrowhead=None];
-   * AfterZeroMultiply -> Splat;
-   * Extract -> Backproj;
+   * Input0 -> VolumeSeriesSource [style=invis];
+   * VolumeSeriesSource -> AfterSource4D[arrowhead=none];
+   * AfterSource4D -> Splat;
+   * Extract -> DisplacedDetector;
+   * DisplacedDetector -> Backproj;
    * Source -> Backproj;
    * Backproj -> Splat;
-   * Splat -> AfterSplat[arrowhead=None];
+   * Splat -> AfterSplat[arrowhead=none];
    * AfterSplat -> Output;
-   * AfterSplat -> AfterZeroMultiply[style=dashed];
+   * AfterSplat -> AfterSource4D[style=dashed, constraint=none];
    * }
    * \enddot
    *
@@ -128,9 +132,10 @@ public:
 
     typedef rtk::BackProjectionImageFilter< VolumeType, VolumeType >              BackProjectionFilterType;
     typedef itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >   ExtractFilterType;
-    typedef rtk::ConstantImageSource< VolumeType >                                ConstantImageSourceType;
-    typedef itk::MultiplyImageFilter< VolumeSeriesType >                          MultiplyFilterType;
+    typedef rtk::ConstantImageSource< VolumeType >                                ConstantVolumeSourceType;
+    typedef rtk::ConstantImageSource< VolumeSeriesType >                          ConstantVolumeSeriesSourceType;
     typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>   SplatFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                DisplacedDetectorFilterType;
 
     typedef rtk::ThreeDCircularProjectionGeometry                                 GeometryType;
 
@@ -140,9 +145,11 @@ public:
     /** Pass the geometry to SingleProjectionToFourDFilter */
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
 
-    /** Use CUDA interpolation/splat filters */
+    /** Use CUDA splat / sources */
     itkSetMacro(UseCudaSplat, bool)
     itkGetMacro(UseCudaSplat, bool)
+    itkSetMacro(UseCudaSources, bool)
+    itkGetMacro(UseCudaSources, bool)
 
     /** Macros that take care of implementing the Get and Set methods for Weights */
     itkGetMacro(Weights, itk::Array2D<float>)
@@ -165,17 +172,19 @@ protected:
     void InitializeConstantSource();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename MultiplyFilterType::Pointer                    m_ZeroMultiplyFilter;
     typename SplatFilterType::Pointer                       m_SplatFilter;
     typename BackProjectionFilterType::Pointer              m_BackProjectionFilter;
     typename ExtractFilterType::Pointer                     m_ExtractFilter;
-    typename ConstantImageSourceType::Pointer               m_ConstantImageSource;
+    typename ConstantVolumeSourceType::Pointer              m_ConstantVolumeSource;
+    typename ConstantVolumeSeriesSourceType::Pointer        m_ConstantVolumeSeriesSource;
+    typename DisplacedDetectorFilterType::Pointer           m_DisplacedDetectorFilter;
 
     /** Other member variables */
     itk::Array2D<float>                                     m_Weights;
     GeometryType::Pointer                                   m_Geometry;
     int                                                     m_ProjectionNumber;
     bool                                                    m_UseCudaSplat;
+    bool                                                    m_UseCudaSources;
 
 private:
     ProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

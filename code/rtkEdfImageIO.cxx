@@ -128,7 +128,7 @@ void rtk::EdfImageIO::ReadImageInformation()
                                 << "\"");
       }
     datalen = edf_datatype_table[k].sajzof;
-    switch(k) {
+    switch(edf_datatype_table[k].value) {
       case U_CHAR_DATATYPE:
         SetComponentType(itk::ImageIOBase::UCHAR);
         break;
@@ -148,10 +148,10 @@ void rtk::EdfImageIO::ReadImageInformation()
         SetComponentType(itk::ImageIOBase::INT);
         break;
       case U_L_INT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::ULONG);
+        SetComponentType(itk::ImageIOBase::UINT);
         break;
       case L_INT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::LONG);
+        SetComponentType(itk::ImageIOBase::INT);
         break;
       case FLOAT_DATATYPE:
         SetComponentType(itk::ImageIOBase::FLOAT);
@@ -203,7 +203,12 @@ void rtk::EdfImageIO::ReadImageInformation()
 
   double spacing = 1.;
   if ( (p = edf_findInHeader(header, "optic_used") ) )
+    {
     spacing = atof(p);
+    if(spacing == 0.)
+      spacing = 1.;
+    }
+
 
   free(header);
   gzclose(inp);
@@ -259,8 +264,8 @@ void rtk::EdfImageIO::Read(void * buffer)
     else if itkReadRawBytesAfterSwappingMacro( unsigned char, UCHAR )
     else if itkReadRawBytesAfterSwappingMacro( unsigned int, UINT )
     else if itkReadRawBytesAfterSwappingMacro( int, INT )
-    else if itkReadRawBytesAfterSwappingMacro( unsigned int, ULONG )
-    else if itkReadRawBytesAfterSwappingMacro( int, LONG )
+    else if itkReadRawBytesAfterSwappingMacro( unsigned int, UINT )
+    else if itkReadRawBytesAfterSwappingMacro( int, INT )
     else if itkReadRawBytesAfterSwappingMacro( float, FLOAT )
     else if itkReadRawBytesAfterSwappingMacro( double, DOUBLE );
     }

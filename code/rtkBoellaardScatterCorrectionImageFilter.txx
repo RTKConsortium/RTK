@@ -70,7 +70,9 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
   for(unsigned int i=0; i<Dimension-1; i++)
     npixelPerSlice *= outputRegionForThread.GetSize(i);
 
-  for(unsigned int slice=0; slice<outputRegionForThread.GetSize(Dimension-1); slice++)
+  unsigned int start = outputRegionForThread.GetIndex(Dimension - 1);
+  unsigned int stop = start + outputRegionForThread.GetSize(Dimension - 1);
+  for (unsigned int slice = start; slice<stop; slice++)
     {
     itk::ImageRegionConstIterator<InputImageType> itInSlice = itIn;
 

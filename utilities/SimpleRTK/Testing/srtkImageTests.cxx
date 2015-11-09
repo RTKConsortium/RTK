@@ -34,6 +34,10 @@
 
 #include <itkIntTypes.h>
 
+#include "rtkConfiguration.h"
+#ifdef RTK_USE_CUDA
+# include "itkCudaImage.h"
+#endif
 #include "itkImage.h"
 #include "itkVectorImage.h"
 #include "itkMetaDataObject.h"
@@ -84,7 +88,11 @@ public:
 
     region.SetSize ( size );
     region.SetIndex ( index );
+#ifdef RTK_USE_CUDA
+    itk::CudaImage<short,3>::Pointer im = itk::CudaImage<short,3>::New();
+#else
     itk::Image<short,3>::Pointer im = itk::Image<short,3>::New();
+#endif
     im->SetRegions ( region );
     im->SetOrigin( origin );
     im->SetSpacing( spacing );
@@ -93,7 +101,11 @@ public:
     itkShortImage = im;
     shortImage = srtkAutoImagePointer( new rtk::simple::Image( im.GetPointer() ) );
 
+#ifdef RTK_USE_CUDA
+    itk::CudaImage<float,3>::Pointer fim = itk::CudaImage<float,3>::New();
+#else
     itk::Image<float,3>::Pointer fim = itk::Image<float,3>::New();
+#endif
     fim->SetRegions ( region );
     fim->SetOrigin( origin );
     fim->SetSpacing( spacing );
@@ -118,10 +130,18 @@ public:
 
   itk::ImageBase<3>::Pointer itkShortImage;
 
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<short,3> ShortImageType;
+#else
   typedef itk::Image<short,3> ShortImageType;
+#endif
   srtkAutoImagePointer shortImage;
 
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<float,3> FloatImageType;
+#else
   typedef itk::Image<float,3> FloatImageType;
+#endif
   srtkAutoImagePointer floatImage;
   FloatImageType::Pointer itkFloatImage;
 
@@ -527,7 +547,11 @@ TEST_F(Image,Operators)
   // 1 = 2 - 1
   imgA = imgC - imgA;
 
+#ifdef RTK_USE_CUDA
+  float v =  dynamic_cast<itk::CudaImage<float,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#else
   float v =  dynamic_cast<itk::Image<float,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( v, 1 ) << "value check 1";
 
   // 4 = 2 * 2
@@ -542,11 +566,19 @@ TEST_F(Image,Operators)
   // 20 = .4 * 50;
   imgA = imgC * 50;
 
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<float,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<float,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( v, 20 ) << "value check 2";
 
   // original value should have never changed
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<float,3>*>( floatImage->GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<float,3>*>( floatImage->GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( v, 0 ) << "value check 3";
 
   // 0 = 20 + -20
@@ -564,13 +596,21 @@ TEST_F(Image,Operators)
   std::cout << "Testing Logical Operators" << std::endl;
   imgA = ~*shortImage;
 
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<short,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<short,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( v, -101 );
 
   imgA = srtk::Image(10,10,10, srtk::srtkUInt8)+1;
   imgB = ~imgA; // <- 253
 
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<uint8_t,3>*>( imgB.GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<uint8_t,3>*>( imgB.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( 254, v );
 
   // 0 = 1 & 254
@@ -585,9 +625,17 @@ TEST_F(Image,Operators)
   // 0 = 254 ^ 254
   imgA = imgB ^ imgA;
 
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<uint8_t,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<uint8_t,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( 0 ,v ) << "value check 4";
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<uint8_t,3>*>( imgB.GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<uint8_t,3>*>( imgB.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( v, 254 ) << "value check 5";
 
   std::cout << "Testing Compoung assignment operators" << std::endl;
@@ -614,7 +662,11 @@ TEST_F(Image,Operators)
   // 8 = 16 / 2
   imgA /= 2;
 
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<float,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<float,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( v, 8 ) << "value check 6";
 
   // 1 = 8 / 8
@@ -626,7 +678,11 @@ TEST_F(Image,Operators)
   // 100 = 100  & 100
   imgA &= imgA;
 
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<short,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<short,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( v, 100 ) << "value check 7";
 
   // 100 = 100 | 100
@@ -636,7 +692,11 @@ TEST_F(Image,Operators)
   imgA ^= *shortImage;
 
 
+#ifdef RTK_USE_CUDA
+  v =  dynamic_cast<itk::CudaImage<short,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#else
   v =  dynamic_cast<itk::Image<short,3>*>( imgA.GetITKBase() )->GetPixel( idx);
+#endif
   EXPECT_EQ( 0, v ) << "value check 8";
 }
 

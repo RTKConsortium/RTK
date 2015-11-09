@@ -62,6 +62,67 @@ typename VolumeSeriesType::Pointer InterpolatorWithKnownWeightsImageFilter<Volum
 
 template< typename VolumeType, typename VolumeSeriesType>
 void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
+::GenerateInputRequestedRegion()
+{
+  // Call the superclass implementation
+  Superclass::GenerateInputRequestedRegion();
+
+  // Set the requested region of the first input to that of the output
+  typename VolumeType::Pointer inputPtr0 = const_cast< VolumeType* >( this->GetInputVolume().GetPointer() );
+  if ( !inputPtr0 )
+    return;
+  inputPtr0->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
+
+  // Compute the smallest possible requested region of the second input
+  // Note that for some projections, the requested frames are 0 and n-1,
+  // which implies that the whole input is loaded
+  typename VolumeSeriesType::Pointer inputPtr1 = const_cast< VolumeSeriesType* >( this->GetInputVolumeSeries().GetPointer() );
+  if ( !inputPtr1 )
+    return;
+
+  // For a single projection number, only two volumes from the volume stack are required
+  // to compute the output. Unfortunately, if the projection requires the first and last
+  // volumes (which happens for a projection with phase close to one, since the motion
+  // is assumed to be cyclic), the requested region will have to be the entire input volume stack
+  // (an ITK region must be a rectangle, it cannot have "holes").
+  // Therefore, the peak memory usage is unchanged whether the input is streamed or not,
+  // and the overhead processing time brought by streaming is significant. So we do not stream.
+  // The code for computing the smallest input requested region is, however, left as a comment,
+  // in case it might prove useful in the future.
+  typename VolumeSeriesType::IndexValueType mini = inputPtr1->GetLargestPossibleRegion().GetIndex(VolumeSeriesType::ImageDimension - 1);
+  typename VolumeSeriesType::IndexValueType maxi = mini + inputPtr1->GetLargestPossibleRegion().GetSize(VolumeSeriesType::ImageDimension - 1) - 1;
+
+//  // Find the minimum and maximum indices of the required frames
+//  // Initialize the minimum to the highest possible value, and the
+//  // maximum to the lowest possible value
+//  typename VolumeSeriesType::IndexValueType maxi =
+//      inputPtr1->GetLargestPossibleRegion().GetIndex(VolumeSeriesType::ImageDimension - 1);
+//  typename VolumeSeriesType::IndexValueType mini =
+//      maxi + inputPtr1->GetLargestPossibleRegion().GetSize(VolumeSeriesType::ImageDimension - 1);
+//  for (unsigned int frame=0; frame<m_Weights.rows(); frame++)
+//    {
+//    if (m_Weights[frame][m_ProjectionNumber] != 0)
+//      {
+//      if (frame < mini) mini = frame;
+//      if (frame > maxi) maxi = frame;
+//      }
+//    }
+
+  typename VolumeSeriesType::RegionType requested = inputPtr1->GetLargestPossibleRegion();
+  for (unsigned int dim=0; dim < VolumeSeriesType::ImageDimension - 1; ++dim)
+    {
+    requested.SetSize(dim, this->GetOutput()->GetRequestedRegion().GetSize(dim));
+    requested.SetIndex(dim, this->GetOutput()->GetRequestedRegion().GetIndex(dim));
+    }
+  requested.SetSize(VolumeSeriesType::ImageDimension - 1, maxi - mini + 1);
+  requested.SetIndex(VolumeSeriesType::ImageDimension - 1, mini);
+
+  // Set the requested region
+  inputPtr1->SetRequestedRegion(requested);
+}
+
+template< typename VolumeType, typename VolumeSeriesType>
+void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
 ::ThreadedGenerateData(const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   typename VolumeType::ConstPointer volume = this->GetInputVolume();
@@ -93,15 +154,15 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
       }
     }
 
-  // Compute the weighted sum of phases (with known weights) to get the output
-  for (unsigned int phase=0; phase<m_Weights.rows(); phase++)
+  // Compute the weighted sum of frames (with known weights) to get the output
+  for (unsigned int frame=0; frame<m_Weights.rows(); frame++)
     {
-    weight = m_Weights[phase][m_ProjectionNumber];
+    weight = m_Weights[frame][m_ProjectionNumber];
     if (weight != 0)
       {
-      volumeSeriesRegion = volumeSeries->GetLargestPossibleRegion();
-      volumeSeriesSize = volumeSeries->GetLargestPossibleRegion().GetSize();
-      volumeSeriesIndex = volumeSeries->GetLargestPossibleRegion().GetIndex();
+      volumeSeriesRegion = volumeSeries->GetRequestedRegion();
+      volumeSeriesSize = volumeSeriesRegion.GetSize();
+      volumeSeriesIndex = volumeSeriesRegion.GetIndex();
 
       typename VolumeType::SizeType outputRegionSize = outputRegionForThread.GetSize();
       typename VolumeType::IndexType outputRegionIndex = outputRegionForThread.GetIndex();
@@ -112,7 +173,7 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
         volumeSeriesIndex[i] = outputRegionIndex[i];
         }
       volumeSeriesSize[Dimension] = 1;
-      volumeSeriesIndex[Dimension] = phase;
+      volumeSeriesIndex[Dimension] = frame;
       
       volumeSeriesRegion.SetSize(volumeSeriesSize);
       volumeSeriesRegion.SetIndex(volumeSeriesIndex);

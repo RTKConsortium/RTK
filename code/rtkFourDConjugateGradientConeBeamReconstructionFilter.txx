@@ -25,6 +25,8 @@
 
 #include <algorithm>
 
+#include <itkImageFileWriter.h>
+
 namespace rtk
 {
 
@@ -36,16 +38,14 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
   // Set the default values of member parameters
   m_NumberOfIterations=3;
+  m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
 
   // Create the filters
-  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
-  m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
+  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Memory management options
-  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
   m_ProjStackToFourDFilter->ReleaseDataFlagOn();
 }
 
@@ -90,8 +90,11 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
     m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
     m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
     }
-  if (_arg == 2) // The forward projection filter runs on GPU. It is most efficient to also run the interpolation on GPU.
+  if (_arg == 2) // The forward projection filter runs on GPU. It is most efficient to also run the interpolation on GPU, and to use GPU constant image sources
+    {
     m_CGOperator->SetUseCudaInterpolation(true);
+    m_CGOperator->SetUseCudaSources(true);
+    }
 }
 
 
@@ -109,10 +112,12 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
     m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter( _arg );
     m_ProjStackToFourDFilter->SetBackProjectionFilter(m_BackProjectionFilterForB);
     }
-  if (_arg == 2) // The back projection filter runs on GPU. It is most efficient to also run the splat on GPU.
+  if (_arg == 2) // The back projection filter runs on GPU. It is most efficient to also run the splat on GPU, and to use GPU constant image sources
     {
     m_CGOperator->SetUseCudaSplat(true);
+    m_CGOperator->SetUseCudaSources(true);
     m_ProjStackToFourDFilter->SetUseCudaSplat(true);
+    m_ProjStackToFourDFilter->SetUseCudaSources(true);
     }
 }
 
@@ -131,21 +136,26 @@ void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  // Set the Conjugate Gradient filter (either on CPU or GPU depending on user's choice)
+#ifdef RTK_USE_CUDA
+  if (m_CudaConjugateGradient)
+    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
+#endif
+  m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
+
   // Set runtime connections
   m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
   m_ConjugateGradientFilter->SetX(this->GetInputVolumeSeries());
-  m_DisplacedDetectorFilter->SetInput(this->GetInputProjectionStack());
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_ProjStackToFourDFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
-  m_ProjStackToFourDFilter->SetInputProjectionStack(m_DisplacedDetectorFilter->GetOutput());
+  m_ProjStackToFourDFilter->SetInputProjectionStack(this->GetInputProjectionStack());
   m_ConjugateGradientFilter->SetB(m_ProjStackToFourDFilter->GetOutput());
 
   // For the same reason, set geometry now
   m_CGOperator->SetGeometry(this->m_Geometry);
   m_ProjStackToFourDFilter->SetGeometry(this->m_Geometry.GetPointer());
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
@@ -157,14 +167,38 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   this->GetOutput()->CopyInformation( m_ConjugateGradientFilter->GetOutput() );
 }
 
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GenerateInputRequestedRegion()
+{
+  //Call the superclass' implementation of this method
+  Superclass::GenerateInputRequestedRegion();
+
+  this->m_ProjStackToFourDFilter->PropagateRequestedRegion(this->m_ProjStackToFourDFilter->GetOutput());
+}
+
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
+  m_ProjStackToFourDFilter->Update();
+
+  // If m_ProjStackToFourDFilter->GetOutput() is stored in an itk::CudaImage, make sure its data is transferred on the CPU
+  this->m_ProjStackToFourDFilter->GetOutput()->GetBufferPointer();
+
   m_ConjugateGradientFilter->Update();
 
-  this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+  // Simply grafting the output of m_ConjugateGradientFilter to the main output
+  // is sufficient in most cases, but when this output is then disconnected and replugged,
+  // several images end up having the same CudaDataManager. The following solution is a
+  // workaround for this problem
+  typename VolumeSeriesType::Pointer pimg = m_ConjugateGradientFilter->GetOutput();
+  pimg->DisconnectPipeline();
+
+  this->GraftOutput( pimg);
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>

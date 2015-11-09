@@ -1,5 +1,5 @@
-package "rtk"
-version "Weight projection serie with 2D weights of Feldkamp cone-beam reconstruction algorithm."
+package "rtkfdktwodweights"
+purpose "Weights projection stack with 2D weights of Feldkamp cone-beam reconstruction algorithm."
 
 option "verbose"   v "Verbose execution"                                         flag                off
 option "config"    - "Config file"                                               string              no
@@ -7,8 +7,3 @@ option "geometry"  g "XML geometry file name"                                   
 option "output"    o "Output file name"                                          string              yes
 option "divisions" d "Number of stream divisions to cope with large serie"       int                 no   default="1"
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

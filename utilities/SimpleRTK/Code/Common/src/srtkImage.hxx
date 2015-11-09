@@ -20,7 +20,10 @@
 
 #include "srtkImage.h"
 
-#include "itkImage.h"
+#include "rtkConfiguration.h"
+#ifdef RTK_USE_CUDA
+# include "itkCudaImage.h"
+#endif
 #include "itkVectorImage.h"
 #include "itkLabelMap.h"
 #include "itkLabelObject.h"

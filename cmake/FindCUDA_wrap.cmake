@@ -29,7 +29,8 @@ endif ()
 
 # GCS 2012-09-25 - Seems this is needed too
 if ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-  set (CUDA_CXX_FLAGS "${CUDA_CXX_FLAGS},-fPIC")
+	#  set (CUDA_CXX_FLAGS "${CUDA_CXX_FLAGS},-fPIC")
+  set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC")
 endif ()
 
 
@@ -53,12 +54,12 @@ endif ()
 include (nvcc-check)
 
 if("${CUDA_VERSION}" LESS 6.5)
-  set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
-        -gencode arch=compute_10,code=sm_10
-        -gencode arch=compute_11,code=sm_11
-        -gencode arch=compute_12,code=sm_12
-        -gencode arch=compute_13,code=sm_13
-      )
+	#  set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
+	#        -gencode arch=compute_10,code=sm_10
+	#        -gencode arch=compute_11,code=sm_11
+	#        -gencode arch=compute_12,code=sm_12
+	#        -gencode arch=compute_13,code=sm_13
+	#      )
 endif ()
 
 if("${CUDA_VERSION}" LESS 5.0)

@@ -1,4 +1,4 @@
-WRAP_GGO(rtktotalvariationdenoising_GGO_C rtktotalvariationdenoising.ggo)
+WRAP_GGO(rtktotalvariationdenoising_GGO_C rtktotalvariationdenoising.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtktotalvariationdenoising rtktotalvariationdenoising.cxx ${rtktotalvariationdenoising_GGO_C})
 TARGET_LINK_LIBRARIES(rtktotalvariationdenoising RTK)
 

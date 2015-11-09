@@ -38,7 +38,7 @@ template <class TInputImage,
 CudaForwardProjectionImageFilter<TInputImage,
                                  TOutputImage>
 ::CudaForwardProjectionImageFilter():
-    m_StepSize(1)
+  m_StepSize(1),m_UseCudaTexture(true)
 {
 }
 
@@ -108,9 +108,12 @@ CudaForwardProjectionImageFilter<TInputImage,
       projIndexTranslation[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
       volIndexTranslation[i][3] = -this->GetInput(1)->GetBufferedRegion().GetIndex(i);
 
-      // Adding 0.5 offset to change from the centered pixel convention (ITK)
-      // to the corner pixel convention (CUDA).
-      volPPToIndex[i][3] += 0.5;
+      if (m_UseCudaTexture)
+        {
+        // Adding 0.5 offset to change from the centered pixel convention (ITK)
+        // to the corner pixel convention (CUDA).
+        volPPToIndex[i][3] += 0.5;
+        }
       }
 
     // Compute matrix to transform projection index to volume index
@@ -141,7 +144,8 @@ CudaForwardProjectionImageFilter<TInputImage,
                         (double*)&(source_position[0]),
                         boxMin,
                         boxMax,
-                        spacing);
+                        spacing,
+                        m_UseCudaTexture);
     }
 }
 

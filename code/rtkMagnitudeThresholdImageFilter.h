@@ -97,7 +97,7 @@ protected:
   virtual ~MagnitudeThresholdImageFilter() {}
 
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            ThreadIdType threadId);
+                            itk::ThreadIdType threadId);
 
 private:
   TRealType m_Threshold;

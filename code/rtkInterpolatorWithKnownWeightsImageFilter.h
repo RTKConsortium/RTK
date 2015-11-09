@@ -18,7 +18,7 @@
 #ifndef __rtkInterpolatorWithKnownWeightsImageFilter_h
 #define __rtkInterpolatorWithKnownWeightsImageFilter_h
 
-#include "itkImageToImageFilter.h"
+#include "itkInPlaceImageFilter.h"
 #include "itkArray2D.h"
 #include "rtkConfiguration.h"
 
@@ -60,7 +60,7 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 template< typename VolumeType, typename VolumeSeriesType>
-class InterpolatorWithKnownWeightsImageFilter : public itk::ImageToImageFilter< VolumeType, VolumeType >
+class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeType, VolumeType >
 {
 public:
     /** Standard class typedefs. */
@@ -72,7 +72,7 @@ public:
     itkNewMacro(Self)
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(InterpolatorWithKnownWeightsImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(InterpolatorWithKnownWeightsImageFilter, itk::InPlaceImageFilter)
 
     /** The 3D image to be updated.*/
     void SetInputVolume(const VolumeType* Volume);
@@ -93,6 +93,8 @@ protected:
 
     typename VolumeType::ConstPointer GetInputVolume();
     typename VolumeSeriesType::Pointer GetInputVolumeSeries();
+
+    virtual void GenerateInputRequestedRegion();
 
     /** Does the real work. */
     virtual void ThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType threadId );

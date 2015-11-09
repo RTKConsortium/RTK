@@ -1,14 +1,8 @@
-package "rtk"
-version "Computes the intersection length between rays of 2D projections and a 3D volume."
+package "rtkdrawshepploganphantom"
+purpose "Computes a 3D voxelized Shepp & Logan phantom with noise [http://www.slaney.org/pct/pct-errata.html]"
 
-option "verbose"      v "Verbose execution"                         flag     off
-option "config"       - "Config file"                               string   no
-option "output"       o "Output projections file name"              string   yes
-option "phantomscale" - "Scaling factor for the phantom dimensions" int      no   default="128"
-option "noise"        - "Gaussian noise parameter (SD)"             double   no
-
-section "Projections parameters"
-option "origin"    - "Origin (default=centered)" double multiple no
-option "dimension" - "Dimension"                 int    multiple no  default="256"
-option "spacing"   - "Spacing"                   double multiple no  default="1"
-option "direction" - "Direction"                 double multiple no
+option "config"       - "Config file"                               string          no
+option "output"       o "Output projections file name"              string          yes
+option "phantomscale" - "Scaling factor for the phantom dimensions" int             no   default="128"
+option "noise"        - "Gaussian noise parameter (SD)"             double          no
+option "offset"       - "3D spatial offset of the phantom center"   double multiple no

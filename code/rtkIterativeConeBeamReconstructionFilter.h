@@ -30,6 +30,7 @@
 #ifdef RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
   #include "rtkCudaBackProjectionImageFilter.h"
+  #include "rtkCudaRayCastBackProjectionImageFilter.h"
 #endif
 
 namespace rtk

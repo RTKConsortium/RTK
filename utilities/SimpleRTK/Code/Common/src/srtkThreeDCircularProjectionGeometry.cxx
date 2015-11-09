@@ -52,6 +52,7 @@ public:
   PimpleThreeDCircularProjectionGeometry &operator=( const PimpleThreeDCircularProjectionGeometry &s )
     {
     m_ProjectionGeometry = s.m_ProjectionGeometry;
+    return *this;
     }
 
   ProjectionGeometryType::Pointer GetProjectionGeometry( void ) { return this->m_ProjectionGeometry.GetPointer(); }
@@ -80,10 +81,76 @@ public:
     return out.str();
     }
 
+  /** Get projection parameters */
+  const std::vector<double> &GetGantryAngles() const
+    {
+      return this->m_ProjectionGeometry->GetGantryAngles();
+    }
+
+  const std::vector<double> &GetOutOfPlaneAngles() const
+    {
+      return this->m_ProjectionGeometry->GetOutOfPlaneAngles();
+    }
+
+  const std::vector<double> &GetInPlaneAngles() const
+    {
+      return this->m_ProjectionGeometry->GetInPlaneAngles();
+    }
+
+  const std::vector<double> &GetSourceAngles() const
+    {
+      return this->m_ProjectionGeometry->GetSourceAngles();
+    }
+
+  const std::vector<double> GetTiltAngles() const
+    {
+      return this->m_ProjectionGeometry->GetTiltAngles();
+    }
+
+  const std::vector<double> &GetSourceToIsocenterDistances() const
+    {
+      return this->m_ProjectionGeometry->GetSourceToIsocenterDistances();
+    }
+
+  const std::vector<double> &GetSourceOffsetsX() const
+    {
+      return this->m_ProjectionGeometry->GetSourceOffsetsX();
+    }
+
+  const std::vector<double> &GetSourceOffsetsY() const
+    {
+      return this->m_ProjectionGeometry->GetSourceOffsetsY();
+    }
+
+  const std::vector<double> &GetSourceToDetectorDistances() const
+    {
+      return this->m_ProjectionGeometry->GetSourceToDetectorDistances();
+    }
+
+  const std::vector<double> &GetProjectionOffsetsX() const
+    {
+      return this->m_ProjectionGeometry->GetProjectionOffsetsX();
+    }
+
+  const std::vector<double> &GetProjectionOffsetsY() const
+    {
+      return this->m_ProjectionGeometry->GetProjectionOffsetsY();
+    }
+
   /** Add the projection */
   void AddProjection(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
     {
     this->m_ProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
+    }
+  void AddProjectionInRadians(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
+    {
+    this->m_ProjectionGeometry->AddProjectionInRadians(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
+    }
+
+  /** Clears the geometry */
+  void Clear()
+    {
+    this->m_ProjectionGeometry->Clear();
     }
 
 private:
@@ -134,13 +201,90 @@ const rtk::ProjectionGeometry<3>* ThreeDCircularProjectionGeometry::GetRTKBase (
     return this->m_PimpleThreeDCircularProjectionGeometry->GetProjectionGeometry();
   }
 
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetGantryAngles() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetGantryAngles();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetOutOfPlaneAngles() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetOutOfPlaneAngles();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetInPlaneAngles() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetInPlaneAngles();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetSourceAngles() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetSourceAngles();
+  }
+
+const std::vector<double> ThreeDCircularProjectionGeometry::GetTiltAngles() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetTiltAngles();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetSourceToIsocenterDistances() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetSourceToIsocenterDistances();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetSourceOffsetsX() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetSourceOffsetsX();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetSourceOffsetsY() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetSourceOffsetsY();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetSourceToDetectorDistances() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetSourceToDetectorDistances();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetProjectionOffsetsX() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetProjectionOffsetsX();
+  }
+
+const std::vector<double> &ThreeDCircularProjectionGeometry::GetProjectionOffsetsY() const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetProjectionOffsetsY();
+  }
 
 void ThreeDCircularProjectionGeometry::AddProjection(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy)
   {
   assert( m_PimpleThreeDCircularProjectionGeometry );
   this->m_PimpleThreeDCircularProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
   }
-  
+
+void ThreeDCircularProjectionGeometry::AddProjectionInRadians(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy)
+  {
+  assert( m_PimpleThreeDCircularProjectionGeometry );
+  this->m_PimpleThreeDCircularProjectionGeometry->AddProjectionInRadians(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
+  }
+
+void ThreeDCircularProjectionGeometry::Clear()
+  {
+  assert( m_PimpleThreeDCircularProjectionGeometry );
+  this->m_PimpleThreeDCircularProjectionGeometry->Clear();
+  }
+
 std::string ThreeDCircularProjectionGeometry::ToString( void ) const
   {
   assert( m_PimpleThreeDCircularProjectionGeometry );

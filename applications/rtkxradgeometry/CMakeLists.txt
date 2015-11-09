@@ -1,4 +1,4 @@
-WRAP_GGO(rtkxradgeometry_GGO_C rtkxradgeometry.ggo)
+WRAP_GGO(rtkxradgeometry_GGO_C rtkxradgeometry.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkxradgeometry rtkxradgeometry.cxx ${rtkxradgeometry_GGO_C})
 TARGET_LINK_LIBRARIES(rtkxradgeometry RTK)
 

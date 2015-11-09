@@ -1,4 +1,4 @@
-WRAP_GGO(rtkadmmwavelets_GGO_C rtkadmmwavelets.ggo)
+WRAP_GGO(rtkadmmwavelets_GGO_C rtkadmmwavelets.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkadmmwavelets rtkadmmwavelets.cxx ${rtkadmmwavelets_GGO_C})
 TARGET_LINK_LIBRARIES(rtkadmmwavelets RTK)
 

@@ -43,11 +43,19 @@ namespace rtk
    * || sqrt(D) (Rf -p) ||_2^2 + alpha * TV(f),
    * with R the forward projection operator, p the measured projections,
    * D the displaced detector weighting matrix, and TV the total variation.
-   * Details on the method and the calculations can be found in
+   * Details on the method and the calculations can be found on page 48 of
    *
-   * Mory, C., B. Zhang, V. Auvray, M. Grass, D. Schafer, F. Peyrin, S. Rit, P. Douek,
-   * and L. Boussel. “ECG-Gated C-Arm Computed Tomography Using L1 Regularization.”
-   * In Proceedings of the 20th European Signal Processing Conference (EUSIPCO), 2728–32, 2012.
+   * Mory, C. “Cardiac C-Arm Computed Tomography”, PhD thesis, 2014.
+   * https://hal.inria.fr/tel-00985728/document
+   *
+   * \f$ f_{k+1} \f$ is obtained by linear conjugate solving the following:
+   * \f[ ( R^T R + \beta \nabla^T \nabla ) f = R^T p + \beta \nabla^T ( g_k + d_k ) \f]
+   *
+   * \f$ g_{k+1} \f$ is obtained by soft thresholding:
+   * \f[ g_{k+1} = ST_{ \frac{\alpha}{2 \beta} } ( \nabla f_{k+1} - d_k ) \f]
+   *
+   * \f$ d_{k+1} \f$ is a simple subtraction:
+   * \f[ d_{k+1} = g_{k+1} - ( \nabla f_{k+1} - d_k) \f]
    *
    * \dot
    * digraph ADMMTotalVariationConeBeamReconstructionFilter {
@@ -81,35 +89,34 @@ namespace rtk
    * AfterTVSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
    * SubtractTwo [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    *
-   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=None];
+   * Input0 -> BeforeZeroMultiplyVolume [arrowhead=none, label="f_0"];
    * BeforeZeroMultiplyVolume -> ZeroMultiplyVolume;
    * BeforeZeroMultiplyVolume -> Gradient;
    * BeforeZeroMultiplyVolume -> ConjugateGradient;
    * ZeroMultiplyVolume -> BackProjection;
-   * Input1 -> Displaced;
+   * Input1 -> Displaced [label="p"];
    * Displaced -> BackProjection;
-   * Gradient -> AfterGradient [arrowhead=None];
+   * Gradient -> AfterGradient [arrowhead=none, label="g_0"];
    * AfterGradient -> AddGradient;
    * AfterGradient -> ZeroMultiplyGradient;
-   * ZeroMultiplyGradient -> AfterZeroMultiplyGradient [arrowhead=None];
+   * ZeroMultiplyGradient -> AfterZeroMultiplyGradient [arrowhead=none, label="d_0"];
    * AfterZeroMultiplyGradient -> AddGradient;
    * AfterZeroMultiplyGradient -> Subtract;
-   * AddGradient -> Divergence;
-   * Divergence -> Multiply;
-   * Multiply -> SubtractVolume;
-   * BackProjection -> SubtractVolume;
-   * SubtractVolume -> ConjugateGradient;
-   * ConjugateGradient -> AfterConjugateGradient;
+   * AddGradient -> Divergence [label="g_0 + d_0"];
+   * Divergence -> Multiply [label="-nabla_t(g_0 + d_0)"];
+   * Multiply -> SubtractVolume [label="-beta *nabla_t(g_0 + d_0)"];
+   * BackProjection -> SubtractVolume [label="R_t p"];
+   * SubtractVolume -> ConjugateGradient [label="b"];
+   * ConjugateGradient -> AfterConjugateGradient [label="f_k+1"];
    * AfterConjugateGradient -> GradientTwo;
-   * GradientTwo -> Subtract;
-   * Subtract -> BeforeTVSoftThreshold [arrowhead=None];
+   * GradientTwo -> Subtract [label="nabla(f_k+1)"];
+   * Subtract -> BeforeTVSoftThreshold [arrowhead=none, label="nabla(f_k+1) - d_k"];
    * BeforeTVSoftThreshold -> TVSoftThreshold;
    * BeforeTVSoftThreshold -> SubtractTwo;
-   * TVSoftThreshold -> AfterTVSoftThreshold [arrowhead=None];
-   * AfterTVSoftThreshold -> SubtractTwo;
-   *
+   * TVSoftThreshold -> AfterTVSoftThreshold [arrowhead=none];
+   * AfterTVSoftThreshold -> SubtractTwo [label="g_k+1"];
    * AfterTVSoftThreshold -> AfterGradient [style=dashed];
-   * SubtractTwo -> AfterZeroMultiplyGradient [style=dashed];
+   * SubtractTwo -> AfterZeroMultiplyGradient [style=dashed, label="d_k+1"];
    * AfterConjugateGradient -> BeforeZeroMultiplyVolume [style=dashed];
    * AfterConjugateGradient -> Output [style=dashed];
    * }

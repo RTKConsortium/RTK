@@ -1,5 +1,5 @@
-package "rtk"
-version "Computes the intersection length between rays of 2D projections and a 3D volume."
+package "rtkrayellipsoidintersection"
+purpose "Computes the intersection length between rays of 2D projections and a 3D ellipsoid"
 
 option "verbose"    v "Verbose execution"                                         flag     off
 option "config"     - "Config file"                                               string   no
@@ -10,8 +10,3 @@ option "center"     c "x_0,y_0,z_0 Defines the center of the ellipsoid"         
 option "mult"       m "Multiplier for the intersection"                           double   no default="1"
 option "rotation"   r "Rotation applied to the volume"                            double multiple no default="0"
 
-section "Projections parameters"
-option "origin"    - "Origin (default=centered)" double multiple no
-option "dimension" - "Dimension"                 int    multiple no  default="256"
-option "spacing"   - "Spacing"                   double multiple no  default="1"
-option "direction" - "Direction"                 double multiple no

@@ -39,6 +39,36 @@ namespace rtk
  * is the cranio-caudal position. More information is available in
  * [Zijp, ICCR, 2004], [Sonke, Med Phys, 2005] and [Rit, IJROBP, 2012].
  *
+ * The following mini-pipeline of ITK filters is used for its RTK implementation:
+ *
+ * \dot
+ * digraph AmsterdamShroud {
+ *
+ * Input [label="Input (Projections)", shape=Mdiamond];
+ * Output [label="Output (Amsterdam Shroud)", shape=Mdiamond];
+ *
+ * node [shape=box];
+ *
+ * Derivative [label="itk::RecursiveGaussianImageFilter" URL="\ref itk::RecursiveGaussianImageFilter"];
+ * Negative [label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+ * Threshold [label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
+ * Sum [label="itk::SumProjectionImageFilter" URL="\ref itk::SumProjectionImageFilter"];
+ * Convolution [label="itk::ConvolutionImageFilter" URL="\ref itk::ConvolutionImageFilter"];
+ * Subtract [label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+ * Permute [label="itk::PermuteAxesImageFilter" URL="\ref itk::PermuteAxesImageFilter"];
+ *
+ * Input->Derivative
+ * Derivative->Negative
+ * Negative->Threshold
+ * Threshold->Sum
+ * Sum->Subtract
+ * Sum->Convolution
+ * Convolution->Subtract
+ * Subtract->Permute
+ * Permute->Output
+ * }
+ * \enddot
+ *
  * \test rtkamsterdamshroudtest.cxx
  *
  * \author Simon Rit

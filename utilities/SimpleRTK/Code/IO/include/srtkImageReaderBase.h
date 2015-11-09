@@ -44,6 +44,7 @@ namespace rtk {
     public:
       // The default constructor and the destructor will be implicitly
       // declared as public.
+      ImageReaderBase();
 
     protected:
 

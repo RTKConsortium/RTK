@@ -25,24 +25,33 @@ namespace rtk
 {
 
 template< typename TOutputImage>
-ReconstructionConjugateGradientOperator<TOutputImage>::ReconstructionConjugateGradientOperator()
+ReconstructionConjugateGradientOperator<TOutputImage>
+::ReconstructionConjugateGradientOperator():
+  m_Geometry(NULL),
+  m_IsWeighted(false)
 {
   this->SetNumberOfRequiredInputs(2);
 
   // Create filters
-  m_MultiplyFilter = MultiplyFilterType::New();
-  m_ZeroMultiplyProjectionFilter = MultiplyFilterType::New();
-  m_ZeroMultiplyVolumeFilter = MultiplyFilterType::New();
+#ifdef RTK_USE_CUDA
+  m_ConstantProjectionsSource = rtk::CudaConstantVolumeSource::New();
+  m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
+  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+#else
+  m_ConstantProjectionsSource = ConstantSourceType::New();
+  m_ConstantVolumeSource = ConstantSourceType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+#endif
+  m_MultiplyFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
-  m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management options
-  m_ZeroMultiplyProjectionFilter->ReleaseDataFlagOn();
-  m_ZeroMultiplyVolumeFilter->ReleaseDataFlagOn();
-  m_MultiplyFilter->ReleaseDataFlagOn();
+  m_ConstantProjectionsSource->ReleaseDataFlagOn();
+  m_ConstantVolumeSource->ReleaseDataFlagOn();
 }
 
 template< typename TOutputImage >
@@ -77,6 +86,18 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     const_cast< TOutputImage * >( this->GetInput(1) );
   if ( !inputPtr1 ) return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+
+  if (m_IsWeighted)
+    {
+    this->SetNumberOfRequiredInputs(3);
+
+    // Input 2 is the weights map, if any
+    typename Superclass::InputImagePointer  inputPtr2 =
+            const_cast< TOutputImage * >( this->GetInput(2) );
+    if ( !inputPtr2 )
+        return;
+    inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
+    }
 }
 
 template< typename TOutputImage >
@@ -87,13 +108,23 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // Set runtime connections, and connections with
   // forward and back projection filters, which are set
   // at runtime
-  m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
+  m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
+  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_DisplacedDetectorFilter->SetInput( m_ForwardProjectionFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
-  m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
-  m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
+  m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
+  m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
+
+  if (m_IsWeighted)
+    {
+    m_MultiplyFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
+    m_MultiplyFilter->SetInput2(this->GetInput(2));
+    m_BackProjectionFilter->SetInput(1, m_MultiplyFilter->GetOutput());
+    }
+  else
+    {
+    m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+    }
 
   // Set geometry
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);

@@ -6,7 +6,9 @@ set( SimpleRTKIOSource
   srtkImageSeriesReader.cxx
   srtkImportImageFilter.cxx
   srtkShow.cxx
+  srtkThreeDCircularProjectionGeometryXMLFileReader.cxx
   srtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
+  srtkProjectionsReader.cxx
   )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )

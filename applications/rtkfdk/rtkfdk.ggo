@@ -1,5 +1,5 @@
-package "rtk"
-version "Reconstruct a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984]."
+package "rtkfdk"
+purpose "Reconstructs a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984]."
 
 option "verbose"    v "Verbose execution"                                           flag                         off
 option "config"     - "Config file"                                                 string                       no
@@ -10,22 +10,10 @@ option "lowmem"     l "Load only one projection per thread in memory"           
 option "divisions"  d "Streaming option: number of stream divisions of the CT"      int                          no   default="1"
 option "subsetsize" - "Streaming option: number of projections processed at a time" int                          no   default="16"
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
-
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"
 option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
 option "hannY"     - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
-
-section "Volume properties"
-option "origin"    - "Origin (default=centered)" double multiple no
-option "dimension" - "Dimension"                 int    multiple no  default="256"
-option "spacing"   - "Spacing"                   double multiple no  default="1"
-option "direction" - "Direction"                 double multiple no
 
 section "Motion-compensation described in [Rit et al, TMI, 2009] and [Rit et al, Med Phys, 2009]"
 option "signal"    - "Signal file name"          string    no

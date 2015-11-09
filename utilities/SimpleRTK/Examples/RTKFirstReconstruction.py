@@ -5,6 +5,7 @@ import sys
 import os
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import time
 
 if len ( sys.argv ) < 3:
     print( "Usage: RTKFirstReconstruction <outputimage> <outputgeometry>" )
@@ -64,7 +65,11 @@ feldkamp = srtk.FDKConeBeamReconstructionFilter()
 feldkamp.SetGeometry( geometry );
 feldkamp.SetTruncationCorrection(0.0);
 feldkamp.SetHannCutFrequency(0.0);
-image = feldkamp.Execute(source2,reiImage) 
+
+start = time.time()
+image = feldkamp.Execute(source2,reiImage)
+end = time.time()
+print("Reconstruction took %f" %(end-start))
 
 plt.imshow(srtk.GetArrayFromImage(image[:,64,:]), cmap = cm.Greys_r)
 plt.show()

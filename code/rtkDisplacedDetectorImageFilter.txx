@@ -29,6 +29,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 ::DisplacedDetectorImageFilter():
+  m_PadOnTruncatedSide(true),
   m_MinimumOffset(0.),
   m_MaximumOffset(0.),
   m_OffsetsSet(false),
@@ -85,9 +86,6 @@ void
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
-  // call the superclass' implementation of this method
-  Superclass::GenerateOutputInformation();
-
   // get pointers to the input and output
   typename Superclass::InputImagePointer  inputPtr  = const_cast< TInputImage * >( this->GetInput() );
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
@@ -96,6 +94,12 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     {
     return;
     }
+
+  // Copy the meta data for this data type
+  outputPtr->SetSpacing( inputPtr->GetSpacing() );
+  outputPtr->SetOrigin( inputPtr->GetOrigin() );
+  outputPtr->SetDirection( inputPtr->GetDirection() );
+  outputPtr->SetNumberOfComponentsPerPixel( inputPtr->GetNumberOfComponentsPerPixel() );
 
   typename TOutputImage::RegionType outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
 
@@ -136,8 +140,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
                              << " Corner inf=" << m_InferiorCorner
                              << " and corner sup=" << m_SuperiorCorner);
     }
-  // Case 2: Not displaced, nothing to do
-  else if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
+  // Case 2: Not displaced, or explicit request not to pad: default outputLargestPossibleRegion is fine
+  else if( (fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner)) || !m_PadOnTruncatedSide)
     {
     this->SetInPlace( true );
     }
@@ -226,6 +230,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 
     if( m_SuperiorCorner+m_InferiorCorner > 0. )
       {
+      itWeights.GoToBegin();
       while(!itWeights.IsAtEnd() )
         {
         const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);

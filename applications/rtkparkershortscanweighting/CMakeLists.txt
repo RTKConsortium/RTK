@@ -1,4 +1,4 @@
-WRAP_GGO(rtkparkershortscanweighting_GGO_C rtkparkershortscanweighting.ggo)
+WRAP_GGO(rtkparkershortscanweighting_GGO_C rtkparkershortscanweighting.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkparkershortscanweighting rtkparkershortscanweighting.cxx ${rtkparkershortscanweighting_GGO_C})
 TARGET_LINK_LIBRARIES(rtkparkershortscanweighting RTK)
 

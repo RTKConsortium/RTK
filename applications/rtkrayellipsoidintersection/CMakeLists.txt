@@ -1,4 +1,4 @@
-WRAP_GGO(rtkrayellipsoidintersection_GGO_C rtkrayellipsoidintersection.ggo)
+WRAP_GGO(rtkrayellipsoidintersection_GGO_C rtkrayellipsoidintersection.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkrayellipsoidintersection rtkrayellipsoidintersection.cxx ${rtkrayellipsoidintersection_GGO_C})
 TARGET_LINK_LIBRARIES(rtkrayellipsoidintersection RTK)
 

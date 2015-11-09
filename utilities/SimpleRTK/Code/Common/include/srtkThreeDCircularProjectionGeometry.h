@@ -63,11 +63,34 @@ public:
   const rtk::ProjectionGeometry<3>* GetRTKBase( void ) const;
   /**@}*/
 
+  const std::vector<double> &GetGantryAngles() const;
+  const std::vector<double> &GetOutOfPlaneAngles() const;
+  const std::vector<double> &GetInPlaneAngles() const;
+  const std::vector<double> &GetSourceAngles() const;
+  const std::vector<double>  GetTiltAngles() const;
+  const std::vector<double> &GetSourceToIsocenterDistances() const;
+  const std::vector<double> &GetSourceOffsetsX() const;
+  const std::vector<double> &GetSourceOffsetsY() const;
+  const std::vector<double> &GetSourceToDetectorDistances() const;
+  const std::vector<double> &GetProjectionOffsetsX() const;
+  const std::vector<double> &GetProjectionOffsetsY() const;
 
-  /** Add the projection
+  /** Add the projection with angles in degress
    * @{
    */
   void AddProjection(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.);
+  /**@}*/
+
+  /** Add the projection with angles in radians
+   * @{
+   */
+  void AddProjectionInRadians(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.);
+  /**@}*/
+
+  /** Clear the geometry object
+   * @{
+   */
+  void Clear();
   /**@}*/
 
   /** Return the current geometry as a string

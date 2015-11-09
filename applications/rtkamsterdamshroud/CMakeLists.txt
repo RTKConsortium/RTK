@@ -1,4 +1,4 @@
-WRAP_GGO(rtkamsterdamshroud_GGO_C rtkamsterdamshroud.ggo)
+WRAP_GGO(rtkamsterdamshroud_GGO_C rtkamsterdamshroud.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkamsterdamshroud rtkamsterdamshroud.cxx ${rtkamsterdamshroud_GGO_C})
 TARGET_LINK_LIBRARIES(rtkamsterdamshroud RTK)
 

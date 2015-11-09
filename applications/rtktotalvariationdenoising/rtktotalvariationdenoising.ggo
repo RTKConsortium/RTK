@@ -1,5 +1,5 @@
-package "rtk"
-version "Total variation denoising along specified dimensions of a 3D image."
+package "rtktotalvariationdenoising"
+purpose "Performs total variation denoising along the specified dimensions of a 3D image."
 
 option "verbose"   v "Verbose execution"                                            flag         off
 option "config"    - "Config file"                                                  string       no
@@ -8,4 +8,3 @@ option "output"    o "Output file name"                                         
 option "gamma"     g "TV term's weighting parameter"                                double       no  default="1.0"
 option "dim" 	   d "Is denoising applied along this dimension (0=false, 1=true)"  int multiple no  default="1"
 option "niter"     n "Number of iterations"                                         int          no  default="5"
-

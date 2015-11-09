@@ -75,12 +75,23 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
   else
     imageDirection.SetIdentity();
 
-
   source->SetOrigin( imageOrigin );
   source->SetSpacing( imageSpacing );
   source->SetDirection( imageDirection );
   source->SetSize( imageDimension );
   source->SetConstant( 0. );
+
+  // Copy output image information from an existing file, if requested
+  // Overwrites parameters given in command line, if any
+  if (args_info.like_given)
+    {
+    typedef itk::ImageFileReader<  ImageType > LikeReaderType;
+    typename LikeReaderType::Pointer likeReader = LikeReaderType::New();
+    likeReader->SetFileName( args_info.like_arg );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( likeReader->UpdateOutputInformation() );
+    source->SetInformationFromImage(likeReader->GetOutput());
+    }
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( source->UpdateOutputInformation() );
 }
 
@@ -115,6 +126,71 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
               << names->GetFileNames().size()
               << " file(s)..."
               << std::endl;
+
+  // Change image information
+  const unsigned int Dimension = TProjectionsReaderType::OutputImageType::GetImageDimension();
+  typename TProjectionsReaderType::OutputImageDirectionType direction;
+  if(args_info.newdirection_given)
+    {
+    direction.Fill(args_info.newdirection_arg[0]);
+    for(unsigned int i=0; i<args_info.newdirection_given; i++)
+      direction[i/Dimension][i%Dimension] = args_info.newdirection_arg[i];
+    reader->SetDirection(direction);
+    }
+  typename TProjectionsReaderType::OutputImageSpacingType spacing;
+  if(args_info.newspacing_given)
+    {
+    spacing.Fill(args_info.newspacing_arg[0]);
+    for(unsigned int i=0; i<args_info.newspacing_given; i++)
+      spacing[i] = args_info.newspacing_arg[i];
+    reader->SetSpacing(spacing);
+    }
+  typename TProjectionsReaderType::OutputImagePointType origin;
+  if(args_info.neworigin_given)
+    {
+    direction.Fill(args_info.neworigin_arg[0]);
+    for(unsigned int i=0; i<args_info.neworigin_given; i++)
+      origin[i] = args_info.neworigin_arg[i];
+    reader->SetOrigin(origin);
+    }
+
+  // Crop boundaries
+  typename TProjectionsReaderType::OutputImageSizeType upperCrop, lowerCrop;
+  upperCrop.Fill(0);
+  lowerCrop.Fill(0);
+  for(unsigned int i=0; i<args_info.lowercrop_given; i++)
+    lowerCrop[i] = args_info.lowercrop_arg[i];
+  reader->SetLowerBoundaryCropSize(lowerCrop);
+  for(unsigned int i=0; i<args_info.uppercrop_given; i++)
+    upperCrop[i] = args_info.uppercrop_arg[i];
+  reader->SetUpperBoundaryCropSize(upperCrop);
+
+  // Shrink / Binning
+  typename TProjectionsReaderType::ShrinkFactorsType binFactors;
+  binFactors.Fill(1);
+  for(unsigned int i=0; i<args_info.binning_given; i++)
+    binFactors[i] = args_info.binning_arg[i];
+  reader->SetShrinkFactors(binFactors);
+
+  // Boellaard scatter correction
+  if(args_info.spr_given)
+    reader->SetScatterToPrimaryRatio(args_info.spr_arg);
+  if(args_info.nonneg_given)
+    reader->SetNonNegativityConstraintThreshold(args_info.nonneg_arg);
+  if(args_info.airthres_given)
+    reader->SetAirThreshold(args_info.airthres_arg);
+
+  // I0
+  if(args_info.i0_given)
+    reader->SetI0(args_info.i0_arg);
+
+  // Water precorrection
+  if(args_info.wpc_given)
+    {
+    std::vector<double> coeffs;
+    coeffs.assign(args_info.wpc_arg, args_info.wpc_arg+args_info.wpc_given);
+    reader->SetWaterPrecorrectionCoefficients(coeffs);
+    }
 
   // Pass list to projections reader
   reader->SetFileNames( names->GetFileNames() );

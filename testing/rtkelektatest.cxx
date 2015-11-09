@@ -2,6 +2,7 @@
 #include "rtkProjectionsReader.h"
 #include "rtkMacro.h"
 #include "rtkElektaSynergyGeometryReader.h"
+#include "rtkElektaXVI5GeometryXMLFile.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -21,25 +22,46 @@
 
 int main(int, char** )
 {
+  std::cout << "Testing geometry with FRAME.DBF..." << std::endl;
+
   // Elekta geometry
   rtk::ElektaSynergyGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::ElektaSynergyGeometryReader::New();
   geoTargReader->SetDicomUID("1.3.46.423632.135428.1351013645.166");
-  geoTargReader->SetImageDbfFileName( std::string(RTK_DATA_ROOT) + 
+  geoTargReader->SetImageDbfFileName( std::string(RTK_DATA_ROOT) +
                                       std::string("/Input/Elekta/IMAGE.DBF") );
-  geoTargReader->SetFrameDbfFileName( std::string(RTK_DATA_ROOT) + 
+  geoTargReader->SetFrameDbfFileName( std::string(RTK_DATA_ROOT) +
                                       std::string("/Input/Elekta/FRAME.DBF") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) + 
+  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
                              std::string("/Baseline/Elekta/geometry.xml") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
+  std::cout << "Testing geometry with _Frames.xml..." << std::endl;
+
+  // Elekta geometry XVI v5
+  rtk::ElektaXVI5GeometryXMLFileReader::Pointer geo5TargReader;
+  geo5TargReader = rtk::ElektaXVI5GeometryXMLFileReader::New();
+  geo5TargReader->SetFilename(std::string(RTK_DATA_ROOT) +
+                              std::string("/Input/Elekta/_Frames.xml"));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( geo5TargReader->GenerateOutputInformation() );
+
+  // Reference geometry v5
+  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geo5RefReader;
+  geo5RefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+  geo5RefReader->SetFilename( std::string(RTK_DATA_ROOT) +
+                             std::string("/Baseline/Elekta/geometry5.xml") );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( geo5RefReader->GenerateOutputInformation() )
+
   // 1. Check geometries
   CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject() );
+  CheckGeometries(geo5TargReader->GetGeometry(), geo5RefReader->GetOutputObject() );
+
+  std::cout << "Testing his file processing..." << std::endl;
 
   // ******* COMPARING projections *******
   typedef float OutputPixelType;
@@ -80,14 +102,15 @@ int main(int, char** )
   full->SetInput(r->GetOutput());
   full->Update();
 
-  typedef rtk::ElektaSynergyRawLookupTableImageFilter<3> RawLUTType;
+  typedef rtk::ElektaSynergyRawLookupTableImageFilter<InputImageType, InputImageType> RawLUTType;
   RawLUTType::Pointer raw = RawLUTType::New();
   raw->SetInput(r->GetOutput());
   raw->Update();
 
-  typedef rtk::ElektaSynergyLogLookupTableImageFilter<ImageType> LogLUTType;
+  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,ImageType> LogLUTType;
   LogLUTType::Pointer log = LogLUTType::New();
   log->SetInput(raw->GetOutput());
+  log->SetI0(log->GetI0()+1.);
   log->Update();
 
   // Compare the result of the full lut with the split lut

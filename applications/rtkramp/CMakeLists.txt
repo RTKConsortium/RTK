@@ -1,4 +1,4 @@
-WRAP_GGO(rtkramp_GGO_C rtkramp.ggo)
+WRAP_GGO(rtkramp_GGO_C rtkramp.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkramp rtkramp.cxx ${rtkramp_GGO_C})
 TARGET_LINK_LIBRARIES(rtkramp RTK)
 

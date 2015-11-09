@@ -18,6 +18,10 @@
 #ifndef __itkSliceImageFilter_h
 #define __itkSliceImageFilter_h
 
+#include "rtkConfiguration.h"
+#ifdef RTK_USE_CUDA
+# include "itkCudaImage.h"
+#endif
 #include "itkImageToImageFilter.h"
 
 namespace itk

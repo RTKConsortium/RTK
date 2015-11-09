@@ -30,7 +30,6 @@
 
 namespace rtk
 {
-  using namespace itk;
 //
 // Constructor
 //
@@ -39,7 +38,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 ::ForwardDifferenceGradientImageFilter()
 {
   // default boundary condition
-  m_BoundaryCondition = new ZeroFluxNeumannBoundaryCondition<TInputImage>();
+  m_BoundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TInputImage>();
   m_IsBoundaryConditionOverriden = false;
 
   // default behaviour is to take into account both spacing and direction
@@ -86,7 +85,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
-::OverrideBoundaryCondition(ImageBoundaryCondition< TInputImage >* boundaryCondition)
+::OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition)
 {
   delete m_BoundaryCondition;
   m_BoundaryCondition = boundaryCondition;
@@ -112,10 +111,10 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     }
 
   // Build an operator so that we can determine the kernel size
-  ForwardDifferenceOperator< OperatorValueType, InputImageDimension > oper;
+  itk::ForwardDifferenceOperator< OperatorValueType, InputImageDimension > oper;
   oper.SetDirection(0);
   oper.CreateDirectional();
-  SizeValueType radius = oper.GetRadius()[0];
+  itk::SizeValueType radius = oper.GetRadius()[0];
 
   // get a copy of the input requested region (should equal the output
   // requested region)
@@ -140,7 +139,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     inputPtr->SetRequestedRegion(inputRequestedRegion);
 
     // build an exception
-    InvalidRequestedRegionError e(__FILE__, __LINE__);
+    itk::InvalidRequestedRegionError e(__FILE__, __LINE__);
     e.SetLocation(ITK_LOCATION);
     e.SetDescription("Requested region is (at least partially) outside the largest possible region.");
     e.SetDataObject(inputPtr);
@@ -152,15 +151,15 @@ template< typename TInputImage, typename TOperatorValueType, typename TOuputValu
 void
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       ThreadIdType threadId)
+                       itk::ThreadIdType threadId)
 {
   unsigned int    i;
   CovariantVectorType gradient;
 
-  ConstNeighborhoodIterator< InputImageType > nit;
-  ImageRegionIterator< OutputImageType >      it;
+  itk::ConstNeighborhoodIterator< InputImageType > nit;
+  itk::ImageRegionIterator< OutputImageType >      it;
 
-  NeighborhoodInnerProduct< InputImageType, OperatorValueType,
+  itk::NeighborhoodInnerProduct< InputImageType, OperatorValueType,
                             OutputValueType > SIP;
 
   // Get the input and output
@@ -177,7 +176,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     }
 
   // Set up operators
-  ForwardDifferenceOperator< OperatorValueType, InputImageDimension > op[InputImageDimension];
+  itk::ForwardDifferenceOperator< OperatorValueType, InputImageDimension > op[InputImageDimension];
 
   for ( i = 0; i < InputImageDimension; i++ )
     {
@@ -199,28 +198,28 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     }
 
   // Calculate iterator radius
-  Size< InputImageDimension > radius;
+  itk::Size< InputImageDimension > radius;
   for ( i = 0; i < InputImageDimension; ++i )
     {
     radius[i]  = op[0].GetRadius()[0];
     }
 
   // Find the data-set boundary "faces"
-  typename NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType faceList;
-  NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType > bC;
+  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType faceList;
+  itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType > bC;
   faceList = bC(inputImage, outputRegionForThread, radius);
 
-  typename NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType::iterator fit;
+  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType::iterator fit;
   fit = faceList.begin();
 
   // support progress methods/callbacks
-  ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
+  itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
 
   // Initialize the x_slice array
-  nit = ConstNeighborhoodIterator< InputImageType >(radius, inputImage, *fit);
+  nit = itk::ConstNeighborhoodIterator< InputImageType >(radius, inputImage, *fit);
 
   std::slice          x_slice[InputImageDimension];
-  const SizeValueType center = nit.Size() / 2;
+  const itk::SizeValueType center = nit.Size() / 2;
   for ( i = 0; i < InputImageDimension; ++i )
     {
     x_slice[i] = std::slice( center - nit.GetStride(i) * radius[i],
@@ -231,9 +230,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   // These are N-d regions which border the edge of the buffer.
   for ( fit = faceList.begin(); fit != faceList.end(); ++fit )
     {
-    nit = ConstNeighborhoodIterator< InputImageType >(radius,
+    nit = itk::ConstNeighborhoodIterator< InputImageType >(radius,
                                                       inputImage, *fit);
-    it = ImageRegionIterator< OutputImageType >(outputImage, *fit);
+    it = itk::ImageRegionIterator< OutputImageType >(outputImage, *fit);
     nit.OverrideBoundaryCondition(m_BoundaryCondition);
     nit.GoToBegin();
 
@@ -288,7 +287,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
-::PrintSelf(std::ostream & os, Indent indent) const
+::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

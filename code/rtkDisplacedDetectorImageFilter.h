@@ -49,7 +49,8 @@ namespace rtk
  * not relevant in the computation because the weighting is reproduced at
  * every gantry angle on each line of the projection images.
  *
- * \test rtkdisplaceddetectortest.cxx, rtkdisplaceddetectorcompcudatest.cxx
+ * \test rtkdisplaceddetectortest.cxx, rtkdisplaceddetectorcompcudatest.cxx,
+ * rtkdisplaceddetectorcompoffsettest.cxx
  *
  * \author Simon Rit
  *
@@ -87,6 +88,11 @@ public:
   itkGetMacro(Geometry, GeometryPointer);
   itkSetMacro(Geometry, GeometryPointer);
 
+  /** Get / Set whether the projections should be padded
+   * (yes for FDK, no for iterative) */
+  itkGetMacro(PadOnTruncatedSide, bool);
+  itkSetMacro(PadOnTruncatedSide, bool);
+
   /**
    * Get / Set the minimum and maximum offsets of the detector along the
    * weighting direction desribed in ToUntiltedCoordinate.
@@ -110,6 +116,9 @@ protected:
   virtual void GenerateOutputInformation();
 
   virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+
+  // Iterative filters do not need padding
+  bool m_PadOnTruncatedSide;
 
 private:
   DisplacedDetectorImageFilter(const Self&); //purposely not implemented

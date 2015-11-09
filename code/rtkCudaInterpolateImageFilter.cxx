@@ -31,10 +31,10 @@ rtk::CudaInterpolateImageFilter
 ::GPUGenerateData()
 {
     int4 inputSize;
-    inputSize.x = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[0];
-    inputSize.y = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[1];
-    inputSize.z = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[2];
-    inputSize.w = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[3];
+    inputSize.x = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[0];
+    inputSize.y = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[1];
+    inputSize.z = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[2];
+    inputSize.w = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[3];
 
     float *pvolseries = *(float**)( this->GetInputVolumeSeries()->GetCudaDataManager()->GetGPUBufferPointer() );
     float *pvol = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );

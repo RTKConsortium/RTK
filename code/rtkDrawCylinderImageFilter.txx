@@ -83,7 +83,7 @@ void DrawCylinderImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(co
     if(QuadricEllip<0)
       itOut.Set(Cylinder.density + itIn.Get());
     else
-      itOut.Set(0.);
+      itOut.Set( itIn.Get() );
     ++itIn;
     ++itOut;
   }

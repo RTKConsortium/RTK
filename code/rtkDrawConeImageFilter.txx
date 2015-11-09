@@ -69,7 +69,7 @@ void DrawConeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const 
   sqpFunctor->Rotate(Cone.angle, Cone.center);
 
   while( !itOut.IsAtEnd() )
-  {
+    {
     this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
 
     double QuadricEllip = sqpFunctor->GetA()*point[0]*point[0]   +
@@ -83,10 +83,10 @@ void DrawConeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const 
     if(QuadricEllip<0)
       itOut.Set(Cone.density + itIn.Get());
     else
-      itOut.Set(0.);
+      itOut.Set( itIn.Get() );
     ++itIn;
     ++itOut;
-  }
+    }
 }
 
 }// end namespace rtk

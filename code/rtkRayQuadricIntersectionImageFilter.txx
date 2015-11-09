@@ -51,7 +51,7 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   if(this->GetGeometry()->GetGantryAngles().size() !=
-          this->GetOutput()->GetRequestedRegion().GetSize()[2])
+          this->GetOutput()->GetLargestPossibleRegion().GetSize()[2])
       itkExceptionMacro(<<"Number of projections in the input stack and the geometry object differ.")
 }
 

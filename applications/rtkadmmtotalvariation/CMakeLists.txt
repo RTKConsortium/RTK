@@ -1,4 +1,4 @@
-WRAP_GGO(rtkadmmtotalvariation_GGO_C rtkadmmtotalvariation.ggo)
+WRAP_GGO(rtkadmmtotalvariation_GGO_C rtkadmmtotalvariation.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkadmmtotalvariation rtkadmmtotalvariation.cxx ${rtkadmmtotalvariation_GGO_C})
 TARGET_LINK_LIBRARIES(rtkadmmtotalvariation RTK)
 

@@ -1,5 +1,5 @@
-package "rtk"
-version "Creates an RTK geometry file from a Digisens geometry calibration."
+package "rtkdigisensgeometry"
+purpose "Creates an RTK geometry file from a Digisens geometry calibration."
 
 option "verbose"   v "Verbose execution"                                     flag            off
 option "config"    - "Config file"                                           string          no

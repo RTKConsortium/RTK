@@ -1,0 +1,16 @@
+section "Input projections and their pre-processing"
+option "path"         p "Path containing projections"                                   string           yes
+option "regexp"       r "Regular expression to select projection files in path"         string           yes
+option "nsort"        - "Numeric sort for regular expression matches"                   flag             off
+option "submatch"     - "Index of the submatch that will be used to sort matches"       int              no   default="0"
+option "newdirection" - "New value of input projections (before pre-processing)"        double  multiple no
+option "neworigin"    - "New origin of input projections (before pre-processing)"       double  multiple no
+option "newspacing"   - "New spacing of input projections (before pre-processing)"      double  multiple no
+option "lowercrop"    - "Lower boundary crop size"                                      int     multiple no   default="0"
+option "uppercrop"    - "Upper boundary crop size"                                      int     multiple no   default="0"
+option "binning"      - "Shrink / Binning factos in each direction"                     int     multiple no   default="1"
+option "wpc"          - "Water precorrection coefficients (default is no correction)"   double  multiple no
+option "spr"          - "Boellaard scatter correction: scatter-to-primary ratio"        double           no   default="0"
+option "nonneg"       - "Boellaard scatter correction: non-negativity threshold"        double           no
+option "airthres"     - "Boellaard scatter correction: air threshold"                   double           no
+option "i0"           - "I0 value (when assumed constant per projection), 0 means auto" double           no

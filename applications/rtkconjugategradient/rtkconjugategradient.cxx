@@ -77,6 +77,14 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
+  // Read weights if given, otherwise perform unweighted least squares reconstruction
+  typedef itk::ImageFileReader<  OutputImageType > WeightsReaderType;
+  WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+  if(args_info.weights_given)
+    {
+    weightsReader->SetFileName( args_info.weights_arg );
+    }
+
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
@@ -85,6 +93,11 @@ int main(int argc, char * argv[])
 
   conjugategradient->SetInput( inputFilter->GetOutput() );
   conjugategradient->SetInput(1, reader->GetOutput());
+  if (args_info.weights_given)
+    {
+    conjugategradient->SetInput(2, weightsReader->GetOutput());
+    conjugategradient->SetIsWeighted(true);
+    }
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
 

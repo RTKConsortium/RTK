@@ -33,15 +33,21 @@ int main(int argc, char * argv[])
   GGO(rtkfourdrooster, args_info);
 
   typedef float OutputPixelType;
+  typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #else
   typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #endif
   typedef ProjectionStackType                   VolumeType;
+  typedef itk::ImageFileReader<  DVFSequenceImageType > DVFReaderType;
 
   // Projections reader
   typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
@@ -80,9 +86,9 @@ int main(int argc, char * argv[])
     // The only default it accepts is to set all components of a multiple argument to the same value.
     // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable value
     // which is why a "frames" argument is introduced
-    ConstantImageSourceType::SizeValueType * inputSize = const_cast<ConstantImageSourceType::SizeValueType *>(constantImageSource->GetSize());
+    ConstantImageSourceType::SizeType inputSize = constantImageSource->GetSize();
     inputSize[3] = args_info.frames_arg;
-    constantImageSource->Modified();
+    constantImageSource->SetSize(inputSize);
 
     inputFilter = constantImageSource;
     }
@@ -115,6 +121,40 @@ int main(int argc, char * argv[])
   rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetGammaSpace(args_info.gamma_space_arg);
   rooster->SetGammaTime(args_info.gamma_time_arg);
+  if (args_info.order_given)
+    {
+    rooster->SetWaveletsSpatialDenoising(true);
+    rooster->SetOrder(args_info.order_arg);
+    }
+  if (args_info.levels_given)
+    {
+    rooster->SetWaveletsSpatialDenoising(true);
+    rooster->SetNumberOfLevels(args_info.levels_arg);
+    }
+  rooster->SetPhaseShift(args_info.shift_arg);
+  rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
+
+  if (args_info.dvf_given)
+    {
+    rooster->SetPerformWarping(true);
+
+    // Read DVF
+    DVFReaderType::Pointer dvfReader = DVFReaderType::New();
+    dvfReader->SetFileName( args_info.dvf_arg );
+    dvfReader->Update();
+    rooster->SetDisplacementField(dvfReader->GetOutput());
+
+    if (args_info.idvf_given)
+      {
+      rooster->SetComputeInverseWarpingByConjugateGradient(false);
+
+      // Read inverse DVF if provided
+      DVFReaderType::Pointer idvfReader = DVFReaderType::New();
+      idvfReader->SetFileName( args_info.idvf_arg );
+      idvfReader->Update();
+      rooster->SetInverseDisplacementField(idvfReader->GetOutput());
+      }
+    }
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)

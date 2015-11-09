@@ -183,6 +183,9 @@ int
 ThreeDCircularProjectionGeometryXMLFileWriter::
 WriteFile()
 {
+  if(this->m_InputObject->GetGantryAngles().size() == 0)
+    itkGenericExceptionMacro(<< "Geometry object is empty, cannot write it");
+
   std::ofstream output(this->m_Filename.c_str() );
   const int     maxDigits = 15;
 

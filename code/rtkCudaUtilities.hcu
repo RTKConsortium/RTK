@@ -19,10 +19,19 @@
 #ifndef __rtkCudaUtilities_hcu
 #define __rtkCudaUtilities_hcu
 
+#ifdef _WIN32
+# include <math.h>
+# define __CUDA_INTERNAL_COMPILATION__
+# include <math_functions.h>
+# undef __CUDA_INTERNAL_COMPILATION__
+#endif
 #include <cuda_runtime_api.h>
 #include <string>
 #include <vector>
+#define ITK_STATIC
 #include <itkMacro.h>
+#undef ITK_STATIC
+#include <cuda.h>
 
 #define CUDA_CHECK_ERROR \
     { \
@@ -39,5 +48,59 @@
 
 std::vector<int> GetListOfCudaDevices();
 std::pair<int,int> GetCudaComputeCapability(int device);
+size_t GetFreeGPUGlobalMemory(int device);
+
+inline __host__ __device__ float3 operator-(float3 a, float3 b)
+{
+    return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+inline __host__ __device__ float3 fminf(float3 a, float3 b)
+{
+  return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
+}
+inline __host__ __device__ float3 fmaxf(float3 a, float3 b)
+{
+  return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
+}
+inline __host__ __device__ float dot(float3 a, float3 b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+inline __host__ __device__ float3 operator/(float3 a, float3 b)
+{
+    return make_float3(a.x / b.x, a.y / b.y, a.z / b.z);
+}
+inline __host__ __device__ float3 operator/(float3 a, float b)
+{
+    return make_float3(a.x / b, a.y / b, a.z / b);
+}
+inline __host__ __device__ float3 operator*(float3 a, float3 b)
+{
+    return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
+}
+inline __host__ __device__ float3 operator*(float b, float3 a)
+{
+    return make_float3(b * a.x, b * a.y, b * a.z);
+}
+inline __host__ __device__ float3 operator+(float3 a, float3 b)
+{
+    return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
+}
+inline __host__ __device__ float3 operator+(float3 a, float b)
+{
+    return make_float3(a.x + b, a.y + b, a.z + b);
+}
+inline __host__ __device__ void operator+=(float3 &a, float3 b)
+{
+    a.x += b.x; a.y += b.y; a.z += b.z;
+}
+inline __host__ __device__ int iDivUp(int a, int b)
+{
+  return (a % b != 0) ? (a / b + 1) : (a / b);
+}
+inline __host__ __device__ float dot_vector(float3 u, float3 v)
+{
+    return u.x*v.x + u.y*v.y + u.z*v.z;
+}
 
 #endif

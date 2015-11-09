@@ -1,4 +1,4 @@
-WRAP_GGO(rtkrayquadricintersection_GGO_C rtkrayquadricintersection.ggo)
+WRAP_GGO(rtkrayquadricintersection_GGO_C rtkrayquadricintersection.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkrayquadricintersection rtkrayquadricintersection.cxx ${rtkrayquadricintersection_GGO_C})
 TARGET_LINK_LIBRARIES(rtkrayquadricintersection RTK)
 

@@ -55,7 +55,7 @@ int main(int, char** )
   typedef rtk::ConstantImageSource< VolumeSeriesType > FourDSourceType;
   FourDSourceType::PointType fourDOrigin;
   FourDSourceType::SizeType fourDSize;
-  FourDSourceType::SpacingType fourdDSpacing;
+  FourDSourceType::SpacingType fourDSpacing;
 
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
   origin[0] = -63.;
@@ -91,22 +91,22 @@ int main(int, char** )
   fourDSize[1] = 8;
   fourDSize[2] = 8;
   fourDSize[3] = 2;
-  fourdDSpacing[0] = 16.;
-  fourdDSpacing[1] = 8.;
-  fourdDSpacing[2] = 16.;
-  fourdDSpacing[3] = 1.;
+  fourDSpacing[0] = 16.;
+  fourDSpacing[1] = 8.;
+  fourDSpacing[2] = 16.;
+  fourDSpacing[3] = 1.;
 #else
   fourDSize[0] = 32;
   fourDSize[1] = 16;
   fourDSize[2] = 32;
   fourDSize[3] = 8;
-  fourdDSpacing[0] = 4.;
-  fourdDSpacing[1] = 4.;
-  fourdDSpacing[2] = 4.;
-  fourdDSpacing[3] = 1.;
+  fourDSpacing[0] = 4.;
+  fourDSpacing[1] = 4.;
+  fourDSpacing[2] = 4.;
+  fourDSpacing[3] = 1.;
 #endif
   fourdSource->SetOrigin( fourDOrigin );
-  fourdSource->SetSpacing( fourdDSpacing );
+  fourdSource->SetSpacing( fourDSpacing );
   fourdSource->SetSize( fourDSize );
   fourdSource->SetConstant( 0. );
 
@@ -284,6 +284,7 @@ int main(int, char** )
 
   conjugategradient->SetBackProjectionFilter( 2 ); // Cuda voxel based
   conjugategradient->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  conjugategradient->SetCudaConjugateGradient(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<VolumeSeriesType>(conjugategradient->GetOutput(), join->GetOutput(), 0.4, 12, 2.0);

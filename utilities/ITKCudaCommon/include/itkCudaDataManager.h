@@ -29,6 +29,8 @@
 
 #include <memory>
 
+//#define VERBOSE
+
 namespace itk
 {
 class GPUMemPointer: public LightObject
@@ -44,13 +46,24 @@ public:
 
   void Allocate(size_t bufferSize)
     {
+#ifdef VERBOSE
+    if(m_GPUBuffer)
+      std::cout << this << "::Freed GPU buffer of size " << m_BufferSize << " Bytes" << " : " << m_GPUBuffer << std::endl;
+#endif
     m_BufferSize = bufferSize;
     CUDA_CHECK(cudaFree(m_GPUBuffer));
     CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
+#ifdef VERBOSE
+    std::cout << this << "::Allocate Create GPU buffer of size " << bufferSize << " Bytes" << " : " << m_GPUBuffer << std::endl;
+#endif
     }
 
   void Free()
     {
+#ifdef VERBOSE
+    if(m_GPUBuffer)
+      std::cout << this << "::Freed GPU buffer of size " << m_BufferSize << " Bytes" << " : " << m_GPUBuffer << std::endl;
+#endif
     CUDA_CHECK(cudaFree(m_GPUBuffer));
     m_GPUBuffer = 0;
     m_BufferSize = 0;
@@ -170,9 +183,16 @@ public:
   /** Get Cuda buffer pointer */
   void* GetGPUBufferPointer();
 
-  /** Get Cuda buffer pointer */
+  /** Get CPU buffer pointer */
   void* GetCPUBufferPointer();
-  
+
+  /** Get Cuda buffer size without calling GetGPUBufferPointer, which
+   * which would trigger an unwanted CPU -> GPU memory transfer */
+  size_t GetGPUBufferSize()
+    {
+    return m_GPUBuffer->GetBufferSize();
+    }
+
   itkSetMacro(TimeStamp,TimeStamp);
   itkGetMacro(TimeStamp,TimeStamp);
 

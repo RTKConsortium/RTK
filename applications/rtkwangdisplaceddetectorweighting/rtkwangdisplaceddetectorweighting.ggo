@@ -1,5 +1,5 @@
-package "rtk"
-version "Weight projection serie with parker weights for displaced detector geometry."
+package "rtkwangdisplaceddetectorweighting"
+purpose "Weights projection stack with parker weights for displaced detector geometry."
 
 option "verbose"    v "Verbose execution"                                           flag                off
 option "config"     - "Config file"                                                 string              no
@@ -10,8 +10,3 @@ option "divisions"  d "Streaming option: number of stream divisions"            
 option "minOffset" - "Minimum offset of projections in the ramp direction"          double no
 option "maxOffset" - "Maximum offset of projections in the ramp direction"          double no
 
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"

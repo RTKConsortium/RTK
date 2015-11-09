@@ -36,7 +36,6 @@ namespace rtk
  *
  * \ingroup IntensityImageFilters  Multithreaded
  */
-using namespace itk;
 
 namespace Functor {  
   
@@ -46,7 +45,7 @@ class SoftThreshold
 public:
   SoftThreshold()
     {
-    m_Threshold = NumericTraits<TInput>::Zero;
+    m_Threshold = itk::NumericTraits<TInput>::Zero;
     }
   ~SoftThreshold() {};
 
@@ -80,7 +79,7 @@ private:
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT SoftThresholdImageFilter :
     public
-UnaryFunctorImageFilter<TInputImage,TOutputImage, 
+itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
                         Functor::SoftThreshold<
   typename TInputImage::PixelType, 
   typename TOutputImage::PixelType> >
@@ -88,12 +87,12 @@ UnaryFunctorImageFilter<TInputImage,TOutputImage,
 public:
   /** Standard class typedefs. */
   typedef SoftThresholdImageFilter                            Self;
-  typedef UnaryFunctorImageFilter
+  typedef itk::UnaryFunctorImageFilter
   <TInputImage,TOutputImage,
   Functor::SoftThreshold< typename TInputImage::PixelType,
                           typename TOutputImage::PixelType> > Superclass;
-  typedef SmartPointer<Self>                                  Pointer;
-  typedef SmartPointer<const Self>                            ConstPointer;
+  typedef itk::SmartPointer<Self>                             Pointer;
+  typedef itk::SmartPointer<const Self>                       ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -106,7 +105,7 @@ public:
   typedef typename TOutputImage::PixelType OutputPixelType;
 
   /** Type of DataObjects to use for scalar inputs */
-  typedef SimpleDataObjectDecorator<InputPixelType> InputPixelObjectType;
+  typedef itk::SimpleDataObjectDecorator<InputPixelType> InputPixelObjectType;
 
   /** Set the threshold */
   virtual void SetThreshold(const InputPixelType threshold);
@@ -114,13 +113,13 @@ public:
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(OutputEqualityComparableCheck,
-                  (Concept::EqualityComparable<OutputPixelType>));
+                  (itk::Concept::EqualityComparable<OutputPixelType>));
   itkConceptMacro(InputPixelTypeComparable,
-                  (Concept::Comparable<InputPixelType>));
+                  (itk::Concept::Comparable<InputPixelType>));
   itkConceptMacro(InputOStreamWritableCheck,
-                  (Concept::OStreamWritable<InputPixelType>));
+                  (itk::Concept::OStreamWritable<InputPixelType>));
   itkConceptMacro(OutputOStreamWritableCheck,
-                  (Concept::OStreamWritable<OutputPixelType>));
+                  (itk::Concept::OStreamWritable<OutputPixelType>));
   /** End concept checking */
 #endif
 
@@ -134,7 +133,7 @@ private:
 
 };
 
-} // end namespace itk
+} // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkSoftThresholdImageFilter.txx"

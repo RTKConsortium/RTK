@@ -71,6 +71,17 @@ public:
 
   typedef NeighborhoodAccessorFunctor< Self >   NeighborhoodAccessorFunctorType;
 
+  /**
+   * example usage:
+   * typedef typename ImageType::template Rebind< float >::Type OutputImageType;
+   *
+   */
+  template <typename UPixelType, unsigned int UImageDimension = VImageDimension>
+  struct Rebind
+    {
+      typedef itk::CudaImage<UPixelType, UImageDimension>  Type;
+    };
+
   //
   // Allocate CPU and Cuda memory space
   //
@@ -175,12 +186,7 @@ public:
 
   /** Graft the data and information from one CudaImage to another. */
   virtual void Graft(const DataObject *data);
-  /** Whenever the image has been modified, set the Cuda Buffer to dirty */
-  virtual void Modified() const;
   
-  itkSetMacro(TimeStamp,TimeStamp);
-  itkGetMacro(TimeStamp,TimeStamp);
-
 protected:
   CudaImage();
   virtual ~CudaImage();
@@ -191,8 +197,6 @@ private:
   CudaImage(const Self&);
   void operator=(const Self&);
   
-  TimeStamp                          m_TimeStamp;
-
   typename CudaImageDataManager< CudaImage >::Pointer m_DataManager;
 };
 

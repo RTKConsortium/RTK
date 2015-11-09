@@ -52,6 +52,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   // Set permanent parameters
   m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management options
   m_ZeroMultiplyProjectionFilter->ReleaseDataFlagOn();
@@ -67,8 +68,9 @@ void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
 {
+  if (m_BackProjectionFilter != _arg)
+    this->Modified();
   m_BackProjectionFilter = _arg;
-  this->Modified();
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -76,8 +78,9 @@ void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
+  if (m_ForwardProjectionFilter != _arg)
+    this->Modified();
   m_ForwardProjectionFilter = _arg;
-  this->Modified();
 }
 
 template< typename TOutputImage, typename TGradientOutputImage>
@@ -87,6 +90,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 {
   m_GatingWeights = weights;
   m_IsGated = true;
+  this->Modified();
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 

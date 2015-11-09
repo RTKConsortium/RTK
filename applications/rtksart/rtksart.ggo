@@ -1,5 +1,5 @@
-package "sart"
-version "Reconstruct a 3D volume from a sequence of projections with Simulatenous Algebraic Reconstruction Technique [Andersen, 1984]."
+package "rtksart"
+purpose "Reconstructs a 3D volume from a sequence of projections with Simulatenous Algebraic Reconstruction Technique [Andersen, 1984]."
 
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no
@@ -9,26 +9,16 @@ option "niterations" n "Number of iterations"                                  i
 option "time"        t "Records elapsed time during the process"               flag   off
 option "lambda"      l "Convergence factor"                                    double no   default="0.3"
 option "positivity"  - "Enforces positivity during the reconstruction"         flag   off
-
-section "Projections"
-option "path"      p "Path containing projections"                               string                       yes
-option "regexp"    r "Regular expression to select projection files in path"     string                       yes
-option "nsort"     - "Numeric sort for regular expression matches"               flag                         off
-option "submatch"  - "Index of the submatch that will be used to sort matches"   int                          no   default="0"
+option "input"     i "Input volume"              string          no
+option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (1 for SART, several for OSSART, all for SIRT)" int no default="1"
 
 section "Phase gating"
-option "phases"       - "File containing the phase of each projection"                                              string              no
+option "signal"       - "File containing the phase of each projection"                                              string              no
 option "windowcenter" c "Target reconstruction phase"                                                               float   no default="0"
 option "windowwidth"  w "Tolerance around the target phase to determine in-phase and out-of-phase projections"      float   no default="1"
 option "windowshape"  s "Shape of the gating window"     values="Rectangular","Triangular"                          enum    no default="Rectangular"
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph" enum no default="VoxelBasedBackProjection"
+option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
 
-section "Volume properties"
-option "input"     i "Input volume"              string          no
-option "origin"    - "Origin (default=centered)" double multiple no
-option "dimension" - "Dimension"                 int    multiple no  default="256"
-option "spacing"   - "Spacing"                   double multiple no  default="1"
-option "direction" - "Direction"                 double multiple no

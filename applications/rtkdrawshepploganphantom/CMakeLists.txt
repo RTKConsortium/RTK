@@ -1,4 +1,4 @@
-WRAP_GGO(rtkdrawshepploganphantom_GGO_C rtkdrawshepploganphantom.ggo)
+WRAP_GGO(rtkdrawshepploganphantom_GGO_C rtkdrawshepploganphantom.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 ADD_EXECUTABLE(rtkdrawshepploganphantom rtkdrawshepploganphantom.cxx ${rtkdrawshepploganphantom_GGO_C})
 TARGET_LINK_LIBRARIES(rtkdrawshepploganphantom RTK)
 

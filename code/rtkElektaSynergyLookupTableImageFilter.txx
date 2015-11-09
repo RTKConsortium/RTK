@@ -58,68 +58,6 @@ ElektaSynergyLookupTableImageFilter<TOutputImage>
   this->SetLookupTable(lut);
 }
 
-template <unsigned int VImageDimension>
-ElektaSynergyRawLookupTableImageFilter<VImageDimension>
-::ElektaSynergyRawLookupTableImageFilter()
-{
-  // Create the lut
-  typename LookupTableType::Pointer lut = LookupTableType::New();
-  typename LookupTableType::SizeType size;
-  size[0] = itk::NumericTraits<InputImagePixelType>::max() -
-            itk::NumericTraits<InputImagePixelType>::min() + 1;
-  lut->SetRegions( size );
-  lut->Allocate();
-
-  // Iterate and set lut
-  itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
-  it.GoToBegin();
-
-  //First value takes value of pixel #1
-  it.Set( OutputImagePixelType(size[0]-1) );
-  ++it;
-
-  //Conventional lookup table for the rest
-  while( !it.IsAtEnd() ) {
-    it.Set( OutputImagePixelType(size[0]-it.GetIndex()[0]) );
-    ++it;
-    }
-
-  //Last value takes value of pixel #1
-  --it;
-  it.Set( OutputImagePixelType(size[0]-1) );
-
-  // Set the lut to member and functor
-  this->SetLookupTable(lut);
-}
-
-template <class TOutputImage>
-ElektaSynergyLogLookupTableImageFilter<TOutputImage>
-::ElektaSynergyLogLookupTableImageFilter()
-{
-  // Create the lut
-  typename LookupTableType::Pointer lut = LookupTableType::New();
-  typename LookupTableType::SizeType size;
-  size[0] = itk::NumericTraits<InputImagePixelType>::max() -
-            itk::NumericTraits<InputImagePixelType>::min() + 1;
-  lut->SetRegions( size );
-  lut->Allocate();
-
-  // Iterate and set lut
-  OutputImagePixelType logRef = log(double(size[0]));
-  itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
-  it.GoToBegin();
-
-  //Conventional lookup table for the rest
-  while( !it.IsAtEnd() ) 
-    {
-    it.Set( logRef - log( double(it.GetIndex()[0]) ) );
-    ++it;
-    }
-
-  // Set the lut to member and functor
-  this->SetLookupTable(lut);
-}
-
 }
 
 #endif

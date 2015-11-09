@@ -29,14 +29,20 @@ int main(int, char** )
 {
   typedef float                             OutputPixelType;
 
+  typedef itk::CovariantVector< OutputPixelType, 3 > MVFVectorType;
+
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
   typedef itk::CudaImage< OutputPixelType, 3 >  VolumeType;
+  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension> MVFSequenceImageType;
+  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension - 1> MVFImageType;
 #else
   typedef itk::Image< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 >  ProjectionStackType;
   typedef itk::Image< OutputPixelType, 3 >  VolumeType;
+  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension> MVFSequenceImageType;
+  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension - 1> MVFImageType;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -54,7 +60,7 @@ int main(int, char** )
   typedef rtk::ConstantImageSource< VolumeSeriesType > FourDSourceType;
   FourDSourceType::PointType fourDOrigin;
   FourDSourceType::SizeType fourDSize;
-  FourDSourceType::SpacingType fourdDSpacing;
+  FourDSourceType::SpacingType fourDSpacing;
 
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
   origin[0] = -63.;
@@ -90,22 +96,22 @@ int main(int, char** )
   fourDSize[1] = 8;
   fourDSize[2] = 8;
   fourDSize[3] = 2;
-  fourdDSpacing[0] = 16.;
-  fourdDSpacing[1] = 8.;
-  fourdDSpacing[2] = 16.;
-  fourdDSpacing[3] = 1.;
+  fourDSpacing[0] = 16.;
+  fourDSpacing[1] = 8.;
+  fourDSpacing[2] = 16.;
+  fourDSpacing[3] = 1.;
 #else
   fourDSize[0] = 32;
   fourDSize[1] = 16;
   fourDSize[2] = 32;
   fourDSize[3] = 8;
-  fourdDSpacing[0] = 4.;
-  fourdDSpacing[1] = 4.;
-  fourdDSpacing[2] = 4.;
-  fourdDSpacing[3] = 1.;
+  fourDSpacing[0] = 4.;
+  fourDSpacing[1] = 4.;
+  fourDSpacing[2] = 4.;
+  fourDSpacing[3] = 1.;
 #endif
   fourdSource->SetOrigin( fourDOrigin );
-  fourdSource->SetSpacing( fourdDSpacing );
+  fourdSource->SetSpacing( fourDSpacing );
   fourdSource->SetSize( fourDSize );
   fourdSource->SetConstant( 0. );
 
@@ -209,6 +215,77 @@ int main(int, char** )
     signalFile << (noProj % 8) / 8. << std::endl;
     }
 
+  // Create a vector field and its (very rough) inverse
+  typedef itk::ImageRegionIteratorWithIndex< MVFSequenceImageType > IteratorType;
+
+  MVFSequenceImageType::Pointer deformationField = MVFSequenceImageType::New();
+  MVFSequenceImageType::Pointer inverseDeformationField = MVFSequenceImageType::New();
+
+  MVFSequenceImageType::IndexType startMotion;
+  startMotion[0] = 0; // first index on X
+  startMotion[1] = 0; // first index on Y
+  startMotion[2] = 0; // first index on Z
+  startMotion[3] = 0; // first index on t
+  MVFSequenceImageType::SizeType sizeMotion;
+  sizeMotion[0] = fourDSize[0];
+  sizeMotion[1] = fourDSize[1];
+  sizeMotion[2] = fourDSize[2];
+  sizeMotion[3] = 2;
+  MVFSequenceImageType::PointType originMotion;
+  originMotion[0] = -63.;
+  originMotion[1] = -31.;
+  originMotion[2] = -63.;
+  originMotion[3] = 0.;
+  MVFSequenceImageType::RegionType regionMotion;
+  regionMotion.SetSize( sizeMotion );
+  regionMotion.SetIndex( startMotion );
+
+  MVFSequenceImageType::SpacingType spacingMotion;
+  spacingMotion[0] = fourDSpacing[0];
+  spacingMotion[1] = fourDSpacing[1];
+  spacingMotion[2] = fourDSpacing[2];
+  spacingMotion[3] = fourDSpacing[3];
+
+  deformationField->SetRegions( regionMotion );
+  deformationField->SetOrigin(originMotion);
+  deformationField->SetSpacing(spacingMotion);
+  deformationField->Allocate();
+
+  inverseDeformationField->SetRegions( regionMotion );
+  inverseDeformationField->SetOrigin(originMotion);
+  inverseDeformationField->SetSpacing(spacingMotion);
+  inverseDeformationField->Allocate();
+
+  // Vector Field initilization
+  MVFVectorType vec;
+  IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
+  IteratorType idvfIt( inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion() );
+
+  MVFSequenceImageType::OffsetType mvfCenter;
+  MVFSequenceImageType::IndexType toCenter;
+  mvfCenter.Fill(0);
+  mvfCenter[0] = sizeMotion[0]/2;
+  mvfCenter[1] = sizeMotion[1]/2;
+  mvfCenter[2] = sizeMotion[2]/2;
+  while (!dvfIt.IsAtEnd())
+    {
+    vec.Fill(0.);
+    toCenter = dvfIt.GetIndex() - mvfCenter;
+
+    if (0.3 * toCenter[0] * toCenter[0] + toCenter[1] * toCenter[1] + toCenter[2] * toCenter[2] < 40)
+      {
+      if(dvfIt.GetIndex()[3]==0)
+        vec[0] = -8.;
+      else
+        vec[0] = 8.;
+      }
+    dvfIt.Set(vec);
+    idvfIt.Set(-vec);
+
+    ++dvfIt;
+    ++idvfIt;
+    }
+
   // Ground truth
   VolumeType::Pointer * Volumes = new VolumeType::Pointer[fourDSize[3]];
   typedef itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType> JoinFilterType;
@@ -288,23 +365,60 @@ int main(int, char** )
   rooster->SetCG_iterations( 2 );
   rooster->SetMainLoop_iterations( 2);
   rooster->SetTV_iterations( 3 );
-  rooster->SetGammaSpace(1);
   rooster->SetGammaTime(0.1);
 
-  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector and wavelets spatial denoising ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 0 ); // Voxel based
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
+  rooster->SetPerformWarping(false);
+  rooster->SetWaveletsSpatialDenoising(true);
+  rooster->SetGammaSpace(0.1);
+  rooster->SetNumberOfLevels(3);
+  rooster->SetOrder(3);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+
+  CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, TV spatial denoising and motion compensation. Inverse warping by conjugate gradient ******" << std::endl;
+
+  rooster->SetBackProjectionFilter( 0 ); // Voxel based
+  rooster->SetForwardProjectionFilter( 0 ); // Joseph
+  rooster->SetMainLoop_iterations( 2);
+  rooster->SetWaveletsSpatialDenoising(false);
+  rooster->SetPerformWarping(true);
+  rooster->SetComputeInverseWarpingByConjugateGradient(true);
+  rooster->SetGammaSpace(1);
+  rooster->SetDisplacementField(deformationField);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+
+  CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector, TV spatial denoising and motion compensation. Inverse warping by warping with approximate inverse DVF ******" << std::endl;
+
+  rooster->SetBackProjectionFilter( 0 ); // Voxel based
+  rooster->SetForwardProjectionFilter( 0 ); // Joseph
+  rooster->SetMainLoop_iterations( 2);
+  rooster->SetWaveletsSpatialDenoising(false);
+  rooster->SetPerformWarping(true);
+  rooster->SetComputeInverseWarpingByConjugateGradient(false);
+  rooster->SetGammaSpace(1);
+  rooster->SetDisplacementField(deformationField);
+  rooster->SetInverseDisplacementField(inverseDeformationField);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 2: CUDA Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector, TV spatial denoising ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 2 ); // Cuda voxel based
   rooster->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  rooster->SetPerformWarping( false );
+  rooster->SetCudaConjugateGradient(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);

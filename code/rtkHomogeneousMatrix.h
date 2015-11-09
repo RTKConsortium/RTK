@@ -45,7 +45,7 @@ GetIndexToPhysicalPointMatrix(const TImageType *image)
   matrix.Fill(0.0);
 
   itk::Index<Dimension>                                 index;
-  itk::Point<typename TImageType::PixelType, Dimension> point;
+  itk::Point<double, Dimension> point;
 
   for(unsigned int j=0; j<Dimension; j++)
     {

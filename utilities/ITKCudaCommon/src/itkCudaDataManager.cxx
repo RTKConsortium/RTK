@@ -18,7 +18,6 @@
 
 #include "itkCudaDataManager.h"
 #include <itksys/SystemTools.hxx>
-//#define VERBOSE
 
 namespace itk
 {
@@ -26,17 +25,33 @@ namespace itk
 CudaDataManager::CudaDataManager()
 {
   m_ContextManager = CudaContextManager::GetInstance();
-  CUDA_CHECK(cuCtxSetCurrent(*(m_ContextManager->GetCurrentContext())));
+
+  // Creating the context in the constructor allows avoiding a memory leak.
+  // However, the cuda data manager is created even if there is no use of CUDA
+  // software and sometimes one compiles RTK with CUDA but wants to use it
+  // without CUDA. So if the context pointer is NULL, which indicates that there
+  // is no CUDA device available, we just do not set the context (SR). This fixes
+  // the problem reported here:
+  // http://public.kitware.com/pipermail/rtk-users/2015-July/000570.html
+  CUcontext *ctx = m_ContextManager->GetCurrentContext();
+  if(ctx)
+    CUDA_CHECK(cuCtxSetCurrent(*ctx));
+
   m_CPUBuffer = NULL;
   m_GPUBuffer = GPUMemPointer::New();
   this->Initialize();
 
-  m_ReleaseDirtyGPUBuffer = false;
+  m_ReleaseDirtyGPUBuffer = true;
   std::string relString;
   if( itksys::SystemTools::GetEnv("ITK_RELEASE_DIRTY_GPU_BUFFERS",relString) &&
-      (itksys::SystemTools::LowerCase(relString) == "true" ||
+      (itksys::SystemTools::LowerCase(relString) == "false" ||
        atoi( relString.c_str() ) !=0) )
-    m_ReleaseDirtyGPUBuffer = true;
+    {
+#ifdef VERBOSE
+    std::cout << "Releasing dirty GPU buffer" << std::endl;
+#endif
+    m_ReleaseDirtyGPUBuffer = false;
+    }
 }
 
 CudaDataManager::~CudaDataManager()
@@ -60,9 +75,6 @@ void CudaDataManager::Allocate()
   if (m_BufferSize > 0 && m_GPUBuffer->GetBufferSize() != m_BufferSize)
     {
     m_GPUBuffer->Allocate(m_BufferSize);
-    #ifdef VERBOSE
-      std::cout << this << "::Allocate Create GPU buffer of size " << m_BufferSize << " Bytes" << " : " << m_GPUBuffer->GetPointer() << std::endl;
-    #endif
     m_IsGPUBufferDirty = true;
     }
 }
@@ -72,9 +84,6 @@ void CudaDataManager::Free()
   m_Mutex.Lock();
   if (m_GPUBuffer->GetBufferSize() > 0)
     {
-#ifdef VERBOSE
-    std::cout << this << "::Freed GPU buffer of size " << m_GPUBuffer->GetBufferSize() << " Bytes" << " : " << m_GPUBuffer->GetPointer() << std::endl;
-#endif
     m_GPUBuffer->Free();
     m_IsGPUBufferDirty = true;
     }
@@ -144,7 +153,7 @@ void CudaDataManager::UpdateGPUBuffer()
 #ifdef VERBOSE
       std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer->GetPointer() << " : " << m_BufferSize << std::endl;
 #endif
-      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context 
+      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
       CUDA_CHECK(cudaMemcpy(m_GPUBuffer->GetPointer(), m_CPUBuffer, m_BufferSize, cudaMemcpyHostToDevice));
       }
     m_IsGPUBufferDirty = false;
