@@ -20,7 +20,7 @@
 
 #include <itkProcessObject.h>
 #include "rtkGlobalTimerProbesCollector.h"
-#include <itkTimeProbesCollectorBase.h>
+#include "rtkTimeProbesCollectorBase.h"
 #include "rtkWatcherForTimer.h"
 #include <itkSimpleFastMutexLock.h>
 
@@ -86,7 +86,7 @@ protected:
   bool m_Verbose;
 
 //  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;
-  itk::TimeProbesCollectorBase       m_TimeProbesCollectorBase;
+  rtk::TimeProbesCollectorBase       m_TimeProbesCollectorBase;
   std::vector<rtk::WatcherForTimer*> m_Watchers;
 
 private:

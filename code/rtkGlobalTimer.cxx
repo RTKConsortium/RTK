@@ -114,7 +114,6 @@ GlobalTimer
 {
   m_Mutex.Lock();
   m_TimeProbesCollectorBase.Start(id);
-//  return m_GlobalTimerProbesCollector.Start(id);
   m_Mutex.Unlock();
 }
 
@@ -124,7 +123,6 @@ GlobalTimer
 {
   m_Mutex.Lock();
   m_TimeProbesCollectorBase.Stop(id);
-//  m_GlobalTimerProbesCollector.Stop(pos);
   m_Mutex.Unlock();
 }
 
@@ -132,20 +130,18 @@ void
 GlobalTimer
 ::Report(std::ostream & os) const
 {
-    m_Mutex.Lock();
-//  if (m_Verbose) m_GlobalTimerProbesCollector.Report(os);
-  /*else*/ m_TimeProbesCollectorBase.Report(os);
-    m_Mutex.Unlock();
+  m_Mutex.Lock();
+  m_TimeProbesCollectorBase.Report(os);
+  m_Mutex.Unlock();
 }
 
 void
 GlobalTimer
 ::Clear(void)
 {
-    m_Mutex.Lock();
+  m_Mutex.Lock();
   m_TimeProbesCollectorBase.Clear();
   m_Watchers.clear();
-//  m_GlobalTimerProbesCollector.Clear();
-    m_Mutex.Unlock();
+  m_Mutex.Unlock();
 }
-} // end namespace itk
+} // end namespace rtk
