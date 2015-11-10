@@ -117,7 +117,6 @@ public:
   typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >             MultiplyFilterType;
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                              SubtractFilterType;
   typedef rtk::ConstantImageSource<OutputImageType>                                                 ConstantImageSourceType;
-  typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >                     ForwardProjectionFilterType;
   typedef itk::ThresholdImageFilter<OutputImageType>                                                ThresholdFilterType;
 
 /** Standard New method. */
@@ -129,8 +128,6 @@ public:
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
-
-  void PrintTiming(std::ostream& os) const;
 
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
@@ -181,16 +178,16 @@ protected:
   virtual void VerifyInputInformation() {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename DisplacedDetectorFilterType::Pointer       m_DisplacedDetectorFilter;
-  typename ParkerFilterType::Pointer                  m_ParkerFilter;
-  typename FDKFilterType::Pointer                     m_FDKFilter;
-  typename ThresholdFilterType::Pointer               m_ThresholdFilter;
-  typename ForwardProjectionFilterType::Pointer       m_ForwardProjectionFilter;
-  typename SubtractFilterType::Pointer                m_SubtractFilter;
-  typename MultiplyFilterType::Pointer                m_MultiplyFilter;
-  typename ConstantImageSourceType::Pointer           m_ConstantProjectionStackSource;
+  typename Superclass::ForwardProjectionPointerType m_ForwardProjectionFilter;
+  typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+  typename ParkerFilterType::Pointer                m_ParkerFilter;
+  typename FDKFilterType::Pointer                   m_FDKFilter;
+  typename ThresholdFilterType::Pointer             m_ThresholdFilter;
+  typename SubtractFilterType::Pointer              m_SubtractFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyFilter;
+  typename ConstantImageSourceType::Pointer         m_ConstantProjectionStackSource;
 
-  bool m_EnforcePositivity;
+  bool   m_EnforcePositivity;
   double m_TruncationCorrection;
   double m_HannCutFrequency;
   double m_HannCutFrequencyY;

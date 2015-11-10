@@ -135,8 +135,6 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     {
     std::cout << "It took " << writerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    ifdk->PrintTiming(std::cout);
-    std::cout << std::endl;
     }
 
   return EXIT_SUCCESS;

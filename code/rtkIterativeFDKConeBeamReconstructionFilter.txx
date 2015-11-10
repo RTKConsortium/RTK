@@ -96,7 +96,6 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   // Source
   m_ConstantProjectionStackSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
   m_ConstantProjectionStackSource->SetConstant(0);
-  m_ConstantProjectionStackSource->UpdateOutputInformation();
 
   //Initial internal connections
   m_DisplacedDetectorFilter->SetInput( this->GetInput(1) );
@@ -198,41 +197,6 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
     this->GraftOutput( m_ThresholdFilter->GetOutput() );
   else
     this->GraftOutput( m_FDKFilter->GetOutput() );
-}
-
-template<class TInputImage, class TOutputImage, class TFFTPrecision>
-void
-IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
-::PrintTiming(std::ostream & os) const
-{
-//  os << "IterativeFDKConeBeamReconstructionFilter timing:" << std::endl;
-//  os << "  Extraction of projection sub-stacks: " << m_ExtractProbe.GetTotal()
-//     << ' ' << m_ExtractProbe.GetUnit() << std::endl;
-//  os << "  Multiplication by zero: " << m_ZeroMultiplyProbe.GetTotal()
-//     << ' ' << m_ZeroMultiplyProbe.GetUnit() << std::endl;
-//  os << "  Forward projection: " << m_ForwardProjectionProbe.GetTotal()
-//     << ' ' << m_ForwardProjectionProbe.GetUnit() << std::endl;
-//  os << "  Subtraction: " << m_SubtractProbe.GetTotal()
-//     << ' ' << m_SubtractProbe.GetUnit() << std::endl;
-//  os << "  Multiplication by lambda: " << m_MultiplyProbe.GetTotal()
-//     << ' ' << m_MultiplyProbe.GetUnit() << std::endl;
-//  os << "  Ray box intersection: " << m_RayBoxProbe.GetTotal()
-//     << ' ' << m_RayBoxProbe.GetUnit() << std::endl;
-//  os << "  Division: " << m_DivideProbe.GetTotal()
-//     << ' ' << m_DivideProbe.GetUnit() << std::endl;
-//  os << "  Multiplication by the gating weights: " << m_GatingProbe.GetTotal()
-//     << ' ' << m_GatingProbe.GetUnit() << std::endl;
-//  os << "  Displaced detector: " << m_DisplacedDetectorProbe.GetTotal()
-//     << ' ' << m_DisplacedDetectorProbe.GetUnit() << std::endl;
-//  os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
-//     << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
-//  os << "  Volume update: " << m_AddProbe.GetTotal()
-//     << ' ' << m_AddProbe.GetUnit() << std::endl;
-//  if (m_EnforcePositivity)
-//    {
-//    os << "  Positivity enforcement: " << m_ThresholdProbe.GetTotal()
-//    << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
-//    }
 }
 
 } // end namespace rtk
