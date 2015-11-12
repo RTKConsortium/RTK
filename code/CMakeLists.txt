@@ -25,6 +25,7 @@ ADD_LIBRARY(RTK
             rtkImagXXMLFileReader.cxx
             rtkThreeDCircularProjectionGeometry.cxx
             rtkReg23ProjectionGeometry.cxx
+            rtkCalibrationBasedProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
             rtkGeometricPhantomFileReader.cxx
             rtkDigisensGeometryXMLFileReader.cxx
