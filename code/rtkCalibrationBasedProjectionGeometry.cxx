@@ -89,45 +89,46 @@ void rtk::CalibrationBasedProjectionGeometry::_computeParameters(
 		const Matrix3x4Type &cMat,
 		std::vector<double>& model )
 {
-		// u_0
-		model[1] = (cMat(0, 0)*cMat(2, 0)) + (cMat(0, 1)*cMat(2, 1)) + (cMat(0, 2)*cMat(2, 2));
-		// v_0
-		model[2] = (cMat(1, 0)*cMat(2, 0)) + (cMat(1, 1)*cMat(2, 1)) + (cMat(1, 2)*cMat(2, 2));
-		// alpha_u
-		double aU = sqrt(cMat(0, 0)*cMat(0, 0) + cMat(0, 1)*cMat(0, 1) + cMat(0, 2)*cMat(0, 2) - model[1]*model[1]);
-		// alpha_v
-		double aV = sqrt(cMat(1, 0)*cMat(1, 0) + cMat(1, 1)*cMat(1, 1) + cMat(1, 2)*cMat(1, 2) - model[2]*model[2]);
+	model.resize(9);
+	// u_0
+	model[1] = (cMat(0, 0)*cMat(2, 0)) + (cMat(0, 1)*cMat(2, 1)) + (cMat(0, 2)*cMat(2, 2));
+	// v_0
+	model[2] = (cMat(1, 0)*cMat(2, 0)) + (cMat(1, 1)*cMat(2, 1)) + (cMat(1, 2)*cMat(2, 2));
+	// alpha_u
+	double aU = sqrt(cMat(0, 0)*cMat(0, 0) + cMat(0, 1)*cMat(0, 1) + cMat(0, 2)*cMat(0, 2) - model[1]*model[1]);
+	// alpha_v
+	double aV = sqrt(cMat(1, 0)*cMat(1, 0) + cMat(1, 1)*cMat(1, 1) + cMat(1, 2)*cMat(1, 2) - model[2]*model[2]);
 
-		// focal of the system, here we take the mean value
-		model[0] = 0.5 * (aU*pixelSizeX + aV*pixelSizeY);
+	// focal of the system, here we take the mean value
+	model[0] = 0.5 * (aU*pixelSizeX + aV*pixelSizeY);
 
-		// Tx
-		model[6] = (cMat(0, 3) - model[1]*cMat(2, 3))/aU;
-		// Ty
-		model[7] = (cMat(1, 3) - model[2]*cMat(2, 3))/aV;
-		// Tz
-		model[8] = cMat(2, 3);
+	// Tx
+	model[6] = (cMat(0, 3) - model[1]*cMat(2, 3))/aU;
+	// Ty
+	model[7] = (cMat(1, 3) - model[2]*cMat(2, 3))/aV;
+	// Tz
+	model[8] = cMat(2, 3);
 
-		//U0 and V0 in mm
-		model[1] *= pixelSizeX;
-		model[2] *= pixelSizeY;
+	//U0 and V0 in mm
+	model[1] *= pixelSizeX;
+	model[2] *= pixelSizeY;
 
-		Matrix3x3Type rotation;
-		for (unsigned int i = 0; i < 3; i++)
-		{
-			rotation(0,i) = (cMat(0, i)-model[1]*cMat(2, i))/aU;
-			rotation(1,i) = (cMat(1, i)-model[2]*cMat(2, i))/aV;
-			rotation(2,i) = cMat(2, i);
-		}
+	Matrix3x3Type rotation;
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		rotation(0,i) = (cMat(0, i)-model[1]*cMat(2, i))/aU;
+		rotation(1,i) = (cMat(1, i)-model[2]*cMat(2, i))/aV;
+		rotation(2,i) = cMat(2, i);
+	}
 
-		//Declare a 3D euler transform in order to properly extract angles
-		typedef itk::Euler3DTransform<double> EulerType;
-		EulerType::Pointer euler = EulerType::New();
-		euler->SetComputeZYX(false); // ZXY order
+	//Declare a 3D euler transform in order to properly extract angles
+	typedef itk::Euler3DTransform<double> EulerType;
+	EulerType::Pointer euler = EulerType::New();
+	euler->SetComputeZYX(false); // ZXY order
 
-		//Extract angle using parent method without orthogonality check, see Reg23ProjectionGeometry.cxx for more
-		euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(rotation);
-		model[3] = euler->GetAngleX(); // OA
-		model[4] = euler->GetAngleY(); // GA
-		model[5] = euler->GetAngleZ(); // IA
+	//Extract angle using parent method without orthogonality check, see Reg23ProjectionGeometry.cxx for more
+	euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(rotation);
+	model[3] = euler->GetAngleX(); // OA
+	model[4] = euler->GetAngleY(); // GA
+	model[5] = euler->GetAngleZ(); // IA
 }
