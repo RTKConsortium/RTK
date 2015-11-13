@@ -73,7 +73,6 @@ protected:
 
 
 private:
-  unsigned int                m_IndexInGlobalTimer;
   itk::ProcessObject*         m_Process;
 
   typedef SimpleMemberCommand< WatcherForTimer > CommandType;

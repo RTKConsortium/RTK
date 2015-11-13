@@ -158,6 +158,7 @@
  * \ingroup Macro
  */
 
+#ifdef RTK_TIME_EACH_FILTER
 #undef itkSimpleNewMacro
 #define itkSimpleNewMacro(x)                                                         \
   static Pointer New(void)                                                           \
@@ -210,6 +211,7 @@
     smartPtr = x::New().GetPointer();                                                \
     return smartPtr;                                                                 \
     }
+#endif //RTK_TIME_EACH_FILTER
 
 
 #endif

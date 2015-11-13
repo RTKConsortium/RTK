@@ -61,10 +61,10 @@ public:
 
   /** Start a probe with a particular name. If the time probe does not
    * exist, it will be created */
-  virtual unsigned int Start(const char *name);
+  virtual void Start(const char *name);
 
   /** Stop a time probe identified with a name */
-  virtual void Stop(unsigned int pos, const char *name);
+  virtual void Stop(const char *name);
 
   /** Report the summary of results from the probes */
   virtual void Report(std::ostream & os = std::cout) const;

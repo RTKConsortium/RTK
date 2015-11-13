@@ -49,14 +49,14 @@ void
 WatcherForTimer
 ::StartFilter()
 {
-  m_IndexInGlobalTimer = rtk::GlobalTimer::GetInstance()->Start(m_Process->GetNameOfClass());
+  rtk::GlobalTimer::GetInstance()->Start(m_Process->GetNameOfClass());
 }
 
 void
 WatcherForTimer
 ::EndFilter()
 {
-  rtk::GlobalTimer::GetInstance()->Stop(m_IndexInGlobalTimer, m_Process->GetNameOfClass());
+  rtk::GlobalTimer::GetInstance()->Stop(m_Process->GetNameOfClass());
 }
 
 void

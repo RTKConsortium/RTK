@@ -26,8 +26,8 @@ void
 rtk::TimeProbesCollectorBase
 ::Report(std::ostream & os) const
 {
-  typename MapType::const_iterator probe = this->m_Probes.begin();
-  typename MapType::const_iterator end   = this->m_Probes.end();
+  MapType::const_iterator probe = this->m_Probes.begin();
+  MapType::const_iterator end   = this->m_Probes.end();
 
   if ( probe == end )
     {

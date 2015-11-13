@@ -108,7 +108,7 @@ GlobalTimer
   m_Mutex.Unlock();
 }
 
-unsigned int
+void
 GlobalTimer
 ::Start(const char *id)
 {
@@ -119,7 +119,7 @@ GlobalTimer
 
 void
 GlobalTimer
-::Stop(unsigned int pos, const char *id)
+::Stop(const char *id)
 {
   m_Mutex.Lock();
   m_TimeProbesCollectorBase.Stop(id);
