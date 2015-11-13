@@ -527,19 +527,16 @@ CUDA_ForwardWarp(int input_vol_dim[3],
                                               make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
                                               make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
 
-  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
 
   normalize_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
                                                dev_accumulate_weights,
                                                make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
-  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
 
   fillHoles_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
                                                dev_accumulate_weights,
                                                make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
-  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
 
   // Unbind the image and projection matrix textures

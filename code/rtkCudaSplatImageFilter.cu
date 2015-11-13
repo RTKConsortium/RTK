@@ -56,5 +56,4 @@ CUDA_splat(const int4 &outputSize,
   cublasDestroy(handle);
 
   CUDA_CHECK_ERROR;
-  cudaDeviceSynchronize();
 }
