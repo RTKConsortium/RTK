@@ -33,8 +33,7 @@ ADD_LIBRARY(RTK
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
-            rtkConvertEllipsoidToQuadricParametersFunction.cxx
-            rtkDrawSpatialObject.cxx
+            rtkConvertEllipsoidToQuadricParametersFunction.cxx            
             )
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})

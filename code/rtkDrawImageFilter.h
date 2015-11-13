@@ -28,8 +28,8 @@
 
 namespace rtk
 {
-  
-  namespace Functor
+
+namespace Functor
 {
 /**
  * \class Discard
@@ -40,82 +40,81 @@ template< typename TInput1, typename TInput2 = TInput1, typename TOutput = TInpu
 class Discard
 {
 public:
-  
+
   Discard() {}
   ~Discard() {}
-  bool operator!=(const Discard &) const
+  bool operator!= ( const Discard & ) const
   {
     return false;
   }
 
-  bool operator==(const Discard & other) const
+  bool operator== ( const Discard & other ) const
   {
-    return !( *this != other );
+    return ! ( *this != other );
   }
 
-  inline TOutput operator()(const TInput1 & A, const TInput2 itkNotUsed(&B)) const
-  {   
+  inline TOutput operator() ( const TInput1 & A, const TInput2 itkNotUsed ( &B ) ) const
+  {
 
-    return static_cast< TOutput >( A );
+    return static_cast< TOutput > ( A );
   }
 };
 }
-  
-  
-  
-  
 
-  template <class TInputImage, 
-            class TOutputImage, 
-	    class TSpatialObject, 
-	    typename TFunction 
-            >
+
+/** \class DrawImageFilter
+ * \brief Base Class for drawing a 3D image by using a DrawSpatialObject. Uses a functor to fill the image.
+ *
+ * \author Mathieu Dupont
+ * 
+ */
+
+template <class TInputImage,
+         class TOutputImage,
+         class TSpatialObject,
+         typename TFunction
+         >
 class ITK_EXPORT DrawImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>  
-  {
-    
-    public:
+  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+{
+
+public:
   /** Standard class typedefs. */
-  typedef DrawImageFilter                               Self;
+  typedef DrawImageFilter                                   Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
-  
-  
-  typedef TSpatialObject                              SpatialObject;
-  
-  
+  typedef TSpatialObject                                    SpatialObject;
+
+
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawImageFilter, InPlaceImageFilter);
-  
-  itkSetMacro(Density, double);
-  itkGetMacro(Density, double);
-    
-    
-    protected:
-  DrawImageFilter();
-  virtual ~DrawImageFilter() {};  
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
-  TSpatialObject m_spatialObject;
-  TFunction m_Fillerfunctor;
-  
-  
-  
-  private:
-  DrawImageFilter(const Self&); //purposely not implemented
-  
-  
-  double         m_Density;    
-    
-  };
-  
-  
+  itkTypeMacro ( DrawImageFilter, InPlaceImageFilter );
 
+  itkSetMacro ( Density, double );  
+  itkGetMacro ( Density, double ); 
   
+  
+protected:
+  DrawImageFilter();
+  virtual ~DrawImageFilter() {};
+  virtual void ThreadedGenerateData ( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  
+  TFunction m_Fillerfunctor;
+  TSpatialObject m_SpatialObject;
+
+
+
+private:
+  DrawImageFilter ( const Self& ); //purposely not implemented
+  double         m_Density;
+  
+};
+
+
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION

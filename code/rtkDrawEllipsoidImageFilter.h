@@ -19,10 +19,8 @@
 #ifndef __rtkDrawEllipsoidImageFilter_h
 #define __rtkDrawEllipsoidImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-
+#include "rtkDrawQuadricImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkConfiguration.h"
 #include <vector>
 
@@ -38,63 +36,47 @@ namespace rtk
  *
  * \ingroup InPlaceImageFilter
  */
-template <class TInputImage, class TOutputImage>
-class ITK_EXPORT DrawEllipsoidImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+template <class TInputImage,
+         class TOutputImage,
+         typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
+         typename TInputImage::PixelType,
+         typename TOutputImage::PixelType>
+         >
+class DrawEllipsoidImageFilter :
+  public DrawQuadricImageFilter < TInputImage,
+                                  TOutputImage,
+                                  DrawQuadricSpatialObject,
+                                  TFunction >
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawEllipsoidImageFilter                          Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
-  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
+  typedef DrawEllipsoidImageFilter                           Self;
+  typedef DrawQuadricImageFilter < TInputImage,
+                                   TOutputImage,
+                                   DrawQuadricSpatialObject,
+				   TFunction >               Superclass;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef typename TOutputImage::RegionType                  OutputImageRegionType;
 
-  typedef itk::Vector<double,3>                             VectorType;
+  typedef itk::Vector<double,3>                              VectorType;
 
-  typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
-  struct FigureType
-  {
-    FigureType():angle(0.),density(0.){};
-    VectorType semiprincipalaxis;
-    VectorType center;
-    double     angle;
-    double     density;
-  };
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawEllipsoidImageFilter, InPlaceImageFilter);
-
-  /** Multiplicative Scaling factor for the phantom parameters described in
-   * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(Density, double);
-  itkGetMacro(Density, double);
-
-  itkSetMacro(Angle, double);
-  itkGetMacro(Angle, double);
-
-  itkSetMacro(Axis, VectorType);
-  itkGetMacro(Axis, VectorType);
-
-  itkSetMacro(Center, VectorType);
-  itkGetMacro(Center, VectorType);
+  itkTypeMacro ( DrawEllipsoidImageFilter, DrawQuadricImageFilter );
 
 protected:
   DrawEllipsoidImageFilter();
   virtual ~DrawEllipsoidImageFilter() {};
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
-
 private:
-  DrawEllipsoidImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);           //purposely not implemented
+  DrawEllipsoidImageFilter ( const Self& ); //purposely not implemented
+  void operator= ( const Self& );         //purposely not implemented
 
-  VectorType      m_Axis;
-  VectorType      m_Center;
-  double          m_Density;
-  double          m_Angle;
+
+
 };
 
 } // end namespace rtk

@@ -20,15 +20,44 @@
 #define __rtkDrawCubeImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
-
+#include "rtkDrawSpatialObject.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkConfiguration.h"
 #include <vector>
+#include <itkVector.h>
 
 namespace rtk
 {
+class DrawCubeSpatialObject : public DrawSpatialObject
+{
+public:
+  typedef double                            ScalarType;
+  typedef itk::Point< ScalarType, 3 >       PointType;
+  typedef itk::Vector<double,6>             AxisType;
+  typedef itk::Vector<double,3>             VectorType;
+  typedef std::string                       StringType;
 
+
+  DrawCubeSpatialObject()
+  {
+    m_Axis.Fill ( 50. );
+    m_Center.Fill ( 0. );
+    m_Angle = 0.;
+  }
+
+  /** Returns true if a point is inside the object. */
+  virtual bool IsInside ( const PointType & point ) const;
+  void UpdateParameters();
+
+
+  VectorType      m_Axis;
+  VectorType      m_Center;
+  ScalarType      m_Angle;
+private:
+  AxisType   m_semiprincipalaxis;
+
+};
 /** \class DrawCubeImageFilter
  * \brief Draws in a 3D image a user defined cube/box.
  *
@@ -38,63 +67,99 @@ namespace rtk
  *
  * \ingroup InPlaceImageFilter
  */
-template <class TInputImage, class TOutputImage>
-class ITK_EXPORT DrawCubeImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+template <class TInputImage,
+         class TOutputImage,
+         class TSpatialObject = DrawQuadricSpatialObject,
+         typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
+         typename TInputImage::PixelType,
+         typename TOutputImage::PixelType>
+         >
+class DrawCubeImageFilter :
+  public DrawImageFilter< TInputImage,
+  TOutputImage,
+  DrawCubeSpatialObject,
+  TFunction
+  >
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawCubeImageFilter                               Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
-  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
+  typedef DrawCubeImageFilter                                 Self;
+  typedef DrawImageFilter < TInputImage,TOutputImage,
+          DrawQuadricSpatialObject,
+          TFunction  >                                        Superclass;
+  typedef itk::SmartPointer<Self>                             Pointer;
+  typedef itk::SmartPointer<const Self>                       ConstPointer;
+  typedef typename TOutputImage::RegionType                   OutputImageRegionType;
 
-  typedef itk::Vector<double,6>                             AxisType;
-  typedef itk::Vector<double,3>                             VectorType;
+  typedef itk::Vector<double,3>                               VectorType;
+  typedef std::string                                         StringType;
 
-  typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
-  struct FigureType
+
+  void SetAxis ( VectorType Axis )
   {
-    FigureType():angle(0.),density(0.){};
-    AxisType   semiprincipalaxis;
-    double     angle;
-    double     density;
-  };
+    if ( Axis == this->m_SpatialObject.m_Axis )
+      {
+        return;
+      }
+    this->m_SpatialObject.m_Axis = Axis;
+    this->m_SpatialObject.UpdateParameters();
+    this->Modified();
+  }
+
+  VectorType GetAxis()
+  {
+    return this->m_SpatialObject.m_Axis;
+  }
+
+
+  void SetCenter ( VectorType Center )
+  {
+    if ( Center == this->m_SpatialObject.m_Center )
+      {
+        return;
+      }
+    this->m_SpatialObject.m_Center = Center;
+    this->m_SpatialObject.UpdateParameters();
+    this->Modified();
+  }
+
+  VectorType GetCenter()
+  {
+    return this->m_SpatialObject.m_Center;
+  }
+
+  void SetAngle ( double Angle )
+  {
+    if ( Angle == this->m_SpatialObject.m_Angle )
+      {
+        return;
+      }
+    this->m_SpatialObject.m_Angle = Angle;
+    this->m_SpatialObject.UpdateParameters();
+    this->Modified();
+  }
+
+  double GetAngle()
+  {
+    return this->m_SpatialObject.m_Angle;
+  }
+
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawCubeImageFilter, InPlaceImageFilter);
-
-  /** Multiplicative Scaling factor for the phantom parameters described in
-   * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(Density, double);
-  itkGetMacro(Density, double);
-
-  itkSetMacro(Angle, double);
-  itkGetMacro(Angle, double);
-
-  itkSetMacro(Axis, VectorType);
-  itkGetMacro(Axis, VectorType);
-
-  itkSetMacro(Center, VectorType);
-  itkGetMacro(Center, VectorType);
+  itkTypeMacro ( DrawCubeImageFilter, DrawImageFilter );
 
 protected:
   DrawCubeImageFilter();
   virtual ~DrawCubeImageFilter() {};
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
-
 private:
-  DrawCubeImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);           //purposely not implemented
+  DrawCubeImageFilter ( const Self& ); //purposely not implemented
+  void operator= ( const Self& );           //purposely not implemented
 
-  VectorType      m_Axis;
-  VectorType      m_Center;
-  double          m_Density;
-  double          m_Angle;
+
+
 };
 
 } // end namespace rtk
