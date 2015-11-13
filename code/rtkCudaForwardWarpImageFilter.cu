@@ -259,43 +259,43 @@ void kernel_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
   // Perform splat if voxel is indeed in output volume
   if (isInVolume_out_idx000)
     {
-      atomicAdd(&dev_vol_out[out_idx000], dev_vol_in[in_idx] * weight000);
-      atomicAdd(&dev_accumulate_weights[out_idx000], weight000);
+    atomicAdd(&dev_vol_out[out_idx000], dev_vol_in[in_idx] * weight000);
+    atomicAdd(&dev_accumulate_weights[out_idx000], weight000);
     }
   if (isInVolume_out_idx001)
     {
-      atomicAdd(&dev_vol_out[out_idx001], dev_vol_in[in_idx] * weight001);
-      atomicAdd(&dev_accumulate_weights[out_idx001], weight001);
+    atomicAdd(&dev_vol_out[out_idx001], dev_vol_in[in_idx] * weight001);
+    atomicAdd(&dev_accumulate_weights[out_idx001], weight001);
     }
   if (isInVolume_out_idx010)
     {
-      atomicAdd(&dev_vol_out[out_idx010], dev_vol_in[in_idx] * weight010);
-      atomicAdd(&dev_accumulate_weights[out_idx010], weight010);
+    atomicAdd(&dev_vol_out[out_idx010], dev_vol_in[in_idx] * weight010);
+    atomicAdd(&dev_accumulate_weights[out_idx010], weight010);
     }
   if (isInVolume_out_idx011)
     {
-      atomicAdd(&dev_vol_out[out_idx011], dev_vol_in[in_idx] * weight011);
-      atomicAdd(&dev_accumulate_weights[out_idx011], weight011);
+    atomicAdd(&dev_vol_out[out_idx011], dev_vol_in[in_idx] * weight011);
+    atomicAdd(&dev_accumulate_weights[out_idx011], weight011);
     }
   if (isInVolume_out_idx100)
     {
-      atomicAdd(&dev_vol_out[out_idx100], dev_vol_in[in_idx] * weight100);
-      atomicAdd(&dev_accumulate_weights[out_idx100], weight100);
+    atomicAdd(&dev_vol_out[out_idx100], dev_vol_in[in_idx] * weight100);
+    atomicAdd(&dev_accumulate_weights[out_idx100], weight100);
     }
   if (isInVolume_out_idx101)
     {
-      atomicAdd(&dev_vol_out[out_idx101], dev_vol_in[in_idx] * weight101);
-      atomicAdd(&dev_accumulate_weights[out_idx101], weight101);
+    atomicAdd(&dev_vol_out[out_idx101], dev_vol_in[in_idx] * weight101);
+    atomicAdd(&dev_accumulate_weights[out_idx101], weight101);
     }
   if (isInVolume_out_idx110)
     {
-      atomicAdd(&dev_vol_out[out_idx110], dev_vol_in[in_idx] * weight110);
-      atomicAdd(&dev_accumulate_weights[out_idx110], weight110);
+    atomicAdd(&dev_vol_out[out_idx110], dev_vol_in[in_idx] * weight110);
+    atomicAdd(&dev_accumulate_weights[out_idx110], weight110);
     }
   if (isInVolume_out_idx111)
     {
-      atomicAdd(&dev_vol_out[out_idx111], dev_vol_in[in_idx] * weight111);
-      atomicAdd(&dev_accumulate_weights[out_idx111], weight111);
+    atomicAdd(&dev_vol_out[out_idx111], dev_vol_in[in_idx] * weight111);
+    atomicAdd(&dev_accumulate_weights[out_idx111], weight111);
     }
 }
 
