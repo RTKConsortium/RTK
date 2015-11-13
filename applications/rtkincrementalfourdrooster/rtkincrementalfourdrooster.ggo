@@ -26,3 +26,5 @@ option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Jos
 
 section "Motion-compensation described in [ToBeWritten]"
 option "dvf"       - "Input 4D DVF"                       string    no
+option "idvf"      - "Input 4D inverse DVF. Inverse transform computed by conjugate gradient if not provided"               string    no
+option "nn"        - "Nearest neighbor interpolation (default is trilinear)"    flag  off

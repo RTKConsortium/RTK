@@ -89,6 +89,9 @@ public:
     itkSetMacro(PhaseShift, float)
     itkGetMacro(PhaseShift, float)
 
+    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
+    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
+
 protected:
     UnwarpSequenceConjugateGradientOperator();
     ~UnwarpSequenceConjugateGradientOperator(){}
@@ -101,6 +104,7 @@ protected:
     typename WarpSequenceFilterType::Pointer              m_WarpSequenceForwardFilter;
 
     float m_PhaseShift;
+    bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
 
     /** When the inputs have the same type, ITK checks whether they occupy the
     * same physical space or not. Obviously they dont, so we have to remove this check

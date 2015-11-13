@@ -122,11 +122,25 @@ int main(int argc, char * argv[])
     {
     incrementalRooster->SetPerformWarping(true);
 
+    if(args_info.nn_flag)
+      incrementalRooster->SetUseNearestNeighborInterpolationInWarping(true);
+
     // Read DVF
     DVFReaderType::Pointer dvfReader = DVFReaderType::New();
     dvfReader->SetFileName( args_info.dvf_arg );
     dvfReader->Update();
     incrementalRooster->SetDisplacementField(dvfReader->GetOutput());
+
+    if (args_info.idvf_given)
+      {
+      incrementalRooster->SetComputeInverseWarpingByConjugateGradient(false);
+
+      // Read inverse DVF if provided
+      DVFReaderType::Pointer idvfReader = DVFReaderType::New();
+      idvfReader->SetFileName( args_info.idvf_arg );
+      idvfReader->Update();
+      incrementalRooster->SetInverseDisplacementField(idvfReader->GetOutput());
+      }
     }
 
   itk::TimeProbe readerProbe;

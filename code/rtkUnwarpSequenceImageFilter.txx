@@ -33,6 +33,7 @@ UnwarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   // Set the default values of member parameters
   m_NumberOfIterations=2;
   m_PhaseShift = 0;
+  m_UseNearestNeighborInterpolationInWarping = false;
 
   // Create the filters
   m_ZeroMultiplySequenceFilter = MultiplySequenceFilterType::New();
@@ -96,8 +97,10 @@ UnwarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   // Set runtime connections
   m_ZeroMultiplySequenceFilter->SetInput1(this->GetInput(0));
   m_CGOperator->SetDisplacementField(this->GetDisplacementField());
+  m_CGOperator->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
   m_WarpForwardFilter->SetInput(this->GetInput(0));
   m_WarpForwardFilter->SetDisplacementField(this->GetDisplacementField());
+  m_WarpForwardFilter->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
