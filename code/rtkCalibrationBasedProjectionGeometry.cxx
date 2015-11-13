@@ -89,7 +89,8 @@ void rtk::CalibrationBasedProjectionGeometry::_computeParameters(
 		const Matrix3x4Type &cMat,
 		std::vector<double>& model )
 {
-	model.resize(9);
+	//Initialize enough elements to 0
+	model.resize(9,0);
 	// u_0
 	model[1] = (cMat(0, 0)*cMat(2, 0)) + (cMat(0, 1)*cMat(2, 1)) + (cMat(0, 2)*cMat(2, 2));
 	// v_0
@@ -109,10 +110,6 @@ void rtk::CalibrationBasedProjectionGeometry::_computeParameters(
 	// Tz
 	model[8] = cMat(2, 3);
 
-	//U0 and V0 in mm
-	model[1] *= pixelSizeX;
-	model[2] *= pixelSizeY;
-
 	Matrix3x3Type rotation;
 	for (unsigned int i = 0; i < 3; i++)
 	{
@@ -120,6 +117,10 @@ void rtk::CalibrationBasedProjectionGeometry::_computeParameters(
 		rotation(1,i) = (cMat(1, i)-model[2]*cMat(2, i))/aV;
 		rotation(2,i) = cMat(2, i);
 	}
+
+	//U0 and V0 are expressed in mm
+	model[1] *= pixelSizeX;
+	model[2] *= pixelSizeY;
 
 	//Declare a 3D euler transform in order to properly extract angles
 	typedef itk::Euler3DTransform<double> EulerType;
