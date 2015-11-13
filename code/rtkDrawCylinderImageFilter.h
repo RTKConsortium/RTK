@@ -21,6 +21,8 @@
 
 
 #include "rtkDrawImageFilter.h"
+#include "itkAddImageFilter.h"
+
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkDrawQuadricImageFilter.h"
 #include "rtkConfiguration.h"

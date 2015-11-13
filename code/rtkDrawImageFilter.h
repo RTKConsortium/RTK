@@ -21,10 +21,9 @@
 
 
 #include <itkInPlaceImageFilter.h>
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkDrawSpatialObject.h"
 
-#include "itkAddImageFilter.h"
+
 
 namespace rtk
 {
