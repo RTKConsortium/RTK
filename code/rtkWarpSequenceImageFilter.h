@@ -68,7 +68,8 @@ namespace rtk
    * Extract -> Warp;
    * CyclicDeformation -> Warp;
    * Warp -> Cast;
-   * Cast -> BeforePaste [arrowhead=none];
+   * Cast -> Paste;
+   * ConstantSource -> BeforePaste [arrowhead=none];
    * BeforePaste -> Paste;
    * Paste -> AfterPaste [arrowhead=none];
    * AfterPaste -> BeforePaste [style=dashed];
