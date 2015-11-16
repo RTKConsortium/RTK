@@ -23,7 +23,6 @@
 #include <itkMacro.h>
 #include <itkImageBase.h>
 #include "rtkGgoArgsInfoManager.h"
-#include "rtkGlobalTimer.h"
 
 //--------------------------------------------------------------------
 /** \brief Debugging macro, displays name and content of a variable
@@ -77,8 +76,7 @@
     exit(1);                                                                                               \
     }                                                                                                      \
   rtk::args_info_manager< args_info_##ggo_filename >                                                       \
-     manager_object( args_info, cmdline_parser_##ggo_filename##_free );                                    \
-  rtk::GlobalTimer::GetInstance()->SetVerbose(args_info.verbose_flag);
+     manager_object( args_info, cmdline_parser_##ggo_filename##_free );
 //--------------------------------------------------------------------
 
 //--------------------------------------------------------------------

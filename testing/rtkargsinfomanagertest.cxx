@@ -6,7 +6,8 @@ class args_info_test
 {
 public:
   int testVar;
-  args_info_test() : testVar(true) 
+  int verbose_flag;
+  args_info_test() : testVar(true), verbose_flag(0)
   {}
 };
 

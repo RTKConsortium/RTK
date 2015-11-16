@@ -205,6 +205,11 @@ SET (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
 CONFIGURE_FILE (cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 #=========================================================
 
+option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
+IF(ITK_VERSION LESS "4.6")
+    SET(RTK_TIME_EACH_FILTER OFF) 
+ENDIF()
+
 option(BUILD_APPLICATIONS "Build RTK applications" ON)
 IF(BUILD_APPLICATIONS)
   ADD_SUBDIRECTORY(applications)
