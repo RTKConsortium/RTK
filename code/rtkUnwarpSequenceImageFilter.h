@@ -25,6 +25,10 @@
 #include "rtkUnwarpSequenceConjugateGradientOperator.h"
 #include "rtkWarpSequenceImageFilter.h"
 
+#ifdef RTK_USE_CUDA
+#include "rtkCudaConjugateGradientImageFilter_4f.h"
+#endif
+
 namespace rtk
 {
   /** \class UnwarpSequenceImageFilter
@@ -120,6 +124,9 @@ public:
     itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
     itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
 
+    itkSetMacro(CudaConjugateGradient, bool)
+    itkGetMacro(CudaConjugateGradient, bool)
+
 protected:
     UnwarpSequenceImageFilter();
     ~UnwarpSequenceImageFilter(){}
@@ -147,6 +154,7 @@ protected:
     void GenerateOutputInformation();
 
     bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
+    bool m_CudaConjugateGradient;
 
 private:
     UnwarpSequenceImageFilter(const Self &); //purposely not implemented

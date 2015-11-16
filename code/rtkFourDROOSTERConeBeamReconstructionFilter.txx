@@ -286,6 +286,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_Unwarp->SetDisplacementField(this->GetDisplacementField());
       m_Unwarp->SetPhaseShift(m_PhaseShift);
       m_Unwarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+      m_Unwarp->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
       }
     else
       {
