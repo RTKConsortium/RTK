@@ -31,7 +31,8 @@ CUDA_warp(
   float *dev_input_xdvf,
   float *dev_input_ydvf,
   float *dev_input_zdvf,
-  float *dev_output_vol
+  float *dev_output_vol,
+  bool isLinear
   );
 
 #endif

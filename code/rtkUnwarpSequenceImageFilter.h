@@ -117,6 +117,9 @@ public:
     itkSetMacro(PhaseShift, float)
     itkGetMacro(PhaseShift, float)
 
+    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
+    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
+
 protected:
     UnwarpSequenceImageFilter();
     ~UnwarpSequenceImageFilter(){}
@@ -142,6 +145,8 @@ protected:
     */
     void GenerateInputRequestedRegion();
     void GenerateOutputInformation();
+
+    bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
 
 private:
     UnwarpSequenceImageFilter(const Self &); //purposely not implemented

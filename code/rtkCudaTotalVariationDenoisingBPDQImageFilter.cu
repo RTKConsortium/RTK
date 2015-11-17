@@ -228,41 +228,31 @@ CUDA_total_variation( int size[3],
 
   // First iteration
   multiply_by_beta_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_interm, beta);
-  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
-//  std::cout << "Done multiplying" << std::endl;
+
   gradient_kernel <<< dimGrid, dimBlock >>> ( dev_interm, dev_grad_x, dev_grad_y, dev_grad_z);
-  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
-//  std::cout << "Done computing gradient" << std::endl;
+
   magnitude_threshold_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, gamma);
-  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
-//  std::cout << "Done projecting gradient onto L2 ball of radius gamma" << std::endl;
 
   // Rest of the iterations
   for (int iter=0; iter<NumberOfIterations; iter++)
     {
     divergence_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, dev_interm);
-    cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-//    std::cout << "Done computing divergence" << std::endl;
+
     subtract_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_interm, dev_out);
-    cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-//    std::cout << "Done subtracting" << std::endl;
+
     multiply_by_beta_kernel <<< dimGrid, dimBlock >>> ( dev_out, dev_interm, beta);
-    cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-//    std::cout << "Done multiplying" << std::endl;
+
     gradient_and_subtract_kernel <<< dimGrid, dimBlock >>> ( dev_interm, dev_grad_x, dev_grad_y, dev_grad_z);
-    cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-//    std::cout << "Done computing gradient and subtracting" << std::endl;
+
     magnitude_threshold_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, gamma);
-    cudaDeviceSynchronize();
     CUDA_CHECK_ERROR;
-//    std::cout << "Done projecting gradient onto L2 ball of radius gamma" << std::endl;
     }
 
   // Cleanup

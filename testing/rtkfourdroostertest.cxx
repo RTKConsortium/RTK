@@ -381,7 +381,7 @@ int main(int, char** )
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, TV spatial denoising and motion compensation. Inverse warping by conjugate gradient ******" << std::endl;
+  std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, TV spatial denoising and motion compensation (nearest neighbor interpolation). Inverse warping by conjugate gradient ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 0 ); // Voxel based
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
@@ -391,6 +391,7 @@ int main(int, char** )
   rooster->SetComputeInverseWarpingByConjugateGradient(true);
   rooster->SetGammaSpace(1);
   rooster->SetDisplacementField(deformationField);
+  rooster->SetUseNearestNeighborInterpolationInWarping(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
@@ -407,6 +408,7 @@ int main(int, char** )
   rooster->SetGammaSpace(1);
   rooster->SetDisplacementField(deformationField);
   rooster->SetInverseDisplacementField(inverseDeformationField);
+  rooster->SetUseNearestNeighborInterpolationInWarping(false);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);

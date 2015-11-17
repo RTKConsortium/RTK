@@ -131,7 +131,7 @@ void normalize_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 
 }
 
 __global__
-void kernel_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumulate_weights, int3 in_dim, int3 out_dim)
+void linearSplat_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumulate_weights, int3 in_dim, int3 out_dim)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -175,9 +175,6 @@ void kernel_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
   PPDisplaced.x = PPinInput.x + Displacement.x;
   PPDisplaced.y = PPinInput.y + Displacement.y;
   PPDisplaced.z = PPinInput.z + Displacement.z;
-//  PPDisplaced.x = PPinInput.x;
-//  PPDisplaced.y = PPinInput.y;
-//  PPDisplaced.z = PPinInput.z;
 
   float3 IndexInOutput;
   IndexInOutput.x =  tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 0) * PPDisplaced.x
@@ -259,45 +256,119 @@ void kernel_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
   // Perform splat if voxel is indeed in output volume
   if (isInVolume_out_idx000)
     {
-      atomicAdd(&dev_vol_out[out_idx000], dev_vol_in[in_idx] * weight000);
-      atomicAdd(&dev_accumulate_weights[out_idx000], weight000);
+    atomicAdd(&dev_vol_out[out_idx000], dev_vol_in[in_idx] * weight000);
+    atomicAdd(&dev_accumulate_weights[out_idx000], weight000);
     }
   if (isInVolume_out_idx001)
     {
-      atomicAdd(&dev_vol_out[out_idx001], dev_vol_in[in_idx] * weight001);
-      atomicAdd(&dev_accumulate_weights[out_idx001], weight001);
+    atomicAdd(&dev_vol_out[out_idx001], dev_vol_in[in_idx] * weight001);
+    atomicAdd(&dev_accumulate_weights[out_idx001], weight001);
     }
   if (isInVolume_out_idx010)
     {
-      atomicAdd(&dev_vol_out[out_idx010], dev_vol_in[in_idx] * weight010);
-      atomicAdd(&dev_accumulate_weights[out_idx010], weight010);
+    atomicAdd(&dev_vol_out[out_idx010], dev_vol_in[in_idx] * weight010);
+    atomicAdd(&dev_accumulate_weights[out_idx010], weight010);
     }
   if (isInVolume_out_idx011)
     {
-      atomicAdd(&dev_vol_out[out_idx011], dev_vol_in[in_idx] * weight011);
-      atomicAdd(&dev_accumulate_weights[out_idx011], weight011);
+    atomicAdd(&dev_vol_out[out_idx011], dev_vol_in[in_idx] * weight011);
+    atomicAdd(&dev_accumulate_weights[out_idx011], weight011);
     }
   if (isInVolume_out_idx100)
     {
-      atomicAdd(&dev_vol_out[out_idx100], dev_vol_in[in_idx] * weight100);
-      atomicAdd(&dev_accumulate_weights[out_idx100], weight100);
+    atomicAdd(&dev_vol_out[out_idx100], dev_vol_in[in_idx] * weight100);
+    atomicAdd(&dev_accumulate_weights[out_idx100], weight100);
     }
   if (isInVolume_out_idx101)
     {
-      atomicAdd(&dev_vol_out[out_idx101], dev_vol_in[in_idx] * weight101);
-      atomicAdd(&dev_accumulate_weights[out_idx101], weight101);
+    atomicAdd(&dev_vol_out[out_idx101], dev_vol_in[in_idx] * weight101);
+    atomicAdd(&dev_accumulate_weights[out_idx101], weight101);
     }
   if (isInVolume_out_idx110)
     {
-      atomicAdd(&dev_vol_out[out_idx110], dev_vol_in[in_idx] * weight110);
-      atomicAdd(&dev_accumulate_weights[out_idx110], weight110);
+    atomicAdd(&dev_vol_out[out_idx110], dev_vol_in[in_idx] * weight110);
+    atomicAdd(&dev_accumulate_weights[out_idx110], weight110);
     }
   if (isInVolume_out_idx111)
     {
-      atomicAdd(&dev_vol_out[out_idx111], dev_vol_in[in_idx] * weight111);
-      atomicAdd(&dev_accumulate_weights[out_idx111], weight111);
+    atomicAdd(&dev_vol_out[out_idx111], dev_vol_in[in_idx] * weight111);
+    atomicAdd(&dev_accumulate_weights[out_idx111], weight111);
     }
 }
+
+__global__
+void nearestNeighborSplat_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumulate_weights, int3 in_dim, int3 out_dim)
+{
+  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+
+  if (i >= in_dim.x || j >= in_dim.y || k >= in_dim.z)
+    {
+    return;
+    }
+
+  // Index row major into the volume
+  long int in_idx = i + (j + k*in_dim.y)*(in_dim.x);
+
+  // Matrix multiply to get the index in the DVF texture of the current point in the output volume
+  float3 IndexInDVF;
+  IndexInDVF.x = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 0)*i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 1)*j +
+         tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 2)*k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 3);
+  IndexInDVF.y = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 4)*i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 5)*j +
+         tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 6)*k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 7);
+  IndexInDVF.z = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 8)*i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 9)*j +
+         tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 10)*k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 11);
+
+  // Get each component of the displacement vector by
+  // interpolation in the dvf
+  float3 Displacement;
+  Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+
+  // Matrix multiply to get the physical coordinates of the current point in the input volume
+  float3 PPinInput;
+  PPinInput.x = tex1Dfetch(tex_IndexInputToPPInputMatrix, 0)*i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 1)*j +
+               tex1Dfetch(tex_IndexInputToPPInputMatrix, 2)*k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 3);
+  PPinInput.y = tex1Dfetch(tex_IndexInputToPPInputMatrix, 4)*i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 5)*j +
+               tex1Dfetch(tex_IndexInputToPPInputMatrix, 6)*k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 7);
+  PPinInput.z = tex1Dfetch(tex_IndexInputToPPInputMatrix, 8)*i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 9)*j +
+               tex1Dfetch(tex_IndexInputToPPInputMatrix, 10)*k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 11);
+
+  // Get the index corresponding to the current physical point in output displaced by the displacement vector
+  float3 PPDisplaced;
+  PPDisplaced.x = PPinInput.x + Displacement.x;
+  PPDisplaced.y = PPinInput.y + Displacement.y;
+  PPDisplaced.z = PPinInput.z + Displacement.z;
+
+  float3 IndexInOutput;
+  IndexInOutput.x =  floor(tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 0) * PPDisplaced.x
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 1) * PPDisplaced.y
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 2) * PPDisplaced.z
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 3) + 0.5);
+  IndexInOutput.y =  floor(tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 4) * PPDisplaced.x
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 5) * PPDisplaced.y
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 6) * PPDisplaced.z
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 7) + 0.5);
+  IndexInOutput.z =  floor(tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 8) * PPDisplaced.x
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 9) * PPDisplaced.y
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 10)* PPDisplaced.z
+                  + tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 11) + 0.5);
+
+  bool isInVolume = (IndexInOutput.x >= 0) && (IndexInOutput.x < out_dim.x)
+                 && (IndexInOutput.y >= 0) && (IndexInOutput.y < out_dim.y)
+                 && (IndexInOutput.z >= 0) && (IndexInOutput.z < out_dim.z);
+
+  // Perform splat if voxel is indeed in output volume
+  if (isInVolume)
+    {
+    long int out_idx = IndexInOutput.x + IndexInOutput.y * out_dim.x + IndexInOutput.z * out_dim.x * out_dim.y;
+    atomicAdd(&dev_vol_out[out_idx], dev_vol_in[in_idx]);
+    atomicAdd(&dev_accumulate_weights[out_idx], 1);
+    }
+}
+
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -317,7 +388,8 @@ CUDA_ForwardWarp(int input_vol_dim[3],
     float *dev_input_xdvf,
     float *dev_input_ydvf,
     float *dev_input_zdvf,
-    float *dev_output_vol)
+    float *dev_output_vol,
+    bool isLinear)
 {
 
   // Prepare channel description for arrays
@@ -442,24 +514,29 @@ CUDA_ForwardWarp(int input_vol_dim[3],
 
   // Note: the DVF is passed via texture memory
   //-------------------------------------
-  kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_input_vol,
+  if (isLinear)
+    linearSplat_3Dgrid <<< dimGrid, dimBlock >>> ( dev_input_vol,
                                             dev_output_vol,
                                             dev_accumulate_weights,
                                             make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
                                             make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
-  cudaDeviceSynchronize();
+  else
+    nearestNeighborSplat_3Dgrid <<< dimGrid, dimBlock >>> ( dev_input_vol,
+                                              dev_output_vol,
+                                              dev_accumulate_weights,
+                                              make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
+                                              make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+
   CUDA_CHECK_ERROR;
 
   normalize_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
                                                dev_accumulate_weights,
                                                make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
-  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
 
   fillHoles_3Dgrid <<< dimGrid, dimBlock >>> ( dev_output_vol,
                                                dev_accumulate_weights,
                                                make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
-  cudaDeviceSynchronize();
   CUDA_CHECK_ERROR;
 
   // Unbind the image and projection matrix textures

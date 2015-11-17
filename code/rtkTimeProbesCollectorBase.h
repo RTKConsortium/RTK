@@ -15,22 +15,24 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+#ifndef __rtkTimeProbesCollectorBase_h
+#define __rtkTimeProbesCollectorBase_h
 
-#ifndef __rtkCudaForwardWarpImageFilter_hcu
-#define __rtkCudaForwardWarpImageFilter_hcu
+#include "itkTimeProbesCollectorBase.h"
 
-void
-CUDA_ForwardWarp(int input_vol_dim[3],
-  int input_dvf_dim[3],
-  int output_vol_dim[3],
-  float IndexInputToPPInputMatrix[12],
-  float IndexInputToIndexDVFMatrix[12],
-  float PPOutputToIndexOutputMatrix[12],
-  float *dev_input_vol,
-  float *dev_input_xdvf,
-  float *dev_input_ydvf,
-  float *dev_input_zdvf,
-  float *dev_output_vol,
-  bool isLinear);
+namespace rtk
+{
+/** \class TimeProbesCollectorBase
+ *  \brief Aggregates a set of time probes.
+ *
+ *  Derives from itk::TimeProbesCollectorBase but improves the report output.
+ */
+class ITKCommon_EXPORT TimeProbesCollectorBase: public itk::TimeProbesCollectorBase
+{
+public:
+  /** Report the summary of results from the probes */
+  virtual void Report(std::ostream & os = std::cout) const;
+};
+}
 
-#endif
+#endif //rtkTimeProbesCollectorBase_h

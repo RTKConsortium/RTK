@@ -271,6 +271,9 @@ public:
   itkSetMacro(ComputeInverseWarpingByConjugateGradient, bool)
   itkGetMacro(ComputeInverseWarpingByConjugateGradient, bool)
 
+  itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
+  itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
+
   /** Get / Set whether conjugate gradient should be performed on GPU */
   itkGetMacro(CudaConjugateGradient, bool)
   itkSetMacro(CudaConjugateGradient, bool)
@@ -316,13 +319,13 @@ protected:
   typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
   typename WarpSequenceFilterType::Pointer                m_InverseWarp;
 
-
   // Booleans :
   // should warping be performed ?
   // should conjugate gradient be performed on GPU ?
   // should wavelets replace TV in spatial denoising ?
   bool  m_PerformWarping;
   bool  m_ComputeInverseWarpingByConjugateGradient;
+  bool  m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
   bool  m_CudaConjugateGradient;
   bool  m_WaveletsSpatialDenoising;
 

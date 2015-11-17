@@ -36,6 +36,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_CG_iterations=2;
   m_PerformWarping=false;
   m_ComputeInverseWarpingByConjugateGradient=true;
+  m_UseNearestNeighborInterpolationInWarping=false;
   m_WaveletsSpatialDenoising=false;
   m_PhaseShift = 0;
   m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
@@ -284,12 +285,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_Unwarp->SetInput(0, m_TVDenoisingTime->GetOutput());
       m_Unwarp->SetDisplacementField(this->GetDisplacementField());
       m_Unwarp->SetPhaseShift(m_PhaseShift);
+      m_Unwarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
       }
     else
       {
       m_InverseWarp->SetInput(0, m_TVDenoisingTime->GetOutput());
       m_InverseWarp->SetDisplacementField(this->GetInverseDisplacementField());
       m_InverseWarp->SetPhaseShift(m_PhaseShift);
+      m_InverseWarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
       }
     }
 }

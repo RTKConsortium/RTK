@@ -138,6 +138,9 @@ int main(int argc, char * argv[])
     {
     rooster->SetPerformWarping(true);
 
+    if(args_info.nn_flag)
+      rooster->SetUseNearestNeighborInterpolationInWarping(true);
+
     // Read DVF
     DVFReaderType::Pointer dvfReader = DVFReaderType::New();
     dvfReader->SetFileName( args_info.dvf_arg );
