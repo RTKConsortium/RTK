@@ -15,35 +15,24 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkGgoArgsInfoManager_h
-#define __rtkGgoArgsInfoManager_h
+#ifndef __rtkTimeProbesCollectorBase_h
+#define __rtkTimeProbesCollectorBase_h
 
-#include "rtkConfiguration.h"
-#ifdef RTK_TIME_EACH_FILTER
-# include "rtkGlobalTimer.h"
-#endif
+#include "itkTimeProbesCollectorBase.h"
 
 namespace rtk
 {
-template < class TArgsInfo, class TCleanupFunction = void (*)( TArgsInfo* ) >
-class args_info_manager
+/** \class TimeProbesCollectorBase
+ *  \brief Aggregates a set of time probes.
+ *
+ *  Derives from itk::TimeProbesCollectorBase but improves the report output.
+ */
+class ITKCommon_EXPORT TimeProbesCollectorBase: public itk::TimeProbesCollectorBase
 {
-  public:
-    args_info_manager( TArgsInfo & args_info, TCleanupFunction cf)
-      {
-      this->args_info_pointer = &args_info;
-      this->cleanup_function = cf;
-#ifdef RTK_TIME_EACH_FILTER
-      rtk::GlobalTimer::GetInstance()->SetVerbose(args_info.verbose_flag);
-#endif
-      }
-    ~args_info_manager()
-      {
-      this->cleanup_function( this->args_info_pointer );
-      }
-  private:
-    TArgsInfo * args_info_pointer;
-    TCleanupFunction cleanup_function;
+public:
+  /** Report the summary of results from the probes */
+  virtual void Report(std::ostream & os = std::cout) const;
 };
 }
-#endif
+
+#endif //rtkTimeProbesCollectorBase_h

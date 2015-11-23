@@ -15,35 +15,25 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkGgoArgsInfoManager_h
-#define __rtkGgoArgsInfoManager_h
 
-#include "rtkConfiguration.h"
-#ifdef RTK_TIME_EACH_FILTER
-# include "rtkGlobalTimer.h"
-#endif
+#include "rtkCudaIterativeFDKConeBeamReconstructionFilter.h"
 
-namespace rtk
+rtk::CudaIterativeFDKConeBeamReconstructionFilter
+::CudaIterativeFDKConeBeamReconstructionFilter()
 {
-template < class TArgsInfo, class TCleanupFunction = void (*)( TArgsInfo* ) >
-class args_info_manager
-{
-  public:
-    args_info_manager( TArgsInfo & args_info, TCleanupFunction cf)
-      {
-      this->args_info_pointer = &args_info;
-      this->cleanup_function = cf;
-#ifdef RTK_TIME_EACH_FILTER
-      rtk::GlobalTimer::GetInstance()->SetVerbose(args_info.verbose_flag);
-#endif
-      }
-    ~args_info_manager()
-      {
-      this->cleanup_function( this->args_info_pointer );
-      }
-  private:
-    TArgsInfo * args_info_pointer;
-    TCleanupFunction cleanup_function;
-};
+  // Create each filter which are specific for cuda
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_ParkerFilter = ParkerFilterType::New();
+  m_FDKFilter = FDKFilterType::New();
+  m_ConstantProjectionStackSource = ConstantImageSourceType::New();
+
+  // Filter parameters
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
-#endif
+
+void
+rtk::CudaIterativeFDKConeBeamReconstructionFilter
+::GPUGenerateData()
+{
+  CPUSuperclass::GenerateData();
+}

@@ -6,7 +6,7 @@ SET (RTK_LIBRARIES RTK lpsolve55)
 #=========================================================
 
 #=========================================================
-ADD_LIBRARY(RTK
+SET(RTK_LIBRARY_FILES
             rtkHisImageIO.cxx
             rtkHisImageIOFactory.cxx
             rtkElektaSynergyGeometryReader.cxx
@@ -34,6 +34,15 @@ ADD_LIBRARY(RTK
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
             rtkConvertEllipsoidToQuadricParametersFunction.cxx)
+IF(RTK_TIME_EACH_FILTER)
+    SET(RTK_LIBRARY_FILES
+            ${RTK_LIBRARY_FILES}
+            rtkGlobalTimer.cxx
+            rtkGlobalTimerProbesCollector.cxx
+            rtkWatcherForTimer.cxx
+            rtkTimeProbesCollectorBase.cxx)
+ENDIF()
+ADD_LIBRARY(RTK ${RTK_LIBRARY_FILES})
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 TARGET_LINK_LIBRARIES(RTK lpsolve55)
@@ -110,6 +119,7 @@ IF (RTK_USE_CUDA)
               rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
+	      rtkCudaIterativeFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
 	      rtkCudaSplatImageFilter.cxx
 	      rtkCudaInterpolateImageFilter.cxx

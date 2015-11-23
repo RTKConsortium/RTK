@@ -34,6 +34,7 @@ namespace rtk
 #ifndef OPENCL_FOUND
 #cmakedefine OPENCL_FOUND
 #endif
+#cmakedefine RTK_TIME_EACH_FILTER
 #cmakedefine RTK_USE_CUDA
 #cmakedefine RTK_USE_OPENCL
 #cmakedefine RTK_BUILD_SHARED_LIBS 1

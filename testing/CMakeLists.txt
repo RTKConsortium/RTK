@@ -266,18 +266,29 @@ ADD_EXECUTABLE(rtkselectoneprojpercycletest rtkselectoneprojpercycletest.cxx)
 TARGET_LINK_LIBRARIES(rtkselectoneprojpercycletest ${RTK_LIBRARIES})
 ADD_TEST(rtkselectoneprojpercycletest ${EXECUTABLE_OUTPUT_PATH}/rtkselectoneprojpercycletest)
 
-# We cannot compile this test using CPU if GPU is present
+# We cannot compile these tests using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
 if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkiterativefdktest rtkiterativefdktest.cxx)
+  TARGET_LINK_LIBRARIES(rtkiterativefdktest ${RTK_LIBRARIES})
+  ADD_TEST(rtkiterativefdktest ${EXECUTABLE_OUTPUT_PATH}/rtkiterativefdktest)
+
   ADD_EXECUTABLE(rtkconjugategradientreconstructiontest rtkconjugategradientreconstructiontest.cxx)
   TARGET_LINK_LIBRARIES(rtkconjugategradientreconstructiontest ${RTK_LIBRARIES})
   ADD_TEST(rtkconjugategradientreconstructiontest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradientreconstructiontest)
-endif()
-ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
 
-# We cannot compile this test using CPU if GPU is present
-# This is because of rtkIterativeConeBeamReconstructionFilter
-if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkfourdroostertest rtkfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkfourdroostertest ${RTK_LIBRARIES})
+  ADD_TEST(rtkfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdroostertest)
+
+  ADD_EXECUTABLE(rtkincrementalfourdroostertest rtkincrementalfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkincrementalfourdroostertest ${RTK_LIBRARIES})
+  ADD_TEST(rtkincrementalfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdroostertest)
+
+  ADD_EXECUTABLE(rtkadmmwaveletstest rtkadmmwaveletstest.cxx)
+  TARGET_LINK_LIBRARIES(rtkadmmwaveletstest RTK)
+  ADD_TEST(rtkadmmwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmwaveletstest)
+
   ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
   TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest ${RTK_LIBRARIES})
   RTK_ADD_TEST(NAME rtkadmmtotalvariationtest
@@ -285,6 +296,11 @@ if(NOT RTK_USE_CUDA)
                DATA{Data/Input/Phases/phases.txt}
                DATA{Data/Input/Phases/phases_3projs.txt})
 endif()
+ADD_CUDA_TEST(rtkiterativefdk rtkiterativefdktest.cxx)
+ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
+ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
+ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
+ADD_CUDA_TEST(rtkadmmwavelets rtkadmmwaveletstest.cxx)
 if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
  SET(testfullname rtkadmmtotalvariationcudatest)
  ADD_EXECUTABLE(${testfullname} rtkadmmtotalvariationtest.cxx)
@@ -295,33 +311,6 @@ if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
               DATA{Data/Input/Phases/phases.txt}
               DATA{Data/Input/Phases/phases_3projs.txt})
 endif()
-
-# We cannot compile this test using CPU if GPU is present
-# This is because of rtkIterativeConeBeamReconstructionFilter
-if(NOT RTK_USE_CUDA)
-  ADD_EXECUTABLE(rtkfourdroostertest rtkfourdroostertest.cxx)
-  TARGET_LINK_LIBRARIES(rtkfourdroostertest ${RTK_LIBRARIES})
-  ADD_TEST(rtkfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdroostertest)
-endif()
-ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
-
-# We cannot compile this test using CPU if GPU is present
-# This is because of rtkIterativeConeBeamReconstructionFilter
-if(NOT RTK_USE_CUDA)
-  ADD_EXECUTABLE(rtkincrementalfourdroostertest rtkincrementalfourdroostertest.cxx)
-  TARGET_LINK_LIBRARIES(rtkincrementalfourdroostertest ${RTK_LIBRARIES})
-  ADD_TEST(rtkincrementalfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdroostertest)
-endif()
-ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
-
-# We cannot compile this test using CPU if GPU is present
-# This is because of rtkIterativeConeBeamReconstructionFilter
-if(NOT RTK_USE_CUDA)
-  ADD_EXECUTABLE(rtkadmmwaveletstest rtkadmmwaveletstest.cxx)
-  TARGET_LINK_LIBRARIES(rtkadmmwaveletstest RTK)
-  ADD_TEST(rtkadmmwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmwaveletstest)
-endif()
-ADD_CUDA_TEST(rtkadmmwavelets rtkadmmwaveletstest.cxx)
 
 ADD_EXECUTABLE(rtkwaveletstest rtkwaveletstest.cxx)
 TARGET_LINK_LIBRARIES(rtkwaveletstest RTK)
