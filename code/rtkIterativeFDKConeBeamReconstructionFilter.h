@@ -23,12 +23,14 @@
 #include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
 #include <itkThresholdImageFilter.h>
+#include <itkDivideOrZeroOutImageFilter.h>
 
 #include "rtkConstantImageSource.h"
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
+#include "rtkRayBoxIntersectionImageFilter.h"
 
 namespace rtk
 {
@@ -62,12 +64,15 @@ namespace rtk
  * Multiply [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
  * ConstantProjectionStack [ label="rtk::ConstantImageSource (projections)" URL="\ref rtk::ConstantImageSource"];
  * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
+ * RayBox [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
  * Threshold [ label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
+ * Divide [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
  *
  * AfterInput1 [label="", fixedsize="false", width=0, height=0, shape=none];
  * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
  * AfterThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
- * AfterMultiply [label="", fixedsize="false", width=0, height=0, shape=none];
+ * AfterConstantSource [label="", fixedsize="false", width=0, height=0, shape=none];
+ * AfterDivide [label="", fixedsize="false", width=0, height=0, shape=none];
  *
  * Input1 -> AfterInput1 [arrowhead=none];
  * AfterInput1 -> Displaced;
@@ -75,17 +80,21 @@ namespace rtk
  * Parker -> FDK;
  * Input0 -> AfterInput0;
  * AfterInput0 -> FDK;
- * ConstantProjectionStack -> ForwardProjection;
+ * ConstantProjectionStack -> AfterConstantSource [arrowhead=none];
+ * AfterConstantSource -> ForwardProjection;
+ * AfterConstantSource -> RayBox;
+ * RayBox -> Divide;
  * FDK -> Threshold;
  * Threshold -> AfterThreshold [arrowhead=none];
  * AfterThreshold -> ForwardProjection;
  * AfterInput1 -> Subtract;
  * ForwardProjection -> Subtract;
  * Subtract -> Multiply;
+ * Multiply -> Divide;
  * AfterThreshold -> Output;
  * AfterThreshold -> AfterInput0 [style=dashed, constraint=false];
- * Multiply -> AfterMultiply;
- * AfterMultiply -> AfterInput1 [style=dashed, constraint=false];
+ * Divide -> AfterDivide;
+ * AfterDivide -> AfterInput1 [style=dashed, constraint=false];
  * }
  * \enddot
  *
@@ -118,6 +127,8 @@ public:
   typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                              SubtractFilterType;
   typedef rtk::ConstantImageSource<OutputImageType>                                                 ConstantImageSourceType;
   typedef itk::ThresholdImageFilter<OutputImageType>                                                ThresholdFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<OutputImageType>                                          DivideFilterType;
+  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                      RayBoxIntersectionFilterType;
 
 /** Standard New method. */
   itkNewMacro(Self);
@@ -186,6 +197,8 @@ protected:
   typename SubtractFilterType::Pointer              m_SubtractFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyFilter;
   typename ConstantImageSourceType::Pointer         m_ConstantProjectionStackSource;
+  typename DivideFilterType::Pointer                m_DivideFilter;
+  typename RayBoxIntersectionFilterType::Pointer    m_RayBoxFilter;
 
   bool   m_EnforcePositivity;
   double m_TruncationCorrection;

@@ -50,6 +50,8 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_SubtractFilter = SubtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   m_ConstantProjectionStackSource = ConstantImageSourceType::New();
+  m_RayBoxFilter = RayBoxIntersectionFilterType::New();
+  m_DivideFilter = DivideFilterType::New();
 
   // Filter parameters
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(true);
@@ -97,6 +99,17 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_ConstantProjectionStackSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
   m_ConstantProjectionStackSource->SetConstant(0);
 
+  // Set box for the m_RayBoxFiltersectionImageFilter
+  itk::Vector<double, 3> Corner1, Corner2;
+  Corner1[0] = this->GetInput(0)->GetOrigin()[0];
+  Corner1[1] = this->GetInput(0)->GetOrigin()[1];
+  Corner1[2] = this->GetInput(0)->GetOrigin()[2];
+  Corner2[0] = this->GetInput(0)->GetOrigin()[0] + this->GetInput(0)->GetLargestPossibleRegion().GetSize()[0] * this->GetInput(0)->GetSpacing()[0];
+  Corner2[1] = this->GetInput(0)->GetOrigin()[1] + this->GetInput(0)->GetLargestPossibleRegion().GetSize()[1] * this->GetInput(0)->GetSpacing()[1];
+  Corner2[2] = this->GetInput(0)->GetOrigin()[2] + this->GetInput(0)->GetLargestPossibleRegion().GetSize()[2] * this->GetInput(0)->GetSpacing()[2];
+  m_RayBoxFilter->SetBoxMin(Corner1);
+  m_RayBoxFilter->SetBoxMax(Corner2);
+
   //Initial internal connections
   m_DisplacedDetectorFilter->SetInput( this->GetInput(1) );
 
@@ -111,8 +124,13 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_SubtractFilter->SetInput1( this->GetInput(1) );
   m_SubtractFilter->SetInput2( m_ForwardProjectionFilter->GetOutput() );
 
+  m_RayBoxFilter->SetInput( m_ConstantProjectionStackSource->GetOutput() );
+
   m_MultiplyFilter->SetInput1( m_SubtractFilter->GetOutput() );
   m_MultiplyFilter->SetConstant2( m_Lambda );
+
+  m_DivideFilter->SetInput1( m_MultiplyFilter->GetOutput() );
+  m_DivideFilter->SetInput2( m_RayBoxFilter->GetOutput() );
 
   // Check and set geometry
   if(this->GetGeometry().GetPointer() == NULL)
@@ -123,6 +141,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_ParkerFilter->SetGeometry(m_Geometry);
   m_FDKFilter->SetGeometry(m_Geometry);
   m_ForwardProjectionFilter->SetGeometry(m_Geometry);
+  m_RayBoxFilter->SetGeometry(m_Geometry.GetPointer());
 
   // Slightly modify the pipeline if positivity enforcement is requested
   if(m_EnforcePositivity)
@@ -134,7 +153,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
     }
 
   // Update output information on the last filter of the pipeline
-  m_MultiplyFilter->UpdateOutputInformation();
+  m_DivideFilter->UpdateOutputInformation();
 
   // Copy the information from the filter that will actually return the output
   if(m_EnforcePositivity)
@@ -164,7 +183,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   // For each iteration over 1, go over each projection
   for(unsigned int iter = 1; iter < m_NumberOfIterations; iter++)
     {
-    m_MultiplyFilter->Update();
+    m_DivideFilter->Update();
 
     // Use previous iteration's result as input volume in next iteration
     if(m_EnforcePositivity)
@@ -182,7 +201,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 
     // Use correction projections as input projections in next iteration
     // No broken link to re-create
-    p_projs = m_MultiplyFilter->GetOutput();
+    p_projs = m_DivideFilter->GetOutput();
     p_projs->DisconnectPipeline();
     m_DisplacedDetectorFilter->SetInput( p_projs );
 
