@@ -42,7 +42,9 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_ConstantVolumeSource = ConstantSourceType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 #endif
-  m_MultiplyFilter = MultiplyFilterType::New();
+  m_MultiplyProjectionsFilter = MultiplyFilterType::New();
+  m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
+  m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
   m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -91,12 +93,24 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     {
     this->SetNumberOfRequiredInputs(3);
 
-    // Input 2 is the weights map, if any
+    // Input 2 is the weights map on projections, if any
     typename Superclass::InputImagePointer  inputPtr2 =
             const_cast< TOutputImage * >( this->GetInput(2) );
     if ( !inputPtr2 )
         return;
     inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
+
+    if (m_Preconditioned)
+      {
+      this->SetNumberOfRequiredInputs(4);
+
+      // Input 3 is the weights map on volumes, if any
+      typename Superclass::InputImagePointer  inputPtr3 =
+              const_cast< TOutputImage * >( this->GetInput(3) );
+      if ( !inputPtr3 )
+          return;
+      inputPtr3->SetRequestedRegion( inputPtr3->GetLargestPossibleRegion() );
+      }
     }
 }
 
@@ -117,9 +131,22 @@ ReconstructionConjugateGradientOperator<TOutputImage>
 
   if (m_IsWeighted)
     {
-    m_MultiplyFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
-    m_MultiplyFilter->SetInput2(this->GetInput(2));
-    m_BackProjectionFilter->SetInput(1, m_MultiplyFilter->GetOutput());
+    // Multiply the projections
+    m_MultiplyProjectionsFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
+    m_MultiplyProjectionsFilter->SetInput2(this->GetInput(2));
+    m_BackProjectionFilter->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
+
+    if (m_Preconditioned)
+      {
+      // Multiply the input volume
+      m_MultiplyInputVolumeFilter->SetInput1( this->GetInput(0) );
+      m_MultiplyInputVolumeFilter->SetInput2( this->GetInput(3) );
+      m_ForwardProjectionFilter->SetInput(1, m_MultiplyInputVolumeFilter->GetOutput());
+
+      // Multiply the volume
+      m_MultiplyOutputVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+      m_MultiplyOutputVolumeFilter->SetInput2(this->GetInput(3));
+      }
     }
   else
     {
@@ -135,7 +162,6 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // and back projection filters
   m_ForwardProjectionFilter->ReleaseDataFlagOn();
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
-  m_BackProjectionFilter->ReleaseDataFlagOn();
 
   // Have the last filter calculate its output information
   m_BackProjectionFilter->UpdateOutputInformation();
@@ -148,10 +174,17 @@ template< typename TOutputImage >
 void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
 {
   // Execute Pipeline
-  m_BackProjectionFilter->Update();
-
+  if (m_Preconditioned)
+    {
+    m_MultiplyOutputVolumeFilter->Update();
+    this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
+    }
+  else
+    {
+    m_BackProjectionFilter->Update();
+    this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+    }
   // Get the output
-  this->GraftOutput( m_BackProjectionFilter->GetOutput() );
 }
 
 }// end namespace

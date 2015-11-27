@@ -97,6 +97,7 @@ int main(int argc, char * argv[])
     {
     conjugategradient->SetInput(2, weightsReader->GetOutput());
     conjugategradient->SetIsWeighted(true);
+    conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
     }
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
