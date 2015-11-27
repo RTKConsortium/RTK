@@ -33,6 +33,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
   m_IsWeighted=false;
+  m_Preconditioned=false;
 
   // Create the filters
 #ifdef RTK_USE_CUDA
