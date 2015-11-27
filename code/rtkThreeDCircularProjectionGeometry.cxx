@@ -359,5 +359,5 @@ ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
 
   // the following relation refers to a note by R. Clackdoyle, title
  // "Samping a tilted detector"
-  return l * sid / (sidu - l*cosa);
+  return l * std::abs(sid) / (sidu - l*cosa);
 }
