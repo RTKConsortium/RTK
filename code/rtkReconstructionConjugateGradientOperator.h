@@ -64,6 +64,8 @@ namespace rtk
    * Input1 [shape=Mdiamond];
    * Input2 [label="Input 2 (Weights)"];
    * Input2 [shape=Mdiamond];
+   * Input3 [label="Input 3 (Preconditioning weights)"];
+   * Input3 [shape=Mdiamond];
    * Output [label="Output (Volume)"];
    * Output [shape=Mdiamond];
    *
@@ -74,16 +76,21 @@ namespace rtk
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * Multiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * MultiplyInput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * MultiplyOutput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    *
-   * Input0 -> ForwardProjection;
+   * Input0 -> MultiplyInput;
+   * Input3 -> MultiplyInput;
+   * MultiplyInput -> ForwardProjection;
    * ConstantProjectionsSource -> ForwardProjection;
    * ConstantVolumeSource -> BackProjection;
    * ForwardProjection -> Displaced;
    * Displaced -> Multiply;
    * Input2 -> Multiply;
    * Multiply -> BackProjection;
-   * BackProjection -> Output;
-   *
+   * BackProjection -> MultiplyOutput;
+   * Input3 -> MultiplyOutput;
+   * MultiplyOutput -> Output;
    * }
    * \enddot
    *
@@ -132,6 +139,10 @@ public:
   itkSetMacro(IsWeighted, bool)
   itkGetMacro(IsWeighted, bool)
 
+  /** If IsWeighted && Preconditioned, multiplies by preconditioning weights to speed up CG convergence */
+  itkSetMacro(Preconditioned, bool)
+  itkGetMacro(Preconditioned, bool)
+
 protected:
   ReconstructionConjugateGradientOperator();
   ~ReconstructionConjugateGradientOperator(){}
@@ -146,11 +157,14 @@ protected:
   typename ConstantSourceType::Pointer              m_ConstantProjectionsSource;
   typename ConstantSourceType::Pointer              m_ConstantVolumeSource;
   typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
-  typename MultiplyFilterType::Pointer              m_MultiplyFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyProjectionsFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyOutputVolumeFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyInputVolumeFilter;
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
   bool                                              m_IsWeighted; //Weighted least squares ?
+  bool                                              m_Preconditioned; //Multiply by preconditioning weights ?
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */

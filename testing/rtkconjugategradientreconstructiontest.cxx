@@ -165,8 +165,14 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 4: Joseph Backprojector, weighted least squares  ******" << std::endl;
 
-  // We use the projections themselves as weights map
-  conjugategradient->SetInput(2, rei->GetOutput());
+  // Use uniform projections as weights map (therefore not really weighting anything)
+  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
+  uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
+  uniformWeightsSource->SetConstant(2.0);
+
+  conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
+  conjugategradient->SetIsWeighted(true);
+  conjugategradient->SetPreconditioned(true);
 
   conjugategradient->SetBackProjectionFilter( 1 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
