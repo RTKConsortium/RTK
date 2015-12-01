@@ -28,7 +28,8 @@ template< typename TOutputImage>
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ReconstructionConjugateGradientOperator():
   m_Geometry(NULL),
-  m_IsWeighted(false)
+  m_IsWeighted(false),
+  m_Preconditioned(false)
 {
   this->SetNumberOfRequiredInputs(2);
 
