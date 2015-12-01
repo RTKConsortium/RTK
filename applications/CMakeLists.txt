@@ -4,10 +4,11 @@ FIND_PACKAGE(Gengetopt)
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 if(GIT_SHA1 MATCHES ".*NOTFOUND") 
-  FILE(WRITE ${RTK_BINARY_DIR}/rtkVersion.ggo "version \"${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}.${RTK_VERSION_PATCH}\"\n")
+  SET(RTK_VERSION_HASH "")
 else()
-  FILE(WRITE ${RTK_BINARY_DIR}/rtkVersion.ggo "version \"${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}.${RTK_VERSION_PATCH}, git hash ${GIT_SHA1}\"\n")
+  SET(RTK_VERSION_HASH ", git hash ${GIT_SHA1}")
 endif()
+CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/rtkVersion.ggo.in ${RTK_BINARY_DIR}/rtkVersion.ggo)
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
