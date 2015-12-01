@@ -99,11 +99,13 @@ int main(int, char** )
   const unsigned int Cycles = 4;
 
   OutputImageType::Pointer wholeImage = constantImageSource->GetOutput();
+  GeometryType::Pointer geometryFull = GeometryType::New();
   for (unsigned int i=1; i <= sizeOutput[2]; i++)
   {
     // Geometry object
     GeometryType::Pointer geometry = GeometryType::New();
     geometry->AddProjection(1200., 1500., i*360/sizeOutput[2]);
+    geometryFull->AddProjection(1200., 1500., i*360/sizeOutput[2]);
 
     // Ellipse 1
     REIType::Pointer e1 = REIType::New();
@@ -186,17 +188,37 @@ int main(int, char** )
     destinationIndex[2]++;
   }
 
-  std::cout << "\n\n****** Case 1: Amsterdam Shroud Image ******" << std::endl;
+  std::cout << "\n\n****** Case 0: Amsterdam Shroud Image with crop ******" << std::endl;
 
   // Amsterdam shroud
   typedef rtk::AmsterdamShroudImageFilter<OutputImageType> shroudFilterType;
   shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
   shroudFilter->SetInput( pasteFilter->GetOutput() );
+  shroudFilter->SetGeometry(geometryFull);
+  REIType::VectorType center(0.);
+  center[0] = 37.;
+  center[1] = 80.;
+  shroudFilter->SetCorner1(REIType::VectorType(-40) + center);
+  shroudFilter->SetCorner2(REIType::VectorType( 40) + center);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update());
 
   // Read reference object
   typedef itk::ImageFileReader< shroudFilterType::OutputImageType > ReaderAmsterdamType;
   ReaderAmsterdamType::Pointer reader2 = ReaderAmsterdamType::New();
+  reader2->SetFileName(std::string(RTK_DATA_ROOT) +
+                       std::string("/Baseline/AmsterdamShroud/Amsterdam_crop.mha"));
+  reader2->Update();
+
+  CheckImageQuality< shroudFilterType::OutputImageType >(shroudFilter->GetOutput(), reader2->GetOutput(), 1.20e-6, 185, 2.0);
+  std::cout << "Test PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 1: Amsterdam Shroud Image without crop ******" << std::endl;
+
+  // Amsterdam shroud
+  shroudFilter->SetGeometry(NULL);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update());
+
+  // Read reference object
   reader2->SetFileName(std::string(RTK_DATA_ROOT) +
                        std::string("/Baseline/AmsterdamShroud/Amsterdam.mha"));
   reader2->Update();

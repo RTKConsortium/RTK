@@ -133,6 +133,7 @@ ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkamsterdamshroudtest
+             DATA{Data/Baseline/AmsterdamShroud/Amsterdam_crop.mha}
              DATA{Data/Baseline/AmsterdamShroud/Amsterdam.mha})
 
 ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)

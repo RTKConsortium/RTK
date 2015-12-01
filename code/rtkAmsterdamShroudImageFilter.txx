@@ -20,6 +20,8 @@
 #define __rtkAmsterdamShroudImageFilter_txx
 
 #include <itkImageFileWriter.h>
+#include <itkImageRegionIterator.h>
+#include "rtkHomogeneousMatrix.h"
 
 namespace rtk
 {
@@ -27,7 +29,8 @@ namespace rtk
 template <class TInputImage>
 AmsterdamShroudImageFilter<TInputImage>
 ::AmsterdamShroudImageFilter():
-  m_UnsharpMaskSize(17)
+  m_UnsharpMaskSize(17),
+  m_Geometry(NULL)
 {
   m_DerivativeFilter = DerivativeType::New();
   m_NegativeFilter = NegativeType::New();
@@ -84,7 +87,7 @@ AmsterdamShroudImageFilter<TInputImage>
 
   m_DerivativeFilter->SetInput( this->GetInput() );
   m_PermuteFilter->UpdateOutputInformation();
-  outputPtr->SetLargestPossibleRegion( m_PermuteFilter->GetOutput()->GetLargestPossibleRegion() );
+  outputPtr->CopyInformation( m_PermuteFilter->GetOutput() );
 }
 
 template <class TInputImage>
@@ -108,6 +111,10 @@ void
 AmsterdamShroudImageFilter<TInputImage>
 ::GenerateData()
 {
+  // If there is a geometry set, use it to crop the projections
+  if( m_Geometry.GetPointer() )
+    CropOutsideProjectedBox();
+
   unsigned int kernelWidth;
   kernelWidth = m_ConvolutionFilter->GetKernelImage()->GetLargestPossibleRegion().GetSize()[1];
   if(kernelWidth != m_UnsharpMaskSize)
@@ -119,6 +126,7 @@ AmsterdamShroudImageFilter<TInputImage>
   // convolution filter is modified! I don't have an explanation for this but
   // this seems to fix the problem (SR).
   m_ConvolutionFilter->Update();
+
   m_PermuteFilter->Update();
   this->GraftOutput( m_PermuteFilter->GetOutput() );
 }
@@ -140,6 +148,89 @@ AmsterdamShroudImageFilter<TInputImage>
   kernel->Allocate();
   kernel->FillBuffer(1./m_UnsharpMaskSize);
   m_ConvolutionFilter->SetKernelImage( kernel );
+}
+
+template<class TInputImage>
+void
+AmsterdamShroudImageFilter<TInputImage>
+::CropOutsideProjectedBox()
+{
+  // The crop is performed after derivation for the sake of simplicity
+  m_DerivativeFilter->Update();
+
+  typename TInputImage::RegionType reg;
+  reg = m_DerivativeFilter->GetOutput()->GetRequestedRegion();
+
+  typedef typename itk::ImageRegionIterator<TInputImage> OutputIterator;
+  OutputIterator it(m_DerivativeFilter->GetOutput(), reg);
+
+  // Prepare the 8 corners of the box
+  std::vector<GeometryType::HomogeneousVectorType> corners;
+  for(unsigned int i=0; i<8; i++)
+    {
+    GeometryType::HomogeneousVectorType corner;
+    if(i/4 == 0)
+      corner[2] = m_Corner1[2];
+    else
+      corner[2] = m_Corner2[2];
+    if((i/2)%2 == 0)
+      corner[1] = m_Corner1[1];
+    else
+      corner[1] = m_Corner2[1];
+    if(i%2 == 0)
+      corner[0] = m_Corner1[0];
+    else
+      corner[0] = m_Corner2[0];
+    corner[3] = 1.;
+    corners.push_back(corner);
+    }
+
+  for(int iProj=reg.GetIndex(2);
+          iProj<reg.GetIndex(2)+(int)reg.GetSize(2);
+          iProj++)
+    {
+    // Project and keep the inferior and superior 2d corner
+    itk::ContinuousIndex<double, 3> pCornerInf, pCornerSup;
+    GeometryType::ThreeDHomogeneousMatrixType matrix;
+    matrix = m_Geometry->GetMatrices()[iProj].GetVnlMatrix();
+    for(unsigned int ci=0; ci<8; ci++)
+      {
+      typename TInputImage::PointType pCorner;
+      vnl_vector< double > pCornerVnl = m_Geometry->GetMatrices()[iProj].GetVnlMatrix()* corners[ci].GetVnlVector();
+      for(unsigned int i=0; i<2; i++)
+        pCorner[i] = pCornerVnl[i] / pCornerVnl[2];
+      itk::ContinuousIndex<double, 3> pCornerI;
+      this->GetInput()->TransformPhysicalPointToContinuousIndex(pCorner, pCornerI);
+      if(ci==0)
+        {
+        pCornerInf = pCornerI;
+        pCornerSup = pCornerI;
+        }
+      else
+        {
+        for(int i=0; i<2; i++)
+          {
+          pCornerInf[i] = std::min(pCornerInf[i], pCornerI[i]);
+          pCornerSup[i] = std::max(pCornerSup[i], pCornerI[i]);
+          }
+        }
+      }
+
+    // Set to 0 all pixels outside 2D projected box
+    for(unsigned int j=0;
+                     j<reg.GetSize(1);
+                     j++)
+      {
+      for(unsigned int i=0;
+                       i<reg.GetSize(0);
+                       i++, ++it)
+        {
+        if(i<pCornerInf[0] || i>pCornerSup[0] ||
+           j<pCornerInf[1] || j>pCornerSup[1])
+          it.Set(0);
+        }
+      }
+    }
 }
 
 } // end namespace rtk

@@ -1,8 +1,9 @@
 package "rtkamsterdamshroud"
 purpose "Creates an Amsterdam Shroud image from a sequence of projections [Zijp et al, ICCR, 2004]."
 
-option "verbose"  v "Verbose execution"                                         flag                         off
-option "config"   - "Config file"                                               string    no
-option "output"   o "Output file name"                                          string    yes
-option "unsharp"  u "Unsharp mask size"                                         int       no  default="17"
-
+option "verbose"  v "Verbose execution"                                          flag            off
+option "config"   - "Config file"                                                string          no
+option "output"   o "Output file name"                                           string          yes
+option "unsharp"  u "Unsharp mask size"                                          int             no  default="17"
+option "clipbox"  c "3D clipbox for cropping projections (x1,x2,y1,y2,z1,z2) mm" double multiple no
+option "geometry" g "XML geometry file name"                                     string          no
