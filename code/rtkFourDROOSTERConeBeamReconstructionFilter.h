@@ -126,9 +126,9 @@ namespace rtk
    *    MC_Resample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
    *    MC_ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
    *    MC_TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   *    MC_BackwardWarp [ label="rtk::WarpSequenceImageFilter (interpolate)" URL="\ref rtk::WarpSequenceImageFilter"];
+   *    MC_BackwardWarp [ label="rtk::WarpSequenceImageFilter (direct field)" URL="\ref rtk::WarpSequenceImageFilter"];
    *    MC_TVTime [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   *    MC_ForwardWarp [ label="rtk::WarpSequenceImageFilter (splat)" URL="\ref rtk::WarpSequenceImageFilter"];
+   *    MC_ForwardWarp [ label="rtk::WarpSequenceImageFilter (inverse field)" URL="\ref rtk::WarpSequenceImageFilter"];
    *    MC_Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    *    MC_Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    *    MC_AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
@@ -228,6 +228,8 @@ public:
   typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>    WarpSequenceFilterType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
   typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
+  typedef itk::SubtractImageFilter<VolumeSeriesType, VolumeSeriesType>                                      SubtractFilterType;
+  typedef itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>                                           AddFilterType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void SetForwardProjectionFilter(int fwtype);
@@ -318,6 +320,8 @@ protected:
   typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
   typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
   typename WarpSequenceFilterType::Pointer                m_InverseWarp;
+  typename SubtractFilterType::Pointer                    m_SubtractFilter;
+  typename AddFilterType::Pointer                         m_AddFilter;
 
   // Booleans :
   // should warping be performed ?

@@ -58,6 +58,8 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_Warp = WarpSequenceFilterType::New();
   m_Unwarp = UnwarpSequenceFilterType::New();
   m_InverseWarp = WarpSequenceFilterType::New();
+  m_SubtractFilter = SubtractFilterType::New();
+  m_AddFilter = AddFilterType::New();
 
   // We create both the Unwarp and the InverseWarp filters,
   // and connect and set only the relevant one
@@ -85,13 +87,10 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_PositivityFilter->SetOutsideValue(0.0);
   m_PositivityFilter->ThresholdBelow(0.0);
 
-  // Set memory management parameters
+  // Memory management parameters common to all cases
   m_FourDCGFilter->ReleaseDataFlagOn();
   m_PositivityFilter->SetInPlace(true);
   m_AverageOutOfROIFilter->ReleaseDataFlagOn();
-  m_TVDenoisingSpace->ReleaseDataFlagOn();
-  m_WaveletsDenoisingSpace->ReleaseDataFlagOn();
-  m_Warp->ReleaseDataFlagOn();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -274,10 +273,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     {
     m_Warp->SetDisplacementField(this->GetDisplacementField());
     m_Warp->SetPhaseShift(m_PhaseShift);
-    m_Warp->ReleaseDataFlagOn();
-
     m_TVDenoisingTime->SetInput(m_Warp->GetOutput());
-    m_TVDenoisingTime->ReleaseDataFlagOn();
 
     if (m_ComputeInverseWarpingByConjugateGradient)
       {
@@ -287,14 +283,42 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_Unwarp->SetPhaseShift(m_PhaseShift);
       m_Unwarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
       m_Unwarp->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
+
+      // Case-specific memory management parameters
+      m_TVDenoisingSpace->ReleaseDataFlagOn();
+      m_WaveletsDenoisingSpace->ReleaseDataFlagOn();
+      m_TVDenoisingTime->SetInPlace(true);
+      m_TVDenoisingTime->ReleaseDataFlagOn();
       }
     else
       {
-      m_InverseWarp->SetInput(0, m_TVDenoisingTime->GetOutput());
+      // Compute the correction performed by TV denoising along time
+      m_SubtractFilter->SetInput1(m_TVDenoisingTime->GetOutput());
+      m_SubtractFilter->SetInput2(m_Warp->GetOutput());
+
+      // Deform only that correction with the inverse field
+      m_InverseWarp->SetInput(0, m_SubtractFilter->GetOutput());
       m_InverseWarp->SetDisplacementField(this->GetInverseDisplacementField());
       m_InverseWarp->SetPhaseShift(m_PhaseShift);
       m_InverseWarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+
+      // Add the deformed correction to the spatially denoised image to get the output
+      m_AddFilter->SetInput1(m_InverseWarp->GetOutput());
+      m_AddFilter->SetInput2(m_TVDenoisingSpace->GetOutput());
+
+      // Specific memory management parameters
+      m_TVDenoisingSpace->ReleaseDataFlagOff();
+      m_WaveletsDenoisingSpace->ReleaseDataFlagOff();
+      m_TVDenoisingTime->SetInPlace(false);
+      m_TVDenoisingTime->ReleaseDataFlagOn();
+      m_SubtractFilter->ReleaseDataFlagOn();
       }
+    }
+  else
+    {
+    // Specific memory management parameters
+    m_TVDenoisingTime->SetInPlace(true);
+    m_TVDenoisingTime->ReleaseDataFlagOff();
     }
 }
 
@@ -367,8 +391,8 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       }
     else
       {
-      m_InverseWarp->UpdateOutputInformation();
-      this->GetOutput()->CopyInformation( m_InverseWarp->GetOutput() );
+      m_AddFilter->UpdateOutputInformation();
+      this->GetOutput()->CopyInformation( m_AddFilter->GetOutput() );
       }
     }
   else
@@ -404,7 +428,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
         if (m_ComputeInverseWarpingByConjugateGradient)
           pimg = m_Unwarp->GetOutput();
         else
-          pimg = m_InverseWarp->GetOutput();
+          pimg = m_AddFilter->GetOutput();
         }
       else
         pimg = m_TVDenoisingTime->GetOutput();
@@ -453,7 +477,11 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       if (m_ComputeInverseWarpingByConjugateGradient)
         m_Unwarp->Update();
       else
+        {
+        m_SubtractFilter->Update();
         m_InverseWarp->Update();
+        m_AddFilter->Update();
+        }
 
       m_UnwarpProbe.Stop();
       }
@@ -464,7 +492,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     if (m_ComputeInverseWarpingByConjugateGradient)
       this->GraftOutput( m_Unwarp->GetOutput() );
     else
-      this->GraftOutput( m_InverseWarp->GetOutput() );
+      this->GraftOutput( m_AddFilter->GetOutput() );
     }
   else
     this->GraftOutput( m_TVDenoisingTime->GetOutput() );
