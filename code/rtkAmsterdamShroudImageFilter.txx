@@ -30,7 +30,9 @@ template <class TInputImage>
 AmsterdamShroudImageFilter<TInputImage>
 ::AmsterdamShroudImageFilter():
   m_UnsharpMaskSize(17),
-  m_Geometry(NULL)
+  m_Geometry(NULL),
+  m_Corner1(0.),
+  m_Corner2(0.)
 {
   m_DerivativeFilter = DerivativeType::New();
   m_NegativeFilter = NegativeType::New();
