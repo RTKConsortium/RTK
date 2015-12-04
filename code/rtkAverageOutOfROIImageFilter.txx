@@ -118,6 +118,39 @@ AverageOutOfROIImageFilter< TInputImage, TROI >
 
   if(isInformationInconsistent)
     itkGenericExceptionMacro(<< "In AverageOutOfROIImageFilter: information of ROI image does not match input image");
+
+  this->GetOutput()->SetLargestPossibleRegion(this->GetInput(0)->GetLargestPossibleRegion());
+}
+
+template< class TInputImage, class TROI >
+void
+AverageOutOfROIImageFilter< TInputImage, TROI >
+::GenerateInputRequestedRegion()
+{
+  //Call the superclass' implementation of this method
+  Superclass::GenerateInputRequestedRegion();
+
+  // Compute the requested regions on input and ROI from the output's requested region
+  typename TInputImage::RegionType outputRequested = this->GetOutput()->GetRequestedRegion();
+
+  typename TInputImage::RegionType inputRequested = outputRequested;
+  inputRequested.SetSize(TInputImage::ImageDimension - 1, this->GetInput(0)->GetLargestPossibleRegion().GetSize(TInputImage::ImageDimension - 1));
+  inputRequested.SetIndex(TInputImage::ImageDimension - 1, this->GetInput(0)->GetLargestPossibleRegion().GetIndex(TInputImage::ImageDimension - 1));
+
+  typename TROI::RegionType ROIRequested;
+//  for (unsigned int dim = 0; dim<TROI::ImageDimension; dim++)
+//    {
+//    ROIRequested.SetSize(dim, outputRequested.GetSize(dim));
+//    ROIRequested.SetIndex(dim, outputRequested.GetSize(dim));
+//    }
+  ROIRequested = outputRequested.Slice(TInputImage::ImageDimension - 1);
+
+  //Get pointers to the input and ROI
+  typename TInputImage::Pointer  inputPtr  = const_cast<TInputImage *>(this->GetInput(0));
+  inputPtr->SetRequestedRegion(inputRequested);
+
+  typename TROI::Pointer  ROIPtr  = this->GetROI();
+  ROIPtr->SetRequestedRegion(ROIRequested);
 }
 
 template< class TInputImage, class TROI >
