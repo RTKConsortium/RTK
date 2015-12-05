@@ -73,6 +73,7 @@ protected:
     typename TROI::Pointer GetROI();
 
     virtual void GenerateOutputInformation();
+    virtual void GenerateInputRequestedRegion();
 
     /** Does the real work. */
     virtual void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
