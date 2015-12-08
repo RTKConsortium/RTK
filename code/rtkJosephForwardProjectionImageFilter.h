@@ -82,16 +82,17 @@ public:
     return !( *this != other );
     }
 
-  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
-                             const TInput &input,
-                             const TOutput &rayCastValue,
-                             const VectorType &stepInMM,
-                             const VectorType &itkNotUsed(source),
-                             const VectorType &itkNotUsed(sourceToPixel),
-                             const VectorType &itkNotUsed(nearestPoint),
-                             const VectorType &itkNotUsed(farthestPoint)) const
+  inline void operator()( const ThreadIdType itkNotUsed(threadId),
+                          const TInput &input,
+                          TOutput &output,
+                          const TOutput &rayCastValue,
+                          const VectorType &stepInMM,
+                          const VectorType &itkNotUsed(source),
+                          const VectorType &itkNotUsed(sourceToPixel),
+                          const VectorType &itkNotUsed(nearestPoint),
+                          const VectorType &itkNotUsed(farthestPoint)) const
     {
-    return input + rayCastValue * stepInMM.GetNorm();
+    output = input + rayCastValue * stepInMM.GetNorm();
     }
 };
 
