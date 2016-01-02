@@ -186,6 +186,23 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_CGOperator->SetIsWeighted(m_IsWeighted);
   m_CGOperator->SetPreconditioned(m_Preconditioned);
 
+  // Set memory management parameters
+  if(m_IsWeighted)
+    {
+    m_MultiplyProjectionsFilter->ReleaseDataFlagOn();
+
+    if (m_Preconditioned)
+      {
+      m_ConstantProjectionsSource->ReleaseDataFlagOn();
+      m_BackProjectionFilterForPreconditioning->ReleaseDataFlagOn();
+      m_BackProjectionFilterForNormalization->ReleaseDataFlagOn();
+      m_MultiplyVolumeFilter->ReleaseDataFlagOn();
+      m_MultiplyOutputFilter->ReleaseDataFlagOn();
+      }
+    }
+  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
+  m_BackProjectionFilterForB->ReleaseDataFlagOn();
+
   // Have the last filter calculate its output information
   m_ConjugateGradientFilter->UpdateOutputInformation();
 

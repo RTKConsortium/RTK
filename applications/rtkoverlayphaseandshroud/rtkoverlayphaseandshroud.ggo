@@ -1,0 +1,8 @@
+package "rtkoverlayphaseandshroud"
+purpose "Generates an RGB image showing the phase peaks on top of the shroud"
+
+option "verbose"    v   "Verbose execution"                           flag                    off
+option "config"     -   "Config file"                                 string                  no
+option "input"      i   "Input shroud image file name"		            string                  yes
+option "output"     o   "Output RGB image file name (.png, .jpg, ...)"  string                  yes
+option "signal"     -   "File containing the phase of each projection"  string                       yes
