@@ -171,7 +171,7 @@ int main(int, char** )
   uniformWeightsSource->SetConstant(2.0);
 
   conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
-  conjugategradient->SetIsWeighted(true);
+  conjugategradient->SetWeighted(true);
   conjugategradient->SetPreconditioned(true);
 
   conjugategradient->SetBackProjectionFilter( 1 );

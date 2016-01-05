@@ -235,6 +235,12 @@ RTK_ADD_TEST(NAME rtkinterpolatesplatadjointtest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkinterpolatesplatadjointtest
              DATA{Data/Input/Phases/phases_slow.txt})
 
+ADD_EXECUTABLE(rtklaplaciantest rtklaplaciantest.cxx)
+TARGET_LINK_LIBRARIES(rtklaplaciantest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtklaplaciantest 
+	     COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtklaplaciantest
+	     DATA{Data/Baseline/Laplacian/Laplacian.mha})
+
 ADD_EXECUTABLE(rtktotalvariationtest rtktotalvariationtest.cxx)
 TARGET_LINK_LIBRARIES(rtktotalvariationtest ${RTK_LIBRARIES})
 ADD_TEST(rtktotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtktotalvariationtest)

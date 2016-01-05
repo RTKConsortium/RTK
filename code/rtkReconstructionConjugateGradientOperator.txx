@@ -28,8 +28,10 @@ template< typename TOutputImage>
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ReconstructionConjugateGradientOperator():
   m_Geometry(NULL),
-  m_IsWeighted(false),
-  m_Preconditioned(false)
+  m_Weighted(false),
+  m_Preconditioned(false),
+  m_Regularized(false),
+  m_Gamma(0)
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -46,6 +48,9 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
+  m_AddFilter = AddFilterType::New();
+  m_LaplacianFilter = LaplacianFilterType::New();
+  m_MultiplyLaplacianFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
   m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -55,6 +60,8 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // Set memory management options
   m_ConstantProjectionsSource->ReleaseDataFlagOn();
   m_ConstantVolumeSource->ReleaseDataFlagOn();
+  m_LaplacianFilter->ReleaseDataFlagOn();
+  m_MultiplyLaplacianFilter->ReleaseDataFlagOn();
 }
 
 template< typename TOutputImage >
@@ -90,7 +97,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   if ( !inputPtr1 ) return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 
-  if (m_IsWeighted)
+  if (m_Weighted)
     {
     this->SetNumberOfRequiredInputs(3);
 
@@ -130,7 +137,18 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
 
-  if (m_IsWeighted)
+  if (m_Regularized)
+  {
+  m_LaplacianFilter->SetInput(this->GetInput(0));
+
+  m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
+  m_MultiplyLaplacianFilter->SetConstant2(m_Gamma);
+    
+  m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
+  m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
+  }
+
+  if (m_Weighted)
     {
     // Multiply the projections
     m_MultiplyProjectionsFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
@@ -147,6 +165,11 @@ ReconstructionConjugateGradientOperator<TOutputImage>
       // Multiply the volume
       m_MultiplyOutputVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
       m_MultiplyOutputVolumeFilter->SetInput2(this->GetInput(3));
+    
+      // If a regularization is added, it needs to be added to the output of the 
+      // m_MultiplyOutputVolumeFilter, instead of that of the m_BackProjectionFilter
+      if (m_Regularized)
+	m_AddFilter->SetInput1( m_MultiplyOutputVolumeFilter->GetOutput());
       }
     }
   else
@@ -175,17 +198,24 @@ template< typename TOutputImage >
 void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
 {
   // Execute Pipeline
-  if (m_Preconditioned)
+  if (m_Regularized)
     {
-    m_MultiplyOutputVolumeFilter->Update();
-    this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
+    m_AddFilter->Update();
+    this->GraftOutput( m_AddFilter->GetOutput() );
     }
   else
     {
-    m_BackProjectionFilter->Update();
-    this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+    if (m_Preconditioned)
+      {
+      m_MultiplyOutputVolumeFilter->Update();
+      this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
+      }
+    else
+      {
+      m_BackProjectionFilter->Update();
+      this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+      }
     }
-  // Get the output
 }
 
 }// end namespace
