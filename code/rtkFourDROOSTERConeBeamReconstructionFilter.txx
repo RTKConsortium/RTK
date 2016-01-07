@@ -310,7 +310,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_TVDenoisingSpace->ReleaseDataFlagOff();
       m_WaveletsDenoisingSpace->ReleaseDataFlagOff();
       m_TVDenoisingTime->SetInPlace(false);
-      m_TVDenoisingTime->ReleaseDataFlagOn();
+      m_TVDenoisingTime->ReleaseDataFlagOff();
       m_SubtractFilter->ReleaseDataFlagOn();
       }
     }
