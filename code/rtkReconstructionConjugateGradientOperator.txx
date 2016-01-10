@@ -143,7 +143,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>
 
   m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
   m_MultiplyLaplacianFilter->SetConstant2(m_Gamma);
-    
+
   m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
   m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
   }
@@ -165,11 +165,11 @@ ReconstructionConjugateGradientOperator<TOutputImage>
       // Multiply the volume
       m_MultiplyOutputVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
       m_MultiplyOutputVolumeFilter->SetInput2(this->GetInput(3));
-    
-      // If a regularization is added, it needs to be added to the output of the 
+
+      // If a regularization is added, it needs to be added to the output of the
       // m_MultiplyOutputVolumeFilter, instead of that of the m_BackProjectionFilter
       if (m_Regularized)
-	m_AddFilter->SetInput1( m_MultiplyOutputVolumeFilter->GetOutput());
+        m_AddFilter->SetInput1( m_MultiplyOutputVolumeFilter->GetOutput());
       }
     }
   else
