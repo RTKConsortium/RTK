@@ -32,8 +32,10 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
-  m_IsWeighted=false;
+  m_Weighted=false;
   m_Preconditioned=false;
+  m_Gamma = 0;
+  m_Regularized = false;
 
   // Create the filters
 #ifdef RTK_USE_CUDA
@@ -109,7 +111,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
       return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 
-  if (m_IsWeighted)
+  if (m_Weighted)
     {
     this->SetNumberOfRequiredInputs(3);
 
@@ -137,7 +139,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_BackProjectionFilterForB->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_ConjugateGradientFilter->SetB(m_BackProjectionFilterForB->GetOutput());
-  if (m_IsWeighted)
+  if (m_Weighted)
     {
     // Multiply the projections by the weights map
     m_MultiplyProjectionsFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
@@ -183,11 +185,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
-  m_CGOperator->SetIsWeighted(m_IsWeighted);
+  m_CGOperator->SetWeighted(m_Weighted);
   m_CGOperator->SetPreconditioned(m_Preconditioned);
+  m_CGOperator->SetRegularized(m_Regularized);
+  m_CGOperator->SetGamma(m_Gamma);
 
   // Set memory management parameters
-  if(m_IsWeighted)
+  if(m_Weighted)
     {
     m_MultiplyProjectionsFilter->ReleaseDataFlagOn();
 

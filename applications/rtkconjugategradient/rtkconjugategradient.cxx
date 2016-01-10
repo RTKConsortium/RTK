@@ -96,8 +96,13 @@ int main(int argc, char * argv[])
   if (args_info.weights_given)
     {
     conjugategradient->SetInput(2, weightsReader->GetOutput());
-    conjugategradient->SetIsWeighted(true);
+    conjugategradient->SetWeighted(true);
     conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
+    }
+  if (args_info.gamma_given)
+    {
+    conjugategradient->SetRegularized(true);
+    conjugategradient->SetGamma(args_info.gamma_arg);
     }
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );

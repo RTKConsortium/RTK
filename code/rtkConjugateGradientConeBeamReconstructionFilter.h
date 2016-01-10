@@ -29,6 +29,7 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkLaplacianImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaConjugateGradientImageFilter_3f.h"
@@ -157,13 +158,20 @@ public:
     itkSetMacro(MeasureExecutionTimes, bool)
     itkGetMacro(MeasureExecutionTimes, bool)
 
-    /** If IsWeighted, perform weighted least squares optimization instead of unweighted */
-    itkSetMacro(IsWeighted, bool)
-    itkGetMacro(IsWeighted, bool)
+    /** If Weighted, perform weighted least squares optimization instead of unweighted */
+    itkSetMacro(Weighted, bool)
+    itkGetMacro(Weighted, bool)
 
-    /** If IsWeighted, and Preconditioned computes preconditioning weights to speed up CG convergence */
+    /** If Weighted and Preconditioned, computes preconditioning weights to speed up CG convergence */
     itkSetMacro(Preconditioned, bool)
     itkGetMacro(Preconditioned, bool)
+    
+    /** If Regularized, perform laplacian-based regularization during 
+     *  reconstruction (gamma is the strength of the regularization) */
+    itkSetMacro(Regularized, bool)
+    itkGetMacro(Regularized, bool)
+    itkSetMacro(Gamma, float)
+    itkGetMacro(Gamma, float)
 
 protected:
     ConjugateGradientConeBeamReconstructionFilter();
@@ -205,10 +213,11 @@ private:
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
     int   m_NumberOfIterations;
+    float m_Gamma;
     bool  m_MeasureExecutionTimes;
-    bool  m_IsWeighted;
+    bool  m_Weighted;
     bool  m_Preconditioned;
-
+    bool  m_Regularized;
 };
 } //namespace ITK
 
