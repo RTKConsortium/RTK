@@ -42,8 +42,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_ProjectionSubsetSize = 16;
 
   // Create each filter of the composite filter
-  typedef rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType, OutputImageType> DisplacedDetectorForOffsetFieldOfViewType;
-  m_DisplacedDetectorFilter = DisplacedDetectorForOffsetFieldOfViewType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_ParkerFilter = ParkerFilterType::New();
   m_FDKFilter = FDKFilterType::New();
   m_ThresholdFilter = ThresholdFilterType::New();
@@ -54,7 +53,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_DivideFilter = DivideFilterType::New();
 
   // Filter parameters
-  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(true);
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
