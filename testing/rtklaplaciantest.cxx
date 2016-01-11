@@ -6,6 +6,10 @@
 #include "itkImageFileReader.h"
 #include "rtkConstantImageSource.h"
 
+#ifdef RTK_USE_CUDA
+#include "rtkCudaLaplacianImageFilter.h"
+#endif
+
 /**
  * \file rtklaplaciantest.cxx
  *
@@ -21,10 +25,12 @@ int main(int, char** )
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#ifdef USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension >, Dimension > GradientImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+  typedef itk::Image<itk::CovariantVector<OutputPixelType, Dimension >, Dimension > GradientImageType;
 #endif
 
   // Constant image sources
@@ -65,25 +71,46 @@ int main(int, char** )
   dsl->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
-  // Create and set the laplacian filter
-  typedef rtk::LaplacianImageFilter<OutputImageType>                LaplacianFilterType;
-  LaplacianFilterType::Pointer laplacian = LaplacianFilterType::New();
-  laplacian->SetInput(dsl->GetOutput());
-
-  // Compute the laplacian of the shepp logan
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( laplacian->Update() );
-
+  
   // Read a reference image
   typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer readerRef = ReaderType::New();
   readerRef->SetFileName( std::string(RTK_DATA_ROOT) +
                           std::string("/Baseline/Laplacian/Laplacian.mha"));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
+  
+  
+  std::cout << "\n\n****** Case 1: CPU laplacian ******" << std::endl;
+
+  // Create and set the laplacian filter
+  typedef rtk::LaplacianImageFilter<OutputImageType, GradientImageType>                LaplacianFilterType;
+  LaplacianFilterType::Pointer laplacian = LaplacianFilterType::New();
+  laplacian->SetInput(dsl->GetOutput());
+
+  // Compute the laplacian of the shepp logan
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( laplacian->Update() );
 
   // Compare the result with the reference
   CheckImageQuality<OutputImageType>(laplacian->GetOutput(), readerRef->GetOutput(), 0.00001, 15, 2.0);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+#ifdef RTK_USE_CUDA
+  std::cout << "\n\n****** Case 2: CUDA laplacian ******" << std::endl;
+
+  // Create and set the laplacian filter
+  typedef rtk::CudaLaplacianImageFilter                		CUDALaplacianFilterType;
+  CUDALaplacianFilterType::Pointer cudaLaplacian = CUDALaplacianFilterType::New();
+  cudaLaplacian->SetInput(dsl->GetOutput());
+
+  // Compute the laplacian of the shepp logan
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( cudaLaplacian->Update() );
+
+  // Compare the result with the reference
+  CheckImageQuality<OutputImageType>(cudaLaplacian->GetOutput(), readerRef->GetOutput(), 0.00001, 15, 2.0);
+
+  std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
+  
   return EXIT_SUCCESS;
 }

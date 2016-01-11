@@ -19,8 +19,8 @@
 #ifndef __rtkCudaFirstOrderKernels_hcu
 #define __rtkCudaFirstOrderKernels_hcu
 
-__global__ void divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out);
+__global__ void divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out, int3 c_Size, float3 c_Spacing);
 
-__global__ void gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z);
+__global__ void gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z, int3 c_Size, float3 c_Spacing);
 
 #endif

@@ -35,14 +35,15 @@ namespace rtk
  */
 
   class ITK_EXPORT CudaLaplacianImageFilter :
-        public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-    LaplacianImageFilter< itk::CudaImage<float,3> > >
+        public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+    LaplacianImageFilter< itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>,3> > >
 {
 public:
   /** Standard class typedefs. */
   typedef rtk::CudaLaplacianImageFilter                               Self;
   typedef itk::CudaImage<float,3>                                     OutputImageType;
-  typedef rtk::LaplacianImageFilter< OutputImageType>                 Superclass;
+  typedef itk::CudaImage<itk::CovariantVector<float, 3>,3>                    	  GradientImageType;
+  typedef rtk::LaplacianImageFilter< OutputImageType, GradientImageType>  Superclass;
   typedef itk::SmartPointer<Self>                                     Pointer;
   typedef itk::SmartPointer<const Self>                               ConstPointer;
 
