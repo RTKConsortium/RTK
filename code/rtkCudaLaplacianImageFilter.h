@@ -40,12 +40,12 @@ namespace rtk
 {
 public:
   /** Standard class typedefs. */
-  typedef rtk::CudaLaplacianImageFilter                               Self;
-  typedef itk::CudaImage<float,3>                                     OutputImageType;
-  typedef itk::CudaImage<itk::CovariantVector<float, 3>,3>                    	  GradientImageType;
+  typedef rtk::CudaLaplacianImageFilter                                   Self;
+  typedef itk::CudaImage<float,3>                                         OutputImageType;
+  typedef itk::CudaImage<itk::CovariantVector<float, 3>,3>                GradientImageType;
   typedef rtk::LaplacianImageFilter< OutputImageType, GradientImageType>  Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  typedef itk::SmartPointer<Self>                                         Pointer;
+  typedef itk::SmartPointer<const Self>                                   ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self)

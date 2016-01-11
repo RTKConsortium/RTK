@@ -18,6 +18,24 @@ macro(add_cuda_test testname testfile)
  endif()
 endmacro()
 
+# Macro to add CUDA test when external data is required
+macro(rtk_add_cuda_test testname testfile)
+ if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+   set(testfullname ${testname}cudatest)
+   add_executable(${testfullname} ${testfile})
+   target_link_libraries(${testfullname} ${RTK_LIBRARIES})
+   set_target_properties(${testfullname} PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
+   set(data_list "")
+   foreach(loop_data ${ARGN})
+      set(data_list "${data_list} DATA{${loop_data}}")
+   endforeach()
+   RTK_ADD_TEST(NAME ${testfullname}
+		COMMAND ${EXECUTABLE_OUTPUT_PATH}/${testfullname}
+		${data_list}
+		)
+ endif()
+endmacro()
+
 # Executable to check the image quality
 ADD_EXECUTABLE(rtkcheckimagequality rtkcheckimagequality.cxx)
 TARGET_LINK_LIBRARIES(rtkcheckimagequality ${RTK_LIBRARIES})
@@ -240,6 +258,7 @@ TARGET_LINK_LIBRARIES(rtklaplaciantest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtklaplaciantest 
 	     COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtklaplaciantest
 	     DATA{Data/Baseline/Laplacian/Laplacian.mha})
+RTK_ADD_CUDA_TEST(rtklaplacian rtklaplaciantest.cxx "Data/Baseline/Laplacian/Laplacian.mha")
 
 ADD_EXECUTABLE(rtktotalvariationtest rtktotalvariationtest.cxx)
 TARGET_LINK_LIBRARIES(rtktotalvariationtest ${RTK_LIBRARIES})
@@ -308,16 +327,7 @@ ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstruct
 ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
 ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
 ADD_CUDA_TEST(rtkadmmwavelets rtkadmmwaveletstest.cxx)
-if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
- SET(testfullname rtkadmmtotalvariationcudatest)
- ADD_EXECUTABLE(${testfullname} rtkadmmtotalvariationtest.cxx)
- TARGET_LINK_LIBRARIES(${testfullname} ${RTK_LIBRARIES})
- SET_TARGET_PROPERTIES(${testfullname} PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
- RTK_ADD_TEST(NAME ${testfullname}
-              COMMAND ${EXECUTABLE_OUTPUT_PATH}/${testfullname}
-              DATA{Data/Input/Phases/phases.txt}
-              DATA{Data/Input/Phases/phases_3projs.txt})
-endif()
+RTK_ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx "Data/Input/Phases/phases.txt" "Data/Input/Phases/phases_3projs.txt")
 
 ADD_EXECUTABLE(rtkwaveletstest rtkwaveletstest.cxx)
 TARGET_LINK_LIBRARIES(rtkwaveletstest RTK)

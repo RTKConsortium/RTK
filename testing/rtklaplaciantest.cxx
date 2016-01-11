@@ -25,7 +25,7 @@ int main(int, char** )
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
   typedef itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension >, Dimension > GradientImageType;
 #else
@@ -95,7 +95,7 @@ int main(int, char** )
 
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   std::cout << "\n\n****** Case 2: CUDA laplacian ******" << std::endl;
 
   // Create and set the laplacian filter

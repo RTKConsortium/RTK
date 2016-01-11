@@ -169,7 +169,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>
       // If a regularization is added, it needs to be added to the output of the 
       // m_MultiplyOutputVolumeFilter, instead of that of the m_BackProjectionFilter
       if (m_Regularized)
-	m_AddFilter->SetInput1( m_MultiplyOutputVolumeFilter->GetOutput());
+        m_AddFilter->SetInput1( m_MultiplyOutputVolumeFilter->GetOutput());
       }
     }
   else
