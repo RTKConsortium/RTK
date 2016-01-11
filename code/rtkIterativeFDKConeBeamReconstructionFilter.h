@@ -130,7 +130,7 @@ public:
   typedef itk::DivideOrZeroOutImageFilter<OutputImageType>                                          DivideFilterType;
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                      RayBoxIntersectionFilterType;
 
-/** Standard New method. */
+  /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */

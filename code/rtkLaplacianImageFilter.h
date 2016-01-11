@@ -41,7 +41,7 @@ template< typename OutputImageType, typename GradientImageType>
 class LaplacianImageFilter : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
 {
 public:
-   
+
   /** Standard class typedefs. */
   typedef LaplacianImageFilter                                                              Self;
   typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                        Superclass;
@@ -52,7 +52,7 @@ public:
                                                     typename OutputImageType::ValueType,
                                                     GradientImageType>                      GradientFilterType;
   typedef rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, OutputImageType>  DivergenceFilterType;
-
+  
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
