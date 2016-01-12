@@ -24,8 +24,8 @@
 namespace rtk
 {
 
-template<typename OutputImageType>
-LaplacianImageFilter<OutputImageType>::LaplacianImageFilter()
+template<typename OutputImageType, typename GradientImageType>
+LaplacianImageFilter<OutputImageType, GradientImageType>::LaplacianImageFilter()
 {
   // Create the filters
   m_Gradient = GradientFilterType::New();
@@ -38,8 +38,8 @@ LaplacianImageFilter<OutputImageType>::LaplacianImageFilter()
   m_Gradient->ReleaseDataFlagOn();
 }
 
-template<typename OutputImageType>
-void LaplacianImageFilter<OutputImageType>
+template<typename OutputImageType, typename GradientImageType>
+void LaplacianImageFilter<OutputImageType, GradientImageType>
 ::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
@@ -54,8 +54,8 @@ void LaplacianImageFilter<OutputImageType>
   this->GetOutput()->CopyInformation( m_Divergence->GetOutput() );
 }
 
-template<typename OutputImageType>
-void LaplacianImageFilter<OutputImageType>
+template<typename OutputImageType, typename GradientImageType>
+void LaplacianImageFilter<OutputImageType, GradientImageType>
 ::GenerateData()
 {
   // Update the last filter

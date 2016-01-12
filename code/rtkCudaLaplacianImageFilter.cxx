@@ -24,7 +24,6 @@
 rtk::CudaLaplacianImageFilter
 ::CudaLaplacianImageFilter()
 {
-//  this->SetInPlace(true);
 }
 
 void

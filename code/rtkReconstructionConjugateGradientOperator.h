@@ -46,10 +46,11 @@ namespace rtk
    *
    * This filter implements the operator A used in the conjugate gradient reconstruction method,
    * which attempts to find the f that minimizes
-   * || sqrt(D) (Rf -p) ||_2^2 + gamma f_t Laplacian f,
+   * || sqrt(D) (Rf -p) ||_2^2 + gamma || grad f ||_2^2,
    * with R the forward projection operator,
    * p the measured projections, and D the displaced detector weighting operator.
-   * In this it is similar to the ART and SART methods. The difference lies
+   *
+   * With gamma=0, this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
@@ -82,6 +83,9 @@ namespace rtk
    * Multiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * MultiplyInput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * MultiplyOutput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * Laplacian [ label="rtk::LaplacianImageFilter" URL="\ref rtk::LaplacianImageFilter"];
+   * MultiplyLaplacian [ label="itk::MultiplyImageFilter (by gamma)" URL="\ref itk::MultiplyImageFilter"];
+   * Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    *
    * Input0 -> MultiplyInput;
    * Input3 -> MultiplyInput;
@@ -94,7 +98,11 @@ namespace rtk
    * Multiply -> BackProjection;
    * BackProjection -> MultiplyOutput;
    * Input3 -> MultiplyOutput;
-   * MultiplyOutput -> Output;
+   * MultiplyOutput -> Add;
+   * Input0 -> Laplacian;
+   * Laplacian -> MultiplyLaplacian;
+   * MultiplyLaplacian -> Add;
+   * Add -> Output;
    * }
    * \enddot
    *

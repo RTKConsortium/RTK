@@ -37,19 +37,22 @@ namespace rtk
  * \ingroup IntensityImageFilters
  */
 
-template< typename OutputImageType>
-class LaplacianImageFilter : public itk::ImageToImageFilter< OutputImageType,  OutputImageType>
+template< typename OutputImageType, typename GradientImageType>
+class LaplacianImageFilter : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
 {
 public:
 
   /** Standard class typedefs. */
-  typedef LaplacianImageFilter                                                                       Self;
-  typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                                 Superclass;
-  typedef itk::SmartPointer< Self >                                                                  Pointer;
-  typedef typename OutputImageType::Pointer                                                          OutputImagePointer;
-  typedef rtk::ForwardDifferenceGradientImageFilter<OutputImageType>                                 GradientFilterType;
-  typedef rtk::BackwardDifferenceDivergenceImageFilter<typename GradientFilterType::OutputImageType> DivergenceFilterType;
-
+  typedef LaplacianImageFilter                                                              Self;
+  typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                        Superclass;
+  typedef itk::SmartPointer< Self >                                                         Pointer;
+  typedef typename OutputImageType::Pointer                                                 OutputImagePointer;
+  typedef rtk::ForwardDifferenceGradientImageFilter<OutputImageType,
+                                                    typename OutputImageType::ValueType,
+                                                    typename OutputImageType::ValueType,
+                                                    GradientImageType>                      GradientFilterType;
+  typedef rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, OutputImageType>  DivergenceFilterType;
+  
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
@@ -66,8 +69,8 @@ protected:
   /** Handle regions */
   void GenerateOutputInformation();
 
-  typename GradientFilterType::Pointer   m_Gradient;
-  typename DivergenceFilterType::Pointer m_Divergence;
+  typename GradientFilterType::Pointer    m_Gradient;
+  typename DivergenceFilterType::Pointer  m_Divergence;
 
 private:
   LaplacianImageFilter(const Self &); //purposely not implemented

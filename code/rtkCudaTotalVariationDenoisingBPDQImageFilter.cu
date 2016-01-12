@@ -231,7 +231,7 @@ CUDA_total_variation( int size[3],
   multiply_by_beta_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_interm, beta);
   CUDA_CHECK_ERROR;
 
-  gradient_kernel <<< dimGrid, dimBlock >>> ( dev_interm, dev_grad_x, dev_grad_y, dev_grad_z);
+  gradient_kernel <<< dimGrid, dimBlock >>> ( dev_interm, dev_grad_x, dev_grad_y, dev_grad_z, dev_Size, dev_Spacing);
   CUDA_CHECK_ERROR;
 
   magnitude_threshold_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, gamma);
@@ -240,7 +240,7 @@ CUDA_total_variation( int size[3],
   // Rest of the iterations
   for (int iter=0; iter<NumberOfIterations; iter++)
     {
-    divergence_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, dev_interm);
+    divergence_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, dev_interm, dev_Size, dev_Spacing);
     CUDA_CHECK_ERROR;
 
     subtract_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_interm, dev_out);

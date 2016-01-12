@@ -26,23 +26,6 @@
 // cuda includes
 #include <cuda.h>
 
-// TEXTURES AND CONSTANTS //
-
-__constant__ int3 c_Size;
-__constant__ float3 c_Spacing;
-
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-// K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_( S T A R T )_
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-
-
-
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-// K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-( E N D )-_-_
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-
 void
 CUDA_laplacian( int size[3],
                 float spacing[3],
@@ -50,10 +33,7 @@ CUDA_laplacian( int size[3],
                 float* dev_out)
 {
   int3 dev_Size = make_int3(size[0], size[1], size[2]);
-  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int3));
-
   float3 dev_Spacing = make_float3(spacing[0], spacing[1], spacing[2]);
-  cudaMemcpyToSymbol(c_Spacing, &dev_Spacing, sizeof(float3));
 
   // Reset output volume
   long int memorySizeOutput = size[0] * size[1] * size[2] * sizeof(float);
@@ -79,10 +59,10 @@ CUDA_laplacian( int size[3],
 
   dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
 
-  gradient_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_grad_x, dev_grad_y, dev_grad_z);
+  gradient_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_grad_x, dev_grad_y, dev_grad_z, dev_Size, dev_Spacing);
   CUDA_CHECK_ERROR;
 
-  divergence_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, dev_out);
+  divergence_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, dev_out, dev_Size, dev_Spacing);
   CUDA_CHECK_ERROR;
 
   // Cleanup

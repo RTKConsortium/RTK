@@ -18,12 +18,7 @@
 
 #include "rtkCudaFirstOrderKernels.hcu"
 
-// TEXTURES AND CONSTANTS //
-
-__constant__ int3 c_Size;
-__constant__ float3 c_Spacing;
-
-__global__ void divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out)
+__global__ void divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out, int3 c_Size, float3 c_Spacing)
 {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -60,7 +55,7 @@ __global__ void divergence_kernel(float * grad_x, float * grad_y, float * grad_z
           + (A.z - B.z) / c_Spacing.z;
 }
 
-__global__ void gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z)
+__global__ void gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z, int3 c_Size, float3 c_Spacing)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;

@@ -44,15 +44,18 @@ namespace rtk
    *
    * This filter implements the ConjugateGradient method.
    * ConjugateGradient attempts to find the f that minimizes
-   * || sqrt(D) (Rf -p) ||_2^2,
+   * || sqrt(D) (Rf -p) ||_2^2 + gamma || grad f ||_2^2
    * with R the forward projection operator,
    * p the measured projections, and D the displaced detector weighting operator.
-   * In this it is similar to the ART and SART methods. The difference lies
+   *
+   * With gamma=0, this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
    * at a time), and ConjugateGradient a conjugate gradient method
    * (projects and back projects all projections together).
+   *
+   * With gamma > 0, a regularization is applied.
    *
    * \dot
    * digraph ConjugateGradientConeBeamReconstructionFilter {
