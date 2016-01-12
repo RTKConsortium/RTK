@@ -1,0 +1,35 @@
+{
+  "name" : "DrawEllipsoidImageFilter",
+  "template_code_filename" : "RTKImageFilter",
+  "template_test_filename" : "ImageFilter",
+  "number_of_inputs" : 1,
+  "output_image_type" : "TImageType",
+  "pixel_types" : "RealPixelIDTypeList",
+  "filter_type" : "rtk::DrawEllipsoidImageFilter<InputImageType, InputImageType>",
+  "members" : [
+    {
+      "name" : "Density",
+      "type" : "double",
+      "default" : "1."
+    }
+    {
+      "name" : "Angle",
+      "type" : "double",
+      "default" : "0."
+    }
+    {
+      "name" : "Axis",
+      "type" : "double",
+      "default" : "std::vector<double>(3, 0)",
+      "dim_vec" : 1,
+	  "itk_type" : "typename FilterType::VectorType"
+    },
+    {
+      "name" : "Center",
+      "type" : "double",
+      "default" : "std::vector<double>(3, 0)",
+      "dim_vec" : 1,
+	  "itk_type" : "typename FilterType::VectorType"
+    }
+  ]
+}
