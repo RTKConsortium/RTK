@@ -40,16 +40,18 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_ConstantProjectionsSource = rtk::CudaConstantVolumeSource::New();
   m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
   m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+  m_LaplacianFilter = rtk::CudaLaplacianImageFilter::New();
 #else
   m_ConstantProjectionsSource = ConstantSourceType::New();
   m_ConstantVolumeSource = ConstantSourceType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_LaplacianFilter = LaplacianFilterType::New();
 #endif
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
   m_AddFilter = AddFilterType::New();
-  m_LaplacianFilter = LaplacianFilterType::New();
+
   m_MultiplyLaplacianFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
