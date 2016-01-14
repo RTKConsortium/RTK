@@ -96,13 +96,13 @@ namespace rtk
    * Displaced -> Multiply;
    * Input2 -> Multiply;
    * Multiply -> BackProjection;
-   * BackProjection -> MultiplyOutput;
+   * BackProjection -> Add;
    * Input3 -> MultiplyOutput;
-   * MultiplyOutput -> Add;
-   * Input0 -> Laplacian;
+   * MultiplyInput -> Laplacian;
    * Laplacian -> MultiplyLaplacian;
    * MultiplyLaplacian -> Add;
-   * Add -> Output;
+   * Add -> MultiplyOutput;
+   * MultiplyOutput -> Output;
    * }
    * \enddot
    *
@@ -121,7 +121,12 @@ public:
   typedef ReconstructionConjugateGradientOperator    Self;
   typedef ConjugateGradientOperator< TOutputImage >  Superclass;
   typedef itk::SmartPointer< Self >                  Pointer;
-
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>, TOutputImage::ImageDimension > GradientImageType;
+#else
+  typedef itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension >, TOutputImage::ImageDimension > GradientImageType;
+#endif
+ 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
@@ -139,11 +144,7 @@ public:
   typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
   typedef itk::AddImageFilter<TOutputImage>                               AddFilterType;
 
-#ifdef RTK_USE_CUDA
-  typedef rtk::CudaLaplacianImageFilter                                   LaplacianFilterType;
-#else
-  typedef rtk::LaplacianImageFilter<TOutputImage>                         LaplacianFilterType;
-#endif
+  typedef rtk::LaplacianImageFilter<TOutputImage, GradientImageType>      LaplacianFilterType;
 
   /** Set the backprojection filter*/
   void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
