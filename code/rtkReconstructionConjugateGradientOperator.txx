@@ -140,15 +140,15 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
 
   if (m_Regularized)
-  {
-  m_LaplacianFilter->SetInput(this->GetInput(0));
+    {
+    m_LaplacianFilter->SetInput(this->GetInput(0));
 
-  m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
-  m_MultiplyLaplacianFilter->SetConstant2(m_Gamma);
+    m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
+    m_MultiplyLaplacianFilter->SetConstant2(m_Gamma);
 
-  m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
-  m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
-  }
+    m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
+    m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
+    }
 
   if (m_Weighted)
     {
@@ -171,7 +171,10 @@ ReconstructionConjugateGradientOperator<TOutputImage>
       // If a regularization is added, it needs to be added to the output of the
       // m_MultiplyOutputVolumeFilter, instead of that of the m_BackProjectionFilter
       if (m_Regularized)
-        m_AddFilter->SetInput1( m_MultiplyOutputVolumeFilter->GetOutput());
+        {
+        m_LaplacianFilter->SetInput(m_MultiplyInputVolumeFilter->GetOutput());
+        m_MultiplyOutputVolumeFilter->SetInput1( m_AddFilter->GetOutput());
+        }
       }
     }
   else
@@ -186,31 +189,46 @@ ReconstructionConjugateGradientOperator<TOutputImage>
 
   // Set memory management parameters for forward
   // and back projection filters
+  m_ForwardProjectionFilter->SetInPlace(!m_Preconditioned);
   m_ForwardProjectionFilter->ReleaseDataFlagOn();
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 
-  // Have the last filter calculate its output information
-  m_BackProjectionFilter->UpdateOutputInformation();
-
-  // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_BackProjectionFilter->GetOutput() );
+  // Update output information on the last filter of the pipeline
+  if (m_Preconditioned)
+    {
+    m_MultiplyOutputVolumeFilter->UpdateOutputInformation();
+    this->GetOutput()->CopyInformation( m_MultiplyOutputVolumeFilter->GetOutput() );
+    }
+  else
+    {
+    if (m_Regularized)
+      {
+      m_AddFilter->UpdateOutputInformation();
+      this->GetOutput()->CopyInformation( m_AddFilter->GetOutput() );
+      }
+    else
+      {
+      m_BackProjectionFilter->UpdateOutputInformation();
+      this->GetOutput()->CopyInformation( m_BackProjectionFilter->GetOutput() );
+      }
+    }
 }
 
 template< typename TOutputImage >
 void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
 {
   // Execute Pipeline
-  if (m_Regularized)
+  if (m_Preconditioned)
     {
-    m_AddFilter->Update();
-    this->GraftOutput( m_AddFilter->GetOutput() );
+    m_MultiplyOutputVolumeFilter->Update();
+    this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
     }
   else
     {
-    if (m_Preconditioned)
+    if (m_Regularized)
       {
-      m_MultiplyOutputVolumeFilter->Update();
-      this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
+      m_AddFilter->Update();
+      this->GraftOutput( m_AddFilter->GetOutput() );
       }
     else
       {

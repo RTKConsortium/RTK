@@ -96,13 +96,13 @@ namespace rtk
    * Displaced -> Multiply;
    * Input2 -> Multiply;
    * Multiply -> BackProjection;
-   * BackProjection -> MultiplyOutput;
+   * BackProjection -> Add;
    * Input3 -> MultiplyOutput;
-   * MultiplyOutput -> Add;
-   * Input0 -> Laplacian;
+   * MultiplyInput -> Laplacian;
    * Laplacian -> MultiplyLaplacian;
    * MultiplyLaplacian -> Add;
-   * Add -> Output;
+   * Add -> MultiplyOutput;
+   * MultiplyOutput -> Output;
    * }
    * \enddot
    *
