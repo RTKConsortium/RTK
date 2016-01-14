@@ -288,9 +288,11 @@ ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
 TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
 ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
 
-ADD_EXECUTABLE(rtkselectoneprojpercycletest rtkselectoneprojpercycletest.cxx)
-TARGET_LINK_LIBRARIES(rtkselectoneprojpercycletest ${RTK_LIBRARIES})
-ADD_TEST(rtkselectoneprojpercycletest ${EXECUTABLE_OUTPUT_PATH}/rtkselectoneprojpercycletest)
+IF(ITK_VERSION VERSION_GREATER 4.3.2)
+  ADD_EXECUTABLE(rtkselectoneprojpercycletest rtkselectoneprojpercycletest.cxx)
+  TARGET_LINK_LIBRARIES(rtkselectoneprojpercycletest ${RTK_LIBRARIES})
+  ADD_TEST(rtkselectoneprojpercycletest ${EXECUTABLE_OUTPUT_PATH}/rtkselectoneprojpercycletest)
+ENDIF()
 
 # We cannot compile these tests using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
