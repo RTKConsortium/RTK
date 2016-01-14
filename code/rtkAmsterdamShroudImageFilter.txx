@@ -197,7 +197,7 @@ AmsterdamShroudImageFilter<TInputImage>
     matrix = m_Geometry->GetMatrices()[iProj].GetVnlMatrix();
     for(unsigned int ci=0; ci<8; ci++)
       {
-      typename TInputImage::PointType pCorner;
+      typename TInputImage::PointType pCorner(0.);
       vnl_vector< double > pCornerVnl = m_Geometry->GetMatrices()[iProj].GetVnlMatrix()* corners[ci].GetVnlVector();
       for(unsigned int i=0; i<2; i++)
         pCorner[i] = pCornerVnl[i] / pCornerVnl[2];
