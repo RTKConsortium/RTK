@@ -73,7 +73,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_SubtractFilter1->ReleaseDataFlagOff(); // Output used in two filters
   m_SoftThresholdFilter->ReleaseDataFlagOff(); // Output is g_k+1
   m_SubtractFilter2->ReleaseDataFlagOff(); //Output is d_k+1
-  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
+  //m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
 template< typename TOutputImage >
@@ -136,19 +136,20 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_CGOperator->SetBeta(m_Beta);
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_MultiplyFilter->SetConstant2( m_Beta );
-  m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
+  //m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  //m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, this->GetInput(1));
   m_AddFilter1->SetInput1(this->GetInput(0));
   m_AddFilter2->SetInput2(m_BackProjectionFilter->GetOutput());
 
   // For the same reason, set geometry now
   m_CGOperator->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  //m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);
