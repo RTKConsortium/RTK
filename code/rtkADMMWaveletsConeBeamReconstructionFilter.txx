@@ -47,7 +47,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_SoftThresholdFilter = SoftThresholdFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  //m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent connections
   m_AddFilter1->SetInput2(m_ZeroMultiplyFilter->GetOutput());
@@ -62,7 +62,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 
   // Set permanent parameters
   m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+ //m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management parameters
   m_ZeroMultiplyFilter->ReleaseDataFlagOn();

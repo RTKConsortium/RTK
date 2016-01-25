@@ -52,7 +52,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_SoftThresholdFilter = SoftThresholdTVFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  //m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_GatingWeightsFilter = GatingWeightsFilterType::New();
 
   // Set permanent connections
@@ -73,7 +73,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   // Set permanent parameters
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ZeroMultiplyGradientFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  //m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management parameters
   m_ZeroMultiplyVolumeFilter->ReleaseDataFlagOn();

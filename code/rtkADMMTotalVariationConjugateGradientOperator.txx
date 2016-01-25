@@ -41,7 +41,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   m_SubtractFilter = SubtractFilterType::New();
   m_DivergenceFilter = DivergenceFilterType::New();
   m_GradientFilter = GradientFilterType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  //m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_GatingWeightsFilter = GatingWeightsFilterType::New();
 
   // Set permanent connections
@@ -52,7 +52,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   // Set permanent parameters
   m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  //m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management options
   m_ZeroMultiplyProjectionFilter->ReleaseDataFlagOn();
@@ -126,13 +126,15 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
     // Insert the gating filter into the pipeline
     m_GatingWeightsFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
     m_GatingWeightsFilter->SetVector(m_GatingWeights);
-    m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
+    //m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
     }
   else
     {
-    m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
+    //m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
     }
-  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  //m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
+
   m_SubtractFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
@@ -142,7 +144,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   // Set geometry
   m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  //m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set runtime parameters
   m_MultiplyFilter->SetConstant2( m_Beta );
