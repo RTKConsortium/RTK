@@ -10,7 +10,7 @@ file:///var/bigharddrive/%(algo)/%(hash)")
 mark_as_advanced(ExternalData_URL_TEMPLATES)
 list(APPEND ExternalData_URL_TEMPLATES
   # Data published by MIDAS
-  "http://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=%(hash)&algorithm=%(algo)"
+  "https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=%(hash)&algorithm=%(algo)"
   )
 
 # Tell ExternalData commands to transform raw files to content links.

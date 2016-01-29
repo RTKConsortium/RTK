@@ -75,6 +75,8 @@ namespace rtk
    * MultiplyOutput [label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
+   * DisplacedForPreconditioning [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
+   * DisplacedForNormalization [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * VolumeSource [ label="rtk::ConstantImageSource (Volume)" URL="\ref rtk::ConstantImageSource"];
    * ProjectionsSource [ label="rtk::ConstantImageSource (Projections)" URL="\ref rtk::ConstantImageSource"];
@@ -88,14 +90,16 @@ namespace rtk
    * Input0 -> ConjugateGradient;
    * Input1 -> Displaced;
    * Input2 -> MultiplyProjections;
-   * Input2 -> BackProjForPreconditioning;
+   * Input2 -> DisplacedForPreconditioning;
+   * DisplacedForPreconditioning -> BackProjForPreconditioning;
    * Displaced -> MultiplyProjections;
    * MultiplyProjections -> BackProjection;
    * VolumeSource -> AfterVolumeSource [arrowhead=none];
    * AfterVolumeSource -> BackProjection;
    * AfterVolumeSource -> BackProjForPreconditioning;
    * AfterVolumeSource -> BackProjForNormalization;
-   * ProjectionsSource -> BackProjForNormalization;
+   * ProjectionsSource -> DisplacedForNormalization;
+   * DisplacedForNormalization -> BackProjForNormalization;
    * BackProjForPreconditioning -> Divide;
    * BackProjForNormalization -> Divide;
    * Divide -> AfterDivide [arrowhead=none];
@@ -195,6 +199,8 @@ protected:
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForPreconditioning;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForNormalization;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilterForPreconditioning;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilterForNormalization;
     typename ConstantImageSourceType::Pointer                                   m_ConstantVolumeSource;
     typename ConstantImageSourceType::Pointer                                   m_ConstantProjectionsSource;
     typename DivideFilterType::Pointer                                          m_DivideFilter;
