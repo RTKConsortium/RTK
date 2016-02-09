@@ -105,12 +105,12 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
 
       rbi[box]->SetNumberOfThreads( this->GetNumberOfThreads() );
       rbi[box]->SetDensity(m_Fig[i][8]);
-      boxMin[0] = -m_Fig[i][1];
-      boxMin[1] = -m_Fig[i][2];
-      boxMin[2] = -m_Fig[i][3];
-      boxMax[0] = m_Fig[i][1];
-      boxMax[1] = m_Fig[i][2];
-      boxMax[2] = m_Fig[i][3];
+      boxMin[0] = -m_Fig[i][1]+m_Fig[i][4];
+      boxMin[1] = -m_Fig[i][2]+m_Fig[i][5];
+      boxMin[2] = -m_Fig[i][3]+m_Fig[i][6];
+      boxMax[0] = m_Fig[i][1]+m_Fig[i][4];
+      boxMax[1] = m_Fig[i][2]+m_Fig[i][5];
+      boxMax[2] = m_Fig[i][3]+m_Fig[i][6];
       rbi[box]->SetBoxMin(boxMin);
       rbi[box]->SetBoxMax(boxMax);
 
