@@ -62,11 +62,11 @@ protected:
   }
 
   /** Apply changes to the input image requested region. */
-  virtual void GenerateInputRequestedRegion();
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  virtual void VerifyInputInformation() ITK_OVERRIDE {}
 
 private:
   ForwardProjectionImageFilter(const Self&); //purposely not implemented

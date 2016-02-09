@@ -64,7 +64,7 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name);
+  int CanReadFile(const char* name) ITK_OVERRIDE;
 
   /** Get smart pointer to projection geometry. */
   itkGetMacro(Geometry, GeometryPointer);
@@ -76,13 +76,13 @@ protected:
   /** Callback function -- called from XML parser with start-of-element
    * information.
    */
-  void StartElement(const char * name,const char **atts);
+  void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
 
   void StartElement(const char * name);
 
-  void EndElement(const char *name);
+  void EndElement(const char *name) ITK_OVERRIDE;
 
-  void CharacterDataHandler(const char *inData, int inLength);
+  void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
 
 private:
    //purposely not implemented
@@ -135,10 +135,10 @@ public:
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLFileWriter);
 
   /** Test whether a file is writable. */
-  int CanWriteFile(const char* name);
+  int CanWriteFile(const char* name) ITK_OVERRIDE;
 
   /** Actually write out the file in question */
-  int WriteFile();
+  int WriteFile() ITK_OVERRIDE;
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileWriter() {};

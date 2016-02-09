@@ -76,7 +76,7 @@ public:
                                       const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
   /** Empty the geometry object. */
-  virtual void Clear();
+  virtual void Clear() ITK_OVERRIDE;
 
   /** Get the vector of geometry parameters (one per projection). Angles are
    * in radians.*/
