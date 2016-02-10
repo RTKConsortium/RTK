@@ -23,6 +23,8 @@
 
 #include <vector>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 
@@ -74,7 +76,7 @@ protected:
   ProjectionGeometry(){};
   virtual ~ProjectionGeometry(){};
 
-  virtual void PrintSelf( std::ostream& os, itk::Indent indent ) const;
+  virtual void PrintSelf( std::ostream& os, itk::Indent indent ) const ITK_OVERRIDE;
 
   /** Add projection matrix */
   virtual void AddMatrix(const MatrixType &m){
