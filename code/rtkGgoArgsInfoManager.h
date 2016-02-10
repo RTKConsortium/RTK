@@ -17,6 +17,12 @@
  *=========================================================================*/
 #ifndef __rtkGgoArgsInfoManager_h
 #define __rtkGgoArgsInfoManager_h
+
+#include "rtkConfiguration.h"
+#ifdef RTK_TIME_EACH_FILTER
+# include "rtkGlobalTimer.h"
+#endif
+
 namespace rtk
 {
 template < class TArgsInfo, class TCleanupFunction = void (*)( TArgsInfo* ) >
@@ -27,6 +33,9 @@ class args_info_manager
       {
       this->args_info_pointer = &args_info;
       this->cleanup_function = cf;
+#ifdef RTK_TIME_EACH_FILTER
+      rtk::GlobalTimer::GetInstance()->SetVerbose(args_info.verbose_flag);
+#endif
       }
     ~args_info_manager()
       {

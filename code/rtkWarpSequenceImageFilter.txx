@@ -37,6 +37,7 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
 
   // Set default member values
   m_ForwardWarp = false;
+  m_UseNearestNeighborInterpolationInWarping = false;
 
   // Create the filters
   m_ExtractFilter = ExtractFilterType::New();
@@ -80,7 +81,6 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
 {
   int Dimension = TImageSequence::ImageDimension;
 
-
 #ifdef RTK_USE_CUDA
   // Create the right warp filter (regular or forward)
   if (m_ForwardWarp)
@@ -94,8 +94,13 @@ WarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
     m_WarpFilter = WarpFilterType::New();
 #endif
 
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  m_WarpFilter->SetInterpolator(interpolator);
+  typename LinearInterpolatorType::Pointer linearInterpolator = LinearInterpolatorType::New();
+  typename NearestNeighborInterpolatorType::Pointer nearestNeighborInterpolator = NearestNeighborInterpolatorType::New();
+
+  if (m_UseNearestNeighborInterpolationInWarping)
+    m_WarpFilter->SetInterpolator(nearestNeighborInterpolator);
+  else
+    m_WarpFilter->SetInterpolator(linearInterpolator);
 
   // Set runtime connections
   m_WarpFilter->SetInput(m_ExtractFilter->GetOutput());

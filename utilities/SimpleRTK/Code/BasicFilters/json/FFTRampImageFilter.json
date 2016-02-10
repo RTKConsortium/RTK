@@ -6,5 +6,11 @@
   "output_image_type" : "TImageType",
   "pixel_types" : "RealPixelIDTypeList",
   "filter_type" : "rtk::FFTRampImageFilter<InputImageType, InputImageType>",
-  "members" : []
+  "members" : [
+    {
+      "name" : "HannCutFrequency",
+      "type" : "double",
+	  "default" : "0."
+    }
+  ]
 }

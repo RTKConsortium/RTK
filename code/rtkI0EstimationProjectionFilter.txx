@@ -22,6 +22,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 #include <algorithm>
+#include <fstream>
 
 namespace rtk
 {

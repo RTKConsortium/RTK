@@ -144,9 +144,11 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 2: Joseph Backprojector, laplacian regularization ******" << std::endl;
 
   conjugategradient->SetBackProjectionFilter( 1 );
+  conjugategradient->SetRegularized(true);
+  conjugategradient->SetGamma(0.01);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -157,6 +159,7 @@ int main(int, char** )
 
   conjugategradient->SetForwardProjectionFilter(2);
   conjugategradient->SetBackProjectionFilter( 2 );
+  conjugategradient->SetRegularized(false);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -165,8 +168,15 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 4: Joseph Backprojector, weighted least squares  ******" << std::endl;
 
-  // We use the projections themselves as weights map
-  conjugategradient->SetInput(2, rei->GetOutput());
+  // Use uniform projections as weights map (therefore not really weighting anything)
+  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
+  uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
+  uniformWeightsSource->SetConstant(2.0);
+
+  conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
+  conjugategradient->SetWeighted(true);
+  conjugategradient->SetPreconditioned(true);
+  conjugategradient->SetRegularized(false);
 
   conjugategradient->SetBackProjectionFilter( 1 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );

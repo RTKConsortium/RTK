@@ -20,6 +20,7 @@
 #define __rtkImportImageFilter_h
 
 #include "itkImageSource.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -122,16 +123,16 @@ public:
 protected:
   ImportImageFilter();
   ~ImportImageFilter();
-  void PrintSelf(std::ostream & os, itk::Indent indent) const;
+  void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
 
   /** This filter does not actually "produce" any data, rather it "wraps"
    * the user supplied data into an itk::Image.  */
-  virtual void GenerateData();
+  virtual void GenerateData() ITK_OVERRIDE;
 
   /** This is a source, so it must set the spacing, size, and largest possible
    * region for the output image that it will produce.
    * \sa ProcessObject::GenerateOutputInformation() */
-  virtual void GenerateOutputInformation();
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** This filter can only produce the amount of data that it is given,
    * so we must override ProcessObject::EnlargeOutputRequestedRegion()
@@ -140,7 +141,7 @@ protected:
    * given.)
    *
    * \sa ProcessObject::EnlargeOutputRequestedRegion() */
-  virtual void EnlargeOutputRequestedRegion(itk::DataObject *output);
+  virtual void EnlargeOutputRequestedRegion(itk::DataObject *output) ITK_OVERRIDE;
 
 private:
   ImportImageFilter(const ImportImageFilter &); //purposely not implemented

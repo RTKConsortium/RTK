@@ -20,6 +20,7 @@
 #define __rtkReconstructionConjugateGradientOperator_h
 
 #include <itkMultiplyImageFilter.h>
+#include <itkAddImageFilter.h>
 
 #include "rtkConstantImageSource.h"
 
@@ -29,10 +30,12 @@
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkLaplacianImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaDisplacedDetectorImageFilter.h"
   #include "rtkCudaConstantVolumeSource.h"
+  #include "rtkCudaLaplacianImageFilter.h"
 #endif
 
 namespace rtk
@@ -43,17 +46,19 @@ namespace rtk
    *
    * This filter implements the operator A used in the conjugate gradient reconstruction method,
    * which attempts to find the f that minimizes
-   * || sqrt(D) (Rf -p) ||_2^2,
+   * || sqrt(D) (Rf -p) ||_2^2 + gamma || grad f ||_2^2,
    * with R the forward projection operator,
    * p the measured projections, and D the displaced detector weighting operator.
-   * In this it is similar to the ART and SART methods. The difference lies
+   *
+   * With gamma=0, this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
    * at a time), and ConjugateGradient a conjugate gradient method
    * (projects and back projects all projections together).
    *
-   * This filter takes in input f and outputs R_t D R f
+   * This filter takes in input f and outputs R_t D R f + gamma Laplacian f
+   * If m_Regularized is false (default), regularization is ignored, and gamma is considered null 
    *
    * \dot
    * digraph ReconstructionConjugateGradientOperator {
@@ -64,6 +69,8 @@ namespace rtk
    * Input1 [shape=Mdiamond];
    * Input2 [label="Input 2 (Weights)"];
    * Input2 [shape=Mdiamond];
+   * Input3 [label="Input 3 (Preconditioning weights)"];
+   * Input3 [shape=Mdiamond];
    * Output [label="Output (Volume)"];
    * Output [shape=Mdiamond];
    *
@@ -74,16 +81,28 @@ namespace rtk
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * Multiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * MultiplyInput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * MultiplyOutput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * Laplacian [ label="rtk::LaplacianImageFilter" URL="\ref rtk::LaplacianImageFilter"];
+   * MultiplyLaplacian [ label="itk::MultiplyImageFilter (by gamma)" URL="\ref itk::MultiplyImageFilter"];
+   * Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    *
-   * Input0 -> ForwardProjection;
+   * Input0 -> MultiplyInput;
+   * Input3 -> MultiplyInput;
+   * MultiplyInput -> ForwardProjection;
    * ConstantProjectionsSource -> ForwardProjection;
    * ConstantVolumeSource -> BackProjection;
    * ForwardProjection -> Displaced;
    * Displaced -> Multiply;
    * Input2 -> Multiply;
    * Multiply -> BackProjection;
-   * BackProjection -> Output;
-   *
+   * BackProjection -> Add;
+   * Input3 -> MultiplyOutput;
+   * MultiplyInput -> Laplacian;
+   * Laplacian -> MultiplyLaplacian;
+   * MultiplyLaplacian -> Add;
+   * Add -> MultiplyOutput;
+   * MultiplyOutput -> Output;
    * }
    * \enddot
    *
@@ -102,7 +121,12 @@ public:
   typedef ReconstructionConjugateGradientOperator    Self;
   typedef ConjugateGradientOperator< TOutputImage >  Superclass;
   typedef itk::SmartPointer< Self >                  Pointer;
-
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>, TOutputImage::ImageDimension > GradientImageType;
+#else
+  typedef itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension >, TOutputImage::ImageDimension > GradientImageType;
+#endif
+ 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
@@ -118,6 +142,9 @@ public:
   typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
   typedef rtk::ConstantImageSource<TOutputImage>                          ConstantSourceType;
   typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
+  typedef itk::AddImageFilter<TOutputImage>                               AddFilterType;
+
+  typedef rtk::LaplacianImageFilter<TOutputImage, GradientImageType>      LaplacianFilterType;
 
   /** Set the backprojection filter*/
   void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
@@ -128,9 +155,20 @@ public:
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
 
-  /** If IsWeighted, perform weighted least squares optimization instead of unweighted */
-  itkSetMacro(IsWeighted, bool)
-  itkGetMacro(IsWeighted, bool)
+  /** If Weighted, perform weighted least squares optimization instead of unweighted */
+  itkSetMacro(Weighted, bool)
+  itkGetMacro(Weighted, bool)
+
+  /** If Weighted && Preconditioned, multiplies by preconditioning weights to speed up CG convergence */
+  itkSetMacro(Preconditioned, bool)
+  itkGetMacro(Preconditioned, bool)
+  
+  /** If Regularized, perform laplacian-based regularization during 
+  *  reconstruction (gamma is the strength of the regularization) */
+  itkSetMacro(Regularized, bool)
+  itkGetMacro(Regularized, bool)
+  itkSetMacro(Gamma, float)
+  itkGetMacro(Gamma, float)
 
 protected:
   ReconstructionConjugateGradientOperator();
@@ -146,11 +184,19 @@ protected:
   typename ConstantSourceType::Pointer              m_ConstantProjectionsSource;
   typename ConstantSourceType::Pointer              m_ConstantVolumeSource;
   typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
-  typename MultiplyFilterType::Pointer              m_MultiplyFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyProjectionsFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyOutputVolumeFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyInputVolumeFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyLaplacianFilter;
+  typename AddFilterType::Pointer                   m_AddFilter;
+  typename LaplacianFilterType::Pointer             m_LaplacianFilter;
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
-  bool                                              m_IsWeighted; //Weighted least squares ?
+  bool                                              m_Weighted; //Weighted least squares ?
+  bool                                              m_Preconditioned; //Multiply by preconditioning weights ?
+  bool                                              m_Regularized;
+  float                                             m_Gamma; //Strength of the regularization
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */

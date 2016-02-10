@@ -75,12 +75,23 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
   else
     imageDirection.SetIdentity();
 
-
   source->SetOrigin( imageOrigin );
   source->SetSpacing( imageSpacing );
   source->SetDirection( imageDirection );
   source->SetSize( imageDimension );
   source->SetConstant( 0. );
+
+  // Copy output image information from an existing file, if requested
+  // Overwrites parameters given in command line, if any
+  if (args_info.like_given)
+    {
+    typedef itk::ImageFileReader<  ImageType > LikeReaderType;
+    typename LikeReaderType::Pointer likeReader = LikeReaderType::New();
+    likeReader->SetFileName( args_info.like_arg );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( likeReader->UpdateOutputInformation() );
+    source->SetInformationFromImage(likeReader->GetOutput());
+    }
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( source->UpdateOutputInformation() );
 }
 

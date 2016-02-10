@@ -54,16 +54,24 @@ namespace rtk
    * Gradient reconstruction, then applying several regularization steps :
    * - Replacing all negative values by zero
    * - Averaging along time where no movement is expected
-   * - Applying total variation denoising in space
+   * - Applying total variation or wavelets denoising in space
    * - Applying total variation denoising in time
    * and starting over as many times as the number of main loop iterations desired.
    *
-   * If the required motion vector fields are provided, 4D ROOSTER performs
-   * total variation denoising in time the following way:
-   * - each 3D volume of the sequence is warped to an average position
+   * If both the displacement vector fields to a reference phase and from a reference phase are provided,
+   * 4D ROOSTER performs total variation denoising in time the following way:
+   * - each 3D volume of the sequence is warped to the reference phase using the first DVF
    * - TV denoising in time is applied on the warped sequence
-   * - each 3D volume is warped back
-   * Otherwise, TV denoising in time is applied on the non-warped sequence
+   * - the difference sequence between the warped-then-denoised sequence and the warped sequence is computed
+   * - that difference sequence is warped from the reference phase using the second DVF, and added to the output of spatial denoising
+   *
+   * If only the displacement vector field to a reference phase is provided,
+   * 4D ROOSTER performs total variation denoising in time the following way:
+   * - each 3D volume of the sequence is warped to the reference phase using the first DVF
+   * - TV denoising in time is applied on the warped sequence
+   * - the warped-then-denoised sequence is warped from the reference phase by
+   * an iterative procedure based on conjugate gradient. This significantly increases
+   * computation time.
    *
    * \dot
    * digraph FourDROOSTERConeBeamReconstructionFilter {
@@ -105,61 +113,124 @@ namespace rtk
    *    AfterTVTime -> AfterInput0 [style=dashed];
    *    }
    *
-   * subgraph clusterMCROOSTER
+   * subgraph clusterMCROOSTER_one_way
    *    {
-   *    label="Motion Compensated ROOSTER"
+   *    label="Motion Compensated ROOSTER, one-way DVF"
    *
-   *    MC_Input0 [label="Input 0 (Input: 4D sequence of volumes)"];
-   *    MC_Input0 [shape=Mdiamond];
-   *    MC_Input1 [label="Input 1 (Projections)"];
-   *    MC_Input1 [shape=Mdiamond];
-   *    MC_Input2 [label="Input 2 (Motion mask)"];
-   *    MC_Input2 [shape=Mdiamond];
-   *    MC_Input3 [label="Input 3 (4D Displacement Vector Field)"];
-   *    MC_Input3 [shape=Mdiamond];
-   *    MC_Output [label="Output (Reconstruction: 4D sequence of volumes)"];
-   *    MC_Output [shape=Mdiamond];
+   *    MC_OW_Input0 [label="Input 0 (Input: 4D sequence of volumes)"];
+   *    MC_OW_Input0 [shape=Mdiamond];
+   *    MC_OW_Input1 [label="Input 1 (Projections)"];
+   *    MC_OW_Input1 [shape=Mdiamond];
+   *    MC_OW_Input2 [label="Input 2 (Motion mask)"];
+   *    MC_OW_Input2 [shape=Mdiamond];
+   *    MC_OW_Input3 [label="Input 3 (4D Displacement Vector Field)"];
+   *    MC_OW_Input3 [shape=Mdiamond];
+   *    MC_OW_Output [label="Output (Reconstruction: 4D sequence of volumes)"];
+   *    MC_OW_Output [shape=Mdiamond];
    *
    *    node [shape=box];
+<<<<<<< Updated upstream
    *    MC_FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
    *    MC_Positivity [ label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
    *    MC_Resample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
    *    MC_ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
    *    MC_TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   *    MC_BackwardWarp [ label="rtk::WarpSequenceImageFilter (interpolate)" URL="\ref rtk::WarpSequenceImageFilter"];
+   *    MC_BackwardWarp [ label="rtk::WarpSequenceImageFilter (direct field)" URL="\ref rtk::WarpSequenceImageFilter"];
    *    MC_TVTime [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   *    MC_ForwardWarp [ label="rtk::WarpSequenceImageFilter (splat)" URL="\ref rtk::WarpSequenceImageFilter"];
+   *    MC_ForwardWarp [ label="rtk::WarpSequenceImageFilter (inverse field)" URL="\ref rtk::WarpSequenceImageFilter"];
    *    MC_Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    *    MC_Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    *    MC_AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    *    MC_AfterWarpBackward [label="", fixedsize="false", width=0, height=0, shape=none];
    *    MC_AfterTVSpace [label="", fixedsize="false", width=0, height=0, shape=none];
    *    MC_AfterAdd [label="", fixedsize="false", width=0, height=0, shape=none];
+=======
+   *    MC_OW_FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
+   *    MC_OW_Positivity [ label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
+   *    MC_OW_Resample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
+   *    MC_OW_ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
+   *    MC_OW_TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   *    MC_OW_Warp [ label="rtk::WarpSequenceImageFilter" URL="\ref rtk::WarpSequenceImageFilter"];
+   *    MC_OW_TVTime [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   *    MC_OW_Unwarp [ label="rtk::UnwarpSequenceImageFilter" URL="\ref rtk::UnwarpSequenceImageFilter"];
+   *    MC_OW_AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+   *    MC_OW_AfterUnwarp [label="", fixedsize="false", width=0, height=0, shape=none];
+>>>>>>> Stashed changes
    *
-   *    MC_Input0 -> MC_AfterInput0 [arrowhead=none];
-   *    MC_AfterInput0 -> MC_FourDCG;
-   *    MC_Input1 -> MC_FourDCG;
-   *    MC_FourDCG -> MC_Positivity;
-   *    MC_Positivity -> MC_ROI;
-   *    MC_Input2 -> MC_Resample;
-   *    MC_Resample -> MC_ROI;
-   *    MC_ROI -> MC_TVSpace;
-   *    MC_TVSpace -> MC_AfterTVSpace [arrowhead=none];
-   *    MC_AfterTVSpace -> MC_BackwardWarp;
-   *    MC_AfterTVSpace -> MC_Add;
-   *    MC_Input3 -> MC_BackwardWarp;
-   *    MC_BackwardWarp -> MC_AfterWarpBackward;
-   *    MC_AfterWarpBackward -> MC_TVTime;
-   *    MC_AfterWarpBackward -> MC_Subtract;
-   *    MC_TVTime -> MC_Subtract;
-   *    MC_Subtract -> MC_ForwardWarp;
-   *    MC_Input3 -> MC_ForwardWarp;
-   *    MC_ForwardWarp -> MC_Add;
-   *    MC_Add -> MC_AfterAdd [arrowhead=none];
-   *    MC_AfterAdd -> MC_Output;
-   *    MC_AfterAdd -> MC_AfterInput0 [style=dashed];
+   *    MC_OW_Input0 -> MC_OW_AfterInput0 [arrowhead=none];
+   *    MC_OW_AfterInput0 -> MC_OW_FourDCG;
+   *    MC_OW_Input1 -> MC_OW_FourDCG;
+   *    MC_OW_FourDCG -> MC_OW_Positivity;
+   *    MC_OW_Positivity -> MC_OW_ROI;
+   *    MC_OW_Input2 -> MC_OW_Resample;
+   *    MC_OW_Resample -> MC_OW_ROI;
+   *    MC_OW_ROI -> MC_OW_TVSpace;
+   *    MC_OW_TVSpace -> MC_OW_Warp;
+   *    MC_OW_Input3 -> MC_OW_Warp;
+   *    MC_OW_Input3 -> MC_OW_Unwarp;
+   *    MC_OW_Warp -> MC_OW_TVTime;
+   *    MC_OW_TVTime -> MC_OW_Unwarp;
+   *    MC_OW_Unwarp -> MC_OW_AfterUnwarp [arrowhead=none];
+   *    MC_OW_AfterUnwarp -> MC_OW_Output;
+   *    MC_OW_AfterUnwarp -> MC_OW_AfterInput0 [style=dashed];
    *    }
    *
+   * subgraph clusterMCROOSTER_both_ways
+   *    {
+   *    label="Motion Compensated ROOSTER, both-ways DVFs"
+   *
+   *    MC_BW_Input0 [label="Input 0 (Input: 4D sequence of volumes)"];
+   *    MC_BW_Input0 [shape=Mdiamond];
+   *    MC_BW_Input1 [label="Input 1 (Projections)"];
+   *    MC_BW_Input1 [shape=Mdiamond];
+   *    MC_BW_Input2 [label="Input 2 (Motion mask)"];
+   *    MC_BW_Input2 [shape=Mdiamond];
+   *    MC_BW_Input3 [label="Input 3 (4D DVF to reference phase)"];
+   *    MC_BW_Input3 [shape=Mdiamond];
+   *    MC_BW_Input4 [label="Input 4 (4D DVF from reference phase)"];
+   *    MC_BW_Input4 [shape=Mdiamond];
+   *    MC_BW_Output [label="Output (Reconstruction: 4D sequence of volumes)"];
+   *    MC_BW_Output [shape=Mdiamond];
+   *
+   *    node [shape=box];
+   *    MC_BW_FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
+   *    MC_BW_Positivity [ label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
+   *    MC_BW_Resample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
+   *    MC_BW_ROI [ label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
+   *    MC_BW_TVSpace [ label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   *    MC_BW_Warp [ label="rtk::WarpSequenceImageFilter (to reference phase)" URL="\ref rtk::WarpSequenceImageFilter"];
+   *    MC_BW_TVTime [ label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   *    MC_BW_InverseWarp [ label="rtk::WarpSequenceImageFilter (from reference phase)" URL="\ref rtk::WarpSequenceImageFilter"];
+   *    MC_BW_Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
+   *    MC_BW_Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+   *    MC_BW_AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+   *    MC_BW_AfterWarpBackward [label="", fixedsize="false", width=0, height=0, shape=none];
+   *    MC_BW_AfterTVSpace [label="", fixedsize="false", width=0, height=0, shape=none];
+   *    MC_BW_AfterAdd [label="", fixedsize="false", width=0, height=0, shape=none];
+   *
+   *    MC_BW_Input0 -> MC_BW_AfterInput0 [arrowhead=none];
+   *    MC_BW_AfterInput0 -> MC_BW_FourDCG;
+   *    MC_BW_Input1 -> MC_BW_FourDCG;
+   *    MC_BW_FourDCG -> MC_BW_Positivity;
+   *    MC_BW_Positivity -> MC_BW_ROI;
+   *    MC_BW_Input2 -> MC_BW_Resample;
+   *    MC_BW_Resample -> MC_BW_ROI;
+   *    MC_BW_ROI -> MC_BW_TVSpace;
+   *    MC_BW_TVSpace -> MC_BW_AfterTVSpace [arrowhead=none];
+   *    MC_BW_AfterTVSpace -> MC_BW_Warp;
+   *    MC_BW_AfterTVSpace -> MC_BW_Add;
+   *    MC_BW_Input3 -> MC_BW_Warp;
+   *    MC_BW_Warp -> MC_BW_AfterWarpBackward;
+   *    MC_BW_AfterWarpBackward -> MC_BW_TVTime;
+   *    MC_BW_AfterWarpBackward -> MC_BW_Subtract;
+   *    MC_BW_TVTime -> MC_BW_Subtract;
+   *    MC_BW_Subtract -> MC_BW_InverseWarp;
+   *    MC_BW_Input4 -> MC_BW_InverseWarp;
+   *    MC_BW_InverseWarp -> MC_BW_Add;
+   *    MC_BW_Add -> MC_BW_AfterAdd [arrowhead=none];
+   *    MC_BW_AfterAdd -> MC_BW_Output;
+   *    MC_BW_AfterAdd -> MC_BW_AfterInput0 [style=dashed];
+   *    }
    * }
    * \enddot
    *
@@ -228,6 +299,8 @@ public:
   typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>    WarpSequenceFilterType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
   typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
+  typedef itk::SubtractImageFilter<VolumeSeriesType, VolumeSeriesType>                                      SubtractFilterType;
+  typedef itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>                                           AddFilterType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void SetForwardProjectionFilter(int fwtype);
@@ -270,6 +343,9 @@ public:
 
   itkSetMacro(ComputeInverseWarpingByConjugateGradient, bool)
   itkGetMacro(ComputeInverseWarpingByConjugateGradient, bool)
+
+  itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
+  itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
 
   /** Get / Set whether conjugate gradient should be performed on GPU */
   itkGetMacro(CudaConjugateGradient, bool)
@@ -315,7 +391,8 @@ protected:
   typename TemporalTVDenoisingFilterType::Pointer         m_TVDenoisingTime;
   typename UnwarpSequenceFilterType::Pointer              m_Unwarp;
   typename WarpSequenceFilterType::Pointer                m_InverseWarp;
-
+  typename SubtractFilterType::Pointer                    m_SubtractFilter;
+  typename AddFilterType::Pointer                         m_AddFilter;
 
   // Booleans :
   // should warping be performed ?
@@ -323,6 +400,7 @@ protected:
   // should wavelets replace TV in spatial denoising ?
   bool  m_PerformWarping;
   bool  m_ComputeInverseWarpingByConjugateGradient;
+  bool  m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
   bool  m_CudaConjugateGradient;
   bool  m_WaveletsSpatialDenoising;
 

@@ -18,6 +18,24 @@ macro(add_cuda_test testname testfile)
  endif()
 endmacro()
 
+# Macro to add CUDA test when external data is required
+macro(rtk_add_cuda_test testname testfile)
+ if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+   set(testfullname ${testname}cudatest)
+   add_executable(${testfullname} ${testfile})
+   target_link_libraries(${testfullname} ${RTK_LIBRARIES})
+   set_target_properties(${testfullname} PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
+   set(data_list "")
+   foreach(loop_data ${ARGN})
+      set(data_list "${data_list} DATA{${loop_data}}")
+   endforeach()
+   RTK_ADD_TEST(NAME ${testfullname}
+		COMMAND ${EXECUTABLE_OUTPUT_PATH}/${testfullname}
+		${data_list}
+		)
+ endif()
+endmacro()
+
 # Executable to check the image quality
 ADD_EXECUTABLE(rtkcheckimagequality rtkcheckimagequality.cxx)
 TARGET_LINK_LIBRARIES(rtkcheckimagequality ${RTK_LIBRARIES})
@@ -133,6 +151,7 @@ ADD_EXECUTABLE(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 TARGET_LINK_LIBRARIES(rtkamsterdamshroudtest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkamsterdamshroudtest
+             DATA{Data/Baseline/AmsterdamShroud/Amsterdam_crop.mha}
              DATA{Data/Baseline/AmsterdamShroud/Amsterdam.mha})
 
 ADD_EXECUTABLE(rtkvariantest rtkvariantest.cxx)
@@ -234,6 +253,13 @@ RTK_ADD_TEST(NAME rtkinterpolatesplatadjointtest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkinterpolatesplatadjointtest
              DATA{Data/Input/Phases/phases_slow.txt})
 
+ADD_EXECUTABLE(rtklaplaciantest rtklaplaciantest.cxx)
+TARGET_LINK_LIBRARIES(rtklaplaciantest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtklaplaciantest 
+	     COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtklaplaciantest
+	     DATA{Data/Baseline/Laplacian/Laplacian.mha})
+RTK_ADD_CUDA_TEST(rtklaplacian rtklaplaciantest.cxx "Data/Baseline/Laplacian/Laplacian.mha")
+
 ADD_EXECUTABLE(rtktotalvariationtest rtktotalvariationtest.cxx)
 TARGET_LINK_LIBRARIES(rtktotalvariationtest ${RTK_LIBRARIES})
 ADD_TEST(rtktotalvariationtest ${EXECUTABLE_OUTPUT_PATH}/rtktotalvariationtest)
@@ -262,22 +288,35 @@ ADD_EXECUTABLE(rtkI0estimationtest rtkI0estimationtest.cxx)
 TARGET_LINK_LIBRARIES(rtkI0estimationtest ${RTK_LIBRARIES})
 ADD_TEST(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
 
-ADD_EXECUTABLE(rtkselectoneprojpercycletest rtkselectoneprojpercycletest.cxx)
-TARGET_LINK_LIBRARIES(rtkselectoneprojpercycletest ${RTK_LIBRARIES})
-ADD_TEST(rtkselectoneprojpercycletest ${EXECUTABLE_OUTPUT_PATH}/rtkselectoneprojpercycletest)
+IF(ITK_VERSION VERSION_GREATER 4.3.2)
+  ADD_EXECUTABLE(rtkselectoneprojpercycletest rtkselectoneprojpercycletest.cxx)
+  TARGET_LINK_LIBRARIES(rtkselectoneprojpercycletest ${RTK_LIBRARIES})
+  ADD_TEST(rtkselectoneprojpercycletest ${EXECUTABLE_OUTPUT_PATH}/rtkselectoneprojpercycletest)
+ENDIF()
 
-# We cannot compile this test using CPU if GPU is present
+# We cannot compile these tests using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter
 if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkiterativefdktest rtkiterativefdktest.cxx)
+  TARGET_LINK_LIBRARIES(rtkiterativefdktest ${RTK_LIBRARIES})
+  ADD_TEST(rtkiterativefdktest ${EXECUTABLE_OUTPUT_PATH}/rtkiterativefdktest)
+
   ADD_EXECUTABLE(rtkconjugategradientreconstructiontest rtkconjugategradientreconstructiontest.cxx)
   TARGET_LINK_LIBRARIES(rtkconjugategradientreconstructiontest ${RTK_LIBRARIES})
   ADD_TEST(rtkconjugategradientreconstructiontest ${EXECUTABLE_OUTPUT_PATH}/rtkconjugategradientreconstructiontest)
-endif()
-ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
 
-# We cannot compile this test using CPU if GPU is present
-# This is because of rtkIterativeConeBeamReconstructionFilter
-if(NOT RTK_USE_CUDA)
+  ADD_EXECUTABLE(rtkfourdroostertest rtkfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkfourdroostertest ${RTK_LIBRARIES})
+  ADD_TEST(rtkfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdroostertest)
+
+  ADD_EXECUTABLE(rtkincrementalfourdroostertest rtkincrementalfourdroostertest.cxx)
+  TARGET_LINK_LIBRARIES(rtkincrementalfourdroostertest ${RTK_LIBRARIES})
+  ADD_TEST(rtkincrementalfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdroostertest)
+
+  ADD_EXECUTABLE(rtkadmmwaveletstest rtkadmmwaveletstest.cxx)
+  TARGET_LINK_LIBRARIES(rtkadmmwaveletstest RTK)
+  ADD_TEST(rtkadmmwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmwaveletstest)
+
   ADD_EXECUTABLE(rtkadmmtotalvariationtest rtkadmmtotalvariationtest.cxx)
   TARGET_LINK_LIBRARIES(rtkadmmtotalvariationtest ${RTK_LIBRARIES})
   RTK_ADD_TEST(NAME rtkadmmtotalvariationtest
@@ -285,43 +324,12 @@ if(NOT RTK_USE_CUDA)
                DATA{Data/Input/Phases/phases.txt}
                DATA{Data/Input/Phases/phases_3projs.txt})
 endif()
-if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
- SET(testfullname rtkadmmtotalvariationcudatest)
- ADD_EXECUTABLE(${testfullname} rtkadmmtotalvariationtest.cxx)
- TARGET_LINK_LIBRARIES(${testfullname} ${RTK_LIBRARIES})
- SET_TARGET_PROPERTIES(${testfullname} PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
- RTK_ADD_TEST(NAME ${testfullname}
-              COMMAND ${EXECUTABLE_OUTPUT_PATH}/${testfullname}
-              DATA{Data/Input/Phases/phases.txt}
-              DATA{Data/Input/Phases/phases_3projs.txt})
-endif()
-
-# We cannot compile this test using CPU if GPU is present
-# This is because of rtkIterativeConeBeamReconstructionFilter
-if(NOT RTK_USE_CUDA)
-  ADD_EXECUTABLE(rtkfourdroostertest rtkfourdroostertest.cxx)
-  TARGET_LINK_LIBRARIES(rtkfourdroostertest ${RTK_LIBRARIES})
-  ADD_TEST(rtkfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdroostertest)
-endif()
+ADD_CUDA_TEST(rtkiterativefdk rtkiterativefdktest.cxx)
+ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
 ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
-
-# We cannot compile this test using CPU if GPU is present
-# This is because of rtkIterativeConeBeamReconstructionFilter
-if(NOT RTK_USE_CUDA)
-  ADD_EXECUTABLE(rtkincrementalfourdroostertest rtkincrementalfourdroostertest.cxx)
-  TARGET_LINK_LIBRARIES(rtkincrementalfourdroostertest ${RTK_LIBRARIES})
-  ADD_TEST(rtkincrementalfourdroostertest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdroostertest)
-endif()
 ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
-
-# We cannot compile this test using CPU if GPU is present
-# This is because of rtkIterativeConeBeamReconstructionFilter
-if(NOT RTK_USE_CUDA)
-  ADD_EXECUTABLE(rtkadmmwaveletstest rtkadmmwaveletstest.cxx)
-  TARGET_LINK_LIBRARIES(rtkadmmwaveletstest RTK)
-  ADD_TEST(rtkadmmwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkadmmwaveletstest)
-endif()
 ADD_CUDA_TEST(rtkadmmwavelets rtkadmmwaveletstest.cxx)
+RTK_ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx "Data/Input/Phases/phases.txt" "Data/Input/Phases/phases_3projs.txt")
 
 ADD_EXECUTABLE(rtkwaveletstest rtkwaveletstest.cxx)
 TARGET_LINK_LIBRARIES(rtkwaveletstest RTK)

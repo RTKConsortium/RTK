@@ -21,6 +21,7 @@
 
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -82,16 +83,17 @@ public:
     return !( *this != other );
     }
 
-  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
-                             const TInput &input,
-                             const TOutput &rayCastValue,
-                             const VectorType &stepInMM,
-                             const VectorType &itkNotUsed(source),
-                             const VectorType &itkNotUsed(sourceToPixel),
-                             const VectorType &itkNotUsed(nearestPoint),
-                             const VectorType &itkNotUsed(farthestPoint)) const
+  inline void operator()( const ThreadIdType itkNotUsed(threadId),
+                          const TInput &input,
+                          TOutput &output,
+                          const TOutput &rayCastValue,
+                          const VectorType &stepInMM,
+                          const VectorType &itkNotUsed(source),
+                          const VectorType &itkNotUsed(sourceToPixel),
+                          const VectorType &itkNotUsed(nearestPoint),
+                          const VectorType &itkNotUsed(farthestPoint)) const
     {
-    return input + rayCastValue * stepInMM.GetNorm();
+    output = input + rayCastValue * stepInMM.GetNorm();
     }
 };
 
@@ -168,11 +170,11 @@ protected:
   JosephForwardProjectionImageFilter() {}
   virtual ~JosephForwardProjectionImageFilter() {}
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  virtual void VerifyInputInformation() ITK_OVERRIDE {}
 
   inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,

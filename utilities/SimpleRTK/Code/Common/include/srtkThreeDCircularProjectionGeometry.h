@@ -74,6 +74,8 @@ public:
   const std::vector<double> &GetSourceToDetectorDistances() const;
   const std::vector<double> &GetProjectionOffsetsX() const;
   const std::vector<double> &GetProjectionOffsetsY() const;
+  const std::vector<double>  GetSourcePosition( const unsigned int i ) const;
+  const std::vector<double>  GetRotationMatrix( const unsigned int i) const;
 
   /** Add the projection with angles in degress
    * @{

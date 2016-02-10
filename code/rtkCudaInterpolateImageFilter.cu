@@ -61,6 +61,4 @@ CUDA_interpolation(const int4 &inputSize,
   cublasDestroy(handle);
 
   CUDA_CHECK_ERROR;
-  cudaDeviceSynchronize();
-
 }

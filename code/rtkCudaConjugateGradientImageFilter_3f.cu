@@ -169,5 +169,4 @@ CUDA_conjugate_gradient_3f(int size[3],
   cublasDestroy(handle);
 
   CUDA_CHECK_ERROR;
-  cudaDeviceSynchronize();
 }

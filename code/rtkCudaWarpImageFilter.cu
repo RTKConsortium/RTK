@@ -207,7 +207,8 @@ CUDA_warp(int input_vol_dim[3],
     float *dev_input_xdvf,
     float *dev_input_ydvf,
     float *dev_input_zdvf,
-    float *dev_output_vol)
+    float *dev_output_vol,
+    bool isLinear)
 {
 
   // Prepare channel description for arrays
@@ -291,8 +292,11 @@ CUDA_warp(int input_vol_dim[3],
   tex_input_vol.addressMode[0] = cudaAddressModeBorder;
   tex_input_vol.addressMode[1] = cudaAddressModeBorder;
   tex_input_vol.addressMode[2] = cudaAddressModeBorder;
-  tex_input_vol.filterMode = cudaFilterModeLinear;
   tex_input_vol.normalized = false; // don't access with normalized texture coords
+  if (isLinear)
+    tex_input_vol.filterMode = cudaFilterModeLinear;
+  else
+    tex_input_vol.filterMode = cudaFilterModePoint;
 
   // Allocate the array
   cudaArray *array_input_vol;

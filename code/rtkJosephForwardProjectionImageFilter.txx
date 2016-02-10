@@ -237,24 +237,26 @@ JosephForwardProjectionImageFilter<TInputImage,
         stepMM[mainDir]       = this->GetInput(1)->GetSpacing()[mainDir];
 
         // Accumulate
-        itOut.Set( m_ProjectedValueAccumulation(threadId,
-                                                itIn.Get(),
-                                                sum,
-                                                stepMM,
-                                                &(sourcePosition[0]),
-                                                dirVox,
-                                                np,
-                                                fp) );
+        m_ProjectedValueAccumulation(threadId,
+                                     itIn.Get(),
+                                     itOut.Value(),
+                                     sum,
+                                     stepMM,
+                                     &(sourcePosition[0]),
+                                     dirVox,
+                                     np,
+                                     fp);
         }
       else
-        itOut.Set( m_ProjectedValueAccumulation(threadId,
-                                                itIn.Get(),
-                                                0.,
-                                                &(sourcePosition[0]),
-                                                &(sourcePosition[0]),
-                                                dirVox,
-                                                &(sourcePosition[0]),
-                                                &(sourcePosition[0])) );
+        m_ProjectedValueAccumulation(threadId,
+                                     itIn.Get(),
+                                     itOut.Value(),
+                                     0.,
+                                     &(sourcePosition[0]),
+                                     &(sourcePosition[0]),
+                                     dirVox,
+                                     &(sourcePosition[0]),
+                                     &(sourcePosition[0]));
       }
     }
 }

@@ -21,6 +21,7 @@
 
 #include <itkMultiplyImageFilter.h>
 #include <itkTimeProbe.h>
+#include <itkDivideOrZeroOutImageFilter.h>
 
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkReconstructionConjugateGradientOperator.h"
@@ -28,6 +29,7 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkLaplacianImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaConjugateGradientImageFilter_3f.h"
@@ -42,15 +44,18 @@ namespace rtk
    *
    * This filter implements the ConjugateGradient method.
    * ConjugateGradient attempts to find the f that minimizes
-   * || sqrt(D) (Rf -p) ||_2^2,
+   * || sqrt(D) (Rf -p) ||_2^2 + gamma || grad f ||_2^2
    * with R the forward projection operator,
    * p the measured projections, and D the displaced detector weighting operator.
-   * In this it is similar to the ART and SART methods. The difference lies
+   *
+   * With gamma=0, this it is similar to the ART and SART methods. The difference lies
    * in the algorithm employed to minimize this cost function. ART uses the
    * Kaczmarz method (projects and back projects one ray at a time),
    * SART the block-Kaczmarz method (projects and back projects one projection
    * at a time), and ConjugateGradient a conjugate gradient method
    * (projects and back projects all projections together).
+   *
+   * With gamma > 0, a regularization is applied.
    *
    * \dot
    * digraph ConjugateGradientConeBeamReconstructionFilter {
@@ -65,20 +70,45 @@ namespace rtk
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
-   * Multiply [label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * MultiplyProjections [label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * MultiplyVolumes [label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * MultiplyOutput [label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
+   * DisplacedForPreconditioning [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
+   * DisplacedForNormalization [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
-   * Source [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+   * VolumeSource [ label="rtk::ConstantImageSource (Volume)" URL="\ref rtk::ConstantImageSource"];
+   * ProjectionsSource [ label="rtk::ConstantImageSource (Projections)" URL="\ref rtk::ConstantImageSource"];
+   * BackProjForPreconditioning [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+   * BackProjForNormalization [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+   * Divide [label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
+   *
+   * AfterVolumeSource [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterDivide [label="Preconditioning weights", fixedsize="false", width=0, height=0, shape=none];
    *
    * Input0 -> ConjugateGradient;
    * Input1 -> Displaced;
-   * Input2 -> Multiply;
-   * Displaced -> Multiply;
-   * Multiply -> BackProjection;
-   * Source -> BackProjection;
-   * BackProjection -> ConjugateGradient;
-   * ConjugateGradient -> Output;
+   * Input2 -> MultiplyProjections;
+   * Input2 -> DisplacedForPreconditioning;
+   * DisplacedForPreconditioning -> BackProjForPreconditioning;
+   * Displaced -> MultiplyProjections;
+   * MultiplyProjections -> BackProjection;
+   * VolumeSource -> AfterVolumeSource [arrowhead=none];
+   * AfterVolumeSource -> BackProjection;
+   * AfterVolumeSource -> BackProjForPreconditioning;
+   * AfterVolumeSource -> BackProjForNormalization;
+   * ProjectionsSource -> DisplacedForNormalization;
+   * DisplacedForNormalization -> BackProjForNormalization;
+   * BackProjForPreconditioning -> Divide;
+   * BackProjForNormalization -> Divide;
+   * Divide -> AfterDivide [arrowhead=none];
+   * AfterDivide -> MultiplyVolumes;
+   * AfterDivide -> MultiplyOutput;
+   * BackProjection -> MultiplyVolumes;
+   * MultiplyVolumes -> ConjugateGradient;
+   * ConjugateGradient -> MultiplyOutput;
+   * MultiplyOutput -> Output;
    * }
    * \enddot
    *
@@ -118,6 +148,7 @@ public:
     typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>       CGOperatorFilterType;
     typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                  DisplacedDetectorFilterType;
     typedef rtk::ConstantImageSource<TOutputImage>                           ConstantImageSourceType;
+    typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                    DivideFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -134,9 +165,20 @@ public:
     itkSetMacro(MeasureExecutionTimes, bool)
     itkGetMacro(MeasureExecutionTimes, bool)
 
-    /** If IsWeighted, perform weighted least squares optimization instead of unweighted */
-    itkSetMacro(IsWeighted, bool)
-    itkGetMacro(IsWeighted, bool)
+    /** If Weighted, perform weighted least squares optimization instead of unweighted */
+    itkSetMacro(Weighted, bool)
+    itkGetMacro(Weighted, bool)
+
+    /** If Weighted and Preconditioned, computes preconditioning weights to speed up CG convergence */
+    itkSetMacro(Preconditioned, bool)
+    itkGetMacro(Preconditioned, bool)
+    
+    /** If Regularized, perform laplacian-based regularization during 
+     *  reconstruction (gamma is the strength of the regularization) */
+    itkSetMacro(Regularized, bool)
+    itkGetMacro(Regularized, bool)
+    itkSetMacro(Gamma, float)
+    itkGetMacro(Gamma, float)
 
 protected:
     ConjugateGradientConeBeamReconstructionFilter();
@@ -146,14 +188,22 @@ protected:
     virtual void GenerateData();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename MultiplyFilterType::Pointer                                        m_MultiplyFilter;
+    typename MultiplyFilterType::Pointer                                        m_MultiplyProjectionsFilter;
+    typename MultiplyFilterType::Pointer                                        m_MultiplyVolumeFilter;
+    typename MultiplyFilterType::Pointer                                        m_MultiplyOutputFilter;
     typename ConjugateGradientFilterType::Pointer                               m_ConjugateGradientFilter;
     typename CGOperatorFilterType::Pointer                                      m_CGOperator;
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForB;
+    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForPreconditioning;
+    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForNormalization;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
-    typename ConstantImageSourceType::Pointer                                   m_ConstantImageSource;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilterForPreconditioning;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilterForNormalization;
+    typename ConstantImageSourceType::Pointer                                   m_ConstantVolumeSource;
+    typename ConstantImageSourceType::Pointer                                   m_ConstantProjectionsSource;
+    typename DivideFilterType::Pointer                                          m_DivideFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -172,9 +222,11 @@ private:
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
     int   m_NumberOfIterations;
+    float m_Gamma;
     bool  m_MeasureExecutionTimes;
-    bool  m_IsWeighted;
-
+    bool  m_Weighted;
+    bool  m_Preconditioned;
+    bool  m_Regularized;
 };
 } //namespace ITK
 

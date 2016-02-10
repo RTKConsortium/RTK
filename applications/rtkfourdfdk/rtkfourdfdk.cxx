@@ -121,11 +121,6 @@ int main(int argc, char * argv[])
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdfdk>(constantImageSource, args_info);
-
-  // GenGetOpt can't handle default arguments for multiple arguments like dimension or spacing.
-  // The only default it accepts is to set all components of a multiple argument to the same value.
-  // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable value
-  // which is why a "frames" argument is introduced
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
 
   // This macro sets options for fdk filter which I can not see how to do better
@@ -183,6 +178,7 @@ int main(int argc, char * argv[])
   FourDConstantImageSourceType::SizeType fourDInputSize(fourDConstantImageSource->GetSize());
   fourDInputSize[3] = args_info.frames_arg;
   fourDConstantImageSource->SetSize(fourDInputSize);
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION(fourDConstantImageSource->Update())
 
   // Go over each frame, reconstruct 3D frame and paste with iterators in 4D image

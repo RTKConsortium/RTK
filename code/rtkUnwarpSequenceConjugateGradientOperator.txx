@@ -32,6 +32,7 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TIma
 
   // Default member variables
   m_PhaseShift = 0;
+  m_UseNearestNeighborInterpolationInWarping = false;
 
   // Create filters
   m_WarpSequenceBackwardFilter = WarpSequenceFilterType::New();
@@ -94,7 +95,9 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TIma
 
   // Set runtime parameters
   m_WarpSequenceBackwardFilter->SetPhaseShift(this->m_PhaseShift);
+  m_WarpSequenceBackwardFilter->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
   m_WarpSequenceForwardFilter->SetPhaseShift(this->m_PhaseShift);
+  m_WarpSequenceForwardFilter->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
 
   // Have the last filter calculate its output information
   m_WarpSequenceForwardFilter->UpdateOutputInformation();

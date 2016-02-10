@@ -1,8 +1,9 @@
 package "rtkextractshroudsignal"
 purpose "Extracts the breathing signal from a shroud image."
 
+option "verbose"    v   "Verbose execution"                           flag                    off
 option "config"     -   "Config file"                                 string                  no
-option "input"      i   "Input shroud image file name"		      string                  yes
+option "input"      i   "Input shroud image file name"		            string                  yes
 option "amplitude"  a   "Maximum breathing amplitude explored in mm"  double                  no
 option "output"     o   "Output file name"                            string                  yes
 option "method"     m   "Method to use (Reg1D or DynamicProgramming)" string  default="Reg1D" no

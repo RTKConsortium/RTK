@@ -4,7 +4,7 @@
 # obtained from RTKConfig.cmake.
 
 # Find ITK (required)
-FIND_PACKAGE(ITK REQUIRED)
+FIND_PACKAGE(ITK REQUIRED HINTS "${ITK_DIR}")
 INCLUDE(${ITK_USE_FILE})
 
 # Add include directories needed to use RTK.

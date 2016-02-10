@@ -1,6 +1,7 @@
 package "rtksimulatedgeometry"
 purpose "Creates an RTK geometry file from simulated/regular trajectory."
 
+option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no
 
 option "output"      o "Output file name"                                      string yes
