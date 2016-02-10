@@ -21,55 +21,30 @@
 
 #include <itkPoint.h>
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
-
+#include <iostream>
 
 namespace rtk
 {
+/** \class DrawSpatialObject
+ * \brief Base class for a 3D object. rtk::DrawImageFilter fills uses it (and IsInside) to fill a volume.
+ *
+ * \author Mathieu Dupont
+ * 
+ */
 
-class DrawSpatialObject //: public itk::DataObject
+class DrawSpatialObject 
 {
   
 public:  
-  typedef double ScalarType;
   
-  DrawSpatialObject(){};
-  
-  
-  typedef itk::Point< ScalarType, 3 > PointType; 
-  
-  
+  typedef double ScalarType;  
+  DrawSpatialObject(){}     
+  typedef itk::Point< ScalarType, 3 > PointType;    
   
   /** Returns true if a point is inside the object. */
-  virtual bool IsInside(const PointType & point) const;    
+  virtual bool IsInside(const PointType & point) const = 0;    
   
 };
-
-class DrawCylinderSpatialObject : public DrawSpatialObject
-{
-  public:
-  
-  typedef double ScalarType;
-  typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
-  
-  
-  DrawCylinderSpatialObject();
- 
-  
-  typedef itk::Point< ScalarType, 3 > PointType;
-  typedef itk::Vector<double,3>                             VectorType;
-
-
-/** Returns true if a point is inside the object. */
-  virtual bool IsInside(const PointType & point) const;    
-  
-public:
-  EQPFunctionType::Pointer sqpFunctor;
-  VectorType     m_Axis;
-  VectorType     m_Center;
-  ScalarType     m_Angle;  
-  
-};
-
 
 };
 

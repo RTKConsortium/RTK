@@ -19,26 +19,17 @@
 #ifndef __rtkDrawCylinderImageFilter_txx
 #define __rtkDrawCylinderImageFilter_txx
 
-#include <iostream>
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
-
-#include "rtkDrawCylinderImageFilter.h"
-
+  
 namespace rtk
 {
-
+  
 template <class TInputImage, class TOutputImage, typename TFunction>
 DrawCylinderImageFilter<TInputImage, TOutputImage, TFunction>
 ::DrawCylinderImageFilter()
-{  
-  
-  this->m_spatialObject.m_Axis.Fill(90.);
-  this->m_spatialObject.m_Center.Fill(0.);  
-  this->m_spatialObject.m_Angle = 0.;
-  this->m_spatialObject.sqpFunctor = EQPFunctionType::New();
-  this->m_spatialObject.sqpFunctor->SetFigure("Cylinder");
+{   
+  this->SetFigure("Cylinder");
 }
+
 
 }// end namespace rtk
 

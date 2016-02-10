@@ -30,64 +30,50 @@
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage>
-DrawCubeImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage, class TSpatialObject, typename TFunction>
+rtk::DrawCubeImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
 ::DrawCubeImageFilter()
 {
-  m_Axis.Fill(50.);
-  m_Center.Fill(0.);
-  m_Density = 1.;
-  m_Angle = 0.;
+
 }
 
-template <class TInputImage, class TOutputImage>
-void DrawCubeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                               ThreadIdType itkNotUsed(threadId) )
+void DrawCubeSpatialObject::UpdateParameters
+()
 {
-  //Getting phantom parameters
-  FigureType cube;
-
+ 
   //Setting axis dimensions taking into account center
   // X-Axis superior
-  cube.semiprincipalaxis[0] =  m_Axis[0] + m_Center[0];
+  m_semiprincipalaxis[0] =  m_Axis[0] + m_Center[0];
   // X-Axis inferior
-  cube.semiprincipalaxis[1] = -m_Axis[0] + m_Center[0];
+  m_semiprincipalaxis[1] = -m_Axis[0] + m_Center[0];
   // Y-Axis superior
-  cube.semiprincipalaxis[2] =  m_Axis[1] + m_Center[1];
+  m_semiprincipalaxis[2] =  m_Axis[1] + m_Center[1];
   // Y-Axis inferior
-  cube.semiprincipalaxis[3] = -m_Axis[1] + m_Center[1];
+  m_semiprincipalaxis[3] = -m_Axis[1] + m_Center[1];
   // Z-Axis superior
-  cube.semiprincipalaxis[4] =  m_Axis[2] + m_Center[2];
+  m_semiprincipalaxis[4] =  m_Axis[2] + m_Center[2];
   // Z-Axis inferior
-  cube.semiprincipalaxis[5] = -m_Axis[2] + m_Center[2];
+  m_semiprincipalaxis[5] = -m_Axis[2] + m_Center[2]; 
+  
+}
 
-  cube.angle = m_Angle;
-  cube.density = m_Density;
+bool DrawCubeSpatialObject::IsInside(const rtk::DrawCubeSpatialObject::PointType& point) const
+{ 
 
-  typename TOutputImage::PointType point;
-  const    TInputImage *           input = this->GetInput();
-
-  typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
-  typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
+ 
 
   //Set type of Figure
   //Apply rotation if necessary
   // FIXME: add rotation option
   //sqpFunctor->Rotate(cube.angle, cube.center);
 
-  while( !itOut.IsAtEnd() )
-  {
-    this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
+  
+    if(point[0]<m_semiprincipalaxis[0] && point[0]>m_semiprincipalaxis[1] &&
+       point[1]<m_semiprincipalaxis[2] && point[1]>m_semiprincipalaxis[3] &&
+       point[2]<m_semiprincipalaxis[4] && point[2]>m_semiprincipalaxis[5])
+      return true;
+    return false;
 
-    if(point[0]<cube.semiprincipalaxis[0] && point[0]>cube.semiprincipalaxis[1] &&
-       point[1]<cube.semiprincipalaxis[2] && point[1]>cube.semiprincipalaxis[3] &&
-       point[2]<cube.semiprincipalaxis[4] && point[2]>cube.semiprincipalaxis[5])
-      itOut.Set( cube.density );
-    else
-      itOut.Set( itIn.Get() );
-    ++itIn;
-    ++itOut;
-  }
 }
 
 }// end namespace rtk

@@ -20,14 +20,14 @@
 #define __rtkDrawConeImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
+#include "rtkDrawQuadricImageFilter.h"
 
-#include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
+
 #include "rtkConfiguration.h"
 #include <vector>
 
 namespace rtk
-{
+{ 
 
 /** \class DrawConeImageFilter
  * \brief Draws in a 3D image user defined Cone.
@@ -38,64 +38,51 @@ namespace rtk
  *
  * \ingroup InPlaceImageFilter
  */
-template <class TInputImage, class TOutputImage>
-class ITK_EXPORT DrawConeImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
-{
-public:
+  template <class TInputImage, 
+            class TOutputImage, 
+	    typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
+                                                    typename TInputImage::PixelType,
+                                                    typename TOutputImage::PixelType>
+                                                    >
+  class DrawConeImageFilter : 
+  public DrawQuadricImageFilter<TInputImage,
+				TOutputImage, 
+				DrawQuadricSpatialObject,
+				TFunction
+			 >
+  {
+       public:
   /** Standard class typedefs. */
   typedef DrawConeImageFilter                               Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef DrawQuadricImageFilter < TInputImage,
+                                   TOutputImage,
+                                   DrawQuadricSpatialObject,
+				   TFunction >              Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
-
+  
   typedef itk::Vector<double,3>                             VectorType;
-
-  typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
-  struct FigureType
-  {
-    FigureType():angle(0.),density(0.){};
-    VectorType semiprincipalaxis;
-    VectorType center;
-    double     angle;
-    double     density;
-  };
+  
+ 
+  
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawConeImageFilter, InPlaceImageFilter);
-
-  /** Multiplicative Scaling factor for the phantom parameters described in
-   * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(Density, double);
-  itkGetMacro(Density, double);
-
-  itkSetMacro(Angle, double);
-  itkGetMacro(Angle, double);
-
-  itkSetMacro(Axis, VectorType);
-  itkGetMacro(Axis, VectorType);
-
-  itkSetMacro(Center, VectorType);
-  itkGetMacro(Center, VectorType);
-
-protected:
+  itkTypeMacro(DrawConeImageFilter, DrawQuadricSpatialObject);
+  
+  protected:
   DrawConeImageFilter();
-  virtual ~DrawConeImageFilter() {};
-
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
-
-private:
-  DrawConeImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);      //purposely not implemented
-
-  VectorType     m_Axis;
-  VectorType     m_Center;
-  double         m_Density;
-  double         m_Angle;
-};
+  virtual ~DrawConeImageFilter() {};  
+  
+  private:
+      DrawConeImageFilter(const Self&); //purposely not implemented
+      void operator=(const Self&);            //purposely not implemented
+ 
+  
+  
+  }; 
 
 } // end namespace rtk
 

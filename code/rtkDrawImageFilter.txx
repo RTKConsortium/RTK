@@ -35,7 +35,7 @@ template <class TInputImage, class TOutputImage, class TSpatialObject, typename 
 DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
 ::DrawImageFilter()
 {
-  m_Density = 1.;
+  m_Density = 1.; //backward compatibility
 }
 
 
@@ -44,6 +44,8 @@ template <class TInputImage, class TOutputImage, class TSpatialObject, typename 
 void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                                                                               ThreadIdType itkNotUsed(threadId) )
 {
+  
+  
   
   typename TOutputImage::PointType point;
   const    TInputImage *           input = this->GetInput();
@@ -56,7 +58,7 @@ void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>::Thre
   {
     this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
     
-    if(m_spatialObject.IsInside(point))
+    if(m_SpatialObject.IsInside(point))
       itOut.Set( m_Fillerfunctor( m_Density, itIn.Get() ));
     else
       itOut.Set( itIn.Get() );

@@ -28,66 +28,13 @@
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage>
-DrawConeImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage, typename TFunction>
+DrawConeImageFilter<TInputImage, TOutputImage, TFunction>
 ::DrawConeImageFilter()
 {
-  m_Axis.Fill(90.);
-  m_Center.Fill(0.);
-  m_Density = 1.;
-  m_Angle = 0.;
+  this->SetFigure("Cone");
 }
 
-template <class TInputImage, class TOutputImage>
-void DrawConeImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                          ThreadIdType itkNotUsed(threadId) )
-{
-  //Getting phantom parameters
-  EQPFunctionType::Pointer sqpFunctor = EQPFunctionType::New();
-  FigureType Cone;
-
-  Cone.semiprincipalaxis[0] = m_Axis[0];
-  Cone.semiprincipalaxis[1] = m_Axis[1];
-  Cone.semiprincipalaxis[2] = m_Axis[2];
-  Cone.center[0] = m_Center[0];
-  Cone.center[1] = m_Center[1];
-  Cone.center[2] = m_Center[2];
-  Cone.angle = m_Angle;
-  Cone.density = m_Density;
-
-  typename TOutputImage::PointType point;
-  const    TInputImage *           input = this->GetInput();
-
-  typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
-  typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
-
-  //Set type of Figure
-  sqpFunctor->SetFigure("Cone");
-  //Translate from regular expression to quadric
-  sqpFunctor->Translate(Cone.semiprincipalaxis);
-  //Apply rotation and translation if necessary
-  sqpFunctor->Rotate(Cone.angle, Cone.center);
-
-  while( !itOut.IsAtEnd() )
-    {
-    this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
-
-    double QuadricEllip = sqpFunctor->GetA()*point[0]*point[0]   +
-                          sqpFunctor->GetB()*point[1]*point[1]   +
-                          sqpFunctor->GetC()*point[2]*point[2]   +
-                          sqpFunctor->GetD()*point[0]*point[1]   +
-                          sqpFunctor->GetE()*point[0]*point[2]   +
-                          sqpFunctor->GetF()*point[1]*point[2]   +
-                          sqpFunctor->GetG()*point[0] + sqpFunctor->GetH()*point[1] +
-                          sqpFunctor->GetI()*point[2] + sqpFunctor->GetJ();
-    if(QuadricEllip<0)
-      itOut.Set(Cone.density);
-    else
-      itOut.Set( itIn.Get() );
-    ++itIn;
-    ++itOut;
-    }
-}
 
 }// end namespace rtk
 
