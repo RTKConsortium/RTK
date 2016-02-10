@@ -23,6 +23,8 @@
 
 #include <vector>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 

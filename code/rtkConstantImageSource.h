@@ -20,6 +20,7 @@
 #define __rtkConstantImageSource_h
 
 #include "rtkConfiguration.h"
+#include "rtkMacro.h"
 
 #include <itkImageSource.h>
 #include <itkNumericTraits.h>

@@ -21,6 +21,7 @@
 
 #include "rtkWin32Header.h"
 #include "rtkProjectionGeometry.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {

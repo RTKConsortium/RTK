@@ -25,6 +25,12 @@
 #include "rtkGgoArgsInfoManager.h"
 
 //--------------------------------------------------------------------
+#ifndef ITK_OVERRIDE
+# define ITK_OVERRIDE
+#endif
+//--------------------------------------------------------------------
+
+//--------------------------------------------------------------------
 /** \brief Debugging macro, displays name and content of a variable
  *
  * \author Simon Rit

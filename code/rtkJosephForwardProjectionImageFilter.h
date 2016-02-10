@@ -21,6 +21,7 @@
 
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {

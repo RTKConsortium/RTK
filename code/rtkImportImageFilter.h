@@ -20,6 +20,7 @@
 #define __rtkImportImageFilter_h
 
 #include "itkImageSource.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
