@@ -27,12 +27,11 @@ namespace rtk
 template< typename TOutputImage>
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientConeBeamReconstructionFilter()
 {
-  this->SetNumberOfRequiredInputs(2);
+  this->SetNumberOfRequiredInputs(3);
 
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
-  m_Weighted=false;
   m_Preconditioned=false;
   m_Gamma = 0;
   m_Regularized = false;
@@ -41,14 +40,10 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
 #ifdef RTK_USE_CUDA
   m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
   m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
-  m_DisplacedDetectorFilterForPreconditioning = rtk::CudaDisplacedDetectorImageFilter::New();
-  m_DisplacedDetectorFilterForNormalization = rtk::CudaDisplacedDetectorImageFilter::New();
   m_ConstantVolumeSource     = rtk::CudaConstantVolumeSource::New();
 #else
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
-  m_DisplacedDetectorFilterForPreconditioning = DisplacedDetectorFilterType::New();
-  m_DisplacedDetectorFilterForNormalization = DisplacedDetectorFilterType::New();  
   m_ConstantVolumeSource     = ConstantImageSourceType::New();
 #endif
   m_CGOperator = CGOperatorFilterType::New();
@@ -115,17 +110,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
       return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 
-  if (m_Weighted)
-    {
-    this->SetNumberOfRequiredInputs(3);
+  // Input 2 is the weights map on projections, either user-defined or filled with ones (default)
+  typename Superclass::InputImagePointer  inputPtr2 =
+          const_cast< TOutputImage * >( this->GetInput(2) );
+  if ( !inputPtr2 )
+      return;
+  inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
 
-    // Input 2 is the weights map on projections, if any
-    typename Superclass::InputImagePointer  inputPtr2 =
-            const_cast< TOutputImage * >( this->GetInput(2) );
-    if ( !inputPtr2 )
-        return;
-    inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
-    }
 }
 
 template< typename TOutputImage>
@@ -137,49 +128,42 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1));
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
-  m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
+  m_DisplacedDetectorFilter->SetInput(this->GetInput(2));
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_BackProjectionFilterForB->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_ConjugateGradientFilter->SetB(m_BackProjectionFilterForB->GetOutput());
-  if (m_Weighted)
+
+  // Multiply the projections by the weights map
+  m_MultiplyProjectionsFilter->SetInput1(this->GetInput(1));  
+  m_MultiplyProjectionsFilter->SetInput2(m_DisplacedDetectorFilter->GetOutput());
+  m_CGOperator->SetInput(2, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilterForB->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
+
+  if (m_Preconditioned)
     {
-    // Multiply the projections by the weights map
-    m_MultiplyProjectionsFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
-    m_MultiplyProjectionsFilter->SetInput2(this->GetInput(2));
-    m_CGOperator->SetInput(2, this->GetInput(2));
-    m_BackProjectionFilterForB->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
+    // Set the projections source
+    m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
 
-    if (m_Preconditioned)
-      {
-      // Set the projections source
-      m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
+    // Build the part of the pipeline that generates the preconditioning weights
+    m_BackProjectionFilterForNormalization->SetInput(0, m_ConstantVolumeSource->GetOutput());
+    m_BackProjectionFilterForNormalization->SetInput(1, m_ConstantProjectionsSource->GetOutput());
+    m_BackProjectionFilterForPreconditioning->SetInput(0, m_ConstantVolumeSource->GetOutput());
+    m_BackProjectionFilterForPreconditioning->SetInput(1, this->GetInput(2));
+  
+    m_DivideFilter->SetInput1(m_BackProjectionFilterForNormalization->GetOutput());
+    m_DivideFilter->SetInput2(m_BackProjectionFilterForPreconditioning->GetOutput());
 
-      // Build the part of the pipeline that generates the preconditioning weights
-      m_DisplacedDetectorFilterForNormalization->SetInput(m_ConstantProjectionsSource->GetOutput());
-      m_BackProjectionFilterForNormalization->SetInput(0, m_ConstantVolumeSource->GetOutput());
-      m_BackProjectionFilterForNormalization->SetInput(1, m_DisplacedDetectorFilterForNormalization->GetOutput());
-      m_DisplacedDetectorFilterForPreconditioning->SetInput(this->GetInput(2));
-      m_BackProjectionFilterForPreconditioning->SetInput(0, m_ConstantVolumeSource->GetOutput());
-      m_BackProjectionFilterForPreconditioning->SetInput(1, m_DisplacedDetectorFilterForPreconditioning->GetOutput());
-      m_DivideFilter->SetInput1(m_BackProjectionFilterForNormalization->GetOutput());
-      m_DivideFilter->SetInput2(m_BackProjectionFilterForPreconditioning->GetOutput());
+    // Multiply the volume by preconditioning weights, and pass them to the conjugate gradient operator
+    m_MultiplyVolumeFilter->SetInput1(m_BackProjectionFilterForB->GetOutput());
+    m_MultiplyVolumeFilter->SetInput2(m_DivideFilter->GetOutput());
+    m_CGOperator->SetInput(3, m_DivideFilter->GetOutput());
+    m_ConjugateGradientFilter->SetB(m_MultiplyVolumeFilter->GetOutput());
 
-      // Multiply the volume by preconditioning weights, and pass them to the conjugate gradient operator
-      m_MultiplyVolumeFilter->SetInput1(m_BackProjectionFilterForB->GetOutput());
-      m_MultiplyVolumeFilter->SetInput2(m_DivideFilter->GetOutput());
-      m_CGOperator->SetInput(3, m_DivideFilter->GetOutput());
-      m_ConjugateGradientFilter->SetB(m_MultiplyVolumeFilter->GetOutput());
-
-      // Divide the output by the preconditioning weights
-      m_MultiplyOutputFilter->SetInput1(m_ConjugateGradientFilter->GetOutput());
-      m_MultiplyOutputFilter->SetInput2(m_DivideFilter->GetOutput());
-      }
-    }
-  else
-    {
-    m_BackProjectionFilterForB->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+    // Divide the output by the preconditioning weights
+    m_MultiplyOutputFilter->SetInput1(m_ConjugateGradientFilter->GetOutput());
+    m_MultiplyOutputFilter->SetInput2(m_DivideFilter->GetOutput());
     }
 
   // For the same reason, set geometry now
@@ -187,34 +171,25 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_BackProjectionFilterForB->SetGeometry(this->m_Geometry.GetPointer());
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilterForNormalization->SetGeometry(this->m_Geometry.GetPointer());
-  m_DisplacedDetectorFilterForNormalization->SetGeometry(this->m_Geometry);
   m_BackProjectionFilterForPreconditioning->SetGeometry(this->m_Geometry.GetPointer());
-  m_DisplacedDetectorFilterForPreconditioning->SetGeometry(this->m_Geometry);
   
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
-  m_CGOperator->SetWeighted(m_Weighted);
   m_CGOperator->SetPreconditioned(m_Preconditioned);
   m_CGOperator->SetRegularized(m_Regularized);
   m_CGOperator->SetGamma(m_Gamma);
 
   // Set memory management parameters
-  if(m_Weighted)
-    {
     m_MultiplyProjectionsFilter->ReleaseDataFlagOn();
 
-    if (m_Preconditioned)
-      {
-      m_ConstantProjectionsSource->ReleaseDataFlagOn();
-      m_BackProjectionFilterForPreconditioning->ReleaseDataFlagOn();
-      m_DisplacedDetectorFilterForPreconditioning->ReleaseDataFlagOn();
-      m_BackProjectionFilterForNormalization->ReleaseDataFlagOn();
-      m_DisplacedDetectorFilterForNormalization->ReleaseDataFlagOn();
-      m_MultiplyVolumeFilter->ReleaseDataFlagOn();
-      m_MultiplyOutputFilter->ReleaseDataFlagOn();
-      }
+  if (m_Preconditioned)
+    {
+    m_ConstantProjectionsSource->ReleaseDataFlagOn();
+    m_BackProjectionFilterForPreconditioning->ReleaseDataFlagOn();
+    m_BackProjectionFilterForNormalization->ReleaseDataFlagOn();
+    m_MultiplyVolumeFilter->ReleaseDataFlagOn();
+    m_MultiplyOutputFilter->ReleaseDataFlagOn();
     }
-  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
   m_BackProjectionFilterForB->ReleaseDataFlagOn();
 
   // Have the last filter calculate its output information

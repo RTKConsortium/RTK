@@ -75,8 +75,6 @@ namespace rtk
    * MultiplyOutput [label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
-   * DisplacedForPreconditioning [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
-   * DisplacedForNormalization [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * VolumeSource [ label="rtk::ConstantImageSource (Volume)" URL="\ref rtk::ConstantImageSource"];
    * ProjectionsSource [ label="rtk::ConstantImageSource (Projections)" URL="\ref rtk::ConstantImageSource"];
@@ -85,21 +83,21 @@ namespace rtk
    * Divide [label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
    *
    * AfterVolumeSource [label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterDisplaced [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterDivide [label="Preconditioning weights", fixedsize="false", width=0, height=0, shape=none];
    *
    * Input0 -> ConjugateGradient;
-   * Input1 -> Displaced;
-   * Input2 -> MultiplyProjections;
-   * Input2 -> DisplacedForPreconditioning;
-   * DisplacedForPreconditioning -> BackProjForPreconditioning;
-   * Displaced -> MultiplyProjections;
+   * Input1 -> MultiplyProjections;
+   * Input2 -> Displaced;
+   * Displaced -> AfterDisplaced [arrowhead=none];
+   * AfterDisplaced -> BackProjForPreconditioning;
+   * AfterDisplaced -> MultiplyProjections;
    * MultiplyProjections -> BackProjection;
    * VolumeSource -> AfterVolumeSource [arrowhead=none];
    * AfterVolumeSource -> BackProjection;
    * AfterVolumeSource -> BackProjForPreconditioning;
    * AfterVolumeSource -> BackProjForNormalization;
-   * ProjectionsSource -> DisplacedForNormalization;
-   * DisplacedForNormalization -> BackProjForNormalization;
+   * ProjectionsSource -> BackProjForNormalization;
    * BackProjForPreconditioning -> Divide;
    * BackProjForNormalization -> Divide;
    * Divide -> AfterDivide [arrowhead=none];
@@ -165,10 +163,6 @@ public:
     itkSetMacro(MeasureExecutionTimes, bool)
     itkGetMacro(MeasureExecutionTimes, bool)
 
-    /** If Weighted, perform weighted least squares optimization instead of unweighted */
-    itkSetMacro(Weighted, bool)
-    itkGetMacro(Weighted, bool)
-
     /** If Weighted and Preconditioned, computes preconditioning weights to speed up CG convergence */
     itkSetMacro(Preconditioned, bool)
     itkGetMacro(Preconditioned, bool)
@@ -199,8 +193,6 @@ protected:
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForPreconditioning;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForNormalization;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
-    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilterForPreconditioning;
-    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilterForNormalization;
     typename ConstantImageSourceType::Pointer                                   m_ConstantVolumeSource;
     typename ConstantImageSourceType::Pointer                                   m_ConstantProjectionsSource;
     typename DivideFilterType::Pointer                                          m_DivideFilter;
@@ -224,7 +216,6 @@ private:
     int   m_NumberOfIterations;
     float m_Gamma;
     bool  m_MeasureExecutionTimes;
-    bool  m_Weighted;
     bool  m_Preconditioned;
     bool  m_Regularized;
 };

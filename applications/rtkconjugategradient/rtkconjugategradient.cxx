@@ -77,12 +77,25 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
-  // Read weights if given, otherwise perform unweighted least squares reconstruction
-  typedef itk::ImageFileReader<  OutputImageType > WeightsReaderType;
-  WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+  // Read weights if given, otherwise default to weights all equal to one
+  itk::ImageSource< OutputImageType >::Pointer weightsSource;
   if(args_info.weights_given)
     {
+    typedef itk::ImageFileReader<  OutputImageType > WeightsReaderType;
+    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
     weightsReader->SetFileName( args_info.weights_arg );
+    weightsSource = weightsReader;
+    }
+  else
+    {
+    typedef rtk::ConstantImageSource< OutputImageType > ConstantWeightsSourceType;
+    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
+    
+    // Set the weights to be like the projections
+    reader->UpdateOutputInformation();
+    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
+    constantWeightsSource->SetConstant(1.0);
+    weightsSource = constantWeightsSource;
     }
 
   // Set the forward and back projection filters to be used
@@ -90,15 +103,11 @@ int main(int argc, char * argv[])
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
   conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
   conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
-
   conjugategradient->SetInput( inputFilter->GetOutput() );
   conjugategradient->SetInput(1, reader->GetOutput());
-  if (args_info.weights_given)
-    {
-    conjugategradient->SetInput(2, weightsReader->GetOutput());
-    conjugategradient->SetWeighted(true);
-    conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
-    }
+  conjugategradient->SetInput(2, weightsSource->GetOutput());
+  conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
+
   if (args_info.gamma_given)
     {
     conjugategradient->SetRegularized(true);

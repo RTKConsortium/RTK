@@ -135,10 +135,14 @@ int main(int, char** )
 
   // In all cases, use the Joseph forward projector
   conjugategradient->SetForwardProjectionFilter(0);
+  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
+  uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
+  uniformWeightsSource->SetConstant(1.0);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
   conjugategradient->SetBackProjectionFilter( 0 );
+  conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -168,13 +172,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 4: Joseph Backprojector, weighted least squares  ******" << std::endl;
 
-  // Use uniform projections as weights map (therefore not really weighting anything)
-  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
-  uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
   uniformWeightsSource->SetConstant(2.0);
-
-  conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
-  conjugategradient->SetWeighted(true);
   conjugategradient->SetPreconditioned(true);
   conjugategradient->SetRegularized(false);
 
