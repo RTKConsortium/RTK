@@ -27,7 +27,7 @@ template <class TInputImage, class TOutputImage, typename TFunction>
 DrawEllipsoidImageFilter<TInputImage, TOutputImage, TFunction>
 ::DrawEllipsoidImageFilter()
 {
-  this->SetFigure("Ellipsoid");  
+  this->SetFigure("Ellipsoid");
 }
 
 

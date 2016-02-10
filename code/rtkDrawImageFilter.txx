@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCubeImageFilter_txx
-#define __rtkCubeImageFilter_txx
+#ifndef __rtkDrawImageFilter_txx
+#define __rtkDrawImageFilter_txx
 
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
@@ -38,26 +38,21 @@ DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
   m_Density = 1.; //backward compatibility
 }
 
-
-
 template <class TInputImage, class TOutputImage, class TSpatialObject, typename TFunction>
 void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                                                                               ThreadIdType itkNotUsed(threadId) )
 {
-  
-  
-  
   typename TOutputImage::PointType point;
   const    TInputImage *           input = this->GetInput();
 
   typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
-  typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread); 
-  
+  typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
+
 
   while( !itOut.IsAtEnd() )
   {
     this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
-    
+
     if(m_SpatialObject.IsInside(point))
       itOut.Set( m_Fillerfunctor( m_Density, itIn.Get() ));
     else
@@ -65,13 +60,9 @@ void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>::Thre
     ++itIn;
     ++itOut;
   }
-  
-  
+
+
 }
-
-
-
-
 
 }// end namespace rtk
 

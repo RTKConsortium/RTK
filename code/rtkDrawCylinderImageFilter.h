@@ -20,12 +20,13 @@
 #define __rtkDrawCylinderImageFilter_h
 
 
-#include "rtkDrawImageFilter.h"
-#include "itkAddImageFilter.h"
+#include <itkAddImageFilter.h>
 
+#include "rtkDrawImageFilter.h"
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkDrawQuadricImageFilter.h"
 #include "rtkConfiguration.h"
+
 #include <iostream>
 #include <vector>
 
@@ -41,51 +42,45 @@ namespace rtk
  *
  * \ingroup InPlaceImageFilter
  */
-  template <class TInputImage, 
-            class TOutputImage, 
-	    typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
+  template <class TInputImage,
+            class TOutputImage,
+            typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
                                                     typename TInputImage::PixelType,
                                                     typename TOutputImage::PixelType>
                                                     >
-  class DrawCylinderImageFilter : 
+class ITK_EXPORT DrawCylinderImageFilter :
   public DrawQuadricImageFilter<TInputImage,
-				TOutputImage, 
-				DrawQuadricSpatialObject,
-				TFunction
-			 >
-  {
-       public:
+                                TOutputImage,
+                                DrawQuadricSpatialObject,
+                                TFunction>
+{
+public:
   /** Standard class typedefs. */
-  typedef DrawCylinderImageFilter                               Self;
+  typedef DrawCylinderImageFilter                            Self;
   typedef DrawQuadricImageFilter < TInputImage,
                                    TOutputImage,
                                    DrawQuadricSpatialObject,
-				   TFunction >                  Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
-  typedef typename TOutputImage::RegionType                     OutputImageRegionType;
-  
-  typedef itk::Vector<double,3>                                 VectorType;
-  
- 
-  
+                                   TFunction >               Superclass;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef typename TOutputImage::RegionType                  OutputImageRegionType;
+
+  typedef itk::Vector<double,3>                              VectorType;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DrawCylinderImageFilter, DrawQuadricImageFilter);
-  
-  protected:
+
+protected:
   DrawCylinderImageFilter();
-  virtual ~DrawCylinderImageFilter() {};  
-  
-  private:
-      DrawCylinderImageFilter(const Self&); //purposely not implemented
-      void operator=(const Self&);            //purposely not implemented
- 
-  
-  
-  }; 
+  virtual ~DrawCylinderImageFilter() {};
+
+private:
+  DrawCylinderImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);            //purposely not implemented
+};
 
 } // end namespace rtk
 

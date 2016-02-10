@@ -19,14 +19,14 @@
 #ifndef __rtkDrawCylinderImageFilter_txx
 #define __rtkDrawCylinderImageFilter_txx
 
-  
+
 namespace rtk
 {
-  
+
 template <class TInputImage, class TOutputImage, typename TFunction>
 DrawCylinderImageFilter<TInputImage, TOutputImage, TFunction>
 ::DrawCylinderImageFilter()
-{   
+{
   this->SetFigure("Cylinder");
 }
 

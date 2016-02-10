@@ -42,7 +42,7 @@ template <class TInputImage,
          typename TInputImage::PixelType,
          typename TOutputImage::PixelType>
          >
-class DrawEllipsoidImageFilter :
+class ITK_EXPORT DrawEllipsoidImageFilter :
   public DrawQuadricImageFilter < TInputImage,
                                   TOutputImage,
                                   DrawQuadricSpatialObject,
@@ -54,7 +54,7 @@ public:
   typedef DrawQuadricImageFilter < TInputImage,
                                    TOutputImage,
                                    DrawQuadricSpatialObject,
-				   TFunction >               Superclass;
+                                   TFunction >               Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
   typedef typename TOutputImage::RegionType                  OutputImageRegionType;
@@ -73,10 +73,7 @@ protected:
 
 private:
   DrawEllipsoidImageFilter ( const Self& ); //purposely not implemented
-  void operator= ( const Self& );         //purposely not implemented
-
-
-
+  void operator= ( const Self& );           //purposely not implemented
 };
 
 } // end namespace rtk

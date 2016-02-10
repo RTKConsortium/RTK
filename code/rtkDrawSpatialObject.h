@@ -29,25 +29,23 @@ namespace rtk
  * \brief Base class for a 3D object. rtk::DrawImageFilter fills uses it (and IsInside) to fill a volume.
  *
  * \author Mathieu Dupont
- * 
+ *
  */
 
-class DrawSpatialObject 
+class DrawSpatialObject
 {
-  
-public:  
-  
-  typedef double ScalarType;  
-  DrawSpatialObject(){}     
-  typedef itk::Point< ScalarType, 3 > PointType;    
-  
+
+public:
+
+  typedef double ScalarType;
+  DrawSpatialObject(){}
+  typedef itk::Point< ScalarType, 3 > PointType;
+
   /** Returns true if a point is inside the object. */
-  virtual bool IsInside(const PointType & point) const = 0;    
-  
-};
+  virtual bool IsInside(const PointType & point) const = 0;
 
 };
 
-
+}
 
 #endif

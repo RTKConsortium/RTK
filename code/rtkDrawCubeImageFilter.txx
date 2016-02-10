@@ -31,49 +31,47 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage, class TSpatialObject, typename TFunction>
-rtk::DrawCubeImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
+DrawCubeImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
 ::DrawCubeImageFilter()
 {
 
 }
 
-void DrawCubeSpatialObject::UpdateParameters
-()
+void
+DrawCubeSpatialObject::UpdateParameters()
 {
- 
+
   //Setting axis dimensions taking into account center
   // X-Axis superior
-  m_semiprincipalaxis[0] =  m_Axis[0] + m_Center[0];
+  m_Semiprincipalaxis[0] =  m_Axis[0] + m_Center[0];
   // X-Axis inferior
-  m_semiprincipalaxis[1] = -m_Axis[0] + m_Center[0];
+  m_Semiprincipalaxis[1] = -m_Axis[0] + m_Center[0];
   // Y-Axis superior
-  m_semiprincipalaxis[2] =  m_Axis[1] + m_Center[1];
+  m_Semiprincipalaxis[2] =  m_Axis[1] + m_Center[1];
   // Y-Axis inferior
-  m_semiprincipalaxis[3] = -m_Axis[1] + m_Center[1];
+  m_Semiprincipalaxis[3] = -m_Axis[1] + m_Center[1];
   // Z-Axis superior
-  m_semiprincipalaxis[4] =  m_Axis[2] + m_Center[2];
+  m_Semiprincipalaxis[4] =  m_Axis[2] + m_Center[2];
   // Z-Axis inferior
-  m_semiprincipalaxis[5] = -m_Axis[2] + m_Center[2]; 
-  
+  m_Semiprincipalaxis[5] = -m_Axis[2] + m_Center[2];
+
 }
 
-bool DrawCubeSpatialObject::IsInside(const rtk::DrawCubeSpatialObject::PointType& point) const
-{ 
-
- 
-
+bool
+DrawCubeSpatialObject
+::IsInside(const rtk::DrawCubeSpatialObject::PointType& point) const
+{
   //Set type of Figure
   //Apply rotation if necessary
   // FIXME: add rotation option
   //sqpFunctor->Rotate(cube.angle, cube.center);
 
-  
-    if(point[0]<m_semiprincipalaxis[0] && point[0]>m_semiprincipalaxis[1] &&
-       point[1]<m_semiprincipalaxis[2] && point[1]>m_semiprincipalaxis[3] &&
-       point[2]<m_semiprincipalaxis[4] && point[2]>m_semiprincipalaxis[5])
-      return true;
-    return false;
 
+  if(point[0]<m_Semiprincipalaxis[0] && point[0]>m_Semiprincipalaxis[1] &&
+     point[1]<m_Semiprincipalaxis[2] && point[1]>m_Semiprincipalaxis[3] &&
+     point[2]<m_Semiprincipalaxis[4] && point[2]>m_Semiprincipalaxis[5])
+    return true;
+  return false;
 }
 
 }// end namespace rtk

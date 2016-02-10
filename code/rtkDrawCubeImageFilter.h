@@ -20,12 +20,14 @@
 #define __rtkDrawCubeImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
+#include <itkVector.h>
+
 #include "rtkDrawSpatialObject.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkConfiguration.h"
+
 #include <vector>
-#include <itkVector.h>
 
 namespace rtk
 {
@@ -55,9 +57,10 @@ public:
   VectorType      m_Center;
   ScalarType      m_Angle;
 private:
-  AxisType   m_semiprincipalaxis;
+  AxisType        m_Semiprincipalaxis;
 
 };
+
 /** \class DrawCubeImageFilter
  * \brief Draws in a 3D image a user defined cube/box.
  *
@@ -74,7 +77,7 @@ template <class TInputImage,
          typename TInputImage::PixelType,
          typename TOutputImage::PixelType>
          >
-class DrawCubeImageFilter :
+class ITK_EXPORT DrawCubeImageFilter :
   public DrawImageFilter< TInputImage,
   TOutputImage,
   DrawCubeSpatialObject,
@@ -95,8 +98,14 @@ public:
   typedef std::string                                         StringType;
 
 
+  /** Method for creation through the object factory. */
+  itkNewMacro ( Self );
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro ( DrawCubeImageFilter, DrawImageFilter );
+
   void SetAxis ( VectorType Axis )
-  {
+    {
     if ( Axis == this->m_SpatialObject.m_Axis )
       {
         return;
@@ -104,16 +113,16 @@ public:
     this->m_SpatialObject.m_Axis = Axis;
     this->m_SpatialObject.UpdateParameters();
     this->Modified();
-  }
+    }
 
   VectorType GetAxis()
-  {
+    {
     return this->m_SpatialObject.m_Axis;
-  }
+    }
 
 
   void SetCenter ( VectorType Center )
-  {
+    {
     if ( Center == this->m_SpatialObject.m_Center )
       {
         return;
@@ -121,15 +130,15 @@ public:
     this->m_SpatialObject.m_Center = Center;
     this->m_SpatialObject.UpdateParameters();
     this->Modified();
-  }
+    }
 
   VectorType GetCenter()
-  {
+    {
     return this->m_SpatialObject.m_Center;
-  }
+    }
 
   void SetAngle ( double Angle )
-  {
+    {
     if ( Angle == this->m_SpatialObject.m_Angle )
       {
         return;
@@ -137,18 +146,12 @@ public:
     this->m_SpatialObject.m_Angle = Angle;
     this->m_SpatialObject.UpdateParameters();
     this->Modified();
-  }
+    }
 
   double GetAngle()
-  {
+    {
     return this->m_SpatialObject.m_Angle;
-  }
-
-  /** Method for creation through the object factory. */
-  itkNewMacro ( Self );
-
-  /** Run-time type information (and related methods). */
-  itkTypeMacro ( DrawCubeImageFilter, DrawImageFilter );
+    }
 
 protected:
   DrawCubeImageFilter();
@@ -156,10 +159,7 @@ protected:
 
 private:
   DrawCubeImageFilter ( const Self& ); //purposely not implemented
-  void operator= ( const Self& );           //purposely not implemented
-
-
-
+  void operator= ( const Self& );      //purposely not implemented
 };
 
 } // end namespace rtk

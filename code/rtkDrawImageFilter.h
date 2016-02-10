@@ -23,8 +23,6 @@
 #include <itkInPlaceImageFilter.h>
 #include "rtkDrawSpatialObject.h"
 
-
-
 namespace rtk
 {
 
@@ -65,7 +63,7 @@ public:
  * \brief Base Class for drawing a 3D image by using a DrawSpatialObject. Uses a functor to fill the image.
  *
  * \author Mathieu Dupont
- * 
+ *
  */
 
 template <class TInputImage,
@@ -86,31 +84,28 @@ public:
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
   typedef TSpatialObject                                    SpatialObject;
 
-
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
   itkTypeMacro ( DrawImageFilter, InPlaceImageFilter );
 
-  itkSetMacro ( Density, double );  
-  itkGetMacro ( Density, double ); 
-  
-  
+  itkSetMacro ( Density, double );
+  itkGetMacro ( Density, double );
+
 protected:
   DrawImageFilter();
   virtual ~DrawImageFilter() {};
   virtual void ThreadedGenerateData ( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
-  
-  TFunction m_Fillerfunctor;
+
+  TFunction      m_Fillerfunctor;
   TSpatialObject m_SpatialObject;
-
-
 
 private:
   DrawImageFilter ( const Self& ); //purposely not implemented
+  void operator=(const Self&);     //purposely not implemented
   double         m_Density;
-  
+
 };
 
 

@@ -27,7 +27,7 @@
 #include <vector>
 
 namespace rtk
-{ 
+{
 
 /** \class DrawConeImageFilter
  * \brief Draws in a 3D image user defined Cone.
@@ -38,52 +38,46 @@ namespace rtk
  *
  * \ingroup InPlaceImageFilter
  */
-  template <class TInputImage, 
-            class TOutputImage, 
-	    typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
-                                                    typename TInputImage::PixelType,
-                                                    typename TOutputImage::PixelType>
-                                                    >
-  class DrawConeImageFilter : 
-  public DrawQuadricImageFilter<TInputImage,
-				TOutputImage, 
-				DrawQuadricSpatialObject,
-				TFunction
-			 >
-  {
+template <class TInputImage,
+          class TOutputImage,
+          typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
+                                                  typename TInputImage::PixelType,
+                                                  typename TOutputImage::PixelType>
+                                                  >
+class ITK_EXPORT DrawConeImageFilter :
+public DrawQuadricImageFilter<TInputImage,
+                              TOutputImage,
+                              DrawQuadricSpatialObject,
+                              TFunction
+                             >
+{
        public:
   /** Standard class typedefs. */
   typedef DrawConeImageFilter                               Self;
   typedef DrawQuadricImageFilter < TInputImage,
                                    TOutputImage,
                                    DrawQuadricSpatialObject,
-				   TFunction >              Superclass;
+                                   TFunction >              Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
-  
+
   typedef itk::Vector<double,3>                             VectorType;
-  
- 
-  
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DrawConeImageFilter, DrawQuadricSpatialObject);
-  
-  protected:
-  DrawConeImageFilter();
-  virtual ~DrawConeImageFilter() {};  
-  
-  private:
-      DrawConeImageFilter(const Self&); //purposely not implemented
-      void operator=(const Self&);            //purposely not implemented
- 
-  
-  
-  }; 
 
+protected:
+  DrawConeImageFilter();
+  virtual ~DrawConeImageFilter() {};
+
+private:
+  DrawConeImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);      //purposely not implemented
+};
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
