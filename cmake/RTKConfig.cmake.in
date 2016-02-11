@@ -8,6 +8,7 @@ SET(RTK_VERSION_MINOR "@RTK_VERSION_MINOR@")
 SET(RTK_VERSION_PATCH "@RTK_VERSION_PATCH@")
 
 # The location of the UseRTK.cmake file.
+SET(ITK_DIR "@ITK_DIR@")
 SET(RTK_USE_FILE "@RTK_USE_FILE@")
 
 # Whether the compiled version of RTK uses CUDA

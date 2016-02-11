@@ -21,6 +21,7 @@
 
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -169,11 +170,11 @@ protected:
   JosephForwardProjectionImageFilter() {}
   virtual ~JosephForwardProjectionImageFilter() {}
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  virtual void VerifyInputInformation() ITK_OVERRIDE {}
 
   inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,

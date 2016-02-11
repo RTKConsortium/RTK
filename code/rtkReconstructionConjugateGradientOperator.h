@@ -29,11 +29,9 @@
 #include "rtkForwardProjectionImageFilter.h"
 
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkLaplacianImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaDisplacedDetectorImageFilter.h"
   #include "rtkCudaConstantVolumeSource.h"
   #include "rtkCudaLaplacianImageFilter.h"
 #endif
@@ -79,7 +77,6 @@ namespace rtk
    * ConstantProjectionsSource [label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
-   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * Multiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * MultiplyInput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * MultiplyOutput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
@@ -92,8 +89,7 @@ namespace rtk
    * MultiplyInput -> ForwardProjection;
    * ConstantProjectionsSource -> ForwardProjection;
    * ConstantVolumeSource -> BackProjection;
-   * ForwardProjection -> Displaced;
-   * Displaced -> Multiply;
+   * ForwardProjection -> Multiply;
    * Input2 -> Multiply;
    * Multiply -> BackProjection;
    * BackProjection -> Add;
@@ -139,7 +135,7 @@ public:
   typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
   typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
 
-  typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
+//   typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
   typedef rtk::ConstantImageSource<TOutputImage>                          ConstantSourceType;
   typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
   typedef itk::AddImageFilter<TOutputImage>                               AddFilterType;
@@ -154,10 +150,6 @@ public:
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
-
-  /** If Weighted, perform weighted least squares optimization instead of unweighted */
-  itkSetMacro(Weighted, bool)
-  itkGetMacro(Weighted, bool)
 
   /** If Weighted && Preconditioned, multiplies by preconditioning weights to speed up CG convergence */
   itkSetMacro(Preconditioned, bool)
@@ -183,7 +175,6 @@ protected:
 
   typename ConstantSourceType::Pointer              m_ConstantProjectionsSource;
   typename ConstantSourceType::Pointer              m_ConstantVolumeSource;
-  typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyProjectionsFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyOutputVolumeFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyInputVolumeFilter;
@@ -193,7 +184,6 @@ protected:
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
-  bool                                              m_Weighted; //Weighted least squares ?
   bool                                              m_Preconditioned; //Multiply by preconditioning weights ?
   bool                                              m_Regularized;
   float                                             m_Gamma; //Strength of the regularization

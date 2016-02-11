@@ -16,21 +16,36 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawEllipsoidImageFilter_txx
-#define __rtkDrawEllipsoidImageFilter_txx
+#ifndef __rtkDrawSpatialObject_h
+#define __rtkDrawSpatialObject_h
 
+#include <itkPoint.h>
+#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
+#include <iostream>
 
 namespace rtk
 {
+/** \class DrawSpatialObject
+ * \brief Base class for a 3D object. rtk::DrawImageFilter fills uses it (and IsInside) to fill a volume.
+ *
+ * \author Mathieu Dupont
+ *
+ */
 
-template <class TInputImage, class TOutputImage, typename TFunction>
-DrawEllipsoidImageFilter<TInputImage, TOutputImage, TFunction>
-::DrawEllipsoidImageFilter()
+class DrawSpatialObject
 {
-  this->SetFigure("Ellipsoid");
+
+public:
+
+  typedef double ScalarType;
+  DrawSpatialObject(){}
+  typedef itk::Point< ScalarType, 3 > PointType;
+
+  /** Returns true if a point is inside the object. */
+  virtual bool IsInside(const PointType & point) const = 0;
+
+};
+
 }
-
-
-}// end namespace rtk
 
 #endif

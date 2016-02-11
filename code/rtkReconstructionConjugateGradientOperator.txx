@@ -28,23 +28,20 @@ template< typename TOutputImage>
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ReconstructionConjugateGradientOperator():
   m_Geometry(NULL),
-  m_Weighted(false),
   m_Preconditioned(false),
   m_Regularized(false),
   m_Gamma(0)
 {
-  this->SetNumberOfRequiredInputs(2);
+  this->SetNumberOfRequiredInputs(3);
 
   // Create filters
 #ifdef RTK_USE_CUDA
   m_ConstantProjectionsSource = rtk::CudaConstantVolumeSource::New();
   m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
-  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
   m_LaplacianFilter = rtk::CudaLaplacianImageFilter::New();
 #else
   m_ConstantProjectionsSource = ConstantSourceType::New();
   m_ConstantVolumeSource = ConstantSourceType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_LaplacianFilter = LaplacianFilterType::New();
 #endif
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
@@ -57,7 +54,6 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // Set permanent parameters
   m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management options
   m_ConstantProjectionsSource->ReleaseDataFlagOn();
@@ -99,28 +95,23 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   if ( !inputPtr1 ) return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 
-  if (m_Weighted)
+  // Input 2 is the weights map on projections, if any
+  typename Superclass::InputImagePointer  inputPtr2 =
+          const_cast< TOutputImage * >( this->GetInput(2) );
+  if ( !inputPtr2 )
+      return;
+  inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
+
+  if (m_Preconditioned)
     {
-    this->SetNumberOfRequiredInputs(3);
+    this->SetNumberOfRequiredInputs(4);
 
-    // Input 2 is the weights map on projections, if any
-    typename Superclass::InputImagePointer  inputPtr2 =
-            const_cast< TOutputImage * >( this->GetInput(2) );
-    if ( !inputPtr2 )
+    // Input 3 is the weights map on volumes, if any
+    typename Superclass::InputImagePointer  inputPtr3 =
+            const_cast< TOutputImage * >( this->GetInput(3) );
+    if ( !inputPtr3 )
         return;
-    inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
-
-    if (m_Preconditioned)
-      {
-      this->SetNumberOfRequiredInputs(4);
-
-      // Input 3 is the weights map on volumes, if any
-      typename Superclass::InputImagePointer  inputPtr3 =
-              const_cast< TOutputImage * >( this->GetInput(3) );
-      if ( !inputPtr3 )
-          return;
-      inputPtr3->SetRequestedRegion( inputPtr3->GetLargestPossibleRegion() );
-      }
+    inputPtr3->SetRequestedRegion( inputPtr3->GetLargestPossibleRegion() );
     }
 }
 
@@ -134,7 +125,6 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // at runtime
   m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-  m_DisplacedDetectorFilter->SetInput( m_ForwardProjectionFilter->GetOutput());
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
@@ -150,48 +140,39 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
     }
 
-  if (m_Weighted)
-    {
     // Multiply the projections
-    m_MultiplyProjectionsFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
+    m_MultiplyProjectionsFilter->SetInput1(m_ForwardProjectionFilter->GetOutput());
     m_MultiplyProjectionsFilter->SetInput2(this->GetInput(2));
     m_BackProjectionFilter->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
 
-    if (m_Preconditioned)
-      {
-      // Multiply the input volume
-      m_MultiplyInputVolumeFilter->SetInput1( this->GetInput(0) );
-      m_MultiplyInputVolumeFilter->SetInput2( this->GetInput(3) );
-      m_ForwardProjectionFilter->SetInput(1, m_MultiplyInputVolumeFilter->GetOutput());
-
-      // Multiply the volume
-      m_MultiplyOutputVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
-      m_MultiplyOutputVolumeFilter->SetInput2(this->GetInput(3));
-
-      // If a regularization is added, it needs to be added to the output of the
-      // m_MultiplyOutputVolumeFilter, instead of that of the m_BackProjectionFilter
-      if (m_Regularized)
-        {
-        m_LaplacianFilter->SetInput(m_MultiplyInputVolumeFilter->GetOutput());
-        m_MultiplyOutputVolumeFilter->SetInput1( m_AddFilter->GetOutput());
-        }
-      }
-    }
-  else
+  if (m_Preconditioned)
     {
-    m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+    // Multiply the input volume
+    m_MultiplyInputVolumeFilter->SetInput1( this->GetInput(0) );
+    m_MultiplyInputVolumeFilter->SetInput2( this->GetInput(3) );
+    m_ForwardProjectionFilter->SetInput(1, m_MultiplyInputVolumeFilter->GetOutput());
+
+    // Multiply the volume
+    m_MultiplyOutputVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+    m_MultiplyOutputVolumeFilter->SetInput2(this->GetInput(3));
+
+    // If a regularization is added, it needs to be added to the output of the
+    // m_MultiplyOutputVolumeFilter, instead of that of the m_BackProjectionFilter
+    if (m_Regularized)
+      {
+      m_LaplacianFilter->SetInput(m_MultiplyInputVolumeFilter->GetOutput());
+      m_MultiplyOutputVolumeFilter->SetInput1( m_AddFilter->GetOutput());
+      }
     }
 
   // Set geometry
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set memory management parameters for forward
   // and back projection filters
   m_ForwardProjectionFilter->SetInPlace(!m_Preconditioned);
   m_ForwardProjectionFilter->ReleaseDataFlagOn();
-  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 
   // Update output information on the last filter of the pipeline
   if (m_Preconditioned)

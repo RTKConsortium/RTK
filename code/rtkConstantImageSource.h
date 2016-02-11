@@ -20,6 +20,7 @@
 #define __rtkConstantImageSource_h
 
 #include "rtkConfiguration.h"
+#include "rtkMacro.h"
 
 #include <itkImageSource.h>
 #include <itkNumericTraits.h>
@@ -115,11 +116,11 @@ public:
 protected:
   ConstantImageSource();
   ~ConstantImageSource();
-  void PrintSelf(std::ostream& os, itk::Indent indent) const;
+  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
 
   SizeType       m_Size;
   SpacingType    m_Spacing;
