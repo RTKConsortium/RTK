@@ -22,6 +22,7 @@
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkDrawSpatialObject.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {

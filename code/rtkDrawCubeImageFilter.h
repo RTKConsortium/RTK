@@ -21,7 +21,7 @@
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>
-
+#include "rtkDrawImageFilter.h"
 #include "rtkDrawSpatialObject.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
@@ -71,25 +71,24 @@ private:
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage,
-         class TOutputImage,
-         class TSpatialObject = DrawQuadricSpatialObject,
-         typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
-         typename TInputImage::PixelType,
-         typename TOutputImage::PixelType>
+          class TOutputImage,
+          class TSpatialObject = DrawCubeSpatialObject,
+          typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
+                                                  typename TInputImage::PixelType,
+                                                  typename TOutputImage::PixelType>
          >
 class ITK_EXPORT DrawCubeImageFilter :
-  public DrawImageFilter< TInputImage,
-  TOutputImage,
-  DrawCubeSpatialObject,
-  TFunction
-  >
+public DrawImageFilter< TInputImage,
+                        TOutputImage,
+                        DrawCubeSpatialObject,
+                        TFunction >
 {
 public:
   /** Standard class typedefs. */
   typedef DrawCubeImageFilter                                 Self;
   typedef DrawImageFilter < TInputImage,TOutputImage,
-          DrawQuadricSpatialObject,
-          TFunction  >                                        Superclass;
+                            DrawCubeSpatialObject,
+                            TFunction  >                      Superclass;
   typedef itk::SmartPointer<Self>                             Pointer;
   typedef itk::SmartPointer<const Self>                       ConstPointer;
   typedef typename TOutputImage::RegionType                   OutputImageRegionType;
