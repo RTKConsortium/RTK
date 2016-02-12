@@ -28,38 +28,6 @@
 namespace rtk
 {
 
-rtk::DrawQuadricSpatialObject::DrawQuadricSpatialObject()
-{
-
-  this->m_SqpFunctor = EQPFunctionType::New();
-  m_Angle = 0;
-  m_Axis.Fill(90.);
-  m_Center.Fill(0.);
-  this->UpdateParameters();
-}
-
-void rtk::DrawQuadricSpatialObject::UpdateParameters()
-{
-  m_SqpFunctor->Translate(m_Axis);
-  m_SqpFunctor->Rotate(m_Angle, m_Center);
-}
-
-bool rtk::DrawQuadricSpatialObject::IsInside(const rtk::DrawQuadricSpatialObject::PointType& point) const
-{
-
-  double QuadricEllip = m_SqpFunctor->GetA()*point[0]*point[0]   +
-                        m_SqpFunctor->GetB()*point[1]*point[1]   +
-                        m_SqpFunctor->GetC()*point[2]*point[2]   +
-                        m_SqpFunctor->GetD()*point[0]*point[1]   +
-                        m_SqpFunctor->GetE()*point[0]*point[2]   +
-                        m_SqpFunctor->GetF()*point[1]*point[2]   +
-                        m_SqpFunctor->GetG()*point[0] + m_SqpFunctor->GetH()*point[1] +
-                        m_SqpFunctor->GetI()*point[2] + m_SqpFunctor->GetJ();
- if(QuadricEllip<0)
-    return true;
- return false;
-}
-
 template <class TInputImage, class TOutputImage, class TSpatialObject, typename TFunction>
 rtk::DrawQuadricImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
 ::DrawQuadricImageFilter()

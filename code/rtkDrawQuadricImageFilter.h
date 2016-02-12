@@ -19,41 +19,16 @@
 #ifndef __rtkDrawQuadricImageFilter_h
 #define __rtkDrawQuadricImageFilter_h
 
+#include <itkAddImageFilter.h>
+
+#include "rtkDrawQuadricSpatialObject.h"
 #include "rtkDrawImageFilter.h"
-#include "itkAddImageFilter.h"
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 #include "rtkConfiguration.h"
-#include <iostream>
-#include <vector>
+#include "rtkDrawQuadricImageFilter.h"
 
 namespace rtk
 {
-
-class DrawQuadricSpatialObject : public DrawSpatialObject
-{
-  public:
-
-    DrawQuadricSpatialObject();
-
-    typedef double                                              ScalarType;
-    typedef rtk::ConvertEllipsoidToQuadricParametersFunction    EQPFunctionType;
-    typedef itk::Point< ScalarType, 3 >                         PointType;
-    typedef itk::Vector<double,3>                               VectorType;
-    typedef std::string                                         StringType;
-
-  /** Returns true if a point is inside the object. */
-  virtual bool IsInside(const PointType & point) const;
-
-  void UpdateParameters();
-
-public:
-  EQPFunctionType::Pointer m_SqpFunctor;
-  VectorType               m_Axis;
-  VectorType               m_Center;
-  ScalarType               m_Angle;
-  StringType               m_Figure;
-
-};
 
 /** \class DrawQuadricImageFilter
  * \brief Draws in a 3D image user defined Quadric.
