@@ -202,7 +202,8 @@ ADD_SUBDIRECTORY(code)
 # Generate RTKConfig.cmake for the build tree.
 SET (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 SET (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
-CONFIGURE_FILE (cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
+CONFIGURE_FILE(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
+CONFIGURE_FILE(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
 #=========================================================
 
 option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
