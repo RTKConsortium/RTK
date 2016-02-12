@@ -33,7 +33,8 @@ SET(RTK_LIBRARY_FILES
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
-            rtkConvertEllipsoidToQuadricParametersFunction.cxx)
+            rtkConvertEllipsoidToQuadricParametersFunction.cxx
+            rtkDrawQuadricSpatialObject.cxx)
 IF(RTK_TIME_EACH_FILTER)
     SET(RTK_LIBRARY_FILES
             ${RTK_LIBRARY_FILES}
