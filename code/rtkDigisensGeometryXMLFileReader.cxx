@@ -77,6 +77,7 @@ DigisensGeometryXMLFileReader::
 EndElement(const char *name)
 {
   typedef itk::Vector<double, 3> VectorThreeDType;
+  typedef itk::Vector<double, 4> Vector4DType;
 
 #define ENCAPLULATE_META_DATA_3D(section, metaName) \
   if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
@@ -85,6 +86,15 @@ EndElement(const char *name)
     std::istringstream iss(m_CurCharacterData); \
     iss >> vec; \
     itk::EncapsulateMetaData<VectorThreeDType>(m_Dictionary, #section metaName, vec); \
+    }
+
+#define ENCAPLULATE_META_DATA_4D(section, metaName) \
+  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
+    { \
+    Vector4DType vec; \
+    std::istringstream iss(m_CurCharacterData); \
+    iss >> vec; \
+    itk::EncapsulateMetaData<Vector4DType>(m_Dictionary, #section metaName, vec); \
     }
 
 #define ENCAPLULATE_META_DATA_INTEGER(section, metaName) \
@@ -101,6 +111,8 @@ EndElement(const char *name)
     itk::EncapsulateMetaData<double>(m_Dictionary, #section metaName, d); \
     }
 
+  ENCAPLULATE_META_DATA_4D(GRID, "rotation");
+
   ENCAPLULATE_META_DATA_3D(ROTATION, "axis");
   ENCAPLULATE_META_DATA_3D(ROTATION, "center");
   ENCAPLULATE_META_DATA_3D(XRAY, "source");
@@ -108,6 +120,9 @@ EndElement(const char *name)
   ENCAPLULATE_META_DATA_3D(CAMERA, "normal");
   ENCAPLULATE_META_DATA_3D(CAMERA, "horizontal");
   ENCAPLULATE_META_DATA_3D(CAMERA, "vertical");
+  ENCAPLULATE_META_DATA_3D(GRID, "center");
+  ENCAPLULATE_META_DATA_3D(GRID, "scale");
+  ENCAPLULATE_META_DATA_3D(GRID, "resolution");
 
   ENCAPLULATE_META_DATA_INTEGER(CAMERA, "pixelWidth");
   ENCAPLULATE_META_DATA_INTEGER(CAMERA, "pixelHeight");
