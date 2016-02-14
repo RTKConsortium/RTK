@@ -19,6 +19,8 @@
 #ifndef __rtkDrawQuadricSpatialObject_h
 #define __rtkDrawQuadricSpatialObject_h
 
+#include "rtkWin32Header.h"
+
 #include <itkPoint.h>
 #include <rtkMacro.h>
 
@@ -28,7 +30,7 @@
 namespace rtk
 {
 
-class ITK_EXPORT DrawQuadricSpatialObject : public DrawSpatialObject
+class RTK_EXPORT DrawQuadricSpatialObject : public DrawSpatialObject
 {
   public:
 
