@@ -8,6 +8,7 @@ set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk440")
 set(ENV{ITK_DIR} "/home/srit/src/itk440/lin64-dg/lib/cmake/ITK-4.4")
 set(ENV{CUDA_BIN_PATH} "/usr/bin")
 set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia")
+set(ENV{ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS} 8)
 set(CTEST_BUILD_FLAGS -j8)
 
 # OpenCL
@@ -19,6 +20,11 @@ set(CONFIGURE_OPTIONS
    -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/libcuda.so
    -DRTK_USE_OPENCL:BOOL=ON
   )
+
+set(ENV{CC} "/home/srit/src/gcc/gcc472-install/bin/gcc")
+set(ENV{CXX} "/home/srit/src/gcc/gcc472-install/bin/c++")
+set(ENV{LD_LIBRARY_PATH} "/home/srit/src/gcc/gcc472-install/lib64:/home/srit/src/gcc/gcc472-install/lib:$ENV{LD_LIBRARY_PATH}")
+set(ENV{PATH} "/home/srit/src/gcc/gcc472-install/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/srit/src/gcc/gcc436-install/bin")
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 

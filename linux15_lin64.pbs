@@ -18,6 +18,9 @@ ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda60_itk4.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda70_itk4.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda70_itk4_sharedlibs.cmake
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_simplertk.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4_simplertk.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_cov.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_nofftw.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_valgrind.cmake -V
@@ -31,6 +34,5 @@ ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc450_cuda40_itk4.cmak
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc454_cuda40_itk4.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc472_cuda40_itk4.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk420.cmake -V
-ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk430.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk460.cmake -V
 
