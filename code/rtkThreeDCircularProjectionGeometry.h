@@ -68,13 +68,15 @@ public:
   void AddProjection(const double sid, const double sdd, const double gantryAngle,
                      const double projOffsetX=0., const double projOffsetY=0.,
                      const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
-                     const double sourceOffsetX=0., const double sourceOffsetY=0.);
+                     const double sourceOffsetX=0., const double sourceOffsetY=0.,
+                     const double radiusCylindricalDetector=0.);
 
   /** Idem with angles in radians. */
   virtual void AddProjectionInRadians(const double sid, const double sdd, const double gantryAngle,
                                       const double projOffsetX=0., const double projOffsetY=0.,
                                       const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
-                                      const double sourceOffsetX=0., const double sourceOffsetY=0.);
+                                      const double sourceOffsetX=0., const double sourceOffsetY=0.,
+                                      const double radiusCylindricalDetector=0.);
 
   /** Empty the geometry object. */
   virtual void Clear() ITK_OVERRIDE;
@@ -107,6 +109,9 @@ public:
   }
   const std::vector<double> &GetProjectionOffsetsY() const {
     return this->m_ProjectionOffsetsY;
+  }
+  const std::vector<double> &GetRadiusCylindricalDetector() const {
+    return this->m_RadiusCylindricalDetector;
   }
 
   /** Get a vector containing the source angles in radians. The source angle is
@@ -228,6 +233,7 @@ protected:
   std::vector<double> m_SourceToDetectorDistances;
   std::vector<double> m_ProjectionOffsetsX;
   std::vector<double> m_ProjectionOffsetsY;
+  std::vector<double> m_RadiusCylindricalDetector;
 
   std::vector<TwoDHomogeneousMatrixType>         m_ProjectionTranslationMatrices;
   std::vector<Superclass::MatrixType>            m_MagnificationMatrices;

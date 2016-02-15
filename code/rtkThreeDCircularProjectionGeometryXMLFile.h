@@ -55,7 +55,7 @@ public:
   typedef GeometryType::Pointer            GeometryPointer;
 
   /** Latest version */
-  static const unsigned int CurrentVersion = 2;
+  static const unsigned int CurrentVersion = 3;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileReader, itk::XMLFileReader);
@@ -103,6 +103,7 @@ private:
   double m_SourceToDetectorDistance;
   double m_ProjectionOffsetX;
   double m_ProjectionOffsetY;
+  double m_RadiusCylindricalDetector;
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;
