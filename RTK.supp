@@ -43,99 +43,27 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: reachable
    ...
-   fun:cudaFree
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   ...
-   fun:cuInit
+   obj:/usr/lib64/libcuda.so.358.16
    ...
 }
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: possible
    ...
-   fun:cuInit
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   ...
-   fun:cudaGetDeviceCount
+   obj:/usr/lib64/libcufft.so.7.0.35
    ...
 }
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
-   obj:/usr/lib64/cuda/lib64/libcufft.so.5.0.35
-   fun:cufftPlan3d
+   ...
+   obj:/usr/lib64/libcublas.so.7.5.18
    ...
 }
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:/usr/lib64/cuda/lib64/libcufft.so.5.0.35
-   fun:cufftPlan3d
-   ...
-}
-{
-   CUDA
-   Memcheck:Value8
-   ...
-   fun:cuCtxCreate_v2
-   ...
-}
-{
-   CUDA
-   Memcheck:Cond
-   ...
-   fun:cuCtxCreate_v2
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: possible
-   fun:calloc
-   ...
-   fun:cuCtxCreate_v2
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:calloc
-   ...
-   fun:cuCtxCreate_v2
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   ...
-   fun:cudaConfigureCall
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
    ...
    fun:cudaSetupArgument
    ...
@@ -143,48 +71,15 @@
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
    ...
-   fun:cufftExecute
+   fun:cudaConfigureCall
    ...
 }
 {
    CUDA
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
    ...
-   fun:cufftCreate
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   ...
-   fun:cufftPlan3d
-   ...
-}
-{
-   CUDA
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   ...
-   fun:cudaGetLastError
-   ...
-}
-{
-   cublas
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:/usr/lib64/libcublas.so.7.5.18
-   obj:/usr/lib64/libcublas.so.7.5.18
-   obj:/usr/lib64/libcublas.so.7.5.18
-   obj:/usr/lib64/libcublas.so.7.5.18
+   obj:/usr/lib64/libcudart.so.7.5.18
    ...
 }
 {
@@ -226,4 +121,9 @@
    fun:make_lp
    ...
 }
-
+{
+   nifti
+   Memcheck:Addr4
+   fun:nifti_findhdrname
+   ...
+}
