@@ -21,6 +21,8 @@
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>
+#include <itkAddImageFilter.h>
+
 #include "rtkDrawImageFilter.h"
 #include "rtkDrawSpatialObject.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
