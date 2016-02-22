@@ -1,0 +1,95 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+#ifndef __rtkLastDimensionL0GradientDenoisingImageFilter_h
+#define __rtkLastDimensionL0GradientDenoisingImageFilter_h
+
+#include "itkInPlaceImageFilter.h"
+
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  #include <itkImageRegionSplitterDirection.h>
+#endif
+
+namespace rtk
+{
+  /** \class LastDimensionL0GradientDenoisingImageFilter
+   * \brief Minimizes the L0 norm of the gradient in 1D, along the last dimension
+   *
+   * \test none
+   *
+   * \author Cyril Mory
+   *
+   */
+template< class TInputImage >
+
+class LastDimensionL0GradientDenoisingImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
+{
+public:
+    /** Standard class typedefs. */
+    typedef LastDimensionL0GradientDenoisingImageFilter                        Self;
+    typedef itk::InPlaceImageFilter<TInputImage, TInputImage> Superclass;
+    typedef itk::SmartPointer< Self >                         Pointer;
+    typedef typename TInputImage::PixelType                   InputPixelType;
+
+    /** Method for creation through the object factory. */
+    itkNewMacro(Self)
+
+    /** Run-time type information (and related methods). */
+    itkTypeMacro(LastDimensionL0GradientDenoisingImageFilter, itk::InPlaceImageFilter)
+
+    /** Get / Set the threshold. Default is 0.001 */
+    itkGetMacro(Lambda, double);
+    itkSetMacro(Lambda, double);
+    
+    /** Get / Set the number of iterations. Default is 10 */
+    itkGetMacro(NumberOfIterations, unsigned int);
+    itkSetMacro(NumberOfIterations, unsigned int);
+    
+protected:
+    LastDimensionL0GradientDenoisingImageFilter();
+    ~LastDimensionL0GradientDenoisingImageFilter(){}
+
+    virtual void GenerateInputRequestedRegion();
+
+    /** Does the real work. */
+    virtual void BeforeThreadedGenerateData();
+    virtual void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+    /** Splits the OutputRequestedRegion along the first direction, not the last */
+    virtual const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
+    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+#endif
+    
+    virtual void OneDimensionMinimizeL0NormOfGradient(InputPixelType* input, unsigned int length, double lambda, unsigned int nbIters);
+    
+    double              m_Lambda;
+    unsigned int        m_NumberOfIterations;
+
+private:
+    LastDimensionL0GradientDenoisingImageFilter(const Self &); //purposely not implemented
+    void operator=(const Self &);  //purposely not implemented
+
+};
+} //namespace RTK
+
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkLastDimensionL0GradientDenoisingImageFilter.txx"
+#endif
+
+#endif
