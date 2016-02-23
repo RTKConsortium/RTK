@@ -27,9 +27,13 @@
 namespace rtk
 {
   /** \class LastDimensionL0GradientDenoisingImageFilter
-   * \brief Minimizes the L0 norm of the gradient in 1D, along the last dimension
+   * \brief Denoises along the last dimension, reducing the L0 norm of the gradient
+   * 
+   * This filter implements the "Fast and Effective L0 Gradient Minimization by Region Fusion"
+   * method, developped by Nguyen and Brown. Their method is computationally demanding, but its
+   * restriction to 1D can be implemented efficiently. This is what this filter does.
    *
-   * \test none
+   * \test rtkl0gradientnormtest
    *
    * \author Cyril Mory
    *
