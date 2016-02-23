@@ -135,6 +135,10 @@ ADD_EXECUTABLE(rtkbinningtest rtkbinningtest.cxx)
 TARGET_LINK_LIBRARIES(rtkbinningtest ${RTK_LIBRARIES})
 ADD_TEST(rtkbinningtest ${EXECUTABLE_OUTPUT_PATH}/rtkbinningtest)
 
+ADD_EXECUTABLE(rtkl0gradientnormtest rtkl0gradientnormtest.cxx)
+TARGET_LINK_LIBRARIES(rtkl0gradientnormtest ${RTK_LIBRARIES})
+ADD_TEST(rtkl0gradientnormtest ${EXECUTABLE_OUTPUT_PATH}/rtkl0gradientnormtest)
+
 ADD_EXECUTABLE(rtkmediantest rtkmediantest.cxx)
 TARGET_LINK_LIBRARIES(rtkmediantest ${RTK_LIBRARIES})
 ADD_TEST(rtkmediantest ${EXECUTABLE_OUTPUT_PATH}/rtkmediantest)
