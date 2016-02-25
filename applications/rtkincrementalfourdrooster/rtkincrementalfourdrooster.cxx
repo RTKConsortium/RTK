@@ -112,8 +112,8 @@ int main(int argc, char * argv[])
   incrementalRooster->SetMainLoop_iterations( args_info.niter_arg );
   incrementalRooster->SetTV_iterations( args_info.tviter_arg );
   incrementalRooster->SetPhasesFileName(args_info.signal_arg);
-  incrementalRooster->SetGammaSpace(args_info.gamma_space_arg);
-  incrementalRooster->SetGammaTime(args_info.gamma_time_arg);
+  incrementalRooster->SetGammaTVSpace(args_info.gamma_space_arg);
+  incrementalRooster->SetGammaTVTime(args_info.gamma_time_arg);
   incrementalRooster->SetNumberOfProjectionsPerSubset(args_info.nprojpersubset_arg);
   incrementalRooster->SetKzero(args_info.kzero_arg);
   incrementalRooster->SetCudaConjugateGradient(args_info.cudacg_flag);

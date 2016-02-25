@@ -42,7 +42,7 @@ IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Projection
 {
   // Call the superclass method to prepare all filters of the pipeline with
   // the correct runtime parameters, but without connecting them to each other
-  this->PreparePipeline();
+  Superclass::GenerateOutputInformation();
 
   unsigned int Dimension = ProjectionStackType::ImageDimension;
 
@@ -142,7 +142,7 @@ IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Projection
       if (costTerm == m_NumberOfSubsets)
         {
         // Spatial TV
-        this->m_TVDenoisingSpace->SetGamma(this->m_GammaSpace * alpha_k);
+        this->m_TVDenoisingSpace->SetGamma(this->m_GammaTVSpace * alpha_k);
         this->m_TVDenoisingSpace->SetInput( pimg );
         TRY_AND_EXIT_ON_ITK_EXCEPTION( this->m_TVDenoisingSpace->Update() );
         pimg = this->m_TVDenoisingSpace->GetOutput();
@@ -160,7 +160,7 @@ IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Projection
           }
 
         // Temporal TV
-        this->m_TVDenoisingTime->SetGamma(this->m_GammaTime * alpha_k);
+        this->m_TVDenoisingTime->SetGamma(this->m_GammaTVTime * alpha_k);
         this->m_TVDenoisingTime->SetInput( pimg );
         TRY_AND_EXIT_ON_ITK_EXCEPTION( this->m_TVDenoisingTime->Update() );
         pimg = this->m_TVDenoisingTime->GetOutput();

@@ -365,15 +365,15 @@ int main(int, char** )
   rooster->SetCG_iterations( 2 );
   rooster->SetMainLoop_iterations( 2);
   rooster->SetTV_iterations( 3 );
-  rooster->SetGammaTime(0.1);
+  rooster->SetGammaTVTime(0.1);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector and wavelets spatial denoising ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 0 ); // Voxel based
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
   rooster->SetPerformWarping(false);
-  rooster->SetWaveletsSpatialDenoising(true);
-  rooster->SetGammaSpace(0.1);
+  rooster->SetPerformWaveletsSpatialDenoising(true);
+  rooster->SetGammaTVSpace(0.1);
   rooster->SetNumberOfLevels(3);
   rooster->SetOrder(3);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
@@ -386,10 +386,10 @@ int main(int, char** )
   rooster->SetBackProjectionFilter( 0 ); // Voxel based
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
   rooster->SetMainLoop_iterations( 2);
-  rooster->SetWaveletsSpatialDenoising(false);
+  rooster->SetPerformWaveletsSpatialDenoising(false);
   rooster->SetPerformWarping(true);
   rooster->SetComputeInverseWarpingByConjugateGradient(true);
-  rooster->SetGammaSpace(1);
+  rooster->SetGammaTVSpace(1);
   rooster->SetDisplacementField(deformationField);
   rooster->SetUseNearestNeighborInterpolationInWarping(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
@@ -402,10 +402,10 @@ int main(int, char** )
   rooster->SetBackProjectionFilter( 0 ); // Voxel based
   rooster->SetForwardProjectionFilter( 0 ); // Joseph
   rooster->SetMainLoop_iterations( 2);
-  rooster->SetWaveletsSpatialDenoising(false);
+  rooster->SetPerformWaveletsSpatialDenoising(false);
   rooster->SetPerformWarping(true);
   rooster->SetComputeInverseWarpingByConjugateGradient(false);
-  rooster->SetGammaSpace(1);
+  rooster->SetGammaTVSpace(1);
   rooster->SetDisplacementField(deformationField);
   rooster->SetInverseDisplacementField(inverseDeformationField);
   rooster->SetUseNearestNeighborInterpolationInWarping(false);

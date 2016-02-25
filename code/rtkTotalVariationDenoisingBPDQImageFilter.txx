@@ -69,15 +69,6 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 }
 
 template< typename TOutputImage, typename TGradientImage>
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::~TotalVariationDenoisingBPDQImageFilter()
-{
-  delete m_BoundaryConditionForGradientFilter;
-  delete m_BoundaryConditionForDivergenceFilter;
-}
-
-
-template< typename TOutputImage, typename TGradientImage>
 void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetDimensionsProcessed(bool* arg)

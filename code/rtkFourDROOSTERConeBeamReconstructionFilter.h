@@ -18,8 +18,6 @@
 #ifndef __rtkFourDROOSTERConeBeamReconstructionFilter_h
 #define __rtkFourDROOSTERConeBeamReconstructionFilter_h
 
-#include <itkThresholdImageFilter.h>
-
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkTotalVariationDenoiseSequenceImageFilter.h"
 #ifdef RTK_USE_CUDA
@@ -32,6 +30,9 @@
 #include "rtkDaubechiesWaveletsDenoiseSequenceImageFilter.h"
 #include "rtkWarpSequenceImageFilter.h"
 #include "rtkUnwarpSequenceImageFilter.h"
+#include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
+
+#include <itkThresholdImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageFilter.h>
 
@@ -301,6 +302,7 @@ public:
   typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
   typedef itk::SubtractImageFilter<VolumeSeriesType, VolumeSeriesType>                                      SubtractFilterType;
   typedef itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>                                           AddFilterType;
+  typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>                                TemporalL0DenoisingFilterType;    
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void SetForwardProjectionFilter(int fwtype);
@@ -313,47 +315,40 @@ public:
 
   void PrintTiming(std::ostream& os) const;
 
-  // Main loop iterations
-  itkSetMacro(MainLoop_iterations, int)
-  itkGetMacro(MainLoop_iterations, int)
 
-  // Conjugate gradient iterations
-  itkSetMacro(CG_iterations, int)
-  itkGetMacro(CG_iterations, int)
-
-  // TV filter parameters
-  itkSetMacro(GammaSpace, float)
-  itkGetMacro(GammaSpace, float)
-
-  itkSetMacro(GammaTime, float)
-  itkGetMacro(GammaTime, float)
-
-  itkSetMacro(PhaseShift, float)
-  itkGetMacro(PhaseShift, float)
-
-  itkSetMacro(TV_iterations, int)
-  itkGetMacro(TV_iterations, int)
-
-  itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
-  itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
-
-  // Booleans : should warping be performed ? how should inverse warping be performed ?
+  // Regularization steps to perform
+  itkSetMacro(PerformPositivity, bool)
+  itkGetMacro(PerformPositivity, bool)
+  itkSetMacro(PerformMotionMask, bool)
+  itkGetMacro(PerformMotionMask, bool)
+  itkSetMacro(PerformTVSpatialDenoising, bool)
+  itkGetMacro(PerformTVSpatialDenoising, bool)
+  itkSetMacro(PerformWaveletsSpatialDenoising, bool)
+  itkGetMacro(PerformWaveletsSpatialDenoising, bool)
   itkSetMacro(PerformWarping, bool)
   itkGetMacro(PerformWarping, bool)
-
+  itkSetMacro(PerformTVTemporalDenoising, bool)
+  itkGetMacro(PerformTVTemporalDenoising, bool)
+  itkSetMacro(PerformL0TemporalDenoising, bool)
+  itkGetMacro(PerformL0TemporalDenoising, bool)
   itkSetMacro(ComputeInverseWarpingByConjugateGradient, bool)
   itkGetMacro(ComputeInverseWarpingByConjugateGradient, bool)
-
   itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
   itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
-
-  /** Get / Set whether conjugate gradient should be performed on GPU */
   itkGetMacro(CudaConjugateGradient, bool)
   itkSetMacro(CudaConjugateGradient, bool)
-
-  /** Get / Set whether Daubechies wavelets should replace TV in spatial denoising*/
-  itkGetMacro(WaveletsSpatialDenoising, bool)
-  itkSetMacro(WaveletsSpatialDenoising, bool)
+ 
+  // Regularization parameters
+  itkSetMacro(GammaTVSpace, float)
+  itkGetMacro(GammaTVSpace, float)
+  itkSetMacro(GammaTVTime, float)
+  itkGetMacro(GammaTVTime, float)
+  itkSetMacro(LambdaL0Time, float)
+  itkGetMacro(LambdaL0Time, float)
+  itkSetMacro(SoftThresholdWavelets, float)
+  itkGetMacro(SoftThresholdWavelets, float)
+  itkSetMacro(PhaseShift, float)
+  itkGetMacro(PhaseShift, float)
 
   /** Set the number of levels of the wavelets decomposition */
   itkGetMacro(NumberOfLevels, unsigned int)
@@ -363,14 +358,26 @@ public:
   itkGetMacro(Order, unsigned int)
   itkSetMacro(Order, unsigned int)
 
+  // Iterations
+  itkSetMacro(MainLoop_iterations, int)
+  itkGetMacro(MainLoop_iterations, int)
+  itkSetMacro(CG_iterations, int)
+  itkGetMacro(CG_iterations, int)
+  itkSetMacro(TV_iterations, int)
+  itkGetMacro(TV_iterations, int)
+  itkSetMacro(L0_iterations, int)
+  itkGetMacro(L0_iterations, int)  
+
+  // Geometry
+  itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
+  itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
+
 protected:
   FourDROOSTERConeBeamReconstructionFilter();
   ~FourDROOSTERConeBeamReconstructionFilter(){}
 
   /** Does the real work. */
   virtual void GenerateData();
-
-  virtual void PreparePipeline();
 
   virtual void GenerateOutputInformation();
 
@@ -393,20 +400,28 @@ protected:
   typename WarpSequenceFilterType::Pointer                m_InverseWarp;
   typename SubtractFilterType::Pointer                    m_SubtractFilter;
   typename AddFilterType::Pointer                         m_AddFilter;
+  typename TemporalL0DenoisingFilterType::Pointer         m_L0DenoisingTime;
 
   // Booleans :
   // should warping be performed ?
   // should conjugate gradient be performed on GPU ?
   // should wavelets replace TV in spatial denoising ?
+  bool  m_PerformPositivity;
+  bool  m_PerformMotionMask;
+  bool  m_PerformTVSpatialDenoising;
+  bool  m_PerformWaveletsSpatialDenoising;
   bool  m_PerformWarping;
+  bool  m_PerformTVTemporalDenoising;
+  bool  m_PerformL0TemporalDenoising;
   bool  m_ComputeInverseWarpingByConjugateGradient;
   bool  m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
   bool  m_CudaConjugateGradient;
-  bool  m_WaveletsSpatialDenoising;
 
   // Regularization parameters
-  float m_GammaSpace;
-  float m_GammaTime;
+  float m_GammaTVSpace;
+  float m_GammaTVTime;
+  float m_LambdaL0Time;
+  float m_SoftThresholdWavelets;
   float m_PhaseShift;
   bool  m_DimensionsProcessedForTVSpace[VolumeSeriesType::ImageDimension];
   bool  m_DimensionsProcessedForTVTime[VolumeSeriesType::ImageDimension];
@@ -419,6 +434,7 @@ protected:
   int   m_MainLoop_iterations;
   int   m_CG_iterations;
   int   m_TV_iterations;
+  int   m_L0_iterations;
 
   // Geometry
   typename rtk::ThreeDCircularProjectionGeometry::Pointer m_Geometry;
@@ -426,11 +442,13 @@ protected:
   /** Time probes */
   itk::TimeProbe m_CGProbe;
   itk::TimeProbe m_PositivityProbe;
-  itk::TimeProbe m_ROIProbe;
-  itk::TimeProbe m_DenoisingSpaceProbe;
-  itk::TimeProbe m_TVTimeProbe;
-  itk::TimeProbe m_WarpProbe;
-  itk::TimeProbe m_UnwarpProbe;
+  itk::TimeProbe m_MotionMaskProbe;
+  itk::TimeProbe m_TVSpatialDenoisingProbe;
+  itk::TimeProbe m_WaveletsSpatialDenoisingProbe;
+  itk::TimeProbe m_TVTemporalDenoisingProbe;
+  itk::TimeProbe m_L0TemporalDenoisingProbe;  
+  itk::TimeProbe m_WarpingProbe;
+  itk::TimeProbe m_UnwarpingProbe;
 
 private:
   FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented
