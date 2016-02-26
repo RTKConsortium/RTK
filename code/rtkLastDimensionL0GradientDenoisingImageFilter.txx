@@ -161,9 +161,9 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
       }
     }
 
-  delete firsts;
-  delete weights;
-  delete values;
+  delete[] firsts;
+  delete[] weights;
+  delete[] values;
 }
 
 template< class TInputImage >
