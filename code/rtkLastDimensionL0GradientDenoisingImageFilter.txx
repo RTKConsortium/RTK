@@ -40,6 +40,10 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
   // and should run this filter with only one thread
   this->SetNumberOfThreads(1);
 #endif
+
+  // Default parameters
+  m_NumberOfIterations = 5;
+  m_Lambda = 0.;
 }
 
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
@@ -118,8 +122,6 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
       unsigned int j = (i + 1) % nbGroups;
     
       // Decide whether or not to merge the current group with its right neighbour
-      float left = weights[i] * weights[j] * (values[i] - values[j]) * (values[i] - values[j]);
-      float right = beta * (weights[i] + weights[j]);
       if ( weights[i] * weights[j] * (values[i] - values[j]) * (values[i] - values[j]) <= beta * (weights[i] + weights[j]) )
         {
         // Perform the fusion
@@ -159,9 +161,9 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
       }
     }
 
-  delete firsts;
-  delete weights;
-  delete values;
+  delete[] firsts;
+  delete[] weights;
+  delete[] values;
 }
 
 template< class TInputImage >

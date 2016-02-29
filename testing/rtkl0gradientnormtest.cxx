@@ -102,10 +102,10 @@ int main(int, char** )
   typedef itk::Image< OutputPixelType, 4 >  VolumeSeriesType;
 
   // Constant image sources
-  typename VolumeSeriesType::PointType origin;
-  typename VolumeSeriesType::SizeType size;
-  typename VolumeSeriesType::SpacingType spacing;
-  typename VolumeSeriesType::IndexType index;
+  VolumeSeriesType::PointType origin;
+  VolumeSeriesType::SizeType size;
+  VolumeSeriesType::SpacingType spacing;
+  VolumeSeriesType::IndexType index;
 
   origin[0] = -63.;
   origin[1] = -31.;
@@ -133,12 +133,12 @@ int main(int, char** )
 #endif
   
   // Initialize the largest possible region for the input image
-  typename VolumeSeriesType::RegionType largest;
+  VolumeSeriesType::RegionType largest;
   largest.SetIndex(index);
   largest.SetSize(size);
   
   // Initialize the input image
-  typename VolumeSeriesType::Pointer input = VolumeSeriesType::New();
+  VolumeSeriesType::Pointer input = VolumeSeriesType::New();
   input->SetOrigin(origin);
   input->SetSpacing(spacing);
   input->SetRegions(largest);
@@ -163,12 +163,12 @@ int main(int, char** )
   signal[11] = 0;
   
   // Create a slice to iterate on
-  typename VolumeSeriesType::RegionType FirstFrameRegion = largest;
+  VolumeSeriesType::RegionType FirstFrameRegion = largest;
   FirstFrameRegion.SetSize(VolumeSeriesType::ImageDimension - 1, 1);
   itk::ImageRegionIteratorWithIndex<VolumeSeriesType> FakeIterator(input, FirstFrameRegion);
   
   // Create a single-voxel region traversing last dimension
-  typename VolumeSeriesType::RegionType SingleVoxelRegion = largest;
+  VolumeSeriesType::RegionType SingleVoxelRegion = largest;
   for (unsigned int dim = 0; dim< VolumeSeriesType::ImageDimension - 1; dim++)
     {
     SingleVoxelRegion.SetSize(dim, 1);
@@ -201,7 +201,7 @@ int main(int, char** )
     
    // Perform regularization
   typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType> DenoisingFilterType;
-  typename DenoisingFilterType::Pointer denoising = DenoisingFilterType::New();
+  DenoisingFilterType::Pointer denoising = DenoisingFilterType::New();
   denoising->SetInput(input);
   denoising->SetLambda(0.3);
   denoising->SetNumberOfIterations(5);
