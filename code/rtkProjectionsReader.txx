@@ -26,6 +26,7 @@
 #include <itkBinShrinkImageFilter.h>
 #include <itkNumericTraits.h>
 #include <itkChangeInformationImageFilter.h>
+#include <itkCastImageFilter.h>
 
 // RTK
 #include "rtkIOFactories.h"
@@ -63,7 +64,8 @@ ProjectionsReader<TOutputImage>
   m_AirThreshold(32000),
   m_ScatterToPrimaryRatio(0.),
   m_NonNegativityConstraintThreshold( itk::NumericTraits<double>::NonpositiveMin() ),
-  m_I0( itk::NumericTraits<double>::NonpositiveMin() )
+  m_I0( itk::NumericTraits<double>::NonpositiveMin() ),
+  m_ComputeLineIntegral(true)
 {
   // Filters common to all input types and that do not depend on the input image type.
   m_WaterPrecorrectionFilter = WaterPrecorrectionType::New();
@@ -121,6 +123,7 @@ void ProjectionsReader<TOutputImage>
     m_ScatterFilter = NULL;
     m_I0EstimationFilter = NULL;
     m_RawToAttenuationFilter = NULL;
+    m_RawCastFilter = NULL;
 
     // Start creation
     if( (!strcmp(imageIO->GetNameOfClass(), "EdfImageIO") &&
@@ -147,6 +150,11 @@ void ProjectionsReader<TOutputImage>
         typedef rtk::EdfRawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
         typename RawFilterType::Pointer rawFilter = RawFilterType::New();
         m_RawToAttenuationFilter = rawFilter;
+
+        // Or just cast to OutputImageType
+        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastFilterType;
+        typename CastFilterType::Pointer castFilter = CastFilterType::New();
+        m_RawCastFilter = castFilter;
         }
       if( !strcmp(imageIO->GetNameOfClass(), "XRadImageIO") )
         {
@@ -155,6 +163,11 @@ void ProjectionsReader<TOutputImage>
         typedef rtk::XRadRawToAttenuationImageFilter<InputImageType, OutputImageType> XRadRawFilterType;
         typename XRadRawFilterType::Pointer rawFilterXRad = XRadRawFilterType::New();
         m_RawToAttenuationFilter = rawFilterXRad;
+
+        // Or just cast to OutputImageType
+        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastFilterType;
+        typename CastFilterType::Pointer castFilter = CastFilterType::New();
+        m_RawCastFilter = castFilter;
         }
       }
     else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
@@ -192,6 +205,11 @@ void ProjectionsReader<TOutputImage>
       typedef rtk::VarianObiRawImageFilter<InputImageType, OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       m_RawToAttenuationFilter = rawFilter;
+
+      // Or just cast to OutputImageType
+      typedef itk::CastImageFilter<InputImageType, OutputImageType> CastFilterType;
+      typename CastFilterType::Pointer castFilter = CastFilterType::New();
+      m_RawCastFilter = castFilter;
       }
     else if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
              !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
@@ -259,6 +277,11 @@ void ProjectionsReader<TOutputImage>
       typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
       m_RawToAttenuationFilter = rawFilter;
+
+      // Or just casts to OutputImageType
+      typedef itk::CastImageFilter<InputImageType, OutputImageType> CastFilterType;
+      typename CastFilterType::Pointer castFilter = CastFilterType::New();
+      m_RawCastFilter = castFilter;
       }
     else
       {
@@ -462,12 +485,18 @@ void ProjectionsReader<TOutputImage>
       }
     }
 
-  // Raw to attenuation filter, change of type
+  // Raw to attenuation or cast filter, change of type
   OutputImageType *output = NULL;
   if(m_RawToAttenuationFilter.GetPointer() != NULL)
     {
     typedef itk::ImageToImageFilter<TInputImage, OutputImageType> IToIFilterType;
-    IToIFilterType * itoi = dynamic_cast<IToIFilterType*>( m_RawToAttenuationFilter.GetPointer() );
+
+    // Cast or convert to line integral depending on m_ComputeLineIntegral
+    IToIFilterType * itoi = NULL;
+    if(m_ComputeLineIntegral)
+      itoi = dynamic_cast<IToIFilterType*>( m_RawToAttenuationFilter.GetPointer() );
+    else
+      itoi = dynamic_cast<IToIFilterType*>( m_RawCastFilter.GetPointer() );
     assert(itoi != NULL);
     itoi->SetInput(nextInput);
     output = itoi->GetOutput();

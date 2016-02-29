@@ -184,6 +184,10 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
   if(args_info.i0_given)
     reader->SetI0(args_info.i0_arg);
 
+  // Line integral flag
+  if(args_info.nolineint_flag)
+    reader->ComputeLineIntegralOff();
+
   // Water precorrection
   if(args_info.wpc_given)
     {

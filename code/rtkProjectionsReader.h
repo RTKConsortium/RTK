@@ -57,12 +57,17 @@ namespace rtk
  * Binning [label="itk::BinShrinkImageFilter" URL="\ref itk::BinShrinkImageFilter" style=dashed];
  * Scatter [label="rtk::BoellaardScatterCorrectionImageFilter" URL="\ref rtk::BoellaardScatterCorrectionImageFilter" style=dashed];
  * I0est [label="rtk::I0EstimationProjectionFilter" URL="\ref rtk::I0EstimationProjectionFilter" style=dashed];
+ * BeforeLUT [label="", fixedsize="false", width=0, height=0, shape=none];
  * LUT [label="rtk::LUTbasedVariableI0RawToAttenuationImageFilter" URL="\ref rtk::LUTbasedVariableI0RawToAttenuationImageFilter"];
+ * BeforeVarian [label="", fixedsize="false", width=0, height=0, shape=none];
  * Varian [label="rtk::VarianObiRawImageFilter" URL="\ref rtk::VarianObiRawImageFilter"];
  * WPC [label="rtk::WaterPrecorrectionImageFilter" URL="\ref rtk::WaterPrecorrectionImageFilter" style=dashed];
  * Streaming [label="itk::StreamingImageFilter" URL="\ref itk::StreamingImageFilter"];
+ * BeforeEDF [label="", fixedsize="false", width=0, height=0, shape=none];
  * EDF [label="rtk::EdfRawToAttenuationImageFilter"  URL="\ref rtk::EdfRawToAttenuationImageFilter"];
+ * BeforeXRad [label="", fixedsize="false", width=0, height=0, shape=none];
  * XRad [label="rtk::XRadRawToAttenuationImageFilter"  URL="\ref rtk::XRadRawToAttenuationImageFilter"];
+ * Cast [label="itk::CastImageFilter"  URL="\ref itk::CastImageFilter"];
  *
  * Raw->ChangeInformation [label="Default"]
  * ChangeInformation->Crop
@@ -71,14 +76,23 @@ namespace rtk
  * Crop->Binning [label="Default"]
  * Binning->Scatter [label="Elekta, Varian, IBA, ushort"]
  * Scatter->I0est [label="Default"]
- * I0est->LUT
+ * I0est->BeforeLUT
+ * BeforeLUT->LUT [label="ComputeLineIntegral\n(default)"]
+ * BeforeLUT->Cast
  * LUT->WPC
- * Scatter->Varian [label="Varian"]
+ * Scatter->BeforeVarian [label="Varian"]
+ * BeforeVarian->Varian [label="ComputeLineIntegral\n(default)"]
+ * BeforeVarian->Cast
  * Varian->WPC
  * EDF->WPC
- * ChangeInformation->EDF [label="edf short"]
+ * ChangeInformation->BeforeEDF [label="edf short"]
+ * BeforeEDF->EDF [label="ComputeLineIntegral\n(default)"]
+ * BeforeEDF->Cast
  * XRad->WPC
- * ChangeInformation->XRad [label="XRad"]
+ * ChangeInformation->BeforeXRad [label="XRad"]
+ * BeforeXRad->XRad [label="ComputeLineIntegral\n(default)"]
+ * BeforeXRad->Cast
+ * Cast->WPC
  * WPC->Streaming
  * Streaming->Output
  *
@@ -196,6 +210,12 @@ public:
       }
     }
 
+  /** Convert the projection data to line integrals after pre-processing.
+  ** Default is off. */
+  itkSetMacro(ComputeLineIntegral, bool);
+  itkGetConstMacro(ComputeLineIntegral, bool);
+  itkBooleanMacro(ComputeLineIntegral);
+
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
   virtual void GenerateOutputInformation(void);
@@ -239,6 +259,10 @@ private:
    * to binning filter output by default. */
   typename itk::ImageSource<TOutputImage>::Pointer m_RawToAttenuationFilter;
 
+  /** When m_ComputeLineIntegral is off, one just casts the value instead of
+   * doing a line integral. */
+  typename itk::ImageSource<TOutputImage>::Pointer m_RawCastFilter;
+
   /** Pointers for post-processing filters that are created only when required. */
   typename WaterPrecorrectionType::Pointer m_WaterPrecorrectionFilter;
   typename StreamingType::Pointer          m_StreamingFilter;
@@ -260,6 +284,7 @@ private:
   double                       m_NonNegativityConstraintThreshold;
   double                       m_I0;
   WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
+  bool                         m_ComputeLineIntegral;
 };
 
 } //namespace rtk
