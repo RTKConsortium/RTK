@@ -290,7 +290,7 @@ private:
 } //namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkProjectionsReader.txx"
+#include "rtkProjectionsReader.hxx"
 #endif
 
 #endif // __rtkProjectionsReader_h

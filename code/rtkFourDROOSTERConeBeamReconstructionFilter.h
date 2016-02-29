@@ -441,7 +441,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFourDROOSTERConeBeamReconstructionFilter.txx"
+#include "rtkFourDROOSTERConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

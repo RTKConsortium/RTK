@@ -188,7 +188,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFourDConjugateGradientConeBeamReconstructionFilter.txx"
+#include "rtkFourDConjugateGradientConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

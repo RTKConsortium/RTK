@@ -99,7 +99,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkParkerShortScanImageFilter.txx"
+#include "rtkParkerShortScanImageFilter.hxx"
 #endif
 
 #endif

@@ -136,7 +136,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSoftThresholdImageFilter.txx"
+#include "rtkSoftThresholdImageFilter.hxx"
 #endif
 
 #endif

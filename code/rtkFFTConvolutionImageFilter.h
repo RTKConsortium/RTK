@@ -160,7 +160,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFFTConvolutionImageFilter.txx"
+#include "rtkFFTConvolutionImageFilter.hxx"
 #endif
 
 #endif

@@ -80,7 +80,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkForwardProjectionImageFilter.txx"
+#include "rtkForwardProjectionImageFilter.hxx"
 #endif
 
 #endif

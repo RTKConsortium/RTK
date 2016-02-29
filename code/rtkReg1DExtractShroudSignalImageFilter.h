@@ -81,7 +81,7 @@ private:
 } // end of namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkReg1DExtractShroudSignalImageFilter.txx"
+#include "rtkReg1DExtractShroudSignalImageFilter.hxx"
 #endif
 
 #endif // ! rtkReg1DExtractShroudSignalImageFilter_h

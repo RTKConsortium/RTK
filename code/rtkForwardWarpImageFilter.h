@@ -84,7 +84,7 @@ private:
 } // end namespace rtk
 
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkForwardWarpImageFilter.txx"
+#include "rtkForwardWarpImageFilter.hxx"
 #endif
 
 #endif

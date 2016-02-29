@@ -145,7 +145,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFFTRampImageFilter.txx"
+#include "rtkFFTRampImageFilter.hxx"
 #endif
 
 #endif

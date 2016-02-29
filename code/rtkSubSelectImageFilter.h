@@ -115,7 +115,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSubSelectImageFilter.txx"
+#include "rtkSubSelectImageFilter.hxx"
 #endif
 
 #endif

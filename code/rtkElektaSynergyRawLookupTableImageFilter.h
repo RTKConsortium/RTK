@@ -82,7 +82,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkElektaSynergyRawLookupTableImageFilter.txx"
+#include "rtkElektaSynergyRawLookupTableImageFilter.hxx"
 #endif
 
 #endif

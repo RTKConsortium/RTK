@@ -183,7 +183,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkWarpSequenceImageFilter.txx"
+#include "rtkWarpSequenceImageFilter.hxx"
 #endif
 
 #endif

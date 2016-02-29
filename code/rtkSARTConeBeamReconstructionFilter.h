@@ -272,7 +272,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSARTConeBeamReconstructionFilter.txx"
+#include "rtkSARTConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

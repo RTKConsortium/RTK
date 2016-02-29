@@ -142,7 +142,7 @@ private:
 } // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayBoxIntersectionFunction.txx"
+#include "rtkRayBoxIntersectionFunction.hxx"
 #endif
 
 #endif

@@ -148,7 +148,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFDKConeBeamReconstructionFilter.txx"
+#include "rtkFDKConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

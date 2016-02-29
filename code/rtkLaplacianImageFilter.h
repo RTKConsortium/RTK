@@ -81,7 +81,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLaplacianImageFilter.txx"
+#include "rtkLaplacianImageFilter.hxx"
 #endif
 
 #endif

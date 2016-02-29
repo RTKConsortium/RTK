@@ -223,7 +223,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientConeBeamReconstructionFilter.txx"
+#include "rtkConjugateGradientConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

@@ -103,7 +103,7 @@ private:
 } //end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkPhasesToInterpolationWeights.txx"
+#include "rtkPhasesToInterpolationWeights.hxx"
 #endif
 
 #endif

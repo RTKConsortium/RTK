@@ -166,7 +166,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkUnwarpSequenceImageFilter.txx"
+#include "rtkUnwarpSequenceImageFilter.hxx"
 #endif
 
 #endif
