@@ -37,28 +37,28 @@ UnwarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   m_CudaConjugateGradient = false;
 
   // Create the filters
-  m_ZeroMultiplySequenceFilter = MultiplySequenceFilterType::New();
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
+  m_ConstantSource = ConstantSourceType::New();
 #ifdef RTK_USE_CUDA
   if (m_CudaConjugateGradient)
     {
     m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
     }
+    m_ConstantSource = rtk::CudaConstantVolumeSeriesSource::New();
 #endif
   m_WarpForwardFilter = WarpForwardFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
-
+  
   // Set permanent connections
   m_ConjugateGradientFilter->SetB(m_WarpForwardFilter->GetOutput());
-  m_ConjugateGradientFilter->SetX(m_ZeroMultiplySequenceFilter->GetOutput());
+  m_ConjugateGradientFilter->SetX(m_ConstantSource->GetOutput());
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
 
   // Set permanent parameters
-  m_ZeroMultiplySequenceFilter->SetConstant2(itk::NumericTraits<typename TImageSequence::PixelType>::ZeroValue());
   m_WarpForwardFilter->SetForwardWarp(true);
 
   // Set memory management parameters
-  m_ZeroMultiplySequenceFilter->ReleaseDataFlagOn();
+  m_ConstantSource->ReleaseDataFlagOn();
   m_WarpForwardFilter->ReleaseDataFlagOn();
 }
 
@@ -84,6 +84,8 @@ void
 UnwarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
 ::GenerateInputRequestedRegion()
 {
+//   std::cout << "Running UnwarpSequenceImageFilter::GenerateInputRequestedRegion" << std::endl;
+  
   //Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
@@ -102,7 +104,7 @@ UnwarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections
-  m_ZeroMultiplySequenceFilter->SetInput1(this->GetInput(0));
+  m_ConstantSource->SetInformationFromImage(this->GetInput(0));
   m_CGOperator->SetDisplacementField(this->GetDisplacementField());
   m_CGOperator->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
   m_WarpForwardFilter->SetInput(this->GetInput(0));
@@ -129,6 +131,14 @@ UnwarpSequenceImageFilter< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
   m_ConjugateGradientFilter->Update();
 
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+  
+  // During mini-pipeline execution, the requested region on the primary input 
+  // is modified by the extract filters contained in the warp filters. This 
+  typename TImageSequence::Pointer  inputPtr  = const_cast<TImageSequence *>(this->GetInput(0));
+  inputPtr->SetRequestedRegionToLargestPossibleRegion();
+
+  typename TMVFImageSequence::Pointer  inputMVFPtr  = this->GetDisplacementField();
+  inputMVFPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
 }// end namespace

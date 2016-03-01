@@ -283,7 +283,7 @@ public:
 
   /** The region of interest outside of which all movement is removed */
   void SetMotionMask(const VolumeType* mask);
-  typename VolumeType::Pointer            GetInputROI();
+  typename VolumeType::Pointer            GetMotionMask();
 
   /** The motion vector fields used to warp the sequence before and after TV denoising along time */
   void SetDisplacementField(const MVFSequenceImageType* MVFs);
