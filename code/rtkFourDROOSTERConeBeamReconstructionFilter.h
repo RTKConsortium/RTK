@@ -244,7 +244,7 @@ public:
   typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType>  UnwarpSequenceFilterType;
   typedef itk::SubtractImageFilter<VolumeSeriesType, VolumeSeriesType>                                      SubtractFilterType;
   typedef itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>                                           AddFilterType;
-  typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>                                TemporalL0DenoisingFilterType;    
+  typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>                                TemporalL0DenoisingFilterType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void SetForwardProjectionFilter(int fwtype);

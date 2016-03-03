@@ -396,7 +396,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_L0DenoisingTime->SetLambda(this->m_LambdaL0Time);
   
     currentDownstreamFilter = m_L0DenoisingTime;
-    }    
+    }
     
   if (m_PerformWarping)
     {
@@ -607,7 +607,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     {
     os << "  Gradient's L0 norm temporal denoising: " << m_L0TemporalDenoisingProbe.GetTotal()
       << ' ' << m_L0TemporalDenoisingProbe.GetUnit() << std::endl;
-    }    
+    }
   if (m_PerformWarping)
     {
     os << "  Warping volumes back from average position: " << m_UnwarpingProbe.GetTotal()
