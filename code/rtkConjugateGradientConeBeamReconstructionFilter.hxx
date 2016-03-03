@@ -35,19 +35,17 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   m_Preconditioned=false;
   m_Gamma = 0;
   m_Regularized = false;
+  m_CudaConjugateGradient = true;
 
   // Create the filters
 #ifdef RTK_USE_CUDA
-  m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
   m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
   m_ConstantVolumeSource     = rtk::CudaConstantVolumeSource::New();
 #else
-  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_ConstantVolumeSource     = ConstantImageSourceType::New();
 #endif
   m_CGOperator = CGOperatorFilterType::New();
-  m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
 
   m_DivideFilter = DivideFilterType::New();
   m_ConstantProjectionsSource = ConstantImageSourceType::New();
@@ -124,6 +122,14 @@ void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateOutputInformation()
 {
+  // Choose between cuda or non-cuda conjugate gradient filter
+  m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
+#ifdef RTK_USE_CUDA
+  if (m_CudaConjugateGradient)
+    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
+#endif
+  m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
+
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1));

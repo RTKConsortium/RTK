@@ -327,6 +327,10 @@ if(NOT RTK_USE_CUDA)
                COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkadmmtotalvariationtest
                DATA{Data/Input/Phases/phases.txt}
                DATA{Data/Input/Phases/phases_3projs.txt})
+
+  ADD_EXECUTABLE(rtkregularizedconjugategradienttest rtkregularizedconjugategradienttest.cxx)
+  TARGET_LINK_LIBRARIES(rtkregularizedconjugategradienttest RTK)
+  ADD_TEST(rtkregularizedconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkregularizedconjugategradienttest)
 endif()
 ADD_CUDA_TEST(rtkiterativefdk rtkiterativefdktest.cxx)
 ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
@@ -334,6 +338,7 @@ ADD_CUDA_TEST(rtkfourdrooster rtkfourdroostertest.cxx)
 ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
 ADD_CUDA_TEST(rtkadmmwavelets rtkadmmwaveletstest.cxx)
 RTK_ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx "Data/Input/Phases/phases.txt" "Data/Input/Phases/phases_3projs.txt")
+ADD_CUDA_TEST(rtkregularizedconjugategradient rtkregularizedconjugategradienttest.cxx)
 
 ADD_EXECUTABLE(rtkwaveletstest rtkwaveletstest.cxx)
 TARGET_LINK_LIBRARIES(rtkwaveletstest RTK)
