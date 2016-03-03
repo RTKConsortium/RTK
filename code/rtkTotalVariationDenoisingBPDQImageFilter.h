@@ -153,7 +153,7 @@ public:
 
 protected:
   TotalVariationDenoisingBPDQImageFilter();
-  virtual ~TotalVariationDenoisingBPDQImageFilter();
+  ~TotalVariationDenoisingBPDQImageFilter(){}
 
   virtual void GenerateData();
 

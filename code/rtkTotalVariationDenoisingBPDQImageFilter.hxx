@@ -69,15 +69,6 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 }
 
 template< typename TOutputImage, typename TGradientImage>
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::~TotalVariationDenoisingBPDQImageFilter()
-{
-  delete m_BoundaryConditionForGradientFilter;
-  delete m_BoundaryConditionForDivergenceFilter;
-}
-
-
-template< typename TOutputImage, typename TGradientImage>
 void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetDimensionsProcessed(bool* arg)
@@ -99,12 +90,8 @@ void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetBoundaryConditionToPeriodic()
 {
-  delete m_BoundaryConditionForGradientFilter;
-  delete m_BoundaryConditionForDivergenceFilter;
-
   m_BoundaryConditionForGradientFilter = new itk::PeriodicBoundaryCondition<TOutputImage>();
   m_BoundaryConditionForDivergenceFilter = new itk::PeriodicBoundaryCondition<TGradientImage>();
-
   m_GradientFilter->OverrideBoundaryCondition(m_BoundaryConditionForGradientFilter);
   m_DivergenceFilter->OverrideBoundaryCondition(m_BoundaryConditionForDivergenceFilter);
 }

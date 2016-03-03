@@ -4,26 +4,32 @@ purpose "Reconstructs a 3D + time sequence of volumes from a projection stack an
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no
 option "geometry"    g "XML geometry file name"                                string yes
+option "input"       i "Input volume"                                          string no
 option "output"      o "Output file name"                                      string yes
 option "niter"       n "Number of main loop iterations"                        int    no   default="5"
 option "cgiter"      - "Number of conjugate gradient nested iterations"        int    no   default="4"
-option "tviter"      - "Number of total variation nested iterations"           int    no   default="10"
-option "time"        t "Records elapsed time during the process"               flag   off
 option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
-option "gamma_time"  - "Regularization parameter along time. The higher, the smoother"  double yes
-option "gamma_space" - "Regularization parameter along space. The higher, the smoother (if order and/or levels are provided, wavelets regularization is used instead of TV"  double yes
-option "motionmask"  - "Region Of Interest file, binary image with ones where movement can occur and zeros elsewhere" string yes
-option "input"       i "Input volume"                                          string no
-option "order"       - "The order of the Daubechies wavelets used for spatial regularization"                    int                       no default="3"
-option "levels"      - "The number of decomposition levels in the wavelets transform used for spatial regularization" int                  no default="5"
+option "time"        t "Records elapsed time during the process"               flag   off
+
+section "Projectors"
+option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
+option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes
 option "shift"     - "Phase shift applied on the DVFs to simulate phase estimation errors"  float   no  default="0"
 
-section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
+section "Regularization"
+option "nopositivity" - "Do not enforce positivity"                                                             flag    off
+option "motionmask"  - "Motion mask file: binary image with ones where movement can occur and zeros elsewhere"  string  no
+option "tviter"      - "Total variation (spatial and temporal) regularization: number of iterations"            int     no      default="10"
+option "gamma_space" - "Total variation spatial regularization parameter. The larger, the smoother"             double  no
+option "threshold"   - "Daubechies wavelets spatial regularization: soft threshold"                             float   no
+option "order"       - "Daubechies wavelets spatial regularization: order of the wavelets"                      int     no      default="5"
+option "levels"      - "Daubechies wavelets spatial regularization: number of decomposition levels"             int     no      default="3"
+option "gamma_time"  - "Total variation temporal regularization parameter. The larger, the smoother"            double  no
+option "lambda_time" - "Temporal gradient's L0 norm regularization parameter. The larger, the stronger"         double  no
+option "l0iter"      - "Temporal gradient's L0 norm regularization: number of iterations"                       int     no      default="5"
 
 section "Motion-compensation described in [ToBeWritten]"
 option "dvf"       - "Input 4D DVF"                       string    no
