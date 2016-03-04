@@ -95,11 +95,11 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
 {
   // Initialize
   float beta = 0;
-  unsigned int* firsts = new unsigned int[length];
-  float* weights = new float[length];
-  InputPixelType* values = new InputPixelType[length];
+  std::vector<unsigned int> firsts(length);
+  std::vector<float> weights(length);
+  std::vector<InputPixelType> values(length);
   unsigned int nbGroups = length;
-  
+
   // Fill in the arrays
   for (unsigned int i=0; i < length; i++)
     {
@@ -160,10 +160,6 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
       input[ j % length ] = values[i];
       }
     }
-
-  delete[] firsts;
-  delete[] weights;
-  delete[] values;
 }
 
 template< class TInputImage >

@@ -134,21 +134,7 @@ int main(int argc, char * argv[])
     admmFilter->SetGeometry( geometryReader->GetOutputObject() );
     }
 
-  itk::TimeProbe totalTimeProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Starting global probes before updating the ADMM filter" << std::endl;
-    totalTimeProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() )
-
-  if(args_info.time_flag)
-    {
-    admmFilter->PrintTiming(std::cout);
-    totalTimeProbe.Stop();
-    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
-    }
 
   // Set writer and write the output
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;

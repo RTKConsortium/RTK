@@ -16,36 +16,34 @@
  *
  *=========================================================================*/
 
-#include "rtkconjugategradient_ggo.h"
+#include "rtkregularizedconjugategradient_ggo.h"
 #include "rtkGgoFunctions.h"
 
+#include "rtkRegularizedConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-  #include <itkCudaImage.h>
+  #include "itkCudaImage.h"
+  #include "rtkCudaConstantVolumeSource.h"
 #endif
 #include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkconjugategradient, args_info);
+  GGO(rtkregularizedconjugategradient, args_info);
 
   typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage< OutputPixelType, 3 > OutputImageType;
 #else
-  typedef CPUOutputImageType                           OutputImageType;
+  typedef itk::Image< OutputPixelType, 3 > OutputImageType;
 #endif
 
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkconjugategradient>(reader, args_info);
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkregularizedconjugategradient>(reader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -73,9 +71,11 @@ int main(int argc, char * argv[])
     // Create new empty volume
     typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkconjugategradient>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkregularizedconjugategradient>(constantImageSource, args_info);
     inputFilter = constantImageSource;
     }
+  inputFilter->Update();
+  inputFilter->ReleaseDataFlagOn();
 
   // Read weights if given, otherwise default to weights all equal to one
   itk::ImageSource< OutputImageType >::Pointer weightsSource;
@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
     {
     typedef rtk::ConstantImageSource< OutputImageType > ConstantWeightsSourceType;
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
-    
+
     // Set the weights to be like the projections
     reader->UpdateOutputInformation();
     constantWeightsSource->SetInformationFromImage(reader->GetOutput());
@@ -99,23 +99,52 @@ int main(int argc, char * argv[])
     }
 
   // Set the forward and back projection filters to be used
-  typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
-  ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
-  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
-  conjugategradient->SetInput( inputFilter->GetOutput() );
-  conjugategradient->SetInput(1, reader->GetOutput());
-  conjugategradient->SetInput(2, weightsSource->GetOutput());
-  conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
-  conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
+  typedef rtk::RegularizedConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
+  ConjugateGradientFilterType::Pointer regularizedConjugateGradient = ConjugateGradientFilterType::New();
+  regularizedConjugateGradient->SetForwardProjectionFilter(args_info.fp_arg);
+  regularizedConjugateGradient->SetBackProjectionFilter(args_info.bp_arg);
+  regularizedConjugateGradient->SetInputVolume(inputFilter->GetOutput() );
+  regularizedConjugateGradient->SetInputProjectionStack(reader->GetOutput());
+  regularizedConjugateGradient->SetInputWeights( weightsSource->GetOutput());
+  regularizedConjugateGradient->SetPreconditioned(args_info.preconditioned_flag);
+  regularizedConjugateGradient->SetGeometry( geometryReader->GetOutputObject() );
+  regularizedConjugateGradient->SetMainLoop_iterations( args_info.niter_arg );
+  regularizedConjugateGradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
 
-  if (args_info.gamma_given)
+  // Positivity
+  if (args_info.nopositivity_flag)
+    regularizedConjugateGradient->SetPerformPositivity(false);
+  else
+    regularizedConjugateGradient->SetPerformPositivity(true);
+
+  if (args_info.gammalaplacian_given)
     {
-    conjugategradient->SetRegularized(true);
-    conjugategradient->SetGamma(args_info.gamma_arg);
+    regularizedConjugateGradient->SetRegularizedCG(true);
+    regularizedConjugateGradient->SetGamma(args_info.gammalaplacian_arg);
     }
-  conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
-  conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
+  else
+    regularizedConjugateGradient->SetRegularizedCG(false);
+
+  // Spatial TV
+  if (args_info.gammatv_given)
+    {
+    regularizedConjugateGradient->SetGammaTV(args_info.gammatv_arg);
+    regularizedConjugateGradient->SetTV_iterations(args_info.tviter_arg);
+    regularizedConjugateGradient->SetPerformTVSpatialDenoising(true);
+    }
+  else
+    regularizedConjugateGradient->SetPerformTVSpatialDenoising(false);
+
+  // Spatial wavelets
+  if (args_info.threshold_given)
+    {
+    regularizedConjugateGradient->SetSoftThresholdWavelets(args_info.threshold_arg);
+    regularizedConjugateGradient->SetOrder(args_info.order_arg);
+    regularizedConjugateGradient->SetNumberOfLevels(args_info.levels_arg);
+    regularizedConjugateGradient->SetPerformWaveletsSpatialDenoising(true);
+    }
+  else
+    regularizedConjugateGradient->SetPerformWaveletsSpatialDenoising(false);
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
@@ -124,11 +153,11 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() );
 
   if(args_info.time_flag)
     {
-//    conjugategradient->PrintTiming(std::cout);
+    regularizedConjugateGradient->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
@@ -137,7 +166,7 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileWriter< OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( conjugategradient->GetOutput() );
+  writer->SetInput( regularizedConjugateGradient->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;
