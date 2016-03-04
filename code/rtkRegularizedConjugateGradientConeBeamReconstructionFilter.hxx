@@ -148,8 +148,6 @@ void
 RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
 ::GenerateOutputInformation()
 {
-  const int Dimension = TImage::ImageDimension;
-
   // Construct the pipeline, adding regularization filters if the user wants them
   // Connect the last filter's output to the next filter's input using the currentDownstreamFilter pointer
   typename itk::ImageToImageFilter<TImage, TImage>::Pointer currentDownstreamFilter;
