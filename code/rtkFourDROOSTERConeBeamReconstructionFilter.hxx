@@ -415,7 +415,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       }
     else
       {
-      currentDownstreamFilter->ReleaseDataFlagOn();
+      currentDownstreamFilter->ReleaseDataFlagOff();
         
       // Compute the correction performed by TV and/or L0 denoising along time
       m_SubtractFilter->SetInput1(currentDownstreamFilter->GetOutput());
