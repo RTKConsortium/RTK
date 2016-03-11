@@ -9,7 +9,7 @@
 #endif
 
 /**
- * \file rtkregularizedConjugateGradienttest.cxx
+ * \file rtkregularizedconjugategradienttest.cxx
  *
  * \brief Functional test for ADMMTotalVariation reconstruction
  *

@@ -133,6 +133,7 @@ int main(int argc, char * argv[])
     {
     InputReaderType::Pointer motionMaskReader = InputReaderType::New();
     motionMaskReader->SetFileName( args_info.motionmask_arg );
+    motionMaskReader->Update();
     rooster->SetMotionMask(motionMaskReader->GetOutput());
     rooster->SetPerformMotionMask(true);
     }
