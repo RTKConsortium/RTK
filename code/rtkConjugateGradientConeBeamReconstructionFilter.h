@@ -174,6 +174,10 @@ public:
     itkSetMacro(Gamma, float)
     itkGetMacro(Gamma, float)
 
+    /** Get / Set whether conjugate gradient should be performed on GPU */
+    itkGetMacro(CudaConjugateGradient, bool)
+    itkSetMacro(CudaConjugateGradient, bool)
+
 protected:
     ConjugateGradientConeBeamReconstructionFilter();
     ~ConjugateGradientConeBeamReconstructionFilter(){}
@@ -218,12 +222,13 @@ private:
     bool  m_MeasureExecutionTimes;
     bool  m_Preconditioned;
     bool  m_Regularized;
+    bool  m_CudaConjugateGradient;
 };
 } //namespace ITK
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientConeBeamReconstructionFilter.txx"
+#include "rtkConjugateGradientConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

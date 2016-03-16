@@ -259,7 +259,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkADMMTotalVariationConeBeamReconstructionFilter.txx"
+#include "rtkADMMTotalVariationConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

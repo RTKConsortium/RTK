@@ -113,7 +113,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawImageFilter.txx"
+#include "rtkDrawImageFilter.hxx"
 #endif
 
 #endif

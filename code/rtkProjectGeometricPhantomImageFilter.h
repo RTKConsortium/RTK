@@ -113,7 +113,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkProjectGeometricPhantomImageFilter.txx"
+#include "rtkProjectGeometricPhantomImageFilter.hxx"
 #endif
 
 #endif

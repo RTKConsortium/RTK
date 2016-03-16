@@ -144,7 +144,7 @@ private:
 } // end namespace rtk
   
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkUpsampleImageFilter.txx"
+#include "rtkUpsampleImageFilter.hxx"
 #endif
   
 #endif

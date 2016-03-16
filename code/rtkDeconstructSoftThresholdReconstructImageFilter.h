@@ -116,7 +116,7 @@ private:
 
 //Include CXX
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkDeconstructSoftThresholdReconstructImageFilter.txx"
+#include "rtkDeconstructSoftThresholdReconstructImageFilter.hxx"
 #endif
 
 #endif

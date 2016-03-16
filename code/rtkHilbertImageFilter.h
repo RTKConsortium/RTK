@@ -71,7 +71,7 @@ private:
 } // end of namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkHilbertImageFilter.txx"
+#include "rtkHilbertImageFilter.hxx"
 #endif
 
 #endif

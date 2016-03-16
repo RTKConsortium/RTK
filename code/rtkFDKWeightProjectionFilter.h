@@ -98,7 +98,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFDKWeightProjectionFilter.txx"
+#include "rtkFDKWeightProjectionFilter.hxx"
 #endif
 
 #endif

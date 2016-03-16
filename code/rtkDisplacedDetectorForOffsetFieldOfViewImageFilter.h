@@ -87,7 +87,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.txx"
+#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.hxx"
 #endif
 
 #endif

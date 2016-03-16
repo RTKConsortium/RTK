@@ -74,7 +74,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSelectOneProjectionPerCycleImageFilter.txx"
+#include "rtkSelectOneProjectionPerCycleImageFilter.hxx"
 #endif
 
 #endif

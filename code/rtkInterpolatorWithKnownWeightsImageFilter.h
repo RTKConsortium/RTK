@@ -112,7 +112,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkInterpolatorWithKnownWeightsImageFilter.txx"
+#include "rtkInterpolatorWithKnownWeightsImageFilter.hxx"
 #endif
 
 #endif

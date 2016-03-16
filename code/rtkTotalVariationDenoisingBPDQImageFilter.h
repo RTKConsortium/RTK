@@ -153,7 +153,7 @@ public:
 
 protected:
   TotalVariationDenoisingBPDQImageFilter();
-  virtual ~TotalVariationDenoisingBPDQImageFilter();
+  ~TotalVariationDenoisingBPDQImageFilter(){}
 
   virtual void GenerateData();
 
@@ -187,7 +187,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkTotalVariationDenoisingBPDQImageFilter.txx"
+#include "rtkTotalVariationDenoisingBPDQImageFilter.hxx"
 #endif
 
 #endif //__rtkTotalVariationDenoisingBPDQImageFilter__

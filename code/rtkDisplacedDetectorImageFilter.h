@@ -151,7 +151,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDisplacedDetectorImageFilter.txx"
+#include "rtkDisplacedDetectorImageFilter.hxx"
 #endif
 
 #endif

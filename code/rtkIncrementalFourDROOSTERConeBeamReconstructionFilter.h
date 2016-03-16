@@ -115,7 +115,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkIncrementalFourDROOSTERConeBeamReconstructionFilter.txx"
+#include "rtkIncrementalFourDROOSTERConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

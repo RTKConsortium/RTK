@@ -172,7 +172,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkAmsterdamShroudImageFilter.txx"
+#include "rtkAmsterdamShroudImageFilter.hxx"
 #endif
 
 #endif

@@ -55,7 +55,7 @@ namespace rtk
    *
    * node [shape=box];
    * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
-   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for MVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
+   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
    * Warp [ label="itk::WarpImageFilter" URL="\ref itk::WarpImageFilter"];
    * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
    * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
@@ -72,7 +72,7 @@ namespace rtk
    * ConstantSource -> BeforePaste [arrowhead=none];
    * BeforePaste -> Paste;
    * Paste -> AfterPaste [arrowhead=none];
-   * AfterPaste -> BeforePaste [style=dashed];
+   * AfterPaste -> BeforePaste [style=dashed, constraint=false];
    * AfterPaste -> Output [style=dashed];
    * }
    * \enddot
@@ -127,8 +127,8 @@ public:
 
     /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
-    typedef rtk::CudaWarpImageFilter                                CudaWarpFilterType;
-    typedef rtk::CudaForwardWarpImageFilter                         CudaForwardWarpFilterType;
+    typedef rtk::CudaWarpImageFilter                                          CudaWarpFilterType;
+    typedef rtk::CudaForwardWarpImageFilter                                   CudaForwardWarpFilterType;
 #endif
     typedef itk::WarpImageFilter<TImage, TImage, TMVFImage>                   WarpFilterType;
     typedef rtk::ForwardWarpImageFilter<TImage, TImage, TMVFImage>            ForwardWarpFilterType;
@@ -183,7 +183,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkWarpSequenceImageFilter.txx"
+#include "rtkWarpSequenceImageFilter.hxx"
 #endif
 
 #endif

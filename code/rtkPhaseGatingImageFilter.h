@@ -87,7 +87,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkPhaseGatingImageFilter.txx"
+#include "rtkPhaseGatingImageFilter.hxx"
 #endif
 
 #endif

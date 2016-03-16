@@ -254,7 +254,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkADMMWaveletsConeBeamReconstructionFilter.txx"
+#include "rtkADMMWaveletsConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

@@ -116,7 +116,7 @@ private:
 } // end of namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkExtractPhaseImageFilter.txx"
+#include "rtkExtractPhaseImageFilter.hxx"
 #endif
 
 #endif

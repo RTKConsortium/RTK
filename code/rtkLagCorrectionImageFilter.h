@@ -130,7 +130,7 @@ private:
 } //namespace RTK
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLagCorrectionImageFilter.txx"
+#include "rtkLagCorrectionImageFilter.hxx"
 #endif
 
 #endif

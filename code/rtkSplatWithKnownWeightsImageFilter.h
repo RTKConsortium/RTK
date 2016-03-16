@@ -121,7 +121,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSplatWithKnownWeightsImageFilter.txx"
+#include "rtkSplatWithKnownWeightsImageFilter.hxx"
 #endif
 
 #endif

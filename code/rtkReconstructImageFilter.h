@@ -228,7 +228,7 @@ private:
 
 //Include CXX
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkReconstructImageFilter.txx"
+#include "rtkReconstructImageFilter.hxx"
 #endif
 
 #endif

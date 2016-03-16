@@ -107,7 +107,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkIterativeConeBeamReconstructionFilter.txx"
+#include "rtkIterativeConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

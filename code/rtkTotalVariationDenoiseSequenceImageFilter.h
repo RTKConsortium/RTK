@@ -144,7 +144,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkTotalVariationDenoiseSequenceImageFilter.txx"
+#include "rtkTotalVariationDenoiseSequenceImageFilter.hxx"
 #endif
 
 #endif

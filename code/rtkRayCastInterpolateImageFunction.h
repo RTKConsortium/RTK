@@ -218,7 +218,7 @@ private:
 } // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayCastInterpolateImageFunction.txx"
+#include "rtkRayCastInterpolateImageFunction.hxx"
 #endif
 
 #endif

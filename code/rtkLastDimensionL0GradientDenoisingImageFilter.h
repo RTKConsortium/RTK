@@ -93,7 +93,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLastDimensionL0GradientDenoisingImageFilter.txx"
+#include "rtkLastDimensionL0GradientDenoisingImageFilter.hxx"
 #endif
 
 #endif
