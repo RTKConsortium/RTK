@@ -107,12 +107,19 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   // Compute the parameters used in Basis Pursuit Dequantization
   // and set the filters to use them
   double numberOfDimensionsProcessed = 0;
+  float maxSpacing = 0;
   for (int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
-    if (m_DimensionsProcessed[dim])  numberOfDimensionsProcessed += 1.0;
+    if (m_DimensionsProcessed[dim])
+      {
+      numberOfDimensionsProcessed += 1.0;
+      if (this->GetInput()->GetSpacing()[dim] > maxSpacing)
+        maxSpacing = this->GetInput()->GetSpacing()[dim];
+      }
     }
-  // Beta must be smaller than 1 / (2 * NumberOfDimensionsProcessed) for the algorithm to converge
-  m_Beta = 1/(2 * numberOfDimensionsProcessed) * 0.9;
+
+  // Beta must be smaller than 1 / (2 ^ NumberOfDimensionsProcessed * max(spacing)) for the algorithm to converge
+  m_Beta = 1/(pow(2,numberOfDimensionsProcessed) * maxSpacing)* 0.9 ;
 
   m_MultiplyFilter->SetConstant2(m_Beta);
   m_MagnitudeThresholdFilter->SetThreshold(m_Gamma);
