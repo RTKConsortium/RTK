@@ -1,0 +1,44 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef __rtkCudaWarpedForwardProjectionImageFilter_hcu
+#define __rtkCudaWarpedForwardProjectionImageFilter_hcu
+
+#include "rtkWin32Header.h"
+
+void
+rtkcuda_EXPORT CUDA_warped_forward_project( int projections_size[2],
+                      int vol_size[3],
+		      int input_dvf_dim[3],
+                      float matrix[12],
+                      float *dev_proj_in,
+                      float *dev_proj_out,
+                      float *dev_vol,
+//                       float t_step,
+                      double source_position[3],
+                      float box_min[3],
+                      float box_max[3],
+                      float spacing[3],
+//                       bool useCudaTexture,
+		      float *dev_input_xdvf,
+		      float *dev_input_ydvf,
+		      float *dev_input_zdvf,
+		      float IndexInputToIndexDVFMatrix[12],
+		      float PPInputToIndexInputMatrix[12],
+		      float IndexInputToPPInputMatrix[12]);
+#endif

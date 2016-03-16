@@ -97,6 +97,7 @@ IF (RTK_USE_CUDA)
        rtkCudaAverageOutOfROIImageFilter.cu
        rtkCudaLaplacianImageFilter.cu
        rtkCudaFirstOrderKernels.cu
+       rtkCudaWarpedForwardProjectionImageFilter.cu
        )
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
@@ -131,6 +132,7 @@ IF (RTK_USE_CUDA)
 	      rtkCudaRayCastBackProjectionImageFilter.cxx
 	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
 	      rtkCudaLastDimensionTVDenoisingImageFilter.cxx
+	      rtkCudaWarpedForwardProjectionImageFilter.cxx
 	      rtkCudaConstantVolumeSource.cxx
 	      rtkCudaConstantVolumeSeriesSource.cxx
               rtkCudaConjugateGradientImageFilter_3f.cxx
