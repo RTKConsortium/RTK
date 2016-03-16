@@ -28,6 +28,7 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkMacro.h>
+#include <itkImageRegionIterator.h>
 #include "rtkMacro.h"
 #include "itkCudaUtil.h"
 
@@ -37,6 +38,7 @@ namespace rtk
 CudaWarpedForwardProjectionImageFilter
 ::CudaWarpedForwardProjectionImageFilter()
 {
+  this->SetNumberOfRequiredInputs(1);
 }
 
 void
@@ -53,7 +55,7 @@ CudaWarpedForwardProjectionImageFilter
   this->SetInput("Volume", const_cast<InputImageType*>(Volume));
 }
 
-typename InputImageType::ConstPointer
+CudaWarpedForwardProjectionImageFilter::InputImageType::ConstPointer
 CudaWarpedForwardProjectionImageFilter
 ::GetInputProjectionStack()
 {
@@ -61,7 +63,7 @@ CudaWarpedForwardProjectionImageFilter
           ( this->itk::ProcessObject::GetInput("Primary") );
 }
 
-typename InputImageType::Pointer
+CudaWarpedForwardProjectionImageFilter::InputImageType::Pointer
 CudaWarpedForwardProjectionImageFilter
 ::GetInputVolume()
 {
@@ -76,7 +78,7 @@ CudaWarpedForwardProjectionImageFilter
   this->SetInput("DisplacementField", const_cast<DVFType*>(MVF));
 }
 
-typename DVFType::Pointer
+CudaWarpedForwardProjectionImageFilter::DVFType::Pointer
 CudaWarpedForwardProjectionImageFilter
 ::GetDisplacementField()
 {
@@ -273,6 +275,7 @@ CudaWarpedForwardProjectionImageFilter
                         pin + nPixelsPerProj * projectionOffset,
                         pout + nPixelsPerProj * projectionOffset,
                         pvol,
+                        1,
                         (double*)&(source_position[0]),
                         boxMin,
                         boxMax,

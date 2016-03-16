@@ -322,7 +322,7 @@ CUDA_warped_forward_project( int projections_size[2],
                       float box_min[3],
                       float box_max[3],
                       float spacing[3],
-                      bool useCudaTexture,
+//                       bool useCudaTexture,
 		      float *dev_input_xdvf,
 		      float *dev_input_ydvf,
 		      float *dev_input_zdvf,
@@ -474,20 +474,34 @@ CUDA_warped_forward_project( int projections_size[2],
 
   kernel_warped_forwardProject <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out);
 
+
+  cudaUnbindTexture (tex_xdvf);
+  cudaUnbindTexture (tex_ydvf);
+  cudaUnbindTexture (tex_zdvf);
   cudaUnbindTexture (tex_vol);
   CUDA_CHECK_ERROR;
 
-  cudaFreeArray ((cudaArray*)array_vol);
+  cudaUnbindTexture (tex_IndexInputToPPInputMatrix);
+  cudaUnbindTexture (tex_IndexInputToIndexDVFMatrix);
+  cudaUnbindTexture (tex_PPInputToIndexInputMatrix);
+  cudaUnbindTexture (tex_matrix);
   CUDA_CHECK_ERROR;
+
+
 //     }
 //   else
 //     {
 //     kernel_forwardProject_noTexture <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol);
 //     }
 
-  cudaUnbindTexture (tex_matrix);
+  cudaFreeArray ((cudaArray*)array_xdvf);
+  cudaFreeArray ((cudaArray*)array_ydvf);
+  cudaFreeArray ((cudaArray*)array_zdvf);
+  cudaFreeArray ((cudaArray*)array_vol);
   CUDA_CHECK_ERROR;
-
+  cudaFree (dev_IndexInputToPPInput);
+  cudaFree (dev_IndexInputToIndexDVF);
+  cudaFree (dev_PPInputToIndexInput);
   cudaFree (dev_matrix);
   CUDA_CHECK_ERROR;
 }

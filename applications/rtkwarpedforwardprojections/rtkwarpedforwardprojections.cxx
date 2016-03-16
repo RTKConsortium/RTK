@@ -30,8 +30,6 @@
 
 int main(int argc, char * argv[])
 {
-  std::cout << "Starting" << std::endl;
-  
   GGO(rtkwarpedforwardprojections, args_info);
 
   const unsigned int Dimension = 3;
@@ -59,8 +57,6 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
   if(args_info.verbose_flag)
     std::cout << " done." << std::endl;
-
-  std::cout << "Geometry loaded" << std::endl;
   
   // Create a stack of empty projection images
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
@@ -92,8 +88,6 @@ int main(int argc, char * argv[])
     std::cout << " done in "
               << readerProbe.GetMean() << ' ' << readerProbe.GetUnit()
               << '.' << std::endl;
-
-  std::cout << "Input read" << std::endl;            
               
   // Create forward projection image filter
   if(args_info.verbose_flag)
@@ -104,8 +98,6 @@ int main(int argc, char * argv[])
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   dvfReader->SetFileName( args_info.dvf_arg );
   dvfReader->Update();
-
-  std::cout << "DVF read" << std::endl;
   
 #ifdef RTK_USE_CUDA
     rtk::CudaWarpedForwardProjectionImageFilter::Pointer forwardProjection;
@@ -115,26 +107,11 @@ int main(int argc, char * argv[])
     return EXIT_FAILURE;
 #endif
 
-  std::cout << "Filter created" << std::endl;  
-    
-  constantImageSource->GetOutput()->Print(std::cout);
-  
   forwardProjection->SetInputProjectionStack( constantImageSource->GetOutput() );
-  
-  std::cout << "Input 0 set" << std::endl;
-  
   forwardProjection->SetInputVolume( reader->GetOutput() );
-  
-  std::cout << "Input 1 set" << std::endl;
-  
   forwardProjection->SetDisplacementField( dvfReader->GetOutput() );
-  
-  std::cout << "Input 2 set" << std::endl;
-  
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   projProbe.Start();
-  
-  std::cout << "About to update" << std::endl;
   
   if(!args_info.lowmem_flag)
     {
