@@ -55,11 +55,11 @@ CudaWarpedForwardProjectionImageFilter
   this->SetInput("Volume", const_cast<InputImageType*>(Volume));
 }
 
-CudaWarpedForwardProjectionImageFilter::InputImageType::ConstPointer
+CudaWarpedForwardProjectionImageFilter::InputImageType::Pointer
 CudaWarpedForwardProjectionImageFilter
 ::GetInputProjectionStack()
 {
-  return static_cast< const InputImageType * >
+  return static_cast< InputImageType * >
           ( this->itk::ProcessObject::GetInput("Primary") );
 }
 
@@ -83,7 +83,7 @@ CudaWarpedForwardProjectionImageFilter
 ::GetDisplacementField()
 {
   return static_cast< DVFType * >
-	( this->itk::ProcessObject::GetInput("DisplacementField") );
+          ( this->itk::ProcessObject::GetInput("DisplacementField") );
 }
 
 void
@@ -97,6 +97,7 @@ CudaWarpedForwardProjectionImageFilter
   // However, the volume's requested region 
   // computed by Superclass::GenerateInputRequestedRegion()
   // is the requested region for the DVF
+  this->GetInputProjectionStack()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
   this->GetDisplacementField()->SetRequestedRegion(this->GetInputVolume()->GetRequestedRegion());
   this->GetInputVolume()->SetRequestedRegionToLargestPossibleRegion();
   
@@ -217,14 +218,6 @@ CudaWarpedForwardProjectionImageFilter
     fIndexInputToPPInputMatrix[j] = (float) indexInputToPPInputMatrix[j/4][j%4];
     }
 
-//   bool isLinear;
-//   if (std::string("LinearInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) == 0)
-//     isLinear = true;
-//   else if (std::string("NearestNeighborInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) == 0)
-//     isLinear = false;
-//   else
-//     itkGenericExceptionMacro(<< "In rtkCudaWarpImageFilter: unknown interpolator");
-  
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
@@ -270,7 +263,7 @@ CudaWarpedForwardProjectionImageFilter
 
     CUDA_warped_forward_project(projectionSize,
                         volumeSize,
-			inputDVFSize,
+                        inputDVFSize,
                         (float*)&(matrix[0][0]),
                         pin + nPixelsPerProj * projectionOffset,
                         pout + nPixelsPerProj * projectionOffset,
@@ -280,13 +273,13 @@ CudaWarpedForwardProjectionImageFilter
                         boxMin,
                         boxMax,
                         spacing,
-			pinxDVF,
-			pinyDVF,
-			pinzDVF,
-			fIndexInputToIndexDVFMatrix,
-			fPPInputToIndexInputMatrix,
-			fIndexInputToPPInputMatrix
-			);
+                        pinxDVF,
+                        pinyDVF,
+                        pinzDVF,
+                        fIndexInputToIndexDVFMatrix,
+                        fPPInputToIndexInputMatrix,
+                        fIndexInputToPPInputMatrix
+                        );
     }
 }
 

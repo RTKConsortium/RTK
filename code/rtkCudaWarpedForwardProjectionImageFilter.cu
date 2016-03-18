@@ -441,7 +441,7 @@ CUDA_warped_forward_project( int projections_size[2],
   cudaMemcpyToSymbol(c_volSize, &dev_vol_size, sizeof(int3));
 
   dim3 dimBlock  = dim3(16, 16, 1);
-  dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
+  dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.y));
 
 //   if (useCudaTexture)
 //     {
@@ -455,7 +455,6 @@ CUDA_warped_forward_project( int projections_size[2],
   // Copy volume data to array, bind the array to the texture
   cudaExtent volExtent = make_cudaExtent(vol_size[0], vol_size[1], vol_size[2]);
   cudaArray *array_vol;
-//  static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
   cudaMalloc3DArray((cudaArray**)&array_vol, &channelDesc, volExtent);
   CUDA_CHECK_ERROR;
 
@@ -473,7 +472,6 @@ CUDA_warped_forward_project( int projections_size[2],
   CUDA_CHECK_ERROR;
 
   kernel_warped_forwardProject <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out);
-
 
   cudaUnbindTexture (tex_xdvf);
   cudaUnbindTexture (tex_ydvf);

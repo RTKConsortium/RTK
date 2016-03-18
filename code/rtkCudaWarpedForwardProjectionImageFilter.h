@@ -67,7 +67,7 @@ public:
 
   /** Input projection stack */
   void SetInputProjectionStack(const InputImageType* ProjectionStack);
-  typename InputImageType::ConstPointer GetInputProjectionStack();
+  typename InputImageType::Pointer GetInputProjectionStack();
   
   /** Input displacement vector field */
   void SetInputVolume(const InputImageType* Volume);
