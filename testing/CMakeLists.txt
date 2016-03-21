@@ -236,6 +236,11 @@ TARGET_LINK_LIBRARIES(rtkfourdconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdconjugategradienttest)
 ADD_CUDA_TEST(rtkfourdconjugategradient rtkfourdconjugategradienttest.cxx)
 
+ADD_EXECUTABLE(rtkwarpforwardprojecttest rtkwarpforwardprojecttest.cxx)
+TARGET_LINK_LIBRARIES(rtkwarpforwardprojecttest ${RTK_LIBRARIES})
+ADD_TEST(rtkwarpforwardprojecttest ${EXECUTABLE_OUTPUT_PATH}/rtkwarpforwardprojecttest)
+ADD_CUDA_TEST(rtkwarpforwardproject rtkwarpforwardprojecttest.cxx)
+
 ADD_EXECUTABLE(rtkincrementalfourdconjugategradienttest rtkincrementalfourdconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkincrementalfourdconjugategradienttest ${RTK_LIBRARIES})
 ADD_TEST(rtkincrementalfourdconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkincrementalfourdconjugategradienttest)

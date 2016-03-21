@@ -102,8 +102,8 @@ int main(int, char** )
     <OutputImageType, GradientOutputImageType>                TVDenoisingFilterType;
   TVDenoisingFilterType::Pointer TVdenoising = TVDenoisingFilterType::New();
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
-  TVdenoising->SetNumberOfIterations(15);
-  TVdenoising->SetGamma(100);
+  TVdenoising->SetNumberOfIterations(100);
+  TVdenoising->SetGamma(0.3);
   
   bool dimsProcessed[Dimension];
   for (unsigned int i=0; i<Dimension; i++)

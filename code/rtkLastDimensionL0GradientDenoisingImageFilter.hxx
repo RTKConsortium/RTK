@@ -220,7 +220,7 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
       ++outputIterator;
       }
 
-    delete toBeRegularized;
+    delete [] toBeRegularized;
       
     ++FakeIterator;
     }

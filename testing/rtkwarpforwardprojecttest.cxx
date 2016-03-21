@@ -7,19 +7,18 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkFieldOfViewImageFilter.h"
-#include "rtkCyclicDeformationImageFilter.h"
-#include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
+#include "rtkWarpForwardProjectSequenceImageFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
 
 /**
- * \file rtkfourdroostertest.cxx
+ * \file rtkwarpforwardprojecttest.cxx
  *
- * \brief Functional test for classes performing 4D ROOSTER
- * reconstruction.
+ * \brief Functional test for classes performing motion-compensated
+ * forward projection combining warping and forward projection
  *
  * This test generates the projections of a phantom, which consists of two
  * ellipsoids (one of them moving). The resulting moving phantom is
- * reconstructed using the 4D ROOSTER algorithm and the generated
+ * forward projected, each ray following a trajectory that matches the motionand the generated
  * result is compared to the expected results (analytical computation).
  *
  * \author Cyril Mory
@@ -74,12 +73,12 @@ int main(int, char** )
   spacing[1] = 8.;
   spacing[2] = 16.;
 #else
-  size[0] = 32;
-  size[1] = 16;
-  size[2] = 32;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  size[0] = 64;
+  size[1] = 64;
+  size[2] = 64;
+  spacing[0] = 2.;
+  spacing[1] = 1.;
+  spacing[2] = 2.;
 #endif
   tomographySource->SetOrigin( origin );
   tomographySource->SetSpacing( spacing );
@@ -88,7 +87,7 @@ int main(int, char** )
 
   FourDSourceType::Pointer fourdSource  = FourDSourceType::New();
   fourDOrigin[0] = -63.;
-  fourDOrigin[1] = -31.;
+  fourDOrigin[1] = -31.5;
   fourDOrigin[2] = -63.;
   fourDOrigin[3] = 0;
 #if FAST_TESTS_NO_CHECKS
@@ -101,13 +100,13 @@ int main(int, char** )
   fourDSpacing[2] = 16.;
   fourDSpacing[3] = 1.;
 #else
-  fourDSize[0] = 32;
-  fourDSize[1] = 16;
-  fourDSize[2] = 32;
+  fourDSize[0] = 64;
+  fourDSize[1] = 64;
+  fourDSize[2] = 64;
   fourDSize[3] = 8;
-  fourDSpacing[0] = 4.;
-  fourDSpacing[1] = 4.;
-  fourDSpacing[2] = 4.;
+  fourDSpacing[0] = 2.;
+  fourDSpacing[1] = 1.;
+  fourDSpacing[2] = 2.;
   fourDSpacing[3] = 1.;
 #endif
   fourdSource->SetOrigin( fourDOrigin );
@@ -127,11 +126,11 @@ int main(int, char** )
   spacing[1] = 32.;
   spacing[2] = 32.;
 #else
-  size[0] = 64;
-  size[1] = 64;
+  size[0] = 128;
+  size[1] = 128;
   size[2] = NumberOfProjectionImages;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
+  spacing[0] = 4.;
+  spacing[1] = 4.;
   spacing[2] = 1.;
 #endif
   projectionsSource->SetOrigin( origin );
@@ -157,8 +156,12 @@ int main(int, char** )
   destinationIndex[0] = 0;
   destinationIndex[1] = 0;
   destinationIndex[2] = 0;
+
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
   pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
+
+  PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
+  pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
 
   std::ofstream signalFile("signal.txt");
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
@@ -177,7 +180,7 @@ int main(int, char** )
     center.Fill(0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
-    e1->SetDensity(2.);
+    e1->SetDensity(1.);
     e1->SetAxis(semiprincipalaxis);
     e1->SetCenter(center);
     e1->SetAngle(0.);
@@ -198,17 +201,41 @@ int main(int, char** )
     e2->SetAngle(0.);
     e2->Update();
 
-    // Adding each projection to the projection stack
+    // Ellipse 2 without motion
+    REIType::Pointer e2static = REIType::New();
+    semiprincipalaxis.Fill(8.);
+    center[0] = 0;
+    center[1] = 0.;
+    center[2] = 0.;
+    e2static->SetInput(e1->GetOutput());
+    e2static->SetGeometry(oneProjGeometry);
+    e2static->SetDensity(-1.);
+    e2static->SetAxis(semiprincipalaxis);
+    e2static->SetCenter(center);
+    e2static->SetAngle(0.);
+    e2static->Update();
+
+    // Adding each projection to the projection stacks
     if (noProj > 0) // After the first projection, we use the output as input
       {
       ProjectionStackType::Pointer wholeImage = pasteFilter->GetOutput();
       wholeImage->DisconnectPipeline();
       pasteFilter->SetDestinationImage(wholeImage);
+
+      ProjectionStackType::Pointer wholeImageStatic = pasteFilterStaticProjections->GetOutput();
+      wholeImageStatic->DisconnectPipeline();
+      pasteFilterStaticProjections->SetDestinationImage(wholeImageStatic);
       }
     pasteFilter->SetSourceImage(e2->GetOutput());
     pasteFilter->SetSourceRegion(e2->GetOutput()->GetLargestPossibleRegion());
     pasteFilter->SetDestinationIndex(destinationIndex);
     pasteFilter->UpdateLargestPossibleRegion();
+
+    pasteFilterStaticProjections->SetSourceImage(e2static->GetOutput());
+    pasteFilterStaticProjections->SetSourceRegion(e2static->GetOutput()->GetLargestPossibleRegion());
+    pasteFilterStaticProjections->SetDestinationIndex(destinationIndex);
+    pasteFilterStaticProjections->UpdateLargestPossibleRegion();
+
     destinationIndex[2]++;
 
     // Signal
@@ -272,7 +299,7 @@ int main(int, char** )
     vec.Fill(0.);
     toCenter = dvfIt.GetIndex() - mvfCenter;
 
-    if (0.3 * toCenter[0] * toCenter[0] + toCenter[1] * toCenter[1] + toCenter[2] * toCenter[2] < 40)
+    if (0.3 * toCenter[0] * toCenter[0] + 0.5*toCenter[1] * toCenter[1] + 0.5*toCenter[2] * toCenter[2] < 40)
       {
       if(dvfIt.GetIndex()[3]==0)
         vec[0] = -8.;
@@ -286,7 +313,7 @@ int main(int, char** )
     ++idvfIt;
     }
 
-  // Ground truth
+  // Input 4D volume sequence
   VolumeType::Pointer * Volumes = new VolumeType::Pointer[fourDSize[3]];
   typedef itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType> JoinFilterType;
   JoinFilterType::Pointer join = JoinFilterType::New();
@@ -297,7 +324,7 @@ int main(int, char** )
     typedef rtk::DrawEllipsoidImageFilter<VolumeType, VolumeType> DEType;
     DEType::Pointer de1 = DEType::New();
     de1->SetInput( tomographySource->GetOutput() );
-    de1->SetDensity(2.);
+    de1->SetDensity(1.);
     DEType::VectorType axis;
     axis.Fill(60.);
     axis[1]=30;
@@ -331,133 +358,46 @@ int main(int, char** )
     }
   join->Update();
 
-  // ROI
-  typedef rtk::DrawEllipsoidImageFilter<VolumeType, VolumeType> DEType;
-  DEType::Pointer roi = DEType::New();
-  roi->SetInput( tomographySource->GetOutput() );
-  roi->SetDensity(1.);
-  DEType::VectorType axis;
-  axis.Fill(15.);
-  axis[0]=20;
-  roi->SetAxis(axis);
-  DEType::VectorType center;
-  center.Fill(0.);
-  roi->SetCenter(center);
-  roi->SetAngle(0.);
-  roi->InPlaceOff();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( roi->Update() )
-
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName("signal.txt");
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
-  // Set the forward and back projection filters to be used
-  typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
-  ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
-  rooster->SetInputVolumeSeries(fourdSource->GetOutput() );
-  rooster->SetInputProjectionStack(pasteFilter->GetOutput());
-  rooster->SetGeometry(geometry);
-  rooster->SetWeights(phaseReader->GetOutput());
-  rooster->SetGeometry( geometry );
-  rooster->SetCG_iterations( 2 );
-  rooster->SetMainLoop_iterations( 2);
-  
-  rooster->SetTV_iterations( 3 );
-  rooster->SetGammaTVSpace(1);
-  rooster->SetGammaTVTime(0.1);
-  
-  rooster->SetSoftThresholdWavelets(0.1);
-  rooster->SetOrder(3);
-  rooster->SetNumberOfLevels(3);
+#ifndef RTK_USE_CUDA
+  std::cout << "\n\n****** Case 1: Non-warped Joseph forward projection (warped forward projection exists only in CUDA) ******" << std::endl;
 
-  rooster->SetLambdaL0Time(0.1);
-  rooster->SetL0_iterations(5);
+  // Create and set the warped forward projection filter
+  typedef rtk::WarpForwardProjectSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType> WarpForwardProjectFilterType;
+  WarpForwardProjectFilterType::Pointer warpforwardproject = WarpForwardProjectFilterType::New();
+  warpforwardproject->SetInputVolumeSeries(join->GetOutput() );
+  warpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
+  warpforwardproject->SetGeometry(geometry);
+  warpforwardproject->SetDisplacementField(deformationField);
+  warpforwardproject->SetWeights(phaseReader->GetOutput());
+  warpforwardproject->SetSignalFilename("signal.txt");
 
-  std::cout << "\n\n****** Case 1: Joseph forward projector, voxel-based back projector, positivity, motion mask, wavelets spatial denoising, TV temporal denoising, no warping ******" << std::endl;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
 
-  rooster->SetBackProjectionFilter( 0 ); // Voxel based
-  rooster->SetForwardProjectionFilter( 0 ); // Joseph
-  
-  rooster->SetPerformPositivity(true);
-  rooster->SetPerformMotionMask(true);
-  rooster->SetMotionMask(roi->GetOutput());
-  rooster->SetPerformTVSpatialDenoising(false);
-  rooster->SetPerformWaveletsSpatialDenoising(true);
-  rooster->SetPerformTVTemporalDenoising(true);
-  rooster->SetPerformL0TemporalDenoising(false);
-  rooster->SetPerformWarping(false);
-  rooster->SetComputeInverseWarpingByConjugateGradient(false);
-  
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
-
-  CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
+  CheckImageQuality<ProjectionStackType>(warpforwardproject->GetOutput(), pasteFilter->GetOutput(), 0.25, 14, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
-
-  std::cout << "\n\n****** Case 2: Joseph forward projector, voxel-based back projector, positivity, no motion mask, TV spatial denoising, L0 temporal denoising, motion compensation (nearest neighbor interpolation). Inverse warping by conjugate gradient ******" << std::endl;
-
-  rooster->SetBackProjectionFilter( 0 ); // Voxel based
-  rooster->SetForwardProjectionFilter( 0 ); // Joseph
-
-  rooster->SetPerformPositivity(true);
-  rooster->SetPerformMotionMask(false);
-  rooster->SetPerformTVSpatialDenoising(true);
-  rooster->SetPerformWaveletsSpatialDenoising(false);
-  rooster->SetPerformTVTemporalDenoising(false);
-  rooster->SetPerformL0TemporalDenoising(true);
-  rooster->SetPerformWarping(true);
-  rooster->SetDisplacementField(deformationField);
-  rooster->SetComputeInverseWarpingByConjugateGradient(true);
-  rooster->SetUseNearestNeighborInterpolationInWarping(true);
-
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
-
-  CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-
-  std::cout << "\n\n****** Case 3: Joseph forward projector, voxel-based back projector, no positivity, motion mask, no spatial denoising, motion compensation and temporal TV denoising. Inverse warping by warping with approximate inverse DVF ******" << std::endl;
-
-  rooster->SetBackProjectionFilter( 0 ); // Voxel based
-  rooster->SetForwardProjectionFilter( 0 ); // Joseph
-  
-  rooster->SetPerformPositivity(false);
-  rooster->SetPerformMotionMask(true);
-  rooster->SetMotionMask(roi->GetOutput());
-  rooster->SetPerformTVSpatialDenoising(false);
-  rooster->SetPerformWaveletsSpatialDenoising(false);
-  rooster->SetPerformTVTemporalDenoising(true);
-  rooster->SetPerformL0TemporalDenoising(false);
-  rooster->SetPerformWarping(true);
-  rooster->SetDisplacementField(deformationField);
-  rooster->SetComputeInverseWarpingByConjugateGradient(false);
-  rooster->SetInverseDisplacementField(inverseDeformationField);
-  rooster->SetUseNearestNeighborInterpolationInWarping(false);
-  
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
-
-  CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 4: CUDA forward and back projectors, only L0 temporal denoising ******" << std::endl;
+  std::cout << "\n\n****** Case 2: CUDA warped forward projection ******" << std::endl;
 
-  rooster->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  rooster->SetForwardProjectionFilter( 2 ); // Cuda ray cast
-  
-  rooster->SetPerformPositivity(false);
-  rooster->SetPerformMotionMask(false);
-  rooster->SetPerformTVSpatialDenoising(false);
-  rooster->SetPerformWaveletsSpatialDenoising(false);
-  rooster->SetPerformTVTemporalDenoising(false);
-  rooster->SetPerformL0TemporalDenoising(true);
-  rooster->SetPerformWarping(false);
-  rooster->SetComputeInverseWarpingByConjugateGradient(false);
-  rooster->SetUseNearestNeighborInterpolationInWarping(false);
-  
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+  typedef rtk::WarpForwardProjectSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType> CudaWarpForwardProjectFilterType;
+  CudaWarpForwardProjectFilterType::Pointer cudawarpforwardproject = CudaWarpForwardProjectFilterType::New();
+  cudawarpforwardproject->SetInputVolumeSeries(join->GetOutput() );
+  cudawarpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
+  cudawarpforwardproject->SetGeometry(geometry);
+  cudawarpforwardproject->SetDisplacementField(deformationField);
+  cudawarpforwardproject->SetWeights(phaseReader->GetOutput());
+  cudawarpforwardproject->SetSignalFilename("signal.txt");
 
-  CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( cudawarpforwardproject->Update() );
+
+  CheckImageQuality<ProjectionStackType>(cudawarpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
