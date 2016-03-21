@@ -28,7 +28,7 @@
 #include <itkNearestNeighborInterpolateImageFunction.h>
 
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaWarpedForwardProjectionImageFilter.h"
+  #include "rtkCudaWarpForwardProjectionImageFilter.h"
   #include "rtkCudaInterpolateImageFilter.h"
 #endif
 
@@ -39,7 +39,7 @@ namespace rtk
    * and forward projects through it. Combines the warping and the forward projection so as
    * to perform only one interpolation in space, thus avoiding some of the loss of resolution.
    *
-   * Most of the work in this filter is performed by rtkCudaWarpedForwardProjectionImageFilter.
+   * Most of the work in this filter is performed by rtkCudaWarpForwardProjectionImageFilter.
    *
    * \dot
    * digraph WarpForwardProjectSequenceImageFilter {
@@ -57,7 +57,7 @@ namespace rtk
    * Interpolator [label="rtk::rtkInterpolatorWithKnownWeightsImageFilter" URL="\ref rtk::rtkInterpolatorWithKnownWeightsImageFilter"];
    * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
    * SingleProjectionSource [ label="rtk::ConstantImageSource (single projection)" URL="\ref rtk::ConstantImageSource"];
-   * WarpForwardProject [ label="rtk::rtkCudaWarpedForwardProjectionImageFilter" URL="\ref rtk::rtkCudaWarpedForwardProjectionImageFilter"];
+   * WarpForwardProject [ label="rtk::rtkCudaWarpForwardProjectionImageFilter" URL="\ref rtk::rtkCudaWarpForwardProjectionImageFilter"];
    * ProjectionStackSource [ label="rtk::ConstantImageSource (projection stack)" URL="\ref rtk::ConstantImageSource"];
    * VolumeSource [ label="rtk::ConstantImageSource (volume)" URL="\ref rtk::ConstantImageSource"];
    * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
@@ -135,7 +135,7 @@ public:
 
     /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
-    typedef rtk::CudaWarpedForwardProjectionImageFilter                                       CudaWarpForwardProjectFilterType;
+    typedef rtk::CudaWarpForwardProjectionImageFilter                                       CudaWarpForwardProjectFilterType;
     typedef rtk::CudaInterpolateImageFilter                                                   CudaInterpolateFilterType;
 #endif
     typedef rtk::JosephForwardProjectionImageFilter<ProjectionStackType,ProjectionStackType>  JosephForwardProjectFilterType;

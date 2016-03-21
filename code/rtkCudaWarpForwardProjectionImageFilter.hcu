@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaWarpedForwardProjectionImageFilter_hcu
-#define __rtkCudaWarpedForwardProjectionImageFilter_hcu
+#ifndef __rtkCudaWarpForwardProjectionImageFilter_hcu
+#define __rtkCudaWarpForwardProjectionImageFilter_hcu
 
 #include "rtkWin32Header.h"
 

@@ -22,7 +22,7 @@
 #include "rtkCudaUtilities.hcu"
 #include "rtkConfiguration.h"
 #include "rtkCudaIntersectBox.hcu"
-#include "rtkCudaWarpedForwardProjectionImageFilter.hcu"
+#include "rtkCudaWarpForwardProjectionImageFilter.hcu"
 
 /*****************
 *  C   #includes *

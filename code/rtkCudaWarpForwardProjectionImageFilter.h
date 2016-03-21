@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaWarpedForwardProjectionImageFilter_h
-#define __rtkCudaWarpedForwardProjectionImageFilter_h
+#ifndef __rtkCudaWarpForwardProjectionImageFilter_h
+#define __rtkCudaWarpForwardProjectionImageFilter_h
 
 #include "rtkForwardProjectionImageFilter.h"
 #include "itkCudaInPlaceImageFilter.h"
@@ -28,10 +28,10 @@
 //#include <itkCudaImage.h>
 //#include "itkCovariantVector.h"
 
-/** \class CudaWarpedForwardProjectionImageFilter
+/** \class CudaWarpForwardProjectionImageFilter
  * \brief Trilinear interpolation forward projection in warped volume implemented in CUDA
  *
- * CudaWarpedForwardProjectionImageFilter is similar to
+ * CudaWarpForwardProjectionImageFilter is similar to
  * CudaForwardProjectionImageFilter, but assumes the object has
  * undergone a known deformation, and compensates for it during the
  * forward projection. It amounts to bending the trajectories of the rays.
@@ -44,7 +44,7 @@
 namespace rtk
 {
 
-class ITK_EXPORT CudaWarpedForwardProjectionImageFilter :
+class ITK_EXPORT CudaWarpForwardProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   ForwardProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
@@ -52,7 +52,7 @@ public:
   /** Standard class typedefs. */
   typedef itk::CudaImage<float, 3>                                            InputImageType;
   typedef itk::CovariantVector<float, 3>                                      DisplacementVectorType;
-  typedef CudaWarpedForwardProjectionImageFilter                              Self;
+  typedef CudaWarpForwardProjectionImageFilter                              Self;
   typedef ForwardProjectionImageFilter<InputImageType, InputImageType>                  Superclass;
   typedef itk::CudaInPlaceImageFilter<InputImageType, InputImageType, Superclass >      GPUSuperclass;
   typedef itk::SmartPointer<Self>                                             Pointer;
@@ -63,7 +63,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(CudaWarpedForwardProjectionImageFilter, ForwardProjectionImageFilter);
+  itkTypeMacro(CudaWarpForwardProjectionImageFilter, ForwardProjectionImageFilter);
 
   /** Input projection stack */
   void SetInputProjectionStack(const InputImageType* ProjectionStack);
@@ -78,8 +78,8 @@ public:
   typename DVFType::Pointer GetDisplacementField();
 
 protected:
-  CudaWarpedForwardProjectionImageFilter();
-  ~CudaWarpedForwardProjectionImageFilter() {};
+  CudaWarpForwardProjectionImageFilter();
+  ~CudaWarpForwardProjectionImageFilter() {};
 
   virtual void GenerateInputRequestedRegion();
   
@@ -87,7 +87,7 @@ protected:
 
 private:
   //purposely not implemented
-  CudaWarpedForwardProjectionImageFilter(const Self&);
+  CudaWarpForwardProjectionImageFilter(const Self&);
   void operator=(const Self&);
 }; // end of class
 

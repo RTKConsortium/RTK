@@ -16,12 +16,12 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaWarpedForwardProjectionImageFilter_hxx
-#define __rtkCudaWarpedForwardProjectionImageFilter_hxx
+#ifndef __rtkCudaWarpForwardProjectionImageFilter_hxx
+#define __rtkCudaWarpForwardProjectionImageFilter_hxx
 
-#include "rtkCudaWarpedForwardProjectionImageFilter.h"
+#include "rtkCudaWarpForwardProjectionImageFilter.h"
 #include "rtkCudaUtilities.hcu"
-#include "rtkCudaWarpedForwardProjectionImageFilter.hcu"
+#include "rtkCudaWarpForwardProjectionImageFilter.hcu"
 #include "rtkHomogeneousMatrix.h"
 
 #include <itkImageRegionConstIterator.h>
@@ -35,36 +35,36 @@
 namespace rtk
 {
 
-CudaWarpedForwardProjectionImageFilter
-::CudaWarpedForwardProjectionImageFilter()
+CudaWarpForwardProjectionImageFilter
+::CudaWarpForwardProjectionImageFilter()
 {
   this->SetNumberOfRequiredInputs(1);
 }
 
 void
-CudaWarpedForwardProjectionImageFilter
+CudaWarpForwardProjectionImageFilter
 ::SetInputProjectionStack(const InputImageType* ProjectionStack)
 {
   this->SetPrimaryInput(const_cast<InputImageType*>(ProjectionStack));
 }
 
 void
-CudaWarpedForwardProjectionImageFilter
+CudaWarpForwardProjectionImageFilter
 ::SetInputVolume(const InputImageType* Volume)
 {
   this->SetInput("Volume", const_cast<InputImageType*>(Volume));
 }
 
-CudaWarpedForwardProjectionImageFilter::InputImageType::Pointer
-CudaWarpedForwardProjectionImageFilter
+CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
+CudaWarpForwardProjectionImageFilter
 ::GetInputProjectionStack()
 {
   return static_cast< InputImageType * >
           ( this->itk::ProcessObject::GetInput("Primary") );
 }
 
-CudaWarpedForwardProjectionImageFilter::InputImageType::Pointer
-CudaWarpedForwardProjectionImageFilter
+CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
+CudaWarpForwardProjectionImageFilter
 ::GetInputVolume()
 {
   return static_cast< InputImageType * >
@@ -72,14 +72,14 @@ CudaWarpedForwardProjectionImageFilter
 }
 
 void
-CudaWarpedForwardProjectionImageFilter
+CudaWarpForwardProjectionImageFilter
 ::SetDisplacementField(const DVFType* MVF)
 {
   this->SetInput("DisplacementField", const_cast<DVFType*>(MVF));
 }
 
-CudaWarpedForwardProjectionImageFilter::DVFType::Pointer
-CudaWarpedForwardProjectionImageFilter
+CudaWarpForwardProjectionImageFilter::DVFType::Pointer
+CudaWarpForwardProjectionImageFilter
 ::GetDisplacementField()
 {
   return static_cast< DVFType * >
@@ -87,7 +87,7 @@ CudaWarpedForwardProjectionImageFilter
 }
 
 void
-CudaWarpedForwardProjectionImageFilter
+CudaWarpForwardProjectionImageFilter
 ::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
@@ -108,7 +108,7 @@ CudaWarpedForwardProjectionImageFilter
 
 
 void
-CudaWarpedForwardProjectionImageFilter
+CudaWarpForwardProjectionImageFilter
 ::GPUGenerateData()
 {
   itk::Matrix<double, 4, 4> matrixIdxInputVol;
