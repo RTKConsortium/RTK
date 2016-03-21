@@ -48,10 +48,6 @@ TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   m_MagnitudeThresholdFilter = MagnitudeThresholdFilterType::New();
   m_DivergenceFilter = DivergenceFilterType::New();
 
-  // Set permanent parameters
-  m_BoundaryConditionForGradientFilter = new itk::ZeroFluxNeumannBoundaryCondition<TOutputImage>();
-  m_BoundaryConditionForDivergenceFilter = new itk::ZeroFluxNeumannBoundaryCondition<TGradientImage>();
-
   // Set whether the sub filters should release their data during pipeline execution
   m_DivergenceFilter->ReleaseDataFlagOn();
   m_SubtractFilter->ReleaseDataFlagOn(); // It is the pipeline's output, but it is explicitely computed during the last iteration
@@ -90,10 +86,8 @@ void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetBoundaryConditionToPeriodic()
 {
-  m_BoundaryConditionForGradientFilter = new itk::PeriodicBoundaryCondition<TOutputImage>();
-  m_BoundaryConditionForDivergenceFilter = new itk::PeriodicBoundaryCondition<TGradientImage>();
-  m_GradientFilter->OverrideBoundaryCondition(m_BoundaryConditionForGradientFilter);
-  m_DivergenceFilter->OverrideBoundaryCondition(m_BoundaryConditionForDivergenceFilter);
+  m_GradientFilter->OverrideBoundaryCondition(new itk::PeriodicBoundaryCondition<TOutputImage>());
+  m_DivergenceFilter->OverrideBoundaryCondition(new itk::PeriodicBoundaryCondition<TGradientImage>());
 }
 
 template< typename TOutputImage, typename TGradientImage>

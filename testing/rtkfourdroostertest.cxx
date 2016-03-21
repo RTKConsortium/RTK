@@ -12,14 +12,14 @@
 #include "rtkPhasesToInterpolationWeights.h"
 
 /**
- * \file rtkfourdconjugategradienttest.cxx
+ * \file rtkfourdroostertest.cxx
  *
- * \brief Functional test for classes performing 4D conjugate gradient-based
+ * \brief Functional test for classes performing 4D ROOSTER
  * reconstruction.
  *
  * This test generates the projections of a phantom, which consists of two
  * ellipsoids (one of them moving). The resulting moving phantom is
- * reconstructed using 4D conjugate gradient and the generated
+ * reconstructed using the 4D ROOSTER algorithm and the generated
  * result is compared to the expected results (analytical computation).
  *
  * \author Cyril Mory
