@@ -79,7 +79,7 @@ namespace rtk
    * }
    * \enddot
    *
-   * \test ??
+   * \test rtkwarpforwardprojecttest.cxx
    *
    * \author Cyril Mory
    *
