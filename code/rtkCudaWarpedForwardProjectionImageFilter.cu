@@ -173,7 +173,7 @@ void kernel_warped_forwardProject(float *dev_proj_in, float *dev_proj_out)
 		      + tex1Dfetch(tex_PPInputToIndexInputMatrix, 11);
 
       // Read from 3D texture from volume
-      sample = tex3D(tex_vol, IndexInInput.x + 0.5f, IndexInInput.y + 0.5f, IndexInInput.z + 0.5f);
+      sample = tex3D(tex_vol, IndexInInput.x, IndexInInput.y, IndexInInput.z);
 
       sum += sample;
       pos += step;
