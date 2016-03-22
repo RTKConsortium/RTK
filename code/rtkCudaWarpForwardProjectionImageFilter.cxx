@@ -121,7 +121,7 @@ CudaWarpForwardProjectionImageFilter
     matrixIdxInputVol[i][3] = this->GetInputVolume()->GetBufferedRegion().GetIndex()[i]; // Should 0.5 be added here ?
     }
   
-  const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
   const unsigned int Dimension = InputImageType::ImageDimension;
   const unsigned int iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension-1);
   const unsigned int nProj = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(Dimension-1);
@@ -165,10 +165,10 @@ CudaWarpForwardProjectionImageFilter
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
   
   // Split the DVF into three images (one per component)
-  typename InputImageType::Pointer xCompDVF = InputImageType::New();
-  typename InputImageType::Pointer yCompDVF = InputImageType::New();
-  typename InputImageType::Pointer zCompDVF = InputImageType::New();
-  typename InputImageType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
+  InputImageType::Pointer xCompDVF = InputImageType::New();
+  InputImageType::Pointer yCompDVF = InputImageType::New();
+  InputImageType::Pointer zCompDVF = InputImageType::New();
+  InputImageType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
   xCompDVF->SetRegions(largest);
   yCompDVF->SetRegions(largest);
   zCompDVF->SetRegions(largest);
@@ -222,7 +222,7 @@ CudaWarpForwardProjectionImageFilter
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
     // Account for system rotations
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
+    Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
     volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInputVolume().GetPointer() );
 
     // Compute matrix to translate the pixel indices on the volume and the detector
@@ -244,7 +244,7 @@ CudaWarpForwardProjectionImageFilter
       }
 
     // Compute matrix to transform projection index to volume index
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
+    Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
     d_matrix =
       volIndexTranslation.GetVnlMatrix() *
       volPPToIndex.GetVnlMatrix() *
