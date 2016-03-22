@@ -138,7 +138,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDaubechiesWaveletsDenoiseSequenceImageFilter.txx"
+#include "rtkDaubechiesWaveletsDenoiseSequenceImageFilter.hxx"
 #endif
 
 #endif

@@ -117,7 +117,7 @@ private:
 } // end namespace rtk
   
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkDownsampleImageFilter.txx"
+#include "rtkDownsampleImageFilter.hxx"
 #endif
   
 #endif

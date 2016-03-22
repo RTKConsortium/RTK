@@ -108,7 +108,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.txx"
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.hxx"
 #endif
 
 #endif

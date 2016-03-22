@@ -205,7 +205,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkReconstructionConjugateGradientOperator.txx"
+#include "rtkReconstructionConjugateGradientOperator.hxx"
 #endif
 
 #endif

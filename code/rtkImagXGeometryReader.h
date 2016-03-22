@@ -113,7 +113,7 @@ private:
 
 }
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkImagXGeometryReader.txx"
+#include "rtkImagXGeometryReader.hxx"
 #endif
 
 #endif // __rtkImagXGeometryReader_h

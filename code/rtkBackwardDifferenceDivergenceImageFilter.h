@@ -122,7 +122,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkBackwardDifferenceDivergenceImageFilter.txx"
+#include "rtkBackwardDifferenceDivergenceImageFilter.hxx"
 #endif
 
 #endif //__rtkBackwardDifferenceDivergenceImageFilter__

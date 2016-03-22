@@ -176,7 +176,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFourDToProjectionStackImageFilter.txx"
+#include "rtkFourDToProjectionStackImageFilter.hxx"
 #endif
 
 #endif

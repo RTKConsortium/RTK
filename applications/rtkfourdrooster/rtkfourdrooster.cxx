@@ -95,44 +95,91 @@ int main(int argc, char * argv[])
   inputFilter->Update();
   inputFilter->ReleaseDataFlagOn();
 
-  // ROI reader
-  typedef itk::ImageFileReader<  VolumeType > InputReaderType;
-  InputReaderType::Pointer motionMaskReader = InputReaderType::New();
-  motionMaskReader->SetFileName( args_info.motionmask_arg );
-
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   phaseReader->Update();
-
-  // Set the forward and back projection filters to be used
+  
+  
+  // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
-  rooster->SetForwardProjectionFilter(args_info.fp_arg);
-  rooster->SetBackProjectionFilter(args_info.bp_arg);
   rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   rooster->SetInputProjectionStack(reader->GetOutput());
-  rooster->SetMotionMask(motionMaskReader->GetOutput());
   rooster->SetGeometry( geometryReader->GetOutputObject() );
+  rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );
-  rooster->SetTV_iterations( args_info.tviter_arg );
-  rooster->SetWeights(phaseReader->GetOutput());
-  rooster->SetGammaSpace(args_info.gamma_space_arg);
-  rooster->SetGammaTime(args_info.gamma_time_arg);
-  if (args_info.order_given)
-    {
-    rooster->SetWaveletsSpatialDenoising(true);
-    rooster->SetOrder(args_info.order_arg);
-    }
-  if (args_info.levels_given)
-    {
-    rooster->SetWaveletsSpatialDenoising(true);
-    rooster->SetNumberOfLevels(args_info.levels_arg);
-    }
   rooster->SetPhaseShift(args_info.shift_arg);
   rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
+  
+  //Set the forward and back projection filters to be used
+  rooster->SetForwardProjectionFilter(args_info.fp_arg);
+  rooster->SetBackProjectionFilter(args_info.bp_arg);
+  
+  // For each optional regularization step, set whether or not
+  // it should be performed, and provide the necessary inputs
+  
+  // Positivity
+  if (args_info.nopositivity_flag)
+    rooster->SetPerformPositivity(false);
+  else
+    rooster->SetPerformPositivity(true);
+  
+  // Motion mask
+  typedef itk::ImageFileReader<  VolumeType > InputReaderType;
+  if (args_info.motionmask_given)
+    {
+    InputReaderType::Pointer motionMaskReader = InputReaderType::New();
+    motionMaskReader->SetFileName( args_info.motionmask_arg );
+    motionMaskReader->Update();
+    rooster->SetMotionMask(motionMaskReader->GetOutput());
+    rooster->SetPerformMotionMask(true);
+    }
+  else
+    rooster->SetPerformMotionMask(false);
+    
+  // Spatial TV
+  if (args_info.gamma_space_given)
+    {
+    rooster->SetGammaTVSpace(args_info.gamma_space_arg);
+    rooster->SetTV_iterations(args_info.tviter_arg);
+    rooster->SetPerformTVSpatialDenoising(true);
+    }
+  else
+    rooster->SetPerformTVSpatialDenoising(false);
+  
+  // Spatial wavelets
+  if (args_info.threshold_given)
+    {
+    rooster->SetSoftThresholdWavelets(args_info.threshold_arg);
+    rooster->SetOrder(args_info.order_arg);
+    rooster->SetNumberOfLevels(args_info.levels_arg);
+    rooster->SetPerformWaveletsSpatialDenoising(true);
+    }
+  else
+    rooster->SetPerformWaveletsSpatialDenoising(false);
+  
+  // Temporal TV
+  if (args_info.gamma_time_given)
+    {
+    rooster->SetGammaTVTime(args_info.gamma_time_arg);
+    rooster->SetTV_iterations(args_info.tviter_arg);
+    rooster->SetPerformTVTemporalDenoising(true);
+    }
+  else
+    rooster->SetPerformTVTemporalDenoising(false);
+
+  // Temporal L0
+  if (args_info.lambda_time_arg)
+    {
+    rooster->SetLambdaL0Time(args_info.lambda_time_arg);
+    rooster->SetL0_iterations(args_info.l0iter_arg);
+    rooster->SetPerformL0TemporalDenoising(true);
+    }
+  else
+    rooster->SetPerformL0TemporalDenoising(false);
 
   if (args_info.dvf_given)
     {
@@ -166,7 +213,7 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   if(args_info.time_flag)
     {

@@ -107,6 +107,7 @@ int main(int argc, char * argv[])
   conjugategradient->SetInput(1, reader->GetOutput());
   conjugategradient->SetInput(2, weightsSource->GetOutput());
   conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
+  conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
 
   if (args_info.gamma_given)
     {

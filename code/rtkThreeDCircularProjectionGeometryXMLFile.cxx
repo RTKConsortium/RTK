@@ -77,8 +77,8 @@ StartElement(const char * name,const char **atts)
       atts += 2;
       }
     // Version 3 is backward compatible with version 2
-    if(m_Version != this->CurrentVersion ||
-       (m_Version == 2 && this->CurrentVersion == 3) )
+    if(  m_Version != this->CurrentVersion &&
+       !(m_Version == 2 && this->CurrentVersion == 3) )
       itkGenericExceptionMacro(<< "Incompatible version of input geometry (v" << m_Version
                                << ") with current geometry (v" << this->CurrentVersion
                                << "). You must re-generate your geometry file again.");

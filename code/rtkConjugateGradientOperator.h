@@ -54,7 +54,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientOperator.txx"
+#include "rtkConjugateGradientOperator.hxx"
 #endif
 
 #endif

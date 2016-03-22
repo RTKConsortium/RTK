@@ -91,7 +91,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkCudaForwardProjectionImageFilter.txx"
+#include "rtkCudaForwardProjectionImageFilter.hxx"
 #endif
 
 #endif

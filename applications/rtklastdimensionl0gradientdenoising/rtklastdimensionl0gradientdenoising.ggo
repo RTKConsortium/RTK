@@ -1,0 +1,9 @@
+package "rtklastdimensionl0gradientdenoising"
+purpose "Performs denoising by minimizing the l0 norm of the gradient"
+
+option "verbose"   v "Verbose execution"                                            flag         off
+option "config"    - "Config file"                                                  string       no
+option "input"     i "Input file name"                                              string       yes
+option "output"    o "Output file name"                                             string       yes
+option "lambda"    l "Strength of the regularization"                               double       no  default="1.0"
+option "niter"     n "Number of iterations"                                         int          no  default="5"

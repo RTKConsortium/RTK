@@ -3,6 +3,7 @@ option "path"         p "Path containing projections"                           
 option "regexp"       r "Regular expression to select projection files in path"         string           yes
 option "nsort"        - "Numeric sort for regular expression matches"                   flag             off
 option "submatch"     - "Index of the submatch that will be used to sort matches"       int              no   default="0"
+option "nolineint"    - "Disable raw to line integral conversion, just casts to float"  flag             off
 option "newdirection" - "New value of input projections (before pre-processing)"        double  multiple no
 option "neworigin"    - "New origin of input projections (before pre-processing)"       double  multiple no
 option "newspacing"   - "New spacing of input projections (before pre-processing)"      double  multiple no

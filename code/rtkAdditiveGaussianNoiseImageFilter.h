@@ -297,7 +297,7 @@ private:
 } /* end namespace rtk */
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkAdditiveGaussianNoiseImageFilter.txx"
+#include "rtkAdditiveGaussianNoiseImageFilter.hxx"
 #endif
 
 #endif /* __rtkAdditiveGaussianNoiseImageFilter_h */

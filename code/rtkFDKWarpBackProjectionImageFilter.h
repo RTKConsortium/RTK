@@ -96,7 +96,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFDKWarpBackProjectionImageFilter.txx"
+#include "rtkFDKWarpBackProjectionImageFilter.hxx"
 #endif
 
 #endif

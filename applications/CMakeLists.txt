@@ -52,10 +52,13 @@ ADD_SUBDIRECTORY(rtkfourdrooster)
 ADD_SUBDIRECTORY(rtkincrementalfourdconjugategradient)
 ADD_SUBDIRECTORY(rtkfourdconjugategradient)
 ADD_SUBDIRECTORY(rtkconjugategradient)
+ADD_SUBDIRECTORY(rtkregularizedconjugategradient)
 ADD_SUBDIRECTORY(rtkwaveletsdenoising)
 ADD_SUBDIRECTORY(rtki0estimation)
 ADD_SUBDIRECTORY(rtktutorialapplication)
 ADD_SUBDIRECTORY(rtkscatterglarecorrection)
+ADD_SUBDIRECTORY(rtklastdimensionl0gradientdenoising)
+ADD_SUBDIRECTORY(rtkwarpedforwardprojectsequence)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 ADD_SUBDIRECTORY(rtkvarianobigeometry)

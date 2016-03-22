@@ -185,7 +185,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLookupTableImageFilter.txx"
+#include "rtkLookupTableImageFilter.hxx"
 #endif
 
 #endif

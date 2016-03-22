@@ -93,6 +93,6 @@ private:
 };
 }
 
-#include "rtkProjectionGeometry.txx"
+#include "rtkProjectionGeometry.hxx"
 
 #endif // __rtkProjectionGeometry_h

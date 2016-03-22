@@ -153,7 +153,7 @@ public:
 
 protected:
   TotalVariationDenoisingBPDQImageFilter();
-  virtual ~TotalVariationDenoisingBPDQImageFilter();
+  ~TotalVariationDenoisingBPDQImageFilter(){}
 
   virtual void GenerateData();
 
@@ -172,10 +172,6 @@ protected:
   int    m_NumberOfIterations;
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
-  // In some cases, regularization must use periodic boundary condition
-  typename itk::ImageBoundaryCondition<TOutputImage, TOutputImage>      * m_BoundaryConditionForGradientFilter;
-  typename itk::ImageBoundaryCondition<TGradientImage, TGradientImage>  * m_BoundaryConditionForDivergenceFilter;
-
 private:
   TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
@@ -187,7 +183,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkTotalVariationDenoisingBPDQImageFilter.txx"
+#include "rtkTotalVariationDenoisingBPDQImageFilter.hxx"
 #endif
 
 #endif //__rtkTotalVariationDenoisingBPDQImageFilter__

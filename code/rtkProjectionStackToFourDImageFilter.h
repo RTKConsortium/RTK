@@ -195,7 +195,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkProjectionStackToFourDImageFilter.txx"
+#include "rtkProjectionStackToFourDImageFilter.hxx"
 #endif
 
 #endif

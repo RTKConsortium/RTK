@@ -356,8 +356,8 @@ int main(int, char** )
   incrementalRooster->SetNumberOfProjectionsPerSubset(8);
   incrementalRooster->SetKzero(100);
   incrementalRooster->SetTV_iterations( 3 );
-  incrementalRooster->SetGammaSpace(1);
-  incrementalRooster->SetGammaTime(0.1);
+  incrementalRooster->SetGammaTVSpace(1);
+  incrementalRooster->SetGammaTVTime(0.1);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 

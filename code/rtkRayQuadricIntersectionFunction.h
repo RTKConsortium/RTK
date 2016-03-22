@@ -133,7 +133,7 @@ private:
 } // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayQuadricIntersectionFunction.txx"
+#include "rtkRayQuadricIntersectionFunction.hxx"
 #endif
 
 #endif

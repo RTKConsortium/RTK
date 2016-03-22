@@ -150,7 +150,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkI0EstimationProjectionFilter.txx"
+#include "rtkI0EstimationProjectionFilter.hxx"
 #endif
 
 #endif

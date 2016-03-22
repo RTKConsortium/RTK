@@ -105,7 +105,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkEdfRawToAttenuationImageFilter.txx"
+#include "rtkEdfRawToAttenuationImageFilter.hxx"
 #endif
 
 #endif

@@ -79,7 +79,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientGetX_kPlusOneImageFilter.txx"
+#include "rtkConjugateGradientGetX_kPlusOneImageFilter.hxx"
 #endif
 
 #endif

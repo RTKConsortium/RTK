@@ -76,7 +76,7 @@ private:
 } //end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkPhaseReader.txx"
+#include "rtkPhaseReader.hxx"
 #endif
 
 #endif

@@ -145,7 +145,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawQuadricImageFilter.txx"
+#include "rtkDrawQuadricImageFilter.hxx"
 #endif
 
 #endif

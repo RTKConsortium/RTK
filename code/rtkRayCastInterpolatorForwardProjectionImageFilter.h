@@ -74,7 +74,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayCastInterpolatorForwardProjectionImageFilter.txx"
+#include "rtkRayCastInterpolatorForwardProjectionImageFilter.hxx"
 #endif
 
 #endif

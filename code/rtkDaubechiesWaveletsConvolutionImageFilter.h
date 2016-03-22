@@ -135,7 +135,7 @@ private:
 
 //Include CXX
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkDaubechiesWaveletsConvolutionImageFilter.txx"
+#include "rtkDaubechiesWaveletsConvolutionImageFilter.hxx"
 #endif
 
 #endif

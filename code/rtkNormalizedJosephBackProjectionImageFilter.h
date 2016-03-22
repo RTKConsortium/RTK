@@ -132,7 +132,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkNormalizedJosephBackProjectionImageFilter.txx"
+#include "rtkNormalizedJosephBackProjectionImageFilter.hxx"
 #endif
 
 #endif

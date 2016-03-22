@@ -129,7 +129,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFieldOfViewImageFilter.txx"
+#include "rtkFieldOfViewImageFilter.hxx"
 #endif
 
 #endif

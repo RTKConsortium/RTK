@@ -106,7 +106,7 @@ private:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientImageFilter.txx"
+#include "rtkConjugateGradientImageFilter.hxx"
 #endif
 
 #endif

@@ -11,6 +11,7 @@ option "input"       i "Input volume"                                          s
 option "weights"     w "Weights file for Weighted Least Squares (WLS)"         string no
 option "preconditioned" - "For WLS only: performs preconditioned CG with a preconditioner computed from the weights" flag off
 option "gamma"	     - "Laplacian regularization weight"			float no default="0"
+option "nocudacg"    - "Do not perform conjugate gradient calculations on GPU"        flag   off
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
