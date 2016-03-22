@@ -38,37 +38,21 @@ namespace rtk
 CudaWarpForwardProjectionImageFilter
 ::CudaWarpForwardProjectionImageFilter()
 {
-  this->SetNumberOfRequiredInputs(1);
+  this->SetNumberOfRequiredInputs(2);
 }
 
 void
 CudaWarpForwardProjectionImageFilter
 ::SetInputProjectionStack(const InputImageType* ProjectionStack)
 {
-  this->SetPrimaryInput(const_cast<InputImageType*>(ProjectionStack));
+  this->SetInput(0, const_cast<InputImageType*>(ProjectionStack));
 }
 
 void
 CudaWarpForwardProjectionImageFilter
 ::SetInputVolume(const InputImageType* Volume)
 {
-  this->SetInput("Volume", const_cast<InputImageType*>(Volume));
-}
-
-CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
-CudaWarpForwardProjectionImageFilter
-::GetInputProjectionStack()
-{
-  return static_cast< InputImageType * >
-          ( this->itk::ProcessObject::GetInput("Primary") );
-}
-
-CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
-CudaWarpForwardProjectionImageFilter
-::GetInputVolume()
-{
-  return static_cast< InputImageType * >
-          ( this->itk::ProcessObject::GetInput("Volume") );
+  this->SetInput(1, const_cast<InputImageType*>(Volume));
 }
 
 void
@@ -76,6 +60,22 @@ CudaWarpForwardProjectionImageFilter
 ::SetDisplacementField(const DVFType* MVF)
 {
   this->SetInput("DisplacementField", const_cast<DVFType*>(MVF));
+}
+
+CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
+CudaWarpForwardProjectionImageFilter
+::GetInputProjectionStack()
+{
+  return static_cast< InputImageType * >
+          ( this->itk::ProcessObject::GetInput(0) );
+}
+
+CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
+CudaWarpForwardProjectionImageFilter
+::GetInputVolume()
+{
+  return static_cast< InputImageType * >
+          ( this->itk::ProcessObject::GetInput(1) );
 }
 
 CudaWarpForwardProjectionImageFilter::DVFType::Pointer
@@ -261,7 +261,7 @@ CudaWarpForwardProjectionImageFilter
 
     int projectionOffset = iProj - this->GetOutput()->GetBufferedRegion().GetIndex(2);
 
-    CUDA_warped_forward_project(projectionSize,
+    CUDA_warp_forward_project(projectionSize,
                         volumeSize,
                         inputDVFSize,
                         (float*)&(matrix[0][0]),
