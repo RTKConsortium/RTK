@@ -97,8 +97,8 @@ JosephBackProjectionImageFilter<TInputImage,
       {
       boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
       boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
-                  this->GetOutput()->GetRequestedRegion().GetSize()[i]  - 1;
-    }
+                  this->GetOutput()->GetRequestedRegion().GetSize()[i] - 1;
+      }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
     }
@@ -126,21 +126,39 @@ JosephBackProjectionImageFilter<TInputImage,
     // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)
     // ProjectionCoordinatesToFixedSystemMatrix maps the 2D position of a pixel on the detector to its 3D coordinates in volume's coordinates (still in mm)
     // volPPToIndex maps 3D volume coordinates to a 3D index
-    typename GeometryType::ThreeDHomogeneousMatrixType matrix;
-    matrix = volPPToIndex.GetVnlMatrix() *
-             geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-             GetIndexToPhysicalPointMatrix( this->GetInput(1) ).GetVnlMatrix();
+    typename GeometryType::ThreeDHomogeneousMatrixType matrixProj, matrixVol;
+    matrixProj = geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
+                 GetIndexToPhysicalPointMatrix( this->GetInput(1) ).GetVnlMatrix();
+    matrixVol = volPPToIndex.GetVnlMatrix() *
+                geometry->GetRotationMatrices()[iProj].GetInverse();
+
+    // Read detector radius and pre-compute its inverse
+    const double R = geometry->GetRadiusCylindricalDetector()[iProj];
+    const double invR = 1./R;
+    const double sid = geometry->GetSourceToIsocenterDistances()[iProj];
 
     // Go over each pixel of the projection
-    typename RBIFunctionType::VectorType dirVox, stepMM, dirVoxAbs, np, fp;
+    typename RBIFunctionType::VectorType posProj, dirVox, stepMM, dirVoxAbs, np, fp;
     for(unsigned int pix=0; pix<nPixelPerProj; pix++, ++itIn)
       {
       // Compute point coordinate in volume depending on projection index
       for(unsigned int i=0; i<Dimension; i++)
         {
-        dirVox[i] = matrix[i][Dimension];
+        posProj[i] = matrixProj[i][Dimension];
         for(unsigned int j=0; j<Dimension; j++)
-          dirVox[i] += matrix[i][j] * itIn.GetIndex()[j];
+          posProj[i] += matrixProj[i][j] * itIn.GetIndex()[j];
+        }
+
+      // Convert cylindrical angle to coordinate
+      double a = invR * posProj[0];
+      posProj[0] = vcl_sin(a) * R;
+      posProj[2] = sid-vcl_cos(a) * R;
+      for(unsigned int i=0; i<Dimension; i++)
+        {
+        // Rotate and convert to voxel coordinates
+        dirVox[i] = matrixVol[i][Dimension];
+        for(unsigned int j=0; j<Dimension; j++)
+          dirVox[i] += matrixVol[i][j] * posProj[j];
 
         // Direction
         dirVox[i] -= sourcePosition[i];

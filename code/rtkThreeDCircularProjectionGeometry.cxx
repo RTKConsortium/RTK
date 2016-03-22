@@ -340,7 +340,7 @@ GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
   matrix[2][2] = 0.; // Force z to axis to detector distance
 
   // Rotate
-  matrix = this->GetRotationMatrices()[i].GetInverse() * matrix.GetVnlMatrix();
+  //matrix = this->GetRotationMatrices()[i].GetInverse() * matrix.GetVnlMatrix();
   return matrix;
 }
 
