@@ -364,9 +364,6 @@ int main(int, char** )
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
-//#ifndef RTK_USE_CUDA
-  std::cout << "\n\n****** Case 1: Non-warped Joseph forward projection (warped forward projection exists only in CUDA) ******" << std::endl;
-
   // Create and set the warped forward projection filter
   typedef rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, VolumeType, MVFSequenceImageType, MVFImageType> WarpFourDToProjectionStackType;
   WarpFourDToProjectionStackType::Pointer warpforwardproject = WarpFourDToProjectionStackType::New();
@@ -377,29 +374,25 @@ int main(int, char** )
   warpforwardproject->SetWeights(phaseReader->GetOutput());
   warpforwardproject->SetSignalFilename("signal.txt");
 
+#ifndef RTK_USE_CUDA
+  std::cout << "\n\n****** Case 1: Non-warped voxel based back projection (warped back projection exists only in CUDA) ******" << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
+
+  // The warpforwardproject filter doesn't really need the data in pasteFilter->GetOutput().
+  // During the update, its requested region is set to empty, and its buffered region follows.
+  // To perform the CheckImageQuality, we need to recompute the data
+  pasteFilter->UpdateLargestPossibleRegion();
 
   CheckImageQuality<ProjectionStackType>(warpforwardproject->GetOutput(), pasteFilter->GetOutput(), 0.25, 14, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
-//#endif
+#endif
 
-//#ifdef USE_CUDA
-//  std::cout << "\n\n****** Case 2: CUDA warped forward projection ******" << std::endl;
-
-//  typedef rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, VolumeType, MVFSequenceImageType,  MVFImageType> WarpFourDToProjectionStackType;
-//  WarpFourDToProjectionStackType::Pointer cudawarpforwardproject = WarpFourDToProjectionStackType::New();
-//  cudawarpforwardproject->SetInputVolumeSeries(join->GetOutput() );
-//  cudawarpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
-//  cudawarpforwardproject->SetGeometry(geometry);
-//  cudawarpforwardproject->SetDisplacementField(deformationField);
-//  cudawarpforwardproject->SetWeights(phaseReader->GetOutput());
-//  cudawarpforwardproject->SetSignalFilename("signal.txt");
-
-//  TRY_AND_EXIT_ON_ITK_EXCEPTION( cudawarpforwardproject->Update() );
-
-//  CheckImageQuality<ProjectionStackType>(cudawarpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
-//  std::cout << "\n\nTest PASSED! " << std::endl;
-//#endif
+#ifdef USE_CUDA
+  std::cout << "\n\n****** Case 2: CUDA warped back projection ******" << std::endl;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
+  CheckImageQuality<ProjectionStackType>(warpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
 
   itksys::SystemTools::RemoveFile("signal.txt");
   delete[] Volumes;
