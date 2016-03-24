@@ -140,7 +140,7 @@ public:
     typedef rtk::ThreeDCircularProjectionGeometry                                 GeometryType;
 
     /** Pass the backprojection filter to SingleProjectionToFourDFilter */
-    void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
+    virtual void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
