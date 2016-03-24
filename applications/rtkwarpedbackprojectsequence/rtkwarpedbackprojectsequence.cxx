@@ -23,6 +23,8 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
 
+#include <itkTimeProbe.h>
+
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
 #endif
@@ -102,108 +104,22 @@ int main(int argc, char * argv[])
   phaseReader->Update();  
   
   // Create the main filter, connect the basic inputs, and set the basic parameters
-  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
-  ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
-  rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
-  rooster->SetInputProjectionStack(reader->GetOutput());
-  rooster->SetGeometry( geometryReader->GetOutputObject() );
-  rooster->SetWeights(phaseReader->GetOutput());
-  rooster->SetCG_iterations( args_info.cgiter_arg );
-  rooster->SetMainLoop_iterations( args_info.niter_arg );
-  rooster->SetPhaseShift(args_info.shift_arg);
-  rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
-  
-  //Set the forward and back projection filters to be used
-  rooster->SetForwardProjectionFilter(args_info.fp_arg);
-  rooster->SetBackProjectionFilter(args_info.bp_arg);
-  
-  // For each optional regularization step, set whether or not
-  // it should be performed, and provide the necessary inputs
-  
-  // Positivity
-  if (args_info.nopositivity_flag)
-    rooster->SetPerformPositivity(false);
-  else
-    rooster->SetPerformPositivity(true);
-  
-  // Motion mask
-  typedef itk::ImageFileReader<  VolumeType > InputReaderType;
-  if (args_info.motionmask_given)
-    {
-    InputReaderType::Pointer motionMaskReader = InputReaderType::New();
-    motionMaskReader->SetFileName( args_info.motionmask_arg );
-    motionMaskReader->Update();
-    rooster->SetMotionMask(motionMaskReader->GetOutput());
-    rooster->SetPerformMotionMask(true);
-    }
-  else
-    rooster->SetPerformMotionMask(false);
-    
-  // Spatial TV
-  if (args_info.gamma_space_given)
-    {
-    rooster->SetGammaTVSpace(args_info.gamma_space_arg);
-    rooster->SetTV_iterations(args_info.tviter_arg);
-    rooster->SetPerformTVSpatialDenoising(true);
-    }
-  else
-    rooster->SetPerformTVSpatialDenoising(false);
-  
-  // Spatial wavelets
-  if (args_info.threshold_given)
-    {
-    rooster->SetSoftThresholdWavelets(args_info.threshold_arg);
-    rooster->SetOrder(args_info.order_arg);
-    rooster->SetNumberOfLevels(args_info.levels_arg);
-    rooster->SetPerformWaveletsSpatialDenoising(true);
-    }
-  else
-    rooster->SetPerformWaveletsSpatialDenoising(false);
-  
-  // Temporal TV
-  if (args_info.gamma_time_given)
-    {
-    rooster->SetGammaTVTime(args_info.gamma_time_arg);
-    rooster->SetTV_iterations(args_info.tviter_arg);
-    rooster->SetPerformTVTemporalDenoising(true);
-    }
-  else
-    rooster->SetPerformTVTemporalDenoising(false);
+  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType,
+                                                     ProjectionStackType,
+                                                     DVFSequenceImageType,
+                                                     DVFImageType> WarpForwardProjectSequenceFilterType;
+  typename WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
+  warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput() );
+  warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
+  warpbackprojectsequence->SetGeometry( geometryReader->GetOutputObject() );
+  warpbackprojectsequence->SetWeights(phaseReader->GetOutput());
+  warpbackprojectsequence->SetSignalFilename(args_info.signal_arg);
 
-  // Temporal L0
-  if (args_info.lambda_time_arg)
-    {
-    rooster->SetLambdaL0Time(args_info.lambda_time_arg);
-    rooster->SetL0_iterations(args_info.l0iter_arg);
-    rooster->SetPerformL0TemporalDenoising(true);
-    }
-  else
-    rooster->SetPerformL0TemporalDenoising(false);
-
-  if (args_info.dvf_given)
-    {
-    rooster->SetPerformWarping(true);
-
-    if(args_info.nn_flag)
-      rooster->SetUseNearestNeighborInterpolationInWarping(true);
-
-    // Read DVF
-    DVFReaderType::Pointer dvfReader = DVFReaderType::New();
-    dvfReader->SetFileName( args_info.dvf_arg );
-    dvfReader->Update();
-    rooster->SetDisplacementField(dvfReader->GetOutput());
-
-    if (args_info.idvf_given)
-      {
-      rooster->SetComputeInverseWarpingByConjugateGradient(false);
-
-      // Read inverse DVF if provided
-      DVFReaderType::Pointer idvfReader = DVFReaderType::New();
-      idvfReader->SetFileName( args_info.idvf_arg );
-      idvfReader->Update();
-      rooster->SetInverseDisplacementField(idvfReader->GetOutput());
-      }
-    }
+  // Read DVF
+  DVFReaderType::Pointer dvfReader = DVFReaderType::New();
+  dvfReader->SetFileName( args_info.dvf_arg );
+  dvfReader->Update();
+  warpbackprojectsequence->SetDisplacementField(dvfReader->GetOutput());
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
@@ -212,11 +128,10 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackprojectsequence->Update() );
 
   if(args_info.time_flag)
     {
-    rooster->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
@@ -225,7 +140,7 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( rooster->GetOutput() );
+  writer->SetInput( warpbackprojectsequence->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;

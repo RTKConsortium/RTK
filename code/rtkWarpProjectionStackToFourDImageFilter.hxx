@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkProjectionStackToFourDImageFilter_hxx
-#define __rtkProjectionStackToFourDImageFilter_hxx
+#ifndef __rtkWarpProjectionStackToFourDImageFilter_hxx
+#define __rtkWarpProjectionStackToFourDImageFilter_hxx
 
 #include "rtkWarpProjectionStackToFourDImageFilter.h"
 
@@ -27,32 +27,39 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision, typename TMVFImageSequence, typename TMVFImage>
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision, TMVFImageSequence, TMVFImage>::ProjectionStackToFourDImageFilter()
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::WarpProjectionStackToFourDImageFilter()
 {
   this->SetNumberOfRequiredInputs(3);
 
   m_MVFInterpolatorFilter = MVFInterpolatorType::New();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
 void
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision, TMVFImageSequence, TMVFImage>::SetDisplacementField(const TMVFImageSequence* DisplacementField)
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::SetDisplacementField(const TMVFImageSequence* DisplacementField)
 {
   this->SetNthInput(2, const_cast<TMVFImageSequence*>(DisplacementField));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision, typename TMVFImageSequence, typename TMVFImage>
-typename ProjectionStackType::ConstPointer
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision, TMVFImageSequence, TMVFImage>::GetDisplacementField()
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+typename TMVFImageSequence::ConstPointer
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::GetDisplacementField()
 {
   return static_cast< const TMVFImageSequence * >
           ( this->itk::ProcessObject::GetInput(2) );
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+CudaWarpBackProjectionImageFilter *
+WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::GetBackProjectionFilter()
+{
+  return(m_BackProjectionFilter.GetPointer());
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
 void
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision, TMVFImageSequence, TMVFImage>
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
 ::SetSignalFilename(const std::string _arg)
 {
   itkDebugMacro("setting SignalFilename to " << _arg);
@@ -77,17 +84,17 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TF
   m_MVFInterpolatorFilter->SetSignalVector(m_Signal);
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
 void
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision, TMVFImageSequence, TMVFImage>
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
 ::GenerateOutputInformation()
 {
   m_MVFInterpolatorFilter->SetInput(this->GetDisplacementField());
   m_MVFInterpolatorFilter->SetFrame(0);
 
 #ifdef RTK_USE_CUDA
-  m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
-  m_BackProjectionFilter->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
+  this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
+  GetBackProjectionFilter()->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
 #else
   m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
   itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
@@ -96,9 +103,9 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TF
   Superclass::GenerateOutputInformation();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
 void
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision, TMVFImageSequence, TMVFImage>
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
 ::GenerateData()
 {
   int Dimension = ProjectionStackType::ImageDimension;
@@ -138,7 +145,7 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TF
     }
 
   // Graft its output
-  this->GraftOutput( m_SplatFilter->GetOutput() );
+  this->GraftOutput( this->m_SplatFilter->GetOutput() );
 
   // Release the data in internal filters
   if(pimg.IsNotNull())

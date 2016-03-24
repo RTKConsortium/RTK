@@ -82,18 +82,15 @@ namespace rtk
 
 template< typename VolumeSeriesType,
           typename ProjectionStackType = itk::Image<typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1>,
-          typename TFFTPrecision=double,
           typename TMVFImageSequence = itk::Image< itk::CovariantVector < typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1 >, VolumeSeriesType::ImageDimension >,
-          typename TMVFImage = itk::Image< itk::CovariantVector < typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1 >, VolumeSeriesType::ImageDimension -1 >
-          >
-class WarpProjectionStackToFourDImageFilter : public rtk::ProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision>
+          typename TMVFImage = itk::Image< itk::CovariantVector < typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1 >, VolumeSeriesType::ImageDimension -1 > >
+class WarpProjectionStackToFourDImageFilter : public rtk::ProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
 {
 public:
     /** Standard class typedefs. */
     typedef WarpProjectionStackToFourDImageFilter                         Self;
     typedef rtk::ProjectionStackToFourDImageFilter< VolumeSeriesType,
-                                                    ProjectionStackType,
-                                                    TFFTPrecision>        Superclass;
+                                                    ProjectionStackType>  Superclass;
     typedef itk::SmartPointer< Self >                                     Pointer;
 
     /** Convenient typedefs */
@@ -108,11 +105,12 @@ public:
     typedef rtk::CyclicDeformationImageFilter<TMVFImage>                  MVFInterpolatorType;
 
     /** The back projection filter cannot be set by the user */
-    void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg) {}
+    void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer _arg) {}
+    virtual typename rtk::CudaWarpBackProjectionImageFilter* GetBackProjectionFilter();
 
     /** The ND + time motion vector field */
     void SetDisplacementField(const TMVFImageSequence* MVFs);
-    typename TMVFImageSequence::Pointer GetDisplacementField();
+    typename TMVFImageSequence::ConstPointer GetDisplacementField();
 
     /** The file containing the phase at which each projection has been acquired */
     itkGetMacro(SignalFilename, std::string)
@@ -127,12 +125,14 @@ protected:
 
     virtual void GenerateOutputInformation();
 
-    virtual void SetSignalFilename(const std::string _arg);
+    /** Remove the check on inp*/
+    virtual void VerifyInputInformation() {}
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename MVFInterpolatorType::Pointer           m_MVFInterpolatorFilter;
     std::string                                     m_SignalFilename;
     std::vector<double>                             m_Signal;
+    rtk::CudaWarpBackProjectionImageFilter::Pointer m_BackProjectionFilter;
 
 private:
     WarpProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

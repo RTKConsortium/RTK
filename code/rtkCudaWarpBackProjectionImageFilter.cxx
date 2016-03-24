@@ -90,7 +90,13 @@ CudaWarpBackProjectionImageFilter
   // computed by Superclass::GenerateInputRequestedRegion()
   // is the requested region for the DVF
   this->GetInputVolume()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
-  this->GetDisplacementField()->SetRequestedRegion(this->GetInputVolume()->GetRequestedRegion());
+
+  // Compute the intersection betwee the DVF's largest possible region and
+  // the requested region
+  DVFType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
+  largest.Crop(this->GetInputVolume()->GetRequestedRegion());
+  this->GetDisplacementField()->SetRequestedRegion(largest);
+
   this->GetInputProjectionStack()->SetRequestedRegionToLargestPossibleRegion();
 }
 
