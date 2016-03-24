@@ -7,19 +7,19 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkFieldOfViewImageFilter.h"
-#include "rtkWarpForwardProjectSequenceImageFilter.h"
+#include "rtkWarpProjectionStackToFourDImageFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
 
 /**
- * \file rtkwarpforwardprojecttest.cxx
+ * \file rtkwarpprojectionstacktofourdtest.cxx
  *
  * \brief Functional test for classes performing motion-compensated
- * forward projection combining warping and forward projection
+ * back projection combining warping and back projection
  *
  * This test generates the projections of a phantom, which consists of two
  * ellipsoids (one of them moving). The resulting moving phantom is
- * forward projected, each ray following a trajectory that matches the motionand the generated
- * result is compared to the expected results (analytical computation).
+ * back projected, each ray following a trajectory that matches the motion
+ * The result is compared to the expected results (voxelized sum of ellipsoids).
  *
  * \author Cyril Mory
  */
@@ -160,8 +160,8 @@ int main(int, char** )
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
   pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
-  PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
-  pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
+//  PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
+//  pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
 
   std::ofstream signalFile("signal.txt");
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
@@ -201,19 +201,19 @@ int main(int, char** )
     e2->SetAngle(0.);
     e2->Update();
 
-    // Ellipse 2 without motion
-    REIType::Pointer e2static = REIType::New();
-    semiprincipalaxis.Fill(8.);
-    center[0] = 0;
-    center[1] = 0.;
-    center[2] = 0.;
-    e2static->SetInput(e1->GetOutput());
-    e2static->SetGeometry(oneProjGeometry);
-    e2static->SetDensity(-1.);
-    e2static->SetAxis(semiprincipalaxis);
-    e2static->SetCenter(center);
-    e2static->SetAngle(0.);
-    e2static->Update();
+//    // Ellipse 2 without motion
+//    REIType::Pointer e2static = REIType::New();
+//    semiprincipalaxis.Fill(8.);
+//    center[0] = 0;
+//    center[1] = 0.;
+//    center[2] = 0.;
+//    e2static->SetInput(e1->GetOutput());
+//    e2static->SetGeometry(oneProjGeometry);
+//    e2static->SetDensity(-1.);
+//    e2static->SetAxis(semiprincipalaxis);
+//    e2static->SetCenter(center);
+//    e2static->SetAngle(0.);
+//    e2static->Update();
 
     // Adding each projection to the projection stacks
     if (noProj > 0) // After the first projection, we use the output as input
@@ -222,19 +222,19 @@ int main(int, char** )
       wholeImage->DisconnectPipeline();
       pasteFilter->SetDestinationImage(wholeImage);
 
-      ProjectionStackType::Pointer wholeImageStatic = pasteFilterStaticProjections->GetOutput();
-      wholeImageStatic->DisconnectPipeline();
-      pasteFilterStaticProjections->SetDestinationImage(wholeImageStatic);
+//      ProjectionStackType::Pointer wholeImageStatic = pasteFilterStaticProjections->GetOutput();
+//      wholeImageStatic->DisconnectPipeline();
+//      pasteFilterStaticProjections->SetDestinationImage(wholeImageStatic);
       }
     pasteFilter->SetSourceImage(e2->GetOutput());
     pasteFilter->SetSourceRegion(e2->GetOutput()->GetLargestPossibleRegion());
     pasteFilter->SetDestinationIndex(destinationIndex);
     pasteFilter->UpdateLargestPossibleRegion();
 
-    pasteFilterStaticProjections->SetSourceImage(e2static->GetOutput());
-    pasteFilterStaticProjections->SetSourceRegion(e2static->GetOutput()->GetLargestPossibleRegion());
-    pasteFilterStaticProjections->SetDestinationIndex(destinationIndex);
-    pasteFilterStaticProjections->UpdateLargestPossibleRegion();
+//    pasteFilterStaticProjections->SetSourceImage(e2static->GetOutput());
+//    pasteFilterStaticProjections->SetSourceRegion(e2static->GetOutput()->GetLargestPossibleRegion());
+//    pasteFilterStaticProjections->SetDestinationIndex(destinationIndex);
+//    pasteFilterStaticProjections->UpdateLargestPossibleRegion();
 
     destinationIndex[2]++;
 
@@ -364,42 +364,42 @@ int main(int, char** )
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
-#ifndef RTK_USE_CUDA
+//#ifndef RTK_USE_CUDA
   std::cout << "\n\n****** Case 1: Non-warped Joseph forward projection (warped forward projection exists only in CUDA) ******" << std::endl;
 
   // Create and set the warped forward projection filter
-  typedef rtk::WarpForwardProjectSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType> WarpForwardProjectFilterType;
-  WarpForwardProjectFilterType::Pointer warpforwardproject = WarpForwardProjectFilterType::New();
-  warpforwardproject->SetInputVolumeSeries(join->GetOutput() );
-  warpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
-  warpforwardproject->SetGeometry(geometry);
-  warpforwardproject->SetDisplacementField(deformationField);
-  warpforwardproject->SetWeights(phaseReader->GetOutput());
-  warpforwardproject->SetSignalFilename("signal.txt");
+  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType, MVFSequenceImageType, MVFImageType> WarpProjectionStackToFourDType;
+  WarpProjectionStackToFourDType::Pointer warpbackproject = WarpProjectionStackToFourDType::New();
+  warpbackproject->SetInputVolumeSeries(fourdSource->GetOutput() );
+  warpbackproject->SetInputProjectionStack(pasteFilter->GetOutput());
+  warpbackproject->SetGeometry(geometry);
+  warpbackproject->SetDisplacementField(deformationField);
+  warpbackproject->SetWeights(phaseReader->GetOutput());
+  warpbackproject->SetSignalFilename("signal.txt");
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackproject->Update() );
 
-  CheckImageQuality<ProjectionStackType>(warpforwardproject->GetOutput(), pasteFilter->GetOutput(), 0.25, 14, 2.0);
+  CheckImageQuality<VolumeSeriesType>(warpbackproject->GetOutput(), join->GetOutput(), 0.25, 14, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
-#endif
+//#endif
 
-#ifdef USE_CUDA
-  std::cout << "\n\n****** Case 2: CUDA warped forward projection ******" << std::endl;
+//#ifdef USE_CUDA
+//  std::cout << "\n\n****** Case 2: CUDA warped forward projection ******" << std::endl;
 
-  typedef rtk::WarpForwardProjectSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType> CudaWarpForwardProjectFilterType;
-  CudaWarpForwardProjectFilterType::Pointer cudawarpforwardproject = CudaWarpForwardProjectFilterType::New();
-  cudawarpforwardproject->SetInputVolumeSeries(join->GetOutput() );
-  cudawarpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
-  cudawarpforwardproject->SetGeometry(geometry);
-  cudawarpforwardproject->SetDisplacementField(deformationField);
-  cudawarpforwardproject->SetWeights(phaseReader->GetOutput());
-  cudawarpforwardproject->SetSignalFilename("signal.txt");
+//  typedef rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, VolumeType, MVFSequenceImageType,  MVFImageType> WarpFourDToProjectionStackType;
+//  WarpFourDToProjectionStackType::Pointer cudawarpforwardproject = WarpFourDToProjectionStackType::New();
+//  cudawarpforwardproject->SetInputVolumeSeries(join->GetOutput() );
+//  cudawarpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
+//  cudawarpforwardproject->SetGeometry(geometry);
+//  cudawarpforwardproject->SetDisplacementField(deformationField);
+//  cudawarpforwardproject->SetWeights(phaseReader->GetOutput());
+//  cudawarpforwardproject->SetSignalFilename("signal.txt");
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cudawarpforwardproject->Update() );
+//  TRY_AND_EXIT_ON_ITK_EXCEPTION( cudawarpforwardproject->Update() );
 
-  CheckImageQuality<ProjectionStackType>(cudawarpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-#endif
+//  CheckImageQuality<ProjectionStackType>(cudawarpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
+//  std::cout << "\n\nTest PASSED! " << std::endl;
+//#endif
 
   itksys::SystemTools::RemoveFile("signal.txt");
   delete[] Volumes;

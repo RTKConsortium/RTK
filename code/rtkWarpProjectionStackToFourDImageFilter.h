@@ -60,6 +60,7 @@ namespace rtk
    *
    * Input1 -> Extract;
    * Input0 -> VolumeSeriesSource [style=invis];
+   * Input2 -> CyclicDeformation;
    * VolumeSeriesSource -> AfterSource4D[arrowhead=none];
    * AfterSource4D -> Splat;
    * Extract -> DisplacedDetector;
@@ -106,7 +107,9 @@ public:
 
     /** The back projection filter cannot be set by the user */
     void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer _arg) {}
+#ifdef RTK_USE_CUDA
     virtual typename rtk::CudaWarpBackProjectionImageFilter* GetBackProjectionFilter();
+#endif
 
     /** The ND + time motion vector field */
     void SetDisplacementField(const TMVFImageSequence* MVFs);
@@ -125,14 +128,17 @@ protected:
 
     virtual void GenerateOutputInformation();
 
-    /** Remove the check on inp*/
+    /** The first two inputs should not be in the same space so there is nothing
+     * to verify. */
     virtual void VerifyInputInformation() {}
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename MVFInterpolatorType::Pointer           m_MVFInterpolatorFilter;
     std::string                                     m_SignalFilename;
     std::vector<double>                             m_Signal;
+#ifdef RTK_USE_CUDA
     rtk::CudaWarpBackProjectionImageFilter::Pointer m_BackProjectionFilter;
+#endif
 
 private:
     WarpProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

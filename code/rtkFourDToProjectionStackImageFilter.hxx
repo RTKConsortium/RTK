@@ -87,6 +87,14 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 }
 
 template< typename ProjectionStackType, typename VolumeSeriesType>
+typename FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::ForwardProjectionFilterType*
+FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
+::GetForwardProjectionFilter ()
+{
+  return(m_ForwardProjectionFilter.GetPointer());
+}
+
+template< typename ProjectionStackType, typename VolumeSeriesType>
 void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 ::SetWeights(const itk::Array2D<float> _arg)
@@ -159,14 +167,14 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
   m_PasteFilter->SetDestinationImage(this->GetInputProjectionStack());
 
   // Connections with the Forward projection filter can only be set at runtime
-  m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionStackSource->GetOutput());
-  m_ForwardProjectionFilter->SetInput(1, m_InterpolationFilter->GetOutput());
-  m_PasteFilter->SetSourceImage(m_ForwardProjectionFilter->GetOutput());
+  GetForwardProjectionFilter()->SetInput(0, m_ConstantProjectionStackSource->GetOutput());
+  GetForwardProjectionFilter()->SetInput(1, m_InterpolationFilter->GetOutput());
+  m_PasteFilter->SetSourceImage(GetForwardProjectionFilter()->GetOutput());
 
   // Set runtime parameters
   m_InterpolationFilter->SetWeights(m_Weights);
   m_InterpolationFilter->SetProjectionNumber(m_ProjectionNumber);
-  m_ForwardProjectionFilter->SetGeometry(m_Geometry);
+  GetForwardProjectionFilter()->SetGeometry(m_Geometry);
   m_PasteFilter->SetSourceRegion(m_PasteRegion);
   m_PasteFilter->SetDestinationIndex(m_PasteRegion.GetIndex());
 
