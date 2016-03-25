@@ -60,6 +60,7 @@ ADD_SUBDIRECTORY(rtkscatterglarecorrection)
 ADD_SUBDIRECTORY(rtklastdimensionl0gradientdenoising)
 ADD_SUBDIRECTORY(rtkwarpedforwardprojectsequence)
 ADD_SUBDIRECTORY(rtkwarpedbackprojectsequence)
+ADD_SUBDIRECTORY(rtkmotioncompensatedfourdconjugategradient)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 ADD_SUBDIRECTORY(rtkvarianobigeometry)

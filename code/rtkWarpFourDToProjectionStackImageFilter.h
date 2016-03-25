@@ -39,10 +39,12 @@ namespace rtk
    * \dot
    * digraph WarpFourDToProjectionStackImageFilter {
    *
-   * Input1 [label="Input 1 (Input: 4D sequence of volumes)"];
-   * Input1 [shape=Mdiamond];
    * Input0 [ label="Input 0 (Projections)"];
    * Input0 [shape=Mdiamond];
+   * Input1 [label="Input 1 (Input: 4D sequence of volumes)"];
+   * Input1 [shape=Mdiamond];
+   * Input2 [label="Input 2 (4D Sequence of DVFs)"];
+   * Input2 [shape=Mdiamond];
    * Output [label="Output (Output projections)"];
    * Output [shape=Mdiamond];
    *
@@ -102,7 +104,7 @@ public:
 
     typedef rtk::CyclicDeformationImageFilter<TMVFImage>                  MVFInterpolatorType;
 
-    /** Set the ForwardProjection filter */
+    /** The forward projection filter cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer _arg) {}
 
 #ifdef RTK_USE_CUDA
