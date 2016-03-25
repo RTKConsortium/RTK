@@ -227,7 +227,7 @@ CudaWarpForwardProjectionImageFilter
 
     // Compute matrix to translate the pixel indices on the volume and the detector
     // if the Requested region has non-zero index
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
+    Superclass::GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
     projIndexTranslation.SetIdentity();
     volIndexTranslation.SetIdentity();
     for(unsigned int i=0; i<3; i++)
