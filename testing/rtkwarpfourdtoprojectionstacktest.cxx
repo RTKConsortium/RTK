@@ -7,19 +7,19 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkFieldOfViewImageFilter.h"
-#include "rtkWarpForwardProjectSequenceImageFilter.h"
+#include "rtkWarpFourDToProjectionStackImageFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
 
 /**
- * \file rtkwarpforwardprojecttest.cxx
+ * \file rtkwarpfourdtoprojectionstacktest.cxx
  *
  * \brief Functional test for classes performing motion-compensated
  * forward projection combining warping and forward projection
  *
  * This test generates the projections of a phantom, which consists of two
  * ellipsoids (one of them moving). The resulting moving phantom is
- * forward projected, each ray following a trajectory that matches the motionand the generated
- * result is compared to the expected results (analytical computation).
+ * forward projected, each ray following a trajectory that matches the motion
+ * The result is compared to the expected results (analytical computation).
  *
  * \author Cyril Mory
  */
@@ -364,12 +364,9 @@ int main(int, char** )
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
-#ifndef RTK_USE_CUDA
-  std::cout << "\n\n****** Case 1: Non-warped Joseph forward projection (warped forward projection exists only in CUDA) ******" << std::endl;
-
   // Create and set the warped forward projection filter
-  typedef rtk::WarpForwardProjectSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType> WarpForwardProjectFilterType;
-  WarpForwardProjectFilterType::Pointer warpforwardproject = WarpForwardProjectFilterType::New();
+  typedef rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, VolumeType, MVFSequenceImageType, MVFImageType> WarpFourDToProjectionStackType;
+  WarpFourDToProjectionStackType::Pointer warpforwardproject = WarpFourDToProjectionStackType::New();
   warpforwardproject->SetInputVolumeSeries(join->GetOutput() );
   warpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
   warpforwardproject->SetGeometry(geometry);
@@ -377,27 +374,23 @@ int main(int, char** )
   warpforwardproject->SetWeights(phaseReader->GetOutput());
   warpforwardproject->SetSignalFilename("signal.txt");
 
+#ifndef RTK_USE_CUDA
+  std::cout << "\n\n****** Case 1: Non-warped voxel based back projection (warped back projection exists only in CUDA) ******" << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
+
+  // The warpforwardproject filter doesn't really need the data in pasteFilter->GetOutput().
+  // During the update, its requested region is set to empty, and its buffered region follows.
+  // To perform the CheckImageQuality, we need to recompute the data
+  pasteFilter->UpdateLargestPossibleRegion();
 
   CheckImageQuality<ProjectionStackType>(warpforwardproject->GetOutput(), pasteFilter->GetOutput(), 0.25, 14, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 2: CUDA warped forward projection ******" << std::endl;
-
-  typedef rtk::WarpForwardProjectSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType> CudaWarpForwardProjectFilterType;
-  CudaWarpForwardProjectFilterType::Pointer cudawarpforwardproject = CudaWarpForwardProjectFilterType::New();
-  cudawarpforwardproject->SetInputVolumeSeries(join->GetOutput() );
-  cudawarpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
-  cudawarpforwardproject->SetGeometry(geometry);
-  cudawarpforwardproject->SetDisplacementField(deformationField);
-  cudawarpforwardproject->SetWeights(phaseReader->GetOutput());
-  cudawarpforwardproject->SetSignalFilename("signal.txt");
-
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cudawarpforwardproject->Update() );
-
-  CheckImageQuality<ProjectionStackType>(cudawarpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
+  std::cout << "\n\n****** Case 2: CUDA warped back projection ******" << std::endl;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
+  CheckImageQuality<ProjectionStackType>(warpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 

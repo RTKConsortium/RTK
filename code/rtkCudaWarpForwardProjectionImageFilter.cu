@@ -310,9 +310,9 @@ void kernel_forwardProject_noTexture(float *dev_proj_in, float *dev_proj_out, fl
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
-CUDA_warped_forward_project( int projections_size[2],
+CUDA_warp_forward_project( int projections_size[2],
                       int vol_size[3],
-		      int input_dvf_dim[3],
+                      int dvf_size[3],
                       float matrix[12],
                       float *dev_proj_in,
                       float *dev_proj_out,
@@ -344,7 +344,7 @@ CUDA_warped_forward_project( int projections_size[2],
 
   
   // Extent stuff, will be used for each component extraction
-  cudaExtent dvfExtent = make_cudaExtent(input_dvf_dim[0], input_dvf_dim[1], input_dvf_dim[2]);
+  cudaExtent dvfExtent = make_cudaExtent(dvf_size[0], dvf_size[1], dvf_size[2]);
 
   // Set texture parameters
   tex_xdvf.addressMode[0] = cudaAddressModeBorder;
@@ -378,7 +378,7 @@ CUDA_warped_forward_project( int projections_size[2],
   // The best way to understand it is to read
   // http://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
   cudaMemcpy3DParms xCopyParams = {0};
-  xCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_xdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
+  xCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_xdvf, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
   xCopyParams.dstArray = (cudaArray*)array_xdvf;
   xCopyParams.extent   = dvfExtent;
   xCopyParams.kind     = cudaMemcpyDeviceToDevice;
@@ -386,7 +386,7 @@ CUDA_warped_forward_project( int projections_size[2],
   CUDA_CHECK_ERROR;
 
   cudaMemcpy3DParms yCopyParams = {0};
-  yCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_ydvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
+  yCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_ydvf, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
   yCopyParams.dstArray = (cudaArray*)array_ydvf;
   yCopyParams.extent   = dvfExtent;
   yCopyParams.kind     = cudaMemcpyDeviceToDevice;
@@ -394,7 +394,7 @@ CUDA_warped_forward_project( int projections_size[2],
   CUDA_CHECK_ERROR;
 
   cudaMemcpy3DParms zCopyParams = {0};
-  zCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_zdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
+  zCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_zdvf, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
   zCopyParams.dstArray = (cudaArray*)array_zdvf;
   zCopyParams.extent   = dvfExtent;
   zCopyParams.kind     = cudaMemcpyDeviceToDevice;

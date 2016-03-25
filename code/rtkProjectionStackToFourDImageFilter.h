@@ -105,7 +105,7 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision=double>
+template< typename VolumeSeriesType, typename ProjectionStackType >
 class ProjectionStackToFourDImageFilter : public itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >
 {
 public:
@@ -140,7 +140,8 @@ public:
     typedef rtk::ThreeDCircularProjectionGeometry                                 GeometryType;
 
     /** Pass the backprojection filter to SingleProjectionToFourDFilter */
-    void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
+    virtual void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
+    virtual BackProjectionFilterType* GetBackProjectionFilter();
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
