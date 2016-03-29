@@ -110,6 +110,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
       }
     }
   m_MVFInterpolatorFilter->SetSignalVector(m_Signal);
+  m_InverseMVFInterpolatorFilter->SetSignalVector(m_Signal);
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
@@ -125,10 +126,10 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 
 #ifdef RTK_USE_CUDA
   this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
-  GetForwardProjectionFilter()->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
+  GetForwardProjectionFilter()->SetDisplacementField(m_InverseMVFInterpolatorFilter->GetOutput());
 
   this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
-  GetBackProjectionFilter()->SetDisplacementField(m_InverseMVFInterpolatorFilter->GetOutput());
+  GetBackProjectionFilter()->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
 #else
   this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
   this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
@@ -201,8 +202,8 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   this->m_ConstantProjectionStackSource->GetOutput()->ReleaseData();
   this->m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   this->m_InterpolationFilter->GetOutput()->ReleaseData();
-  m_BackProjectionFilter->GetOutput()->ReleaseData();
-  m_ForwardProjectionFilter->GetOutput()->ReleaseData();
+  GetBackProjectionFilter()->GetOutput()->ReleaseData();
+  GetForwardProjectionFilter()->GetOutput()->ReleaseData();
   m_MVFInterpolatorFilter->GetOutput()->ReleaseData();
   m_InverseMVFInterpolatorFilter->GetOutput()->ReleaseData();
 

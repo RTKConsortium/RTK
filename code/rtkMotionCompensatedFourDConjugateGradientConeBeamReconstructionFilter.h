@@ -114,6 +114,9 @@ public:
   typedef rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>  MCProjStackToFourDType;
   typedef rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage> MCCGOperatorType;
 
+  virtual MCProjStackToFourDType* GetProjectionStackToFourDFilter();
+  virtual MCCGOperatorType* GetConjugateGradientOperator();
+
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
   ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter(){}

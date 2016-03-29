@@ -32,6 +32,16 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
 {
   this->SetNumberOfRequiredInputs(3);
   m_MVFInterpolatorFilter = MVFInterpolatorType::New();
+
+  this->m_UseCudaSplat = true;
+  this->m_UseCudaSources = true;
+
+#ifdef RTK_USE_CUDA
+  this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
+#else
+  this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
+  itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
+#endif
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
@@ -54,7 +64,7 @@ template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVF
 CudaWarpBackProjectionImageFilter *
 WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::GetBackProjectionFilter()
 {
-  return(m_BackProjectionFilter.GetPointer());
+  return(this->m_BackProjectionFilter.GetPointer());
 }
 #endif
 
@@ -94,11 +104,7 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
   m_MVFInterpolatorFilter->SetFrame(0);
 
 #ifdef RTK_USE_CUDA
-  this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
   GetBackProjectionFilter()->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
-#else
-  this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
-  itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
 #endif
 
   Superclass::GenerateOutputInformation();

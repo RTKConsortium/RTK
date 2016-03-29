@@ -148,6 +148,9 @@ public:
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);
 
+  virtual ProjStackToFourDFilterType* GetProjectionStackToFourDFilter();
+  virtual CGOperatorFilterType* GetConjugateGradientOperator();
+
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
   ~FourDConjugateGradientConeBeamReconstructionFilter(){}

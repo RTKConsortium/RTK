@@ -80,7 +80,7 @@ typename ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
 ::GetBackProjectionFilter ()
 {
-  return(m_BackProjectionFilter.GetPointer());
+  return(this->m_BackProjectionFilter.GetPointer());
 }
 
 

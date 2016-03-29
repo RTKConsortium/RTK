@@ -111,6 +111,7 @@ int main(int argc, char * argv[])
   mcfourdcg->SetWeights(phaseReader->GetOutput());
   mcfourdcg->SetNumberOfIterations( args_info.niter_arg );
   mcfourdcg->SetCudaConjugateGradient(args_info.cudacg_flag);
+  mcfourdcg->SetSignalFilename(args_info.signal_arg);
   
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
