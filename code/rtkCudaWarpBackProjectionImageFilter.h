@@ -67,15 +67,15 @@ public:
 
   /** Input projection stack */
   void SetInputProjectionStack(const InputImageType* ProjectionStack);
-  typename InputImageType::Pointer GetInputProjectionStack();
+  InputImageType::Pointer GetInputProjectionStack();
 
   /** Input displacement vector field */
   void SetInputVolume(const InputImageType* Volume);
-  typename InputImageType::Pointer GetInputVolume();
+  InputImageType::Pointer GetInputVolume();
 
   /** Input displacement vector field */
   void SetDisplacementField(const DVFType* MVF);
-  typename DVFType::Pointer GetDisplacementField();
+  DVFType::Pointer GetDisplacementField();
 
 protected:
   rtkcuda_EXPORT CudaWarpBackProjectionImageFilter();

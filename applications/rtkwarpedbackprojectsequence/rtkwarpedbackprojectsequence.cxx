@@ -108,7 +108,7 @@ int main(int argc, char * argv[])
                                                      ProjectionStackType,
                                                      DVFSequenceImageType,
                                                      DVFImageType> WarpForwardProjectSequenceFilterType;
-  typename WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
+  WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
   warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput() );
   warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
   warpbackprojectsequence->SetGeometry( geometryReader->GetOutputObject() );
