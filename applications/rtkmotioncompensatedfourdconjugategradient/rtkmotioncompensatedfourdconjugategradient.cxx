@@ -22,6 +22,7 @@
 #include "rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
+#include "rtkWarpSequenceImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -102,7 +103,7 @@ int main(int argc, char * argv[])
   phaseReader->Update();
   
   
-  // Create the 4D mcfourdcg filter, connect the basic inputs, and set the basic parameters
+  // Create the mcfourdcg filter, connect the basic inputs, and set the basic parameters
   typedef rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType, DVFSequenceImageType, DVFImageType> MCFourDCGFilterType;
   MCFourDCGFilterType::Pointer mcfourdcg = MCFourDCGFilterType::New();
   mcfourdcg->SetInputVolumeSeries(inputFilter->GetOutput() );
@@ -141,11 +142,19 @@ int main(int argc, char * argv[])
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
+  // The mcfourdcg filter reconstructs a static 4D volume (if the DVFs perfectly model the actual motion)
+  // Warp this sequence with the inverse DVF so as to obtain a result similar to the classical 4D CG filter
+  typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType> WarpSequenceFilterType;
+  WarpSequenceFilterType::Pointer warp = WarpSequenceFilterType::New();
+  warp->SetInput(mcfourdcg->GetOutput());
+  warp->SetDisplacementField(idvfReader->GetOutput());
+  warp->Update();
+
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( mcfourdcg->GetOutput() );
+  writer->SetInput( warp->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;

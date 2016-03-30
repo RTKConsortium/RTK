@@ -202,8 +202,8 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   this->m_ConstantProjectionStackSource->GetOutput()->ReleaseData();
   this->m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   this->m_InterpolationFilter->GetOutput()->ReleaseData();
-  GetBackProjectionFilter()->GetOutput()->ReleaseData();
-  GetForwardProjectionFilter()->GetOutput()->ReleaseData();
+  this->GetBackProjectionFilter()->GetOutput()->ReleaseData();
+  this->GetForwardProjectionFilter()->GetOutput()->ReleaseData();
   m_MVFInterpolatorFilter->GetOutput()->ReleaseData();
   m_InverseMVFInterpolatorFilter->GetOutput()->ReleaseData();
 

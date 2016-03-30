@@ -23,6 +23,7 @@
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkMacro.h>
+#include <itkImageAlgorithm.h>
 
 namespace rtk
 {
@@ -86,18 +87,49 @@ CudaWarpBackProjectionImageFilter
 
   // Since we do not know where the DVF points, the
   // whole input projection is required.
-  // However, the volume's requested region
-  // computed by Superclass::GenerateInputRequestedRegion()
-  // is the requested region for the DVF
-  this->GetInputVolume()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
-
-  // Compute the intersection betwee the DVF's largest possible region and
-  // the requested region
-  DVFType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
-  largest.Crop(this->GetInputVolume()->GetRequestedRegion());
-  this->GetDisplacementField()->SetRequestedRegion(largest);
-
   this->GetInputProjectionStack()->SetRequestedRegionToLargestPossibleRegion();
+
+  // To compute the DVF's requested region, we use the same method
+  // as in itk::WarpImageFilter
+
+  // If the output and the deformation field have the same
+  // information, just propagate up the output requested region for the
+  // deformation field. Otherwise, it is non-trivial to determine
+  // the smallest region of the deformation field that fully
+  // contains the physical space covered by the output's requested
+  // region, se we do the easy thing and request the largest possible region
+  DVFType::Pointer    fieldPtr = this->GetDisplacementField();
+  ImageType::Pointer  outputPtr = this->GetOutput();
+  if ( fieldPtr.IsNotNull() )
+    {
+    // tolerance for origin and spacing depends on the size of pixel
+    // tolerance for direction is a fraction of the unit cube.
+    const itk::SpacePrecisionType coordinateTol = this->GetCoordinateTolerance() * outputPtr->GetSpacing()[0]; // use first dimension spacing
+
+    bool DefFieldSameInformation =
+       (outputPtr->GetOrigin().GetVnlVector().is_equal(fieldPtr->GetOrigin().GetVnlVector(), coordinateTol))
+    && (outputPtr->GetSpacing().GetVnlVector().is_equal(fieldPtr->GetSpacing().GetVnlVector(), coordinateTol))
+    && (outputPtr->GetDirection().GetVnlMatrix().as_ref().is_equal(fieldPtr->GetDirection().GetVnlMatrix(), this->GetDirectionTolerance()));
+
+    if (DefFieldSameInformation)
+      {
+      fieldPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
+      }
+    else
+      {
+      typedef typename DVFType::RegionType DisplacementRegionType;
+
+      DisplacementRegionType fieldRequestedRegion = itk::ImageAlgorithm::EnlargeRegionOverBox(outputPtr->GetRequestedRegion(),
+                                                                                         outputPtr.GetPointer(),
+                                                                                         fieldPtr.GetPointer());
+      fieldPtr->SetRequestedRegion( fieldRequestedRegion );
+      }
+    if ( !fieldPtr->VerifyRequestedRegion() )
+      {
+      fieldPtr->SetRequestedRegion( fieldPtr->GetLargestPossibleRegion() );
+      }
+    }
+
 }
 
 
@@ -147,17 +179,17 @@ CudaWarpBackProjectionImageFilter
   ImageType::Pointer xCompDVF = ImageType::New();
   ImageType::Pointer yCompDVF = ImageType::New();
   ImageType::Pointer zCompDVF = ImageType::New();
-  ImageType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
-  xCompDVF->SetRegions(largest);
-  yCompDVF->SetRegions(largest);
-  zCompDVF->SetRegions(largest);
+  ImageType::RegionType buffered = this->GetDisplacementField()->GetBufferedRegion();
+  xCompDVF->SetRegions(buffered);
+  yCompDVF->SetRegions(buffered);
+  zCompDVF->SetRegions(buffered);
   xCompDVF->Allocate();
   yCompDVF->Allocate();
   zCompDVF->Allocate();
-  itk::ImageRegionIterator<ImageType>     itxComp(xCompDVF, largest);
-  itk::ImageRegionIterator<ImageType>     ityComp(yCompDVF, largest);
-  itk::ImageRegionIterator<ImageType>     itzComp(zCompDVF, largest);
-  itk::ImageRegionConstIterator<DVFType>       itDVF(this->GetDisplacementField(), largest);
+  itk::ImageRegionIterator<ImageType>     itxComp(xCompDVF, buffered);
+  itk::ImageRegionIterator<ImageType>     ityComp(yCompDVF, buffered);
+  itk::ImageRegionIterator<ImageType>     itzComp(zCompDVF, buffered);
+  itk::ImageRegionConstIterator<DVFType>  itDVF(this->GetDisplacementField(), buffered);
   while(!itDVF.IsAtEnd())
     {
       itxComp.Set(itDVF.Get()[0]);

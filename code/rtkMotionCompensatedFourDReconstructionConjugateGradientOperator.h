@@ -136,6 +136,9 @@ protected:
     /** Computes the requested region of input images */
     virtual void GenerateInputRequestedRegion();
 
+    /** The inputs should not be in the same space so there is nothing to verify */
+    virtual void VerifyInputInformation() {}
+
     /** Does the real work. */
     virtual void GenerateData();
 
