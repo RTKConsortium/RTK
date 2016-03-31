@@ -133,9 +133,6 @@ protected:
     typename MVFInterpolatorType::Pointer           m_MVFInterpolatorFilter;
     std::string                                     m_SignalFilename;
     std::vector<double>                             m_Signal;
-#ifdef RTK_USE_CUDA
-    rtk::CudaWarpBackProjectionImageFilter::Pointer m_BackProjectionFilter;
-#endif
 
 private:
     WarpProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

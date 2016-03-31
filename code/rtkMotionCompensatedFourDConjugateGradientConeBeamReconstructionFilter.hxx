@@ -68,28 +68,14 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-typename rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::MCProjStackToFourDType*
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::GetProjectionStackToFourDFilter()
-{
-return(this->m_ProjStackToFourDFilter.GetPointer());
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-typename rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::MCCGOperatorType*
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::GetConjugateGradientOperator()
-{
-return(this->m_CGOperator.GetPointer());
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
 void
 MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
 ::SetSignalFilename(const std::string _arg)
 {
-  GetProjectionStackToFourDFilter()->SetSignalFilename(_arg);
-  GetConjugateGradientOperator()->SetSignalFilename(_arg);
+#ifdef RTK_USE_CUDA
+  dynamic_cast<MCProjStackToFourDType*>(this->m_ProjStackToFourDFilter.GetPointer())->SetSignalFilename(_arg);
+  dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetSignalFilename(_arg);
+#endif
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
@@ -98,9 +84,9 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
 ::GenerateOutputInformation()
 {
 #ifdef RTK_USE_CUDA
-  GetConjugateGradientOperator()->SetDisplacementField(this->GetDisplacementField());
-  GetConjugateGradientOperator()->SetInverseDisplacementField(this->GetInverseDisplacementField());
-  GetProjectionStackToFourDFilter()->SetDisplacementField(this->GetDisplacementField());
+  dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetDisplacementField(this->GetDisplacementField());
+  dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetInverseDisplacementField(this->GetInverseDisplacementField());
+  dynamic_cast<MCProjStackToFourDType*>(this->m_ProjStackToFourDFilter.GetPointer())->SetDisplacementField(this->GetDisplacementField());
 #endif
 
   Superclass::GenerateOutputInformation();

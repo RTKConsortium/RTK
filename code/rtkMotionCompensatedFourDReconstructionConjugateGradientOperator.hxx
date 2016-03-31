@@ -30,6 +30,16 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   this->SetNumberOfRequiredInputs(3);
   m_MVFInterpolatorFilter = MVFInterpolatorType::New();
   m_InverseMVFInterpolatorFilter = MVFInterpolatorType::New();
+
+#ifdef RTK_USE_CUDA
+  this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
+  this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
+#else
+  this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
+  this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
+  itkWarningMacro("The warp forward and back project image filters exist only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection and CPU voxel-based back projection")
+#endif
+
 }
 
 
@@ -66,24 +76,6 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   return static_cast< const TMVFImageSequence * >
           ( this->itk::ProcessObject::GetInput(3) );
 }
-
-#ifdef RTK_USE_CUDA
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-CudaWarpForwardProjectionImageFilter *
-MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::GetForwardProjectionFilter()
-{
-  return(m_ForwardProjectionFilter.GetPointer());
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-CudaWarpBackProjectionImageFilter *
-MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::GetBackProjectionFilter()
-{
-  return(m_BackProjectionFilter.GetPointer());
-}
-#endif
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
 void
@@ -125,15 +117,8 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   m_InverseMVFInterpolatorFilter->SetFrame(0);
 
 #ifdef RTK_USE_CUDA
-  this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
-  GetForwardProjectionFilter()->SetDisplacementField(m_InverseMVFInterpolatorFilter->GetOutput());
-
-  this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
-  GetBackProjectionFilter()->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
-#else
-  this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
-  this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
-  itkWarningMacro("The warp forward and back project image filters exist only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection and CPU voxel-based back projection")
+  dynamic_cast< CudaWarpForwardProjectionImageFilter* >(this->m_ForwardProjectionFilter.GetPointer())->SetDisplacementField(m_InverseMVFInterpolatorFilter->GetOutput());
+  dynamic_cast< CudaWarpBackProjectionImageFilter* >(this->m_BackProjectionFilter.GetPointer())->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
 #endif
 
   Superclass::GenerateOutputInformation();
@@ -202,8 +187,8 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   this->m_ConstantProjectionStackSource->GetOutput()->ReleaseData();
   this->m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   this->m_InterpolationFilter->GetOutput()->ReleaseData();
-  this->GetBackProjectionFilter()->GetOutput()->ReleaseData();
-  this->GetForwardProjectionFilter()->GetOutput()->ReleaseData();
+  this->m_BackProjectionFilter->GetOutput()->ReleaseData();
+  this->m_ForwardProjectionFilter->GetOutput()->ReleaseData();
   m_MVFInterpolatorFilter->GetOutput()->ReleaseData();
   m_InverseMVFInterpolatorFilter->GetOutput()->ReleaseData();
 

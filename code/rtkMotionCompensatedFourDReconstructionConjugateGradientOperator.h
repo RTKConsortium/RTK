@@ -111,11 +111,6 @@ public:
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer _arg) {}
     void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer _arg) {}
 
-#ifdef RTK_USE_CUDA
-    virtual typename rtk::CudaWarpForwardProjectionImageFilter* GetForwardProjectionFilter();
-    virtual typename rtk::CudaWarpBackProjectionImageFilter* GetBackProjectionFilter();
-#endif
-
     /** The ND + time motion vector field */
     void SetDisplacementField(const TMVFImageSequence* MVFs);
     void SetInverseDisplacementField(const TMVFImageSequence* MVFs);
@@ -147,10 +142,6 @@ protected:
     typename MVFInterpolatorType::Pointer               m_InverseMVFInterpolatorFilter;
     std::string                                         m_SignalFilename;
     std::vector<double>                                 m_Signal;
-#ifdef RTK_USE_CUDA
-    rtk::CudaWarpForwardProjectionImageFilter::Pointer  m_ForwardProjectionFilter;
-    rtk::CudaWarpBackProjectionImageFilter::Pointer m_BackProjectionFilter;
-#endif
 
 private:
     MotionCompensatedFourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented

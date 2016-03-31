@@ -83,22 +83,6 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-typename FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::BackProjectionFilterType*
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::GetBackProjectionFilter ()
-{
-  return(this->m_BackProjectionFilter.GetPointer());
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType>
-typename FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::ForwardProjectionFilterType*
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::GetForwardProjectionFilter ()
-{
-  return(this->m_ForwardProjectionFilter.GetPointer());
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::InitializeConstantSources()
@@ -197,17 +181,17 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_InterpolationFilter->SetInputVolume(m_ConstantVolumeSource1->GetOutput());
   m_InterpolationFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
 
-  GetForwardProjectionFilter()->SetInput(0, m_ConstantProjectionStackSource->GetOutput());
-  GetForwardProjectionFilter()->SetInput(1, m_InterpolationFilter->GetOutput());
+  m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionStackSource->GetOutput());
+  m_ForwardProjectionFilter->SetInput(1, m_InterpolationFilter->GetOutput());
 
-  m_DisplacedDetectorFilter->SetInput(GetForwardProjectionFilter()->GetOutput());
+  m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
 
-  GetBackProjectionFilter()->SetInput(0, m_ConstantVolumeSource2->GetOutput());
-  GetBackProjectionFilter()->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
-  GetBackProjectionFilter()->SetInPlace(false);
+  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource2->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilter->SetInPlace(false);
 
   m_SplatFilter->SetInputVolumeSeries(m_ConstantVolumeSeriesSource->GetOutput());
-  m_SplatFilter->SetInputVolume(GetBackProjectionFilter()->GetOutput());
+  m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
 
   m_InterpolationFilter->SetWeights(m_Weights);
   m_SplatFilter->SetWeights(m_Weights);
@@ -215,8 +199,8 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_SplatFilter->SetProjectionNumber(0);
 
   // Set geometry
-  GetBackProjectionFilter()->SetGeometry(this->m_Geometry.GetPointer());
-  GetForwardProjectionFilter()->SetGeometry(this->m_Geometry);
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Initialize sources
@@ -289,8 +273,8 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_ConstantProjectionStackSource->GetOutput()->ReleaseData();
   m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   m_InterpolationFilter->GetOutput()->ReleaseData();
-  GetBackProjectionFilter()->GetOutput()->ReleaseData();
-  GetForwardProjectionFilter()->GetOutput()->ReleaseData();
+  m_BackProjectionFilter->GetOutput()->ReleaseData();
+  m_ForwardProjectionFilter->GetOutput()->ReleaseData();
 
   // Send the input back onto the CPU
   this->GetInputVolumeSeries()->GetBufferPointer();
