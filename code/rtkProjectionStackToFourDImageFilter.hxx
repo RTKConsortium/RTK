@@ -160,11 +160,9 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Prepare the extract filter
   int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
-//  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-//  if (NumberProjs != m_Weights.columns())
-//    {
-//    std::cerr << "Size of interpolation weights array does not match the number of projections" << std::endl;
-//    }
+  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+  if (NumberProjs != m_Weights.columns())
+    itkWarningMacro("Size of interpolation weights array does not match the number of projections");
 
   typename ExtractFilterType::InputImageRegionType subsetRegion;
   subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
@@ -195,8 +193,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // The 4D input volume need not be loaded in memory, is it only used to configure the
   // m_ConstantVolumeSeriesSource with the correct information
   // Leave its requested region unchanged (set by the other filters that need it)
-
-//  this->m_BackProjectionFilter->GetInput(1)->Print(std::cout);
 
   // Calculation of the requested region on input 1 is left to the back projection filter
   this->m_BackProjectionFilter->PropagateRequestedRegion(this->m_BackProjectionFilter->GetOutput());
