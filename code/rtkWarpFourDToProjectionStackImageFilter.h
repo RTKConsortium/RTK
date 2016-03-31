@@ -107,10 +107,6 @@ public:
     /** The forward projection filter cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer _arg) {}
 
-#ifdef RTK_USE_CUDA
-    virtual typename rtk::CudaWarpForwardProjectionImageFilter* GetForwardProjectionFilter();
-#endif
-
     /** The ND + time motion vector field */
     void SetDisplacementField(const TMVFImageSequence* MVFs);
     typename TMVFImageSequence::ConstPointer GetDisplacementField();
@@ -138,9 +134,6 @@ protected:
     typename MVFInterpolatorType::Pointer               m_MVFInterpolatorFilter;
     std::string                                         m_SignalFilename;
     std::vector<double>                                 m_Signal;
-#ifdef RTK_USE_CUDA
-    rtk::CudaWarpForwardProjectionImageFilter::Pointer  m_ForwardProjectionFilter;
-#endif
 
 private:
     WarpFourDToProjectionStackImageFilter(const Self &); //purposely not implemented

@@ -59,15 +59,6 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
           ( this->itk::ProcessObject::GetInput(2) );
 }
 
-#ifdef RTK_USE_CUDA
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-CudaWarpBackProjectionImageFilter *
-WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::GetBackProjectionFilter()
-{
-  return(this->m_BackProjectionFilter.GetPointer());
-}
-#endif
-
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
 void
 WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
@@ -104,7 +95,8 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
   m_MVFInterpolatorFilter->SetFrame(0);
 
 #ifdef RTK_USE_CUDA
-  GetBackProjectionFilter()->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
+  dynamic_cast< rtk::CudaWarpBackProjectionImageFilter* >
+      (this->m_BackProjectionFilter.GetPointer())->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
 #endif
 
   Superclass::GenerateOutputInformation();

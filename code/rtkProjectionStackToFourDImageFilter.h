@@ -141,7 +141,6 @@ public:
 
     /** Pass the backprojection filter to SingleProjectionToFourDFilter */
     virtual void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
-    virtual BackProjectionFilterType* GetBackProjectionFilter();
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);

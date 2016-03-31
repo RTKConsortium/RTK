@@ -76,15 +76,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-typename ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>::BackProjectionFilterType*
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
-::GetBackProjectionFilter ()
-{
-  return(this->m_BackProjectionFilter.GetPointer());
-}
-
-
-template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
 ::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
@@ -160,20 +151,18 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
 
   m_DisplacedDetectorFilter->SetInput(m_ExtractFilter->GetOutput());
 
-  this->GetBackProjectionFilter()->SetInput(0, m_ConstantVolumeSource->GetOutput());
-  this->GetBackProjectionFilter()->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
-  this->GetBackProjectionFilter()->SetInPlace(false);
+  this->m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  this->m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  this->m_BackProjectionFilter->SetInPlace(false);
 
   m_SplatFilter->SetInputVolumeSeries(m_ConstantVolumeSeriesSource->GetOutput());
-  m_SplatFilter->SetInputVolume(this->GetBackProjectionFilter()->GetOutput());
+  m_SplatFilter->SetInputVolume(this->m_BackProjectionFilter->GetOutput());
 
   // Prepare the extract filter
   int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
-//  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-//  if (NumberProjs != m_Weights.columns())
-//    {
-//    std::cerr << "Size of interpolation weights array does not match the number of projections" << std::endl;
-//    }
+  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+  if (NumberProjs != m_Weights.columns())
+    itkWarningMacro("Size of interpolation weights array does not match the number of projections");
 
   typename ExtractFilterType::InputImageRegionType subsetRegion;
   subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
@@ -182,7 +171,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
   m_ExtractFilter->SetExtractionRegion(subsetRegion);
 
   // Set runtime parameters
-  this->GetBackProjectionFilter()->SetGeometry(m_Geometry.GetPointer());
+  this->m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
   m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
   m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
   m_SplatFilter->SetWeights(m_Weights);
@@ -205,10 +194,8 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
   // m_ConstantVolumeSeriesSource with the correct information
   // Leave its requested region unchanged (set by the other filters that need it)
 
-//  this->GetBackProjectionFilter()->GetInput(1)->Print(std::cout);
-
   // Calculation of the requested region on input 1 is left to the back projection filter
-  this->GetBackProjectionFilter()->PropagateRequestedRegion(this->GetBackProjectionFilter()->GetOutput());
+  this->m_BackProjectionFilter->PropagateRequestedRegion(this->m_BackProjectionFilter->GetOutput());
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -256,7 +243,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
   if(pimg.IsNotNull())
     pimg->ReleaseData();
   m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
-  this->GetBackProjectionFilter()->GetOutput()->ReleaseData();
+  this->m_BackProjectionFilter->GetOutput()->ReleaseData();
   m_ExtractFilter->GetOutput()->ReleaseData();
   m_ConstantVolumeSource->GetOutput()->ReleaseData();
 }

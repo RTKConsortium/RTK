@@ -107,9 +107,6 @@ public:
 
     /** The back projection filter cannot be set by the user */
     void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer _arg) {}
-#ifdef RTK_USE_CUDA
-    virtual typename rtk::CudaWarpBackProjectionImageFilter* GetBackProjectionFilter();
-#endif
 
     /** The ND + time motion vector field */
     void SetDisplacementField(const TMVFImageSequence* MVFs);

@@ -130,7 +130,6 @@ public:
 
     /** Set the ForwardProjection filter */
     void SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg);
-    virtual ForwardProjectionFilterType* GetForwardProjectionFilter();
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
     virtual void SetGeometry(GeometryType::Pointer _arg);

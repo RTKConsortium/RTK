@@ -375,7 +375,7 @@ int main(int, char** )
   warpforwardproject->SetSignalFilename("signal.txt");
 
 #ifndef RTK_USE_CUDA
-  std::cout << "\n\n****** Case 1: Non-warped voxel based back projection (warped back projection exists only in CUDA) ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Non-warped joseph forward projection (warped forward projection exists only in CUDA) ******" << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
 
   // The warpforwardproject filter doesn't really need the data in pasteFilter->GetOutput().
@@ -388,7 +388,7 @@ int main(int, char** )
 #endif
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 2: CUDA warped back projection ******" << std::endl;
+  std::cout << "\n\n****** Case 2: CUDA warped forward projection ******" << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
   CheckImageQuality<ProjectionStackType>(warpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
