@@ -131,9 +131,9 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
   // Process the projections in permutated order
   for (int i = 0 ; i < this->m_Signal.size(); i++)
     {
-      // Make sure the current projection is in the input projection stack's largest possible region
-      this->m_ProjectionNumber = IndicesOfProjectionsSortedByPhase[i];
-      if ((this->m_ProjectionNumber >= FirstProj) && (this->m_ProjectionNumber<FirstProj+NumberProjs))
+    // Make sure the current projection is in the input projection stack's largest possible region
+    this->m_ProjectionNumber = IndicesOfProjectionsSortedByPhase[i];
+    if ((this->m_ProjectionNumber >= FirstProj) && (this->m_ProjectionNumber<FirstProj+NumberProjs))
       {
       // After the first update, we need to use the output as input.
       if(firstProjectionProcessed)

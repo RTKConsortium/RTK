@@ -41,7 +41,7 @@ GetSortingPermutation(std::vector<TVectorElement> input)
   std::vector<std::pair<TVectorElement, unsigned int> > pairsVector;
 
   // Fill it
-  for (unsigned int i = 0 ; i < input.size(); i++)
+  for (unsigned int i = 0; i < input.size(); i++)
       pairsVector.push_back(std::make_pair(input[i], i));
 
   // Sort it according to values
@@ -49,7 +49,7 @@ GetSortingPermutation(std::vector<TVectorElement> input)
 
   // Extract the permutated indices
   std::vector<unsigned int> result;
-  for (unsigned int i = 0 ; i < pairsVector.size(); i++)
+  for (unsigned int i = 0; i < pairsVector.size(); i++)
       result.push_back(pairsVector[i].second);
 
   // Return
