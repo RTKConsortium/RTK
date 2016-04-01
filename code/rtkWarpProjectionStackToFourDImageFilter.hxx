@@ -19,10 +19,11 @@
 #define __rtkWarpProjectionStackToFourDImageFilter_hxx
 
 #include "rtkWarpProjectionStackToFourDImageFilter.h"
+#include "rtkGeneralPurposeFunctions.h"
 
-#include "itkObjectFactory.h"
-#include "itkImageRegionIterator.h"
-#include "itkImageRegionConstIterator.h"
+#include <itkObjectFactory.h>
+#include <itkImageRegionIterator.h>
+#include <itkImageRegionConstIterator.h>
 
 namespace rtk
 {
@@ -119,28 +120,45 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
 
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
   int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
-  for(this->m_ProjectionNumber=FirstProj; this->m_ProjectionNumber<FirstProj+NumberProjs; this->m_ProjectionNumber++)
+
+  // Get an index permutation that sorts the signal values. Then process the projections
+  // in that permutated order. This way, projections with identical phases will be
+  // processed one after the other. This will save some of the MVF interpolation operations.
+  std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
+
+  bool firstProjectionProcessed = false;
+
+  // Process the projections in permutated order
+  for (int i = 0 ; i < this->m_Signal.size(); i++)
     {
-    // After the first update, we need to use the output as input.
-    if(this->m_ProjectionNumber>FirstProj)
+      // Make sure the current projection is in the input projection stack's largest possible region
+      this->m_ProjectionNumber = IndicesOfProjectionsSortedByPhase[i];
+      if ((this->m_ProjectionNumber >= FirstProj) && (this->m_ProjectionNumber<FirstProj+NumberProjs))
       {
-      pimg = this->m_SplatFilter->GetOutput();
-      pimg->DisconnectPipeline();
-      this->m_SplatFilter->SetInputVolumeSeries( pimg );
+      // After the first update, we need to use the output as input.
+      if(firstProjectionProcessed)
+        {
+        pimg = this->m_SplatFilter->GetOutput();
+        pimg->DisconnectPipeline();
+        this->m_SplatFilter->SetInputVolumeSeries( pimg );
+        }
+
+      // Set the Extract Filter
+      extractRegion.SetIndex(Dimension-1, this->m_ProjectionNumber);
+      this->m_ExtractFilter->SetExtractionRegion(extractRegion);
+
+      // Set the MVF interpolator
+      m_MVFInterpolatorFilter->SetFrame(this->m_ProjectionNumber);
+
+      // Set the splat filter
+      this->m_SplatFilter->SetProjectionNumber(this->m_ProjectionNumber);
+
+      // Update the last filter
+      this->m_SplatFilter->Update();
+
+      // Update condition
+      firstProjectionProcessed = true;
       }
-
-    // Set the Extract Filter
-    extractRegion.SetIndex(Dimension-1, this->m_ProjectionNumber);
-    this->m_ExtractFilter->SetExtractionRegion(extractRegion);
-
-    // Set the MVF interpolator
-    m_MVFInterpolatorFilter->SetFrame(this->m_ProjectionNumber);
-
-    // Set the splat filter
-    this->m_SplatFilter->SetProjectionNumber(this->m_ProjectionNumber);
-
-    // Update the last filter
-    this->m_SplatFilter->Update();
     }
 
   // Graft its output
@@ -149,6 +167,7 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
   // Release the data in internal filters
   if(pimg.IsNotNull())
     pimg->ReleaseData();
+
   this->m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   this->m_BackProjectionFilter->GetOutput()->ReleaseData();
   this->m_ExtractFilter->GetOutput()->ReleaseData();

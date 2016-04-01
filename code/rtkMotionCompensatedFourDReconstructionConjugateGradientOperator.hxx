@@ -19,6 +19,7 @@
 #define __rtkMotionCompensatedFourDReconstructionConjugateGradientOperator_hxx
 
 #include "rtkMotionCompensatedFourDReconstructionConjugateGradientOperator.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 namespace rtk
 {
@@ -148,32 +149,51 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   typename ProjectionStackType::IndexType ConstantProjectionStackSourceIndex
       = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex();
 
-  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
+  int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
+
+  // Get an index permutation that sorts the signal values. Then process the projections
+  // in that permutated order. This way, projections with identical phases will be
+  // processed one after the other. This will save some of the MVF interpolation operations.
+  std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
+
+  bool firstProjectionProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
-  for(int proj=0; proj<NumberProjs; proj++)
+  int proj = 0;
+
+  // Process the projections in permutated order
+  for (int i = 0 ; i < this->m_Signal.size(); i++)
     {
-    // After the first update, we need to use the output as input.
-    if(proj>0)
+      // Make sure the current projection is in the input projection stack's largest possible region
+      proj = IndicesOfProjectionsSortedByPhase[i];
+      if ((proj >= FirstProj) && (proj<FirstProj+NumberProjs))
       {
-      pimg = this->m_SplatFilter->GetOutput();
-      pimg->DisconnectPipeline();
-      this->m_SplatFilter->SetInputVolumeSeries( pimg );
+      // After the first update, we need to use the output as input.
+      if(firstProjectionProcessed)
+        {
+        pimg = this->m_SplatFilter->GetOutput();
+        pimg->DisconnectPipeline();
+        this->m_SplatFilter->SetInputVolumeSeries( pimg );
+        }
+
+      // Set the projection stack source
+      ConstantProjectionStackSourceIndex[Dimension - 1] = proj;
+      this->m_ConstantProjectionStackSource->SetIndex( ConstantProjectionStackSourceIndex );
+
+      // Set the Interpolation filter
+      this->m_InterpolationFilter->SetProjectionNumber(proj);
+      this->m_SplatFilter->SetProjectionNumber(proj);
+
+      // Set the MVF interpolator
+      m_MVFInterpolatorFilter->SetFrame(proj);
+      m_InverseMVFInterpolatorFilter->SetFrame(proj);
+
+      // Update the last filter
+      this->m_SplatFilter->Update();
+
+      // Update condition
+      firstProjectionProcessed = true;
       }
-
-    // Set the projection stack source
-    ConstantProjectionStackSourceIndex[Dimension - 1] = proj;
-    this->m_ConstantProjectionStackSource->SetIndex( ConstantProjectionStackSourceIndex );
-
-    // Set the Interpolation filter
-    this->m_InterpolationFilter->SetProjectionNumber(proj);
-    this->m_SplatFilter->SetProjectionNumber(proj);
-
-    // Set the MVF interpolator
-    m_MVFInterpolatorFilter->SetFrame(proj);
-    m_InverseMVFInterpolatorFilter->SetFrame(proj);
-
-    // Update the last filter
-    this->m_SplatFilter->Update();
     }
 
   // Graft its output
