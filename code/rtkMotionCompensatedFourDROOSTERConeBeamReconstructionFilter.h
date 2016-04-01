@@ -138,18 +138,18 @@ public:
   typedef ProjectionStackType                                                                   VolumeType;
   typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1> CovariantVectorForSpatialGradient;
   typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>                                    CovariantVectorForTemporalGradient;
-  typedef CovariantVectorForSpatialGradient                                                                 MVFVectorType;
+  typedef CovariantVectorForSpatialGradient                                                                 DVFVectorType;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>   SpatialGradientImageType;
   typedef itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>  TemporalGradientImageType;
-  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension>                       MVFSequenceImageType;
-  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension - 1>                   MVFImageType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>                       DVFSequenceImageType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>                   DVFImageType;
 #else
   typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>       SpatialGradientImageType;
   typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>      TemporalGradientImageType;
-  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension>                           MVFSequenceImageType;
-  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension - 1>                       MVFImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>                           DVFSequenceImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>                       DVFImageType;
 #endif
 
   /** Method for creation through the object factory. */

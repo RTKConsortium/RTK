@@ -28,20 +28,20 @@ int main(int, char** )
 {
   typedef float                             OutputPixelType;
 
-  typedef itk::CovariantVector< OutputPixelType, 3 > MVFVectorType;
+  typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
   typedef itk::CudaImage< OutputPixelType, 3 >  VolumeType;
-  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension> MVFSequenceImageType;
-  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension - 1> MVFImageType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #else
   typedef itk::Image< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 >  ProjectionStackType;
   typedef itk::Image< OutputPixelType, 3 >  VolumeType;
-  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension> MVFSequenceImageType;
-  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension - 1> MVFImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -243,31 +243,31 @@ int main(int, char** )
     }
 
   // Create a vector field and its (very rough) inverse
-  typedef itk::ImageRegionIteratorWithIndex< MVFSequenceImageType > IteratorType;
+  typedef itk::ImageRegionIteratorWithIndex< DVFSequenceImageType > IteratorType;
 
-  MVFSequenceImageType::Pointer deformationField = MVFSequenceImageType::New();
-  MVFSequenceImageType::Pointer inverseDeformationField = MVFSequenceImageType::New();
+  DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
+  DVFSequenceImageType::Pointer inverseDeformationField = DVFSequenceImageType::New();
 
-  MVFSequenceImageType::IndexType startMotion;
+  DVFSequenceImageType::IndexType startMotion;
   startMotion[0] = 0; // first index on X
   startMotion[1] = 0; // first index on Y
   startMotion[2] = 0; // first index on Z
   startMotion[3] = 0; // first index on t
-  MVFSequenceImageType::SizeType sizeMotion;
+  DVFSequenceImageType::SizeType sizeMotion;
   sizeMotion[0] = fourDSize[0];
   sizeMotion[1] = fourDSize[1];
   sizeMotion[2] = fourDSize[2];
   sizeMotion[3] = 2;
-  MVFSequenceImageType::PointType originMotion;
+  DVFSequenceImageType::PointType originMotion;
   originMotion[0] = -63.;
   originMotion[1] = -31.;
   originMotion[2] = -63.;
   originMotion[3] = 0.;
-  MVFSequenceImageType::RegionType regionMotion;
+  DVFSequenceImageType::RegionType regionMotion;
   regionMotion.SetSize( sizeMotion );
   regionMotion.SetIndex( startMotion );
 
-  MVFSequenceImageType::SpacingType spacingMotion;
+  DVFSequenceImageType::SpacingType spacingMotion;
   spacingMotion[0] = fourDSpacing[0];
   spacingMotion[1] = fourDSpacing[1];
   spacingMotion[2] = fourDSpacing[2];
@@ -284,20 +284,20 @@ int main(int, char** )
   inverseDeformationField->Allocate();
 
   // Vector Field initilization
-  MVFVectorType vec;
+  DVFVectorType vec;
   IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
   IteratorType idvfIt( inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion() );
 
-  MVFSequenceImageType::OffsetType mvfCenter;
-  MVFSequenceImageType::IndexType toCenter;
-  mvfCenter.Fill(0);
-  mvfCenter[0] = sizeMotion[0]/2;
-  mvfCenter[1] = sizeMotion[1]/2;
-  mvfCenter[2] = sizeMotion[2]/2;
+  DVFSequenceImageType::OffsetType DVFCenter;
+  DVFSequenceImageType::IndexType toCenter;
+  DVFCenter.Fill(0);
+  DVFCenter[0] = sizeMotion[0]/2;
+  DVFCenter[1] = sizeMotion[1]/2;
+  DVFCenter[2] = sizeMotion[2]/2;
   while (!dvfIt.IsAtEnd())
     {
     vec.Fill(0.);
-    toCenter = dvfIt.GetIndex() - mvfCenter;
+    toCenter = dvfIt.GetIndex() - DVFCenter;
 
     if (0.3 * toCenter[0] * toCenter[0] + 0.5*toCenter[1] * toCenter[1] + 0.5*toCenter[2] * toCenter[2] < 40)
       {

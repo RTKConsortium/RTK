@@ -96,11 +96,11 @@ public:
     typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
 
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          MVFSequenceImageType;
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      MVFImageType;
+    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          DVFSequenceImageType;
+    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      DVFImageType;
 #else
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              MVFSequenceImageType;
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          MVFImageType;
+    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              DVFSequenceImageType;
+    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          DVFImageType;
 #endif
 
     /** Method for creation through the object factory. */
@@ -109,14 +109,14 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(WarpProjectionStackToFourDImageFilter, rtk::ProjectionStackToFourDImageFilter)
 
-    typedef rtk::CyclicDeformationImageFilter<MVFImageType>                  MVFInterpolatorType;
+    typedef rtk::CyclicDeformationImageFilter<DVFImageType>                  DVFInterpolatorType;
 
     /** The back projection filter cannot be set by the user */
     void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer _arg) {}
 
     /** The ND + time motion vector field */
-    void SetDisplacementField(const MVFSequenceImageType* MVFs);
-    typename MVFSequenceImageType::ConstPointer GetDisplacementField();
+    void SetDisplacementField(const DVFSequenceImageType* DVFs);
+    typename DVFSequenceImageType::ConstPointer GetDisplacementField();
 
     /** The file containing the phase at which each projection has been acquired */
     itkGetMacro(SignalFilename, std::string)
@@ -136,7 +136,7 @@ protected:
     virtual void VerifyInputInformation() {}
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename MVFInterpolatorType::Pointer           m_MVFInterpolatorFilter;
+    typename DVFInterpolatorType::Pointer           m_DVFInterpolatorFilter;
     std::string                                     m_SignalFilename;
     std::vector<double>                             m_Signal;
 

@@ -98,11 +98,11 @@ public:
     typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
 
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          MVFSequenceImageType;
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      MVFImageType;
+    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          DVFSequenceImageType;
+    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      DVFImageType;
 #else
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              MVFSequenceImageType;
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          MVFImageType;
+    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              DVFSequenceImageType;
+    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          DVFImageType;
 #endif
 
     /** Method for creation through the object factory. */
@@ -111,17 +111,17 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(MotionCompensatedFourDReconstructionConjugateGradientOperator, FourDReconstructionConjugateGradientOperator)
 
-    typedef rtk::CyclicDeformationImageFilter<MVFImageType>                  MVFInterpolatorType;
+    typedef rtk::CyclicDeformationImageFilter<DVFImageType>                  DVFInterpolatorType;
 
     /** The forward and back projection filters cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer _arg) {}
     void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer _arg) {}
 
     /** The ND + time motion vector field */
-    void SetDisplacementField(const MVFSequenceImageType* MVFs);
-    void SetInverseDisplacementField(const MVFSequenceImageType* MVFs);
-    typename MVFSequenceImageType::ConstPointer GetInverseDisplacementField();
-    typename MVFSequenceImageType::ConstPointer GetDisplacementField();
+    void SetDisplacementField(const DVFSequenceImageType* DVFs);
+    void SetInverseDisplacementField(const DVFSequenceImageType* DVFs);
+    typename DVFSequenceImageType::ConstPointer GetInverseDisplacementField();
+    typename DVFSequenceImageType::ConstPointer GetDisplacementField();
 
     /** The file containing the phase at which each projection has been acquired */
     itkGetMacro(SignalFilename, std::string)
@@ -144,8 +144,8 @@ protected:
     virtual void GenerateData();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename MVFInterpolatorType::Pointer               m_MVFInterpolatorFilter;
-    typename MVFInterpolatorType::Pointer               m_InverseMVFInterpolatorFilter;
+    typename DVFInterpolatorType::Pointer               m_DVFInterpolatorFilter;
+    typename DVFInterpolatorType::Pointer               m_InverseDVFInterpolatorFilter;
     std::string                                         m_SignalFilename;
     std::vector<double>                                 m_Signal;
 

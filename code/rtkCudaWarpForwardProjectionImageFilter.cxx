@@ -58,9 +58,9 @@ CudaWarpForwardProjectionImageFilter
 
 void
 CudaWarpForwardProjectionImageFilter
-::SetDisplacementField(const DVFType* MVF)
+::SetDisplacementField(const DVFType* DVF)
 {
-  this->SetInput("DisplacementField", const_cast<DVFType*>(MVF));
+  this->SetInput("DisplacementField", const_cast<DVFType*>(DVF));
 }
 
 CudaWarpForwardProjectionImageFilter::InputImageType::Pointer

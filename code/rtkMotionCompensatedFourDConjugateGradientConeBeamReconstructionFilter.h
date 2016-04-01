@@ -84,11 +84,11 @@ public:
   typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          MVFSequenceImageType;
-  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      MVFImageType;
+  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          DVFSequenceImageType;
+  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      DVFImageType;
 #else
-  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              MVFSequenceImageType;
-  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          MVFImageType;
+  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              DVFSequenceImageType;
+  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          DVFImageType;
 #endif
 
   /** Typedefs of each subfilter of this composite filter */
@@ -104,10 +104,10 @@ public:
   void SetBackProjectionFilter (int _arg) {}
 
   /** The ND + time motion vector field */
-  void SetDisplacementField(const MVFSequenceImageType* MVFs);
-  void SetInverseDisplacementField(const MVFSequenceImageType* MVFs);
-  typename MVFSequenceImageType::ConstPointer GetDisplacementField();
-  typename MVFSequenceImageType::ConstPointer GetInverseDisplacementField();
+  void SetDisplacementField(const DVFSequenceImageType* DVFs);
+  void SetInverseDisplacementField(const DVFSequenceImageType* DVFs);
+  typename DVFSequenceImageType::ConstPointer GetDisplacementField();
+  typename DVFSequenceImageType::ConstPointer GetInverseDisplacementField();
 
   /** The file containing the phase at which each projection has been acquired */
   itkGetMacro(SignalFilename, std::string)

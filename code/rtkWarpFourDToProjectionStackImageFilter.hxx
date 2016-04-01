@@ -28,7 +28,7 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::WarpFourDToProjectionStackImageFilter()
 {
   this->SetNumberOfRequiredInputs(3);
-  m_MVFInterpolatorFilter = MVFInterpolatorType::New();
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
 
 #ifdef RTK_USE_CUDA
   this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
@@ -40,16 +40,16 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::W
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::SetDisplacementField(const MVFSequenceImageType* DisplacementField)
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::SetDisplacementField(const DVFSequenceImageType* DisplacementField)
 {
-  this->SetNthInput(2, const_cast<MVFSequenceImageType*>(DisplacementField));
+  this->SetNthInput(2, const_cast<DVFSequenceImageType*>(DisplacementField));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-typename WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::ConstPointer
+typename WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::ConstPointer
 WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::GetDisplacementField()
 {
-  return static_cast< const MVFSequenceImageType * >
+  return static_cast< const DVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(2) );
 }
 
@@ -77,7 +77,7 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
       m_Signal.push_back(value);
       }
     }
-  m_MVFInterpolatorFilter->SetSignalVector(m_Signal);
+  m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -85,12 +85,12 @@ void
 WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
-  m_MVFInterpolatorFilter->SetInput(this->GetDisplacementField());
-  m_MVFInterpolatorFilter->SetFrame(0);
+  m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
+  m_DVFInterpolatorFilter->SetFrame(0);
 
 #ifdef RTK_USE_CUDA
   dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter* >
-      (this->m_ForwardProjectionFilter.GetPointer())->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
+      (this->m_ForwardProjectionFilter.GetPointer())->SetDisplacementField(m_DVFInterpolatorFilter->GetOutput());
 #endif
 
   Superclass::GenerateOutputInformation();
@@ -115,7 +115,7 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
   inputPtr1->SetRequestedRegionToLargestPossibleRegion();
 
   // Input 2 is the sequence of DVFs
-  typename MVFSequenceImageType::Pointer inputPtr2 = static_cast< MVFSequenceImageType * >
+  typename DVFSequenceImageType::Pointer inputPtr2 = static_cast< DVFSequenceImageType * >
             ( this->itk::ProcessObject::GetInput(2) );
   inputPtr2->SetRequestedRegionToLargestPossibleRegion();
 }
@@ -132,7 +132,7 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
 
   // Get an index permutation that sorts the signal values. Then process the projections
   // in that permutated order. This way, projections with identical phases will be
-  // processed one after the other. This will save some of the MVF interpolation operations.
+  // processed one after the other. This will save some of the DVF interpolation operations.
   std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
 
   bool firstProjectionProcessed = false;
@@ -168,8 +168,8 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
       // Set the Interpolation filter
       this->m_InterpolationFilter->SetProjectionNumber(this->m_ProjectionNumber);
 
-      // Set the MVF interpolator
-      m_MVFInterpolatorFilter->SetFrame(this->m_ProjectionNumber);
+      // Set the DVF interpolator
+      m_DVFInterpolatorFilter->SetFrame(this->m_ProjectionNumber);
 
       // Update the last filter
       this->m_PasteFilter->Update();
@@ -183,7 +183,7 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
   this->GraftOutput( this->m_PasteFilter->GetOutput() );
 
   // Release the data in internal filters
-  this->m_MVFInterpolatorFilter->GetOutput()->ReleaseData();
+  this->m_DVFInterpolatorFilter->GetOutput()->ReleaseData();
 }
 
 }// end namespace

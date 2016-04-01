@@ -29,8 +29,8 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 ::MotionCompensatedFourDReconstructionConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(3);
-  m_MVFInterpolatorFilter = MVFInterpolatorType::New();
-  m_InverseMVFInterpolatorFilter = MVFInterpolatorType::New();
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
+  m_InverseDVFInterpolatorFilter = DVFInterpolatorType::New();
 
 #ifdef RTK_USE_CUDA
   this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
@@ -47,34 +47,34 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::SetDisplacementField(const MVFSequenceImageType* DisplacementField)
+::SetDisplacementField(const DVFSequenceImageType* DisplacementField)
 {
-  this->SetNthInput(2, const_cast<MVFSequenceImageType*>(DisplacementField));
+  this->SetNthInput(2, const_cast<DVFSequenceImageType*>(DisplacementField));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::SetInverseDisplacementField(const MVFSequenceImageType* InverseDisplacementField)
+::SetInverseDisplacementField(const DVFSequenceImageType* InverseDisplacementField)
 {
-  this->SetNthInput(3, const_cast<MVFSequenceImageType*>(InverseDisplacementField));
+  this->SetNthInput(3, const_cast<DVFSequenceImageType*>(InverseDisplacementField));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-typename MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::ConstPointer
+typename MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::ConstPointer
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GetDisplacementField()
 {
-  return static_cast< const MVFSequenceImageType * >
+  return static_cast< const DVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(2) );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-typename MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::ConstPointer
+typename MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::ConstPointer
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GetInverseDisplacementField()
 {
-  return static_cast< const MVFSequenceImageType * >
+  return static_cast< const DVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(3) );
 }
 
@@ -102,8 +102,8 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
       m_Signal.push_back(value);
       }
     }
-  m_MVFInterpolatorFilter->SetSignalVector(m_Signal);
-  m_InverseMVFInterpolatorFilter->SetSignalVector(m_Signal);
+  m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
+  m_InverseDVFInterpolatorFilter->SetSignalVector(m_Signal);
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -111,15 +111,15 @@ void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
-  m_MVFInterpolatorFilter->SetInput(this->GetDisplacementField());
-  m_MVFInterpolatorFilter->SetFrame(0);
+  m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
+  m_DVFInterpolatorFilter->SetFrame(0);
 
-  m_InverseMVFInterpolatorFilter->SetInput(this->GetInverseDisplacementField());
-  m_InverseMVFInterpolatorFilter->SetFrame(0);
+  m_InverseDVFInterpolatorFilter->SetInput(this->GetInverseDisplacementField());
+  m_InverseDVFInterpolatorFilter->SetFrame(0);
 
 #ifdef RTK_USE_CUDA
-  dynamic_cast< CudaWarpForwardProjectionImageFilter* >(this->m_ForwardProjectionFilter.GetPointer())->SetDisplacementField(m_InverseMVFInterpolatorFilter->GetOutput());
-  dynamic_cast< CudaWarpBackProjectionImageFilter* >(this->m_BackProjectionFilter.GetPointer())->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
+  dynamic_cast< CudaWarpForwardProjectionImageFilter* >(this->m_ForwardProjectionFilter.GetPointer())->SetDisplacementField(m_InverseDVFInterpolatorFilter->GetOutput());
+  dynamic_cast< CudaWarpBackProjectionImageFilter* >(this->m_BackProjectionFilter.GetPointer())->SetDisplacementField(m_DVFInterpolatorFilter->GetOutput());
 #endif
 
   Superclass::GenerateOutputInformation();
@@ -154,7 +154,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 
   // Get an index permutation that sorts the signal values. Then process the projections
   // in that permutated order. This way, projections with identical phases will be
-  // processed one after the other. This will save some of the MVF interpolation operations.
+  // processed one after the other. This will save some of the DVF interpolation operations.
   std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
 
   bool firstProjectionProcessed = false;
@@ -184,9 +184,9 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
       this->m_InterpolationFilter->SetProjectionNumber(proj);
       this->m_SplatFilter->SetProjectionNumber(proj);
 
-      // Set the MVF interpolator
-      m_MVFInterpolatorFilter->SetFrame(proj);
-      m_InverseMVFInterpolatorFilter->SetFrame(proj);
+      // Set the DVF interpolator
+      m_DVFInterpolatorFilter->SetFrame(proj);
+      m_InverseDVFInterpolatorFilter->SetFrame(proj);
 
       // Update the last filter
       this->m_SplatFilter->Update();
@@ -209,8 +209,8 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   this->m_InterpolationFilter->GetOutput()->ReleaseData();
   this->m_BackProjectionFilter->GetOutput()->ReleaseData();
   this->m_ForwardProjectionFilter->GetOutput()->ReleaseData();
-  m_MVFInterpolatorFilter->GetOutput()->ReleaseData();
-  m_InverseMVFInterpolatorFilter->GetOutput()->ReleaseData();
+  m_DVFInterpolatorFilter->GetOutput()->ReleaseData();
+  m_InverseDVFInterpolatorFilter->GetOutput()->ReleaseData();
 
   // Send the input back onto the CPU
   this->GetInputVolumeSeries()->GetBufferPointer();
