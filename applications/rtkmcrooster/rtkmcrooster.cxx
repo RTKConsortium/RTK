@@ -103,7 +103,7 @@ int main(int argc, char * argv[])
   phaseReader->Update();
   
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
-  typedef rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType, DVFSequenceImageType, DVFImageType> MCROOSTERFilterType;
+  typedef rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCROOSTERFilterType;
   MCROOSTERFilterType::Pointer mcrooster = MCROOSTERFilterType::New();
   mcrooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   mcrooster->SetInputProjectionStack(reader->GetOutput());

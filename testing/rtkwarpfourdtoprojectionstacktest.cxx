@@ -365,7 +365,7 @@ int main(int, char** )
   phaseReader->Update();
 
   // Create and set the warped forward projection filter
-  typedef rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, VolumeType, MVFSequenceImageType, MVFImageType> WarpFourDToProjectionStackType;
+  typedef rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, VolumeType> WarpFourDToProjectionStackType;
   WarpFourDToProjectionStackType::Pointer warpforwardproject = WarpFourDToProjectionStackType::New();
   warpforwardproject->SetInputVolumeSeries(join->GetOutput() );
   warpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());

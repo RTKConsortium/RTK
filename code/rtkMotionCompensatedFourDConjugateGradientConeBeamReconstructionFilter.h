@@ -66,10 +66,7 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 
-template< typename VolumeSeriesType,
-          typename ProjectionStackType = itk::Image<typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1>,
-          typename TMVFImageSequence = itk::Image< itk::CovariantVector < typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1 >, VolumeSeriesType::ImageDimension >,
-          typename TMVFImage = itk::Image< itk::CovariantVector < typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1 >, VolumeSeriesType::ImageDimension -1 > >
+template< typename VolumeSeriesType, typename ProjectionStackType>
 class ITK_EXPORT MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter :
   public rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
@@ -84,6 +81,15 @@ public:
   typedef VolumeSeriesType      InputImageType;
   typedef VolumeSeriesType      OutputImageType;
   typedef ProjectionStackType   VolumeType;
+  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
+
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          MVFSequenceImageType;
+  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      MVFImageType;
+#else
+  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              MVFSequenceImageType;
+  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          MVFImageType;
+#endif
 
   /** Typedefs of each subfilter of this composite filter */
 
@@ -98,17 +104,17 @@ public:
   void SetBackProjectionFilter (int _arg) {}
 
   /** The ND + time motion vector field */
-  void SetDisplacementField(const TMVFImageSequence* MVFs);
-  void SetInverseDisplacementField(const TMVFImageSequence* MVFs);
-  typename TMVFImageSequence::ConstPointer GetDisplacementField();
-  typename TMVFImageSequence::ConstPointer GetInverseDisplacementField();
+  void SetDisplacementField(const MVFSequenceImageType* MVFs);
+  void SetInverseDisplacementField(const MVFSequenceImageType* MVFs);
+  typename MVFSequenceImageType::ConstPointer GetDisplacementField();
+  typename MVFSequenceImageType::ConstPointer GetInverseDisplacementField();
 
   /** The file containing the phase at which each projection has been acquired */
   itkGetMacro(SignalFilename, std::string)
   virtual void SetSignalFilename (const std::string _arg);
 
-  typedef rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>                        MCProjStackToFourDType;
-  typedef rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage> MCCGOperatorType;
+  typedef rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>                        MCProjStackToFourDType;
+  typedef rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType> MCCGOperatorType;
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();

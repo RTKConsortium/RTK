@@ -28,8 +28,8 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::WarpProjectionStackToFourDImageFilter()
+template< typename VolumeSeriesType, typename ProjectionStackType>
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::WarpProjectionStackToFourDImageFilter()
 {
   this->SetNumberOfRequiredInputs(3);
   m_MVFInterpolatorFilter = MVFInterpolatorType::New();
@@ -45,24 +45,24 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
 #endif
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::SetDisplacementField(const TMVFImageSequence* DisplacementField)
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::SetDisplacementField(const MVFSequenceImageType* DisplacementField)
 {
-  this->SetNthInput(2, const_cast<TMVFImageSequence*>(DisplacementField));
+  this->SetNthInput(2, const_cast<MVFSequenceImageType*>(DisplacementField));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-typename TMVFImageSequence::ConstPointer
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::GetDisplacementField()
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::ConstPointer
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::GetDisplacementField()
 {
-  return static_cast< const TMVFImageSequence * >
+  return static_cast< const MVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(2) );
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
 ::SetSignalFilename(const std::string _arg)
 {
   itkDebugMacro("setting SignalFilename to " << _arg);
@@ -87,9 +87,9 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
   m_MVFInterpolatorFilter->SetSignalVector(m_Signal);
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
   m_MVFInterpolatorFilter->SetInput(this->GetDisplacementField());
@@ -103,9 +103,9 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TM
   Superclass::GenerateOutputInformation();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
   int Dimension = ProjectionStackType::ImageDimension;

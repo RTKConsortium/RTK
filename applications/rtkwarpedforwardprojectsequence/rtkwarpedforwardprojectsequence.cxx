@@ -87,7 +87,7 @@ int main(int argc, char * argv[])
     std::cout << "Projecting volume sequence..." << std::flush;
   itk::TimeProbe projProbe;
 
-  typedef rtk::WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, DVFSequenceImageType, DVFImageType> WarpForwardProjectType;
+  typedef rtk::WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType> WarpForwardProjectType;
   WarpForwardProjectType::Pointer forwardProjection = WarpForwardProjectType::New();
 
   forwardProjection->SetInputProjectionStack( constantImageSource->GetOutput() );

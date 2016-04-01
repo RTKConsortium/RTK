@@ -127,7 +127,7 @@ namespace rtk
    *
    * \ingroup ReconstructionAlgorithm
    */
-template<typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template<typename VolumeSeriesType, typename ProjectionStackType>
 class MotionCompensatedFourDROOSTERConeBeamReconstructionFilter : public rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
@@ -140,6 +140,18 @@ public:
   typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>                                    CovariantVectorForTemporalGradient;
   typedef CovariantVectorForSpatialGradient                                                                 MVFVectorType;
 
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>   SpatialGradientImageType;
+  typedef itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>  TemporalGradientImageType;
+  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension>                       MVFSequenceImageType;
+  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension - 1>                   MVFImageType;
+#else
+  typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>       SpatialGradientImageType;
+  typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>      TemporalGradientImageType;
+  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension>                           MVFSequenceImageType;
+  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension - 1>                       MVFImageType;
+#endif
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
@@ -147,7 +159,7 @@ public:
   itkTypeMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter, rtk::FourDROOSTERConeBeamReconstructionFilter)
 
   typedef rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
-    <VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>    MotionCompensatedFourDCGFilterType;
+    <VolumeSeriesType, ProjectionStackType>    MotionCompensatedFourDCGFilterType;
 
   /** Neither the forward nor the back projection filter can be set by the user */
   void SetForwardProjectionFilter(int fwtype) {}

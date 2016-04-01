@@ -104,7 +104,7 @@ int main(int argc, char * argv[])
   
   
   // Create the mcfourdcg filter, connect the basic inputs, and set the basic parameters
-  typedef rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType, DVFSequenceImageType, DVFImageType> MCFourDCGFilterType;
+  typedef rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCFourDCGFilterType;
   MCFourDCGFilterType::Pointer mcfourdcg = MCFourDCGFilterType::New();
   mcfourdcg->SetInputVolumeSeries(inputFilter->GetOutput() );
   mcfourdcg->SetInputProjectionStack(reader->GetOutput());

@@ -81,10 +81,7 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 
-template< typename VolumeSeriesType,
-          typename ProjectionStackType = itk::Image<typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1>,
-          typename TMVFImageSequence = itk::Image< itk::CovariantVector < typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1 >, VolumeSeriesType::ImageDimension >,
-          typename TMVFImage = itk::Image< itk::CovariantVector < typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension-1 >, VolumeSeriesType::ImageDimension -1 > >
+template< typename VolumeSeriesType, typename ProjectionStackType>
 class WarpProjectionStackToFourDImageFilter : public rtk::ProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
 {
 public:
@@ -96,6 +93,15 @@ public:
 
     /** Convenient typedefs */
     typedef ProjectionStackType VolumeType;
+    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
+
+#ifdef RTK_USE_CUDA
+    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          MVFSequenceImageType;
+    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      MVFImageType;
+#else
+    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              MVFSequenceImageType;
+    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          MVFImageType;
+#endif
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -103,14 +109,14 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(WarpProjectionStackToFourDImageFilter, rtk::ProjectionStackToFourDImageFilter)
 
-    typedef rtk::CyclicDeformationImageFilter<TMVFImage>                  MVFInterpolatorType;
+    typedef rtk::CyclicDeformationImageFilter<MVFImageType>                  MVFInterpolatorType;
 
     /** The back projection filter cannot be set by the user */
     void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer _arg) {}
 
     /** The ND + time motion vector field */
-    void SetDisplacementField(const TMVFImageSequence* MVFs);
-    typename TMVFImageSequence::ConstPointer GetDisplacementField();
+    void SetDisplacementField(const MVFSequenceImageType* MVFs);
+    typename MVFSequenceImageType::ConstPointer GetDisplacementField();
 
     /** The file containing the phase at which each projection has been acquired */
     itkGetMacro(SignalFilename, std::string)

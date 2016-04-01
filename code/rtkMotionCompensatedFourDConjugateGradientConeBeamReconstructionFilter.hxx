@@ -24,8 +24,8 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(3);
@@ -33,43 +33,43 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
   this->m_CGOperator = MCCGOperatorType::New();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::SetDisplacementField(const TMVFImageSequence* DisplacementField)
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
+::SetDisplacementField(const MVFSequenceImageType* DisplacementField)
 {
-  this->SetNthInput(2, const_cast<TMVFImageSequence*>(DisplacementField));
+  this->SetNthInput(2, const_cast<MVFSequenceImageType*>(DisplacementField));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::SetInverseDisplacementField(const TMVFImageSequence* InverseDisplacementField)
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
+::SetInverseDisplacementField(const MVFSequenceImageType* InverseDisplacementField)
 {
-  this->SetNthInput(3, const_cast<TMVFImageSequence*>(InverseDisplacementField));
+  this->SetNthInput(3, const_cast<MVFSequenceImageType*>(InverseDisplacementField));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-typename TMVFImageSequence::ConstPointer
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::ConstPointer
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::GetDisplacementField()
 {
-  return static_cast< const TMVFImageSequence * >
+  return static_cast< const MVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(2) );
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-typename TMVFImageSequence::ConstPointer
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::ConstPointer
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::GetInverseDisplacementField()
 {
-  return static_cast< const TMVFImageSequence * >
+  return static_cast< const MVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(3) );
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::SetSignalFilename(const std::string _arg)
 {
 #ifdef RTK_USE_CUDA
@@ -78,9 +78,9 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
 #endif
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
 #ifdef RTK_USE_CUDA

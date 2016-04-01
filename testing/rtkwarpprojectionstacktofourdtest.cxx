@@ -349,7 +349,7 @@ int main(int, char** )
   join->Update();
 
   // Create and set the warped forward projection filter
-  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType, MVFSequenceImageType, MVFImageType> WarpProjectionStackToFourDType;
+  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType> WarpProjectionStackToFourDType;
   WarpProjectionStackToFourDType::Pointer warpbackproject = WarpProjectionStackToFourDType::New();
   warpbackproject->SetInputVolumeSeries(fourdSource->GetOutput() );
   warpbackproject->SetInputProjectionStack(pasteFilter->GetOutput());

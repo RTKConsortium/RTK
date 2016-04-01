@@ -24,8 +24,8 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::MotionCompensatedFourDReconstructionConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(3);
@@ -44,43 +44,43 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 }
 
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::SetDisplacementField(const TMVFImageSequence* DisplacementField)
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
+::SetDisplacementField(const MVFSequenceImageType* DisplacementField)
 {
-  this->SetNthInput(2, const_cast<TMVFImageSequence*>(DisplacementField));
+  this->SetNthInput(2, const_cast<MVFSequenceImageType*>(DisplacementField));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::SetInverseDisplacementField(const TMVFImageSequence* InverseDisplacementField)
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
+::SetInverseDisplacementField(const MVFSequenceImageType* InverseDisplacementField)
 {
-  this->SetNthInput(3, const_cast<TMVFImageSequence*>(InverseDisplacementField));
+  this->SetNthInput(3, const_cast<MVFSequenceImageType*>(InverseDisplacementField));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-typename TMVFImageSequence::ConstPointer
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::ConstPointer
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GetDisplacementField()
 {
-  return static_cast< const TMVFImageSequence * >
+  return static_cast< const MVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(2) );
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-typename TMVFImageSequence::ConstPointer
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::ConstPointer
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GetInverseDisplacementField()
 {
-  return static_cast< const TMVFImageSequence * >
+  return static_cast< const MVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput(3) );
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::SetSignalFilename(const std::string _arg)
 {
   itkDebugMacro("setting SignalFilename to " << _arg);
@@ -106,9 +106,9 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   m_InverseMVFInterpolatorFilter->SetSignalVector(m_Signal);
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
   m_MVFInterpolatorFilter->SetInput(this->GetDisplacementField());
@@ -125,9 +125,9 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   Superclass::GenerateOutputInformation();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GenerateInputRequestedRegion()
 {
   // Let the internal filters compute the input requested region
@@ -138,9 +138,9 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   // Leave its requested region unchanged (set by the other filters that need it)
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
   int Dimension = ProjectionStackType::ImageDimension;

@@ -105,9 +105,7 @@ int main(int argc, char * argv[])
   
   // Create the main filter, connect the basic inputs, and set the basic parameters
   typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType,
-                                                     ProjectionStackType,
-                                                     DVFSequenceImageType,
-                                                     DVFImageType> WarpForwardProjectSequenceFilterType;
+                                                     ProjectionStackType> WarpForwardProjectSequenceFilterType;
   typename WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
   warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput() );
   warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());

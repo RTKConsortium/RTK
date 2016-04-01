@@ -24,8 +24,8 @@
 namespace rtk
 {
 
-template<typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+template<typename VolumeSeriesType, typename ProjectionStackType>
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter()
 {
   // Create the filters
@@ -34,17 +34,17 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, Pro
 #endif
 }
 
-template<typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template<typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::SetSignalFilename(const std::string _arg)
 {
   dynamic_cast<MotionCompensatedFourDCGFilterType*>(this->m_FourDCGFilter.GetPointer())->SetSignalFilename(_arg);
 }
 
-template<typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template<typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateInputRequestedRegion()
 {
   // Set variables so that the superclass' implementation
@@ -56,9 +56,9 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, Pro
   Superclass::GenerateInputRequestedRegion();
 }
 
-template<typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template<typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
   // Set m_PerformWarping to false so as not
@@ -74,9 +74,9 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, Pro
   Superclass::GenerateOutputInformation();
 }
 
-template<typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template<typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
   // Set the variables so that the superclass implementation updates the right filters
