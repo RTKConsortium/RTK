@@ -43,25 +43,33 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   ++it;
   while( !it.IsAtEnd() )
     {
-    it.Set( -log( double(it.GetIndex()[0]) ) );
+    it.Set( it.GetIndex()[0] );
     ++it;
     }
 
   // Default value for I0 is the numerical max
   m_I0 = size[0]-1;
+  m_IDark = 0;
 
   // Mini pipeline for creating the lut.
-  m_AddLUTFilter = AddLUTFilterType::New();
-  m_ThresholdLUTFilter = ThresholdLUTFilterType::New();
-  m_AddLUTFilter->InPlaceOff();
-  m_AddLUTFilter->SetInput1(lut);
-  m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max(m_I0, 1.) ) );
-  m_ThresholdLUTFilter->SetInput( m_AddLUTFilter->GetOutput() );
-  m_ThresholdLUTFilter->ThresholdBelow(0.);
-  m_ThresholdLUTFilter->SetOutsideValue(0.);
+  m_SubtractRampFilter = SubtractLUTFilterType::New();
+  m_SubtractLUTFilter = SubtractLUTFilterType::New();
+  m_ThresholdRampFilter = ThresholdLUTFilterType::New();
+  m_LogRampFilter = LogLUTFilterType::New();
+
+  m_SubtractRampFilter->SetInput1(lut);
+  m_SubtractRampFilter->SetConstant2(m_IDark);
+  m_SubtractRampFilter->InPlaceOff();
+  m_ThresholdRampFilter->SetInput(m_SubtractRampFilter->GetOutput());
+  m_ThresholdRampFilter->ThresholdBelow(1.);
+  m_ThresholdRampFilter->SetOutsideValue(1.);
+  m_LogRampFilter->SetInput(m_ThresholdRampFilter->GetOutput());
+
+  m_SubtractLUTFilter->SetConstant1((OutputImagePixelType) log( std::max(m_I0-m_IDark, 1.) ) );
+  m_SubtractLUTFilter->SetInput2(m_LogRampFilter->GetOutput());
 
   // Set the lut to member and functor
-  this->SetLookupTable( m_ThresholdLUTFilter->GetOutput() );
+  this->SetLookupTable( m_SubtractLUTFilter->GetOutput() );
 }
 
 template <class TInputImage, class TOutputImage>
@@ -73,12 +81,13 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   I0EstimationType * i0est = dynamic_cast<I0EstimationType*>( this->GetInput()->GetSource().GetPointer() );
   if(i0est)
     {
-    m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max((double)i0est->GetI0(), 1.) ) );
+    m_SubtractLUTFilter->SetConstant1((OutputImagePixelType) log( std::max((double)i0est->GetI0()-m_IDark, 1.) ) );
     }
   else
     {
-    m_AddLUTFilter->SetConstant2((OutputImagePixelType) log( std::max(m_I0, 1.) ) );
+    m_SubtractLUTFilter->SetConstant1((OutputImagePixelType) log( std::max(m_I0-m_IDark, 1.) ) );
     }
+  m_SubtractRampFilter->SetInput2(m_IDark);
 
   Superclass::BeforeThreadedGenerateData(); // Update the LUT
 }

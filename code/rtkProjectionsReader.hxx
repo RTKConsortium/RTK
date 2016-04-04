@@ -65,6 +65,7 @@ ProjectionsReader<TOutputImage>
   m_ScatterToPrimaryRatio(0.),
   m_NonNegativityConstraintThreshold( itk::NumericTraits<double>::NonpositiveMin() ),
   m_I0( itk::NumericTraits<double>::NonpositiveMin() ),
+  m_IDark( 0. ),
   m_ComputeLineIntegral(true)
 {
   // Filters common to all input types and that do not depend on the input image type.
@@ -565,6 +566,7 @@ void ProjectionsReader<TOutputImage>
   I0Type *i0 = dynamic_cast<I0Type*>(m_RawToAttenuationFilter.GetPointer());
   assert(i0 != NULL);
   i0->SetI0(m_I0);
+  i0->SetIDark(m_IDark);
   // Pipeline connection for m_RawToAttenuationFilter is done after the call to this function
 }
 
