@@ -21,6 +21,7 @@
 #include "rtkFourDToProjectionStackImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
+#include <vector>
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaWarpForwardProjectionImageFilter.h"
@@ -109,6 +110,7 @@ public:
     itkTypeMacro(WarpFourDToProjectionStackImageFilter, rtk::FourDToProjectionStackImageFilter)
 
     typedef rtk::CyclicDeformationImageFilter<DVFImageType>                  DVFInterpolatorType;
+    typedef std::vector<double>                                              SignalVectorType;
 
     /** The forward projection filter cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer _arg) {}
@@ -117,9 +119,7 @@ public:
     void SetDisplacementField(const DVFSequenceImageType* DVFs);
     typename DVFSequenceImageType::ConstPointer GetDisplacementField();
 
-    /** The file containing the phase at which each projection has been acquired */
-    itkGetMacro(SignalFilename, std::string)
-    virtual void SetSignalFilename (const std::string _arg);
+    virtual void SetSignal(const std::vector<double> signal);
 
 protected:
     WarpFourDToProjectionStackImageFilter();
@@ -138,7 +138,6 @@ protected:
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename DVFInterpolatorType::Pointer               m_DVFInterpolatorFilter;
-    std::string                                         m_SignalFilename;
     std::vector<double>                                 m_Signal;
 
 private:

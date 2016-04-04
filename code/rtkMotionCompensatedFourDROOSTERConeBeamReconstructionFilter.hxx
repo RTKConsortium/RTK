@@ -34,12 +34,12 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, Pro
 #endif
 }
 
-template<typename VolumeSeriesType, typename ProjectionStackType>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
-::SetSignalFilename(const std::string _arg)
+::SetSignal(const std::vector<double> signal)
 {
-  dynamic_cast<MotionCompensatedFourDCGFilterType*>(this->m_FourDCGFilter.GetPointer())->SetSignalFilename(_arg);
+  this->m_FourDCGFilter->SetSignal(signal);
 }
 
 template<typename VolumeSeriesType, typename ProjectionStackType>

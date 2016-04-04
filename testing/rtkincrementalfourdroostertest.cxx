@@ -9,6 +9,7 @@
 #include "rtkFieldOfViewImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
 #include "rtkIncrementalFourDROOSTERConeBeamReconstructionFilter.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 /**
  * \file rtkfourdconjugategradienttest.cxx
@@ -347,8 +348,8 @@ int main(int, char** )
   incrementalRooster->SetInputVolumeSeries(fourdSource->GetOutput() );
   incrementalRooster->SetInputProjectionStack(pasteFilter->GetOutput());
   incrementalRooster->SetGeometry(geometry);
-//  incrementalRooster->SetWeights(phaseReader->GetOutput());
   incrementalRooster->SetPhasesFileName("signal.txt");
+  incrementalRooster->SetSignal(rtk::ReadSignalFile("signal.txt"));
   incrementalRooster->SetMotionMask(roi->GetOutput());
   incrementalRooster->SetGeometry( geometry );
   incrementalRooster->SetCG_iterations( 2 );

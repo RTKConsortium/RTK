@@ -18,6 +18,7 @@
 
 #include "rtkwarpedforwardprojectsequence_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 //#include "rtkWarpForwardProjectSequenceImageFilter.h"
@@ -95,7 +96,7 @@ int main(int argc, char * argv[])
   forwardProjection->SetDisplacementField( dvfReader->GetOutput() );
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   forwardProjection->SetWeights(phaseReader->GetOutput());
-  forwardProjection->SetSignalFilename(args_info.signal_arg);
+  forwardProjection->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
 
   projProbe.Start();
   

@@ -19,7 +19,6 @@
 #define __rtkWarpFourDToProjectionStackImageFilter_hxx
 
 #include "rtkWarpFourDToProjectionStackImageFilter.h"
-#include "rtkGeneralPurposeFunctions.h"
 
 namespace rtk
 {
@@ -56,28 +55,10 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::G
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
-::SetSignalFilename(const std::string _arg)
+::SetSignal(const std::vector<double> signal)
 {
-  itkDebugMacro("setting SignalFilename to " << _arg);
-  if ( this->m_SignalFilename != _arg )
-    {
-    this->m_SignalFilename = _arg;
-    this->Modified();
-
-    std::ifstream is( _arg.c_str() );
-    if( !is.is_open() )
-      {
-      itkGenericExceptionMacro(<< "Could not open signal file " << m_SignalFilename);
-      }
-
-    double value;
-    while( !is.eof() )
-      {
-      is >> value;
-      m_Signal.push_back(value);
-      }
-    }
-  m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
+  this->m_Signal = signal;
+  this->Modified();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -85,6 +66,7 @@ void
 WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
   m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
   m_DVFInterpolatorFilter->SetFrame(0);
 

@@ -360,6 +360,7 @@ int main(int, char** )
   rooster->SetInputProjectionStack(pasteFilter->GetOutput());
   rooster->SetGeometry(geometry);
   rooster->SetWeights(phaseReader->GetOutput());
+  rooster->SetSignal(rtk::ReadSignalFile("signal.txt"));
   rooster->SetGeometry( geometry );
   rooster->SetCG_iterations( 2 );
   rooster->SetMainLoop_iterations( 2);

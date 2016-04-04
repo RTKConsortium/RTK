@@ -70,11 +70,11 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
-::SetSignalFilename(const std::string _arg)
+::SetSignal(const std::vector<double> signal)
 {
 #ifdef RTK_USE_CUDA
-  dynamic_cast<MCProjStackToFourDType*>(this->m_ProjStackToFourDFilter.GetPointer())->SetSignalFilename(_arg);
-  dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetSignalFilename(_arg);
+  dynamic_cast<MCProjStackToFourDType*>(this->m_ProjStackToFourDFilter.GetPointer())->SetSignal(signal);
+  dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetSignal(signal);
 #endif
 }
 

@@ -101,7 +101,6 @@ int main(int argc, char * argv[])
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   phaseReader->Update();
   
-  
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
@@ -109,6 +108,7 @@ int main(int argc, char * argv[])
   rooster->SetInputProjectionStack(reader->GetOutput());
   rooster->SetGeometry( geometryReader->GetOutputObject() );
   rooster->SetWeights(phaseReader->GetOutput());
+  rooster->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );
   rooster->SetPhaseShift(args_info.shift_arg);

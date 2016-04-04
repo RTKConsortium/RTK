@@ -18,6 +18,7 @@
 
 #include "rtkmcrooster_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include "rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
@@ -96,7 +97,7 @@ int main(int argc, char * argv[])
   inputFilter->Update();
   inputFilter->ReleaseDataFlagOn();
 
-  // Read the phases file
+  // Convert phase into interpolation and splat weights
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
@@ -112,7 +113,7 @@ int main(int argc, char * argv[])
   mcrooster->SetCG_iterations( args_info.cgiter_arg );
   mcrooster->SetMainLoop_iterations( args_info.niter_arg );
   mcrooster->SetCudaConjugateGradient(args_info.cudacg_flag);
-  mcrooster->SetSignalFilename(args_info.signal_arg);
+  mcrooster->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   
   // For each optional regularization step, set whether or not
   // it should be performed, and provide the necessary inputs

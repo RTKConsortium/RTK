@@ -105,6 +105,7 @@ int main(int argc, char * argv[])
   incrementalCG->SetInputVolumeSeries(inputFilter->GetOutput() );
   incrementalCG->SetInputProjectionStack(reader->GetOutput() );
   incrementalCG->SetPhasesFileName( args_info.signal_arg );
+  incrementalCG->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   incrementalCG->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
   incrementalCG->SetGeometry( geometryReader->GetOutputObject() );
   incrementalCG->SetCudaConjugateGradient(args_info.cudacg_flag);

@@ -38,6 +38,16 @@ IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Projection
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetSignal(const std::vector<double> signal)
+{
+  this->m_FourDCGFilter->SetSignal(signal);
+  this->m_Signal = signal;
+  this->Modified();
+}
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+IncrementalFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
   // Call the superclass method to prepare all filters of the pipeline with

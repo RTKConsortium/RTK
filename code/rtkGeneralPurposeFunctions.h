@@ -20,6 +20,7 @@
 #define __rtkGeneralPurposeFunctions_h
 
 #include <vector>
+#include <itkMacro.h>
 
 namespace rtk
 {
@@ -56,6 +57,25 @@ GetSortingPermutation(std::vector<TVectorElement> input)
   return result;
 }
 
+std::vector<double>
+ReadSignalFile(std::string filename)
+{
+  std::vector<double> signalVector;
+  std::ifstream is( filename.c_str() );
+  if( !is.is_open() )
+    {
+    itkGenericExceptionMacro(<< "Could not open signal file " << filename);
+    }
+
+  double value;
+  while( !is.eof() )
+    {
+    is >> value;
+    signalVector.push_back(value);
+    }
+
+  return signalVector;
+}
 
 }
 

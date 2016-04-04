@@ -314,6 +314,9 @@ public:
   itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
   itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
 
+  /** Store the phase signal in a member variable */
+  virtual void SetSignal(const std::vector<double> signal);
+
 protected:
   FourDROOSTERConeBeamReconstructionFilter();
   ~FourDROOSTERConeBeamReconstructionFilter(){}
@@ -380,6 +383,9 @@ protected:
 
   // Geometry
   typename rtk::ThreeDCircularProjectionGeometry::Pointer m_Geometry;
+
+  // Signal
+  std::vector<double>                            m_Signal;
 
   /** Time probes */
   itk::TimeProbe m_CGProbe;

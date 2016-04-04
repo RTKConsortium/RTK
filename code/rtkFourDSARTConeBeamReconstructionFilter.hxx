@@ -20,6 +20,7 @@
 #define __rtkFourDSARTConeBeamReconstructionFilter_hxx
 
 #include "rtkFourDSARTConeBeamReconstructionFilter.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include <algorithm>
 #include <itkTimeProbe.h>
@@ -144,6 +145,17 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
   m_ProjectionStackToFourDFilter->SetWeights(_arg);
   m_FourDToProjectionStackFilter->SetWeights(_arg);
+  this->Modified();
+}
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetSignal(const std::vector<double> signal)
+{
+  m_ProjectionStackToFourDFilter->SetSignal(signal);
+  m_FourDToProjectionStackFilter->SetSignal(signal);
+  this->m_Signal = signal;
   this->Modified();
 }
 

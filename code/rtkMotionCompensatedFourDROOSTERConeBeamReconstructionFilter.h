@@ -165,9 +165,8 @@ public:
   void SetForwardProjectionFilter(int fwtype) {}
   void SetBackProjectionFilter(int bptype) {}
 
-  /** The file containing the phase at which each projection has been acquired */
-  itkGetMacro(SignalFilename, std::string)
-  virtual void SetSignalFilename (const std::string _arg);
+  /** Set the vector containing the signal in the sub-filters */
+  void SetSignal(const std::vector<double> signal);
 
 protected:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter();
@@ -179,9 +178,6 @@ protected:
   virtual void GenerateOutputInformation();
 
   virtual void GenerateInputRequestedRegion();
-
-  std::string                                     m_SignalFilename;
-  std::vector<double>                             m_Signal;
 
 private:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented

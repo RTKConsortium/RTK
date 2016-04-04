@@ -109,10 +109,10 @@ public:
   typename DVFSequenceImageType::ConstPointer GetDisplacementField();
   typename DVFSequenceImageType::ConstPointer GetInverseDisplacementField();
 
-  /** The file containing the phase at which each projection has been acquired */
-  itkGetMacro(SignalFilename, std::string)
-  virtual void SetSignalFilename (const std::string _arg);
+  /** Set the vector containing the signal in the sub-filters */
+  void SetSignal(const std::vector<double> signal);
 
+  // Sub filters typedefs
   typedef rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>                        MCProjStackToFourDType;
   typedef rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType> MCCGOperatorType;
 
@@ -121,9 +121,6 @@ protected:
   ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter(){}
 
   virtual void GenerateOutputInformation();
-
-  std::string                                     m_SignalFilename;
-  std::vector<double>                             m_Signal;
 
 private:
   //purposely not implemented

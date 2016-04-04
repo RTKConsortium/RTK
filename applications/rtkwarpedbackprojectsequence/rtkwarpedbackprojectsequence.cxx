@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
   warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
   warpbackprojectsequence->SetGeometry( geometryReader->GetOutputObject() );
   warpbackprojectsequence->SetWeights(phaseReader->GetOutput());
-  warpbackprojectsequence->SetSignalFilename(args_info.signal_arg);
+  warpbackprojectsequence->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
 
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();

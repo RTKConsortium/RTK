@@ -19,6 +19,7 @@
 #define __rtkFourDToProjectionStackImageFilter_hxx
 
 #include "rtkFourDToProjectionStackImageFilter.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 namespace rtk
 {
@@ -100,6 +101,15 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 ::SetGeometry(GeometryType::Pointer _arg)
 {
   m_Geometry=_arg;
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
+::SetSignal(const std::vector<double> signal)
+{
+  this->m_Signal = signal;
+  this->Modified();
 }
 
 template< typename ProjectionStackType, typename VolumeSeriesType>
@@ -205,35 +215,51 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 
   int NumberProjs = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(ProjectionStackDimension-1);
   int FirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(ProjectionStackDimension-1);
-  for(m_ProjectionNumber=FirstProj; m_ProjectionNumber<FirstProj+NumberProjs; m_ProjectionNumber++)
+
+  // Get an index permutation that sorts the signal values. Then process the projections
+  // in that permutated order. This way, projections with identical phases will be
+  // processed one after the other. This will save some of the DVF interpolation operations.
+  std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
+
+  bool firstProjectionProcessed = false;
+
+  // Process the projections in permutated order
+  for (int i = 0 ; i < this->m_Signal.size(); i++)
     {
-
-    // After the first update, we need to use the output as input.
-    if(m_ProjectionNumber>FirstProj)
+    // Make sure the current projection is in the input projection stack's largest possible region
+    this->m_ProjectionNumber = IndicesOfProjectionsSortedByPhase[i];
+    if ((this->m_ProjectionNumber >= FirstProj) && (this->m_ProjectionNumber<FirstProj+NumberProjs))
       {
-      typename ProjectionStackType::Pointer pimg = m_PasteFilter->GetOutput();
-      pimg->DisconnectPipeline();
-      m_PasteFilter->SetDestinationImage( pimg );
+      // After the first update, we need to use the output as input.
+      if(firstProjectionProcessed)
+        {
+        typename ProjectionStackType::Pointer pimg = this->m_PasteFilter->GetOutput();
+        pimg->DisconnectPipeline();
+        this->m_PasteFilter->SetDestinationImage( pimg );
+        }
+
+      // Update the paste region
+      this->m_PasteRegion.SetIndex(ProjectionStackDimension-1, this->m_ProjectionNumber);
+
+      // Set the projection stack source
+      this->m_ConstantProjectionStackSource->SetIndex(this->m_PasteRegion.GetIndex());
+
+      // Set the Paste Filter. Since its output has been disconnected
+      // we need to set its RequestedRegion manually (it will never
+      // be updated by a downstream filter)
+      m_PasteFilter->SetSourceRegion(m_PasteRegion);
+      m_PasteFilter->SetDestinationIndex(m_PasteRegion.GetIndex());
+      m_PasteFilter->GetOutput()->SetRequestedRegion(m_PasteFilter->GetDestinationImage()->GetLargestPossibleRegion());
+
+      // Set the Interpolation filter
+      m_InterpolationFilter->SetProjectionNumber(m_ProjectionNumber);
+
+      // Update the last filter
+      m_PasteFilter->Update();
+
+      // Update condition
+      firstProjectionProcessed = true;
       }
-
-    // Update the paste region
-    m_PasteRegion.SetIndex(ProjectionStackDimension-1, m_ProjectionNumber);
-
-    // Set the projection stack source
-    m_ConstantProjectionStackSource->SetIndex(m_PasteRegion.GetIndex());
-
-    // Set the Paste Filter. Since its output has been disconnected
-    // we need to set its RequestedRegion manually (it will never
-    // be updated by a downstream filter)
-    m_PasteFilter->SetSourceRegion(m_PasteRegion);
-    m_PasteFilter->SetDestinationIndex(m_PasteRegion.GetIndex());
-    m_PasteFilter->GetOutput()->SetRequestedRegion(m_PasteFilter->GetDestinationImage()->GetLargestPossibleRegion());
-
-    // Set the Interpolation filter
-    m_InterpolationFilter->SetProjectionNumber(m_ProjectionNumber);
-
-    // Update the last filter
-    m_PasteFilter->Update();
     }
 
   // Graft its output

@@ -123,9 +123,8 @@ public:
     typename DVFSequenceImageType::ConstPointer GetInverseDisplacementField();
     typename DVFSequenceImageType::ConstPointer GetDisplacementField();
 
-    /** The file containing the phase at which each projection has been acquired */
-    itkGetMacro(SignalFilename, std::string)
-    virtual void SetSignalFilename (const std::string _arg);
+    /** Set the vector containing the signal in the sub-filters */
+    virtual void SetSignal(const std::vector<double> signal);
 
 protected:
     MotionCompensatedFourDReconstructionConjugateGradientOperator();
@@ -146,7 +145,6 @@ protected:
     /** Member pointers to the filters used internally (for convenience)*/
     typename DVFInterpolatorType::Pointer               m_DVFInterpolatorFilter;
     typename DVFInterpolatorType::Pointer               m_InverseDVFInterpolatorFilter;
-    std::string                                         m_SignalFilename;
     std::vector<double>                                 m_Signal;
 
 private:

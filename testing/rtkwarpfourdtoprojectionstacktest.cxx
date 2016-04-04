@@ -9,6 +9,7 @@
 #include "rtkFieldOfViewImageFilter.h"
 #include "rtkWarpFourDToProjectionStackImageFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 /**
  * \file rtkwarpfourdtoprojectionstacktest.cxx
@@ -372,7 +373,7 @@ int main(int, char** )
   warpforwardproject->SetGeometry(geometry);
   warpforwardproject->SetDisplacementField(deformationField);
   warpforwardproject->SetWeights(phaseReader->GetOutput());
-  warpforwardproject->SetSignalFilename("signal.txt");
+  warpforwardproject->SetSignal(rtk::ReadSignalFile("signal.txt"));
 
 #ifndef RTK_USE_CUDA
   std::cout << "\n\n****** Case 1: Non-warped joseph forward projection (warped forward projection exists only in CUDA) ******" << std::endl;

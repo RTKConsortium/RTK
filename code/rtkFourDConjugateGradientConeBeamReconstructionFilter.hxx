@@ -134,6 +134,17 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetSignal(const std::vector<double> signal)
+{
+  m_ProjStackToFourDFilter->SetSignal(signal);
+  m_CGOperator->SetSignal(signal);
+  this->m_Signal = signal;
+  this->Modified();
+}
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
   // Set the Conjugate Gradient filter (either on CPU or GPU depending on user's choice)

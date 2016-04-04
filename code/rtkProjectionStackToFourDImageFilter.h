@@ -155,6 +155,9 @@ public:
     itkGetMacro(Weights, itk::Array2D<float>)
     itkSetMacro(Weights, itk::Array2D<float>)
 
+    /** Store the phase signal in a member variable */
+    virtual void SetSignal(const std::vector<double> signal);
+
 protected:
     ProjectionStackToFourDImageFilter();
     ~ProjectionStackToFourDImageFilter(){}
@@ -185,6 +188,7 @@ protected:
     int                                                     m_ProjectionNumber;
     bool                                                    m_UseCudaSplat;
     bool                                                    m_UseCudaSources;
+    std::vector<double>                                     m_Signal;
 
 private:
     ProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

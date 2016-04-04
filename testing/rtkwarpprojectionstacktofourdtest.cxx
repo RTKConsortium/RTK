@@ -356,7 +356,7 @@ int main(int, char** )
   warpbackproject->SetGeometry(geometry);
   warpbackproject->SetDisplacementField(deformationField);
   warpbackproject->SetWeights(phaseReader->GetOutput());
-  warpbackproject->SetSignalFilename("signal.txt");
+  warpbackproject->SetSignal(rtk::ReadSignalFile("signal.txt"));
 
 #ifndef RTK_USE_CUDA
   std::cout << "\n\n****** Case 1: Non-warped voxel based back projection (warped back projection exists only in CUDA) ******" << std::endl;
