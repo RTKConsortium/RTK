@@ -214,10 +214,9 @@ void ProjectionsReader<TOutputImage>
     else if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
              !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
              !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
-             !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") ||
              imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
       {
-      /////////// Elekta synergy, IBA / iMagX, TIFF
+      /////////// Elekta synergy, IBA / iMagX, unsigned short
       typedef unsigned short                                     InputPixelType;
       typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
 
@@ -317,7 +316,6 @@ void ProjectionsReader<TOutputImage>
       !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
-      !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") ||
       imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
     PropagateParametersToMiniPipeline< itk::Image<unsigned short, OutputImageDimension> >();
   else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
