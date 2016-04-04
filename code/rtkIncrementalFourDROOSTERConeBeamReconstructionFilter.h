@@ -74,6 +74,9 @@ public:
   itkGetMacro(Kzero, float)
   itkSetMacro(Kzero, float)
 
+  /** Store the phase signal in a member variable */
+  virtual void SetSignal(const std::vector<double> signal);
+
 protected:
   IncrementalFourDROOSTERConeBeamReconstructionFilter();
   ~IncrementalFourDROOSTERConeBeamReconstructionFilter(){}
@@ -100,7 +103,8 @@ protected:
   unsigned int m_NumberOfSubsets;
 
   /** Name of the file containing the phases */
-  std::string m_PhasesFileName;
+  std::string             m_PhasesFileName;
+  std::vector<double>     m_Signal;
 
   /** Convergence parameter */
   float m_Kzero;

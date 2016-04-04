@@ -23,86 +23,64 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::WarpFourDToProjectionStackImageFilter()
+template< typename VolumeSeriesType, typename ProjectionStackType>
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::WarpFourDToProjectionStackImageFilter()
 {
   this->SetNumberOfRequiredInputs(3);
-  m_MVFInterpolatorFilter = MVFInterpolatorType::New();
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-void
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::SetDisplacementField(const TMVFImageSequence* DisplacementField)
-{
-  this->SetNthInput(2, const_cast<TMVFImageSequence*>(DisplacementField));
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-typename TMVFImageSequence::ConstPointer
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::GetDisplacementField()
-{
-  return static_cast< const TMVFImageSequence * >
-          ( this->itk::ProcessObject::GetInput(2) );
-}
-
-#ifdef RTK_USE_CUDA
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-CudaWarpForwardProjectionImageFilter *
-WarpFourDToProjectionStackImageFilter<VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>::GetForwardProjectionFilter()
-{
-  return(m_ForwardProjectionFilter.GetPointer());
-}
-#endif
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-void
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::SetSignalFilename(const std::string _arg)
-{
-  itkDebugMacro("setting SignalFilename to " << _arg);
-  if ( this->m_SignalFilename != _arg )
-    {
-    this->m_SignalFilename = _arg;
-    this->Modified();
-
-    std::ifstream is( _arg.c_str() );
-    if( !is.is_open() )
-      {
-      itkGenericExceptionMacro(<< "Could not open signal file " << m_SignalFilename);
-      }
-
-    double value;
-    while( !is.eof() )
-      {
-      is >> value;
-      m_Signal.push_back(value);
-      }
-    }
-  m_MVFInterpolatorFilter->SetSignalVector(m_Signal);
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
-void
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
-::GenerateOutputInformation()
-{
-  m_MVFInterpolatorFilter->SetInput(this->GetDisplacementField());
-  m_MVFInterpolatorFilter->SetFrame(0);
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
 
 #ifdef RTK_USE_CUDA
   this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
-  GetForwardProjectionFilter()->SetDisplacementField(m_MVFInterpolatorFilter->GetOutput());
 #else
   this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
   itkWarningMacro("The warp Forward project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection")
+#endif
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::SetDisplacementField(const DVFSequenceImageType* DisplacementField)
+{
+  this->SetNthInput(2, const_cast<DVFSequenceImageType*>(DisplacementField));
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::ConstPointer
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::GetDisplacementField()
+{
+  return static_cast< const DVFSequenceImageType * >
+          ( this->itk::ProcessObject::GetInput(2) );
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
+::SetSignal(const std::vector<double> signal)
+{
+  this->m_Signal = signal;
+  this->Modified();
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
+::GenerateOutputInformation()
+{
+  m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
+  m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
+  m_DVFInterpolatorFilter->SetFrame(0);
+
+#ifdef RTK_USE_CUDA
+  dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter* >
+      (this->m_ForwardProjectionFilter.GetPointer())->SetDisplacementField(m_DVFInterpolatorFilter->GetOutput());
 #endif
 
   Superclass::GenerateOutputInformation();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the stack of projections we update
@@ -119,59 +97,75 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, TM
   inputPtr1->SetRequestedRegionToLargestPossibleRegion();
 
   // Input 2 is the sequence of DVFs
-  typename TMVFImageSequence::Pointer inputPtr2 = static_cast< TMVFImageSequence * >
+  typename DVFSequenceImageType::Pointer inputPtr2 = static_cast< DVFSequenceImageType * >
             ( this->itk::ProcessObject::GetInput(2) );
   inputPtr2->SetRequestedRegionToLargestPossibleRegion();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TMVFImageSequence, typename TMVFImage>
+template< typename VolumeSeriesType, typename ProjectionStackType>
 void
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, TMVFImageSequence, TMVFImage>
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
   int ProjectionStackDimension = ProjectionStackType::ImageDimension;
 
   int NumberProjs = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(ProjectionStackDimension-1);
   int FirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(ProjectionStackDimension-1);
-  for(this->m_ProjectionNumber=FirstProj; this->m_ProjectionNumber<FirstProj+NumberProjs; this->m_ProjectionNumber++)
+
+  // Get an index permutation that sorts the signal values. Then process the projections
+  // in that permutated order. This way, projections with identical phases will be
+  // processed one after the other. This will save some of the DVF interpolation operations.
+  std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
+
+  bool firstProjectionProcessed = false;
+
+  // Process the projections in permutated order
+  for (int i = 0 ; i < this->m_Signal.size(); i++)
     {
-
-    // After the first update, we need to use the output as input.
-    if(this->m_ProjectionNumber>FirstProj)
+    // Make sure the current projection is in the input projection stack's largest possible region
+    this->m_ProjectionNumber = IndicesOfProjectionsSortedByPhase[i];
+    if ((this->m_ProjectionNumber >= FirstProj) && (this->m_ProjectionNumber<FirstProj+NumberProjs))
       {
-      typename ProjectionStackType::Pointer pimg = this->m_PasteFilter->GetOutput();
-      pimg->DisconnectPipeline();
-      this->m_PasteFilter->SetDestinationImage( pimg );
+      // After the first update, we need to use the output as input.
+      if(firstProjectionProcessed)
+        {
+        typename ProjectionStackType::Pointer pimg = this->m_PasteFilter->GetOutput();
+        pimg->DisconnectPipeline();
+        this->m_PasteFilter->SetDestinationImage( pimg );
+        }
+
+      // Update the paste region
+      this->m_PasteRegion.SetIndex(ProjectionStackDimension-1, this->m_ProjectionNumber);
+
+      // Set the projection stack source
+      this->m_ConstantProjectionStackSource->SetIndex(this->m_PasteRegion.GetIndex());
+
+      // Set the Paste Filter. Since its output has been disconnected
+      // we need to set its RequestedRegion manually (it will never
+      // be updated by a downstream filter)
+      this->m_PasteFilter->SetSourceRegion(this->m_PasteRegion);
+      this->m_PasteFilter->SetDestinationIndex(this->m_PasteRegion.GetIndex());
+      this->m_PasteFilter->GetOutput()->SetRequestedRegion(this->m_PasteFilter->GetDestinationImage()->GetLargestPossibleRegion());
+
+      // Set the Interpolation filter
+      this->m_InterpolationFilter->SetProjectionNumber(this->m_ProjectionNumber);
+
+      // Set the DVF interpolator
+      m_DVFInterpolatorFilter->SetFrame(this->m_ProjectionNumber);
+
+      // Update the last filter
+      this->m_PasteFilter->Update();
+
+      // Update condition
+      firstProjectionProcessed = true;
       }
-
-    // Update the paste region
-    this->m_PasteRegion.SetIndex(ProjectionStackDimension-1, this->m_ProjectionNumber);
-
-    // Set the projection stack source
-    this->m_ConstantProjectionStackSource->SetIndex(this->m_PasteRegion.GetIndex());
-
-    // Set the Paste Filter. Since its output has been disconnected
-    // we need to set its RequestedRegion manually (it will never
-    // be updated by a downstream filter)
-    this->m_PasteFilter->SetSourceRegion(this->m_PasteRegion);
-    this->m_PasteFilter->SetDestinationIndex(this->m_PasteRegion.GetIndex());
-    this->m_PasteFilter->GetOutput()->SetRequestedRegion(this->m_PasteFilter->GetDestinationImage()->GetLargestPossibleRegion());
-
-    // Set the Interpolation filter
-    this->m_InterpolationFilter->SetProjectionNumber(this->m_ProjectionNumber);
-
-    // Set the MVF interpolator
-    m_MVFInterpolatorFilter->SetFrame(this->m_ProjectionNumber);
-
-    // Update the last filter
-    this->m_PasteFilter->Update();
     }
 
   // Graft its output
   this->GraftOutput( this->m_PasteFilter->GetOutput() );
 
   // Release the data in internal filters
-  this->m_MVFInterpolatorFilter->GetOutput()->ReleaseData();
+  this->m_DVFInterpolatorFilter->GetOutput()->ReleaseData();
 }
 
 }// end namespace

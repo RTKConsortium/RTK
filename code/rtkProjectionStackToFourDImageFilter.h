@@ -105,7 +105,7 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 
-template< typename VolumeSeriesType, typename ProjectionStackType >
+template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision=double>
 class ProjectionStackToFourDImageFilter : public itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >
 {
 public:
@@ -140,8 +140,7 @@ public:
     typedef rtk::ThreeDCircularProjectionGeometry                                 GeometryType;
 
     /** Pass the backprojection filter to SingleProjectionToFourDFilter */
-    virtual void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
-    virtual BackProjectionFilterType* GetBackProjectionFilter();
+    void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
@@ -155,6 +154,9 @@ public:
     /** Macros that take care of implementing the Get and Set methods for Weights */
     itkGetMacro(Weights, itk::Array2D<float>)
     itkSetMacro(Weights, itk::Array2D<float>)
+
+    /** Store the phase signal in a member variable */
+    virtual void SetSignal(const std::vector<double> signal);
 
 protected:
     ProjectionStackToFourDImageFilter();
@@ -186,6 +188,7 @@ protected:
     int                                                     m_ProjectionNumber;
     bool                                                    m_UseCudaSplat;
     bool                                                    m_UseCudaSources;
+    std::vector<double>                                     m_Signal;
 
 private:
     ProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

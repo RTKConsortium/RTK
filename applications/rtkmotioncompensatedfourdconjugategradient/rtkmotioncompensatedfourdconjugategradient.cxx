@@ -16,14 +16,13 @@
  *
  *=========================================================================*/
 
-#include "rtkwarpedbackprojectsequence_ggo.h"
+#include "rtkmotioncompensatedfourdconjugategradient_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkWarpProjectionStackToFourDImageFilter.h"
+#include "rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
-
-#include <itkTimeProbe.h>
+#include "rtkWarpSequenceImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -32,7 +31,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkwarpedbackprojectsequence, args_info);
+  GGO(rtkmotioncompensatedfourdconjugategradient, args_info);
 
   typedef float OutputPixelType;
   typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
@@ -54,7 +53,7 @@ int main(int argc, char * argv[])
   // Projections reader
   typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkwarpedbackprojectsequence>(reader, args_info);
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmotioncompensatedfourdconjugategradient>(reader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -79,10 +78,10 @@ int main(int argc, char * argv[])
     }
   else
     {
-    // Create new empty volume sequence
+    // Create new empty volume
     typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkwarpedbackprojectsequence>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkmotioncompensatedfourdconjugategradient>(constantImageSource, args_info);
 
     // GenGetOpt can't handle default arguments for multiple arguments like dimension or spacing.
     // The only default it accepts is to set all components of a multiple argument to the same value.
@@ -101,23 +100,31 @@ int main(int argc, char * argv[])
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  phaseReader->Update();  
+  phaseReader->Update();
   
-  // Create the main filter, connect the basic inputs, and set the basic parameters
-  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType,
-                                                     ProjectionStackType> WarpForwardProjectSequenceFilterType;
-  WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
-  warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput() );
-  warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
-  warpbackprojectsequence->SetGeometry( geometryReader->GetOutputObject() );
-  warpbackprojectsequence->SetWeights(phaseReader->GetOutput());
-  warpbackprojectsequence->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
-
+  
+  // Create the mcfourdcg filter, connect the basic inputs, and set the basic parameters
+  typedef rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCFourDCGFilterType;
+  MCFourDCGFilterType::Pointer mcfourdcg = MCFourDCGFilterType::New();
+  mcfourdcg->SetInputVolumeSeries(inputFilter->GetOutput() );
+  mcfourdcg->SetInputProjectionStack(reader->GetOutput());
+  mcfourdcg->SetGeometry( geometryReader->GetOutputObject() );
+  mcfourdcg->SetWeights(phaseReader->GetOutput());
+  mcfourdcg->SetNumberOfIterations( args_info.niter_arg );
+  mcfourdcg->SetCudaConjugateGradient(args_info.cudacg_flag);
+  mcfourdcg->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
+  
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   dvfReader->SetFileName( args_info.dvf_arg );
   dvfReader->Update();
-  warpbackprojectsequence->SetDisplacementField(dvfReader->GetOutput());
+  mcfourdcg->SetDisplacementField(dvfReader->GetOutput());
+
+  // Read inverse DVF if provided
+  DVFReaderType::Pointer idvfReader = DVFReaderType::New();
+  idvfReader->SetFileName( args_info.idvf_arg );
+  idvfReader->Update();
+  mcfourdcg->SetInverseDisplacementField(idvfReader->GetOutput());
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
@@ -126,19 +133,28 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackprojectsequence->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( mcfourdcg->Update() );
 
   if(args_info.time_flag)
     {
+    mcfourdcg->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
+
+  // The mcfourdcg filter reconstructs a static 4D volume (if the DVFs perfectly model the actual motion)
+  // Warp this sequence with the inverse DVF so as to obtain a result similar to the classical 4D CG filter
+  typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType> WarpSequenceFilterType;
+  WarpSequenceFilterType::Pointer warp = WarpSequenceFilterType::New();
+  warp->SetInput(mcfourdcg->GetOutput());
+  warp->SetDisplacementField(idvfReader->GetOutput());
+  warp->Update();
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( warpbackprojectsequence->GetOutput() );
+  writer->SetInput( warp->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;

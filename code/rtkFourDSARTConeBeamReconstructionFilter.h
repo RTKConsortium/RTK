@@ -188,6 +188,10 @@ public:
 
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);
+
+  /** Store the phase signal in a member variable */
+  virtual void SetSignal(const std::vector<double> signal);
+
 protected:
   FourDSARTConeBeamReconstructionFilter();
   ~FourDSARTConeBeamReconstructionFilter(){}
@@ -224,6 +228,7 @@ protected:
   std::vector< unsigned int >                    m_ProjectionsOrder;
   bool                                           m_ProjectionsOrderInitialized;
   bool                                           m_EnforcePositivity;
+  std::vector<double>                            m_Signal;
 
 private:
   /** Number of projections processed before the volume is updated (1 for SART,

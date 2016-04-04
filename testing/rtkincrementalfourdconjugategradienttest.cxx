@@ -263,6 +263,7 @@ int main(int, char** )
   conjugategradient->SetMainLoop_iterations(3);
   conjugategradient->SetCG_iterations(2);
   conjugategradient->SetPhasesFileName("signal.txt");
+  conjugategradient->SetSignal(rtk::ReadSignalFile("signal.txt"));
   conjugategradient->SetNumberOfProjectionsPerSubset(5);
 
   std::cout << "\n\n****** Case 1: Joseph forward projector, Voxel-Based back projector, CPU interpolation and splat ******" << std::endl;

@@ -18,6 +18,7 @@
 
 #include "rtkwarpedforwardprojectsequence_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 //#include "rtkWarpForwardProjectSequenceImageFilter.h"
@@ -87,7 +88,7 @@ int main(int argc, char * argv[])
     std::cout << "Projecting volume sequence..." << std::flush;
   itk::TimeProbe projProbe;
 
-  typedef rtk::WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType, DVFSequenceImageType, DVFImageType> WarpForwardProjectType;
+  typedef rtk::WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType> WarpForwardProjectType;
   WarpForwardProjectType::Pointer forwardProjection = WarpForwardProjectType::New();
 
   forwardProjection->SetInputProjectionStack( constantImageSource->GetOutput() );
@@ -95,7 +96,7 @@ int main(int argc, char * argv[])
   forwardProjection->SetDisplacementField( dvfReader->GetOutput() );
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   forwardProjection->SetWeights(phaseReader->GetOutput());
-  forwardProjection->SetSignalFilename(args_info.signal_arg);
+  forwardProjection->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
 
   projProbe.Start();
   

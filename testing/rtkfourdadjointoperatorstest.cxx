@@ -162,6 +162,8 @@ int main(int, char** )
   fw->SetForwardProjectionFilter( jfw.GetPointer() );
   fw->SetGeometry( geometry );
   fw->SetWeights(phaseReader->GetOutput());
+  fw->SetSignal(rtk::ReadSignalFile(std::string(RTK_DATA_ROOT) +
+                           std::string("/Input/Phases/phases_slow.txt")));
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
 
   std::cout << "\n\n****** Projection stack to 4D ******" << std::endl;
@@ -176,6 +178,8 @@ int main(int, char** )
   bp->SetBackProjectionFilter( jbp.GetPointer() );
   bp->SetGeometry( geometry.GetPointer() );
   bp->SetWeights(phaseReader->GetOutput());
+  bp->SetSignal(rtk::ReadSignalFile(std::string(RTK_DATA_ROOT) +
+                           std::string("/Input/Phases/phases_slow.txt")));
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
 
   CheckScalarProducts<VolumeSeriesType, ProjectionStackType>(randomVolumeSeriesSource->GetOutput(), bp->GetOutput(), randomProjectionStackSource->GetOutput(), fw->GetOutput());

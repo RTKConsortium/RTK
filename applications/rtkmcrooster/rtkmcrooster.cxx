@@ -16,14 +16,14 @@
  *
  *=========================================================================*/
 
-#include "rtkwarpedbackprojectsequence_ggo.h"
+#include "rtkmcrooster_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 
-#include "rtkWarpProjectionStackToFourDImageFilter.h"
+#include "rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
-
-#include <itkTimeProbe.h>
+#include "rtkWarpSequenceImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -32,7 +32,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkwarpedbackprojectsequence, args_info);
+  GGO(rtkmcrooster, args_info);
 
   typedef float OutputPixelType;
   typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
   // Projections reader
   typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkwarpedbackprojectsequence>(reader, args_info);
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmcrooster>(reader, args_info);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -79,10 +79,10 @@ int main(int argc, char * argv[])
     }
   else
     {
-    // Create new empty volume sequence
+    // Create new empty volume
     typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkwarpedbackprojectsequence>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkmcrooster>(constantImageSource, args_info);
 
     // GenGetOpt can't handle default arguments for multiple arguments like dimension or spacing.
     // The only default it accepts is to set all components of a multiple argument to the same value.
@@ -97,27 +97,98 @@ int main(int argc, char * argv[])
   inputFilter->Update();
   inputFilter->ReleaseDataFlagOn();
 
-  // Read the phases file
+  // Convert phase into interpolation and splat weights
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  phaseReader->Update();  
+  phaseReader->Update();
   
-  // Create the main filter, connect the basic inputs, and set the basic parameters
-  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType,
-                                                     ProjectionStackType> WarpForwardProjectSequenceFilterType;
-  WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
-  warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput() );
-  warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
-  warpbackprojectsequence->SetGeometry( geometryReader->GetOutputObject() );
-  warpbackprojectsequence->SetWeights(phaseReader->GetOutput());
-  warpbackprojectsequence->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
+  // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
+  typedef rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCROOSTERFilterType;
+  MCROOSTERFilterType::Pointer mcrooster = MCROOSTERFilterType::New();
+  mcrooster->SetInputVolumeSeries(inputFilter->GetOutput() );
+  mcrooster->SetInputProjectionStack(reader->GetOutput());
+  mcrooster->SetGeometry( geometryReader->GetOutputObject() );
+  mcrooster->SetWeights(phaseReader->GetOutput());
+  mcrooster->SetCG_iterations( args_info.cgiter_arg );
+  mcrooster->SetMainLoop_iterations( args_info.niter_arg );
+  mcrooster->SetCudaConjugateGradient(args_info.cudacg_flag);
+  mcrooster->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
+  
+  // For each optional regularization step, set whether or not
+  // it should be performed, and provide the necessary inputs
+  
+  // Positivity
+  if (args_info.nopositivity_flag)
+    mcrooster->SetPerformPositivity(false);
+  else
+    mcrooster->SetPerformPositivity(true);
+  
+  // Motion mask
+  typedef itk::ImageFileReader<  VolumeType > InputReaderType;
+  if (args_info.motionmask_given)
+    {
+    InputReaderType::Pointer motionMaskReader = InputReaderType::New();
+    motionMaskReader->SetFileName( args_info.motionmask_arg );
+    motionMaskReader->Update();
+    mcrooster->SetMotionMask(motionMaskReader->GetOutput());
+    mcrooster->SetPerformMotionMask(true);
+    }
+  else
+    mcrooster->SetPerformMotionMask(false);
+    
+  // Spatial TV
+  if (args_info.gamma_space_given)
+    {
+    mcrooster->SetGammaTVSpace(args_info.gamma_space_arg);
+    mcrooster->SetTV_iterations(args_info.tviter_arg);
+    mcrooster->SetPerformTVSpatialDenoising(true);
+    }
+  else
+    mcrooster->SetPerformTVSpatialDenoising(false);
+  
+  // Spatial wavelets
+  if (args_info.threshold_given)
+    {
+    mcrooster->SetSoftThresholdWavelets(args_info.threshold_arg);
+    mcrooster->SetOrder(args_info.order_arg);
+    mcrooster->SetNumberOfLevels(args_info.levels_arg);
+    mcrooster->SetPerformWaveletsSpatialDenoising(true);
+    }
+  else
+    mcrooster->SetPerformWaveletsSpatialDenoising(false);
+  
+  // Temporal TV
+  if (args_info.gamma_time_given)
+    {
+    mcrooster->SetGammaTVTime(args_info.gamma_time_arg);
+    mcrooster->SetTV_iterations(args_info.tviter_arg);
+    mcrooster->SetPerformTVTemporalDenoising(true);
+    }
+  else
+    mcrooster->SetPerformTVTemporalDenoising(false);
+
+  // Temporal L0
+  if (args_info.lambda_time_arg)
+    {
+    mcrooster->SetLambdaL0Time(args_info.lambda_time_arg);
+    mcrooster->SetL0_iterations(args_info.l0iter_arg);
+    mcrooster->SetPerformL0TemporalDenoising(true);
+    }
+  else
+    mcrooster->SetPerformL0TemporalDenoising(false);
 
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   dvfReader->SetFileName( args_info.dvf_arg );
   dvfReader->Update();
-  warpbackprojectsequence->SetDisplacementField(dvfReader->GetOutput());
+  mcrooster->SetDisplacementField(dvfReader->GetOutput());
+
+  // Read inverse DVF if provided
+  DVFReaderType::Pointer idvfReader = DVFReaderType::New();
+  idvfReader->SetFileName( args_info.idvf_arg );
+  idvfReader->Update();
+  mcrooster->SetInverseDisplacementField(idvfReader->GetOutput());
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
@@ -126,19 +197,28 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackprojectsequence->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( mcrooster->Update() );
 
   if(args_info.time_flag)
     {
+    mcrooster->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
+
+  // MCROOSTER outputs a motion-compensated reconstruction
+  // Warp it with the inverse field so that it is 4D
+  typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType> WarpSequenceFilterType;
+  WarpSequenceFilterType::Pointer warp = WarpSequenceFilterType::New();
+  warp->SetInput(mcrooster->GetOutput());
+  warp->SetDisplacementField(idvfReader->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() );
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( warpbackprojectsequence->GetOutput() );
+  writer->SetInput( warp->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
 
   return EXIT_SUCCESS;

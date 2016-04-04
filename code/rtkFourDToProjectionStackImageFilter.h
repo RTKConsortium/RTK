@@ -130,7 +130,6 @@ public:
 
     /** Set the ForwardProjection filter */
     void SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg);
-    virtual ForwardProjectionFilterType* GetForwardProjectionFilter();
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
     virtual void SetGeometry(GeometryType::Pointer _arg);
@@ -140,6 +139,9 @@ public:
 
     /** Initializes the empty volume source, set it and update it */
     void InitializeConstantVolumeSource();
+
+    /** Store the phase signal in a member variable */
+    virtual void SetSignal(const std::vector<double> signal);
 
 protected:
     FourDToProjectionStackImageFilter();
@@ -167,6 +169,7 @@ protected:
     GeometryType::Pointer                                               m_Geometry;
     int                                                                 m_ProjectionNumber;
     typename ConstantProjectionStackSourceType::OutputImageRegionType   m_PasteRegion;
+    std::vector<double>                                                 m_Signal;
 
 private:
     FourDToProjectionStackImageFilter(const Self &); //purposely not implemented

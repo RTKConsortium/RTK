@@ -98,6 +98,17 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetSignal(const std::vector<double> signal)
+{
+  m_CG->SetSignal(signal);
+  this->m_Signal = signal;
+  this->Modified();
+}
+
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
   unsigned int Dimension = ProjectionStackType::ImageDimension;
