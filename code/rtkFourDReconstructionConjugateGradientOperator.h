@@ -177,6 +177,9 @@ public:
     itkGetMacro(Weights, itk::Array2D<float>)
     itkSetMacro(Weights, itk::Array2D<float>)
 
+    /** Store the phase signal in a member variable */
+    virtual void SetSignal(const std::vector<double> signal);
+
 protected:
     FourDReconstructionConjugateGradientOperator();
     ~FourDReconstructionConjugateGradientOperator(){}
@@ -212,6 +215,7 @@ protected:
     bool                                                  m_UseCudaSplat;
     bool                                                  m_UseCudaSources;
     itk::Array2D<float>                                   m_Weights;
+    std::vector<double>                                   m_Signal;
 
 private:
     FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented

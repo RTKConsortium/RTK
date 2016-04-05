@@ -74,7 +74,7 @@ public:
   InputImageType::Pointer GetInputVolume();
   
   /** Input displacement vector field */
-  void SetDisplacementField(const DVFType* MVF);
+  void SetDisplacementField(const DVFType* DVF);
   DVFType::Pointer GetDisplacementField();
 
 protected:

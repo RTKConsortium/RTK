@@ -18,6 +18,7 @@
 
 #include "rtkfourdsart_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkFourDSARTConeBeamReconstructionFilter.h"
@@ -110,6 +111,7 @@ int main(int argc, char * argv[])
   fourdsart->SetNumberOfIterations( args_info.niterations_arg );
   fourdsart->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
   fourdsart->SetWeights(phaseReader->GetOutput());
+  fourdsart->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   fourdsart->SetLambda( args_info.lambda_arg );
 
   itk::TimeProbe totalTimeProbe;

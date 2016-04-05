@@ -148,6 +148,9 @@ public:
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);
 
+  /** Store the phase signal in a member variable */
+  virtual void SetSignal(const std::vector<double> signal);
+
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
   ~FourDConjugateGradientConeBeamReconstructionFilter(){}
@@ -170,7 +173,8 @@ protected:
   typename CGOperatorFilterType::Pointer            m_CGOperator;
   typename ProjStackToFourDFilterType::Pointer      m_ProjStackToFourDFilter;
 
-  bool m_CudaConjugateGradient;
+  bool                    m_CudaConjugateGradient;
+  std::vector<double>     m_Signal;
 
 private:
   //purposely not implemented

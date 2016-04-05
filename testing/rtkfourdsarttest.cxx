@@ -271,6 +271,7 @@ int main(int, char** )
   fourdsart->SetGeometry(geometry);
   fourdsart->SetNumberOfIterations(3);
   fourdsart->SetWeights(phaseReader->GetOutput());
+  fourdsart->SetSignal(rtk::ReadSignalFile("signal.txt"));
   fourdsart->SetEnforcePositivity(true);
 
   std::cout << "\n\n****** Case 1: Joseph forward projector, Voxel-Based back projector, CPU interpolation and splat ******" << std::endl;
