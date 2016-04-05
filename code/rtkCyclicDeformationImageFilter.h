@@ -22,6 +22,10 @@
 #include "rtkConfiguration.h"
 #include <itkImageToImageFilter.h>
 
+#ifdef RTK_USE_CUDA
+  #include "itkCudaImage.h"
+#endif
+
 namespace rtk
 {
 
@@ -46,14 +50,22 @@ namespace rtk
  */
 template <class TOutputImage>
 class ITK_EXPORT CyclicDeformationImageFilter:
-  public itk::ImageToImageFilter<itk::Image<typename TOutputImage::PixelType,
-                                            TOutputImage::ImageDimension+1>,
-                                 TOutputImage >
+  public itk::ImageToImageFilter<
+#ifdef RTK_USE_CUDA
+    itk::CudaImage<typename TOutputImage::PixelType, TOutputImage::ImageDimension+1>,
+#else
+    itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension+1>,
+#endif
+    TOutputImage >
 {
 public:
   /** Standard class typedefs. */
   typedef CyclicDeformationImageFilter                                                 Self;
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<typename TOutputImage::PixelType, TOutputImage::ImageDimension+1> InputImageType;
+#else
   typedef itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension+1> InputImageType;
+#endif
   typedef TOutputImage                                                                 OutputImageType;
   typedef itk::ImageToImageFilter<InputImageType, OutputImageType>                     Superclass;
   typedef itk::SmartPointer<Self>                                                      Pointer;
@@ -87,6 +99,11 @@ protected:
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
                                      ThreadIdType threadId );
 
+  // Linear interpolation position and weights
+  unsigned int m_FrameInf;
+  unsigned int m_FrameSup;
+  double       m_WeightInf;
+  double       m_WeightSup;
 
 private:
   CyclicDeformationImageFilter(const Self&); //purposely not implemented
@@ -96,12 +113,6 @@ private:
 
   std::string         m_SignalFilename;
   std::vector<double> m_Signal;
-
-  // Linear interpolation position and weights
-  unsigned int m_FrameInf;
-  unsigned int m_FrameSup;
-  double       m_WeightInf;
-  double       m_WeightSup;
 };
 
 } // end namespace rtk

@@ -8,7 +8,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkFieldOfViewImageFilter.h"
-#include "rtkCyclicDeformationImageFilter.h"
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
 

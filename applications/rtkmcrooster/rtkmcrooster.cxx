@@ -206,20 +206,31 @@ int main(int argc, char * argv[])
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
-  // MCROOSTER outputs a motion-compensated reconstruction
-  // Warp it with the inverse field so that it is 4D
-  typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType> WarpSequenceFilterType;
-  WarpSequenceFilterType::Pointer warp = WarpSequenceFilterType::New();
-  warp->SetInput(mcrooster->GetOutput());
-  warp->SetDisplacementField(idvfReader->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() );
-
-  // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( warp->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+
+  typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType> WarpSequenceFilterType;
+  WarpSequenceFilterType::Pointer warp = WarpSequenceFilterType::New();
+
+  if(args_info.nofinalwarp_flag)
+    {
+    // MCROOSTER outputs a motion-compensated reconstruction
+    writer->SetInput( mcrooster->GetOutput() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+    }
+  else
+    {
+    // Warp the output of MCROOSTER with the inverse field so
+    // that it is similar to that of rtkfourdrooster
+    warp->SetInput(mcrooster->GetOutput());
+    warp->SetDisplacementField(idvfReader->GetOutput());
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() );
+
+    // Write
+    writer->SetInput( warp->GetOutput() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+    }
 
   return EXIT_SUCCESS;
 }

@@ -24,6 +24,7 @@
 #ifdef RTK_USE_CUDA
   #include "rtkCudaWarpForwardProjectionImageFilter.h"
   #include "rtkCudaWarpBackProjectionImageFilter.h"
+  #include "rtkCudaCyclicDeformationImageFilter.h"
 #endif
 
 namespace rtk

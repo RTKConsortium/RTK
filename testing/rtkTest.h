@@ -76,19 +76,19 @@ void CheckImageQuality(typename TImage::Pointer recon,
   ErrorType QI = (RefValueForPSNR-ErrorPerPixel)/RefValueForPSNR;
   std::cout << "QI = " << QI << std::endl;
 
-//   // It is often necessary to write the images and look at them
-//   // to understand why a given test fails. This portion of code
-//   // does that. It should be left here but commented out, since
-//   // it is only useful in specific debugging tasks
-//   typedef itk::ImageFileWriter<TImage> FileWriterType;
-//   typename FileWriterType::Pointer writer = FileWriterType::New();
-//   writer->SetInput(recon);
-//   writer->SetFileName("Reconstruction.mhd");
-//   writer->Update();
-//   writer->SetInput(ref);
-//   writer->SetFileName("Reference.mhd");
-//   writer->Update();
-//   // End of results writing
+   // It is often necessary to write the images and look at them
+   // to understand why a given test fails. This portion of code
+   // does that. It should be left here but commented out, since
+   // it is only useful in specific debugging tasks
+   typedef itk::ImageFileWriter<TImage> FileWriterType;
+   typename FileWriterType::Pointer writer = FileWriterType::New();
+   writer->SetInput(recon);
+   writer->SetFileName("Reconstruction.mhd");
+   writer->Update();
+   writer->SetInput(ref);
+   writer->SetFileName("Reference.mhd");
+   writer->Update();
+   // End of results writing
 
   // Checking results. As a comparison with NaN always returns false,
   // this design allows to detect NaN results and cause test failure
@@ -106,6 +106,87 @@ void CheckImageQuality(typename TImage::Pointer recon,
     }
 }
 #endif //FAST_TESTS_NO_CHECKS
+
+template<class TImage>
+#if FAST_TESTS_NO_CHECKS
+void CheckVectorImageQuality(typename TImage::Pointer itkNotUsed(recon),
+                             typename TImage::Pointer itkNotUsed(ref),
+                             double itkNotUsed(ErrorPerPixelTolerance),
+                             double itkNotUsed(PSNRTolerance),
+                             double itkNotUsed(RefValueForPSNR))
+{
+}
+#else
+void CheckVectorImageQuality(typename TImage::Pointer recon,
+                             typename TImage::Pointer ref,
+                             double ErrorPerPixelTolerance,
+                             double PSNRTolerance,
+                             double RefValueForPSNR)
+{
+  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
+  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
+  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
+
+  typedef double ErrorType;
+  ErrorType TestError = 0.;
+  ErrorType EnerError = 0.;
+
+  itTest.GoToBegin();
+  itRef.GoToBegin();
+
+  while( !itRef.IsAtEnd() )
+    {
+    typename TImage::PixelType TestVal = itTest.Get();
+    typename TImage::PixelType RefVal = itRef.Get();
+    TestError += (RefVal - TestVal).GetNorm();
+    EnerError += (RefVal - TestVal).GetSquaredNorm();
+    ++itTest;
+    ++itRef;
+    }
+  // Error per Pixel
+  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
+  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
+  // MSE
+  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
+  std::cout << "MSE = " << MSE << std::endl;
+  // PSNR
+  ErrorType PSNR = 20*log10(RefValueForPSNR) - 10*log10(MSE);
+  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
+  // QI
+  ErrorType QI = (RefValueForPSNR-ErrorPerPixel)/RefValueForPSNR;
+  std::cout << "QI = " << QI << std::endl;
+
+   // It is often necessary to write the images and look at them
+   // to understand why a given test fails. This portion of code
+   // does that. It should be left here but commented out, since
+   // it is only useful in specific debugging tasks
+   typedef itk::ImageFileWriter<TImage> FileWriterType;
+   typename FileWriterType::Pointer writer = FileWriterType::New();
+   writer->SetInput(recon);
+   writer->SetFileName("Reconstruction.mhd");
+   writer->Update();
+   writer->SetInput(ref);
+   writer->SetFileName("Reference.mhd");
+   writer->Update();
+   // End of results writing
+
+  // Checking results. As a comparison with NaN always returns false,
+  // this design allows to detect NaN results and cause test failure
+  if (!(ErrorPerPixel < ErrorPerPixelTolerance))
+    {
+    std::cerr << "Test Failed, Error per pixel not valid! "
+              << ErrorPerPixel << " instead of "<< ErrorPerPixelTolerance << std::endl;
+    exit( EXIT_FAILURE);
+    }
+  if (!(PSNR > PSNRTolerance))
+    {
+    std::cerr << "Test Failed, PSNR not valid! "
+              << PSNR << " instead of " << PSNRTolerance << std::endl;
+    exit( EXIT_FAILURE);
+    }
+}
+#endif //FAST_TESTS_NO_CHECKS
+
 
 void CheckGeometries(GeometryType *g1, GeometryType *g2)
 {
