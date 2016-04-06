@@ -180,9 +180,10 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
   if(args_info.airthres_given)
     reader->SetAirThreshold(args_info.airthres_arg);
 
-  // I0
+  // I0 and IDark
   if(args_info.i0_given)
     reader->SetI0(args_info.i0_arg);
+  reader->SetIDark(args_info.idark_arg);
 
   // Line integral flag
   if(args_info.nolineint_flag)
