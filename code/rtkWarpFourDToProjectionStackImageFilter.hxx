@@ -27,11 +27,12 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::WarpFourDToProjectionStackImageFilter()
 {
   this->SetNumberOfRequiredInputs(3);
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
 
 #ifdef RTK_USE_CUDA
+  m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
   this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
 #else
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
   this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
   itkWarningMacro("The warp Forward project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection")
 #endif

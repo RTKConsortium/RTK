@@ -29,3 +29,4 @@ option "l0iter"      - "Temporal gradient's L0 norm regularization: number of it
 section "Motion-compensation"
 option "dvf"       - "Input 4D DVF"             string    yes
 option "idvf"      - "Input 4D inverse DVF"     string    yes
+option "nofinalwarp" - "Outputs the motion-compensated sequence, without warping it"        flag off

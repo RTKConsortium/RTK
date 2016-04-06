@@ -341,6 +341,10 @@ if(NOT RTK_USE_CUDA)
   ADD_EXECUTABLE(rtkregularizedconjugategradienttest rtkregularizedconjugategradienttest.cxx)
   TARGET_LINK_LIBRARIES(rtkregularizedconjugategradienttest RTK)
   ADD_TEST(rtkregularizedconjugategradienttest ${EXECUTABLE_OUTPUT_PATH}/rtkregularizedconjugategradienttest)
+  
+  ADD_EXECUTABLE(rtkcyclicdeformationtest rtkcyclicdeformationtest.cxx)
+  TARGET_LINK_LIBRARIES(rtkcyclicdeformationtest RTK)
+  ADD_TEST(rtkcyclicdeformationtest ${EXECUTABLE_OUTPUT_PATH}/rtkcyclicdeformationtest)
 endif()
 ADD_CUDA_TEST(rtkiterativefdk rtkiterativefdktest.cxx)
 ADD_CUDA_TEST(rtkconjugategradientreconstruction rtkconjugategradientreconstructiontest.cxx)
@@ -349,12 +353,12 @@ ADD_CUDA_TEST(rtkincrementalfourdrooster rtkincrementalfourdroostertest.cxx)
 ADD_CUDA_TEST(rtkadmmwavelets rtkadmmwaveletstest.cxx)
 RTK_ADD_CUDA_TEST(rtkadmmtotalvariation rtkadmmtotalvariationtest.cxx "Data/Input/Phases/phases.txt" "Data/Input/Phases/phases_3projs.txt")
 ADD_CUDA_TEST(rtkregularizedconjugategradient rtkregularizedconjugategradienttest.cxx)
+ADD_CUDA_TEST(rtkcudaraycastadjointoperatorstest rtkcudaraycastadjointoperatorstest.cxx)
+ADD_CUDA_TEST(rtkcyclicdeformation rtkcyclicdeformationtest.cxx)
 
 ADD_EXECUTABLE(rtkwaveletstest rtkwaveletstest.cxx)
 TARGET_LINK_LIBRARIES(rtkwaveletstest RTK)
 ADD_TEST(rtkwaveletstest ${EXECUTABLE_OUTPUT_PATH}/rtkwaveletstest)
-
-ADD_CUDA_TEST(rtkcudaraycastadjointoperatorstest rtkcudaraycastadjointoperatorstest.cxx)
 
 # Test headers
 FILE(GLOB RTK_ALL_HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/code "${PROJECT_SOURCE_DIR}/code/rtk*.h")

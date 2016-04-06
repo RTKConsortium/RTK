@@ -31,14 +31,15 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::WarpProjectionStackToFourDImageFilter()
 {
   this->SetNumberOfRequiredInputs(3);
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
 
   this->m_UseCudaSplat = true;
   this->m_UseCudaSources = true;
 
 #ifdef RTK_USE_CUDA
+  m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
   this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
 #else
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
   this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
   itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
 #endif

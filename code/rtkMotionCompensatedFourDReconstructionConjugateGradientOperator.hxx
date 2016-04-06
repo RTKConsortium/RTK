@@ -28,13 +28,15 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 ::MotionCompensatedFourDReconstructionConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(3);
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
-  m_InverseDVFInterpolatorFilter = DVFInterpolatorType::New();
 
 #ifdef RTK_USE_CUDA
+  m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
+  m_InverseDVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
   this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
   this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
 #else
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
+  m_InverseDVFInterpolatorFilter = DVFInterpolatorType::New();
   this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
   this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
   itkWarningMacro("The warp forward and back project image filters exist only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection and CPU voxel-based back projection")
