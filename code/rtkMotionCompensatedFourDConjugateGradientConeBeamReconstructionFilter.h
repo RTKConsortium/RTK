@@ -121,6 +121,7 @@ protected:
   ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter(){}
 
   virtual void GenerateOutputInformation();
+  virtual void GenerateInputRequestedRegion();
 
 private:
   //purposely not implemented

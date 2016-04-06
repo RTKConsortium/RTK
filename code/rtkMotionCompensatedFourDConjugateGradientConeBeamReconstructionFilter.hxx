@@ -92,6 +92,14 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
   Superclass::GenerateOutputInformation();
 }
 
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
+::GenerateInputRequestedRegion()
+{
+  this->m_CGOperator->PropagateRequestedRegion(this->m_CGOperator->GetOutput());
+}
+
 } // end namespace rtk
 
 #endif // __rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx

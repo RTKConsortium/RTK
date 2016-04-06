@@ -230,10 +230,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 {
   // Let the internal filters compute the input requested region
   m_SplatFilter->PropagateRequestedRegion(m_SplatFilter->GetOutput());
-
-  // The projection stack need not be loaded in memory, is it only used to configure the
-  // constantProjectionStackSource with the correct information
-  // Leave its requested region unchanged (set by the other filters that need it)
+  this->m_ForwardProjectionFilter->PropagateRequestedRegion(this->m_ForwardProjectionFilter->GetOutput());
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
