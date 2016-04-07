@@ -136,7 +136,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 1: CPU cyclic deformation field ******" << std::endl;
 
-  typename CyclicDeformationType::Pointer cyclic = CyclicDeformationType::New();
+  CyclicDeformationType::Pointer cyclic = CyclicDeformationType::New();
   cyclic->SetInput(deformationField);
   cyclic->SetSignalFilename("signal.txt");
   TRY_AND_EXIT_ON_ITK_EXCEPTION( cyclic->Update() );
