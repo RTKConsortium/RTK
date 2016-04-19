@@ -100,6 +100,9 @@ CudaWarpForwardProjectionImageFilter
   // The requested region on the projection stack input is the same as the output requested region
   this->GetInputProjectionStack()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
 
+#if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 8)
+  this->GetDisplacementField()->SetRequestedRegionToLargestPossibleRegion();
+#else  
   // Determine the smallest region of the deformation field that fully
   // contains the physical space covered by the input volume's requested
   // region
@@ -134,7 +137,7 @@ CudaWarpForwardProjectionImageFilter
       fieldPtr->SetRequestedRegion( fieldPtr->GetLargestPossibleRegion() );
       }
     }
-
+#endif
 }
 
 

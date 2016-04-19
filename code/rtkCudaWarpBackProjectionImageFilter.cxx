@@ -90,8 +90,11 @@ CudaWarpBackProjectionImageFilter
   this->GetInputProjectionStack()->SetRequestedRegionToLargestPossibleRegion();
 
   // To compute the DVF's requested region, we use the same method
-  // as in itk::WarpImageFilter
-
+  // as in itk::WarpImageFilter, except if the ITK version is too old to
+  // contain the required methods
+#if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 8)
+  this->GetDisplacementField()->SetRequestedRegionToLargestPossibleRegion();
+#else 
   // If the output and the deformation field have the same
   // information, just propagate up the output requested region for the
   // deformation field. Otherwise, it is non-trivial to determine
@@ -129,7 +132,7 @@ CudaWarpBackProjectionImageFilter
       fieldPtr->SetRequestedRegion( fieldPtr->GetLargestPossibleRegion() );
       }
     }
-
+#endif
 }
 
 
