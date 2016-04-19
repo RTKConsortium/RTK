@@ -78,7 +78,6 @@ namespace rtk
    * AfterWavelets [group=invisible, label="m_PerformWarping ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterTVTime [group=invisible, label="m_PerformL0TemporalDenoising ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterL0Time [group=invisible, label="m_ComputeInverseWarpingByConjugateGradient ?", fixedsize="false", width=0, height=0, shape=none];
-   *FourDROOSTERConeBeamReconstructionFilter
    * InputDisplacementField -> FourDCG;
    * InputInverseDisplacementField -> FourDCG;
    *
