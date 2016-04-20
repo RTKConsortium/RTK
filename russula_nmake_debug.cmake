@@ -1,5 +1,5 @@
 # client maintainer: simon.rit@creatis.insa-lyon.fr
-set(CTEST_SITE "shiitake.clb")
+set(CTEST_SITE "russula.clb")
 set(CTEST_BUILD_NAME "Windows7-64bit-NMake-Debug")
 set(CTEST_BUILD_CONFIGURATION Debug)
 set(CTEST_CMAKE_GENERATOR "NMake Makefiles")

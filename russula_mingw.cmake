@@ -1,5 +1,5 @@
 # client maintainer: simon.rit@creatis.insa-lyon.fr
-set(CTEST_SITE "shiitake.clb")
+set(CTEST_SITE "russula.clb")
 set(CTEST_BUILD_NAME "Windows7-64bit-MinGW")
 set(CTEST_BUILD_CONFIGURATION Release)
 set(CTEST_CMAKE_GENERATOR "MinGW Makefiles")

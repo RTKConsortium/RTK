@@ -1,5 +1,5 @@
 # client maintainer: simon.rit@creatis.insa-lyon.fr
-set(CTEST_SITE "shiitake.clb")
+set(CTEST_SITE "russula.clb")
 set(CTEST_BUILD_NAME "Linux-64bit-Style")
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_UPDATE_COMMAND "git")

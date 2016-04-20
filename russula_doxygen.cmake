@@ -1,9 +1,9 @@
 # client maintainer: simon.rit@creatis.insa-lyon.fr
-set(CTEST_SITE "shiitake.clb")
+set(CTEST_SITE "russula.clb")
 set(CTEST_BUILD_NAME "Linux-64bit-Doxygen")
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_UPDATE_COMMAND "git")
-  set(dashboard_root_name "dashboard_tests")
+set(dashboard_root_name "dashboard_tests")
 get_filename_component(CTEST_DASHBOARD_ROOT "${CTEST_SCRIPT_DIRECTORY}/../${dashboard_root_name}" ABSOLUTE)
 set(CTEST_SOURCE_DIRECTORY ${CTEST_DASHBOARD_ROOT}/RTK)
 set(CTEST_BINARY_DIRECTORY ${CTEST_DASHBOARD_ROOT}/RTK-Doxygen)
@@ -16,6 +16,7 @@ file(WRITE ${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake
   \"warning: Duplicate anchor RegistrationMetrics found\"
   \"rtkDigisensGeometryXMLFileReader.cxx:49: warning: member with no name found.\"
   \"warning: member ThreadedGenerateData belongs to two different groups. The second one found here will be ignored.\"
+  \"rtkTimeProbesCollectorBase.cxx:26: warning: no uniquely matching class member found for\"
   )")
 CTEST_READ_CUSTOM_FILES("${CTEST_BINARY_DIRECTORY}")
 
