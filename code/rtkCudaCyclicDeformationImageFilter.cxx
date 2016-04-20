@@ -35,11 +35,11 @@ rtk::CudaCyclicDeformationImageFilter
   this->Superclass::BeforeThreadedGenerateData();
 
   // Prepare the data to perform the linear interpolation on GPU
-  int inputSize[4];
+  unsigned int inputSize[4];
 
-  for (int i=0; i<4; i++)
+  for (unsigned int i=0; i<4; i++)
     inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
-  for (int i=0; i<3; i++)
+  for (unsigned int i=0; i<3; i++)
     {
     if(this->GetOutput()->GetRequestedRegion().GetSize()[i] != inputSize[i])
       itkExceptionMacro("In rtk::CudaCyclicDeformationImageFilter: the output's requested region must have the same size as the input's buffered region on the first 3 dimensions")

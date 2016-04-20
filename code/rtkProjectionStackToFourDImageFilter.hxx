@@ -233,7 +233,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   bool firstProjectionProcessed = false;
 
   // Process the projections in permutated order
-  for (int i = 0 ; i < this->m_Signal.size(); i++)
+  for (unsigned int i = 0 ; i < this->m_Signal.size(); i++)
     {
     // Make sure the current projection is in the input projection stack's largest possible region
     this->m_ProjectionNumber = IndicesOfProjectionsSortedByPhase[i];

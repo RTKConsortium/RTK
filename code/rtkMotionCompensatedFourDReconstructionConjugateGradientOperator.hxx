@@ -132,7 +132,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   int proj = 0;
 
   // Process the projections in permutated order
-  for (int i = 0 ; i < this->m_Signal.size(); i++)
+  for (unsigned int i = 0 ; i < this->m_Signal.size(); i++)
     {
     // Make sure the current projection is in the input projection stack's largest possible region
     proj = IndicesOfProjectionsSortedByPhase[i];

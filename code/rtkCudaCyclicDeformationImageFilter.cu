@@ -37,7 +37,7 @@ __constant__ int4 c_inputSize;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_linear_interpolate_along_fourth_dimension(int inputSize[4],
+CUDA_linear_interpolate_along_fourth_dimension(unsigned int inputSize[4],
                                               float* input,
                                               float* output,
                                               unsigned int frameInf,
