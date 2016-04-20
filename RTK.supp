@@ -44,21 +44,35 @@
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcuda.so.358.16
+   obj:/usr/lib64/libcuda.so.*
+   ...
+}
+{
+   CUDA
+   Memcheck:Cond
+   ...
+   obj:/usr/lib64/libcuda.so.*
    ...
 }
 {
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcufft.so.7.0.35
+   obj:/usr/lib64/libcufft.so.*
    ...
 }
 {
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcublas.so.7.5.18
+   obj:/usr/lib64/libcufft.so.*
+   ...
+}
+{
+   CUDA
+   Memcheck:Leak
+   ...
+   obj:/usr/lib64/libcublas.so.*
    ...
 }
 {
@@ -79,7 +93,7 @@
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcudart.so.7.5.18
+   obj:/usr/lib64/libcudart.so.*
    ...
 }
 {
