@@ -39,4 +39,4 @@ ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk
 ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk460.cmake -V
 
 # Generate a script to perform a cuda-memcheck on all tests
-grep Command /tmp/RTK_dashboard/RTK_lin64_gcc_cuda_system_itk4/Testing/Temporary/LastTest_*.log | sed 's/Command:/cuda-memcheck --error-exitcode 1/g' > /tmp/RTK_dashboard/cudamemchecks.sh
+grep Command /tmp/RTK_dashboard/RTK_lin64_gcc_cuda_system_itk4/Testing/Temporary/LastTest_*.log | sed 's/Command:/cuda-memcheck --error-exitcode 1 --leak-check full/g' > /tmp/RTK_dashboard/cudamemchecks.sh
