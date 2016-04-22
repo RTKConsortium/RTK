@@ -75,6 +75,10 @@ public:
   itkGetMacro(DetectorOffset, float);
   itkSetMacro(DetectorOffset, float);
 
+  /** Whether or not calibration data should be taken from the projections' DICOM info*/
+  itkGetMacro(ReadCalibrationFromProjections, bool);
+  itkSetMacro(ReadCalibrationFromProjections, bool);
+
 
   /** Set the vector of strings that contains the projection file names. Files
    * are processed in sequential order. */
@@ -92,7 +96,7 @@ public:
     }
 
 protected:
-  ImagXGeometryReader(): m_Geometry(NULL), m_DetectorOffset(0.f) {};
+  ImagXGeometryReader(): m_Geometry(NULL), m_DetectorOffset(0.f), m_ReadCalibrationFromProjections(false) {};
 
   ~ImagXGeometryReader() {};
 
@@ -109,6 +113,7 @@ private:
   std::string           m_RoomXMLFileName;
   FileNamesContainer    m_ProjectionsFileNames;
   float                 m_DetectorOffset;
+  bool                  m_ReadCalibrationFromProjections;
 };
 
 }
