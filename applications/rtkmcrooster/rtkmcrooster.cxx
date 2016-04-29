@@ -115,6 +115,10 @@ int main(int argc, char * argv[])
   mcrooster->SetCudaConjugateGradient(args_info.cudacg_flag);
   mcrooster->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   
+  //Set the forward and back projection filters to be used
+  mcrooster->SetForwardProjectionFilter(args_info.fp_arg);
+  mcrooster->SetBackProjectionFilter(args_info.bp_arg);
+
   // For each optional regularization step, set whether or not
   // it should be performed, and provide the necessary inputs
   
