@@ -60,12 +60,12 @@ CUDA_linear_interpolate_along_fourth_dimension(unsigned int inputSize[4],
     // Create a pointer to the component-th component of frameInf in the input,
     // and add it weightInf times to the component-th component of the output
     float * pinf = input + frameInf * numel * 3 + component;
-    cublasSaxpy(handle, numel, &wInf, pinf, 3, output, 3);
+    cublasSaxpy(handle, numel, &wInf, pinf, 3, output + component, 3);
 
     // Create a pointer to the component-th component of frameSup in the input,
     // and add it weightSup times to the component-th component of the output
     float * psup = input + frameSup * numel * 3 + component;
-    cublasSaxpy(handle, numel, &wSup, psup, 3, output, 3);
+    cublasSaxpy(handle, numel, &wSup, psup, 3, output + component, 3);
     }
 
   // Destroy Cublas context
