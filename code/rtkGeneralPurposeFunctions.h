@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <itkMacro.h>
+#include <itkImageFileWriter.h>
 
 namespace rtk
 {
@@ -75,6 +76,18 @@ ReadSignalFile(std::string filename)
     }
 
   return signalVector;
+}
+
+template< typename ImageType >
+void
+WriteImage(typename ImageType::Pointer input, std::string name)
+{
+  //Create an itk::ImageFileWriter
+  typedef itk::ImageFileWriter<ImageType> WriterType;
+  typename WriterType::Pointer writer = WriterType::New();
+  writer->SetInput(input);
+  writer->SetFileName(name);
+  writer->Update();
 }
 
 }

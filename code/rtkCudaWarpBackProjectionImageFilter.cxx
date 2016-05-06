@@ -120,7 +120,7 @@ CudaWarpBackProjectionImageFilter
       }
     else
       {
-      typedef typename DVFType::RegionType DisplacementRegionType;
+      typedef DVFType::RegionType DisplacementRegionType;
 
       DisplacementRegionType fieldRequestedRegion = itk::ImageAlgorithm::EnlargeRegionOverBox(outputPtr->GetRequestedRegion(),
                                                                                          outputPtr.GetPointer(),
@@ -204,20 +204,19 @@ CudaWarpBackProjectionImageFilter
       ++itDVF;
     }
 
-
   // Transform matrices that we will need during the warping process
-  itk::Matrix<double, 4, 4> indexInputToPPInputMatrix;
   itk::Matrix<double, 4, 4> indexInputToIndexDVFMatrix;
   itk::Matrix<double, 4, 4> PPInputToIndexInputMatrix;
-
-  indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix()
-                              * matrixIdxVol.GetVnlMatrix();
+  itk::Matrix<double, 4, 4> indexInputToPPInputMatrix;
 
   indexInputToIndexDVFMatrix = rtk::GetPhysicalPointToIndexMatrix( this->GetDisplacementField().GetPointer() ).GetVnlMatrix()
                               * rtk::GetIndexToPhysicalPointMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix()
                               * matrixIdxVol.GetVnlMatrix();
 
   PPInputToIndexInputMatrix = rtk::GetPhysicalPointToIndexMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix();
+
+  indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix()
+                              * matrixIdxVol.GetVnlMatrix();
 
   // Convert the matrices to arrays of floats (skipping the last line, as we don't care)
   float fIndexInputToIndexDVFMatrix[12];
