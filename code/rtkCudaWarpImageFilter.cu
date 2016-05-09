@@ -397,7 +397,7 @@ CUDA_warp(int input_vol_dim[3],
   cudaFreeArray ((cudaArray*) DVFcomponentArrays[1]);
   cudaFreeArray ((cudaArray*) DVFcomponentArrays[2]);
   cudaFreeArray ((cudaArray*) array_input_vol);
-  cudaFree(DVFcomponentArrays);
+  delete[] DVFcomponentArrays;
   CUDA_CHECK_ERROR;
   cudaFree (dev_IndexOutputToPPOutput);
   cudaFree (dev_IndexOutputToIndexDVF);
