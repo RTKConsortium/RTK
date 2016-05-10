@@ -36,6 +36,8 @@
 * CUDA #includes *
 *****************/
 #include <cuda.h>
+#include <cublas_v2.h>
+#include <cuda_runtime.h>
 
 // TEXTURES AND CONSTANTS //
 texture<float, 1, cudaReadModeElementType> tex_IndexInputToPPInputMatrix;
@@ -323,14 +325,16 @@ CUDA_warp_forward_project( int projections_size[2],
                       float box_max[3],
                       float spacing[3],
 //                       bool useCudaTexture,
-		      float *dev_input_xdvf,
-		      float *dev_input_ydvf,
-		      float *dev_input_zdvf,
+		      float *dev_input_dvf,
 		      float IndexInputToIndexDVFMatrix[12],
 		      float PPInputToIndexInputMatrix[12],
 		      float IndexInputToPPInputMatrix[12]
 		    )
 {
+  // Create CUBLAS context
+  cublasHandle_t  handle;
+  cublasCreate(&handle);
+
   // Prepare channel description for arrays
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
 
@@ -341,7 +345,6 @@ CUDA_warp_forward_project( int projections_size[2],
   CUDA_CHECK_ERROR;
   cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
   CUDA_CHECK_ERROR;
-
   
   // Extent stuff, will be used for each component extraction
   cudaExtent dvfExtent = make_cudaExtent(dvf_size[0], dvf_size[1], dvf_size[2]);
@@ -365,46 +368,46 @@ CUDA_warp_forward_project( int projections_size[2],
   tex_zdvf.filterMode = cudaFilterModeLinear;
   tex_zdvf.normalized = false;
 
-  // Allocate the arrays
-  cudaArray *array_xdvf;
-  cudaArray *array_ydvf;
-  cudaArray *array_zdvf;
-  cudaMalloc3DArray((cudaArray**)&array_xdvf, &channelDesc, dvfExtent);
-  cudaMalloc3DArray((cudaArray**)&array_ydvf, &channelDesc, dvfExtent);
-  cudaMalloc3DArray((cudaArray**)&array_zdvf, &channelDesc, dvfExtent);
+  // Allocate an intermediate memory space to extract x, y and z components of the DVF
+  float *DVFcomponent;
+  int numel = dvf_size[0] * dvf_size[1] * dvf_size[2];
+  cudaMalloc(&DVFcomponent, numel * sizeof(float));
+  float one = 1.0;
+
+  // Allocate the arrays used for textures
+  cudaArray** DVFcomponentArrays = new cudaArray* [3];
   CUDA_CHECK_ERROR;
 
   // Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
   // The best way to understand it is to read
   // http://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
-  cudaMemcpy3DParms xCopyParams = {0};
-  xCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_xdvf, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
-  xCopyParams.dstArray = (cudaArray*)array_xdvf;
-  xCopyParams.extent   = dvfExtent;
-  xCopyParams.kind     = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&xCopyParams);
-  CUDA_CHECK_ERROR;
+  for (unsigned int component = 0; component < 3; component++)
+    {
+    // Reset the intermediate memory
+    cudaMemset((void *)DVFcomponent, 0, numel * sizeof(float));
 
-  cudaMemcpy3DParms yCopyParams = {0};
-  yCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_ydvf, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
-  yCopyParams.dstArray = (cudaArray*)array_ydvf;
-  yCopyParams.extent   = dvfExtent;
-  yCopyParams.kind     = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&yCopyParams);
-  CUDA_CHECK_ERROR;
+    // Fill it with the current component
+    float * pComponent = dev_input_dvf + component;
+    cublasSaxpy(handle, numel, &one, pComponent, 3, DVFcomponent, 1);
 
-  cudaMemcpy3DParms zCopyParams = {0};
-  zCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_zdvf, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
-  zCopyParams.dstArray = (cudaArray*)array_zdvf;
-  zCopyParams.extent   = dvfExtent;
-  zCopyParams.kind     = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&zCopyParams);
-  CUDA_CHECK_ERROR;
+    // Allocate the cudaArray and fill it with the current DVFcomponent
+    cudaMalloc3DArray((cudaArray**)& DVFcomponentArrays[component], &channelDesc, dvfExtent);
+    cudaMemcpy3DParms CopyParams = {0};
+    CopyParams.srcPtr   = make_cudaPitchedPtr(DVFcomponent, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
+    CopyParams.dstArray = (cudaArray*) DVFcomponentArrays[component];
+    CopyParams.extent   = dvfExtent;
+    CopyParams.kind     = cudaMemcpyDeviceToDevice;
+    cudaMemcpy3D(&CopyParams);
+    CUDA_CHECK_ERROR;
+    }
+
+  // Intermediate memory is no longer needed
+  cudaFree (DVFcomponent);
 
   // Bind 3D arrays to 3D textures
-  cudaBindTextureToArray(tex_xdvf, (cudaArray*)array_xdvf, channelDesc);
-  cudaBindTextureToArray(tex_ydvf, (cudaArray*)array_ydvf, channelDesc);
-  cudaBindTextureToArray(tex_zdvf, (cudaArray*)array_zdvf, channelDesc);
+  cudaBindTextureToArray(tex_xdvf, (cudaArray*) DVFcomponentArrays[0], channelDesc);
+  cudaBindTextureToArray(tex_ydvf, (cudaArray*) DVFcomponentArrays[1], channelDesc);
+  cudaBindTextureToArray(tex_zdvf, (cudaArray*) DVFcomponentArrays[2], channelDesc);
   CUDA_CHECK_ERROR;
 
   ///////////////////////////////////////
@@ -485,16 +488,16 @@ CUDA_warp_forward_project( int projections_size[2],
   cudaUnbindTexture (tex_matrix);
   CUDA_CHECK_ERROR;
 
-
 //     }
 //   else
 //     {
 //     kernel_forwardProject_noTexture <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol);
 //     }
 
-  cudaFreeArray ((cudaArray*)array_xdvf);
-  cudaFreeArray ((cudaArray*)array_ydvf);
-  cudaFreeArray ((cudaArray*)array_zdvf);
+  cudaFreeArray ((cudaArray*) DVFcomponentArrays[0]);
+  cudaFreeArray ((cudaArray*) DVFcomponentArrays[1]);
+  cudaFreeArray ((cudaArray*) DVFcomponentArrays[2]);
+  delete[] DVFcomponentArrays;
   cudaFreeArray ((cudaArray*)array_vol);
   CUDA_CHECK_ERROR;
   cudaFree (dev_IndexInputToPPInput);
@@ -502,4 +505,7 @@ CUDA_warp_forward_project( int projections_size[2],
   cudaFree (dev_PPInputToIndexInput);
   cudaFree (dev_matrix);
   CUDA_CHECK_ERROR;
+
+  // Destroy CUBLAS context
+  cublasDestroy(handle);
 }

@@ -198,38 +198,10 @@ CudaWarpForwardProjectionImageFilter
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
   
-  // Split the DVF into three images (one per component)
-  InputImageType::Pointer xCompDVF = InputImageType::New();
-  InputImageType::Pointer yCompDVF = InputImageType::New();
-  InputImageType::Pointer zCompDVF = InputImageType::New();
-  InputImageType::RegionType buffered = this->GetDisplacementField()->GetBufferedRegion();
-  xCompDVF->SetRegions(buffered);
-  yCompDVF->SetRegions(buffered);
-  zCompDVF->SetRegions(buffered);
-  xCompDVF->Allocate();
-  yCompDVF->Allocate();
-  zCompDVF->Allocate();
-  itk::ImageRegionIterator<InputImageType>     itxComp(xCompDVF, buffered);
-  itk::ImageRegionIterator<InputImageType>     ityComp(yCompDVF, buffered);
-  itk::ImageRegionIterator<InputImageType>     itzComp(zCompDVF, buffered);
-  itk::ImageRegionConstIterator<DVFType>  itDVF(this->GetDisplacementField(), buffered);
-  while(!itDVF.IsAtEnd())
-    {
-      itxComp.Set(itDVF.Get()[0]);
-      ityComp.Set(itDVF.Get()[1]);
-      itzComp.Set(itDVF.Get()[2]);
-      ++itxComp;
-      ++ityComp;
-      ++itzComp;
-      ++itDVF;
-    }
-
   float *pin = *(float**)( this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pvol = *(float**)( this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinxDVF = *(float**)( xCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinyDVF = *(float**)( yCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinzDVF = *(float**)( zCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
+  float *pDVF = *(float**)( this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Transform matrices that we will need during the warping process
   indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix()
@@ -307,9 +279,7 @@ CudaWarpForwardProjectionImageFilter
                         boxMin,
                         boxMax,
                         spacing,
-                        pinxDVF,
-                        pinyDVF,
-                        pinzDVF,
+                        pDVF,
                         fIndexInputToIndexDVFMatrix,
                         fPPInputToIndexInputMatrix,
                         fIndexInputToPPInputMatrix

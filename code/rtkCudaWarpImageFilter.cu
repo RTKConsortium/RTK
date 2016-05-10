@@ -252,9 +252,6 @@ CUDA_warp(int input_vol_dim[3],
 
   // Allocate the arrays used for textures
   cudaArray** DVFcomponentArrays = new cudaArray* [3];
-  cudaMalloc3DArray((cudaArray**)& DVFcomponentArrays[0], &channelDesc, dvfExtent);
-  cudaMalloc3DArray((cudaArray**)& DVFcomponentArrays[1], &channelDesc, dvfExtent);
-  cudaMalloc3DArray((cudaArray**)& DVFcomponentArrays[2], &channelDesc, dvfExtent);
   CUDA_CHECK_ERROR;
 
   // Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
@@ -269,7 +266,8 @@ CUDA_warp(int input_vol_dim[3],
     float * pComponent = dev_DVF + component;
     cublasSaxpy(handle, numel, &one, pComponent, 3, DVFcomponent, 1);
 
-    // Fill the cudaArray with the current DVFcomponent
+    // Allocate the cudaArray and fill it with the current DVFcomponent
+    cudaMalloc3DArray((cudaArray**)& DVFcomponentArrays[component], &channelDesc, dvfExtent);
     cudaMemcpy3DParms CopyParams = {0};
     CopyParams.srcPtr   = make_cudaPitchedPtr(DVFcomponent, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
     CopyParams.dstArray = (cudaArray*) DVFcomponentArrays[component];
