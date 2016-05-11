@@ -95,7 +95,7 @@ void PhasesToInterpolationWeights::Parse()
     {
     this->GetNextField(entry);
     if ((m_SelectedProjections.size() == 0) || (m_SelectedProjections[j]))
-      projectionPhases.push_back(atof(entry.c_str()));
+      projectionPhases.push_back(round(atof(entry.c_str()) * 100. ) / 100.);
     }
 
   // Compute the instant of the cycle each phase represents
@@ -140,7 +140,6 @@ void PhasesToInterpolationWeights::Parse()
     }
   m_Array2D.Fill(0);
 
-
   // Compute the interpolation weights and fill the Array2D
   for (unsigned int c = 0; c < NumberOfProjections; c++)
     {
@@ -160,10 +159,9 @@ void PhasesToInterpolationWeights::Parse()
     // The last phase is equal to the first one (see comment above when filling "reconstructedFrames")
     if (upper==this->m_NumberOfReconstructedFrames) upper=0;
 
-    m_Array2D[lower][c] = (float) lowerWeight;
-    m_Array2D[upper][c] = (float) upperWeight;
+    m_Array2D[lower][c] = round(lowerWeight * 100.) / 100.;
+    m_Array2D[upper][c] = round(upperWeight * 100.) / 100.;
     }
-
   this->m_InputStream.close();
 }
 

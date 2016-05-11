@@ -72,7 +72,7 @@ ReadSignalFile(std::string filename)
   while( !is.eof() )
     {
     is >> value;
-    signalVector.push_back(value);
+    signalVector.push_back(round(value * 100) / 100);
     }
 
   return signalVector;
