@@ -61,6 +61,20 @@ typename VolumeSeriesType::Pointer InterpolatorWithKnownWeightsImageFilter<Volum
 }
 
 template< typename VolumeType, typename VolumeSeriesType>
+void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::SetProjectionNumber(int n)
+{
+  // Check whether the weights change from the old projection number to the new one
+  for (int row=0; row < m_Weights.rows(); row++)
+    {
+    if (m_Weights[row][m_ProjectionNumber] != m_Weights[row][n])
+      this->Modified();
+    }
+
+  // Change the member variable whatever the result
+  m_ProjectionNumber = n;
+}
+
+template< typename VolumeType, typename VolumeSeriesType>
 void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
 ::GenerateInputRequestedRegion()
 {

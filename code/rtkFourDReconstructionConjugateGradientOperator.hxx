@@ -249,7 +249,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // Get an index permutation that sorts the signal values. Then process the projections
   // in that permutated order. This way, projections with identical phases will be
-  // processed one after the other. This will save some of the DVF interpolation operations.
+  // processed one after the other, opening the door to optimizations
   std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
 
   bool firstProjectionProcessed = false;
