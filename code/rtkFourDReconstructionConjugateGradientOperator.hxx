@@ -252,8 +252,9 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   // processed one after the other, opening the door to optimizations
   std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
 
-  bool firstProjectionProcessed = false;
+  bool firstProjectionSlabProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
+  typename VolumeType::Pointer pbp;
   int proj = 0;
 
   // Process the projections in permutated order
@@ -263,27 +264,42 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
     proj = IndicesOfProjectionsSortedByPhase[i];
     if ((proj >= FirstProj) && (proj<FirstProj+NumberProjs))
       {
-      // After the first update, we need to use the output as input.
-      if(firstProjectionProcessed)
-        {
-        pimg = this->m_SplatFilter->GetOutput();
-        pimg->DisconnectPipeline();
-        this->m_SplatFilter->SetInputVolumeSeries( pimg );
-        }
-
       // Set the projection stack source
       ConstantProjectionStackSourceIndex[Dimension - 1] = proj;
       this->m_ConstantProjectionStackSource->SetIndex( ConstantProjectionStackSourceIndex );
 
-      // Set the Interpolation filter
-      m_InterpolationFilter->SetProjectionNumber(proj);
-      m_SplatFilter->SetProjectionNumber(proj);
+      // Unless the phase changed since the last projection, recompute only the FW and Back projections
+      if ((i>0) && (m_Signal[proj] == m_Signal[IndicesOfProjectionsSortedByPhase[i-1]]))
+        {
+        pbp = m_BackProjectionFilter->GetOutput();
+        pbp->DisconnectPipeline();
+        m_BackProjectionFilter->SetInput(0, pbp);
+        m_BackProjectionFilter->Update();
+        }
+      else
+        {
+        // Set the Interpolation filter
+        m_InterpolationFilter->SetProjectionNumber(proj);
+        m_SplatFilter->SetProjectionNumber(proj);
 
-      // Update the last filter
-      m_SplatFilter->Update();
+        // After the first update, we need to use the output as input.
+        if(firstProjectionSlabProcessed)
+          {
+          pimg = this->m_SplatFilter->GetOutput();
+          pimg->DisconnectPipeline();
+          this->m_SplatFilter->SetInputVolumeSeries( pimg );
+          }
 
-      // Update condition
-      firstProjectionProcessed = true;
+        // Reset the connections between the back projection filter and the surrounding filters
+        m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource2->GetOutput());
+        m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
+
+        // Update the last filter
+        m_SplatFilter->Update();
+
+        // Update condition
+        firstProjectionSlabProcessed = true;
+        }
       }
     }
 
