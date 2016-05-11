@@ -106,6 +106,7 @@ int main(int argc, char * argv[])
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetWeights(phaseReader->GetOutput());
+  conjugategradient->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   conjugategradient->SetCudaConjugateGradient(args_info.cudacg_flag);
 
   itk::TimeProbe readerProbe;
