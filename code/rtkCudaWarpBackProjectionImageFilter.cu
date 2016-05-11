@@ -98,39 +98,38 @@ void kernel_warp_back_project_3Dgrid(float *dev_vol_in,
   Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
   Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
 
-  // Matrix multiply to get the physical coordinates of the current point in the output volume
-  float3 PPinInput;
-  PPinInput.x =  c_IndexInputToPPInputMatrix[0] * i
+  float3 PP; //Physical point in input
+  PP.x =  c_IndexInputToPPInputMatrix[0] * i
                 + c_IndexInputToPPInputMatrix[1] * j
                 + c_IndexInputToPPInputMatrix[2] * k
                 + c_IndexInputToPPInputMatrix[3];
-  PPinInput.y =  c_IndexInputToPPInputMatrix[4] * i
+  PP.y =  c_IndexInputToPPInputMatrix[4] * i
                 + c_IndexInputToPPInputMatrix[5] * j
                 + c_IndexInputToPPInputMatrix[6] * k
-                + c_IndexInputToPPInputMatrix[7];
-  PPinInput.z =  c_IndexInputToPPInputMatrix[8] * i
+                + c_IndexInputToPPInputMatrix[7];Dear all,
+  PP.z =  c_IndexInputToPPInputMatrix[8] * i
                 + c_IndexInputToPPInputMatrix[9] * j
                 + c_IndexInputToPPInputMatrix[10] * k
                 + c_IndexInputToPPInputMatrix[11];
 
   // Get the index corresponding to the current physical point in output displaced by the displacement vector
-  float3 PPDisplaced;
-  PPDisplaced.x = PPinInput.x + Displacement.x;
-  PPDisplaced.y = PPinInput.y + Displacement.y;
-  PPDisplaced.z = PPinInput.z + Displacement.z;
+  // Overwriting the PP variable (physical point in input) is less readable, but results in a significant performance boost
+  PP.x = PP.x + Displacement.x;
+  PP.y = PP.y + Displacement.y;
+  PP.z = PP.z + Displacement.z;
 
   float3 IndexInInput;
-  IndexInInput.x =  c_PPInputToIndexInputMatrix[0] * PPDisplaced.x
-                  + c_PPInputToIndexInputMatrix[1] * PPDisplaced.y
-                  + c_PPInputToIndexInputMatrix[2] * PPDisplaced.z
+  IndexInInput.x =  c_PPInputToIndexInputMatrix[0] * PP.x
+                  + c_PPInputToIndexInputMatrix[1] * PP.y
+                  + c_PPInputToIndexInputMatrix[2] * PP.z
                   + c_PPInputToIndexInputMatrix[3];
-  IndexInInput.y =  c_PPInputToIndexInputMatrix[4] * PPDisplaced.x
-                  + c_PPInputToIndexInputMatrix[5] * PPDisplaced.y
-                  + c_PPInputToIndexInputMatrix[6] * PPDisplaced.z
+  IndexInInput.y =  c_PPInputToIndexInputMatrix[4] * PP.x
+                  + c_PPInputToIndexInputMatrix[5] * PP.y
+                  + c_PPInputToIndexInputMatrix[6] * PP.z
                   + c_PPInputToIndexInputMatrix[7];
-  IndexInInput.z =  c_PPInputToIndexInputMatrix[8] * PPDisplaced.x
-                  + c_PPInputToIndexInputMatrix[9] * PPDisplaced.y
-                  + c_PPInputToIndexInputMatrix[10]* PPDisplaced.z
+  IndexInInput.z =  c_PPInputToIndexInputMatrix[8] * PP.x
+                  + c_PPInputToIndexInputMatrix[9] * PP.y
+                  + c_PPInputToIndexInputMatrix[10]* PP.z
                   + c_PPInputToIndexInputMatrix[11];
 
   float3 ip;
