@@ -77,88 +77,35 @@ void kernel_warp_back_project_3Dgrid(float *dev_vol_in,
   // Index row major into the volume
   long int vol_idx = i + (j + k*vol_size.y)*(vol_size.x);
 
-  float3 IndexInDVF;
-  IndexInDVF.x =  c_IndexInputToIndexDVFMatrix[0] * i
-                + c_IndexInputToIndexDVFMatrix[1] * j
-                + c_IndexInputToIndexDVFMatrix[2] * k
-                + c_IndexInputToIndexDVFMatrix[3];
-  IndexInDVF.y =  c_IndexInputToIndexDVFMatrix[4] * i
-                + c_IndexInputToIndexDVFMatrix[5] * j
-                + c_IndexInputToIndexDVFMatrix[6] * k
-                + c_IndexInputToIndexDVFMatrix[7];
-  IndexInDVF.z =  c_IndexInputToIndexDVFMatrix[8] * i
-                + c_IndexInputToIndexDVFMatrix[9] * j
-                + c_IndexInputToIndexDVFMatrix[10] * k
-                + c_IndexInputToIndexDVFMatrix[11];
+  // Compute the index in the DVF
+  float3 IndexInDVF = matrix_multiply(make_float3(i, j, k),  c_IndexInputToIndexDVFMatrix);
 
-  // Get each component of the displacement vector by
-  // interpolation in the dvf
+  // Get each component of the displacement vector by interpolation in the DVF
   float3 Displacement;
   Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
   Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
   Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
 
-  float3 PP; //Physical point in input
-  PP.x =  c_IndexInputToPPInputMatrix[0] * i
-                + c_IndexInputToPPInputMatrix[1] * j
-                + c_IndexInputToPPInputMatrix[2] * k
-                + c_IndexInputToPPInputMatrix[3];
-  PP.y =  c_IndexInputToPPInputMatrix[4] * i
-                + c_IndexInputToPPInputMatrix[5] * j
-                + c_IndexInputToPPInputMatrix[6] * k
-                + c_IndexInputToPPInputMatrix[7];Dear all,
-  PP.z =  c_IndexInputToPPInputMatrix[8] * i
-                + c_IndexInputToPPInputMatrix[9] * j
-                + c_IndexInputToPPInputMatrix[10] * k
-                + c_IndexInputToPPInputMatrix[11];
+  // Compute the physical point in input
+  float3 PP = matrix_multiply(make_float3(i, j, k),  c_IndexInputToPPInputMatrix);
 
   // Get the index corresponding to the current physical point in output displaced by the displacement vector
-  // Overwriting the PP variable (physical point in input) is less readable, but results in a significant performance boost
-  PP.x = PP.x + Displacement.x;
-  PP.y = PP.y + Displacement.y;
-  PP.z = PP.z + Displacement.z;
+  // Overwriting the PP variable to limit the memory used by each thread
+  PP += Displacement;
 
-  float3 IndexInInput;
-  IndexInInput.x =  c_PPInputToIndexInputMatrix[0] * PP.x
-                  + c_PPInputToIndexInputMatrix[1] * PP.y
-                  + c_PPInputToIndexInputMatrix[2] * PP.z
-                  + c_PPInputToIndexInputMatrix[3];
-  IndexInInput.y =  c_PPInputToIndexInputMatrix[4] * PP.x
-                  + c_PPInputToIndexInputMatrix[5] * PP.y
-                  + c_PPInputToIndexInputMatrix[6] * PP.z
-                  + c_PPInputToIndexInputMatrix[7];
-  IndexInInput.z =  c_PPInputToIndexInputMatrix[8] * PP.x
-                  + c_PPInputToIndexInputMatrix[9] * PP.y
-                  + c_PPInputToIndexInputMatrix[10]* PP.z
-                  + c_PPInputToIndexInputMatrix[11];
+  // Compute the input in input
+  float3 IndexInInput = matrix_multiply(PP,  c_PPInputToIndexInputMatrix);
 
-  float3 ip;
-  float  voxel_data;
-
-  // matrix multiply
-  ip.x =  c_matrix[0] * IndexInInput.x
-        + c_matrix[1] * IndexInInput.y
-        + c_matrix[2] * IndexInInput.z
-        + c_matrix[3];
-  ip.y =  c_matrix[4] * IndexInInput.x
-        + c_matrix[5] * IndexInInput.y
-        + c_matrix[6] * IndexInInput.z
-        + c_matrix[7];
-  ip.z =  c_matrix[8] * IndexInInput.x
-        + c_matrix[9] * IndexInInput.y
-        + c_matrix[10] * IndexInInput.z
-        + c_matrix[11];
+  // Project the voxel onto the detector to find out which value to add to it
+  float3 ip = matrix_multiply(IndexInInput,  c_matrix);;
 
   // Change coordinate systems
   ip.z = 1 / ip.z;
   ip.x = ip.x * ip.z;
   ip.y = ip.y * ip.z;
 
-  // Get texture point, clip left to GPU
-  voxel_data = tex2D(tex_img, ip.x, ip.y);
-
   // Place it into the volume
-  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
+  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + tex2D(tex_img, ip.x, ip.y);
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_

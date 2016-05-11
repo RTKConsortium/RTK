@@ -50,6 +50,12 @@ std::vector<int> GetListOfCudaDevices();
 std::pair<int,int> GetCudaComputeCapability(int device);
 size_t GetFreeGPUGlobalMemory(int device);
 
+inline __host__ __device__ float3 matrix_multiply(float3 a, float* matrix)
+{
+    return make_float3(matrix[0] * a.x + matrix[1] * a.y + matrix[2] * a.z + matrix[3],
+                       matrix[4] * a.x + matrix[5] * a.y + matrix[6] * a.z + matrix[7],
+                       matrix[8] * a.x + matrix[9] * a.y + matrix[10] * a.z + matrix[11]);
+}
 inline __host__ __device__ float3 operator-(float3 a, float3 b)
 {
     return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
