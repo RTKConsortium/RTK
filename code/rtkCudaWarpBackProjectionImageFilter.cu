@@ -93,7 +93,7 @@ void kernel_warp_back_project_3Dgrid(float *dev_vol_in,
   // Overwriting the PP variable to limit the memory used by each thread
   PP += Displacement;
 
-  // Compute the input in input
+  // Convert it to a continuous index
   float3 IndexInInput = matrix_multiply(PP,  c_PPInputToIndexInputMatrix);
 
   // Project the voxel onto the detector to find out which value to add to it
