@@ -33,7 +33,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 {
   this->SetNumberOfRequiredInputs(2);
 
-  m_ProjectionNumber = 0;
   m_UseCudaSplat = false;
   m_UseCudaSources = false;
 
@@ -172,12 +171,11 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   typename ExtractFilterType::InputImageRegionType subsetRegion;
   subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
   subsetRegion.SetSize(Dimension-1, 1);
-  m_ProjectionNumber = subsetRegion.GetIndex(Dimension-1);
   m_ExtractFilter->SetExtractionRegion(subsetRegion);
 
   // Set runtime parameters
   m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
-  m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
+  m_SplatFilter->SetProjectionNumber(subsetRegion.GetIndex(Dimension-1));
   m_SplatFilter->SetWeights(m_Weights);
 
   // Have the last filter calculate its output information
@@ -219,41 +217,31 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
   int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
-  // Get an index permutation that sorts the signal values. Then process the projections
-  // in that permutated order. This way, projections with identical phases will be
-  // processed one after the other. This will save some of the DVF interpolation operations.
-  std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
-
   bool firstProjectionProcessed = false;
 
-  // Process the projections in permutated order
-  for (unsigned int i = 0 ; i < this->m_Signal.size(); i++)
+  // Process the projections in order
+  for (unsigned int proj = FirstProj ; proj < FirstProj+NumberProjs; proj++)
     {
-    // Make sure the current projection is in the input projection stack's largest possible region
-    this->m_ProjectionNumber = IndicesOfProjectionsSortedByPhase[i];
-    if ((this->m_ProjectionNumber >= FirstProj) && (this->m_ProjectionNumber<FirstProj+NumberProjs))
+    // After the first update, we need to use the output as input.
+    if(firstProjectionProcessed)
       {
-      // After the first update, we need to use the output as input.
-      if(firstProjectionProcessed)
-        {
-        pimg = this->m_SplatFilter->GetOutput();
-        pimg->DisconnectPipeline();
-        this->m_SplatFilter->SetInputVolumeSeries( pimg );
-        }
-
-      // Set the Extract Filter
-      extractRegion.SetIndex(Dimension-1, this->m_ProjectionNumber);
-      this->m_ExtractFilter->SetExtractionRegion(extractRegion);
-
-      // Set the splat filter
-      m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
-
-      // Update the last filter
-      m_SplatFilter->Update();
-
-      // Update condition
-      firstProjectionProcessed = true;
+      pimg = this->m_SplatFilter->GetOutput();
+      pimg->DisconnectPipeline();
+      this->m_SplatFilter->SetInputVolumeSeries( pimg );
       }
+
+    // Set the Extract Filter
+    extractRegion.SetIndex(Dimension-1, proj);
+    this->m_ExtractFilter->SetExtractionRegion(extractRegion);
+
+    // Set the splat filter
+    m_SplatFilter->SetProjectionNumber(proj);
+
+    // Update the last filter
+    m_SplatFilter->Update();
+
+    // Update condition
+    firstProjectionProcessed = true;
     }
 
   // Graft its output

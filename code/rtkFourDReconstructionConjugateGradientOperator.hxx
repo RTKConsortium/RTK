@@ -273,7 +273,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   bool firstProjectionProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
 
-  // Process the projections in permutated order
+  // Process the projections in order
   for (unsigned int proj = FirstProj ; proj < FirstProj+NumberProjs; proj++)
     {
     // Set the projection stack source

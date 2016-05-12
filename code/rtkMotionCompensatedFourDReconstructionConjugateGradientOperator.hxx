@@ -44,7 +44,6 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 
 }
 
-
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
@@ -115,55 +114,53 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 {
   int Dimension = ProjectionStackType::ImageDimension;
 
-  // Prepare the index for the constant projection stack source
+  // Prepare the index for the constant projection stack source and the extract filter
   typename ProjectionStackType::IndexType ConstantProjectionStackSourceIndex
       = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex();
+  typename ProjectionStackType::RegionType singleProjectionRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
+  singleProjectionRegion.SetSize(ProjectionStackType::ImageDimension -1, 1);
+  this->m_ExtractFilter->SetExtractionRegion(singleProjectionRegion);
 
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
   int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
-  // Get an index permutation that sorts the signal values. Then process the projections
-  // in that permutated order. This way, projections with identical phases will be
-  // processed one after the other. This will save some of the DVF interpolation operations.
-  std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
-
   bool firstProjectionProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
-  int proj = 0;
 
-  // Process the projections in permutated order
-  for (unsigned int i = 0 ; i < this->m_Signal.size(); i++)
+  // Process the projections in order
+  for (unsigned int proj = FirstProj ; proj < FirstProj+NumberProjs; proj++)
     {
-    // Make sure the current projection is in the input projection stack's largest possible region
-    proj = IndicesOfProjectionsSortedByPhase[i];
-    if ((proj >= FirstProj) && (proj<FirstProj+NumberProjs))
+    // Set the projection stack source
+    ConstantProjectionStackSourceIndex[Dimension - 1] = proj;
+    this->m_ConstantProjectionStackSource->SetIndex( ConstantProjectionStackSourceIndex );
+    singleProjectionRegion.SetIndex(ProjectionStackType::ImageDimension -1, proj);
+    this->m_ExtractFilter->SetExtractionRegion(singleProjectionRegion);
+
+    // Set the Interpolation filter
+    this->m_InterpolationFilter->SetProjectionNumber(proj);
+    this->m_SplatFilter->SetProjectionNumber(proj);
+
+    // After the first update, we need to use the output as input.
+    if(firstProjectionProcessed)
       {
-      // After the first update, we need to use the output as input.
-      if(firstProjectionProcessed)
-        {
-        pimg = this->m_SplatFilter->GetOutput();
-        pimg->DisconnectPipeline();
-        this->m_SplatFilter->SetInputVolumeSeries( pimg );
-        }
-
-      // Set the projection stack source
-      ConstantProjectionStackSourceIndex[Dimension - 1] = proj;
-      this->m_ConstantProjectionStackSource->SetIndex( ConstantProjectionStackSourceIndex );
-
-      // Set the Interpolation filter
-      this->m_InterpolationFilter->SetProjectionNumber(proj);
-      this->m_SplatFilter->SetProjectionNumber(proj);
-
-      // Set the DVF interpolator
-      m_DVFInterpolatorFilter->SetFrame(proj);
-      m_InverseDVFInterpolatorFilter->SetFrame(proj);
-
-      // Update the last filter
-      this->m_SplatFilter->Update();
-
-      // Update condition
-      firstProjectionProcessed = true;
+      pimg = this->m_SplatFilter->GetOutput();
+      pimg->DisconnectPipeline();
+      this->m_SplatFilter->SetInputVolumeSeries( pimg );
       }
+
+    // Set the Interpolation filter
+    this->m_InterpolationFilter->SetProjectionNumber(proj);
+    this->m_SplatFilter->SetProjectionNumber(proj);
+
+    // Set the DVF interpolator
+    m_DVFInterpolatorFilter->SetFrame(proj);
+    m_InverseDVFInterpolatorFilter->SetFrame(proj);
+
+    // Update the last filter
+    this->m_SplatFilter->Update();
+
+    // Update condition
+    firstProjectionProcessed = true;
     }
 
   // Graft its output

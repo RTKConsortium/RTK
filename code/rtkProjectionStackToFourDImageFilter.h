@@ -177,7 +177,6 @@ protected:
     /** Other member variables */
     itk::Array2D<float>                                     m_Weights;
     GeometryType::Pointer                                   m_Geometry;
-    int                                                     m_ProjectionNumber;
     bool                                                    m_UseCudaSplat;
     bool                                                    m_UseCudaSources;
     std::vector<double>                                     m_Signal;
