@@ -145,23 +145,19 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_ConstantVolumeSource = ConstantVolumeSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 #ifdef RTK_USE_CUDA
   if (m_UseCudaSources)
     {
     m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
     m_ConstantVolumeSeriesSource = rtk::CudaConstantVolumeSeriesSource::New();
     }
-  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
 #endif
 
   // Set runtime connections
   m_ExtractFilter->SetInput(this->GetInputProjectionStack());
 
-  m_DisplacedDetectorFilter->SetInput(m_ExtractFilter->GetOutput());
-
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_ExtractFilter->GetOutput());
   m_BackProjectionFilter->SetInPlace(false);
 
   m_SplatFilter->SetInputVolumeSeries(m_ConstantVolumeSeriesSource->GetOutput());
@@ -181,10 +177,8 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Set runtime parameters
   m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
-  m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
   m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
   m_SplatFilter->SetWeights(m_Weights);
-  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Have the last filter calculate its output information
   this->InitializeConstantSource();
@@ -268,7 +262,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // Release the data in internal filters
   if(pimg.IsNotNull())
     pimg->ReleaseData();
-  m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   m_BackProjectionFilter->GetOutput()->ReleaseData();
   m_ExtractFilter->GetOutput()->ReleaseData();
   m_ConstantVolumeSource->GetOutput()->ReleaseData();

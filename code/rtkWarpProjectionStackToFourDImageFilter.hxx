@@ -151,7 +151,6 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
   if(pimg.IsNotNull())
     pimg->ReleaseData();
 
-  this->m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   this->m_BackProjectionFilter->GetOutput()->ReleaseData();
   this->m_ExtractFilter->GetOutput()->ReleaseData();
   this->m_ConstantVolumeSource->GetOutput()->ReleaseData();

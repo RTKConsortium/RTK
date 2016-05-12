@@ -50,7 +50,7 @@ void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::SetDisplacementField(const DVFSequenceImageType* DisplacementField)
 {
-  this->SetNthInput(2, const_cast<DVFSequenceImageType*>(DisplacementField));
+  this->SetNthInput(3, const_cast<DVFSequenceImageType*>(DisplacementField));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -58,7 +58,7 @@ void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::SetInverseDisplacementField(const DVFSequenceImageType* InverseDisplacementField)
 {
-  this->SetNthInput(3, const_cast<DVFSequenceImageType*>(InverseDisplacementField));
+  this->SetNthInput(4, const_cast<DVFSequenceImageType*>(InverseDisplacementField));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -67,7 +67,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 ::GetDisplacementField()
 {
   return static_cast< const DVFSequenceImageType * >
-          ( this->itk::ProcessObject::GetInput(2) );
+          ( this->itk::ProcessObject::GetInput(3) );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -76,7 +76,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 ::GetInverseDisplacementField()
 {
   return static_cast< const DVFSequenceImageType * >
-          ( this->itk::ProcessObject::GetInput(3) );
+          ( this->itk::ProcessObject::GetInput(4) );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -175,7 +175,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   this->m_ConstantVolumeSource2->GetOutput()->ReleaseData();
   this->m_ConstantVolumeSeriesSource->GetOutput()->ReleaseData();
   this->m_ConstantProjectionStackSource->GetOutput()->ReleaseData();
-  this->m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
+  this->m_MultiplyFilter->GetOutput()->ReleaseData();
   this->m_InterpolationFilter->GetOutput()->ReleaseData();
   this->m_BackProjectionFilter->GetOutput()->ReleaseData();
   this->m_ForwardProjectionFilter->GetOutput()->ReleaseData();

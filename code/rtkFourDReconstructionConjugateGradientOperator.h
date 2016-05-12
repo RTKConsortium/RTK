@@ -21,6 +21,8 @@
 #include "rtkConjugateGradientOperator.h"
 
 #include <itkArray2D.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkExtractImageFilter.h>
 
 #include "rtkConstantImageSource.h"
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
@@ -28,12 +30,10 @@
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaInterpolateImageFilter.h"
 #  include "rtkCudaSplatImageFilter.h"
-#  include "rtkCudaDisplacedDetectorImageFilter.h"
 #  include "rtkCudaConstantVolumeSource.h"
 #  include "rtkCudaConstantVolumeSeriesSource.h"
 #endif
@@ -140,12 +140,17 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(FourDReconstructionConjugateGradientOperator, ConjugateGradientOperator)
 
-    /** The 4D image to be updated.*/
+    /** Set/Get the 4D image to be updated.*/
     void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
+    typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
 
-    /** The image that will be backprojected, then added, with coefficients, to each 3D volume of the 4D image.
-    * It is 3D because the backprojection filters need it, but the third dimension, which is the number of projections, is 1  */
-    void SetInputProjectionStack(const ProjectionStackType* Projection);
+    /** Set/Get the stack of projections */
+    void SetInputProjectionStack(const ProjectionStackType* Projections);
+    typename ProjectionStackType::ConstPointer GetInputProjectionStack();
+
+    /** Set/Get the projection weights */
+    void SetInputProjectionWeights(const VolumeType* ProjectionWeights);
+    typename ProjectionStackType::ConstPointer GetInputProjectionWeights();
 
     typedef rtk::BackProjectionImageFilter< ProjectionStackType, ProjectionStackType >          BackProjectionFilterType;
     typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >       ForwardProjectionFilterType;
@@ -154,7 +159,8 @@ public:
     typedef rtk::ConstantImageSource<VolumeType>                                                ConstantVolumeSourceType;
     typedef rtk::ConstantImageSource<ProjectionStackType>                                       ConstantProjectionStackSourceType;
     typedef rtk::ConstantImageSource<VolumeSeriesType>                                          ConstantVolumeSeriesSourceType;
-    typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                              DisplacedDetectorFilterType;
+    typedef itk::MultiplyImageFilter<ProjectionStackType>                                       MultiplyFilterType;
+    typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>                   ExtractFilterType;
 
     /** Pass the backprojection filter to ProjectionStackToFourD*/
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
@@ -184,9 +190,6 @@ protected:
     FourDReconstructionConjugateGradientOperator();
     ~FourDReconstructionConjugateGradientOperator(){}
 
-    typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
-    typename ProjectionStackType::ConstPointer GetInputProjectionStack();
-
     /** Builds the pipeline and computes output information */
     virtual void GenerateOutputInformation();
 
@@ -208,7 +211,8 @@ protected:
     typename ConstantVolumeSourceType::Pointer            m_ConstantVolumeSource2;
     typename ConstantProjectionStackSourceType::Pointer   m_ConstantProjectionStackSource;
     typename ConstantVolumeSeriesSourceType::Pointer      m_ConstantVolumeSeriesSource;
-    typename DisplacedDetectorFilterType::Pointer         m_DisplacedDetectorFilter;
+    typename MultiplyFilterType::Pointer                  m_MultiplyFilter;
+    typename ExtractFilterType::Pointer                   m_ExtractFilter;
 
     ThreeDCircularProjectionGeometry::Pointer             m_Geometry;
     bool                                                  m_UseCudaInterpolation;
