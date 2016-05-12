@@ -50,7 +50,6 @@ namespace rtk
    *
    * node [shape=box];
    * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
-   * DisplacedDetector [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * VolumeSeriesSource [ label="rtk::ConstantImageSource (4D)" URL="\ref rtk::ConstantImageSource"];
    * AfterSource4D [label="", fixedsize="false", width=0, height=0, shape=none];
    * Source [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
@@ -64,8 +63,7 @@ namespace rtk
    * Input2 -> CyclicDeformation;
    * VolumeSeriesSource -> AfterSource4D[arrowhead=none];
    * AfterSource4D -> Splat;
-   * Extract -> DisplacedDetector;
-   * DisplacedDetector -> Backproj;
+   * Extract -> Backproj;
    * CyclicDeformation -> Backproj;
    * Source -> Backproj;
    * Backproj -> Splat;

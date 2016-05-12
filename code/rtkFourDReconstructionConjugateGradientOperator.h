@@ -82,6 +82,8 @@ namespace rtk
    * Input0 [shape=Mdiamond];
    * Input1 [label="Input 1 (Projections)"];
    * Input1 [shape=Mdiamond];
+   * Input2 [label="Input 2 (Projection weights)"];
+   * Input2 [shape=Mdiamond];
    * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
    * Output [shape=Mdiamond];
    *
@@ -97,14 +99,15 @@ namespace rtk
    * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterSource4D [label="", fixedsize="false", width=0, height=0, shape=none];
-   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
+   * Multiply [ label="MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    *
    * Input0 -> Interpolation;
    * SourceVol -> Interpolation;
    * Interpolation -> ForwardProj;
    * SourceVol2 -> BackProj;
-   * ForwardProj -> Displaced;
-   * Displaced -> BackProj;
+   * ForwardProj -> Multiply;
+   * Input2 -> Multiply;
+   * Multiply -> BackProj;
    * BackProj -> Splat;
    * Splat -> AfterSplat[arrowhead=none];
    * AfterSplat -> Output;
