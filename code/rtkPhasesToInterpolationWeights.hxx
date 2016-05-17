@@ -95,7 +95,7 @@ void PhasesToInterpolationWeights::Parse()
     {
     this->GetNextField(entry);
     if ((m_SelectedProjections.size() == 0) || (m_SelectedProjections[j]))
-      projectionPhases.push_back(round(atof(entry.c_str()) * 100. ) / 100.);
+      projectionPhases.push_back(round(atof(entry.c_str()) * 1000. ) / 1000.);
     }
 
   // Compute the instant of the cycle each phase represents
