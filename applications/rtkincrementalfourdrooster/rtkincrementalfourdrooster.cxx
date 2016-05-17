@@ -21,6 +21,7 @@
 
 #include "rtkIncrementalFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -94,6 +95,36 @@ int main(int argc, char * argv[])
   inputFilter->Update();
   inputFilter->ReleaseDataFlagOn();
 
+  // Read weights if given, otherwise default to weights all equal to one
+  itk::ImageSource< ProjectionStackType >::Pointer weightsSource;
+  if(args_info.weights_given)
+    {
+    typedef itk::ImageFileReader<  ProjectionStackType > WeightsReaderType;
+    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+    weightsReader->SetFileName( args_info.weights_arg );
+    weightsSource = weightsReader;
+    }
+  else
+    {
+    typedef rtk::ConstantImageSource< ProjectionStackType > ConstantWeightsSourceType;
+    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
+
+    // Set the weights to be like the projections
+    reader->UpdateOutputInformation();
+    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
+    constantWeightsSource->SetConstant(1.0);
+    weightsSource = constantWeightsSource;
+    }
+
+  // Apply the displaced detector weighting now, then re-order the projection weights
+  // containing everything
+  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType> DisplacedDetectorFilterType;
+  DisplacedDetectorFilterType::Pointer displaced = DisplacedDetectorFilterType::New();
+  displaced->SetInput(weightsSource->GetOutput());
+  displaced->SetGeometry(geometryReader->GetOutputObject());
+  displaced->SetPadOnTruncatedSide(false);
+  displaced->Update();
+
   // ROI reader
   typedef itk::ImageFileReader<  VolumeType > InputReaderType;
   InputReaderType::Pointer motionMaskReader = InputReaderType::New();
@@ -106,6 +137,7 @@ int main(int argc, char * argv[])
   incrementalRooster->SetBackProjectionFilter(args_info.bp_arg);
   incrementalRooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   incrementalRooster->SetInputProjectionStack(reader->GetOutput());
+  incrementalRooster->SetInputProjectionWeights(displaced->GetOutput());
   incrementalRooster->SetMotionMask(motionMaskReader->GetOutput());
   incrementalRooster->SetGeometry( geometryReader->GetOutputObject() );
   incrementalRooster->SetCG_iterations( args_info.cgiter_arg );

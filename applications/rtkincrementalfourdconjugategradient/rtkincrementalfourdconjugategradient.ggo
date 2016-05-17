@@ -11,6 +11,7 @@ option "time"        t "Records elapsed time during the process"                
 option "cudacg"      - "Perform conjugate gradient calculations on GPU"                                   flag   off
 option "input"       i "Input volume"                                                                     string no
 option "nprojpersubset" - "Number of projections processed at each update of the reconstructed volume (several for OS-4DCG, all for regular 4DCG). 0 means all" int no default="0"
+option "weights"     w "Weights file for Weighted Least Squares (WLS)"         string no
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"                                       string                       yes

@@ -149,6 +149,10 @@ public:
   void SetInputProjectionStack(const VolumeType* Projection);
   typename VolumeType::ConstPointer GetInputProjectionStack();
 
+  /** Set/Get the stack of projections  */
+  void SetInputProjectionWeights(const VolumeType* Projection);
+  typename VolumeType::ConstPointer GetInputProjectionWeights();
+
   /** Pass the ForwardProjection filter to the conjugate gradient operator */
   void SetForwardProjectionFilter (int _arg);
 

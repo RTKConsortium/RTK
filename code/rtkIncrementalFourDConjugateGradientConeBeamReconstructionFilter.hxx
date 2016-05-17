@@ -55,9 +55,16 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 
 template<class VolumeSeriesType, class ProjectionStackType>
 void
-IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(const VolumeType* Projection)
+IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(const ProjectionStackType* Projection)
 {
-  this->SetNthInput(1, const_cast<VolumeType*>(Projection));
+  this->SetNthInput(1, const_cast<ProjectionStackType*>(Projection));
+}
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionWeights(const ProjectionStackType* ProjectionWeights)
+{
+  this->SetInput("ProjectionWeights", const_cast<ProjectionStackType*>(ProjectionWeights));
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
@@ -74,6 +81,14 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 {
   return static_cast< const VolumeType * >
           ( this->itk::ProcessObject::GetInput(1) );
+}
+
+template<class VolumeSeriesType, class ProjectionStackType>
+typename ProjectionStackType::ConstPointer
+IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputProjectionWeights()
+{
+  return static_cast< const ProjectionStackType * >
+          ( this->itk::ProcessObject::GetInput("ProjectionWeights") );
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
@@ -105,7 +120,6 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
   this->Modified();
 }
 
-
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
@@ -134,7 +148,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
     projOrder[i] = i;
   std::random_shuffle( projOrder.begin(), projOrder.end() );
 
-  for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset++)
+  for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset+=2)
     {
     // Create a vector of booleans, indicating whether a projection is selected or not
     std::vector< bool > selectedProjs(nProjs);
@@ -152,6 +166,13 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
     m_SubSelectFilters[subset]->SetInputProjectionStack( this->GetInputProjectionStack() );
     m_SubSelectFilters[subset]->Update();
 
+    // Do the same for the projection weights (except that the geometry is useless)
+    m_SubSelectFilters.push_back(SubSelectType::New());
+    m_SubSelectFilters[subset+1]->SetSelectedProjections( m_SelectedProjsVector[subset] );
+    m_SubSelectFilters[subset+1]->SetInputGeometry( m_Geometry );
+    m_SubSelectFilters[subset+1]->SetInputProjectionStack( this->GetInputProjectionWeights() );
+    m_SubSelectFilters[subset+1]->Update();
+
     // Read the phases file, and extract the interpolation weights for this subset
     m_PhasesFilters.push_back(rtk::PhasesToInterpolationWeights::New());
     m_PhasesFilters[subset]->SetFileName(m_PhasesFileName);
@@ -162,6 +183,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 
   // Set the conjugate gradient filter to reconstruct from the first subset
   m_CG->SetInputProjectionStack(m_SubSelectFilters[0]->GetOutput());
+  m_CG->SetInputProjectionWeights(m_SubSelectFilters[1]->GetOutput());
   m_CG->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_CG->SetNumberOfIterations(m_CG_iterations);
   m_CG->SetGeometry(m_SubSelectFilters[0]->GetOutputGeometry());
@@ -182,7 +204,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 
   for (unsigned int ml_iter=0; ml_iter < m_MainLoop_iterations; ml_iter++)
     {
-    for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset++)
+    for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset+=2)
       {
       // After the first update, we need to use the output as input
       if (subset + ml_iter > 0)
@@ -194,6 +216,7 @@ IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, 
 
       // Change to the next subset
       m_CG->SetInputProjectionStack( m_SubSelectFilters[subset]->GetOutput() );
+      m_CG->SetInputProjectionWeights( m_SubSelectFilters[subset+1]->GetOutput() );
       m_CG->SetGeometry( m_SubSelectFilters[subset]->GetOutputGeometry() );
       m_CG->SetWeights(m_PhasesFilters[subset]->GetOutput());
       TRY_AND_EXIT_ON_ITK_EXCEPTION( m_CG->Update() );

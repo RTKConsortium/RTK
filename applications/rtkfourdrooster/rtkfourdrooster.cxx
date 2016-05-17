@@ -22,6 +22,7 @@
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -95,6 +96,36 @@ int main(int argc, char * argv[])
   inputFilter->Update();
   inputFilter->ReleaseDataFlagOn();
 
+  // Read weights if given, otherwise default to weights all equal to one
+  itk::ImageSource< ProjectionStackType >::Pointer weightsSource;
+  if(args_info.weights_given)
+    {
+    typedef itk::ImageFileReader<  ProjectionStackType > WeightsReaderType;
+    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+    weightsReader->SetFileName( args_info.weights_arg );
+    weightsSource = weightsReader;
+    }
+  else
+    {
+    typedef rtk::ConstantImageSource< ProjectionStackType > ConstantWeightsSourceType;
+    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
+
+    // Set the weights to be like the projections
+    reader->UpdateOutputInformation();
+    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
+    constantWeightsSource->SetConstant(1.0);
+    weightsSource = constantWeightsSource;
+    }
+
+  // Apply the displaced detector weighting now, then re-order the projection weights
+  // containing everything
+  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType> DisplacedDetectorFilterType;
+  DisplacedDetectorFilterType::Pointer displaced = DisplacedDetectorFilterType::New();
+  displaced->SetInput(weightsSource->GetOutput());
+  displaced->SetGeometry(geometryReader->GetOutputObject());
+  displaced->SetPadOnTruncatedSide(false);
+  displaced->Update();
+
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
@@ -106,6 +137,7 @@ int main(int argc, char * argv[])
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
   rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   rooster->SetInputProjectionStack(reader->GetOutput());
+  rooster->SetInputProjectionWeights(displaced->GetOutput());
   rooster->SetGeometry( geometryReader->GetOutputObject() );
   rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));

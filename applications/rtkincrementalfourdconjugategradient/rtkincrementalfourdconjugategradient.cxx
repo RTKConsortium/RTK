@@ -96,6 +96,36 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
+  // Read weights if given, otherwise default to weights all equal to one
+  itk::ImageSource< ProjectionStackType >::Pointer weightsSource;
+  if(args_info.weights_given)
+    {
+    typedef itk::ImageFileReader<  ProjectionStackType > WeightsReaderType;
+    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+    weightsReader->SetFileName( args_info.weights_arg );
+    weightsSource = weightsReader;
+    }
+  else
+    {
+    typedef rtk::ConstantImageSource< ProjectionStackType > ConstantWeightsSourceType;
+    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
+
+    // Set the weights to be like the projections
+    reader->UpdateOutputInformation();
+    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
+    constantWeightsSource->SetConstant(1.0);
+    weightsSource = constantWeightsSource;
+    }
+
+  // Apply the displaced detector weighting now, then re-order the projection weights
+  // containing everything
+  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType> DisplacedDetectorFilterType;
+  DisplacedDetectorFilterType::Pointer displaced = DisplacedDetectorFilterType::New();
+  displaced->SetInput(weightsSource->GetOutput());
+  displaced->SetGeometry(geometryReader->GetOutputObject());
+  displaced->SetPadOnTruncatedSide(false);
+  displaced->Update();
+
   typedef rtk::IncrementalFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> IncrementalCGFilterType;
   IncrementalCGFilterType::Pointer incrementalCG = IncrementalCGFilterType::New();
   incrementalCG->SetForwardProjectionFilter(args_info.fp_arg);
@@ -104,6 +134,7 @@ int main(int argc, char * argv[])
   incrementalCG->SetCG_iterations( args_info.nested_arg );
   incrementalCG->SetInputVolumeSeries(inputFilter->GetOutput() );
   incrementalCG->SetInputProjectionStack(reader->GetOutput() );
+  incrementalCG->SetInputProjectionWeights(displaced->GetOutput() );
   incrementalCG->SetPhasesFileName( args_info.signal_arg );
   incrementalCG->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   incrementalCG->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );

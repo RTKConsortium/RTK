@@ -16,6 +16,7 @@ option "motionmask"  - "Region Of Interest file, binary image with ones where mo
 option "input"       i "Input volume"                                          string no
 option "nprojpersubset" - "Number of projections processed at each update of the reconstructed volume. 0 means all" int no default="0"
 option "kzero"       k "Parameter controlling convergence"                     float  no   default="100"
+option "weights"     w "Weights file for Weighted Least Squares (WLS)"         string no
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes
