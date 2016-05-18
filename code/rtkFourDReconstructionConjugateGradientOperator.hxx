@@ -261,33 +261,50 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   int Dimension = ProjectionStackType::ImageDimension;
 
   // Prepare the index for the constant projection stack source and the extract filter
-  typename ProjectionStackType::IndexType ConstantProjectionStackSourceIndex
-      = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex();
-  typename ProjectionStackType::RegionType singleProjectionRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  singleProjectionRegion.SetSize(ProjectionStackType::ImageDimension -1, 1);
-  m_ExtractFilter->SetExtractionRegion(singleProjectionRegion);
+  typename ProjectionStackType::RegionType extractRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
+  typename ProjectionStackType::SizeType extractSize = extractRegion.GetSize();
+  typename ProjectionStackType::IndexType extractIndex = extractRegion.GetIndex();
 
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
   int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
-  bool firstProjectionProcessed = false;
+  std::vector<int> firstProjectionInSlabs;
+  std::vector<unsigned int> sizeOfSlabs;
+  firstProjectionInSlabs.push_back(FirstProj);
+  for (unsigned int proj = FirstProj+1 ; proj < FirstProj+NumberProjs; proj++)
+    {
+    if ((m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
+      {
+      // Compute the number of projections in the current slab
+      sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+
+      // Update the index of the first projection in the next slab
+      firstProjectionInSlabs.push_back(proj);
+      }
+    }
+  sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+
+  bool firstSlabProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
 
   // Process the projections in order
-  for (unsigned int proj = FirstProj ; proj < FirstProj+NumberProjs; proj++)
+  for (unsigned int slab = 0 ; slab < firstProjectionInSlabs.size(); slab++)
     {
     // Set the projection stack source
-    ConstantProjectionStackSourceIndex[Dimension - 1] = proj;
-    this->m_ConstantProjectionStackSource->SetIndex( ConstantProjectionStackSourceIndex );
-    singleProjectionRegion.SetIndex(ProjectionStackType::ImageDimension -1, proj);
-    m_ExtractFilter->SetExtractionRegion(singleProjectionRegion);
+    extractIndex[Dimension - 1] = firstProjectionInSlabs[slab];
+    extractSize[Dimension - 1] = sizeOfSlabs[slab];
+    extractRegion.SetIndex(extractIndex);
+    extractRegion.SetSize(extractSize);
+    this->m_ConstantProjectionStackSource->SetIndex( extractIndex );
+    this->m_ConstantProjectionStackSource->SetSize( extractSize );
+    m_ExtractFilter->SetExtractionRegion(extractRegion);
 
     // Set the Interpolation filter
-    m_InterpolationFilter->SetProjectionNumber(proj);
-    m_SplatFilter->SetProjectionNumber(proj);
+    m_InterpolationFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
+    m_SplatFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
 
     // After the first update, we need to use the output as input.
-    if(firstProjectionProcessed)
+    if(firstSlabProcessed)
       {
       pimg = this->m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
@@ -302,7 +319,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
     m_SplatFilter->Update();
 
     // Update condition
-    firstProjectionProcessed = true;
+    firstSlabProcessed = true;
     }
 
   // Graft its output

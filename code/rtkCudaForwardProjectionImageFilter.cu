@@ -49,6 +49,7 @@ __constant__ float3 c_boxMax;
 __constant__ float3 c_spacing;
 __constant__ int3 c_volSize;
 __constant__ float c_tStep;
+__constant__ float c_matrix[12];
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -71,14 +72,7 @@ void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out)
   Ray ray;
   ray.o = c_sourcePos;
 
-  float3 pixelPos;
-
-  pixelPos.x = tex1Dfetch(tex_matrix, 3)  + tex1Dfetch(tex_matrix, 0)*i +
-               tex1Dfetch(tex_matrix, 1)*j;
-  pixelPos.y = tex1Dfetch(tex_matrix, 7)  + tex1Dfetch(tex_matrix, 4)*i +
-               tex1Dfetch(tex_matrix, 5)*j;
-  pixelPos.z = tex1Dfetch(tex_matrix, 11) + tex1Dfetch(tex_matrix, 8)*i +
-               tex1Dfetch(tex_matrix, 9)*j;
+  float3 pixelPos = matrix_multiply(make_float3(i,j,0), c_matrix);
 
   ray.d = pixelPos - ray.o;
   ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
@@ -191,14 +185,7 @@ void kernel_forwardProject_noTexture(float *dev_proj_in, float *dev_proj_out, fl
   Ray ray;
   ray.o = c_sourcePos;
 
-  float3 pixelPos;
-
-  pixelPos.x = tex1Dfetch(tex_matrix, 3)  + tex1Dfetch(tex_matrix, 0)*i +
-               tex1Dfetch(tex_matrix, 1)*j;
-  pixelPos.y = tex1Dfetch(tex_matrix, 7)  + tex1Dfetch(tex_matrix, 4)*i +
-               tex1Dfetch(tex_matrix, 5)*j;
-  pixelPos.z = tex1Dfetch(tex_matrix, 11) + tex1Dfetch(tex_matrix, 8)*i +
-               tex1Dfetch(tex_matrix, 9)*j;
+  float3 pixelPos = matrix_multiply(make_float3(i,j,0), c_matrix);
 
   ray.d = pixelPos - ray.o;
   ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
@@ -248,36 +235,27 @@ void kernel_forwardProject_noTexture(float *dev_proj_in, float *dev_proj_out, fl
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
-CUDA_forward_project( int projections_size[2],
+CUDA_forward_project( int projections_size[3],
                       int vol_size[3],
-                      float matrix[12],
+                      float* matrices,
                       float *dev_proj_in,
                       float *dev_proj_out,
                       float *dev_vol,
                       float t_step,
-                      double source_position[3],
+                      double* source_positions,
                       float box_min[3],
                       float box_max[3],
                       float spacing[3],
                       bool useCudaTexture)
 {
-  // Copy matrix and bind data to the texture
-  float *dev_matrix;
-  cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
-  cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
-  CUDA_CHECK_ERROR;
-  cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
-  CUDA_CHECK_ERROR;
-
-  // constant memory
-  float3 dev_sourcePos = make_float3(source_position[0], source_position[1], source_position[2]);
+  // Constant memory
   float3 dev_boxMin = make_float3(box_min[0], box_min[1], box_min[2]);
-  int2 dev_projSize = make_int2(projections_size[0], projections_size[1]);
+  int3 dev_projSize = make_int3(projections_size[0], projections_size[1], projections_size[2]);
   float3 dev_boxMax = make_float3(box_max[0], box_max[1], box_max[2]);
   float3 dev_spacing = make_float3(spacing[0], spacing[1], spacing[2]);
   int3 dev_vol_size = make_int3(vol_size[0], vol_size[1], vol_size[2]);
-  cudaMemcpyToSymbol(c_sourcePos, &dev_sourcePos, sizeof(float3));
-  cudaMemcpyToSymbol(c_projSize, &dev_projSize, sizeof(int2));
+  float3 dev_sourcePos;
+  cudaMemcpyToSymbol(c_projSize, &dev_projSize, sizeof(int3));
   cudaMemcpyToSymbol(c_boxMin, &dev_boxMin, sizeof(float3));
   cudaMemcpyToSymbol(c_boxMax, &dev_boxMax, sizeof(float3));
   cudaMemcpyToSymbol(c_spacing, &dev_spacing, sizeof(float3));
@@ -316,22 +294,38 @@ CUDA_forward_project( int projections_size[2],
     cudaBindTextureToArray(tex_vol, (cudaArray*)array_vol, channelDesc);
     CUDA_CHECK_ERROR;
 
-    kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out);
+    for (unsigned int proj = 0; proj<projections_size[2]; proj++)
+      {
+      // Copy the source position matrix into a float3 in constant memory
+      dev_sourcePos = make_float3(source_positions[3*proj], source_positions[3*proj + 1], source_positions[3*proj + 2]);
+      cudaMemcpyToSymbol(c_sourcePos, &dev_sourcePos, sizeof(float3));
+
+      // Copy the projection matrix into a constant memory array of 12 floats
+      unsigned int offset = projections_size[0] * projections_size[1] * proj;
+      cudaMemcpyToSymbol(c_matrix, &(matrices[12 * proj]), 12 * sizeof(float));
+
+      // Run the kernel
+      kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj_in + offset , dev_proj_out + offset);
+      }
 
     cudaUnbindTexture (tex_vol);
-    CUDA_CHECK_ERROR;
-
     cudaFreeArray ((cudaArray*)array_vol);
     CUDA_CHECK_ERROR;
     }
-  else
+else
+  {
+  for (unsigned int proj = 0; proj<projections_size[2]; proj++)
     {
-    kernel_forwardProject_noTexture <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol);
+    // Copy the source position matrix into a float3 in constant memory
+    dev_sourcePos = make_float3(source_positions[3*proj], source_positions[3*proj + 1], source_positions[3*proj + 2]);
+    cudaMemcpyToSymbol(c_sourcePos, &dev_sourcePos, sizeof(float3));
+
+    // Copy the projection matrix into a constant memory array of 12 floats
+    unsigned int offset = projections_size[0] * projections_size[1] * proj;
+    cudaMemcpyToSymbol(c_matrix, &(matrices[12 * proj]), 12 * sizeof(float));
+
+    // Run the kernel
+    kernel_forwardProject_noTexture <<< dimGrid, dimBlock >>> (dev_proj_in + offset, dev_proj_out + offset, dev_vol);
     }
-
-  cudaUnbindTexture (tex_matrix);
-  CUDA_CHECK_ERROR;
-
-  cudaFree (dev_matrix);
-  CUDA_CHECK_ERROR;
+  }
 }

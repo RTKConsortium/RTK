@@ -78,9 +78,10 @@ CudaForwardProjectionImageFilter<TInputImage,
     }
 
   // Cuda convenient format for dimensions
-  int projectionSize[2];
+  int projectionSize[3];
   projectionSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
+  projectionSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
   int volumeSize[3];
   volumeSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
@@ -91,32 +92,36 @@ CudaForwardProjectionImageFilter<TInputImage,
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pvol = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
 
+  // Account for system rotations
+  typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
+  volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(1) );
+
+  // Compute matrix to translate the pixel indices on the volume and the detector
+  // if the Requested region has non-zero index
+  typename Superclass::GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
+  projIndexTranslation.SetIdentity();
+  volIndexTranslation.SetIdentity();
+  for(unsigned int i=0; i<3; i++)
+    {
+    projIndexTranslation[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
+    volIndexTranslation[i][3] = -this->GetInput(1)->GetBufferedRegion().GetIndex(i);
+
+    if (m_UseCudaTexture)
+      {
+      // Adding 0.5 offset to change from the centered pixel convention (ITK)
+      // to the corner pixel convention (CUDA).
+      volPPToIndex[i][3] += 0.5;
+      }
+    }
+
+  // Compute matrices to transform projection index to volume index, one per projection
+  float matrices[3*nProj][4];
+  double source_positions[4 * nProj];
+
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
-    // Account for system rotations
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
-    volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(1) );
 
-    // Compute matrix to translate the pixel indices on the volume and the detector
-    // if the Requested region has non-zero index
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
-    projIndexTranslation.SetIdentity();
-    volIndexTranslation.SetIdentity();
-    for(unsigned int i=0; i<3; i++)
-      {
-      projIndexTranslation[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
-      volIndexTranslation[i][3] = -this->GetInput(1)->GetBufferedRegion().GetIndex(i);
-
-      if (m_UseCudaTexture)
-        {
-        // Adding 0.5 offset to change from the centered pixel convention (ITK)
-        // to the corner pixel convention (CUDA).
-        volPPToIndex[i][3] += 0.5;
-        }
-      }
-
-    // Compute matrix to transform projection index to volume index
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
     d_matrix =
       volIndexTranslation.GetVnlMatrix() *
@@ -124,29 +129,34 @@ CudaForwardProjectionImageFilter<TInputImage,
       geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
       rtk::GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix() *
       projIndexTranslation.GetVnlMatrix();
-    float matrix[4][4];
-    for (int j=0; j<4; j++)
+    for (int j=0; j<3; j++) // Ignore the 4th row
       for (int k=0; k<4; k++)
-        matrix[j][k] = (float)d_matrix[j][k];
+        matrices[j + 3 * iProj][k] = (float)d_matrix[j][k];
 
-    // Set source position in volume indices
-    source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
+    // Compute source position in volume indices
+    source_position= volPPToIndex * geometry->GetSourcePosition(iProj);
 
-    int projectionOffset = iProj - this->GetOutput()->GetBufferedRegion().GetIndex(2);
-
-    CUDA_forward_project(projectionSize,
-                        volumeSize,
-                        (float*)&(matrix[0][0]),
-                        pin + nPixelsPerProj * projectionOffset,
-                        pout + nPixelsPerProj * projectionOffset,
-                        pvol,
-                        m_StepSize,
-                        (double*)&(source_position[0]),
-                        boxMin,
-                        boxMax,
-                        spacing,
-                        m_UseCudaTexture);
+    // Copy it into a single large array
+    for (unsigned int d=0; d<3; d++)
+      source_positions[(iProj-iFirstProj)*3 + d] = source_position[d]; // Ignore the 4th component
     }
+
+  int projectionOffset = iFirstProj - this->GetOutput()->GetBufferedRegion().GetIndex(2);
+
+  // Run the forward projection on the whole slab of projections
+  CUDA_forward_project(projectionSize,
+                      volumeSize,
+                      (float*)&(matrices[0][0]),
+                      pin + nPixelsPerProj * projectionOffset,
+                      pout + nPixelsPerProj * projectionOffset,
+                      pvol,
+                      m_StepSize,
+                      (double*)&(source_positions[0]),
+                      boxMin,
+                      boxMax,
+                      spacing,
+                      m_UseCudaTexture);
+
 }
 
 } // end namespace rtk
