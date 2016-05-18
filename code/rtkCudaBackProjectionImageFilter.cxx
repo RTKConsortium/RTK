@@ -42,10 +42,12 @@ CudaBackProjectionImageFilter
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
+  if (nProj>1024)
+    itkGenericExceptionMacro("The CUDA voxel based back projection image filter can only handle stacks of at most 1024 projections")
 
   // Ramp factor is the correction for ramp filter which did not account for the
   // divergence of the beam
-  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() );
+//  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() );
 
   // Rotation center (assumed to be at 0 yet)
   ImageType::PointType rotCenterPoint;
@@ -63,9 +65,10 @@ CudaBackProjectionImageFilter
     }
 
   // Cuda convenient format for dimensions
-  int projectionSize[2];
+  int projectionSize[3];
   projectionSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+  projectionSize[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[2];
 
   int volumeSize[3];
   //volumeSize[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
@@ -76,7 +79,6 @@ CudaBackProjectionImageFilter
   volumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
   volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
-
   float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
@@ -85,8 +87,11 @@ CudaBackProjectionImageFilter
                        this->GetInput(1)->GetBufferedRegion().GetSize()[1];
   stackGPUPointer += projSize * (iFirstProj-this->GetInput(1)->GetBufferedRegion().GetIndex()[2]);
 
+  // Allocate a large matrix to hold the matrix of all projections
+  float fMatrix[12 * nProj];
+
   // Go over each projection
-  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++, stackGPUPointer += projSize)
+  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)
@@ -106,9 +111,9 @@ CudaBackProjectionImageFilter
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
     matrix /= perspFactor;
 
-    float fMatrix[12];
     for (int j = 0; j < 12; j++)
-      fMatrix[j] = matrix[j/4][j%4];
+      fMatrix[j + (iProj-iFirstProj) * 12] = matrix[j/4][j%4];
+    }
 
     CUDA_back_project(projectionSize,
                       volumeSize,
@@ -117,8 +122,6 @@ CudaBackProjectionImageFilter
                       pout,
                       stackGPUPointer
                       );
-    pin = pout;
-    }
 }
 
 } // end namespace rtk
