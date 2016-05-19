@@ -131,7 +131,7 @@ CudaForwardProjectionImageFilter<TInputImage,
       projIndexTranslation.GetVnlMatrix();
     for (int j=0; j<3; j++) // Ignore the 4th row
       for (int k=0; k<4; k++)
-        matrices[j + 3 * iProj][k] = (float)d_matrix[j][k];
+        matrices[j + 3 * (iProj-iFirstProj)][k] = (float)d_matrix[j][k];
 
     // Compute source position in volume indices
     source_position= volPPToIndex * geometry->GetSourcePosition(iProj);
