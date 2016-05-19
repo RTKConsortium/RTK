@@ -311,10 +311,6 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
       this->m_SplatFilter->SetInputVolumeSeries( pimg );
       }
 
-    // Reset the connections between the back projection filter and the surrounding filters
-    m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource2->GetOutput());
-    m_SplatFilter->SetInputVolume(m_BackProjectionFilter->GetOutput());
-
     // Update the last filter
     m_SplatFilter->Update();
 
