@@ -43,7 +43,7 @@ texture<float, 3, cudaReadModeElementType> tex_vol;
 texture<float, 1, cudaReadModeElementType> tex_matrix;
 
 __constant__ float3 c_sourcePos;
-__constant__ int2 c_projSize;
+__constant__ int3 c_projSize;
 __constant__ float3 c_boxMin;
 __constant__ float3 c_boxMax;
 __constant__ float3 c_spacing;
