@@ -40,7 +40,7 @@ namespace rtk
  *
  * \ingroup Projector CudaImageToImageFilter
  */
-class CudaWarpBackProjectionImageFilter :
+class rtkcuda_EXPORT CudaWarpBackProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   BackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
@@ -78,7 +78,7 @@ public:
   DVFType::Pointer GetDisplacementField();
 
 protected:
-  rtkcuda_EXPORT CudaWarpBackProjectionImageFilter();
+  CudaWarpBackProjectionImageFilter();
   virtual ~CudaWarpBackProjectionImageFilter() {};
 
   virtual void GenerateInputRequestedRegion();

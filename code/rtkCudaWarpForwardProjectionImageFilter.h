@@ -22,11 +22,7 @@
 #include "rtkForwardProjectionImageFilter.h"
 #include "itkCudaInPlaceImageFilter.h"
 #include "itkCudaUtil.h"
-//#include "itkCudaKernelManager.h"
 #include "rtkWin32Header.h"
-
-//#include <itkCudaImage.h>
-//#include "itkCovariantVector.h"
 
 /** \class CudaWarpForwardProjectionImageFilter
  * \brief Trilinear interpolation forward projection in warped volume implemented in CUDA
@@ -44,7 +40,7 @@
 namespace rtk
 {
 
-class ITK_EXPORT CudaWarpForwardProjectionImageFilter :
+class rtkcuda_EXPORT CudaWarpForwardProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   ForwardProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
