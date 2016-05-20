@@ -178,32 +178,6 @@ CudaWarpBackProjectionImageFilter
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
 
-  // Split the DVF into three images (one per component)
-  ImageType::Pointer xCompDVF = ImageType::New();
-  ImageType::Pointer yCompDVF = ImageType::New();
-  ImageType::Pointer zCompDVF = ImageType::New();
-  ImageType::RegionType buffered = this->GetDisplacementField()->GetBufferedRegion();
-  xCompDVF->SetRegions(buffered);
-  yCompDVF->SetRegions(buffered);
-  zCompDVF->SetRegions(buffered);
-  xCompDVF->Allocate();
-  yCompDVF->Allocate();
-  zCompDVF->Allocate();
-  itk::ImageRegionIterator<ImageType>     itxComp(xCompDVF, buffered);
-  itk::ImageRegionIterator<ImageType>     ityComp(yCompDVF, buffered);
-  itk::ImageRegionIterator<ImageType>     itzComp(zCompDVF, buffered);
-  itk::ImageRegionConstIterator<DVFType>  itDVF(this->GetDisplacementField(), buffered);
-  while(!itDVF.IsAtEnd())
-    {
-      itxComp.Set(itDVF.Get()[0]);
-      ityComp.Set(itDVF.Get()[1]);
-      itzComp.Set(itDVF.Get()[2]);
-      ++itxComp;
-      ++ityComp;
-      ++itzComp;
-      ++itDVF;
-    }
-
   // Transform matrices that we will need during the warping process
   itk::Matrix<double, 4, 4> indexInputToIndexDVFMatrix;
   itk::Matrix<double, 4, 4> PPInputToIndexInputMatrix;
@@ -232,15 +206,12 @@ CudaWarpBackProjectionImageFilter
   // Load the required images onto the GPU (handled by the CudaDataManager)
   float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float *pDVF = *(float**)( this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer() );
 
   float *stackGPUPointer = *(float**)( this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer() );
   ptrdiff_t projSize = this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[0] *
                        this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[1];
   stackGPUPointer += projSize * (iFirstProj-this->GetInputProjectionStack()->GetBufferedRegion().GetIndex()[2]);
-
-  float *pinxDVF = *(float**)( xCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinyDVF = *(float**)( yCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinzDVF = *(float**)( zCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++, stackGPUPointer += projSize)
@@ -274,9 +245,7 @@ CudaWarpBackProjectionImageFilter
                       pin,
                       pout,
                       stackGPUPointer,
-                      pinxDVF,
-                      pinyDVF,
-                      pinzDVF,
+                      pDVF,
                       fIndexInputToIndexDVFMatrix,
                       fPPInputToIndexInputMatrix,
                       fIndexInputToPPInputMatrix
