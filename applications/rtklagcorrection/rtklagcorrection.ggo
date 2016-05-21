@@ -1,0 +1,6 @@
+package "rtklagcorrection"
+purpose "LTI Lag correction"
+
+option  "config"    - "Config file"                                              string        no
+option  "verbose"   v "Verbose execution"                                        flag          off
+option  "output"    o "Output file name"                                         string        yes
