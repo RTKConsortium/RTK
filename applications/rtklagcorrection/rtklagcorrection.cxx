@@ -30,6 +30,8 @@
 
 using namespace rtk;
 
+#include <chrono>
+
 #include <itkImageFileWriter.h>
 
 const unsigned ModelOrder = 4;
@@ -50,7 +52,7 @@ int main(int argc, char * argv[])
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklagcorrection>(reader, args_info);
-  reader->ComputeLineIntegralOff();
+  reader->ComputeLineIntegralOff();   // Don't want to preprocess data
   
   // Generate namefiles projections
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
@@ -61,17 +63,17 @@ int main(int argc, char * argv[])
   reader->SetFileNames( names->GetFileNames() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
-  VectorType a;
-  a[0] = 0.7055f;
-  a[1] = 0.1141f;
-  a[2] = 0.0212f;
-  a[3] = 0.0033f;
-  
-  VectorType b;
-  b[0] = 2.911e-3f;
-  b[1] = 0.4454e-3f;
-  b[2] = 0.0748e-3f;
-  b[3] = 0.0042e-3f;
+  if ((args_info.coefficients_given != ModelOrder) && (args_info.rates_given != ModelOrder)) 
+  {
+	std::cerr << "Expecting 4 lags rates and coefficients values" << std::endl;
+	return EXIT_FAILURE;
+  }
+
+  VectorType a, b;
+  for (int i = 0; i < ModelOrder; ++i) {
+	  a[i] = args_info.rates_arg[i];
+	  b[i] = args_info.coefficients_arg[i];
+  }
 
 #ifdef RTK_USE_CUDA
   typedef rtk::CudaLagCorrectionImageFilter LagType;
@@ -82,7 +84,7 @@ int main(int argc, char * argv[])
   lagfilter->SetInput(reader->GetOutput());
   lagfilter->SetCoefficients(a, b);
   lagfilter->InPlaceOff();
-  lagfilter->UpdateOutputInformation();
+  lagfilter->Update();
   
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
