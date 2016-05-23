@@ -24,80 +24,12 @@
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
+#include "rtkTest.h"
 
 #ifdef USE_CUDA
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #else
 #  include "rtkFDKConeBeamReconstructionFilter.h"
-#endif
-
-template<class TImage>
-#if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon),
-                       typename TImage::Pointer itkNotUsed(ref),
-                       double itkNotUsed(refLowerThreshold),
-                       double itkNotUsed(refUpperThreshold),
-                       double itkNotUsed(snrThreshold),
-                       double itkNotUsed(errorPerPixelThreshold))
-{
-}
-#else
-void CheckImageQuality(typename TImage::Pointer recon,
-                       typename TImage::Pointer ref,
-                       double refLowerThreshold,
-                       double refUpperThreshold,
-                       double snrThreshold,
-                       double errorPerPixelThreshold)
-{
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
-
-  typedef double ErrorType;
-  ErrorType TestError = 0.;
-  ErrorType EnerError = 0.;
-
-  itTest.GoToBegin();
-  itRef.GoToBegin();
-
-  unsigned int npix=0;
-  while( !itRef.IsAtEnd() )
-    {
-    typename TImage::PixelType testVal = itTest.Get();
-    typename TImage::PixelType refVal = itRef.Get();
-    if( testVal != refVal && (refVal>=refLowerThreshold && refVal<=refUpperThreshold) )
-      {
-        TestError += vcl_abs(refVal - testVal);
-        EnerError += vcl_pow(ErrorType(refVal - testVal), 2.);
-        npix++;
-      }
-    ++itTest;
-    ++itRef;
-    }
-  // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/npix;
-  std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
-  // MSE
-  ErrorType MSE = EnerError/npix;
-  std::cout << "MSE = " << MSE << std::endl;
-  // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
-  std::cout << "PSNR = " << PSNR << "dB" << std::endl;
-
-  // Checking results
-  if (ErrorPerPixel > errorPerPixelThreshold)
-  {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of " << errorPerPixelThreshold << std::endl;
-    exit( EXIT_FAILURE);
-  }
-  if (PSNR < snrThreshold)
-  {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of " << snrThreshold << std::endl;
-    exit( EXIT_FAILURE);
-  }
-}
 #endif
 
 /**
@@ -224,13 +156,13 @@ int main(int , char** )
   feldkamp->GetRampFilter()->SetHannCutFrequency(0.8);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
 
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 1.05, 1.06, 40, 0.13);
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.72, 22.4, 2.);
 
   std::cout << "\n\n****** Test 1.5: add noise and test HannY window ******" << std::endl;
   feldkamp->GetRampFilter()->SetHannCutFrequencyY(0.8);
   feldkamp->Modified();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
-  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 1.05, 1.06, 40, 0.13);
+  CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.74, 21.8, 2.);
 
   std::cout << "\n\n****** Test 2: smaller detector and test data padding for truncation ******" << std::endl;
 
@@ -245,7 +177,7 @@ int main(int , char** )
   feldkampCropped->GetRampFilter()->SetTruncationCorrection(0.1);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCropped->Update() );
 
-  CheckImageQuality<OutputImageType>(feldkampCropped->GetOutput(), dsl->GetOutput(), 1.015, 1.025, 26, 0.05);
+  CheckImageQuality<OutputImageType>(feldkampCropped->GetOutput(), dsl->GetOutput(), 0.12, 20.8, 2.);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
