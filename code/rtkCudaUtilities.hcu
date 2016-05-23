@@ -37,7 +37,8 @@
     { \
     cudaError_t err = cudaGetLastError(); \
     if (cudaSuccess != err) \
-      itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) << std::endl); \
+      itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) \
+                               << " (" << cudaGetErrorString(err) << ")" << std::endl); \
     }
 
 #define CUFFT_CHECK_ERROR(result) \
