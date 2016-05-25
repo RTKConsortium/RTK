@@ -38,19 +38,6 @@
 namespace itk
 {
 
-#define CUDA_CHECK_ERROR \
-    { \
-    cudaError_t err = cudaGetLastError(); \
-    if (cudaSuccess != err) \
-      itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) << std::endl); \
-    }
-
-#define CUFFT_CHECK_ERROR(result) \
-    { \
-    if (result) \
-      itkGenericExceptionMacro(<< "CUFFT ERROR #" << result << std::endl); \
-    }
-
 /** Construct a non-templatized helper class that
  * provides the GPU kernel source code as a const char*
  */
