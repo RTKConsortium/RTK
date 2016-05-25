@@ -66,8 +66,6 @@ int main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( lagcorr->Update() )
   }
 
-  std::vector<float > corrections = lagcorr->GetAvgCorrections();
-
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

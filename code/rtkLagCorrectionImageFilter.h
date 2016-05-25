@@ -73,6 +73,7 @@ public:
   typedef typename TImage::IndexType                   IndexType;
   typedef typename itk::Vector<float, ModelOrder>      VectorType;
   typedef typename std::vector<float>                  FloatVectorType;
+  typedef typename TImage::RegionType                  OutputImageRegionType;
 
   /** Get / Set the model parameters A and B*/
   itkGetMacro(A, VectorType)

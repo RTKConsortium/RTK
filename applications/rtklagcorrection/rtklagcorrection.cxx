@@ -22,15 +22,13 @@
 #include "rtkConfiguration.h"
 
 #ifdef RTK_USE_CUDA
-	#include "rtkCudaLagCorrectionImageFilter.h"
-	#include <itkCudaImage.h>
+  #include "rtkCudaLagCorrectionImageFilter.h"
+  #include <itkCudaImage.h>
 #else
-	#include "rtkLagCorrectionImageFilter.h"
+  #include "rtkLagCorrectionImageFilter.h"
 #endif
 
 using namespace rtk;
-
-#include <chrono>
 
 #include <itkImageFileWriter.h>
 

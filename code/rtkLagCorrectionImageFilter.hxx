@@ -182,7 +182,7 @@ int LagCorrectionImageFilter<TImage, ModelOrder>
   // Split along the "second" direction
 
   // Get the output pointer
-  OutputImageType * outputPtr = this->GetOutput();
+  TImage * outputPtr = this->GetOutput();
   const typename TImage::SizeType& requestedRegionSize
     = outputPtr->GetRequestedRegion().GetSize();
 
