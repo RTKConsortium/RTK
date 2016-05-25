@@ -45,7 +45,7 @@ texture<float, 3, cudaReadModeElementType> tex_img;
 ///////////////////////////////////////////////////////////////////////////
 
 __constant__ float c_matrices[1024 * 12]; //Can process stacks of at most 1024 projections
-__constant__ int c_projSize[3];
+__constant__ int3 c_projSize;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -76,7 +76,7 @@ void kernel(float *dev_vol_in, float *dev_vol_out, int3 vol_dim, unsigned int Bl
   float3 ip;
   float  voxel_data = 0;
 
-  for (unsigned int proj = 0; proj<c_projSize[2]; proj++)
+  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
     {
     // matrix multiply
     ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
@@ -112,7 +112,7 @@ void kernel_3Dgrid(float *dev_vol_in, float * dev_vol_out, int3 vol_dim)
 float3 ip;
 float  voxel_data = 0;
 
-for (unsigned int proj = 0; proj<c_projSize[2]; proj++)
+for (unsigned int proj = 0; proj<c_projSize.z; proj++)
   {
   // matrix multiply
   ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
@@ -186,7 +186,7 @@ CUDA_back_project(
   float *dev_img)
 {
   // Copy the size of the input projection stack into constant memory
-  cudaMemcpyToSymbol(c_projSize, img_dim, 3*sizeof(int));
+  cudaMemcpyToSymbol(c_projSize, img_dim, sizeof(int3));
 
   // set texture parameters
   tex_img.addressMode[0] = cudaAddressModeBorder;
