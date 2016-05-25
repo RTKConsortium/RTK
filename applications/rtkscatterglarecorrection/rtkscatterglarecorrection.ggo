@@ -1,10 +1,10 @@
 package "rtkscatterglarecorrection"
 purpose "Reads projection images and correct them for scatter glare"
 
-option "verbose"  v "Verbose execution"                                         flag      off
-option "config"   - "Config file"                                               string    no
-option "output"   o "Output filename"                                           string    no
-option "range"    - "Range of projections to correct min,step,max"              int     multiple no
+option "verbose"      v "Verbose execution"                                         flag      off
+option "config"       - "Config file"                                               string    no
+option "output"       o "Output filename"                                           string    no
+option "bufferSize"   - "Number of projections computed at the same time"       int      no   default="4"
 
 section "Algorithm parameters"
 option "coefficients"  c  "Deconvolution kernel coefficients"                   float   multiple no
