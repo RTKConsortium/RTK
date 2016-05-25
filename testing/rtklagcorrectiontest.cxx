@@ -1,7 +1,11 @@
 #include "rtkTest.h"
 #include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
-#include "rtkLagCorrectionImageFilter.h"
+#ifdef USE_CUDA
+#  include "rtkCudaLagCorrectionImageFilter.h"
+#else
+#  include "rtkLagCorrectionImageFilter.h"
+#endif
 
 #include <vector>
 
@@ -19,12 +23,18 @@ const unsigned Nprojections = 10;
 int main(int argc, char * argv[])
 {
   const unsigned int Dimension = 3;
-  typedef float PixelType;
 
-  typedef itk::Image< PixelType, Dimension > ImageType;
   typedef itk::Vector<float, ModelOrder> VectorType;     // Parameter type always float/double
-
+#ifdef USE_CUDA
+  typedef unsigned short PixelType;
+  typedef itk::CudaImage< PixelType, Dimension > ImageType;
+  typedef rtk::CudaLagCorrectionImageFilter LCImageFilterType;
+#else
+  typedef float PixelType;
+  typedef itk::Image< PixelType, Dimension > ImageType;
   typedef rtk::LagCorrectionImageFilter< ImageType, ModelOrder> LCImageFilterType;
+#endif
+
   LCImageFilterType::Pointer lagcorr = LCImageFilterType::New();
 
   ImageType::SizeType size;
