@@ -42,14 +42,14 @@
 texture<float, 3, cudaReadModeElementType> tex_vol;
 texture<float, 1, cudaReadModeElementType> tex_matrix;
 
-__constant__ float3 c_sourcePos;
 __constant__ int3 c_projSize;
 __constant__ float3 c_boxMin;
 __constant__ float3 c_boxMax;
 __constant__ float3 c_spacing;
 __constant__ int3 c_volSize;
 __constant__ float c_tStep;
-__constant__ float c_matrix[12];
+__constant__ float c_matrices[1024 * 12]; //Can process stacks of at most 1024 projections
+__constant__ float c_sourcePos[1024 * 3]; //Can process stacks of at most 1024 projections
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -68,49 +68,55 @@ void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out)
   if (i >= c_projSize.x || j >= c_projSize.y)
     return;
 
-  // Setting ray origin
+  // Declare variables used in the loop
   Ray ray;
-  ray.o = c_sourcePos;
-
-  float3 pixelPos = matrix_multiply(make_float3(i,j,0), c_matrix);
-
-  ray.d = pixelPos - ray.o;
-  ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
-
-  // Detect intersection with box
+  float3 pixelPos;
   float tnear, tfar;
-  if ( !intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f )
+
+  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
     {
-    dev_proj_out[numThread] = dev_proj_in[numThread];
-    }
-  else
-    {
-    if (tnear < 0.f)
-      tnear = 0.f; // clamp to near plane
+    // Setting ray origin
+    ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
 
-    // Step length in mm
-    float3 dirInMM = c_spacing * ray.d;
-    float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
-    float3 step = vStep * ray.d;
+    pixelPos = matrix_multiply(make_float3(i,j,0), &(c_matrices[12*proj]));
 
-    // First position in the box
-    float3 pos;
-    float halfVStep = 0.5f*vStep;
-    tnear = tnear + halfVStep;
-    pos = ray.o + tnear*ray.d;
+    ray.d = pixelPos - ray.o;
+    ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
 
-    float  t;
-    float  sample = 0.0f;
-    float  sum    = 0.0f;
-    for(t=tnear; t<=tfar; t+=vStep)
+    // Detect intersection with box
+    if ( !intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f )
       {
-      // Read from 3D texture from volume
-      sample = tex3D(tex_vol, pos.x, pos.y, pos.z);
-
-      sum += sample;
-      pos += step;
+      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] = dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y];
       }
-    dev_proj_out[numThread] = dev_proj_in[numThread] + (sum+(tfar-t+halfVStep)/vStep*sample) * c_tStep;
+    else
+      {
+      if (tnear < 0.f)
+        tnear = 0.f; // clamp to near plane
+
+      // Step length in mm
+      float3 dirInMM = c_spacing * ray.d;
+      float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
+      float3 step = vStep * ray.d;
+
+      // First position in the box
+      float3 pos;
+      float halfVStep = 0.5f*vStep;
+      tnear = tnear + halfVStep;
+      pos = ray.o + tnear*ray.d;
+
+      float  t;
+      float  sample = 0.0f;
+      float  sum    = 0.0f;
+      for(t=tnear; t<=tfar; t+=vStep)
+        {
+        // Read from 3D texture from volume
+        sample = tex3D(tex_vol, pos.x, pos.y, pos.z);
+
+        sum += sample;
+        pos += step;
+        }
+      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] = dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y] + (sum+(tfar-t+halfVStep)/vStep*sample) * c_tStep;
+      }
     }
 }
 
@@ -181,49 +187,55 @@ void kernel_forwardProject_noTexture(float *dev_proj_in, float *dev_proj_out, fl
   if (i >= c_projSize.x || j >= c_projSize.y)
     return;
 
-  // Setting ray origin
+  // Declare variables used in the loop
   Ray ray;
-  ray.o = c_sourcePos;
-
-  float3 pixelPos = matrix_multiply(make_float3(i,j,0), c_matrix);
-
-  ray.d = pixelPos - ray.o;
-  ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
-
-  // Detect intersection with box
+  float3 pixelPos;
   float tnear, tfar;
-  if ( !intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f )
+
+  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
     {
-    dev_proj_out[numThread] = dev_proj_in[numThread];
-    }
-  else
-    {
-    if (tnear < 0.f)
-      tnear = 0.f; // clamp to near plane
+    // Setting ray origin
+    ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
 
-    // Step length in mm
-    float3 dirInMM = c_spacing * ray.d;
-    float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
-    float3 step = vStep * ray.d;
+    pixelPos = matrix_multiply(make_float3(i,j,0), &(c_matrices[12*proj]));
 
-    // First position in the box
-    float3 pos;
-    float halfVStep = 0.5f*vStep;
-    tnear = tnear + halfVStep;
-    pos = ray.o + tnear*ray.d;
+    ray.d = pixelPos - ray.o;
+    ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
 
-    float  t;
-    float  sample = 0.0f;
-    float  sum    = 0.0f;
-    for(t=tnear; t<=tfar; t+=vStep)
+    // Detect intersection with box
+    if ( !intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f )
       {
-      // Read from 3D texture from volume
-      sample = notex3D(dev_vol, pos, c_volSize);
-
-      sum += sample;
-      pos += step;
+      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] = dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y];
       }
-    dev_proj_out[numThread] = dev_proj_in[numThread] + (sum+(tfar-t+halfVStep)/vStep*sample) * c_tStep;
+    else
+      {
+      if (tnear < 0.f)
+        tnear = 0.f; // clamp to near plane
+
+      // Step length in mm
+      float3 dirInMM = c_spacing * ray.d;
+      float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
+      float3 step = vStep * ray.d;
+
+      // First position in the box
+      float3 pos;
+      float halfVStep = 0.5f*vStep;
+      tnear = tnear + halfVStep;
+      pos = ray.o + tnear*ray.d;
+
+      float  t;
+      float  sample = 0.0f;
+      float  sum    = 0.0f;
+      for(t=tnear; t<=tfar; t+=vStep)
+        {
+        // Read from 3D texture from volume
+        sample = notex3D(dev_vol, pos, c_volSize);
+
+        sum += sample;
+        pos += step;
+        }
+      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] = dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y] + (sum+(tfar-t+halfVStep)/vStep*sample) * c_tStep;
+      }
     }
 }
 
@@ -242,7 +254,7 @@ CUDA_forward_project( int projections_size[3],
                       float *dev_proj_out,
                       float *dev_vol,
                       float t_step,
-                      double* source_positions,
+                      float* source_positions,
                       float box_min[3],
                       float box_max[3],
                       float spacing[3],
@@ -254,16 +266,21 @@ CUDA_forward_project( int projections_size[3],
   float3 dev_boxMax = make_float3(box_max[0], box_max[1], box_max[2]);
   float3 dev_spacing = make_float3(spacing[0], spacing[1], spacing[2]);
   int3 dev_vol_size = make_int3(vol_size[0], vol_size[1], vol_size[2]);
-  float3 dev_sourcePos;
-  cudaMemcpyToSymbol(c_projSize, &dev_projSize, sizeof(int3));
   cudaMemcpyToSymbol(c_boxMin, &dev_boxMin, sizeof(float3));
+  cudaMemcpyToSymbol(c_projSize, &dev_projSize, sizeof(int3));
   cudaMemcpyToSymbol(c_boxMax, &dev_boxMax, sizeof(float3));
   cudaMemcpyToSymbol(c_spacing, &dev_spacing, sizeof(float3));
-  cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
   cudaMemcpyToSymbol(c_volSize, &dev_vol_size, sizeof(int3));
+  cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
 
   dim3 dimBlock  = dim3(16, 16, 1);
   dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
+
+  // Copy the source position matrix into a float3 in constant memory
+  cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projections_size[2]);
+
+  // Copy the projection matrices into constant memory
+  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projections_size[2]);
 
   if (useCudaTexture)
     {
@@ -294,38 +311,16 @@ CUDA_forward_project( int projections_size[3],
     cudaBindTextureToArray(tex_vol, (cudaArray*)array_vol, channelDesc);
     CUDA_CHECK_ERROR;
 
-    for (unsigned int proj = 0; proj<projections_size[2]; proj++)
-      {
-      // Copy the source position matrix into a float3 in constant memory
-      dev_sourcePos = make_float3(source_positions[3*proj], source_positions[3*proj + 1], source_positions[3*proj + 2]);
-      cudaMemcpyToSymbol(c_sourcePos, &dev_sourcePos, sizeof(float3));
-
-      // Copy the projection matrix into a constant memory array of 12 floats
-      unsigned int offset = projections_size[0] * projections_size[1] * proj;
-      cudaMemcpyToSymbol(c_matrix, &(matrices[12 * proj]), 12 * sizeof(float));
-
-      // Run the kernel
-      kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj_in + offset , dev_proj_out + offset);
-      }
+    // Run the kernel
+    kernel_forwardProject <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out);
 
     cudaUnbindTexture (tex_vol);
     cudaFreeArray ((cudaArray*)array_vol);
     CUDA_CHECK_ERROR;
     }
-else
-  {
-  for (unsigned int proj = 0; proj<projections_size[2]; proj++)
+  else
     {
-    // Copy the source position matrix into a float3 in constant memory
-    dev_sourcePos = make_float3(source_positions[3*proj], source_positions[3*proj + 1], source_positions[3*proj + 2]);
-    cudaMemcpyToSymbol(c_sourcePos, &dev_sourcePos, sizeof(float3));
-
-    // Copy the projection matrix into a constant memory array of 12 floats
-    unsigned int offset = projections_size[0] * projections_size[1] * proj;
-    cudaMemcpyToSymbol(c_matrix, &(matrices[12 * proj]), 12 * sizeof(float));
-
-    // Run the kernel
-    kernel_forwardProject_noTexture <<< dimGrid, dimBlock >>> (dev_proj_in + offset, dev_proj_out + offset, dev_vol);
+    // Run the kernel without using texture memory
+    kernel_forwardProject_noTexture <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol);
     }
-  }
 }
