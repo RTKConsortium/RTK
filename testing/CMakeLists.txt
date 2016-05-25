@@ -284,6 +284,7 @@ ADD_TEST(rtkdivergencetest ${EXECUTABLE_OUTPUT_PATH}/rtkdivergencetest)
 ADD_EXECUTABLE(rtklagcorrectiontest rtklagcorrectiontest.cxx)
 TARGET_LINK_LIBRARIES(rtklagcorrectiontest ${RTK_LIBRARIES})
 ADD_TEST(rtklagcorrectiontest ${EXECUTABLE_OUTPUT_PATH}/rtklagcorrectiontest)
+ADD_CUDA_TEST(rtklagcorrection rtklagcorrectiontest.cxx)
 
 ADD_EXECUTABLE(rtkconjugategradienttest rtkconjugategradienttest.cxx)
 TARGET_LINK_LIBRARIES(rtkconjugategradienttest ${RTK_LIBRARIES})

@@ -1,0 +1,8 @@
+package "rtklagcorrection"
+purpose "4th order LTI Lag correction"
+
+option  "config"       - "Config file"                                       string         no
+option  "verbose"      v "Verbose execution"                                 flag           off
+option  "output"       o "Output file name"                                  string         yes
+option  "rates"        a "Lag rates (a0, a1, a2, a3)"                        float multiple yes
+option  "coefficients" c "Lag coefficients (b0, b1, b2, b3)"                 float multiple yes

@@ -100,6 +100,7 @@ IF (RTK_USE_CUDA)
        rtkCudaWarpForwardProjectionImageFilter.cu
        rtkCudaWarpBackProjectionImageFilter.cu
        rtkCudaCyclicDeformationImageFilter.cu
+       rtkCudaLagCorrectionImageFilter.cu
        )
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
@@ -125,25 +126,26 @@ IF (RTK_USE_CUDA)
               rtkCudaCropImageFilter.cxx
               rtkCudaFDKBackProjectionImageFilter.cxx
               rtkCudaFDKConeBeamReconstructionFilter.cxx
-	      rtkCudaIterativeFDKConeBeamReconstructionFilter.cxx
+              rtkCudaIterativeFDKConeBeamReconstructionFilter.cxx
               rtkCudaBackProjectionImageFilter.cxx
-	      rtkCudaSplatImageFilter.cxx
-	      rtkCudaInterpolateImageFilter.cxx
-	      rtkCudaWarpImageFilter.cxx
-	      rtkCudaForwardWarpImageFilter.cxx
-	      rtkCudaRayCastBackProjectionImageFilter.cxx
-	      rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
-	      rtkCudaLastDimensionTVDenoisingImageFilter.cxx
-	      rtkCudaWarpForwardProjectionImageFilter.cxx
-	      rtkCudaWarpBackProjectionImageFilter.cxx
-	      rtkCudaConstantVolumeSource.cxx
-	      rtkCudaConstantVolumeSeriesSource.cxx
+              rtkCudaSplatImageFilter.cxx
+              rtkCudaInterpolateImageFilter.cxx
+              rtkCudaWarpImageFilter.cxx
+              rtkCudaForwardWarpImageFilter.cxx
+              rtkCudaRayCastBackProjectionImageFilter.cxx
+              rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
+              rtkCudaLastDimensionTVDenoisingImageFilter.cxx
+              rtkCudaWarpForwardProjectionImageFilter.cxx
+              rtkCudaWarpBackProjectionImageFilter.cxx
+              rtkCudaConstantVolumeSource.cxx
+              rtkCudaConstantVolumeSeriesSource.cxx
               rtkCudaConjugateGradientImageFilter_3f.cxx
               rtkCudaConjugateGradientImageFilter_4f.cxx
-	      rtkCudaAverageOutOfROIImageFilter.cxx
-	      rtkCudaLaplacianImageFilter.cxx
-	      rtkCudaCyclicDeformationImageFilter.cxx
-	      ${rtkcuda_CUDA_WRAPPERS}
+              rtkCudaAverageOutOfROIImageFilter.cxx
+              rtkCudaLaplacianImageFilter.cxx
+              rtkCudaCyclicDeformationImageFilter.cxx
+              rtkCudaLagCorrectionImageFilter.cxx
+              ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
   TARGET_LINK_LIBRARIES(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_cublas_LIBRARY} RTK ITKCudaCommon)

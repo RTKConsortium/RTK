@@ -148,22 +148,21 @@ void kernel_warped_forwardProject(float *dev_proj_in, float *dev_proj_out)
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
 CUDA_warp_forward_project( int projections_size[2],
-                      int vol_size[3],
-                      int dvf_size[3],
-                      float matrix[12],
-                      float *dev_proj_in,
-                      float *dev_proj_out,
-                      float *dev_vol,
-                      float t_step,
-                      double source_position[3],
-                      float box_min[3],
-                      float box_max[3],
-                      float spacing[3],
-		      float *dev_input_dvf,
-		      float IndexInputToIndexDVFMatrix[12],
-		      float PPInputToIndexInputMatrix[12],
-		      float IndexInputToPPInputMatrix[12]
-		    )
+                           int vol_size[3],
+                           int dvf_size[3],
+                           float matrix[12],
+                           float *dev_proj_in,
+                           float *dev_proj_out,
+                           float *dev_vol,
+                           float t_step,
+                           double source_position[3],
+                           float box_min[3],
+                           float box_max[3],
+                           float spacing[3],
+                           float *dev_input_dvf,
+                           float IndexInputToIndexDVFMatrix[12],
+                           float PPInputToIndexInputMatrix[12],
+                           float IndexInputToPPInputMatrix[12] )
 {
   // Create CUBLAS context
   cublasHandle_t  handle;
