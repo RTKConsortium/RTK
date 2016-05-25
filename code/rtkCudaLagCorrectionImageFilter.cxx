@@ -50,7 +50,7 @@ CudaLagCorrectionImageFilter
   proj_idx_in[0] = overlapRegion.GetIndex()[0];
   proj_idx_in[1] = overlapRegion.GetIndex()[1];
   proj_idx_in[2] = overlapRegion.GetIndex()[2];
-  
+
   int proj_size_in_buf[2];
   proj_size_in_buf[0] = this->GetInput()->GetBufferedRegion().GetSize()[0];
   proj_size_in_buf[1] = this->GetInput()->GetBufferedRegion().GetSize()[1];
@@ -59,7 +59,7 @@ CudaLagCorrectionImageFilter
   proj_size_in[0] = overlapRegion.GetSize()[0];
   proj_size_in[1] = overlapRegion.GetSize()[1];
   proj_size_in[2] = overlapRegion.GetSize()[2];
-  
+
   int proj_idx_out[3];
   proj_idx_out[0] = this->GetOutput()->GetRequestedRegion().GetIndex()[0];
   proj_idx_out[1] = this->GetOutput()->GetRequestedRegion().GetIndex()[1];
@@ -74,12 +74,12 @@ CudaLagCorrectionImageFilter
   proj_size_out[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
-  float coefficients[9] = { m_B[0], m_B[1], m_B[2], m_B[3], m_ExpmA[0], m_ExpmA[1], m_ExpmA[2], m_ExpmA[3] , m_sumB};
-  
+  float coefficients[9] = { m_B[0], m_B[1], m_B[2], m_B[3], m_ExpmA[0], m_ExpmA[1], m_ExpmA[2], m_ExpmA[3] , m_SumB};
+
   int S_size = sizeof(float)*m_S.size();
   CUDA_lag_correction(
       proj_idx_in, proj_size_in, proj_size_in_buf, proj_idx_out, proj_size_out, proj_size_out_buf,
-	  inBuffer, outBuffer, &m_S[0], S_size, coefficients);
+      inBuffer, outBuffer, &m_S[0], S_size, coefficients);
 }
 
 }

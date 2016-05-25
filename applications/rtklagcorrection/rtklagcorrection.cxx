@@ -24,7 +24,7 @@
 #ifdef RTK_USE_CUDA
 	#include "rtkCudaLagCorrectionImageFilter.h"
 	#include <itkCudaImage.h>
-#else 
+#else
 	#include "rtkLagCorrectionImageFilter.h"
 #endif
 
@@ -53,7 +53,7 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklagcorrection>(reader, args_info);
   reader->ComputeLineIntegralOff();   // Don't want to preprocess data
-  
+
   // Generate namefiles projections
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
   names->SetDirectory(args_info.path_arg);
@@ -63,17 +63,18 @@ int main(int argc, char * argv[])
   reader->SetFileNames( names->GetFileNames() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
-  if ((args_info.coefficients_given != ModelOrder) && (args_info.rates_given != ModelOrder)) 
-  {
-	std::cerr << "Expecting 4 lags rates and coefficients values" << std::endl;
-	return EXIT_FAILURE;
-  }
+  if ((args_info.coefficients_given != ModelOrder) && (args_info.rates_given != ModelOrder))
+    {
+    std::cerr << "Expecting 4 lags rates and coefficients values" << std::endl;
+    return EXIT_FAILURE;
+    }
 
   VectorType a, b;
-  for (int i = 0; i < ModelOrder; ++i) {
-	  a[i] = args_info.rates_arg[i];
-	  b[i] = args_info.coefficients_arg[i];
-  }
+  for (int i = 0; i < ModelOrder; ++i)
+    {
+    a[i] = args_info.rates_arg[i];
+    b[i] = args_info.coefficients_arg[i];
+    }
 
 #ifdef RTK_USE_CUDA
   typedef rtk::CudaLagCorrectionImageFilter LagType;
@@ -85,18 +86,18 @@ int main(int argc, char * argv[])
   lagfilter->SetCoefficients(a, b);
   lagfilter->InPlaceOff();
   lagfilter->Update();
-  
+
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
   StreamerType::Pointer streamer = StreamerType::New();
   streamer->SetInput(lagfilter->GetOutput());
   streamer->SetNumberOfStreamDivisions(100);
-  
+
   // Save corrected projections
   typedef itk::ImageFileWriter<OutputImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
-  writer->SetInput(streamer->GetOutput()); 
+  writer->SetInput(streamer->GetOutput());
   writer->UpdateOutputInformation();
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())

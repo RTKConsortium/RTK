@@ -40,8 +40,8 @@ namespace rtk
  * \author Sebastien Brousmiche
  */
 class CudaLagCorrectionImageFilter :
-	public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<unsigned short, 3>,
-	LagCorrectionImageFilter < itk::CudaImage<unsigned short, 3>, 4> >
+  public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<unsigned short, 3>,
+  LagCorrectionImageFilter < itk::CudaImage<unsigned short, 3>, 4> >
 {
 public:
   /** Convenience typedefs **/
@@ -49,11 +49,10 @@ public:
   typedef LagCorrectionImageFilter <ImageType, 4>              CPULagFilterType;
 
   /** Standard class typedefs. */
-  typedef CudaLagCorrectionImageFilter                         Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-	  CPULagFilterType>                                        Superclass;
-  typedef itk::SmartPointer<Self>                              Pointer;
-  typedef itk::SmartPointer<const Self>                        ConstPointer;
+  typedef CudaLagCorrectionImageFilter                                        Self;
+  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, CPULagFilterType> Superclass;
+  typedef itk::SmartPointer<Self>                                             Pointer;
+  typedef itk::SmartPointer<const Self>                                       ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -71,7 +70,7 @@ protected:
 
 private:
   /** purposely not implemented **/
-	CudaLagCorrectionImageFilter(const Self&);
+  CudaLagCorrectionImageFilter(const Self&);
   /** purposely not implemented **/
   void operator=(const Self&);
 };

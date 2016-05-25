@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __ibaLagCorrectionImageFilter_h
-#define __ibaLagCorrectionImageFilter_h
+#ifndef __rtkLagCorrectionImageFilter_h
+#define __rtkLagCorrectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>
@@ -25,7 +25,7 @@
 
 #include "rtkConfiguration.h"
 
-namespace rtk 
+namespace rtk
 {
 
 /** \class LagCorrectionImageFilter
@@ -50,7 +50,7 @@ namespace rtk
 */
 
 template< typename TImage, unsigned ModelOrder >
-class LagCorrectionImageFilter 
+class LagCorrectionImageFilter
 : public itk::InPlaceImageFilter < TImage, TImage >
 {
 public:
@@ -99,29 +99,29 @@ protected:
 
   virtual void ThreadedGenerateData(const ImageRegionType & outputRegionForThread, itk::ThreadIdType threadId);
 
-  /** The correction is applied along the third (stack) dimension. 
-      Therefore, we must avoid splitting along the stack. 
-	  The split is done along the second dimension. */
+  /** The correction is applied along the third (stack) dimension.
+      Therefore, we must avoid splitting along the stack.
+      The split is done along the second dimension. */
   virtual unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion);
   virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
 
   VectorType m_A;           // a_n coefficients (lag rates)
   VectorType m_B;           // b coefficients (lag coefficients)
   VectorType m_ExpmA;       // exp(-a)
-  float m_sumB;             // normalization factor
+  float      m_SumB;        // normalization factor
 
 protected:
-  FloatVectorType m_S;                      // State variable  
+  FloatVectorType m_S;                      // State variable
 
 private:
   LagCorrectionImageFilter(const Self &); // purposely not implemented
   void operator=(const Self &);           // purposely not implemented
- 
+
   bool            m_NewParamJustReceived;   // For state/correction initialization
-  IndexType       m_startIdx;               // To account for cropping 
+  IndexType       m_StartIdx;               // To account for cropping
 };
 
-} 
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkLagCorrectionImageFilter.hxx"
