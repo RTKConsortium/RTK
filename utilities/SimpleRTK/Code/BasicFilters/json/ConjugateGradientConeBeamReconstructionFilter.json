@@ -85,6 +85,15 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
+    },
+    {
+      "name" : "IterationCosts",
+      "type" : "bool",
+      "default" : "0",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : ""
     }
   ],
   "briefdescription" : "",

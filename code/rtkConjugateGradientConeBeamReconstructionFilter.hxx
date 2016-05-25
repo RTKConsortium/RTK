@@ -32,6 +32,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
+  m_IterationCosts=false;
   m_Preconditioned=false;
   m_Gamma = 0;
   m_Regularized = false;
@@ -129,6 +130,8 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
+  m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
+
 
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));

@@ -50,6 +50,7 @@ public:
   typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                Superclass;
   typedef itk::SmartPointer< Self >                                                 Pointer;
   typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
+  typedef itk::MultiplyImageFilter<ImageType, ImageType, ImageType>                 MultiplyFilterType;
   typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
   typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
   typedef typename OutputImageType::Pointer                                         OutputImagePointer;
@@ -66,6 +67,9 @@ public:
   /** Get and Set macro*/
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
+
+  itkGetMacro(IterationCosts, bool)
+  itkSetMacro(IterationCosts, bool)
   
 //  itkSetMacro(MeasureExecutionTimes, bool)
 //  itkGetMacro(MeasureExecutionTimes, bool)
@@ -99,7 +103,7 @@ private:
   ConjugateGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
 
-
+  bool m_IterationCosts;
 //  bool m_MeasureExecutionTimes;
 };
 } //namespace RTK

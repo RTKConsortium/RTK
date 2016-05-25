@@ -20,6 +20,8 @@
 #define __rtkConjugateGradientImageFilter_hxx
 
 #include "rtkConjugateGradientImageFilter.h"
+#include <iostream>
+#include <fstream>
 
 namespace rtk
 {
@@ -30,6 +32,7 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   this->SetNumberOfRequiredInputs(2);
   
   m_NumberOfIterations = 1;
+  m_IterationCosts = false;
 //  m_MeasureExecutionTimes = false;
 
   m_A = ConjugateGradientOperatorType::New();
@@ -104,6 +107,16 @@ void ConjugateGradientImageFilter<OutputImageType>
   m_A->SetX(this->GetX());
   m_A->ReleaseDataFlagOn();
 
+  if (m_IterationCosts) {
+      std::ofstream costsfile ("/tmp/IterationCosts.txt");
+      typedef itk::StatisticsImageFilter<ImageType> StatisticsImageFilterType;
+      typename StatisticsImageFilterType::Pointer IterationCostsStatisticsImageFilter = StatisticsImageFilterType::New ();
+      typename SubtractFilterType::Pointer IterationCostsSubtractFilter = SubtractFilterType::New();
+      typename MultiplyFilterType::Pointer IterationCostsMultiplyFilter = MultiplyFilterType::New();
+      IterationCostsMultiplyFilter->SetConstant(-1);
+      IterationCostsMultiplyFilter->Update();
+  }
+
   typename SubtractFilterType::Pointer SubtractFilter = SubtractFilterType::New();
   SubtractFilter->SetInput(0, this->GetB());
   SubtractFilter->SetInput(1, m_A->GetOutput());
@@ -116,6 +129,17 @@ void ConjugateGradientImageFilter<OutputImageType>
   // Compute P_zero = R_zero
   typename OutputImageType::Pointer P_zero = SubtractFilter->GetOutput();
   P_zero->DisconnectPipeline();
+
+  if (m_IterationCosts) {
+      IterationCostsMultiplyFilter->SetInput(P_zero);
+      IterationCostsMultiplyFilter->Update();
+      IterationCostsSubtractFilter->SetInput(0,IterationCostsMultiplyFilter->GetOutput());
+      IterationCostsSubtractFilter->SetInput(1, this->GetB());
+      IterationCostsSubtractFilter->Update();
+      IterationCostsStatisticsImageFilter->SetInput(IterationCostsSubtractFilter->GetOutput());
+      IterationCostsStatisticsImageFilter->Update();
+      costsfile << IterationCostsStatisticsImageFilter->GetSum() << std::endl;;	  
+  }
 
   // Compute AP_zero
   m_A->SetX(P_zero);
@@ -150,6 +174,17 @@ void ConjugateGradientImageFilter<OutputImageType>
       X_kPlusOne = GetX_kPlusOne_Filter->GetOutput();
       X_kPlusOne->DisconnectPipeline();
 
+      if (m_IterationCosts) {
+	  IterationCostsMultiplyFilter->SetInput(R_kPlusOne);
+	  IterationCostsMultiplyFilter->Update();
+	  IterationCostsSubtractFilter->SetInput(0,IterationCostsMultiplyFilter->GetOutput());
+	  IterationCostsSubtractFilter->SetInput(1, this->GetB());
+	  IterationCostsSubtractFilter->Update();
+	  IterationCostsStatisticsImageFilter->SetInput(IterationCostsSubtractFilter->GetOutput());
+	  IterationCostsStatisticsImageFilter->Update();
+	  costsfile << IterationCostsStatisticsImageFilter->GetSum() << std::endl;;	  
+      }
+
       m_A->SetX(P_kPlusOne);
 
       GetR_kPlusOne_Filter->SetRk(R_kPlusOne);
@@ -176,6 +211,10 @@ void ConjugateGradientImageFilter<OutputImageType>
     }
 
   this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
+
+  if (m_IterationCosts) {
+      costsfile.close();
+  }
 
   // Release the data from internal filters
   if (m_NumberOfIterations > 1)
