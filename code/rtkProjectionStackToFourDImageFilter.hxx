@@ -164,9 +164,9 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Prepare the extract filter
   int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
-  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-  if (NumberProjs != m_Weights.columns())
-    itkWarningMacro("Size of interpolation weights array does not match the number of projections");
+//  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+//  if (NumberProjs != m_Weights.columns())
+//    itkWarningMacro("Size of interpolation weights array does not match the number of projections");
 
   typename ExtractFilterType::InputImageRegionType subsetRegion;
   subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
@@ -217,19 +217,23 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   std::vector<int> firstProjectionInSlabs;
   std::vector<unsigned int> sizeOfSlabs;
   firstProjectionInSlabs.push_back(FirstProj);
-  for (unsigned int proj = FirstProj+1 ; proj < FirstProj+NumberProjs; proj++)
+  if (NumberProjs==1)
+    sizeOfSlabs.push_back(1);
+  else
     {
-    if ((m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
+    for (unsigned int proj = FirstProj+1 ; proj < FirstProj+NumberProjs; proj++)
       {
-      // Compute the number of projections in the current slab
-      sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+      if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
+        {
+        // Compute the number of projections in the current slab
+        sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
 
-      // Update the index of the first projection in the next slab
-      firstProjectionInSlabs.push_back(proj);
+        // Update the index of the first projection in the next slab
+        firstProjectionInSlabs.push_back(proj);
+        }
       }
+    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
     }
-  sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
-
   bool firstSlabProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
 
