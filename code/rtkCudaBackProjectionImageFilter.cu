@@ -44,7 +44,7 @@ texture<float, cudaTextureType2DLayered> tex_proj;
 
 // Constant memory
 __constant__ float c_matrices[1024 * 12]; //Can process stacks of at most 1024 projections
-__constant__ int3 c_projSize;
+__constant__ int3 c_proj_size;
 __constant__ int3 c_vol_size;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -76,7 +76,7 @@ void kernel(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y)
   float3 ip;
   float  voxel_data = 0;
 
-  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
+  for (unsigned int proj = 0; proj<c_proj_size.z; proj++)
     {
     // matrix multiply
     ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
@@ -112,7 +112,7 @@ void kernel_3Dgrid(float *dev_vol_in, float * dev_vol_out)
   float3 ip;
   float  voxel_data = 0;
 
-  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
+  for (unsigned int proj = 0; proj<c_proj_size.z; proj++)
     {
     // matrix multiply
     ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
@@ -128,6 +128,66 @@ void kernel_3Dgrid(float *dev_vol_in, float * dev_vol_out)
 
   // Place it into the volume
   dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
+}
+
+
+__global__
+void kernel_optim(float *dev_vol_in, float *dev_vol_out)
+{
+  // Allocate a few shared buffers
+  extern __shared__ float shared[];
+  float* accumulators = &shared[0];
+
+  // Compute the starting position of the shared memory available to the current thread
+  unsigned int startIndex = (threadIdx.x + (threadIdx.y * ( blockDim.x + threadIdx.z * blockDim.y) ) ) * 8;
+
+  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+  unsigned int j = (blockIdx.y * blockDim.y + threadIdx.y)*8;
+  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+
+  if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
+    {
+    return;
+    }
+  unsigned int range_j = max(c_vol_size.y - j, 8);
+
+  // Index row major into the volume
+  long int vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
+
+  float3 ip;
+
+  // Initialize the shared memory with zeros
+  for(unsigned int l=0; l<range_j; l++)
+    accumulators[startIndex + l]=0;
+
+  // Process all the projections in the stack
+  for (unsigned int proj = 0; proj<c_proj_size.z; proj++)
+    {
+    // matrix multiply
+    ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
+
+    // Change coordinate systems
+    ip.z = 1 / ip.z;
+    ip.x = ip.x * ip.z;
+    ip.y = ip.y * ip.z;
+    float dx = c_matrices[12*proj +  1]*ip.z;
+    float dy = c_matrices[12*proj +  5]*ip.z;
+
+    // Walk voxels and accumulate their back projection in shared memory
+    for(unsigned int l=0; l<range_j; l++)
+      {
+      accumulators[startIndex + l] += tex2DLayered(tex_proj, ip.x, ip.y, proj);
+      ip.x+=dx;
+      ip.y+=dy;
+      }
+    }
+
+  // Write the accumulated results into global memory
+  for(unsigned int l=0; l<range_j; l++)
+    {
+    dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + accumulators[startIndex + l];
+    vol_idx+=c_vol_size.x;
+    }
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -147,7 +207,7 @@ CUDA_back_project(
   float *dev_proj)
 {
   // Copy the size of inputs into constant memory
-  cudaMemcpyToSymbol(c_projSize, proj_size, sizeof(int3));
+  cudaMemcpyToSymbol(c_proj_size, proj_size, sizeof(int3));
   cudaMemcpyToSymbol(c_vol_size, vol_size, sizeof(int3));
 
   // Copy the projection matrices into constant memory
@@ -183,35 +243,75 @@ CUDA_back_project(
   int device;
   cudaGetDevice(&device);
 
-  // Thread Block Dimensions
-  const int tBlock_x = 16;
-  const int tBlock_y = 4;
-  const int tBlock_z = 4;
-
-  // Each element in the volume (each voxel) gets 1 thread
-  unsigned int  blocksInX = (vol_size[0]-1)/tBlock_x + 1;
-  unsigned int  blocksInY = (vol_size[1]-1)/tBlock_y + 1;
-  unsigned int  blocksInZ = (vol_size[2]-1)/tBlock_z + 1;
+  // Choose which kernel to use. The optimized version runs only when
+  // one of the axes of the detector is parallel to the y axis of the volume
+  bool runKernelOptim = true;
+  for (unsigned int proj = 0; proj<proj_size[2]; proj++)
+    {
+    if(fabs(matrices[12*proj + 5])>1e-10 || fabs(matrices[12*proj + 9])>1e-10)
+      runKernelOptim = false;
+    }
 
   // Run kernels. Note: Projection data is passed via texture memory,
   // transform matrix is passed via constant memory
-  if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
+  if (runKernelOptim)
     {
-    dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
-    dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+    cudaDeviceProp properties;
+    cudaGetDeviceProperties(&properties, device);
 
-    kernel <<< dimGrid, dimBlock >>> ( dev_vol_in,
-                                       dev_vol_out,
-                                       blocksInY );
-    }
-  else
-    {
+    // Thread Block Dimensions
+    size_t sharedMemPerThread = sizeof(float) * 8;
+    const int tBlock_x = 16;
+    const int tBlock_y = 4;
+    int maximumZSizeOfBlocks = properties.sharedMemPerBlock / ( sharedMemPerThread * tBlock_x * tBlock_y );
+    int tBlock_z = min(maximumZSizeOfBlocks, 4);
+
+    // Each segment gets 1 thread
+    unsigned int  blocksInX = (vol_size[0]-1)/tBlock_x + 1;
+    unsigned int  blocksInY = (vol_size[1]-1)/(tBlock_y * 8) + 1;
+    unsigned int  blocksInZ = (vol_size[2]-1)/tBlock_z + 1;
     dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
     dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
     CUDA_CHECK_ERROR;
 
-    kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol_in,
-                                              dev_vol_out);
+    std::cout << "Using blocks of size " << tBlock_x << "x" << tBlock_y << "x" << tBlock_z << std::endl;
+    std::cout << "Using grid of size " << blocksInX << "x" << blocksInY << "x" << blocksInZ << std::endl;
+
+    // Note: cbi->img AND cbi->matrix are passed via texture memory
+    //-------------------------------------
+    kernel_optim <<< dimGrid, dimBlock, sharedMemPerThread * tBlock_x * tBlock_y * tBlock_z >>> ( dev_vol_in,
+                                                                                                  dev_vol_out);
+    }
+  else
+    {
+    // Thread Block Dimensions
+    const int tBlock_x = 16;
+    const int tBlock_y = 4;
+    const int tBlock_z = 4;
+
+    // Each element in the volume (each voxel) gets 1 thread
+    unsigned int  blocksInX = (vol_size[0]-1)/tBlock_x + 1;
+    unsigned int  blocksInY = (vol_size[1]-1)/tBlock_y + 1;
+    unsigned int  blocksInZ = (vol_size[2]-1)/tBlock_z + 1;
+
+    if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
+      {
+      dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
+      dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+
+      kernel <<< dimGrid, dimBlock >>> ( dev_vol_in,
+                                         dev_vol_out,
+                                         blocksInY );
+      }
+    else
+      {
+      dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
+      dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+      CUDA_CHECK_ERROR;
+
+      kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol_in,
+                                                dev_vol_out);
+      }
     }
 
   // Unbind the image and projection matrix textures
