@@ -5,6 +5,7 @@ option "verbose"      v "Verbose execution"                                     
 option "config"       - "Config file"                                               string    no
 option "output"       o "Output filename"                                           string    no
 option "bufferSize"   - "Number of projections computed at the same time"       int      no   default="4"
+option "difference"   d "Output the difference between input and corrected images"     flag      off
 
 section "Algorithm parameters"
 option "coefficients"  c  "Deconvolution kernel coefficients"                   float   multiple no

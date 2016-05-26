@@ -21,17 +21,17 @@
 #include "rtkGgoFunctions.h"
 
 #include <itkExtractImageFilter.h>
+#include <itkSubtractImageFilter.h>
 #ifdef RTK_USE_CUDA
     #include "rtkCudaScatterGlareCorrectionImageFilter.h"
 #else
     #include "rtkScatterGlareCorrectionImageFilter.h"
 #endif
+
 #include "rtkProjectionsReader.h"
 #include <itkPasteImageFilter.h>
 #include <rtkConstantImageSource.h>
 #include <itkImageFileWriter.h>
-
-//#include <itkMultiplyImageFilter.h>
 
 #include <vector>
 #include <algorithm>
@@ -139,15 +139,30 @@ int main(int argc, char *argv[])
       InputImageType::Pointer procImage = SFilter->GetOutput();
       procImage->DisconnectPipeline();
 
-      InputImageType::IndexType current_idx = procImage->GetLargestPossibleRegion().GetIndex();
+      InputImageType::Pointer outImage;
+      if (args_info.difference_flag)
+      {
+          typedef itk::SubtractImageFilter <InputImageType, InputImageType> SubtractImageFilterType;
+          SubtractImageFilterType::Pointer subtractFilter = SubtractImageFilterType::New();
+          subtractFilter->SetInput1(image);
+          subtractFilter->SetInput2(procImage);
+          subtractFilter->Update();
+          outImage = subtractFilter->GetOutput();
+          outImage->DisconnectPipeline();
+      }
+      else{
+          outImage = procImage;
+      }
+
+      InputImageType::IndexType current_idx = outImage->GetLargestPossibleRegion().GetIndex();
       current_idx[2] = projid;
 
       if (first) {
           // Initialization of the output volume
-          InputImageType::SizeType    sizeInput = procImage->GetLargestPossibleRegion().GetSize();
+          InputImageType::SizeType    sizeInput = outImage->GetLargestPossibleRegion().GetSize();
           sizeInput[2] = Nproj;
-          InputImageType::SpacingType spacingInput = procImage->GetSpacing();
-          InputImageType::PointType   originInput = procImage->GetOrigin();
+          InputImageType::SpacingType spacingInput = outImage->GetSpacing();
+          InputImageType::PointType   originInput = outImage->GetOrigin();
           InputImageType::DirectionType imageDirection;
           imageDirection.SetIdentity();
 
@@ -161,8 +176,10 @@ int main(int argc, char *argv[])
       else {
           paste->SetDestinationImage(paste->GetOutput());
       }
-      paste->SetSourceImage(procImage);
-      paste->SetSourceRegion(procImage->GetLargestPossibleRegion());
+      
+      paste->SetSourceImage(outImage);
+      paste->SetSourceRegion(outImage->GetLargestPossibleRegion());
+            
       paste->SetDestinationIndex(current_idx);
       paste->Update();
 
