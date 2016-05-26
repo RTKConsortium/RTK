@@ -93,7 +93,26 @@ public:
   itkGetConstMacro(TruncationCorrection, double);
   itkSetMacro(TruncationCorrection, double);
 
-
+  /** Set/Get the reproduction factor in x and y directions.
+      Accepted values are either 1 and 2. Another is forced to 1.
+      If m_TruncationCorrection is not null, the x reproduction factor is automatically
+      set to 2.
+   */
+  itkGetConstMacro(ReproductionFactors, SizeType);
+  virtual void SetReproductionFactors(const SizeType reprodFactor)
+  {
+      if (m_ReproductionFactors != reprodFactor)
+      {
+          m_ReproductionFactors = reprodFactor;
+          m_ReproductionFactors[2] = 1;
+          if (m_ReproductionFactors[0] < 1 || m_ReproductionFactors[0] > 2)
+              m_ReproductionFactors[0] = 1;
+          if (m_ReproductionFactors[1] < 1 || m_ReproductionFactors[1] > 2)
+              m_ReproductionFactors[1] = 1;
+          this->Modified();
+      }
+  }
+  
 protected:
   FFTConvolutionImageFilter();
   ~FFTConvolutionImageFilter(){}
@@ -149,6 +168,12 @@ private:
     */
   double m_TruncationCorrection;
   int GetTruncationCorrectionExtent();
+
+  /** The reproduction factor in x and y directions. Accepted values are either 1 and 2. 
+    * Another is forced to 1. If m_TruncationCorrection is not null, the x reproduction factor is automatically
+    * set to 2.
+    */
+  SizeType m_ReproductionFactors;
 
   /**
    * Greatest prime factor of the FFT input.

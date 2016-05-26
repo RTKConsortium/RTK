@@ -46,6 +46,8 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   if(typeid(TFFTPrecision).name() == typeid(float).name() )
     m_GreatestPrimeFactor = 13;
 #endif
+
+  m_ReproductionFactors.Fill(1);
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -188,6 +190,10 @@ typename FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FF
 FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::PadInputImageRegion(const RegionType &inputRegion)
 {
+  // If we correct for truncation, we need to pad the image along the x direction
+  if (m_TruncationCorrection > 0.0)
+     m_ReproductionFactors[1] = 2;   
+
   UpdateTruncationMirrorWeights();
   RegionType paddedRegion = GetPaddedImageRegion(inputRegion);
 
@@ -196,6 +202,9 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   paddedImage->SetRegions(paddedRegion);
   paddedImage->Allocate();
   paddedImage->FillBuffer(0);
+
+  std::cout << "Padded image " << std::endl;
+  std::cout << paddedRegion << std::endl;
 
   const long next = vnl_math_min(inputRegion.GetIndex(0) - paddedRegion.GetIndex(0),
                                  (typename FFTInputImageType::IndexValueType)this->GetTruncationCorrectionExtent() );
@@ -272,7 +281,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   RegionType paddedRegion = inputRegion;
 
   // Set x padding
-  typename SizeType::SizeValueType xPaddedSize = 2*inputRegion.GetSize(0);
+  typename SizeType::SizeValueType xPaddedSize = m_ReproductionFactors[0]*inputRegion.GetSize(0);
   while( GreatestPrimeFactor( xPaddedSize ) > m_GreatestPrimeFactor )
     xPaddedSize++;
   paddedRegion.SetSize(0, xPaddedSize);
@@ -282,9 +291,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // Set y padding. Padding along Y is only required if
   // - there is some windowing in the Y direction
   // - the DFT requires the size to be the product of given prime factors
-  typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
-  if(m_KernelDimension == 2)
-    yPaddedSize *= 2;
+  typename SizeType::SizeValueType yPaddedSize = m_ReproductionFactors[1]*inputRegion.GetSize(1);
   while( GreatestPrimeFactor( yPaddedSize ) > m_GreatestPrimeFactor )
     yPaddedSize++;
   paddedRegion.SetSize(1, yPaddedSize);

@@ -67,17 +67,7 @@ int main(int argc, char *argv[])
   int Nproj = sizeInput[2];
 
   typedef itk::ExtractImageFilter< InputImageType, InputImageType > ExtractFilterType;
-  //ExtractFilterType::Pointer extract = ExtractFilterType::New();
-  //extract->InPlaceOff();
-  //extract->SetDirectionCollapseToSubmatrix();
-  //extract->SetInput( reader->GetOutput() );
-  
-  //InputImageType::RegionType subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
-  //InputImageType::SizeType extractSize = subsetRegion.GetSize();
-  //extractSize[2] = 1;
-  //InputImageType::IndexType start = subsetRegion.GetIndex();
-  //extract->SetExtractionRegion(subsetRegion);
-  
+   
   std::vector<float> coef;
   if (args_info.coefficients_given == 2) {
     coef.push_back(args_info.coefficients_arg[0]);
@@ -94,9 +84,9 @@ int main(int argc, char *argv[])
   typedef rtk::ScatterGlareCorrectionImageFilter<InputImageType, InputImageType, float>   ScatterCorrectionType;
 #endif
   ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
-  SFilter->SetTruncationCorrection(1.0);
+  SFilter->SetTruncationCorrection(0.0);
   SFilter->SetCoefficients(coef);
-
+  
   typedef rtk::ConstantImageSource<InputImageType> ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantSource = ConstantImageSourceType::New();
         
@@ -105,9 +95,10 @@ int main(int argc, char *argv[])
   paste->SetSourceImage(SFilter->GetOutput());
   paste->SetDestinationImage(constantSource->GetOutput());
    
+  std::cout << "Starting processing" << std::endl;
   int projid = 0;
   bool first = true;
-  std::vector<int> weightingTimings, fdkTimings, totalTimings;
+  std::vector<int> avgTimings;
   while (projid < Nproj)
   {
       int curBufferSize = std::min(args_info.bufferSize_arg, Nproj - projid);
@@ -138,6 +129,11 @@ int main(int argc, char *argv[])
 
       auto t1 = std::chrono::high_resolution_clock::now();
       float rrtime = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count()) / static_cast<float>(curBufferSize);
+
+      if (projid > 0) // Because first timing includes filter initialization time
+      {
+          avgTimings.push_back(rrtime);
+      }
       std::cout << "Timing per projection: " << rrtime << " usec" << std::endl;
 
       InputImageType::Pointer procImage = SFilter->GetOutput();
@@ -172,6 +168,10 @@ int main(int argc, char *argv[])
 
       projid += curBufferSize;
   }
+  
+  float sumpp = static_cast<float>(std::accumulate(avgTimings.begin(), avgTimings.end(), 0.f));
+  float meanpp = sumpp / static_cast<float>(avgTimings.size());
+  std::cout << "Average time per projection [us]: " << meanpp << std::endl;
   
   typedef itk::ImageFileWriter<InputImageType> FileWriterType;
   FileWriterType::Pointer writer = FileWriterType::New();
