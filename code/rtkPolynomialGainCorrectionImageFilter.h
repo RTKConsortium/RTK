@@ -56,7 +56,7 @@ public:
   typedef typename OutputImageType::Pointer    OutputImagePtr;
   typedef typename TInputImage::RegionType     InputImageRegionType;
   typedef typename TOutputImage::RegionType    OutputImageRegionType;
-  typedef typename std::vector< double >       VectorType;
+  typedef typename std::vector< float >        VectorType;
   typedef typename OutputImageType::SizeType   OutputSizeType;
   
   /** Standard New method. */
@@ -90,6 +90,7 @@ private:
   PolynomialGainCorrectionImageFilter(const Self&);
   void operator=(const Self&);
 
+protected:
   bool               m_MapsLoaded;
   int                m_ModelOrder;
   float              m_K;                 // Scaling constant

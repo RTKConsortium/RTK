@@ -83,7 +83,7 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
 	  m_NpixValues = (1 << (sizeof(TInputImage::PixelType) * 8));
 	  int lutSize = m_ModelOrder*m_NpixValues;
 	  for (int pid = 0; pid < m_NpixValues; ++pid) {
-		  double value = static_cast<double>(pid);
+		  float value = static_cast<float>(pid);
 		  for (int order = 0; order < m_ModelOrder; ++order) {
 			  m_PowerLut.push_back(value);
 			  value = value*value;
