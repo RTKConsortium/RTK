@@ -62,7 +62,6 @@ CudaBackProjectionImageFilter
   int projectionSize[3];
   projectionSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
-//  projectionSize[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[2];
 
   int volumeSize[3];
   volumeSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
@@ -105,12 +104,12 @@ CudaBackProjectionImageFilter
       fMatrix[j + (iProj-iFirstProj) * 12] = matrix[j/4][j%4];
     }
 
-  for (unsigned int i=0; i<nProj; i+=16)
+  for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
     {
-    // If nProj is not a multiple of 16, the last slab will contain less than 16 projections
-    projectionSize[2] = std::min(nProj-i, (unsigned int)16);
+    // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
+    projectionSize[2] = std::min(nProj-i, (unsigned int)SLAB_SIZE);
 
-    // Run the back projection with a slab of 16 or less projections
+    // Run the back projection with a slab of SLAB_SIZE or less projections
     CUDA_back_project(projectionSize,
                       volumeSize,
                       fMatrix + 12 * i,
