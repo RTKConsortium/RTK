@@ -213,6 +213,10 @@ CUDA_back_project(
     kernel <<< dimGrid, dimBlock >>> ( dev_vol_in,
                                        dev_vol_out,
                                        blocksInY );
+
+    // Unbind the image and projection matrix textures
+    cudaUnbindTexture (tex_proj_3D);
+    CUDA_CHECK_ERROR;
     }
   else
     {
@@ -227,11 +231,11 @@ CUDA_back_project(
 
     kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol_in,
                                               dev_vol_out);
-    }
 
-  // Unbind the image and projection matrix textures
-  cudaUnbindTexture (tex_proj);
-  CUDA_CHECK_ERROR;
+    // Unbind the image and projection matrix textures
+    cudaUnbindTexture (tex_proj);
+    CUDA_CHECK_ERROR;
+    }
 
   // Cleanup
   cudaFreeArray ((cudaArray*)array_proj);
