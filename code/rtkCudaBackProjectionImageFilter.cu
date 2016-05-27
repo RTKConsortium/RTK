@@ -41,9 +41,10 @@
 
 // T E X T U R E S ////////////////////////////////////////////////////////
 texture<float, cudaTextureType2DLayered> tex_proj;
+texture<float, 3, cudaReadModeElementType> tex_proj_3D;
 
 // Constant memory
-__constant__ float c_matrices[1024 * 12]; //Can process stacks of at most 1024 projections
+__constant__ float c_matrices[16 * 12]; //Can process stacks of at most 1024 projections
 __constant__ int3 c_projSize;
 __constant__ int3 c_vol_size;
 
@@ -87,7 +88,7 @@ void kernel(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y)
     ip.y = ip.y * ip.z;
 
     // Get texture point, clip left to GPU
-    voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj);
+    voxel_data += tex3D(tex_proj_3D, ip.x, ip.y, proj + 0.5);
     }
 
   // Place it into the volume
@@ -146,6 +147,9 @@ CUDA_back_project(
   float *dev_vol_out,
   float *dev_proj)
 {
+  int device;
+  cudaGetDevice(&device);
+
   // Copy the size of inputs into constant memory
   cudaMemcpyToSymbol(c_projSize, proj_size, sizeof(int3));
   cudaMemcpyToSymbol(c_vol_size, vol_size, sizeof(int3));
@@ -164,7 +168,14 @@ CUDA_back_project(
   cudaExtent projExtent = make_cudaExtent(proj_size[0], proj_size[1], proj_size[2]);
   cudaArray *array_proj;
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent, cudaArrayLayered);
+
+  // Allocate array for input projections, in order to bind them to
+  // either a 2D layered texture (requires GetCudaComputeCapability >= 2.0) or
+  // a 3D texture
+  if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
+    cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent);
+  else
+    cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent, cudaArrayLayered);
   CUDA_CHECK_ERROR;
 
   // Copy data to 3D array
@@ -175,13 +186,6 @@ CUDA_back_project(
   copyParams.kind     = cudaMemcpyDeviceToDevice;
   cudaMemcpy3D(&copyParams);
   CUDA_CHECK_ERROR;
-
-  // Bind 3D array to 3D texture
-  cudaBindTextureToArray(tex_proj, (cudaArray*)array_proj, channelDesc);
-  CUDA_CHECK_ERROR;
-
-  int device;
-  cudaGetDevice(&device);
 
   // Thread Block Dimensions
   const int tBlock_x = 16;
@@ -197,8 +201,13 @@ CUDA_back_project(
   // transform matrix is passed via constant memory
   if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
     {
+    // Compute block and grid sizes
     dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
     dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+
+    // Bind the array of projections to a 3D texture
+    cudaBindTextureToArray(tex_proj_3D, (cudaArray*)array_proj, channelDesc);
+    CUDA_CHECK_ERROR;
 
     kernel <<< dimGrid, dimBlock >>> ( dev_vol_in,
                                        dev_vol_out,
@@ -206,8 +215,13 @@ CUDA_back_project(
     }
   else
     {
+    // Compute block and grid sizes
     dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
     dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+    CUDA_CHECK_ERROR;
+
+    // Bind the array of projections to a 2D layered texture
+    cudaBindTextureToArray(tex_proj, (cudaArray*)array_proj, channelDesc);
     CUDA_CHECK_ERROR;
 
     kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol_in,
