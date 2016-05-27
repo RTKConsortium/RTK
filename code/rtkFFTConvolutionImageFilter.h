@@ -63,6 +63,7 @@ public:
   typedef typename itk::Image<std::complex<TFFTPrecision>,
                               TInputImage::ImageDimension > FFTOutputImageType;
   typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
+  typedef itk::Vector<int,2>                                ZeroPadFactorsType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(ImageDimension, unsigned int,
@@ -93,26 +94,23 @@ public:
   itkGetConstMacro(TruncationCorrection, double);
   itkSetMacro(TruncationCorrection, double);
 
-  /** Set/Get the reproduction factor in x and y directions.
-      Accepted values are either 1 and 2. Another is forced to 1.
-      If m_TruncationCorrection is not null, the x reproduction factor is automatically
-      set to 2.
-   */
-  itkGetConstMacro(ReproductionFactors, SizeType);
-  virtual void SetReproductionFactors(const SizeType reprodFactor)
-  {
-      if (m_ReproductionFactors != reprodFactor)
+  /** Set/Get the zero padding factors in x and y directions. Accepted values
+    * are either 1 and 2. The y value is only used if the convolution kernel is 2D.
+    */
+  itkGetConstMacro(ZeroPadFactors, ZeroPadFactorsType);
+  virtual void SetZeroPadFactors (ZeroPadFactorsType _arg)
+    {
+    if (m_ZeroPadFactors != _arg)
       {
-          m_ReproductionFactors = reprodFactor;
-          m_ReproductionFactors[2] = 1;
-          if (m_ReproductionFactors[0] < 1 || m_ReproductionFactors[0] > 2)
-              m_ReproductionFactors[0] = 1;
-          if (m_ReproductionFactors[1] < 1 || m_ReproductionFactors[1] > 2)
-              m_ReproductionFactors[1] = 1;
-          this->Modified();
+      m_ZeroPadFactors = _arg;
+      m_ZeroPadFactors[0] = std::max(m_ZeroPadFactors[0], 1);
+      m_ZeroPadFactors[1] = std::max(m_ZeroPadFactors[1], 1);
+      m_ZeroPadFactors[0] = std::min(m_ZeroPadFactors[0], 2);
+      m_ZeroPadFactors[1] = std::min(m_ZeroPadFactors[1], 2);
+      this->Modified();
       }
-  }
-  
+    }
+
 protected:
   FFTConvolutionImageFilter();
   ~FFTConvolutionImageFilter(){}
@@ -169,11 +167,10 @@ private:
   double m_TruncationCorrection;
   int GetTruncationCorrectionExtent();
 
-  /** The reproduction factor in x and y directions. Accepted values are either 1 and 2. 
-    * Another is forced to 1. If m_TruncationCorrection is not null, the x reproduction factor is automatically
-    * set to 2.
+  /** Zero padding factors in x and y directions. Accepted values are either 1
+    * and 2. The y value is only used if the convolution kernel is 2D.
     */
-  SizeType m_ReproductionFactors;
+  ZeroPadFactorsType m_ZeroPadFactors;
 
   /**
    * Greatest prime factor of the FFT input.
