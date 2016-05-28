@@ -21,6 +21,9 @@
 #include "rtkConfiguration.h"
 #include "rtkConstantImageSource.h"
 #include "rtkPolynomialGainCorrectionImageFilter.h"
+#ifdef RTK_USE_CUDA
+    #include "rtkCudaPolynomialGainCorrectionImageFilter.h"
+#endif
 
 #include <string>
 #include <chrono>
@@ -36,8 +39,13 @@ int main(int argc, char * argv[])
   GGO(rtkgaincorrection, args_info);
 
   const unsigned int Dimension = 3;
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< unsigned short, Dimension > InputImageType;
+  typedef itk::CudaImage< float, Dimension >          OutputImageType;
+#else
   typedef itk::Image< unsigned short, Dimension >     InputImageType;
   typedef itk::Image< float, Dimension >              OutputImageType;
+#endif
 
   typedef rtk::ProjectionsReader< InputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
@@ -88,7 +96,12 @@ int main(int argc, char * argv[])
   gainImage = readerGain->GetOutput();
   gainImage->DisconnectPipeline();
     
+#ifdef RTK_USE_CUDA
+  typedef CudaPolynomialGainCorrectionImageFilter GainType;
+#else
   typedef PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType> GainType;
+#endif
+
   GainType::Pointer gainfilter = GainType::New();
   gainfilter->SetDarkImage(darkImage);
   gainfilter->SetGainCoefficients(gainImage);

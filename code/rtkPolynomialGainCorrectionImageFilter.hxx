@@ -20,6 +20,8 @@
 #define __rtkPolynomialGainCorrectionImageFilter_hxx
 
 #include <itkImageFileReader.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
 
 namespace rtk 
 {
