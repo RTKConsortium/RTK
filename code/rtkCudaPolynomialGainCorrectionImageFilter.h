@@ -41,12 +41,12 @@ namespace rtk
  */
 class CudaPolynomialGainCorrectionImageFilter :
     public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>,
-    PolynomialGainCorrectionImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> > >
+    PolynomialGainCorrectionImageFilter <itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> > >
 {
 public:
   /** Convenience typedefs **/
   typedef itk::CudaImage<float, 3>                             ImageType;
-  typedef PolynomialGainCorrectionImageFilter<ImageType>       CPUPolyGainFilterType;
+  typedef PolynomialGainCorrectionImageFilter<itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>>       CPUPolyGainFilterType;
 
   /** Standard class typedefs. */
   typedef CudaPolynomialGainCorrectionImageFilter                             Self;

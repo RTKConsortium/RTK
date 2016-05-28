@@ -29,6 +29,7 @@
  *
  * Based on 'An improved method for flat-field correction of flat panel x-ray detector'
  *          Kwan, Med. Phys 33 (2), 2006
+ * Only allow unsigned short as input format
  *
  * \author Sebastien Brousmiche
  *
@@ -38,13 +39,13 @@
 namespace rtk 
 {
 
-template<class TInputImage, class TOutputImage=TInputImage>
+template<class TInputImage, class TOutputImage>
 class PolynomialGainCorrectionImageFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef PolynomialGainCorrectionImageFilter                           Self;
+  typedef PolynomialGainCorrectionImageFilter                Self;
   typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
@@ -54,7 +55,7 @@ public:
   typedef TOutputImage                         OutputImageType;
   typedef typename InputImageType::Pointer     InputImagePtr;
   typedef typename OutputImageType::Pointer    OutputImagePtr;
-  typedef typename TInputImage::RegionType     InputImageRegionType;
+  typedef typename InputImageType::RegionType  InputImageRegionType;
   typedef typename TOutputImage::RegionType    OutputImageRegionType;
   typedef typename std::vector< float >        VectorType;
   typedef typename OutputImageType::SizeType   OutputSizeType;
@@ -65,10 +66,11 @@ public:
   /** Runtime information support. */
   itkTypeMacro(PolynomialGainCorrectionImageFilter, itk::ImageToImageFilter);
 
-  /** Dark image */
+  /** Dark image, 2D same size of one input projection */
   void SetDarkImage(const InputImagePtr gain);
 
-  /** Weights, matrix A from reference paper */
+  /** Weights, matrix A from reference paper
+   *  3D image: 2D x order. */
   void SetGainCoefficients(const OutputImagePtr gain);
 
   /* if K==0, the filter is bypassed */
@@ -91,14 +93,13 @@ private:
   void operator=(const Self&);
 
 protected:
-  bool               m_MapsLoaded;
-  int                m_ModelOrder;
-  float              m_K;                 // Scaling constant
-  int                m_NpixValues;        // Also maximum acceptable value in the LUT
+  bool               m_MapsLoaded;        // True if gain maps loaded
+  int                m_ModelOrder;        // Polynomial correction order
+  float              m_K;                 // Scaling constant, a 0 means no correction
   VectorType         m_PowerLut;          // Vector containing I^n
   InputImagePtr      m_DarkImage;         // Dark image
   OutputImagePtr     m_GainImage;         // Gain coefficients (A matrix)
-  OutputSizeType     m_GainSize;
+  OutputSizeType     m_GainSize;          // Gain map size
 }; // end of class
 
 } 
