@@ -106,6 +106,11 @@ TARGET_LINK_LIBRARIES(rtkscatterglarefiltertest ${RTK_LIBRARIES})
 ADD_TEST(rtkscatterglarefiltertest ${EXECUTABLE_OUTPUT_PATH}/rtkscatterglarefiltertest)
 ADD_CUDA_TEST(rtkscatterglarefilter rtkscatterglarefiltertest.cxx)
 
+ADD_EXECUTABLE(rtkgaincorrectiontest rtkgaincorrectiontest.cxx)
+TARGET_LINK_LIBRARIES(rtkgaincorrectiontest ${RTK_LIBRARIES})
+ADD_TEST(rtkgaincorrectiontest ${EXECUTABLE_OUTPUT_PATH}/rtkgaincorrectiontest)
+ADD_CUDA_TEST(rtkgaincorrectiontest rtkgaincorrectiontest.cxx)
+
 ADD_EXECUTABLE(rtkscatterglarefilternofftwtest rtkscatterglarefiltertest.cxx)
 SET_TARGET_PROPERTIES(rtkscatterglarefilternofftwtest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
 TARGET_LINK_LIBRARIES(rtkscatterglarefilternofftwtest ${RTK_LIBRARIES})
