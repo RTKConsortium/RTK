@@ -131,7 +131,6 @@ float *h_powerlut, int lut_size, float *coefficients)
     d_powerlut
     );
 
-  cudaMemcpy(h_powerlut, d_powerlut, lut_size, cudaMemcpyDeviceToHost);
   cudaFree(d_powerlut);
 
   CUDA_CHECK_ERROR;
