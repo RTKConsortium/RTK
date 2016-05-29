@@ -63,6 +63,7 @@ public:
   typedef typename itk::Image<std::complex<TFFTPrecision>,
                               TInputImage::ImageDimension > FFTOutputImageType;
   typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
+  typedef itk::Vector<int,2>                                ZeroPadFactorsType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(ImageDimension, unsigned int,
@@ -93,6 +94,22 @@ public:
   itkGetConstMacro(TruncationCorrection, double);
   itkSetMacro(TruncationCorrection, double);
 
+  /** Set/Get the zero padding factors in x and y directions. Accepted values
+    * are either 1 and 2. The y value is only used if the convolution kernel is 2D.
+    */
+  itkGetConstMacro(ZeroPadFactors, ZeroPadFactorsType);
+  virtual void SetZeroPadFactors (ZeroPadFactorsType _arg)
+    {
+    if (m_ZeroPadFactors != _arg)
+      {
+      m_ZeroPadFactors = _arg;
+      m_ZeroPadFactors[0] = std::max(m_ZeroPadFactors[0], 1);
+      m_ZeroPadFactors[1] = std::max(m_ZeroPadFactors[1], 1);
+      m_ZeroPadFactors[0] = std::min(m_ZeroPadFactors[0], 2);
+      m_ZeroPadFactors[1] = std::min(m_ZeroPadFactors[1], 2);
+      this->Modified();
+      }
+    }
 
 protected:
   FFTConvolutionImageFilter();
@@ -149,6 +166,11 @@ private:
     */
   double m_TruncationCorrection;
   int GetTruncationCorrectionExtent();
+
+  /** Zero padding factors in x and y directions. Accepted values are either 1
+    * and 2. The y value is only used if the convolution kernel is 2D.
+    */
+  ZeroPadFactorsType m_ZeroPadFactors;
 
   /**
    * Greatest prime factor of the FFT input.
