@@ -38,6 +38,9 @@ namespace rtk
 #cmakedefine RTK_USE_CUDA
 #cmakedefine RTK_USE_OPENCL
 #cmakedefine RTK_BUILD_SHARED_LIBS 1
+#ifndef SLAB_SIZE
+  #define SLAB_SIZE @RTK_CUDA_PROJECTIONS_SLAB_SIZE@
+#endif
 
 #define RTK_BINARY_DIR "@RTK_BINARY_DIR@"
 

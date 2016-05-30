@@ -120,7 +120,7 @@ int main(int argc, char * argv[])
   projProbe.Start();
   if(!args_info.lowmem_flag)
     {
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() )
     }
   projProbe.Stop();
   if(args_info.verbose_flag)
@@ -141,7 +141,7 @@ int main(int argc, char * argv[])
     writer->SetNumberOfStreamDivisions(sizeOutput[2]);
     }
   writeProbe.Start();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
   writeProbe.Stop();
   if(args_info.verbose_flag)
     std::cout << " done in "

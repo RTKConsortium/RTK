@@ -94,14 +94,14 @@ int main(int argc, char * argv[])
 
     inputFilter = constantImageSource;
     }
-  inputFilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
 
   // Convert phase into interpolation and splat weights
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  phaseReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
   
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   typedef rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCROOSTERFilterType;
@@ -134,7 +134,7 @@ int main(int argc, char * argv[])
     {
     InputReaderType::Pointer motionMaskReader = InputReaderType::New();
     motionMaskReader->SetFileName( args_info.motionmask_arg );
-    motionMaskReader->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( motionMaskReader->Update() )
     mcrooster->SetMotionMask(motionMaskReader->GetOutput());
     mcrooster->SetPerformMotionMask(true);
     }
@@ -185,13 +185,13 @@ int main(int argc, char * argv[])
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   dvfReader->SetFileName( args_info.dvf_arg );
-  dvfReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dvfReader->Update() )
   mcrooster->SetDisplacementField(dvfReader->GetOutput());
 
   // Read inverse DVF if provided
   DVFReaderType::Pointer idvfReader = DVFReaderType::New();
   idvfReader->SetFileName( args_info.idvf_arg );
-  idvfReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( idvfReader->Update() )
   mcrooster->SetInverseDisplacementField(idvfReader->GetOutput());
 
   itk::TimeProbe readerProbe;
@@ -201,7 +201,7 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( mcrooster->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( mcrooster->Update() )
 
   if(args_info.time_flag)
     {
@@ -221,7 +221,7 @@ int main(int argc, char * argv[])
     {
     // MCROOSTER outputs a motion-compensated reconstruction
     writer->SetInput( mcrooster->GetOutput() );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
     }
   else
     {
@@ -229,11 +229,11 @@ int main(int argc, char * argv[])
     // that it is similar to that of rtkfourdrooster
     warp->SetInput(mcrooster->GetOutput());
     warp->SetDisplacementField(idvfReader->GetOutput());
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() )
 
     // Write
     writer->SetInput( warp->GetOutput() );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
     }
 
   return EXIT_SUCCESS;

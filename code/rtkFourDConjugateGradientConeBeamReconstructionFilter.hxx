@@ -34,7 +34,7 @@ template<class VolumeSeriesType, class ProjectionStackType>
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::FourDConjugateGradientConeBeamReconstructionFilter()
 {
-  this->SetNumberOfRequiredInputs(2);
+  this->SetNumberOfRequiredInputs(3); // 4D sequence, projections, projection weights
 
   // Set the default values of member parameters
   m_NumberOfIterations=3;
@@ -44,6 +44,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
+  m_MultiplyFilter = MultiplyFilterType::New();
 
   // Memory management options
   m_ProjStackToFourDFilter->ReleaseDataFlagOn();
@@ -58,9 +59,16 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
 template<class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(const VolumeType* Projection)
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(const ProjectionStackType *Projections)
 {
-  this->SetNthInput(1, const_cast<VolumeType*>(Projection));
+  this->SetNthInput(1, const_cast<ProjectionStackType*>(Projections));
+}
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionWeights(const VolumeType* ProjectionWeights)
+{
+  this->SetNthInput(2, const_cast<ProjectionStackType*>(ProjectionWeights));
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
@@ -75,8 +83,16 @@ template<class VolumeSeriesType, class ProjectionStackType>
 typename ProjectionStackType::ConstPointer
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputProjectionStack()
 {
-  return static_cast< const VolumeType * >
+  return static_cast< const ProjectionStackType * >
           ( this->itk::ProcessObject::GetInput(1) );
+}
+
+template<class VolumeSeriesType, class ProjectionStackType>
+typename ProjectionStackType::ConstPointer
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputProjectionWeights()
+{
+  return static_cast< const ProjectionStackType * >
+          ( this->itk::ProcessObject::GetInput(2) );
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
@@ -156,12 +172,15 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
   // Set runtime connections
   m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
+  m_CGOperator->SetInputProjectionWeights(this->GetInputProjectionWeights());
   m_ConjugateGradientFilter->SetX(this->GetInputVolumeSeries());
+  m_MultiplyFilter->SetInput1(this->GetInputProjectionStack());
+  m_MultiplyFilter->SetInput2(this->GetInputProjectionWeights());
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_ProjStackToFourDFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
-  m_ProjStackToFourDFilter->SetInputProjectionStack(this->GetInputProjectionStack());
+  m_ProjStackToFourDFilter->SetInputProjectionStack(m_MultiplyFilter->GetOutput());
   m_ConjugateGradientFilter->SetB(m_ProjStackToFourDFilter->GetOutput());
 
   // For the same reason, set geometry now
@@ -197,8 +216,8 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 {
   m_ProjStackToFourDFilter->Update();
 
-  // If m_ProjStackToFourDFilter->GetOutput() is stored in an itk::CudaImage, make sure its data is transferred on the CPU
-  this->m_ProjStackToFourDFilter->GetOutput()->GetBufferPointer();
+  if (!m_CudaConjugateGradient)
+    this->m_ProjStackToFourDFilter->GetOutput()->GetBufferPointer();
 
   m_ConjugateGradientFilter->Update();
 

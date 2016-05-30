@@ -221,6 +221,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
   m_ProjectionStackToFourDFilter->SetInputVolumeSeries( this->GetInputVolumeSeries() );
   m_ProjectionStackToFourDFilter->SetInputProjectionStack( m_DivideFilter->GetOutput() );
+  m_ProjectionStackToFourDFilter->SetSignal(this->m_Signal);
 
   m_AddFilter->SetInput1(m_ProjectionStackToFourDFilter->GetOutput());
   m_AddFilter->SetInput2(m_ConstantVolumeSeriesSource->GetOutput());

@@ -33,7 +33,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 {
   this->SetNumberOfRequiredInputs(2);
 
-  m_ProjectionNumber = 0;
   m_UseCudaSplat = false;
   m_UseCudaSources = false;
 
@@ -145,23 +144,19 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_ConstantVolumeSource = ConstantVolumeSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 #ifdef RTK_USE_CUDA
   if (m_UseCudaSources)
     {
     m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
     m_ConstantVolumeSeriesSource = rtk::CudaConstantVolumeSeriesSource::New();
     }
-  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
 #endif
 
   // Set runtime connections
   m_ExtractFilter->SetInput(this->GetInputProjectionStack());
 
-  m_DisplacedDetectorFilter->SetInput(m_ExtractFilter->GetOutput());
-
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_ExtractFilter->GetOutput());
   m_BackProjectionFilter->SetInPlace(false);
 
   m_SplatFilter->SetInputVolumeSeries(m_ConstantVolumeSeriesSource->GetOutput());
@@ -169,22 +164,19 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Prepare the extract filter
   int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
-  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-  if (NumberProjs != m_Weights.columns())
-    itkWarningMacro("Size of interpolation weights array does not match the number of projections");
+//  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+//  if (NumberProjs != m_Weights.columns())
+//    itkWarningMacro("Size of interpolation weights array does not match the number of projections");
 
   typename ExtractFilterType::InputImageRegionType subsetRegion;
   subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
   subsetRegion.SetSize(Dimension-1, 1);
-  m_ProjectionNumber = subsetRegion.GetIndex(Dimension-1);
   m_ExtractFilter->SetExtractionRegion(subsetRegion);
 
   // Set runtime parameters
   m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
-  m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
-  m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
+  m_SplatFilter->SetProjectionNumber(subsetRegion.GetIndex(Dimension-1));
   m_SplatFilter->SetWeights(m_Weights);
-  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Have the last filter calculate its output information
   this->InitializeConstantSource();
@@ -214,52 +206,62 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 {
   int Dimension = ProjectionStackType::ImageDimension;
 
-  // Set the Extract filter
-  typename ProjectionStackType::RegionType extractRegion;
-  extractRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  extractRegion.SetSize(Dimension-1, 1);
-
-  // Declare the pointer to a VolumeSeries that will be used in the pipeline
-  typename VolumeSeriesType::Pointer pimg;
+  // Prepare the index for the constant projection stack source and the extract filter
+  typename ProjectionStackType::RegionType extractRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
+  typename ProjectionStackType::SizeType extractSize = extractRegion.GetSize();
+  typename ProjectionStackType::IndexType extractIndex = extractRegion.GetIndex();
 
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
   int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
-  // Get an index permutation that sorts the signal values. Then process the projections
-  // in that permutated order. This way, projections with identical phases will be
-  // processed one after the other. This will save some of the DVF interpolation operations.
-  std::vector<unsigned int> IndicesOfProjectionsSortedByPhase = GetSortingPermutation<double>(this->m_Signal);
-
-  bool firstProjectionProcessed = false;
-
-  // Process the projections in permutated order
-  for (unsigned int i = 0 ; i < this->m_Signal.size(); i++)
+  std::vector<int> firstProjectionInSlabs;
+  std::vector<unsigned int> sizeOfSlabs;
+  firstProjectionInSlabs.push_back(FirstProj);
+  if (NumberProjs==1)
+    sizeOfSlabs.push_back(1);
+  else
     {
-    // Make sure the current projection is in the input projection stack's largest possible region
-    this->m_ProjectionNumber = IndicesOfProjectionsSortedByPhase[i];
-    if ((this->m_ProjectionNumber >= FirstProj) && (this->m_ProjectionNumber<FirstProj+NumberProjs))
+    for (unsigned int proj = FirstProj+1 ; proj < FirstProj+NumberProjs; proj++)
       {
-      // After the first update, we need to use the output as input.
-      if(firstProjectionProcessed)
+      if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
         {
-        pimg = this->m_SplatFilter->GetOutput();
-        pimg->DisconnectPipeline();
-        this->m_SplatFilter->SetInputVolumeSeries( pimg );
+        // Compute the number of projections in the current slab
+        sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+
+        // Update the index of the first projection in the next slab
+        firstProjectionInSlabs.push_back(proj);
         }
-
-      // Set the Extract Filter
-      extractRegion.SetIndex(Dimension-1, this->m_ProjectionNumber);
-      this->m_ExtractFilter->SetExtractionRegion(extractRegion);
-
-      // Set the splat filter
-      m_SplatFilter->SetProjectionNumber(m_ProjectionNumber);
-
-      // Update the last filter
-      m_SplatFilter->Update();
-
-      // Update condition
-      firstProjectionProcessed = true;
       }
+    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+    }
+  bool firstSlabProcessed = false;
+  typename VolumeSeriesType::Pointer pimg;
+
+  // Process the projections in order
+  for (unsigned int slab = 0 ; slab < firstProjectionInSlabs.size(); slab++)
+    {
+    // Set the projection stack source
+    extractIndex[Dimension - 1] = firstProjectionInSlabs[slab];
+    extractSize[Dimension - 1] = sizeOfSlabs[slab];
+    extractRegion.SetIndex(extractIndex);
+    extractRegion.SetSize(extractSize);
+    m_ExtractFilter->SetExtractionRegion(extractRegion);
+
+    m_SplatFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
+
+    // After the first update, we need to use the output as input.
+    if(firstSlabProcessed)
+      {
+      pimg = this->m_SplatFilter->GetOutput();
+      pimg->DisconnectPipeline();
+      this->m_SplatFilter->SetInputVolumeSeries( pimg );
+      }
+
+    // Update the last filter
+    m_SplatFilter->Update();
+
+    // Update condition
+    firstSlabProcessed = true;
     }
 
   // Graft its output
@@ -268,7 +270,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   // Release the data in internal filters
   if(pimg.IsNotNull())
     pimg->ReleaseData();
-  m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   m_BackProjectionFilter->GetOutput()->ReleaseData();
   m_ExtractFilter->GetOutput()->ReleaseData();
   m_ConstantVolumeSource->GetOutput()->ReleaseData();

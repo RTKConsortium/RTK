@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkbackprojections>(reader, args_info);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Create back projection image filter
   if(args_info.verbose_flag)
@@ -161,7 +161,7 @@ int main(int argc, char * argv[])
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( bp->GetOutput() );
   writeProbe.Start();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
   writeProbe.Stop();
   if(args_info.verbose_flag)
     std::cout << " done in "

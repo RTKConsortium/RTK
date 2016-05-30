@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
   DQType::Pointer dq = DQType::New();
   dq->SetInput( constantImageSource->GetOutput() );
   dq->SetConfigFile(args_info.phantomfile_arg);
-  dq->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dq->Update() )
 
   // Add noise
   OutputImageType::Pointer output = dq->GetOutput();
@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
     noisy->SetInput( output );
     noisy->SetMean( 0.0 );
     noisy->SetStandardDeviation( args_info.noise_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() )
     output = noisy->GetOutput();
   }
 
@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
   writer->SetInput( output );
   if(args_info.verbose_flag)
     std::cout << "Writing reference... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

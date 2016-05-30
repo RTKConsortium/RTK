@@ -79,7 +79,7 @@ int main(int argc, char * argv[])
     phaseGating->SetGatingWindowShape(args_info.windowshape_arg);
     phaseGating->SetInputProjectionStack(projectionsReader->GetOutput());
     phaseGating->SetInputGeometry(geometryReader->GetOutputObject());
-    phaseGating->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseGating->Update() )
     }
 
   // Create input: either an existing volume read from a file or a blank image
@@ -141,7 +141,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( admmFilter->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

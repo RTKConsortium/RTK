@@ -42,14 +42,14 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileReader<LUTType> LUTReaderType;
   LUTReaderType::Pointer lutReader = LUTReaderType::New();
   lutReader->SetFileName(args_info.lut_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutReader->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutReader->Update() )
 
   // Apply lookup table
   typedef rtk::LookupTableImageFilter<OutputImageType, OutputImageType> LUTFilterType;
   LUTFilterType::Pointer lutFilter = LUTFilterType::New();
   lutFilter->SetInput(reader->GetOutput());
   lutFilter->SetLookupTable(lutReader->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutFilter->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutFilter->Update() )
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
   writer->SetInput( lutFilter->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Writing result... " << std::endl;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

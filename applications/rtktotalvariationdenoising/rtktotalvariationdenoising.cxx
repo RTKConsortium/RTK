@@ -93,7 +93,7 @@ int main(int argc, char * argv[])
   writer->SetFileName( args_info.output_arg );
   writer->SetInput(tv->GetOutput());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   delete[] dimsProcessed;
   return EXIT_SUCCESS;

@@ -223,6 +223,10 @@ public:
   void SetInputProjectionStack(const ProjectionStackType* Projection);
   typename ProjectionStackType::Pointer   GetInputProjectionStack();
 
+  /** Set/Get the projection weights */
+  void SetInputProjectionWeights(const VolumeType* ProjectionWeights);
+  typename ProjectionStackType::ConstPointer GetInputProjectionWeights();
+
   /** The region of interest outside of which all movement is removed */
   void SetMotionMask(const VolumeType* mask);
   typename VolumeType::Pointer            GetMotionMask();

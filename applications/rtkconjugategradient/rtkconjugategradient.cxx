@@ -92,7 +92,7 @@ int main(int argc, char * argv[])
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
     
     // Set the weights to be like the projections
-    reader->UpdateOutputInformation();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
     constantWeightsSource->SetInformationFromImage(reader->GetOutput());
     constantWeightsSource->SetConstant(1.0);
     weightsSource = constantWeightsSource;
@@ -138,7 +138,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( conjugategradient->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

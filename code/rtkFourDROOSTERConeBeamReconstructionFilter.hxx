@@ -94,6 +94,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   this->SetInput("ProjectionStack", const_cast<ProjectionStackType*>(Projection));
 }
 
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetInputProjectionWeights(const ProjectionStackType* ProjectionWeights)
+{
+  this->SetInput("ProjectionWeights", const_cast<ProjectionStackType*>(ProjectionWeights));
+}
+
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
@@ -134,6 +142,15 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
   return static_cast< ProjectionStackType * >
           ( this->itk::ProcessObject::GetInput("ProjectionStack") );
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+typename ProjectionStackType::ConstPointer
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GetInputProjectionWeights()
+{
+  return static_cast< ProjectionStackType * >
+          ( this->itk::ProcessObject::GetInput("ProjectionWeights") );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -271,6 +288,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   // whatever was the user wants
   m_FourDCGFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_FourDCGFilter->SetInputProjectionStack(this->GetInputProjectionStack());
+  m_FourDCGFilter->SetInputProjectionWeights(this->GetInputProjectionWeights());
   m_FourDCGFilter->SetGeometry(this->m_Geometry);
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());

@@ -167,7 +167,6 @@ protected:
     /** Other member variables */
     itk::Array2D<float>                                                 m_Weights;
     GeometryType::Pointer                                               m_Geometry;
-    int                                                                 m_ProjectionNumber;
     typename ConstantProjectionStackSourceType::OutputImageRegionType   m_PasteRegion;
     std::vector<double>                                                 m_Signal;
 
