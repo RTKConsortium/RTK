@@ -111,14 +111,14 @@ rtk::DigisensGeometryReader
     ThreeDTransformType::Pointer xfm3D = ThreeDTransformType::New();
     xfm3D->SetMatrix(xfm3DVersor.GetMatrix());
 
-    m_Geometry->AddProjection( sid,
-                               sdd,
-                               xfm3D->GetAngleY(),
-                               projectionOffsetX,
-                               projectionOffsetY,
-                               xfm3D->GetAngleX(),
-                               xfm3D->GetAngleZ(),
-                               rotationCenter[0],
-                               rotationCenter[1] );
+    m_Geometry->AddProjectionInRadians( sid,
+                                        sdd,
+                                        xfm3D->GetAngleY(),
+                                        projectionOffsetX,
+                                        projectionOffsetY,
+                                        xfm3D->GetAngleX(),
+                                        xfm3D->GetAngleZ(),
+                                        rotationCenter[0],
+                                        rotationCenter[1] );
     }
 }

@@ -25,7 +25,7 @@
 __constant__ float cst_coef[9];
 
 __global__
-void kernel_displaced_weight(
+void kernel_lag_correction(
 int3 proj_idx_in,
 int3 proj_size_in,
 int2 proj_size_in_buf,
@@ -125,7 +125,7 @@ int state_size, float *coefficients)
 
   dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
-  kernel_displaced_weight <<< dimGrid, dimBlock >>> (
+  kernel_lag_correction <<< dimGrid, dimBlock >>> (
     make_int3(proj_idx_in[0], proj_idx_in[1], proj_idx_in[2]),
     make_int3(proj_dim_in[0], proj_dim_in[1], proj_dim_in[2]),
     make_int2(proj_dim_in_buf[0], proj_dim_in_buf[1]),
