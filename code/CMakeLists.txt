@@ -101,7 +101,7 @@ IF (RTK_USE_CUDA)
        rtkCudaWarpBackProjectionImageFilter.cu
        rtkCudaCyclicDeformationImageFilter.cu
        rtkCudaLagCorrectionImageFilter.cu
-	   rtkCudaPolynomialGainCorrectionImageFilter.cu
+       rtkCudaPolynomialGainCorrectionImageFilter.cu
        )
   # This is a fix for ITK4 to avoid too long cmd lines error
   # (http://www.itk.org/Bug/view.php?id=12198)
@@ -146,7 +146,7 @@ IF (RTK_USE_CUDA)
               rtkCudaLaplacianImageFilter.cxx
               rtkCudaCyclicDeformationImageFilter.cxx
               rtkCudaLagCorrectionImageFilter.cxx
-			  rtkCudaPolynomialGainCorrectionImageFilter.cxx
+              rtkCudaPolynomialGainCorrectionImageFilter.cxx
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   SET_TARGET_PROPERTIES (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)

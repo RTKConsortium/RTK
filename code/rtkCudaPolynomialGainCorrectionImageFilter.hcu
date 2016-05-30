@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef ORAPOLYGAINCORRECTIONIMAGEFILTER_HCU
-#define ORAPOLYGAINCORRECTIONIMAGEFILTER_HCU
+#ifndef __rtkCudaPolynomialGainCorrectionImageFilter_hcu
+#define __rtkCudaPolynomialGainCorrectionImageFilter_hcu
 
 void
 CUDA_gain_correction(
@@ -32,4 +32,4 @@ CUDA_gain_correction(
   float *dev_gain_in,
   float *h_powerlut, int lut_size, float *coefficients);
 
-#endif //ORAPOLYGAINCORRECTIONIMAGEFILTER_HCU
+#endif //__rtkCudaPolynomialGainCorrectionImageFilter_hcu

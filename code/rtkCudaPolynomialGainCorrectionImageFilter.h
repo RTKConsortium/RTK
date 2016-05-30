@@ -45,14 +45,15 @@ class CudaPolynomialGainCorrectionImageFilter :
 {
 public:
   /** Convenience typedefs **/
-  typedef itk::CudaImage<float, 3>                             ImageType;
-  typedef PolynomialGainCorrectionImageFilter<itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>>       CPUPolyGainFilterType;
+  typedef itk::CudaImage<float, 3>                                                 ImageType;
+  typedef PolynomialGainCorrectionImageFilter< itk::CudaImage<unsigned short, 3>,
+                                               itk::CudaImage<float, 3> >          CPUPolyGainFilterType;
 
   /** Standard class typedefs. */
-  typedef CudaPolynomialGainCorrectionImageFilter                             Self;
+  typedef CudaPolynomialGainCorrectionImageFilter                                  Self;
   typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, CPUPolyGainFilterType> Superclass;
-  typedef itk::SmartPointer<Self>                                             Pointer;
-  typedef itk::SmartPointer<const Self>                                       ConstPointer;
+  typedef itk::SmartPointer<Self>                                                  Pointer;
+  typedef itk::SmartPointer<const Self>                                            ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

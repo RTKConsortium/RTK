@@ -24,8 +24,8 @@
 
 #include <vector>
 
-/** \class PolynomialGainCorrection 
- * \brief Pixel-wize polynomial gain calibration  
+/** \class PolynomialGainCorrection
+ * \brief Pixel-wize polynomial gain calibration
  *
  * Based on 'An improved method for flat-field correction of flat panel x-ray detector'
  *          Kwan, Med. Phys 33 (2), 2006
@@ -36,7 +36,7 @@
  * \ingroup ImageToImageFilter
  */
 
-namespace rtk 
+namespace rtk
 {
 
 template<class TInputImage, class TOutputImage>
@@ -53,13 +53,13 @@ public:
   /** Some convenient typedefs. */
   typedef TInputImage                          InputImageType;
   typedef TOutputImage                         OutputImageType;
-  typedef typename InputImageType::Pointer     InputImagePtr;
-  typedef typename OutputImageType::Pointer    OutputImagePtr;
+  typedef typename InputImageType::Pointer     InputImagePointer;
+  typedef typename OutputImageType::Pointer    OutputImagePointer;
   typedef typename InputImageType::RegionType  InputImageRegionType;
   typedef typename TOutputImage::RegionType    OutputImageRegionType;
   typedef typename std::vector< float >        VectorType;
   typedef typename OutputImageType::SizeType   OutputSizeType;
-  
+
   /** Standard New method. */
   itkNewMacro(Self);
 
@@ -67,11 +67,11 @@ public:
   itkTypeMacro(PolynomialGainCorrectionImageFilter, itk::ImageToImageFilter);
 
   /** Dark image, 2D same size of one input projection */
-  void SetDarkImage(const InputImagePtr gain);
+  void SetDarkImage(const InputImagePointer gain);
 
   /** Weights, matrix A from reference paper
    *  3D image: 2D x order. */
-  void SetGainCoefficients(const OutputImagePtr gain);
+  void SetGainCoefficients(const OutputImagePointer gain);
 
   /* if K==0, the filter is bypassed */
   itkSetMacro(K, float);
@@ -86,7 +86,7 @@ protected:
   virtual void GenerateInputRequestedRegion();
 
   virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId );
-  
+
 private:
   //purposely not implemented
   PolynomialGainCorrectionImageFilter(const Self&);
@@ -97,16 +97,15 @@ protected:
   int                m_ModelOrder;        // Polynomial correction order
   float              m_K;                 // Scaling constant, a 0 means no correction
   VectorType         m_PowerLut;          // Vector containing I^n
-  InputImagePtr      m_DarkImage;         // Dark image
-  OutputImagePtr     m_GainImage;         // Gain coefficients (A matrix)
+  InputImagePointer  m_DarkImage;         // Dark image
+  OutputImagePointer m_GainImage;         // Gain coefficients (A matrix)
   OutputSizeType     m_GainSize;          // Gain map size
 }; // end of class
 
-} 
+}
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkPolynomialGainCorrectionImageFilter.hxx"
 #endif
 
 #endif
-
