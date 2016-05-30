@@ -108,6 +108,7 @@ IF(RTK_USE_CUDA)
     FIND_PACKAGE(CUDA_wrap REQUIRED)
   ENDIF()
   INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
+  SET(RTK_CUDA_PROJECTIONS_SLAB_SIZE "16" CACHE STRING "Number of projections processed simultaneously in CUDA forward and back projections")
 ENDIF()
 #=========================================================
 
@@ -205,8 +206,6 @@ SET (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
 CONFIGURE_FILE(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 CONFIGURE_FILE(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
 #=========================================================
-
-SET(RTK_CUDA_PROJECTIONS_SLAB_SIZE "16" CACHE STRING "Number of projections processed simultaneously in CUDA forward and back projections")
 
 option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
 IF(ITK_VERSION LESS "4.6")
