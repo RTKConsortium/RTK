@@ -24,7 +24,7 @@
 *****************/
 #include "rtkCudaUtilities.hcu"
 #include "rtkConfiguration.h"
-#include "rtkCudaBackProjectionImageFilter.hcu"
+#include "rtkCudaFDKBackProjectionImageFilter.hcu"
 
 /*****************
 *  C   #includes *
