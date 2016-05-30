@@ -5,7 +5,7 @@ sudo: false
 addons:
   apt:
     packages:
-    - libfftw3
+    - libfftw3-3
     - libfftw3-dev
 
 compiler: gcc
@@ -26,16 +26,16 @@ before_script:
   - if ! test -d ${ITK_SOURCE_DIR}; then git clone --branch ${ITK_VERSION} git://itk.org/ITK.git ${ITK_SOURCE_DIR}; fi
   - if ! test -d ${ITK_BUILD_DIR}; then mkdir ${ITK_BUILD_DIR}; fi
   - cd ${ITK_BUILD_DIR}
-  - cmake ${ITK_SOURCE_DIR} \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_EXAMPLES=OFF \
-    -DBUILD_TESTING=OFF \
-    -DModule_ITKReview=ON \
-    -DITK_USE_FFTWD=ON \
-    -DITK_USE_FFTWF=ON \
-    -DITK_USE_SYSTEM_FFTW=ON \
-    -DUSE_FFTWD=ON \
-    -DUSE_FFTWF=ON \
+  - cmake ${ITK_SOURCE_DIR}
+    -DCMAKE_BUILD_TYPE=Release
+    -DBUILD_EXAMPLES=OFF
+    -DBUILD_TESTING=OFF
+    -DModule_ITKReview=ON
+    -DITK_USE_FFTWD=ON
+    -DITK_USE_FFTWF=ON
+    -DITK_USE_SYSTEM_FFTW=ON
+    -DUSE_FFTWD=ON
+    -DUSE_FFTWF=ON
     -DUSE_SYSTEM_FFTW=ON
   - make --jobs=$NUM_THREADS --keep-going
   - cd ..
