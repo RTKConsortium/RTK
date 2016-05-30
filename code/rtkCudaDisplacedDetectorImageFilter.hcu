@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU
-#define ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU
+#ifndef __rtkCudaDisplacedDetectorImageFilter_hcu
+#define __rtkCudaDisplacedDetectorImageFilter_hcu
 
 void
 CUDA_displaced_weight(
@@ -36,4 +36,4 @@ CUDA_displaced_weight(
   float proj_row,
   float proj_col);
 
-#endif //ORACUDADISPLACEDDETECTORIMAGEFILTER_HCU
+#endif //__rtkCudaDisplacedDetectorImageFilter_hcu

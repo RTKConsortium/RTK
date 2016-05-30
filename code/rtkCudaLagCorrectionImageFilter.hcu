@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef ORALAGCORRECTIONIMAGEFILTER_HCU
-#define ORALAGCORRECTIONIMAGEFILTER_HCU
+#ifndef __rtkCudaLagCorrectionImageFilter_hcu
+#define __rtkCudaLagCorrectionImageFilter_hcu
 
 void
 CUDA_lag_correction(
@@ -32,4 +32,4 @@ CUDA_lag_correction(
   float *h_state,
   int state_size, float *coefficients);
 
-#endif //ORALAGCORRECTIONIMAGEFILTER_HCU
+#endif //__rtkCudaLagCorrectionImageFilter_hcu

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
-#define ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
+#ifndef __rtkCudaFDKWeightProjectionFilter_hcu
+#define __rtkCudaFDKWeightProjectionFilter_hcu
 
 void
 CUDA_weight_projection(
@@ -33,4 +33,4 @@ CUDA_weight_projection(
   float proj_col[2]
 );
 
-#endif //ORACUDAFDKWEIGHTPROJECTIONFILTER_HCU
+#endif //__rtkCudaFDKWeightProjectionFilter_hcu
