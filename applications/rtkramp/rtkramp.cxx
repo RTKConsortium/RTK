@@ -114,7 +114,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( streamer->GetOutput() );
-  writer->UpdateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 

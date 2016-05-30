@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
   reader->ComputeLineIntegralOff();
-  reader->UpdateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
   // Input projection parameters
   InputImageType::SizeType    sizeInput = reader->GetOutput()->GetLargestPossibleRegion().GetSize();;
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     extract->SetDirectionCollapseToIdentity();
     extract->SetExtractionRegion(desiredRegionA);
     extract->SetInput(reader->GetOutput());
-    extract->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( extract->Update() )
 
     InputImageType::Pointer image = extract->GetOutput();
     image->DisconnectPipeline();
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
     SFilter->SetInput(image);
     SFilter->GetOutput()->SetRequestedRegion(image->GetRequestedRegion());
-    SFilter->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( SFilter->Update() )
 
     probe.Stop();
     float rrtime = probe.GetMean() / static_cast<float>(curBufferSize);
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
       SubtractImageFilterType::Pointer subtractFilter = SubtractImageFilterType::New();
       subtractFilter->SetInput1(image);
       subtractFilter->SetInput2(procImage);
-      subtractFilter->Update();
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( subtractFilter->Update() )
       outImage = subtractFilter->GetOutput();
       outImage->DisconnectPipeline();
       }
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
     paste->SetSourceRegion(outImage->GetLargestPossibleRegion());
 
     paste->SetDestinationIndex(current_idx);
-    paste->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( paste->Update() )
 
     projid += curBufferSize;
     }

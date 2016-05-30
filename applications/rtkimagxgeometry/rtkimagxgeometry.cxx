@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
     imagxReader->SetRoomXMLFileName(args_info.room_setup_arg);
     }
   imagxReader->SetDetectorOffset(args_info.offset_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( imagxReader->UpdateOutputData() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( imagxReader->UpdateOutputData() )
 
   // Write
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();

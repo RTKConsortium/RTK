@@ -77,7 +77,7 @@ int main(int argc, char * argv[])
 
   rei->SetInput( constantImageSource->GetOutput() );
   rei->SetGeometry( geometryReader->GetOutputObject() );
-  rei->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() )
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
   writer->SetInput( rei->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

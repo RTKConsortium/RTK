@@ -97,7 +97,7 @@ int main(int argc, char * argv[])
     phase->SetMovingAverageSize(args_info.movavg_arg);
     phase->SetUnsharpMaskSize(args_info.unsharp_arg);
     phase->SetModel((PhaseFilter::ModelType)args_info.model_arg);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( phase->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( phase->Update() )
 
     WriteSignalToTextFile(phase->GetOutput(), args_info.phase_arg);
     }

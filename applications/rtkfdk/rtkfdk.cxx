@@ -235,7 +235,7 @@ int main(int argc, char * argv[])
   itk::TimeProbe writerProbe;
 
   writerProbe.Start();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
   writerProbe.Stop();
 
   if(args_info.verbose_flag)

@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
     reader->SetDicomUID(args_info.dicom_uid_arg);
     reader->SetImageDbfFileName(args_info.image_db_arg);
     reader->SetFrameDbfFileName(args_info.frame_db_arg);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputData() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputData() )
 
     // Write
     rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =

@@ -72,7 +72,7 @@ int main(int argc, char * argv[])
   slp->SetGeometry(geometryReader->GetOutputObject());
   slp->SetPhantomScale(args_info.phantomscale_arg);
   slp->SetOriginOffset(offset);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() )
 
   // Add noise
   OutputImageType::Pointer output = slp->GetOutput();
@@ -83,7 +83,7 @@ int main(int argc, char * argv[])
     noisy->SetInput( slp->GetOutput() );
     noisy->SetMean( 0.0 );
     noisy->SetStandardDeviation( args_info.noise_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() )
     output = noisy->GetOutput();
   }
 
@@ -94,7 +94,7 @@ int main(int argc, char * argv[])
   writer->SetInput( output );
   if(args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

@@ -163,7 +163,7 @@ int main(int argc, char * argv[])
   StreamerType::Pointer streamerBP = StreamerType::New();
   streamerBP->SetInput( pfeldkamp );
   streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( streamerBP->UpdateOutputInformation() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( streamerBP->UpdateOutputInformation() )
 
   // Create empty 4D image
   typedef itk::Image< OutputPixelType, Dimension+1 >       FourDOutputImageType;
@@ -190,7 +190,7 @@ int main(int argc, char * argv[])
                 << "..."
                 << std::endl;
     selector->SetPhase(f/(double)args_info.frames_arg);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( streamerBP->UpdateLargestPossibleRegion() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( streamerBP->UpdateLargestPossibleRegion() )
 
     FourDConstantImageSourceType::OutputImageRegionType region;
     region = fourDConstantImageSource->GetOutput()->GetLargestPossibleRegion();
@@ -214,7 +214,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( fourDConstantImageSource->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

@@ -94,7 +94,7 @@ int main(int argc, char * argv[])
 
     inputFilter = constantImageSource;
     }
-  inputFilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
 
   // Read the phases file
@@ -116,7 +116,7 @@ int main(int argc, char * argv[])
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   dvfReader->SetFileName( args_info.dvf_arg );
-  dvfReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dvfReader->Update() )
   warpbackprojectsequence->SetDisplacementField(dvfReader->GetOutput());
 
   itk::TimeProbe readerProbe;
@@ -126,7 +126,7 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackprojectsequence->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackprojectsequence->Update() )
 
   if(args_info.time_flag)
     {
@@ -139,7 +139,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( warpbackprojectsequence->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

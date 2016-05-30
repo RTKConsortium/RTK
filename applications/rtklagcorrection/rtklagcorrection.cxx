@@ -83,7 +83,7 @@ int main(int argc, char * argv[])
   lagfilter->SetInput(reader->GetOutput());
   lagfilter->SetCoefficients(a, b);
   lagfilter->InPlaceOff();
-  lagfilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( lagfilter->Update() )
 
   // Streaming filter
   typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
@@ -96,7 +96,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(streamer->GetOutput());
-  writer->UpdateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
