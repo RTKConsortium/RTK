@@ -147,6 +147,7 @@ public:
     typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                  DisplacedDetectorFilterType;
     typedef rtk::ConstantImageSource<TOutputImage>                           ConstantImageSourceType;
     typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                    DivideFilterType;
+    typedef itk::StatisticsImageFilter<TOutputImage>                         StatisticsImageFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -180,6 +181,9 @@ public:
     /** Get / Set whether conjugate gradient should be performed on GPU */
     itkGetMacro(CudaConjugateGradient, bool)
     itkSetMacro(CudaConjugateGradient, bool)
+
+    /** Getter for ResidualCosts storing array **/
+    const std::vector<double> &GetResidualCosts();
 
 protected:
     ConjugateGradientConeBeamReconstructionFilter();

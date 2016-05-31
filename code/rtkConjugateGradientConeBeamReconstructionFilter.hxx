@@ -62,6 +62,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
 }
 
 template< typename TOutputImage>
+const std::vector<double> &ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
+::GetResidualCosts()
+{
+  return m_ConjugateGradientFilter->GetResidualCosts();
+}
+
+template< typename TOutputImage>
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::SetForwardProjectionFilter (int _arg)
@@ -131,8 +138,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
-
-
+  
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1));
@@ -214,6 +220,20 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateData()
 {
   itk::TimeProbe ConjugateGradientTimeProbe;
+  typename StatisticsImageFilterType::Pointer ytWyStatisticsImageFilter = StatisticsImageFilterType::New();
+  typename MultiplyFilterType::Pointer ytWyMultiplyFilter = MultiplyFilterType::New();
+
+  if (m_IterationCosts)
+  {
+      ytWyMultiplyFilter->SetInput(0,this->GetInput(1));
+      ytWyMultiplyFilter->SetInput(1,this->GetInput(2));
+      ytWyMultiplyFilter->Update();
+      ytWyMultiplyFilter->SetInput(1,ytWyMultiplyFilter->GetOutput());
+      ytWyMultiplyFilter->Update();
+      ytWyStatisticsImageFilter->SetInput(ytWyMultiplyFilter->GetOutput());
+      ytWyStatisticsImageFilter->Update();
+      m_ConjugateGradientFilter->SetytWy(ytWyStatisticsImageFilter->GetSum());
+  }
 
   if(m_MeasureExecutionTimes)
     {

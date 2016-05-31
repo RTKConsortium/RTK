@@ -33,9 +33,71 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   
   m_NumberOfIterations = 1;
   m_IterationCosts = false;
+  m_ytWy=0.0;
 //  m_MeasureExecutionTimes = false;
 
   m_A = ConjugateGradientOperatorType::New();
+}
+
+template<typename OutputImageType>
+void ConjugateGradientImageFilter<OutputImageType>
+::SetytWy(const double _arg) 
+{
+    this->m_ytWy = _arg;
+    this->Modified();
+}
+
+template<typename OutputImageType>
+const double ConjugateGradientImageFilter<OutputImageType>
+::GetytWy() 
+{
+    return this->m_ytWy;
+}
+
+template<typename OutputImageType>
+void ConjugateGradientImageFilter<OutputImageType>
+::CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne)
+/* Perform the calculation of the residual cost function at each iteration :
+ *  
+ *  Cost_residuals(kPlusOne) = <X_kPlusOne,-R_kPlusOne-B> + <y,Wy>
+ *                           = X_kPlusOne^T A X_kPlusOne -2 B^T X_kPlusOne + Y^T W Y
+ *                           = || sqrt(W) (R X_kPlusOne - Y) ||_2^2 + gamma || D X_kPlusOne ||_2^2
+ *
+ *  where :
+ *           -> Y are the projections.
+ *           -> X_kPlusOne is the current estimate.
+ *           -> A and B are the components of the normal equations AX=B resovled by the CG algorithm.
+ *              | A = R^T W R + gamma * D^T D
+ *	       | B = R^T W Y
+ *	       | R is the projection operator, W the weights and D the gradient operator
+ *  	     -> R_kPlusOne is the CG residual (steepest descent direction) 
+ *	        R_kPlusOne = B - A X_kPlusOne.	     
+ */
+{
+    typename StatisticsImageFilterType::Pointer IterationCostsStatisticsImageFilter = StatisticsImageFilterType::New();
+    typename SubtractFilterType::Pointer IterationCostsSubtractFilter = SubtractFilterType::New();
+    typename MultiplyFilterType::Pointer IterationCostsMultiplyFilter = MultiplyFilterType::New();
+
+    IterationCostsMultiplyFilter->SetConstant(-1);
+    IterationCostsMultiplyFilter->SetInput(R_kPlusOne);
+    IterationCostsMultiplyFilter->Update();
+    IterationCostsSubtractFilter->SetInput(0,IterationCostsMultiplyFilter->GetOutput());
+    IterationCostsSubtractFilter->SetInput(1, this->GetB());
+    IterationCostsSubtractFilter->Update();
+    IterationCostsMultiplyFilter->SetConstant(1);
+    IterationCostsMultiplyFilter->SetInput(0,X_kPlusOne);
+    IterationCostsMultiplyFilter->SetInput(1,IterationCostsSubtractFilter->GetOutput());
+    IterationCostsMultiplyFilter->Update();
+    IterationCostsStatisticsImageFilter->SetInput(IterationCostsMultiplyFilter->GetOutput());
+    IterationCostsStatisticsImageFilter->Update();
+    m_ResidualCosts.push_back(IterationCostsStatisticsImageFilter->GetSum()+this->GetytWy());
+}
+
+template<typename OutputImageType>
+const std::vector<double> &ConjugateGradientImageFilter<OutputImageType>
+::GetResidualCosts() 
+{
+    return this->m_ResidualCosts;
 }
 
 template<typename OutputImageType>
@@ -96,7 +158,7 @@ void ConjugateGradientImageFilter<OutputImageType>
 ::GenerateData()
 {
   itk::TimeProbe CGTimeProbe;
-
+  
 //  if(m_MeasureExecutionTimes)
 //    {
 //    std::cout << "Starting conjugate gradient initialization"<< std::endl;
@@ -106,16 +168,6 @@ void ConjugateGradientImageFilter<OutputImageType>
   // Initialization
   m_A->SetX(this->GetX());
   m_A->ReleaseDataFlagOn();
-
-  if (m_IterationCosts) {
-      std::ofstream costsfile ("/tmp/IterationCosts.txt");
-      typedef itk::StatisticsImageFilter<ImageType> StatisticsImageFilterType;
-      typename StatisticsImageFilterType::Pointer IterationCostsStatisticsImageFilter = StatisticsImageFilterType::New ();
-      typename SubtractFilterType::Pointer IterationCostsSubtractFilter = SubtractFilterType::New();
-      typename MultiplyFilterType::Pointer IterationCostsMultiplyFilter = MultiplyFilterType::New();
-      IterationCostsMultiplyFilter->SetConstant(-1);
-      IterationCostsMultiplyFilter->Update();
-  }
 
   typename SubtractFilterType::Pointer SubtractFilter = SubtractFilterType::New();
   SubtractFilter->SetInput(0, this->GetB());
@@ -131,14 +183,7 @@ void ConjugateGradientImageFilter<OutputImageType>
   P_zero->DisconnectPipeline();
 
   if (m_IterationCosts) {
-      IterationCostsMultiplyFilter->SetInput(P_zero);
-      IterationCostsMultiplyFilter->Update();
-      IterationCostsSubtractFilter->SetInput(0,IterationCostsMultiplyFilter->GetOutput());
-      IterationCostsSubtractFilter->SetInput(1, this->GetB());
-      IterationCostsSubtractFilter->Update();
-      IterationCostsStatisticsImageFilter->SetInput(IterationCostsSubtractFilter->GetOutput());
-      IterationCostsStatisticsImageFilter->Update();
-      costsfile << IterationCostsStatisticsImageFilter->GetSum() << std::endl;;	  
+      CalculateResidualCosts(P_zero,this->GetX());
   }
 
   // Compute AP_zero
@@ -175,14 +220,7 @@ void ConjugateGradientImageFilter<OutputImageType>
       X_kPlusOne->DisconnectPipeline();
 
       if (m_IterationCosts) {
-	  IterationCostsMultiplyFilter->SetInput(R_kPlusOne);
-	  IterationCostsMultiplyFilter->Update();
-	  IterationCostsSubtractFilter->SetInput(0,IterationCostsMultiplyFilter->GetOutput());
-	  IterationCostsSubtractFilter->SetInput(1, this->GetB());
-	  IterationCostsSubtractFilter->Update();
-	  IterationCostsStatisticsImageFilter->SetInput(IterationCostsSubtractFilter->GetOutput());
-	  IterationCostsStatisticsImageFilter->Update();
-	  costsfile << IterationCostsStatisticsImageFilter->GetSum() << std::endl;;	  
+	  CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
       }
 
       m_A->SetX(P_kPlusOne);
@@ -211,11 +249,7 @@ void ConjugateGradientImageFilter<OutputImageType>
     }
 
   this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
-
-  if (m_IterationCosts) {
-      costsfile.close();
-  }
-
+  
   // Release the data from internal filters
   if (m_NumberOfIterations > 1)
     {

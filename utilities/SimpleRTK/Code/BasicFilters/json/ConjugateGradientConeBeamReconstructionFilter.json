@@ -96,6 +96,14 @@
       "detaileddescriptionGet" : ""
     }
   ],
+  "measurements" : [
+    {
+      "name" : "ResidualCosts",
+      "type" : "std::vector<double>",
+      "default" : "std::vector<double>()",
+      "custom_itk_cast" : "this->m_ResidualCosts = std::vector<double>( filter->GetResidualCosts().begin(), filter->GetResidualCosts().end() );"
+    }
+  ],
   "briefdescription" : "",
   "detaileddescription" : ""
 }
