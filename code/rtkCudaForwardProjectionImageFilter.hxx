@@ -115,8 +115,10 @@ CudaForwardProjectionImageFilter<TInputImage,
     }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  float matrices[3*nProj][4];
-  float source_positions[4 * nProj];
+  float **matrices = new float*[3 * nProj];
+  for (int i = 0; i < 3 * nProj; ++i)
+      matrices[i] = new float[4];
+  float *source_positions = new float[4 * nProj];
 
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
@@ -157,6 +159,11 @@ CudaForwardProjectionImageFilter<TInputImage,
                       spacing,
                       m_UseCudaTexture);
 
+  for (int i = 0; i < 3 * nProj; ++i) {
+      delete[] matrices[i];
+  }
+  delete[] matrices;
+  delete[] source_positions;
 }
 
 } // end namespace rtk
