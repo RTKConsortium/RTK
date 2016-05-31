@@ -1,0 +1,74 @@
+language: cpp
+
+sudo: required
+
+dist: trusty
+
+addons:
+  apt:
+    packages:
+    - libfftw3-3
+    - libfftw3-dev
+
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+  - clang
+
+env:
+  - ITK_VERSION=v4.2.0 CUDA=NONE
+  - ITK_VERSION=v4.10.0 CUDA=NONE
+  - ITK_VERSION=v4.2.0 CUDA=7.5-18
+  - ITK_VERSION=v4.10.0 CUDA=7.5-18
+
+cache:
+  directories:
+  - /home/travis/itk-v4.2.0
+  - /home/travis/itk-v4.2.0-build
+  - /home/travis/itk-v4.10.0
+  - /home/travis/itk-v4.10.0-build
+
+before_install:
+  - if test "$CUDA" != NONE; then echo "Installing CUDA library"; fi
+  - if test "$CUDA" != NONE; then travis_retry wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_${CUDA}_amd64.deb; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo dpkg -i cuda-repo-ubuntu1404_${CUDA}_amd64.deb; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo apt-get update -qq; fi
+  - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA%-*}; fi
+  - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA_APT/./-}; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT}; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo apt-get clean; fi
+  - if test "$CUDA" != NONE; then export CUDA_HOME=/usr/local/cuda-${CUDA%%-*}; fi
+  - if test "$CUDA" != NONE; then export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}; fi
+  - if test "$CUDA" != NONE; then export PATH=${CUDA_HOME}/bin:${PATH}; fi
+
+before_script:
+  - export NUM_THREADS=4
+  - export ITK_SOURCE_DIR=/home/travis/itk-${ITK_VERSION}
+  - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-build
+  - if ! test -e ${ITK_SOURCE_DIR}/CMakeLists.txt; then rm -fr $ITK_SOURCE_DIR; fi
+  - if ! test -d ${ITK_SOURCE_DIR}; then git clone --branch ${ITK_VERSION} git://itk.org/ITK.git ${ITK_SOURCE_DIR}; fi
+  - if ! test -d ${ITK_BUILD_DIR}; then mkdir ${ITK_BUILD_DIR}; fi
+  - cd ${ITK_BUILD_DIR}
+  - cmake ${ITK_SOURCE_DIR}
+    -DCMAKE_BUILD_TYPE=Release
+    -DBUILD_EXAMPLES=OFF
+    -DBUILD_TESTING=OFF
+    -DModule_ITKReview=ON
+    -DITK_USE_FFTWD=ON
+    -DITK_USE_FFTWF=ON
+    -DITK_USE_SYSTEM_FFTW=ON
+    -DUSE_FFTWD=ON
+    -DUSE_FFTWF=ON
+    -DUSE_SYSTEM_FFTW=ON
+  - make --jobs=$NUM_THREADS --keep-going
+  - cd -
+
+script:
+  - if ! test -d build; then mkdir build; fi
+  - cd build
+  - cmake ..
+  - make --jobs=$NUM_THREADS --keep-going all test
+
