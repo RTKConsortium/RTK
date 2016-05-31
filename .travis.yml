@@ -32,14 +32,11 @@ matrix:
       env: ITK_VERSION=v4.10.0 CUDA=7.5-18
 
 cache:
-  - apt
   - directories:
     - /home/travis/itk-v4.2.0
-    - /home/travis/itk-v4.2.0-osx-build
-    - /home/travis/itk-v4.2.0-linux-build
+    - /home/travis/itk-v4.2.0-build
     - /home/travis/itk-v4.10.0
-    - /home/travis/itk-v4.10.0-osx-build
-    - /home/travis/itk-v4.10.0-linux-build
+    - /home/travis/itk-v4.10.0-build
 
 before_install:
   - if test "$CUDA" != NONE; then echo "Installing CUDA library"; fi
@@ -50,9 +47,7 @@ before_install:
   - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA_APT/./-}; fi
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT} cuda-cublas-${CUDA_APT}; fi
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get clean; fi
-  - if test "$CUDA" != NONE; then export CUDA_HOME=/usr/local/cuda-${CUDA%%-*}; fi
-  - if test "$CUDA" != NONE; then export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}; fi
-  - if test "$CUDA" != NONE; then export PATH=${CUDA_HOME}/bin:${PATH}; fi
+  - if test "$CUDA" != NONE; then export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-${CUDA%%-*}; fi
 
 before_script:
   - export NUM_THREADS=4
