@@ -42,9 +42,10 @@ before_script:
     -DUSE_FFTWF=ON
     -DUSE_SYSTEM_FFTW=ON
   - make --jobs=$NUM_THREADS --keep-going
-  - cd
+  - cd -
 
 script:
+  - pwd
   - ls
   - if ! test -d build; then mkdir build; fi
   - cd build
