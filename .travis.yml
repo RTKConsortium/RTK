@@ -49,9 +49,9 @@ before_install:
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get clean; fi
   - if test "$CUDA" != NONE; then export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-${CUDA%%-*}; fi
   - if test "$CUDA" != NONE; then export PATH=${CUDA_TOOLKIT_ROOT_DIR}/bin:${PATH}; fi
-  - if test $TRAVIS_OS_NAME == osx ; then brew update; brew install fftw; fi
 
 before_script:
+  - if test $TRAVIS_OS_NAME == osx ; then brew update; brew install fftw; fi
   - export NUM_THREADS=4
   - export ITK_SOURCE_DIR=$HOME/itk-${ITK_VERSION}
   - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-build
