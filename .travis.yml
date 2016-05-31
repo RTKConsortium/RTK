@@ -45,15 +45,16 @@ before_install:
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get update -qq; fi
   - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA%-*}; fi
   - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA_APT/./-}; fi
-  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT} cuda-cublas-${CUDA_APT}; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT} cuda-cufft-${CUDA_APT} cuda-cublas-${CUDA_APT}; fi
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get clean; fi
   - if test "$CUDA" != NONE; then export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-${CUDA%%-*}; fi
   - if test "$CUDA" != NONE; then export PATH=${CUDA_TOOLKIT_ROOT_DIR}/bin:${PATH}; fi
+  - if test $TRAVIS_OS_NAME == osx ; then brew update; brew install fftw; fi
 
 before_script:
   - export NUM_THREADS=4
   - export ITK_SOURCE_DIR=$HOME/itk-${ITK_VERSION}
-  - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-${TRAVIS_OS_NAME}-build
+  - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-build
   - if ! test -e ${ITK_SOURCE_DIR}/CMakeLists.txt; then rm -fr $ITK_SOURCE_DIR; fi
   - if ! test -d ${ITK_SOURCE_DIR}; then git clone --branch ${ITK_VERSION} git://itk.org/ITK.git ${ITK_SOURCE_DIR}; fi
   - if ! test -d ${ITK_BUILD_DIR}; then mkdir ${ITK_BUILD_DIR}; fi
