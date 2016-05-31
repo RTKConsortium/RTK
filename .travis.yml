@@ -22,6 +22,7 @@ cache:
   - /home/travis/itk-v4.10.0-build
 
 before_script:
+  - set -x
   - export NUM_THREADS=4
   - export ITK_SOURCE_DIR=/home/travis/itk-${ITK_VERSION}
   - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-build
@@ -41,10 +42,11 @@ before_script:
     -DUSE_FFTWF=ON
     -DUSE_SYSTEM_FFTW=ON
   - make --jobs=$NUM_THREADS --keep-going
-  - cd ..
+  - cd
 
 script:
-  - mkdir build
+  - ls
+  - if ! test -d build; then mkdir build; fi
   - cd build
   - cmake ..
   - make --jobs=$NUM_THREADS --keep-going all test
