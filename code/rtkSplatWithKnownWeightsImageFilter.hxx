@@ -71,6 +71,20 @@ typename VolumeType::Pointer SplatWithKnownWeightsImageFilter<VolumeSeriesType, 
           ( this->itk::ProcessObject::GetInput(1) );
 }
 
+template< typename VolumeType, typename VolumeSeriesType>
+void SplatWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::SetProjectionNumber(int n)
+{
+  // Check whether the weights change from the old projection number to the new one
+  for (int row=0; row < m_Weights.rows(); row++)
+    {
+    if (m_Weights[row][m_ProjectionNumber] != m_Weights[row][n])
+      this->Modified();
+    }
+
+  // Change the member variable whatever the result
+  m_ProjectionNumber = n;
+}
+
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   template< typename VolumeSeriesType, typename VolumeType>
   const itk::ImageRegionSplitterBase*

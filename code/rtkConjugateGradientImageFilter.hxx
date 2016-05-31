@@ -155,20 +155,22 @@ void ConjugateGradientImageFilter<OutputImageType>
 
 template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
-::GenerateData()
+::GenerateOutputInformation()
 {
-  itk::TimeProbe CGTimeProbe;
-  
-//  if(m_MeasureExecutionTimes)
-//    {
-//    std::cout << "Starting conjugate gradient initialization"<< std::endl;
-//    CGTimeProbe.Start();
-//    }
+  Superclass::GenerateOutputInformation();
 
   // Initialization
   m_A->SetX(this->GetX());
   m_A->ReleaseDataFlagOn();
 
+  // Compute output information
+  this->m_A->UpdateOutputInformation();
+}
+
+template<typename OutputImageType>
+void ConjugateGradientImageFilter<OutputImageType>
+::GenerateData()
+{
   typename SubtractFilterType::Pointer SubtractFilter = SubtractFilterType::New();
   SubtractFilter->SetInput(0, this->GetB());
   SubtractFilter->SetInput(1, m_A->GetOutput());

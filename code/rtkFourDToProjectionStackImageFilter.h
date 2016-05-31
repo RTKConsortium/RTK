@@ -140,6 +140,9 @@ public:
     /** Initializes the empty volume source, set it and update it */
     void InitializeConstantVolumeSource();
 
+    /** Store the phase signal in a member variable */
+    virtual void SetSignal(const std::vector<double> signal);
+
 protected:
     FourDToProjectionStackImageFilter();
     ~FourDToProjectionStackImageFilter(){}
@@ -164,8 +167,8 @@ protected:
     /** Other member variables */
     itk::Array2D<float>                                                 m_Weights;
     GeometryType::Pointer                                               m_Geometry;
-    int                                                                 m_ProjectionNumber;
     typename ConstantProjectionStackSourceType::OutputImageRegionType   m_PasteRegion;
+    std::vector<double>                                                 m_Signal;
 
 private:
     FourDToProjectionStackImageFilter(const Self &); //purposely not implemented

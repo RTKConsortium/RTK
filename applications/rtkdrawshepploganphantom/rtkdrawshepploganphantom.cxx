@@ -66,7 +66,7 @@ int main(int argc, char * argv[])
     noisy->SetInput( output );
     noisy->SetMean( 0.0 );
     noisy->SetStandardDeviation( args_info.noise_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() )
     output = noisy->GetOutput();
     }
 
@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( output );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

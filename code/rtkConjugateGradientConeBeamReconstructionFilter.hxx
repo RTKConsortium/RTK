@@ -165,7 +165,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_BackProjectionFilterForNormalization->SetInput(0, m_ConstantVolumeSource->GetOutput());
     m_BackProjectionFilterForNormalization->SetInput(1, m_ConstantProjectionsSource->GetOutput());
     m_BackProjectionFilterForPreconditioning->SetInput(0, m_ConstantVolumeSource->GetOutput());
-    m_BackProjectionFilterForPreconditioning->SetInput(1, this->GetInput(2));
+    m_BackProjectionFilterForPreconditioning->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   
     m_DivideFilter->SetInput1(m_BackProjectionFilterForNormalization->GetOutput());
     m_DivideFilter->SetInput2(m_BackProjectionFilterForPreconditioning->GetOutput());

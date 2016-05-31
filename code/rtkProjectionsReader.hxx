@@ -65,6 +65,7 @@ ProjectionsReader<TOutputImage>
   m_ScatterToPrimaryRatio(0.),
   m_NonNegativityConstraintThreshold( itk::NumericTraits<double>::NonpositiveMin() ),
   m_I0( itk::NumericTraits<double>::NonpositiveMin() ),
+  m_IDark( 0. ),
   m_ComputeLineIntegral(true)
 {
   // Filters common to all input types and that do not depend on the input image type.
@@ -214,10 +215,9 @@ void ProjectionsReader<TOutputImage>
     else if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
              !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
              !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
-             !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") ||
              imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
       {
-      /////////// Elekta synergy, IBA / iMagX, TIFF
+      /////////// Elekta synergy, IBA / iMagX, unsigned short
       typedef unsigned short                                     InputPixelType;
       typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
 
@@ -317,7 +317,6 @@ void ProjectionsReader<TOutputImage>
       !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
       !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
-      !strcmp(imageIO->GetNameOfClass(), "TIFFImageIO") ||
       imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
     PropagateParametersToMiniPipeline< itk::Image<unsigned short, OutputImageDimension> >();
   else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
@@ -567,6 +566,7 @@ void ProjectionsReader<TOutputImage>
   I0Type *i0 = dynamic_cast<I0Type*>(m_RawToAttenuationFilter.GetPointer());
   assert(i0 != NULL);
   i0->SetI0(m_I0);
+  i0->SetIDark(m_IDark);
   // Pipeline connection for m_RawToAttenuationFilter is done after the call to this function
 }
 

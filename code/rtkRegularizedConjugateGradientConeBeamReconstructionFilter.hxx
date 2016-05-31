@@ -29,6 +29,8 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
   // Set the default values of member parameters
   m_GammaTV = 0.00005;
   m_SoftThresholdWavelets = 0.001;
+  m_Preconditioned = false;
+  m_RegularizedCG = false;
 
   m_TV_iterations=10;
   m_MainLoop_iterations=10;

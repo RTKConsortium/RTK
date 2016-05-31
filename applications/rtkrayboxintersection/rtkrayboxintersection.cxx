@@ -60,7 +60,7 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileReader<  OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
-  reader->UpdateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
   // Create projection image filter
   typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
   rbi->SetInput( constantImageSource->GetOutput() );
   rbi->SetBoxFromImage( reader->GetOutput() );
   rbi->SetGeometry( geometryReader->GetOutputObject() );
-  rbi->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rbi->Update() )
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
@@ -77,7 +77,7 @@ int main(int argc, char * argv[])
   writer->SetInput( rbi->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

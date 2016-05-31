@@ -103,6 +103,7 @@ protected:
 
   /** Conjugate gradient requires the whole image */
   void GenerateInputRequestedRegion();
+  void GenerateOutputInformation();
 
   ConjugateGradientOperatorPointerType m_A;
 

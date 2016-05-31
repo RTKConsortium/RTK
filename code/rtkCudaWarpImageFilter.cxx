@@ -68,38 +68,9 @@ CudaWarpImageFilter
   outputVolumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
   outputVolumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
-  // Split the DVF into three images (one per component)
-  ImageType::Pointer xCompDVF = ImageType::New();
-  ImageType::Pointer yCompDVF = ImageType::New();
-  ImageType::Pointer zCompDVF = ImageType::New();
-  ImageType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
-  xCompDVF->SetRegions(largest);
-  yCompDVF->SetRegions(largest);
-  zCompDVF->SetRegions(largest);
-  xCompDVF->Allocate();
-  yCompDVF->Allocate();
-  zCompDVF->Allocate();
-  itk::ImageRegionIterator<ImageType>      itxComp(xCompDVF, largest);
-  itk::ImageRegionIterator<ImageType>      ityComp(yCompDVF, largest);
-  itk::ImageRegionIterator<ImageType>      itzComp(zCompDVF, largest);
-  itk::ImageRegionConstIterator<DVFType>   itDVF(this->GetDisplacementField(), largest);
-  while(!itDVF.IsAtEnd())
-    {
-      itxComp.Set(itDVF.Get()[0]);
-      ityComp.Set(itDVF.Get()[1]);
-      itzComp.Set(itDVF.Get()[2]);
-      ++itxComp;
-      ++ityComp;
-      ++itzComp;
-      ++itDVF;
-    }
-
-
   float *pinVol  = *(float**)( this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer() );
   float *poutVol = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinxDVF = *(float**)( xCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinyDVF = *(float**)( yCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinzDVF = *(float**)( zCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
+  float *pDVF = *(float**)( this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Transform matrices that we will need during the warping process
   indexOutputToPPOutputMatrix = rtk::GetIndexToPhysicalPointMatrix( this->GetOutput() ).GetVnlMatrix()
@@ -139,17 +110,10 @@ CudaWarpImageFilter
     fIndexOutputToIndexDVFMatrix,
     fPPInputToIndexInputMatrix,
     pinVol,
-    pinxDVF,
-    pinyDVF,
-    pinzDVF,
     poutVol,
+    pDVF,
     isLinear
     );
-
-  // Get rid of the intermediate images used to split the DVF into three components
-  xCompDVF = NULL;
-  yCompDVF = NULL;
-  zCompDVF = NULL;
 
   // The filter is inPlace
   pinVol = poutVol;

@@ -28,7 +28,7 @@ int main(int argc, char * argv[])
   // Create geometry reader
   rtk::XRadGeometryReader::Pointer reader = rtk::XRadGeometryReader::New();
   reader->SetImageFileName(args_info.input_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputData() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputData() )
 
   // Write
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =

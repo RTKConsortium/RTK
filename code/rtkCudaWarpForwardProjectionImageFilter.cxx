@@ -23,13 +23,14 @@
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaWarpForwardProjectionImageFilter.hcu"
 #include "rtkHomogeneousMatrix.h"
+#include "rtkMacro.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkMacro.h>
 #include <itkImageRegionIterator.h>
-#include "rtkMacro.h"
+#include <itkImageAlgorithm.h>
 #include "itkCudaUtil.h"
 
 namespace rtk
@@ -38,21 +39,28 @@ namespace rtk
 CudaWarpForwardProjectionImageFilter
 ::CudaWarpForwardProjectionImageFilter()
 {
-  this->SetNumberOfRequiredInputs(1);
+  this->SetNumberOfRequiredInputs(2);
 }
 
 void
 CudaWarpForwardProjectionImageFilter
 ::SetInputProjectionStack(const InputImageType* ProjectionStack)
 {
-  this->SetPrimaryInput(const_cast<InputImageType*>(ProjectionStack));
+  this->SetInput(0, const_cast<InputImageType*>(ProjectionStack));
 }
 
 void
 CudaWarpForwardProjectionImageFilter
 ::SetInputVolume(const InputImageType* Volume)
 {
-  this->SetInput("Volume", const_cast<InputImageType*>(Volume));
+  this->SetInput(1, const_cast<InputImageType*>(Volume));
+}
+
+void
+CudaWarpForwardProjectionImageFilter
+::SetDisplacementField(const DVFType* DVF)
+{
+  this->SetInput("DisplacementField", const_cast<DVFType*>(DVF));
 }
 
 CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
@@ -60,7 +68,7 @@ CudaWarpForwardProjectionImageFilter
 ::GetInputProjectionStack()
 {
   return static_cast< InputImageType * >
-          ( this->itk::ProcessObject::GetInput("Primary") );
+          ( this->itk::ProcessObject::GetInput(0) );
 }
 
 CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
@@ -68,14 +76,7 @@ CudaWarpForwardProjectionImageFilter
 ::GetInputVolume()
 {
   return static_cast< InputImageType * >
-          ( this->itk::ProcessObject::GetInput("Volume") );
-}
-
-void
-CudaWarpForwardProjectionImageFilter
-::SetDisplacementField(const DVFType* MVF)
-{
-  this->SetInput("DisplacementField", const_cast<DVFType*>(MVF));
+          ( this->itk::ProcessObject::GetInput(1) );
 }
 
 CudaWarpForwardProjectionImageFilter::DVFType::Pointer
@@ -94,16 +95,49 @@ CudaWarpForwardProjectionImageFilter
   
   // Since we do not know where the DVF points, the 
   // whole input volume is required. 
-  // However, the volume's requested region 
-  // computed by Superclass::GenerateInputRequestedRegion()
-  // is the requested region for the DVF
-  this->GetInputProjectionStack()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
-  this->GetDisplacementField()->SetRequestedRegion(this->GetInputVolume()->GetRequestedRegion());
   this->GetInputVolume()->SetRequestedRegionToLargestPossibleRegion();
-  
-  // The requested region for the input projection 
-  // shoudl be set correctly by 
-  // Superclass::GenerateInputRequestedRegion()
+
+  // The requested region on the projection stack input is the same as the output requested region
+  this->GetInputProjectionStack()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
+
+#if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 8)
+  this->GetDisplacementField()->SetRequestedRegionToLargestPossibleRegion();
+#else  
+  // Determine the smallest region of the deformation field that fully
+  // contains the physical space covered by the input volume's requested
+  // region
+  DVFType::Pointer    fieldPtr = this->GetDisplacementField();
+  InputImageType::Pointer  inputPtr = this->GetInputVolume();
+  if ( fieldPtr.IsNotNull() )
+    {
+    // tolerance for origin and spacing depends on the size of pixel
+    // tolerance for direction is a fraction of the unit cube.
+    const itk::SpacePrecisionType coordinateTol = this->GetCoordinateTolerance() * inputPtr->GetSpacing()[0]; // use first dimension spacing
+
+    bool DefFieldSameInformation =
+       (inputPtr->GetOrigin().GetVnlVector().is_equal(fieldPtr->GetOrigin().GetVnlVector(), coordinateTol))
+    && (inputPtr->GetSpacing().GetVnlVector().is_equal(fieldPtr->GetSpacing().GetVnlVector(), coordinateTol))
+    && (inputPtr->GetDirection().GetVnlMatrix().as_ref().is_equal(fieldPtr->GetDirection().GetVnlMatrix(), this->GetDirectionTolerance()));
+
+    if (DefFieldSameInformation)
+      {
+      fieldPtr->SetRequestedRegion( inputPtr->GetRequestedRegion() );
+      }
+    else
+      {
+      typedef DVFType::RegionType DisplacementRegionType;
+
+      DisplacementRegionType fieldRequestedRegion = itk::ImageAlgorithm::EnlargeRegionOverBox(inputPtr->GetRequestedRegion(),
+                                                                                         inputPtr.GetPointer(),
+                                                                                         fieldPtr.GetPointer());
+      fieldPtr->SetRequestedRegion( fieldRequestedRegion );
+      }
+    if ( !fieldPtr->VerifyRequestedRegion() )
+      {
+      fieldPtr->SetRequestedRegion( fieldPtr->GetLargestPossibleRegion() );
+      }
+    }
+#endif
 }
 
 
@@ -121,7 +155,7 @@ CudaWarpForwardProjectionImageFilter
     matrixIdxInputVol[i][3] = this->GetInputVolume()->GetBufferedRegion().GetIndex()[i]; // Should 0.5 be added here ?
     }
   
-  const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
   const unsigned int Dimension = InputImageType::ImageDimension;
   const unsigned int iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension-1);
   const unsigned int nProj = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(Dimension-1);
@@ -164,38 +198,10 @@ CudaWarpForwardProjectionImageFilter
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
   
-  // Split the DVF into three images (one per component)
-  typename InputImageType::Pointer xCompDVF = InputImageType::New();
-  typename InputImageType::Pointer yCompDVF = InputImageType::New();
-  typename InputImageType::Pointer zCompDVF = InputImageType::New();
-  typename InputImageType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
-  xCompDVF->SetRegions(largest);
-  yCompDVF->SetRegions(largest);
-  zCompDVF->SetRegions(largest);
-  xCompDVF->Allocate();
-  yCompDVF->Allocate();
-  zCompDVF->Allocate();
-  itk::ImageRegionIterator<InputImageType>      itxComp(xCompDVF, largest);
-  itk::ImageRegionIterator<InputImageType>      ityComp(yCompDVF, largest);
-  itk::ImageRegionIterator<InputImageType>      itzComp(zCompDVF, largest);
-  itk::ImageRegionConstIterator<DVFType>   itDVF(this->GetDisplacementField(), largest);
-  while(!itDVF.IsAtEnd())
-    {
-      itxComp.Set(itDVF.Get()[0]);
-      ityComp.Set(itDVF.Get()[1]);
-      itzComp.Set(itDVF.Get()[2]);
-      ++itxComp;
-      ++ityComp;
-      ++itzComp;
-      ++itDVF;
-    }
-
   float *pin = *(float**)( this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pvol = *(float**)( this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinxDVF = *(float**)( xCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinyDVF = *(float**)( yCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinzDVF = *(float**)( zCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
+  float *pDVF = *(float**)( this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Transform matrices that we will need during the warping process
   indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix()
@@ -222,12 +228,12 @@ CudaWarpForwardProjectionImageFilter
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
     // Account for system rotations
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
+    Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
     volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInputVolume().GetPointer() );
 
     // Compute matrix to translate the pixel indices on the volume and the detector
     // if the Requested region has non-zero index
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
+    Superclass::GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
     projIndexTranslation.SetIdentity();
     volIndexTranslation.SetIdentity();
     for(unsigned int i=0; i<3; i++)
@@ -244,7 +250,7 @@ CudaWarpForwardProjectionImageFilter
       }
 
     // Compute matrix to transform projection index to volume index
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
+    Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
     d_matrix =
       volIndexTranslation.GetVnlMatrix() *
       volPPToIndex.GetVnlMatrix() *
@@ -261,7 +267,7 @@ CudaWarpForwardProjectionImageFilter
 
     int projectionOffset = iProj - this->GetOutput()->GetBufferedRegion().GetIndex(2);
 
-    CUDA_warped_forward_project(projectionSize,
+    CUDA_warp_forward_project(projectionSize,
                         volumeSize,
                         inputDVFSize,
                         (float*)&(matrix[0][0]),
@@ -273,9 +279,7 @@ CudaWarpForwardProjectionImageFilter
                         boxMin,
                         boxMax,
                         spacing,
-                        pinxDVF,
-                        pinyDVF,
-                        pinzDVF,
+                        pDVF,
                         fIndexInputToIndexDVFMatrix,
                         fPPInputToIndexInputMatrix,
                         fIndexInputToPPInputMatrix

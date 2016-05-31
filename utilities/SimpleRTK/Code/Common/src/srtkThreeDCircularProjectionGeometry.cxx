@@ -148,6 +148,18 @@ public:
     return std::vector< double >( r.GetVnlMatrix().begin(), r.GetVnlMatrix().end() );
     }
 
+  const std::vector<double>  GetMatrix( const unsigned int i ) const
+    {
+    const ProjectionGeometryType::MatrixType  &m = this->m_ProjectionGeometry->GetMatrices()[i];
+    return std::vector< double >( m.GetVnlMatrix().begin(), m.GetVnlMatrix().end() );
+    }
+
+  const std::vector<double>  GetProjectionCoordinatesToFixedSystemMatrix( const unsigned int i) const
+    {
+    const ProjectionGeometryType::ThreeDHomogeneousMatrixType &m = this->m_ProjectionGeometry->GetProjectionCoordinatesToFixedSystemMatrix(i);
+    return std::vector< double >( m.GetVnlMatrix().begin(), m.GetVnlMatrix().end() );
+    }
+
   /** Add the projection */
   void AddProjection(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
     {
@@ -288,6 +300,18 @@ const std::vector<double>  ThreeDCircularProjectionGeometry::GetRotationMatrix( 
   {
     assert( m_PimpleThreeDCircularProjectionGeometry );
     return this->m_PimpleThreeDCircularProjectionGeometry->GetRotationMatrix(i);
+  }
+
+const std::vector<double>  ThreeDCircularProjectionGeometry::GetMatrix( const unsigned int i) const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetMatrix(i);
+  }
+
+const std::vector<double>  ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToFixedSystemMatrix( const unsigned int i) const
+  {
+    assert( m_PimpleThreeDCircularProjectionGeometry );
+    return this->m_PimpleThreeDCircularProjectionGeometry->GetProjectionCoordinatesToFixedSystemMatrix(i);
   }
 
 void ThreeDCircularProjectionGeometry::AddProjection(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy)

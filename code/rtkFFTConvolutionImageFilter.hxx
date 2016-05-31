@@ -46,6 +46,8 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   if(typeid(TFFTPrecision).name() == typeid(float).name() )
     m_GreatestPrimeFactor = 13;
 #endif
+
+  m_ZeroPadFactors.Fill(2);
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -272,7 +274,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   RegionType paddedRegion = inputRegion;
 
   // Set x padding
-  typename SizeType::SizeValueType xPaddedSize = 2*inputRegion.GetSize(0);
+  typename SizeType::SizeValueType xPaddedSize = m_ZeroPadFactors[0]*inputRegion.GetSize(0);
   while( GreatestPrimeFactor( xPaddedSize ) > m_GreatestPrimeFactor )
     xPaddedSize++;
   paddedRegion.SetSize(0, xPaddedSize);
@@ -284,7 +286,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   // - the DFT requires the size to be the product of given prime factors
   typename SizeType::SizeValueType yPaddedSize = inputRegion.GetSize(1);
   if(m_KernelDimension == 2)
-    yPaddedSize *= 2;
+    yPaddedSize *= m_ZeroPadFactors[1];
   while( GreatestPrimeFactor( yPaddedSize ) > m_GreatestPrimeFactor )
     yPaddedSize++;
   paddedRegion.SetSize(1, yPaddedSize);

@@ -18,6 +18,7 @@
 
 #include "rtkfourdsart_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkFourDSARTConeBeamReconstructionFilter.h"
@@ -88,14 +89,14 @@ int main(int argc, char * argv[])
 
     inputFilter = constantImageSource;
     }
-  inputFilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  phaseReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
   
   // 4D SART reconstruction filter
   rtk::FourDSARTConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType >::Pointer fourdsart =
@@ -110,6 +111,7 @@ int main(int argc, char * argv[])
   fourdsart->SetNumberOfIterations( args_info.niterations_arg );
   fourdsart->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
   fourdsart->SetWeights(phaseReader->GetOutput());
+  fourdsart->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   fourdsart->SetLambda( args_info.lambda_arg );
 
   itk::TimeProbe totalTimeProbe;
@@ -137,7 +139,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( fourdsart->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

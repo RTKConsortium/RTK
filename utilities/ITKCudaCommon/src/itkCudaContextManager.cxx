@@ -87,6 +87,7 @@ CudaContextManager::~CudaContextManager()
     {
     CUDA_CHECK(cuCtxDestroy(m_Context));
     }
+  cudaDeviceReset();
 }
 
 int CudaContextManager::GetCurrentDevice()

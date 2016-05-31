@@ -85,7 +85,7 @@ public:
     itkSetMacro(Weights, itk::Array2D<float>)
 
     itkGetMacro(ProjectionNumber, int)
-    itkSetMacro(ProjectionNumber, int)
+    void SetProjectionNumber(int n);
 
 protected:
     InterpolatorWithKnownWeightsImageFilter();

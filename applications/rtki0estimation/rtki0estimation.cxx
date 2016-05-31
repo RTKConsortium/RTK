@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
   typedef rtk::ProjectionsReader< InputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( names->GetFileNames() );
-  reader->UpdateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
   typedef itk::ExtractImageFilter< InputImageType, InputImageType > ExtractFilterType;
   ExtractFilterType::Pointer extract = ExtractFilterType::New();
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 
     try
       {
-      i0est->UpdateLargestPossibleRegion();
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( i0est->UpdateLargestPossibleRegion() )
       }
     catch ( itk::ExceptionObject & err )
       {

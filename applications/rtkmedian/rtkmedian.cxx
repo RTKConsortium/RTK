@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
   MEDFilterType::Pointer median=MEDFilterType::New();
   median->SetInput(reader->GetOutput());
   median->SetMedianWindow(medianWindow);
-  median->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( median->Update() )
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
@@ -72,7 +72,7 @@ int main(int argc, char * argv[])
     {
     std::cout << "Processing and writing... " << std::flush;
     }
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

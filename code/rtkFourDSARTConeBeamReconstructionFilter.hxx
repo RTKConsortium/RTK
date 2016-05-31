@@ -20,6 +20,7 @@
 #define __rtkFourDSARTConeBeamReconstructionFilter_hxx
 
 #include "rtkFourDSARTConeBeamReconstructionFilter.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include <algorithm>
 #include <itkTimeProbe.h>
@@ -150,6 +151,17 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetSignal(const std::vector<double> signal)
+{
+  m_ProjectionStackToFourDFilter->SetSignal(signal);
+  m_FourDToProjectionStackFilter->SetSignal(signal);
+  this->m_Signal = signal;
+  this->Modified();
+}
+
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateInputRequestedRegion()
 {  
   typename Superclass::InputImagePointer inputPtr =
@@ -209,6 +221,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
   m_ProjectionStackToFourDFilter->SetInputVolumeSeries( this->GetInputVolumeSeries() );
   m_ProjectionStackToFourDFilter->SetInputProjectionStack( m_DivideFilter->GetOutput() );
+  m_ProjectionStackToFourDFilter->SetSignal(this->m_Signal);
 
   m_AddFilter->SetInput1(m_ProjectionStackToFourDFilter->GetOutput());
   m_AddFilter->SetInput2(m_ConstantVolumeSeriesSource->GetOutput());

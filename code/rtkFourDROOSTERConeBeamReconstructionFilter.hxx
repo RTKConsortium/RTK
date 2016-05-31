@@ -94,6 +94,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   this->SetInput("ProjectionStack", const_cast<ProjectionStackType*>(Projection));
 }
 
+template<class VolumeSeriesType, class ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetInputProjectionWeights(const ProjectionStackType* ProjectionWeights)
+{
+  this->SetInput("ProjectionWeights", const_cast<ProjectionStackType*>(ProjectionWeights));
+}
+
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
@@ -105,17 +113,17 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetDisplacementField(const MVFSequenceImageType* MVFs)
+::SetDisplacementField(const DVFSequenceImageType* DVFs)
 {
-  this->SetInput("DisplacementField", const_cast<MVFSequenceImageType*>(MVFs));
+  this->SetInput("DisplacementField", const_cast<DVFSequenceImageType*>(DVFs));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetInverseDisplacementField(const MVFSequenceImageType* MVFs)
+::SetInverseDisplacementField(const DVFSequenceImageType* DVFs)
 {
-  this->SetInput("InverseDisplacementField", const_cast<MVFSequenceImageType*>(MVFs));
+  this->SetInput("InverseDisplacementField", const_cast<DVFSequenceImageType*>(DVFs));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -137,6 +145,15 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
+typename ProjectionStackType::ConstPointer
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::GetInputProjectionWeights()
+{
+  return static_cast< ProjectionStackType * >
+          ( this->itk::ProcessObject::GetInput("ProjectionWeights") );
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
 typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VolumeType::Pointer
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GetMotionMask()
@@ -146,20 +163,20 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::Pointer
+typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::Pointer
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GetDisplacementField()
 {
-  return static_cast< MVFSequenceImageType * >
+  return static_cast< DVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput("DisplacementField") );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::MVFSequenceImageType::Pointer
+typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::Pointer
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GetInverseDisplacementField()
 {
-  return static_cast< MVFSequenceImageType * >
+  return static_cast< DVFSequenceImageType * >
           ( this->itk::ProcessObject::GetInput("InverseDisplacementField") );
 }
 
@@ -198,6 +215,16 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template< typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+::SetSignal(const std::vector<double> signal)
+{
+  m_FourDCGFilter->SetSignal(signal);
+  this->m_Signal = signal;
+  this->Modified();
+}
+
+template< typename VolumeSeriesType, typename ProjectionStackType>
+void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateInputRequestedRegion()
 {
   //Call the superclass' implementation of this method
@@ -220,12 +247,12 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   
   if (m_PerformWarping)
     {
-    typename MVFSequenceImageType::Pointer DisplacementFieldPtr  = this->GetDisplacementField();
+    typename DVFSequenceImageType::Pointer DisplacementFieldPtr  = this->GetDisplacementField();
     DisplacementFieldPtr->SetRequestedRegionToLargestPossibleRegion();
 
     if (!m_ComputeInverseWarpingByConjugateGradient)
       {
-      typename MVFSequenceImageType::Pointer InverseDisplacementFieldPtr  = this->GetInverseDisplacementField();
+      typename DVFSequenceImageType::Pointer InverseDisplacementFieldPtr  = this->GetInverseDisplacementField();
       InverseDisplacementFieldPtr->SetRequestedRegionToLargestPossibleRegion();
       }
     else
@@ -261,6 +288,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   // whatever was the user wants
   m_FourDCGFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_FourDCGFilter->SetInputProjectionStack(this->GetInputProjectionStack());
+  m_FourDCGFilter->SetInputProjectionWeights(this->GetInputProjectionWeights());
   m_FourDCGFilter->SetGeometry(this->m_Geometry);
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());

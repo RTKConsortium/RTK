@@ -48,7 +48,7 @@ namespace rtk
    *
    * Input0 [ label="Input 0 (Sequence of images)"];
    * Input0 [shape=Mdiamond];
-   * Input1 [label="Input 1 (Sequence of MVFs)"];
+   * Input1 [label="Input 1 (Sequence of DVFs)"];
    * Input1 [shape=Mdiamond];
    * Output [label="Output (Sequence of images)"];
    * Output [shape=Mdiamond];
@@ -85,12 +85,12 @@ namespace rtk
    */
 
 template< typename TImageSequence,
-          typename TMVFImageSequence = itk::Image< itk::CovariantVector < typename TImageSequence::ValueType,
+          typename TDVFImageSequence = itk::Image< itk::CovariantVector < typename TImageSequence::ValueType,
                                                                           TImageSequence::ImageDimension-1 >,
                                                    TImageSequence::ImageDimension >,
           typename TImage = itk::Image< typename TImageSequence::ValueType,
                                         TImageSequence::ImageDimension-1 >,
-          typename TMVFImage = itk::Image<itk::CovariantVector < typename TImageSequence::ValueType,
+          typename TDVFImage = itk::Image<itk::CovariantVector < typename TImageSequence::ValueType,
                                                                  TImageSequence::ImageDimension - 1 >,
                                           TImageSequence::ImageDimension - 1> >
 class WarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
@@ -108,10 +108,10 @@ public:
     itkTypeMacro(WarpSequenceImageFilter, IterativeConeBeamReconstructionFilter)
 
     /** Set the motion vector field used in input 1 */
-    void SetDisplacementField(const TMVFImageSequence* MVFs);
+    void SetDisplacementField(const TDVFImageSequence* DVFs);
 
     /** Get the motion vector field used in input 1 */
-    typename TMVFImageSequence::Pointer GetDisplacementField();
+    typename TDVFImageSequence::Pointer GetDisplacementField();
 
     /** Set/Get for m_ForwardWarp */
     itkGetMacro(ForwardWarp, bool)
@@ -130,13 +130,13 @@ public:
     typedef rtk::CudaWarpImageFilter                                          CudaWarpFilterType;
     typedef rtk::CudaForwardWarpImageFilter                                   CudaForwardWarpFilterType;
 #endif
-    typedef itk::WarpImageFilter<TImage, TImage, TMVFImage>                   WarpFilterType;
-    typedef rtk::ForwardWarpImageFilter<TImage, TImage, TMVFImage>            ForwardWarpFilterType;
+    typedef itk::WarpImageFilter<TImage, TImage, TDVFImage>                   WarpFilterType;
+    typedef rtk::ForwardWarpImageFilter<TImage, TImage, TDVFImage>            ForwardWarpFilterType;
 
     typedef itk::LinearInterpolateImageFunction<TImage, double >              LinearInterpolatorType;
     typedef itk::NearestNeighborInterpolateImageFunction<TImage, double >     NearestNeighborInterpolatorType;
     typedef itk::ExtractImageFilter<TImageSequence, TImage>                   ExtractFilterType;
-    typedef rtk::CyclicDeformationImageFilter<TMVFImage>                      MVFInterpolatorType;
+    typedef rtk::CyclicDeformationImageFilter<TDVFImage>                      DVFInterpolatorType;
     typedef itk::PasteImageFilter<TImageSequence,TImageSequence>              PasteFilterType;
     typedef itk::CastImageFilter<TImage, TImageSequence>                      CastFilterType;
     typedef rtk::ConstantImageSource<TImageSequence>                          ConstantImageSourceType;
@@ -151,7 +151,7 @@ protected:
     /** Member pointers to the filters used internally (for convenience)*/
     typename WarpFilterType::Pointer          m_WarpFilter;
     typename ExtractFilterType::Pointer       m_ExtractFilter;
-    typename MVFInterpolatorType::Pointer     m_MVFInterpolatorFilter;
+    typename DVFInterpolatorType::Pointer     m_DVFInterpolatorFilter;
     typename PasteFilterType::Pointer         m_PasteFilter;
     typename CastFilterType::Pointer          m_CastFilter;
     typename ConstantImageSourceType::Pointer m_ConstantSource;

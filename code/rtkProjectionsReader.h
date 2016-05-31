@@ -38,11 +38,12 @@ namespace rtk
  *
  * This is the universal projections reader of rtk (raw data converted to
  * attenuation). Currently handles his (Elekta Synergy), hnd (Varian OBI),
- * tiff (Digisens), edf (ESRF), XRad. For all other ITK file formats, it is
- * assumed that the attenuation is directly passed and there is no processing.
- * Optionnally, one can activate cropping, binning, scatter correction, etc.
- * The details of the mini-pipeline is provided below, note that dashed filters
- * are shunt if they are not required according to parameters.
+ * edf (ESRF), XRad. For all other ITK file formats (mha, tif, ...), it is
+ * assumed that the attenuation is directly passed if the pixel type is not
+ * unsigned short and there is no processing. Optionnally, one can activate
+ * cropping, binning, scatter correction, etc. The details of the mini-
+ * pipeline is provided below, note that dashed filters are shunt if they
+ * are not required according to parameters.
  *
  * \dot
  * digraph ProjectionsReader {
@@ -199,6 +200,12 @@ public:
   itkGetMacro(I0, double);
   itkSetMacro(I0, double);
 
+  /** Set/Get the intensity with no photons for
+   * rtk::LUTbasedVariableI0RawToAttenuationImageFilter.
+   */
+  itkGetMacro(IDark, double);
+  itkSetMacro(IDark, double);
+
   /** Get / Set the water precorrection parameters. */
   itkGetMacro(WaterPrecorrectionCoefficients, WaterPrecorrectionVectorType);
   virtual void SetWaterPrecorrectionCoefficients(const WaterPrecorrectionVectorType _arg)
@@ -283,6 +290,7 @@ private:
   double                       m_ScatterToPrimaryRatio;
   double                       m_NonNegativityConstraintThreshold;
   double                       m_I0;
+  double                       m_IDark;
   WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
   bool                         m_ComputeLineIntegral;
 };

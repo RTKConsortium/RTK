@@ -87,14 +87,14 @@ int main(int argc, char * argv[])
     fieldofview->SetProjectionsStack(reader->GetOutput());
     fieldofview->SetGeometry(geometryReader->GetOutputObject());
     fieldofview->SetDisplacedDetector(args_info.displaced_flag);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( fieldofview->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( fieldofview->Update() )
 
     // Write
     typedef itk::ImageFileWriter<  OutputImageType > WriterType;
     WriterType::Pointer writer = WriterType::New();
     writer->SetFileName( args_info.output_arg );
     writer->SetInput( fieldofview->GetOutput() );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
     }
   else
     {
@@ -104,8 +104,8 @@ int main(int argc, char * argv[])
       return EXIT_FAILURE;
       }
 
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( unmasked_reconstruction->UpdateOutputInformation() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( unmasked_reconstruction->UpdateOutputInformation() )
 
 #ifdef RTK_USE_CUDA
     typedef itk::CudaImage<float, 3> MaskImgType;
@@ -149,7 +149,7 @@ int main(int argc, char * argv[])
       WriterType::Pointer writer = WriterType::New();
       writer->SetFileName( args_info.output_arg );
       writer->SetInput( div->GetOutput() );
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
       }
     else
       {

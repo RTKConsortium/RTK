@@ -8,4 +8,5 @@ option "pad"      - "Data padding parameter to correct for truncation"          
 option "hardware" - "Hardware used for computation"                             values="cpu","cuda" no   default="cpu"
 option "hann"     - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double    no   default="0.0"
 option "hannY"    - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double    no   default="0.0"
+option "lowmem"   l "Load only one projection per thread in memory"             flag      off
 

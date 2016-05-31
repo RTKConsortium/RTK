@@ -1,25 +1,27 @@
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
 #include <itkJoinSeriesImageFilter.h>
+#include <itkDivideImageFilter.h>
 
 #include "rtkTest.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkFieldOfViewImageFilter.h"
-#include "rtkWarpForwardProjectSequenceImageFilter.h"
+#include "rtkWarpProjectionStackToFourDImageFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
+#include "rtkBackProjectionImageFilter.h"
 
 /**
- * \file rtkwarpforwardprojecttest.cxx
+ * \file rtkwarpprojectionstacktofourdtest.cxx
  *
  * \brief Functional test for classes performing motion-compensated
- * forward projection combining warping and forward projection
+ * back projection combining warping and back projection
  *
  * This test generates the projections of a phantom, which consists of two
  * ellipsoids (one of them moving). The resulting moving phantom is
- * forward projected, each ray following a trajectory that matches the motionand the generated
- * result is compared to the expected results (analytical computation).
+ * back projected, each ray following a trajectory that matches the motion
+ * The result is compared to the CPU voxel based back projection of the static object.
  *
  * \author Cyril Mory
  */
@@ -28,20 +30,20 @@ int main(int, char** )
 {
   typedef float                             OutputPixelType;
 
-  typedef itk::CovariantVector< OutputPixelType, 3 > MVFVectorType;
+  typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
   typedef itk::CudaImage< OutputPixelType, 3 >  VolumeType;
-  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension> MVFSequenceImageType;
-  typedef itk::CudaImage<MVFVectorType, VolumeSeriesType::ImageDimension - 1> MVFImageType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #else
   typedef itk::Image< OutputPixelType, 4 >  VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 >  ProjectionStackType;
   typedef itk::Image< OutputPixelType, 3 >  VolumeType;
-  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension> MVFSequenceImageType;
-  typedef itk::Image<MVFVectorType, VolumeSeriesType::ImageDimension - 1> MVFImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -243,31 +245,31 @@ int main(int, char** )
     }
 
   // Create a vector field and its (very rough) inverse
-  typedef itk::ImageRegionIteratorWithIndex< MVFSequenceImageType > IteratorType;
+  typedef itk::ImageRegionIteratorWithIndex< DVFSequenceImageType > IteratorType;
 
-  MVFSequenceImageType::Pointer deformationField = MVFSequenceImageType::New();
-  MVFSequenceImageType::Pointer inverseDeformationField = MVFSequenceImageType::New();
+  DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
+  DVFSequenceImageType::Pointer inverseDeformationField = DVFSequenceImageType::New();
 
-  MVFSequenceImageType::IndexType startMotion;
+  DVFSequenceImageType::IndexType startMotion;
   startMotion[0] = 0; // first index on X
   startMotion[1] = 0; // first index on Y
   startMotion[2] = 0; // first index on Z
   startMotion[3] = 0; // first index on t
-  MVFSequenceImageType::SizeType sizeMotion;
+  DVFSequenceImageType::SizeType sizeMotion;
   sizeMotion[0] = fourDSize[0];
   sizeMotion[1] = fourDSize[1];
   sizeMotion[2] = fourDSize[2];
   sizeMotion[3] = 2;
-  MVFSequenceImageType::PointType originMotion;
+  DVFSequenceImageType::PointType originMotion;
   originMotion[0] = -63.;
   originMotion[1] = -31.;
   originMotion[2] = -63.;
   originMotion[3] = 0.;
-  MVFSequenceImageType::RegionType regionMotion;
+  DVFSequenceImageType::RegionType regionMotion;
   regionMotion.SetSize( sizeMotion );
   regionMotion.SetIndex( startMotion );
 
-  MVFSequenceImageType::SpacingType spacingMotion;
+  DVFSequenceImageType::SpacingType spacingMotion;
   spacingMotion[0] = fourDSpacing[0];
   spacingMotion[1] = fourDSpacing[1];
   spacingMotion[2] = fourDSpacing[2];
@@ -284,20 +286,20 @@ int main(int, char** )
   inverseDeformationField->Allocate();
 
   // Vector Field initilization
-  MVFVectorType vec;
+  DVFVectorType vec;
   IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
   IteratorType idvfIt( inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion() );
 
-  MVFSequenceImageType::OffsetType mvfCenter;
-  MVFSequenceImageType::IndexType toCenter;
-  mvfCenter.Fill(0);
-  mvfCenter[0] = sizeMotion[0]/2;
-  mvfCenter[1] = sizeMotion[1]/2;
-  mvfCenter[2] = sizeMotion[2]/2;
+  DVFSequenceImageType::OffsetType DVFCenter;
+  DVFSequenceImageType::IndexType toCenter;
+  DVFCenter.Fill(0);
+  DVFCenter[0] = sizeMotion[0]/2;
+  DVFCenter[1] = sizeMotion[1]/2;
+  DVFCenter[2] = sizeMotion[2]/2;
   while (!dvfIt.IsAtEnd())
     {
     vec.Fill(0.);
-    toCenter = dvfIt.GetIndex() - mvfCenter;
+    toCenter = dvfIt.GetIndex() - DVFCenter;
 
     if (0.3 * toCenter[0] * toCenter[0] + 0.5*toCenter[1] * toCenter[1] + 0.5*toCenter[2] * toCenter[2] < 40)
       {
@@ -314,49 +316,8 @@ int main(int, char** )
     }
 
   // Input 4D volume sequence
-  VolumeType::Pointer * Volumes = new VolumeType::Pointer[fourDSize[3]];
   typedef itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType> JoinFilterType;
   JoinFilterType::Pointer join = JoinFilterType::New();
-
-  for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
-    {
-    // Ellipse 1
-    typedef rtk::DrawEllipsoidImageFilter<VolumeType, VolumeType> DEType;
-    DEType::Pointer de1 = DEType::New();
-    de1->SetInput( tomographySource->GetOutput() );
-    de1->SetDensity(1.);
-    DEType::VectorType axis;
-    axis.Fill(60.);
-    axis[1]=30;
-    de1->SetAxis(axis);
-    DEType::VectorType center;
-    center.Fill(0.);
-    de1->SetCenter(center);
-    de1->SetAngle(0.);
-    de1->InPlaceOff();
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( de1->Update() )
-
-    // Ellipse 2
-    DEType::Pointer de2 = DEType::New();
-    de2->SetInput(de1->GetOutput());
-    de2->SetDensity(-1.);
-    DEType::VectorType axis2;
-    axis2.Fill(8.);
-    de2->SetAxis(axis2);
-    DEType::VectorType center2;
-    center2[0] = 4*(vcl_abs( (4+n) % 8 - 4.) - 2.);
-    center2[1] = 0.;
-    center2[2] = 0.;
-    de2->SetCenter(center2);
-    de2->SetAngle(0.);
-    de2->InPlaceOff();
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( de2->Update() );
-
-    Volumes[n] = de2->GetOutput();
-    Volumes[n]->DisconnectPipeline();
-    join->SetInput(n, Volumes[n]);
-    }
-  join->Update();
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
@@ -364,45 +325,53 @@ int main(int, char** )
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
-#ifndef RTK_USE_CUDA
-  std::cout << "\n\n****** Case 1: Non-warped Joseph forward projection (warped forward projection exists only in CUDA) ******" << std::endl;
+  // The CPU voxel-based static 3D back projection used as a reference for comparison
+  typedef rtk::BackProjectionImageFilter<VolumeType,VolumeType> StaticBackProjectionFilterType;
+  StaticBackProjectionFilterType::Pointer backprojection = StaticBackProjectionFilterType::New();
+  backprojection->SetInput(0, tomographySource->GetOutput());
+  backprojection->SetInput(1, pasteFilterStaticProjections->GetOutput());
+  backprojection->SetGeometry(geometry.GetPointer());
+  backprojection->Update();
+
+  // Divide the result by the number of volumes in the 4D sequence,
+  // for the attenuation results to approximately match
+  typedef itk::DivideImageFilter<VolumeType, VolumeType, VolumeType> DivideFilterType;
+  DivideFilterType::Pointer divide = DivideFilterType::New();
+  divide->SetInput1(backprojection->GetOutput());
+  divide->SetConstant2(fourDSize[3]);
+  divide->Update();
+
+  // Concatenate n times the 3D reconstruction with itself to compare the result with
+  // the 4D output of warpbackproject
+  for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
+    join->SetInput(n, divide->GetOutput());
+  join->Update();
 
   // Create and set the warped forward projection filter
-  typedef rtk::WarpForwardProjectSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType> WarpForwardProjectFilterType;
-  WarpForwardProjectFilterType::Pointer warpforwardproject = WarpForwardProjectFilterType::New();
-  warpforwardproject->SetInputVolumeSeries(join->GetOutput() );
-  warpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
-  warpforwardproject->SetGeometry(geometry);
-  warpforwardproject->SetDisplacementField(deformationField);
-  warpforwardproject->SetWeights(phaseReader->GetOutput());
-  warpforwardproject->SetSignalFilename("signal.txt");
+  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType> WarpProjectionStackToFourDType;
+  WarpProjectionStackToFourDType::Pointer warpbackproject = WarpProjectionStackToFourDType::New();
+  warpbackproject->SetInputVolumeSeries(fourdSource->GetOutput() );
+  warpbackproject->SetInputProjectionStack(pasteFilter->GetOutput());
+  warpbackproject->SetGeometry(geometry);
+  warpbackproject->SetDisplacementField(deformationField);
+  warpbackproject->SetWeights(phaseReader->GetOutput());
+  warpbackproject->SetSignal(rtk::ReadSignalFile("signal.txt"));
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpforwardproject->Update() );
-
-  CheckImageQuality<ProjectionStackType>(warpforwardproject->GetOutput(), pasteFilter->GetOutput(), 0.25, 14, 2.0);
+#ifndef RTK_USE_CUDA
+  std::cout << "\n\n****** Case 1: Non-warped voxel based back projection (warped back projection exists only in CUDA) ******" << std::endl;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackproject->Update() );
+  CheckImageQuality<VolumeSeriesType>(warpbackproject->GetOutput(), join->GetOutput(), 15, 33, 800.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 2: CUDA warped forward projection ******" << std::endl;
-
-  typedef rtk::WarpForwardProjectSequenceImageFilter<VolumeSeriesType, MVFSequenceImageType, VolumeType, MVFImageType> CudaWarpForwardProjectFilterType;
-  CudaWarpForwardProjectFilterType::Pointer cudawarpforwardproject = CudaWarpForwardProjectFilterType::New();
-  cudawarpforwardproject->SetInputVolumeSeries(join->GetOutput() );
-  cudawarpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
-  cudawarpforwardproject->SetGeometry(geometry);
-  cudawarpforwardproject->SetDisplacementField(deformationField);
-  cudawarpforwardproject->SetWeights(phaseReader->GetOutput());
-  cudawarpforwardproject->SetSignalFilename("signal.txt");
-
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cudawarpforwardproject->Update() );
-
-  CheckImageQuality<ProjectionStackType>(cudawarpforwardproject->GetOutput(), pasteFilterStaticProjections->GetOutput(), 0.25, 14, 2.0);
+  std::cout << "\n\n****** Case 2: CUDA warped back projection ******" << std::endl;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackproject->Update() );
+  CheckImageQuality<VolumeSeriesType>(warpbackproject->GetOutput(), join->GetOutput(), 15, 33, 800.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
   itksys::SystemTools::RemoveFile("signal.txt");
-  delete[] Volumes;
 
   return EXIT_SUCCESS;
 }

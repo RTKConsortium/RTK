@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef ORACUDAPARKERSHORTSCANIMAGEFILTER_HCU
-#define ORACUDAPARKERSHORTSCANIMAGEFILTER_HCU
+#ifndef __rtkCudaParkerShortScanImageFilter_hcu
+#define __rtkCudaParkerShortScanImageFilter_hcu
 
 void
 CUDA_parker_weight(
@@ -34,4 +34,4 @@ CUDA_parker_weight(
   float proj_row,
   float proj_col);
 
-#endif //ORACUDAPARKERSHORTSCANIMAGEFILTER_HCU
+#endif //__rtkCudaParkerShortScanImageFilter_hcu

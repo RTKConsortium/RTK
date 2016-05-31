@@ -33,108 +33,198 @@ LagCorrectionImageFilter<TImage, ModelOrder>::LagCorrectionImageFilter()
   m_A.Fill(0.0f);
   m_B.Fill(0.0f);
   m_ExpmA.Fill(0.0f);
-  m_BExpmA.Fill(0.0f);
-
   m_NewParamJustReceived = false;
-  m_StatusMatrixAllocated = false;
 }
 
 template<typename TImage, unsigned ModelOrder>
-void LagCorrectionImageFilter<TImage, ModelOrder>::BeforeThreadedGenerateData()
+void LagCorrectionImageFilter<TImage, ModelOrder>
+::GenerateOutputInformation()
 {
-  // Initialization
-  if (m_NewParamJustReceived) {
-    int i = 0;
-    typename VectorType::Iterator itB = m_B.Begin();
-    for (typename VectorType::Iterator itA = m_A.Begin(); itA != m_A.End(); ++itA, ++itB, ++i) {
-      float expma = expf(-*itA);
-      m_ExpmA[i] = expma;
-      m_BExpmA[i] = (*itB) * expma;
-    }
+  // get pointers to the input and output
+  typename TImage::Pointer  inputPtr = const_cast<TImage *>(this->GetInput());
+  typename TImage::Pointer outputPtr = this->GetOutput();
 
-    if (!m_StatusMatrixAllocated) {
-      ImageSizeType SizeInput = this->GetInput()->GetLargestPossibleRegion().GetSize();
-      m_M = SizeInput[0] * SizeInput[1];
-
-      VectorType v;
-      v.Fill(0.0f);
-      m_S = StateType::New();
-      m_S->SetRegions(this->GetInput()->GetLargestPossibleRegion());
-      m_S->Allocate();
-      m_S->FillBuffer(v);
-      m_StatusMatrixAllocated = true;
-    }
-
-    m_ImageId = 0;
-    m_NewParamJustReceived = false;
+  if (!outputPtr || !inputPtr) {
+    return;
   }
 
-  m_ThAvgCorr = 0.0f;
+  this->SetInPlace(false);
+
+  // Copy the meta data for this data type
+  outputPtr->SetSpacing(inputPtr->GetSpacing());
+  outputPtr->SetOrigin(inputPtr->GetOrigin());
+  outputPtr->SetDirection(inputPtr->GetDirection());
+  outputPtr->SetNumberOfComponentsPerPixel(inputPtr->GetNumberOfComponentsPerPixel());
+
+  typename TImage::RegionType outputLargestPossibleRegion;
+  outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
+
+  // Compute the X coordinates of the corners of the image (images offset incl. in origin?)
+  typename Superclass::InputImageType::SizeType size = inputPtr->GetLargestPossibleRegion().GetSize();
+  typename Superclass::InputImageType::SpacingType spacing = inputPtr->GetSpacing();
+  typename Superclass::InputImageType::PointType origin = inputPtr->GetOrigin();
+
+  outputPtr->SetOrigin(origin);
+  outputPtr->SetRegions(outputLargestPossibleRegion);
+  outputPtr->SetSpacing(inputPtr->GetSpacing());
+
+  // Initialization at first frame
+  if (m_NewParamJustReceived && (m_B[0] != 0.f))
+  {
+    m_SumB = 1.f;
+    for (unsigned int n = 0; n < ModelOrder; n++) {
+      m_ExpmA[n] = expf(-m_A[n]);
+      m_SumB += m_B[n];
+    }
+
+    m_StartIdx = this->GetInput()->GetLargestPossibleRegion().GetIndex();
+    ImageSizeType SizeInput = this->GetInput()->GetLargestPossibleRegion().GetSize();
+    m_S.assign(SizeInput[0] * SizeInput[1] * ModelOrder, 0.f);
+    m_NewParamJustReceived = false;
+  }
 }
 
 template<typename TImage, unsigned ModelOrder>
-void LagCorrectionImageFilter<TImage, ModelOrder>::AfterThreadedGenerateData()
+void LagCorrectionImageFilter<TImage, ModelOrder>
+::GenerateInputRequestedRegion()
 {
-  m_AvgCorrections.push_back(m_ThAvgCorr / (float)(this->GetNumberOfThreads() * m_M));
-  ++m_ImageId;
+  typename Superclass::InputImagePointer  inputPtr = const_cast< TImage * >(this->GetInput());
+  typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
+
+  if (!inputPtr || !outputPtr)
+    return;
+
+  typename TImage::RegionType inputRequestedRegion = outputPtr->GetRequestedRegion();
+  inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion());     // Because Largest region has been updated
+  inputPtr->SetRequestedRegion(inputRequestedRegion);
 }
 
 template<typename TImage, unsigned ModelOrder>
 void LagCorrectionImageFilter<TImage, ModelOrder>::
-  ThreadedGenerateData(const ImageRegionType & thRegion, ThreadIdType threadId)
+ThreadedGenerateData(const ImageRegionType & thRegion, itk::ThreadIdType threadId)
 {
-  typename TImage::Pointer  inputPtr = const_cast<TImage *>(this->GetInput());
-  typename TImage::Pointer outputPtr = this->GetOutput();
-
-  typename TImage::RegionType reg = thRegion;
-  typename TImage::IndexType start = thRegion.GetIndex();
-  start[2] = 0;
-  reg.SetIndex(start);
-
-  itk::ImageRegionConstIterator<TImage> itIn(inputPtr, reg);
-  itk::ImageRegionIterator<TImage>      itOut(outputPtr, reg);
-  itk::ImageRegionIterator<StateType>   itS(m_S, reg);
+  // Input / ouput iterators
+  itk::ImageRegionConstIterator<TImage> itIn(this->GetInput(), thRegion);
+  itk::ImageRegionIterator<TImage>     itOut(this->GetOutput(), thRegion);
 
   itIn.GoToBegin();
   itOut.GoToBegin();
-  itS.GoToBegin();
 
-  float meanc = 0.0f;      // Average correction over all projection
-  while (!itIn.IsAtEnd())
-  {
-    VectorType S = itS.Get();
-
-    // k is pixel id
-    float c = 0.0f;
-    for (unsigned int n = 0; n < ModelOrder; n++) {
-      c += m_BExpmA[n] * S[n];
+  if (m_B[0] == 0.f) {
+    while (!itIn.IsAtEnd())
+    {
+      itOut.Set(itIn.Get());
+      ++itIn;
+      ++itOut;
     }
-    meanc += c;
-
-    float xk = float(itIn.Get()) - c;
-    /*if (xk<0.0f) {
-      xk = 0.0f;
-      } else if (xk >= 65536) {
-      xk = 65535;
-      }*/
-    itOut.Set(static_cast<PixelType>(xk));
-
-    // Update internal state Snk
-    for (unsigned int n = 0; n < ModelOrder; n++) {
-      S[n] = xk + m_ExpmA[n] * S[n];
-    }
-    itS.Set(S);
-
-    ++itIn;
-    ++itOut;
-    ++itS;
+    return;
   }
 
-  m_Mutex.Lock();
-  m_ThAvgCorr += meanc;
-  m_Mutex.Unlock();
+  ImageSizeType SizeInput = this->GetInput()->GetLargestPossibleRegion().GetSize();
+
+  for (unsigned int k = 0; k < thRegion.GetSize(2); ++k)
+  {
+    unsigned int jj = (thRegion.GetIndex()[1] - m_StartIdx[1]) * SizeInput[0];
+    for (unsigned int j = 0; j < thRegion.GetSize(1); ++j)
+    {
+      unsigned int ii = thRegion.GetIndex()[0] - m_StartIdx[0];
+      for (unsigned int i = 0; i < thRegion.GetSize(0); ++i, ++ii)
+      {
+        unsigned idx_s = (jj + ii)*ModelOrder;
+
+        // Get measured pixel value y[k]
+        float yk = static_cast<float>(itIn.Get());
+
+        // Computes correction
+        float xk = yk;         // Initial corrected pixel
+        VectorType Sa;         // Update of the state
+        for (unsigned int n = 0; n < ModelOrder; n++)
+        {
+          // Compute the update of internal state for nth exponential
+          Sa[n] = m_ExpmA[n] * m_S[idx_s + n];
+
+          // Update x[k] by removing contribution of the nth exponential
+          xk -= m_B[n] * Sa[n];
+        }
+
+        // Apply normalization factor
+        xk = xk / m_SumB;
+
+        // Update internal state Snk
+        for (unsigned int n = 0; n < ModelOrder; n++) {
+          m_S[idx_s + n] = xk + Sa[n];
+        }
+
+        // Avoid negative values
+        xk = (xk < 0.0f) ? 0.f : xk;
+
+        itOut.Set(static_cast<PixelType>(xk));
+
+        ++itIn;
+        ++itOut;
+      }
+      jj += SizeInput[0];
+    }
+  }
 }
 
-} // end namespace
+template<typename TImage, unsigned ModelOrder>
+unsigned int LagCorrectionImageFilter<TImage, ModelOrder>
+::SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion)
+{
+  return SplitRequestedRegion((int)i, (int)num, splitRegion);
+}
+
+template<typename TImage, unsigned ModelOrder>
+int LagCorrectionImageFilter<TImage, ModelOrder>
+::SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion)
+{
+  // Split along the "second" direction
+
+  // Get the output pointer
+  TImage * outputPtr = this->GetOutput();
+  const typename TImage::SizeType& requestedRegionSize
+    = outputPtr->GetRequestedRegion().GetSize();
+
+  int splitAxis;
+  typename TImage::IndexType splitIndex;
+  typename TImage::SizeType splitSize;
+
+  // Initialize the splitRegion to the output requested region
+  splitRegion = outputPtr->GetRequestedRegion();
+  splitIndex = splitRegion.GetIndex();
+  splitSize = splitRegion.GetSize();
+
+  // split on the outermost dimension available
+  splitAxis = 1;
+  if (requestedRegionSize[splitAxis] == 1) {
+    splitAxis = 0;
+  }
+
+  // determine the actual number of pieces that will be generated
+  typename TImage::SizeType::SizeValueType range = requestedRegionSize[splitAxis];
+  int valuesPerThread = itk::Math::Ceil<int>(range / (double)num);
+  int maxThreadIdUsed = itk::Math::Ceil<int>(range / (double)valuesPerThread) - 1;
+
+  // Split the region
+  if (i < maxThreadIdUsed) {
+    splitIndex[splitAxis] += i*valuesPerThread;
+    splitSize[splitAxis] = valuesPerThread;
+  }
+  if (i == maxThreadIdUsed)
+  {
+    splitIndex[splitAxis] += i*valuesPerThread;
+    // last thread needs to process the "rest" dimension being split
+    splitSize[splitAxis] = splitSize[splitAxis] - i*valuesPerThread;
+  }
+
+  // set the split region ivars
+  splitRegion.SetIndex(splitIndex);
+  splitRegion.SetSize(splitSize);
+
+  return maxThreadIdUsed + 1;
+}
+
+}
 
 #endif
