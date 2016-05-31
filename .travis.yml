@@ -10,26 +10,36 @@ addons:
     - libfftw3-3
     - libfftw3-dev
 
-os:
-  - linux
-  - osx
-
-compiler:
-  - gcc
-  - clang
-
-env:
-  - ITK_VERSION=v4.2.0 CUDA=NONE
-  - ITK_VERSION=v4.10.0 CUDA=NONE
-  - ITK_VERSION=v4.2.0 CUDA=7.5-18
-  - ITK_VERSION=v4.10.0 CUDA=7.5-18
+matrix:
+  include:
+    - os: osx
+      compiler: clang
+      env: ITK_VERSION=v4.2.0 CUDA=NONE
+    - os: osx
+      compiler: clang
+      env: ITK_VERSION=v4.10.0 CUDA=NONE
+    - os: linux
+      compiler: gcc
+      env: ITK_VERSION=v4.2.0 CUDA=NONE
+    - os: linux
+      compiler: gcc
+      env: ITK_VERSION=v4.10.0 CUDA=NONE
+    - os: linux
+      compiler: gcc
+      env: ITK_VERSION=v4.2.0 CUDA=7.5-18
+    - os: linux
+      compiler: gcc
+      env: ITK_VERSION=v4.10.0 CUDA=7.5-18
 
 cache:
-  directories:
-  - /home/travis/itk-v4.2.0
-  - /home/travis/itk-v4.2.0-build
-  - /home/travis/itk-v4.10.0
-  - /home/travis/itk-v4.10.0-build
+  - apt
+  - directories:
+    - /home/travis/itk-v4.2.0
+    - /home/travis/itk-v4.2.0-osx-build
+    - /home/travis/itk-v4.2.0-linux-build
+    - /home/travis/itk-v4.10.0
+    - /home/travis/itk-v4.10.0-osx-build
+    - /home/travis/itk-v4.10.0-linux-build
 
 before_install:
   - if test "$CUDA" != NONE; then echo "Installing CUDA library"; fi
@@ -38,7 +48,7 @@ before_install:
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get update -qq; fi
   - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA%-*}; fi
   - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA_APT/./-}; fi
-  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT}; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT} cuda-cublas-${CUDA_APT}; fi
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get clean; fi
   - if test "$CUDA" != NONE; then export CUDA_HOME=/usr/local/cuda-${CUDA%%-*}; fi
   - if test "$CUDA" != NONE; then export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}; fi
@@ -47,7 +57,7 @@ before_install:
 before_script:
   - export NUM_THREADS=4
   - export ITK_SOURCE_DIR=/home/travis/itk-${ITK_VERSION}
-  - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-build
+  - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-${TRAVIS_OS_NAME}-build
   - if ! test -e ${ITK_SOURCE_DIR}/CMakeLists.txt; then rm -fr $ITK_SOURCE_DIR; fi
   - if ! test -d ${ITK_SOURCE_DIR}; then git clone --branch ${ITK_VERSION} git://itk.org/ITK.git ${ITK_SOURCE_DIR}; fi
   - if ! test -d ${ITK_BUILD_DIR}; then mkdir ${ITK_BUILD_DIR}; fi
