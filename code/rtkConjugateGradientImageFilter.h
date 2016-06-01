@@ -21,6 +21,7 @@
 
 #include "itkImageToImageFilter.h"
 #include "itkSubtractImageFilter.h"
+#include "itkStatisticsImageFilter.h"
 
 #include "rtkConjugateGradientGetR_kPlusOneImageFilter.h"
 #include "rtkConjugateGradientGetX_kPlusOneImageFilter.h"
@@ -50,6 +51,8 @@ public:
   typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                Superclass;
   typedef itk::SmartPointer< Self >                                                 Pointer;
   typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
+  typedef itk::MultiplyImageFilter<OutputImageType,OutputImageType,OutputImageType> MultiplyFilterType;
+  typedef itk::StatisticsImageFilter<OutputImageType>                               StatisticsImageFilterType;
   typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
   typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
   typedef typename OutputImageType::Pointer                                         OutputImagePointer;
@@ -66,6 +69,9 @@ public:
   /** Get and Set macro*/
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
+
+  itkGetMacro(IterationCosts, bool)
+  itkSetMacro(IterationCosts, bool)
   
 //  itkSetMacro(MeasureExecutionTimes, bool)
 //  itkGetMacro(MeasureExecutionTimes, bool)
@@ -78,6 +84,13 @@ public:
   /** The image called "B" in the CG algorithm.*/
   void SetB(const OutputImageType* OutputImage);
 
+  /** Set and Get the constant quantity BtWB for residual costs calculation */
+  void SetC(const double _arg);
+  const double GetC();
+
+  /** Setter and getter for ResidualCosts storing array **/
+  const std::vector<double> &GetResidualCosts();
+  
 protected:
   ConjugateGradientImageFilter();
   ~ConjugateGradientImageFilter(){}
@@ -90,16 +103,20 @@ protected:
 
   /** Conjugate gradient requires the whole image */
   void GenerateInputRequestedRegion();
+  void GenerateOutputInformation();
 
   ConjugateGradientOperatorPointerType m_A;
 
   int  m_NumberOfIterations;
+  bool m_IterationCosts;
+  std::vector<double> m_ResidualCosts;
+  double m_C;
+
+  void CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne);
 
 private:
   ConjugateGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
-
-
 //  bool m_MeasureExecutionTimes;
 };
 } //namespace RTK

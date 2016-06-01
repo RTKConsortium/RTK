@@ -299,7 +299,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
                 << region.GetIndex()[2]<<std::endl;
 
       reader->SetFileNames( fileNames );
-      reader->UpdateOutputInformation();
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
       subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
       subsetRegion.SetIndex(Dimension-1, geometry->GetMatrices().size()-2);
       subsetRegion.SetSize(Dimension-1, 1);
@@ -325,32 +325,32 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
 
       if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
         {
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() )
         OutputImageType::Pointer pimg = feldkampCPU->GetOutput();
         pimg->DisconnectPipeline();
         feldkampCPU->SetInput( pimg );
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() )
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->PropagateRequestedRegion() );
         }
 #ifdef RTK_USE_CUDA
       else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
         {
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() )
         OutputImageType::Pointer pimg = feldkampCUDA->GetOutput();
         pimg->DisconnectPipeline();
         feldkampCUDA->SetInput( pimg );
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->UpdateOutputInformation() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->UpdateOutputInformation() )
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
         }
 #endif
 #ifdef RTK_USE_OPENCL
       else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
         {
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() )
         CPUOutputImageType::Pointer pimg = feldkampOCL->GetOutput();
         pimg->DisconnectPipeline();
         feldkampOCL->SetInput( pimg );
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() )
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->PropagateRequestedRegion() );
         }
 #endif
@@ -365,32 +365,32 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         extract->SetExtractionRegion(subsetRegion);
         if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
           {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() )
           OutputImageType::Pointer pimg = feldkampCPU->GetOutput();
           pimg->DisconnectPipeline();
           feldkampCPU->SetInput( pimg );
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->UpdateOutputInformation() )
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->GetOutput()->PropagateRequestedRegion() );
           }
 #ifdef RTK_USE_CUDA
         else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
           {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() )
           OutputImageType::Pointer pimg = feldkampCUDA->GetOutput();
           pimg->DisconnectPipeline();
           feldkampCUDA->SetInput( pimg );
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->UpdateOutputInformation() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->UpdateOutputInformation() )
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
           }
 #endif
 #ifdef RTK_USE_OPENCL
         else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
           {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() )
           CPUOutputImageType::Pointer pimg = feldkampOCL->GetOutput();
           pimg->DisconnectPipeline();
           feldkampOCL->SetInput( pimg );
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() )
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->PropagateRequestedRegion() );
           }
 #endif
@@ -403,20 +403,20 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         extract->SetExtractionRegion(subsetRegion);
         if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
           {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCPU->Update() )
           writer->SetInput( feldkampCPU->GetOutput() );
           }
 #ifdef RTK_USE_CUDA
         else if(!strcmp(threadInfo->args_info->hardware_arg, "cuda") )
           {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() )
           writer->SetInput( feldkampCUDA->GetOutput() );
           }
 #endif
 #ifdef RTK_USE_OPENCL
         else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
           {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() );
+          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() )
           writer->SetInput( feldkampOCL->GetOutput() );
           }
 #endif
@@ -425,7 +425,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
                     << " has been processed in reconstruction." << std::endl;
 
         //Write to disk and exit
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+        TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
         exit(EXIT_SUCCESS);
         }
       }

@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtksubselect>(reader, args_info);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Geometry
   if(args_info.verbose_flag)

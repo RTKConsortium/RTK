@@ -79,7 +79,7 @@ int main(int argc, char * argv[])
       shroudFilter->SetGeometry( geometryReader->GetOutputObject() );
       }
     }
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->UpdateOutputInformation() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->UpdateOutputInformation() )
 
   // Write
   typedef itk::ImageFileWriter< ShroudFilterType::OutputImageType > WriterType;

@@ -55,12 +55,12 @@ namespace rtk
    */
 
   template< typename TImageSequence,
-            typename TMVFImageSequence = itk::Image< itk::CovariantVector < typename TImageSequence::ValueType,
+            typename TDVFImageSequence = itk::Image< itk::CovariantVector < typename TImageSequence::ValueType,
                                                                             TImageSequence::ImageDimension-1 >,
                                                      TImageSequence::ImageDimension >,
             typename TImage = itk::Image< typename TImageSequence::ValueType,
                                           TImageSequence::ImageDimension-1 >,
-            typename TMVFImage = itk::Image<itk::CovariantVector < typename TImageSequence::ValueType,
+            typename TDVFImage = itk::Image<itk::CovariantVector < typename TImageSequence::ValueType,
                                                                    TImageSequence::ImageDimension - 1 >,
                                             TImageSequence::ImageDimension - 1> >
 class UnwarpSequenceConjugateGradientOperator : public ConjugateGradientOperator< TImageSequence >
@@ -77,13 +77,13 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(rtkUnwarpSequenceConjugateGradientOperator, ConjugateGradientOperator)
 
-    typedef rtk::WarpSequenceImageFilter<TImageSequence, TMVFImageSequence, TImage, TMVFImage> WarpSequenceFilterType;
+    typedef rtk::WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage> WarpSequenceFilterType;
 
     /** Set the motion vector field used in input 1 */
-    void SetDisplacementField(const TMVFImageSequence* MVFs);
+    void SetDisplacementField(const TDVFImageSequence* DVFs);
 
     /** Get the motion vector field used in input 1 */
-    typename TMVFImageSequence::Pointer GetDisplacementField();
+    typename TDVFImageSequence::Pointer GetDisplacementField();
 
     /** Phase shift to simulate phase estimation errors */
     itkSetMacro(PhaseShift, float)

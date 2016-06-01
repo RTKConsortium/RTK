@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
   // Read
   itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
   reader->SetFileName(args_info.input_arg);
-  reader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Read signal file
   typedef itk::CSVArray2DFileReader<double> ReaderType;
@@ -52,7 +52,7 @@ int main(int argc, char * argv[])
   signalReader->SetFieldDelimiterCharacter( ';' );
   signalReader->HasRowHeadersOff();
   signalReader->HasColumnHeadersOff();
-  signalReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( signalReader->Update() )
   std::vector<double> signal = signalReader->GetArray2DDataObject()->GetColumn(0);
 
   // Locate the minima in the signal
@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(RGBout);
-  writer->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

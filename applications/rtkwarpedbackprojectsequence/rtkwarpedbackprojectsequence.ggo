@@ -1,0 +1,15 @@
+package "rtkwarpedbackprojectsequence"
+purpose "Backprojects a set of projections into a 4D volume, based on a respiratory/cardiac signal, and taking an a priori motion into account"
+
+option "verbose"     v "Verbose execution"                                     flag   off
+option "config"      - "Config file"                                           string no
+option "geometry"    g "XML geometry file name"                                string yes
+option "input"       i "Input volume"                                          string no
+option "output"      o "Output file name"                                      string yes
+option "time"        t "Records elapsed time during the process"               flag   off
+
+section "Phase gating"
+option "signal"    - "File containing the phase of each projection"              string                       yes
+
+section "Motion compensation"
+option "dvf"       - "Input 4D DVF"                       string    no

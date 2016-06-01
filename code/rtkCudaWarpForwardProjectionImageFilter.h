@@ -22,11 +22,7 @@
 #include "rtkForwardProjectionImageFilter.h"
 #include "itkCudaInPlaceImageFilter.h"
 #include "itkCudaUtil.h"
-//#include "itkCudaKernelManager.h"
 #include "rtkWin32Header.h"
-
-//#include <itkCudaImage.h>
-//#include "itkCovariantVector.h"
 
 /** \class CudaWarpForwardProjectionImageFilter
  * \brief Trilinear interpolation forward projection in warped volume implemented in CUDA
@@ -44,7 +40,7 @@
 namespace rtk
 {
 
-class ITK_EXPORT CudaWarpForwardProjectionImageFilter :
+class rtkcuda_EXPORT CudaWarpForwardProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   ForwardProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
@@ -67,15 +63,15 @@ public:
 
   /** Input projection stack */
   void SetInputProjectionStack(const InputImageType* ProjectionStack);
-  typename InputImageType::Pointer GetInputProjectionStack();
+  InputImageType::Pointer GetInputProjectionStack();
   
   /** Input displacement vector field */
   void SetInputVolume(const InputImageType* Volume);
-  typename InputImageType::Pointer GetInputVolume();
+  InputImageType::Pointer GetInputVolume();
   
   /** Input displacement vector field */
-  void SetDisplacementField(const DVFType* MVF);
-  typename DVFType::Pointer GetDisplacementField();
+  void SetDisplacementField(const DVFType* DVF);
+  DVFType::Pointer GetDisplacementField();
 
 protected:
   CudaWarpForwardProjectionImageFilter();

@@ -46,7 +46,19 @@ int main(int argc, char * argv[])
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkramp>(reader, args_info);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
+  itk::TimeProbe readerProbe;
+  if(!args_info.lowmem_flag)
+    {
+    if(args_info.verbose_flag)
+      std::cout << "Reading... " << std::flush;
+    readerProbe.Start();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
+    readerProbe.Stop();
+    if(args_info.verbose_flag)
+      std::cout << "It took " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+    }
+  else
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
   // Ramp filter
 #ifdef RTK_USE_CUDA
@@ -102,7 +114,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( streamer->GetOutput() );
-  writer->UpdateOutputInformation();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 

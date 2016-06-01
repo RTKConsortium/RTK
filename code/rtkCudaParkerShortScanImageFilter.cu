@@ -127,8 +127,11 @@ CUDA_parker_weight(
   // copy geometry matrix to device, bind the matrix to the texture
   float *dev_geom;
   cudaMalloc((void**)&dev_geom, proj_dim[2]*5*sizeof(float));
+  CUDA_CHECK_ERROR;
   cudaMemcpy(dev_geom, geometries, proj_dim[2]*5*sizeof(float), cudaMemcpyHostToDevice);
+  CUDA_CHECK_ERROR;
   cudaBindTexture(0, tex_geometry, dev_geom, proj_dim[2]*5*sizeof(float));
+  CUDA_CHECK_ERROR;
 
   // Thread Block Dimensions
   int tBlock_x = 16;
@@ -157,6 +160,7 @@ CUDA_parker_weight(
 
   // Unbind matrix texture
   cudaUnbindTexture(tex_geometry);
+  CUDA_CHECK_ERROR;
   cudaFree(dev_geom);
   CUDA_CHECK_ERROR;
 }

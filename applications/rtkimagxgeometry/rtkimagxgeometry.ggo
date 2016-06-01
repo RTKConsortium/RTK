@@ -2,11 +2,12 @@ package "rtkimagxgeometry"
 purpose "Creates an RTK geometry file from an iMagX  acquisition."
 
 option "config"      - "Config file"                       string no
-option "calibration" c "iMagX Calibration file"            string yes
-option "room_setup"  s "iMagX room setup file"             string yes
+option "calibration" c "iMagX Calibration file"            string no
+option "room_setup"  s "iMagX room setup file"             string no
 option "offset"      d "Detector offset for LFOV"          float  no  default="0"
 option "output"      o "Output file name"                  string yes
 option "verbose"     v "Verbose execution"                 flag   off
+option "dicomcalibration"  - "Reads calibration and room setup parameters in the DICOM info of the first projection instead of the calibration and room setup files"  flag     off
 
 section "Projections"
 option "path"      p "Path containing projections"                               string                       yes

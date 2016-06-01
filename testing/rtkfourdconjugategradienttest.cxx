@@ -8,7 +8,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkFieldOfViewImageFilter.h"
-#include "rtkCyclicDeformationImageFilter.h"
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
 
@@ -261,6 +260,11 @@ int main(int, char** )
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
+  // Create a uniform weights map
+  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
+  uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
+  uniformWeightsSource->SetConstant(1.0);
+
   // Set the forward and back projection filters to be used
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
@@ -269,6 +273,8 @@ int main(int, char** )
   conjugategradient->SetGeometry(geometry);
   conjugategradient->SetNumberOfIterations(3);
   conjugategradient->SetWeights(phaseReader->GetOutput());
+  conjugategradient->SetInputProjectionWeights(uniformWeightsSource->GetOutput());
+  conjugategradient->SetSignal(rtk::ReadSignalFile("signal.txt"));
 
   std::cout << "\n\n****** Case 1: Joseph forward projector, Voxel-Based back projector, CPU interpolation and splat ******" << std::endl;
 

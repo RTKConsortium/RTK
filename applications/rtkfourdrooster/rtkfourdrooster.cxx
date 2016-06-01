@@ -22,6 +22,7 @@
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -92,23 +93,54 @@ int main(int argc, char * argv[])
 
     inputFilter = constantImageSource;
     }
-  inputFilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
+
+  // Read weights if given, otherwise default to weights all equal to one
+  itk::ImageSource< ProjectionStackType >::Pointer weightsSource;
+  if(args_info.weights_given)
+    {
+    typedef itk::ImageFileReader<  ProjectionStackType > WeightsReaderType;
+    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+    weightsReader->SetFileName( args_info.weights_arg );
+    weightsSource = weightsReader;
+    }
+  else
+    {
+    typedef rtk::ConstantImageSource< ProjectionStackType > ConstantWeightsSourceType;
+    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
+
+    // Set the weights to be like the projections
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
+    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
+    constantWeightsSource->SetConstant(1.0);
+    weightsSource = constantWeightsSource;
+    }
+
+  // Apply the displaced detector weighting now, then re-order the projection weights
+  // containing everything
+  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType> DisplacedDetectorFilterType;
+  DisplacedDetectorFilterType::Pointer displaced = DisplacedDetectorFilterType::New();
+  displaced->SetInput(weightsSource->GetOutput());
+  displaced->SetGeometry(geometryReader->GetOutputObject());
+  displaced->SetPadOnTruncatedSide(false);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( displaced->Update() )
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  phaseReader->Update();
-  
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
   
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
   rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   rooster->SetInputProjectionStack(reader->GetOutput());
+  rooster->SetInputProjectionWeights(displaced->GetOutput());
   rooster->SetGeometry( geometryReader->GetOutputObject() );
   rooster->SetWeights(phaseReader->GetOutput());
+  rooster->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );
   rooster->SetPhaseShift(args_info.shift_arg);
@@ -133,7 +165,7 @@ int main(int argc, char * argv[])
     {
     InputReaderType::Pointer motionMaskReader = InputReaderType::New();
     motionMaskReader->SetFileName( args_info.motionmask_arg );
-    motionMaskReader->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( motionMaskReader->Update() )
     rooster->SetMotionMask(motionMaskReader->GetOutput());
     rooster->SetPerformMotionMask(true);
     }
@@ -191,7 +223,7 @@ int main(int argc, char * argv[])
     // Read DVF
     DVFReaderType::Pointer dvfReader = DVFReaderType::New();
     dvfReader->SetFileName( args_info.dvf_arg );
-    dvfReader->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( dvfReader->Update() )
     rooster->SetDisplacementField(dvfReader->GetOutput());
 
     if (args_info.idvf_given)
@@ -201,7 +233,7 @@ int main(int argc, char * argv[])
       // Read inverse DVF if provided
       DVFReaderType::Pointer idvfReader = DVFReaderType::New();
       idvfReader->SetFileName( args_info.idvf_arg );
-      idvfReader->Update();
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( idvfReader->Update() )
       rooster->SetInverseDisplacementField(idvfReader->GetOutput());
       }
     }
@@ -213,7 +245,7 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
 
   if(args_info.time_flag)
     {
@@ -227,7 +259,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( rooster->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

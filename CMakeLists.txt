@@ -108,6 +108,7 @@ IF(RTK_USE_CUDA)
     FIND_PACKAGE(CUDA_wrap REQUIRED)
   ENDIF()
   INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
+  SET(RTK_CUDA_PROJECTIONS_SLAB_SIZE "16" CACHE STRING "Number of projections processed simultaneously in CUDA forward and back projections")
 ENDIF()
 #=========================================================
 

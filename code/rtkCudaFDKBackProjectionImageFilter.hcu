@@ -20,13 +20,12 @@
 #define __rtkCudaFDKBackProjectionImageFilter_hcu
 
 void
-CUDA_reconstruct_conebeam (
-  int img_dim[2],
-  int vol_dim[3],
-  float matrix[12],
-  float *dev_vol_in,
-  float *dev_vol_out,
-  float *dev_img
-  );
+CUDA_reconstruct_conebeam(int img_dim[3],
+                          int vol_dim[3],
+                          float* matrices,
+                          float *dev_vol_in,
+                          float *dev_vol_out,
+                          float *dev_img
+                          );
 
 #endif

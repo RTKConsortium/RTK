@@ -32,6 +32,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
+  m_IterationCosts=false;
   m_Preconditioned=false;
   m_Gamma = 0;
   m_Regularized = false;
@@ -58,6 +59,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ConstantProjectionsSource->SetConstant(1.0);
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+}
+
+template< typename TOutputImage>
+const std::vector<double> &ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
+::GetResidualCosts()
+{
+  return m_ConjugateGradientFilter->GetResidualCosts();
 }
 
 template< typename TOutputImage>
@@ -129,7 +137,8 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
-
+  m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
+  
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1));
@@ -156,7 +165,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_BackProjectionFilterForNormalization->SetInput(0, m_ConstantVolumeSource->GetOutput());
     m_BackProjectionFilterForNormalization->SetInput(1, m_ConstantProjectionsSource->GetOutput());
     m_BackProjectionFilterForPreconditioning->SetInput(0, m_ConstantVolumeSource->GetOutput());
-    m_BackProjectionFilterForPreconditioning->SetInput(1, this->GetInput(2));
+    m_BackProjectionFilterForPreconditioning->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   
     m_DivideFilter->SetInput1(m_BackProjectionFilterForNormalization->GetOutput());
     m_DivideFilter->SetInput2(m_BackProjectionFilterForPreconditioning->GetOutput());
@@ -211,6 +220,20 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateData()
 {
   itk::TimeProbe ConjugateGradientTimeProbe;
+  typename StatisticsImageFilterType::Pointer StatisticsImageFilterForC = StatisticsImageFilterType::New();
+  typename MultiplyFilterType::Pointer MultiplyFilterForC = MultiplyFilterType::New();
+
+  if (m_IterationCosts)
+  {
+      MultiplyFilterForC->SetInput(0,this->GetInput(1));
+      MultiplyFilterForC->SetInput(1,this->GetInput(2));
+      MultiplyFilterForC->Update();
+      MultiplyFilterForC->SetInput(1,MultiplyFilterForC->GetOutput());
+      MultiplyFilterForC->Update();
+      StatisticsImageFilterForC->SetInput(MultiplyFilterForC->GetOutput());
+      StatisticsImageFilterForC->Update();
+      m_ConjugateGradientFilter->SetC(0.5*StatisticsImageFilterForC->GetSum());
+  }
 
   if(m_MeasureExecutionTimes)
     {

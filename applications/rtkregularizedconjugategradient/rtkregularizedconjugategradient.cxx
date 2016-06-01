@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkregularizedconjugategradient>(constantImageSource, args_info);
     inputFilter = constantImageSource;
     }
-  inputFilter->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
 
   // Read weights if given, otherwise default to weights all equal to one
@@ -92,7 +92,7 @@ int main(int argc, char * argv[])
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
 
     // Set the weights to be like the projections
-    reader->UpdateOutputInformation();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
     constantWeightsSource->SetInformationFromImage(reader->GetOutput());
     constantWeightsSource->SetConstant(1.0);
     weightsSource = constantWeightsSource;
@@ -153,7 +153,7 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() )
 
   if(args_info.time_flag)
     {
@@ -167,7 +167,7 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( regularizedConjugateGradient->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
 }

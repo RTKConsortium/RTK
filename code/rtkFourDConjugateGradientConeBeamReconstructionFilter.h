@@ -28,6 +28,7 @@
 
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 #include <itkTimeProbe.h>
 #ifdef RTK_USE_CUDA
   #include "rtkCudaConjugateGradientImageFilter_4f.h"
@@ -110,6 +111,7 @@ public:
   typedef rtk::ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
   typedef rtk::FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
   typedef rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
+  typedef itk::MultiplyImageFilter<ProjectionStackType>                                             MultiplyFilterType;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -135,9 +137,13 @@ public:
   void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
   typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
 
-  /** Set/Get the stack of projections  */
-  void SetInputProjectionStack(const VolumeType* Projection);
-  typename VolumeType::ConstPointer GetInputProjectionStack();
+  /** Set/Get the stack of projections */
+  void SetInputProjectionStack(const ProjectionStackType* Projections);
+  typename ProjectionStackType::ConstPointer GetInputProjectionStack();
+
+  /** Set/Get the projection weights */
+  void SetInputProjectionWeights(const VolumeType* ProjectionWeights);
+  typename ProjectionStackType::ConstPointer GetInputProjectionWeights();
 
   /** Pass the ForwardProjection filter to the conjugate gradient operator */
   void SetForwardProjectionFilter (int _arg);
@@ -147,6 +153,9 @@ public:
 
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);
+
+  /** Store the phase signal in a member variable */
+  virtual void SetSignal(const std::vector<double> signal);
 
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
@@ -169,8 +178,10 @@ protected:
   typename ConjugateGradientFilterType::Pointer     m_ConjugateGradientFilter;
   typename CGOperatorFilterType::Pointer            m_CGOperator;
   typename ProjStackToFourDFilterType::Pointer      m_ProjStackToFourDFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyFilter;
 
-  bool m_CudaConjugateGradient;
+  bool                    m_CudaConjugateGradient;
+  std::vector<double>     m_Signal;
 
 private:
   //purposely not implemented

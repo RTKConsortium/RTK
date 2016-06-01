@@ -20,7 +20,8 @@
 #define __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 
 #include <itkNumericTraits.h>
-#include <itkAddImageFilter.h>
+#include <itkSubtractImageFilter.h>
+#include <itkLogImageFilter.h>
 #include <itkThresholdImageFilter.h>
 
 #include "rtkLookupTableImageFilter.h"
@@ -40,21 +41,31 @@ namespace rtk
  *
  * The lookup table is obtained using the following mini-pipeline:
  *
+ * \dot
  * digraph LookupTable {
  *
- *  Input2 [label="-ln(max(1,index))"]
- *  Input [label="ln(max(1,m_I0))"]
+ *  Input1 [label="index"]
+ *  Input2 [label="ln(max(1,m_I0-m_IDark))"]
+ *  Input3 [label="m_IDark"]
  *  Output [label="LookupTable", shape=Mdiamond];
  *
  *  node [shape=box];
- *  Add [label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
- *  Thres [label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
+ *  SubR [label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"]
+ *  ThresR [label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
+ *  Log [label="itk::LogImageFilter" URL="\ref itk::LogImageFilter"]
+ *  Sub [label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  *
- *  Input2 -> Add
- *  Input -> Add
- *  Add -> Thres
- *  Thres -> Output
+ *  Input1 -> SubR
+ *  Input3 -> SubR
+ *  SubR -> ThresR
+ *  ThresR -> Log
+ *
+ *
+ *  Log -> Sub
+ *  Input2 -> Sub
+ *  Sub -> Output
  * }
+ * \enddot
  *
  * \test rtklutbasedrawtoattenuationtest.cxx
  *
@@ -74,11 +85,12 @@ public:
   typedef itk::SmartPointer< Self >                               Pointer;
   typedef itk::SmartPointer< const Self >                         ConstPointer;
 
-  typedef typename TInputImage::PixelType                     InputImagePixelType;
-  typedef typename TOutputImage::PixelType                    OutputImagePixelType;
-  typedef typename Superclass::FunctorType::LookupTableType   LookupTableType;
-  typedef typename itk::AddImageFilter<LookupTableType>       AddLUTFilterType;
-  typedef typename itk::ThresholdImageFilter<LookupTableType> ThresholdLUTFilterType;
+  typedef typename TInputImage::PixelType                                InputImagePixelType;
+  typedef typename TOutputImage::PixelType                               OutputImagePixelType;
+  typedef typename Superclass::FunctorType::LookupTableType              LookupTableType;
+  typedef typename itk::SubtractImageFilter<LookupTableType>             SubtractLUTFilterType;
+  typedef typename itk::ThresholdImageFilter<LookupTableType>            ThresholdLUTFilterType;
+  typedef typename itk::LogImageFilter<LookupTableType, LookupTableType> LogLUTFilterType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -91,6 +103,11 @@ public:
   itkGetMacro(I0, double);
   itkSetMacro(I0, double);
 
+  /** Intensity when there is no photons (beam off)
+    */
+  itkGetMacro(IDark, double);
+  itkSetMacro(IDark, double);
+
   virtual void BeforeThreadedGenerateData();
 
 protected:
@@ -102,8 +119,11 @@ private:
   void operator=(const Self &);                                //purposely not implemented
 
   double                                   m_I0;
-  typename AddLUTFilterType::Pointer       m_AddLUTFilter;
-  typename ThresholdLUTFilterType::Pointer m_ThresholdLUTFilter;
+  double                                   m_IDark;
+  typename SubtractLUTFilterType::Pointer  m_SubtractRampFilter;
+  typename ThresholdLUTFilterType::Pointer m_ThresholdRampFilter;
+  typename LogLUTFilterType::Pointer       m_LogRampFilter;
+  typename SubtractLUTFilterType::Pointer  m_SubtractLUTFilter;
 };
 } // end namespace rtk
 

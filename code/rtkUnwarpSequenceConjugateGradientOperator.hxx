@@ -24,8 +24,8 @@
 namespace rtk
 {
 
-template< typename TImageSequence, typename TMVFImageSequence, typename TImage, typename TMVFImage>
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
+template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 ::UnwarpSequenceConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
@@ -48,26 +48,26 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TIma
   m_WarpSequenceBackwardFilter->ReleaseDataFlagOn();
 }
 
-template< typename TImageSequence, typename TMVFImageSequence, typename TImage, typename TMVFImage>
+template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
-::SetDisplacementField(const TMVFImageSequence* MVFs)
+UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
+::SetDisplacementField(const TDVFImageSequence* DVFs)
 {
-  this->SetNthInput(1, const_cast<TMVFImageSequence*>(MVFs));
+  this->SetNthInput(1, const_cast<TDVFImageSequence*>(DVFs));
 }
 
-template< typename TImageSequence, typename TMVFImageSequence, typename TImage, typename TMVFImage>
-typename TMVFImageSequence::Pointer
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
+template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+typename TDVFImageSequence::Pointer
+UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 ::GetDisplacementField()
 {
-  return static_cast< TMVFImageSequence * >
+  return static_cast< TDVFImageSequence * >
           ( this->itk::ProcessObject::GetInput(1) );
 }
 
-template< typename TImageSequence, typename TMVFImageSequence, typename TImage, typename TMVFImage>
+template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
+UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 ::GenerateInputRequestedRegion()
 {
   //Call the superclass' implementation of this method
@@ -77,13 +77,13 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TIma
   typename TImageSequence::Pointer  inputPtr  = const_cast<TImageSequence *>(this->GetInput(0));
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 
-  typename TMVFImageSequence::Pointer  inputMVFPtr  = this->GetDisplacementField();
-  inputMVFPtr->SetRequestedRegionToLargestPossibleRegion();
+  typename TDVFImageSequence::Pointer  inputDVFPtr  = this->GetDisplacementField();
+  inputDVFPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
-template< typename TImageSequence, typename TMVFImageSequence, typename TImage, typename TMVFImage>
+template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
+UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections, and connections with
@@ -106,9 +106,9 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TIma
   this->GetOutput()->CopyInformation( m_WarpSequenceForwardFilter->GetOutput() );
 }
 
-template< typename TImageSequence, typename TMVFImageSequence, typename TImage, typename TMVFImage>
+template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void 
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TMVFImageSequence, TImage, TMVFImage>
+UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 ::GenerateData()
 {
   // Execute Pipeline

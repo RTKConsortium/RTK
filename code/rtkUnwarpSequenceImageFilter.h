@@ -53,7 +53,7 @@ namespace rtk
    * ConstantSource [label="rtk::ConstantImageSource (4D volume sequence)" URL="\ref rtk::WarpSequenceImageFilter"];
    * WarpSequenceForward [label="rtk::WarpSequenceImageFilter (forward mapping)" URL="\ref rtk::WarpSequenceImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
-   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for MVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
+   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
    * 
    * Input0 -> WarpSequenceForward;
    * Input1 -> CyclicDeformation;
@@ -72,12 +72,12 @@ namespace rtk
    */
 
   template< typename TImageSequence,
-            typename TMVFImageSequence = itk::Image< itk::CovariantVector < typename TImageSequence::ValueType,
+            typename TDVFImageSequence = itk::Image< itk::CovariantVector < typename TImageSequence::ValueType,
                                                                             TImageSequence::ImageDimension-1 >,
                                                      TImageSequence::ImageDimension >,
             typename TImage = itk::Image< typename TImageSequence::ValueType,
                                           TImageSequence::ImageDimension-1 >,
-            typename TMVFImage = itk::Image<itk::CovariantVector < typename TImageSequence::ValueType,
+            typename TDVFImage = itk::Image<itk::CovariantVector < typename TImageSequence::ValueType,
                                                                    TImageSequence::ImageDimension - 1 >,
                                             TImageSequence::ImageDimension - 1> >
 class UnwarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
@@ -95,22 +95,22 @@ public:
     itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter)
 
     typedef rtk::UnwarpSequenceConjugateGradientOperator<TImageSequence,
-                                                         TMVFImageSequence,
+                                                         TDVFImageSequence,
                                                          TImage,
-                                                         TMVFImage>           CGOperatorFilterType;
+                                                         TDVFImage>           CGOperatorFilterType;
     typedef rtk::WarpSequenceImageFilter< TImageSequence,
-                                          TMVFImageSequence,
+                                          TDVFImageSequence,
                                           TImage,
-                                          TMVFImage>                          WarpForwardFilterType;
+                                          TDVFImage>                          WarpForwardFilterType;
     typedef rtk::ConjugateGradientImageFilter<TImageSequence>                 ConjugateGradientFilterType;
-//     typedef rtk::CyclicDeformationImageFilter<TMVFImage>                      MVFInterpolatorType;
+//     typedef rtk::CyclicDeformationImageFilter<TDVFImage>                      DVFInterpolatorType;
     typedef rtk::ConstantImageSource<TImageSequence>                          ConstantSourceType;
 
     /** Set the motion vector field used in input 1 */
-    void SetDisplacementField(const TMVFImageSequence* MVFs);
+    void SetDisplacementField(const TDVFImageSequence* DVFs);
 
     /** Get the motion vector field used in input 1 */
-    typename TMVFImageSequence::Pointer GetDisplacementField();
+    typename TDVFImageSequence::Pointer GetDisplacementField();
 
     /** Number of conjugate gradient iterations */
     itkSetMacro(NumberOfIterations, float)
@@ -137,7 +137,7 @@ protected:
     typename ConjugateGradientFilterType::Pointer                   m_ConjugateGradientFilter;
     typename CGOperatorFilterType::Pointer                          m_CGOperator;
     typename WarpForwardFilterType::Pointer                         m_WarpForwardFilter;
-//     typename MVFInterpolatorType::Pointer                           m_MVFInterpolator;
+//     typename DVFInterpolatorType::Pointer                           m_DVFInterpolator;
     typename ConstantSourceType::Pointer                            m_ConstantSource;
 
     /** Member variables */

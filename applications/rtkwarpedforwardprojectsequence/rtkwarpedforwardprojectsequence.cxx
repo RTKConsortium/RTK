@@ -18,9 +18,11 @@
 
 #include "rtkwarpedforwardprojectsequence_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkWarpForwardProjectSequenceImageFilter.h"
+//#include "rtkWarpForwardProjectSequenceImageFilter.h"
+#include "rtkWarpFourDToProjectionStackImageFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
 
 #include <itkImageFileReader.h>
@@ -52,13 +54,13 @@ int main(int argc, char * argv[])
   typedef rtk::ConstantImageSource< ProjectionStackType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkwarpedforwardprojectsequence>(constantImageSource, args_info);
-  constantImageSource->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantImageSource->Update() )
 
   // Read the input volume sequence
   typedef itk::ImageFileReader<  VolumeSeriesType > volumeSeriesReaderType;
   volumeSeriesReaderType::Pointer volumeSeriesReader = volumeSeriesReaderType::New();
   volumeSeriesReader->SetFileName( args_info.input_arg );
-  volumeSeriesReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( volumeSeriesReader->Update() )
 
   // Geometry
   if(args_info.verbose_flag)
@@ -75,18 +77,18 @@ int main(int argc, char * argv[])
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(volumeSeriesReader->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  phaseReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
   
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   dvfReader->SetFileName( args_info.dvf_arg );
-  dvfReader->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dvfReader->Update() )
 
   if(args_info.verbose_flag)
     std::cout << "Projecting volume sequence..." << std::flush;
   itk::TimeProbe projProbe;
 
-  typedef rtk::WarpForwardProjectSequenceImageFilter< VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType> WarpForwardProjectType;
+  typedef rtk::WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType> WarpForwardProjectType;
   WarpForwardProjectType::Pointer forwardProjection = WarpForwardProjectType::New();
 
   forwardProjection->SetInputProjectionStack( constantImageSource->GetOutput() );
@@ -94,11 +96,11 @@ int main(int argc, char * argv[])
   forwardProjection->SetDisplacementField( dvfReader->GetOutput() );
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   forwardProjection->SetWeights(phaseReader->GetOutput());
-  forwardProjection->SetSignalFilename(args_info.signal_arg);
+  forwardProjection->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
 
   projProbe.Start();
   
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() )
 
   projProbe.Stop();
   if(args_info.verbose_flag)
@@ -115,7 +117,7 @@ int main(int argc, char * argv[])
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( forwardProjection->GetOutput() );
   writeProbe.Start();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
   writeProbe.Stop();
   if(args_info.verbose_flag)
     std::cout << " done in "

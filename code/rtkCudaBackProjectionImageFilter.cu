@@ -40,9 +40,13 @@
 #include <cuda.h>
 
 // T E X T U R E S ////////////////////////////////////////////////////////
-texture<float, 2, cudaReadModeElementType> tex_img;
-texture<float, 1, cudaReadModeElementType> tex_matrix;
-///////////////////////////////////////////////////////////////////////////
+texture<float, cudaTextureType2DLayered> tex_proj;
+texture<float, 3, cudaReadModeElementType> tex_proj_3D;
+
+// Constant memory
+__constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
+__constant__ int3 c_projSize;
+__constant__ int3 c_vol_size;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -50,7 +54,7 @@ texture<float, 1, cudaReadModeElementType> tex_matrix;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__
-void kernel(float *dev_vol_in, float *dev_vol_out, int3 vol_dim, unsigned int Blocks_Y)
+void kernel(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y)
 {
   // CUDA 2.0 does not allow for a 3D grid, which severely
   // limits the manipulation of large 3D arrays of data.  The
@@ -62,112 +66,69 @@ void kernel(float *dev_vol_in, float *dev_vol_out, int3 vol_dim, unsigned int Bl
   unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
   unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
-  if (i >= vol_dim.x || j >= vol_dim.y || k >= vol_dim.z)
+  if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
     {
     return;
     }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k*vol_dim.y)*(vol_dim.x);
+  long int vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
 
   float3 ip;
-  float  voxel_data;
+  float  voxel_data = 0;
 
-  // matrix multiply
-  ip.x = tex1Dfetch(tex_matrix, 0)*i + tex1Dfetch(tex_matrix, 1)*j +
-         tex1Dfetch(tex_matrix, 2)*k + tex1Dfetch(tex_matrix, 3);
-  ip.y = tex1Dfetch(tex_matrix, 4)*i + tex1Dfetch(tex_matrix, 5)*j +
-         tex1Dfetch(tex_matrix, 6)*k + tex1Dfetch(tex_matrix, 7);
-  ip.z = tex1Dfetch(tex_matrix, 8)*i + tex1Dfetch(tex_matrix, 9)*j +
-         tex1Dfetch(tex_matrix, 10)*k + tex1Dfetch(tex_matrix, 11);
+  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
+    {
+    // matrix multiply
+    ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
 
-  // Change coordinate systems
-  ip.z = 1 / ip.z;
-  ip.x = ip.x * ip.z;
-  ip.y = ip.y * ip.z;
+    // Change coordinate systems
+    ip.z = 1 / ip.z;
+    ip.x = ip.x * ip.z;
+    ip.y = ip.y * ip.z;
 
-  // Get texture point, clip left to GPU
-  voxel_data = tex2D(tex_img, ip.x, ip.y);
+    // Get texture point, clip left to GPU
+    voxel_data += tex3D(tex_proj_3D, ip.x, ip.y, proj + 0.5);
+    }
 
   // Place it into the volume
   dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
 }
 
 __global__
-void kernel_3Dgrid(float *dev_vol_in, float * dev_vol_out, int3 vol_dim)
+void kernel_3Dgrid(float *dev_vol_in, float * dev_vol_out)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
   unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
-  if (i >= vol_dim.x || j >= vol_dim.y || k >= vol_dim.z)
+  if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
     {
     return;
     }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k*vol_dim.y)*(vol_dim.x);
+  long int vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
 
   float3 ip;
-  float  voxel_data;
+  float  voxel_data = 0;
 
-  // matrix multiply
-  ip.x = tex1Dfetch(tex_matrix, 0)*i + tex1Dfetch(tex_matrix, 1)*j +
-         tex1Dfetch(tex_matrix, 2)*k + tex1Dfetch(tex_matrix, 3);
-  ip.y = tex1Dfetch(tex_matrix, 4)*i + tex1Dfetch(tex_matrix, 5)*j +
-         tex1Dfetch(tex_matrix, 6)*k + tex1Dfetch(tex_matrix, 7);
-  ip.z = tex1Dfetch(tex_matrix, 8)*i + tex1Dfetch(tex_matrix, 9)*j +
-         tex1Dfetch(tex_matrix, 10)*k + tex1Dfetch(tex_matrix, 11);
+  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
+    {
+    // matrix multiply
+    ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
 
-  // Change coordinate systems
-  ip.z = 1 / ip.z;
-  ip.x = ip.x * ip.z;
-  ip.y = ip.y * ip.z;
+    // Change coordinate systems
+    ip.z = 1 / ip.z;
+    ip.x = ip.x * ip.z;
+    ip.y = ip.y * ip.z;
 
-  // Get texture point, clip left to GPU
-  voxel_data = tex2D(tex_img, ip.x, ip.y);
+    // Get texture point, clip left to GPU, and accumulate in voxel_data
+    voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj);
+    }
 
   // Place it into the volume
   dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
-}
-
-__global__
-void kernel_optim(float *dev_vol_in, float *dev_vol_out, int3 vol_dim)
-{
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = 0;
-  unsigned int k = blockIdx.y * blockDim.y + threadIdx.y;
-
-  if (i >= vol_dim.x || k >= vol_dim.z)
-    {
-    return;
-    }
-
-  // Index row major into the volume
-  long int vol_idx = i + k*vol_dim.y*vol_dim.x;
-
-  float3 ip;
-
-  // matrix multiply
-  ip.x = tex1Dfetch(tex_matrix, 0)*i + tex1Dfetch(tex_matrix, 2)*k + tex1Dfetch(tex_matrix, 3);
-  ip.y = tex1Dfetch(tex_matrix, 4)*i + tex1Dfetch(tex_matrix, 6)*k + tex1Dfetch(tex_matrix, 7);
-  ip.z = tex1Dfetch(tex_matrix, 8)*i + tex1Dfetch(tex_matrix, 10)*k + tex1Dfetch(tex_matrix, 11);
-
-  // Change coordinate systems
-  ip.z = 1 / ip.z;
-  ip.x = ip.x * ip.z;
-  ip.y = ip.y * ip.z;
-  float dx = tex1Dfetch(tex_matrix, 1)*ip.z;
-  float dy = tex1Dfetch(tex_matrix, 5)*ip.z;
-
-  // Place it into the volume segment
-  for(; j<vol_dim.y; j++)
-    {
-    dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + tex2D(tex_img, ip.x, ip.y);
-    vol_idx+=vol_dim.x;
-    ip.x+=dx;
-    ip.y+=dy;
-    }
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -179,106 +140,104 @@ void kernel_optim(float *dev_vol_in, float *dev_vol_out, int3 vol_dim)
 // FUNCTION: CUDA_back_project /////////////////////////////
 void
 CUDA_back_project(
-  int img_dim[2],
-  int vol_dim[3],
-  float matrix[12],
+  int proj_size[3],
+  int vol_size[3],
+  float *matrices,
   float *dev_vol_in,
   float *dev_vol_out,
-  float *dev_img)
+  float *dev_proj)
 {
+  int device;
+  cudaGetDevice(&device);
+
+  // Copy the size of inputs into constant memory
+  cudaMemcpyToSymbol(c_projSize, proj_size, sizeof(int3));
+  cudaMemcpyToSymbol(c_vol_size, vol_size, sizeof(int3));
+
+  // Copy the projection matrices into constant memory
+  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * proj_size[2]);
+
   // set texture parameters
-  tex_img.addressMode[0] = cudaAddressModeBorder;
-  tex_img.addressMode[1] = cudaAddressModeBorder;
-  tex_img.filterMode = cudaFilterModeLinear;
-  tex_img.normalized = false; // don't access with normalized texture coords
+  tex_proj.addressMode[0] = cudaAddressModeBorder;
+  tex_proj.addressMode[1] = cudaAddressModeBorder;
+  tex_proj.addressMode[2] = cudaAddressModeBorder;
+  tex_proj.filterMode = cudaFilterModeLinear;
+  tex_proj.normalized = false; // don't access with normalized texture coords
 
-  // copy image data to array, bind the array to the texture
-  cudaArray *array_img;
+  // Copy projection data to array, bind the array to the texture
+  cudaExtent projExtent = make_cudaExtent(proj_size[0], proj_size[1], proj_size[2]);
+  cudaArray *array_proj;
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  cudaMallocArray( &array_img, &channelDesc, img_dim[0], img_dim[1] );
-  cudaMemcpyToArray( array_img, 0, 0, dev_img, img_dim[0] * img_dim[1] * sizeof(float), cudaMemcpyDeviceToDevice);
-  cudaBindTextureToArray( tex_img, (cudaArray*)array_img, channelDesc);
+  CUDA_CHECK_ERROR;
 
-  // copy matrix, bind data to the texture
-  float *dev_matrix;
-  cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
-  cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
+  // Allocate array for input projections, in order to bind them to
+  // either a 2D layered texture (requires GetCudaComputeCapability >= 2.0) or
+  // a 3D texture
+  if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
+    cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent);
+  else
+    cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent, cudaArrayLayered);
+  CUDA_CHECK_ERROR;
 
-  // The optimized version runs when only one of the axis of the detector is
-  // parallel to the y axis of the volume
+  // Copy data to 3D array
+  cudaMemcpy3DParms copyParams = {0};
+  copyParams.srcPtr   = make_cudaPitchedPtr(dev_proj, proj_size[0]*sizeof(float), proj_size[0], proj_size[1]);
+  copyParams.dstArray = (cudaArray*)array_proj;
+  copyParams.extent   = projExtent;
+  copyParams.kind     = cudaMemcpyDeviceToDevice;
+  cudaMemcpy3D(&copyParams);
+  CUDA_CHECK_ERROR;
 
-  if(fabs(matrix[5])<1e-10 && fabs(matrix[9])<1e-10)
+  // Thread Block Dimensions
+  const int tBlock_x = 16;
+  const int tBlock_y = 4;
+  const int tBlock_z = 4;
+
+  // Each element in the volume (each voxel) gets 1 thread
+  unsigned int  blocksInX = (vol_size[0]-1)/tBlock_x + 1;
+  unsigned int  blocksInY = (vol_size[1]-1)/tBlock_y + 1;
+  unsigned int  blocksInZ = (vol_size[2]-1)/tBlock_z + 1;
+
+  // Run kernels. Note: Projection data is passed via texture memory,
+  // transform matrix is passed via constant memory
+  if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
     {
-    // Thread Block Dimensions
-    const int tBlock_x = 32;
-    const int tBlock_y = 16;
+    // Compute block and grid sizes
+    dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
+    dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
-    // Each segment gets 1 thread
-    unsigned int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
-    unsigned int  blocksInY = (vol_dim[2]-1)/tBlock_y + 1;
-    dim3 dimGrid  = dim3(blocksInX, blocksInY);
-    dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
+    // Bind the array of projections to a 3D texture
+    cudaBindTextureToArray(tex_proj_3D, (cudaArray*)array_proj, channelDesc);
+    CUDA_CHECK_ERROR;
 
-    // Note: cbi->img AND cbi->matrix are passed via texture memory
-    //-------------------------------------
-    kernel_optim <<< dimGrid, dimBlock >>> ( dev_vol_in,
-                                             dev_vol_out,
-                                             make_int3(vol_dim[0], vol_dim[1], vol_dim[2]) );
+    kernel <<< dimGrid, dimBlock >>> ( dev_vol_in,
+                                       dev_vol_out,
+                                       blocksInY );
+
+    // Unbind the image and projection matrix textures
+    cudaUnbindTexture (tex_proj_3D);
+    CUDA_CHECK_ERROR;
     }
   else
     {
-    int device;
-    cudaGetDevice(&device);
+    // Compute block and grid sizes
+    dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
+    dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+    CUDA_CHECK_ERROR;
 
-    // Thread Block Dimensions
-    const int tBlock_x = 16;
-    const int tBlock_y = 4;
-    const int tBlock_z = 4;
+    // Bind the array of projections to a 2D layered texture
+    cudaBindTextureToArray(tex_proj, (cudaArray*)array_proj, channelDesc);
+    CUDA_CHECK_ERROR;
 
-    // Each element in the volume (each voxel) gets 1 thread
-    unsigned int  blocksInX = (vol_dim[0]-1)/tBlock_x + 1;
-    unsigned int  blocksInY = (vol_dim[1]-1)/tBlock_y + 1;
-    unsigned int  blocksInZ = (vol_dim[2]-1)/tBlock_z + 1;
+    kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol_in,
+                                              dev_vol_out);
 
-    if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
-      {
-      dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
-      dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
-
-
-      // Note: cbi->img AND cbi->matrix are passed via texture memory
-      //-------------------------------------
-      kernel <<< dimGrid, dimBlock >>> ( dev_vol_in,
-                                         dev_vol_out,
-                                         make_int3(vol_dim[0], vol_dim[1], vol_dim[2]),
-                                         blocksInY );
-      }
-    else
-      {
-      dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
-      dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
-
-
-      // Note: cbi->img AND cbi->matrix are passed via texture memory
-      //-------------------------------------
-      kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol_in,
-                                                dev_vol_out,
-                                                make_int3(vol_dim[0], vol_dim[1], vol_dim[2]));
-      }
-
+    // Unbind the image and projection matrix textures
+    cudaUnbindTexture (tex_proj);
+    CUDA_CHECK_ERROR;
     }
-  CUDA_CHECK_ERROR;
-
-  // Unbind the image and projection matrix textures
-  cudaUnbindTexture (tex_img);
-  CUDA_CHECK_ERROR;
-  cudaUnbindTexture (tex_matrix);
-  CUDA_CHECK_ERROR;
 
   // Cleanup
-  cudaFreeArray ((cudaArray*)array_img);
-  CUDA_CHECK_ERROR;
-  cudaFree (dev_matrix);
+  cudaFreeArray ((cudaArray*)array_proj);
   CUDA_CHECK_ERROR;
 }

@@ -97,7 +97,7 @@ class RegularizedConjugateGradientConeBeamReconstructionFilter : public rtk::Ite
 {
 public:
   /** Standard class typedefs. */
-  typedef RegularizedConjugateGradientConeBeamReconstructionFilter                                       Self;
+  typedef RegularizedConjugateGradientConeBeamReconstructionFilter                      Self;
   typedef rtk::IterativeConeBeamReconstructionFilter<TImage, TImage>                    Superclass;
   typedef itk::SmartPointer< Self >                                                     Pointer;
   typedef itk::CovariantVector< typename TImage::ValueType, TImage::ImageDimension>     CovariantVectorForSpatialGradient;
