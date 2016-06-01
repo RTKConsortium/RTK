@@ -48,8 +48,8 @@ __constant__ float3 c_boxMax;
 __constant__ float3 c_spacing;
 __constant__ int3 c_volSize;
 __constant__ float c_tStep;
-__constant__ float c_matrices[1024 * 12]; //Can process stacks of at most 1024 projections
-__constant__ float c_sourcePos[1024 * 3]; //Can process stacks of at most 1024 projections
+__constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
+__constant__ float c_sourcePos[SLAB_SIZE * 3]; //Can process stacks of at most SLAB_SIZE projections
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
