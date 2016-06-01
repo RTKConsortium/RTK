@@ -1,12 +1,12 @@
 {
-  "name" : "JosephForwardProjectionImageFilter",
+  "name" : "CudaForwardProjectionImageFilter",
   "template_code_filename" : "RTKImageFilter",
   "template_test_filename" : "ImageFilter",
   "number_of_inputs" : 2,
   "doc" : "",
   "output_image_type" : "TImageType",
-  "pixel_types" : "RealPixelIDTypeList",
-  "filter_type" : "rtk::JosephForwardProjectionImageFilter<InputImageType, InputImageType>",
+  "pixel_types" : "typelist::MakeTypeList< BasicPixelID<float> >::Type",
+  "filter_type" : "rtk::CudaForwardProjectionImageFilter<InputImageType>",
   "include_files" : [
     "srtkThreeDCircularProjectionGeometry.h"
   ],

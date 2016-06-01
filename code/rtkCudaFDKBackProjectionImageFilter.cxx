@@ -77,7 +77,7 @@ CudaFDKBackProjectionImageFilter
   stackGPUPointer += projSize * (iFirstProj-this->GetInput(1)->GetBufferedRegion().GetIndex()[2]);
 
   // Allocate a large matrix to hold the matrix of all projections
-  float fMatrix[12 * nProj];
+  float *fMatrix = new float[12 * nProj];
 
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
@@ -121,6 +121,8 @@ CudaFDKBackProjectionImageFilter
     // Re-use the output as input
     pin = pout;
     }
+
+  delete[] fMatrix;
 }
 
 } // end namespace rtk

@@ -9,12 +9,13 @@ addons:
     packages:
     - libfftw3-3
     - libfftw3-dev
+    - kwstyle
 
 matrix:
   include:
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.2.0 CUDA=NONE
+      env: ITK_VERSION=v4.5.0 CUDA=NONE
     - os: osx
       compiler: clang
       env: ITK_VERSION=v4.10.0 CUDA=NONE
@@ -33,10 +34,12 @@ matrix:
 
 cache:
   - directories:
-    - /home/travis/itk-v4.2.0
-    - /home/travis/itk-v4.2.0-build
-    - /home/travis/itk-v4.10.0
-    - /home/travis/itk-v4.10.0-build
+    - $HOME/itk-v4.2.0
+    - $HOME/itk-v4.2.0-build
+    - $HOME/itk-v4.5.0
+    - $HOME/itk-v4.5.0-build
+    - $HOME/itk-v4.10.0
+    - $HOME/itk-v4.10.0-build
 
 before_install:
   - if test "$CUDA" != NONE; then echo "Installing CUDA library"; fi
@@ -45,14 +48,18 @@ before_install:
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get update -qq; fi
   - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA%-*}; fi
   - if test "$CUDA" != NONE; then export CUDA_APT=${CUDA_APT/./-}; fi
-  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT} cuda-cublas-${CUDA_APT}; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT}; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-cufft-${CUDA_APT} cuda-cufft-dev-${CUDA_APT}; fi
+  - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-cublas-${CUDA_APT} cuda-cublas-dev-${CUDA_APT}; fi
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get clean; fi
   - if test "$CUDA" != NONE; then export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-${CUDA%%-*}; fi
+  - if test "$CUDA" != NONE; then export PATH=${CUDA_TOOLKIT_ROOT_DIR}/bin:${PATH}; fi
+  - if test $TRAVIS_OS_NAME == osx ; then brew update; brew install fftw; fi
 
 before_script:
   - export NUM_THREADS=4
-  - export ITK_SOURCE_DIR=/home/travis/itk-${ITK_VERSION}
-  - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-${TRAVIS_OS_NAME}-build
+  - export ITK_SOURCE_DIR=$HOME/itk-${ITK_VERSION}
+  - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-build
   - if ! test -e ${ITK_SOURCE_DIR}/CMakeLists.txt; then rm -fr $ITK_SOURCE_DIR; fi
   - if ! test -d ${ITK_SOURCE_DIR}; then git clone --branch ${ITK_VERSION} git://itk.org/ITK.git ${ITK_SOURCE_DIR}; fi
   - if ! test -d ${ITK_BUILD_DIR}; then mkdir ${ITK_BUILD_DIR}; fi
@@ -74,6 +81,7 @@ before_script:
 script:
   - if ! test -d build; then mkdir build; fi
   - cd build
-  - cmake ..
+  - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
+  - cmake .. $CMAKE_OPTIONS
+  - if test $TRAVIS_OS_NAME == linux ; then make StyleCheckCode; fi
   - make --jobs=$NUM_THREADS --keep-going all test
-
