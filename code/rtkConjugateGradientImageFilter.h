@@ -22,6 +22,7 @@
 #include "itkImageToImageFilter.h"
 #include "itkSubtractImageFilter.h"
 #include "itkStatisticsImageFilter.h"
+#include "itkImageFileWriter.h"
 
 #include "rtkConjugateGradientGetR_kPlusOneImageFilter.h"
 #include "rtkConjugateGradientGetX_kPlusOneImageFilter.h"
@@ -53,6 +54,7 @@ public:
   typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
   typedef itk::MultiplyImageFilter<OutputImageType,OutputImageType,OutputImageType> MultiplyFilterType;
   typedef itk::StatisticsImageFilter<OutputImageType>                               StatisticsImageFilterType;
+  typedef itk::ImageFileWriter<OutputImageType >                                    WriterType;
   typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
   typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
   typedef typename OutputImageType::Pointer                                         OutputImagePointer;
@@ -75,6 +77,11 @@ public:
   
 //  itkSetMacro(MeasureExecutionTimes, bool)
 //  itkGetMacro(MeasureExecutionTimes, bool)
+
+  /** If IterFileName is given, reconstructed images will be saved at each iteration */
+  /** IterFileName must be "pathname/filename.extension" so it can be parsed as pathname/filename + extension */
+  itkSetStringMacro(IterFileName);
+  itkGetStringMacro(IterFileName);
 
   void SetA(ConjugateGradientOperatorPointerType _arg );
 
@@ -113,10 +120,12 @@ protected:
   double m_C;
 
   void CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne);
+  void IterateImageWriter(OutputImagePointer X_kPlusOne, const int iter, const std::string FileName, const std::string Ext);
 
 private:
   ConjugateGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
+  std::string m_IterFileName;
 //  bool m_MeasureExecutionTimes;
 };
 } //namespace RTK

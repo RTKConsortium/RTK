@@ -94,6 +94,15 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
+    },
+    {
+      "name" : "IterFileName",
+      "type" : "std::string",
+      "default" : "std::string()",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : ""
     }
   ],
   "measurements" : [

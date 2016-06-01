@@ -181,6 +181,10 @@ public:
     /** Get / Set whether conjugate gradient should be performed on GPU */
     itkGetMacro(CudaConjugateGradient, bool)
     itkSetMacro(CudaConjugateGradient, bool)
+	
+    /** If IterFileName is given, reconstructed images will be saved at each iteration */
+    itkSetStringMacro(IterFileName);
+    itkGetStringMacro(IterFileName);
 
     /** Getter for ResidualCosts storing array **/
     const std::vector<double> &GetResidualCosts();
@@ -231,6 +235,7 @@ private:
     bool  m_Preconditioned;
     bool  m_Regularized;
     bool  m_CudaConjugateGradient;
+    std::string m_IterFileName;
 };
 } //namespace ITK
 
