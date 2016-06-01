@@ -44,7 +44,7 @@ namespace rtk
    *
    * This filter implements the ConjugateGradient method.
    * ConjugateGradient attempts to find the f that minimizes
-   * || sqrt(D) (Rf -p) ||_2^2 + gamma || grad f ||_2^2
+   * (1/2).|| sqrt(D) (Rf -p) ||_2^2 + (1/2).gamma.|| grad f ||_2^2
    * with R the forward projection operator,
    * p the measured projections, and D the displaced detector weighting operator.
    *

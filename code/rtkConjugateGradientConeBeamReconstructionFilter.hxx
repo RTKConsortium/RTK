@@ -220,19 +220,19 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateData()
 {
   itk::TimeProbe ConjugateGradientTimeProbe;
-  typename StatisticsImageFilterType::Pointer ytWyStatisticsImageFilter = StatisticsImageFilterType::New();
-  typename MultiplyFilterType::Pointer ytWyMultiplyFilter = MultiplyFilterType::New();
+  typename StatisticsImageFilterType::Pointer StatisticsImageFilterForC = StatisticsImageFilterType::New();
+  typename MultiplyFilterType::Pointer MultiplyFilterForC = MultiplyFilterType::New();
 
   if (m_IterationCosts)
   {
-      ytWyMultiplyFilter->SetInput(0,this->GetInput(1));
-      ytWyMultiplyFilter->SetInput(1,this->GetInput(2));
-      ytWyMultiplyFilter->Update();
-      ytWyMultiplyFilter->SetInput(1,ytWyMultiplyFilter->GetOutput());
-      ytWyMultiplyFilter->Update();
-      ytWyStatisticsImageFilter->SetInput(ytWyMultiplyFilter->GetOutput());
-      ytWyStatisticsImageFilter->Update();
-      m_ConjugateGradientFilter->SetytWy(ytWyStatisticsImageFilter->GetSum());
+      MultiplyFilterForC->SetInput(0,this->GetInput(1));
+      MultiplyFilterForC->SetInput(1,this->GetInput(2));
+      MultiplyFilterForC->Update();
+      MultiplyFilterForC->SetInput(1,MultiplyFilterForC->GetOutput());
+      MultiplyFilterForC->Update();
+      StatisticsImageFilterForC->SetInput(MultiplyFilterForC->GetOutput());
+      StatisticsImageFilterForC->Update();
+      m_ConjugateGradientFilter->SetC(0.5*StatisticsImageFilterForC->GetSum());
   }
 
   if(m_MeasureExecutionTimes)
