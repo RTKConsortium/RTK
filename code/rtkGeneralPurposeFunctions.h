@@ -22,6 +22,7 @@
 #include <vector>
 #include <itkMacro.h>
 #include <itkImageFileWriter.h>
+#include <itkMath.h>
 
 namespace rtk
 {
@@ -72,7 +73,7 @@ ReadSignalFile(std::string filename)
   while( !is.eof() )
     {
     is >> value;
-    signalVector.push_back(round(value * 100) / 100);
+    signalVector.push_back(itk::Math::Round<double>(value * 100) / 100);
     }
 
   return signalVector;
