@@ -85,8 +85,8 @@ public:
   void SetB(const OutputImageType* OutputImage);
 
   /** Set and Get the constant quantity BtWB for residual costs calculation */
-  void SetytWy(const double _arg);
-  const double GetytWy();
+  void SetC(const double _arg);
+  const double GetC();
 
   /** Setter and getter for ResidualCosts storing array **/
   const std::vector<double> &GetResidualCosts();
@@ -110,7 +110,7 @@ protected:
   int  m_NumberOfIterations;
   bool m_IterationCosts;
   std::vector<double> m_ResidualCosts;
-  double m_ytWy;
+  double m_C;
 
   void CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne);
 

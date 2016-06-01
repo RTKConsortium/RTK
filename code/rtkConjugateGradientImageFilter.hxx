@@ -41,17 +41,17 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
 
 template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
-::SetytWy(const double _arg) 
+::SetC(const double _arg) 
 {
-    this->m_ytWy = _arg;
+    this->m_C = _arg;
     this->Modified();
 }
 
 template<typename OutputImageType>
 const double ConjugateGradientImageFilter<OutputImageType>
-::GetytWy() 
+::GetC() 
 {
-    return this->m_ytWy;
+    return this->m_C;
 }
 
 template<typename OutputImageType>
@@ -59,19 +59,20 @@ void ConjugateGradientImageFilter<OutputImageType>
 ::CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne)
 /* Perform the calculation of the residual cost function at each iteration :
  *  
- *  Cost_residuals(kPlusOne) = <X_kPlusOne,-R_kPlusOne-B> + <y,Wy>
- *                           = X_kPlusOne^T A X_kPlusOne -2 B^T X_kPlusOne + Y^T W Y
- *                           = || sqrt(W) (R X_kPlusOne - Y) ||_2^2 + gamma || D X_kPlusOne ||_2^2
+ *  Cost_residuals(kPlusOne) = (1/2) <X_kPlusOne,-R_kPlusOne-B> + C ( where <.,.> is the scalar product )
  *
- *  where :
- *           -> Y are the projections.
+ *                                                  /                    \
+ *                           = (1/2) X_kPlusOne^T . | A X_kPlusOne - 2 B | + C
+ *                                                  \                    /
+ *
+ *                           = (1/2) X_kPlusOne^T A X_kPlusOne - B^T X_kPlusOne + C
+ *  
+ *  which is the value of the quadratic form the minimization of which is equivalent to resolve AX=B by CG.                       
+ *
  *           -> X_kPlusOne is the current estimate.
- *           -> A and B are the components of the normal equations AX=B resovled by the CG algorithm.
- *              | A = R^T W R + gamma * D^T D
- *	       | B = R^T W Y
- *	       | R is the projection operator, W the weights and D the gradient operator
- *  	     -> R_kPlusOne is the CG residual (steepest descent direction) 
- *	        R_kPlusOne = B - A X_kPlusOne.	     
+ *           -> A and B are the components of the normal equations AX=B resolved by the CG algorithm.
+ *  	     -> R_kPlusOne is the CG residual (steepest descent direction).
+ *           -> C is the constant involved in the cost function. If it is known, it can be added by setting its value to the attribute C (default 0).
  */
 {
     typename StatisticsImageFilterType::Pointer IterationCostsStatisticsImageFilter = StatisticsImageFilterType::New();
@@ -90,7 +91,7 @@ void ConjugateGradientImageFilter<OutputImageType>
     IterationCostsMultiplyFilter->Update();
     IterationCostsStatisticsImageFilter->SetInput(IterationCostsMultiplyFilter->GetOutput());
     IterationCostsStatisticsImageFilter->Update();
-    m_ResidualCosts.push_back(IterationCostsStatisticsImageFilter->GetSum()+this->GetytWy());
+    m_ResidualCosts.push_back(0.5*IterationCostsStatisticsImageFilter->GetSum()+this->GetC());
 }
 
 template<typename OutputImageType>
