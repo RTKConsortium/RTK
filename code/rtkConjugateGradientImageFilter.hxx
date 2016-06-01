@@ -20,8 +20,7 @@
 #define __rtkConjugateGradientImageFilter_hxx
 
 #include "rtkConjugateGradientImageFilter.h"
-#include <iostream>
-#include <fstream>
+#include <sstream>
 
 namespace rtk
 {
@@ -34,6 +33,7 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   m_NumberOfIterations = 1;
   m_IterationCosts = false;
   m_C=0.0;
+  m_IterFileName = std::string();
 //  m_MeasureExecutionTimes = false;
 
   m_A = ConjugateGradientOperatorType::New();
@@ -92,6 +92,18 @@ void ConjugateGradientImageFilter<OutputImageType>
     IterationCostsStatisticsImageFilter->SetInput(IterationCostsMultiplyFilter->GetOutput());
     IterationCostsStatisticsImageFilter->Update();
     m_ResidualCosts.push_back(0.5*IterationCostsStatisticsImageFilter->GetSum()+this->GetC());
+}
+
+template<typename OutputImageType>
+void ConjugateGradientImageFilter<OutputImageType>
+::IterateImageWriter(OutputImagePointer X_kPlusOne, const int iter, const std::string FileName, const std::string Ext)
+{
+    typename WriterType::Pointer IterWriter = WriterType::New();
+    std::ostringstream siter;
+    siter << iter;
+    IterWriter->SetFileName(FileName+"_iter"+siter.str()+'.'+Ext);
+    IterWriter->SetInput(X_kPlusOne);
+    IterWriter->Update();
 }
 
 template<typename OutputImageType>
@@ -172,6 +184,11 @@ template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
 ::GenerateData()
 {
+   
+  std::istringstream FileNameStream(this->m_IterFileName);
+  std::string FileName;
+  std::string Extension;
+
   typename SubtractFilterType::Pointer SubtractFilter = SubtractFilterType::New();
   SubtractFilter->SetInput(0, this->GetB());
   SubtractFilter->SetInput(1, m_A->GetOutput());
@@ -187,6 +204,15 @@ void ConjugateGradientImageFilter<OutputImageType>
 
   if (m_IterationCosts) {
       CalculateResidualCosts(P_zero,this->GetX());
+  }
+
+  if (!this->m_IterFileName.empty())
+  {
+      // Parse IterFileName to extract filename and extension (IterFileName must be "filename.extension")
+      std::getline(FileNameStream, FileName, '.');
+      std::getline(FileNameStream, Extension, '\0');
+      
+      IterateImageWriter(this->GetX(), 0, FileName, Extension);
   }
 
   // Compute AP_zero
@@ -224,6 +250,11 @@ void ConjugateGradientImageFilter<OutputImageType>
 
       if (m_IterationCosts) {
 	  CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
+      }
+
+      if (!this->m_IterFileName.empty())
+      {
+	  IterateImageWriter(X_kPlusOne, iter, FileName, Extension);
       }
 
       m_A->SetX(P_kPlusOne);

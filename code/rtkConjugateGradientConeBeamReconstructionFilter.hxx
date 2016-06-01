@@ -138,6 +138,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
+  m_ConjugateGradientFilter->SetIterFileName(m_IterFileName);
   
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
