@@ -14,7 +14,7 @@ matrix:
   include:
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.2.0 CUDA=NONE
+      env: ITK_VERSION=v4.5.0 CUDA=NONE
     - os: osx
       compiler: clang
       env: ITK_VERSION=v4.10.0 CUDA=NONE
@@ -35,6 +35,8 @@ cache:
   - directories:
     - $HOME/itk-v4.2.0
     - $HOME/itk-v4.2.0-build
+    - $HOME/itk-v4.5.0
+    - $HOME/itk-v4.5.0-build
     - $HOME/itk-v4.10.0
     - $HOME/itk-v4.10.0-build
 
