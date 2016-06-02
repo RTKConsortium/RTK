@@ -114,10 +114,10 @@ protected:
 
   ConjugateGradientOperatorPointerType m_A;
 
-  int  m_NumberOfIterations;
-  bool m_IterationCosts;
+  int                 m_NumberOfIterations;
+  bool                m_IterationCosts;
   std::vector<double> m_ResidualCosts;
-  double m_C;
+  double              m_C;
 
   void CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne);
   void IterateImageWriter(OutputImagePointer X_kPlusOne, const int iter, const std::string FileName, const std::string Ext);
