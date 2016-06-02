@@ -105,7 +105,7 @@ int main(int, char** )
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     streamingCUDA->SetNumberOfStreamDivisions(4);
     itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
-    splitter->SetDirection(2);
+    splitter->SetDirection(2); // Splitting along direction 1, NOT 2
     streamingCUDA->SetRegionSplitter(splitter);
 #else
     streamingCUDA->SetNumberOfStreamDivisions(2);
