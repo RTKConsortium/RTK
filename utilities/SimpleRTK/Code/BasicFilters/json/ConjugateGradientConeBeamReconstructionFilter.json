@@ -76,6 +76,32 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
+    },
+    {
+      "name" : "CudaConjugateGradient",
+      "type" : "bool",
+      "default" : "0",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : ""
+    },
+    {
+      "name" : "IterationCosts",
+      "type" : "bool",
+      "default" : "0",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : ""
+    }
+  ],
+  "measurements" : [
+    {
+      "name" : "ResidualCosts",
+      "type" : "std::vector<double>",
+      "default" : "std::vector<double>()",
+      "custom_itk_cast" : "this->m_ResidualCosts = std::vector<double>( filter->GetResidualCosts().begin(), filter->GetResidualCosts().end() );"
     }
   ],
   "briefdescription" : "",
