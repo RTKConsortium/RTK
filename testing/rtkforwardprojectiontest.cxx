@@ -124,9 +124,9 @@ int main(int , char** )
 
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   stream->SetNumberOfStreamDivisions(9);
-  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
-  splitter->SetDirection(2);
-  stream->SetRegionSplitter(splitter);
+//  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+//  splitter->SetDirection(2);
+//  stream->SetRegionSplitter(splitter);
 #else
   stream->SetNumberOfStreamDivisions(1);
 #endif
