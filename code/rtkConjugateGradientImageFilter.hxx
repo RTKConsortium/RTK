@@ -20,8 +20,6 @@
 #define __rtkConjugateGradientImageFilter_hxx
 
 #include "rtkConjugateGradientImageFilter.h"
-#include <iostream>
-#include <fstream>
 
 namespace rtk
 {
