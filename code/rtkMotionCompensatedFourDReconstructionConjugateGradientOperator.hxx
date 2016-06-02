@@ -27,7 +27,7 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::MotionCompensatedFourDReconstructionConjugateGradientOperator()
 {
-  this->SetNumberOfRequiredInputs(3);
+  this->SetNumberOfRequiredInputs(2);
 
 #ifdef RTK_USE_CUDA
   m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
@@ -49,7 +49,7 @@ void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::SetDisplacementField(const DVFSequenceImageType* DisplacementField)
 {
-  this->SetNthInput(3, const_cast<DVFSequenceImageType*>(DisplacementField));
+  this->SetNthInput(2, const_cast<DVFSequenceImageType*>(DisplacementField));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -57,7 +57,7 @@ void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::SetInverseDisplacementField(const DVFSequenceImageType* InverseDisplacementField)
 {
-  this->SetNthInput(4, const_cast<DVFSequenceImageType*>(InverseDisplacementField));
+  this->SetNthInput(3, const_cast<DVFSequenceImageType*>(InverseDisplacementField));
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -66,7 +66,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 ::GetDisplacementField()
 {
   return static_cast< const DVFSequenceImageType * >
-          ( this->itk::ProcessObject::GetInput(3) );
+          ( this->itk::ProcessObject::GetInput(2) );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -75,7 +75,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 ::GetInverseDisplacementField()
 {
   return static_cast< const DVFSequenceImageType * >
-          ( this->itk::ProcessObject::GetInput(4) );
+          ( this->itk::ProcessObject::GetInput(3) );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -115,52 +115,66 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   int Dimension = ProjectionStackType::ImageDimension;
 
   // Prepare the index for the constant projection stack source and the extract filter
-  typename ProjectionStackType::IndexType ConstantProjectionStackSourceIndex
-      = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex();
-  typename ProjectionStackType::RegionType singleProjectionRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  singleProjectionRegion.SetSize(ProjectionStackType::ImageDimension -1, 1);
-  this->m_ExtractFilter->SetExtractionRegion(singleProjectionRegion);
+  typename ProjectionStackType::RegionType sourceRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
+  typename ProjectionStackType::SizeType sourceSize = sourceRegion.GetSize();
+  typename ProjectionStackType::IndexType sourceIndex = sourceRegion.GetIndex();
 
   int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
   int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
-  bool firstProjectionProcessed = false;
+  // Divide the stack of projections into slabs of projections of identical phase
+  std::vector<int> firstProjectionInSlabs;
+  std::vector<unsigned int> sizeOfSlabs;
+  firstProjectionInSlabs.push_back(FirstProj);
+  if (NumberProjs==1)
+    sizeOfSlabs.push_back(1);
+  else
+    {
+    for (unsigned int proj = FirstProj+1 ; proj < FirstProj+NumberProjs; proj++)
+      {
+      if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
+        {
+        // Compute the number of projections in the current slab
+        sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+
+        // Update the index of the first projection in the next slab
+        firstProjectionInSlabs.push_back(proj);
+        }
+      }
+    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+    }
+
+  bool firstSlabProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
 
   // Process the projections in order
-  for (unsigned int proj = FirstProj ; proj < FirstProj+NumberProjs; proj++)
+  for (unsigned int slab = 0 ; slab < firstProjectionInSlabs.size(); slab++)
     {
     // Set the projection stack source
-    ConstantProjectionStackSourceIndex[Dimension - 1] = proj;
-    this->m_ConstantProjectionStackSource->SetIndex( ConstantProjectionStackSourceIndex );
-    singleProjectionRegion.SetIndex(ProjectionStackType::ImageDimension -1, proj);
-    this->m_ExtractFilter->SetExtractionRegion(singleProjectionRegion);
+    sourceIndex[Dimension - 1] = firstProjectionInSlabs[slab];
+    sourceSize[Dimension - 1] = sizeOfSlabs[slab];
+    this->m_ConstantProjectionStackSource->SetIndex( sourceIndex );
+    this->m_ConstantProjectionStackSource->SetSize( sourceSize );
 
-    // Set the Interpolation filter
-    this->m_InterpolationFilter->SetProjectionNumber(proj);
-    this->m_SplatFilter->SetProjectionNumber(proj);
+    // Set the interpolation filters, including those for the DVFs
+    this->m_InterpolationFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
+    this->m_SplatFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
+    m_DVFInterpolatorFilter->SetFrame(firstProjectionInSlabs[slab]);
+    m_InverseDVFInterpolatorFilter->SetFrame(firstProjectionInSlabs[slab]);
 
     // After the first update, we need to use the output as input.
-    if(firstProjectionProcessed)
+    if(firstSlabProcessed)
       {
       pimg = this->m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
       this->m_SplatFilter->SetInputVolumeSeries( pimg );
       }
 
-    // Set the Interpolation filter
-    this->m_InterpolationFilter->SetProjectionNumber(proj);
-    this->m_SplatFilter->SetProjectionNumber(proj);
-
-    // Set the DVF interpolator
-    m_DVFInterpolatorFilter->SetFrame(proj);
-    m_InverseDVFInterpolatorFilter->SetFrame(proj);
-
     // Update the last filter
     this->m_SplatFilter->Update();
 
     // Update condition
-    firstProjectionProcessed = true;
+    firstSlabProcessed = true;
     }
 
   // Graft its output
@@ -172,7 +186,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   this->m_ConstantVolumeSource2->GetOutput()->ReleaseData();
   this->m_ConstantVolumeSeriesSource->GetOutput()->ReleaseData();
   this->m_ConstantProjectionStackSource->GetOutput()->ReleaseData();
-  this->m_MultiplyFilter->GetOutput()->ReleaseData();
+  this->m_DisplacedDetectorFilter->GetOutput()->ReleaseData();
   this->m_InterpolationFilter->GetOutput()->ReleaseData();
   this->m_BackProjectionFilter->GetOutput()->ReleaseData();
   this->m_ForwardProjectionFilter->GetOutput()->ReleaseData();
