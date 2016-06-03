@@ -44,11 +44,9 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_ProjStackToFourDFilter = ProjStackToFourDFilterType::New();
-#ifdef RTK_USE_CUDA
-  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
-#else
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
-#endif
+
+  // Set parameters
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Memory management options

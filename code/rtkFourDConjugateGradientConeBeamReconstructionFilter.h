@@ -33,7 +33,6 @@
 #include <itkTimeProbe.h>
 #ifdef RTK_USE_CUDA
   #include "rtkCudaConjugateGradientImageFilter_4f.h"
-  #include "rtkCudaDisplacedDetectorImageFilter.h"
 #endif
 
 namespace rtk

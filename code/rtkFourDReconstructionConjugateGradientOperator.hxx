@@ -42,6 +42,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management flags
+  m_DisplacedDetectorFilter->SetInPlace(true);
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
