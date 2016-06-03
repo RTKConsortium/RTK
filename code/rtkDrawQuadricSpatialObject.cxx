@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricImageFilter_txx
-#define __rtkDrawQuadricImageFilter_txx
+#ifndef __rtkDrawQuadricImageFilter_cxx
+#define __rtkDrawQuadricImageFilter_cxx
 
 #include "rtkDrawQuadricImageFilter.h"
 

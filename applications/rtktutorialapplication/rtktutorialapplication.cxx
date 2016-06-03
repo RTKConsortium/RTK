@@ -66,7 +66,7 @@ int main(int argc, char * argv[])
   //
   // You will need to use the DisconnectPipeline()
   // function. You can see how it is used in
-  // rtkSARTConeBeamReconstructionFilter.txx
+  // rtkSARTConeBeamReconstructionFilter.hxx
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
