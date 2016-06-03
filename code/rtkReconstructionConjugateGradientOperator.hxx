@@ -134,7 +134,9 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     m_LaplacianFilter->SetInput(this->GetInput(0));
 
     m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
-    m_MultiplyLaplacianFilter->SetConstant2(m_Gamma);
+    // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian" 
+    // for correctly applying quadratic regularization || grad f ||_2^2
+    m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
 
     m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
     m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
