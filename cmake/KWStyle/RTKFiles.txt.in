@@ -1,3 +1,3 @@
 @RTK_SOURCE_DIR@/code/rtk*.h
-@RTK_SOURCE_DIR@/code/rtk*.txx
+@RTK_SOURCE_DIR@/code/rtk*.hxx
 @RTK_SOURCE_DIR@/code/rtk*.cxx

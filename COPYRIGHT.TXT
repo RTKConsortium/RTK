@@ -161,15 +161,15 @@ It uses the same Apache 2.0 license as RTK
 Some code is modified (a lot) from GIFT, the Generalized Image Fusion Toolkit
 (http://hdl.handle.net/1926/216)
 - rtkDaubechiesWaveletsKernelSource.h
-- rtkDaubechiesWaveletsKernelSource.txx
+- rtkDaubechiesWaveletsKernelSource.hxx
 - rtkDeconstructImageFilter.h
-- rtkDeconstructImageFilter.txx
+- rtkDeconstructImageFilter.hxx
 - rtkReconstructImageFilter.h
-- rtkReconstructImageFilter.txx
+- rtkReconstructImageFilter.hxx
 - rtkDownsampleImageFilter.h
-- rtkDownsampleImageFilter.txx
+- rtkDownsampleImageFilter.hxx
 - rtkUpsampleImageFilter.h
-- rtkUpsampleImageFilter.txx
+- rtkUpsampleImageFilter.hxx
 
 ------------------------------------------------------------------------
 Some code is modified from http://sourceforge.net/projects/niftyrec/:

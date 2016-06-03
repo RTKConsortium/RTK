@@ -255,7 +255,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
     sizeOfSlabs.push_back(1);
   else
     {
-    for (unsigned int proj = FirstProj+1 ; proj < FirstProj+NumberProjs; proj++)
+    for (unsigned int proj = FirstProj+1; proj < FirstProj+NumberProjs; proj++)
       {
       if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
         {
@@ -273,7 +273,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   typename VolumeSeriesType::Pointer pimg;
 
   // Process the projections in order
-  for (unsigned int slab = 0 ; slab < firstProjectionInSlabs.size(); slab++)
+  for (unsigned int slab = 0; slab < firstProjectionInSlabs.size(); slab++)
     {
     // Set the projection stack source
     sourceIndex[Dimension - 1] = firstProjectionInSlabs[slab];

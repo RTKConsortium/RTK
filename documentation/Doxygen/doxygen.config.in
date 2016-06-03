@@ -765,7 +765,7 @@ INPUT_ENCODING         = UTF-8
 # *.qsf, *.as and *.js.
 
 FILE_PATTERNS          = *.h \
-                         *.txx \
+                         *.hxx \
                          *.cxx \
                          *.dox
 

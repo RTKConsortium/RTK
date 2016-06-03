@@ -168,9 +168,9 @@ IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
                 ${RTK_SOURCE_DIR}/cmake/UseRTK.cmake
           DESTINATION ${RTK_INSTALL_PACKAGE_DIR})
 
-  # Include .h and .txx files
+  # Include .h and .hxx files
   FILE(GLOB __files1 "${PROJECT_SOURCE_DIR}/code/*.h")
-  FILE(GLOB __files2 "${PROJECT_SOURCE_DIR}/code/*.txx")
+  FILE(GLOB __files2 "${PROJECT_SOURCE_DIR}/code/*.hxx")
   INSTALL(FILES ${__files1} ${__files2} ${RTK_BINARY_DIR}/rtkConfiguration.h
     DESTINATION ${RTK_INSTALL_INCLUDE_DIR}
     COMPONENT Development)
