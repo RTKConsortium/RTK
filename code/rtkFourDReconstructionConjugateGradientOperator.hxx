@@ -33,6 +33,16 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_UseCudaInterpolation = false;
   m_UseCudaSplat = false;
   m_UseCudaSources = false;
+
+#ifdef RTK_USE_CUDA
+  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+#else
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+#endif
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+
+  // Set memory management flags
+  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
 
@@ -154,13 +164,9 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   // Create the interpolation filter and the displaced detector filter
   // (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_InterpolationFilter = InterpolationFilterType::New();
-  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 #ifdef RTK_USE_CUDA
   if (m_UseCudaInterpolation)
-    {
     m_InterpolationFilter = rtk::CudaInterpolateImageFilter::New();
-    m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
-    }
 #endif
 
   // Create the splat filter (first on CPU, and overwrite with the GPU version if CUDA requested)

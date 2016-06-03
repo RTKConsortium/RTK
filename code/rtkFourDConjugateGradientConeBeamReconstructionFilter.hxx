@@ -49,9 +49,10 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 #else
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 #endif
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Memory management options
-  m_DisplacedDetectorFilter->SetInPlace(true);
+  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
   m_ProjStackToFourDFilter->ReleaseDataFlagOn();
 }
 
