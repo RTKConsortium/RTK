@@ -115,11 +115,8 @@ CudaForwardProjectionImageFilter<TInputImage,
     }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  float **matrices = new float*[3 * nProj];
-  for (int i = 0; i < 3 * nProj; ++i)
-      matrices[i] = new float[4];
-  float *source_positions = new float[4 * nProj];
-
+  float* matrices = new float[12 * nProj];
+  float* source_positions = new float[4 * nProj];
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
@@ -133,7 +130,7 @@ CudaForwardProjectionImageFilter<TInputImage,
       projIndexTranslation.GetVnlMatrix();
     for (int j=0; j<3; j++) // Ignore the 4th row
       for (int k=0; k<4; k++)
-        matrices[j + 3 * (iProj-iFirstProj)][k] = (float)d_matrix[j][k];
+        matrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)d_matrix[j][k];
 
     // Compute source position in volume indices
     source_position= volPPToIndex * geometry->GetSourcePosition(iProj);
@@ -148,20 +145,17 @@ CudaForwardProjectionImageFilter<TInputImage,
   // Run the forward projection on the whole slab of projections
   CUDA_forward_project(projectionSize,
                       volumeSize,
-                      (float*)&(matrices[0][0]),
+                      matrices,
                       pin + nPixelsPerProj * projectionOffset,
                       pout + nPixelsPerProj * projectionOffset,
                       pvol,
                       m_StepSize,
-                      (float*)&(source_positions[0]),
+                      source_positions,
                       boxMin,
                       boxMax,
                       spacing,
                       m_UseCudaTexture);
 
-  for (int i = 0; i < 3 * nProj; ++i) {
-      delete[] matrices[i];
-  }
   delete[] matrices;
   delete[] source_positions;
 }

@@ -159,7 +159,7 @@ int main(int, char** )
   direction[2][0] = 0;
   direction[2][1] = 0;
   direction[2][2] = 1;
-  tomographySource->SetDirection(direction);
+  tomographySource->SetDirection(direction); // Splitting along direction 1, NOT 2
   origin[0] = -127.;
   origin[1] =  127.;
   origin[2] = -127.;
@@ -182,7 +182,7 @@ int main(int, char** )
   direction[2][0] = 0;
   direction[2][1] = 0;
   direction[2][2] = 1;
-  tomographySource->SetDirection(direction);
+  tomographySource->SetDirection(direction); // Splitting along direction 1, NOT 2
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;

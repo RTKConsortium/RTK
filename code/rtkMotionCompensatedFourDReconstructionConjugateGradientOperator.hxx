@@ -39,7 +39,9 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   m_InverseDVFInterpolatorFilter = DVFInterpolatorType::New();
   this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
   this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
-  itkWarningMacro("The warp forward and back project image filters exist only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection and CPU voxel-based back projection")
+  itkWarningMacro("The warp forward and back project image filters exist only"
+          << " in CUDA. Ignoring the displacement vector field and using CPU"
+          << "Joseph forward projection and CPU voxel-based back projection")
 #endif
 
 }
@@ -128,7 +130,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   typename VolumeSeriesType::Pointer pimg;
 
   // Process the projections in order
-  for (unsigned int proj = FirstProj ; proj < FirstProj+NumberProjs; proj++)
+  for (unsigned int proj = FirstProj; proj < FirstProj+NumberProjs; proj++)
     {
     // Set the projection stack source
     ConstantProjectionStackSourceIndex[Dimension - 1] = proj;

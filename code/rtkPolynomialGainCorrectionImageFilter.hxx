@@ -188,4 +188,3 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
 }
 
 #endif
-

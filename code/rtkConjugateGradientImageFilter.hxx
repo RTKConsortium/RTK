@@ -29,7 +29,7 @@ template<typename OutputImageType>
 ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
-  
+
   m_NumberOfIterations = 1;
   m_IterationCosts = false;
   m_C=0.0;
@@ -41,7 +41,7 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
 
 template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
-::SetC(const double _arg) 
+::SetC(const double _arg)
 {
     this->m_C = _arg;
     this->Modified();
@@ -49,7 +49,7 @@ void ConjugateGradientImageFilter<OutputImageType>
 
 template<typename OutputImageType>
 const double ConjugateGradientImageFilter<OutputImageType>
-::GetC() 
+::GetC()
 {
     return this->m_C;
 }
@@ -58,7 +58,7 @@ template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
 ::CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne)
 /* Perform the calculation of the residual cost function at each iteration :
- *  
+ *
  *  Cost_residuals(kPlusOne) = (1/2) <X_kPlusOne,-R_kPlusOne-B> + C ( where <.,.> is the scalar product )
  *
  *                                                  /                    \
@@ -66,12 +66,12 @@ void ConjugateGradientImageFilter<OutputImageType>
  *                                                  \                    /
  *
  *                           = (1/2) X_kPlusOne^T A X_kPlusOne - B^T X_kPlusOne + C
- *  
- *  which is the value of the quadratic form the minimization of which is equivalent to resolve AX=B by CG.                       
+ *
+ *  which is the value of the quadratic form the minimization of which is equivalent to resolve AX=B by CG.
  *
  *           -> X_kPlusOne is the current estimate.
  *           -> A and B are the components of the normal equations AX=B resolved by the CG algorithm.
- *  	     -> R_kPlusOne is the CG residual (steepest descent direction).
+ *         -> R_kPlusOne is the CG residual (steepest descent direction).
  *           -> C is the constant involved in the cost function. If it is known, it can be added by setting its value to the attribute C (default 0).
  */
 {
@@ -108,7 +108,7 @@ void ConjugateGradientImageFilter<OutputImageType>
 
 template<typename OutputImageType>
 const std::vector<double> &ConjugateGradientImageFilter<OutputImageType>
-::GetResidualCosts() 
+::GetResidualCosts()
 {
     return this->m_ResidualCosts;
 }
@@ -126,7 +126,7 @@ void ConjugateGradientImageFilter<OutputImageType>::SetB(const OutputImageType* 
 }
 
 template<typename OutputImageType>
-typename ConjugateGradientImageFilter<OutputImageType>::OutputImagePointer 
+typename ConjugateGradientImageFilter<OutputImageType>::OutputImagePointer
 ConjugateGradientImageFilter<OutputImageType>::GetX()
 {
   return static_cast< OutputImageType * >
@@ -134,7 +134,7 @@ ConjugateGradientImageFilter<OutputImageType>::GetX()
 }
 
 template<typename OutputImageType>
-typename ConjugateGradientImageFilter<OutputImageType>::OutputImagePointer 
+typename ConjugateGradientImageFilter<OutputImageType>::OutputImagePointer
 ConjugateGradientImageFilter<OutputImageType>::GetB()
 {
   return static_cast< OutputImageType * >
@@ -249,7 +249,7 @@ void ConjugateGradientImageFilter<OutputImageType>
       X_kPlusOne->DisconnectPipeline();
 
       if (m_IterationCosts) {
-	  CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
+    CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
       }
 
       if (!this->m_IterFileName.empty())
@@ -283,7 +283,7 @@ void ConjugateGradientImageFilter<OutputImageType>
     }
 
   this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
-  
+
   // Release the data from internal filters
   if (m_NumberOfIterations > 1)
     {
