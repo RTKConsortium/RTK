@@ -22,7 +22,6 @@
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -92,36 +91,6 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
 
-  // Read weights if given, otherwise default to weights all equal to one
-  itk::ImageSource< ProjectionStackType >::Pointer weightsSource;
-  if(args_info.weights_given)
-    {
-    typedef itk::ImageFileReader<  ProjectionStackType > WeightsReaderType;
-    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
-    weightsReader->SetFileName( args_info.weights_arg );
-    weightsSource = weightsReader;
-    }
-  else
-    {
-    typedef rtk::ConstantImageSource< ProjectionStackType > ConstantWeightsSourceType;
-    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
-
-    // Set the weights to be like the projections
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
-    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
-    constantWeightsSource->SetConstant(1.0);
-    weightsSource = constantWeightsSource;
-    }
-
-  // Apply the displaced detector weighting now, then re-order the projection weights
-  // containing everything
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType> DisplacedDetectorFilterType;
-  DisplacedDetectorFilterType::Pointer displaced = DisplacedDetectorFilterType::New();
-  displaced->SetInput(weightsSource->GetOutput());
-  displaced->SetGeometry(geometryReader->GetOutputObject());
-  displaced->SetPadOnTruncatedSide(false);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( displaced->Update() )
-
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
@@ -146,12 +115,6 @@ int main(int argc, char * argv[])
   orderedProjs->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
   orderedProjs->Allocate();
   orderedProjs->FillBuffer(0);
-  // Stack of projection weights
-  ProjectionStackType::Pointer orderedProjectionWeights = ProjectionStackType::New();
-  orderedProjectionWeights->CopyInformation(reader->GetOutput());
-  orderedProjectionWeights->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
-  orderedProjectionWeights->Allocate();
-  orderedProjectionWeights->FillBuffer(0);
 
   // Declare regions used in the loop
   ProjectionStackType::RegionType unorderedRegion = orderedProjs->GetLargestPossibleRegion();
@@ -171,16 +134,10 @@ int main(int argc, char * argv[])
     itk::ImageRegionIterator<ProjectionStackType> unorderedProjsIt(reader->GetOutput(), unorderedRegion);
     itk::ImageRegionIterator<ProjectionStackType> orderedProjsIt(orderedProjs, orderedRegion);
 
-    itk::ImageRegionIterator<ProjectionStackType> unorderedWeightsIt(displaced->GetOutput(), unorderedRegion);
-    itk::ImageRegionIterator<ProjectionStackType> orderedWeightsIt(orderedProjectionWeights, orderedRegion);
-
     // Actual copy
     while(!orderedProjsIt.IsAtEnd())
       {
       orderedProjsIt.Set(unorderedProjsIt.Get());
-      orderedWeightsIt.Set(unorderedWeightsIt.Get());
-      ++orderedWeightsIt;
-      ++unorderedWeightsIt;
       ++orderedProjsIt;
       ++unorderedProjsIt;
       }
@@ -204,9 +161,7 @@ int main(int argc, char * argv[])
     // Copy the signal
     orderedSignal.push_back(signal[permutation[proj]]);
     }
-  displaced->GetOutput()->ReleaseData();
   reader->GetOutput()->ReleaseData();
-  weightsSource->GetOutput()->ReleaseData();
 
   // Set the forward and back projection filters to be used
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ConjugateGradientFilterType;
@@ -218,7 +173,6 @@ int main(int argc, char * argv[])
   conjugategradient->SetCudaConjugateGradient(args_info.cudacg_flag);
 
   // Set the newly ordered arguments
-  conjugategradient->SetInputProjectionWeights(orderedProjectionWeights);
   conjugategradient->SetInputProjectionStack( orderedProjs );
   conjugategradient->SetGeometry( orderedGeometry );
   conjugategradient->SetWeights(orderedWeights);

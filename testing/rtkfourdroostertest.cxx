@@ -353,17 +353,11 @@ int main(int, char** )
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
-  // Create a uniform weights map
-  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
-  uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
-  uniformWeightsSource->SetConstant(1.0);
-
   // Set the forward and back projection filters to be used
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
   rooster->SetInputVolumeSeries(fourdSource->GetOutput() );
   rooster->SetInputProjectionStack(pasteFilter->GetOutput());
-  rooster->SetInputProjectionWeights(uniformWeightsSource->GetOutput());
   rooster->SetGeometry(geometry);
   rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetSignal(rtk::ReadSignalFile("signal.txt"));

@@ -22,7 +22,6 @@
 
 #include <itkArray2D.h>
 #include <itkMultiplyImageFilter.h>
-#include <itkExtractImageFilter.h>
 
 #include "rtkConstantImageSource.h"
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
@@ -30,12 +29,14 @@
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaInterpolateImageFilter.h"
 #  include "rtkCudaSplatImageFilter.h"
 #  include "rtkCudaConstantVolumeSource.h"
 #  include "rtkCudaConstantVolumeSeriesSource.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
 #endif
 
 namespace rtk
@@ -99,15 +100,14 @@ namespace rtk
    * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterSource4D [label="", fixedsize="false", width=0, height=0, shape=none];
-   * Multiply [ label="MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    *
    * Input0 -> Interpolation;
    * SourceVol -> Interpolation;
    * Interpolation -> ForwardProj;
    * SourceVol2 -> BackProj;
-   * ForwardProj -> Multiply;
-   * Input2 -> Multiply;
-   * Multiply -> BackProj;
+   * ForwardProj -> Displaced;
+   * Displaced -> BackProj;
    * BackProj -> Splat;
    * Splat -> AfterSplat[arrowhead=none];
    * AfterSplat -> Output;
@@ -151,10 +151,6 @@ public:
     void SetInputProjectionStack(const ProjectionStackType* Projections);
     typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
-    /** Set/Get the projection weights */
-    void SetInputProjectionWeights(const VolumeType* ProjectionWeights);
-    typename ProjectionStackType::ConstPointer GetInputProjectionWeights();
-
     typedef rtk::BackProjectionImageFilter< ProjectionStackType, ProjectionStackType >          BackProjectionFilterType;
     typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >       ForwardProjectionFilterType;
     typedef rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>          InterpolationFilterType;
@@ -162,8 +158,7 @@ public:
     typedef rtk::ConstantImageSource<VolumeType>                                                ConstantVolumeSourceType;
     typedef rtk::ConstantImageSource<ProjectionStackType>                                       ConstantProjectionStackSourceType;
     typedef rtk::ConstantImageSource<VolumeSeriesType>                                          ConstantVolumeSeriesSourceType;
-    typedef itk::MultiplyImageFilter<ProjectionStackType>                                       MultiplyFilterType;
-    typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>                   ExtractFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                              DisplacedDetectorFilterType;
 
     /** Pass the backprojection filter to ProjectionStackToFourD*/
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
@@ -214,8 +209,7 @@ protected:
     typename ConstantVolumeSourceType::Pointer            m_ConstantVolumeSource2;
     typename ConstantProjectionStackSourceType::Pointer   m_ConstantProjectionStackSource;
     typename ConstantVolumeSeriesSourceType::Pointer      m_ConstantVolumeSeriesSource;
-    typename MultiplyFilterType::Pointer                  m_MultiplyFilter;
-    typename ExtractFilterType::Pointer                   m_ExtractFilter;
+    typename DisplacedDetectorFilterType::Pointer         m_DisplacedDetectorFilter;
 
     ThreeDCircularProjectionGeometry::Pointer             m_Geometry;
     bool                                                  m_UseCudaInterpolation;
