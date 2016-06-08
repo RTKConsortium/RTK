@@ -50,26 +50,6 @@ TARGET_LINK_LIBRARIES(RTK lpsolve55)
 #=========================================================
 
 #=========================================================
-# OpenCL library stuff
-IF(RTK_USE_OPENCL)
-  SET(RTK_LIBRARIES ${RTK_LIBRARIES} rtkopencl)
-  ADD_LIBRARY(rtkopencl
-              rtkOpenCLUtilities.cxx
-              rtkOpenCLFDKBackProjectionImageFilter.cxx)
-  TARGET_LINK_LIBRARIES(rtkopencl ${OPENCL_LIBRARIES} ${ITK_LIBRARIES})
-
-  FILE(GLOB openclSRCs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cl)
-  ADD_CUSTOM_TARGET(openclSRCCopy ALL COMMENT "Copying OpenCL source files")
-  FOREACH(openclSRC ${openclSRCs})
-    ADD_CUSTOM_COMMAND(TARGET openclSRCCopy
-                       COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${openclSRC}
-                                                        ${RTK_BINARY_DIR}/${openclSRC})
-  ENDFOREACH(openclSRC)
-  ADD_DEPENDENCIES(rtkopencl openclSRCCopy)
-ENDIF(RTK_USE_OPENCL)
-#=========================================================
-
-#=========================================================
 # Cuda library stuff
 IF (RTK_USE_CUDA)
   SET (RTK_LIBRARIES ${RTK_LIBRARIES} rtkcuda ITKCudaCommon ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY} ${CUDA_CUFFT_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
@@ -194,13 +174,6 @@ IF(NOT RTK_INSTALL_NO_LIBRARIES)
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
   ENDIF(RTK_USE_CUDA)
-
-  IF(OPENCL_FOUND)
-    INSTALL(TARGETS rtkopencl
-      RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
-      LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
-      ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  ENDIF(OPENCL_FOUND)
 ENDIF(NOT RTK_INSTALL_NO_LIBRARIES)
 #=========================================================
 

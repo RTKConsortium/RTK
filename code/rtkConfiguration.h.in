@@ -31,12 +31,8 @@ namespace rtk
 #ifndef CUDA_FOUND
 #cmakedefine CUDA_FOUND
 #endif
-#ifndef OPENCL_FOUND
-#cmakedefine OPENCL_FOUND
-#endif
 #cmakedefine RTK_TIME_EACH_FILTER
 #cmakedefine RTK_USE_CUDA
-#cmakedefine RTK_USE_OPENCL
 #cmakedefine RTK_BUILD_SHARED_LIBS 1
 #ifndef SLAB_SIZE
   #define SLAB_SIZE @RTK_CUDA_PROJECTIONS_SLAB_SIZE@
