@@ -20,6 +20,8 @@
 #define __rtkXRadRawToAttenuationImageFilter_hxx
 
 #include <itkImageFileReader.h>
+#include <itkImageRegionIterator.h>
+#include "rtkConfiguration.h"
 
 namespace rtk
 {
