@@ -20,8 +20,9 @@
 
 #include "rtkPhasesToInterpolationWeights.h"
 
-#include "itksys/SystemTools.hxx"
+#include <itksys/SystemTools.hxx>
 #include <vcl_limits.h>
+#include <itkMath.h>
 
 namespace rtk
 {
@@ -95,7 +96,7 @@ void PhasesToInterpolationWeights::Parse()
     {
     this->GetNextField(entry);
     if ((m_SelectedProjections.size() == 0) || (m_SelectedProjections[j]))
-      projectionPhases.push_back(round(atof(entry.c_str()) * 1000. ) / 1000.);
+      projectionPhases.push_back(itk::Math::Round<float>(atof(entry.c_str()) * 1000. ) / 1000.);
     }
 
   // Compute the instant of the cycle each phase represents
@@ -159,8 +160,8 @@ void PhasesToInterpolationWeights::Parse()
     // The last phase is equal to the first one (see comment above when filling "reconstructedFrames")
     if (upper==this->m_NumberOfReconstructedFrames) upper=0;
 
-    m_Array2D[lower][c] = round(lowerWeight * 100.) / 100.;
-    m_Array2D[upper][c] = round(upperWeight * 100.) / 100.;
+    m_Array2D[lower][c] = itk::Math::Round<float>(lowerWeight * 100.) / 100.;
+    m_Array2D[upper][c] = itk::Math::Round<float>(upperWeight * 100.) / 100.;
     }
   this->m_InputStream.close();
 }

@@ -9,8 +9,6 @@
 
 #ifdef USE_CUDA
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
-#elif USE_OPENCL
-#  include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
 #else
 #  include "rtkFDKConeBeamReconstructionFilter.h"
 #endif
@@ -124,8 +122,6 @@ int main(int, char** )
   // FDK reconstruction filtering
 #ifdef USE_CUDA
   typedef rtk::CudaFDKConeBeamReconstructionFilter                FDKType;
-#elif USE_OPENCL
-  typedef rtk::OpenCLFDKConeBeamReconstructionFilter              FDKType;
 #else
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKType;
 #endif
@@ -159,7 +155,7 @@ int main(int, char** )
   direction[2][0] = 0;
   direction[2][1] = 0;
   direction[2][2] = 1;
-  tomographySource->SetDirection(direction);
+  tomographySource->SetDirection(direction); // Splitting along direction 1, NOT 2
   origin[0] = -127.;
   origin[1] =  127.;
   origin[2] = -127.;
@@ -182,7 +178,7 @@ int main(int, char** )
   direction[2][0] = 0;
   direction[2][1] = 0;
   direction[2][2] = 1;
-  tomographySource->SetDirection(direction);
+  tomographySource->SetDirection(direction); // Splitting along direction 1, NOT 2
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;

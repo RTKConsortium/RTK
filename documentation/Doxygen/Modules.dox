@@ -7,10 +7,6 @@
 */
 
 /**
- \defgroup OpenCLImageToImageFilter Filters using the GPU with OpenCL.
-*/
-
-/**
  \defgroup CudaImageToImageFilter Filters using the GPU with CUDA.
 */
 

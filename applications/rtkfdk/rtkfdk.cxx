@@ -30,9 +30,6 @@
 #  include "rtkCudaParkerShortScanImageFilter.h"
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
-#ifdef RTK_USE_OPENCL
-#  include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
-#endif
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
 
@@ -88,13 +85,6 @@ int main(int argc, char * argv[])
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
     }
-#endif
-#ifndef RTK_USE_OPENCL
-   if(!strcmp(args_info.hardware_arg, "opencl") )
-     {
-     std::cerr << "The program has not been compiled with opencl option" << std::endl;
-     return EXIT_FAILURE;
-     }
 #endif
 
   // Displaced detector weighting
@@ -164,10 +154,6 @@ int main(int argc, char * argv[])
   // FDK reconstruction filtering
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
   FDKCPUType::Pointer feldkamp;
-#ifdef RTK_USE_OPENCL
-  typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
-  FDKOPENCLType::Pointer feldkampOCL;
-#endif
 #ifdef RTK_USE_CUDA
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
   FDKCUDAType::Pointer feldkampCUDA;
@@ -202,21 +188,6 @@ int main(int argc, char * argv[])
     pfeldkamp = feldkampCUDA->GetOutput();
     }
 #endif
-#ifdef RTK_USE_OPENCL
-  else if(!strcmp(args_info.hardware_arg, "opencl") )
-    {
-    if(args_info.signal_given && args_info.dvf_given)
-      {
-      std::cerr << "Motion compensation is not supported in OpenCL. Aborting" << std::endl;
-      return EXIT_FAILURE;
-      }
-
-    feldkampOCL = FDKOPENCLType::New();
-    SET_FELDKAMP_OPTIONS( feldkampOCL );
-    pfeldkamp = feldkampOCL->GetOutput();
-    }
-#endif
-
 
   // Streaming depending on streaming capability of writer
   typedef itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType> StreamerType;
@@ -246,10 +217,6 @@ int main(int argc, char * argv[])
 #ifdef RTK_USE_CUDA
     else if(!strcmp(args_info.hardware_arg, "cuda") )
       feldkampCUDA->PrintTiming(std::cout);
-#endif
-#ifdef RTK_USE_OPENCL
-    else if(!strcmp(args_info.hardware_arg, "opencl") )
-      feldkampOCL->PrintTiming(std::cout);
 #endif
     std::cout << std::endl;
     }

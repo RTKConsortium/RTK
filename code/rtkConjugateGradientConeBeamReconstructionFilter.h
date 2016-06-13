@@ -44,7 +44,7 @@ namespace rtk
    *
    * This filter implements the ConjugateGradient method.
    * ConjugateGradient attempts to find the f that minimizes
-   * || sqrt(D) (Rf -p) ||_2^2 + gamma || grad f ||_2^2
+   * (1/2).|| sqrt(D) (Rf -p) ||_2^2 + (1/2).gamma.|| grad f ||_2^2
    * with R the forward projection operator,
    * p the measured projections, and D the displaced detector weighting operator.
    *
@@ -147,6 +147,7 @@ public:
     typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                  DisplacedDetectorFilterType;
     typedef rtk::ConstantImageSource<TOutputImage>                           ConstantImageSourceType;
     typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                    DivideFilterType;
+    typedef itk::StatisticsImageFilter<TOutputImage>                         StatisticsImageFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg);
@@ -163,6 +164,9 @@ public:
     itkSetMacro(MeasureExecutionTimes, bool)
     itkGetMacro(MeasureExecutionTimes, bool)
 
+    itkSetMacro(IterationCosts, bool)
+    itkGetMacro(IterationCosts, bool)
+
     /** If Weighted and Preconditioned, computes preconditioning weights to speed up CG convergence */
     itkSetMacro(Preconditioned, bool)
     itkGetMacro(Preconditioned, bool)
@@ -177,6 +181,9 @@ public:
     /** Get / Set whether conjugate gradient should be performed on GPU */
     itkGetMacro(CudaConjugateGradient, bool)
     itkSetMacro(CudaConjugateGradient, bool)
+
+    /** Getter for ResidualCosts storing array **/
+    const std::vector<double> &GetResidualCosts();
 
 protected:
     ConjugateGradientConeBeamReconstructionFilter();
@@ -216,10 +223,11 @@ private:
     void operator=(const Self &);  //purposely not implemented
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-
+    
     int   m_NumberOfIterations;
     float m_Gamma;
     bool  m_MeasureExecutionTimes;
+    bool  m_IterationCosts;
     bool  m_Preconditioned;
     bool  m_Regularized;
     bool  m_CudaConjugateGradient;
