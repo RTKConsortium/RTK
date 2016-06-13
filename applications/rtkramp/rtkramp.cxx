@@ -98,7 +98,7 @@ int main(int argc, char * argv[])
   else
 #endif
     streamer->SetInput( rampFilter->GetOutput() );
-  streamer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024*1024*4) );
+  streamer->SetNumberOfStreamDivisions( 1+reader->GetOutput()->GetLargestPossibleRegion().GetSize(2) / args_info.subsetsize_arg );
 
   itk::TimeProbe probe;
   probe.Start();
