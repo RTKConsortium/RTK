@@ -151,7 +151,7 @@ int main(int , char** )
     jfp->SetGeometry(geometry);
     stream->Update();
 
-    CheckImageQuality<OutputImageType>(rbi->GetOutput(), stream->GetOutput(), 1.28, 44.0, 255.0);
+    CheckImageQuality<OutputImageType>(stream->GetOutput(), rbi->GetOutput(), 1.28, 44.0, 255.0);
     std::cout << "\n\nTest of quarter #" << q << " PASSED! " << std::endl;
   }
 
@@ -175,7 +175,7 @@ int main(int , char** )
   jfp->SetGeometry( geometry );
   stream->Update();
 
-  CheckImageQuality<OutputImageType>(rbi->GetOutput(), stream->GetOutput(), 1.28, 44.0, 255.0);
+  CheckImageQuality<OutputImageType>(stream->GetOutput(), rbi->GetOutput(), 1.28, 44.0, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 3: Shepp-Logan, outer ray source ******" << std::endl;
@@ -207,7 +207,7 @@ int main(int , char** )
   jfp->SetInput( 1, dsl->GetOutput() );
   stream->Update();
 
-  CheckImageQuality<OutputImageType>(slp->GetOutput(), stream->GetOutput(), 1.28, 44, 255.0);
+  CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 4: Shepp-Logan, inner ray source ******" << std::endl;
@@ -221,7 +221,7 @@ int main(int , char** )
   jfp->SetGeometry( geometry );
   stream->Update();
 
-  CheckImageQuality<OutputImageType>(slp->GetOutput(), stream->GetOutput(), 1.28, 44, 255.0);
+  CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
