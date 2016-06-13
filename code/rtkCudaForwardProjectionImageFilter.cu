@@ -40,7 +40,6 @@
 // TEXTURES AND CONSTANTS //
 
 texture<float, 3, cudaReadModeElementType> tex_vol;
-texture<float, 1, cudaReadModeElementType> tex_matrix;
 
 __constant__ int3 c_projSize;
 __constant__ float3 c_boxMin;
@@ -50,7 +49,6 @@ __constant__ int3 c_volSize;
 __constant__ float c_tStep;
 __constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_sourcePos[SLAB_SIZE * 3]; //Can process stacks of at most SLAB_SIZE projections
-//__constant__ float3 spacingSquare;  // inverse view matrix
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -247,8 +245,8 @@ void kernel_forwardProject_noTexture(float *dev_proj_in, float *dev_proj_out, fl
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
-CUDA_forward_project( int projections_size[3],
-                      int vol_size[3],
+CUDA_forward_project( int projSize[3],
+                      int volSize[3],
                       float* matrices,
                       float *dev_proj_in,
                       float *dev_proj_out,
@@ -261,26 +259,24 @@ CUDA_forward_project( int projections_size[3],
                       bool useCudaTexture)
 {
   // Constant memory
-  float3 dev_boxMin = make_float3(box_min[0], box_min[1], box_min[2]);
-  int3 dev_projSize = make_int3(projections_size[0], projections_size[1], projections_size[2]);
-  float3 dev_boxMax = make_float3(box_max[0], box_max[1], box_max[2]);
-  float3 dev_spacing = make_float3(spacing[0], spacing[1], spacing[2]);
-  int3 dev_vol_size = make_int3(vol_size[0], vol_size[1], vol_size[2]);
-  cudaMemcpyToSymbol(c_boxMin, &dev_boxMin, sizeof(float3));
-  cudaMemcpyToSymbol(c_projSize, &dev_projSize, sizeof(int3));
-  cudaMemcpyToSymbol(c_boxMax, &dev_boxMax, sizeof(float3));
-  cudaMemcpyToSymbol(c_spacing, &dev_spacing, sizeof(float3));
-  cudaMemcpyToSymbol(c_volSize, &dev_vol_size, sizeof(int3));
+//  float3 dev_boxMin = make_float3(box_min[0], box_min[1], box_min[2]);
+//  float3 dev_boxMax = make_float3(box_max[0], box_max[1], box_max[2]);
+//  float3 dev_spacing = make_float3(spacing[0], spacing[1], spacing[2]);
+  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
+  cudaMemcpyToSymbol(c_boxMin, box_min, sizeof(float3));
+  cudaMemcpyToSymbol(c_boxMax, box_max, sizeof(float3));
+  cudaMemcpyToSymbol(c_spacing, spacing, sizeof(float3));
+  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
 
   dim3 dimBlock  = dim3(16, 16, 1);
-  dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.x));
+  dim3 dimGrid = dim3(iDivUp(projSize[0], dimBlock.x), iDivUp(projSize[1], dimBlock.x));
 
   // Copy the source position matrix into a float3 in constant memory
-  cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projections_size[2]);
+  cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projSize[2]);
 
   // Copy the projection matrices into constant memory
-  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projections_size[2]);
+  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projSize[2]);
 
   if (useCudaTexture)
     {
@@ -292,7 +288,7 @@ CUDA_forward_project( int projections_size[3],
     tex_vol.filterMode = cudaFilterModeLinear;      // linear interpolation
 
     // Copy volume data to array, bind the array to the texture
-    cudaExtent volExtent = make_cudaExtent(vol_size[0], vol_size[1], vol_size[2]);
+    cudaExtent volExtent = make_cudaExtent(volSize[0], volSize[1], volSize[2]);
     cudaArray *array_vol;
     static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
     cudaMalloc3DArray((cudaArray**)&array_vol, &channelDesc, volExtent);
@@ -300,7 +296,7 @@ CUDA_forward_project( int projections_size[3],
 
     // Copy data to 3D array
     cudaMemcpy3DParms copyParams = {0};
-    copyParams.srcPtr   = make_cudaPitchedPtr(dev_vol, vol_size[0]*sizeof(float), vol_size[0], vol_size[1]);
+    copyParams.srcPtr   = make_cudaPitchedPtr(dev_vol, volSize[0]*sizeof(float), volSize[0], volSize[1]);
     copyParams.dstArray = (cudaArray*)array_vol;
     copyParams.extent   = volExtent;
     copyParams.kind     = cudaMemcpyDeviceToDevice;
