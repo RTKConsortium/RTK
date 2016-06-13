@@ -9,8 +9,6 @@
 
 #ifdef USE_CUDA
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
-#elif USE_OPENCL
-#  include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
 #else
 #  include "rtkFDKConeBeamReconstructionFilter.h"
 #endif
@@ -124,8 +122,6 @@ int main(int, char** )
   // FDK reconstruction filtering
 #ifdef USE_CUDA
   typedef rtk::CudaFDKConeBeamReconstructionFilter                FDKType;
-#elif USE_OPENCL
-  typedef rtk::OpenCLFDKConeBeamReconstructionFilter              FDKType;
 #else
   typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKType;
 #endif

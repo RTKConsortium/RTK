@@ -28,9 +28,6 @@
 #ifdef RTK_USE_CUDA
 # include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
-#ifdef RTK_USE_OPENCL
-# include "rtkOpenCLFDKConeBeamReconstructionFilter.h"
-#endif
 
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileWriter.h>
@@ -225,10 +222,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
   FDKCUDAType::Pointer feldkampCUDA = FDKCUDAType::New();
 #endif
-#ifdef RTK_USE_OPENCL
-  typedef rtk::OpenCLFDKConeBeamReconstructionFilter FDKOPENCLType;
-  FDKOPENCLType::Pointer feldkampOCL = FDKOPENCLType::New();
-#endif
   if(!strcmp(threadInfo->args_info->hardware_arg, "cpu") )
     {
     SET_FELDKAMP_OPTIONS(feldkampCPU);
@@ -239,15 +232,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
     SET_FELDKAMP_OPTIONS( feldkampCUDA );
 #else
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    exit(EXIT_FAILURE);
-#endif
-    }
-  else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
-    {
-#ifdef RTK_USE_OPENCL
-    SET_FELDKAMP_OPTIONS( feldkampOCL );
-#else
-    std::cerr << "The program has not been compiled with opencl option" << std::endl;
     exit(EXIT_FAILURE);
 #endif
     }
@@ -343,17 +327,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
         TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
         }
 #endif
-#ifdef RTK_USE_OPENCL
-      else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
-        {
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() )
-        CPUOutputImageType::Pointer pimg = feldkampOCL->GetOutput();
-        pimg->DisconnectPipeline();
-        feldkampOCL->SetInput( pimg );
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() )
-        TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->PropagateRequestedRegion() );
-        }
-#endif
       if(threadInfo->args_info->verbose_flag)
         std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                   << " has been processed in reconstruction." << std::endl;
@@ -383,17 +356,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->GetOutput()->PropagateRequestedRegion() );
           }
 #endif
-#ifdef RTK_USE_OPENCL
-        else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
-          {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() )
-          CPUOutputImageType::Pointer pimg = feldkampOCL->GetOutput();
-          pimg->DisconnectPipeline();
-          feldkampOCL->SetInput( pimg );
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->UpdateOutputInformation() )
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->GetOutput()->PropagateRequestedRegion() );
-          }
-#endif
         if(threadInfo->args_info->verbose_flag)
           std::cout << "Projection #" << subsetRegion.GetIndex(Dimension-1)
                     << " has been processed in reconstruction." << std::endl;
@@ -411,13 +373,6 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
           {
           TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCUDA->Update() )
           writer->SetInput( feldkampCUDA->GetOutput() );
-          }
-#endif
-#ifdef RTK_USE_OPENCL
-        else if(!strcmp(threadInfo->args_info->hardware_arg, "opencl") )
-          {
-          TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampOCL->Update() )
-          writer->SetInput( feldkampOCL->GetOutput() );
           }
 #endif
         if(threadInfo->args_info->verbose_flag)

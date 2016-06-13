@@ -164,6 +164,12 @@ CUDA_back_project(
   tex_proj.filterMode = cudaFilterModeLinear;
   tex_proj.normalized = false; // don't access with normalized texture coords
 
+  tex_proj_3D.addressMode[0] = cudaAddressModeBorder;
+  tex_proj_3D.addressMode[1] = cudaAddressModeBorder;
+  tex_proj_3D.addressMode[2] = cudaAddressModeBorder;
+  tex_proj_3D.filterMode = cudaFilterModeLinear;
+  tex_proj_3D.normalized = false; // don't access with normalized texture coords
+
   // Copy projection data to array, bind the array to the texture
   cudaExtent projExtent = make_cudaExtent(proj_size[0], proj_size[1], proj_size[2]);
   cudaArray *array_proj;

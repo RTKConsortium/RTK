@@ -6,10 +6,6 @@ IF(RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtkfdk rtkcuda)
 ENDIF()
 
-IF(RTK_USE_OPENCL)
-  TARGET_LINK_LIBRARIES(rtkfdk rtkopencl)
-ENDIF()
-
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
   FOREACH(EXE_NAME rtkfdk) 

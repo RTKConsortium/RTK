@@ -6,10 +6,6 @@ IF (RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtkadmmwavelets rtkcuda)
 ENDIF (RTK_USE_CUDA)
 
-IF (OPENCL_FOUND)
-  TARGET_LINK_LIBRARIES(rtkadmmwavelets rtkopencl)
-ENDIF (OPENCL_FOUND)
-
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
   FOREACH(EXE_NAME rtkadmmwavelets) 

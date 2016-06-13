@@ -6,10 +6,6 @@ IF(RTK_USE_CUDA)
   TARGET_LINK_LIBRARIES(rtklastdimensionl0gradientdenoising rtkcuda)
 ENDIF()
 
-IF(RTK_USE_OPENCL)
-  TARGET_LINK_LIBRARIES(rtklastdimensionl0gradientdenoising rtkopencl)
-ENDIF()
-
 # Installation code
 IF(NOT RTK_INSTALL_NO_EXECUTABLES)
   FOREACH(EXE_NAME rtklastdimensionl0gradientdenoising) 
