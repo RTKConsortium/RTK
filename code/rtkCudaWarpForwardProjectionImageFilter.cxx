@@ -251,7 +251,7 @@ CudaWarpForwardProjectionImageFilter
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
+    Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
     d_matrix =
       volIndexTranslation.GetVnlMatrix() *
       volPPToIndex.GetVnlMatrix() *
