@@ -22,6 +22,7 @@
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSignalToInterpolationWeights.h"
+#include "rtkReorderProjectionsImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -94,65 +95,19 @@ int main(int argc, char * argv[])
   // Re-order geometry and projections
   // In the new order, projections with identical phases are packed together
   std::vector<double> signal = rtk::ReadSignalFile(args_info.signal_arg);
-  std::vector<unsigned int> permutation = rtk::GetSortingPermutation(signal);
+  typedef rtk::ReorderProjectionsImageFilter<ProjectionStackType> ReorderProjectionsFilterType;
+  ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
+  reorder->SetInput(reader->GetOutput());
+  reorder->SetInputGeometry(geometryReader->GetOutputObject());
+  reorder->SetInputSignal(signal);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reorder->Update() )
 
-  // Create a new object for each object that has to be reordered
-  // Geometry
-  rtk::ThreeDCircularProjectionGeometry::Pointer orderedGeometry = rtk::ThreeDCircularProjectionGeometry::New();
-  // Signal vector
-  std::vector<double> orderedSignal;
-  // Stack of projection
-  ProjectionStackType::Pointer orderedProjs = ProjectionStackType::New();
-  orderedProjs->CopyInformation(reader->GetOutput());
-  orderedProjs->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
-  orderedProjs->Allocate();
-  orderedProjs->FillBuffer(0);
-
-  // Declare regions used in the loop
-  ProjectionStackType::RegionType unorderedRegion = orderedProjs->GetLargestPossibleRegion();
-  ProjectionStackType::RegionType orderedRegion = orderedProjs->GetLargestPossibleRegion();
-  unorderedRegion.SetSize(2, 1);
-  orderedRegion.SetSize(2, 1);
-
-  // Perform the copies
-  for (unsigned int proj=0; proj<orderedProjs->GetLargestPossibleRegion().GetSize()[2]; proj++)
-    {
-    // Copy the projection data and the projection weights
-
-    // Regions
-    unorderedRegion.SetIndex(2, permutation[proj]);
-    orderedRegion.SetIndex(2, proj);
-
-    itk::ImageRegionIterator<ProjectionStackType> unorderedProjsIt(reader->GetOutput(), unorderedRegion);
-    itk::ImageRegionIterator<ProjectionStackType> orderedProjsIt(orderedProjs, orderedRegion);
-
-    // Actual copy
-    while(!orderedProjsIt.IsAtEnd())
-      {
-      orderedProjsIt.Set(unorderedProjsIt.Get());
-      ++orderedProjsIt;
-      ++unorderedProjsIt;
-      }
-
-    // Copy the geometry
-    orderedGeometry->AddProjectionInRadians( geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[permutation[proj]],
-                                             geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[permutation[proj]],
-                                             geometryReader->GetOutputObject()->GetGantryAngles()[permutation[proj]],
-                                             geometryReader->GetOutputObject()->GetProjectionOffsetsX()[permutation[proj]],
-                                             geometryReader->GetOutputObject()->GetProjectionOffsetsY()[permutation[proj]],
-                                             geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[permutation[proj]],
-                                             geometryReader->GetOutputObject()->GetInPlaneAngles()[permutation[proj]],
-                                             geometryReader->GetOutputObject()->GetSourceOffsetsX()[permutation[proj]],
-                                             geometryReader->GetOutputObject()->GetSourceOffsetsY()[permutation[proj]]);
-
-    // Copy the signal
-    orderedSignal.push_back(signal[permutation[proj]]);
-    }
+  // Release the memory holding the stack of original projections
   reader->GetOutput()->ReleaseData();
 
   // Compute the interpolation weights
   rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
-  signalToInterpolationWeights->SetSignal(orderedSignal);
+  signalToInterpolationWeights->SetSignal(reorder->GetOutputSignal());
   signalToInterpolationWeights->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
 
@@ -166,10 +121,10 @@ int main(int argc, char * argv[])
   conjugategradient->SetCudaConjugateGradient(args_info.cudacg_flag);
 
   // Set the newly ordered arguments
-  conjugategradient->SetInputProjectionStack( orderedProjs );
-  conjugategradient->SetGeometry( orderedGeometry );
+  conjugategradient->SetInputProjectionStack( reorder->GetOutput() );
+  conjugategradient->SetGeometry( reorder->GetOutputGeometry() );
   conjugategradient->SetWeights(signalToInterpolationWeights->GetOutput());
-  conjugategradient->SetSignal(orderedSignal);
+  conjugategradient->SetSignal(reorder->GetOutputSignal());
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
