@@ -21,7 +21,7 @@
 
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkPhasesToInterpolationWeights.h"
+#include "rtkSignalToInterpolationWeights.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -91,12 +91,6 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
 
-  // Read the phases file
-  rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName(args_info.signal_arg);
-  phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
-
   // Re-order geometry and projections
   // In the new order, projections with identical phases are packed together
   std::vector<double> signal = rtk::ReadSignalFile(args_info.signal_arg);
@@ -107,8 +101,6 @@ int main(int argc, char * argv[])
   rtk::ThreeDCircularProjectionGeometry::Pointer orderedGeometry = rtk::ThreeDCircularProjectionGeometry::New();
   // Signal vector
   std::vector<double> orderedSignal;
-  // Array of interpolation and splat weights
-  itk::Array2D<float> orderedWeights = itk::Array2D<float> (phaseReader->GetOutput().rows(), phaseReader->GetOutput().cols());
   // Stack of projection
   ProjectionStackType::Pointer orderedProjs = ProjectionStackType::New();
   orderedProjs->CopyInformation(reader->GetOutput());
@@ -143,25 +135,26 @@ int main(int argc, char * argv[])
       }
 
     // Copy the geometry
-    orderedGeometry->AddProjectionInRadians(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[permutation[proj]],
-                                   geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[permutation[proj]],
-                                   geometryReader->GetOutputObject()->GetGantryAngles()[permutation[proj]],
-                                   geometryReader->GetOutputObject()->GetProjectionOffsetsX()[permutation[proj]],
-                                   geometryReader->GetOutputObject()->GetProjectionOffsetsY()[permutation[proj]],
-                                   geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[permutation[proj]],
-                                   geometryReader->GetOutputObject()->GetInPlaneAngles()[permutation[proj]],
-                                   geometryReader->GetOutputObject()->GetSourceOffsetsX()[permutation[proj]],
-                                   geometryReader->GetOutputObject()->GetSourceOffsetsY()[permutation[proj]]);
-
-
-    // Copy a column of the weights array
-    for(unsigned int row=0; row<phaseReader->GetOutput().rows(); row++)
-      orderedWeights[row][proj] = phaseReader->GetOutput()[row][permutation[proj]];
+    orderedGeometry->AddProjectionInRadians( geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[permutation[proj]],
+                                             geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[permutation[proj]],
+                                             geometryReader->GetOutputObject()->GetGantryAngles()[permutation[proj]],
+                                             geometryReader->GetOutputObject()->GetProjectionOffsetsX()[permutation[proj]],
+                                             geometryReader->GetOutputObject()->GetProjectionOffsetsY()[permutation[proj]],
+                                             geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[permutation[proj]],
+                                             geometryReader->GetOutputObject()->GetInPlaneAngles()[permutation[proj]],
+                                             geometryReader->GetOutputObject()->GetSourceOffsetsX()[permutation[proj]],
+                                             geometryReader->GetOutputObject()->GetSourceOffsetsY()[permutation[proj]]);
 
     // Copy the signal
     orderedSignal.push_back(signal[permutation[proj]]);
     }
   reader->GetOutput()->ReleaseData();
+
+  // Compute the interpolation weights
+  rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
+  signalToInterpolationWeights->SetSignal(orderedSignal);
+  signalToInterpolationWeights->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
 
   // Set the forward and back projection filters to be used
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ConjugateGradientFilterType;
@@ -175,7 +168,7 @@ int main(int argc, char * argv[])
   // Set the newly ordered arguments
   conjugategradient->SetInputProjectionStack( orderedProjs );
   conjugategradient->SetGeometry( orderedGeometry );
-  conjugategradient->SetWeights(orderedWeights);
+  conjugategradient->SetWeights(signalToInterpolationWeights->GetOutput());
   conjugategradient->SetSignal(orderedSignal);
 
   itk::TimeProbe readerProbe;
