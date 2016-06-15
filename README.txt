@@ -1,5 +1,5 @@
 RTK: The Reconstruction ToolKit 
-
+Modified by AGRAVGAARD for use with Varian CBCTrecon software.
 
 Links
 -----
