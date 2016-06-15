@@ -183,9 +183,8 @@ void ConjugateGradientImageFilter<OutputImageType>
   typename OutputImageType::Pointer P_zero = SubtractFilter->GetOutput();
   P_zero->DisconnectPipeline();
 
-  if (m_IterationCosts) {
-      CalculateResidualCosts(P_zero,this->GetX());
-  }
+  if (m_IterationCosts)
+    CalculateResidualCosts(P_zero,this->GetX());
 
   // Compute AP_zero
   m_A->SetX(P_zero);
@@ -220,9 +219,8 @@ void ConjugateGradientImageFilter<OutputImageType>
       X_kPlusOne = GetX_kPlusOne_Filter->GetOutput();
       X_kPlusOne->DisconnectPipeline();
 
-      if (m_IterationCosts) {
-    CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
-      }
+      if (m_IterationCosts)
+        CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
 
       m_A->SetX(P_kPlusOne);
 

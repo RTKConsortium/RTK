@@ -4,5 +4,5 @@ purpose "A simple application you can use to train yourself to writing rtk progr
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no
 option "output"      o "Output file name"                                      string yes
-option "input"       i "Input volume"              string          no
+option "input"       i "Input volume"                                          string yes
 option "constant"    c "Scalar added to input"                                 float no default="1"

@@ -213,8 +213,11 @@ CudaWarpBackProjectionImageFilter
                        this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[1];
   stackGPUPointer += projSize * (iFirstProj-this->GetInputProjectionStack()->GetBufferedRegion().GetIndex()[2]);
 
+  // Allocate a large matrix to hold the matrix of all projections
+  float *fMatrix = new float[12 * nProj];
+
   // Go over each projection
-  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++, stackGPUPointer += projSize)
+  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Index to index matrix normalized to have a correct backprojection weight
     // (1 at the isocenter)
@@ -234,24 +237,34 @@ CudaWarpBackProjectionImageFilter
       perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
     matrix /= perspFactor;
 
-    float fMatrix[12];
     for (int j = 0; j < 12; j++)
-      fMatrix[j] = matrix[j/4][j%4];
+      fMatrix[j + (iProj-iFirstProj) * 12] = matrix[j/4][j%4];
+    }
 
-    CUDA_warp_back_project(projectionSize,
-                      volumeSize,
-                      inputDVFSize,
-                      fMatrix,
-                      pin,
-                      pout,
-                      stackGPUPointer,
-                      pDVF,
-                      fIndexInputToIndexDVFMatrix,
-                      fPPInputToIndexInputMatrix,
-                      fIndexInputToPPInputMatrix
-                      );
+  for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
+    {
+    // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
+    projectionSize[2] = std::min(nProj-i, (unsigned int)SLAB_SIZE);
+
+    // Run the back projection with a slab of SLAB_SIZE or less projections
+    CUDA_warp_back_project( projectionSize,
+                            volumeSize,
+                            inputDVFSize,
+                            fMatrix + 12 * i,
+                            pin,
+                            pout,
+                            stackGPUPointer + projSize * i,
+                            pDVF,
+                            fIndexInputToIndexDVFMatrix,
+                            fPPInputToIndexInputMatrix,
+                            fIndexInputToPPInputMatrix
+                            );
+
+    // Re-use the output as input
     pin = pout;
     }
+
+  delete[] fMatrix;
 }
 
 } // end namespace rtk
