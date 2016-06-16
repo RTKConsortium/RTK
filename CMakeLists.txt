@@ -1,3 +1,4 @@
+
 #=========================================================
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.4 FATAL_ERROR)
 if(WIN32 OR NOT EXISTS /dev/urandom)
@@ -110,6 +111,14 @@ IF(RTK_USE_CUDA)
   INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
   SET(RTK_CUDA_PROJECTIONS_SLAB_SIZE "16" CACHE STRING "Number of projections processed simultaneously in CUDA forward and back projections")
 ENDIF()
+
+# Find BZIP2 (required for Varian HNC)
+FIND_PACKAGE(BZip2)
+IF(BZIP2_FOUND)
+  INCLUDE_DIRECTORIES(${BZIP_INCLUDE_DIRS})
+ELSE(BZIP2_FOUND)
+  MESSAGE(FATAL_ERROR "Cannot build without bzip2.")
+ENDIF(BZIP2_FOUND)
 #=========================================================
 
 #=========================================================

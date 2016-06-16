@@ -14,6 +14,8 @@ SET(RTK_LIBRARY_FILES
             rtkDbf.cxx
             rtkHndImageIO.cxx
             rtkHndImageIOFactory.cxx
+            rtkHncImageIO.cxx
+            rtkHncImageIOFactory.cxx
             rtkVarianObiXMLFileReader.cxx
             rtkVarianObiGeometryReader.cxx
             rtkEdfImageIO.cxx
@@ -47,6 +49,7 @@ ADD_LIBRARY(RTK ${RTK_LIBRARY_FILES})
 
 TARGET_LINK_LIBRARIES(RTK ${ITK_LIBRARIES})
 TARGET_LINK_LIBRARIES(RTK lpsolve55)
+TARGET_LINK_LIBRARIES(RTK ${BZIP2_LIBRARIES})
 #=========================================================
 
 #=========================================================
