@@ -81,7 +81,6 @@ CudaForwardProjectionImageFilter<TInputImage,
   int projectionSize[3];
   projectionSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
-  projectionSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
   int volumeSize[3];
   volumeSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
@@ -117,10 +116,10 @@ CudaForwardProjectionImageFilter<TInputImage,
   // Compute matrices to transform projection index to volume index, one per projection
   float* matrices = new float[12 * nProj];
   float* source_positions = new float[4 * nProj];
+
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
-
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
     d_matrix =
       volIndexTranslation.GetVnlMatrix() *
@@ -140,21 +139,27 @@ CudaForwardProjectionImageFilter<TInputImage,
       source_positions[(iProj-iFirstProj)*3 + d] = source_position[d]; // Ignore the 4th component
     }
 
-  int projectionOffset = iFirstProj - this->GetOutput()->GetBufferedRegion().GetIndex(2);
+  int projectionOffset = 0;
+  for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
+    {
+    // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
+    projectionSize[2] = std::min(nProj-i, (unsigned int)SLAB_SIZE);
+    projectionOffset = iFirstProj + i - this->GetOutput()->GetBufferedRegion().GetIndex(2);
 
-  // Run the forward projection on the whole slab of projections
-  CUDA_forward_project(projectionSize,
-                      volumeSize,
-                      matrices,
-                      pin + nPixelsPerProj * projectionOffset,
-                      pout + nPixelsPerProj * projectionOffset,
-                      pvol,
-                      m_StepSize,
-                      source_positions,
-                      boxMin,
-                      boxMax,
-                      spacing,
-                      m_UseCudaTexture);
+    // Run the forward projection with a slab of SLAB_SIZE or less projections
+    CUDA_forward_project(projectionSize,
+                        volumeSize,
+                        (float*)&(matrices[12 * i]),
+                        pin + nPixelsPerProj * projectionOffset,
+                        pout + nPixelsPerProj * projectionOffset,
+                        pvol,
+                        m_StepSize,
+                        (float*)&(source_positions[3 * i]),
+                        boxMin,
+                        boxMax,
+                        spacing,
+                        m_UseCudaTexture);
+    }
 
   delete[] matrices;
   delete[] source_positions;
