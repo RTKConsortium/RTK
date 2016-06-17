@@ -122,16 +122,16 @@ public:
 #else
   typedef itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension >, TOutputImage::ImageDimension > GradientImageType;
 #endif
- 
+  
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
-
+    
   /** Run-time type information (and related methods). */
   itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator)
-
+    
   typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >    BackProjectionFilterType;
   typedef typename BackProjectionFilterType::Pointer                      BackProjectionFilterPointer;
-
+  
   typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
   typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
 
@@ -142,11 +142,16 @@ public:
 
   typedef rtk::LaplacianImageFilter<TOutputImage, GradientImageType>      LaplacianFilterType;
 
+  typedef typename TOutputImage::Pointer                                  OutputImagePointer;
+
   /** Set the backprojection filter*/
   void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
 
   /** Set the forward projection filter*/
   void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
+
+  /** Set the support mask for support constraint in reconstruction */
+  void SetSupportMask(const OutputImagePointer _arg);
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
@@ -169,6 +174,8 @@ protected:
   /** Does the real work. */
   virtual void GenerateData();
 
+  const TOutputImage * ApplySupportMask(const TOutputImage *_arg);
+
   /** Member pointers to the filters used internally (for convenience)*/
   BackProjectionFilterPointer            m_BackProjectionFilter;
   ForwardProjectionFilterPointer         m_ForwardProjectionFilter;
@@ -181,12 +188,14 @@ protected:
   typename MultiplyFilterType::Pointer              m_MultiplyLaplacianFilter;
   typename AddFilterType::Pointer                   m_AddFilter;
   typename LaplacianFilterType::Pointer             m_LaplacianFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplySupportMaskFilter;
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
   bool                                              m_Preconditioned; //Multiply by preconditioning weights ?
   bool                                              m_Regularized;
   float                                             m_Gamma; //Strength of the regularization
+  OutputImagePointer                                m_SupportMask;
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */
