@@ -43,9 +43,9 @@ public:
   /** Standard class typedefs. */
   typedef ReorderProjectionsImageFilter Self;
 
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  typedef itk::ImageToImageFilter<TInputImage, TOutputImage>  Superclass;
+  typedef itk::SmartPointer<Self>                             Pointer;
+  typedef itk::SmartPointer<const Self>                       ConstPointer;
 
   /** Some convenient typedefs. */
   typedef TInputImage                             InputImageType;
