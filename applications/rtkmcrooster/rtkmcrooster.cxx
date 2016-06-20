@@ -22,7 +22,8 @@
 
 #include "rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkPhasesToInterpolationWeights.h"
+#include "rtkSignalToInterpolationWeights.h"
+#include "rtkReorderProjectionsImageFilter.h"
 #include "rtkWarpSequenceImageFilter.h"
 
 #ifdef RTK_USE_CUDA
@@ -97,27 +98,40 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
 
-  // Convert phase into interpolation and splat weights
-  rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName(args_info.signal_arg);
-  phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
-  
+  // Re-order geometry and projections
+  // In the new order, projections with identical phases are packed together
+  std::vector<double> signal = rtk::ReadSignalFile(args_info.signal_arg);
+  typedef rtk::ReorderProjectionsImageFilter<ProjectionStackType> ReorderProjectionsFilterType;
+  ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
+  reorder->SetInput(reader->GetOutput());
+  reorder->SetInputGeometry(geometryReader->GetOutputObject());
+  reorder->SetInputSignal(signal);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reorder->Update() )
+
+  // Release the memory holding the stack of original projections
+  reader->GetOutput()->ReleaseData();
+
+  // Compute the interpolation weights
+  rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
+  signalToInterpolationWeights->SetSignal(reorder->GetOutputSignal());
+  signalToInterpolationWeights->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
+
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   typedef rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCROOSTERFilterType;
   MCROOSTERFilterType::Pointer mcrooster = MCROOSTERFilterType::New();
+  mcrooster->SetForwardProjectionFilter(args_info.fp_arg);
+  mcrooster->SetBackProjectionFilter(args_info.bp_arg);
   mcrooster->SetInputVolumeSeries(inputFilter->GetOutput() );
-  mcrooster->SetInputProjectionStack(reader->GetOutput());
-  mcrooster->SetGeometry( geometryReader->GetOutputObject() );
-  mcrooster->SetWeights(phaseReader->GetOutput());
   mcrooster->SetCG_iterations( args_info.cgiter_arg );
   mcrooster->SetMainLoop_iterations( args_info.niter_arg );
   mcrooster->SetCudaConjugateGradient(args_info.cudacg_flag);
-  mcrooster->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
-  
-  //Set the forward and back projection filters to be used
-  mcrooster->SetForwardProjectionFilter(args_info.fp_arg);
-  mcrooster->SetBackProjectionFilter(args_info.bp_arg);
+
+  // Set the newly ordered arguments
+  mcrooster->SetInputProjectionStack( reorder->GetOutput() );
+  mcrooster->SetGeometry( reorder->GetOutputGeometry() );
+  mcrooster->SetWeights(signalToInterpolationWeights->GetOutput());
+  mcrooster->SetSignal(reorder->GetOutputSignal());
 
   // For each optional regularization step, set whether or not
   // it should be performed, and provide the necessary inputs
