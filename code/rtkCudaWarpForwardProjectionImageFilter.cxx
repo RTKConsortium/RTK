@@ -295,6 +295,9 @@ CudaWarpForwardProjectionImageFilter
                         fIndexInputToPPInputMatrix
                         );
     }
+
+  delete[] matrices;
+  delete[] source_positions;
 }
 
 } // end namespace rtk
