@@ -125,7 +125,10 @@ int main(int argc, char * argv[])
   conjugategradient->SetInput(2, weightsSource->GetOutput());
   conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
-  conjugategradient->SetSupportMask(supportmaskSource->GetOutput() );
+  if(args_info.mask_given)
+    {
+    conjugategradient->SetSupportMask(supportmaskSource->GetOutput() );
+    }
   conjugategradient->SetIterationCosts(args_info.costs_flag);
 
   if (args_info.gamma_given)
