@@ -22,7 +22,7 @@
       "detaileddescriptionSet" : "Set the object pointer to projection geometry.",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : "Get the object pointer to projection geometry."
-    },
+    }
     {
       "name" : "NumberOfIterations",
       "type" : "int",
@@ -31,7 +31,7 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
-    },
+    }
     {
       "name" : "ForwardProjectionFilter",
       "type" : "int",
@@ -40,7 +40,7 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
-    },
+    }
     {
       "name" : "BackProjectionFilter",
       "type" : "int",
@@ -49,7 +49,7 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
-    },
+    }
     {
       "name" : "Preconditioned",
       "type" : "bool",
@@ -67,7 +67,7 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
-    },
+    }
     {
       "name" : "Gamma",
       "type" : "float",
@@ -85,7 +85,7 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
-    },
+    }
     {
       "name" : "IterationCosts",
       "type" : "bool",
@@ -94,6 +94,17 @@
       "detaileddescriptionSet" : "",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : ""
+    }
+    {
+      "name" : "SupportMask",
+      "type" : "Image",
+      "default" : "Image()",
+      "custom_itk_cast" : "filter->SetSupportMask(const_cast<InputImageType*>( this->CastImageToITK<InputImageType>(this->m_SupportMask).GetPointer() ) );",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "",
+      "no_print" : true
     }
   ],
   "measurements" : [
