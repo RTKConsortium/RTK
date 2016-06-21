@@ -151,7 +151,8 @@ public:
   void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
 
   /** Set the support mask for support constraint in reconstruction */
-  void SetSupportMask(const OutputImagePointer _arg);
+  itkGetMacro(SupportMask, OutputImagePointer);
+  itkSetMacro(SupportMask, OutputImagePointer);
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)

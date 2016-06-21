@@ -81,19 +81,11 @@ ReconstructionConjugateGradientOperator<TOutputImage>
 }
 
 template< typename TOutputImage >
-void
-ReconstructionConjugateGradientOperator<TOutputImage>
-::SetSupportMask (const OutputImagePointer _arg)
-{
-  m_SupportMask = _arg;
-}
-
-template< typename TOutputImage >
 const TOutputImage *
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ApplySupportMask (const TOutputImage *_arg)
 {
-  if (m_SupportMask)
+  if (m_SupportMask.IsNotNull())
   {
     m_MultiplySupportMaskFilter->SetInput(0,_arg);
     m_MultiplySupportMaskFilter->Update();
@@ -155,12 +147,10 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
   m_MultiplySupportMaskFilter->SetInput(1,m_SupportMask);
-  // m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
   m_ForwardProjectionFilter->SetInput(1, ApplySupportMask(this->GetInput(0)));
   
   if (m_Regularized)
     {
-    // m_LaplacianFilter->SetInput(this->GetInput(0));
     m_LaplacianFilter->SetInput(ApplySupportMask(this->GetInput(0)));
 
     m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
@@ -180,7 +170,6 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   if (m_Preconditioned)
     {
     // Multiply the input volume
-    // m_MultiplyInputVolumeFilter->SetInput1( this->GetInput(0) );
     m_MultiplyInputVolumeFilter->SetInput1( ApplySupportMask(this->GetInput(0)) );
     m_MultiplyInputVolumeFilter->SetInput2( this->GetInput(3) );
     m_ForwardProjectionFilter->SetInput(1, m_MultiplyInputVolumeFilter->GetOutput());
@@ -218,13 +207,11 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     if (m_Regularized)
       {
       m_AddFilter->UpdateOutputInformation();
-      // this->GetOutput()->CopyInformation( m_AddFilter->GetOutput() );
       this->GetOutput()->CopyInformation( m_AddFilter->GetOutput() );
       }
     else
       {
       m_BackProjectionFilter->UpdateOutputInformation();
-      // this->GetOutput()->CopyInformation( m_BackProjectionFilter->GetOutput() );
       this->GetOutput()->CopyInformation( m_BackProjectionFilter->GetOutput() );
       }
     }
@@ -245,13 +232,11 @@ void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
     if (m_Regularized)
       {
       m_AddFilter->Update();
-      // this->GraftOutput( m_AddFilter->GetOutput() );
       this->GraftOutput( const_cast<  TOutputImage* >(ApplySupportMask(m_AddFilter->GetOutput())) );
       }
     else
       {
       m_BackProjectionFilter->Update();
-      // this->GraftOutput( m_BackProjectionFilter->GetOutput() );
       this->GraftOutput( const_cast< TOutputImage* >(ApplySupportMask(m_BackProjectionFilter->GetOutput())) );
       }
     }

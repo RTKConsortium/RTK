@@ -28,7 +28,7 @@ template< typename TOutputImage>
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(3);
-
+  
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
@@ -101,19 +101,11 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 }
 
 template< typename TOutputImage >
-void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
-::SetSupportMask (const OutputImagePointer _arg)
-{
-  m_SupportMask = _arg;
-}
-
-template< typename TOutputImage >
 const TOutputImage *
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::ApplySupportMask (const TOutputImage *_arg)
 {
-  if (m_SupportMask)
+  if (m_SupportMask.IsNotNull())
   {
     m_MultiplySupportMaskFilter->SetInput(0,_arg);
     m_MultiplySupportMaskFilter->Update();
@@ -166,8 +158,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
-
-  m_MultiplySupportMaskFilter->SetInput(1,m_SupportMask);
   
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
@@ -193,7 +183,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_CGOperator->SetInput(2, m_DisplacedDetectorFilter->GetOutput());
   m_BackProjectionFilterForB->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
 
-  if (m_SupportMask)
+  if (m_SupportMask.IsNotNull())
     {
     m_MultiplySupportMaskFilter->SetInput(0,m_BackProjectionFilterForB->GetOutput());
     m_MultiplySupportMaskFilter->SetInput(1,m_SupportMask);
@@ -220,7 +210,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_CGOperator->SetInput(3, m_DivideFilter->GetOutput());
     m_ConjugateGradientFilter->SetB(m_MultiplyVolumeFilter->GetOutput());
 
-    if (m_SupportMask)
+    if (m_SupportMask.IsNotNull())
     {
     m_MultiplySupportMaskFilter->SetInput(0,m_BackProjectionFilterForB->GetOutput());
     m_MultiplySupportMaskFilter->SetInput(1,m_SupportMask);
