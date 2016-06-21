@@ -5,7 +5,7 @@ option "verbose"   v "Verbose execution"                                        
 option "config"    - "Config file"                                               string                       no
 option "geometry"  g "XML geometry file name"                                    string                       yes
 option "output"    o "Output file name"                                          string                       yes
-option "hardware"  - "Hardware used for computation"                             values="cpu","cuda","opencl" no   default="cpu"
+option "hardware"  - "Hardware used for computation"                             values="cpu","cuda"          no   default="cpu"
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"

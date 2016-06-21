@@ -46,7 +46,7 @@ texture<float, 3, cudaReadModeElementType> tex_proj_3D;
 // Constant memory
 __constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
 __constant__ int3 c_projSize;
-__constant__ int3 c_vol_size;
+__constant__ int3 c_volSize;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -66,13 +66,13 @@ void kernel(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y)
   unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
   unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
-  if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
+  if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
     {
     return;
     }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
+  long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
 
   float3 ip;
   float  voxel_data = 0;
@@ -102,13 +102,13 @@ void kernel_3Dgrid(float *dev_vol_in, float * dev_vol_out)
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
   unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
-  if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
+  if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
     {
     return;
     }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
+  long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
 
   float3 ip;
   float  voxel_data = 0;
@@ -140,8 +140,8 @@ void kernel_3Dgrid(float *dev_vol_in, float * dev_vol_out)
 // FUNCTION: CUDA_back_project /////////////////////////////
 void
 CUDA_back_project(
-  int proj_size[3],
-  int vol_size[3],
+  int projSize[3],
+  int volSize[3],
   float *matrices,
   float *dev_vol_in,
   float *dev_vol_out,
@@ -151,11 +151,11 @@ CUDA_back_project(
   cudaGetDevice(&device);
 
   // Copy the size of inputs into constant memory
-  cudaMemcpyToSymbol(c_projSize, proj_size, sizeof(int3));
-  cudaMemcpyToSymbol(c_vol_size, vol_size, sizeof(int3));
+  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
+  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
 
   // Copy the projection matrices into constant memory
-  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * proj_size[2]);
+  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projSize[2]);
 
   // set texture parameters
   tex_proj.addressMode[0] = cudaAddressModeBorder;
@@ -164,8 +164,14 @@ CUDA_back_project(
   tex_proj.filterMode = cudaFilterModeLinear;
   tex_proj.normalized = false; // don't access with normalized texture coords
 
+  tex_proj_3D.addressMode[0] = cudaAddressModeBorder;
+  tex_proj_3D.addressMode[1] = cudaAddressModeBorder;
+  tex_proj_3D.addressMode[2] = cudaAddressModeBorder;
+  tex_proj_3D.filterMode = cudaFilterModeLinear;
+  tex_proj_3D.normalized = false; // don't access with normalized texture coords
+
   // Copy projection data to array, bind the array to the texture
-  cudaExtent projExtent = make_cudaExtent(proj_size[0], proj_size[1], proj_size[2]);
+  cudaExtent projExtent = make_cudaExtent(projSize[0], projSize[1], projSize[2]);
   cudaArray *array_proj;
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
   CUDA_CHECK_ERROR;
@@ -181,7 +187,7 @@ CUDA_back_project(
 
   // Copy data to 3D array
   cudaMemcpy3DParms copyParams = {0};
-  copyParams.srcPtr   = make_cudaPitchedPtr(dev_proj, proj_size[0]*sizeof(float), proj_size[0], proj_size[1]);
+  copyParams.srcPtr   = make_cudaPitchedPtr(dev_proj, projSize[0]*sizeof(float), projSize[0], projSize[1]);
   copyParams.dstArray = (cudaArray*)array_proj;
   copyParams.extent   = projExtent;
   copyParams.kind     = cudaMemcpyDeviceToDevice;
@@ -194,9 +200,9 @@ CUDA_back_project(
   const int tBlock_z = 4;
 
   // Each element in the volume (each voxel) gets 1 thread
-  unsigned int  blocksInX = (vol_size[0]-1)/tBlock_x + 1;
-  unsigned int  blocksInY = (vol_size[1]-1)/tBlock_y + 1;
-  unsigned int  blocksInZ = (vol_size[2]-1)/tBlock_z + 1;
+  unsigned int  blocksInX = (volSize[0]-1)/tBlock_x + 1;
+  unsigned int  blocksInY = (volSize[1]-1)/tBlock_y + 1;
+  unsigned int  blocksInZ = (volSize[2]-1)/tBlock_z + 1;
 
   // Run kernels. Note: Projection data is passed via texture memory,
   // transform matrix is passed via constant memory

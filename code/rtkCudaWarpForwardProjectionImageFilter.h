@@ -73,6 +73,10 @@ public:
   void SetDisplacementField(const DVFType* DVF);
   DVFType::Pointer GetDisplacementField();
 
+  /** Set step size along ray (in mm). Default is 1 mm. */
+  itkGetConstMacro(StepSize, double);
+  itkSetMacro(StepSize, double);
+
 protected:
   CudaWarpForwardProjectionImageFilter();
   ~CudaWarpForwardProjectionImageFilter() {};
@@ -85,6 +89,8 @@ private:
   //purposely not implemented
   CudaWarpForwardProjectionImageFilter(const Self&);
   void operator=(const Self&);
+
+  double             m_StepSize;
 }; // end of class
 
 } // end namespace rtk

@@ -21,8 +21,8 @@
 
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkPhasesToInterpolationWeights.h"
-#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkSignalToInterpolationWeights.h"
+#include "rtkReorderProjectionsImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -96,60 +96,43 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
   inputFilter->ReleaseDataFlagOn();
 
-  // Read weights if given, otherwise default to weights all equal to one
-  itk::ImageSource< ProjectionStackType >::Pointer weightsSource;
-  if(args_info.weights_given)
-    {
-    typedef itk::ImageFileReader<  ProjectionStackType > WeightsReaderType;
-    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
-    weightsReader->SetFileName( args_info.weights_arg );
-    weightsSource = weightsReader;
-    }
-  else
-    {
-    typedef rtk::ConstantImageSource< ProjectionStackType > ConstantWeightsSourceType;
-    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
+  // Re-order geometry and projections
+  // In the new order, projections with identical phases are packed together
+  std::vector<double> signal = rtk::ReadSignalFile(args_info.signal_arg);
+  typedef rtk::ReorderProjectionsImageFilter<ProjectionStackType> ReorderProjectionsFilterType;
+  ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
+  reorder->SetInput(reader->GetOutput());
+  reorder->SetInputGeometry(geometryReader->GetOutputObject());
+  reorder->SetInputSignal(signal);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reorder->Update() )
 
-    // Set the weights to be like the projections
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
-    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
-    constantWeightsSource->SetConstant(1.0);
-    weightsSource = constantWeightsSource;
-    }
+  // Release the memory holding the stack of original projections
+  reader->GetOutput()->ReleaseData();
 
-  // Apply the displaced detector weighting now, then re-order the projection weights
-  // containing everything
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType> DisplacedDetectorFilterType;
-  DisplacedDetectorFilterType::Pointer displaced = DisplacedDetectorFilterType::New();
-  displaced->SetInput(weightsSource->GetOutput());
-  displaced->SetGeometry(geometryReader->GetOutputObject());
-  displaced->SetPadOnTruncatedSide(false);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( displaced->Update() )
-
-  // Read the phases file
-  rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName(args_info.signal_arg);
-  phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
+  // Compute the interpolation weights
+  rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
+  signalToInterpolationWeights->SetSignal(reorder->GetOutputSignal());
+  signalToInterpolationWeights->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
   
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
+  // Also set the forward and back projection filters to be used
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
+  rooster->SetForwardProjectionFilter(args_info.fp_arg);
+  rooster->SetBackProjectionFilter(args_info.bp_arg);
   rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
-  rooster->SetInputProjectionStack(reader->GetOutput());
-  rooster->SetInputProjectionWeights(displaced->GetOutput());
-  rooster->SetGeometry( geometryReader->GetOutputObject() );
-  rooster->SetWeights(phaseReader->GetOutput());
-  rooster->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );
   rooster->SetPhaseShift(args_info.shift_arg);
   rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
   
-  //Set the forward and back projection filters to be used
-  rooster->SetForwardProjectionFilter(args_info.fp_arg);
-  rooster->SetBackProjectionFilter(args_info.bp_arg);
-  
+  // Set the newly ordered arguments
+  rooster->SetInputProjectionStack( reorder->GetOutput() );
+  rooster->SetGeometry( reorder->GetOutputGeometry() );
+  rooster->SetWeights(signalToInterpolationWeights->GetOutput());
+  rooster->SetSignal(reorder->GetOutputSignal());
+
   // For each optional regularization step, set whether or not
   // it should be performed, and provide the necessary inputs
   
