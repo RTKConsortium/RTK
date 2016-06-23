@@ -364,6 +364,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_Warp->SetDisplacementField(this->GetDisplacementField());
     m_Warp->SetPhaseShift(m_PhaseShift);
     m_Warp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+    m_Warp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
   
     currentDownstreamFilter = m_Warp;
     }
@@ -420,6 +421,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_Unwarp->SetPhaseShift(m_PhaseShift);
       m_Unwarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
       m_Unwarp->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
+      m_Unwarp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
       currentDownstreamFilter = m_Unwarp;
       }
@@ -436,6 +438,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_InverseWarp->SetDisplacementField(this->GetInverseDisplacementField());
       m_InverseWarp->SetPhaseShift(m_PhaseShift);
       m_InverseWarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+      m_InverseWarp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
       // Add the deformed correction to the spatially denoised image to get the output
       m_AddFilter->SetInput1(m_InverseWarp->GetOutput());

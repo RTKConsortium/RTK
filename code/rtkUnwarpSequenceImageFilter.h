@@ -19,13 +19,10 @@
 #ifndef __rtkUnwarpSequenceImageFilter_h
 #define __rtkUnwarpSequenceImageFilter_h
 
-// #include <itkMultiplyImageFilter.h>
-
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkUnwarpSequenceConjugateGradientOperator.h"
 #include "rtkWarpSequenceImageFilter.h"
 #include "rtkConstantImageSource.h"
-// #include "rtkCyclicDeformationImageFilter.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaConjugateGradientImageFilter_4f.h"
@@ -126,6 +123,10 @@ public:
     itkSetMacro(CudaConjugateGradient, bool)
     itkGetMacro(CudaConjugateGradient, bool)
 
+    /** Set and Get for the UseCudaCyclicDeformation variable */
+    itkSetMacro(UseCudaCyclicDeformation, bool)
+    itkGetMacro(UseCudaCyclicDeformation, bool)
+
 protected:
     UnwarpSequenceImageFilter();
     ~UnwarpSequenceImageFilter(){}
@@ -137,7 +138,6 @@ protected:
     typename ConjugateGradientFilterType::Pointer                   m_ConjugateGradientFilter;
     typename CGOperatorFilterType::Pointer                          m_CGOperator;
     typename WarpForwardFilterType::Pointer                         m_WarpForwardFilter;
-//     typename DVFInterpolatorType::Pointer                           m_DVFInterpolator;
     typename ConstantSourceType::Pointer                            m_ConstantSource;
 
     /** Member variables */
@@ -155,6 +155,7 @@ protected:
 
     bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
     bool m_CudaConjugateGradient;
+    bool m_UseCudaCyclicDeformation;
 
 private:
     UnwarpSequenceImageFilter(const Self &); //purposely not implemented

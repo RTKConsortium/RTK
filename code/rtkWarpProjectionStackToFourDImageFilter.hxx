@@ -34,12 +34,11 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::W
 
   this->m_UseCudaSplat = true;
   this->m_UseCudaSources = true;
+  m_UseCudaCyclicDeformation = false;
 
 #ifdef RTK_USE_CUDA
-  m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
   this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
 #else
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
   this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
   itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
 #endif
@@ -74,6 +73,11 @@ void
 WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
+#ifdef RTK_USE_CUDA
+  if (m_UseCudaCyclicDeformation)
+    m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
+#endif
   m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
   m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
   m_DVFInterpolatorFilter->SetFrame(0);
