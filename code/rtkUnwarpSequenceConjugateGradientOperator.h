@@ -92,6 +92,10 @@ public:
     itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
     itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
 
+    /** Set and Get for the UseCudaCyclicDeformation variable */
+    itkSetMacro(UseCudaCyclicDeformation, bool)
+    itkGetMacro(UseCudaCyclicDeformation, bool)
+
 protected:
     UnwarpSequenceConjugateGradientOperator();
     ~UnwarpSequenceConjugateGradientOperator(){}
@@ -115,6 +119,8 @@ protected:
     */
     void GenerateInputRequestedRegion();
     void GenerateOutputInformation();
+
+    bool m_UseCudaCyclicDeformation;
 
 private:
     UnwarpSequenceConjugateGradientOperator(const Self &); //purposely not implemented

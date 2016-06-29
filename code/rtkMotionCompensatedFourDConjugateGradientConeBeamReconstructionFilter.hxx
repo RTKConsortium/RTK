@@ -86,7 +86,9 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
 #ifdef RTK_USE_CUDA
   dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetDisplacementField(this->GetDisplacementField());
   dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetInverseDisplacementField(this->GetInverseDisplacementField());
+  dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
   dynamic_cast<MCProjStackToFourDType*>(this->m_ProjStackToFourDFilter.GetPointer())->SetDisplacementField(this->GetDisplacementField());
+  dynamic_cast<MCProjStackToFourDType*>(this->m_ProjStackToFourDFilter.GetPointer())->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 #endif
 
   Superclass::GenerateOutputInformation();
