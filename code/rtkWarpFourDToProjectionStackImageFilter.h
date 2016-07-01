@@ -122,6 +122,10 @@ public:
 
     virtual void SetSignal(const std::vector<double> signal);
 
+    /** Set and Get for the UseCudaCyclicDeformation variable */
+    itkSetMacro(UseCudaCyclicDeformation, bool)
+    itkGetMacro(UseCudaCyclicDeformation, bool)
+
 protected:
     WarpFourDToProjectionStackImageFilter();
     ~WarpFourDToProjectionStackImageFilter(){}
@@ -140,6 +144,7 @@ protected:
     /** Member pointers to the filters used internally (for convenience)*/
     typename DVFInterpolatorType::Pointer               m_DVFInterpolatorFilter;
     std::vector<double>                                 m_Signal;
+    bool                                                m_UseCudaCyclicDeformation;
 
 private:
     WarpFourDToProjectionStackImageFilter(const Self &); //purposely not implemented

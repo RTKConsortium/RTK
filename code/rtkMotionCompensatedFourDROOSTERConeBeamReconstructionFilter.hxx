@@ -69,6 +69,7 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, Pro
   // Set the 4D conjugate gradient filter
   dynamic_cast<MotionCompensatedFourDCGFilterType*>(this->m_FourDCGFilter.GetPointer())->SetDisplacementField(this->GetDisplacementField());
   dynamic_cast<MotionCompensatedFourDCGFilterType*>(this->m_FourDCGFilter.GetPointer())->SetInverseDisplacementField(this->GetInverseDisplacementField());
+  dynamic_cast<MotionCompensatedFourDCGFilterType*>(this->m_FourDCGFilter.GetPointer())->SetUseCudaCyclicDeformation(this->m_UseCudaCyclicDeformation);
 
   // Call the superclass implementation
   Superclass::GenerateOutputInformation();

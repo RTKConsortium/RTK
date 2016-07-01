@@ -116,12 +116,18 @@ public:
   typedef rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>                        MCProjStackToFourDType;
   typedef rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType> MCCGOperatorType;
 
+  /** Set and Get for the UseCudaCyclicDeformation variable */
+  itkSetMacro(UseCudaCyclicDeformation, bool)
+  itkGetMacro(UseCudaCyclicDeformation, bool)
+
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
   ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter(){}
 
   virtual void GenerateOutputInformation();
   virtual void GenerateInputRequestedRegion();
+
+  bool                                                m_UseCudaCyclicDeformation;
 
 private:
   //purposely not implemented

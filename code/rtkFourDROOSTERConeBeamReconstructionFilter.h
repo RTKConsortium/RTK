@@ -279,7 +279,11 @@ public:
   itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
   itkGetMacro(CudaConjugateGradient, bool)
   itkSetMacro(CudaConjugateGradient, bool)
- 
+
+  /** Set and Get for the UseCudaCyclicDeformation variable */
+  itkSetMacro(UseCudaCyclicDeformation, bool)
+  itkGetMacro(UseCudaCyclicDeformation, bool)
+
   // Regularization parameters
   itkSetMacro(GammaTVSpace, float)
   itkGetMacro(GammaTVSpace, float)
@@ -361,6 +365,7 @@ protected:
   bool  m_ComputeInverseWarpingByConjugateGradient;
   bool  m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
   bool  m_CudaConjugateGradient;
+  bool  m_UseCudaCyclicDeformation;
 
   // Regularization parameters
   float m_GammaTVSpace;

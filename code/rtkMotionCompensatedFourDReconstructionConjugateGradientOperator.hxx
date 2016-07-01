@@ -29,14 +29,12 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 {
   this->SetNumberOfRequiredInputs(2);
 
+  m_UseCudaCyclicDeformation = false;
+
 #ifdef RTK_USE_CUDA
-  m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
-  m_InverseDVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
   this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
   this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
 #else
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
-  m_InverseDVFInterpolatorFilter = DVFInterpolatorType::New();
   this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
   this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
   itkWarningMacro("The warp forward and back project image filters exist only"
@@ -86,8 +84,6 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 ::SetSignal(const std::vector<double> signal)
 {
   this->m_Signal = signal;
-  m_DVFInterpolatorFilter->SetSignalVector(signal);
-  m_InverseDVFInterpolatorFilter->SetSignalVector(signal);
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -95,9 +91,20 @@ void
 MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
+  m_InverseDVFInterpolatorFilter = DVFInterpolatorType::New();
+#ifdef RTK_USE_CUDA
+  if (m_UseCudaCyclicDeformation)
+    {
+    m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
+    m_InverseDVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
+    }
+#endif
+  m_DVFInterpolatorFilter->SetSignalVector(this->m_Signal);
   m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
   m_DVFInterpolatorFilter->SetFrame(0);
 
+  m_InverseDVFInterpolatorFilter->SetSignalVector(this->m_Signal);
   m_InverseDVFInterpolatorFilter->SetInput(this->GetInverseDisplacementField());
   m_InverseDVFInterpolatorFilter->SetFrame(0);
 
