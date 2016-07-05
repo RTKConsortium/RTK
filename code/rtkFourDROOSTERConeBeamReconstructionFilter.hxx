@@ -54,6 +54,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_UseNearestNeighborInterpolationInWarping=false;
   m_PhaseShift = 0;
   m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
+  m_UseCudaCyclicDeformation = false;
   m_Order = 5;
   m_NumberOfLevels = 3;
 
