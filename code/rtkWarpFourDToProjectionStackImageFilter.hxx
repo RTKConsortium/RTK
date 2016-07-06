@@ -24,7 +24,8 @@ namespace rtk
 {
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::WarpFourDToProjectionStackImageFilter()
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::WarpFourDToProjectionStackImageFilter():
+    m_UseCudaCyclicDeformation(false)
 {
   this->SetNumberOfRequiredInputs(3);
 
