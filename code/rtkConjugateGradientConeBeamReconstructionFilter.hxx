@@ -322,9 +322,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   else
     {
       if (m_Preconditioned)
-	this->GraftOutput( m_MultiplyOutputFilter->GetOutput() );
+      {
+      this->GraftOutput( m_MultiplyOutputFilter->GetOutput() );
+      }
       else
-	this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+      {
+      this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+      }
     }
 }
 
