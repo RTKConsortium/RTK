@@ -34,7 +34,7 @@ template <class TInputImage, class TOutputImage, class TSpatialObject, typename 
 DrawCubeImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
 ::DrawCubeImageFilter()
 {
-
+  this->m_SpatialObject.UpdateParameters();
 }
 
 void
