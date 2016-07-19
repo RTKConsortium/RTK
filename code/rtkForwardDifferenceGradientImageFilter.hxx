@@ -151,10 +151,8 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                        itk::ThreadIdType threadId)
 {
-  unsigned int    i;
   CovariantVectorType gradient;
 
-  itk::ConstNeighborhoodIterator< InputImageType > nit;
   itk::ImageRegionIterator< OutputImageType >      it;
 
   itk::NeighborhoodInnerProduct< InputImageType, OperatorValueType,
@@ -176,7 +174,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   // Set up operators
   itk::ForwardDifferenceOperator< OperatorValueType, InputImageDimension > op[InputImageDimension];
 
-  for ( i = 0; i < InputImageDimension; i++ )
+  for ( int i = 0; i < InputImageDimension; i++ )
     {
     op[i].SetDirection(0);
     op[i].CreateDirectional();
@@ -197,28 +195,28 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
   // Calculate iterator radius
   itk::Size< InputImageDimension > radius;
-  for ( i = 0; i < InputImageDimension; ++i )
+  for ( int i = 0; i < InputImageDimension; ++i )
     {
     radius[i]  = op[0].GetRadius()[0];
     }
 
   // Find the data-set boundary "faces"
-  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType faceList;
   itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType > bC;
-  faceList = bC(inputImage, outputRegionForThread, radius);
+  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType faceList
+                         = bC(inputImage, outputRegionForThread, radius);
 
-  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType::iterator fit;
-  fit = faceList.begin();
+  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType::iterator fit
+          = faceList.begin();
 
   // support progress methods/callbacks
   itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
 
   // Initialize the x_slice array
-  nit = itk::ConstNeighborhoodIterator< InputImageType >(radius, inputImage, *fit);
+  itk::ConstNeighborhoodIterator< InputImageType > nit = itk::ConstNeighborhoodIterator< InputImageType >(radius, inputImage, *fit);
 
   std::slice          x_slice[InputImageDimension];
   const itk::SizeValueType center = nit.Size() / 2;
-  for ( i = 0; i < InputImageDimension; ++i )
+  for ( int i = 0; i < InputImageDimension; ++i )
     {
     x_slice[i] = std::slice( center - nit.GetStride(i) * radius[i],
                              op[i].GetSize()[0], nit.GetStride(i) );
@@ -236,7 +234,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
     while ( !nit.IsAtEnd() )
       {
-      for ( i = 0; i < dimsToProcess.size(); ++i )
+      for ( int i = 0; i < dimsToProcess.size(); ++i )
         {
         gradient[i] = SIP(x_slice[dimsToProcess[i]], nit, op[dimsToProcess[i]]);
         }
