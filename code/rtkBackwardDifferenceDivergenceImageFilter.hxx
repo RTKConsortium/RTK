@@ -156,8 +156,6 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
   typename TOutputImage::Pointer output = this->GetOutput();
   typename TInputImage::ConstPointer input = this->GetInput();
 
-  itk::ConstantBoundaryCondition<InputImageType> cbc;
-
   itk::ImageRegionIterator<TOutputImage> oit(output, outputRegionForThread);
   oit.GoToBegin();
 
@@ -166,7 +164,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 
   itk::ConstNeighborhoodIterator<TInputImage> iit(radius, input, outputRegionForThread);
   iit.GoToBegin();
-  iit.OverrideBoundaryCondition(&cbc);
+  iit.OverrideBoundaryCondition(m_BoundaryCondition);
 
   itk::SizeValueType c = (itk::SizeValueType) (iit.Size() / 2); // get offset of center pixel
   itk::SizeValueType strides[TOutputImage::ImageDimension]; // get offsets to access neighboring pixels
