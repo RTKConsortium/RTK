@@ -23,6 +23,9 @@
 #include <itkCovariantVector.h>
 #include <itkImageRegionIterator.h>
 
+// The UseImageDirection code is currently not implementd
+#define USE_IMAGE_DIRECTION_IMPLEMENTED
+//#undef USE_IMAGE_DIRECTION_IMPLEMENTED
 namespace rtk
 {
 
@@ -97,6 +100,7 @@ public:
 
   /** Use the image spacing information in calculations. Use this option if you
    *  want derivatives in physical space. Default is UseImageSpacingOn. */
+#if 0
   void SetUseImageSpacingOn()
   { this->SetUseImageSpacing(true); }
 
@@ -104,11 +108,12 @@ public:
       isotropic pixel space.  Default is UseImageSpacingOn. */
   void SetUseImageSpacingOff()
   { this->SetUseImageSpacing(false); }
-
+#endif
   /** Set/Get whether or not the filter will use the spacing of the input
       image in its calculations */
   itkSetMacro(UseImageSpacing, bool);
   itkGetConstMacro(UseImageSpacing, bool);
+  itkBooleanMacro(UseImageSpacing);
 
   /** Set along which dimensions the gradient computation should be
       performed. The vector components at unprocessed dimensions contain
@@ -127,6 +132,7 @@ public:
   // End concept checking
 #endif
 
+#ifdef USE_IMAGE_DIRECTION_IMPLEMENTED  // NOT IMPLEMENTED
   /** The UseImageDirection flag determines whether image derivatives are
    * computed with respect to the image grid or with respect to the physical
    * space. When this flag is ON the derivatives are computed with respect to
@@ -140,6 +146,7 @@ public:
   itkSetMacro(UseImageDirection, bool);
   itkGetConstMacro(UseImageDirection, bool);
   itkBooleanMacro(UseImageDirection);
+#endif
 
 protected:
   ForwardDifferenceGradientImageFilter();
@@ -165,6 +172,7 @@ private:
   ForwardDifferenceGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);      //purposely not implemented
 
+#ifdef USE_IMAGE_DIRECTION_IMPLEMENTED //NOT IMPLEMENTED
 //  // An overloaded method which may transform the gradient to a
 //  // physical vector and converts to the correct output pixel type.
 //  template <typename TValue>
@@ -181,6 +189,7 @@ private:
 //      it.Set( OutputPixelType( gradient.GetDataPointer(), InputImageDimension, false ) );
 //      }
 //  }
+#endif
 
   template <typename T >
   void SetOutputPixel( itk::ImageRegionIterator< T > &it, CovariantVectorType &gradient )
@@ -191,10 +200,11 @@ private:
 
   bool m_UseImageSpacing;
 
+#ifdef USE_IMAGE_DIRECTION_IMPLEMENTED //NOT IMPLEMENTED
   // flag to take or not the image direction into account
   // when computing the derivatives.
   bool m_UseImageDirection;
-
+#endif
   // list of the dimensions along which the gradient has
   // to be computed. The components on other dimensions
   // are set to zero
