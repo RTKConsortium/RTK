@@ -105,7 +105,7 @@ private:
     void operator=(const Self&); //purposely not implemented
 
     bool                              m_UseImageSpacing;
-    typename TInputImage::SpacingType m_SpacingCoeffs;
+    typename TInputImage::SpacingType m_InvSpacingCoeffs;
 
     // list of the dimensions along which the divergence has
     // to be computed. The components on other dimensions
