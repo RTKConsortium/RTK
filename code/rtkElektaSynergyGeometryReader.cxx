@@ -22,7 +22,7 @@
 
 rtk::ElektaSynergyGeometryReader
 ::ElektaSynergyGeometryReader():
-  m_Geometry(NULL),
+  m_Geometry(ITK_NULLPTR),
   m_DicomUID(""),
   m_ImageDbfFileName("IMAGE.DBF"),
   m_FrameDbfFileName("FRAME.DBF")

@@ -27,7 +27,7 @@ namespace rtk
 template< typename TOutputImage>
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ReconstructionConjugateGradientOperator():
-  m_Geometry(NULL),
+  m_Geometry(ITK_NULLPTR),
   m_Preconditioned(false),
   m_Regularized(false),
   m_Gamma(0)

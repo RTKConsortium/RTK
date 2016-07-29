@@ -174,9 +174,9 @@
       }                                                                              \
     smartPtr->UnRegister();                                                          \
     /* If smartPtr is a ProcessObject, watch it */                                   \
-    itk::ProcessObject* processObjectPointer = NULL;                                 \
+    itk::ProcessObject* processObjectPointer = ITK_NULLPTR;                                 \
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer()); \
-    if (processObjectPointer != NULL)                                                \
+    if (processObjectPointer != ITK_NULLPTR)                                                \
       {                                                                              \
       rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer);                  \
       }                                                                              \
@@ -201,9 +201,9 @@
     smartPtr = rawPtr;                                                               \
     rawPtr->UnRegister();                                                            \
     /* If smartPtr is a ProcessObject, watch it */                                   \
-    itk::ProcessObject* processObjectPointer = NULL;                                 \
+    itk::ProcessObject* processObjectPointer = ITK_NULLPTR;                                 \
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer()); \
-    if (processObjectPointer != NULL)                                                \
+    if (processObjectPointer != ITK_NULLPTR)                                                \
       {                                                                              \
       rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer);                  \
       }                                                                              \

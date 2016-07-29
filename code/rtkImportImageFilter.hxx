@@ -40,7 +40,7 @@ ImportImageFilter< TImage >
     }
   m_Direction.SetIdentity();
 
-  m_ImportPointer = 0;
+  m_ImportPointer = ITK_NULLPTR;
   m_FilterManageMemory = false;
   m_Size = 0;
 }

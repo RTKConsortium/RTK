@@ -85,7 +85,7 @@ public:
 
 
 protected:
-  RayBoxIntersectionImageFilter() : m_RBIFunctor(RBIFunctionType::New()), m_Geometry(NULL), m_Density(1.) {}
+  RayBoxIntersectionImageFilter() : m_RBIFunctor(RBIFunctionType::New()), m_Geometry(ITK_NULLPTR), m_Density(1.) {}
   virtual ~RayBoxIntersectionImageFilter() {};
 
   /** Apply changes to the input image requested region. */

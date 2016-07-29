@@ -239,7 +239,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
   // For the same reason, set geometry now
   // Check and set geometry
-  if(this->GetGeometry().GetPointer() == NULL)
+  if(this->GetGeometry().GetPointer() == ITK_NULLPTR)
     {
     itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
     }

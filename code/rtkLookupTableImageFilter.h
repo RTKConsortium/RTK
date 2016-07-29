@@ -54,7 +54,7 @@ public:
   typedef typename InterpolatorType::Pointer                                      InterpolatorPointer;
 
   LUT():
-    m_LookupTableDataPointer(NULL),
+    m_LookupTableDataPointer(ITK_NULLPTR),
     m_Interpolator(InterpolatorType::New())
   {};
   ~LUT() {};

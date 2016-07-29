@@ -146,9 +146,9 @@ CudaForwardWarpImageFilter
     );
 
   // Get rid of the intermediate images used to split the DVF into three components
-  xCompDVF = NULL;
-  yCompDVF = NULL;
-  zCompDVF = NULL;
+  xCompDVF = ITK_NULLPTR;
+  yCompDVF = ITK_NULLPTR;
+  zCompDVF = ITK_NULLPTR;
 
   // The filter is inPlace
 //  pinVol = poutVol;

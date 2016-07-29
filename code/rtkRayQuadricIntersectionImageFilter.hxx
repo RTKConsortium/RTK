@@ -31,7 +31,7 @@ template <class TInputImage, class TOutputImage>
 RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 ::RayQuadricIntersectionImageFilter():
   m_RQIFunctor( RQIFunctionType::New() ),
-  m_Geometry(NULL),
+  m_Geometry(ITK_NULLPTR),
   m_Density(1.)
 {
 }

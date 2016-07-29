@@ -55,7 +55,7 @@ public:
   itkSetMacro(Geometry, GeometryPointer);
 
 protected:
-  ForwardProjectionImageFilter() : m_Geometry(NULL) {
+  ForwardProjectionImageFilter() : m_Geometry(ITK_NULLPTR) {
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
 
