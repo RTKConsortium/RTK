@@ -94,18 +94,18 @@ public:
 
 protected:
     SplatWithKnownWeightsImageFilter();
-    ~SplatWithKnownWeightsImageFilter(){}
+    ~SplatWithKnownWeightsImageFilter() ITK_OVERRIDE {}
 
     typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
     typename VolumeType::Pointer GetInputVolume();
 
     /** Does the real work. */
-    virtual void ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
-    virtual void BeforeThreadedGenerateData();
+    void ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    virtual const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 #endif
 

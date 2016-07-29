@@ -72,10 +72,10 @@ public:
 protected:
   ReorderProjectionsImageFilter();
 
-  ~ReorderProjectionsImageFilter(){
+  ~ReorderProjectionsImageFilter() ITK_OVERRIDE {
   }
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   // Iterative filters do not need padding
   bool m_PadOnTruncatedSide;

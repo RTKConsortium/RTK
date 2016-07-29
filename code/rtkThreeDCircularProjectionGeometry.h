@@ -77,7 +77,7 @@ public:
                                       const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
   /** Empty the geometry object. */
-  virtual void Clear() ITK_OVERRIDE;
+  void Clear() ITK_OVERRIDE;
 
   /** Get the vector of geometry parameters (one per projection). Angles are
    * in radians.*/
@@ -197,7 +197,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometry() {};
-  virtual ~ThreeDCircularProjectionGeometry() {};
+  ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);

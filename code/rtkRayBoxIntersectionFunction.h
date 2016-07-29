@@ -121,7 +121,7 @@ protected:
   RayBoxIntersectionFunction();
 
   /// Destructor
-  ~RayBoxIntersectionFunction(){};
+  ~RayBoxIntersectionFunction() ITK_OVERRIDE {};
 
   /// The focal point or position of the ray source
   VectorType m_FocalPoint;

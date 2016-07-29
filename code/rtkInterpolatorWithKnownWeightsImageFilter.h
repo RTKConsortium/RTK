@@ -89,15 +89,15 @@ public:
 
 protected:
     InterpolatorWithKnownWeightsImageFilter();
-    ~InterpolatorWithKnownWeightsImageFilter(){}
+    ~InterpolatorWithKnownWeightsImageFilter() ITK_OVERRIDE {}
 
     typename VolumeType::ConstPointer GetInputVolume();
     typename VolumeSeriesType::Pointer GetInputVolumeSeries();
 
-    virtual void GenerateInputRequestedRegion();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Does the real work. */
-    virtual void ThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType threadId );
+    void ThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
     itk::Array2D<float> m_Weights;
     int                 m_ProjectionNumber;

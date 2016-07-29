@@ -161,22 +161,22 @@ public:
     <VolumeSeriesType, ProjectionStackType>    MotionCompensatedFourDCGFilterType;
 
   /** Neither the forward nor the back projection filter can be set by the user */
-  void SetForwardProjectionFilter(int fwtype) {}
-  void SetBackProjectionFilter(int bptype) {}
+  void SetForwardProjectionFilter(int fwtype) ITK_OVERRIDE {}
+  void SetBackProjectionFilter(int bptype) ITK_OVERRIDE {}
 
   /** Set the vector containing the signal in the sub-filters */
-  void SetSignal(const std::vector<double> signal);
+  void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
 
 protected:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter();
-  ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter(){}
+  ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 private:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented

@@ -94,10 +94,10 @@ public:
     
 protected:
   MagnitudeThresholdImageFilter();
-  virtual ~MagnitudeThresholdImageFilter() {}
+  ~MagnitudeThresholdImageFilter() ITK_OVERRIDE {}
 
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            itk::ThreadIdType threadId);
+                            itk::ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
   TRealType m_Threshold;

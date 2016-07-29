@@ -108,11 +108,11 @@ public:
   itkGetMacro(IDark, double);
   itkSetMacro(IDark, double);
 
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 protected:
   LUTbasedVariableI0RawToAttenuationImageFilter();
-  virtual ~LUTbasedVariableI0RawToAttenuationImageFilter() {}
+  ~LUTbasedVariableI0RawToAttenuationImageFilter() ITK_OVERRIDE {}
 
 private:
   LUTbasedVariableI0RawToAttenuationImageFilter(const Self &); //purposely not implemented

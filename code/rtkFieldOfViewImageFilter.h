@@ -101,13 +101,13 @@ public:
 
 protected:
   FieldOfViewImageFilter();
-  virtual ~FieldOfViewImageFilter() {};
+  ~FieldOfViewImageFilter() ITK_OVERRIDE {};
 
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
   /** Generates a FOV mask which is applied to the reconstruction
    * A call to this function will assume modification of the function.*/
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   FieldOfViewImageFilter(const Self&);      //purposely not implemented

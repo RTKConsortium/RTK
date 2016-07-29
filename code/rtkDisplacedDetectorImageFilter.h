@@ -104,18 +104,18 @@ public:
 protected:
   DisplacedDetectorImageFilter();
 
-  ~DisplacedDetectorImageFilter(){
+  ~DisplacedDetectorImageFilter() ITK_OVERRIDE {
   }
 
   /** Retrieve computed inferior and superior corners */
   itkGetMacro(InferiorCorner, double);
   itkGetMacro(SuperiorCorner, double);
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   // Iterative filters do not need padding
   bool m_PadOnTruncatedSide;

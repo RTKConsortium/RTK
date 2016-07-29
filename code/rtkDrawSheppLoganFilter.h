@@ -84,9 +84,9 @@ public:
 
 protected:
   DrawSheppLoganFilter();
-  virtual ~DrawSheppLoganFilter() {};
+  ~DrawSheppLoganFilter() ITK_OVERRIDE {};
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   DrawSheppLoganFilter(const Self&); //purposely not implemented

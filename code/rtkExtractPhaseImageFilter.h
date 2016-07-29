@@ -96,9 +96,9 @@ public:
 
 protected:
   ExtractPhaseImageFilter();
-  ~ExtractPhaseImageFilter(){}
+  ~ExtractPhaseImageFilter() ITK_OVERRIDE {}
 
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   ExtractPhaseImageFilter(const Self&); //purposely not implemented

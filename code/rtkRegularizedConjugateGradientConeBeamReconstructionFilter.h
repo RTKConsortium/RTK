@@ -132,10 +132,10 @@ public:
   typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TImage>                   WaveletsDenoisingFilterType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
-  void SetForwardProjectionFilter(int fwtype);
+  void SetForwardProjectionFilter(int fwtype) ITK_OVERRIDE;
 
   /** Pass the backprojection filter to ProjectionStackToFourD*/
-  void SetBackProjectionFilter(int bptype);
+  void SetBackProjectionFilter(int bptype) ITK_OVERRIDE;
 
   void PrintTiming(std::ostream& os) const;
 
@@ -189,18 +189,18 @@ public:
 
 protected:
   RegularizedConjugateGradientConeBeamReconstructionFilter();
-  ~RegularizedConjugateGradientConeBeamReconstructionFilter(){}
+  ~RegularizedConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   // Inputs are not supposed to occupy the same physical space,
   // so there is nothing to verify
-  virtual void VerifyInputInformation(){}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
   /** Member pointers to the filters used internally (for convenience)*/
   typename CGFilterType::Pointer                   m_CGFilter;

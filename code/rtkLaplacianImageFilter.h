@@ -61,13 +61,13 @@ public:
 
 protected:
   LaplacianImageFilter();
-  ~LaplacianImageFilter(){}
+  ~LaplacianImageFilter() ITK_OVERRIDE {}
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** Handle regions */
-  void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   typename GradientFilterType::Pointer    m_Gradient;
   typename DivergenceFilterType::Pointer  m_Divergence;

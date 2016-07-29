@@ -129,10 +129,10 @@ public:
 
 protected:
     UnwarpSequenceImageFilter();
-    ~UnwarpSequenceImageFilter(){}
+    ~UnwarpSequenceImageFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename ConjugateGradientFilterType::Pointer                   m_ConjugateGradientFilter;
@@ -146,12 +146,12 @@ protected:
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
-    void VerifyInputInformation(){}
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion();
-    void GenerateOutputInformation();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
     bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
     bool m_CudaConjugateGradient;

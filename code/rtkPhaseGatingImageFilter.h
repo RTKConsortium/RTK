@@ -56,9 +56,9 @@ public:
 
 protected:
     PhaseGatingImageFilter();
-    ~PhaseGatingImageFilter(){}
+    ~PhaseGatingImageFilter() ITK_OVERRIDE {}
 
-    virtual void GenerateOutputInformation();
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
     void SelectProjections();
 

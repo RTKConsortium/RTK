@@ -85,7 +85,7 @@ private:
   VarianObiGeometryReader(const Self&);
   void operator=(const Self&);
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_XMLFileName;

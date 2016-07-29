@@ -82,7 +82,7 @@ public:
 protected:
   GlobalTimer();
   virtual ~GlobalTimer();
-  virtual void PrintSelf(std::ostream & os, Indent indent) const;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
   bool m_Verbose;
 
 //  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;
