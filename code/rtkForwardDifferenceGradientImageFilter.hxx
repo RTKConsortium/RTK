@@ -43,7 +43,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
   // default behaviour is to take into account both spacing and direction
   this->m_UseImageSpacing   = true;
+#ifdef USE_IMAGE_DIRECTION_IMPLEMENTED //NOT IMPLEMENTED
   this->m_UseImageDirection = true;
+#endif
 
   // default behaviour is to process all dimensions
   for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
@@ -289,9 +291,11 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
   os << indent << "UseImageSpacing: "
      << ( this->m_UseImageSpacing ? "On" : "Off" ) << std::endl;
+#ifdef USE_IMAGE_DIRECTION_IMPLEMENTED //NOT IMPLEMENTED
   os << indent << "UseImageDirection = "
      << ( this->m_UseImageDirection ? "On" : "Off" ) << std::endl;
 }
+#endif
 } // end namespace itk
 
 #endif
