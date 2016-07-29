@@ -117,13 +117,13 @@ public:
 
 protected:
   JosephBackProjectionImageFilter() {}
-  virtual ~JosephBackProjectionImageFilter() {}
+  ~JosephBackProjectionImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
   inline void BilinearSplat(const InputPixelType rayValue,
                             const double stepLengthInVoxel,

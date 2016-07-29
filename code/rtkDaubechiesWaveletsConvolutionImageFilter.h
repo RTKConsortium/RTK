@@ -100,7 +100,7 @@ public:
 
 protected:
     DaubechiesWaveletsConvolutionImageFilter();
-    ~DaubechiesWaveletsConvolutionImageFilter();
+    ~DaubechiesWaveletsConvolutionImageFilter() ITK_OVERRIDE;
 
     typedef std::vector<typename TImage::PixelType> CoefficientVector;
 
@@ -108,10 +108,10 @@ protected:
     CoefficientVector GenerateCoefficients();
 
     /** Does the real work */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Defines the size, spacing, ... of the output kernel image */
-    virtual void GenerateOutputInformation();
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
 

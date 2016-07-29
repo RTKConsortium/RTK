@@ -88,14 +88,14 @@ public:
 
 protected:
   SubSelectImageFilter();
-  ~SubSelectImageFilter(){}
+  ~SubSelectImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** Member variables */
   GeometryType::Pointer     m_InputGeometry;

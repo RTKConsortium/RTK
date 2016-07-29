@@ -59,15 +59,15 @@ protected:
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
 
-  virtual ~ForwardProjectionImageFilter() {
+  ~ForwardProjectionImageFilter() ITK_OVERRIDE {
   }
 
   /** Apply changes to the input image requested region. */
-  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
 private:
   ForwardProjectionImageFilter(const Self&); //purposely not implemented

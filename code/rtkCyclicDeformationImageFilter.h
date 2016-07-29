@@ -91,13 +91,13 @@ public:
 
 protected:
   CyclicDeformationImageFilter(): m_Frame(0) {}
-  virtual ~CyclicDeformationImageFilter() {}
+  ~CyclicDeformationImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateOutputInformation();
-  virtual void GenerateInputRequestedRegion();
-  virtual void BeforeThreadedGenerateData();
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                                     ThreadIdType threadId );
+  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
+                                     ThreadIdType threadId ) ITK_OVERRIDE;
 
   // Linear interpolation position and weights
   unsigned int m_FrameInf;

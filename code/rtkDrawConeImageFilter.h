@@ -72,7 +72,7 @@ public DrawQuadricImageFilter<TInputImage,
 
 protected:
   DrawConeImageFilter();
-  virtual ~DrawConeImageFilter() {};
+  ~DrawConeImageFilter() ITK_OVERRIDE {};
 
 private:
   DrawConeImageFilter(const Self&); //purposely not implemented

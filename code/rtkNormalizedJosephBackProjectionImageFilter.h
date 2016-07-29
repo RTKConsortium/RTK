@@ -103,17 +103,17 @@ public:
 
 protected:
   NormalizedJosephBackProjectionImageFilter();
-  virtual ~NormalizedJosephBackProjectionImageFilter() {}
+  ~NormalizedJosephBackProjectionImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
   /** Sub filters */
   typename AddFilterType::Pointer                   m_AddFilter;

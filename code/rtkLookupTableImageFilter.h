@@ -169,11 +169,11 @@ public:
 
   /** Update the LUT before using it to process the data in case it is the
    * result of a pipeline. */
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 protected:
   LookupTableImageFilter() {}
-  virtual ~LookupTableImageFilter() {}
+  ~LookupTableImageFilter() ITK_OVERRIDE {}
   typename LookupTableType::Pointer m_LookupTable;
 
 private:

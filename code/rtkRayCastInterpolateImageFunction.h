@@ -131,7 +131,7 @@ public:
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. 
    */
-  virtual OutputType Evaluate( const PointType& point ) const;
+  OutputType Evaluate( const PointType& point ) const ITK_OVERRIDE;
 
   /** Interpolate the image at a continuous index position
    *
@@ -144,8 +144,8 @@ public:
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. 
    */
-  virtual OutputType EvaluateAtContinuousIndex( 
-    const ContinuousIndexType &index ) const;
+  OutputType EvaluateAtContinuousIndex( 
+    const ContinuousIndexType &index ) const ITK_OVERRIDE;
 
 
   /** Connect the Transform. */
@@ -171,15 +171,15 @@ public:
   /** Check if a point is inside the image buffer.
    * \warning For efficiency, no validity checking of
    * the input image pointer is done. */
-  inline bool IsInsideBuffer( const PointType & ) const
+  inline bool IsInsideBuffer( const PointType & ) const override
     { 
     return true;
     }
-  bool IsInsideBuffer( const ContinuousIndexType &  ) const
+  bool IsInsideBuffer( const ContinuousIndexType &  ) const override
     {
     return true;
     }
-  bool IsInsideBuffer( const IndexType &  ) const
+  bool IsInsideBuffer( const IndexType &  ) const override
     { 
     return true;
     }
@@ -190,10 +190,10 @@ protected:
   RayCastInterpolateImageFunction();
 
   /// Destructor
-  ~RayCastInterpolateImageFunction(){};
+  ~RayCastInterpolateImageFunction() ITK_OVERRIDE {};
 
   /// Print the object
-  void PrintSelf(std::ostream& os, itk::Indent indent) const;
+  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
   
   /// Transformation used to calculate the new focal point position
   TransformPointer m_Transform;

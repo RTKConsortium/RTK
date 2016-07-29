@@ -79,12 +79,12 @@ public:
 
 protected:
   EdfRawToAttenuationImageFilter();
-  ~EdfRawToAttenuationImageFilter(){
+  ~EdfRawToAttenuationImageFilter() ITK_OVERRIDE {
   }
 
-  void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   //purposely not implemented

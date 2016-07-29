@@ -107,13 +107,13 @@ public:
 
 protected:
     DaubechiesWaveletsDenoiseSequenceImageFilter();
-    ~DaubechiesWaveletsDenoiseSequenceImageFilter(){}
+    ~DaubechiesWaveletsDenoiseSequenceImageFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
-    virtual void GenerateOutputInformation();
-    virtual void GenerateInputRequestedRegion();
+    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename WaveletsDenoisingFilterType::Pointer   m_WaveletsDenoisingFilter;

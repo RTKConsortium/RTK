@@ -98,7 +98,7 @@ public:
 protected:
   ImagXGeometryReader(): m_Geometry(ITK_NULLPTR), m_DetectorOffset(0.f), m_ReadCalibrationFromProjections(false) {};
 
-  ~ImagXGeometryReader() {};
+  ~ImagXGeometryReader() ITK_OVERRIDE {};
 
 
 private:
@@ -106,7 +106,7 @@ private:
   ImagXGeometryReader(const Self&);
   void operator=(const Self&);
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_CalibrationXMLFileName;

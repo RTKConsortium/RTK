@@ -43,7 +43,7 @@ class RTK_EXPORT DrawQuadricSpatialObject : public DrawSpatialObject
     typedef std::string                                         StringType;
 
   /** Returns true if a point is inside the object. */
-  virtual bool IsInside(const PointType & point) const;
+  bool IsInside(const PointType & point) const ITK_OVERRIDE;
 
   void UpdateParameters();
 

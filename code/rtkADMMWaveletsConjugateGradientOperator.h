@@ -134,10 +134,10 @@ public:
 
 protected:
     ADMMWaveletsConjugateGradientOperator();
-    ~ADMMWaveletsConjugateGradientOperator(){}
+    ~ADMMWaveletsConjugateGradientOperator() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
     BackProjectionFilterPointer            m_BackProjectionFilter;
@@ -154,12 +154,12 @@ protected:
     /** When the inputs have the same type, ITK checks whether they occupy the
     * same physical space or not. Obviously they dont, so we have to remove this check
     */
-    void VerifyInputInformation(){}
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion();
-    void GenerateOutputInformation();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
     ADMMWaveletsConjugateGradientOperator(const Self &); //purposely not implemented

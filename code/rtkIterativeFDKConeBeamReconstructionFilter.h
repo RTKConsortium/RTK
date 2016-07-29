@@ -153,10 +153,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (int _arg);
+  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (int _arg){}
+  void SetBackProjectionFilter (int _arg) ITK_OVERRIDE {}
 
   /** Get / Set the truncation correction */
   itkGetMacro(TruncationCorrection, double);
@@ -176,17 +176,17 @@ public:
 
 protected:
   IterativeFDKConeBeamReconstructionFilter();
-  ~IterativeFDKConeBeamReconstructionFilter(){}
+  ~IterativeFDKConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
   /** Pointers to each subfilter of this composite filter */
   typename Superclass::ForwardProjectionPointerType m_ForwardProjectionFilter;

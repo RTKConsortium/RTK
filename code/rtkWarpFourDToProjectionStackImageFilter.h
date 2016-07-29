@@ -120,7 +120,7 @@ public:
     void SetDisplacementField(const DVFSequenceImageType* DVFs);
     typename DVFSequenceImageType::ConstPointer GetDisplacementField();
 
-    virtual void SetSignal(const std::vector<double> signal);
+    void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
 
     /** Set and Get for the UseCudaCyclicDeformation variable */
     itkSetMacro(UseCudaCyclicDeformation, bool)
@@ -128,18 +128,18 @@ public:
 
 protected:
     WarpFourDToProjectionStackImageFilter();
-    ~WarpFourDToProjectionStackImageFilter(){}
+    ~WarpFourDToProjectionStackImageFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
-    virtual void GenerateOutputInformation();
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
-    virtual void GenerateInputRequestedRegion();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** The first two inputs should not be in the same space so there is nothing
      * to verify. */
-    virtual void VerifyInputInformation() {}
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename DVFInterpolatorType::Pointer               m_DVFInterpolatorFilter;

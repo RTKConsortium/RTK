@@ -65,7 +65,7 @@ public:
 
 protected:
   ElektaSynergyLookupTableImageFilter();
-  virtual ~ElektaSynergyLookupTableImageFilter() {
+  ~ElektaSynergyLookupTableImageFilter() ITK_OVERRIDE {
   }
 
 private:

@@ -66,9 +66,9 @@ public:
 
 protected:
   ForwardWarpImageFilter();
-  ~ForwardWarpImageFilter() {}
+  ~ForwardWarpImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   // Redefine stuff that is private in the Superclass
   void Protected_EvaluateDisplacementAtPhysicalPoint(const PointType & p, DisplacementType &output);

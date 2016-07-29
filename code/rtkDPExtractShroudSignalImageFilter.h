@@ -67,11 +67,11 @@ public:
 
 protected:
   DPExtractShroudSignalImageFilter();
-  ~DPExtractShroudSignalImageFilter(){}
+  ~DPExtractShroudSignalImageFilter() ITK_OVERRIDE {}
 
-  void GenerateOutputInformation();
-  void GenerateInputRequestedRegion();
-  void GenerateData();
+  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   DPExtractShroudSignalImageFilter(const Self&);  //purposely not implemented

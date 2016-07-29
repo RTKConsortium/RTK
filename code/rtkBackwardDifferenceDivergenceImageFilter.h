@@ -90,15 +90,15 @@ public:
 
 protected:
     BackwardDifferenceDivergenceImageFilter();
-    virtual ~BackwardDifferenceDivergenceImageFilter();
+    ~BackwardDifferenceDivergenceImageFilter() ITK_OVERRIDE;
 
-    virtual void GenerateInputRequestedRegion();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-    virtual void BeforeThreadedGenerateData();
+    void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-    virtual void ThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+    void ThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
 
-    virtual void AfterThreadedGenerateData();
+    void AfterThreadedGenerateData() ITK_OVERRIDE;
 
 private:
     BackwardDifferenceDivergenceImageFilter(const Self&); //purposely not implemented

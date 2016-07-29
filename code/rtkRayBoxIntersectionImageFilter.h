@@ -86,14 +86,14 @@ public:
 
 protected:
   RayBoxIntersectionImageFilter() : m_RBIFunctor(RBIFunctionType::New()), m_Geometry(ITK_NULLPTR), m_Density(1.) {}
-  virtual ~RayBoxIntersectionImageFilter() {};
+  ~RayBoxIntersectionImageFilter() ITK_OVERRIDE {};
 
   /** Apply changes to the input image requested region. */
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
 private:
   RayBoxIntersectionImageFilter(const Self&); //purposely not implemented

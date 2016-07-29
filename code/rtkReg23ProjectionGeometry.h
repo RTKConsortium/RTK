@@ -93,7 +93,7 @@ protected:
   /** Standard constructor. **/
   Reg23ProjectionGeometry();
   /** Destructor. **/
-  virtual ~Reg23ProjectionGeometry();
+  ~Reg23ProjectionGeometry() ITK_OVERRIDE;
 
   /** Verify that the specified Euler angles in ZXY result in a rotation matrix
    * which corresponds to the specified detector orientation. Rationale for this
