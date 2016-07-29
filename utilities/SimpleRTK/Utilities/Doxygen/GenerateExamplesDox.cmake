@@ -29,7 +29,7 @@ file( APPEND ${OUTPUT_FILE} "namespace srtk = rtk::simple;/**\n")
 
 foreach( f IN LISTS EXAMPLES_LIST )
   file( APPEND ${OUTPUT_FILE}  "\\example ${f}\n" )
-endforeach( )
+endforeach()
 
 # end comment
 file( APPEND ${OUTPUT_FILE}  "*/\n" )

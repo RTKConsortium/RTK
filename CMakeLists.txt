@@ -24,11 +24,11 @@ endif()
 ## Default to release
 if (NOT CMAKE_BUILD_TYPE)
   set (CMAKE_BUILD_TYPE Release)
-endif (NOT CMAKE_BUILD_TYPE)
+endif ()
 
 if(BUILD_TESTING)
   enable_testing()
-endif(BUILD_TESTING)
+endif()
 #=========================================================
 
 #=========================================================
@@ -42,17 +42,17 @@ set(RTK_VERSION_PATCH "0")
 # Help function to debug CMake
 macro (DD in)
   message(${in}=[${${in}}])
-endmacro(DD)
+endmacro()
 #=========================================================
 
 #=========================================================
 # Output directories.
 if(NOT LIBRARY_OUTPUT_PATH)
   set (LIBRARY_OUTPUT_PATH ${RTK_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all libraries.")
-endif(NOT LIBRARY_OUTPUT_PATH)
+endif()
 if(NOT EXECUTABLE_OUTPUT_PATH)
   set (EXECUTABLE_OUTPUT_PATH ${RTK_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all executables.")
-endif(NOT EXECUTABLE_OUTPUT_PATH)
+endif()
 mark_as_advanced(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
 
 set(RTK_LIBRARY_PATH "${LIBRARY_OUTPUT_PATH}")
@@ -63,13 +63,13 @@ set(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 # Remove some MS Visual c++ flags
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)
-endif(MSVC)
+endif()
 
 # Flag required for shared libraries
 if ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-endif ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+endif ()
 #=========================================================
 
 #=========================================================
@@ -77,9 +77,9 @@ endif ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
 find_package(ITK 4.2.0 REQUIRED)
 if(ITK_FOUND)
   include(${ITK_USE_FILE})
-else(ITK_FOUND)
+else()
   message(FATAL_ERROR "Cannot build without ITK. Set ITK_DIR.")
-endif(ITK_FOUND)
+endif()
 
 # GPU optional dependencies
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -107,10 +107,10 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   string(REPLACE "-Wno-unused-parameter" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
   if(WIN32)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qwd1268")
-  else(WIN32)
+  else()
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd1268")
-  endif(WIN32)
-endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+  endif()
+endif()
 #=========================================================
 
 #=========================================================
@@ -130,7 +130,7 @@ include(${RTK_SOURCE_DIR}/cmake/KWStyle/KWStyle.cmake)
 option(BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
 if(BUILD_DOXYGEN)
   add_subdirectory(documentation/Doxygen)
-endif(BUILD_DOXYGEN)
+endif()
 #=========================================================
 
 #=========================================================
@@ -156,7 +156,7 @@ list(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/code")
 if(RTK_USE_CUDA)
   list(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/utilities/ITKCudaCommon/include/")
   list(APPEND RTK_INCLUDE_DIRS ${CUDA_TOOLKIT_INCLUDE})
-endif(RTK_USE_CUDA)
+endif()
 list(APPEND RTK_INCLUDE_DIRS "${PROJECT_BINARY_DIR}")
 include_directories(${RTK_INCLUDE_DIRS})
 
@@ -170,7 +170,7 @@ endif()
 if(RTK_USE_CUDA)
   add_subdirectory(utilities/ITKCudaCommon)
   include_directories(utilities/ITKCudaCommon/include)
-endif(RTK_USE_CUDA)
+endif()
 add_subdirectory(utilities/lp_solve)
 include_directories(
         utilities/lp_solve
@@ -204,16 +204,16 @@ endif()
 option(BUILD_APPLICATIONS "Build RTK applications" ON)
 if(BUILD_APPLICATIONS)
   add_subdirectory(applications)
-endif(BUILD_APPLICATIONS)
+endif()
 
 if(BUILD_TESTING)
   add_subdirectory(testing)
-endif(BUILD_TESTING)
+endif()
 
 option(BUILD_EXAMPLES "Build RTK examples" ON)
 if(BUILD_EXAMPLES)
   add_subdirectory(examples)
-endif(BUILD_EXAMPLES)
+endif()
 
 ExternalData_Add_Target(rtkData)
 
@@ -222,4 +222,4 @@ if(BUILD_SIMPLERTK)
   # SimpleRTK is meant to be build separately, so we set the variables
   set(RTK_DIR ${CMAKE_BINARY_DIR})
   include(utilities/SimpleRTK/SimpleRTKWithSwig.cmake)
-endif(BUILD_SIMPLERTK)
+endif()

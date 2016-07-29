@@ -23,16 +23,16 @@ if(NOT RTK_DIR)
   # Get the system search path as a list.
   if(UNIX)
     string(REGEX MATCHALL "[^:]+" RTK_DIR_SEARCH1 "$ENV{PATH}")
-  else(UNIX)
+  else()
     string(REGEX REPLACE "\\\\" "/" RTK_DIR_SEARCH1 "$ENV{PATH}")
-  endif(UNIX)
+  endif()
   string(REGEX REPLACE "/;" ";" RTK_DIR_SEARCH2 ${RTK_DIR_SEARCH1})
 
   # Construct a set of paths relative to the system search path.
   set(RTK_DIR_SEARCH "")
   foreach(dir ${RTK_DIR_SEARCH2})
     set(RTK_DIR_SEARCH ${RTK_DIR_SEARCH} "${dir}/../lib")
-  endforeach(dir)
+  endforeach()
 
   #
   # Look for an installation or build tree.
@@ -64,16 +64,16 @@ if(NOT RTK_DIR)
     # Help the user find it if we cannot.
     DOC "The ${RTK_DIR_STRING}"
   )
-endif(NOT RTK_DIR)
+endif()
 
 # If RTK was found, load the configuration file to get the rest of the
 # settings.
 if(RTK_DIR)
   set(RTK_FOUND 1)
   include(${RTK_DIR}/RTKConfig.cmake)
-else(RTK_DIR)
+else()
   set(RTK_FOUND 0)
   if(RTK_FIND_REQUIRED)
     message(FATAL_ERROR "Please set RTK_DIR to the ${RTK_DIR_STRING}")
-  endif(RTK_FIND_REQUIRED)
-endif(RTK_DIR)
+  endif()
+endif()

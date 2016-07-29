@@ -4,7 +4,7 @@ target_link_libraries(rtkwaveletsdenoising RTK)
 
 if (RTK_USE_CUDA)
   target_link_libraries(rtkwaveletsdenoising rtkcuda)
-endif (RTK_USE_CUDA)
+endif ()
 
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
@@ -13,6 +13,6 @@ if(NOT RTK_INSTALL_NO_EXECUTABLES)
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  endforeach(EXE_NAME) 
-endif(NOT RTK_INSTALL_NO_EXECUTABLES)
+  endforeach() 
+endif()
 

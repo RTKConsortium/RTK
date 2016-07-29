@@ -157,9 +157,9 @@ foreach(FILTERNAME ${NOTHING})
     set( OUTPUT_TEST_FILENAME "${SimpleRTK_BINARY_DIR}/Testing/CSharpTests/Test${FILTERNAME}.cs" )
     if ( WIN32 )
       string( REPLACE "/" "\\" OUTPUT_TEST_FILENAME_SAFE ${OUTPUT_TEST_FILENAME} )
-    else ( UNIX )
+    else ()
       string( REPLACE "\\" "/" OUTPUT_TEST_FILENAME_SAFE ${OUTPUT_TEST_FILENAME} )
-    endif ( WIN32 )
+    endif ()
     add_custom_command (
       OUTPUT "${OUTPUT_TEST_FILENAME}"
       COMMAND ${CMAKE_COMMAND} -E remove -f "${OUTPUT_TEST_FILENAME}"
@@ -368,7 +368,7 @@ if ( WRAP_CSHARP )
   add_csharp_test( Test.ImageTest
     "${SimpleRTK_SOURCE_DIR}/Testing/CSharpImageTest.cs" )
 
-endif ( WRAP_CSHARP )
+endif ()
 
 
 if ( WRAP_JAVA )
@@ -390,10 +390,10 @@ if ( WRAP_JAVA )
       set( _JAVA_LIBRARY_PATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIGURATION>" )
       # Note: on windows this is a semi-colon separated list
       set( _JAVA_CLASSPATH "${SimpleRTK_BINARY_DIR}/Wrapping/${JAR_FILE};${CMAKE_CURRENT_BINARY_DIR}" )
-    else(WIN32)
+    else()
       set( _JAVA_LIBRARY_PATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" )
       set( _JAVA_CLASSPATH "${SimpleRTK_BINARY_DIR}/Wrapping/${JAR_FILE}:${CMAKE_CURRENT_BINARY_DIR}" )
-    endif(WIN32)
+    endif()
 
     add_custom_command(
       OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_java_file_class}"
@@ -453,7 +453,7 @@ if ( WRAP_JAVA )
   # is built
   add_custom_target( CompileJavaTests ALL DEPENDS ${compiled_java_tests} )
 
-endif ( WRAP_JAVA )
+endif ()
 
 
 if ( WRAP_PYTHON )
@@ -614,7 +614,7 @@ if ( WRAP_PYTHON )
 
 
 
-endif( WRAP_PYTHON )
+endif()
 
 
 if ( WRAP_LUA )
@@ -656,7 +656,7 @@ if ( WRAP_LUA )
     "2.0"
     "${TEST_HARNESS_TEMP_DIRECTORY}/Lua.SimpleGaussian.nrrd" )
 
-endif ( WRAP_LUA )
+endif ()
 
 if ( WRAP_RUBY )
 
@@ -699,7 +699,7 @@ if ( WRAP_RUBY )
     "2.0"
     "${TEST_HARNESS_TEMP_DIRECTORY}/Ruby.SimpleGaussian.nrrd" )
 
-endif ( WRAP_RUBY )
+endif ()
 
 
 if ( WRAP_TCL )
@@ -742,7 +742,7 @@ if ( WRAP_TCL )
     "2.0"
     "${TEST_HARNESS_TEMP_DIRECTORY}/Tcl.SimpleGaussian.nrrd" )
 
-endif ( WRAP_TCL )
+endif ()
 
 if ( WRAP_R )
 
@@ -782,4 +782,4 @@ if ( WRAP_R )
     "--file=${SimpleRTK_SOURCE_DIR}/Testing/RArithmeticTest.R"
      )
 
-endif ( WRAP_R )
+endif ()

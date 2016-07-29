@@ -40,4 +40,4 @@ if (BUILD_DOXYGEN)
     "To generate Doxygen's documentation, you need to build the Documentation target"
     )
   
-endif (BUILD_DOXYGEN)
+endif ()

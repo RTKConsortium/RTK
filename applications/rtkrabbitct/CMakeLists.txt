@@ -5,7 +5,7 @@ if(CUDA_FOUND)
   if(RTK_RABBITCT)
     add_library(rtkrabbitct SHARED rtkrabbitct.cpp)
     target_link_libraries(rtkrabbitct ${CUDA_LIBRARIES} ITKCommon rtkcuda)
-  endif(RTK_RABBITCT)
-endif(CUDA_FOUND)
+  endif()
+endif()
 #=========================================================
 

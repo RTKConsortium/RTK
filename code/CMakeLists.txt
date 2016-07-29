@@ -131,7 +131,7 @@ if (RTK_USE_CUDA)
               ${rtkcuda_CUDA_FILES})
   set_target_properties (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
   target_link_libraries(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_cublas_LIBRARY} RTK ITKCudaCommon)
-endif (RTK_USE_CUDA)
+endif ()
 #=========================================================
 
 #=========================================================
@@ -159,8 +159,8 @@ if(NOT RTK_INSTALL_NO_DEVELOPMENT)
     install(FILES ${__files3}
       DESTINATION ${RTK_INSTALL_INCLUDE_DIR}
       COMPONENT Development)
-  endif(RTK_USE_CUDA)
-endif(NOT RTK_INSTALL_NO_DEVELOPMENT)
+  endif()
+endif()
 
 if(NOT RTK_INSTALL_NO_LIBRARIES)
   install(TARGETS RTK
@@ -173,8 +173,8 @@ if(NOT RTK_INSTALL_NO_LIBRARIES)
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  endif(RTK_USE_CUDA)
-endif(NOT RTK_INSTALL_NO_LIBRARIES)
+  endif()
+endif()
 #=========================================================
 
 set(RTK_LIBRARIES ${RTK_LIBRARIES} PARENT_SCOPE)

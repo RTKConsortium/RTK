@@ -20,4 +20,4 @@ if(NOT RTK_INSTALL_NO_DEVELOPMENT)
   install(FILES ${__files1} ${__files2}
           DESTINATION ${RTK_INSTALL_INCLUDE_DIR}
           COMPONENT Development)
-endif(NOT RTK_INSTALL_NO_DEVELOPMENT)
+endif()

@@ -92,7 +92,7 @@ if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
   target_link_libraries(rtkrampfilternofftwcudatest ${RTK_LIBRARIES})
   set_target_properties(rtkrampfilternofftwcudatest PROPERTIES COMPILE_FLAGS "-DUSE_CUDA -DRAMP_FILTER_TEST_WITHOUT_FFTW")
   add_test(rtkrampfilternofftwcudatest ${EXECUTABLE_OUTPUT_PATH}/rtkrampfilternofftwcudatest)
-endif(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+endif()
 
 add_executable(rtkscatterglarefiltertest rtkscatterglarefiltertest.cxx)
 target_link_libraries(rtkscatterglarefiltertest ${RTK_LIBRARIES})

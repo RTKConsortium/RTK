@@ -271,7 +271,7 @@ if( CXX_HAS_fPIC )
   if(NOT "${CMAKE_CXX_FLAGS}" MATCHES "-fPIC")
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC" )
   endif()
-endif( )
+endif()
 
 
 
@@ -441,7 +441,7 @@ string(REGEX REPLACE "/" ";" _count "${SimpleRTK_INSTALL_PACKAGE_DIR}")
 foreach(p ${_count})
   set(SimpleRTKConfig_CODE "${SimpleRTKConfig_CODE}
 get_filename_component(SimpleRTK_INSTALL_PREFIX \"\${SimpleRTK_INSTALL_PREFIX}\" PATH)")
-endforeach(p)
+endforeach()
 set(SimpleRTKConfig_CODE "${SimpleRTKConfig_CODE}\n")
 
 set(SimpleRTKConfig_INCLUDE_DIRS
