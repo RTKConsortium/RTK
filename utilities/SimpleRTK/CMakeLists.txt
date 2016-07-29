@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.8.11 FATAL_ERROR )
 
 # Explicitly add INCREMENTAL linking option to command lines.
 # http://www.cmake.org/pipermail/cmake/2010-February/035174.html
-SET(MSVC_INCREMENTAL_DEFAULT ON)
+set(MSVC_INCREMENTAL_DEFAULT ON)
 
 project ( SimpleRTK )
 
@@ -66,7 +66,7 @@ endif()
 
 find_package(RTK REQUIRED ) # the modules needed can be listed here as required components
 if(RTK_FOUND)
-  INCLUDE(${RTK_USE_FILE})
+  include(${RTK_USE_FILE})
   link_directories( "${RTK_LIBRARY_DIRS}")
 endif()
 
@@ -252,7 +252,7 @@ if(MSVC)
       CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
       CMAKE_SHARED_LINKER_FLAGS_DEBUG
       CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO )
-    STRING(REGEX REPLACE "INCREMENTAL(:[a-zA-Z]+)?" "INCREMENTAL:NO" ${_varName} ${${_varName}})
+    string(REGEX REPLACE "INCREMENTAL(:[a-zA-Z]+)?" "INCREMENTAL:NO" ${_varName} ${${_varName}})
   endforeach()
 
 endif()

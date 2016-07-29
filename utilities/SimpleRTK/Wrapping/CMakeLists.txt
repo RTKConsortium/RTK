@@ -218,7 +218,7 @@ if ( WRAP_JAVA )
   find_package ( JNI REQUIRED )
   include_directories ( ${JAVA_INCLUDE_PATH} ${JNI_INCLUDE_DIRS} )
 
-  FIND_PROGRAM(Java_JAVADOC_EXECUTABLE
+  find_program(Java_JAVADOC_EXECUTABLE
     NAMES javadoc
     HINTS ${_JAVA_HINTS}
     PATHS ${_JAVA_PATHS}

@@ -73,7 +73,7 @@ macro( CSHARP_ADD_PROJECT type name )
         list( APPEND sources_dep ${CSHARP_SOURCE_DIRECTORY}/${it} )
       elseif( ${it} MATCHES "[*]" )
         # For dependencies, we need to expand wildcards
-        FILE( GLOB it_glob ${it} )
+        file( GLOB it_glob ${it} )
         list( APPEND sources ${it} )
         list( APPEND sources_dep ${it_glob} )
       endif( )
@@ -83,7 +83,7 @@ macro( CSHARP_ADD_PROJECT type name )
   # Check we have at least one source
   list( LENGTH sources_dep sources_length )
   if ( ${sources_length} LESS 1 )
-    MESSAGE( SEND_ERROR "No C# sources were specified for ${type} ${name}" )
+    message( SEND_ERROR "No C# sources were specified for ${type} ${name}" )
   endif ()
   list( SORT sources_dep )
 
@@ -95,7 +95,7 @@ macro( CSHARP_ADD_PROJECT type name )
   endif (WIN32)
 
   # Add custom target and command
-  MESSAGE( STATUS "Adding C# ${type} ${name}: '${CSHARP_COMPILER} /t:${type} /out:${name}.${output} /platform:${CSHARP_PLATFORM} ${CSHARP_SDK} ${refs} ${sources}'" )
+  message( STATUS "Adding C# ${type} ${name}: '${CSHARP_COMPILER} /t:${type} /out:${name}.${output} /platform:${CSHARP_PLATFORM} ${CSHARP_SDK} ${refs} ${sources}'" )
   add_custom_command(
     COMMENT "Compiling C# ${type} ${name}: '${CSHARP_COMPILER} /t:${type} /out:${name}.${output} /platform:${CSHARP_PLATFORM} ${CSHARP_SDK} ${refs} ${sources}'"
     OUTPUT ${CSHARP_BINARY_DIRECTORY}/${name}.${output}

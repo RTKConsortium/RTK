@@ -27,9 +27,9 @@ file( REMOVE ${OUTPUT_FILE} )
 # begin comment
 file( APPEND ${OUTPUT_FILE} "namespace srtk = rtk::simple;/**\n")
 
-FOREACH( f IN LISTS EXAMPLES_LIST )
+foreach( f IN LISTS EXAMPLES_LIST )
   file( APPEND ${OUTPUT_FILE}  "\\example ${f}\n" )
-ENDFOREACH( )
+endforeach( )
 
 # end comment
 file( APPEND ${OUTPUT_FILE}  "*/\n" )

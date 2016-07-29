@@ -188,10 +188,10 @@ if (CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available.
 endif()
 
 # The gtest include file directories.
-SET(GTEST_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/GoogleTest" PARENT_SCOPE)
+set(GTEST_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/GoogleTest" PARENT_SCOPE)
 
 # The gtest library directories.
-SET(GTEST_LIBRARY_DIRS "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
+set(GTEST_LIBRARY_DIRS "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
 
 # Test data directory
 set(TEST_HARNESS_TEMP_DIRECTORY ${SimpleRTK_BINARY_DIR}/Testing/Temporary)

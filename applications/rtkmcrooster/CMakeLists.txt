@@ -1,18 +1,18 @@
 WRAP_GGO(rtkmcrooster_GGO_C rtkmcrooster.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
-ADD_EXECUTABLE(rtkmcrooster rtkmcrooster.cxx ${rtkmcrooster_GGO_C})
-TARGET_LINK_LIBRARIES(rtkmcrooster RTK)
+add_executable(rtkmcrooster rtkmcrooster.cxx ${rtkmcrooster_GGO_C})
+target_link_libraries(rtkmcrooster RTK)
 
-IF (RTK_USE_CUDA)
-  TARGET_LINK_LIBRARIES(rtkmcrooster rtkcuda)
-ENDIF (RTK_USE_CUDA)
+if (RTK_USE_CUDA)
+  target_link_libraries(rtkmcrooster rtkcuda)
+endif (RTK_USE_CUDA)
 
 # Installation code
-IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtkmcrooster) 
-    INSTALL(TARGETS ${EXE_NAME}
+if(NOT RTK_INSTALL_NO_EXECUTABLES)
+  foreach(EXE_NAME rtkmcrooster) 
+    install(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  ENDFOREACH(EXE_NAME) 
-ENDIF(NOT RTK_INSTALL_NO_EXECUTABLES)
+  endforeach(EXE_NAME) 
+endif(NOT RTK_INSTALL_NO_EXECUTABLES)
 
