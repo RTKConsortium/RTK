@@ -25,7 +25,7 @@
 
 rtk::XRadGeometryReader
 ::XRadGeometryReader():
-  m_Geometry(NULL)
+  m_Geometry(ITK_NULLPTR)
 {
 }
 

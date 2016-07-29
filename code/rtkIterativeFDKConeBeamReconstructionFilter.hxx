@@ -132,7 +132,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_DivideFilter->SetInput2( m_RayBoxFilter->GetOutput() );
 
   // Check and set geometry
-  if(this->GetGeometry().GetPointer() == NULL)
+  if(this->GetGeometry().GetPointer() == ITK_NULLPTR)
     {
     itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
     }

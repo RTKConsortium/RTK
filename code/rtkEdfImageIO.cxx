@@ -31,7 +31,7 @@ rtk::EdfImageIO::edf_findInHeader( char* header, const char* key )
 {
   char *value_ptr = strstr( header, key );
 
-  if (!value_ptr) return NULL;
+  if (!value_ptr) return ITK_NULLPTR;
   /* an edf line is "key     = value ;" */
   value_ptr = 1 + strchr( value_ptr + strlen(key), '=' );
   while (isspace(*value_ptr) ) value_ptr++;
@@ -43,7 +43,7 @@ rtk::EdfImageIO::edf_findInHeader( char* header, const char* key )
 void rtk::EdfImageIO::ReadImageInformation()
 {
   int    k;
-  char * header = NULL;
+  char * header = ITK_NULLPTR;
   int    header_size = 0;
   char * p;
   gzFile inp;
@@ -76,7 +76,7 @@ void rtk::EdfImageIO::ReadImageInformation()
 
   // parse the header
   int   dim1 = -1, dim2 = -1, datalen = -1;
-  char *otherfile_name = 0; // this file, or another file with the data (EDF vs
+  char *otherfile_name = ITK_NULLPTR; // this file, or another file with the data (EDF vs
                             // EHF formats)
   int   otherfile_skip = 0;
 
@@ -116,7 +116,7 @@ void rtk::EdfImageIO::ReadImageInformation()
                                                       // are synonyms
           { "Double",          DOUBLE_DATATYPE,  8 }, // Double and DoubleValue
                                                       // are synonyms
-          { NULL, -1, -1 }
+          { ITK_NULLPTR, -1, -1 }
     };
   if ( (p = edf_findInHeader(header, "DataType") ) ) {
     k = lookup_table3_nth(edf_datatype_table, p);
@@ -166,7 +166,7 @@ void rtk::EdfImageIO::ReadImageInformation()
     {
           { "LowByteFirst",  LittleEndian }, /* little endian */
           { "HighByteFirst", BigEndian },    /* big endian */
-          { NULL, -1 }
+          { ITK_NULLPTR, -1 }
     };
 
   int byteorder = LittleEndian;

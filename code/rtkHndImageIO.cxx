@@ -30,7 +30,7 @@ void rtk::HndImageIO::ReadImageInformation()
   FILE *     fp;
 
   fp = fopen (m_FileName.c_str(), "rb");
-  if (fp == NULL)
+  if (fp == ITK_NULLPTR)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
   size_t nelements = 0;
@@ -145,7 +145,7 @@ void rtk::HndImageIO::Read(void * buffer)
   itk::uint32_t  i;
 
   fp = fopen (m_FileName.c_str(), "rb");
-  if (fp == NULL)
+  if (fp == ITK_NULLPTR)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
   pt_lut = (unsigned char*) malloc (sizeof (unsigned char) * GetDimensions(0) * GetDimensions(1) );

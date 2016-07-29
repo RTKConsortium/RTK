@@ -76,7 +76,7 @@ public:
   itkSetMacro(Transpose, bool);
 
 protected:
-  BackProjectionImageFilter() : m_Geometry(NULL), m_Transpose(false) {
+  BackProjectionImageFilter() : m_Geometry(ITK_NULLPTR), m_Transpose(false) {
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
   virtual ~BackProjectionImageFilter() {
