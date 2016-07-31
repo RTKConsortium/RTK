@@ -95,9 +95,12 @@ public:
   typedef typename InputImageType::PixelType  InputPixelType;
   typedef TOperatorValueType                  OperatorValueType;
   typedef TOutputValueType                    OutputValueType;
+  typedef typename OutputImageType::PixelType OutputCovariantVectorType;
+
   typedef itk::CovariantVector<
     OutputValueType, itkGetStaticConstMacro(OutputImageDimension) >
                                               CovariantVectorType;
+
   typedef typename OutputImageType::RegionType OutputImageRegionType;
 
   /** ForwardDifferenceGradientImageFilter needs a larger input requested region than
@@ -206,11 +209,23 @@ private:
     // This uses the more efficient set by reference method
     if ( this->m_UseImageDirection )
       {
-      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, it.Value() );
+      CovariantVectorType physicalGradient;
+      for( unsigned int i =0; i <  OutputCovariantVectorType::Dimension ; ++i )
+        {
+        physicalGradient[i] = it.Value()[i];
+        }
+      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, physicalGradient);
+      for( unsigned int i =0; i <  OutputCovariantVectorType::Dimension ; ++i )
+        {
+        it.Value()[i] = physicalGradient[i];
+        }
       }
     else
       {
-      it.Value() = gradient;
+      for( unsigned int i =0; i <  OutputCovariantVectorType::Dimension ; ++i )
+        {
+        it.Value()[i] = gradient[i];
+        }
       }
   }
 
