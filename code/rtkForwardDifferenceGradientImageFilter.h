@@ -15,25 +15,28 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-
-#ifndef __rtkForwardDifferenceGradientImageFilter_h
-#define __rtkForwardDifferenceGradientImageFilter_h
+#ifndef rtkForwardDifferenceGradientImageFilter_h
+#define rtkForwardDifferenceGradientImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkCovariantVector.h>
 #include <itkImageRegionIterator.h>
 
 #include "rtkMacro.h"
+#include <itkVectorImage.h>
 
 namespace rtk
 {
 
-template <typename TPixelType, unsigned int VImageDimension > class VectorImage;
+//template <typename TPixelType, unsigned int VImageDimension > class itk::VectorImage;
 
 
 /** \class ForwardDifferenceGradientImageFilter
  * \brief Computes the gradient of an image using forward difference.
  *
+ * Computes the gradient of an image using directional forward differences.
+ * The directional derivative at each pixel location is computed by
+ * convolution with a first-order derivative operator.
  *
  * The second template parameter defines the value type used in the
  * derivative operator (defaults to float).  The third template
@@ -45,33 +48,39 @@ template <typename TPixelType, unsigned int VImageDimension > class VectorImage;
  * be found in Chambolle, Antonin. “An Algorithm for Total
  * Variation Minimization and Applications.” J. Math. Imaging Vis. 20,
  * no. 1–2 (January 2004): 89–97.
+ *
+ * \sa Image
+ * \sa Neighborhood
+ * \sa NeighborhoodOperator
+ * \sa NeighborhoodIterator
+ *
+ * \ingroup GradientFilters
+ * \ingroup ITKImageGradient
  */
-
 template< typename TInputImage,
           typename TOperatorValueType = float,
-          typename TOuputValue = float,
-          typename TOuputImage = itk::Image< itk::CovariantVector
-        < TOuputValue, TInputImage::ImageDimension >, TInputImage::ImageDimension > >
+          typename TOutputValueType = float,
+          typename TOutputImageType = itk::Image< itk::CovariantVector< TOutputValueType,
+                                                           TInputImage::ImageDimension >,
+                                          TInputImage::ImageDimension > >
 class ForwardDifferenceGradientImageFilter:
-  public itk::ImageToImageFilter< TInputImage, TOuputImage >
+  public itk::ImageToImageFilter< TInputImage, TOutputImageType >
 {
 public:
   /** Extract dimension from input image. */
   itkStaticConstMacro(InputImageDimension, unsigned int,
                       TInputImage::ImageDimension);
   itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOuputImage::ImageDimension);
-
-  /** Standard class typedefs. */
-  typedef ForwardDifferenceGradientImageFilter Self;
+                      TOutputImageType::ImageDimension);
 
   /** Convenient typedefs for simplifying declarations. */
   typedef TInputImage                       InputImageType;
   typedef typename InputImageType::Pointer  InputImagePointer;
-  typedef TOuputImage                       OutputImageType;
+  typedef TOutputImageType                  OutputImageType;
   typedef typename OutputImageType::Pointer OutputImagePointer;
 
   /** Standard class typedefs. */
+  typedef ForwardDifferenceGradientImageFilter                       Self;
   typedef itk::ImageToImageFilter< InputImageType, OutputImageType > Superclass;
   typedef itk::SmartPointer< Self >                                  Pointer;
   typedef itk::SmartPointer< const Self >                            ConstPointer;
@@ -83,11 +92,13 @@ public:
   itkTypeMacro(ForwardDifferenceGradientImageFilter, ImageToImageFilter);
 
   /** Image typedef support. */
-  typedef TOperatorValueType                    OperatorValueType;
-  typedef TOuputValue                           OutputValueType;
-  typedef typename InputImageType::PixelType    InputPixelType;
-  typedef typename OutputImageType::PixelType   CovariantVectorType;
-  typedef typename OutputImageType::RegionType  OutputImageRegionType;
+  typedef typename InputImageType::PixelType  InputPixelType;
+  typedef TOperatorValueType                  OperatorValueType;
+  typedef TOutputValueType                    OutputValueType;
+  typedef itk::CovariantVector<
+    OutputValueType, itkGetStaticConstMacro(OutputImageDimension) >
+                                              CovariantVectorType;
+  typedef typename OutputImageType::RegionType OutputImageRegionType;
 
   /** ForwardDifferenceGradientImageFilter needs a larger input requested region than
    * the output requested region.  As such, ForwardDifferenceGradientImageFilter needs
@@ -95,7 +106,7 @@ public:
    * in order to inform the pipeline execution model.
    *
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Use the image spacing information in calculations. Use this option if you
    *  want derivatives in physical space. Default is UseImageSpacingOn. */
@@ -111,6 +122,7 @@ public:
       image in its calculations */
   itkSetMacro(UseImageSpacing, bool);
   itkGetConstMacro(UseImageSpacing, bool);
+  itkBooleanMacro(UseImageSpacing);
 
   /** Set along which dimensions the gradient computation should be
       performed. The vector components at unprocessed dimensions contain
@@ -145,7 +157,7 @@ public:
 
 protected:
   ForwardDifferenceGradientImageFilter();
-  ~ForwardDifferenceGradientImageFilter() ITK_OVERRIDE;
+  virtual ~ForwardDifferenceGradientImageFilter() ITK_OVERRIDE;
   void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
 
   /** ForwardDifferenceGradientImageFilter can be implemented as a multithreaded filter.
@@ -161,33 +173,45 @@ protected:
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             itk::ThreadIdType threadId) ITK_OVERRIDE;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
-
 private:
+#ifdef ITK_DISALLOW_COPY_AND_ASSIGN
+  ITK_DISALLOW_COPY_AND_ASSIGN(ForwardDifferenceGradientImageFilter);
+#else
   ForwardDifferenceGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);      //purposely not implemented
+#endif
 
-//  // An overloaded method which may transform the gradient to a
-//  // physical vector and converts to the correct output pixel type.
-//  template <typename TValue>
-//  void SetOutputPixel( ImageRegionIterator< VectorImage<TValue,OutputImageDimension> > &it, CovariantVectorType &gradient )
-//  {
-//    if ( this->m_UseImageDirection )
-//      {
-//      CovariantVectorType physicalGradient;
-//      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, physicalGradient );
-//      it.Set( OutputPixelType( physicalGradient.GetDataPointer(), InputImageDimension, false ) );
-//      }
-//    else
-//      {
-//      it.Set( OutputPixelType( gradient.GetDataPointer(), InputImageDimension, false ) );
-//      }
-//  }
+  virtual void GenerateOutputInformation() ITK_OVERRIDE;
+
+  // An overloaded method which may transform the gradient to a
+  // physical vector and converts to the correct output pixel type.
+  template <typename TValue>
+  void SetOutputPixel( itk::ImageRegionIterator< itk::VectorImage<TValue,OutputImageDimension> > &it, CovariantVectorType &gradient )
+  {
+    if ( this->m_UseImageDirection )
+      {
+      CovariantVectorType physicalGradient;
+      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, physicalGradient );
+      it.Set( OutputPixelType( physicalGradient.GetDataPointer(), InputImageDimension, false ) );
+      }
+    else
+      {
+      it.Set( OutputPixelType( gradient.GetDataPointer(), InputImageDimension, false ) );
+      }
+  }
 
   template <typename T >
   void SetOutputPixel( itk::ImageRegionIterator< T > &it, CovariantVectorType &gradient )
   {
-    it.Value() = gradient;
+    // This uses the more efficient set by reference method
+    if ( this->m_UseImageDirection )
+      {
+      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, it.Value() );
+      }
+    else
+      {
+      it.Value() = gradient;
+      }
   }
 
 
@@ -205,7 +229,7 @@ private:
   itk::ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
   bool                                                     m_IsBoundaryConditionOverriden;
 };
-} // end namespace itk
+} // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkForwardDifferenceGradientImageFilter.hxx"
