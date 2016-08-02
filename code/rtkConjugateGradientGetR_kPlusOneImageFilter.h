@@ -20,8 +20,10 @@
 #define __rtkConjugateGradientGetR_kPlusOneImageFilter_h
 
 #include <itkImageToImageFilter.h>
-#include "itkBarrier.h"
+#include <itkBarrier.h>
+
 #include "rtkConfiguration.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {

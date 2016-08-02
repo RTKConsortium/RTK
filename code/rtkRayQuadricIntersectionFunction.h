@@ -23,6 +23,8 @@
 #include <vector>
 #include <itkImageBase.h>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 

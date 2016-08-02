@@ -25,6 +25,8 @@
   #include <itkImageRegionSplitterDirection.h>
 #endif
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
   /** \class SplatWithKnownWeightsImageFilter

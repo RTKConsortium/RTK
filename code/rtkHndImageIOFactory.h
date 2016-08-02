@@ -48,11 +48,11 @@ public:
   typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const override {
+  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const override {
+  const char* GetDescription(void) const ITK_OVERRIDE {
     return "His ImageIO Factory, allows the loading of His images into insight";
   }
 

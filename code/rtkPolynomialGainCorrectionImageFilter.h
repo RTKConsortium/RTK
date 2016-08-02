@@ -24,6 +24,8 @@
 
 #include <vector>
 
+#include "rtkMacro.h"
+
 /** \class PolynomialGainCorrection
  * \brief Pixel-wize polynomial gain calibration
  *

@@ -28,6 +28,8 @@
 
 #include <map>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 

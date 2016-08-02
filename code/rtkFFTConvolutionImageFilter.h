@@ -21,7 +21,9 @@
 
 #include <itkImageToImageFilter.h>
 #include <itkConceptChecking.h>
+
 #include "rtkConfiguration.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
