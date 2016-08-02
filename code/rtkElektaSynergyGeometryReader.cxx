@@ -19,6 +19,7 @@
 
 #include "rtkElektaSynergyGeometryReader.h"
 #include "rtkDbf.h"
+#include "rtkMacro.h"
 
 rtk::ElektaSynergyGeometryReader
 ::ElektaSynergyGeometryReader():

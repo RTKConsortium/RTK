@@ -171,15 +171,15 @@ public:
   /** Check if a point is inside the image buffer.
    * \warning For efficiency, no validity checking of
    * the input image pointer is done. */
-  inline bool IsInsideBuffer( const PointType & ) const override
+  inline bool IsInsideBuffer( const PointType & ) const ITK_OVERRIDE
     { 
     return true;
     }
-  bool IsInsideBuffer( const ContinuousIndexType &  ) const override
+  bool IsInsideBuffer( const ContinuousIndexType &  ) const ITK_OVERRIDE
     {
     return true;
     }
-  bool IsInsideBuffer( const IndexType &  ) const override
+  bool IsInsideBuffer( const IndexType &  ) const ITK_OVERRIDE
     { 
     return true;
     }

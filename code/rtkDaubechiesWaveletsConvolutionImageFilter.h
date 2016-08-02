@@ -23,6 +23,8 @@
 #include <itkImageToImageFilter.h>
 #include <itkConvolutionImageFilter.h>
 
+#include "rtkMacro.h"
+
 namespace rtk {
 
 /**

@@ -21,6 +21,8 @@
 
 #include <itkWarpImageFilter.h>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 

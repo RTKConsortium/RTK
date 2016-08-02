@@ -21,6 +21,7 @@
 #include "itkInPlaceImageFilter.h"
 #include "itkArray2D.h"
 #include "rtkConfiguration.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {

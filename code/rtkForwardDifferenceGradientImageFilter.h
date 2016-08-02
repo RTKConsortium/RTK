@@ -23,6 +23,8 @@
 #include <itkCovariantVector.h>
 #include <itkImageRegionIterator.h>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 

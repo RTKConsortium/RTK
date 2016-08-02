@@ -27,6 +27,8 @@
 #include <itkMetaDataDictionary.h>
 #include <itkMetaDataObject.h>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 

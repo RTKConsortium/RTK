@@ -21,6 +21,8 @@
 
 #include <itkGDCMImageIO.h>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
 

@@ -23,6 +23,8 @@
 #include <fstream>
 #include <string.h>
 
+#include "rtkMacro.h"
+
 namespace rtk {
 
 /** \class EdfImageIO

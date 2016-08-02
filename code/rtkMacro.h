@@ -25,6 +25,12 @@
 #include "rtkGgoArgsInfoManager.h"
 
 //--------------------------------------------------------------------
+#ifndef ITK_NULLPTR
+# define ITK_NULLPTR NULL
+#endif
+//--------------------------------------------------------------------
+
+//--------------------------------------------------------------------
 #ifndef ITK_OVERRIDE
 # define ITK_OVERRIDE
 #endif

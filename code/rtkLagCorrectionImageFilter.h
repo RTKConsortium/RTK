@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "rtkConfiguration.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {

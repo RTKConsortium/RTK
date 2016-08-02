@@ -19,10 +19,12 @@
 #ifndef __rtkTotalVariationImageFilter_h
 #define __rtkTotalVariationImageFilter_h
 
-#include "itkImageToImageFilter.h"
-#include "itkNumericTraits.h"
-#include "itkArray.h"
-#include "itkSimpleDataObjectDecorator.h"
+#include <itkImageToImageFilter.h>
+#include <itkNumericTraits.h>
+#include <itkArray.h>
+#include <itkSimpleDataObjectDecorator.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
