@@ -1,18 +1,18 @@
 WRAP_GGO(rtksart_GGO_C rtksart.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
-ADD_EXECUTABLE(rtksart rtksart.cxx ${rtksart_GGO_C})
-TARGET_LINK_LIBRARIES(rtksart RTK)
+add_executable(rtksart rtksart.cxx ${rtksart_GGO_C})
+target_link_libraries(rtksart RTK)
 
-IF (RTK_USE_CUDA)
-  TARGET_LINK_LIBRARIES(rtksart rtkcuda)
-ENDIF (RTK_USE_CUDA)
+if (RTK_USE_CUDA)
+  target_link_libraries(rtksart rtkcuda)
+endif ()
 
 # Installation code
-IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtksart) 
-    INSTALL(TARGETS ${EXE_NAME}
+if(NOT RTK_INSTALL_NO_EXECUTABLES)
+  foreach(EXE_NAME rtksart) 
+    install(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  ENDFOREACH(EXE_NAME) 
-ENDIF(NOT RTK_INSTALL_NO_EXECUTABLES)
+  endforeach() 
+endif()
 

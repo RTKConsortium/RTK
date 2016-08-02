@@ -13,11 +13,11 @@ include_directories(${ITKCudaCommon_SOURCE_DIR}/include)
 add_subdirectory(src)
 
 # Installation
-IF(NOT RTK_INSTALL_NO_DEVELOPMENT)
+if(NOT RTK_INSTALL_NO_DEVELOPMENT)
   # Include .h and .hxx files
-  FILE(GLOB __files1 "${ITKCudaCommon_SOURCE_DIR}/include/*.h")
-  FILE(GLOB __files2 "${ITKCudaCommon_SOURCE_DIR}/include/*.hxx")
-  INSTALL(FILES ${__files1} ${__files2}
+  file(GLOB __files1 "${ITKCudaCommon_SOURCE_DIR}/include/*.h")
+  file(GLOB __files2 "${ITKCudaCommon_SOURCE_DIR}/include/*.hxx")
+  install(FILES ${__files1} ${__files2}
           DESTINATION ${RTK_INSTALL_INCLUDE_DIR}
           COMPONENT Development)
-ENDIF(NOT RTK_INSTALL_NO_DEVELOPMENT)
+endif()

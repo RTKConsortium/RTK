@@ -151,9 +151,9 @@ if(NOT SETIFEMPTY)
     set(VALUE ${ARGV1})
     if(NOT ${KEY})
       set(${ARGV})
-    endif(NOT ${KEY})
-  endmacro(SETIFEMPTY KEY VALUE)
-endif(NOT SETIFEMPTY)
+    endif()
+  endmacro()
+endif()
 
 
 #------------------------------------------------------------------------------

@@ -80,4 +80,4 @@ if ( (NOT SRTK_HAS_TR1_FUNCTIONAL AND NOT SRTK_HAS_CXX11_FUNCTIONAL)
     "It may be available as an optional download for your compiler or difference CXX_FLAGS."
     "Please see the FAQs for details."
     "http://www.itk.org/Wiki/SimpleRTK/FAQ#Do_I_need_to_download_an_option_package_for_TR1_support.3F\n" )
-endif ( )
+endif ()

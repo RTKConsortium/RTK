@@ -1,59 +1,59 @@
 
 # Attempt to find gengetopt. If not found, compile it.
-FIND_PROGRAM(GENGETOPT gengetopt)
-IF ((GENGETOPT STREQUAL "GENGETOPT-NOTFOUND") OR (GENGETOPT STREQUAL ""))
-  GET_FILENAME_COMPONENT(CLITK_CMAKE_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
-  ADD_SUBDIRECTORY(${CLITK_CMAKE_DIR}/../utilities/gengetopt ${CMAKE_CURRENT_BINARY_DIR}/gengetopt)
-ELSE((GENGETOPT STREQUAL "GENGETOPT-NOTFOUND") OR (GENGETOPT STREQUAL ""))
-  IF(EXISTS ${GENGETOPT})
-    ADD_EXECUTABLE(gengetopt IMPORTED)
-    SET_PROPERTY(TARGET gengetopt PROPERTY IMPORTED_LOCATION ${GENGETOPT})
-  ELSE(EXISTS ${GENGETOPT})
-	  SET(GENGETOPT "GENGETOPT-NOTFOUND" CACHE FILEPATH "Path to a program." FORCE)
-    MESSAGE(FATAL_ERROR "No gengetopt executable found at the specified location")
-  ENDIF(EXISTS ${GENGETOPT})
-ENDIF((GENGETOPT STREQUAL "GENGETOPT-NOTFOUND") OR (GENGETOPT STREQUAL ""))
+find_program(GENGETOPT gengetopt)
+if ((GENGETOPT STREQUAL "GENGETOPT-NOTFOUND") OR (GENGETOPT STREQUAL ""))
+  get_filename_component(CLITK_CMAKE_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+  add_subdirectory(${CLITK_CMAKE_DIR}/../utilities/gengetopt ${CMAKE_CURRENT_BINARY_DIR}/gengetopt)
+else()
+  if(EXISTS ${GENGETOPT})
+    add_executable(gengetopt IMPORTED)
+    set_property(TARGET gengetopt PROPERTY IMPORTED_LOCATION ${GENGETOPT})
+  else()
+	  set(GENGETOPT "GENGETOPT-NOTFOUND" CACHE FILEPATH "Path to a program." FORCE)
+    message(FATAL_ERROR "No gengetopt executable found at the specified location")
+  endif()
+endif()
 
 # Create a cmake script to cat a list of files
-FILE(WRITE ${CMAKE_BINARY_DIR}/cat.cmake "
-FILE(WRITE \${OUTPUT} \"\")
-SET(LIST_INPUTS \${INPUTS})
-SEPARATE_ARGUMENTS(LIST_INPUTS)
-FOREACH(INPUT \${LIST_INPUTS})
-  FILE(READ \${INPUT} CONTENT)
-  FILE(APPEND \${OUTPUT} \"\${CONTENT}\")
-ENDFOREACH()
+file(WRITE ${CMAKE_BINARY_DIR}/cat.cmake "
+file(WRITE \${OUTPUT} \"\")
+set(LIST_INPUTS \${INPUTS})
+separate_arguments(LIST_INPUTS)
+foreach(INPUT \${LIST_INPUTS})
+  file(READ \${INPUT} CONTENT)
+  file(APPEND \${OUTPUT} \"\${CONTENT}\")
+endforeach()
 ")
 
-MACRO (WRAP_GGO GGO_SRCS)
+macro (WRAP_GGO GGO_SRCS)
 
   # Set current list of files to zero for a new target
-  SET(GGO_FILES_ABS "")
+  set(GGO_FILES_ABS "")
 
   # Convert list of a file in a list with absolute file names
-  FOREACH(GGO_FILE ${ARGN})
-    GET_FILENAME_COMPONENT(GGO_FILE_ABS ${GGO_FILE} ABSOLUTE)
-    LIST(APPEND GGO_FILES_ABS ${GGO_FILE_ABS})
-  ENDFOREACH()
+  foreach(GGO_FILE ${ARGN})
+    get_filename_component(GGO_FILE_ABS ${GGO_FILE} ABSOLUTE)
+    list(APPEND GGO_FILES_ABS ${GGO_FILE_ABS})
+  endforeach()
 
   # Append to a new ggo file containing all files
-  LIST(GET GGO_FILES_ABS 0 FIRST_GGO_FILE)
-  GET_FILENAME_COMPONENT(FIRST_GGO_BASEFILENAME ${FIRST_GGO_FILE} NAME)
-  ADD_CUSTOM_COMMAND(
+  list(GET GGO_FILES_ABS 0 FIRST_GGO_FILE)
+  get_filename_component(FIRST_GGO_BASEFILENAME ${FIRST_GGO_FILE} NAME)
+  add_custom_command(
       OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}"
       COMMAND ${CMAKE_COMMAND} -D INPUTS="${GGO_FILES_ABS}"
                                -D OUTPUT=${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}
                                -P ${CMAKE_BINARY_DIR}/cat.cmake
       DEPENDS ${GGO_FILES_ABS}
   )
-  SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME} PROPERTIES GENERATED TRUE)
+  set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME} PROPERTIES GENERATED TRUE)
 
   # Now add ggo command
-  GET_FILENAME_COMPONENT(GGO_BASEFILENAME ${FIRST_GGO_FILE} NAME_WE)
-  SET(GGO_H ${GGO_BASEFILENAME}_ggo.h)
-  SET(GGO_C ${GGO_BASEFILENAME}_ggo.c)
-  SET(GGO_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${GGO_H} ${CMAKE_CURRENT_BINARY_DIR}/${GGO_C})
-  ADD_CUSTOM_COMMAND(OUTPUT ${GGO_OUTPUT}
+  get_filename_component(GGO_BASEFILENAME ${FIRST_GGO_FILE} NAME_WE)
+  set(GGO_H ${GGO_BASEFILENAME}_ggo.h)
+  set(GGO_C ${GGO_BASEFILENAME}_ggo.c)
+  set(GGO_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${GGO_H} ${CMAKE_CURRENT_BINARY_DIR}/${GGO_C})
+  add_custom_command(OUTPUT ${GGO_OUTPUT}
                      COMMAND gengetopt
                      ARGS < ${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}
                             --output-dir=${CMAKE_CURRENT_BINARY_DIR}
@@ -65,18 +65,18 @@ MACRO (WRAP_GGO GGO_SRCS)
                             --include-getopt
                      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}
                     )
-  SET(${GGO_SRCS} ${${GGO_SRCS}} ${GGO_OUTPUT})
-  INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+  set(${GGO_SRCS} ${${GGO_SRCS}} ${GGO_OUTPUT})
+  include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-  SET_SOURCE_FILES_PROPERTIES(${${GGO_SRCS}} PROPERTIES GENERATED TRUE)
-  IF(CMAKE_COMPILER_IS_GNUCXX)
-    FIND_PROGRAM(DEFAULT_GCC gcc)
-    EXEC_PROGRAM(${DEFAULT_GCC} ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
-    IF("${GCCVER}" VERSION_GREATER "4.5.2")
-      SET_SOURCE_FILES_PROPERTIES(${${GGO_SRCS}} PROPERTIES COMPILE_FLAGS "-Wno-unused-but-set-variable")
-    ENDIF("${GCCVER}" VERSION_GREATER "4.5.2")
-  ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-  IF(MSVC)
-    SET_SOURCE_FILES_PROPERTIES(${${GGO_SRCS}} PROPERTIES COMPILE_FLAGS "/W0")
-  ENDIF(MSVC)
-ENDMACRO (WRAP_GGO)
+  set_source_files_properties(${${GGO_SRCS}} PROPERTIES GENERATED TRUE)
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    find_program(DEFAULT_GCC gcc)
+    exec_program(${DEFAULT_GCC} ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
+    if("${GCCVER}" VERSION_GREATER "4.5.2")
+      set_source_files_properties(${${GGO_SRCS}} PROPERTIES COMPILE_FLAGS "-Wno-unused-but-set-variable")
+    endif()
+  endif()
+  if(MSVC)
+    set_source_files_properties(${${GGO_SRCS}} PROPERTIES COMPILE_FLAGS "/W0")
+  endif()
+endmacro ()

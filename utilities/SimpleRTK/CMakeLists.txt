@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.8.11 FATAL_ERROR )
 
 # Explicitly add INCREMENTAL linking option to command lines.
 # http://www.cmake.org/pipermail/cmake/2010-February/035174.html
-SET(MSVC_INCREMENTAL_DEFAULT ON)
+set(MSVC_INCREMENTAL_DEFAULT ON)
 
 project ( SimpleRTK )
 
@@ -66,7 +66,7 @@ endif()
 
 find_package(RTK REQUIRED ) # the modules needed can be listed here as required components
 if(RTK_FOUND)
-  INCLUDE(${RTK_USE_FILE})
+  include(${RTK_USE_FILE})
   link_directories( "${RTK_LIBRARY_DIRS}")
 endif()
 
@@ -252,7 +252,7 @@ if(MSVC)
       CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
       CMAKE_SHARED_LINKER_FLAGS_DEBUG
       CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO )
-    STRING(REGEX REPLACE "INCREMENTAL(:[a-zA-Z]+)?" "INCREMENTAL:NO" ${_varName} ${${_varName}})
+    string(REGEX REPLACE "INCREMENTAL(:[a-zA-Z]+)?" "INCREMENTAL:NO" ${_varName} ${${_varName}})
   endforeach()
 
 endif()
@@ -271,7 +271,7 @@ if( CXX_HAS_fPIC )
   if(NOT "${CMAKE_CXX_FLAGS}" MATCHES "-fPIC")
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC" )
   endif()
-endif( )
+endif()
 
 
 
@@ -441,7 +441,7 @@ string(REGEX REPLACE "/" ";" _count "${SimpleRTK_INSTALL_PACKAGE_DIR}")
 foreach(p ${_count})
   set(SimpleRTKConfig_CODE "${SimpleRTKConfig_CODE}
 get_filename_component(SimpleRTK_INSTALL_PREFIX \"\${SimpleRTK_INSTALL_PREFIX}\" PATH)")
-endforeach(p)
+endforeach()
 set(SimpleRTKConfig_CODE "${SimpleRTKConfig_CODE}\n")
 
 set(SimpleRTKConfig_INCLUDE_DIRS
