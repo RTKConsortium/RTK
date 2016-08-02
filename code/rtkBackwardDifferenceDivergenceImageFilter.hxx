@@ -184,10 +184,9 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
     strides[dim] = iit.GetStride(dim);
     }
 
-  float div;
   while(!oit.IsAtEnd())
     {
-    div = 0;
+    typename TOutputImage::PixelType div = 0.0F;
     // Compute the local differences around the central pixel
     for (unsigned int k = 0; k < dimsToProcess.size(); k++)
       {
