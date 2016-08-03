@@ -83,4 +83,4 @@ if(NOT SWIG_DIR)
     set(SWIG_EXECUTABLE ${swig_install_dir}/bin/swig)
 
   endif()
-endif(NOT SWIG_DIR)
+endif()

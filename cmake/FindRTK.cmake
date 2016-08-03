@@ -16,28 +16,28 @@
 #              RTK_DIR is okay.
 #
 
-SET(RTK_DIR_STRING "directory containing RTKConfig.cmake.  This is either the root of the build tree, or PREFIX/lib for an installation.")
+set(RTK_DIR_STRING "directory containing RTKConfig.cmake.  This is either the root of the build tree, or PREFIX/lib for an installation.")
 
 # Search only if the location is not already known.
-IF(NOT RTK_DIR)
+if(NOT RTK_DIR)
   # Get the system search path as a list.
-  IF(UNIX)
-    STRING(REGEX MATCHALL "[^:]+" RTK_DIR_SEARCH1 "$ENV{PATH}")
-  ELSE(UNIX)
-    STRING(REGEX REPLACE "\\\\" "/" RTK_DIR_SEARCH1 "$ENV{PATH}")
-  ENDIF(UNIX)
-  STRING(REGEX REPLACE "/;" ";" RTK_DIR_SEARCH2 ${RTK_DIR_SEARCH1})
+  if(UNIX)
+    string(REGEX MATCHALL "[^:]+" RTK_DIR_SEARCH1 "$ENV{PATH}")
+  else()
+    string(REGEX REPLACE "\\\\" "/" RTK_DIR_SEARCH1 "$ENV{PATH}")
+  endif()
+  string(REGEX REPLACE "/;" ";" RTK_DIR_SEARCH2 ${RTK_DIR_SEARCH1})
 
   # Construct a set of paths relative to the system search path.
-  SET(RTK_DIR_SEARCH "")
-  FOREACH(dir ${RTK_DIR_SEARCH2})
-    SET(RTK_DIR_SEARCH ${RTK_DIR_SEARCH} "${dir}/../lib")
-  ENDFOREACH(dir)
+  set(RTK_DIR_SEARCH "")
+  foreach(dir ${RTK_DIR_SEARCH2})
+    set(RTK_DIR_SEARCH ${RTK_DIR_SEARCH} "${dir}/../lib")
+  endforeach()
 
   #
   # Look for an installation or build tree.
   #
-  FIND_PATH(RTK_DIR RTKConfig.cmake
+  find_path(RTK_DIR RTKConfig.cmake
     # Look for an environment variable RTK_DIR.
     $ENV{RTK_DIR}
 
@@ -64,16 +64,16 @@ IF(NOT RTK_DIR)
     # Help the user find it if we cannot.
     DOC "The ${RTK_DIR_STRING}"
   )
-ENDIF(NOT RTK_DIR)
+endif()
 
 # If RTK was found, load the configuration file to get the rest of the
 # settings.
-IF(RTK_DIR)
-  SET(RTK_FOUND 1)
-  INCLUDE(${RTK_DIR}/RTKConfig.cmake)
-ELSE(RTK_DIR)
-  SET(RTK_FOUND 0)
-  IF(RTK_FIND_REQUIRED)
-    MESSAGE(FATAL_ERROR "Please set RTK_DIR to the ${RTK_DIR_STRING}")
-  ENDIF(RTK_FIND_REQUIRED)
-ENDIF(RTK_DIR)
+if(RTK_DIR)
+  set(RTK_FOUND 1)
+  include(${RTK_DIR}/RTKConfig.cmake)
+else()
+  set(RTK_FOUND 0)
+  if(RTK_FIND_REQUIRED)
+    message(FATAL_ERROR "Please set RTK_DIR to the ${RTK_DIR_STRING}")
+  endif()
+endif()

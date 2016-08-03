@@ -112,12 +112,11 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   itk::ForwardDifferenceOperator< OperatorValueType, InputImageDimension > oper;
   oper.SetDirection(0);
   oper.CreateDirectional();
-  itk::SizeValueType radius = oper.GetRadius()[0];
+  const itk::SizeValueType radius = oper.GetRadius()[0];
 
   // get a copy of the input requested region (should equal the output
   // requested region)
-  typename TInputImage::RegionType inputRequestedRegion;
-  inputRequestedRegion = inputPtr->GetRequestedRegion();
+  typename TInputImage::RegionType inputRequestedRegion = inputPtr->GetRequestedRegion();
 
   // pad the input requested region by the operator radius
   inputRequestedRegion.PadByRadius(radius);
@@ -151,12 +150,8 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                        itk::ThreadIdType threadId)
 {
-  CovariantVectorType gradient;
 
-  itk::ImageRegionIterator< OutputImageType >      it;
-
-  itk::NeighborhoodInnerProduct< InputImageType, OperatorValueType,
-                            OutputValueType > SIP;
+  itk::NeighborhoodInnerProduct< InputImageType, OperatorValueType, OutputValueType > SIP;
 
   // Get the input and output
   OutputImageType *     outputImage = this->GetOutput();
@@ -222,13 +217,14 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
                              op[i].GetSize()[0], nit.GetStride(i) );
     }
 
+  CovariantVectorType gradient;
   // Process non-boundary face and then each of the boundary faces.
   // These are N-d regions which border the edge of the buffer.
   for ( fit = faceList.begin(); fit != faceList.end(); ++fit )
     {
     nit = itk::ConstNeighborhoodIterator< InputImageType >(radius,
                                                       inputImage, *fit);
-    it = itk::ImageRegionIterator< OutputImageType >(outputImage, *fit);
+    itk::ImageRegionIterator< OutputImageType > it = itk::ImageRegionIterator< OutputImageType >(outputImage, *fit);
     nit.OverrideBoundaryCondition(m_BoundaryCondition);
     nit.GoToBegin();
 

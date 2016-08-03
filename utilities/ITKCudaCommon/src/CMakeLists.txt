@@ -6,7 +6,7 @@ set(ITKCudaCommon_SRC
   )
 
 # Avoid issue with command line too long for nvcc
-SET_DIRECTORY_PROPERTIES(PROPERTIES INCLUDE_DIRECTORIES "" )
+set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES "" )
 
 # This is necessary to include the win32 header from RTK
 # These lines should be removed if ITKCudaCommon is put as
@@ -21,9 +21,9 @@ add_library(ITKCudaCommon ${ITKCudaCommon_SRC})
 target_link_libraries(ITKCudaCommon ${ITKCommon_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_LIBRARIES})
 
 
-IF(NOT RTK_INSTALL_NO_LIBRARIES)
-  INSTALL(TARGETS ITKCudaCommon
+if(NOT RTK_INSTALL_NO_LIBRARIES)
+  install(TARGETS ITKCudaCommon
           RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
           LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
           ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-ENDIF(NOT RTK_INSTALL_NO_LIBRARIES) 
+endif() 
