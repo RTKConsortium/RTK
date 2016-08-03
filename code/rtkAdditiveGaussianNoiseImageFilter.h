@@ -35,8 +35,10 @@
 #define __rtkAdditiveGaussianNoiseImageFilter_h
 
 #include <itkImageToImageFilter.h>
-#include "itkNormalVariateGenerator.h"
-#include "itkUnaryFunctorImageFilter.h"
+#include <itkNormalVariateGenerator.h>
+#include <itkUnaryFunctorImageFilter.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
