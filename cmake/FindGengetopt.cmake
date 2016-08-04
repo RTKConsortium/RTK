@@ -66,7 +66,7 @@ macro (WRAP_GGO GGO_SRCS)
                      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}
                     )
   set(${GGO_SRCS} ${${GGO_SRCS}} ${GGO_OUTPUT})
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+  include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
   set_source_files_properties(${${GGO_SRCS}} PROPERTIES GENERATED TRUE)
   if(CMAKE_COMPILER_IS_GNUCXX)
