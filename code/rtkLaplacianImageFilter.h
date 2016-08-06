@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLaplacianImageFilter_h
-#define __rtkLaplacianImageFilter_h
+#ifndef rtkLaplacianImageFilter_h
+#define rtkLaplacianImageFilter_h
 
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"

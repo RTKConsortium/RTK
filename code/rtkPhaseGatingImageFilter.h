@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkPhaseGatingImageFilter_h
-#define __rtkPhaseGatingImageFilter_h
+#ifndef rtkPhaseGatingImageFilter_h
+#define rtkPhaseGatingImageFilter_h
 
 #include "rtkSubSelectImageFilter.h"
 #include "rtkConstantImageSource.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaSplatImageFilter_h
-#define __rtkCudaSplatImageFilter_h
+#ifndef rtkCudaSplatImageFilter_h
+#define rtkCudaSplatImageFilter_h
 
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "itkCudaImage.h"

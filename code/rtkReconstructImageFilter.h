@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReconstructImageFilter_h
-#define __rtkReconstructImageFilter_h
+#ifndef rtkReconstructImageFilter_h
+#define rtkReconstructImageFilter_h
 
 //Includes
 #include <itkImageToImageFilter.h>

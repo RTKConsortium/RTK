@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkFourDROOSTERConeBeamReconstructionFilter_h
-#define __rtkFourDROOSTERConeBeamReconstructionFilter_h
+#ifndef rtkFourDROOSTERConeBeamReconstructionFilter_h
+#define rtkFourDROOSTERConeBeamReconstructionFilter_h
 
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkTotalVariationDenoiseSequenceImageFilter.h"

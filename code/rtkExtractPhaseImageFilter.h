@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkExtractPhaseImageFilter_h
-#define __rtkExtractPhaseImageFilter_h
+#ifndef rtkExtractPhaseImageFilter_h
+#define rtkExtractPhaseImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 

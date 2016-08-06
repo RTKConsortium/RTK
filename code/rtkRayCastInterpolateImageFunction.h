@@ -32,8 +32,8 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __rtkRayCastInterpolateImageFunction_h
-#define __rtkRayCastInterpolateImageFunction_h
+#ifndef rtkRayCastInterpolateImageFunction_h
+#define rtkRayCastInterpolateImageFunction_h
 
 #include <itkInterpolateImageFunction.h>
 #include <itkTransform.h>

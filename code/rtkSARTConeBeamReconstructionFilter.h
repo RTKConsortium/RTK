@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSARTConeBeamReconstructionFilter_h
-#define __rtkSARTConeBeamReconstructionFilter_h
+#ifndef rtkSARTConeBeamReconstructionFilter_h
+#define rtkSARTConeBeamReconstructionFilter_h
 
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkForwardProjectionImageFilter.h"

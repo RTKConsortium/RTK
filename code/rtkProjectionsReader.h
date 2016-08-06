@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectionsReader_h
-#define __rtkProjectionsReader_h
+#ifndef rtkProjectionsReader_h
+#define rtkProjectionsReader_h
 
 // ITK
 #include <itkImageSource.h>
@@ -301,4 +301,4 @@ private:
 #include "rtkProjectionsReader.hxx"
 #endif
 
-#endif // __rtkProjectionsReader_h
+#endif // rtkProjectionsReader_h

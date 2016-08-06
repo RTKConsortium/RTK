@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkProjectionStackToFourDImageFilter_h
-#define __rtkProjectionStackToFourDImageFilter_h
+#ifndef rtkProjectionStackToFourDImageFilter_h
+#define rtkProjectionStackToFourDImageFilter_h
 
 #include <itkExtractImageFilter.h>
 #include <itkArray2D.h>

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConjugateGradientConeBeamReconstructionFilter_h
-#define __rtkConjugateGradientConeBeamReconstructionFilter_h
+#ifndef rtkConjugateGradientConeBeamReconstructionFilter_h
+#define rtkConjugateGradientConeBeamReconstructionFilter_h
 
 #include <itkMultiplyImageFilter.h>
 #include <itkTimeProbe.h>

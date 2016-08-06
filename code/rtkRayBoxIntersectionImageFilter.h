@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayBoxIntersectionImageFilter_h
-#define __rtkRayBoxIntersectionImageFilter_h
+#ifndef rtkRayBoxIntersectionImageFilter_h
+#define rtkRayBoxIntersectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

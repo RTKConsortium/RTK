@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectionGeometry_h
-#define __rtkProjectionGeometry_h
+#ifndef rtkProjectionGeometry_h
+#define rtkProjectionGeometry_h
 
 #include <itkImageBase.h>
 
@@ -95,4 +95,4 @@ private:
 
 #include "rtkProjectionGeometry.hxx"
 
-#endif // __rtkProjectionGeometry_h
+#endif // rtkProjectionGeometry_h

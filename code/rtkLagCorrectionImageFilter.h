@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLagCorrectionImageFilter_h
-#define __rtkLagCorrectionImageFilter_h
+#ifndef rtkLagCorrectionImageFilter_h
+#define rtkLagCorrectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>

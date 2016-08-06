@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFDKBackProjectionImageFilter_h
-#define __rtkFDKBackProjectionImageFilter_h
+#ifndef rtkFDKBackProjectionImageFilter_h
+#define rtkFDKBackProjectionImageFilter_h
 
 #include "rtkBackProjectionImageFilter.h"
 

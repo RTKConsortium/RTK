@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkThreeDCircularProjectionGeometry_h
-#define __rtkThreeDCircularProjectionGeometry_h
+#ifndef rtkThreeDCircularProjectionGeometry_h
+#define rtkThreeDCircularProjectionGeometry_h
 
 #include "rtkWin32Header.h"
 #include "rtkProjectionGeometry.h"
@@ -240,4 +240,4 @@ private:
 };
 }
 
-#endif // __rtkThreeDCircularProjectionGeometry_h
+#endif // rtkThreeDCircularProjectionGeometry_h

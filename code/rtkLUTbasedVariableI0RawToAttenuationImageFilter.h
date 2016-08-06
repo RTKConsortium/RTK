@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
-#define __rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
+#ifndef rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
+#define rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 
 #include <itkNumericTraits.h>
 #include <itkSubtractImageFilter.h>

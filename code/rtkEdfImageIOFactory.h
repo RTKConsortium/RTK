@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkEdfImageIOFactory_h
-#define __rtkEdfImageIOFactory_h
+#ifndef rtkEdfImageIOFactory_h
+#define rtkEdfImageIOFactory_h
 
 #include "rtkWin32Header.h"
 #include "rtkEdfImageIO.h"

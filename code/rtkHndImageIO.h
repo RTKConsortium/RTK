@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkHndImageIO_h
-#define __rtkHndImageIO_h
+#ifndef rtkHndImageIO_h
+#define rtkHndImageIO_h
 
 // itk include
 #include <itkImageIOBase.h>
@@ -142,4 +142,4 @@ public:
 
 } // end namespace
 
-#endif /* end #define __rtkHndImageIO_h */
+#endif /* end #define rtkHndImageIO_h */

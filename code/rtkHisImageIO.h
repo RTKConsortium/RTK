@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkHisImageIO_h
-#define __rtkHisImageIO_h
+#ifndef rtkHisImageIO_h
+#define rtkHisImageIO_h
 
 // itk include
 #include <itkImageIOBase.h>
@@ -80,4 +80,4 @@ protected:
 }; // end class HisImageIO
 } // end namespace
 
-#endif /* end #define __rtkHisImageIO_h */
+#endif /* end #define rtkHisImageIO_h */

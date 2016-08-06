@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayEllipsoidIntersectionImageFilter_h
-#define __rtkRayEllipsoidIntersectionImageFilter_h
+#ifndef rtkRayEllipsoidIntersectionImageFilter_h
+#define rtkRayEllipsoidIntersectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

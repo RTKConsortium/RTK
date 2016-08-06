@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConstantImageSource_h
-#define __rtkConstantImageSource_h
+#ifndef rtkConstantImageSource_h
+#define rtkConstantImageSource_h
 
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"

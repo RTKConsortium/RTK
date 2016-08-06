@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkXRadGeometryReader_h
-#define __rtkXRadGeometryReader_h
+#ifndef rtkXRadGeometryReader_h
+#define rtkXRadGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkReg23ProjectionGeometry.h"

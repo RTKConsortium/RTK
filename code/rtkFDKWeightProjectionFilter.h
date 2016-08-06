@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFDKWeightProjectionFilter_h
-#define __rtkFDKWeightProjectionFilter_h
+#ifndef rtkFDKWeightProjectionFilter_h
+#define rtkFDKWeightProjectionFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

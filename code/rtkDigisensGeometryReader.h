@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDigisensGeometryReader_h
-#define __rtkDigisensGeometryReader_h
+#ifndef rtkDigisensGeometryReader_h
+#define rtkDigisensGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

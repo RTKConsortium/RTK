@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaConjugateGradientImageFilter_4f_h
-#define __rtkCudaConjugateGradientImageFilter_4f_h
+#ifndef rtkCudaConjugateGradientImageFilter_4f_h
+#define rtkCudaConjugateGradientImageFilter_4f_h
 
 #include "rtkConjugateGradientImageFilter.h"
 #include <itkCudaImageToImageFilter.h>

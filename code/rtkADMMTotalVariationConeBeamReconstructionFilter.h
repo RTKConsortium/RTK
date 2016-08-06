@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkADMMTotalVariationConeBeamReconstructionFilter_h
-#define __rtkADMMTotalVariationConeBeamReconstructionFilter_h
+#ifndef rtkADMMTotalVariationConeBeamReconstructionFilter_h
+#define rtkADMMTotalVariationConeBeamReconstructionFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkAddImageFilter.h>

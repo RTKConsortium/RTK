@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaScatterGlareCorrectionImageFilter_h
-#define __rtkCudaScatterGlareCorrectionImageFilter_h
+#ifndef rtkCudaScatterGlareCorrectionImageFilter_h
+#define rtkCudaScatterGlareCorrectionImageFilter_h
 
 #include "rtkScatterGlareCorrectionImageFilter.h"
 #include "rtkCudaFFTConvolutionImageFilter.h"

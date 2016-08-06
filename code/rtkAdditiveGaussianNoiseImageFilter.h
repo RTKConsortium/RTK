@@ -31,8 +31,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __rtkAdditiveGaussianNoiseImageFilter_h
-#define __rtkAdditiveGaussianNoiseImageFilter_h
+#ifndef rtkAdditiveGaussianNoiseImageFilter_h
+#define rtkAdditiveGaussianNoiseImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkNormalVariateGenerator.h>
@@ -302,4 +302,4 @@ private:
 #include "rtkAdditiveGaussianNoiseImageFilter.hxx"
 #endif
 
-#endif /* __rtkAdditiveGaussianNoiseImageFilter_h */
+#endif /* rtkAdditiveGaussianNoiseImageFilter_h */

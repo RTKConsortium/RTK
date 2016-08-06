@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayQuadricIntersectionImageFilter_h
-#define __rtkRayQuadricIntersectionImageFilter_h
+#ifndef rtkRayQuadricIntersectionImageFilter_h
+#define rtkRayQuadricIntersectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkConfiguration.h"

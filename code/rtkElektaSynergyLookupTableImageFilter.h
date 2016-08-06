@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkElektaSynergyLookupTableImageFilter_h
-#define __rtkElektaSynergyLookupTableImageFilter_h
+#ifndef rtkElektaSynergyLookupTableImageFilter_h
+#define rtkElektaSynergyLookupTableImageFilter_h
 
 #include "rtkLookupTableImageFilter.h"
 #include <itkNumericTraits.h>

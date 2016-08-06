@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkI0EstimationProjectionFilter_h
-#define __rtkI0EstimationProjectionFilter_h
+#ifndef rtkI0EstimationProjectionFilter_h
+#define rtkI0EstimationProjectionFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkMutexLock.h>

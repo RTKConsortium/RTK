@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkThreeDCircularProjectionGeometryXMLFile_h
-#define __rtkThreeDCircularProjectionGeometryXMLFile_h
+#ifndef rtkThreeDCircularProjectionGeometryXMLFile_h
+#define rtkThreeDCircularProjectionGeometryXMLFile_h
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )

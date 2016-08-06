@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkVarianObiXMLFileReader_h
-#define __rtkVarianObiXMLFileReader_h
+#ifndef rtkVarianObiXMLFileReader_h
+#define rtkVarianObiXMLFileReader_h
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )

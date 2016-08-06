@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMacro_h
-#define __rtkMacro_h
+#ifndef rtkMacro_h
+#define rtkMacro_h
 
 #include <iostream>
 #include <itkMacro.h>

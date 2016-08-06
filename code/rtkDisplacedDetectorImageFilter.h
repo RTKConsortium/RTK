@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDisplacedDetectorImageFilter_h
-#define __rtkDisplacedDetectorImageFilter_h
+#ifndef rtkDisplacedDetectorImageFilter_h
+#define rtkDisplacedDetectorImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

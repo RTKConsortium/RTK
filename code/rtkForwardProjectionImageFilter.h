@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkForwardProjectionImageFilter_h
-#define __rtkForwardProjectionImageFilter_h
+#ifndef rtkForwardProjectionImageFilter_h
+#define rtkForwardProjectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

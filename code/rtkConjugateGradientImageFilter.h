@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConjugateGradientImageFilter_h
-#define __rtkConjugateGradientImageFilter_h
+#ifndef rtkConjugateGradientImageFilter_h
+#define rtkConjugateGradientImageFilter_h
 
 #include "itkImageToImageFilter.h"
 #include "itkSubtractImageFilter.h"

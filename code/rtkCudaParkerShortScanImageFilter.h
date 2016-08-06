@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaParkerShortScanImageFilter_h
-#define __rtkCudaParkerShortScanImageFilter_h
+#ifndef rtkCudaParkerShortScanImageFilter_h
+#define rtkCudaParkerShortScanImageFilter_h
 
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkWin32Header.h"
@@ -79,4 +79,4 @@ private:
 
 }
 
-#endif // __rtkCudaParkerShortScanImageFilter_h
+#endif // rtkCudaParkerShortScanImageFilter_h

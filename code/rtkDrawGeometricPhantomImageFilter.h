@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawGeometricPhantomImageFilter_h
-#define __rtkDrawGeometricPhantomImageFilter_h
+#ifndef rtkDrawGeometricPhantomImageFilter_h
+#define rtkDrawGeometricPhantomImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 

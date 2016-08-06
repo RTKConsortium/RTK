@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMagnitudeThresholdImageFilter_h
-#define __rtkMagnitudeThresholdImageFilter_h
+#ifndef rtkMagnitudeThresholdImageFilter_h
+#define rtkMagnitudeThresholdImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>

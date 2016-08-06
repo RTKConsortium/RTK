@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkGlobalTimer_h
-#define __rtkGlobalTimer_h
+#ifndef rtkGlobalTimer_h
+#define rtkGlobalTimer_h
 
 #include <itkProcessObject.h>
 #include "rtkGlobalTimerProbesCollector.h"

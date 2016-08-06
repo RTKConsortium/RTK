@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFieldOfViewImageFilter_h
-#define __rtkFieldOfViewImageFilter_h
+#ifndef rtkFieldOfViewImageFilter_h
+#define rtkFieldOfViewImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkTotalVariationDenoisingBPDQImageFilter_h
-#define __rtkTotalVariationDenoisingBPDQImageFilter_h
+#ifndef rtkTotalVariationDenoisingBPDQImageFilter_h
+#define rtkTotalVariationDenoisingBPDQImageFilter_h
 
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"

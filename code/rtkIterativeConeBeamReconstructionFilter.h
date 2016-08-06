@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkIterativeConeBeamReconstructionFilter_h
-#define __rtkIterativeConeBeamReconstructionFilter_h
+#ifndef rtkIterativeConeBeamReconstructionFilter_h
+#define rtkIterativeConeBeamReconstructionFilter_h
 
 // Forward projection filters
 #include "rtkConfiguration.h"

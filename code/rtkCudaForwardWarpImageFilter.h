@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaForwardWarpImageFilter_h
-#define __rtkCudaForwardWarpImageFilter_h
+#ifndef rtkCudaForwardWarpImageFilter_h
+#define rtkCudaForwardWarpImageFilter_h
 
 #include "rtkWin32Header.h"
 #include "rtkForwardWarpImageFilter.h"

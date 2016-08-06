@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawCubeImageFilter_h
-#define __rtkDrawCubeImageFilter_h
+#ifndef rtkDrawCubeImageFilter_h
+#define rtkDrawCubeImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>

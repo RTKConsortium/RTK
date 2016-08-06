@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_h
-#define __rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_h
+#ifndef rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_h
+#define rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_h
 
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter.h"

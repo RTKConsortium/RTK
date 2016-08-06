@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkRegularizedConjugateGradientConeBeamReconstructionFilter_h
-#define __rtkRegularizedConjugateGradientConeBeamReconstructionFilter_h
+#ifndef rtkRegularizedConjugateGradientConeBeamReconstructionFilter_h
+#define rtkRegularizedConjugateGradientConeBeamReconstructionFilter_h
 
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #ifdef RTK_USE_CUDA

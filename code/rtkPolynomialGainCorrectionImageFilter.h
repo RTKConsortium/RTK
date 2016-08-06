@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkPolynomialGainCorrectionImageFilter_h
-#define __rtkPolynomialGainCorrectionImageFilter_h
+#ifndef rtkPolynomialGainCorrectionImageFilter_h
+#define rtkPolynomialGainCorrectionImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkSimpleFastMutexLock.h>

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReconstructionConjugateGradientOperator_h
-#define __rtkReconstructionConjugateGradientOperator_h
+#ifndef rtkReconstructionConjugateGradientOperator_h
+#define rtkReconstructionConjugateGradientOperator_h
 
 #include <itkMultiplyImageFilter.h>
 #include <itkAddImageFilter.h>

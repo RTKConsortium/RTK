@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDPExtractShroudSignalImageFilter_h
-#define __rtkDPExtractShroudSignalImageFilter_h
+#ifndef rtkDPExtractShroudSignalImageFilter_h
+#define rtkDPExtractShroudSignalImageFilter_h
 
 #include <itkImageToImageFilter.h>
 

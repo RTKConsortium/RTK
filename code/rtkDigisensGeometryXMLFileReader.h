@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDigisensGeometryXMLFileReader_h
-#define __rtkDigisensGeometryXMLFileReader_h
+#ifndef rtkDigisensGeometryXMLFileReader_h
+#define rtkDigisensGeometryXMLFileReader_h
 
 #include <itkXMLFile.h>
 #include <itkMetaDataDictionary.h>

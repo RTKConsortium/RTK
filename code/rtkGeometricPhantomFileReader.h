@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkGeometricPhantomFileReader_h
-#define __rtkGeometricPhantomFileReader_h
+#ifndef rtkGeometricPhantomFileReader_h
+#define rtkGeometricPhantomFileReader_h
 
 #include <itkNumericTraits.h>
 #include <vector>

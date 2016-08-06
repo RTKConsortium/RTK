@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFourDConjugateGradientConeBeamReconstructionFilter_h
-#define __rtkFourDConjugateGradientConeBeamReconstructionFilter_h
+#ifndef rtkFourDConjugateGradientConeBeamReconstructionFilter_h
+#define rtkFourDConjugateGradientConeBeamReconstructionFilter_h
 
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkForwardProjectionImageFilter.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkForwardWarpImageFilter_h
-#define __rtkForwardWarpImageFilter_h
+#ifndef rtkForwardWarpImageFilter_h
+#define rtkForwardWarpImageFilter_h
 
 #include <itkWarpImageFilter.h>
 

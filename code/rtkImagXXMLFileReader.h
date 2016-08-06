@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkImagXXMLFileReader_h
-#define __rtkImagXXMLFileReader_h
+#ifndef rtkImagXXMLFileReader_h
+#define rtkImagXXMLFileReader_h
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )

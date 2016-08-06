@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkUnwarpSequenceImageFilter_h
-#define __rtkUnwarpSequenceImageFilter_h
+#ifndef rtkUnwarpSequenceImageFilter_h
+#define rtkUnwarpSequenceImageFilter_h
 
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkUnwarpSequenceConjugateGradientOperator.h"

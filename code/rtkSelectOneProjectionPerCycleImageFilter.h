@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkSelectOneProjectionPerCycleImageFilter_h
-#define __rtkSelectOneProjectionPerCycleImageFilter_h
+#ifndef rtkSelectOneProjectionPerCycleImageFilter_h
+#define rtkSelectOneProjectionPerCycleImageFilter_h
 
 #include "rtkSubSelectImageFilter.h"
 

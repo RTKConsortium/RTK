@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawEllipsoidImageFilter_h
-#define __rtkDrawEllipsoidImageFilter_h
+#ifndef rtkDrawEllipsoidImageFilter_h
+#define rtkDrawEllipsoidImageFilter_h
 
 #include "rtkDrawQuadricImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"

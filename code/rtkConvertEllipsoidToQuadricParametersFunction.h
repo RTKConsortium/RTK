@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConvertEllipsoidToQuadricParametersFunction_h
-#define __rtkConvertEllipsoidToQuadricParametersFunction_h
+#ifndef rtkConvertEllipsoidToQuadricParametersFunction_h
+#define rtkConvertEllipsoidToQuadricParametersFunction_h
 
 #include <itkNumericTraits.h>
 #include <itkVector.h>

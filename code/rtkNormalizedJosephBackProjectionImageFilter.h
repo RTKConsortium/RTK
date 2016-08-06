@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkNormalizedJosephBackProjectionImageFilter_h
-#define __rtkNormalizedJosephBackProjectionImageFilter_h
+#ifndef rtkNormalizedJosephBackProjectionImageFilter_h
+#define rtkNormalizedJosephBackProjectionImageFilter_h
 
 #include "rtkConfiguration.h"
 #include "rtkJosephBackProjectionImageFilter.h"

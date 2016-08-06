@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkXRadImageIOFactory_h
-#define __rtkXRadImageIOFactory_h
+#ifndef rtkXRadImageIOFactory_h
+#define rtkXRadImageIOFactory_h
 
 #include "rtkWin32Header.h"
 #include "rtkXRadImageIO.h"

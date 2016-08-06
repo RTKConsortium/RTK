@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkXRadRawToAttenuationImageFilter_h
-#define __rtkXRadRawToAttenuationImageFilter_h
+#ifndef rtkXRadRawToAttenuationImageFilter_h
+#define rtkXRadRawToAttenuationImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include "rtkConfiguration.h"

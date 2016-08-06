@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkXRadImageIO_h
-#define __rtkXRadImageIO_h
+#ifndef rtkXRadImageIO_h
+#define rtkXRadImageIO_h
 
 #include <itkImageIOBase.h>
 #include <fstream>

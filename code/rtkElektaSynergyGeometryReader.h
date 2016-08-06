@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkElektaSynergyGeometryReader_h
-#define __rtkElektaSynergyGeometryReader_h
+#ifndef rtkElektaSynergyGeometryReader_h
+#define rtkElektaSynergyGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

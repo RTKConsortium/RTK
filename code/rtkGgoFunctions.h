@@ -19,8 +19,8 @@
 //#ifndef RTKGGOFUNCTIONS_H
 //#define RTKGGOFUNCTIONS_H
 
-#ifndef __rtkGgoFunctions_h
-#define __rtkGgoFunctions_h
+#ifndef rtkGgoFunctions_h
+#define rtkGgoFunctions_h
 
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
@@ -204,4 +204,4 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
 
 }
 
-#endif // __rtkGgoFunctions_h
+#endif // rtkGgoFunctions_h

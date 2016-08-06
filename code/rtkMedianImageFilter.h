@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMedianImageFilter_h
-#define __rtkMedianImageFilter_h
+#ifndef rtkMedianImageFilter_h
+#define rtkMedianImageFilter_h
 
 #include <itkImageToImageFilter.h>
 

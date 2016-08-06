@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkHisImageIOFactory_h
-#define __rtkHisImageIOFactory_h
+#ifndef rtkHisImageIOFactory_h
+#define rtkHisImageIOFactory_h
 
 #include "rtkWin32Header.h"
 #include "rtkHisImageIO.h"
@@ -79,4 +79,4 @@ private:
 
 } // end namespace
 
-#endif /* end #define __rtkHisImageIOFactory_h */
+#endif /* end #define rtkHisImageIOFactory_h */

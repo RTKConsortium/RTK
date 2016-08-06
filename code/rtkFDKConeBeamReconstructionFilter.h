@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFDKConeBeamReconstructionFilter_h
-#define __rtkFDKConeBeamReconstructionFilter_h
+#ifndef rtkFDKConeBeamReconstructionFilter_h
+#define rtkFDKConeBeamReconstructionFilter_h
 
 #include "rtkFDKWeightProjectionFilter.h"
 #include "rtkFFTRampImageFilter.h"

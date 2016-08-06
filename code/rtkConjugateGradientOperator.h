@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkConjugateGradientOperator_h
-#define __rtkConjugateGradientOperator_h
+#ifndef rtkConjugateGradientOperator_h
+#define rtkConjugateGradientOperator_h
 
 #include "itkImageToImageFilter.h"
 

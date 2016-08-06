@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkWarpProjectionStackToFourDImageFilter_h
-#define __rtkWarpProjectionStackToFourDImageFilter_h
+#ifndef rtkWarpProjectionStackToFourDImageFilter_h
+#define rtkWarpProjectionStackToFourDImageFilter_h
 
 #include "rtkCyclicDeformationImageFilter.h"
 #include "rtkProjectionStackToFourDImageFilter.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkImagXImageIO_h
-#define __rtkImagXImageIO_h
+#ifndef rtkImagXImageIO_h
+#define rtkImagXImageIO_h
 
 #include <itkImageIOBase.h>
 #include <fstream>

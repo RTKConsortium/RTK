@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkTimeProbesCollectorBase_h
-#define __rtkTimeProbesCollectorBase_h
+#ifndef rtkTimeProbesCollectorBase_h
+#define rtkTimeProbesCollectorBase_h
 
 #include "itkTimeProbesCollectorBase.h"
 

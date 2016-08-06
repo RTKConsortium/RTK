@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkImagXGeometryReader_h
-#define __rtkImagXGeometryReader_h
+#ifndef rtkImagXGeometryReader_h
+#define rtkImagXGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -121,4 +121,4 @@ private:
 #include "rtkImagXGeometryReader.hxx"
 #endif
 
-#endif // __rtkImagXGeometryReader_h
+#endif // rtkImagXGeometryReader_h

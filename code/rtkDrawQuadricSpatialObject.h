@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricSpatialObject_h
-#define __rtkDrawQuadricSpatialObject_h
+#ifndef rtkDrawQuadricSpatialObject_h
+#define rtkDrawQuadricSpatialObject_h
 
 #include "rtkWin32Header.h"
 

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkBackwardDifferenceDivergenceImageFilter_h
-#define __rtkBackwardDifferenceDivergenceImageFilter_h
+#ifndef rtkBackwardDifferenceDivergenceImageFilter_h
+#define rtkBackwardDifferenceDivergenceImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkCastImageFilter.h>

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkTotalVariationImageFilter_h
-#define __rtkTotalVariationImageFilter_h
+#ifndef rtkTotalVariationImageFilter_h
+#define rtkTotalVariationImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkNumericTraits.h>

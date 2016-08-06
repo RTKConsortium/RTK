@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDeconstructSoftThresholdReconstructImageFilter_h
-#define __rtkDeconstructSoftThresholdReconstructImageFilter_h
+#ifndef rtkDeconstructSoftThresholdReconstructImageFilter_h
+#define rtkDeconstructSoftThresholdReconstructImageFilter_h
 
 //ITK includes
 #include "itkMacro.h"

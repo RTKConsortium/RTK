@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkVarianObiRawImageFilter_h
-#define __rtkVarianObiRawImageFilter_h
+#ifndef rtkVarianObiRawImageFilter_h
+#define rtkVarianObiRawImageFilter_h
 
 #include <itkUnaryFunctorImageFilter.h>
 #include <itkConceptChecking.h>

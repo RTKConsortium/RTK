@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayBoxIntersectionFunction_h
-#define __rtkRayBoxIntersectionFunction_h
+#ifndef rtkRayBoxIntersectionFunction_h
+#define rtkRayBoxIntersectionFunction_h
 
 #include <itkNumericTraits.h>
 #include <vector>

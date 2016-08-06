@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawConeImageFilter_h
-#define __rtkDrawConeImageFilter_h
+#ifndef rtkDrawConeImageFilter_h
+#define rtkDrawConeImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkDrawQuadricImageFilter.h"

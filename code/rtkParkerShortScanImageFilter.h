@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkParkerShortScanImageFilter_h
-#define __rtkParkerShortScanImageFilter_h
+#ifndef rtkParkerShortScanImageFilter_h
+#define rtkParkerShortScanImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkSimpleFastMutexLock.h>

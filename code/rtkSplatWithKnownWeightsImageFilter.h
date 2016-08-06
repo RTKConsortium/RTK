@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkSplatWithKnownWeightsImageFilter_h
-#define __rtkSplatWithKnownWeightsImageFilter_h
+#ifndef rtkSplatWithKnownWeightsImageFilter_h
+#define rtkSplatWithKnownWeightsImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkArray2D.h>

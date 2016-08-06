@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkVarianObiGeometryReader_h
-#define __rtkVarianObiGeometryReader_h
+#ifndef rtkVarianObiGeometryReader_h
+#define rtkVarianObiGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

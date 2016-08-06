@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSheppLoganPhantomFilter_h
-#define __rtkSheppLoganPhantomFilter_h
+#ifndef rtkSheppLoganPhantomFilter_h
+#define rtkSheppLoganPhantomFilter_h
 
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 

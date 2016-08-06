@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkAverageOutOfROIImageFilter_h
-#define __rtkAverageOutOfROIImageFilter_h
+#ifndef rtkAverageOutOfROIImageFilter_h
+#define rtkAverageOutOfROIImageFilter_h
 
 #include "itkInPlaceImageFilter.h"
 

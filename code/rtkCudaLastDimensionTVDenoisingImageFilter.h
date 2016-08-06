@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaLastDimensionTVDenoisingImageFilter_h
-#define __rtkCudaLastDimensionTVDenoisingImageFilter_h
+#ifndef rtkCudaLastDimensionTVDenoisingImageFilter_h
+#define rtkCudaLastDimensionTVDenoisingImageFilter_h
 
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #include <itkCudaInPlaceImageFilter.h>

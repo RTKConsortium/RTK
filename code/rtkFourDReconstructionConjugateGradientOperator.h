@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkFourDReconstructionConjugateGradientOperator_h
-#define __rtkFourDReconstructionConjugateGradientOperator_h
+#ifndef rtkFourDReconstructionConjugateGradientOperator_h
+#define rtkFourDReconstructionConjugateGradientOperator_h
 
 #include "rtkConjugateGradientOperator.h"
 

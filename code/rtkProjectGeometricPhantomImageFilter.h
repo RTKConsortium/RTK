@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectGeometricPhantomImageFilter_h
-#define __rtkProjectGeometricPhantomImageFilter_h
+#ifndef rtkProjectGeometricPhantomImageFilter_h
+#define rtkProjectGeometricPhantomImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

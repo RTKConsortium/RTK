@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawSheppLoganFilter_h
-#define __rtkDrawSheppLoganFilter_h
+#ifndef rtkDrawSheppLoganFilter_h
+#define rtkDrawSheppLoganFilter_h
 
 #include <itkInPlaceImageFilter.h>
 

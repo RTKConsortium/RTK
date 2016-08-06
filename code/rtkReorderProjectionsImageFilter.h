@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReorderProjectionsImageFilter_h
-#define __rtkReorderProjectionsImageFilter_h
+#ifndef rtkReorderProjectionsImageFilter_h
+#define rtkReorderProjectionsImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"

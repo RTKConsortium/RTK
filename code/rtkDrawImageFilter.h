@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawImageFilter_h
-#define __rtkDrawImageFilter_h
+#ifndef rtkDrawImageFilter_h
+#define rtkDrawImageFilter_h
 
 
 #include <itkInPlaceImageFilter.h>

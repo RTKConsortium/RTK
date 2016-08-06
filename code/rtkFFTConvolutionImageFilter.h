@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFFTConvolutionImageFilter_h
-#define __rtkFFTConvolutionImageFilter_h
+#ifndef rtkFFTConvolutionImageFilter_h
+#define rtkFFTConvolutionImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkConceptChecking.h>

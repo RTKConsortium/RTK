@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDownsampleImageFilter_h
-#define __rtkDownsampleImageFilter_h
+#ifndef rtkDownsampleImageFilter_h
+#define rtkDownsampleImageFilter_h
 
 #include "itkImageToImageFilter.h"
 

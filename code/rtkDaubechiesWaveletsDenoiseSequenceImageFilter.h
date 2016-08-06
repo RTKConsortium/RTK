@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDaubechiesWaveletsDenoiseSequenceImageFilter_h
-#define __rtkDaubechiesWaveletsDenoiseSequenceImageFilter_h
+#ifndef rtkDaubechiesWaveletsDenoiseSequenceImageFilter_h
+#define rtkDaubechiesWaveletsDenoiseSequenceImageFilter_h
 
 #include "rtkConstantImageSource.h"
 

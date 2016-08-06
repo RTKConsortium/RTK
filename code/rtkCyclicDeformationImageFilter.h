@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCyclicDeformationImageFilter_h
-#define __rtkCyclicDeformationImageFilter_h
+#ifndef rtkCyclicDeformationImageFilter_h
+#define rtkCyclicDeformationImageFilter_h
 
 #include <itkImageToImageFilter.h>
 

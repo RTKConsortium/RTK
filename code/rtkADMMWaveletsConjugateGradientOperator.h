@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkADMMWaveletsConjugateGradientOperator_h
-#define __rtkADMMWaveletsConjugateGradientOperator_h
+#ifndef rtkADMMWaveletsConjugateGradientOperator_h
+#define rtkADMMWaveletsConjugateGradientOperator_h
 
 #include <itkMultiplyImageFilter.h>
 #include <itkAddImageFilter.h>

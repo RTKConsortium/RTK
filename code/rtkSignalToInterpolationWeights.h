@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSignalToInterpolationWeights_h
-#define __rtkSignalToInterpolationWeights_h
+#ifndef rtkSignalToInterpolationWeights_h
+#define rtkSignalToInterpolationWeights_h
 
 #include "itkCSVFileReaderBase.h"
 #include "itkArray2D.h"

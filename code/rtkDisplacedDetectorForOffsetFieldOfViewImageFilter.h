@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_h
-#define __rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_h
+#ifndef rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_h
+#define rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_h
 
 #include "rtkDisplacedDetectorImageFilter.h"
 

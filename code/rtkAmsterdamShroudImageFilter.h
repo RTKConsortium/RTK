@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkAmsterdamShroudImageFilter_h
-#define __rtkAmsterdamShroudImageFilter_h
+#ifndef rtkAmsterdamShroudImageFilter_h
+#define rtkAmsterdamShroudImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkRecursiveGaussianImageFilter.h>

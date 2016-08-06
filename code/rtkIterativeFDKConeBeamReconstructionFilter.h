@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkIterativeFDKConeBeamReconstructionFilter_h
-#define __rtkIterativeFDKConeBeamReconstructionFilter_h
+#ifndef rtkIterativeFDKConeBeamReconstructionFilter_h
+#define rtkIterativeFDKConeBeamReconstructionFilter_h
 
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>

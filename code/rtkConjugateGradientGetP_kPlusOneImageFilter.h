@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConjugateGradientGetP_kPlusOneImageFilter_h
-#define __rtkConjugateGradientGetP_kPlusOneImageFilter_h
+#ifndef rtkConjugateGradientGetP_kPlusOneImageFilter_h
+#define rtkConjugateGradientGetP_kPlusOneImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkAddImageFilter.h>

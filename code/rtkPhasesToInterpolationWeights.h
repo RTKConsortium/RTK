@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkPhasesToInterpolationWeights_h
-#define __rtkPhasesToInterpolationWeights_h
+#ifndef rtkPhasesToInterpolationWeights_h
+#define rtkPhasesToInterpolationWeights_h
 
 #include "itkCSVFileReaderBase.h"
 #include "itkArray2D.h"

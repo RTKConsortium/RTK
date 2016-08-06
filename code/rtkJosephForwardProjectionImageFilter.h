@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkJosephForwardProjectionImageFilter_h
-#define __rtkJosephForwardProjectionImageFilter_h
+#ifndef rtkJosephForwardProjectionImageFilter_h
+#define rtkJosephForwardProjectionImageFilter_h
 
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"

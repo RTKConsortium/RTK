@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkScatterGlareCorrectionImageFilter_h
-#define __rtkScatterGlareCorrectionImageFilter_h
+#ifndef rtkScatterGlareCorrectionImageFilter_h
+#define rtkScatterGlareCorrectionImageFilter_h
 
 #include "rtkConfiguration.h"
 #include "rtkFFTConvolutionImageFilter.h"

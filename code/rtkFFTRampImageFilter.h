@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFFTRampImageFilter_h
-#define __rtkFFTRampImageFilter_h
+#ifndef rtkFFTRampImageFilter_h
+#define rtkFFTRampImageFilter_h
 
 #include <itkConceptChecking.h>
 #include "rtkConfiguration.h"

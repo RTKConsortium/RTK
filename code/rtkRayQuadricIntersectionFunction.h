@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayQuadricIntersectionFunction_h
-#define __rtkRayQuadricIntersectionFunction_h
+#ifndef rtkRayQuadricIntersectionFunction_h
+#define rtkRayQuadricIntersectionFunction_h
 
 #include <itkNumericTraits.h>
 #include <vector>

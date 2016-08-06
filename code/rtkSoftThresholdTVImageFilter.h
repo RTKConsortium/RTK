@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSoftThresholdTVImageFilter_h
-#define __rtkSoftThresholdTVImageFilter_h
+#ifndef rtkSoftThresholdTVImageFilter_h
+#define rtkSoftThresholdTVImageFilter_h
 
 #include <itkNeighborhoodIterator.h>
 #include <itkImageToImageFilter.h>

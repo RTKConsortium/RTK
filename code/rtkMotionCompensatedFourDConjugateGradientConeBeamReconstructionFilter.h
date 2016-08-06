@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_h
-#define __rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_h
+#ifndef rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_h
+#define rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_h
 
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkMotionCompensatedFourDReconstructionConjugateGradientOperator.h"

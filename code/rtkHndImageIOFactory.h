@@ -19,8 +19,8 @@
 //#ifndef ITKHNDIMAGEIOFACTORY_H
 //#define ITKHNDIMAGEIOFACTORY_H
 
-#ifndef __rtkHndImageIOFactory_h
-#define __rtkHndImageIOFactory_h
+#ifndef rtkHndImageIOFactory_h
+#define rtkHndImageIOFactory_h
 
 #include "rtkWin32Header.h"
 #include "rtkHndImageIO.h"
@@ -81,4 +81,4 @@ private:
 
 } // end namespace
 
-#endif // __rtkHndImageIOFactory_h
+#endif // rtkHndImageIOFactory_h

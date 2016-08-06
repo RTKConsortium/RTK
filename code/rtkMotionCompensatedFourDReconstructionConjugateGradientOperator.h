@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkMotionCompensatedFourDReconstructionConjugateGradientOperator_h
-#define __rtkMotionCompensatedFourDReconstructionConjugateGradientOperator_h
+#ifndef rtkMotionCompensatedFourDReconstructionConjugateGradientOperator_h
+#define rtkMotionCompensatedFourDReconstructionConjugateGradientOperator_h
 
 #include "rtkFourDReconstructionConjugateGradientOperator.h"
 #include "rtkCyclicDeformationImageFilter.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDCMImagXImageIOFactory_h
-#define __rtkDCMImagXImageIOFactory_h
+#ifndef rtkDCMImagXImageIOFactory_h
+#define rtkDCMImagXImageIOFactory_h
 
 #include "rtkWin32Header.h"
 #include "rtkDCMImagXImageIO.h"

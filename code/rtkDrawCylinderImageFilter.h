@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawCylinderImageFilter_h
-#define __rtkDrawCylinderImageFilter_h
+#ifndef rtkDrawCylinderImageFilter_h
+#define rtkDrawCylinderImageFilter_h
 
 
 #include <itkAddImageFilter.h>

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDCMImagXImageIO_h
-#define __rtkDCMImagXImageIO_h
+#ifndef rtkDCMImagXImageIO_h
+#define rtkDCMImagXImageIO_h
 
 #include <itkGDCMImageIO.h>
 

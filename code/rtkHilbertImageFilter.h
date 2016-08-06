@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkHilbertImageFilter_h
-#define __rtkHilbertImageFilter_h
+#ifndef rtkHilbertImageFilter_h
+#define rtkHilbertImageFilter_h
 
 #include <itkImageToImageFilter.h>
 

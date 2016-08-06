@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDivergenceOfGradientConjugateGradientOperator_h
-#define __rtkDivergenceOfGradientConjugateGradientOperator_h
+#ifndef rtkDivergenceOfGradientConjugateGradientOperator_h
+#define rtkDivergenceOfGradientConjugateGradientOperator_h
 
 #include "rtkConjugateGradientOperator.h"
 

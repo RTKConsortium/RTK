@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLookupTableImageFilter_h
-#define __rtkLookupTableImageFilter_h
+#ifndef rtkLookupTableImageFilter_h
+#define rtkLookupTableImageFilter_h
 
 #include <itkUnaryFunctorImageFilter.h>
 #include <itkLinearInterpolateImageFunction.h>

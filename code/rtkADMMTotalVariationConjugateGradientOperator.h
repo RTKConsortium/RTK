@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkADMMTotalVariationConjugateGradientOperator_h
-#define __rtkADMMTotalVariationConjugateGradientOperator_h
+#ifndef rtkADMMTotalVariationConjugateGradientOperator_h
+#define rtkADMMTotalVariationConjugateGradientOperator_h
 
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>

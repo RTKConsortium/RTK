@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkPhaseReader_h
-#define __rtkPhaseReader_h
+#ifndef rtkPhaseReader_h
+#define rtkPhaseReader_h
 
 #include <itkCSVFileReaderBase.h>
 
