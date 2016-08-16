@@ -15,9 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-
-#ifndef __rtkForwardDifferenceGradientImageFilter_hxx
-#define __rtkForwardDifferenceGradientImageFilter_hxx
+#ifndef rtkForwardDifferenceGradientImageFilter_hxx
+#define rtkForwardDifferenceGradientImageFilter_hxx
 #include "rtkForwardDifferenceGradientImageFilter.h"
 
 #include <itkConstNeighborhoodIterator.h>
@@ -30,15 +29,16 @@
 
 namespace rtk
 {
+using namespace itk;
 //
 // Constructor
 //
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
 ::ForwardDifferenceGradientImageFilter()
 {
   // default boundary condition
-  m_BoundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TInputImage>();
+  m_BoundaryCondition = new ZeroFluxNeumannBoundaryCondition<TInputImage>();
   m_IsBoundaryConditionOverriden = false;
 
   // default behaviour is to take into account both spacing and direction
@@ -55,17 +55,17 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 //
 // Destructor
 //
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
 ::~ForwardDifferenceGradientImageFilter()
 {
   delete m_BoundaryCondition;
 }
 
 // This should be handled by an itkMacro, but it doesn't seem to work with pointer types
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
 ::SetDimensionsProcessed(bool* DimensionsProcessed)
 {
   bool Modified=false;
@@ -80,19 +80,19 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   if(Modified) this->Modified();
 }
 
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
-::OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition)
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+::OverrideBoundaryCondition(ImageBoundaryCondition< TInputImage >* boundaryCondition)
 {
   delete m_BoundaryCondition;
   m_BoundaryCondition = boundaryCondition;
   m_IsBoundaryConditionOverriden = true;
 }
 
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -109,10 +109,10 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     }
 
   // Build an operator so that we can determine the kernel size
-  itk::ForwardDifferenceOperator< OperatorValueType, InputImageDimension > oper;
+  ForwardDifferenceOperator< OperatorValueType, InputImageDimension > oper;
   oper.SetDirection(0);
   oper.CreateDirectional();
-  const itk::SizeValueType radius = oper.GetRadius()[0];
+  const SizeValueType radius = oper.GetRadius()[0];
 
   // get a copy of the input requested region (should equal the output
   // requested region)
@@ -136,7 +136,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     inputPtr->SetRequestedRegion(inputRequestedRegion);
 
     // build an exception
-    itk::InvalidRequestedRegionError e(__FILE__, __LINE__);
+    InvalidRequestedRegionError e(__FILE__, __LINE__);
     e.SetLocation(ITK_LOCATION);
     e.SetDescription("Requested region is (at least partially) outside the largest possible region.");
     e.SetDataObject(inputPtr);
@@ -144,14 +144,15 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     }
 }
 
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       itk::ThreadIdType threadId)
+                       ThreadIdType threadId)
 {
 
-  itk::NeighborhoodInnerProduct< InputImageType, OperatorValueType, OutputValueType > SIP;
+  NeighborhoodInnerProduct< InputImageType, OperatorValueType,
+                            OutputValueType > SIP;
 
   // Get the input and output
   OutputImageType *     outputImage = this->GetOutput();
@@ -167,7 +168,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     }
 
   // Set up operators
-  itk::ForwardDifferenceOperator< OperatorValueType, InputImageDimension > op[InputImageDimension];
+  ForwardDifferenceOperator< OperatorValueType, InputImageDimension > op[InputImageDimension];
 
   for ( int i = 0; i < InputImageDimension; i++ )
     {
@@ -189,28 +190,28 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     }
 
   // Calculate iterator radius
-  itk::Size< InputImageDimension > radius;
+  Size< InputImageDimension > radius;
   for ( int i = 0; i < InputImageDimension; ++i )
     {
     radius[i]  = op[0].GetRadius()[0];
     }
 
   // Find the data-set boundary "faces"
-  itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType > bC;
-  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType faceList
+  NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType > bC;
+  typename NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType faceList
                          = bC(inputImage, outputRegionForThread, radius);
 
-  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType::iterator fit
+  typename NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType::iterator fit
           = faceList.begin();
 
   // support progress methods/callbacks
-  itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
+  ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
 
   // Initialize the x_slice array
-  itk::ConstNeighborhoodIterator< InputImageType > nit = itk::ConstNeighborhoodIterator< InputImageType >(radius, inputImage, *fit);
+  ConstNeighborhoodIterator< InputImageType > nit = ConstNeighborhoodIterator< InputImageType >(radius, inputImage, *fit);
 
   std::slice          x_slice[InputImageDimension];
-  const itk::SizeValueType center = nit.Size() / 2;
+  const SizeValueType center = nit.Size() / 2;
   for ( int i = 0; i < InputImageDimension; ++i )
     {
     x_slice[i] = std::slice( center - nit.GetStride(i) * radius[i],
@@ -222,9 +223,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   // These are N-d regions which border the edge of the buffer.
   for ( fit = faceList.begin(); fit != faceList.end(); ++fit )
     {
-    nit = itk::ConstNeighborhoodIterator< InputImageType >(radius,
+    nit = ConstNeighborhoodIterator< InputImageType >(radius,
                                                       inputImage, *fit);
-    itk::ImageRegionIterator< OutputImageType > it = itk::ImageRegionIterator< OutputImageType >(outputImage, *fit);
+    ImageRegionIterator< OutputImageType > it = ImageRegionIterator< OutputImageType >(outputImage, *fit);
     nit.OverrideBoundaryCondition(m_BoundaryCondition);
     nit.GoToBegin();
 
@@ -251,9 +252,9 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
     }
 }
 
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
 ::GenerateOutputInformation()
 {
   // this methods is overloaded so that if the output image is a
@@ -276,10 +277,10 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 /**
  * Standard "PrintSelf" method
  */
-template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
+template< typename TInputImage, typename TOperatorValueType, typename TOutputValueType , typename TOutputImageType >
 void
-ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
-::PrintSelf(std::ostream & os, itk::Indent indent) const
+ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOutputValueType, TOutputImageType >
+::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -288,6 +289,6 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   os << indent << "UseImageDirection = "
      << ( this->m_UseImageDirection ? "On" : "Off" ) << std::endl;
 }
-} // end namespace itk
+} // end namespace rtk
 
 #endif
