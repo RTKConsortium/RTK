@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkUnwarpSequenceConjugateGradientOperator_hxx
-#define __rtkUnwarpSequenceConjugateGradientOperator_hxx
+#ifndef rtkUnwarpSequenceConjugateGradientOperator_hxx
+#define rtkUnwarpSequenceConjugateGradientOperator_hxx
 
 #include "rtkUnwarpSequenceConjugateGradientOperator.h"
 

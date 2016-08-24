@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkWaterPrecorrectionImageFilter_hxx
-#define __rtkWaterPrecorrectionImageFilter_hxx
+#ifndef rtkWaterPrecorrectionImageFilter_hxx
+#define rtkWaterPrecorrectionImageFilter_hxx
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
@@ -90,4 +90,4 @@ void WaterPrecorrectionImageFilter<TInputImage,TOutputImage>
 }
 } // end namespace rtk
 
-#endif // __rtkWaterPrecorrectionImageFilter_hxx
+#endif // rtkWaterPrecorrectionImageFilter_hxx

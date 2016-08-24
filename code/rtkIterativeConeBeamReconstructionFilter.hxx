@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkIterativeConeBeamReconstructionFilter_hxx
-#define __rtkIterativeConeBeamReconstructionFilter_hxx
+#ifndef rtkIterativeConeBeamReconstructionFilter_hxx
+#define rtkIterativeConeBeamReconstructionFilter_hxx
 
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 
@@ -119,4 +119,4 @@ namespace rtk
 
 } // end namespace rtk
 
-#endif // __rtkIterativeConeBeamReconstructionFilter_hxx
+#endif // rtkIterativeConeBeamReconstructionFilter_hxx

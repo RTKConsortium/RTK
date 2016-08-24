@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkForwardDifferenceGradientImageFilter_h
-#define __rtkForwardDifferenceGradientImageFilter_h
+#ifndef rtkForwardDifferenceGradientImageFilter_h
+#define rtkForwardDifferenceGradientImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkCovariantVector.h>

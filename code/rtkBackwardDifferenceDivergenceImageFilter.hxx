@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkBackwardDifferenceDivergenceImageFilter_hxx
-#define __rtkBackwardDifferenceDivergenceImageFilter_hxx
+#ifndef rtkBackwardDifferenceDivergenceImageFilter_hxx
+#define rtkBackwardDifferenceDivergenceImageFilter_hxx
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 
 #include <itkConstShapedNeighborhoodIterator.h>

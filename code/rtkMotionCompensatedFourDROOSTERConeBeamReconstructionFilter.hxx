@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_hxx
-#define __rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_hxx
+#ifndef rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_hxx
+#define rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_hxx
 
 #include "rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter.h"
 #include <itkImageFileWriter.h>

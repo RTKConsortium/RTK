@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkInterpolatorWithKnownWeightsImageFilter_hxx
-#define __rtkInterpolatorWithKnownWeightsImageFilter_hxx
+#ifndef rtkInterpolatorWithKnownWeightsImageFilter_hxx
+#define rtkInterpolatorWithKnownWeightsImageFilter_hxx
 
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 

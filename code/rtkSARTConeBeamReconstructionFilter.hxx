@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSARTConeBeamReconstructionFilter_hxx
-#define __rtkSARTConeBeamReconstructionFilter_hxx
+#ifndef rtkSARTConeBeamReconstructionFilter_hxx
+#define rtkSARTConeBeamReconstructionFilter_hxx
 
 #include "rtkSARTConeBeamReconstructionFilter.h"
 
@@ -438,4 +438,4 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
 } // end namespace rtk
 
-#endif // __rtkSARTConeBeamReconstructionFilter_hxx
+#endif // rtkSARTConeBeamReconstructionFilter_hxx

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFourDSARTConeBeamReconstructionFilter_hxx
-#define __rtkFourDSARTConeBeamReconstructionFilter_hxx
+#ifndef rtkFourDSARTConeBeamReconstructionFilter_hxx
+#define rtkFourDSARTConeBeamReconstructionFilter_hxx
 
 #include "rtkFourDSARTConeBeamReconstructionFilter.h"
 #include "rtkGeneralPurposeFunctions.h"
@@ -475,4 +475,4 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
 } // end namespace rtk
 
-#endif // __rtkFourDSARTConeBeamReconstructionFilter_hxx
+#endif // rtkFourDSARTConeBeamReconstructionFilter_hxx

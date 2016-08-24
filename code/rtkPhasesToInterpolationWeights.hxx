@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkPhasesToInterpolationWeights_hxx
-#define __rtkPhasesToInterpolationWeights_hxx
+#ifndef rtkPhasesToInterpolationWeights_hxx
+#define rtkPhasesToInterpolationWeights_hxx
 
 #include "rtkPhasesToInterpolationWeights.h"
 

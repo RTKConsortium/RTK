@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkPhaseReader_hxx
-#define __rtkPhaseReader_hxx
+#ifndef rtkPhaseReader_hxx
+#define rtkPhaseReader_hxx
 
 #include "rtkPhaseReader.h"
 

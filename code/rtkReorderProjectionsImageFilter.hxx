@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReorderProjectionsImageFilter_hxx
-#define __rtkReorderProjectionsImageFilter_hxx
+#ifndef rtkReorderProjectionsImageFilter_hxx
+#define rtkReorderProjectionsImageFilter_hxx
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageRegionConstIterator.h>

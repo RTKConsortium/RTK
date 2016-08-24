@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkImportImageFilter_hxx
-#define __rtkImportImageFilter_hxx
+#ifndef rtkImportImageFilter_hxx
+#define rtkImportImageFilter_hxx
 
 #include "rtkImportImageFilter.h"
 #include "itkObjectFactory.h"

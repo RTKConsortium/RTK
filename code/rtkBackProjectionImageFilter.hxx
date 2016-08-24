@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkBackProjectionImageFilter_hxx
-#define __rtkBackProjectionImageFilter_hxx
+#ifndef rtkBackProjectionImageFilter_hxx
+#define rtkBackProjectionImageFilter_hxx
 
 #include "rtkHomogeneousMatrix.h"
 

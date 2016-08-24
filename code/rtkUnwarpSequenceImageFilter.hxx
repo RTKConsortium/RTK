@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkUnwarpSequenceImageFilter_hxx
-#define __rtkUnwarpSequenceImageFilter_hxx
+#ifndef rtkUnwarpSequenceImageFilter_hxx
+#define rtkUnwarpSequenceImageFilter_hxx
 
 #include "rtkUnwarpSequenceImageFilter.h"
 

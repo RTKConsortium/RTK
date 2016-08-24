@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConjugateGradientConeBeamReconstructionFilter_hxx
-#define __rtkConjugateGradientConeBeamReconstructionFilter_hxx
+#ifndef rtkConjugateGradientConeBeamReconstructionFilter_hxx
+#define rtkConjugateGradientConeBeamReconstructionFilter_hxx
 
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 

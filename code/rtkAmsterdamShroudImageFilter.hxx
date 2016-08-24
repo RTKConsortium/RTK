@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkAmsterdamShroudImageFilter_hxx
-#define __rtkAmsterdamShroudImageFilter_hxx
+#ifndef rtkAmsterdamShroudImageFilter_hxx
+#define rtkAmsterdamShroudImageFilter_hxx
 
 #include <itkImageFileWriter.h>
 #include <itkImageRegionIterator.h>

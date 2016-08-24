@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_hxx
-#define __rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_hxx
+#ifndef rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_hxx
+#define rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_hxx
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageRegionConstIterator.h>

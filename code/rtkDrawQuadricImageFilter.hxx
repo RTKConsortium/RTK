@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricImageFilter_hxx
-#define __rtkDrawQuadricImageFilter_hxx
+#ifndef rtkDrawQuadricImageFilter_hxx
+#define rtkDrawQuadricImageFilter_hxx
 
 #include <iostream>
 #include <itkImageRegionConstIterator.h>

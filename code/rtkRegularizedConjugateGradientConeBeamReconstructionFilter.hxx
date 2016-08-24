@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkRegularizedConjugateGradientConeBeamReconstructionFilter_hxx
-#define __rtkRegularizedConjugateGradientConeBeamReconstructionFilter_hxx
+#ifndef rtkRegularizedConjugateGradientConeBeamReconstructionFilter_hxx
+#define rtkRegularizedConjugateGradientConeBeamReconstructionFilter_hxx
 
 #include "rtkRegularizedConjugateGradientConeBeamReconstructionFilter.h"
 

@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkSignalToInterpolationWeights_hxx
-#define __rtkSignalToInterpolationWeights_hxx
+#ifndef rtkSignalToInterpolationWeights_hxx
+#define rtkSignalToInterpolationWeights_hxx
 
 #include "rtkSignalToInterpolationWeights.h"
 

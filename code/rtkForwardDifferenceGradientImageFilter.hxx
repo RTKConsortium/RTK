@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkForwardDifferenceGradientImageFilter_hxx
-#define __rtkForwardDifferenceGradientImageFilter_hxx
+#ifndef rtkForwardDifferenceGradientImageFilter_hxx
+#define rtkForwardDifferenceGradientImageFilter_hxx
 #include "rtkForwardDifferenceGradientImageFilter.h"
 
 #include <itkConstNeighborhoodIterator.h>

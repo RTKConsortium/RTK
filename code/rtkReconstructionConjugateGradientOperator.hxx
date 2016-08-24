@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReconstructionConjugateGradientOperator_hxx
-#define __rtkReconstructionConjugateGradientOperator_hxx
+#ifndef rtkReconstructionConjugateGradientOperator_hxx
+#define rtkReconstructionConjugateGradientOperator_hxx
 
 #include "rtkReconstructionConjugateGradientOperator.h"
 

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx
-#define __rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx
+#ifndef rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx
+#define rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx
 
 #include "rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter.h"
 
@@ -104,4 +104,4 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
 
 } // end namespace rtk
 
-#endif // __rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx
+#endif // rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx

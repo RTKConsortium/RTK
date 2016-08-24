@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawEllipsoidImageFilter_hxx
-#define __rtkDrawEllipsoidImageFilter_hxx
+#ifndef rtkDrawEllipsoidImageFilter_hxx
+#define rtkDrawEllipsoidImageFilter_hxx
 
 
 namespace rtk

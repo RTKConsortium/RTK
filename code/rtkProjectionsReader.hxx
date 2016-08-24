@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectionsReader_hxx
-#define __rtkProjectionsReader_hxx
+#ifndef rtkProjectionsReader_hxx
+#define rtkProjectionsReader_hxx
 
 // ITK
 #include <itkConfigure.h>

@@ -33,8 +33,8 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
-#ifndef __rtkRayCastInterpolateImageFunction_hxx
-#define __rtkRayCastInterpolateImageFunction_hxx
+#ifndef rtkRayCastInterpolateImageFunction_hxx
+#define rtkRayCastInterpolateImageFunction_hxx
 
 #include "rtkRayCastInterpolateImageFunction.h"
 

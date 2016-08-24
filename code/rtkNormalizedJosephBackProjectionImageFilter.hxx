@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkNormalizedJosephBackProjectionImageFilter_hxx
-#define __rtkNormalizedJosephBackProjectionImageFilter_hxx
+#ifndef rtkNormalizedJosephBackProjectionImageFilter_hxx
+#define rtkNormalizedJosephBackProjectionImageFilter_hxx
 
 namespace rtk
 {

@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkSelectOneProjectionPerCycleImageFilter_hxx
-#define __rtkSelectOneProjectionPerCycleImageFilter_hxx
+#ifndef rtkSelectOneProjectionPerCycleImageFilter_hxx
+#define rtkSelectOneProjectionPerCycleImageFilter_hxx
 
 #include "rtkSelectOneProjectionPerCycleImageFilter.h"
 #include <itkCSVArray2DFileReader.h>
