@@ -24,6 +24,7 @@
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
+#include <itkVectorIndexSelectionCastImageFilter.h>
 
 int main(int argc, char * argv[])
 {
@@ -35,26 +36,25 @@ int main(int argc, char * argv[])
   const unsigned int NumberOfSpectralBins = 6;
   const unsigned int MaximumEnergy = 150;
 
-  typedef itk::Vector<float, NumberOfMaterials> MaterialsVectorType;
+  typedef itk::Vector<OutputPixelType, NumberOfMaterials> MaterialsVectorType;
   typedef itk::Image< MaterialsVectorType, Dimension > DecomposedProjectionType;
   typedef itk::ImageFileReader<DecomposedProjectionType> DecomposedProjectionReaderType;
-  typedef itk::ImageFileWriter<DecomposedProjectionType> DecomposedProjectionWriterType;
 
-  typedef itk::Vector<float, NumberOfSpectralBins> SpectralVectorType;
+  typedef itk::Vector<OutputPixelType, NumberOfSpectralBins> SpectralVectorType;
   typedef itk::Image< SpectralVectorType, Dimension > SpectralProjectionsType;
   typedef itk::ImageFileReader<SpectralProjectionsType> SpectralProjectionReaderType;
 
-  typedef itk::Vector<float, MaximumEnergy> IncidentSpectrumVectorType;
+  typedef itk::Vector<OutputPixelType, MaximumEnergy> IncidentSpectrumVectorType;
   typedef itk::Image< IncidentSpectrumVectorType, Dimension-1 > IncidentSpectrumImageType;
   typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
 
-  typedef itk::Image< float, Dimension-1 > DetectorResponseImageType;
+  typedef itk::Image< OutputPixelType, Dimension-1 > DetectorResponseImageType;
   typedef itk::ImageFileReader<DetectorResponseImageType> DetectorResponseReaderType;
 
-  typedef itk::Image< float, Dimension-1 > MaterialAttenuationsImageType;
+  typedef itk::Image< OutputPixelType, Dimension-1 > MaterialAttenuationsImageType;
   typedef itk::ImageFileReader<MaterialAttenuationsImageType> MaterialAttenuationsReaderType;
 
-  typedef itk::Matrix<float, NumberOfSpectralBins, MaximumEnergy>            DetectorResponseType;
+  typedef itk::Matrix<OutputPixelType, NumberOfSpectralBins, MaximumEnergy>            DetectorResponseType;
   typedef itk::Vector<itk::Vector<float, MaximumEnergy>, NumberOfMaterials>  MaterialAttenuationsType;
 
   // Read all inputs
@@ -154,11 +154,23 @@ int main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
-  // Write output
-  DecomposedProjectionWriterType::Pointer writer = DecomposedProjectionWriterType::New();
-  writer->SetInput(simplex->GetOutput());
-  writer->SetFileName(args_info.output_arg);
-  writer->Update();
+  // Write one output per material
+  typedef itk::VectorIndexSelectionCastImageFilter<DecomposedProjectionType, itk::Image<OutputPixelType, Dimension> > IndexSelectionType;
+  IndexSelectionType::Pointer indexSelectionFilter = IndexSelectionType::New();
+  indexSelectionFilter->SetInput(simplex->GetOutput());
+
+  typedef itk::ImageFileWriter<itk::Image<OutputPixelType, Dimension> > SingleMaterialProjectionWriterType;
+  SingleMaterialProjectionWriterType::Pointer writer = SingleMaterialProjectionWriterType::New();
+  writer->SetInput(indexSelectionFilter->GetOutput());
+
+  for (unsigned int mat=0; mat<NumberOfMaterials; mat++)
+    {
+    indexSelectionFilter->SetIndex(mat);
+    std::stringstream filename;
+    filename << args_info.output_arg << "_" << mat << ".mhd";
+    writer->SetFileName(filename.str());
+    writer->Update();
+    }
 
   return EXIT_SUCCESS;
 }
