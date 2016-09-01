@@ -29,33 +29,33 @@ int main(int argc, char * argv[])
 {
   GGO(rtkdecomposespectralprojections, args_info);
 
-  typedef float OutputPixelType;
+  typedef float PixelValueType;
   const unsigned int Dimension = 3;
   const unsigned int NumberOfMaterials = 3;
   const unsigned int NumberOfSpectralBins = 6;
   const unsigned int MaximumEnergy = 150;
 
-  typedef itk::Vector<OutputPixelType, NumberOfMaterials> MaterialsVectorType;
+  typedef itk::Vector<PixelValueType, NumberOfMaterials> MaterialsVectorType;
   typedef itk::Image< MaterialsVectorType, Dimension > DecomposedProjectionType;
   typedef itk::ImageFileReader<DecomposedProjectionType> DecomposedProjectionReaderType;
   typedef itk::ImageFileWriter<DecomposedProjectionType> DecomposedProjectionWriterType;
 
-  typedef itk::Vector<OutputPixelType, NumberOfSpectralBins> SpectralVectorType;
+  typedef itk::Vector<PixelValueType, NumberOfSpectralBins> SpectralVectorType;
   typedef itk::Image< SpectralVectorType, Dimension > SpectralProjectionsType;
   typedef itk::ImageFileReader< SpectralProjectionsType > SpectralProjectionReaderType;
 
-  typedef itk::Vector<OutputPixelType, MaximumEnergy> IncidentSpectrumVectorType;
+  typedef itk::Vector<PixelValueType, MaximumEnergy> IncidentSpectrumVectorType;
   typedef itk::Image< IncidentSpectrumVectorType, Dimension-1 > IncidentSpectrumImageType;
   typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
 
-  typedef itk::Image< OutputPixelType, Dimension-1 > DetectorResponseImageType;
+  typedef itk::Image< PixelValueType, Dimension-1 > DetectorResponseImageType;
   typedef itk::ImageFileReader<DetectorResponseImageType> DetectorResponseReaderType;
 
-  typedef itk::Image< OutputPixelType, Dimension-1 > MaterialAttenuationsImageType;
+  typedef itk::Image< PixelValueType, Dimension-1 > MaterialAttenuationsImageType;
   typedef itk::ImageFileReader<MaterialAttenuationsImageType> MaterialAttenuationsReaderType;
 
-  typedef itk::Matrix<OutputPixelType, NumberOfSpectralBins, MaximumEnergy>            DetectorResponseType;
-  typedef itk::Vector<itk::Vector<float, MaximumEnergy>, NumberOfMaterials>  MaterialAttenuationsType;
+  typedef itk::Matrix<PixelValueType, NumberOfSpectralBins, MaximumEnergy>            DetectorResponseType;
+  typedef itk::Vector<itk::Vector<PixelValueType, MaximumEnergy>, NumberOfMaterials>  MaterialAttenuationsType;
 
   // Read all inputs
   DecomposedProjectionReaderType::Pointer DecomposedProjectionReader = DecomposedProjectionReaderType::New();
@@ -63,7 +63,7 @@ int main(int argc, char * argv[])
   DecomposedProjectionReader->Update();
 
   SpectralProjectionReaderType::Pointer spectralProjectionReader = SpectralProjectionReaderType::New();
-  DecomposedProjectionReader->SetFileName( args_info.spectral_arg );
+  spectralProjectionReader->SetFileName( args_info.spectral_arg );
   spectralProjectionReader->Update();
 
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
