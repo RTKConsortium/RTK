@@ -152,6 +152,17 @@ int main(int argc, char * argv[])
   simplex->SetMaterialAttenuations(materialAttenuationsVector);
   simplex->SetNumberOfIterations(args_info.niterations_arg);
 
+  // Uncomment this line if you want the application to always yield the same result, like the test does
+  //  simplex->SetNumberOfThreads(1);
+
+  // Note: The simplex filter is set to perform several searches for each pixel,
+  // with different initializations, and keep the best one (SetOptimizeWithRestart(true)).
+  // These initializations are partially random, which makes the output non-reproducible:
+  // the application will yield different results each time it runs.
+  // To fix this, the simplex filter provides a constant seed to the random generator,
+  // but since this seed is then used by all threads, only the mono-threaded version will
+  // actually be reproducible.
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
   // Write output

@@ -194,6 +194,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
     optimizer->SetInitialPosition(startingPosition);
     optimizer->SetAutomaticInitialSimplex(true);
     optimizer->SetOptimizeWithRestarts(true);
+    srand(0);
     optimizer->StartOptimization();
 
     typename DecomposedProjectionsType::PixelType outputPixel;
