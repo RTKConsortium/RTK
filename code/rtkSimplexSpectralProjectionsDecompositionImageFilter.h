@@ -36,15 +36,15 @@ namespace rtk
    */
 
 // We have to define the cost function first
-template <unsigned int NbMaterials = 3, unsigned int NumberOfSpectralBins = 6, unsigned int MaximumEnergy = 150>
+template <unsigned int NbMaterials = 3, unsigned int NumberOfSpectralBins = 6, unsigned int NumberOfEnergies = 150>
 class Schlomka2008NegativeLogLikelihood : public itk::SingleValuedCostFunction
 {
 public:
 
-  typedef Schlomka2008NegativeLogLikelihood                  Self;
-  typedef itk::SingleValuedCostFunction   Superclass;
-  typedef itk::SmartPointer<Self>         Pointer;
-  typedef itk::SmartPointer<const Self>   ConstPointer;
+  typedef Schlomka2008NegativeLogLikelihood   Self;
+  typedef itk::SingleValuedCostFunction       Superclass;
+  typedef itk::SmartPointer<Self>             Pointer;
+  typedef itk::SmartPointer<const Self>       ConstPointer;
   itkNewMacro( Self );
   itkTypeMacro( Schlomka2008NegativeLogLikelihood, SingleValuedCostFunction );
 
@@ -54,10 +54,10 @@ public:
   typedef Superclass::DerivativeType      DerivativeType;
   typedef Superclass::MeasureType         MeasureType;
 
-  typedef itk::Matrix<float, NumberOfSpectralBins, MaximumEnergy>            DetectorResponseType;
-  typedef itk::Vector<itk::Vector<float, MaximumEnergy>, NbMaterials>        MaterialAttenuationsType;
-  typedef itk::Vector<float, NumberOfSpectralBins>                           DetectorCountsType;
-  typedef itk::Vector<float, MaximumEnergy>                                  IncidentSpectrumType;
+  typedef itk::Matrix<float, NumberOfSpectralBins, NumberOfEnergies>            DetectorResponseType;
+  typedef itk::Vector<itk::Vector<float, NumberOfEnergies>, NbMaterials>        MaterialAttenuationsType;
+  typedef itk::Vector<float, NumberOfSpectralBins>                              DetectorCountsType;
+  typedef itk::Vector<float, NumberOfEnergies>                                  IncidentSpectrumType;
 
   // Constructor
   Schlomka2008NegativeLogLikelihood()
@@ -75,9 +75,9 @@ public:
   // taken into account in the incident spectrum image
 
   // Apply attenuation at each energy
-  itk::Vector<float, MaximumEnergy> attenuatedIncidentSpectrum;
+  itk::Vector<float, NumberOfEnergies> attenuatedIncidentSpectrum;
   attenuatedIncidentSpectrum.Fill(0);
-  for (unsigned int e=0; e<MaximumEnergy; e++)
+  for (unsigned int e=0; e<NumberOfEnergies; e++)
     {
     float totalAttenuation = 0.;
     for (unsigned int m=0; m<NbMaterials; m++)
@@ -143,7 +143,8 @@ private:
 };
 
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy = 150, typename IncidentSpectrumImageType = itk::Image<itk::Vector<double, MaximumEnergy>, 2> >
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+         unsigned int NumberOfEnergies = 150, typename IncidentSpectrumImageType = itk::Image<itk::Vector<double, NumberOfEnergies>, 2> >
 class ITK_EXPORT SimplexSpectralProjectionsDecompositionImageFilter :
   public itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>
 {
@@ -160,11 +161,12 @@ public:
   typedef DecomposedProjectionsType     VolumeType;
 
   /** Convenient information */
-  typedef itk::Matrix<float, SpectralProjectionsType::PixelType::Dimension, MaximumEnergy>            DetectorResponseType;
-  typedef itk::Vector<itk::Vector<float, MaximumEnergy>, DecomposedProjectionsType::PixelType::Dimension>  MaterialAttenuationsType;
+  typedef itk::Matrix<float, SpectralProjectionsType::PixelType::Dimension, NumberOfEnergies>                 DetectorResponseType;
+  typedef itk::Vector<itk::Vector<float, NumberOfEnergies>, DecomposedProjectionsType::PixelType::Dimension>  MaterialAttenuationsType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef Schlomka2008NegativeLogLikelihood<DecomposedProjectionsType::PixelType::Dimension, SpectralProjectionsType::PixelType::Dimension, MaximumEnergy>    CostFunctionType;
+  typedef Schlomka2008NegativeLogLikelihood<DecomposedProjectionsType::PixelType::Dimension,
+                                            SpectralProjectionsType::PixelType::Dimension, NumberOfEnergies>  CostFunctionType;
 
   /** Standard New method. */
   itkNewMacro(Self)

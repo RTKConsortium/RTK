@@ -26,8 +26,8 @@
 namespace rtk
 {
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::SimplexSpectralProjectionsDecompositionImageFilter()
 {
   this->SetNumberOfRequiredInputs(3); // 4D sequence, projections
@@ -40,60 +40,60 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
   m_DetectorResponse.Fill(0.);
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::SetInputDecomposedProjections(const DecomposedProjectionsType* DecomposedProjections)
 {
   this->SetNthInput(0, const_cast<DecomposedProjectionsType*>(DecomposedProjections));
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::SetInputSpectralProjections(const SpectralProjectionsType *SpectralProjections)
 {
   this->SetNthInput(1, const_cast<SpectralProjectionsType*>(SpectralProjections));
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::SetInputIncidentSpectrum(const IncidentSpectrumImageType *IncidentSpectrum)
 {
   this->SetNthInput(2, const_cast<IncidentSpectrumImageType*>(IncidentSpectrum));
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 typename DecomposedProjectionsType::ConstPointer
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::GetInputDecomposedProjections()
 {
   return static_cast< const DecomposedProjectionsType * >
           ( this->itk::ProcessObject::GetInput(0) );
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 typename SpectralProjectionsType::ConstPointer
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::GetInputSpectralProjections()
 {
   return static_cast< const SpectralProjectionsType * >
           ( this->itk::ProcessObject::GetInput(1) );
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 typename IncidentSpectrumImageType::ConstPointer
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::GetInputIncidentSpectrum()
 {
   return static_cast< const IncidentSpectrumImageType * >
           ( this->itk::ProcessObject::GetInput(2) );
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the initial decomposed projections
@@ -129,17 +129,17 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
   inputPtr2->SetRequestedRegion( requested );
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::GenerateOutputInformation()
 {
   this->GetOutput()->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int MaximumEnergy, typename IncidentSpectrumImageType>
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies, typename IncidentSpectrumImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType>
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies, IncidentSpectrumImageType>
 ::ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
   const unsigned int NumberOfMaterials = DecomposedProjectionsType::PixelType::Dimension;
