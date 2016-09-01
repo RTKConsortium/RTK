@@ -24,7 +24,6 @@
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkVectorIndexSelectionCastImageFilter.h>
 
 int main(int argc, char * argv[])
 {
@@ -39,10 +38,11 @@ int main(int argc, char * argv[])
   typedef itk::Vector<OutputPixelType, NumberOfMaterials> MaterialsVectorType;
   typedef itk::Image< MaterialsVectorType, Dimension > DecomposedProjectionType;
   typedef itk::ImageFileReader<DecomposedProjectionType> DecomposedProjectionReaderType;
+  typedef itk::ImageFileWriter<DecomposedProjectionType> DecomposedProjectionWriterType;
 
   typedef itk::Vector<OutputPixelType, NumberOfSpectralBins> SpectralVectorType;
   typedef itk::Image< SpectralVectorType, Dimension > SpectralProjectionsType;
-  typedef itk::ImageFileReader<SpectralProjectionsType> SpectralProjectionReaderType;
+  typedef itk::ImageFileReader< SpectralProjectionsType > SpectralProjectionReaderType;
 
   typedef itk::Vector<OutputPixelType, MaximumEnergy> IncidentSpectrumVectorType;
   typedef itk::Image< IncidentSpectrumVectorType, Dimension-1 > IncidentSpectrumImageType;
@@ -63,7 +63,7 @@ int main(int argc, char * argv[])
   DecomposedProjectionReader->Update();
 
   SpectralProjectionReaderType::Pointer spectralProjectionReader = SpectralProjectionReaderType::New();
-  spectralProjectionReader->SetFileName( args_info.spectral_arg );
+  DecomposedProjectionReader->SetFileName( args_info.spectral_arg );
   spectralProjectionReader->Update();
 
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
@@ -154,23 +154,11 @@ int main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
-  // Write one output per material
-  typedef itk::VectorIndexSelectionCastImageFilter<DecomposedProjectionType, itk::Image<OutputPixelType, Dimension> > IndexSelectionType;
-  IndexSelectionType::Pointer indexSelectionFilter = IndexSelectionType::New();
-  indexSelectionFilter->SetInput(simplex->GetOutput());
-
-  typedef itk::ImageFileWriter<itk::Image<OutputPixelType, Dimension> > SingleMaterialProjectionWriterType;
-  SingleMaterialProjectionWriterType::Pointer writer = SingleMaterialProjectionWriterType::New();
-  writer->SetInput(indexSelectionFilter->GetOutput());
-
-  for (unsigned int mat=0; mat<NumberOfMaterials; mat++)
-    {
-    indexSelectionFilter->SetIndex(mat);
-    std::stringstream filename;
-    filename << args_info.output_arg << "_" << mat << ".mhd";
-    writer->SetFileName(filename.str());
-    writer->Update();
-    }
+  // Write output
+  DecomposedProjectionWriterType::Pointer writer = DecomposedProjectionWriterType::New();
+  writer->SetInput(simplex->GetOutput());
+  writer->SetFileName(args_info.output_arg);
+  writer->Update();
 
   return EXIT_SUCCESS;
 }
