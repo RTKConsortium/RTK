@@ -83,38 +83,21 @@ int main(int , char** )
                                            std::string("/Input/Spectral/material_attenuations.mha") );
   materialAttenuationsReader->Update();
 
+  // Generate the thresholds vector
+  itk::Vector<unsigned int, 7> thresholds;
+  thresholds[0] = 25;
+  thresholds[1] = 40;
+  thresholds[2] = 55;
+  thresholds[3] = 70;
+  thresholds[4] = 85;
+  thresholds[5] = 100;
+  thresholds[6] = 180;
+
   // Read baseline output
   DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
   decomposedProjectionReader->SetFileName( std::string(RTK_DATA_ROOT) +
                                            std::string("/Baseline/Spectral/ref_output.mha") );
   decomposedProjectionReader->Update();
-
-  // Format the inputs to pass them to the filter
-  // First the detector response matrix
-  DetectorResponseType detectorResponseMatrix;
-  DetectorResponseImageType::IndexType indexDet;
-  for (unsigned int energy=0; energy<MaximumEnergy; energy++)
-    {
-    indexDet[0] = energy;
-    for (unsigned int bin=0; bin<NumberOfSpectralBins; bin++)
-      {
-      indexDet[1] = bin;
-      detectorResponseMatrix[bin][energy] = detectorResponseReader->GetOutput()->GetPixel(indexDet);
-      }
-    }
-
-  // Then the material attenuations vector of vectors
-  MaterialAttenuationsType materialAttenuationsVector;
-  MaterialAttenuationsImageType::IndexType indexMat;
-  for (unsigned int energy=0; energy<MaximumEnergy; energy++)
-    {
-    indexMat[1] = energy;
-    for (unsigned int material=0; material<NumberOfMaterials; material++)
-      {
-      indexMat[0] = material;
-      materialAttenuationsVector[material][energy] = materialAttenuationsReader->GetOutput()->GetPixel(indexMat);
-      }
-    }
 
   // Create and set the filter
   typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType> SimplexFilterType;
@@ -122,8 +105,9 @@ int main(int , char** )
   simplex->SetInputDecomposedProjections(initialDecomposedProjections);
   simplex->SetInputSpectralProjections(spectralProjectionReader->GetOutput());
   simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
-  simplex->SetDetectorResponse(detectorResponseMatrix);
-  simplex->SetMaterialAttenuations(materialAttenuationsVector);
+  simplex->SetDetectorResponse(detectorResponseReader->GetOutput());
+  simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
+  simplex->SetThresholds(thresholds);
   simplex->SetNumberOfIterations(10000);
   simplex->SetNumberOfThreads(1);
 

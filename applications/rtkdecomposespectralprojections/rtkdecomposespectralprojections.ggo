@@ -10,3 +10,4 @@ option "detector"   d "Detector response file"                                  
 option "incident"   - "Incident spectrum file"                                            string                       yes
 option "attenuations" a "Material attenuations file"                                      string                       yes
 option "niterations" n "Number of iterations"                                             int                           no   default="300"
+option "thresholds" t "Lower threshold of bins, expressed in pulse height"                int                          yes multiple                         

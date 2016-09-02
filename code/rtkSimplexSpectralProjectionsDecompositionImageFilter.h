@@ -144,7 +144,8 @@ private:
 
 
 template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
-         unsigned int NumberOfEnergies = 150, typename IncidentSpectrumImageType = itk::Image<itk::Vector<double, NumberOfEnergies>, 2> >
+         unsigned int NumberOfEnergies = 150, typename IncidentSpectrumImageType = itk::Image<itk::Vector<float, NumberOfEnergies>, 2>,
+         typename DetectorResponseImageType = itk::Image<float, 2>, typename MaterialAttenuationsImageType = itk::Image<float, 2> >
 class ITK_EXPORT SimplexSpectralProjectionsDecompositionImageFilter :
   public itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>
 {
@@ -158,11 +159,11 @@ public:
   /** Some convenient typedefs. */
   typedef SpectralProjectionsType       InputImageType;
   typedef SpectralProjectionsType       OutputImageType;
-  typedef DecomposedProjectionsType     VolumeType;
 
   /** Convenient information */
   typedef itk::Matrix<float, SpectralProjectionsType::PixelType::Dimension, NumberOfEnergies>                 DetectorResponseType;
   typedef itk::Vector<itk::Vector<float, NumberOfEnergies>, DecomposedProjectionsType::PixelType::Dimension>  MaterialAttenuationsType;
+  typedef itk::Vector<unsigned int, SpectralProjectionsType::PixelType::Dimension + 1>                        ThresholdsType;
 
   /** Typedefs of each subfilter of this composite filter */
   typedef Schlomka2008NegativeLogLikelihood<DecomposedProjectionsType::PixelType::Dimension,
@@ -190,13 +191,16 @@ public:
   void SetInputIncidentSpectrum(const IncidentSpectrumImageType* IncidentSpectrum);
   typename IncidentSpectrumImageType::ConstPointer GetInputIncidentSpectrum();
 
-  /** Get / Set the detector response matrix */
-  itkGetMacro(DetectorResponse, DetectorResponseType)
-  itkSetMacro(DetectorResponse, DetectorResponseType)
+  /** Set/Get the detector response as an image */
+  void SetDetectorResponse(const DetectorResponseImageType* DetectorResponse);
+  typename DetectorResponseImageType::ConstPointer GetDetectorResponse();
 
-  /** Get / Set the material attenuation data */
-  itkGetMacro(MaterialAttenuations, MaterialAttenuationsType)
-  itkSetMacro(MaterialAttenuations, MaterialAttenuationsType)
+  /** Set/Get the material attenuations as an image */
+  void SetMaterialAttenuations(const MaterialAttenuationsImageType* MaterialAttenuations);
+  typename MaterialAttenuationsImageType::ConstPointer GetMaterialAttenuations();
+
+  itkSetMacro(Thresholds, ThresholdsType)
+  itkGetMacro(Thresholds, ThresholdsType)
 
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
@@ -206,6 +210,7 @@ protected:
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
   void ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
@@ -214,6 +219,7 @@ protected:
 
   MaterialAttenuationsType   m_MaterialAttenuations;
   DetectorResponseType       m_DetectorResponse;
+  ThresholdsType             m_Thresholds;
 
   /** Number of simplex iterations */
   unsigned int m_NumberOfIterations;

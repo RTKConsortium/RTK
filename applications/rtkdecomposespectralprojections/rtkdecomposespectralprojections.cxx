@@ -19,7 +19,7 @@
 #include "rtkdecomposespectralprojections_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
-
+#include "rtkMacro.h"
 #include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
 
 #include <itkImageFileReader.h>
@@ -78,6 +78,20 @@ int main(int argc, char * argv[])
   materialAttenuationsReader->SetFileName( args_info.attenuations_arg );
   materialAttenuationsReader->Update();
 
+  // Read the thresholds on command line and check their number
+  itk::Vector<unsigned int, NumberOfSpectralBins+1> thresholds;
+  if (args_info.thresholds_given == NumberOfSpectralBins)
+    {
+    for (unsigned int i=0; i<NumberOfSpectralBins; i++)
+      thresholds[i] = args_info.thresholds_arg[i];
+
+    // Add the maximum pulse height at the end
+    unsigned int MaximumPulseHeight = detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
+    thresholds[NumberOfSpectralBins] = MaximumPulseHeight;
+    }
+  else
+    itkGenericExceptionMacro(<< "Number of thresholds "<< args_info.thresholds_given << " does not match the number of bins " << NumberOfSpectralBins);
+
   // Check that the inputs have the expected size
   DecomposedProjectionType::IndexType indexDecomp;
   indexDecomp.Fill(0);
@@ -109,47 +123,15 @@ int main(int argc, char * argv[])
                              << "energies, should have "
                              << MaximumEnergy);
 
-  if (detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1] != NumberOfSpectralBins)
-    itkGenericExceptionMacro(<< "Detector response image has "
-                             << detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[0]
-                             << "energy bins, should have "
-                             << NumberOfSpectralBins);
-
-  // Format the inputs to pass them to the filter
-  // First the detector response matrix
-  DetectorResponseType detectorResponseMatrix;
-  DetectorResponseImageType::IndexType indexDet;
-  for (unsigned int energy=0; energy<MaximumEnergy; energy++)
-    {
-    indexDet[0] = energy;
-    for (unsigned int bin=0; bin<NumberOfSpectralBins; bin++)
-      {
-      indexDet[1] = bin;
-      detectorResponseMatrix[bin][energy] = detectorResponseReader->GetOutput()->GetPixel(indexDet);
-      }
-    }
-
-  // Then the material attenuations vector of vectors
-  MaterialAttenuationsType materialAttenuationsVector;
-  MaterialAttenuationsImageType::IndexType indexMat;
-  for (unsigned int energy=0; energy<MaximumEnergy; energy++)
-    {
-    indexMat[1] = energy;
-    for (unsigned int material=0; material<NumberOfMaterials; material++)
-      {
-      indexMat[0] = material;
-      materialAttenuationsVector[material][energy] = materialAttenuationsReader->GetOutput()->GetPixel(indexMat);
-      }
-    }
-
   // Create and set the filter
   typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType> SimplexFilterType;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(DecomposedProjectionReader->GetOutput());
   simplex->SetInputSpectralProjections(spectralProjectionReader->GetOutput());
   simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
-  simplex->SetDetectorResponse(detectorResponseMatrix);
-  simplex->SetMaterialAttenuations(materialAttenuationsVector);
+  simplex->SetDetectorResponse(detectorResponseReader->GetOutput());
+  simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
+  simplex->SetThresholds(thresholds);
   simplex->SetNumberOfIterations(args_info.niterations_arg);
 
   // Uncomment this line if you want the application to always yield the same result, like the test does
