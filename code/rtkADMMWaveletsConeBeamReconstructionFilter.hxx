@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkADMMWaveletsConeBeamReconstructionFilter_hxx
-#define __rtkADMMWaveletsConeBeamReconstructionFilter_hxx
+#ifndef rtkADMMWaveletsConeBeamReconstructionFilter_hxx
+#define rtkADMMWaveletsConeBeamReconstructionFilter_hxx
 
 #include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 

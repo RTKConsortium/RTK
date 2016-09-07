@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkImportImageFilter_hxx
-#define __rtkImportImageFilter_hxx
+#ifndef rtkImportImageFilter_hxx
+#define rtkImportImageFilter_hxx
 
 #include "rtkImportImageFilter.h"
 #include "itkObjectFactory.h"
@@ -40,7 +40,7 @@ ImportImageFilter< TImage >
     }
   m_Direction.SetIdentity();
 
-  m_ImportPointer = 0;
+  m_ImportPointer = ITK_NULLPTR;
   m_FilterManageMemory = false;
   m_Size = 0;
 }

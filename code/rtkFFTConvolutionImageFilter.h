@@ -16,12 +16,14 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFFTConvolutionImageFilter_h
-#define __rtkFFTConvolutionImageFilter_h
+#ifndef rtkFFTConvolutionImageFilter_h
+#define rtkFFTConvolutionImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkConceptChecking.h>
+
 #include "rtkConfiguration.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -113,15 +115,15 @@ public:
 
 protected:
   FFTConvolutionImageFilter();
-  ~FFTConvolutionImageFilter(){}
+  ~FFTConvolutionImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void AfterThreadedGenerateData();
+  void AfterThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
     * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
@@ -130,7 +132,7 @@ protected:
   virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
   RegionType GetPaddedImageRegion(const RegionType &inputRegion);
 
-  void PrintSelf(std::ostream& os, itk::Indent indent) const;
+  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
   bool IsPrime( int n ) const;
 

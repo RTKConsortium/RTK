@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDeconstructSoftThresholdReconstructImageFilter_hxx
-#define __rtkDeconstructSoftThresholdReconstructImageFilter_hxx
+#ifndef rtkDeconstructSoftThresholdReconstructImageFilter_hxx
+#define rtkDeconstructSoftThresholdReconstructImageFilter_hxx
 
 //rtk Includes
 #include "rtkDeconstructSoftThresholdReconstructImageFilter.h"

@@ -1,7 +1,7 @@
-SET(RTK_DIR ${RTK_BINARY_DIR})
+set(RTK_DIR ${RTK_BINARY_DIR})
 
-ADD_SUBDIRECTORY(HelloWorld)
-ADD_SUBDIRECTORY(FirstReconstruction)
+add_subdirectory(HelloWorld)
+add_subdirectory(FirstReconstruction)
 
 # Testing of the examples
 if(BUILD_TESTING)

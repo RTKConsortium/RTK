@@ -114,7 +114,7 @@ CudaDisplacedDetectorImageFilter
   // 3: sid
   int geomIdx = proj_idx_out[2];
   float *geomMatrix = new float[proj_size_out[2] * 4];
-  if(geomMatrix == NULL)
+  if(geomMatrix == ITK_NULLPTR)
      itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size_out[2]; ++g)
   {

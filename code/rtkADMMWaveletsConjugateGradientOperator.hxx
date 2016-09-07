@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkADMMWaveletsConjugateGradientOperator_hxx
-#define __rtkADMMWaveletsConjugateGradientOperator_hxx
+#ifndef rtkADMMWaveletsConjugateGradientOperator_hxx
+#define rtkADMMWaveletsConjugateGradientOperator_hxx
 
 #include "rtkADMMWaveletsConjugateGradientOperator.h"
 

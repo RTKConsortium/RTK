@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkGeometricPhantomFileReader_h
-#define __rtkGeometricPhantomFileReader_h
+#ifndef rtkGeometricPhantomFileReader_h
+#define rtkGeometricPhantomFileReader_h
 
 #include <itkNumericTraits.h>
 #include <vector>
@@ -83,7 +83,7 @@ protected:
   GeometricPhantomFileReader() {};
 
   /// Destructor
-  ~GeometricPhantomFileReader() {};
+  ~GeometricPhantomFileReader() ITK_OVERRIDE {};
 
   /** Corners of the image Quadric */
   VectorOfVectorType      m_Fig;

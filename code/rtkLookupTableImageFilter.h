@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLookupTableImageFilter_h
-#define __rtkLookupTableImageFilter_h
+#ifndef rtkLookupTableImageFilter_h
+#define rtkLookupTableImageFilter_h
 
 #include <itkUnaryFunctorImageFilter.h>
 #include <itkLinearInterpolateImageFunction.h>
@@ -54,7 +54,7 @@ public:
   typedef typename InterpolatorType::Pointer                                      InterpolatorPointer;
 
   LUT():
-    m_LookupTableDataPointer(NULL),
+    m_LookupTableDataPointer(ITK_NULLPTR),
     m_Interpolator(InterpolatorType::New())
   {};
   ~LUT() {};
@@ -169,11 +169,11 @@ public:
 
   /** Update the LUT before using it to process the data in case it is the
    * result of a pipeline. */
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 protected:
   LookupTableImageFilter() {}
-  virtual ~LookupTableImageFilter() {}
+  ~LookupTableImageFilter() ITK_OVERRIDE {}
   typename LookupTableType::Pointer m_LookupTable;
 
 private:

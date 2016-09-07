@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkFourDReconstructionConjugateGradientOperator_h
-#define __rtkFourDReconstructionConjugateGradientOperator_h
+#ifndef rtkFourDReconstructionConjugateGradientOperator_h
+#define rtkFourDReconstructionConjugateGradientOperator_h
 
 #include "rtkConjugateGradientOperator.h"
 
@@ -186,16 +186,16 @@ public:
 
 protected:
     FourDReconstructionConjugateGradientOperator();
-    ~FourDReconstructionConjugateGradientOperator(){}
+    ~FourDReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
 
     /** Builds the pipeline and computes output information */
-    virtual void GenerateOutputInformation();
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
     /** Computes the requested region of input images */
-    virtual void GenerateInputRequestedRegion();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Initialize the ConstantImageSourceFilter */
     void InitializeConstantSources();

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayEllipsoidIntersectionImageFilter_h
-#define __rtkRayEllipsoidIntersectionImageFilter_h
+#ifndef rtkRayEllipsoidIntersectionImageFilter_h
+#define rtkRayEllipsoidIntersectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -77,9 +77,9 @@ public:
 
 protected:
   RayEllipsoidIntersectionImageFilter();
-  virtual ~RayEllipsoidIntersectionImageFilter() {};
+  ~RayEllipsoidIntersectionImageFilter() ITK_OVERRIDE {};
 
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 private:
   RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented

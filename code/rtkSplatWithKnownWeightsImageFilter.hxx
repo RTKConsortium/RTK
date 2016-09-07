@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkSplatWithKnownWeightsImageFilter_hxx
-#define __rtkSplatWithKnownWeightsImageFilter_hxx
+#ifndef rtkSplatWithKnownWeightsImageFilter_hxx
+#define rtkSplatWithKnownWeightsImageFilter_hxx
 
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 

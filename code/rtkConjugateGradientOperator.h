@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkConjugateGradientOperator_h
-#define __rtkConjugateGradientOperator_h
+#ifndef rtkConjugateGradientOperator_h
+#define rtkConjugateGradientOperator_h
 
 #include "itkImageToImageFilter.h"
 
@@ -43,7 +43,7 @@ public:
 
 protected:
   ConjugateGradientOperator();
-  ~ConjugateGradientOperator(){}
+  ~ConjugateGradientOperator() ITK_OVERRIDE {}
 
 private:
   ConjugateGradientOperator(const Self &); //purposely not implemented

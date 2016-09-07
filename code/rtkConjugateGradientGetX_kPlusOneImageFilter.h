@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConjugateGradientGetX_kPlusOneImageFilter_h
-#define __rtkConjugateGradientGetX_kPlusOneImageFilter_h
+#ifndef rtkConjugateGradientGetX_kPlusOneImageFilter_h
+#define rtkConjugateGradientGetX_kPlusOneImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkAddImageFilter.h>
@@ -55,15 +55,15 @@ public:
 
 protected:
   ConjugateGradientGetX_kPlusOneImageFilter();
-  ~ConjugateGradientGetX_kPlusOneImageFilter(){}
+  ~ConjugateGradientGetX_kPlusOneImageFilter() ITK_OVERRIDE {}
 
   typename TInputImage::Pointer GetXk();
   typename TInputImage::Pointer GetPk();
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
-  void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
   
 private:
   ConjugateGradientGetX_kPlusOneImageFilter(const Self &); //purposely not implemented

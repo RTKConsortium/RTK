@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayBoxIntersectionFunction_h
-#define __rtkRayBoxIntersectionFunction_h
+#ifndef rtkRayBoxIntersectionFunction_h
+#define rtkRayBoxIntersectionFunction_h
 
 #include <itkNumericTraits.h>
 #include <vector>
@@ -121,7 +121,7 @@ protected:
   RayBoxIntersectionFunction();
 
   /// Destructor
-  ~RayBoxIntersectionFunction(){};
+  ~RayBoxIntersectionFunction() ITK_OVERRIDE {};
 
   /// The focal point or position of the ray source
   VectorType m_FocalPoint;

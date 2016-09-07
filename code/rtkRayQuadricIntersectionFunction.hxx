@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayQuadricIntersectionFunction_hxx
-#define __rtkRayQuadricIntersectionFunction_hxx
+#ifndef rtkRayQuadricIntersectionFunction_hxx
+#define rtkRayQuadricIntersectionFunction_hxx
 
 namespace rtk
 {
@@ -102,4 +102,4 @@ RayQuadricIntersectionFunction<TCoordRep, VBoxDimension>
 
 } // namespace rtk
 
-#endif // __rtkRayQuadricIntersectionFunction_hxx
+#endif // rtkRayQuadricIntersectionFunction_hxx

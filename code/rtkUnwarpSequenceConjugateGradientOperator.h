@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkUnwarpSequenceConjugateGradientOperator_h
-#define __rtkUnwarpSequenceConjugateGradientOperator_h
+#ifndef rtkUnwarpSequenceConjugateGradientOperator_h
+#define rtkUnwarpSequenceConjugateGradientOperator_h
 
 #include "rtkWarpSequenceImageFilter.h"
 #include "rtkConjugateGradientOperator.h"
@@ -92,12 +92,16 @@ public:
     itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
     itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
 
+    /** Set and Get for the UseCudaCyclicDeformation variable */
+    itkSetMacro(UseCudaCyclicDeformation, bool)
+    itkGetMacro(UseCudaCyclicDeformation, bool)
+
 protected:
     UnwarpSequenceConjugateGradientOperator();
-    ~UnwarpSequenceConjugateGradientOperator(){}
+    ~UnwarpSequenceConjugateGradientOperator() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename WarpSequenceFilterType::Pointer              m_WarpSequenceBackwardFilter;
@@ -109,12 +113,14 @@ protected:
     /** When the inputs have the same type, ITK checks whether they occupy the
     * same physical space or not. Obviously they dont, so we have to remove this check
     */
-    void VerifyInputInformation(){}
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion();
-    void GenerateOutputInformation();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() ITK_OVERRIDE;
+
+    bool m_UseCudaCyclicDeformation;
 
 private:
     UnwarpSequenceConjugateGradientOperator(const Self &); //purposely not implemented

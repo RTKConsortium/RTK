@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFDKConeBeamReconstructionFilter_h
-#define __rtkFDKConeBeamReconstructionFilter_h
+#ifndef rtkFDKConeBeamReconstructionFilter_h
+#define rtkFDKConeBeamReconstructionFilter_h
 
 #include "rtkFDKWeightProjectionFilter.h"
 #include "rtkFFTRampImageFilter.h"
@@ -113,17 +113,17 @@ public:
 
 protected:
   FDKConeBeamReconstructionFilter();
-  ~FDKConeBeamReconstructionFilter(){}
+  ~FDKConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
   /** Pointers to each subfilter of this composite filter */
   typename ExtractFilterType::Pointer m_ExtractFilter;

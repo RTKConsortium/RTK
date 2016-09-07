@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReconstructionConjugateGradientOperator_hxx
-#define __rtkReconstructionConjugateGradientOperator_hxx
+#ifndef rtkReconstructionConjugateGradientOperator_hxx
+#define rtkReconstructionConjugateGradientOperator_hxx
 
 #include "rtkReconstructionConjugateGradientOperator.h"
 
@@ -27,7 +27,7 @@ namespace rtk
 template< typename TOutputImage>
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ReconstructionConjugateGradientOperator():
-  m_Geometry(NULL),
+  m_Geometry(ITK_NULLPTR),
   m_Preconditioned(false),
   m_Regularized(false),
   m_Gamma(0)

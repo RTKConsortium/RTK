@@ -53,7 +53,7 @@ StartElement(const char * name, const char ** atts)
 
   if(std::string(name) == std::string("image") )
     {
-    for(int i=0; atts[i] != NULL; i+=2)
+    for(int i=0; atts[i] != ITK_NULLPTR; i+=2)
       {
       ENCAPLULATE_META_DATA_STRING("name");
       ENCAPLULATE_META_DATA_INT("bitDepth");
@@ -68,7 +68,7 @@ StartElement(const char * name, const char ** atts)
     }
   if(std::string(name) == std::string("size") )
     {
-    for(int i=0; atts[i] != NULL; i+=2)
+    for(int i=0; atts[i] != ITK_NULLPTR; i+=2)
       {
       ENCAPLULATE_META_DATA_INT("x");
       ENCAPLULATE_META_DATA_INT("y");
@@ -82,7 +82,7 @@ StartElement(const char * name, const char ** atts)
     double d = atof(atts[i+1]); \
     itk::EncapsulateMetaData<double>(m_Dictionary, std::string("spacing_") + std::string(metaName), d); \
     }
-    for(int i=0; atts[i] != NULL; i+=2)
+    for(int i=0; atts[i] != ITK_NULLPTR; i+=2)
       {
       ENCAPLULATE_META_DATA_DOUBLE("x");
       ENCAPLULATE_META_DATA_DOUBLE("y");

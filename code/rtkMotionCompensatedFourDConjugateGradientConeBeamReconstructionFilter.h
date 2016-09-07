@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_h
-#define __rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_h
+#ifndef rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_h
+#define rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_h
 
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkMotionCompensatedFourDReconstructionConjugateGradientOperator.h"
@@ -100,8 +100,8 @@ public:
   itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter, FourDConjugateGradientConeBeamReconstructionFilter)
 
   /** Neither the Forward nor the Back projection filters can be set by the user */
-  void SetForwardProjectionFilter (int _arg) {}
-  void SetBackProjectionFilter (int _arg) {}
+  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE {}
+  void SetBackProjectionFilter (int _arg) ITK_OVERRIDE {}
 
   /** The ND + time motion vector field */
   void SetDisplacementField(const DVFSequenceImageType* DVFs);
@@ -110,18 +110,24 @@ public:
   typename DVFSequenceImageType::ConstPointer GetInverseDisplacementField();
 
   /** Set the vector containing the signal in the sub-filters */
-  void SetSignal(const std::vector<double> signal);
+  void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
 
   // Sub filters typedefs
   typedef rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>                        MCProjStackToFourDType;
   typedef rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType> MCCGOperatorType;
 
+  /** Set and Get for the UseCudaCyclicDeformation variable */
+  itkSetMacro(UseCudaCyclicDeformation, bool)
+  itkGetMacro(UseCudaCyclicDeformation, bool)
+
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
-  ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter(){}
+  ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateOutputInformation();
-  virtual void GenerateInputRequestedRegion();
+  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+
+  bool                                                m_UseCudaCyclicDeformation;
 
 private:
   //purposely not implemented

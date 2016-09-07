@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFDKWarpBackProjectionImageFilter_hxx
-#define __rtkFDKWarpBackProjectionImageFilter_hxx
+#ifndef rtkFDKWarpBackProjectionImageFilter_hxx
+#define rtkFDKWarpBackProjectionImageFilter_hxx
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkExtractPhaseImageFilter_h
-#define __rtkExtractPhaseImageFilter_h
+#ifndef rtkExtractPhaseImageFilter_h
+#define rtkExtractPhaseImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 
@@ -96,9 +96,9 @@ public:
 
 protected:
   ExtractPhaseImageFilter();
-  ~ExtractPhaseImageFilter(){}
+  ~ExtractPhaseImageFilter() ITK_OVERRIDE {}
 
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   ExtractPhaseImageFilter(const Self&); //purposely not implemented

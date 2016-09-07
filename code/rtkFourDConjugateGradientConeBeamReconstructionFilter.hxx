@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFourDConjugateGradientConeBeamReconstructionFilter_hxx
-#define __rtkFourDConjugateGradientConeBeamReconstructionFilter_hxx
+#ifndef rtkFourDConjugateGradientConeBeamReconstructionFilter_hxx
+#define rtkFourDConjugateGradientConeBeamReconstructionFilter_hxx
 
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
@@ -228,4 +228,4 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
 } // end namespace rtk
 
-#endif // __rtkFourDConjugateGradientConeBeamReconstructionFilter_hxx
+#endif // rtkFourDConjugateGradientConeBeamReconstructionFilter_hxx

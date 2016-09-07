@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawCubeImageFilter_h
-#define __rtkDrawCubeImageFilter_h
+#ifndef rtkDrawCubeImageFilter_h
+#define rtkDrawCubeImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>
@@ -51,7 +51,7 @@ public:
   }
 
   /** Returns true if a point is inside the object. */
-  virtual bool IsInside ( const PointType & point ) const;
+  bool IsInside ( const PointType & point ) const ITK_OVERRIDE;
   void UpdateParameters();
 
 
@@ -156,7 +156,7 @@ public:
 
 protected:
   DrawCubeImageFilter();
-  virtual ~DrawCubeImageFilter() {};
+  ~DrawCubeImageFilter() ITK_OVERRIDE {};
 
 private:
   DrawCubeImageFilter ( const Self& ); //purposely not implemented

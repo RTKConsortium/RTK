@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkIterativeConeBeamReconstructionFilter_h
-#define __rtkIterativeConeBeamReconstructionFilter_h
+#ifndef rtkIterativeConeBeamReconstructionFilter_h
+#define rtkIterativeConeBeamReconstructionFilter_h
 
 // Forward projection filters
 #include "rtkConfiguration.h"
@@ -82,7 +82,7 @@ public:
 
 protected:
   IterativeConeBeamReconstructionFilter();
-  ~IterativeConeBeamReconstructionFilter(){}
+  ~IterativeConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
   /** Creates and returns an instance of the back projection filter.
    * To be used in SetBackProjectionFilter. */

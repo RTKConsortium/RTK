@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkPolynomialGainCorrectionImageFilter_hxx
-#define __rtkPolynomialGainCorrectionImageFilter_hxx
+#ifndef rtkPolynomialGainCorrectionImageFilter_hxx
+#define rtkPolynomialGainCorrectionImageFilter_hxx
 
 #include <itkImageFileReader.h>
 #include <itkImageRegionConstIterator.h>

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkTest_h
-#define __rtkTest_h
+#ifndef rtkTest_h
+#define rtkTest_h
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageFileWriter.h>
@@ -323,4 +323,4 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
 }
 #endif
 
-#endif //__rtkTest_h
+#endif //rtkTest_h

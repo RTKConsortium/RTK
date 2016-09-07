@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaLagCorrectionImageFilter_h
-#define __rtkCudaLagCorrectionImageFilter_h
+#ifndef rtkCudaLagCorrectionImageFilter_h
+#define rtkCudaLagCorrectionImageFilter_h
 
 #include "rtkLagCorrectionImageFilter.h"
 #include "rtkWin32Header.h"
@@ -77,4 +77,4 @@ private:
 
 }
 
-#endif // __rtkCudaLagCorrectionImageFilter_h
+#endif // rtkCudaLagCorrectionImageFilter_h

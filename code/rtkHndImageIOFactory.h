@@ -19,8 +19,8 @@
 //#ifndef ITKHNDIMAGEIOFACTORY_H
 //#define ITKHNDIMAGEIOFACTORY_H
 
-#ifndef __rtkHndImageIOFactory_h
-#define __rtkHndImageIOFactory_h
+#ifndef rtkHndImageIOFactory_h
+#define rtkHndImageIOFactory_h
 
 #include "rtkWin32Header.h"
 #include "rtkHndImageIO.h"
@@ -48,11 +48,11 @@ public:
   typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const {
+  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const {
+  const char* GetDescription(void) const ITK_OVERRIDE {
     return "His ImageIO Factory, allows the loading of His images into insight";
   }
 
@@ -69,7 +69,7 @@ public:
 
 protected:
   HndImageIOFactory();
-  ~HndImageIOFactory() {};
+  ~HndImageIOFactory() ITK_OVERRIDE {};
   typedef HndImageIOFactory myProductType;
   const myProductType* m_MyProduct;
 
@@ -81,4 +81,4 @@ private:
 
 } // end namespace
 
-#endif // __rtkHndImageIOFactory_h
+#endif // rtkHndImageIOFactory_h

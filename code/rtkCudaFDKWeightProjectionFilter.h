@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaFDKWeightProjectionFilter_h
-#define __rtkCudaFDKWeightProjectionFilter_h
+#ifndef rtkCudaFDKWeightProjectionFilter_h
+#define rtkCudaFDKWeightProjectionFilter_h
 
 #include "rtkFDKWeightProjectionFilter.h"
 #include "rtkWin32Header.h"
@@ -81,4 +81,4 @@ private:
 
 } // end namespace rtk
 
-#endif // __rtkCudaFDKWeightProjectionFilter_h
+#endif // rtkCudaFDKWeightProjectionFilter_h

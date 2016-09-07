@@ -24,6 +24,7 @@
 // Includes
 #include <fstream>
 #include "rtkHisImageIO.h"
+#include "rtkMacro.h"
 
 //--------------------------------------------------------------------
 // Read Image Information

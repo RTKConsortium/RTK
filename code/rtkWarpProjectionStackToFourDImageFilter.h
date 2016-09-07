@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkWarpProjectionStackToFourDImageFilter_h
-#define __rtkWarpProjectionStackToFourDImageFilter_h
+#ifndef rtkWarpProjectionStackToFourDImageFilter_h
+#define rtkWarpProjectionStackToFourDImageFilter_h
 
 #include "rtkCyclicDeformationImageFilter.h"
 #include "rtkProjectionStackToFourDImageFilter.h"
@@ -118,24 +118,29 @@ public:
     void SetDisplacementField(const DVFSequenceImageType* DVFs);
     typename DVFSequenceImageType::ConstPointer GetDisplacementField();
 
-    virtual void SetSignal(const std::vector<double> signal);
+    void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
+
+    /** Set and Get for the UseCudaCyclicDeformation variable */
+    itkSetMacro(UseCudaCyclicDeformation, bool)
+    itkGetMacro(UseCudaCyclicDeformation, bool)
 
 protected:
     WarpProjectionStackToFourDImageFilter();
-    ~WarpProjectionStackToFourDImageFilter(){}
+    ~WarpProjectionStackToFourDImageFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
-    virtual void GenerateOutputInformation();
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
     /** The first two inputs should not be in the same space so there is nothing
      * to verify. */
-    virtual void VerifyInputInformation() {}
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename DVFInterpolatorType::Pointer           m_DVFInterpolatorFilter;
     std::vector<double>                             m_Signal;
+    bool                                            m_UseCudaCyclicDeformation;
 
 private:
     WarpProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectGeometricPhantomImageFilter_h
-#define __rtkProjectGeometricPhantomImageFilter_h
+#ifndef rtkProjectGeometricPhantomImageFilter_h
+#define rtkProjectGeometricPhantomImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -94,9 +94,9 @@ public:
 
 protected:
   ProjectGeometricPhantomImageFilter() {}
-  virtual ~ProjectGeometricPhantomImageFilter() {};
+  ~ProjectGeometricPhantomImageFilter() ITK_OVERRIDE {};
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** Translate user parameteres to quadric parameters.
    * A call to this function will assume modification of the function.*/

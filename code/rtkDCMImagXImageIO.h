@@ -16,10 +16,12 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDCMImagXImageIO_h
-#define __rtkDCMImagXImageIO_h
+#ifndef rtkDCMImagXImageIO_h
+#define rtkDCMImagXImageIO_h
 
 #include <itkGDCMImageIO.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -43,13 +45,13 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(DCMImagXImageIO, itk::GDCMImageIO);
 
-  virtual void ReadImageInformation();
-  virtual bool CanReadFile( const char* FileNameToRead );
-  virtual bool CanWriteFile(const char* filename);
+  void ReadImageInformation() ITK_OVERRIDE;
+  bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
+  bool CanWriteFile(const char* filename) ITK_OVERRIDE;
 
 protected:
   DCMImagXImageIO() {}
-  ~DCMImagXImageIO() {}
+  ~DCMImagXImageIO() ITK_OVERRIDE {}
 };
 
 } // end namespace

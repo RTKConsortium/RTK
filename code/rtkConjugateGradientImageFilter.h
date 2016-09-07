@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConjugateGradientImageFilter_h
-#define __rtkConjugateGradientImageFilter_h
+#ifndef rtkConjugateGradientImageFilter_h
+#define rtkConjugateGradientImageFilter_h
 
 #include "itkImageToImageFilter.h"
 #include "itkSubtractImageFilter.h"
@@ -100,17 +100,17 @@ public:
   
 protected:
   ConjugateGradientImageFilter();
-  ~ConjugateGradientImageFilter(){}
+  ~ConjugateGradientImageFilter() ITK_OVERRIDE {}
 
   OutputImagePointer GetX();
   OutputImagePointer GetB();
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** Conjugate gradient requires the whole image */
-  void GenerateInputRequestedRegion();
-  void GenerateOutputInformation();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   ConjugateGradientOperatorPointerType m_A;
 

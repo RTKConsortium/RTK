@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkGeneralPurposeFunctions_h
-#define __rtkGeneralPurposeFunctions_h
+#ifndef rtkGeneralPurposeFunctions_h
+#define rtkGeneralPurposeFunctions_h
 
 #include <vector>
 #include <itkMacro.h>
@@ -93,4 +93,4 @@ WriteImage(typename ImageType::Pointer input, std::string name)
 
 }
 
-#endif // __rtkGeneralPurposeFunctions_h
+#endif // rtkGeneralPurposeFunctions_h

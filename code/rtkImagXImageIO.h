@@ -16,12 +16,14 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkImagXImageIO_h
-#define __rtkImagXImageIO_h
+#ifndef rtkImagXImageIO_h
+#define rtkImagXImageIO_h
 
 #include <itkImageIOBase.h>
 #include <fstream>
 #include <string.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -48,19 +50,19 @@ public:
   itkTypeMacro(ImagXImageIO, ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  virtual void ReadImageInformation();
+  void ReadImageInformation() ITK_OVERRIDE;
 
-  virtual bool CanReadFile( const char* FileNameToRead );
+  bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
 
-  virtual void Read(void * buffer);
+  void Read(void * buffer) ITK_OVERRIDE;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void WriteImageInformation(bool keepOfStream);
 
-  virtual void WriteImageInformation() { WriteImageInformation(false); }
-  virtual bool CanWriteFile(const char* filename);
+  void WriteImageInformation() ITK_OVERRIDE { WriteImageInformation(false); }
+  bool CanWriteFile(const char* filename) ITK_OVERRIDE;
 
-  virtual void Write(const void* buffer);
+  void Write(const void* buffer) ITK_OVERRIDE;
 
 protected:
   std::string m_RawFileName;

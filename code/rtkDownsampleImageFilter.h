@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDownsampleImageFilter_h
-#define __rtkDownsampleImageFilter_h
+#ifndef rtkDownsampleImageFilter_h
+#define rtkDownsampleImageFilter_h
 
 #include "itkImageToImageFilter.h"
 
@@ -78,18 +78,18 @@ public:
    * the pipeline execution model.  The original documentation of this
    * method is below.
    * \sa ProcessObject::GenerateOutputInformaton() */
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** DownsampleImageFilter needs a larger input requested region than the output
    * requested region.  As such, DownsampleImageFilter needs to provide an
    * implementation for GenerateInputRequestedRegion() in order to inform the
    * pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 protected:
   DownsampleImageFilter();
-  ~DownsampleImageFilter() {}
+  ~DownsampleImageFilter() ITK_OVERRIDE {}
 
   /** DownsampleImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData() routine
@@ -102,7 +102,7 @@ protected:
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
 //  virtual void BeforeThreadedGenerateData();
-  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
 //  virtual void AfterThreadedGenerateData();
 
 private:

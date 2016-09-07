@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricImageFilter_h
-#define __rtkDrawQuadricImageFilter_h
+#ifndef rtkDrawQuadricImageFilter_h
+#define rtkDrawQuadricImageFilter_h
 
 #include <itkAddImageFilter.h>
 
@@ -135,7 +135,7 @@ public:
 
 protected:
   DrawQuadricImageFilter();
-  virtual ~DrawQuadricImageFilter() {};
+  ~DrawQuadricImageFilter() ITK_OVERRIDE {};
 
 private:
   DrawQuadricImageFilter(const Self&); //purposely not implemented

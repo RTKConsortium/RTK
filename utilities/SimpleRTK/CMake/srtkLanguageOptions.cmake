@@ -65,9 +65,9 @@ find_package ( Java COMPONENTS Development Runtime QUIET )
 find_package ( JNI QUIET )
 if ( ${JAVA_FOUND} AND ${JNI_FOUND} )
   set( WRAP_JAVA_DEFAULT ON )
-else ( ${JAVA_FOUND} AND ${JNI_FOUND} )
+else ()
   set( WRAP_JAVA_DEFAULT OFF )
-endif ( ${JAVA_FOUND} AND ${JNI_FOUND} )
+endif ()
 list( APPEND SRTK_LANGUAGES_VARS
   Java_JAVA_EXECUTABLE
   Java_JAVAC_EXECUTABLE
@@ -95,9 +95,9 @@ check_PIC_flag ( Java )
 find_package ( TCL QUIET )
 #if ( ${TCL_FOUND} )
 #  set ( WRAP_TCL_DEFAULT ON )
-#else ( ${TCL_FOUND} )
+#else ()
 set ( WRAP_TCL_DEFAULT OFF )
-#endif ( ${TCL_FOUND} )
+#endif ()
 list( APPEND SRTK_LANGUAGES_VARS
   TCL_LIBRARY
   TCL_INCLUDE_PATH
@@ -110,9 +110,9 @@ option ( WRAP_TCL "Wrap Tcl" ${WRAP_TCL_DEFAULT} )
 find_package ( Ruby QUIET )
 if ( ${RUBY_FOUND} )
   set ( WRAP_RUBY_DEFAULT ON )
-else ( ${RUBY_FOUND} )
+else ()
   set ( WRAP_RUBY_DEFAULT OFF )
-endif ( ${RUBY_FOUND} )
+endif ()
 check_PIC_flag ( Ruby )
 list( APPEND SRTK_LANGUAGES_VARS
   RUBY_EXECUTABLE
@@ -140,9 +140,9 @@ option ( WRAP_CSHARP "Wrap C#" ${WRAP_CSHARP_DEFAULT} )
 find_package(R QUIET)
 if ( ${R_FOUND} AND NOT WIN32 )
   set ( WRAP_R_DEFAULT ON )
-else( )
+else()
   set ( WRAP_R_DEFAULT OFF )
-endif( )
+endif()
 
 
 list( APPEND SRTK_LANGUAGES_VARS

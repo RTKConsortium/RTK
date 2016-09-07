@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkAmsterdamShroudImageFilter_hxx
-#define __rtkAmsterdamShroudImageFilter_hxx
+#ifndef rtkAmsterdamShroudImageFilter_hxx
+#define rtkAmsterdamShroudImageFilter_hxx
 
 #include <itkImageFileWriter.h>
 #include <itkImageRegionIterator.h>
@@ -30,7 +30,7 @@ template <class TInputImage>
 AmsterdamShroudImageFilter<TInputImage>
 ::AmsterdamShroudImageFilter():
   m_UnsharpMaskSize(17),
-  m_Geometry(NULL),
+  m_Geometry(ITK_NULLPTR),
   m_Corner1(0.),
   m_Corner2(0.)
 {

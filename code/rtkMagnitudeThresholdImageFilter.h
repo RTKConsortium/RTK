@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMagnitudeThresholdImageFilter_h
-#define __rtkMagnitudeThresholdImageFilter_h
+#ifndef rtkMagnitudeThresholdImageFilter_h
+#define rtkMagnitudeThresholdImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>
@@ -94,10 +94,10 @@ public:
     
 protected:
   MagnitudeThresholdImageFilter();
-  virtual ~MagnitudeThresholdImageFilter() {}
+  ~MagnitudeThresholdImageFilter() ITK_OVERRIDE {}
 
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            itk::ThreadIdType threadId);
+                            itk::ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
   TRealType m_Threshold;

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDaubechiesWaveletsConvolutionImageFilter_hxx
-#define __rtkDaubechiesWaveletsConvolutionImageFilter_hxx
+#ifndef rtkDaubechiesWaveletsConvolutionImageFilter_hxx
+#define rtkDaubechiesWaveletsConvolutionImageFilter_hxx
 
 //Includes
 #include "rtkDaubechiesWaveletsConvolutionImageFilter.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkADMMTotalVariationConeBeamReconstructionFilter_hxx
-#define __rtkADMMTotalVariationConeBeamReconstructionFilter_hxx
+#ifndef rtkADMMTotalVariationConeBeamReconstructionFilter_hxx
+#define rtkADMMTotalVariationConeBeamReconstructionFilter_hxx
 
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 

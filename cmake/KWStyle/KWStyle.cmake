@@ -29,7 +29,7 @@ string(STRIP ${KWSTYLE_VERSION_TEXT} KWSTYLE_VERSION_TEXT)
 
 if(KWSTYLE_VERSION_TEXT STREQUAL "Version: Not defined")
   message("This project requires a newer version of KWStyle. Please upgrade the KWStyle executable.")
-else(${KWSTYLE_VERSION_TEXT} STREQUAL "Version: Not defined")
+else()
 
   string(LENGTH ${KWSTYLE_VERSION_TEXT} KWSTYLE_VERSION_LENGTH)
   math(EXPR KWSTYLE_VERSION_FINAL_LENGTH "${KWSTYLE_VERSION_LENGTH}-9")
@@ -46,10 +46,10 @@ else(${KWSTYLE_VERSION_TEXT} STREQUAL "Version: Not defined")
   # Set the minimum require version for batchmake
   if(KWSTYLE_LONG_VERSION LESS KWSTYLE_REQ_VERSION)
     message(FATAL_ERROR "This project requires a newer version of KWStyle. Please upgrade the KWStyle executable.")
-  else(KWSTYLE_LONG_VERSION LESS KWSTYLE_REQ_VERSION)
+  else()
     set(KWSTYLE_FOUND 1)
-  endif(KWSTYLE_LONG_VERSION LESS KWSTYLE_REQ_VERSION)
-endif(KWSTYLE_VERSION_TEXT STREQUAL "Version: Not defined")
+  endif()
+endif()
 
 if(KWSTYLE_FOUND)
 #
@@ -84,19 +84,19 @@ set(KWSTYLE_EDITOR_FORMAT "")
 
 if(${CMAKE_CXX_COMPILER} MATCHES "cl.exe$")
   set(KWSTYLE_USE_MSVC_FORMAT 1)
-endif(${CMAKE_CXX_COMPILER} MATCHES "cl.exe$")
+endif()
 
 if(${CMAKE_C_COMPILER} MATCHES "g[cx][cx]$")
   set(KWSTYLE_USE_VIM_FORMAT 1)
-endif(${CMAKE_C_COMPILER} MATCHES "g[cx][cx]$")
+endif()
 
 if(KWSTYLE_USE_VIM_FORMAT)
   set(KWSTYLE_EDITOR_FORMAT -vim)
-endif(KWSTYLE_USE_VIM_FORMAT)
+endif()
 
 if(KWSTYLE_USE_MSVC_FORMAT)
   set(KWSTYLE_EDITOR_FORMAT -msvc)
-endif(KWSTYLE_USE_MSVC_FORMAT)
+endif()
 
 set(KWSTYLE_ARGUMENTS_CODE
   -xml ${KWSTYLE_CONFIGURATION_FILE} -v -D ${KWSTYLE_RTK_FILES_LIST}
@@ -117,6 +117,6 @@ add_test(NAME KWStyleCodeTest
   ${KWSTYLE_ARGUMENTS_CODE}
   WORKING_DIRECTORY ${RTK_SOURCE_DIR})
 
-endif(KWSTYLE_FOUND)
-endif(KWSTYLE_EXECUTABLE)
-endif(RTK_USE_KWSTYLE)
+endif()
+endif()
+endif()

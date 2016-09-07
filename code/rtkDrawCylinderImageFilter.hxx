@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawCylinderImageFilter_hxx
-#define __rtkDrawCylinderImageFilter_hxx
+#ifndef rtkDrawCylinderImageFilter_hxx
+#define rtkDrawCylinderImageFilter_hxx
 
 
 namespace rtk

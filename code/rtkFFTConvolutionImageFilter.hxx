@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFFTConvolutionImageFilter_hxx
-#define __rtkFFTConvolutionImageFilter_hxx
+#ifndef rtkFFTConvolutionImageFilter_hxx
+#define rtkFFTConvolutionImageFilter_hxx
 
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154

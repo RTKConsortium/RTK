@@ -16,15 +16,17 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCyclicDeformationImageFilter_h
-#define __rtkCyclicDeformationImageFilter_h
+#ifndef rtkCyclicDeformationImageFilter_h
+#define rtkCyclicDeformationImageFilter_h
 
-#include "rtkConfiguration.h"
 #include <itkImageToImageFilter.h>
 
+#include "rtkConfiguration.h"
 #ifdef RTK_USE_CUDA
-  #include "itkCudaImage.h"
+  #include <itkCudaImage.h>
 #endif
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -91,13 +93,13 @@ public:
 
 protected:
   CyclicDeformationImageFilter(): m_Frame(0) {}
-  virtual ~CyclicDeformationImageFilter() {}
+  ~CyclicDeformationImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateOutputInformation();
-  virtual void GenerateInputRequestedRegion();
-  virtual void BeforeThreadedGenerateData();
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                                     ThreadIdType threadId );
+  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
+                                     ThreadIdType threadId ) ITK_OVERRIDE;
 
   // Linear interpolation position and weights
   unsigned int m_FrameInf;

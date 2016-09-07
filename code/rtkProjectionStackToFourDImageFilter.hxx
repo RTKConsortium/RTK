@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkProjectionStackToFourDImageFilter_hxx
-#define __rtkProjectionStackToFourDImageFilter_hxx
+#ifndef rtkProjectionStackToFourDImageFilter_hxx
+#define rtkProjectionStackToFourDImageFilter_hxx
 
 #include "rtkProjectionStackToFourDImageFilter.h"
 #include "rtkGeneralPurposeFunctions.h"

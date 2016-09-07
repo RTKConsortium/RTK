@@ -31,12 +31,14 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __rtkAdditiveGaussianNoiseImageFilter_h
-#define __rtkAdditiveGaussianNoiseImageFilter_h
+#ifndef rtkAdditiveGaussianNoiseImageFilter_h
+#define rtkAdditiveGaussianNoiseImageFilter_h
 
 #include <itkImageToImageFilter.h>
-#include "itkNormalVariateGenerator.h"
-#include "itkUnaryFunctorImageFilter.h"
+#include <itkNormalVariateGenerator.h>
+#include <itkUnaryFunctorImageFilter.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -184,7 +186,7 @@ public:
 
   // virtual void GenerateOutputInformation();
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   // Accessor & Mutator methods
 
@@ -276,7 +278,7 @@ protected:
 
   AdditiveGaussianNoiseImageFilter();
 
-  virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
+  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
 private:
 
@@ -300,4 +302,4 @@ private:
 #include "rtkAdditiveGaussianNoiseImageFilter.hxx"
 #endif
 
-#endif /* __rtkAdditiveGaussianNoiseImageFilter_h */
+#endif /* rtkAdditiveGaussianNoiseImageFilter_h */

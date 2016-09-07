@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConjugateGradientConeBeamReconstructionFilter_h
-#define __rtkConjugateGradientConeBeamReconstructionFilter_h
+#ifndef rtkConjugateGradientConeBeamReconstructionFilter_h
+#define rtkConjugateGradientConeBeamReconstructionFilter_h
 
 #include <itkMultiplyImageFilter.h>
 #include <itkTimeProbe.h>
@@ -150,10 +150,10 @@ public:
     typedef itk::StatisticsImageFilter<TOutputImage>                         StatisticsImageFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
-    void SetForwardProjectionFilter (int _arg);
+    void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
 
     /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
-    void SetBackProjectionFilter (int _arg);
+    void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
 
     /** Pass the geometry to all filters needing it */
     itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
@@ -191,10 +191,10 @@ public:
 
 protected:
     ConjugateGradientConeBeamReconstructionFilter();
-    ~ConjugateGradientConeBeamReconstructionFilter(){}
+    ~ConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename MultiplyFilterType::Pointer                                        m_MultiplyProjectionsFilter;
@@ -215,12 +215,12 @@ protected:
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
-    void VerifyInputInformation(){}
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion();
-    void GenerateOutputInformation();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
     ConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented

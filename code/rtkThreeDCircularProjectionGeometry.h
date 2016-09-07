@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkThreeDCircularProjectionGeometry_h
-#define __rtkThreeDCircularProjectionGeometry_h
+#ifndef rtkThreeDCircularProjectionGeometry_h
+#define rtkThreeDCircularProjectionGeometry_h
 
 #include "rtkWin32Header.h"
 #include "rtkProjectionGeometry.h"
@@ -79,7 +79,7 @@ public:
                                       const double radiusCylindricalDetector=0.);
 
   /** Empty the geometry object. */
-  virtual void Clear() ITK_OVERRIDE;
+  void Clear() ITK_OVERRIDE;
 
   /** Get the vector of geometry parameters (one per projection). Angles are
    * in radians.*/
@@ -202,7 +202,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometry() {};
-  virtual ~ThreeDCircularProjectionGeometry() {};
+  ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);
@@ -246,4 +246,4 @@ private:
 };
 }
 
-#endif // __rtkThreeDCircularProjectionGeometry_h
+#endif // rtkThreeDCircularProjectionGeometry_h

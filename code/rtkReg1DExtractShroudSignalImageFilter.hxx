@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReg1DExtractShroudSignalImageFilter_hxx
-#define __rtkReg1DExtractShroudSignalImageFilter_hxx
+#ifndef rtkReg1DExtractShroudSignalImageFilter_hxx
+#define rtkReg1DExtractShroudSignalImageFilter_hxx
 
 #include <itkExtractImageFilter.h>
 #include <itkTranslationTransform.h>

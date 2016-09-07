@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectGeometricPhantomImageFilter_hxx
-#define __rtkProjectGeometricPhantomImageFilter_hxx
+#ifndef rtkProjectGeometricPhantomImageFilter_hxx
+#define rtkProjectGeometricPhantomImageFilter_hxx
 
 #include <iostream>
 #include <fstream>

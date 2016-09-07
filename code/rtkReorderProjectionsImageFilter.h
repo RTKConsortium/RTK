@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReorderProjectionsImageFilter_h
-#define __rtkReorderProjectionsImageFilter_h
+#ifndef rtkReorderProjectionsImageFilter_h
+#define rtkReorderProjectionsImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -72,10 +72,10 @@ public:
 protected:
   ReorderProjectionsImageFilter();
 
-  ~ReorderProjectionsImageFilter(){
+  ~ReorderProjectionsImageFilter() ITK_OVERRIDE {
   }
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   // Iterative filters do not need padding
   bool m_PadOnTruncatedSide;

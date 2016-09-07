@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkScatterGlareCorrectionImageFilter_h
-#define __rtkScatterGlareCorrectionImageFilter_h
+#ifndef rtkScatterGlareCorrectionImageFilter_h
+#define rtkScatterGlareCorrectionImageFilter_h
 
 #include "rtkConfiguration.h"
 #include "rtkFFTConvolutionImageFilter.h"
@@ -83,11 +83,11 @@ public:
 
 protected:
   ScatterGlareCorrectionImageFilter();
-  ~ScatterGlareCorrectionImageFilter(){}
+  ~ScatterGlareCorrectionImageFilter() ITK_OVERRIDE {}
 
   /** Create the deconvolution kernel
   */
-  virtual void UpdateFFTConvolutionKernel(const SizeType size);
+  void UpdateFFTConvolutionKernel(const SizeType size) ITK_OVERRIDE;
 
 private:
   ScatterGlareCorrectionImageFilter(const Self&); //purposely not implemented

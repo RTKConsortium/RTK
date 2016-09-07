@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkElektaXVI5GeometryXMLFile_h
-#define __rtkElektaXVI5GeometryXMLFile_h
+#ifndef rtkElektaXVI5GeometryXMLFile_h
+#define rtkElektaXVI5GeometryXMLFile_h
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -66,25 +66,25 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name);
+  int CanReadFile(const char* name) ITK_OVERRIDE;
 
   /** Get smart pointer to projection geometry. */
   itkGetMacro(Geometry, GeometryPointer);
 
 protected:
   ElektaXVI5GeometryXMLFileReader();
-  ~ElektaXVI5GeometryXMLFileReader() { };
+  ~ElektaXVI5GeometryXMLFileReader() ITK_OVERRIDE { };
 
   /** Callback function -- called from XML parser with start-of-element
    * information.
    */
-  void StartElement(const char * name,const char **atts);
+  void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
 
   void StartElement(const char * name);
 
-  void EndElement(const char *name);
+  void EndElement(const char *name) ITK_OVERRIDE;
 
-  void CharacterDataHandler(const char *inData, int inLength);
+  void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
 
 private:
    //purposely not implemented

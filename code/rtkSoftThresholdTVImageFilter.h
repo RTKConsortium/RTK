@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSoftThresholdTVImageFilter_h
-#define __rtkSoftThresholdTVImageFilter_h
+#ifndef rtkSoftThresholdTVImageFilter_h
+#define rtkSoftThresholdTVImageFilter_h
 
 #include <itkNeighborhoodIterator.h>
 #include <itkImageToImageFilter.h>
@@ -98,7 +98,7 @@ public:
 
 protected:
   SoftThresholdTVImageFilter();
-  virtual ~SoftThresholdTVImageFilter() {}
+  ~SoftThresholdTVImageFilter() ITK_OVERRIDE {}
 
   /** Do any necessary casting/copying of the input data.  Input pixel types
      whose value types are not real number types must be cast to real number
@@ -117,7 +117,7 @@ protected:
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                              ThreadIdType threadId);
+                              ThreadIdType threadId) ITK_OVERRIDE;
 
 //    typedef typename InputImageType::Superclass ImageBaseType;
 

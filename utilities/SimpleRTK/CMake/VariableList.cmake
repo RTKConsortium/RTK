@@ -23,7 +23,7 @@ endif()" )
     endif()
   endforeach()
   set( ${cache} "${_cache}" PARENT_SCOPE)
-endfunction( )
+endfunction()
 
 #
 # Function which converts a list a cmake cache variable into a list of
@@ -37,4 +37,4 @@ function( VariableListToArgs var_list args )
     endif()
   endforeach()
   set( ${args} "${_args}" PARENT_SCOPE)
-endfunction( )
+endfunction()

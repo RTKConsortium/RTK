@@ -26,7 +26,7 @@
 
 rtk::VarianObiGeometryReader
 ::VarianObiGeometryReader():
-  m_Geometry(NULL)
+  m_Geometry(ITK_NULLPTR)
 {
 }
 

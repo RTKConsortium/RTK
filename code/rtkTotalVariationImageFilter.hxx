@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkTotalVariationImageFilter_hxx
-#define __rtkTotalVariationImageFilter_hxx
+#ifndef rtkTotalVariationImageFilter_hxx
+#define rtkTotalVariationImageFilter_hxx
 #include "rtkTotalVariationImageFilter.h"
 
 

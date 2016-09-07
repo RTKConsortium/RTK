@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkHndImageIO_h
-#define __rtkHndImageIO_h
+#ifndef rtkHndImageIO_h
+#define rtkHndImageIO_h
 
 // itk include
 #include <itkImageIOBase.h>
@@ -28,6 +28,8 @@
 #else
 #include <stdint.h>
 #endif
+
+#include "rtkMacro.h"
 
 namespace rtk {
 
@@ -121,23 +123,23 @@ public:
   itkTypeMacro(HndImageIO, itk::ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  virtual void ReadImageInformation();
+  void ReadImageInformation() ITK_OVERRIDE;
 
-  virtual bool CanReadFile( const char* FileNameToRead );
+  bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
 
-  virtual void Read(void * buffer);
+  void Read(void * buffer) ITK_OVERRIDE;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void WriteImageInformation(bool /*keepOfStream*/) { }
 
-  virtual void WriteImageInformation() { WriteImageInformation(false); }
+  void WriteImageInformation() ITK_OVERRIDE { WriteImageInformation(false); }
 
-  virtual bool CanWriteFile(const char* filename);
+  bool CanWriteFile(const char* filename) ITK_OVERRIDE;
 
-  virtual void Write(const void* buffer);
+  void Write(const void* buffer) ITK_OVERRIDE;
 
 }; // end class HndImageIO
 
 } // end namespace
 
-#endif /* end #define __rtkHndImageIO_h */
+#endif /* end #define rtkHndImageIO_h */

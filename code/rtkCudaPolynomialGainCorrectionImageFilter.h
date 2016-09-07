@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaPolynomialGainCorrectionImageFilter_h
-#define __rtkCudaPolynomialGainCorrectionImageFilter_h
+#ifndef rtkCudaPolynomialGainCorrectionImageFilter_h
+#define rtkCudaPolynomialGainCorrectionImageFilter_h
 
 #include "rtkPolynomialGainCorrectionImageFilter.h"
 #include "rtkWin32Header.h"
@@ -78,4 +78,4 @@ private:
 
 }
 
-#endif // __rtkCudaPolynomialGainCorrectionImageFilter_h
+#endif // rtkCudaPolynomialGainCorrectionImageFilter_h

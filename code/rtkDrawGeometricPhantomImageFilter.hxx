@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawGeometricPhantomImageFilter_hxx
-#define __rtkDrawGeometricPhantomImageFilter_hxx
+#ifndef rtkDrawGeometricPhantomImageFilter_hxx
+#define rtkDrawGeometricPhantomImageFilter_hxx
 
 #include <iostream>
 #include "rtkDrawEllipsoidImageFilter.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkADMMTotalVariationConjugateGradientOperator_hxx
-#define __rtkADMMTotalVariationConjugateGradientOperator_hxx
+#ifndef rtkADMMTotalVariationConjugateGradientOperator_hxx
+#define rtkADMMTotalVariationConjugateGradientOperator_hxx
 
 #include "rtkADMMTotalVariationConjugateGradientOperator.h"
 

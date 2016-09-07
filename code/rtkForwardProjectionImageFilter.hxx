@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkForwardProjectionImageFilter_hxx
-#define __rtkForwardProjectionImageFilter_hxx
+#ifndef rtkForwardProjectionImageFilter_hxx
+#define rtkForwardProjectionImageFilter_hxx
 
 #include "rtkHomogeneousMatrix.h"
 #include "rtkRayCastInterpolateImageFunction.h"

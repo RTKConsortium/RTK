@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkVarianObiGeometryReader_h
-#define __rtkVarianObiGeometryReader_h
+#ifndef rtkVarianObiGeometryReader_h
+#define rtkVarianObiGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -85,7 +85,7 @@ private:
   VarianObiGeometryReader(const Self&);
   void operator=(const Self&);
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_XMLFileName;

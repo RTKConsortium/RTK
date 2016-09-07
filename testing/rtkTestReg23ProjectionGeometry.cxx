@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     sarg = std::string(argv[i]);
     if (sarg == "-h" || sarg == "--help")
     {
-      PrintHelp(argc > 0 ? argv[0] : NULL);
+      PrintHelp(argc > 0 ? argv[0] : ITK_NULLPTR);
       return EXIT_SUCCESS;
     }
     if (sarg == "-v" || sarg == "--verbose")

@@ -16,12 +16,14 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayQuadricIntersectionFunction_h
-#define __rtkRayQuadricIntersectionFunction_h
+#ifndef rtkRayQuadricIntersectionFunction_h
+#define rtkRayQuadricIntersectionFunction_h
 
 #include <itkNumericTraits.h>
 #include <vector>
 #include <itkImageBase.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -104,7 +106,7 @@ protected:
   RayQuadricIntersectionFunction();
 
   /// Destructor
-  ~RayQuadricIntersectionFunction(){};
+  ~RayQuadricIntersectionFunction() ITK_OVERRIDE {};
 
   /// The focal point or position of the ray source
   VectorType m_FocalPoint;

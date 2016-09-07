@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawGeometricPhantomImageFilter_h
-#define __rtkDrawGeometricPhantomImageFilter_h
+#ifndef rtkDrawGeometricPhantomImageFilter_h
+#define rtkDrawGeometricPhantomImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 
@@ -73,9 +73,9 @@ public:
 
 protected:
   DrawGeometricPhantomImageFilter() {}
-  virtual ~DrawGeometricPhantomImageFilter() {};
+  ~DrawGeometricPhantomImageFilter() ITK_OVERRIDE {};
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   DrawGeometricPhantomImageFilter(const Self&); //purposely not implemented

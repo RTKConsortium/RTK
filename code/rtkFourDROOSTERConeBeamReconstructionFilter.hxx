@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkFourDROOSTERConeBeamReconstructionFilter_hxx
-#define __rtkFourDROOSTERConeBeamReconstructionFilter_hxx
+#ifndef rtkFourDROOSTERConeBeamReconstructionFilter_hxx
+#define rtkFourDROOSTERConeBeamReconstructionFilter_hxx
 
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include <itkImageFileWriter.h>
@@ -54,6 +54,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_UseNearestNeighborInterpolationInWarping=false;
   m_PhaseShift = 0;
   m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
+  m_UseCudaCyclicDeformation = false;
   m_Order = 5;
   m_NumberOfLevels = 3;
 
@@ -364,6 +365,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_Warp->SetDisplacementField(this->GetDisplacementField());
     m_Warp->SetPhaseShift(m_PhaseShift);
     m_Warp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+    m_Warp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
   
     currentDownstreamFilter = m_Warp;
     }
@@ -420,6 +422,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_Unwarp->SetPhaseShift(m_PhaseShift);
       m_Unwarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
       m_Unwarp->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
+      m_Unwarp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
       currentDownstreamFilter = m_Unwarp;
       }
@@ -436,6 +439,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_InverseWarp->SetDisplacementField(this->GetInverseDisplacementField());
       m_InverseWarp->SetPhaseShift(m_PhaseShift);
       m_InverseWarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+      m_InverseWarp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
       // Add the deformed correction to the spatially denoised image to get the output
       m_AddFilter->SetInput1(m_InverseWarp->GetOutput());

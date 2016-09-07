@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawQuadricSpatialObject_h
-#define __rtkDrawQuadricSpatialObject_h
+#ifndef rtkDrawQuadricSpatialObject_h
+#define rtkDrawQuadricSpatialObject_h
 
 #include "rtkWin32Header.h"
 
@@ -43,7 +43,7 @@ class RTK_EXPORT DrawQuadricSpatialObject : public DrawSpatialObject
     typedef std::string                                         StringType;
 
   /** Returns true if a point is inside the object. */
-  virtual bool IsInside(const PointType & point) const;
+  bool IsInside(const PointType & point) const ITK_OVERRIDE;
 
   void UpdateParameters();
 

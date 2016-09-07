@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkLastDimensionL0GradientDenoisingImageFilter_h
-#define __rtkLastDimensionL0GradientDenoisingImageFilter_h
+#ifndef rtkLastDimensionL0GradientDenoisingImageFilter_h
+#define rtkLastDimensionL0GradientDenoisingImageFilter_h
 
 #include "itkInPlaceImageFilter.h"
 
@@ -65,17 +65,17 @@ public:
     
 protected:
     LastDimensionL0GradientDenoisingImageFilter();
-    ~LastDimensionL0GradientDenoisingImageFilter(){}
+    ~LastDimensionL0GradientDenoisingImageFilter() ITK_OVERRIDE {}
 
-    virtual void GenerateInputRequestedRegion();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Does the real work. */
-    virtual void BeforeThreadedGenerateData();
-    virtual void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+    void BeforeThreadedGenerateData() ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
 
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    virtual const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 #endif
     

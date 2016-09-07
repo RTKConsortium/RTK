@@ -15,14 +15,16 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkAverageOutOfROIImageFilter_h
-#define __rtkAverageOutOfROIImageFilter_h
+#ifndef rtkAverageOutOfROIImageFilter_h
+#define rtkAverageOutOfROIImageFilter_h
 
 #include "itkInPlaceImageFilter.h"
 
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   #include <itkImageRegionSplitterDirection.h>
 #endif
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -68,20 +70,20 @@ public:
 
 protected:
     AverageOutOfROIImageFilter();
-    ~AverageOutOfROIImageFilter(){}
+    ~AverageOutOfROIImageFilter() ITK_OVERRIDE {}
 
     typename TROI::Pointer GetROI();
 
-    virtual void GenerateOutputInformation();
-    virtual void GenerateInputRequestedRegion();
+    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Does the real work. */
-    virtual void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
-    virtual void BeforeThreadedGenerateData();
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    virtual const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 #endif
 

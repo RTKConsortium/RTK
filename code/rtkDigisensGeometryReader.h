@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDigisensGeometryReader_h
-#define __rtkDigisensGeometryReader_h
+#ifndef rtkDigisensGeometryReader_h
+#define rtkDigisensGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -71,7 +71,7 @@ private:
   DigisensGeometryReader(const Self&);
   void operator=(const Self&);
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_XMLFileName;
