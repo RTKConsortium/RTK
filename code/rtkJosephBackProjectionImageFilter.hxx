@@ -115,7 +115,7 @@ JosephBackProjectionImageFilter<TInputImage,
     volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetOutput() );
 
     // Set source position in volume indices
-    // GetSourcePosition() returns coordinates in mm. Multiplying by 
+    // GetSourcePosition() returns coordinates in mm. Multiplying by
     // volPPToIndex gives the corresponding volume index
     typename GeometryType::HomogeneousVectorType sourcePosition;
     sourcePosition = volPPToIndex * geometry->GetSourcePosition(iProj);
@@ -151,8 +151,8 @@ JosephBackProjectionImageFilter<TInputImage,
 		  for(unsigned int j=0; j<Dimension; j++)
 		      posProj[i] += matrixProj[i][j] * itIn.GetIndex()[j];
 	      }
-	      
-	      // Convert cylindrical angle to coordinate
+	
+	      // Convert cylindrical angle to coordinates in the (u,v,u^v) coordinate system
 	      double a = invR * posProj[0];
 	      posProj[0] = vcl_sin(a) * R;
 	      posProj[2] = sid-vcl_cos(a) * R;
@@ -162,11 +162,11 @@ JosephBackProjectionImageFilter<TInputImage,
 		  dirVox[i] = matrixVol[i][Dimension];
 		  for(unsigned int j=0; j<Dimension; j++)
 		      dirVox[i] += matrixVol[i][j] * posProj[j];
-		  
+		
 		  // Direction
 		  dirVox[i] -= sourcePosition[i];
 	      }
-	      
+	
 	      // Select main direction
 	      unsigned int mainDir = 0;
 	      for(unsigned int i=0; i<Dimension; i++)
@@ -175,7 +175,7 @@ JosephBackProjectionImageFilter<TInputImage,
 		  if(dirVoxAbs[i]>dirVoxAbs[mainDir])
 		      mainDir = i;
 	      }
-	      
+	
 	      // Test if there is an intersection
 	      if( rbi[mainDir]->Evaluate(dirVox) &&
 		  rbi[mainDir]->GetFarthestDistance()>=0. && // check if detector after the source
@@ -184,39 +184,39 @@ JosephBackProjectionImageFilter<TInputImage,
 		  // Clip the casting between source and pixel of the detector
 		  rbi[mainDir]->SetNearestDistance ( std::max(rbi[mainDir]->GetNearestDistance() , 0.) );
 		  rbi[mainDir]->SetFarthestDistance( std::min(rbi[mainDir]->GetFarthestDistance(), 1.) );
-		  
+		
 		  // Compute and sort intersections: (n)earest and (f)arthest (p)points
 		  np = rbi[mainDir]->GetNearestPoint();
 		  fp = rbi[mainDir]->GetFarthestPoint();
 		  if(np[mainDir]>fp[mainDir])
 		      std::swap(np, fp);
-		  
+		
 		  // Compute main nearest and farthest slice indices
 		  const int ns = vnl_math_rnd( np[mainDir]);
 		  const int fs = vnl_math_rnd( fp[mainDir]);
-		  
+		
 		  // Determine the other two directions
 		  unsigned int notMainDirInf = (mainDir+1)%Dimension;
 		  unsigned int notMainDirSup = (mainDir+2)%Dimension;
 		  if(notMainDirInf>notMainDirSup)
 		      std::swap(notMainDirInf, notMainDirSup);
-		  
+		
 		  const CoordRepType minx = rbi[mainDir]->GetBoxMin()[notMainDirInf];
 		  const CoordRepType miny = rbi[mainDir]->GetBoxMin()[notMainDirSup];
 		  const CoordRepType maxx = rbi[mainDir]->GetBoxMax()[notMainDirInf];
 		  const CoordRepType maxy = rbi[mainDir]->GetBoxMax()[notMainDirSup];
-		  
+		
 		  // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
 		  const int offsetx = offsets[notMainDirInf];
 		  const int offsety = offsets[notMainDirSup];
 		  const int offsetz = offsets[mainDir];
 		  OutputPixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
-		  
+		
 		  pxiyi = beginBuffer + ns * offsetz;
 		  pxsyi = pxiyi + offsetx;
 		  pxiys = pxiyi + offsety;
 		  pxsys = pxsyi + offsety;
-		  
+		
 		  // Compute step size and go to first voxel
 		  const CoordRepType residual = ns - np[mainDir];
 		  const CoordRepType norm = 1/dirVox[mainDir];
@@ -224,12 +224,12 @@ JosephBackProjectionImageFilter<TInputImage,
 		  const CoordRepType stepy = dirVox[notMainDirSup] * norm;
 		  CoordRepType currentx = np[notMainDirInf] + residual * stepx;
 		  CoordRepType currenty = np[notMainDirSup] + residual * stepy;
-		  
+		
 		  // Compute voxel to millimeters conversion
 		  stepMM[notMainDirInf] = this->GetInput(0)->GetSpacing()[notMainDirInf] * stepx;
 		  stepMM[notMainDirSup] = this->GetInput(0)->GetSpacing()[notMainDirSup] * stepy;
 		  stepMM[mainDir]       = this->GetInput(0)->GetSpacing()[mainDir];
-		  
+		
 		  if (fs == ns) //If the voxel is a corner, we can skip most steps
 		  {
 		      BilinearSplatOnBorders(itIn.Get(), fp[mainDir] - np[mainDir], stepMM.GetNorm(),
@@ -238,12 +238,12 @@ JosephBackProjectionImageFilter<TInputImage,
 		  }
 		  else
 		  {
-		      
+		
 		      // First step
 		      BilinearSplatOnBorders(itIn.Get(), residual + 0.5, stepMM.GetNorm(),
 					     pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
 					     offsetx, offsety, minx, miny, maxx, maxy);
-		      
+		
 		      // Move to next main direction slice
 		      pxiyi += offsetz;
 		      pxsyi += offsetz;
@@ -251,13 +251,13 @@ JosephBackProjectionImageFilter<TInputImage,
 		      pxsys += offsetz;
 		      currentx += stepx;
 		      currenty += stepy;
-		      
+		
 		      // Middle steps
 		      for(int i=ns+1; i<fs; i++)
 		      {
-			  
+			
 			  BilinearSplat(itIn.Get(), 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
-			  
+			
 			  // Move to next main direction slice
 			  pxiyi += offsetz;
 			  pxsyi += offsetz;
@@ -266,7 +266,7 @@ JosephBackProjectionImageFilter<TInputImage,
 			  currentx += stepx;
 			  currenty += stepy;
 		      }
-		      
+		
 		      // Last step
 		      BilinearSplatOnBorders(itIn.Get(), fp[mainDir] - fs + 0.5, stepMM.GetNorm(),
 					     pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,

@@ -126,7 +126,7 @@ JosephForwardProjectionImageFilter<TInputImage,
           posProj[i] += matrixProj[i][j] * itOut.GetIndex()[j];
         }
 
-      // Convert cylindrical angle to coordinate
+      // Convert cylindrical angle to coordinates in the (u,v,u^v) coordinate system
       double a = invR * posProj[0];
       posProj[0] = vcl_sin(a) * R;
       posProj[2] = sid-vcl_cos(a) * R;
