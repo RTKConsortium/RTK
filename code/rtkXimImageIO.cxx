@@ -256,8 +256,8 @@ void rtk::XimImageIO::Read(void * buffer)
   itk::int32_t compressedPixelBufferSize;
   // De"compress" image
   nelements += fread((void *)&lookUpTableSize, sizeof(itk::int32_t), 1, fp);
-  unsigned _int8 * m_lookup_table = (unsigned _int8*) malloc(sizeof(unsigned _int8) * lookUpTableSize);
-  nelements += fread((void *)m_lookup_table, sizeof(unsigned _int8), lookUpTableSize, fp);
+  itk::uint8_t * m_lookup_table = (itk::uint8_t *) malloc(sizeof(itk::uint8_t) * lookUpTableSize);
+  nelements += fread((void *)m_lookup_table, sizeof(itk::uint8_t), lookUpTableSize, fp);
   
   nelements += fread((void *)&compressedPixelBufferSize, sizeof(itk::int32_t), 1, fp);
 
