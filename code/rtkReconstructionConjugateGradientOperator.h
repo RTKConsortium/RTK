@@ -150,9 +150,13 @@ public:
   /** Set the forward projection filter*/
   void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
 
-  /** Set the support mask for support constraint in reconstruction */
-  itkGetMacro(SupportMask, OutputImagePointer);
-  itkSetMacro(SupportMask, OutputImagePointer);
+//  /** Set the support mask, if any, for support constraint in reconstruction */
+//  itkGetMacro(SupportMask, OutputImagePointer);
+//  itkSetMacro(SupportMask, OutputImagePointer);
+
+  /** Set the support mask, if any, for support constraint in reconstruction */
+  void SetSupportMask(const TOutputImage *SupportMask);
+  typename TOutputImage::ConstPointer GetSupportMask();
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
@@ -196,7 +200,7 @@ protected:
   bool                                              m_Preconditioned; //Multiply by preconditioning weights ?
   bool                                              m_Regularized;
   float                                             m_Gamma; //Strength of the regularization
-  OutputImagePointer                                m_SupportMask;
+//  OutputImagePointer                                m_SupportMask;
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */

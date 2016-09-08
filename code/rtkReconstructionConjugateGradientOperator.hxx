@@ -30,8 +30,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_Geometry(ITK_NULLPTR),
   m_Preconditioned(false),
   m_Regularized(false),
-  m_Gamma(0),
-  m_SupportMask(NULL)
+  m_Gamma(0)
 {
   this->SetNumberOfRequiredInputs(3);
 
@@ -64,6 +63,23 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_MultiplyLaplacianFilter->ReleaseDataFlagOn();
 }
 
+template< typename TOutputImage>
+void
+ReconstructionConjugateGradientOperator<TOutputImage>::
+SetSupportMask(const TOutputImage *SupportMask)
+{
+  this->SetInput("SupportMask", const_cast<TOutputImage*>(SupportMask));
+}
+
+template< typename TOutputImage>
+typename TOutputImage::ConstPointer
+ReconstructionConjugateGradientOperator<TOutputImage>::
+GetSupportMask()
+{
+  return static_cast< const TOutputImage * >
+          ( this->itk::ProcessObject::GetInput("SupportMask") );
+}
+
 template< typename TOutputImage >
 void
 ReconstructionConjugateGradientOperator<TOutputImage>
@@ -85,7 +101,7 @@ const TOutputImage *
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ApplySupportMask (const TOutputImage *_arg)
 {
-  if (m_SupportMask.IsNotNull())
+  if (this->GetSupportMask().IsNotNull())
   {
     m_MultiplySupportMaskFilter->SetInput(0,_arg);
     m_MultiplySupportMaskFilter->Update();
@@ -132,6 +148,16 @@ ReconstructionConjugateGradientOperator<TOutputImage>
         return;
     inputPtr3->SetRequestedRegion( inputPtr3->GetLargestPossibleRegion() );
     }
+
+  // Input "SupportMask" is the support constraint mask on volume, if any
+  if (this->GetSupportMask().IsNotNull())
+    {
+    typename Superclass::InputImagePointer inputSupportMaskPtr =
+            const_cast< TOutputImage * >( this->GetSupportMask().GetPointer() );
+    if ( !inputSupportMaskPtr )
+        return;
+    inputSupportMaskPtr->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+    }
 }
 
 template< typename TOutputImage >
@@ -146,7 +172,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
-  m_MultiplySupportMaskFilter->SetInput(1,m_SupportMask);
+  m_MultiplySupportMaskFilter->SetInput(1,this->GetSupportMask());
   m_ForwardProjectionFilter->SetInput(1, ApplySupportMask(this->GetInput(0)));
   
   if (m_Regularized)

@@ -156,9 +156,13 @@ public:
     /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
     void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
 
-    /** Set the support mask for support constraint in reconstruction */
-    itkGetMacro(SupportMask, OutputImagePointer);
-    itkSetMacro(SupportMask, OutputImagePointer);
+//    /** Set the support mask for support constraint in reconstruction */
+//    itkGetMacro(SupportMask, OutputImagePointer);
+//    itkSetMacro(SupportMask, OutputImagePointer);
+
+    /** Set the support mask, if any, for support constraint in reconstruction */
+    void SetSupportMask(const TOutputImage *SupportMask);
+    typename TOutputImage::ConstPointer GetSupportMask();
 
     /** Pass the geometry to all filters needing it */
     itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
@@ -240,7 +244,7 @@ private:
     bool                         m_Preconditioned;
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
-    OutputImagePointer           m_SupportMask;
+//    OutputImagePointer           m_SupportMask;
 };
 } //namespace ITK
 
