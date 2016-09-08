@@ -40,6 +40,8 @@
 #include "rtkHncImageIOFactory.h"
 #include "rtkVarianObiHncRawToAttenuationImageFilter.h"
 
+#include "rtkXimImageIOFactory.h"
+
 // Elekta Synergy includes
 #include "rtkHisImageIOFactory.h"
 #include "rtkElektaSynergyRawLookupTableImageFilter.h"
@@ -215,7 +217,48 @@ void ProjectionsReader<TOutputImage>
       typename CastFilterType::Pointer castFilter = CastFilterType::New();
       m_RawCastFilter = castFilter;
       }
-    else if( !strcmp(imageIO->GetNameOfClass(), "HncImageIO") )
+	else if (!strcmp(imageIO->GetNameOfClass(), "XimImageIO"))
+	{
+		/////////// Varian Xim
+		typedef unsigned int                                       InputPixelType;
+		typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
+
+		// Reader
+		typedef itk::ImageSeriesReader< InputImageType > ReaderType;
+		typename ReaderType::Pointer reader = ReaderType::New();
+		m_RawDataReader = reader;
+
+		// Change information
+		typedef itk::ChangeInformationImageFilter< InputImageType > ChangeInfoType;
+		typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+		m_ChangeInformationFilter = cif;
+
+		// Crop
+		typedef itk::CropImageFilter< InputImageType, InputImageType > CropType;
+		typename CropType::Pointer crop = CropType::New();
+		m_CropFilter = crop;
+
+		// Bin
+		typedef itk::BinShrinkImageFilter< InputImageType, InputImageType > BinType;
+		typename BinType::Pointer bin = BinType::New();
+		m_BinningFilter = bin;
+
+		// Scatter correction
+		typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
+		typename ScatterFilterType::Pointer scatter = ScatterFilterType::New();
+		m_ScatterFilter = scatter;
+
+		// Convert raw to Projections
+		typedef rtk::VarianObiRawImageFilter<InputImageType, OutputImageType> RawFilterType;
+		typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+		m_RawToAttenuationFilter = rawFilter;
+
+		// Or just cast to OutputImageType
+		typedef itk::CastImageFilter<InputImageType, OutputImageType> CastFilterType;
+		typename CastFilterType::Pointer castFilter = CastFilterType::New();
+		m_RawCastFilter = castFilter;
+	}
+	else if (!strcmp(imageIO->GetNameOfClass(), "HncImageIO"))
       {
       /////////// Varian OBI HNC
       typedef unsigned short                                     InputPixelType;
@@ -364,7 +407,8 @@ void ProjectionsReader<TOutputImage>
       !strcmp(imageIO->GetNameOfClass(), "HncImageIO") ||
       imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
     PropagateParametersToMiniPipeline< itk::Image<unsigned short, OutputImageDimension> >();
-  else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
+  else if (!strcmp(imageIO->GetNameOfClass(), "HndImageIO") ||
+	       !strcmp(imageIO->GetNameOfClass(), "XimImageIO"))
     PropagateParametersToMiniPipeline< itk::Image<unsigned int, OutputImageDimension> >();
   else
     PropagateParametersToMiniPipeline< OutputImageType >();
