@@ -71,6 +71,12 @@ public:
 
   itk::Vector<float, NumberOfSpectralBins> ForwardModel(const ParametersType & lineIntegrals) const
   {
+  // Apply detector response, getting the lambdas
+  return m_DetectorResponse * GetAttenuatedIncidentSpectrum(lineIntegrals);
+  }
+
+  itk::Vector<float, NumberOfEnergies> GetAttenuatedIncidentSpectrum(const ParametersType & lineIntegrals) const
+  {
   // Solid angle of detector pixel, exposure time and mAs should already be
   // taken into account in the incident spectrum image
 
@@ -88,8 +94,52 @@ public:
     attenuatedIncidentSpectrum[e] = m_IncidentSpectrum[e] * std::exp(-totalAttenuation);
     }
 
-  // Apply detector response, getting the lambdas
-  return m_DetectorResponse * attenuatedIncidentSpectrum;
+  return attenuatedIncidentSpectrum;
+  }
+
+  itk::Vector<float, NbMaterials> GetCramerRaoLowerBound(const ParametersType & lineIntegrals) const
+  {
+  // Get some required data
+  itk::Vector<float, NumberOfEnergies> attenuatedIncidentSpectrum = GetAttenuatedIncidentSpectrum(lineIntegrals);
+  itk::Vector<float, NumberOfSpectralBins> lambdas = ForwardModel(lineIntegrals);
+
+  // Compute the vector of m_b / lambda_b²
+  itk::Vector<float, NumberOfSpectralBins> weights;
+  weights.SetVnlVector(element_product(lambdas.GetVnlVector(), lambdas.GetVnlVector()));
+  weights.SetVnlVector(element_product(weights.GetVnlVector(), m_DetectorCounts.GetVnlVector()));
+
+  // Prepare intermediate variables
+  itk::Vector<float, NumberOfEnergies> intermediate_a;
+  itk::Vector<float, NumberOfEnergies> intermediate_a_prime;
+  itk::Vector<float, NumberOfSpectralBins> partial_derivative_a;
+  itk::Vector<float, NumberOfSpectralBins> partial_derivative_a_prime;
+
+  // Compute the Fischer information matrix
+  itk::Matrix<float, NbMaterials, NbMaterials> Fischer;
+  for (unsigned int a=0; a<NbMaterials; a++)
+    {
+    for (unsigned int a_prime=0; a_prime<NbMaterials; a_prime++)
+      {
+      // Compute the partial derivatives of lambda_b with respect to the material line integrals
+      intermediate_a.SetVnlVector(element_product(attenuatedIncidentSpectrum.GetVnlVector(), m_MaterialAttenuations[a].GetVnlVector()));
+      intermediate_a_prime.SetVnlVector(element_product(attenuatedIncidentSpectrum.GetVnlVector(), m_MaterialAttenuations[a_prime].GetVnlVector()));
+
+      partial_derivative_a = m_DetectorResponse * intermediate_a;
+      partial_derivative_a_prime = m_DetectorResponse * intermediate_a_prime;
+
+      // Multiply them together element-wise, then dot product with the weights
+      partial_derivative_a_prime.SetVnlVector(element_product(partial_derivative_a.GetVnlVector(), partial_derivative_a_prime.GetVnlVector()));
+      Fischer[a][a_prime] = partial_derivative_a_prime * weights;
+      }
+    }
+
+  // Invert the Fischer matrix and extract the diagonal components (variances)
+  itk::Vector<float, NbMaterials> diag = Fischer.GetInverse().get_diagonal();
+
+  // Return the inverse (element wise) of the diagonal components (inverse variances, to be used directly in WLS reconstruction)
+  for (unsigned int mat=0; mat<NbMaterials; mat++)
+    diag[mat] = 1./diag[mat];
+  return diag;
   }
 
   // Not implemented, since it is too complex to compute
