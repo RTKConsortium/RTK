@@ -149,9 +149,17 @@ int main(int argc, char * argv[])
 
   // Write output
   DecomposedProjectionWriterType::Pointer writer = DecomposedProjectionWriterType::New();
-  writer->SetInput(simplex->GetOutput());
+  writer->SetInput(simplex->GetOutput(0));
   writer->SetFileName(args_info.output_arg);
   writer->Update();
+
+  // If requested, write the weightsmap
+  if (args_info.weightsmap_given)
+    {
+    writer->SetInput(simplex->GetOutput(1));
+    writer->SetFileName(args_info.weightsmap_arg);
+    writer->Update();
+    }
 
   return EXIT_SUCCESS;
 }

@@ -11,3 +11,4 @@ option "incident"   - "Incident spectrum file"                                  
 option "attenuations" a "Material attenuations file"                                      string                       yes
 option "niterations" n "Number of iterations"                                             int                           no   default="300"
 option "thresholds" t "Lower threshold of bins, expressed in pulse height"                int                          yes multiple                         
+option "weightsmap" w "File name for the output weights map (inverse noise variance)"     string                        no

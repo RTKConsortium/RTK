@@ -97,7 +97,7 @@ public:
   return attenuatedIncidentSpectrum;
   }
 
-  itk::Vector<float, NbMaterials> GetCramerRaoLowerBound(const ParametersType & lineIntegrals) const
+  itk::Vector<float, NbMaterials> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
   {
   // Get some required data
   itk::Vector<float, NumberOfEnergies> attenuatedIncidentSpectrum = GetAttenuatedIncidentSpectrum(lineIntegrals);
@@ -106,6 +106,8 @@ public:
   // Compute the vector of m_b / lambda_b²
   itk::Vector<float, NumberOfSpectralBins> weights;
   weights.SetVnlVector(element_product(lambdas.GetVnlVector(), lambdas.GetVnlVector()));
+  for (unsigned int i=0; i<NumberOfSpectralBins; i++)
+    weights[i] = 1. / weights[i];
   weights.SetVnlVector(element_product(weights.GetVnlVector(), m_DetectorCounts.GetVnlVector()));
 
   // Prepare intermediate variables
@@ -133,12 +135,15 @@ public:
       }
     }
 
-  // Invert the Fischer matrix and extract the diagonal components (variances)
-  itk::Vector<float, NbMaterials> diag = Fischer.GetInverse().get_diagonal();
+  // Invert the Fischer matrix
+  itk::Vector<float, NbMaterials> diag;
+  diag.Fill(0);
 
-  // Return the inverse (element wise) of the diagonal components (inverse variances, to be used directly in WLS reconstruction)
+  Fischer = Fischer.GetInverse();
+
+  // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS reconstruction)
   for (unsigned int mat=0; mat<NbMaterials; mat++)
-    diag[mat] = 1./diag[mat];
+    diag[mat] = 1./Fischer[mat][mat];
   return diag;
   }
 
@@ -263,7 +268,12 @@ protected:
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
   void ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
 
-  /** The two inputs should not be in the same space so there is nothing
+  /**  Create the Output */
+  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using Superclass::MakeOutput;
+  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
+
+  /** The inputs should not be in the same space so there is nothing
    * to verify. */
   void VerifyInputInformation() ITK_OVERRIDE {}
 

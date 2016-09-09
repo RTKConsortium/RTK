@@ -33,6 +33,13 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
 ::SimplexSpectralProjectionsDecompositionImageFilter()
 {
   this->SetNumberOfRequiredInputs(5); // decomposed projections, photon counts, incident spectrum, detector response, material attenuations
+  this->SetNumberOfIndexedOutputs(2); // decomposed projections, inverse variance of decomposition noise
+
+  // distance map
+  this->SetNthOutput( 0, this->MakeOutput( 0 ) );
+
+  // voronoi map
+  this->SetNthOutput( 1, this->MakeOutput( 1 ) );
 
   // Set the default values of member parameters
   m_NumberOfIterations=300;
@@ -149,6 +156,27 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
 
 template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+itk::DataObject::Pointer
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::MakeOutput(DataObjectPointerArraySizeType idx)
+{
+  itk::DataObject::Pointer output;
+
+  switch ( idx )
+    {
+    case 0:
+      output = ( DecomposedProjectionsType::New() ).GetPointer();
+      break;
+    case 1:
+      output = ( DecomposedProjectionsType::New() ).GetPointer();
+      break;
+    }
+  return output.GetPointer();
+}
+
+template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
 SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType, NumberOfEnergies,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
@@ -207,7 +235,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
 ::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
-  this->GetOutput()->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
+  this->GetOutput(0)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
+  this->GetOutput(1)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
 }
 
 template<typename DecomposedProjectionsType, typename SpectralProjectionsType, unsigned int NumberOfEnergies,
@@ -276,7 +305,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Walk the output projection stack. For each pixel, set the cost function's member variables and run the optimizer.
-  itk::ImageRegionIterator<DecomposedProjectionsType> outputIt (this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIterator<DecomposedProjectionsType> output0It (this->GetOutput(0), outputRegionForThread);
+  itk::ImageRegionIterator<DecomposedProjectionsType> output1It (this->GetOutput(1), outputRegionForThread);
   itk::ImageRegionConstIterator<DecomposedProjectionsType> inputIt (this->GetInputDecomposedProjections(), outputRegionForThread);
   itk::ImageRegionConstIterator<SpectralProjectionsType> spectralProjIt (this->GetInputSpectralProjections(), outputRegionForThread);
 
@@ -288,7 +318,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
     }
   itk::ImageRegionConstIterator<IncidentSpectrumImageType> spectrumIt (this->GetInputIncidentSpectrum(), incidentSpectrumRegionForThread);
 
-  while(!outputIt.IsAtEnd())
+  while(!output0It.IsAtEnd())
     {
     // The input incident spectrum image typically has lower dimension than
     // This condition makes the iterator cycle over and over on the same image, following the other ones
@@ -315,11 +345,14 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
     typename DecomposedProjectionsType::PixelType outputPixel;
     for (unsigned int m=0; m<NumberOfMaterials; m++)
       outputPixel[m] = optimizer->GetCurrentPosition()[m];
+    output0It.Set(outputPixel);
 
-    outputIt.Set(outputPixel);
+    // Compute the inverse variance of decomposition noise, and store it into output(1)
+    output1It.Set(cost->GetInverseCramerRaoLowerBound(optimizer->GetCurrentPosition()));
 
     // Move forward
-    ++outputIt;
+    ++output0It;
+    ++output1It;
     ++inputIt;
     ++spectralProjIt;
     ++spectrumIt;
