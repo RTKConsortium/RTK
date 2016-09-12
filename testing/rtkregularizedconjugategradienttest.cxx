@@ -3,6 +3,7 @@
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkRegularizedConjugateGradientConeBeamReconstructionFilter.h"
+#include <itkAdditiveGaussianNoiseImageFilter.h>
 
 #ifdef USE_CUDA
   #include "itkCudaImage.h"
@@ -188,6 +189,32 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
+  std::cout << "\n\n****** Image-domain sparsity ******" << std::endl;
+
+  // Replace the ellise with a very small one
+  semiprincipalaxis.Fill(9.);
+  rei->SetAxis(semiprincipalaxis);
+  dsl->SetAxis(semiprincipalaxis);
+
+  // Add gaussian noise on the projections
+  typedef itk::AdditiveGaussianNoiseImageFilter<OutputImageType>      GaussianNoiseFilterType;
+  GaussianNoiseFilterType::Pointer gaussian = GaussianNoiseFilterType::New();
+  gaussian->SetStandardDeviation(1);
+  gaussian->SetMean(0.);
+  gaussian->SetInput(rei->GetOutput());
+
+  regularizedConjugateGradient->SetInputProjectionStack(gaussian->GetOutput());
+  regularizedConjugateGradient->SetPerformPositivity(false);
+  regularizedConjugateGradient->SetPerformTVSpatialDenoising(false);
+  regularizedConjugateGradient->SetPerformWaveletsSpatialDenoising(false);
+  regularizedConjugateGradient->SetPerformSoftThresholdOnImage(true);
+  regularizedConjugateGradient->SetSoftThresholdOnImage(0.01);
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
+
+  CheckImageQuality<OutputImageType>(regularizedConjugateGradient->GetOutput(), dsl->GetOutput(), 0.004, 47, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
 }
