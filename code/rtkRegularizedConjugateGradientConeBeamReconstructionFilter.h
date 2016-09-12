@@ -54,12 +54,14 @@ namespace rtk
    * Positivity [group=regul, label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
    * TV [group=regul, label="rtk::TotalVariationDenoisingBPDQImageFilter" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
    * Wavelets [group=regul, label="rtk::DeconstructSoftThresholdReconstructImageFilter" URL="\ref rtk::DeconstructSoftThresholdReconstructImageFilter"];
+   * SoftThreshold [group=regul, label="rtk::SoftThresholdImageFilter" URL="\ref rtk::SoftThresholdImageFilter"];
    *
    * AfterPrimaryInput [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterCG [group=invisible, label="m_PerformPositivity ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterPositivity [group=invisible, label="m_PerformTVSpatialDenoising ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterTV [group=invisible, label="m_PerformWaveletsSpatialDenoising ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterWavelets [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
+   * AfterSoftThreshold [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
    *
    * PrimaryInput -> AfterPrimaryInput [arrowhead=none];
    * AfterPrimaryInput -> CG;
@@ -71,21 +73,25 @@ namespace rtk
    * TV -> AfterTV;
    * AfterTV -> Wavelets [label="true"];
    * Wavelets -> AfterWavelets;
-   * AfterWavelets -> Output;
-   * AfterWavelets -> AfterPrimaryInput [style=dashed];
+   * AfterWavelets -> SoftThreshold [label="true"];
+   * SoftThreshold -> AfterSoftThreshold;
+   * AfterSoftThreshold -> Output;
+   * AfterSoftThreshold -> AfterPrimaryInput [style=dashed];
    *
    * AfterCG -> AfterPositivity  [label="false"];
    * AfterPositivity -> AfterTV [label="false"];
    * AfterTV -> AfterWavelets [label="false"];
+   * AfterWavelets -> AfterSoftThreshold [label="false"];
    *
    * // Invisible edges between the regularization filters
    * edge[style=invis];
    * Positivity -> TV;
    * TV -> Wavelets;
+   * Wavelets -> SoftThreshold;
    * }
    * \enddot
    *
-   * \test rtkfourdroostertest.cxx
+   * \test rtkregularizedconjugategradienttest.cxx
    *
    * \author Cyril Mory
    *
@@ -130,6 +136,7 @@ public:
   typedef itk::ThresholdImageFilter<TImage>                                             ThresholdFilterType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter<TImage, GradientImageType>        TVDenoisingFilterType;
   typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TImage>                   WaveletsDenoisingFilterType;
+  typedef rtk::SoftThresholdImageFilter<TImage, TImage>                                 SoftThresholdFilterType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void SetForwardProjectionFilter(int fwtype) ITK_OVERRIDE;
@@ -146,12 +153,16 @@ public:
   itkGetMacro(PerformTVSpatialDenoising, bool)
   itkSetMacro(PerformWaveletsSpatialDenoising, bool)
   itkGetMacro(PerformWaveletsSpatialDenoising, bool)
+  itkSetMacro(PerformSoftThresholdOnImage, bool)
+  itkGetMacro(PerformSoftThresholdOnImage, bool)
 
   // Regularization parameters
   itkSetMacro(GammaTV, float)
   itkGetMacro(GammaTV, float)
   itkSetMacro(SoftThresholdWavelets, float)
   itkGetMacro(SoftThresholdWavelets, float)
+  itkSetMacro(SoftThresholdOnImage, float)
+  itkGetMacro(SoftThresholdOnImage, float)
 
   /** Set the number of levels of the wavelets decomposition */
   itkGetMacro(NumberOfLevels, unsigned int)
@@ -207,20 +218,21 @@ protected:
   typename ThresholdFilterType::Pointer            m_PositivityFilter;
   typename TVDenoisingFilterType::Pointer          m_TVDenoising;
   typename WaveletsDenoisingFilterType::Pointer    m_WaveletsDenoising;
+  typename SoftThresholdFilterType::Pointer        m_SoftThresholdFilter;
 
-  // Booleans :
-  // should warping be performed ?
-  // should conjugate gradient be performed on GPU ?
-  // should wavelets replace TV in spatial denoising ?
+  // Booleans for each regularization (should it be performed or not)
+  // as well as to choose whether CG should be on GPU or not
   bool  m_PerformPositivity;
   bool  m_PerformTVSpatialDenoising;
   bool  m_PerformWaveletsSpatialDenoising;
   bool  m_CudaConjugateGradient;
+  bool  m_PerformSoftThresholdOnImage;
 
   // Regularization parameters
   float m_GammaTV;
   float m_Gamma;
   float m_SoftThresholdWavelets;
+  float m_SoftThresholdOnImage;
   bool  m_DimensionsProcessedForTV[TImage::ImageDimension];
   bool  m_Preconditioned;
   bool  m_RegularizedCG;
@@ -242,6 +254,7 @@ protected:
   itk::TimeProbe m_PositivityProbe;
   itk::TimeProbe m_TVSpatialDenoisingProbe;
   itk::TimeProbe m_WaveletsSpatialDenoisingProbe;
+  itk::TimeProbe m_SoftThresholdImageProbe;
 
 private:
   RegularizedConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
