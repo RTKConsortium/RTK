@@ -3,7 +3,10 @@
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkRegularizedConjugateGradientConeBeamReconstructionFilter.h"
-#include <itkAdditiveGaussianNoiseImageFilter.h>
+
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 6)
+  #include <itkAdditiveGaussianNoiseImageFilter.h>
+#endif
 
 #ifdef USE_CUDA
   #include "itkCudaImage.h"
@@ -189,6 +192,7 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 6)
   std::cout << "\n\n****** Image-domain sparsity ******" << std::endl;
 
   // Replace the ellise with a very small one
@@ -215,6 +219,7 @@ int main(int, char** )
 
   CheckImageQuality<OutputImageType>(regularizedConjugateGradient->GetOutput(), dsl->GetOutput(), 0.004, 47, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
 
   return EXIT_SUCCESS;
 }
