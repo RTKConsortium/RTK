@@ -20,8 +20,6 @@
 #define rtkFDKWeightProjectionFilter_hxx
 
 #include <itkImageRegionIterator.h>
-#include <itkImageFileWriter.h>
-#include <itkMeanProjectionImageFilter.h>
 
 namespace rtk
 {

@@ -21,7 +21,6 @@
 
 #include "rtkWin32Header.h"
 #include "rtkProjectionGeometry.h"
-#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -45,6 +44,9 @@ namespace rtk
  *
  * \ingroup ProjectionGeometry
  */
+
+template<class TImage> class ProjectionsRegionConstIteratorRayBased;
+
 class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
@@ -195,6 +197,17 @@ public:
   double ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
                                          const double tiltedCoord) const;
 
+  template<class TImage>
+  ProjectionsRegionConstIteratorRayBased<TImage>*
+  GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
+                                            const typename TImage::RegionType & region,
+                                            const ThreeDHomogeneousMatrixType &postMat);
+
+  template<class TImage>
+  ProjectionsRegionConstIteratorRayBased<TImage>*
+  GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
+                                            const typename TImage::RegionType & region);
+
 protected:
   ThreeDCircularProjectionGeometry() {};
   ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
@@ -240,4 +253,29 @@ private:
 };
 }
 
-#endif // rtkThreeDCircularProjectionGeometry_h
+#include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
+
+template<class TImage>
+rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
+rtk::ThreeDCircularProjectionGeometry::
+GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
+                                          const typename TImage::RegionType & region,
+                                          const ThreeDHomogeneousMatrixType &postMat)
+{
+  typedef ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage> IteratorType;
+  return new IteratorType(ptr, region, this, postMat);
+}
+
+template<class TImage>
+rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
+rtk::ThreeDCircularProjectionGeometry::
+GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
+                                          const typename TImage::RegionType & region)
+{
+  ThreeDHomogeneousMatrixType postMat;
+  postMat.SetIdentity();
+  return this->GetProjectionsRegionConstIteratorRayBased(ptr, region, postMat);
+}
+
+
+#endif // __rtkThreeDCircularProjectionGeometry_h

@@ -17,9 +17,7 @@
  *=========================================================================*/
 
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkMacro.h"
 
-#include <algorithm>
 #include <itkCenteredEuler3DTransform.h>
 
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
