@@ -156,19 +156,19 @@ void CheckVectorImageQuality(typename TImage::Pointer recon,
   ErrorType QI = (RefValueForPSNR-ErrorPerPixel)/RefValueForPSNR;
   std::cout << "QI = " << QI << std::endl;
 
-   // It is often necessary to write the images and look at them
-   // to understand why a given test fails. This portion of code
-   // does that. It should be left here but commented out, since
-   // it is only useful in specific debugging tasks
-   typedef itk::ImageFileWriter<TImage> FileWriterType;
-   typename FileWriterType::Pointer writer = FileWriterType::New();
-   writer->SetInput(recon);
-   writer->SetFileName("Reconstruction.mhd");
-   writer->Update();
-   writer->SetInput(ref);
-   writer->SetFileName("Reference.mhd");
-   writer->Update();
-   // End of results writing
+//   // It is often necessary to write the images and look at them
+//   // to understand why a given test fails. This portion of code
+//   // does that. It should be left here but commented out, since
+//   // it is only useful in specific debugging tasks
+//   typedef itk::ImageFileWriter<TImage> FileWriterType;
+//   typename FileWriterType::Pointer writer = FileWriterType::New();
+//   writer->SetInput(recon);
+//   writer->SetFileName("Reconstruction.mhd");
+//   writer->Update();
+//   writer->SetInput(ref);
+//   writer->SetFileName("Reference.mhd");
+//   writer->Update();
+//   // End of results writing
 
   // Checking results. As a comparison with NaN always returns false,
   // this design allows to detect NaN results and cause test failure
