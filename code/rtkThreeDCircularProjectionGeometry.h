@@ -178,6 +178,13 @@ public:
   const HomogeneousVectorType GetSourcePosition(const unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
+   * in the detector coordinate system (u,v,u^v). Note that the matrix is square but the
+   * third element of the projection coordinates is ignored because projection
+   * coordinates are 2D. This is meant to manipulate more easily stack of
+   * projection images. */
+  const ThreeDHomogeneousMatrixType GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const;
+
+  /** Compute the ith matrix to convert projection coordinates to coordinates
    * in the fixed coordinate system. Note that the matrix is square but the
    * third element of the projection coordinates is ignored because projection
    * coordinates are 2D. This is meant to manipulate more easily stack of
@@ -263,6 +270,7 @@ private:
 }
 
 #include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
+#include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"
 
 template<class TImage>
 rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
@@ -271,8 +279,16 @@ GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
                                           const typename TImage::RegionType & region,
                                           const ThreeDHomogeneousMatrixType &postMat)
 {
-  typedef ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage> IteratorType;
-  return new IteratorType(ptr, region, this, postMat);
+  if(m_RadiusCylindricalDetector==0.)
+    {
+    typedef ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage> IteratorType;
+    return new IteratorType(ptr, region, this, postMat);
+    }
+  else
+    {
+    typedef ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage> IteratorType;
+    return new IteratorType(ptr, region, this, postMat);
+    }
 }
 
 template<class TImage>

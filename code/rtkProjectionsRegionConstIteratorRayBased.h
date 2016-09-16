@@ -55,6 +55,8 @@ public:
   typedef typename Superclass::OffsetValueType OffsetValueType;
   typedef typename Superclass::RegionType      RegionType;
   typedef typename itk::Vector<double, 3>      PointType;
+  typedef typename Superclass::IndexValueType  IndexValueType;
+
   typedef itk::Matrix< double, 3, 4 >          MatrixType;
   typedef itk::Matrix< double, 4, 4 >          HomogeneousMatrixType;
 

@@ -325,7 +325,7 @@ GetSourcePosition(const unsigned int i) const
 
 const rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
 rtk::ThreeDCircularProjectionGeometry::
-GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
+GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const
 {
   // Compute projection inverse and distance to source
   ThreeDHomogeneousMatrixType matrix;
@@ -334,9 +334,16 @@ GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
   matrix[1][3] = this->GetProjectionOffsetsY()[i];
   matrix[2][3] = this->GetSourceToIsocenterDistances()[i]-this->GetSourceToDetectorDistances()[i];
   matrix[2][2] = 0.; // Force z to axis to detector distance
+  return matrix;
+}
 
-  // Rotate
-  matrix = this->GetRotationMatrices()[i].GetInverse() * matrix.GetVnlMatrix();
+const rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+rtk::ThreeDCircularProjectionGeometry::
+GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
+{
+  ThreeDHomogeneousMatrixType matrix;
+  matrix = this->GetRotationMatrices()[i].GetInverse() *
+           GetProjectionCoordinatesToDetectorSystemMatrix(i).GetVnlMatrix();
   return matrix;
 }
 
