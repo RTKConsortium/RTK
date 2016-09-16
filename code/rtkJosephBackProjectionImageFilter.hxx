@@ -104,8 +104,8 @@ JosephBackProjectionImageFilter<TInputImage,
       {
       boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
       boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
-                  this->GetOutput()->GetRequestedRegion().GetSize()[i]  - 1;
-    }
+                  this->GetOutput()->GetRequestedRegion().GetSize()[i] - 1;
+      }
     rbi[j]->SetBoxMin(boxMin);
     rbi[j]->SetBoxMax(boxMax);
     }

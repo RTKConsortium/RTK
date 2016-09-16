@@ -55,7 +55,7 @@ public:
   typedef GeometryType::Pointer            GeometryPointer;
 
   /** Latest version */
-  static const unsigned int CurrentVersion = 2;
+  static const unsigned int CurrentVersion = 3;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileReader, itk::XMLFileReader);

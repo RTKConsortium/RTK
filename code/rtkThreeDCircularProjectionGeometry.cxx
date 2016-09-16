@@ -20,6 +20,11 @@
 
 #include <itkCenteredEuler3DTransform.h>
 
+rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry():
+    m_RadiusCylindricalDetector(0.)
+{
+}
+
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
   double result = a-360*floor(a/360); // between -360 and 360

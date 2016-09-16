@@ -208,8 +208,13 @@ public:
   GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
                                             const typename TImage::RegionType & region);
 
+  /** Accessor for the radius of curved detector. The default is 0 and it means
+   * a flat detector. */
+  itkGetMacro(RadiusCylindricalDetector, double)
+  itkSetMacro(RadiusCylindricalDetector, double)
+
 protected:
-  ThreeDCircularProjectionGeometry() {};
+  ThreeDCircularProjectionGeometry();
   ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
@@ -242,6 +247,10 @@ protected:
   std::vector<double> m_ProjectionOffsetsX;
   std::vector<double> m_ProjectionOffsetsY;
 
+  /** Radius of curved detector. The default is 0 and it means a flat detector. */
+  double m_RadiusCylindricalDetector;
+
+  /** Matrices to change coordiate systems. */
   std::vector<TwoDHomogeneousMatrixType>         m_ProjectionTranslationMatrices;
   std::vector<Superclass::MatrixType>            m_MagnificationMatrices;
   std::vector<ThreeDHomogeneousMatrixType>       m_RotationMatrices;
