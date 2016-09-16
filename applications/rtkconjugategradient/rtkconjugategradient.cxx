@@ -23,6 +23,10 @@
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
+#include <iostream>
+#include <fstream>
+#include <iterator>
+
 #ifdef RTK_USE_CUDA
   #include <itkCudaImage.h>
 #endif
@@ -34,6 +38,8 @@ int main(int argc, char * argv[])
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
+  std::vector<double> costs;
+  std::ostream_iterator<double> costs_it(std::cout,"\n");
 
   typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
 #ifdef RTK_USE_CUDA
@@ -98,6 +104,17 @@ int main(int argc, char * argv[])
     weightsSource = constantWeightsSource;
     }
 
+  // Read Support Mask if given
+  itk::ImageSource< OutputImageType >::Pointer supportmaskSource;
+  if(args_info.mask_given)
+    {
+    typedef itk::ImageFileReader<  OutputImageType > MaskReaderType;
+    MaskReaderType::Pointer supportmaskReader = MaskReaderType::New();
+    supportmaskReader->SetFileName( args_info.mask_arg );
+    supportmaskSource = supportmaskReader;
+    }
+  
+
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
@@ -108,12 +125,18 @@ int main(int argc, char * argv[])
   conjugategradient->SetInput(2, weightsSource->GetOutput());
   conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
+  if(args_info.mask_given)
+    {
+    conjugategradient->SetSupportMask(supportmaskSource->GetOutput() );
+    }
+  conjugategradient->SetIterationCosts(args_info.costs_flag);
 
   if (args_info.gamma_given)
     {
     conjugategradient->SetRegularized(true);
     conjugategradient->SetGamma(args_info.gamma_arg);
     }
+  
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
 
@@ -131,6 +154,13 @@ int main(int argc, char * argv[])
 //    conjugategradient->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+    }
+
+  if(args_info.costs_given)
+    {
+    costs=conjugategradient->GetResidualCosts();
+    std::cout << "Residual costs at each iteration :" << std::endl;
+    copy(costs.begin(),costs.end(),costs_it);
     }
 
   // Write
