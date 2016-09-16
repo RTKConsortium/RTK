@@ -121,8 +121,7 @@ int main(int argc, char * argv[])
                                            geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[indices[i]],
                                            geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
                                            geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
-                                           geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]],
-                                           geometryReader->GetOutputObject()->GetRadiusCylindricalDetector()[indices[i]]);
+                                           geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
     }
 
   // Geometry writer

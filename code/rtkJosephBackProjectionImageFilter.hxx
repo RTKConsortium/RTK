@@ -133,7 +133,7 @@ JosephBackProjectionImageFilter<TInputImage,
                 geometry->GetRotationMatrices()[iProj].GetInverse();
 
     // Read detector radius and pre-compute its inverse
-    const double R = geometry->GetRadiusCylindricalDetector()[iProj];
+    const double R = geometry->GetRadiusCylindricalDetector();
     const double invR = 1./R;
     const double sid = geometry->GetSourceToIsocenterDistances()[iProj];
 

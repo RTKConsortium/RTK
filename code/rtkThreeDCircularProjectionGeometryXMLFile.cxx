@@ -43,7 +43,6 @@ ThreeDCircularProjectionGeometryXMLFileReader():
   m_SourceToDetectorDistance(0.),
   m_ProjectionOffsetX(0.),
   m_ProjectionOffsetY(0.),
-  m_RadiusCylindricalDetector(0.),
   m_Version(0)
 {
   this->m_OutputObject = &(*m_Geometry);
@@ -124,7 +123,10 @@ EndElement(const char *name)
     m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str() );
 
   if(itksys::SystemTools::Strucmp(name, "RadiusCylindricalDetector") == 0)
-    m_RadiusCylindricalDetector = atof(this->m_CurCharacterData.c_str() );
+    {
+    double radiusCylindricalDetector = atof(this->m_CurCharacterData.c_str() );
+    this->m_OutputObject->SetRadiusCylindricalDetector(radiusCylindricalDetector);
+    }
 
   if(itksys::SystemTools::Strucmp(name, "Matrix") == 0)
     {
@@ -148,8 +150,7 @@ EndElement(const char *name)
                                         m_OutOfPlaneAngle,
                                         m_InPlaneAngle,
                                         m_SourceOffsetX,
-                                        m_SourceOffsetY,
-                                        m_RadiusCylindricalDetector);
+                                        m_SourceOffsetY);
     for(unsigned int i=0; i<m_Matrix.RowDimensions; i++)
       for(unsigned int j=0; j<m_Matrix.ColumnDimensions; j++)
         {
@@ -249,10 +250,9 @@ WriteFile()
                                "OutOfPlaneAngle",
                                true);
 
-  bool bRadiusCylindricalDetectorGlobal =
-          WriteGlobalParameter(output, indent,
-                               this->m_InputObject->GetRadiusCylindricalDetector(),
-                               "RadiusCylindricalDetector");
+  const double radius = this->m_InputObject->GetRadiusCylindricalDetector();
+  if (0. != radius)
+    WriteLocalParameter(output, indent, radius, "RadiusCylindricalDetector");
 
   // Second, write per projection parameters (if corresponding parameter is not global)
   const double radiansToDegrees = 45. / vcl_atan(1.);
@@ -298,11 +298,6 @@ WriteFile()
       WriteLocalParameter(output, indent,
                           radiansToDegrees * this->m_InputObject->GetOutOfPlaneAngles()[i],
                           "OutOfPlaneAngle");
-
-    if(!bRadiusCylindricalDetectorGlobal)
-      WriteLocalParameter(output, indent,
-                          this->m_InputObject->GetRadiusCylindricalDetector()[i],
-                          "RadiusCylindricalDetector");
 
     //Matrix
     output << indent << indent;
@@ -352,19 +347,18 @@ WriteGlobalParameter(std::ofstream &output,
     double val = v[0];
     if(convertToDegrees)
       val *= 45. / vcl_atan(1.);
-    std::string ss(s);
-    output << indent;
-    this->WriteStartElement(ss, output);
-    output << val;
-    this->WriteEndElement(ss,output);
-    output << std::endl;
+
+    WriteLocalParameter(output, indent, val, s);
     }
   return true;
 }
 
 void
 ThreeDCircularProjectionGeometryXMLFileWriter::
-WriteLocalParameter(std::ofstream &output, const std::string &indent, const double &v, const std::string &s)
+WriteLocalParameter(std::ofstream &output,
+                    const std::string &indent,
+                    const double &v,
+                    const std::string &s)
 {
   std::string ss(s);
   output << indent << indent;

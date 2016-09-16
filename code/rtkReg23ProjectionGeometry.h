@@ -87,8 +87,7 @@ public:
   bool AddReg23Projection(const PointType &sourcePosition,
                           const PointType &detectorPosition,
                           const VectorType &detectorRowVector,
-                          const VectorType &detectorColumnVector,
-                          const double radiusCylindricalDetector=0.);
+                          const VectorType &detectorColumnVector);
 
 protected:
   /** Standard constructor. **/

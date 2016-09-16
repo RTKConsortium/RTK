@@ -79,16 +79,19 @@ public:
   const std::vector<double>  GetMatrix( const unsigned int i) const;
   const std::vector<double>  GetProjectionCoordinatesToFixedSystemMatrix( const unsigned int i) const;
 
+  const double GetRadiusCylindricalDetector();
+  void SetRadiusCylindricalDetector(const double radius);
+
   /** Add the projection with angles in degress
    * @{
    */
-  void AddProjection(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0., float rc=0.);
+  void AddProjection(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.);
   /**@}*/
 
   /** Add the projection with angles in radians
    * @{
    */
-  void AddProjectionInRadians(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0., float rc=0.);
+  void AddProjectionInRadians(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.);
   /**@}*/
 
   /** Clear the geometry object

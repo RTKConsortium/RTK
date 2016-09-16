@@ -68,15 +68,13 @@ public:
   void AddProjection(const double sid, const double sdd, const double gantryAngle,
                      const double projOffsetX=0., const double projOffsetY=0.,
                      const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
-                     const double sourceOffsetX=0., const double sourceOffsetY=0.,
-                     const double radiusCylindricalDetector=0.);
+                     const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
   /** Idem with angles in radians. */
   virtual void AddProjectionInRadians(const double sid, const double sdd, const double gantryAngle,
                                       const double projOffsetX=0., const double projOffsetY=0.,
                                       const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
-                                      const double sourceOffsetX=0., const double sourceOffsetY=0.,
-                                      const double radiusCylindricalDetector=0.);
+                                      const double sourceOffsetX=0., const double sourceOffsetY=0.);
 
   /** Empty the geometry object. */
   void Clear() ITK_OVERRIDE;
@@ -109,9 +107,6 @@ public:
   }
   const std::vector<double> &GetProjectionOffsetsY() const {
     return this->m_ProjectionOffsetsY;
-  }
-  const std::vector<double> &GetRadiusCylindricalDetector() const {
-    return this->m_RadiusCylindricalDetector;
   }
 
   /** Get a vector containing the source angles in radians. The source angle is
@@ -200,8 +195,13 @@ public:
   double ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
                                          const double tiltedCoord) const;
 
+  /** Accessor for the radius of curved detector. The default is 0 and it means
+   * a flat detector. */
+  itkGetMacro(RadiusCylindricalDetector, double)
+  itkSetMacro(RadiusCylindricalDetector, double)
+
 protected:
-  ThreeDCircularProjectionGeometry() {};
+  ThreeDCircularProjectionGeometry();
   ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
@@ -233,8 +233,11 @@ protected:
   std::vector<double> m_SourceToDetectorDistances;
   std::vector<double> m_ProjectionOffsetsX;
   std::vector<double> m_ProjectionOffsetsY;
-  std::vector<double> m_RadiusCylindricalDetector;
 
+  /** Radius of curved detector. The default is 0 and it means a flat detector. */
+  double m_RadiusCylindricalDetector;
+
+  /** Matrices to change coordiate systems. */
   std::vector<TwoDHomogeneousMatrixType>         m_ProjectionTranslationMatrices;
   std::vector<Superclass::MatrixType>            m_MagnificationMatrices;
   std::vector<ThreeDHomogeneousMatrixType>       m_RotationMatrices;

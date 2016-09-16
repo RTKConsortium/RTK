@@ -103,7 +103,6 @@ private:
   double m_SourceToDetectorDistance;
   double m_ProjectionOffsetX;
   double m_ProjectionOffsetY;
-  double m_RadiusCylindricalDetector;
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;

@@ -22,6 +22,11 @@
 #include <algorithm>
 #include <itkCenteredEuler3DTransform.h>
 
+rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry():
+    m_RadiusCylindricalDetector(0.)
+{
+}
+
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
   double result = a-360*floor(a/360); // between -360 and 360
@@ -40,23 +45,20 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjection(
   const double sid, const double sdd, const double gantryAngle,
   const double projOffsetX, const double projOffsetY,
   const double outOfPlaneAngle, const double inPlaneAngle,
-  const double sourceOffsetX, const double sourceOffsetY,
-  const double radiusCylindricalDetector)
+  const double sourceOffsetX, const double sourceOffsetY)
 {
   const double degreesToRadians = vcl_atan(1.0) / 45.0;
   AddProjectionInRadians(sid, sdd, degreesToRadians * gantryAngle,
                          projOffsetX, projOffsetY, degreesToRadians * outOfPlaneAngle,
                          degreesToRadians * inPlaneAngle,
-                         sourceOffsetX, sourceOffsetY,
-                         radiusCylindricalDetector);
+                         sourceOffsetX, sourceOffsetY);
 }
 
 void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
   const double sid, const double sdd, const double gantryAngle,
   const double projOffsetX, const double projOffsetY,
   const double outOfPlaneAngle, const double inPlaneAngle,
-  const double sourceOffsetX, const double sourceOffsetY,
-  const double radiusCylindricalDetector)
+  const double sourceOffsetX, const double sourceOffsetY)
 {
   // Detector orientation parameters
   m_GantryAngles.push_back( ConvertAngleBetween0And2PIRadians(gantryAngle) );
@@ -100,9 +102,6 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
     a = 2. * vnl_math::pi - a;
   m_SourceAngles.push_back( ConvertAngleBetween0And2PIRadians(a) );
 
-  // Radius cylinder
-  m_RadiusCylindricalDetector.push_back( radiusCylindricalDetector );
-
   this->Modified();
 }
 
@@ -120,7 +119,6 @@ void rtk::ThreeDCircularProjectionGeometry::Clear()
   m_SourceToDetectorDistances.clear();
   m_ProjectionOffsetsX.clear();
   m_ProjectionOffsetsY.clear();
-  m_RadiusCylindricalDetector.clear();
 
   m_ProjectionTranslationMatrices.clear();
   m_MagnificationMatrices.clear();

@@ -113,8 +113,7 @@ void SubSelectImageFilter<ProjectionStackType>
                                                 m_InputGeometry->GetOutOfPlaneAngles()[i],
                                                 m_InputGeometry->GetInPlaneAngles()[i],
                                                 m_InputGeometry->GetSourceOffsetsX()[i],
-                                                m_InputGeometry->GetSourceOffsetsY()[i],
-                                                m_InputGeometry->GetRadiusCylindricalDetector()[i]);
+                                                m_InputGeometry->GetSourceOffsetsY()[i]);
       }
     }
 }

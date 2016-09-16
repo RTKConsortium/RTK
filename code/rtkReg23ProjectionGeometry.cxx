@@ -136,8 +136,7 @@ bool rtk::Reg23ProjectionGeometry::FixAngles(double &outOfPlaneAngleRAD,
 
 bool rtk::Reg23ProjectionGeometry::AddReg23Projection(
     const PointType &sourcePosition, const PointType &detectorPosition,
-    const VectorType &detectorRowVector, const VectorType &detectorColumnVector,
-    const double radiusCylindricalDetector)
+    const VectorType &detectorRowVector, const VectorType &detectorColumnVector)
 {
   typedef itk::Euler3DTransform<double> EulerType;
 
@@ -216,7 +215,7 @@ bool rtk::Reg23ProjectionGeometry::AddReg23Projection(
   double oRy = Rv * c;
 
   // configure native RTK geometry
-  this->Superclass::AddProjection(SID, SDD, ga, oRx, oRy, oa, ia, oSx, oSy, radiusCylindricalDetector);
+  this->Superclass::AddProjection(SID, SDD, ga, oRx, oRy, oa, ia, oSx, oSy);
 
   return true;
 }

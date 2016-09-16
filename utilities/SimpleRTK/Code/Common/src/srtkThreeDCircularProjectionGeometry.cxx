@@ -160,14 +160,24 @@ public:
     return std::vector< double >( m.GetVnlMatrix().begin(), m.GetVnlMatrix().end() );
     }
 
-  /** Add the projection */
-  void AddProjection(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0., float rc=0.)
+  const double GetRadiusCylindricalDetector()
     {
-    this->m_ProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy,oa,ia,sx,sy,rc);
+    return this->m_ProjectionGeometry->GetRadiusCylindricalDetector();
     }
-  void AddProjectionInRadians(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0., float rc=0.)
+
+  void SetRadiusCylindricalDetector( const double radius )
     {
-    this->m_ProjectionGeometry->AddProjectionInRadians(sid,sdd,angle,isox,isoy,oa,ia,sx,sy,rc);
+    this->m_ProjectionGeometry->SetRadiusCylindricalDetector(radius);
+    }
+
+  /** Add the projection */
+  void AddProjection(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
+    {
+    this->m_ProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
+    }
+  void AddProjectionInRadians(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
+    {
+    this->m_ProjectionGeometry->AddProjectionInRadians(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
     }
 
   /** Clears the geometry */
@@ -314,16 +324,28 @@ const std::vector<double>  ThreeDCircularProjectionGeometry::GetProjectionCoordi
     return this->m_PimpleThreeDCircularProjectionGeometry->GetProjectionCoordinatesToFixedSystemMatrix(i);
   }
 
-void ThreeDCircularProjectionGeometry::AddProjection(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy, float rc)
+const double ThreeDCircularProjectionGeometry::GetRadiusCylindricalDetector()
   {
   assert( m_PimpleThreeDCircularProjectionGeometry );
-  this->m_PimpleThreeDCircularProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy,oa,ia,sx,sy,rc);
+  return this->m_PimpleThreeDCircularProjectionGeometry->GetRadiusCylindricalDetector();
   }
 
-void ThreeDCircularProjectionGeometry::AddProjectionInRadians(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy, float rc)
+void ThreeDCircularProjectionGeometry::SetRadiusCylindricalDetector( const double radius )
+  {
+  this->m_PimpleThreeDCircularProjectionGeometry->SetRadiusCylindricalDetector(radius);
+  }
+
+
+void ThreeDCircularProjectionGeometry::AddProjection(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy)
   {
   assert( m_PimpleThreeDCircularProjectionGeometry );
-  this->m_PimpleThreeDCircularProjectionGeometry->AddProjectionInRadians(sid,sdd,angle,isox,isoy,oa,ia,sx,sy,rc);
+  this->m_PimpleThreeDCircularProjectionGeometry->AddProjection(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
+  }
+
+void ThreeDCircularProjectionGeometry::AddProjectionInRadians(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy)
+  {
+  assert( m_PimpleThreeDCircularProjectionGeometry );
+  this->m_PimpleThreeDCircularProjectionGeometry->AddProjectionInRadians(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
   }
 
 void ThreeDCircularProjectionGeometry::Clear()
