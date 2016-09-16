@@ -65,42 +65,12 @@ public:
 	itk::int32_t binsInHistogram;
 	itk::int32_t * histogramData;
 	itk::int32_t numberOfProperties;
-	//Properties expected:
-	/*char sChecksumSpec[4];
-    unsigned int nCheckSum;
-    char sCreationDate[8];
-    char sCreationTime[8];
-    char sPatientID[16];
-    unsigned int nPatientSer;
-    char sSeriesID[16];
-    unsigned int nSeriesSer;
-    char sSliceID[16];
-    unsigned int nSliceSer;
-    double dSliceZPos;
-    char sModality[16];
-    unsigned int nWindow;
-    unsigned int nLevel;*/
     unsigned int nPixelOffset;
-    double dGantryRtn;
-    /*double dSAD;
-    double dSFD;*/
     double dCollX1;
     double dCollX2;
     double dCollY1;
     double dCollY2;
     double dCollRtn;
-    /*double dFieldX;
-    double dFieldY;
-    double dBladeX1;
-    double dBladeX2;
-    double dBladeY1;
-    double dBladeY2;
-    double dIDUPosLng;
-    double dIDUPosLat;
-    double dIDUPosVrt;
-    double dIDUPosRtn;
-    double dPatientSupportAngle;
-    double dTableTopEccentricAngle;*/
     double dCouchVrt;
     double dCouchLng;
     double dCouchLat;
@@ -112,10 +82,9 @@ public:
     double dDoseRate;
     double dXRayKV;
     double dXRayMA;
-    /*double dMetersetExposure;
-    double dAcqAdjustment;*/
-    double dCTProjectionAngle; //dGantryRtn in file
-	double dCTSourceAngle; //dGantryRtn in file
+    double dCTProjectionAngle; //KVSourceRtn in file
+	double dDetectorOffsetX; // KVDetectorLat
+	double dDetectorOffsetY; // KVDetectorLng
     double dCTNormChamber;
     double dGatingTimeTag;
     double dGating4DInfoX;

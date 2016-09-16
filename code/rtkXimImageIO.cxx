@@ -48,8 +48,12 @@ size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t v
 		xim->dCouchVrt = property_value;
 	else if (strncmp(property_name,"DataOffset", 10) == 0)
 		xim->nPixelOffset = property_value;
-	else if (strncmp(property_name, "KVSourceRtn", 9) == 0) //dGantryRtn
+	else if (strncmp(property_name, "KVSourceRtn", 11) == 0)
 		xim->dCTProjectionAngle = property_value;
+	else if (strncmp(property_name, "KVDetectorLat", 13) == 0)
+		xim->dDetectorOffsetX = property_value;
+	else if (strncmp(property_name, "KVDetectorLng", 13) == 0)
+		xim->dDetectorOffsetY = property_value;
 	else if (strncmp(property_name, "KVCollimatorX1", 14) == 0)
 		xim->dCollX1 = property_value;
 	else if (strncmp(property_name, "KVCollimatorX2", 14) == 0)
@@ -64,8 +68,6 @@ size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t v
 		xim->dXRayMA = property_value;
 	else if (strncmp(property_name, "KVNormChamber", 13) == 0)
 		xim->dCTNormChamber = property_value;
-	else if (strncmp(property_name, "KVSourceRtn", 11) == 0)
-		xim->dCTSourceAngle = property_value; //May need off-set correction?
 	else if (strncmp(property_name, "MMTrackingRemainderX", 20) == 0)
 		xim->dGating4DInfoX = property_value;
 	else if (strncmp(property_name, "MMTrackingRemainderY", 20) == 0)
@@ -87,9 +89,9 @@ size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t v
 	else if (strncmp(property_name, "MVEnergy", 8) == 0)
 		xim->dEnergy = property_value;
 	else if (strncmp(property_name, "PixelHeight", 11) == 0) //READ WRONGLY!
-		xim->dIDUResolutionY = property_value * 10; 
+		xim->dIDUResolutionY = property_value * 10.0; 
 	else if (strncmp(property_name, "PixelWidth", 10) == 0)
-		xim->dIDUResolutionX = property_value * 10;
+		xim->dIDUResolutionX = property_value * 10.0;
 	else
 		not_set = false;
 	// Line below is for debugging:
@@ -217,8 +219,11 @@ void rtk::XimImageIO::ReadImageInformation()
 
   SetComponentType(itk::ImageIOBase::UINT);
   /* Store important meta information in the meta data dictionary */
-  if (xim.SizeX * xim.SizeY != 0)
-	itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", xim.dCTProjectionAngle);
+  if (xim.SizeX * xim.SizeY != 0){
+	  itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", xim.dCTProjectionAngle);
+	  itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dDetectorOffsetX", xim.dDetectorOffsetX * 10.0); //cm->mm Lat
+	  itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dDetectorOffsetY", xim.dDetectorOffsetY * 10.0); //cm->mm Lng
+  }
   else
 	itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", 6000);
 }

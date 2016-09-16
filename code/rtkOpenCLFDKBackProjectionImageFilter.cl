@@ -51,6 +51,7 @@ OpenCLFDKBackProjectionImageFilterKernel(__global float *volume,
   volume[volumeIndex] += ipz * ipz * projectionData.x;
 }
 
+/*
 __kernel
 void kernel_forwardProject_noTexture(float *dev_proj_in, image2d_t *dv
                                      float *dev_proj_out,
@@ -158,3 +159,4 @@ CUDA_forward_project( int projSize[3],
 
   kernel_forwardProject_noTexture<<<dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol);
 }
+*/

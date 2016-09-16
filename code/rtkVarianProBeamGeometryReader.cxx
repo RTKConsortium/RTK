@@ -49,6 +49,7 @@ rtk::VarianProBeamGeometryReader
   const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["SID"].GetPointer() )->GetMetaDataObjectValue();
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["SAD"].GetPointer() )->GetMetaDataObjectValue();
   typedef itk::MetaDataObject< std::string > MetaDataStringType;
+  /*
   double offsetx;
   std::string fanType = dynamic_cast<const MetaDataStringType *>(dic["Fan"].GetPointer() )->GetMetaDataObjectValue();
   if(itksys::SystemTools::Strucmp(fanType.c_str(), "HALF") == 0)
@@ -66,7 +67,8 @@ rtk::VarianProBeamGeometryReader
     }
   const double offsety = 0.0; //XML file doesn't contain offset!!
     //dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetY"].GetPointer() )->GetMetaDataObjectValue();
-
+  */
+  
   // Projections reader (for angle)
   rtk::XimImageIOFactory::RegisterOneFactory();
   // Projection matrices
@@ -82,7 +84,14 @@ rtk::VarianProBeamGeometryReader
 
 	const double angle = 
 	  dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
-	if (angle != 6000)
+	
+	if (angle != 6000){
+	  const double offsetx =
+		dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue();
+	  const double offsety =
+		dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetY"].GetPointer())->GetMetaDataObjectValue();
 	  m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
+	  std::cout << "Angle: " << angle << ", off: [" << offsetx << ", " << offsety << "]" << std::endl;
+	  }
     }
 }
