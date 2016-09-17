@@ -22,6 +22,7 @@
 #include "rtkHncImageIO.h"
 #include "itkMetaDataObject.h"
 
+
 static std::string
 GetExtension(const std::string & filename)
 {

@@ -91,7 +91,6 @@ rtk::VarianProBeamGeometryReader
 	  const double offsety =
 		dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetY"].GetPointer())->GetMetaDataObjectValue();
 	  m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
-	  std::cout << "Angle: " << angle << ", off: [" << offsetx << ", " << offsety << "]" << std::endl;
 	  }
     }
 }
