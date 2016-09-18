@@ -146,6 +146,15 @@ int main(int argc, char * argv[])
   else
     regularizedConjugateGradient->SetPerformWaveletsSpatialDenoising(false);
 
+  // Sparsity in image domain
+  if (args_info.soft_given)
+    {
+    regularizedConjugateGradient->SetSoftThresholdOnImage(args_info.soft_arg);
+    regularizedConjugateGradient->SetPerformSoftThresholdOnImage(true);
+    }
+  else
+    regularizedConjugateGradient->SetSoftThresholdOnImage(false);
+
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
     {
