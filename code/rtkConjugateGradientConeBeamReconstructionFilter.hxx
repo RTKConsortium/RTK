@@ -28,7 +28,7 @@ template< typename TOutputImage>
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(3);
-  
+
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
@@ -37,7 +37,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   m_Gamma = 0;
   m_Regularized = false;
   m_CudaConjugateGradient = true;
-//  this->GetSupportMask() = NULL;
 
   // Create the filters
 #ifdef RTK_USE_CUDA
@@ -192,7 +191,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_CGOperator->SetSupportMask(this->GetSupportMask());
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_DisplacedDetectorFilter->SetInput(this->GetInput(2));
-  
+
   // Multiply the projections by the weights map
   m_MultiplyProjectionsFilter->SetInput1(this->GetInput(1));  
   m_MultiplyProjectionsFilter->SetInput2(m_DisplacedDetectorFilter->GetOutput());
@@ -216,7 +215,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_MultiplySupportMaskFilter->SetInput(1,this->GetSupportMask());
     m_ConjugateGradientFilter->SetB(m_MultiplySupportMaskFilter->GetOutput());   
     }
-  
+
   if (m_Preconditioned)
     {
     // Set the projections source
@@ -264,7 +263,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 
   // Set memory management parameters
   m_MultiplyProjectionsFilter->ReleaseDataFlagOn();
-  
+
   if (m_Preconditioned)
     {
     m_ConstantProjectionsSource->ReleaseDataFlagOn();
@@ -274,7 +273,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_MultiplyOutputFilter->ReleaseDataFlagOn();
     }
   m_BackProjectionFilterForB->ReleaseDataFlagOn();
-  
+
   if (this->GetSupportMask().IsNotNull())
     {
     m_MultiplySupportMaskFilterForOutput->SetInput(1,this->GetSupportMask());
@@ -341,7 +340,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     ConjugateGradientTimeProbe.Stop();
     std::cout << "ConjugateGradient took " << ConjugateGradientTimeProbe.GetTotal() << ' ' << ConjugateGradientTimeProbe.GetUnit() << std::endl;
     }
-  
+
   if (this->GetSupportMask())
     {
     this->GraftOutput( m_MultiplySupportMaskFilterForOutput->GetOutput() );

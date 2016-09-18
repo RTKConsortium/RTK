@@ -122,16 +122,16 @@ public:
 #else
   typedef itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension >, TOutputImage::ImageDimension > GradientImageType;
 #endif
-  
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
-    
+
   /** Run-time type information (and related methods). */
   itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator)
-    
+
   typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >    BackProjectionFilterType;
   typedef typename BackProjectionFilterType::Pointer                      BackProjectionFilterPointer;
-  
+
   typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
   typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
 
@@ -149,10 +149,6 @@ public:
 
   /** Set the forward projection filter*/
   void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
-
-//  /** Set the support mask, if any, for support constraint in reconstruction */
-//  itkGetMacro(SupportMask, OutputImagePointer);
-//  itkSetMacro(SupportMask, OutputImagePointer);
 
   /** Set the support mask, if any, for support constraint in reconstruction */
   void SetSupportMask(const TOutputImage *SupportMask);
@@ -200,7 +196,6 @@ protected:
   bool                                              m_Preconditioned; //Multiply by preconditioning weights ?
   bool                                              m_Regularized;
   float                                             m_Gamma; //Strength of the regularization
-//  OutputImagePointer                                m_SupportMask;
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */

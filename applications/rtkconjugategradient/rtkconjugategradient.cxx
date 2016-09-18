@@ -113,7 +113,7 @@ int main(int argc, char * argv[])
     supportmaskReader->SetFileName( args_info.mask_arg );
     supportmaskSource = supportmaskReader;
     }
-  
+
 
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
@@ -136,7 +136,7 @@ int main(int argc, char * argv[])
     conjugategradient->SetRegularized(true);
     conjugategradient->SetGamma(args_info.gamma_arg);
     }
-  
+
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
 

@@ -16,94 +16,53 @@
       "type" : "ThreeDCircularProjectionGeometry*",
       "default" : "0",
 	  "itk_type" : "ThreeDCircularProjectionGeometry",
-      "custom_itk_cast" : "filter->SetGeometry( const_cast<rtk::ThreeDCircularProjectionGeometry*>(dynamic_cast<const rtk::ThreeDCircularProjectionGeometry*>(this->m_Geometry->GetRTKBase())) );\n",
-      "doc" : "",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "Set the object pointer to projection geometry.",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : "Get the object pointer to projection geometry."
+      "custom_itk_cast" : "filter->SetGeometry( const_cast<rtk::ThreeDCircularProjectionGeometry*>(dynamic_cast<const rtk::ThreeDCircularProjectionGeometry*>(this->m_Geometry->GetRTKBase())) );\n"
     }
     {
       "name" : "NumberOfIterations",
       "type" : "int",
-      "default" : "5",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : ""
+      "default" : "5"
     }
     {
       "name" : "ForwardProjectionFilter",
       "type" : "int",
-      "default" : "0",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : ""
+      "default" : "0"
     }
     {
       "name" : "BackProjectionFilter",
       "type" : "int",
-      "default" : "0",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : ""
+      "default" : "0"
     }
     {
       "name" : "Preconditioned",
       "type" : "bool",
-      "default" : "0",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : ""
-    },
+      "default" : "0"
+    }
     {
       "name" : "Regularized",
       "type" : "bool",
-      "default" : "0",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : ""
+      "default" : "0"
     }
     {
       "name" : "Gamma",
       "type" : "float",
-      "default" : "0",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : ""
-    },
+      "default" : "0"
+    }
     {
       "name" : "CudaConjugateGradient",
       "type" : "bool",
-      "default" : "0",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : ""
+      "default" : "0"
     }
     {
       "name" : "IterationCosts",
       "type" : "bool",
-      "default" : "0",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : ""
+      "default" : "0"
     }
     {
       "name" : "SupportMask",
       "type" : "Image",
       "default" : "Image()",
-      "custom_itk_cast" : "filter->SetSupportMask(const_cast<InputImageType*>( this->CastImageToITK<InputImageType>(this->m_SupportMask).GetPointer() ) );",
-      "briefdescriptionSet" : "",
-      "detaileddescriptionSet" : "",
-      "briefdescriptionGet" : "",
-      "detaileddescriptionGet" : "",
+      "custom_itk_cast" : "if(dynamic_cast < const TImageType* > ( this->m_SupportMask.GetITKBase() )) filter->SetSupportMask(const_cast<InputImageType*>( this->CastImageToITK<InputImageType>(this->m_SupportMask).GetPointer() ));",
       "no_print" : true
     }
   ],
@@ -114,7 +73,5 @@
       "default" : "std::vector<double>()",
       "custom_itk_cast" : "this->m_ResidualCosts = std::vector<double>( filter->GetResidualCosts().begin(), filter->GetResidualCosts().end() );"
     }
-  ],
-  "briefdescription" : "",
-  "detaileddescription" : ""
+  ]
 }

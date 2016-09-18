@@ -156,10 +156,6 @@ public:
     /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
     void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
 
-//    /** Set the support mask for support constraint in reconstruction */
-//    itkGetMacro(SupportMask, OutputImagePointer);
-//    itkSetMacro(SupportMask, OutputImagePointer);
-
     /** Set the support mask, if any, for support constraint in reconstruction */
     void SetSupportMask(const TOutputImage *SupportMask);
     typename TOutputImage::ConstPointer GetSupportMask();
@@ -179,8 +175,8 @@ public:
     /** If Weighted and Preconditioned, computes preconditioning weights to speed up CG convergence */
     itkSetMacro(Preconditioned, bool)
     itkGetMacro(Preconditioned, bool)
-    
-    /** If Regularized, perform laplacian-based regularization during 
+
+    /** If Regularized, perform laplacian-based regularization during
      *  reconstruction (gamma is the strength of the regularization) */
     itkSetMacro(Regularized, bool)
     itkGetMacro(Regularized, bool)
@@ -236,7 +232,7 @@ private:
     void operator=(const Self &);  //purposely not implemented
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-    
+
     int                          m_NumberOfIterations;
     float                        m_Gamma;
     bool                         m_MeasureExecutionTimes;
@@ -244,7 +240,6 @@ private:
     bool                         m_Preconditioned;
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
-//    OutputImagePointer           m_SupportMask;
 };
 } //namespace ITK
 

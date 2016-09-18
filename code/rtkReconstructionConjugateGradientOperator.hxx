@@ -174,7 +174,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
   m_MultiplySupportMaskFilter->SetInput(1,this->GetSupportMask());
   m_ForwardProjectionFilter->SetInput(1, ApplySupportMask(this->GetInput(0)));
-  
+
   if (m_Regularized)
     {
     m_LaplacianFilter->SetInput(ApplySupportMask(this->GetInput(0)));
@@ -251,7 +251,7 @@ void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
     {
     m_MultiplyOutputVolumeFilter->Update();
     this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
-    
+
     }
   else
     {
