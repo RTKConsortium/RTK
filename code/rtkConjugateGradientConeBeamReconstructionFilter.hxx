@@ -192,12 +192,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_DisplacedDetectorFilter->SetInput(this->GetInput(2));
 
-  // Multiply the projections by the weights map
-  m_MultiplyProjectionsFilter->SetInput1(this->GetInput(1));  
-  m_MultiplyProjectionsFilter->SetInput2(m_DisplacedDetectorFilter->GetOutput());
-  m_CGOperator->SetInput(2, m_DisplacedDetectorFilter->GetOutput());
-  m_BackProjectionFilterForB->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
-
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_BackProjectionFilterForB->SetInput(0, m_ConstantVolumeSource->GetOutput());
