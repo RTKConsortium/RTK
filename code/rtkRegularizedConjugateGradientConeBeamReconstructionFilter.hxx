@@ -28,6 +28,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
 {
   // Set the default values of member parameters
   m_GammaTV = 0.00005;
+  m_Gamma = 0; // Laplacian regularization
   m_SoftThresholdWavelets = 0.001;
   m_SoftThresholdOnImage = 0.001;
   m_Preconditioned = false;
@@ -167,6 +168,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->SetPreconditioned(m_Preconditioned);
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_CGFilter->SetRegularized(this->m_RegularizedCG);
+  m_CGFilter->SetGamma(this->m_Gamma);
 
   currentDownstreamFilter = m_CGFilter;
 
