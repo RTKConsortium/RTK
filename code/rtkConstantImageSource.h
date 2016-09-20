@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConstantImageSource_h
-#define __rtkConstantImageSource_h
+#ifndef rtkConstantImageSource_h
+#define rtkConstantImageSource_h
 
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
@@ -115,12 +115,12 @@ public:
 
 protected:
   ConstantImageSource();
-  ~ConstantImageSource();
+  ~ConstantImageSource() ITK_OVERRIDE;
   void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   SizeType       m_Size;
   SpacingType    m_Spacing;

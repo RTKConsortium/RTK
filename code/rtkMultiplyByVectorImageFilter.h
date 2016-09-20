@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkMultiplyByVectorImageFilter_h
-#define __rtkMultiplyByVectorImageFilter_h
+#ifndef rtkMultiplyByVectorImageFilter_h
+#define rtkMultiplyByVectorImageFilter_h
 
 #include <itkImageToImageFilter.h>
 
@@ -54,10 +54,10 @@ public:
 
 protected:
     MultiplyByVectorImageFilter();
-    ~MultiplyByVectorImageFilter(){}
+    ~MultiplyByVectorImageFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
 
 private:
     MultiplyByVectorImageFilter(const Self &); //purposely not implemented

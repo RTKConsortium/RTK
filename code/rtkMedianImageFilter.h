@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMedianImageFilter_h
-#define __rtkMedianImageFilter_h
+#ifndef rtkMedianImageFilter_h
+#define rtkMedianImageFilter_h
 
 #include <itkImageToImageFilter.h>
 
@@ -73,14 +73,14 @@ public:
 
 protected:
   MedianImageFilter();
-  virtual ~MedianImageFilter() {};
+  ~MedianImageFilter() ITK_OVERRIDE {};
 
   //virtual void GenerateOutputInformation();
   //virtual void GenerateInputRequestedRegion();
 
   /** Performs median filtering on input image.
    * A call to this function will assume modification of the function.*/
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   MedianImageFilter(const Self&); //purposely not implemented

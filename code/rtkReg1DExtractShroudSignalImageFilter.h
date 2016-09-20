@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReg1DExtractShroudSignalImageFilter_h
-#define __rtkReg1DExtractShroudSignalImageFilter_h
+#ifndef rtkReg1DExtractShroudSignalImageFilter_h
+#define rtkReg1DExtractShroudSignalImageFilter_h
 
 #include <itkImageToImageFilter.h>
 
@@ -63,11 +63,11 @@ public:
 
 protected:
   Reg1DExtractShroudSignalImageFilter();
-  ~Reg1DExtractShroudSignalImageFilter(){}
+  ~Reg1DExtractShroudSignalImageFilter() ITK_OVERRIDE {}
 
-  void GenerateOutputInformation();
-  void GenerateInputRequestedRegion();
-  void GenerateData();
+  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   Reg1DExtractShroudSignalImageFilter(const Self&);  //purposely not implemented

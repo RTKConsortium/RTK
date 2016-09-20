@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkElektaSynergyLookupTableImageFilter_hxx
-#define __rtkElektaSynergyLookupTableImageFilter_hxx
+#ifndef rtkElektaSynergyLookupTableImageFilter_hxx
+#define rtkElektaSynergyLookupTableImageFilter_hxx
 
 namespace rtk
 {

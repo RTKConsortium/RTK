@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayQuadricIntersectionImageFilter_h
-#define __rtkRayQuadricIntersectionImageFilter_h
+#ifndef rtkRayQuadricIntersectionImageFilter_h
+#define rtkRayQuadricIntersectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkConfiguration.h"
@@ -75,17 +75,17 @@ public:
 
 protected:
   RayQuadricIntersectionImageFilter();
-  virtual ~RayQuadricIntersectionImageFilter() {};
+  ~RayQuadricIntersectionImageFilter() ITK_OVERRIDE {};
 
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
   /** Apply changes to the input image requested region. */
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                                     ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
+                                     ThreadIdType threadId ) ITK_OVERRIDE;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
 private:
   RayQuadricIntersectionImageFilter(const Self&); //purposely not implemented

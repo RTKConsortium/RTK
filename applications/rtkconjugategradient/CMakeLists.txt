@@ -1,18 +1,18 @@
 WRAP_GGO(rtkconjugategradient_GGO_C rtkconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
-ADD_EXECUTABLE(rtkconjugategradient rtkconjugategradient.cxx ${rtkconjugategradient_GGO_C})
-TARGET_LINK_LIBRARIES(rtkconjugategradient RTK)
+add_executable(rtkconjugategradient rtkconjugategradient.cxx ${rtkconjugategradient_GGO_C})
+target_link_libraries(rtkconjugategradient RTK)
 
-IF (RTK_USE_CUDA)
-  TARGET_LINK_LIBRARIES(rtkconjugategradient rtkcuda)
-ENDIF (RTK_USE_CUDA)
+if (RTK_USE_CUDA)
+  target_link_libraries(rtkconjugategradient rtkcuda)
+endif ()
 
 # Installation code
-IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtkconjugategradient) 
-    INSTALL(TARGETS ${EXE_NAME}
+if(NOT RTK_INSTALL_NO_EXECUTABLES)
+  foreach(EXE_NAME rtkconjugategradient) 
+    install(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  ENDFOREACH(EXE_NAME) 
-ENDIF(NOT RTK_INSTALL_NO_EXECUTABLES)
+  endforeach() 
+endif()
 

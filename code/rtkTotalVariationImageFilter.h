@@ -16,13 +16,15 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkTotalVariationImageFilter_h
-#define __rtkTotalVariationImageFilter_h
+#ifndef rtkTotalVariationImageFilter_h
+#define rtkTotalVariationImageFilter_h
 
-#include "itkImageToImageFilter.h"
-#include "itkNumericTraits.h"
-#include "itkArray.h"
-#include "itkSimpleDataObjectDecorator.h"
+#include <itkImageToImageFilter.h>
+#include <itkNumericTraits.h>
+#include <itkArray.h>
+#include <itkSimpleDataObjectDecorator.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -94,7 +96,7 @@ public:
    * output. */
   typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  virtual DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx);
+  DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -105,31 +107,31 @@ public:
 
 protected:
   TotalVariationImageFilter();
-  ~TotalVariationImageFilter(){}
-  void PrintSelf(std::ostream & os, itk::Indent indent) const;
+  ~TotalVariationImageFilter() ITK_OVERRIDE {}
+  void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
 
   /** Pass the input through unmodified. Do this by Grafting in the
    *  AllocateOutputs method.
    */
-  void AllocateOutputs();
+  void AllocateOutputs() ITK_OVERRIDE;
 
   /** Initialize some accumulators before the threads run. */
-  void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
   /** Do final mean and variance computation from data accumulated in threads.
    */
-  void AfterThreadedGenerateData();
+  void AfterThreadedGenerateData() ITK_OVERRIDE;
 
   /** Multi-thread version GenerateData. */
   void  ThreadedGenerateData(const RegionType &
                              outputRegionForThread,
-                             itk::ThreadIdType threadId);
+                             itk::ThreadIdType threadId) ITK_OVERRIDE;
 
   // Override since the filter needs all the data for the algorithm
-  void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   // Override since the filter produces all of its output
-  void EnlargeOutputRequestedRegion(itk::DataObject *data);
+  void EnlargeOutputRequestedRegion(itk::DataObject *data) ITK_OVERRIDE;
 
 private:
   TotalVariationImageFilter(const Self &); //purposely not implemented

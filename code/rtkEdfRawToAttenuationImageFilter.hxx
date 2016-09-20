@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkEdfRawToAttenuationImageFilter_hxx
-#define __rtkEdfRawToAttenuationImageFilter_hxx
+#ifndef rtkEdfRawToAttenuationImageFilter_hxx
+#define rtkEdfRawToAttenuationImageFilter_hxx
 
 #include <itkImageFileWriter.h>
 #include <itksys/SystemTools.hxx>

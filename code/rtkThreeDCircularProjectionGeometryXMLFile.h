@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkThreeDCircularProjectionGeometryXMLFile_h
-#define __rtkThreeDCircularProjectionGeometryXMLFile_h
+#ifndef rtkThreeDCircularProjectionGeometryXMLFile_h
+#define rtkThreeDCircularProjectionGeometryXMLFile_h
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -71,7 +71,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();
-  ~ThreeDCircularProjectionGeometryXMLFileReader() { };
+  ~ThreeDCircularProjectionGeometryXMLFileReader() ITK_OVERRIDE { };
 
   /** Callback function -- called from XML parser with start-of-element
    * information.
@@ -142,7 +142,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileWriter() {};
-  ~ThreeDCircularProjectionGeometryXMLFileWriter() {};
+  ~ThreeDCircularProjectionGeometryXMLFileWriter() ITK_OVERRIDE {};
   
   /** If all values are equal in v, write first value (if not 0.) in
       output file with parameter value s and return true. Return false

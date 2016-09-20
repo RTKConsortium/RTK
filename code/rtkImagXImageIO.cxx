@@ -57,7 +57,7 @@ void rtk::ImagXImageIO::ReadImageInformation()
   if(pixelType=="Type_float")
     SetComponentType(itk::ImageIOBase::FLOAT);
 
-  if( dic["dimensions"].GetPointer() == NULL )
+  if( dic["dimensions"].GetPointer() == ITK_NULLPTR )
     SetNumberOfDimensions(3);
   else
     SetNumberOfDimensions( ( dynamic_cast<MetaDataIntType *>(dic["dimensions"].GetPointer() )->GetMetaDataObjectValue() ) );
@@ -78,7 +78,7 @@ void rtk::ImagXImageIO::ReadImageInformation()
     }
 
   itk::Matrix<double, 4, 4> matrix;
-  if(dic["matrixTransform"].GetPointer() == NULL)
+  if(dic["matrixTransform"].GetPointer() == ITK_NULLPTR)
     matrix.SetIdentity();
   else
     {

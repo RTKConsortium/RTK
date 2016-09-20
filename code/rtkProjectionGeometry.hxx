@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectionGeometry_hxx
-#define __rtkProjectionGeometry_hxx
+#ifndef rtkProjectionGeometry_hxx
+#define rtkProjectionGeometry_hxx
 
 namespace rtk {
 
@@ -45,4 +45,4 @@ ProjectionGeometry< TDimension >
 
 }
 
-#endif // __rtkProjectionGeometry_hxx
+#endif // rtkProjectionGeometry_hxx

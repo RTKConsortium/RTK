@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLaplacianImageFilter_h
-#define __rtkLaplacianImageFilter_h
+#ifndef rtkLaplacianImageFilter_h
+#define rtkLaplacianImageFilter_h
 
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
@@ -61,13 +61,13 @@ public:
 
 protected:
   LaplacianImageFilter();
-  ~LaplacianImageFilter(){}
+  ~LaplacianImageFilter() ITK_OVERRIDE {}
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** Handle regions */
-  void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   typename GradientFilterType::Pointer    m_Gradient;
   typename DivergenceFilterType::Pointer  m_Divergence;

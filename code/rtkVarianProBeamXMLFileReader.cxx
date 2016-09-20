@@ -72,18 +72,16 @@ EndElement(const char *name)
     itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, m_CurCharacterData); \
     }
 
-  ENCAPLULATE_META_DATA_DOUBLE("Velocity"); // "GantryRtnSpeed");
-  ENCAPLULATE_META_DATA_DOUBLE("SAD"); //"CalibratedSAD");
-  ENCAPLULATE_META_DATA_DOUBLE("SID"); //"CalibratedSID");
+  ENCAPLULATE_META_DATA_DOUBLE("Velocity");
+  ENCAPLULATE_META_DATA_DOUBLE("SAD");
+  ENCAPLULATE_META_DATA_DOUBLE("SID");
   ENCAPLULATE_META_DATA_DOUBLE("SourceAngleOffset");
-//ENCAPLULATE_META_DATA_DOUBLE("CalibratedDetectorOffsetX");
-//ENCAPLULATE_META_DATA_DOUBLE("CalibratedDetectorOffsetY");
-  ENCAPLULATE_META_DATA_DOUBLE_AS("ImagerSizeX", "DetectorSizeX");// DetectorSize = ImagerSize * ImagerRes
+  ENCAPLULATE_META_DATA_DOUBLE_AS("ImagerSizeX", "DetectorSizeX");  // DetectorSize = ImagerSize * ImagerRes
   ENCAPLULATE_META_DATA_DOUBLE_AS("ImagerSizeY", "DetectorSizeY");
   MODIFY_META_DATA_DOUBLE_MULTIPLY("ImagerResX", "DetectorSizeX"); // Assumes ImagerSize is always read first!!
   MODIFY_META_DATA_DOUBLE_MULTIPLY("ImagerResY", "DetectorSizeY");
-  ENCAPLULATE_META_DATA_DOUBLE("ImagerLat"); //"DetectorPosLat");
-  ENCAPLULATE_META_DATA_STRING("Fan"); //"FanType");
+  ENCAPLULATE_META_DATA_DOUBLE("ImagerLat");
+  ENCAPLULATE_META_DATA_STRING("Fan");
 }
 
 void

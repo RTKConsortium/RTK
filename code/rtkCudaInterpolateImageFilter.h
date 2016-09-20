@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaInterpolateImageFilter_h
-#define __rtkCudaInterpolateImageFilter_h
+#ifndef rtkCudaInterpolateImageFilter_h
+#define rtkCudaInterpolateImageFilter_h
 
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 #include "itkCudaImage.h"

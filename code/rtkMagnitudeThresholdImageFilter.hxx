@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkMagnitudeThresholdImageFilter_hxx
-#define __rtkMagnitudeThresholdImageFilter_hxx
+#ifndef rtkMagnitudeThresholdImageFilter_hxx
+#define rtkMagnitudeThresholdImageFilter_hxx
 
 #include "rtkMagnitudeThresholdImageFilter.h"
 

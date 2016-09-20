@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkWin32Header_h
-#define __rtkWin32Header_h
+#ifndef rtkWin32Header_h
+#define rtkWin32Header_h
 
 #include "rtkConfiguration.h"
 

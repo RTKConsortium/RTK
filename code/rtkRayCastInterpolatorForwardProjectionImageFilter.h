@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayCastInterpolatorForwardProjectionImageFilter_h
-#define __rtkRayCastInterpolatorForwardProjectionImageFilter_h
+#ifndef rtkRayCastInterpolatorForwardProjectionImageFilter_h
+#define rtkRayCastInterpolatorForwardProjectionImageFilter_h
 
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"
@@ -62,9 +62,9 @@ public:
 
 protected:
   RayCastInterpolatorForwardProjectionImageFilter() {}
-  virtual ~RayCastInterpolatorForwardProjectionImageFilter() {}
+  ~RayCastInterpolatorForwardProjectionImageFilter() ITK_OVERRIDE {}
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   RayCastInterpolatorForwardProjectionImageFilter(const Self&); //purposely not implemented

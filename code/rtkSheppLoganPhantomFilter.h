@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSheppLoganPhantomFilter_h
-#define __rtkSheppLoganPhantomFilter_h
+#ifndef rtkSheppLoganPhantomFilter_h
+#define rtkSheppLoganPhantomFilter_h
 
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 
@@ -81,9 +81,9 @@ public:
 
 protected:
   SheppLoganPhantomFilter();
-  virtual ~SheppLoganPhantomFilter() {};
+  ~SheppLoganPhantomFilter() ITK_OVERRIDE {};
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
 private:
   SheppLoganPhantomFilter(const Self&); //purposely not implemented

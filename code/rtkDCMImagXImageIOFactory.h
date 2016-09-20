@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDCMImagXImageIOFactory_h
-#define __rtkDCMImagXImageIOFactory_h
+#ifndef rtkDCMImagXImageIOFactory_h
+#define rtkDCMImagXImageIOFactory_h
 
 #include "rtkWin32Header.h"
 #include "rtkDCMImagXImageIO.h"
@@ -43,11 +43,11 @@ public:
   typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const {
+  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const {
+  const char* GetDescription(void) const ITK_OVERRIDE {
     return "ImagX ImageIO Factory, allows the loading of ImagX images into insight";
   }
 
@@ -64,7 +64,7 @@ public:
 
 protected:
   DCMImagXImageIOFactory();
-  ~DCMImagXImageIOFactory() {}
+  ~DCMImagXImageIOFactory() ITK_OVERRIDE {}
   typedef DCMImagXImageIOFactory myProductType;
   const myProductType* m_MyProduct;
 

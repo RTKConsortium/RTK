@@ -41,7 +41,7 @@ if(NOT _BUILD_CUDA_KERNEL)
     set(${KERNELSPTX} ${KernelsPTX})
     set(${KERNELSCXX} ${CUDAKERNELS})
   endmacro()
-endif(NOT _BUILD_CUDA_KERNEL)
+endif()
 
 # Script called to generate a CUDA PTX Source file
 if(_BUILD_CUDA_KERNEL)

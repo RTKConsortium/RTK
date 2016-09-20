@@ -16,12 +16,14 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkForwardDifferenceGradientImageFilter_h
-#define __rtkForwardDifferenceGradientImageFilter_h
+#ifndef rtkForwardDifferenceGradientImageFilter_h
+#define rtkForwardDifferenceGradientImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkCovariantVector.h>
 #include <itkImageRegionIterator.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -93,7 +95,7 @@ public:
    * in order to inform the pipeline execution model.
    *
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Use the image spacing information in calculations. Use this option if you
    *  want derivatives in physical space. Default is UseImageSpacingOn. */
@@ -143,8 +145,8 @@ public:
 
 protected:
   ForwardDifferenceGradientImageFilter();
-  virtual ~ForwardDifferenceGradientImageFilter();
-  void PrintSelf(std::ostream & os, itk::Indent indent) const;
+  ~ForwardDifferenceGradientImageFilter() ITK_OVERRIDE;
+  void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
 
   /** ForwardDifferenceGradientImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData()
@@ -157,9 +159,9 @@ protected:
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            itk::ThreadIdType threadId);
+                            itk::ThreadIdType threadId) ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
   ForwardDifferenceGradientImageFilter(const Self &); //purposely not implemented

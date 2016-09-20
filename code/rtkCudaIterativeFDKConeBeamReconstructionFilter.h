@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaIterativeFDKConeBeamReconstructionFilter_h
-#define __rtkCudaIterativeFDKConeBeamReconstructionFilter_h
+#ifndef rtkCudaIterativeFDKConeBeamReconstructionFilter_h
+#define rtkCudaIterativeFDKConeBeamReconstructionFilter_h
 
 #include "rtkIterativeFDKConeBeamReconstructionFilter.h"
 #include "rtkCudaFDKConeBeamReconstructionFilter.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawCylinderImageFilter_h
-#define __rtkDrawCylinderImageFilter_h
+#ifndef rtkDrawCylinderImageFilter_h
+#define rtkDrawCylinderImageFilter_h
 
 
 #include <itkAddImageFilter.h>
@@ -75,7 +75,7 @@ public:
 
 protected:
   DrawCylinderImageFilter();
-  virtual ~DrawCylinderImageFilter() {};
+  ~DrawCylinderImageFilter() ITK_OVERRIDE {};
 
 private:
   DrawCylinderImageFilter(const Self&); //purposely not implemented

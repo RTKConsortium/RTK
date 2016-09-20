@@ -1,22 +1,18 @@
 WRAP_GGO(rtkfdk_GGO_C rtkfdk.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
-ADD_EXECUTABLE(rtkfdk rtkfdk.cxx ${rtkfdk_GGO_C})
-TARGET_LINK_LIBRARIES(rtkfdk RTK)
+add_executable(rtkfdk rtkfdk.cxx ${rtkfdk_GGO_C})
+target_link_libraries(rtkfdk RTK)
 
-IF(RTK_USE_CUDA)
-  TARGET_LINK_LIBRARIES(rtkfdk rtkcuda)
-ENDIF()
-
-IF(RTK_USE_OPENCL)
-  TARGET_LINK_LIBRARIES(rtkfdk rtkopencl)
-ENDIF()
+if(RTK_USE_CUDA)
+  target_link_libraries(rtkfdk rtkcuda)
+endif()
 
 # Installation code
-IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtkfdk) 
-    INSTALL(TARGETS ${EXE_NAME}
+if(NOT RTK_INSTALL_NO_EXECUTABLES)
+  foreach(EXE_NAME rtkfdk) 
+    install(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  ENDFOREACH(EXE_NAME) 
-ENDIF(NOT RTK_INSTALL_NO_EXECUTABLES)
+  endforeach() 
+endif()
 

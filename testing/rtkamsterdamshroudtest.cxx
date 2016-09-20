@@ -220,7 +220,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 1: Amsterdam Shroud Image without crop ******" << std::endl;
 
   // Amsterdam shroud
-  shroudFilter->SetGeometry(NULL);
+  shroudFilter->SetGeometry(ITK_NULLPTR);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update());
 
   // Read reference object

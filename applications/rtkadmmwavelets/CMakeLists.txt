@@ -1,22 +1,18 @@
 WRAP_GGO(rtkadmmwavelets_GGO_C rtkadmmwavelets.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
-ADD_EXECUTABLE(rtkadmmwavelets rtkadmmwavelets.cxx ${rtkadmmwavelets_GGO_C})
-TARGET_LINK_LIBRARIES(rtkadmmwavelets RTK)
+add_executable(rtkadmmwavelets rtkadmmwavelets.cxx ${rtkadmmwavelets_GGO_C})
+target_link_libraries(rtkadmmwavelets RTK)
 
-IF (RTK_USE_CUDA)
-  TARGET_LINK_LIBRARIES(rtkadmmwavelets rtkcuda)
-ENDIF (RTK_USE_CUDA)
-
-IF (OPENCL_FOUND)
-  TARGET_LINK_LIBRARIES(rtkadmmwavelets rtkopencl)
-ENDIF (OPENCL_FOUND)
+if (RTK_USE_CUDA)
+  target_link_libraries(rtkadmmwavelets rtkcuda)
+endif ()
 
 # Installation code
-IF(NOT RTK_INSTALL_NO_EXECUTABLES)
-  FOREACH(EXE_NAME rtkadmmwavelets) 
-    INSTALL(TARGETS ${EXE_NAME}
+if(NOT RTK_INSTALL_NO_EXECUTABLES)
+  foreach(EXE_NAME rtkadmmwavelets) 
+    install(TARGETS ${EXE_NAME}
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
-  ENDFOREACH(EXE_NAME) 
-ENDIF(NOT RTK_INSTALL_NO_EXECUTABLES)
+  endforeach() 
+endif()
 

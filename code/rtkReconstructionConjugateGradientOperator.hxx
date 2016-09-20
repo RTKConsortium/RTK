@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReconstructionConjugateGradientOperator_hxx
-#define __rtkReconstructionConjugateGradientOperator_hxx
+#ifndef rtkReconstructionConjugateGradientOperator_hxx
+#define rtkReconstructionConjugateGradientOperator_hxx
 
 #include "rtkReconstructionConjugateGradientOperator.h"
 
@@ -27,7 +27,7 @@ namespace rtk
 template< typename TOutputImage>
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ReconstructionConjugateGradientOperator():
-  m_Geometry(NULL),
+  m_Geometry(ITK_NULLPTR),
   m_Preconditioned(false),
   m_Regularized(false),
   m_Gamma(0)
@@ -47,6 +47,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
+  m_MultiplySupportMaskFilter = MultiplyFilterType::New();
   m_AddFilter = AddFilterType::New();
 
   m_MultiplyLaplacianFilter = MultiplyFilterType::New();
@@ -60,6 +61,23 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_ConstantVolumeSource->ReleaseDataFlagOn();
   m_LaplacianFilter->ReleaseDataFlagOn();
   m_MultiplyLaplacianFilter->ReleaseDataFlagOn();
+}
+
+template< typename TOutputImage>
+void
+ReconstructionConjugateGradientOperator<TOutputImage>::
+SetSupportMask(const TOutputImage *SupportMask)
+{
+  this->SetInput("SupportMask", const_cast<TOutputImage*>(SupportMask));
+}
+
+template< typename TOutputImage>
+typename TOutputImage::ConstPointer
+ReconstructionConjugateGradientOperator<TOutputImage>::
+GetSupportMask()
+{
+  return static_cast< const TOutputImage * >
+          ( this->itk::ProcessObject::GetInput("SupportMask") );
 }
 
 template< typename TOutputImage >
@@ -76,6 +94,23 @@ ReconstructionConjugateGradientOperator<TOutputImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
+}
+
+template< typename TOutputImage >
+const TOutputImage *
+ReconstructionConjugateGradientOperator<TOutputImage>
+::ApplySupportMask (const TOutputImage *_arg)
+{
+  if (this->GetSupportMask().IsNotNull())
+  {
+    m_MultiplySupportMaskFilter->SetInput(0,_arg);
+    m_MultiplySupportMaskFilter->Update();
+    return m_MultiplySupportMaskFilter->GetOutput();
+  }
+  else
+  {
+    return _arg;
+  }
 }
 
 template< typename TOutputImage >
@@ -113,6 +148,16 @@ ReconstructionConjugateGradientOperator<TOutputImage>
         return;
     inputPtr3->SetRequestedRegion( inputPtr3->GetLargestPossibleRegion() );
     }
+
+  // Input "SupportMask" is the support constraint mask on volume, if any
+  if (this->GetSupportMask().IsNotNull())
+    {
+    typename Superclass::InputImagePointer inputSupportMaskPtr =
+            const_cast< TOutputImage * >( this->GetSupportMask().GetPointer() );
+    if ( !inputSupportMaskPtr )
+        return;
+    inputSupportMaskPtr->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+    }
 }
 
 template< typename TOutputImage >
@@ -127,11 +172,12 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
-  m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
+  m_MultiplySupportMaskFilter->SetInput(1,this->GetSupportMask());
+  m_ForwardProjectionFilter->SetInput(1, ApplySupportMask(this->GetInput(0)));
 
   if (m_Regularized)
     {
-    m_LaplacianFilter->SetInput(this->GetInput(0));
+    m_LaplacianFilter->SetInput(ApplySupportMask(this->GetInput(0)));
 
     m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
     // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian" 
@@ -150,12 +196,12 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   if (m_Preconditioned)
     {
     // Multiply the input volume
-    m_MultiplyInputVolumeFilter->SetInput1( this->GetInput(0) );
+    m_MultiplyInputVolumeFilter->SetInput1( ApplySupportMask(this->GetInput(0)) );
     m_MultiplyInputVolumeFilter->SetInput2( this->GetInput(3) );
     m_ForwardProjectionFilter->SetInput(1, m_MultiplyInputVolumeFilter->GetOutput());
 
     // Multiply the volume
-    m_MultiplyOutputVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+    m_MultiplyOutputVolumeFilter->SetInput1(ApplySupportMask(m_BackProjectionFilter->GetOutput()));
     m_MultiplyOutputVolumeFilter->SetInput2(this->GetInput(3));
 
     // If a regularization is added, it needs to be added to the output of the
@@ -163,7 +209,7 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     if (m_Regularized)
       {
       m_LaplacianFilter->SetInput(m_MultiplyInputVolumeFilter->GetOutput());
-      m_MultiplyOutputVolumeFilter->SetInput1( m_AddFilter->GetOutput());
+      m_MultiplyOutputVolumeFilter->SetInput1( ApplySupportMask(m_AddFilter->GetOutput()));
       }
     }
 
@@ -205,18 +251,19 @@ void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
     {
     m_MultiplyOutputVolumeFilter->Update();
     this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
+
     }
   else
     {
     if (m_Regularized)
       {
       m_AddFilter->Update();
-      this->GraftOutput( m_AddFilter->GetOutput() );
+      this->GraftOutput( const_cast<  TOutputImage* >(ApplySupportMask(m_AddFilter->GetOutput())) );
       }
     else
       {
       m_BackProjectionFilter->Update();
-      this->GraftOutput( m_BackProjectionFilter->GetOutput() );
+      this->GraftOutput( const_cast< TOutputImage* >(ApplySupportMask(m_BackProjectionFilter->GetOutput())) );
       }
     }
 }

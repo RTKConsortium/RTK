@@ -49,31 +49,12 @@ rtk::VarianProBeamGeometryReader
   const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["SID"].GetPointer() )->GetMetaDataObjectValue();
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["SAD"].GetPointer() )->GetMetaDataObjectValue();
   typedef itk::MetaDataObject< std::string > MetaDataStringType;
-  /*
-  double offsetx;
-  std::string fanType = dynamic_cast<const MetaDataStringType *>(dic["Fan"].GetPointer() )->GetMetaDataObjectValue();
-  if(itksys::SystemTools::Strucmp(fanType.c_str(), "HALF") == 0)
-    {
-    // Half Fan (offset detector), get lateral offset from XML file
-    offsetx = // Kept in case XML is different for HalfFan hardware.
-      //dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer() )->GetMetaDataObjectValue() +
-      dynamic_cast<MetaDataDoubleType *>(dic["ImagerLat"].GetPointer() )->GetMetaDataObjectValue();
-    }
-  else
-    {
-    // Full Fan (centered detector)
-	offsetx = 0.0; //XML file doesn't contain offset!!
-      //dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer() )->GetMetaDataObjectValue();
-    }
-  const double offsety = 0.0; //XML file doesn't contain offset!!
-    //dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetY"].GetPointer() )->GetMetaDataObjectValue();
-  */
-  
+
   // Projections reader (for angle)
   rtk::XimImageIOFactory::RegisterOneFactory();
   // Projection matrices
   for(unsigned int noProj=0; noProj<m_ProjectionsFileNames.size(); noProj++)
-    {
+  {
     typedef unsigned int                    InputPixelType;
     typedef itk::Image< InputPixelType, 2 > InputImageType;
 
@@ -82,15 +63,15 @@ rtk::VarianProBeamGeometryReader
     reader->SetFileName( m_ProjectionsFileNames[noProj] );
     reader->UpdateOutputInformation();
 
-	const double angle = 
-	  dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
-	
-	if (angle != 6000){
-	  const double offsetx =
-		dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue();
-	  const double offsety =
-		dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetY"].GetPointer())->GetMetaDataObjectValue();
-	  m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
-	  }
+    const double angle =
+      dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
+    if (angle != 6000)
+    {
+      const double offsetx =
+        dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue();
+      const double offsety =
+        dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetY"].GetPointer())->GetMetaDataObjectValue();
+      m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
     }
+  }
 }

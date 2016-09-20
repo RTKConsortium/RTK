@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaCyclicDeformationImageFilter_h
-#define __rtkCudaCyclicDeformationImageFilter_h
+#ifndef rtkCudaCyclicDeformationImageFilter_h
+#define rtkCudaCyclicDeformationImageFilter_h
 
 #include "rtkCyclicDeformationImageFilter.h"
 #include <itkCudaImageToImageFilter.h>

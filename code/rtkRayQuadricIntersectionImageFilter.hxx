@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkRayQuadricIntersectionImageFilter_hxx
-#define __rtkRayQuadricIntersectionImageFilter_hxx
+#ifndef rtkRayQuadricIntersectionImageFilter_hxx
+#define rtkRayQuadricIntersectionImageFilter_hxx
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -31,7 +31,7 @@ template <class TInputImage, class TOutputImage>
 RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 ::RayQuadricIntersectionImageFilter():
   m_RQIFunctor( RQIFunctionType::New() ),
-  m_Geometry(NULL),
+  m_Geometry(ITK_NULLPTR),
   m_Density(1.)
 {
 }

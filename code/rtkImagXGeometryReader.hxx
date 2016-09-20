@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkImagXGeometryReader_hxx
-#define __rtkImagXGeometryReader_hxx
+#ifndef rtkImagXGeometryReader_hxx
+#define rtkImagXGeometryReader_hxx
 
 #include "rtkMacro.h"
 #include "rtkImagXXMLFileReader.h"

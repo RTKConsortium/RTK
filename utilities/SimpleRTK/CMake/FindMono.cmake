@@ -28,8 +28,8 @@ if( DEFINED CSHARP_MONO_FOUND )
     set( CSHARP_MONO_FOUND 0 )
     set( CSHARP_MONO_VERSION "CSHARP_MONO_VERSION-NOTVALID" CACHE STRING "C# Mono compiler version, choices: ${CSHARP_MONO_VERSIONS}" FORCE )
     message( FATAL_ERROR "The C# Mono version '${csharp_mono_version_user}' is not valid. Please enter one of the following: ${CSHARP_MONO_VERSIONS}" )
-  endif( NOT DEFINED CSHARP_MONO_COMPILER_${CSHARP_MONO_VERSION} )
-endif( DEFINED CSHARP_MONO_FOUND )
+  endif()
+endif()
 
 unset( CSHARP_MONO_VERSIONS CACHE ) # Clear versions
 if( WIN32 )
@@ -59,8 +59,8 @@ if( WIN32 )
     get_filename_component( csharp_mono_bin_dir "${csharp_mono_search_hint}" ABSOLUTE )
     if ( EXISTS "${csharp_mono_bin_dir}" )
       set( csharp_mono_bin_dirs ${csharp_mono_bin_dirs} ${csharp_mono_bin_dir} )
-    endif ( EXISTS "${csharp_mono_bin_dir}" )
-  endforeach( csharp_mono_search_hint )
+    endif ()
+  endforeach()
   # TODO: Use HKLM_LOCAL_MACHINE\Software\Novell\Mono\DefaultCLR to specify default version
   # get_filename_component( test "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Novell\\Mono;DefaultCLR]" NAME )
 
@@ -72,7 +72,7 @@ if( WIN32 )
       set( csharp_mono_executable "${csharp_mono_bin_dir}/gmcs.bat")
     elseif (EXISTS "${csharp_mono_bin_dir}/mcs.bat")
       set( csharp_mono_executable "${csharp_mono_bin_dir}/mcs.bat")
-    endif (EXISTS "${csharp_mono_bin_dir}/dmcs.bat")
+    endif ()
 
     if( csharp_mono_valid )
       # Extract version number (eg. 2.10.2)
@@ -88,22 +88,22 @@ if( WIN32 )
       if (EXISTS "${csharp_mono_bin_dir}/mono.exe")
         set( CSHARP_MONO_INTERPRETER_${csharp_mono_version_temp} "${csharp_mono_bin_dir}/mono.exe" CACHE STRING "C# Mono interpreter ${csharp_mono_version_temp}" FORCE )
         mark_as_advanced( CSHARP_MONO_INTERPRETER_${csharp_mono_version_temp} )
-      endif (EXISTS "${csharp_mono_bin_dir}/mono.exe")
-    endif( csharp_mono_valid )
+      endif ()
+    endif()
 
     # Create a list of supported compiler versions
     if( NOT DEFINED CSHARP_MONO_VERSIONS )
       set( CSHARP_MONO_VERSIONS "${csharp_mono_version_temp}" CACHE STRING "Available C# Mono compiler versions" FORCE )
-    else( NOT DEFINED CSHARP_MONO_VERSIONS )
+    else()
       set( CSHARP_MONO_VERSIONS "${CSHARP_MONO_VERSIONS}, ${csharp_mono_version_temp}"  CACHE STRING "Available C# Mono versions" FORCE )
-    endif( NOT DEFINED CSHARP_MONO_VERSIONS )
+    endif()
     mark_as_advanced( CSHARP_MONO_VERSIONS )
 
     # We found at least one Mono compiler version
     set( CSHARP_MONO_FOUND 1 CACHE INTERNAL "Boolean indicating if C# Mono was found" )
-  endforeach( csharp_mono_bin_dir )
+  endforeach()
 
-else( UNIX )
+else()
   # Search for Mono on non-Win32 systems
   set( chsarp_mono_names "mcs" "mcs.exe" "dmcs" "dmcs.exe" "smcs" "smcs.exe" "gmcs" "gmcs.exe" )
   set(
@@ -134,7 +134,7 @@ else( UNIX )
       string( REGEX MATCH "([0-9]*)([.])([0-9]*)([.]*)([0-9]*)" csharp_mono_version_temp ${csharp_mono_version_string} )
       set( CSHARP_MONO_INTERPRETER_${CSHARP_MONO_VERSION} ${csharp_mono_interpreter} CACHE STRING "C# Mono interpreter ${csharp_mono_version_temp}" FORCE )
       mark_as_advanced( CSHARP_MONO_INTERPRETER_${CSHARP_MONO_VERSION} )
-    endif ( EXISTS ${csharp_mono_interpreter} )
+    endif ()
     unset( csharp_mono_interpreter CACHE )
 
     # We found Mono compiler
@@ -145,17 +145,17 @@ else( UNIX )
     set( CSHARP_MONO_VERSIONS ${CSHARP_MONO_VERSION} CACHE STRING "Available C# Mono compiler versions" FORCE )
     mark_as_advanced( CSHARP_MONO_VERSIONS )
     set( CSHARP_MONO_FOUND 1 CACHE INTERNAL "Boolean indicating if C# Mono was found" )
-  endif( EXISTS ${csharp_mono_compiler} )
+  endif()
 
   # Remove temp variable from cache
   unset( csharp_mono_compiler CACHE )
 
-endif( WIN32 )
+endif()
 
 if( CSHARP_MONO_FOUND )
   # Report the found versions
   message( STATUS "Found the following C# Mono versions: ${CSHARP_MONO_VERSIONS}" )
-endif( CSHARP_MONO_FOUND )
+endif()
 
 # Set USE_FILE
 get_filename_component( current_list_path ${CMAKE_CURRENT_LIST_FILE} PATH )

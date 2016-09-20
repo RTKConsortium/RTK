@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkGgoArgsInfoManager_h
-#define __rtkGgoArgsInfoManager_h
+#ifndef rtkGgoArgsInfoManager_h
+#define rtkGgoArgsInfoManager_h
 
 #include "rtkConfiguration.h"
 #ifdef RTK_TIME_EACH_FILTER

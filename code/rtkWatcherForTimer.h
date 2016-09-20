@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkWatcherForTimer_h
-#define __rtkWatcherForTimer_h
+#ifndef rtkWatcherForTimer_h
+#define rtkWatcherForTimer_h
 
 #include "itkCommand.h"
 #include "itkProcessObject.h"

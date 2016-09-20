@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSoftThresholdTVImageFilter_hxx
-#define __rtkSoftThresholdTVImageFilter_hxx
+#ifndef rtkSoftThresholdTVImageFilter_hxx
+#define rtkSoftThresholdTVImageFilter_hxx
 
 #include "rtkSoftThresholdTVImageFilter.h"
 

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkAmsterdamShroudImageFilter_h
-#define __rtkAmsterdamShroudImageFilter_h
+#ifndef rtkAmsterdamShroudImageFilter_h
+#define rtkAmsterdamShroudImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkRecursiveGaussianImageFilter.h>
@@ -130,15 +130,15 @@ public:
   itkTypeMacro(AmsterdamShroudImageFilter, itk::ImageToImageFilter);
 protected:
   AmsterdamShroudImageFilter();
-  ~AmsterdamShroudImageFilter(){}
+  ~AmsterdamShroudImageFilter() ITK_OVERRIDE {}
 
-  void GenerateOutputInformation();
-  void GenerateInputRequestedRegion();
+  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
   void UpdateUnsharpMaskKernel();
 
   /** Single-threaded version of GenerateData.  This filter delegates
    * to other filters. */
-  void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** Function that actually projects the 3D box defined by m_Corner1 and
    * m_Corner2 and set everything outside to 0. */

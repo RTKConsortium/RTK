@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkBackwardDifferenceDivergenceImageFilter_h
-#define __rtkBackwardDifferenceDivergenceImageFilter_h
+#ifndef rtkBackwardDifferenceDivergenceImageFilter_h
+#define rtkBackwardDifferenceDivergenceImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkCastImageFilter.h>
@@ -90,22 +90,22 @@ public:
 
 protected:
     BackwardDifferenceDivergenceImageFilter();
-    virtual ~BackwardDifferenceDivergenceImageFilter();
+    ~BackwardDifferenceDivergenceImageFilter() ITK_OVERRIDE;
 
-    virtual void GenerateInputRequestedRegion();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-    virtual void BeforeThreadedGenerateData();
+    void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-    virtual void ThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+    void ThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
 
-    virtual void AfterThreadedGenerateData();
+    void AfterThreadedGenerateData() ITK_OVERRIDE;
 
 private:
     BackwardDifferenceDivergenceImageFilter(const Self&); //purposely not implemented
     void operator=(const Self&); //purposely not implemented
 
     bool                              m_UseImageSpacing;
-    typename TInputImage::SpacingType m_SpacingCoeffs;
+    typename TInputImage::SpacingType m_InvSpacingCoeffs;
 
     // list of the dimensions along which the divergence has
     // to be computed. The components on other dimensions

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkUnwarpSequenceConjugateGradientOperator_hxx
-#define __rtkUnwarpSequenceConjugateGradientOperator_hxx
+#ifndef rtkUnwarpSequenceConjugateGradientOperator_hxx
+#define rtkUnwarpSequenceConjugateGradientOperator_hxx
 
 #include "rtkUnwarpSequenceConjugateGradientOperator.h"
 
@@ -33,6 +33,7 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TIma
   // Default member variables
   m_PhaseShift = 0;
   m_UseNearestNeighborInterpolationInWarping = false;
+  m_UseCudaCyclicDeformation = false;
 
   // Create filters
   m_WarpSequenceBackwardFilter = WarpSequenceFilterType::New();
@@ -96,8 +97,10 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TIma
   // Set runtime parameters
   m_WarpSequenceBackwardFilter->SetPhaseShift(this->m_PhaseShift);
   m_WarpSequenceBackwardFilter->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+  m_WarpSequenceBackwardFilter->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
   m_WarpSequenceForwardFilter->SetPhaseShift(this->m_PhaseShift);
   m_WarpSequenceForwardFilter->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+  m_WarpSequenceForwardFilter->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
   // Have the last filter calculate its output information
   m_WarpSequenceForwardFilter->UpdateOutputInformation();

@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkFourDROOSTERConeBeamReconstructionFilter_h
-#define __rtkFourDROOSTERConeBeamReconstructionFilter_h
+#ifndef rtkFourDROOSTERConeBeamReconstructionFilter_h
+#define rtkFourDROOSTERConeBeamReconstructionFilter_h
 
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkTotalVariationDenoiseSequenceImageFilter.h"
@@ -247,10 +247,10 @@ public:
   typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>                                TemporalL0DenoisingFilterType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
-  void SetForwardProjectionFilter(int fwtype);
+  void SetForwardProjectionFilter(int fwtype) ITK_OVERRIDE;
 
   /** Pass the backprojection filter to ProjectionStackToFourD*/
-  void SetBackProjectionFilter(int bptype);
+  void SetBackProjectionFilter(int bptype) ITK_OVERRIDE;
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void SetWeights(const itk::Array2D<float> _arg);
@@ -279,7 +279,11 @@ public:
   itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
   itkGetMacro(CudaConjugateGradient, bool)
   itkSetMacro(CudaConjugateGradient, bool)
- 
+
+  /** Set and Get for the UseCudaCyclicDeformation variable */
+  itkSetMacro(UseCudaCyclicDeformation, bool)
+  itkGetMacro(UseCudaCyclicDeformation, bool)
+
   // Regularization parameters
   itkSetMacro(GammaTVSpace, float)
   itkGetMacro(GammaTVSpace, float)
@@ -319,18 +323,18 @@ public:
 
 protected:
   FourDROOSTERConeBeamReconstructionFilter();
-  ~FourDROOSTERConeBeamReconstructionFilter(){}
+  ~FourDROOSTERConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   // Inputs are not supposed to occupy the same physical space,
   // so there is nothing to verify
-  virtual void VerifyInputInformation(){}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
   /** Member pointers to the filters used internally (for convenience)*/
   typename FourDCGFilterType::Pointer                     m_FourDCGFilter;
@@ -361,6 +365,7 @@ protected:
   bool  m_ComputeInverseWarpingByConjugateGradient;
   bool  m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
   bool  m_CudaConjugateGradient;
+  bool  m_UseCudaCyclicDeformation;
 
   // Regularization parameters
   float m_GammaTVSpace;

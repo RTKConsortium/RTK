@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaFFTConvolutionImageFilter_hxx
-#define __rtkCudaFFTConvolutionImageFilter_hxx
+#ifndef rtkCudaFFTConvolutionImageFilter_hxx
+#define rtkCudaFFTConvolutionImageFilter_hxx
 
 #include "rtkCudaFFTConvolutionImageFilter.h"
 #include "rtkCudaFFTConvolutionImageFilter.hcu"

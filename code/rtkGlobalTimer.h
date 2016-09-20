@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkGlobalTimer_h
-#define __rtkGlobalTimer_h
+#ifndef rtkGlobalTimer_h
+#define rtkGlobalTimer_h
 
 #include <itkProcessObject.h>
 #include "rtkGlobalTimerProbesCollector.h"
@@ -82,7 +82,7 @@ public:
 protected:
   GlobalTimer();
   virtual ~GlobalTimer();
-  virtual void PrintSelf(std::ostream & os, Indent indent) const;
+  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
   bool m_Verbose;
 
 //  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;

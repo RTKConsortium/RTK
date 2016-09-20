@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkWaterPrecorrectionImageFilter_h
-#define __rtkWaterPrecorrectionImageFilter_h
+#ifndef rtkWaterPrecorrectionImageFilter_h
+#define rtkWaterPrecorrectionImageFilter_h
 
 #include <vector>
 #include <itkInPlaceImageFilter.h>
@@ -71,9 +71,9 @@ public:
 
 protected:
   WaterPrecorrectionImageFilter();
-  virtual ~WaterPrecorrectionImageFilter() {}
+  ~WaterPrecorrectionImageFilter() ITK_OVERRIDE {}
 
-  virtual void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
   WaterPrecorrectionImageFilter(const Self &); //purposely not implemented

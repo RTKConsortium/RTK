@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFDKWarpBackProjectionImageFilter_h
-#define __rtkFDKWarpBackProjectionImageFilter_h
+#ifndef rtkFDKWarpBackProjectionImageFilter_h
+#define rtkFDKWarpBackProjectionImageFilter_h
 
 #include "rtkFDKBackProjectionImageFilter.h"
 
@@ -78,11 +78,11 @@ public:
 
 protected:
   FDKWarpBackProjectionImageFilter():m_DeformationUpdateError(false) {};
-  virtual ~FDKWarpBackProjectionImageFilter() {};
+  ~FDKWarpBackProjectionImageFilter() ITK_OVERRIDE {};
 
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   FDKWarpBackProjectionImageFilter(const Self&); //purposely not implemented

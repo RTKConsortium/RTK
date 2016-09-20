@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkFourDToProjectionStackImageFilter_h
-#define __rtkFourDToProjectionStackImageFilter_h
+#ifndef rtkFourDToProjectionStackImageFilter_h
+#define rtkFourDToProjectionStackImageFilter_h
 
 #include <itkExtractImageFilter.h>
 #include <itkPasteImageFilter.h>
@@ -145,17 +145,17 @@ public:
 
 protected:
     FourDToProjectionStackImageFilter();
-    ~FourDToProjectionStackImageFilter(){}
+    ~FourDToProjectionStackImageFilter() ITK_OVERRIDE {}
 
     typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
     typename ProjectionStackType::Pointer GetInputProjectionStack();
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
-    virtual void GenerateOutputInformation();
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
-    virtual void GenerateInputRequestedRegion();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename PasteFilterType::Pointer                       m_PasteFilter;

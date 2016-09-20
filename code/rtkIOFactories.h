@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkIOFactories_h
-#define __rtkIOFactories_h
+#ifndef rtkIOFactories_h
+#define rtkIOFactories_h
 
 #include "rtkWin32Header.h"
 

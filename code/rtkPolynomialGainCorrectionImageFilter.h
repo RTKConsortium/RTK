@@ -16,13 +16,15 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkPolynomialGainCorrectionImageFilter_h
-#define __rtkPolynomialGainCorrectionImageFilter_h
+#ifndef rtkPolynomialGainCorrectionImageFilter_h
+#define rtkPolynomialGainCorrectionImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkSimpleFastMutexLock.h>
 
 #include <vector>
+
+#include "rtkMacro.h"
 
 /** \class PolynomialGainCorrection
  * \brief Pixel-wize polynomial gain calibration
@@ -79,13 +81,13 @@ public:
 
 protected:
   PolynomialGainCorrectionImageFilter();
-  ~PolynomialGainCorrectionImageFilter() {}
+  ~PolynomialGainCorrectionImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   //purposely not implemented

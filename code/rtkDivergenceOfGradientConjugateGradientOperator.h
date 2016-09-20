@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDivergenceOfGradientConjugateGradientOperator_h
-#define __rtkDivergenceOfGradientConjugateGradientOperator_h
+#ifndef rtkDivergenceOfGradientConjugateGradientOperator_h
+#define rtkDivergenceOfGradientConjugateGradientOperator_h
 
 #include "rtkConjugateGradientOperator.h"
 
@@ -73,11 +73,11 @@ public:
 
 protected:
   DivergenceOfGradientConjugateGradientOperator();
-  virtual ~DivergenceOfGradientConjugateGradientOperator() {}
+  ~DivergenceOfGradientConjugateGradientOperator() ITK_OVERRIDE {}
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Sub filter pointers */
   typename GradientFilterType::Pointer             m_GradientFilter;

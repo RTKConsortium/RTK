@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkUnwarpSequenceImageFilter_hxx
-#define __rtkUnwarpSequenceImageFilter_hxx
+#ifndef rtkUnwarpSequenceImageFilter_hxx
+#define rtkUnwarpSequenceImageFilter_hxx
 
 #include "rtkUnwarpSequenceImageFilter.h"
 
@@ -35,6 +35,7 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   m_PhaseShift = 0;
   m_UseNearestNeighborInterpolationInWarping = false;
   m_CudaConjugateGradient = false;
+  m_UseCudaCyclicDeformation = false;
 
   // Create the filters
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
@@ -84,8 +85,6 @@ void
 UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 ::GenerateInputRequestedRegion()
 {
-//   std::cout << "Running UnwarpSequenceImageFilter::GenerateInputRequestedRegion" << std::endl;
-  
   //Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
@@ -110,11 +109,13 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   m_WarpForwardFilter->SetInput(this->GetInput(0));
   m_WarpForwardFilter->SetDisplacementField(this->GetDisplacementField());
   m_WarpForwardFilter->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
+  m_WarpForwardFilter->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
   m_WarpForwardFilter->SetPhaseShift(this->m_PhaseShift);
   m_CGOperator->SetPhaseShift(this->m_PhaseShift);
+  m_CGOperator->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
   // Have the last filter calculate its output information
   m_ConjugateGradientFilter->UpdateOutputInformation();

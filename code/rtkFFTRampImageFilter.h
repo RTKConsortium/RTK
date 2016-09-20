@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFFTRampImageFilter_h
-#define __rtkFFTRampImageFilter_h
+#ifndef rtkFFTRampImageFilter_h
+#define rtkFFTRampImageFilter_h
 
 #include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
@@ -117,11 +117,11 @@ public:
   
 protected:
   FFTRampImageFilter();
-  ~FFTRampImageFilter(){}
+  ~FFTRampImageFilter() ITK_OVERRIDE {}
 
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.  */
-  virtual void UpdateFFTConvolutionKernel(const SizeType size);
+  void UpdateFFTConvolutionKernel(const SizeType size) ITK_OVERRIDE;
 
 private:
   FFTRampImageFilter(const Self&); //purposely not implemented

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDeconstructSoftThresholdReconstructImageFilter_h
-#define __rtkDeconstructSoftThresholdReconstructImageFilter_h
+#ifndef rtkDeconstructSoftThresholdReconstructImageFilter_h
+#define rtkDeconstructSoftThresholdReconstructImageFilter_h
 
 //ITK includes
 #include "itkMacro.h"
@@ -87,16 +87,16 @@ public:
 
 protected:
     DeconstructSoftThresholdReconstructImageFilter();
-    ~DeconstructSoftThresholdReconstructImageFilter(){}
-    void PrintSelf(std::ostream&os, itk::Indent indent) const;
+    ~DeconstructSoftThresholdReconstructImageFilter() ITK_OVERRIDE {}
+    void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
 
     /** Generate the output data. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Compute the information on output's size and index */
-    virtual void GenerateOutputInformation();
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
-    virtual void GenerateInputRequestedRegion();
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
 private:
     DeconstructSoftThresholdReconstructImageFilter(const Self&);     //purposely not implemented

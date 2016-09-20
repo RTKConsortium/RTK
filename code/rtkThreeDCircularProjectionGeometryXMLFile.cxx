@@ -69,7 +69,7 @@ StartElement(const char * name,const char **atts)
   // Check on last version of file format. Warning if not.
   if( std::string(name) == "RTKThreeDCircularGeometry" )
     {
-    while( (*atts) != NULL )
+    while( (*atts) != ITK_NULLPTR )
       {
       if( std::string(atts[0]) == "version" )
         m_Version = atoi(atts[1]);

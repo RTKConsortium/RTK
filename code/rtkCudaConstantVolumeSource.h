@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaConstantVolumeSource_h
-#define __rtkCudaConstantVolumeSource_h
+#ifndef rtkCudaConstantVolumeSource_h
+#define rtkCudaConstantVolumeSource_h
 
 #include "rtkConstantImageSource.h"
 #include <itkCudaImageToImageFilter.h>

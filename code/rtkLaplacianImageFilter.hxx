@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLaplacianImageFilter_hxx
-#define __rtkLaplacianImageFilter_hxx
+#ifndef rtkLaplacianImageFilter_hxx
+#define rtkLaplacianImageFilter_hxx
 
 #include "rtkLaplacianImageFilter.h"
 

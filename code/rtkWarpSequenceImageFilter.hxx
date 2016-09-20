@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkWarpSequenceImageFilter_hxx
-#define __rtkWarpSequenceImageFilter_hxx
+#ifndef rtkWarpSequenceImageFilter_hxx
+#define rtkWarpSequenceImageFilter_hxx
 
 #include "rtkWarpSequenceImageFilter.h"
 
@@ -38,10 +38,10 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   // Set default member values
   m_ForwardWarp = false;
   m_UseNearestNeighborInterpolationInWarping = false;
+  m_UseCudaCyclicDeformation = false;
 
   // Create the filters
   m_ExtractFilter = ExtractFilterType::New();
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
   m_PasteFilter = PasteFilterType::New();
   m_CastFilter = CastFilterType::New();
   m_ConstantSource = ConstantImageSourceType::New();
@@ -81,12 +81,15 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 {
   int Dimension = TImageSequence::ImageDimension;
 
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
 #ifdef RTK_USE_CUDA
   // Create the right warp filter (regular or forward)
   if (m_ForwardWarp)
     m_WarpFilter = CudaForwardWarpFilterType::New();
   else
     m_WarpFilter = CudaWarpFilterType::New();
+  if (m_UseCudaCyclicDeformation)
+    m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
 #else
   if (m_ForwardWarp)
     m_WarpFilter = ForwardWarpFilterType::New();

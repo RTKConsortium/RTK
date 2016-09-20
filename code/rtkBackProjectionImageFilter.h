@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkBackProjectionImageFilter_h
-#define __rtkBackProjectionImageFilter_h
+#ifndef rtkBackProjectionImageFilter_h
+#define rtkBackProjectionImageFilter_h
 
 #include "rtkConfiguration.h"
 
@@ -76,18 +76,18 @@ public:
   itkSetMacro(Transpose, bool);
 
 protected:
-  BackProjectionImageFilter() : m_Geometry(NULL), m_Transpose(false) {
+  BackProjectionImageFilter() : m_Geometry(ITK_NULLPTR), m_Transpose(false) {
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
-  virtual ~BackProjectionImageFilter() {
+  ~BackProjectionImageFilter() ITK_OVERRIDE {
   }
 
   /** Apply changes to the input image requested region. */
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
     and matrix[2][0] are zeros. */
@@ -101,7 +101,7 @@ protected:
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-  virtual void VerifyInputInformation() {}
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
   /** The input is a stack of projections, we need to interpolate in one projection
       for efficiency during interpolation. Use of itk::ExtractImageFilter is

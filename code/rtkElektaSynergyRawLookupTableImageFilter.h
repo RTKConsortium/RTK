@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkElektaSynergyRawLookupTableImageFilter_h
-#define __rtkElektaSynergyRawLookupTableImageFilter_h
+#ifndef rtkElektaSynergyRawLookupTableImageFilter_h
+#define rtkElektaSynergyRawLookupTableImageFilter_h
 
 #include "rtkLookupTableImageFilter.h"
 #include <itkNumericTraits.h>
@@ -70,7 +70,7 @@ public:
 
 protected:
   ElektaSynergyRawLookupTableImageFilter();
-  virtual ~ElektaSynergyRawLookupTableImageFilter() {
+  ~ElektaSynergyRawLookupTableImageFilter() ITK_OVERRIDE {
   }
 
 private:

@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkSubSelectImageFilter_h
-#define __rtkSubSelectImageFilter_h
+#ifndef rtkSubSelectImageFilter_h
+#define rtkSubSelectImageFilter_h
 
 #include <itkPasteImageFilter.h>
 #include <itkExtractImageFilter.h>
@@ -88,14 +88,14 @@ public:
 
 protected:
   SubSelectImageFilter();
-  ~SubSelectImageFilter(){}
+  ~SubSelectImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateInputRequestedRegion();
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** Member variables */
   GeometryType::Pointer     m_InputGeometry;

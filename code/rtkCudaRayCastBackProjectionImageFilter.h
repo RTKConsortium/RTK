@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaRayCastBackProjectionImageFilter_h
-#define __rtkCudaRayCastBackProjectionImageFilter_h
+#ifndef rtkCudaRayCastBackProjectionImageFilter_h
+#define rtkCudaRayCastBackProjectionImageFilter_h
 
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkWin32Header.h"

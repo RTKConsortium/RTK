@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkEdfRawToAttenuationImageFilter_h
-#define __rtkEdfRawToAttenuationImageFilter_h
+#ifndef rtkEdfRawToAttenuationImageFilter_h
+#define rtkEdfRawToAttenuationImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkImageSeriesReader.h>
@@ -79,12 +79,12 @@ public:
 
 protected:
   EdfRawToAttenuationImageFilter();
-  ~EdfRawToAttenuationImageFilter(){
+  ~EdfRawToAttenuationImageFilter() ITK_OVERRIDE {
   }
 
-  void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   //purposely not implemented

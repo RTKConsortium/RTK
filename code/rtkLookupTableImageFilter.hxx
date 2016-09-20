@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLookupTableImageFilter_hxx
-#define __rtkLookupTableImageFilter_hxx
+#ifndef rtkLookupTableImageFilter_hxx
+#define rtkLookupTableImageFilter_hxx
 
 namespace rtk
 {

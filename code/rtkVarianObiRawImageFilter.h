@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkVarianObiRawImageFilter_h
-#define __rtkVarianObiRawImageFilter_h
+#ifndef rtkVarianObiRawImageFilter_h
+#define rtkVarianObiRawImageFilter_h
 
 #include <itkUnaryFunctorImageFilter.h>
 #include <itkConceptChecking.h>
@@ -95,7 +95,7 @@ public:
 
 protected:
   VarianObiRawImageFilter() {}
-  virtual ~VarianObiRawImageFilter() {}
+  ~VarianObiRawImageFilter() ITK_OVERRIDE {}
 
 private:
   VarianObiRawImageFilter(const Self&); //purposely not implemented

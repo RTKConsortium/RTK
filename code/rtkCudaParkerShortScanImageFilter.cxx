@@ -133,7 +133,7 @@ CudaParkerShortScanImageFilter
   // 2: gantry angle
   int geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
   float *geomMatrix = new float[proj_size[2] * 5];
-  if(geomMatrix == NULL)
+  if(geomMatrix == ITK_NULLPTR)
      itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
     {

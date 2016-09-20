@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkSubSelectImageFilter_hxx
-#define __rtkSubSelectImageFilter_hxx
+#ifndef rtkSubSelectImageFilter_hxx
+#define rtkSubSelectImageFilter_hxx
 
 #include "rtkSubSelectImageFilter.h"
 

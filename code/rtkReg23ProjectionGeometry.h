@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkReg23ProjectionGeometry_h
-#define __rtkReg23ProjectionGeometry_h
+#ifndef rtkReg23ProjectionGeometry_h
+#define rtkReg23ProjectionGeometry_h
 
 
 //RTK
@@ -93,7 +93,7 @@ protected:
   /** Standard constructor. **/
   Reg23ProjectionGeometry();
   /** Destructor. **/
-  virtual ~Reg23ProjectionGeometry();
+  ~Reg23ProjectionGeometry() ITK_OVERRIDE;
 
   /** Verify that the specified Euler angles in ZXY result in a rotation matrix
    * which corresponds to the specified detector orientation. Rationale for this
@@ -147,4 +147,4 @@ private:
 
 }
 
-#endif // __rtkReg23ProjectionGeometry_h
+#endif // rtkReg23ProjectionGeometry_h

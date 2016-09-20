@@ -16,11 +16,10 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkWarpSequenceImageFilter_h
-#define __rtkWarpSequenceImageFilter_h
+#ifndef rtkWarpSequenceImageFilter_h
+#define rtkWarpSequenceImageFilter_h
 
 #include "rtkConstantImageSource.h"
-#include "rtkCyclicDeformationImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkPasteImageFilter.h>
@@ -30,9 +29,11 @@
 #ifdef RTK_USE_CUDA
   #include "rtkCudaWarpImageFilter.h"
   #include "rtkCudaForwardWarpImageFilter.h"
+  #include "rtkCudaCyclicDeformationImageFilter.h"
 #else
   #include <itkWarpImageFilter.h>
   #include "rtkForwardWarpImageFilter.h"
+  #include "rtkCyclicDeformationImageFilter.h"
 #endif
 
 namespace rtk
@@ -125,6 +126,10 @@ public:
     itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
     itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
 
+    /** Set and Get for the UseCudaCyclicDeformation variable */
+    itkSetMacro(UseCudaCyclicDeformation, bool)
+    itkGetMacro(UseCudaCyclicDeformation, bool)
+
     /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
     typedef rtk::CudaWarpImageFilter                                          CudaWarpFilterType;
@@ -143,10 +148,10 @@ public:
 
 protected:
     WarpSequenceImageFilter();
-    ~WarpSequenceImageFilter(){}
+    ~WarpSequenceImageFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename WarpFilterType::Pointer          m_WarpFilter;
@@ -166,14 +171,15 @@ protected:
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
-    void VerifyInputInformation(){}
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateOutputInformation();
-    void GenerateInputRequestedRegion();
+    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
+    bool m_UseCudaCyclicDeformation;
 
 private:
     WarpSequenceImageFilter(const Self &); //purposely not implemented

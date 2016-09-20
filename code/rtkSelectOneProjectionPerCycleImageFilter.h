@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkSelectOneProjectionPerCycleImageFilter_h
-#define __rtkSelectOneProjectionPerCycleImageFilter_h
+#ifndef rtkSelectOneProjectionPerCycleImageFilter_h
+#define rtkSelectOneProjectionPerCycleImageFilter_h
 
 #include "rtkSubSelectImageFilter.h"
 
@@ -58,9 +58,9 @@ public:
 
 protected:
   SelectOneProjectionPerCycleImageFilter();
-  ~SelectOneProjectionPerCycleImageFilter(){}
+  ~SelectOneProjectionPerCycleImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
   SelectOneProjectionPerCycleImageFilter(const Self &); //purposely not implemented

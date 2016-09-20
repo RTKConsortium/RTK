@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawSpatialObject_h
-#define __rtkDrawSpatialObject_h
+#ifndef rtkDrawSpatialObject_h
+#define rtkDrawSpatialObject_h
 
 #include <itkPoint.h>
 #include "rtkConvertEllipsoidToQuadricParametersFunction.h"

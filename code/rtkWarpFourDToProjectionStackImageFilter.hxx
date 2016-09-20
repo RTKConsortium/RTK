@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkWarpFourDToProjectionStackImageFilter_hxx
-#define __rtkWarpFourDToProjectionStackImageFilter_hxx
+#ifndef rtkWarpFourDToProjectionStackImageFilter_hxx
+#define rtkWarpFourDToProjectionStackImageFilter_hxx
 
 #include "rtkWarpFourDToProjectionStackImageFilter.h"
 
@@ -24,15 +24,14 @@ namespace rtk
 {
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
-WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::WarpFourDToProjectionStackImageFilter()
+WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::WarpFourDToProjectionStackImageFilter():
+    m_UseCudaCyclicDeformation(false)
 {
   this->SetNumberOfRequiredInputs(3);
 
 #ifdef RTK_USE_CUDA
-  m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
   this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
 #else
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
   this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
   itkWarningMacro("The warp Forward project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection")
 #endif
@@ -67,6 +66,11 @@ void
 WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
+#ifdef RTK_USE_CUDA
+  if (m_UseCudaCyclicDeformation)
+    m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
+#endif
   m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
   m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
   m_DVFInterpolatorFilter->SetFrame(0);

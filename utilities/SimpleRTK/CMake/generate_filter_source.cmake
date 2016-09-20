@@ -44,7 +44,7 @@ macro( get_dependent_template_components out_var_name json_file input_dir )
           set(${cache_var} ${${cache_var}} ${component})
         endif()
 
-      endforeach(component)
+      endforeach()
     endif()
     set (${out_var_name} ${${cache_var}} )
 
@@ -165,7 +165,7 @@ macro(generate_filter_source)
     ${SimpleRTK${directory_name}GeneratedSource} )
   if (BUILD_DOXYGEN)
     add_dependencies(Documentation ${directory_name}SourceCode)
-  endif (BUILD_DOXYGEN)
+  endif ()
 
 
 

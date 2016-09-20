@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkBackProjectionImageFilter_hxx
-#define __rtkBackProjectionImageFilter_hxx
+#ifndef rtkBackProjectionImageFilter_hxx
+#define rtkBackProjectionImageFilter_hxx
 
 #include "rtkHomogeneousMatrix.h"
 
@@ -58,7 +58,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if(m_Geometry.GetPointer() == NULL)
+  if(m_Geometry.GetPointer() == ITK_NULLPTR)
     {
     inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
     return;

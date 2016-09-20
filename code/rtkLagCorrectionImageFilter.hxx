@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkLagCorrectionImageFilter_hxx
-#define __rtkLagCorrectionImageFilter_hxx
+#ifndef rtkLagCorrectionImageFilter_hxx
+#define rtkLagCorrectionImageFilter_hxx
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"

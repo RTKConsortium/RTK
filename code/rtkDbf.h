@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDbf_h
-#define __rtkDbf_h
+#ifndef rtkDbf_h
+#define rtkDbf_h
 
 #include <string>
 #include <fstream>

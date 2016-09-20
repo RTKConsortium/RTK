@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkMultiplyByVectorImageFilter_hxx
-#define __rtkMultiplyByVectorImageFilter_hxx
+#ifndef rtkMultiplyByVectorImageFilter_hxx
+#define rtkMultiplyByVectorImageFilter_hxx
 
 #include "rtkMultiplyByVectorImageFilter.h"
 #include "itkImageRegionIterator.h"

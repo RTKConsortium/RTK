@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFDKWeightProjectionFilter_h
-#define __rtkFDKWeightProjectionFilter_h
+#ifndef rtkFDKWeightProjectionFilter_h
+#define rtkFDKWeightProjectionFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -75,11 +75,11 @@ public:
 
 protected:
   FDKWeightProjectionFilter()  {}
-  ~FDKWeightProjectionFilter() {}
+  ~FDKWeightProjectionFilter() ITK_OVERRIDE {}
 
-  virtual void BeforeThreadedGenerateData();
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId);
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 
 private:
   FDKWeightProjectionFilter(const Self&); //purposely not implemented

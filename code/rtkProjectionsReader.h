@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectionsReader_h
-#define __rtkProjectionsReader_h
+#ifndef rtkProjectionsReader_h
+#define rtkProjectionsReader_h
 
 // ITK
 #include <itkImageSource.h>
@@ -225,15 +225,15 @@ public:
 
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
-  virtual void GenerateOutputInformation(void);
+  void GenerateOutputInformation(void) ITK_OVERRIDE;
 
 protected:
   ProjectionsReader();
-  ~ProjectionsReader() {};
-  void PrintSelf(std::ostream& os, itk::Indent indent) const;
+  ~ProjectionsReader() ITK_OVERRIDE {};
+  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
   /** Does the real work. */
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   /** A list of filenames to be processed. */
   FileNamesContainer m_FileNames;
@@ -301,4 +301,4 @@ private:
 #include "rtkProjectionsReader.hxx"
 #endif
 
-#endif // __rtkProjectionsReader_h
+#endif // rtkProjectionsReader_h

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkSheppLoganPhantomFilter_hxx
-#define __rtkSheppLoganPhantomFilter_hxx
+#ifndef rtkSheppLoganPhantomFilter_hxx
+#define rtkSheppLoganPhantomFilter_hxx
 
 
 namespace rtk

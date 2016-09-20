@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_h
-#define __rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_h
+#ifndef rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_h
+#define rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_h
 
 #include "rtkDisplacedDetectorImageFilter.h"
 
@@ -65,12 +65,12 @@ public:
 
 protected:
   DisplacedDetectorForOffsetFieldOfViewImageFilter();
-  ~DisplacedDetectorForOffsetFieldOfViewImageFilter(){
+  ~DisplacedDetectorForOffsetFieldOfViewImageFilter() ITK_OVERRIDE {
   }
 
-  virtual void GenerateOutputInformation();
+  void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
   DisplacedDetectorForOffsetFieldOfViewImageFilter(const Self&); //purposely not implemented

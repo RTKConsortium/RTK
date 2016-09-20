@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkElektaSynergyGeometryReader_h
-#define __rtkElektaSynergyGeometryReader_h
+#ifndef rtkElektaSynergyGeometryReader_h
+#define rtkElektaSynergyGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -86,7 +86,7 @@ private:
                          std::vector<float> &projFlexX,
                          std::vector<float> &projFlexY);
 
-  virtual void GenerateData();
+  void GenerateData() ITK_OVERRIDE;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_DicomUID;

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDownsampleImageFilter_hxx
-#define __rtkDownsampleImageFilter_hxx
+#ifndef rtkDownsampleImageFilter_hxx
+#define rtkDownsampleImageFilter_hxx
 
 #include "rtkDownsampleImageFilter.h"
 

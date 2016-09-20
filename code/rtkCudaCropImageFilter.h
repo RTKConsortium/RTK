@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkCudaCropImageFilter_h
-#define __rtkCudaCropImageFilter_h
+#ifndef rtkCudaCropImageFilter_h
+#define rtkCudaCropImageFilter_h
 
 #include <itkCropImageFilter.h>
 #include "rtkWin32Header.h"

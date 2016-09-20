@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkPhaseReader_h
-#define __rtkPhaseReader_h
+#ifndef rtkPhaseReader_h
+#define rtkPhaseReader_h
 
 #include <itkCSVFileReaderBase.h>
 
@@ -47,7 +47,7 @@ public:
 
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */
-    void Parse();
+    void Parse() ITK_OVERRIDE;
 
     /** Aliased to the Parse() method to be consistent with the rest of the
    * pipeline. */
@@ -60,10 +60,10 @@ public:
 protected:
 
     PhaseReader();
-    virtual ~PhaseReader () {}
+    ~PhaseReader () ITK_OVERRIDE {}
 
     /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const;
+    void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
 
 private:
 

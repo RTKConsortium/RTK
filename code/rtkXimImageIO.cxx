@@ -39,7 +39,7 @@ size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t v
 	addNelements += fread((void *)&property_value, sizeof(T), value_length, fp);
 
 	bool not_set = true;
-	
+
 	if (strncmp(property_name, "CouchLat", 8) == 0)
 		xim->dCouchLat = property_value;
 	else if (strncmp(property_name, "CouchLng", 8) == 0)
@@ -77,7 +77,7 @@ size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t v
 	else if (strncmp(property_name, "MVCollimatorRtn", 15) == 0)
 		xim->dCollRtn = property_value;
 	else if (strncmp(property_name, "MVCollimatorX1", 14) == 0)
-		xim->dCollX1 = property_value; // is this kV or MV??
+		xim->dCollX1 = property_value;
 	else if (strncmp(property_name, "MVCollimatorX2", 14) == 0)
 		xim->dCollX2 = property_value;
 	else if (strncmp(property_name, "MVCollimatorY1", 14) == 0)
@@ -88,14 +88,12 @@ size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t v
 		xim->dDoseRate = property_value;
 	else if (strncmp(property_name, "MVEnergy", 8) == 0)
 		xim->dEnergy = property_value;
-	else if (strncmp(property_name, "PixelHeight", 11) == 0) //READ WRONGLY!
-		xim->dIDUResolutionY = property_value * 10.0; 
+	else if (strncmp(property_name, "PixelHeight", 11) == 0)
+		xim->dIDUResolutionY = property_value * 10.0;
 	else if (strncmp(property_name, "PixelWidth", 10) == 0)
 		xim->dIDUResolutionX = property_value * 10.0;
 	else
 		not_set = false;
-	// Line below is for debugging:
-	// std::cout << property_name << ":= " << property_value << (not_set?" Found":" Not Found") << std::endl;
 	return addNelements;
 }
 
@@ -120,36 +118,36 @@ void rtk::XimImageIO::ReadImageInformation()
   m_bytes_per_pixel = xim.dBytesPerPixel;
   nelements += fread((void *)&xim.dCompressionIndicator, sizeof(itk::int32_t), 1, fp);
   imageDataStart = ftell(fp);
-  if (xim.dCompressionIndicator == 1) // True for Scripps Data
+  if (xim.dCompressionIndicator == 1)
   {
-	  nelements += fread((void *)&xim.lookUpTableSize, sizeof(itk::int32_t), 1, fp);
-	  fseek(fp, xim.lookUpTableSize, SEEK_CUR);
-	  nelements += fread((void *)&xim.compressedPixelBufferSize, sizeof(itk::int32_t), 1, fp);
-	  fseek(fp, xim.compressedPixelBufferSize, SEEK_CUR);
-	  nelements += fread((void *)&xim.unCompressedPixelBufferSize, sizeof(itk::int32_t), 1, fp);
-	  if (nelements != /*char*/8 +/*itk::int32_t*/9) // + /*itk::int8*/(xim.lookUpTableSize * 4))
-		  std::cout << "Could not read header data in " << m_FileName; //itkGenericExceptionMacro();
+    nelements += fread((void *)&xim.lookUpTableSize, sizeof(itk::int32_t), 1, fp);
+    fseek(fp, xim.lookUpTableSize, SEEK_CUR);
+    nelements += fread((void *)&xim.compressedPixelBufferSize, sizeof(itk::int32_t), 1, fp);
+    fseek(fp, xim.compressedPixelBufferSize, SEEK_CUR);
+    nelements += fread((void *)&xim.unCompressedPixelBufferSize, sizeof(itk::int32_t), 1, fp);
+    if (nelements != /*char*/8 +/*itk::int32_t*/9)
+      itkGenericExceptionMacro(<< "Could not read header data in " << m_FileName);
   }
   else
   {
-	  nelements += fread((void *)&xim.unCompressedPixelBufferSize, sizeof(itk::int32_t), 1, fp);
-	  fseek(fp, xim.unCompressedPixelBufferSize, SEEK_CUR);
-	  if (nelements != /*char*/8 +/*itk::uint32_t*/7) 
-		  itkGenericExceptionMacro(<< "Could not read header data in " << m_FileName);
+    nelements += fread((void *)&xim.unCompressedPixelBufferSize, sizeof(itk::int32_t), 1, fp);
+    fseek(fp, xim.unCompressedPixelBufferSize, SEEK_CUR);
+    if (nelements != /*char*/8 +/*itk::uint32_t*/7)
+      itkGenericExceptionMacro(<< "Could not read header data in " << m_FileName);
   }
-  
+
   // Histogram Reading:
   size_t nhistElements = 0;
   nhistElements += fread((void *)&xim.binsInHistogram, sizeof(itk::int32_t), 1, fp);
-  
+
   xim.histogramData = new int[xim.binsInHistogram];
   for (itk::int32_t i = 0; i < xim.binsInHistogram; i++)
-	xim.histogramData[i] = 0;
+    xim.histogramData[i] = 0;
 
   nhistElements += fread((void *)xim.histogramData, sizeof(itk::int32_t), xim.binsInHistogram, fp);
   if (nhistElements != (xim.binsInHistogram + 1))
   {
-	  itkGenericExceptionMacro(<< "Could not read histogram from header data in " << m_FileName);
+    itkGenericExceptionMacro(<< "Could not read histogram from header data in " << m_FileName);
   }
   // Properties Readding:
   nelements += fread((void *)&xim.numberOfProperties, sizeof(itk::int32_t), 1, fp);
@@ -158,52 +156,48 @@ void rtk::XimImageIO::ReadImageInformation()
   itk::int32_t property_type;
   itk::int32_t property_value_length = 0;
   size_t theoretical_nelements = nelements; // Same as reseting
-  
+
   for (size_t i = 0; i < xim.numberOfProperties; i++)
   {
-	  nelements += fread((void *)&property_name_length, sizeof(itk::int32_t), 1, fp);
-	  nelements += fread((void *)&property_name, sizeof(char), property_name_length, fp);
-	  
-	  // std::cout << "Property name: " << property_name << ", "; //FOR DEBUGGING ONLY REMOVE WHEN IT WORKS!!
-	  nelements += fread((void *)&property_type, sizeof(itk::int32_t), 1, fp);
-	  theoretical_nelements += property_name_length + 2;
-	  // std::cout << property_type << ", ";
-	  switch (property_type)
-	  {
-	  case 0://property_value type = uint32
-		  nelements += SetPropertyValue<itk::int32_t>(property_name, 1, fp, &xim);
-		  theoretical_nelements++;
-		  break;
-	  case 1://property_value type = double
-		  theoretical_nelements++;
-		  nelements += SetPropertyValue<double>(property_name, 1, fp, &xim);
-		  break;
-	  case 2://property_value type = length * char
-	      nelements += fread((void *)&property_value_length, sizeof(itk::int32_t), 1, fp);
-		  theoretical_nelements += property_value_length+1;
-		  nelements += SetPropertyValue<char>(property_name, property_value_length, fp, &xim);
-		  break;
-	  case 4://property_value type = length * double
-		  nelements += fread((void *)&property_value_length, sizeof(itk::int32_t), 1, fp);
-		  nelements += SetPropertyValue<double>(property_name, property_value_length/8, fp, &xim);
-		  theoretical_nelements += property_value_length/8+1;
-		  break;
-	  case 5://property_value type = length * uint32
-		  nelements += fread((void *)&property_value_length, sizeof(itk::int32_t), 1, fp);
-		  nelements += SetPropertyValue<itk::int32_t>(property_name, property_value_length/4, fp, &xim);
-		  theoretical_nelements += property_value_length/4+1;
-		  break;
-	  default:
-		  std::cout << "\n\nProperty name: " << property_name << ", type: " << property_type << ", is not supported! ABORTING decoding!";
-		  return;
-	  }
+    nelements += fread((void *)&property_name_length, sizeof(itk::int32_t), 1, fp);
+    nelements += fread((void *)&property_name, sizeof(char), property_name_length, fp);
+    nelements += fread((void *)&property_type, sizeof(itk::int32_t), 1, fp);
+    theoretical_nelements += property_name_length + 2;
+
+    switch (property_type)
+    {
+    case 0://property_value type = uint32
+      nelements += SetPropertyValue<itk::int32_t>(property_name, 1, fp, &xim);
+      theoretical_nelements++;
+      break;
+    case 1://property_value type = double
+      theoretical_nelements++;
+      nelements += SetPropertyValue<double>(property_name, 1, fp, &xim);
+      break;
+    case 2://property_value type = length * char
+      nelements += fread((void *)&property_value_length, sizeof(itk::int32_t), 1, fp);
+      theoretical_nelements += property_value_length+1;
+      nelements += SetPropertyValue<char>(property_name, property_value_length, fp, &xim);
+      break;
+    case 4://property_value type = length * double
+      nelements += fread((void *)&property_value_length, sizeof(itk::int32_t), 1, fp);
+      nelements += SetPropertyValue<double>(property_name, property_value_length/8, fp, &xim);
+      theoretical_nelements += property_value_length/8+1;
+      break;
+    case 5://property_value type = length * uint32
+      nelements += fread((void *)&property_value_length, sizeof(itk::int32_t), 1, fp);
+      nelements += SetPropertyValue<itk::int32_t>(property_name, property_value_length/4, fp, &xim);
+      theoretical_nelements += property_value_length/4+1;
+      break;
+    default:
+      std::cout << "\n\nProperty name: " << property_name << ", type: " << property_type << ", is not supported! ABORTING decoding!";
+      return;
+    }
   }
   if (nelements != theoretical_nelements){
-	  std::cout << nelements << " != " << theoretical_nelements << std::endl;
-	  itkGenericExceptionMacro(<< "Could not read properties of " << m_FileName);
+    std::cout << nelements << " != " << theoretical_nelements << std::endl;
+    itkGenericExceptionMacro(<< "Could not read properties of " << m_FileName);
   }
-	
-  
   if(fclose (fp) != 0)
     itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
 
@@ -220,30 +214,29 @@ void rtk::XimImageIO::ReadImageInformation()
   SetComponentType(itk::ImageIOBase::UINT);
   /* Store important meta information in the meta data dictionary */
   if (xim.SizeX * xim.SizeY != 0){
-	  itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", xim.dCTProjectionAngle);
-	  itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dDetectorOffsetX", xim.dDetectorOffsetX * 10.0); //cm->mm Lat
-	  itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dDetectorOffsetY", xim.dDetectorOffsetY * 10.0); //cm->mm Lng
+    itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", xim.dCTProjectionAngle);
+    itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dDetectorOffsetX", xim.dDetectorOffsetX * 10.0); //cm->mm Lat
+    itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dDetectorOffsetY", xim.dDetectorOffsetY * 10.0); //cm->mm Lng
   }
   else
-	itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", 6000);
+    itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", 6000);
 }
 //--------------------------------------------------------------------
 bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
 {
-	std::string                  filename(FileNameToRead);
-	const std::string::size_type it = filename.find_last_of(".");
-	std::string                  fileExt(filename, it + 1, filename.length());
+  std::string                  filename(FileNameToRead);
+  const std::string::size_type it = filename.find_last_of(".");
+  std::string                  fileExt(filename, it + 1, filename.length());
 
-	if (fileExt != std::string("xim"))
-		return false;
-	return true;
+  if (fileExt != std::string("xim"))
+    return false;
+  return true;
 }
 
 //--------------------------------------------------------------------
 // Read Image Content
 void rtk::XimImageIO::Read(void * buffer)
 {
-  
   FILE *fp;
   itk::uint32_t *buf = (itk::uint32_t*)buffer;
   itk::int32_t  a;
@@ -253,7 +246,7 @@ void rtk::XimImageIO::Read(void * buffer)
   if (fp == NULL)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
-  if(fseek (fp, imageDataStart, SEEK_SET) != 0) 
+  if(fseek (fp, imageDataStart, SEEK_SET) != 0)
     itkGenericExceptionMacro(<< "Could not seek to image data in: " << m_FileName);
 
   size_t nelements = 0;
@@ -263,15 +256,15 @@ void rtk::XimImageIO::Read(void * buffer)
   nelements += fread((void *)&lookUpTableSize, sizeof(itk::int32_t), 1, fp);
   itk::uint8_t * m_lookup_table = (itk::uint8_t *) malloc(sizeof(itk::uint8_t) * lookUpTableSize);
   nelements += fread((void *)m_lookup_table, sizeof(itk::uint8_t), lookUpTableSize, fp);
-  
+
   nelements += fread((void *)&compressedPixelBufferSize, sizeof(itk::int32_t), 1, fp);
 
   for (i = 0; i < (GetDimensions(0) + 1); i++) {
-	if (1 != fread(&a, sizeof(itk::uint32_t), 1, fp))
-	  itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
-	buf[i] = a;
+    if (1 != fread(&a, sizeof(itk::uint32_t), 1, fp))
+      itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
+    buf[i] = a;
   }
-  
+
   int lookup_table_pos = 0;
   char  diff8;
   short diff16;
@@ -280,42 +273,42 @@ void rtk::XimImageIO::Read(void * buffer)
   unsigned char v;
 
   while( i < (GetDimensions(0)*GetDimensions(1))){
-	  v = m_lookup_table[lut_idx];
-	  switch (lut_off) {
-	  case 0:
-		  v = v & 0x03;
-		  lut_off++;
-		  break;
-	  case 1:
-		  v = (v & 0x0C) >> 2;
-		  lut_off++;
-		  break;
-	  case 2:
-		  v = (v & 0x30) >> 4;
-		  lut_off++;
-		  break;
-	  case 3:
-		  v = (v & 0xC0) >> 6;
-		  lut_off = 0;
-		  lut_idx++;
-		  break;
-	  }
-	  switch (v) {
-	  case 0:
-		  nelements += fread(&diff8, sizeof(unsigned char), 1, fp);
-		  diff = diff8;
-		  break;
-	  case 1:
-		  nelements += fread(&diff16, sizeof(unsigned short), 1, fp);
-		  diff = diff16;
-		  break;
-	  case 2:
-		  nelements += fread(&diff32, sizeof(itk::uint32_t), 1, fp);
-		  diff = diff32;
-		  break;
-	  }
-	buf[i] = diff + buf[i - 1] + buf[i - GetDimensions(0)] - buf[i - GetDimensions(0) - 1];
-	i++;
+    v = m_lookup_table[lut_idx];
+    switch (lut_off) {
+    case 0:
+      v = v & 0x03;
+      lut_off++;
+      break;
+    case 1:
+      v = (v & 0x0C) >> 2;
+      lut_off++;
+      break;
+    case 2:
+      v = (v & 0x30) >> 4;
+      lut_off++;
+      break;
+    case 3:
+      v = (v & 0xC0) >> 6;
+      lut_off = 0;
+      lut_idx++;
+      break;
+    }
+    switch (v) {
+      case 0:
+        nelements += fread(&diff8, sizeof(unsigned char), 1, fp);
+        diff = diff8;
+        break;
+      case 1:
+        nelements += fread(&diff16, sizeof(unsigned short), 1, fp);
+        diff = diff16;
+        break;
+      case 2:
+        nelements += fread(&diff32, sizeof(itk::uint32_t), 1, fp);
+        diff = diff32;
+        break;
+      }
+    buf[i] = diff + buf[i - 1] + buf[i - GetDimensions(0)] - buf[i - GetDimensions(0) - 1];
+    i++;
   }
 
   /* Clean up */

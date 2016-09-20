@@ -1,10 +1,5 @@
-RTK: The Reconstruction ToolKit :: Fork from SimonRit/RTK!
-Modified by AGRAVGAARD for use with Varian CBCTrecon software.
-VARIAN HNC READER ADDED FROM THE gdhugo/RTK FORK
-A huge thanks to Geoff Hugo for these tools!
-BZip2 dependency added!
+RTK: The Reconstruction ToolKit 
 
-OpenCL functionality is kept in this fork!
 
 Links
 -----

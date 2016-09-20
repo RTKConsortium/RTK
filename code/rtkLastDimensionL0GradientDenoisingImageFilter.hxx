@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkLastDimensionL0GradientDenoisingImageFilter_hxx
-#define __rtkLastDimensionL0GradientDenoisingImageFilter_hxx
+#ifndef rtkLastDimensionL0GradientDenoisingImageFilter_hxx
+#define rtkLastDimensionL0GradientDenoisingImageFilter_hxx
 
 #include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkProjectionGeometry_h
-#define __rtkProjectionGeometry_h
+#ifndef rtkProjectionGeometry_h
+#define rtkProjectionGeometry_h
 
 #include <itkImageBase.h>
 
@@ -74,9 +74,9 @@ public:
 
 protected:
   ProjectionGeometry(){};
-  virtual ~ProjectionGeometry(){};
+  ~ProjectionGeometry() ITK_OVERRIDE {};
 
-  virtual void PrintSelf( std::ostream& os, itk::Indent indent ) const ITK_OVERRIDE;
+  void PrintSelf( std::ostream& os, itk::Indent indent ) const ITK_OVERRIDE;
 
   /** Add projection matrix */
   virtual void AddMatrix(const MatrixType &m){
@@ -95,4 +95,4 @@ private:
 
 #include "rtkProjectionGeometry.hxx"
 
-#endif // __rtkProjectionGeometry_h
+#endif // rtkProjectionGeometry_h

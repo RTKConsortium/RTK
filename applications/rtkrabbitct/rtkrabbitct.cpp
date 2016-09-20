@@ -99,7 +99,7 @@ FNCSIGN bool RCTUnloadAlgorithm(RabbitCtGlobalData* rcgd)
 
   // delete the previously allocated volume
   delete [] (rcgd->f_L);
-  rcgd->f_L = NULL;
+  rcgd->f_L = ITK_NULLPTR;
   return true;
 }
 

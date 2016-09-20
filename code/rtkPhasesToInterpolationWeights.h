@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkPhasesToInterpolationWeights_h
-#define __rtkPhasesToInterpolationWeights_h
+#ifndef rtkPhasesToInterpolationWeights_h
+#define rtkPhasesToInterpolationWeights_h
 
 #include "itkCSVFileReaderBase.h"
 #include "itkArray2D.h"
@@ -59,7 +59,7 @@ public:
 
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */
-    void Parse();
+    void Parse() ITK_OVERRIDE;
 
     /** Aliased to the Parse() method to be consistent with the rest of the
    * pipeline. */
@@ -84,10 +84,10 @@ public:
 protected:
 
     PhasesToInterpolationWeights();
-    virtual ~PhasesToInterpolationWeights () {}
+    ~PhasesToInterpolationWeights () ITK_OVERRIDE {}
 
     /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const;
+    void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
 
 private:
 

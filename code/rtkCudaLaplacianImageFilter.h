@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaLaplacianImageFilter_h
-#define __rtkCudaLaplacianImageFilter_h
+#ifndef rtkCudaLaplacianImageFilter_h
+#define rtkCudaLaplacianImageFilter_h
 
 #include "rtkLaplacianImageFilter.h"
 #include <itkCudaInPlaceImageFilter.h>

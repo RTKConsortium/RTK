@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaForwardProjectionImageFilter_hxx
-#define __rtkCudaForwardProjectionImageFilter_hxx
+#ifndef rtkCudaForwardProjectionImageFilter_hxx
+#define rtkCudaForwardProjectionImageFilter_hxx
 
 #include "rtkCudaForwardProjectionImageFilter.h"
 #include "rtkCudaUtilities.hcu"

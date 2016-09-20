@@ -25,3 +25,4 @@ option "gammatv"     - "Total variation spatial regularization parameter. The la
 option "threshold"   - "Daubechies wavelets spatial regularization: soft threshold"                             float   no
 option "order"       - "Daubechies wavelets spatial regularization: order of the wavelets"                      int     no      default="5"
 option "levels"      - "Daubechies wavelets spatial regularization: number of decomposition levels"             int     no      default="3"
+option "soft"        - "Soft threshold for image domain sparsity enforcement"                                   float   no

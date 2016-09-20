@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkHomogeneousMatrix_h
-#define __rtkHomogeneousMatrix_h
+#ifndef rtkHomogeneousMatrix_h
+#define rtkHomogeneousMatrix_h
 
 #include <itkMatrix.h>
 #include <itkImage.h>
@@ -82,4 +82,4 @@ GetPhysicalPointToIndexMatrix(const TImageType *image)
 
 } // end namespace
 
-#endif // __rtkHomogeneousMatrix_h
+#endif // rtkHomogeneousMatrix_h

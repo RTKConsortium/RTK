@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConjugateGradientConeBeamReconstructionFilter_hxx
-#define __rtkConjugateGradientConeBeamReconstructionFilter_hxx
+#ifndef rtkConjugateGradientConeBeamReconstructionFilter_hxx
+#define rtkConjugateGradientConeBeamReconstructionFilter_hxx
 
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 
@@ -54,11 +54,31 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   m_MultiplyVolumeFilter = MultiplyFilterType::New();
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
   m_MultiplyOutputFilter = MultiplyFilterType::New();
+  m_MultiplySupportMaskFilter = MultiplyFilterType::New();
+  m_MultiplySupportMaskFilterForOutput = MultiplyFilterType::New();
 
   // Set permanent parameters
   m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ConstantProjectionsSource->SetConstant(1.0);
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+}
+
+
+template< typename TOutputImage>
+void
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::
+SetSupportMask(const TOutputImage *SupportMask)
+{
+  this->SetInput("SupportMask", const_cast<TOutputImage*>(SupportMask));
+}
+
+template< typename TOutputImage>
+typename TOutputImage::ConstPointer
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::
+GetSupportMask()
+{
+  return static_cast< const TOutputImage * >
+          ( this->itk::ProcessObject::GetInput("SupportMask") );
 }
 
 template< typename TOutputImage>
@@ -97,6 +117,23 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     }
 }
 
+template< typename TOutputImage >
+const TOutputImage *
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
+::ApplySupportMask (const TOutputImage *_arg)
+{
+  if (this->GetSupportMask().IsNotNull())
+  {
+    m_MultiplySupportMaskFilter->SetInput(0,_arg);
+    m_MultiplySupportMaskFilter->Update();
+    return m_MultiplySupportMaskFilter->GetOutput();
+  }
+  else
+  {
+    return _arg;
+  }
+}
+
 template< typename TOutputImage>
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
@@ -123,6 +160,15 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
       return;
   inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
 
+  // Input "SupportMask" is the support constraint mask on volume, if any
+  if (this->GetSupportMask().IsNotNull())
+    {
+    typename Superclass::InputImagePointer inputSupportMaskPtr =
+            const_cast< TOutputImage * >( this->GetSupportMask().GetPointer() );
+    if ( !inputSupportMaskPtr )
+        return;
+    inputSupportMaskPtr->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+    }
 }
 
 template< typename TOutputImage>
@@ -142,6 +188,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1));
+  m_CGOperator->SetSupportMask(this->GetSupportMask());
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
   m_DisplacedDetectorFilter->SetInput(this->GetInput(2));
 
@@ -155,6 +202,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_MultiplyProjectionsFilter->SetInput2(m_DisplacedDetectorFilter->GetOutput());
   m_CGOperator->SetInput(2, m_DisplacedDetectorFilter->GetOutput());
   m_BackProjectionFilterForB->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
+
+  if (this->GetSupportMask().IsNotNull())
+    {
+    m_MultiplySupportMaskFilter->SetInput(0,m_BackProjectionFilterForB->GetOutput());
+    m_MultiplySupportMaskFilter->SetInput(1,this->GetSupportMask());
+    m_ConjugateGradientFilter->SetB(m_MultiplySupportMaskFilter->GetOutput());   
+    }
 
   if (m_Preconditioned)
     {
@@ -176,6 +230,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_CGOperator->SetInput(3, m_DivideFilter->GetOutput());
     m_ConjugateGradientFilter->SetB(m_MultiplyVolumeFilter->GetOutput());
 
+    if (this->GetSupportMask().IsNotNull())
+    {
+    m_MultiplySupportMaskFilter->SetInput(0,m_BackProjectionFilterForB->GetOutput());
+    m_MultiplySupportMaskFilter->SetInput(1,this->GetSupportMask());
+    m_MultiplyVolumeFilter->SetInput1(m_MultiplySupportMaskFilter->GetOutput());
+    }
+
     // Divide the output by the preconditioning weights
     m_MultiplyOutputFilter->SetInput1(m_ConjugateGradientFilter->GetOutput());
     m_MultiplyOutputFilter->SetInput2(m_DivideFilter->GetOutput());
@@ -195,7 +256,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_CGOperator->SetGamma(m_Gamma);
 
   // Set memory management parameters
-    m_MultiplyProjectionsFilter->ReleaseDataFlagOn();
+  m_MultiplyProjectionsFilter->ReleaseDataFlagOn();
 
   if (m_Preconditioned)
     {
@@ -206,6 +267,19 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_MultiplyOutputFilter->ReleaseDataFlagOn();
     }
   m_BackProjectionFilterForB->ReleaseDataFlagOn();
+
+  if (this->GetSupportMask().IsNotNull())
+    {
+    m_MultiplySupportMaskFilterForOutput->SetInput(1,this->GetSupportMask());
+    if (m_Preconditioned)
+      {
+      m_MultiplySupportMaskFilterForOutput->SetInput(0,m_MultiplyOutputFilter->GetOutput());
+      }
+    else
+      {
+      m_MultiplySupportMaskFilterForOutput->SetInput(0,m_ConjugateGradientFilter->GetOutput());
+      }
+    }
 
   // Have the last filter calculate its output information
   m_ConjugateGradientFilter->UpdateOutputInformation();
@@ -249,16 +323,33 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   if (m_Preconditioned)
     m_MultiplyOutputFilter->Update();
 
+  if (this->GetSupportMask())
+    {
+    m_MultiplySupportMaskFilter->Update();
+    m_MultiplySupportMaskFilterForOutput->Update();
+    }
+
   if(m_MeasureExecutionTimes)
     {
     ConjugateGradientTimeProbe.Stop();
     std::cout << "ConjugateGradient took " << ConjugateGradientTimeProbe.GetTotal() << ' ' << ConjugateGradientTimeProbe.GetUnit() << std::endl;
     }
 
-  if (m_Preconditioned)
-    this->GraftOutput( m_MultiplyOutputFilter->GetOutput() );
+  if (this->GetSupportMask())
+    {
+    this->GraftOutput( m_MultiplySupportMaskFilterForOutput->GetOutput() );
+    }
   else
-    this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+    {
+      if (m_Preconditioned)
+      {
+      this->GraftOutput( m_MultiplyOutputFilter->GetOutput() );
+      }
+      else
+      {
+      this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+      }
+    }
 }
 
 }// end namespace

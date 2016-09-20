@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawEllipsoidImageFilter_h
-#define __rtkDrawEllipsoidImageFilter_h
+#ifndef rtkDrawEllipsoidImageFilter_h
+#define rtkDrawEllipsoidImageFilter_h
 
 #include "rtkDrawQuadricImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -69,7 +69,7 @@ public:
 
 protected:
   DrawEllipsoidImageFilter();
-  virtual ~DrawEllipsoidImageFilter() {};
+  ~DrawEllipsoidImageFilter() ITK_OVERRIDE {};
 
 private:
   DrawEllipsoidImageFilter ( const Self& ); //purposely not implemented

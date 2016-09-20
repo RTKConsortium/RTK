@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __rtkGlobalTimerProbesCollector_h
-#define __rtkGlobalTimerProbesCollector_h
+#ifndef rtkGlobalTimerProbesCollector_h
+#define rtkGlobalTimerProbesCollector_h
 
 
 #include "itkTimeProbe.h"
@@ -71,4 +71,4 @@ protected:
 };
 } // end namespace itk
 
-#endif //__rtkGlobalTimerProbesCollector_h
+#endif //rtkGlobalTimerProbesCollector_h

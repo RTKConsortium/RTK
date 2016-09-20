@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkFieldOfViewImageFilter_hxx
-#define __rtkFieldOfViewImageFilter_hxx
+#ifndef rtkFieldOfViewImageFilter_hxx
+#define rtkFieldOfViewImageFilter_hxx
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionConstIteratorWithIndex.h>
@@ -30,7 +30,7 @@ namespace rtk
 template<class TInputImage, class TOutputImage>
 FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::FieldOfViewImageFilter():
-  m_Geometry(NULL),
+  m_Geometry(ITK_NULLPTR),
   m_Mask(false),
   m_Radius(-1),
   m_CenterX(0.),
@@ -70,7 +70,7 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
   // Build model for lpsolve with 3 variables: x, z and r
   const int Ncol = 3;
   lprec *lp = make_lp(0, Ncol);
-  if(lp == NULL)
+  if(lp == ITK_NULLPTR)
     itkExceptionMacro(<< "Couldn't construct 2 new models for the simplex solver");
 
   // Objective: maximize r
@@ -367,4 +367,4 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 
 } // end namespace rtk
 
-#endif // __rtkFieldOfViewImageFilter_hxx
+#endif // rtkFieldOfViewImageFilter_hxx

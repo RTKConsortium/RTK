@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawCubeImageFilter_hxx
-#define __rtkDrawCubeImageFilter_hxx
+#ifndef rtkDrawCubeImageFilter_hxx
+#define rtkDrawCubeImageFilter_hxx
 
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
@@ -34,7 +34,7 @@ template <class TInputImage, class TOutputImage, class TSpatialObject, typename 
 DrawCubeImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
 ::DrawCubeImageFilter()
 {
-
+  this->m_SpatialObject.UpdateParameters();
 }
 
 void

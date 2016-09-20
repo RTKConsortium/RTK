@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDrawImageFilter_h
-#define __rtkDrawImageFilter_h
+#ifndef rtkDrawImageFilter_h
+#define rtkDrawImageFilter_h
 
 
 #include <itkInPlaceImageFilter.h>
@@ -96,8 +96,8 @@ public:
 
 protected:
   DrawImageFilter();
-  virtual ~DrawImageFilter() {};
-  virtual void ThreadedGenerateData ( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  ~DrawImageFilter() ITK_OVERRIDE {};
+  void ThreadedGenerateData ( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   TFunction      m_Fillerfunctor;
   TSpatialObject m_SpatialObject;

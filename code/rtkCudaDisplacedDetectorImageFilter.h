@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaDisplacedDetectorImageFilter_h
-#define __rtkCudaDisplacedDetectorImageFilter_h
+#ifndef rtkCudaDisplacedDetectorImageFilter_h
+#define rtkCudaDisplacedDetectorImageFilter_h
 
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkWin32Header.h"
@@ -79,4 +79,4 @@ private:
 
 }
 
-#endif // __rtkCudaDisplacedDetectorImageFilter_h
+#endif // rtkCudaDisplacedDetectorImageFilter_h

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkIterativeFDKConeBeamReconstructionFilter_hxx
-#define __rtkIterativeFDKConeBeamReconstructionFilter_hxx
+#ifndef rtkIterativeFDKConeBeamReconstructionFilter_hxx
+#define rtkIterativeFDKConeBeamReconstructionFilter_hxx
 
 #include "rtkIterativeFDKConeBeamReconstructionFilter.h"
 
@@ -132,7 +132,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_DivideFilter->SetInput2( m_RayBoxFilter->GetOutput() );
 
   // Check and set geometry
-  if(this->GetGeometry().GetPointer() == NULL)
+  if(this->GetGeometry().GetPointer() == ITK_NULLPTR)
     {
     itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
     }
@@ -219,4 +219,4 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 
 } // end namespace rtk
 
-#endif // __rtkIterativeFDKConeBeamReconstructionFilter_hxx
+#endif // rtkIterativeFDKConeBeamReconstructionFilter_hxx

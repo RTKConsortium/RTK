@@ -16,13 +16,14 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkConvertEllipsoidToQuadricParametersFunction_h
-#define __rtkConvertEllipsoidToQuadricParametersFunction_h
+#ifndef rtkConvertEllipsoidToQuadricParametersFunction_h
+#define rtkConvertEllipsoidToQuadricParametersFunction_h
 
 #include <itkNumericTraits.h>
 #include <itkVector.h>
 #include <itkObjectFactory.h>
 #include "rtkWin32Header.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -100,7 +101,7 @@ protected:
   ConvertEllipsoidToQuadricParametersFunction();
 
   /// Destructor
-  ~ConvertEllipsoidToQuadricParametersFunction() {};
+  ~ConvertEllipsoidToQuadricParametersFunction() ITK_OVERRIDE {};
 
   /** Corners of the image Quadric */
   double     m_SemiPrincipalAxisX;

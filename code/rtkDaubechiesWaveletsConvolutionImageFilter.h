@@ -16,12 +16,14 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkDaubechiesWaveletsConvolutionImageFilter_h
-#define __rtkDaubechiesWaveletsConvolutionImageFilter_h
+#ifndef rtkDaubechiesWaveletsConvolutionImageFilter_h
+#define rtkDaubechiesWaveletsConvolutionImageFilter_h
 
 //Includes
 #include <itkImageToImageFilter.h>
 #include <itkConvolutionImageFilter.h>
+
+#include "rtkMacro.h"
 
 namespace rtk {
 
@@ -100,7 +102,7 @@ public:
 
 protected:
     DaubechiesWaveletsConvolutionImageFilter();
-    ~DaubechiesWaveletsConvolutionImageFilter();
+    ~DaubechiesWaveletsConvolutionImageFilter() ITK_OVERRIDE;
 
     typedef std::vector<typename TImage::PixelType> CoefficientVector;
 
@@ -108,10 +110,10 @@ protected:
     CoefficientVector GenerateCoefficients();
 
     /** Does the real work */
-    virtual void GenerateData();
+    void GenerateData() ITK_OVERRIDE;
 
     /** Defines the size, spacing, ... of the output kernel image */
-    virtual void GenerateOutputInformation();
+    void GenerateOutputInformation() ITK_OVERRIDE;
 
 private:
 
