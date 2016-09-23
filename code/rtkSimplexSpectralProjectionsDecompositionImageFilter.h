@@ -21,6 +21,9 @@
 
 #include <itkImageToImageFilter.h>
 #include <itkAmoebaOptimizer.h>
+#include <itkVectorImage.h>
+#include <itkVariableLengthVector.h>
+#include <itkVariableSizeMatrix.h>
 
 namespace rtk
 {
@@ -36,7 +39,6 @@ namespace rtk
    */
 
 // We have to define the cost function first
-template <unsigned int NbMaterials = 3, unsigned int NumberOfSpectralBins = 6, unsigned int NumberOfEnergies = 150>
 class Schlomka2008NegativeLogLikelihood : public itk::SingleValuedCostFunction
 {
 public:
@@ -48,16 +50,16 @@ public:
   itkNewMacro( Self );
   itkTypeMacro( Schlomka2008NegativeLogLikelihood, SingleValuedCostFunction );
 
-  enum { SpaceDimension=NbMaterials };
+//  enum { SpaceDimension=m_NumberOfMaterials };
 
   typedef Superclass::ParametersType      ParametersType;
   typedef Superclass::DerivativeType      DerivativeType;
   typedef Superclass::MeasureType         MeasureType;
 
-  typedef itk::Matrix<float, NumberOfSpectralBins, NumberOfEnergies>            DetectorResponseType;
-  typedef itk::Vector<itk::Vector<float, NumberOfEnergies>, NbMaterials>        MaterialAttenuationsType;
-  typedef itk::Vector<float, NumberOfSpectralBins>                              DetectorCountsType;
-  typedef itk::Vector<float, NumberOfEnergies>                                  IncidentSpectrumType;
+  typedef itk::VariableSizeMatrix<float>      DetectorResponseType;
+  typedef itk::VariableSizeMatrix<float>      MaterialAttenuationsType;
+  typedef itk::VariableLengthVector<float>    DetectorCountsType;
+  typedef itk::VariableLengthVector<float>    IncidentSpectrumType;
 
   // Constructor
   Schlomka2008NegativeLogLikelihood()
@@ -69,24 +71,29 @@ public:
   {
   }
 
-  itk::Vector<float, NumberOfSpectralBins> ForwardModel(const ParametersType & lineIntegrals) const
+  vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const
   {
+  // Variable length vector and variable size matrix cannot be used in linear algebra operations
+  // Get their vnl counterparts, which can
+  vnl_vector<float> vnl_vec(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+
   // Apply detector response, getting the lambdas
-  return m_DetectorResponse * GetAttenuatedIncidentSpectrum(lineIntegrals);
+  return (m_DetectorResponse.GetVnlMatrix() * vnl_vec);
   }
 
-  itk::Vector<float, NumberOfEnergies> GetAttenuatedIncidentSpectrum(const ParametersType & lineIntegrals) const
+  itk::VariableLengthVector<float> GetAttenuatedIncidentSpectrum(const ParametersType & lineIntegrals) const
   {
   // Solid angle of detector pixel, exposure time and mAs should already be
   // taken into account in the incident spectrum image
 
   // Apply attenuation at each energy
-  itk::Vector<float, NumberOfEnergies> attenuatedIncidentSpectrum;
+  itk::VariableLengthVector<float> attenuatedIncidentSpectrum;
+  attenuatedIncidentSpectrum.SetSize(m_NumberOfEnergies);
   attenuatedIncidentSpectrum.Fill(0);
-  for (unsigned int e=0; e<NumberOfEnergies; e++)
+  for (unsigned int e=0; e<m_NumberOfEnergies; e++)
     {
     float totalAttenuation = 0.;
-    for (unsigned int m=0; m<NbMaterials; m++)
+    for (unsigned int m=0; m<m_NumberOfMaterials; m++)
       {
       totalAttenuation += lineIntegrals[m] * m_MaterialAttenuations[m][e];
       }
@@ -97,52 +104,53 @@ public:
   return attenuatedIncidentSpectrum;
   }
 
-  itk::Vector<float, NbMaterials> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
+  itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
   {
   // Get some required data
-  itk::Vector<float, NumberOfEnergies> attenuatedIncidentSpectrum = GetAttenuatedIncidentSpectrum(lineIntegrals);
-  itk::Vector<float, NumberOfSpectralBins> lambdas = ForwardModel(lineIntegrals);
+  vnl_vector<float> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<float> lambdas = ForwardModel(lineIntegrals);
 
   // Compute the vector of m_b / lambda_b²
-  itk::Vector<float, NumberOfSpectralBins> weights;
-  weights.SetVnlVector(element_product(lambdas.GetVnlVector(), lambdas.GetVnlVector()));
-  for (unsigned int i=0; i<NumberOfSpectralBins; i++)
-    weights[i] = 1. / weights[i];
-  weights.SetVnlVector(element_product(weights.GetVnlVector(), m_DetectorCounts.GetVnlVector()));
+  vnl_vector<float> weights;
+  weights.set_size(m_NumberOfSpectralBins);
+  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
+    weights[i] = m_DetectorCounts[i] / (lambdas[i] * lambdas[i]);
 
   // Prepare intermediate variables
-  itk::Vector<float, NumberOfEnergies> intermediate_a;
-  itk::Vector<float, NumberOfEnergies> intermediate_a_prime;
-  itk::Vector<float, NumberOfSpectralBins> partial_derivative_a;
-  itk::Vector<float, NumberOfSpectralBins> partial_derivative_a_prime;
+  vnl_vector<float> intermediate_a;
+  vnl_vector<float> intermediate_a_prime;
+  vnl_vector<float> partial_derivative_a;
+  vnl_vector<float> partial_derivative_a_prime;
 
   // Compute the Fischer information matrix
-  itk::Matrix<float, NbMaterials, NbMaterials> Fischer;
-  for (unsigned int a=0; a<NbMaterials; a++)
+  itk::VariableSizeMatrix<float> Fischer;
+  Fischer.SetSize(m_NumberOfMaterials, m_NumberOfMaterials);
+  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
     {
-    for (unsigned int a_prime=0; a_prime<NbMaterials; a_prime++)
+    for (unsigned int a_prime=0; a_prime<m_NumberOfMaterials; a_prime++)
       {
       // Compute the partial derivatives of lambda_b with respect to the material line integrals
-      intermediate_a.SetVnlVector(element_product(attenuatedIncidentSpectrum.GetVnlVector(), m_MaterialAttenuations[a].GetVnlVector()));
-      intermediate_a_prime.SetVnlVector(element_product(attenuatedIncidentSpectrum.GetVnlVector(), m_MaterialAttenuations[a_prime].GetVnlVector()));
+      intermediate_a = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a));
+      intermediate_a_prime = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a_prime));
 
-      partial_derivative_a = m_DetectorResponse * intermediate_a;
-      partial_derivative_a_prime = m_DetectorResponse * intermediate_a_prime;
+      partial_derivative_a = m_DetectorResponse.GetVnlMatrix() * intermediate_a;
+      partial_derivative_a_prime = m_DetectorResponse.GetVnlMatrix() * intermediate_a_prime;
 
       // Multiply them together element-wise, then dot product with the weights
-      partial_derivative_a_prime.SetVnlVector(element_product(partial_derivative_a.GetVnlVector(), partial_derivative_a_prime.GetVnlVector()));
-      Fischer[a][a_prime] = partial_derivative_a_prime * weights;
+      partial_derivative_a_prime = element_product(partial_derivative_a, partial_derivative_a_prime);
+      Fischer[a][a_prime] = dot_product(partial_derivative_a_prime,weights);
       }
     }
 
   // Invert the Fischer matrix
-  itk::Vector<float, NbMaterials> diag;
+  itk::VariableLengthVector<float> diag;
+  diag.SetSize(m_NumberOfMaterials);
   diag.Fill(0);
 
   Fischer = Fischer.GetInverse();
 
   // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS reconstruction)
-  for (unsigned int mat=0; mat<NbMaterials; mat++)
+  for (unsigned int mat=0; mat<m_NumberOfMaterials; mat++)
     diag[mat] = 1./Fischer[mat][mat];
   return diag;
   }
@@ -158,11 +166,11 @@ public:
   MeasureType  GetValue( const ParametersType & parameters ) const
   {
   // Forward model: compute the expected number of counts in each bin
-  DetectorCountsType lambdas = ForwardModel(parameters);
+  vnl_vector<float> lambdas = ForwardModel(parameters);
 
   // Compute the negative log likelihood from the lambdas
   MeasureType measure = 0;
-  for (unsigned int i=0; i<NumberOfSpectralBins; i++)
+  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
     measure += lambdas[i] - std::log(lambdas[i]) * m_DetectorCounts[i];
 
   return measure;
@@ -170,7 +178,7 @@ public:
 
   unsigned int GetNumberOfParameters(void) const
   {
-  return SpaceDimension;
+  return m_NumberOfMaterials;
   }
 
   itkSetMacro(DetectorCounts, DetectorCountsType)
@@ -185,11 +193,23 @@ public:
   itkSetMacro(MaterialAttenuations, MaterialAttenuationsType)
   itkGetMacro(MaterialAttenuations, MaterialAttenuationsType)
 
+  itkSetMacro(NumberOfEnergies, unsigned int)
+  itkGetMacro(NumberOfEnergies, unsigned int)
+
+  itkSetMacro(NumberOfSpectralBins, unsigned int)
+  itkGetMacro(NumberOfSpectralBins, unsigned int)
+
+  itkSetMacro(NumberOfMaterials, unsigned int)
+  itkGetMacro(NumberOfMaterials, unsigned int)
+
 protected:
   MaterialAttenuationsType    m_MaterialAttenuations;
   DetectorResponseType        m_DetectorResponse;
   IncidentSpectrumType        m_IncidentSpectrum;
   DetectorCountsType          m_DetectorCounts;
+  unsigned int                m_NumberOfEnergies;
+  unsigned int                m_NumberOfSpectralBins;
+  unsigned int                m_NumberOfMaterials;
 
 private:
   Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented
@@ -198,9 +218,11 @@ private:
 };
 
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
-         unsigned int NumberOfEnergies = 150, typename IncidentSpectrumImageType = itk::Image<itk::Vector<float, NumberOfEnergies>, 2>,
-         typename DetectorResponseImageType = itk::Image<float, 2>, typename MaterialAttenuationsImageType = itk::Image<float, 2> >
+template<typename DecomposedProjectionsType,
+         typename SpectralProjectionsType,
+         typename IncidentSpectrumImageType = itk::VectorImage<float, 2>,
+         typename DetectorResponseImageType = itk::Image<float, 2>,
+         typename MaterialAttenuationsImageType = itk::Image<float, 2> >
 class ITK_EXPORT SimplexSpectralProjectionsDecompositionImageFilter :
   public itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>
 {
@@ -216,13 +238,12 @@ public:
   typedef SpectralProjectionsType       OutputImageType;
 
   /** Convenient information */
-  typedef itk::Matrix<float, SpectralProjectionsType::PixelType::Dimension, NumberOfEnergies>                 DetectorResponseType;
-  typedef itk::Vector<itk::Vector<float, NumberOfEnergies>, DecomposedProjectionsType::PixelType::Dimension>  MaterialAttenuationsType;
-  typedef itk::Vector<unsigned int, SpectralProjectionsType::PixelType::Dimension + 1>                        ThresholdsType;
+  typedef itk::VariableSizeMatrix<float>            DetectorResponseType;
+  typedef itk::VariableSizeMatrix<float>            MaterialAttenuationsType;
+  typedef itk::VariableLengthVector<unsigned int>   ThresholdsType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef Schlomka2008NegativeLogLikelihood<DecomposedProjectionsType::PixelType::Dimension,
-                                            SpectralProjectionsType::PixelType::Dimension, NumberOfEnergies>  CostFunctionType;
+  typedef Schlomka2008NegativeLogLikelihood                             CostFunctionType;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -257,6 +278,15 @@ public:
   itkSetMacro(Thresholds, ThresholdsType)
   itkGetMacro(Thresholds, ThresholdsType)
 
+  itkSetMacro(NumberOfEnergies, unsigned int)
+  itkGetMacro(NumberOfEnergies, unsigned int)
+
+  itkSetMacro(NumberOfSpectralBins, unsigned int)
+  itkGetMacro(NumberOfSpectralBins, unsigned int)
+
+  itkSetMacro(NumberOfMaterials, unsigned int)
+  itkGetMacro(NumberOfMaterials, unsigned int)
+
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
   ~SimplexSpectralProjectionsDecompositionImageFilter() ITK_OVERRIDE {}
@@ -280,6 +310,9 @@ protected:
   MaterialAttenuationsType   m_MaterialAttenuations;
   DetectorResponseType       m_DetectorResponse;
   ThresholdsType             m_Thresholds;
+  unsigned int               m_NumberOfEnergies;
+  unsigned int               m_NumberOfSpectralBins;
+  unsigned int               m_NumberOfMaterials;
 
   /** Number of simplex iterations */
   unsigned int m_NumberOfIterations;

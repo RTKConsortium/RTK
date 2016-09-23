@@ -18,20 +18,15 @@ int main(int , char** )
 {
   typedef float PixelValueType;
   const unsigned int Dimension = 3;
-  const unsigned int NumberOfMaterials = 3;
-  const unsigned int NumberOfSpectralBins = 6;
-  const unsigned int MaximumEnergy = 150;
 
-  typedef itk::Vector<PixelValueType, NumberOfMaterials> MaterialsVectorType;
-  typedef itk::Image< MaterialsVectorType, Dimension > DecomposedProjectionType;
+  typedef itk::VectorImage< PixelValueType, Dimension > DecomposedProjectionType;
   typedef itk::ImageFileReader<DecomposedProjectionType> DecomposedProjectionReaderType;
+  typedef itk::ImageFileWriter<DecomposedProjectionType> DecomposedProjectionWriterType;
 
-  typedef itk::Vector<PixelValueType, NumberOfSpectralBins> SpectralVectorType;
-  typedef itk::Image< SpectralVectorType, Dimension > SpectralProjectionsType;
+  typedef itk::VectorImage< PixelValueType, Dimension > SpectralProjectionsType;
   typedef itk::ImageFileReader< SpectralProjectionsType > SpectralProjectionReaderType;
 
-  typedef itk::Vector<PixelValueType, MaximumEnergy> IncidentSpectrumVectorType;
-  typedef itk::Image< IncidentSpectrumVectorType, Dimension-1 > IncidentSpectrumImageType;
+  typedef itk::VectorImage< PixelValueType, Dimension-1 > IncidentSpectrumImageType;
   typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
 
   typedef itk::Image< PixelValueType, Dimension-1 > DetectorResponseImageType;
@@ -39,9 +34,6 @@ int main(int , char** )
 
   typedef itk::Image< PixelValueType, Dimension-1 > MaterialAttenuationsImageType;
   typedef itk::ImageFileReader<MaterialAttenuationsImageType> MaterialAttenuationsReaderType;
-
-  typedef itk::Matrix<PixelValueType, NumberOfSpectralBins, MaximumEnergy>            DetectorResponseType;
-  typedef itk::Vector<itk::Vector<PixelValueType, MaximumEnergy>, NumberOfMaterials>  MaterialAttenuationsType;
 
   // Generate an initial set of decomposed projections
   DecomposedProjectionType::Pointer initialDecomposedProjections = DecomposedProjectionType::New();
@@ -55,8 +47,10 @@ int main(int , char** )
   initRegion.SetSize(initSize);
   initRegion.SetIndex(initIndex);
   initialDecomposedProjections->SetRegions(initRegion);
+  initialDecomposedProjections->SetVectorLength(3);
   initialDecomposedProjections->Allocate();
   DecomposedProjectionType::PixelType initPixel;
+  initPixel.SetSize(3);
   initPixel[0] = 0.1;
   initPixel[1] = 0.1;
   initPixel[2] = 100;
@@ -84,7 +78,8 @@ int main(int , char** )
   materialAttenuationsReader->Update();
 
   // Generate the thresholds vector
-  itk::Vector<unsigned int, 7> thresholds;
+  itk::VariableLengthVector<unsigned int> thresholds;
+  thresholds.SetSize(7);
   thresholds[0] = 25;
   thresholds[1] = 40;
   thresholds[2] = 55;
@@ -100,7 +95,7 @@ int main(int , char** )
   decomposedProjectionReader->Update();
 
   // Create and set the filter
-  typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, MaximumEnergy, IncidentSpectrumImageType> SimplexFilterType;
+  typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType> SimplexFilterType;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(initialDecomposedProjections);
   simplex->SetInputSpectralProjections(spectralProjectionReader->GetOutput());
