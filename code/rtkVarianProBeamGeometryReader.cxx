@@ -67,11 +67,15 @@ rtk::VarianProBeamGeometryReader
       dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
     if (angle != 6000)
     {
+      /* Warning: The offsets in the test scans were very small,
+      however this configuration improved reconstruction quality slightly.*/
       const double offsetx =
         dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue();
       const double offsety =
         dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetY"].GetPointer())->GetMetaDataObjectValue();
-      m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
+      /*The angle-direction of RTK is opposite of the Xim properties
+      (There doesn't seem to be a flag for direction in neither the xml nor xim file) */
+      m_Geometry->AddProjection(sid, sdd, 180.0 - angle, offsetx, offsety);
     }
   }
 }
