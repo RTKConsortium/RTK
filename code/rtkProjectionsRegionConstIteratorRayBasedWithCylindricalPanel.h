@@ -75,7 +75,7 @@ protected:
    * NewProjection method has already been called. */
   inline virtual void NewPixel();
 
-  MatrixType m_ProjectionIndexTransformMatrix;
+  HomogeneousMatrixType m_ProjectionIndexTransformMatrix;
   MatrixType m_VolumeTransformMatrix;
   double     m_Radius;
   double     m_InverseRadius;
