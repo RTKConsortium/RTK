@@ -155,11 +155,37 @@ public:
   return diag;
   }
 
-  // Not implemented, since it is too complex to compute
-  // Therefore we will only use a zero-th order method
-  void GetDerivative( const ParametersType & ,
-                      DerivativeType &  ) const
+  // Not used with a simplex optimizer, but may be useful later
+  // for gradient based methods
+  void GetDerivative( const ParametersType & lineIntegrals,
+                      DerivativeType & derivatives ) const
   {
+  // Set the size of the derivatives vector
+  derivatives.set_size(m_NumberOfMaterials);
+
+  // Get some required data
+  vnl_vector<float> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<float> lambdas = ForwardModel(lineIntegrals);
+
+  // Compute the vector of 1 - m_b / lambda_b
+  vnl_vector<float> weights;
+  weights.set_size(m_NumberOfSpectralBins);
+  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
+    weights[i] = 1 - (m_DetectorCounts[i] / lambdas[i]);
+
+  // Prepare intermediate variables
+  vnl_vector<float> intermediate_a;
+  vnl_vector<float> partial_derivative_a;
+
+  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
+    {
+    // Compute the partial derivatives of lambda_b with respect to the material line integrals
+    intermediate_a = element_product(-attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a));
+    partial_derivative_a = m_DetectorResponse.GetVnlMatrix() * intermediate_a;
+
+    // Multiply them together element-wise, then dot product with the weights
+    derivatives[a] = dot_product(partial_derivative_a,weights);
+    }
   }
 
   // Main method
@@ -172,7 +198,6 @@ public:
   MeasureType measure = 0;
   for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
     measure += lambdas[i] - std::log(lambdas[i]) * m_DetectorCounts[i];
-
   return measure;
   }
 
