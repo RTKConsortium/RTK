@@ -39,15 +39,15 @@
 
 // TEXTURES AND CONSTANTS //
 
-texture<float, 1, cudaReadModeElementType> tex_matrix;
-
-__constant__ float3 c_sourcePos;
-__constant__ int2 c_projSize;
+__constant__ int3 c_projSize;
 __constant__ float3 c_boxMin;
 __constant__ float3 c_boxMax;
 __constant__ float3 c_spacing;
-__constant__ float c_tStep;
 __constant__ int3 c_volSize;
+__constant__ float c_tStep;
+__constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
+__constant__ float c_sourcePos[SLAB_SIZE * 3]; //Can process stacks of at most SLAB_SIZE projections
+
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -113,7 +113,7 @@ void splat3D(float toSplat,
 
 // KERNEL normalize
 __global__
-void kernel_normalize_and_add_to_output(float * dev_vol_out, float * dev_accumulate_weights, float * dev_accumulate_values, bool normalize)
+void kernel_normalize_and_add_to_output(float * dev_vol_in, float * dev_vol_out, float * dev_accumulate_weights, float * dev_accumulate_values, bool normalize)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -137,7 +137,7 @@ void kernel_normalize_and_add_to_output(float * dev_vol_out, float * dev_accumul
       dev_vol_out[out_idx] += (dev_accumulate_values[out_idx] / dev_accumulate_weights[out_idx]);
     }
   else
-    dev_vol_out[out_idx] += dev_accumulate_values[out_idx];
+    dev_vol_out[out_idx] = dev_vol_in[out_idx] + dev_accumulate_values[out_idx];
 }
 
 // KERNEL kernel_ray_cast_back_project
@@ -151,69 +151,68 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
   if (i >= c_projSize.x || j >= c_projSize.y)
     return;
 
-  // Setting ray origin
+  // Declare variables used in the loop
   Ray ray;
-  ray.o = c_sourcePos;
-
   float3 pixelPos;
-
-  pixelPos.x = tex1Dfetch(tex_matrix, 3)  + tex1Dfetch(tex_matrix, 0)*i +
-               tex1Dfetch(tex_matrix, 1)*j;
-  pixelPos.y = tex1Dfetch(tex_matrix, 7)  + tex1Dfetch(tex_matrix, 4)*i +
-               tex1Dfetch(tex_matrix, 5)*j;
-  pixelPos.z = tex1Dfetch(tex_matrix, 11) + tex1Dfetch(tex_matrix, 8)*i +
-               tex1Dfetch(tex_matrix, 9)*j;
-
-  ray.d = pixelPos - ray.o;
-  ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
-
-  // Detect intersection with box
   float tnear, tfar;
-  if ( intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f) )
+
+  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
     {
-    if (tnear < 0.f)
-      tnear = 0.f; // clamp to near plane
+    // Setting ray origin
+    ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
 
-    // Step length in mm
-    float3 dirInMM = c_spacing * ray.d;
-    float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
-    float3 step = vStep * ray.d;
+    pixelPos = matrix_multiply(make_float3(i,j,0), &(c_matrices[12*proj]));
 
-    // First position in the box
-    float3 pos;
-    float halfVStep = 0.5f*vStep;
-    tnear = tnear + halfVStep;
-    pos = ray.o + tnear*ray.d;
+    ray.d = pixelPos - ray.o;
+    ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
 
-    float  t;
-
-    float toSplat;
-    long int indices[8];
-    float weights[8];
-    int3 floor_pos;
-
-    if (tfar - tnear > halfVStep)
+    // Detect intersection with box
+    if ( intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f) )
       {
-      for(t=tnear; t<=tfar; t+=vStep)
+      if (tnear < 0.f)
+        tnear = 0.f; // clamp to near plane
+
+      // Step length in mm
+      float3 dirInMM = c_spacing * ray.d;
+      float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
+      float3 step = vStep * ray.d;
+
+      // First position in the box
+      float3 pos;
+      float halfVStep = 0.5f*vStep;
+      tnear = tnear + halfVStep;
+      pos = ray.o + tnear*ray.d;
+
+      float  t;
+
+      float toSplat;
+      long int indices[8];
+      float weights[8];
+      int3 floor_pos;
+
+      if (tfar - tnear > halfVStep)
         {
-        floor_pos.x = floor(pos.x);
-        floor_pos.y = floor(pos.y);
-        floor_pos.z = floor(pos.z);
+        for(t=tnear; t<=tfar; t+=vStep)
+          {
+          floor_pos.x = floor(pos.x);
+          floor_pos.y = floor(pos.y);
+          floor_pos.z = floor(pos.z);
 
-        // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
-        splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
+          // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
+          splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
 
-        // Compute the value to be splatted
-        toSplat = dev_proj[numThread] * c_tStep;
+          // Compute the value to be splatted
+          toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep;
+          splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
+
+          // Move to next position
+          pos += step;
+          }
+
+        // Last position
+        toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep * (tfar - t + halfVStep) / vStep;
         splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
-
-        // Move to next position
-        pos += step;
         }
-
-      // Last position
-      toSplat = dev_proj[numThread] * c_tStep * (tfar - t + halfVStep) / vStep;
-      splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
       }
     }
 }
@@ -226,57 +225,49 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_ray_cast_backproject() //////////////////////////////////
 void
-CUDA_ray_cast_back_project( int projections_size[2],
-                      int vol_size[3],
-                      float matrix[12],
+CUDA_ray_cast_back_project( int projSize[2],
+                      int volSize[3],
+                      float* matrices,
+                      float *dev_vol_in,
                       float *dev_vol_out,
                       float *dev_proj,
                       float t_step,
-                      double source_position[3],
+                      double* source_positions,
                       float box_min[3],
                       float box_max[3],
                       float spacing[3],
                       bool normalize)
 {
-  // Copy matrix and bind data to the texture
-  float *dev_matrix;
-  cudaMalloc( (void**)&dev_matrix, 12*sizeof(float) );
-  cudaMemcpy (dev_matrix, matrix, 12*sizeof(float), cudaMemcpyHostToDevice);
-  CUDA_CHECK_ERROR;
-  cudaBindTexture (0, tex_matrix, dev_matrix, 12*sizeof(float) );
-  CUDA_CHECK_ERROR;
+  // Constant memory
+  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
+  cudaMemcpyToSymbol(c_boxMin, box_min, sizeof(float3));
+  cudaMemcpyToSymbol(c_boxMax, box_max, sizeof(float3));
+  cudaMemcpyToSymbol(c_spacing, spacing, sizeof(float3));
+  cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
+  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
+
+  // Copy the source position matrix into a float3 in constant memory
+  cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projSize[2]);
+
+  // Copy the projection matrices into constant memory
+  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projSize[2]);
 
   // Create an image to store the splatted values
   // We cannot use the output image, because it may not be zero, in which case
   // normalization by the splat weights would affect not only the backprojection
   // of the current projection, but also the initial value of the output
   float *dev_accumulate_values;
-  cudaMalloc( (void**)&dev_accumulate_values, sizeof(float) * vol_size[0] * vol_size[1] * vol_size[2]);
-  cudaMemset((void *)dev_accumulate_values, 0, sizeof(float) * vol_size[0] * vol_size[1] * vol_size[2]);
+  cudaMalloc( (void**)&dev_accumulate_values, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
+  cudaMemset((void *)dev_accumulate_values, 0, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
 
   // Create an image to store the splat weights (in order to normalize)
   float *dev_accumulate_weights;
-  cudaMalloc( (void**)&dev_accumulate_weights, sizeof(float) * vol_size[0] * vol_size[1] * vol_size[2]);
-  cudaMemset((void *)dev_accumulate_weights, 0, sizeof(float) * vol_size[0] * vol_size[1] * vol_size[2]);
-
-  // constant memory
-  float3 dev_sourcePos = make_float3(source_position[0], source_position[1], source_position[2]);
-  float3 dev_boxMin = make_float3(box_min[0], box_min[1], box_min[2]);
-  int2 dev_projSize = make_int2(projections_size[0], projections_size[1]);
-  float3 dev_boxMax = make_float3(box_max[0], box_max[1], box_max[2]);
-  float3 dev_spacing = make_float3(spacing[0], spacing[1], spacing[2]);
-  int3 dev_volSize = make_int3(vol_size[0], vol_size[1], vol_size[2]);
-  cudaMemcpyToSymbol(c_sourcePos, &dev_sourcePos, sizeof(float3));
-  cudaMemcpyToSymbol(c_projSize, &dev_projSize, sizeof(int2));
-  cudaMemcpyToSymbol(c_boxMin, &dev_boxMin, sizeof(float3));
-  cudaMemcpyToSymbol(c_boxMax, &dev_boxMax, sizeof(float3));
-  cudaMemcpyToSymbol(c_spacing, &dev_spacing, sizeof(float3));
-  cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
-  cudaMemcpyToSymbol(c_volSize, &dev_volSize, sizeof(int3));
+  cudaMalloc( (void**)&dev_accumulate_weights, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
+  cudaMemset((void *)dev_accumulate_weights, 0, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
 
   // Calling kernels
   dim3 dimBlock  = dim3(16, 16, 1);
-  dim3 dimGrid = dim3(iDivUp(projections_size[0], dimBlock.x), iDivUp(projections_size[1], dimBlock.y));
+  dim3 dimGrid = dim3(iDivUp(projSize[0], dimBlock.x), iDivUp(projSize[1], dimBlock.y));
 
   kernel_ray_cast_back_project <<< dimGrid, dimBlock >>> (dev_accumulate_values, dev_proj, dev_accumulate_weights);
 
@@ -284,20 +275,14 @@ CUDA_ray_cast_back_project( int projections_size[2],
   CUDA_CHECK_ERROR;
 
   dim3 dimBlockVol = dim3(16, 4, 4);
-  dim3 dimGridVol = dim3(iDivUp(vol_size[0], dimBlockVol.x), iDivUp(vol_size[1], dimBlockVol.y), iDivUp(vol_size[2], dimBlockVol.z));
+  dim3 dimGridVol = dim3(iDivUp(volSize[0], dimBlockVol.x), iDivUp(volSize[1], dimBlockVol.y), iDivUp(volSize[2], dimBlockVol.z));
 
-  kernel_normalize_and_add_to_output <<< dimGridVol, dimBlockVol >>> ( dev_vol_out, dev_accumulate_weights, dev_accumulate_values, normalize);
+  kernel_normalize_and_add_to_output <<< dimGridVol, dimBlockVol >>> ( dev_vol_in, dev_vol_out, dev_accumulate_weights, dev_accumulate_values, normalize);
 
-  CUDA_CHECK_ERROR;
-
-  // Unbind the volume and matrix textures
-  cudaUnbindTexture (tex_matrix);
   CUDA_CHECK_ERROR;
 
   // Cleanup
   cudaFree (dev_accumulate_weights);
   cudaFree (dev_accumulate_values);
-  CUDA_CHECK_ERROR;
-  cudaFree (dev_matrix);
   CUDA_CHECK_ERROR;
 }
