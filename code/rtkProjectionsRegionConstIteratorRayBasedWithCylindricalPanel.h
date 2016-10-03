@@ -76,10 +76,10 @@ protected:
   inline virtual void NewPixel();
 
   HomogeneousMatrixType m_ProjectionIndexTransformMatrix;
-  MatrixType m_VolumeTransformMatrix;
-  double     m_Radius;
-  double     m_InverseRadius;
-  double     m_SourceToIsocenterDistance;
+  MatrixType            m_VolumeTransformMatrix;
+  double                m_Radius;
+  double                m_InverseRadius;
+  double                m_SourceToIsocenterDistance;
 };
 } // end namespace itk
 
