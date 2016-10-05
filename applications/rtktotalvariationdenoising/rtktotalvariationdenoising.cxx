@@ -89,6 +89,5 @@ int main(int argc, char * argv[])
     std::cout << "TV after denoising = " << tv->GetTotalVariation() << std::endl;
     }
 
-  delete[] dimsProcessed;
   return EXIT_SUCCESS;
 }
