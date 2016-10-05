@@ -62,15 +62,22 @@ int main(int argc, char * argv[])
   typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
   SLPType::Pointer slp=SLPType::New();
   SLPType::VectorType offset(0.);
+  SLPType::VectorType scale(128.);
   if(args_info.offset_given)
     {
     offset[0] = args_info.offset_arg[0];
     offset[1] = args_info.offset_arg[1];
     offset[2] = args_info.offset_arg[2];
     }
+  if(args_info.phantomscale_given)
+    {
+    scale[0] = args_info.phantomscale_arg[0];
+    scale[1] = args_info.phantomscale_arg[1];
+    scale[2] = args_info.phantomscale_arg[2];
+    }
   slp->SetInput(constantImageSource->GetOutput());
   slp->SetGeometry(geometryReader->GetOutputObject());
-  slp->SetPhantomScale(args_info.phantomscale_arg);
+  slp->SetPhantomScale(scale);
   slp->SetOriginOffset(offset);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() )
 

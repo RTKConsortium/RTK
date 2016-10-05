@@ -45,14 +45,21 @@ int main(int argc, char * argv[])
   // Create a reference object (in this case a 3D phantom reference).
   typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
   DSLType::VectorType offset(0.);
+  DSLType::VectorType scale(128.);
   if(args_info.offset_given)
     {
     offset[0] = args_info.offset_arg[0];
     offset[1] = args_info.offset_arg[1];
     offset[2] = args_info.offset_arg[2];
     }
+  if(args_info.phantomscale_given)
+    {
+    scale[0] = args_info.phantomscale_arg[0];
+    scale[1] = args_info.phantomscale_arg[1];
+    scale[2] = args_info.phantomscale_arg[2];
+    }
   DSLType::Pointer dsl = DSLType::New();
-  dsl->SetPhantomScale( args_info.phantomscale_arg );
+  dsl->SetPhantomScale( scale );
   dsl->SetInput( constantImageSource->GetOutput() );
   dsl->SetOriginOffset(offset);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
