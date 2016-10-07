@@ -85,7 +85,7 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 
   // Have the last filter calculate its output information,
   // which should update that of the whole pipeline
-  m_ThresholdFilter->UpdateOutputInformation();
+  this->GetThresholdFilter()->UpdateOutputInformation();
   this->GetOutput()->CopyInformation( m_MultiplyFilter->GetOutput() );
 }
 
@@ -96,7 +96,7 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 {
   m_MultiplyFilter->SetInput1(this->GetInput());
   m_GradientFilter->SetInput(m_MultiplyFilter->GetOutput());
-  m_ThresholdFilter->SetInput(m_GradientFilter->GetOutput());
+  this->GetThresholdFilter()->SetInput(m_GradientFilter->GetOutput());
 }
 
 template< typename TOutputImage, typename TGradientImage>
@@ -113,7 +113,7 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 
   m_SubtractGradientFilter->SetInput2(m_GradientFilter->GetOutput());
 
-  m_ThresholdFilter->SetInput(m_SubtractGradientFilter->GetOutput());
+  this->GetThresholdFilter()->SetInput(m_SubtractGradientFilter->GetOutput());
 }
 
 template< typename TOutputImage, typename TGradientImage>
@@ -130,9 +130,9 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
     {
     if(iter==1) SetPipelineAfterFirstIteration();
 
-    m_ThresholdFilter->Update();
+    this->GetThresholdFilter()->Update();
 
-    pimg = m_ThresholdFilter->GetOutput();
+    pimg = this->GetThresholdFilter()->GetOutput();
     pimg->DisconnectPipeline();
     m_DivergenceFilter->SetInput( pimg );
     m_SubtractGradientFilter->SetInput1( pimg );

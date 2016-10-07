@@ -137,6 +137,10 @@ protected:
 
   /** Sub filter pointers */
   typename SingularValueThresholdFilterType::Pointer    m_ThresholdFilter;
+  virtual typename Superclass::ThresholdFilterType* GetThresholdFilter()
+  {
+    return dynamic_cast<typename Superclass::ThresholdFilterType*>(this->m_ThresholdFilter.GetPointer());
+  }
 
 private:
   TotalNuclearVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented

@@ -81,12 +81,13 @@ protected:
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
+  virtual ThresholdFilterType* GetThresholdFilter(){}
+
   /** Sub filter pointers */
   typename GradientFilterType::Pointer                  m_GradientFilter;
   typename MultiplyFilterType::Pointer                  m_MultiplyFilter;
   typename SubtractImageFilterType::Pointer             m_SubtractFilter;
   typename SubtractGradientFilterType::Pointer          m_SubtractGradientFilter;
-  typename ThresholdFilterType::Pointer                 m_ThresholdFilter;
   typename DivergenceFilterType::Pointer                m_DivergenceFilter;
 
   double m_Gamma;
