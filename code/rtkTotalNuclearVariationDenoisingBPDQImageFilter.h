@@ -110,15 +110,15 @@ template< typename TOutputImage, typename TGradientImage =
     itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension - 1>,
     TOutputImage::ImageDimension > >
 class TotalNuclearVariationDenoisingBPDQImageFilter :
-        public rtk::DenoisingBPDQImageFilter< TOutputImage, TOutputImage >
+        public rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >
 {
 public:
 
   /** Standard class typedefs. */
-  typedef TotalNuclearVariationDenoisingBPDQImageFilter        Self;
-  typedef itk::InPlaceImageFilter< TOutputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                              Pointer;
-  typedef itk::SmartPointer<const Self>                        ConstPointer;
+  typedef TotalNuclearVariationDenoisingBPDQImageFilter                 Self;
+  typedef rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage > Superclass;
+  typedef itk::SmartPointer<Self>                                       Pointer;
+  typedef itk::SmartPointer<const Self>                                 ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -127,7 +127,7 @@ public:
   itkTypeMacro(TotalNuclearVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
 
   /** Sub filter type definitions */
-  typedef SingularValueThresholdImageFilter<TGradientImage>                       SingularValueThresholdFilterType;
+  typedef SingularValueThresholdImageFilter<TGradientImage>             SingularValueThresholdFilterType;
 
 protected:
   TotalNuclearVariationDenoisingBPDQImageFilter();
@@ -141,9 +141,6 @@ protected:
 private:
   TotalNuclearVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-
-  virtual void SetPipelineForFirstIteration();
-  virtual void SetPipelineAfterFirstIteration();
 };
 
 } // end namespace itk

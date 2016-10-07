@@ -107,15 +107,15 @@ template< typename TOutputImage, typename TGradientImage =
     itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
     TOutputImage::ImageDimension > >
 class TotalVariationDenoisingBPDQImageFilter :
-        public rtk::DenoisingBPDQImageFilter< TOutputImage, TOutputImage >
+        public rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >
 {
 public:
 
   /** Standard class typedefs. */
-  typedef TotalVariationDenoisingBPDQImageFilter               Self;
-  typedef itk::InPlaceImageFilter< TOutputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                              Pointer;
-  typedef itk::SmartPointer<const Self>                        ConstPointer;
+  typedef TotalVariationDenoisingBPDQImageFilter                        Self;
+  typedef rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage > Superclass;
+  typedef itk::SmartPointer<Self>                                       Pointer;
+  typedef itk::SmartPointer<const Self>                                 ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -124,7 +124,7 @@ public:
   itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
 
   /** Sub filter type definitions */
-  typedef MagnitudeThresholdImageFilter<TGradientImage>                           MagnitudeThresholdFilterType;
+  typedef MagnitudeThresholdImageFilter<TGradientImage>                 MagnitudeThresholdFilterType;
 
   void SetDimensionsProcessed(bool* arg);
 

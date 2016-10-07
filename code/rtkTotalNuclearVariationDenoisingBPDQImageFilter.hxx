@@ -47,7 +47,7 @@ TotalNuclearVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 {
   Superclass::GenerateOutputInformation();
 
-  this->m_ThresholdFilter->SetThreshold(m_Gamma);
+  this->m_ThresholdFilter->SetThreshold(this->m_Gamma);
 }
 
 } // end namespace rtk
