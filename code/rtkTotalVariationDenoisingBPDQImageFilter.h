@@ -19,20 +19,15 @@
 #ifndef rtkTotalVariationDenoisingBPDQImageFilter_h
 #define rtkTotalVariationDenoisingBPDQImageFilter_h
 
-#include "rtkForwardDifferenceGradientImageFilter.h"
-#include "rtkBackwardDifferenceDivergenceImageFilter.h"
+#include "rtkDenoisingBPDQImageFilter.h"
 #include "rtkMagnitudeThresholdImageFilter.h"
 
-#include <itkCastImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkPeriodicBoundaryCondition.h>
-#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {
 /** \class TotalVariationDenoisingBPDQImageFilter
- * \brief Applies a total variation denoising, only along the dimensions specified, on an image.
+ * \brief Applies a total variation denoising, only alm_SingularValueThresholdFilterong the dimensions specified, on an image.
  *
  * This filter finds the minimum of || f - f_0 ||_2^2 + gamma * TV(f)
  * using basis pursuit dequantization, where f is the current image, f_0 the
@@ -112,7 +107,7 @@ template< typename TOutputImage, typename TGradientImage =
     itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
     TOutputImage::ImageDimension > >
 class TotalVariationDenoisingBPDQImageFilter :
-        public itk::InPlaceImageFilter< TOutputImage, TOutputImage >
+        public rtk::DenoisingBPDQImageFilter< TOutputImage, TOutputImage >
 {
 public:
 
@@ -126,25 +121,10 @@ public:
   itkNewMacro(Self)
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, ImageToImageFilter)
+  itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
 
   /** Sub filter type definitions */
-  typedef ForwardDifferenceGradientImageFilter
-            <TOutputImage,
-             typename TOutputImage::ValueType,
-             typename TOutputImage::ValueType,
-             TGradientImage>                                                      GradientFilterType;
-  typedef itk::MultiplyImageFilter<TOutputImage>                                  MultiplyFilterType;
-  typedef itk::SubtractImageFilter<TOutputImage>                                  SubtractImageFilterType;
-  typedef itk::SubtractImageFilter<TGradientImage>                                SubtractGradientFilterType;
   typedef MagnitudeThresholdImageFilter<TGradientImage>                           MagnitudeThresholdFilterType;
-  typedef BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>   DivergenceFilterType;
-
-  itkGetMacro(NumberOfIterations, int)
-  itkSetMacro(NumberOfIterations, int)
-
-  itkSetMacro(Gamma, double)
-  itkGetMacro(Gamma, double)
 
   void SetDimensionsProcessed(bool* arg);
 
@@ -155,29 +135,14 @@ protected:
   TotalVariationDenoisingBPDQImageFilter();
   ~TotalVariationDenoisingBPDQImageFilter() ITK_OVERRIDE {}
 
-  void GenerateData() ITK_OVERRIDE;
-
   void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Sub filter pointers */
-  typename GradientFilterType::Pointer             m_GradientFilter;
-  typename MultiplyFilterType::Pointer             m_MultiplyFilter;
-  typename SubtractImageFilterType::Pointer        m_SubtractFilter;
-  typename SubtractGradientFilterType::Pointer     m_SubtractGradientFilter;
-  typename MagnitudeThresholdFilterType::Pointer   m_MagnitudeThresholdFilter;
-  typename DivergenceFilterType::Pointer           m_DivergenceFilter;
-
-  double m_Gamma;
-  double m_Beta;
-  int    m_NumberOfIterations;
-  bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
+  typename MagnitudeThresholdFilterType::Pointer   m_ThresholdFilter;
 
 private:
   TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-
-  virtual void SetPipelineForFirstIteration();
-  virtual void SetPipelineAfterFirstIteration();
 };
 
 } // end namespace itk
