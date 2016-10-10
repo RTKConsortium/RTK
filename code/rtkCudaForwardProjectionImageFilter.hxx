@@ -115,7 +115,7 @@ CudaForwardProjectionImageFilter<TInputImage,
 
   // Compute matrices to transform projection index to volume index, one per projection
   float* matrices = new float[12 * nProj];
-  float* source_positions = new float[4 * nProj];
+  float* source_positions = new float[3 * nProj];
 
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
