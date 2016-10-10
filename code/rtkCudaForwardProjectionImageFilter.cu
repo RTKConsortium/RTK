@@ -47,7 +47,9 @@ __constant__ float3 c_boxMax;
 __constant__ float3 c_spacing;
 __constant__ int3 c_volSize;
 __constant__ float c_tStep;
-__constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
+__constant__ float c_radius;
+__constant__ float c_translatedProjectionIndexTransformMatrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
+__constant__ float c_translatedVolumeTransformMatrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_sourcePos[SLAB_SIZE * 3]; //Can process stacks of at most SLAB_SIZE projections
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -76,7 +78,19 @@ void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out)
     // Setting ray origin
     ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
 
-    pixelPos = matrix_multiply(make_float3(i,j,0), &(c_matrices[12*proj]));
+    if (c_radius == 0)
+      {
+      pixelPos = matrix_multiply(make_float3(i,j,0), &(c_translatedProjectionIndexTransformMatrices[12*proj]));
+      }
+    else
+      {
+      float3 posProj;
+      posProj = matrix_multiply(make_float3(i,j,0), &(c_translatedProjectionIndexTransformMatrices[12*proj]));
+      double a = posProj.x / c_radius;
+      posProj.x = sin(a) * c_radius;
+      posProj.z += (1. - cos(a)) * c_radius;
+      pixelPos = matrix_multiply(posProj, &(c_translatedVolumeTransformMatrices[12*proj]));
+      }
 
     ray.d = pixelPos - ray.o;
     ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
@@ -195,7 +209,19 @@ void kernel_forwardProject_noTexture(float *dev_proj_in, float *dev_proj_out, fl
     // Setting ray origin
     ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
 
-    pixelPos = matrix_multiply(make_float3(i,j,0), &(c_matrices[12*proj]));
+    if (c_radius == 0)
+      {
+      pixelPos = matrix_multiply(make_float3(i,j,0), &(c_translatedProjectionIndexTransformMatrices[12*proj]));
+      }
+    else
+      {
+      float3 posProj;
+      posProj = matrix_multiply(make_float3(i,j,0), &(c_translatedProjectionIndexTransformMatrices[12*proj]));
+      double a = posProj.x / c_radius;
+      posProj.x = sin(a) * c_radius;
+      posProj.z += (1. - cos(a)) * c_radius;
+      pixelPos = matrix_multiply(posProj, &(c_translatedVolumeTransformMatrices[12*proj]));
+      }
 
     ray.d = pixelPos - ray.o;
     ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
@@ -245,14 +271,16 @@ void kernel_forwardProject_noTexture(float *dev_proj_in, float *dev_proj_out, fl
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
-CUDA_forward_project( int projSize[3],
+CUDA_forward_project(int projSize[3],
                       int volSize[3],
-                      float* matrices,
+                      float* translatedProjectionIndexTransformMatrices,
+                      float* translatedVolumeTransformMatrices,
                       float *dev_proj_in,
                       float *dev_proj_out,
                       float *dev_vol,
                       float t_step,
                       float* source_positions,
+                      float radiusCylindricalDetector,
                       float box_min[3],
                       float box_max[3],
                       float spacing[3],
@@ -268,6 +296,7 @@ CUDA_forward_project( int projSize[3],
   cudaMemcpyToSymbol(c_spacing, spacing, sizeof(float3));
   cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
+  cudaMemcpyToSymbol(c_radius, &radiusCylindricalDetector, sizeof(float));
 
   dim3 dimBlock  = dim3(16, 16, 1);
   dim3 dimGrid = dim3(iDivUp(projSize[0], dimBlock.x), iDivUp(projSize[1], dimBlock.x));
@@ -276,7 +305,8 @@ CUDA_forward_project( int projSize[3],
   cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projSize[2]);
 
   // Copy the projection matrices into constant memory
-  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projSize[2]);
+  cudaMemcpyToSymbol(c_translatedProjectionIndexTransformMatrices, &(translatedProjectionIndexTransformMatrices[0]), 12 * sizeof(float) * projSize[2]);
+  cudaMemcpyToSymbol(c_translatedVolumeTransformMatrices, &(translatedVolumeTransformMatrices[0]), 12 * sizeof(float) * projSize[2]);
 
   if (useCudaTexture)
     {

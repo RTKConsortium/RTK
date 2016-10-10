@@ -114,22 +114,50 @@ CudaForwardProjectionImageFilter<TInputImage,
     }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  float* matrices = new float[12 * nProj];
+  float* translatedProjectionIndexTransformMatrices = new float[12 * nProj];
+  float* translatedVolumeTransformMatrices = new float[12 * nProj];
   float* source_positions = new float[4 * nProj];
+
+  float radiusCylindricalDetector = geometry->GetRadiusCylindricalDetector();
 
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
-    d_matrix =
-      volIndexTranslation.GetVnlMatrix() *
-      volPPToIndex.GetVnlMatrix() *
-      geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-      rtk::GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix() *
-      projIndexTranslation.GetVnlMatrix();
-    for (int j=0; j<3; j++) // Ignore the 4th row
-      for (int k=0; k<4; k++)
-        matrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)d_matrix[j][k];
+    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translatedProjectionIndexTransformMatrix;
+    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix;
+    translatedVolumeTransformMatrix.Fill(0);
+
+    // The matrices required depend on the type of detector
+    if (radiusCylindricalDetector == 0)
+      {
+      translatedProjectionIndexTransformMatrix =
+        volIndexTranslation.GetVnlMatrix() *
+        volPPToIndex.GetVnlMatrix() *
+        geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
+        rtk::GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix() *
+        projIndexTranslation.GetVnlMatrix();
+      for (int j=0; j<3; j++) // Ignore the 4th row
+        for (int k=0; k<4; k++)
+          translatedProjectionIndexTransformMatrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)translatedProjectionIndexTransformMatrix[j][k];
+      }
+    else
+      {
+      translatedProjectionIndexTransformMatrix =
+        geometry->GetProjectionCoordinatesToDetectorSystemMatrix(iProj).GetVnlMatrix() *
+        rtk::GetIndexToPhysicalPointMatrix( this->GetInput() ).GetVnlMatrix() *
+        projIndexTranslation.GetVnlMatrix();
+      for (int j=0; j<3; j++) // Ignore the 4th row
+        for (int k=0; k<4; k++)
+          translatedProjectionIndexTransformMatrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)translatedProjectionIndexTransformMatrix[j][k];
+
+      translatedVolumeTransformMatrix =
+        volIndexTranslation.GetVnlMatrix() *
+        volPPToIndex.GetVnlMatrix() *
+        geometry->GetRotationMatrices()[iProj].GetInverse();
+      for (int j=0; j<3; j++) // Ignore the 4th row
+        for (int k=0; k<4; k++)
+          translatedVolumeTransformMatrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)translatedVolumeTransformMatrix[j][k];
+      }
 
     // Compute source position in volume indices
     source_position= volPPToIndex * geometry->GetSourcePosition(iProj);
@@ -149,19 +177,22 @@ CudaForwardProjectionImageFilter<TInputImage,
     // Run the forward projection with a slab of SLAB_SIZE or less projections
     CUDA_forward_project(projectionSize,
                         volumeSize,
-                        (float*)&(matrices[12 * i]),
+                        (float*)&(translatedProjectionIndexTransformMatrices[12 * i]),
+                        (float*)&(translatedVolumeTransformMatrices[12 * i]),
                         pin + nPixelsPerProj * projectionOffset,
                         pout + nPixelsPerProj * projectionOffset,
                         pvol,
                         m_StepSize,
                         (float*)&(source_positions[3 * i]),
+                        radiusCylindricalDetector,
                         boxMin,
                         boxMax,
                         spacing,
                         m_UseCudaTexture);
     }
 
-  delete[] matrices;
+  delete[] translatedProjectionIndexTransformMatrices;
+  delete[] translatedVolumeTransformMatrices;
   delete[] source_positions;
 }
 
