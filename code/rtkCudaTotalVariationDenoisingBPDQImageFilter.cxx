@@ -34,6 +34,7 @@ rtk::CudaTotalVariationDenoisingBPDQImageFilter
     int outputSize[3];
     float inputSpacing[3];
     float outputSpacing[3];
+    float fakeSpacing[3]; // Total variation regularization seems to only work with images of spacing 1
 
     for (int i=0; i<3; i++)
       {
@@ -47,13 +48,15 @@ rtk::CudaTotalVariationDenoisingBPDQImageFilter
         std::cerr << "The CUDA Total Variation Denoising BPDQ filter can only handle input and output regions of equal size and spacing" << std::endl;
         exit(1);
         }
+
+      fakeSpacing[i] = 1;
       }
 
     float *pin = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
     float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
 
     CUDA_total_variation(inputSize,
-                         inputSpacing,
+                         fakeSpacing,
                          pin,
                          pout,
                          static_cast<float>(m_Gamma),
