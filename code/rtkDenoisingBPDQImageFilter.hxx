@@ -30,6 +30,7 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 {
   m_Gamma = 1.0;
   m_NumberOfIterations = 1;
+  m_MinSpacing = 0;
 
   // This is an InPlace filter only for the subclasses to have the possibility to run in place
   this->SetInPlace(false);
@@ -68,16 +69,23 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   // Compute the parameters used in Basis Pursuit Dequantization
   // and set the filters to use them
   double numberOfDimensionsProcessed = 0;
+  m_MinSpacing = this->GetInput()->GetSpacing()[0];
   for (int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
     if (m_DimensionsProcessed[dim])
       {
       numberOfDimensionsProcessed += 1.0;
+      if (this->GetInput()->GetSpacing()[dim] < m_MinSpacing)
+        m_MinSpacing = this->GetInput()->GetSpacing()[dim];
       }
     }
 
+  // Set the gradient and divergence filter to take spacing into account
+  m_GradientFilter->SetUseImageSpacingOn();
+  m_DivergenceFilter->SetUseImageSpacingOn();
+
   // Beta must be smaller than 1 / (2 ^ NumberOfDimensionsProcessed) for the algorithm to converge
-  m_Beta = 1/pow(2,numberOfDimensionsProcessed) * 0.9;
+  m_Beta = 1/pow(2,numberOfDimensionsProcessed) * 0.9 * m_MinSpacing;
 
   m_MultiplyFilter->SetConstant2(m_Beta);
   m_GradientFilter->SetDimensionsProcessed(m_DimensionsProcessed);
@@ -114,6 +122,8 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   m_SubtractGradientFilter->SetInput2(m_GradientFilter->GetOutput());
 
   this->GetThresholdFilter()->SetInput(m_SubtractGradientFilter->GetOutput());
+
+  m_MultiplyFilter->SetConstant2(m_Beta * m_MinSpacing);
 }
 
 template< typename TOutputImage, typename TGradientImage>

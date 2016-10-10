@@ -92,6 +92,7 @@ protected:
 
   double m_Gamma;
   double m_Beta;
+  double m_MinSpacing;
   int    m_NumberOfIterations;
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
