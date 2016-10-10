@@ -147,7 +147,7 @@ protected:
     typename MultiplyFilterType::Pointer              m_MultiplyFilter;
     typename MultiplyFilterType::Pointer              m_ZeroMultiplyProjectionFilter;
     typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
-    typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+    //typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
 
     float m_Beta;
 

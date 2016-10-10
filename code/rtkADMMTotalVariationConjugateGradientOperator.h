@@ -165,7 +165,7 @@ protected:
     typename MultiplyFilterType::Pointer              m_ZeroMultiplyVolumeFilter;
     typename DivergenceFilterType::Pointer            m_DivergenceFilter;
     typename GradientFilterType::Pointer              m_GradientFilter;
-    typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+    //typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
     typename GatingWeightsFilterType::Pointer         m_GatingWeightsFilter;
 
     ThreeDCircularProjectionGeometry::Pointer         m_Geometry;
