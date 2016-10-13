@@ -44,10 +44,10 @@ class DenoisingBPDQImageFilter :
 public:
 
   /** Standard class typedefs. */
-  typedef DenoisingBPDQImageFilter        Self;
-  typedef itk::InPlaceImageFilter< TOutputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                              Pointer;
-  typedef itk::SmartPointer<const Self>                        ConstPointer;
+  typedef DenoisingBPDQImageFilter                              Self;
+  typedef itk::InPlaceImageFilter< TOutputImage, TOutputImage>  Superclass;
+  typedef itk::SmartPointer<Self>                               Pointer;
+  typedef itk::SmartPointer<const Self>                         ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
