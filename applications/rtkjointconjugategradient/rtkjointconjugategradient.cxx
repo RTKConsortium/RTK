@@ -76,78 +76,52 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Create 4D input. Fill it either with an existing materials volume read from a file or a blank image
-  VolumeSeriesType::Pointer input = VolumeSeriesType::New();
-  VolumeSeriesType::SizeType inputSize;
-  VolumeSeriesType::SpacingType inputSpacing;
-  VolumeSeriesType::PointType inputOrigin;
-  VolumeSeriesType::DirectionType inputDirection;
+  VolumeSeriesType::Pointer input;
 
-  inputSize[Dimension] = projectionsReader->GetOutput()->GetVectorLength();
-  inputSpacing[Dimension] = 1;
-  inputOrigin[Dimension] = 0;
-  inputDirection.SetIdentity();
+  typedef rtk::VectorImageToImageFilter<MaterialsVolumeType, VolumeSeriesType> VectorVolumeToVolumeSeriesFilterType;
+  VectorVolumeToVolumeSeriesFilterType::Pointer vecVol2VolSeries = VectorVolumeToVolumeSeriesFilterType::New();
 
-  if(args_info.input_given || args_info.like_given)
+  if(args_info.input_given)
     {
-    // Read an existing vector image to initialize the volume
+    // Using std::cout because itkWarningMacro cannot be used outside a class
+    if(args_info.like_given)
+      std::cout << "WARNING: Option --like ignored, since option --input was passed" << std::endl;
+
     MaterialsVolumeReaderType::Pointer referenceReader = MaterialsVolumeReaderType::New();
-    if (args_info.input_given)
-      referenceReader->SetFileName( args_info.input_arg );
-    else
-      referenceReader->SetFileName( args_info.like_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( referenceReader->UpdateOutputInformation() );
+    referenceReader->SetFileName( args_info.input_arg );
+    vecVol2VolSeries->SetInput(referenceReader->GetOutput());
+    vecVol2VolSeries->Update();
+    input = vecVol2VolSeries->GetOutput();
+    }
+  else if(args_info.like_given)
+    {
+    MaterialsVolumeReaderType::Pointer referenceReader = MaterialsVolumeReaderType::New();
+    referenceReader->SetFileName( args_info.like_arg );
+    vecVol2VolSeries->SetInput(referenceReader->GetOutput());
+    vecVol2VolSeries->UpdateOutputInformation();
 
-    VolumeSeriesType::IndexType inputIndex;
-    inputIndex.Fill(0);
-    VolumeSeriesType::RegionType inputRegion;
-
-    // Initialize the 4D image and (carefully) copy the vector image into it
-    for (unsigned int dim=0; dim < Dimension; dim++)
-      {
-      inputSize[dim] = referenceReader->GetOutput()->GetLargestPossibleRegion().GetSize()[dim];
-      inputIndex[dim] = referenceReader->GetOutput()->GetLargestPossibleRegion().GetIndex()[dim];
-      inputSpacing[dim] = referenceReader->GetOutput()->GetSpacing()[dim];
-      inputOrigin[dim] = referenceReader->GetOutput()->GetOrigin()[dim];
-      for (unsigned int j=0; j < Dimension; j++)
-        inputDirection[dim][j] = referenceReader->GetOutput()->GetDirection()[dim][j];
-      }
-    inputIndex[Dimension - 1] = 0;
-    inputRegion.SetSize(inputSize);
-    inputRegion.SetIndex(inputIndex);
-    input->SetRegions(inputRegion);
-    input->SetSpacing(inputSpacing);
-    input->SetOrigin(inputOrigin);
-    input->SetDirection(inputDirection);
-    input->Allocate();
-
-    if (args_info.input_given)
-      {
-      // Actual copy
-      itk::ImageRegionConstIterator<MaterialsVolumeType> inIt(referenceReader->GetOutput(), referenceReader->GetOutput()->GetLargestPossibleRegion());
-      itk::ImageRegionIterator<VolumeSeriesType> fourdIt(input, inputRegion);
-      for (unsigned int material=0; material < referenceReader->GetOutput()->GetVectorLength(); material++)
-        {
-        inIt.GoToBegin();
-        while(!inIt.IsAtEnd())
-          {
-          fourdIt.Set(inIt.Get()[material]);
-          ++inIt;
-          ++fourdIt;
-          }
-        }
-      }
-      else
-      {
-      input->FillBuffer(0.);
-      }
+    typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
+    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    constantImageSource->SetInformationFromImage(vecVol2VolSeries->GetOutput());
+    constantImageSource->Update();
+    input = constantImageSource->GetOutput();
     }
   else
     {
     // Create new empty volume
     typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
-    ConstantImageSourceType::Pointer source = ConstantImageSourceType::New();
+    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
 
-    inputSize.Fill(args_info.dimension_arg[0]);
+    VolumeSeriesType::SizeType inputSize;
+    VolumeSeriesType::SpacingType inputSpacing;
+    VolumeSeriesType::PointType inputOrigin;
+    VolumeSeriesType::DirectionType inputDirection;
+
+    inputSize[Dimension] = projectionsReader->GetOutput()->GetVectorLength();
+    inputSpacing[Dimension] = 1;
+    inputOrigin[Dimension] = 0;
+    inputDirection.SetIdentity();
+
     for(unsigned int i=0; i<vnl_math_min(args_info.dimension_given, Dimension); i++)
       inputSize[i] = args_info.dimension_arg[i];
 
@@ -167,13 +141,13 @@ int main(int argc, char * argv[])
     else
       inputDirection.SetIdentity();
 
-    source->SetOrigin( inputOrigin );
-    source->SetSpacing( inputSpacing );
-    source->SetDirection( inputDirection );
-    source->SetSize( inputSize );
-    source->SetConstant( 0. );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( source->UpdateOutputInformation() );
-    input = source->GetOutput();
+    constantImageSource->SetOrigin( inputOrigin );
+    constantImageSource->SetSpacing( inputSpacing );
+    constantImageSource->SetDirection( inputDirection );
+    constantImageSource->SetSize( inputSize );
+    constantImageSource->SetConstant( 0. );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( constantImageSource->Update() );
+    input = constantImageSource->GetOutput();
     }
 
   // Duplicate geometry and transform the N M-vector projections into N*M scalar projections
