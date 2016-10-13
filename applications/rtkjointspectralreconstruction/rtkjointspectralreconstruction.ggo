@@ -1,4 +1,4 @@
-package "rtkjointconjugategradient"
+package "rtkjointspectralreconstruction"
 purpose "Reconstructs a 3D + material vector volume from a vector projection stack, with a conjugate gradient technique"
 
 option "verbose"     v "Verbose execution"                                     flag   off
