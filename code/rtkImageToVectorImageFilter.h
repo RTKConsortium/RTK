@@ -21,6 +21,9 @@
 #include "rtkMacro.h"
 
 #include <itkImageToImageFilter.h>
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  #include <itkImageRegionSplitterDirection.h>
+#endif
 namespace rtk
 {
   /** \class ImageToVectorImageFilter
