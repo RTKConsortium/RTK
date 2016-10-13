@@ -48,9 +48,9 @@ class VectorImageToImageFilter : public itk::ImageToImageFilter< InputImageType,
 {
 public:
     /** Standard class typedefs. */
-    typedef VectorImageToImageFilter                           Self;
-    typedef itk::ImageToImageFilter< InputImageType, OutputImageType > Superclass;
-    typedef itk::SmartPointer< Self >                                     Pointer;
+    typedef VectorImageToImageFilter                                    Self;
+    typedef itk::ImageToImageFilter< InputImageType, OutputImageType >  Superclass;
+    typedef itk::SmartPointer< Self >                                   Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
