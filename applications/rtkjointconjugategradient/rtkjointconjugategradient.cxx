@@ -24,6 +24,7 @@
 #include "rtkSignalToInterpolationWeights.h"
 #include "rtkReorderProjectionsImageFilter.h"
 #include "rtkVectorImageToImageFilter.h"
+#include "rtkImageToVectorImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -230,11 +231,17 @@ int main(int argc, char * argv[])
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
+  // Convert to result to a vector image
+  typedef rtk::ImageToVectorImageFilter<VolumeSeriesType, MaterialsVolumeType> VolumeSeriesToVectorVolumeFilterType;
+  VolumeSeriesToVectorVolumeFilterType::Pointer volSeries2VecVol = VolumeSeriesToVectorVolumeFilterType::New();
+  volSeries2VecVol->SetInput(conjugategradient->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( volSeries2VecVol->Update() )
+
   // Write
-  typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
+  typedef itk::ImageFileWriter< MaterialsVolumeType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( conjugategradient->GetOutput() );
+  writer->SetInput( volSeries2VecVol->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
   return EXIT_SUCCESS;
