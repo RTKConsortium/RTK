@@ -19,10 +19,9 @@
 #include "rtkjointconjugategradient_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
+#include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSignalToInterpolationWeights.h"
-#include "rtkReorderProjectionsImageFilter.h"
 #include "rtkVectorImageToImageFilter.h"
 #include "rtkImageToVectorImageFilter.h"
 
@@ -201,19 +200,75 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
 
   // Set the forward and back projection filters to be used
-  typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ConjugateGradientFilterType;
-  ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
-  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
-  conjugategradient->SetInputVolumeSeries(input);
-  conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
-  conjugategradient->SetCudaConjugateGradient(args_info.cudacg_flag);
+  typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
+  ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
+  rooster->SetForwardProjectionFilter(args_info.fp_arg);
+  rooster->SetBackProjectionFilter(args_info.bp_arg);
+  rooster->SetInputVolumeSeries(input);
+  rooster->SetCG_iterations( args_info.cgiter_arg );
+  rooster->SetMainLoop_iterations( args_info.niter_arg );
+  rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
 
   // Set the newly ordered arguments
-  conjugategradient->SetInputProjectionStack( vproj2proj->GetOutput() );
-  conjugategradient->SetGeometry( geometry );
-  conjugategradient->SetWeights(signalToInterpolationWeights->GetOutput());
-  conjugategradient->SetSignal(fakeSignal);
+  rooster->SetInputProjectionStack( vproj2proj->GetOutput() );
+  rooster->SetGeometry( geometry );
+  rooster->SetWeights(signalToInterpolationWeights->GetOutput());
+  rooster->SetSignal(fakeSignal);
+
+  // For each optional regularization step, set whether or not
+  // it should be performed, and provide the necessary inputs
+
+  // Positivity
+  if (args_info.nopositivity_flag)
+    rooster->SetPerformPositivity(false);
+  else
+    rooster->SetPerformPositivity(true);
+
+  // No motion mask is used, since there is no motion
+  rooster->SetPerformMotionMask(false);
+
+  // Spatial TV
+  if (args_info.gamma_space_given)
+    {
+    rooster->SetGammaTVSpace(args_info.gamma_space_arg);
+    rooster->SetTV_iterations(args_info.tviter_arg);
+    rooster->SetPerformTVSpatialDenoising(true);
+    }
+  else
+    rooster->SetPerformTVSpatialDenoising(false);
+
+  // Spatial wavelets
+  if (args_info.threshold_given)
+    {
+    rooster->SetSoftThresholdWavelets(args_info.threshold_arg);
+    rooster->SetOrder(args_info.order_arg);
+    rooster->SetNumberOfLevels(args_info.levels_arg);
+    rooster->SetPerformWaveletsSpatialDenoising(true);
+    }
+  else
+    rooster->SetPerformWaveletsSpatialDenoising(false);
+
+  // Temporal TV
+  if (args_info.gamma_time_given)
+    {
+    rooster->SetGammaTVTime(args_info.gamma_time_arg);
+    rooster->SetTV_iterations(args_info.tviter_arg);
+    rooster->SetPerformTVTemporalDenoising(true);
+    }
+  else
+    rooster->SetPerformTVTemporalDenoising(false);
+
+  // Temporal L0
+  if (args_info.lambda_time_arg)
+    {
+    rooster->SetLambdaL0Time(args_info.lambda_time_arg);
+    rooster->SetL0_iterations(args_info.l0iter_arg);
+    rooster->SetPerformL0TemporalDenoising(true);
+    }
+  else
+    rooster->SetPerformL0TemporalDenoising(false);
+
+
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)
@@ -222,11 +277,11 @@ int main(int argc, char * argv[])
     readerProbe.Start();
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
 
   if(args_info.time_flag)
     {
-//    conjugategradient->PrintTiming(std::cout);
+//    rooster->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
@@ -234,7 +289,7 @@ int main(int argc, char * argv[])
   // Convert to result to a vector image
   typedef rtk::ImageToVectorImageFilter<VolumeSeriesType, MaterialsVolumeType> VolumeSeriesToVectorVolumeFilterType;
   VolumeSeriesToVectorVolumeFilterType::Pointer volSeries2VecVol = VolumeSeriesToVectorVolumeFilterType::New();
-  volSeries2VecVol->SetInput(conjugategradient->GetOutput());
+  volSeries2VecVol->SetInput(rooster->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION( volSeries2VecVol->Update() )
 
   // Write
