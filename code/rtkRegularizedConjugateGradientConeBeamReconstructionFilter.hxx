@@ -28,7 +28,9 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
 {
   // Set the default values of member parameters
   m_GammaTV = 0.00005;
+  m_Gamma = 0; // Laplacian regularization
   m_SoftThresholdWavelets = 0.001;
+  m_SoftThresholdOnImage = 0.001;
   m_Preconditioned = false;
   m_RegularizedCG = false;
 
@@ -40,6 +42,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
   m_PerformPositivity = true;
   m_PerformTVSpatialDenoising = true;
   m_PerformWaveletsSpatialDenoising = false;
+  m_PerformSoftThresholdOnImage= false;
 
   // Dimensions processed for TV, default is all
   for (unsigned int i=0; i<TImage::ImageDimension; i++)
@@ -55,6 +58,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
   m_PositivityFilter = ThresholdFilterType::New();
   m_TVDenoising = TVDenoisingFilterType::New();
   m_WaveletsDenoising = WaveletsDenoisingFilterType::New();
+  m_SoftThresholdFilter = SoftThresholdFilterType::New();
 }
 
 template< typename TImage >
@@ -164,6 +168,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->SetPreconditioned(m_Preconditioned);
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_CGFilter->SetRegularized(this->m_RegularizedCG);
+  m_CGFilter->SetGamma(this->m_Gamma);
 
   currentDownstreamFilter = m_CGFilter;
 
@@ -201,6 +206,16 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
     m_WaveletsDenoising->SetNumberOfLevels(m_NumberOfLevels);
 
     currentDownstreamFilter = m_WaveletsDenoising;
+    }
+
+  if (m_PerformSoftThresholdOnImage)
+    {
+    currentDownstreamFilter->ReleaseDataFlagOn();
+
+    m_SoftThresholdFilter->SetInput(currentDownstreamFilter->GetOutput());
+    m_SoftThresholdFilter->SetThreshold(m_SoftThresholdOnImage);
+
+    currentDownstreamFilter = m_SoftThresholdFilter;
     }
 
   // Have the last filter calculate its output information
@@ -265,6 +280,15 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
 
       currentDownstreamFilter = m_WaveletsDenoising;
       }
+
+    if (m_PerformSoftThresholdOnImage)
+      {
+      m_SoftThresholdImageProbe.Start();
+      m_SoftThresholdFilter->Update();
+      m_SoftThresholdImageProbe.Stop();
+
+      currentDownstreamFilter = m_SoftThresholdFilter;
+      }
     }
 
   this->GraftOutput( currentDownstreamFilter->GetOutput() );
@@ -276,7 +300,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
 ::PrintTiming(std::ostream& os) const
 {
   os << "RegularizedConjugateGradientConeBeamReconstructionFilter timing:" << std::endl;
-  os << "  4D conjugate gradient reconstruction: " << m_CGProbe.GetTotal()
+  os << "  3D conjugate gradient reconstruction: " << m_CGProbe.GetTotal()
      << ' ' << m_CGProbe.GetUnit() << std::endl;
   if (m_PerformPositivity)
     {
@@ -292,6 +316,11 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
     {
     os << "  Wavelets spatial denoising: " << m_WaveletsSpatialDenoisingProbe.GetTotal()
       << ' ' << m_WaveletsSpatialDenoisingProbe.GetUnit() << std::endl;
+    }
+  if (m_PerformSoftThresholdOnImage)
+    {
+    os << "  Soft thresholding in image domain: " << m_SoftThresholdImageProbe.GetTotal()
+      << ' ' << m_SoftThresholdImageProbe.GetUnit() << std::endl;
     }
 }
 
