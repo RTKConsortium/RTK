@@ -81,7 +81,7 @@ protected:
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
-  virtual ThresholdFilterType* GetThresholdFilter(){}
+  virtual ThresholdFilterType* GetThresholdFilter(){return ITK_NULLPTR;}
 
   /** Sub filter pointers */
   typename GradientFilterType::Pointer                  m_GradientFilter;
