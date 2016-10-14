@@ -38,8 +38,8 @@ void rtk::HisImageIO::ReadImageInformation()
                              << m_FileName);
 
   // read header
-  char header[HEADER_INFO_SIZE];
-  file.read(header, HEADER_INFO_SIZE);
+  unsigned char header[HEADER_INFO_SIZE];
+  file.read((char*)header, HEADER_INFO_SIZE);
 
   if (header[0]!=0 || header[1]!=112 || header[2]!=68 || header[3]!=0) {
     itkExceptionMacro(<< "rtk::HisImageIO::ReadImageInformation: file "
