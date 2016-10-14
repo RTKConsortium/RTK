@@ -159,6 +159,10 @@ RTK_ADD_TEST(NAME rtkdecomposespectralprojectionstest
              DATA{Data/Input/Spectral/photon_count.mha}
              DATA{Data/Input/Spectral/detector_response.mha})
              
+add_executable(rtkvectorimageconverterstest rtkvectorimageconverterstest.cxx)
+target_link_libraries(rtkvectorimageconverterstest ${RTK_LIBRARIES})
+add_test(rtkvectorimageconverterstest ${EXECUTABLE_OUTPUT_PATH}/rtkvectorimageconverterstest)
+
 add_executable(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 target_link_libraries(rtkamsterdamshroudtest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest

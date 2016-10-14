@@ -19,15 +19,8 @@
 #ifndef rtkTotalNuclearVariationDenoisingBPDQImageFilter_h
 #define rtkTotalNuclearVariationDenoisingBPDQImageFilter_h
 
-#include "rtkForwardDifferenceGradientImageFilter.h"
-#include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "rtkSingularValueThresholdImageFilter.h"
-
-#include <itkCastImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
-#include <itkPeriodicBoundaryCondition.h>
-#include <itkInPlaceImageFilter.h>
+#include "rtkDenoisingBPDQImageFilter.h"
 
 namespace rtk
 {
@@ -63,12 +56,12 @@ namespace rtk
  *   FI_Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
  *   FI_Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
  *   FI_SingularValueThreshold [ label="rtk::SingularValueThresholdImageFilter" URL="\ref rtk::SingularValueThresholdImageFilter"];
- *   FI_OutOfMagnitudeTreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ *   FI_OutOfSingularValueThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
  *
  *   FI_Input -> FI_Multiply;
  *   FI_Multiply -> FI_Gradient;
  *   FI_Gradient -> FI_SingularValueThreshold;
- *   FI_SingularValueThreshold -> FI_OutOfMagnitudeTreshold [style=dashed];
+ *   FI_SingularValueThreshold -> FI_OutOfSingularValueThreshold [style=dashed];
  *   }
  *
  * subgraph clusterAfterFirstIteration
@@ -88,7 +81,7 @@ namespace rtk
  *   SubtractGradient [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  *   SingularValueThreshold [ label="rtk::SingularValueThresholdImageFilter" URL="\ref rtk::SingularValueThresholdImageFilter"];
  *   OutOfSubtract [label="", fixedsize="false", width=0, height=0, shape=none];
- *   OutOfMagnitudeTreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ *   OutOfSingularValueThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
  *   BeforeDivergence [label="", fixedsize="false", width=0, height=0, shape=none];
  *
  *   Input -> Subtract;
@@ -99,8 +92,8 @@ namespace rtk
  *   Multiply -> Gradient;
  *   Gradient -> SubtractGradient;
  *   SubtractGradient -> SingularValueThreshold;
- *   SingularValueThreshold -> OutOfMagnitudeTreshold;
- *   OutOfMagnitudeTreshold -> BeforeDivergence [style=dashed, constraint=false];
+ *   SingularValueThreshold -> OutOfSingularValueThreshold;
+ *   OutOfSingularValueThreshold -> BeforeDivergence [style=dashed, constraint=false];
  *   BeforeDivergence -> Divergence;
  *   BeforeDivergence -> SubtractGradient;
  *   }
@@ -117,67 +110,41 @@ template< typename TOutputImage, typename TGradientImage =
     itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension - 1>,
     TOutputImage::ImageDimension > >
 class TotalNuclearVariationDenoisingBPDQImageFilter :
-        public itk::InPlaceImageFilter< TOutputImage, TOutputImage >
+        public rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >
 {
 public:
 
   /** Standard class typedefs. */
-  typedef TotalNuclearVariationDenoisingBPDQImageFilter        Self;
-  typedef itk::InPlaceImageFilter< TOutputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                              Pointer;
-  typedef itk::SmartPointer<const Self>                        ConstPointer;
+  typedef TotalNuclearVariationDenoisingBPDQImageFilter                 Self;
+  typedef rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage > Superclass;
+  typedef itk::SmartPointer<Self>                                       Pointer;
+  typedef itk::SmartPointer<const Self>                                 ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(TotalNuclearVariationDenoisingBPDQImageFilter, ImageToImageFilter)
+  itkTypeMacro(TotalNuclearVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
 
   /** Sub filter type definitions */
-  typedef ForwardDifferenceGradientImageFilter
-            <TOutputImage,
-             typename TOutputImage::ValueType,
-             typename TOutputImage::ValueType,
-             TGradientImage>                                                      GradientFilterType;
-  typedef itk::MultiplyImageFilter<TOutputImage>                                  MultiplyFilterType;
-  typedef itk::SubtractImageFilter<TOutputImage>                                  SubtractImageFilterType;
-  typedef itk::SubtractImageFilter<TGradientImage>                                SubtractGradientFilterType;
-  typedef SingularValueThresholdImageFilter<TGradientImage>                       SingularValueThresholdFilterType;
-  typedef BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>   DivergenceFilterType;
-
-  itkGetMacro(NumberOfIterations, int)
-  itkSetMacro(NumberOfIterations, int)
-
-  itkSetMacro(Gamma, double)
-  itkGetMacro(Gamma, double)
+  typedef SingularValueThresholdImageFilter<TGradientImage>             SingularValueThresholdFilterType;
 
 protected:
   TotalNuclearVariationDenoisingBPDQImageFilter();
   ~TotalNuclearVariationDenoisingBPDQImageFilter() ITK_OVERRIDE {}
 
-  void GenerateData() ITK_OVERRIDE;
-
   void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Sub filter pointers */
-  typename GradientFilterType::Pointer                  m_GradientFilter;
-  typename MultiplyFilterType::Pointer                  m_MultiplyFilter;
-  typename SubtractImageFilterType::Pointer             m_SubtractFilter;
-  typename SubtractGradientFilterType::Pointer          m_SubtractGradientFilter;
-  typename SingularValueThresholdFilterType::Pointer    m_SingularValueThresholdFilter;
-  typename DivergenceFilterType::Pointer                m_DivergenceFilter;
-
-  double m_Gamma;
-  double m_Beta;
-  int    m_NumberOfIterations;
-  bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
+  typename SingularValueThresholdFilterType::Pointer    m_ThresholdFilter;
+  virtual typename Superclass::ThresholdFilterType* GetThresholdFilter()
+  {
+    return dynamic_cast<typename Superclass::ThresholdFilterType*>(this->m_ThresholdFilter.GetPointer());
+  }
 
 private:
   TotalNuclearVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-
-  virtual void SetPipelineForFirstIteration();
-  virtual void SetPipelineAfterFirstIteration();
 };
 
 } // end namespace itk

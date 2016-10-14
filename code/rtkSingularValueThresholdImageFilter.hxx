@@ -112,7 +112,7 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
     unsigned int row=0;
     for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator, row++)
       {
-      jacobian.set_row(row, inputIterator.Get().GetVnlVector()) ;
+      jacobian.set_row(row, inputIterator.Get().GetVnlVector());
       }
 
     // Perform the singular value decomposition of the jacobian matrix
