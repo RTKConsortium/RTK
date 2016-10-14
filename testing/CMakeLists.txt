@@ -149,6 +149,10 @@ add_executable(rtklutbasedvarI0rawtoatttest rtklutbasedvarI0rawtoatttest.cxx)
 target_link_libraries(rtklutbasedvarI0rawtoatttest ${RTK_LIBRARIES})
 add_test(rtklutbasedvarI0rawtoatttest ${EXECUTABLE_OUTPUT_PATH}/rtklutbasedvarI0rawtoatttest)
 
+add_executable(rtkvectorimageconverterstest rtkvectorimageconverterstest.cxx)
+target_link_libraries(rtkvectorimageconverterstest ${RTK_LIBRARIES})
+add_test(rtkvectorimageconverterstest ${EXECUTABLE_OUTPUT_PATH}/rtkvectorimageconverterstest)
+
 add_executable(rtkamsterdamshroudtest rtkamsterdamshroudtest.cxx)
 target_link_libraries(rtkamsterdamshroudtest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkamsterdamshroudtest
