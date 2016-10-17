@@ -55,8 +55,10 @@ public:
 
   typedef itk::Vector<double, 3>           VectorType;
   typedef itk::Vector<double, 4>           HomogeneousVectorType;
-  typedef itk::Matrix< double, 3, 3 >      TwoDHomogeneousMatrixType;
-  typedef itk::Matrix< double, 4, 4 >      ThreeDHomogeneousMatrixType;
+  typedef itk::Matrix<double, 3, 3 >       TwoDHomogeneousMatrixType;
+  typedef itk::Matrix<double, 4, 4 >       ThreeDHomogeneousMatrixType;
+  typedef itk::Point<double, 3>            PointType;
+  typedef itk::Matrix<double, 3, 3>        Matrix3x3Type;
 
   /** Method for creation through the object factory. */
   itkNewMacro( Self );
@@ -75,6 +77,22 @@ public:
                                       const double projOffsetX=0., const double projOffsetY=0.,
                                       const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
                                       const double sourceOffsetX=0., const double sourceOffsetY=0.);
+
+  /**
+   * @brief Add a REG23-based geometry set to the RTK projections list.
+   * @param sourcePosition absolute position of the point source S in WCS
+   * @param detectorPosition absolute position of the detector origin R in WCS
+   * @param detectorRowVector absolute direction vector indicating the
+   * orientation of the detector's rows r (sometimes referred to as v1)
+   * @param detectorColumnVector absolute direction vector indicating the
+   * orientation of the detector's columns c (sometimes referred to as v2)
+   * @return TRUE if the projection could be added to the RTK projections list
+   */
+  bool AddProjection(const PointType &sourcePosition,
+                     const PointType &detectorPosition,
+                     const VectorType &detectorRowVector,
+                     const VectorType &detectorColumnVector);
+
 
   /** Empty the geometry object. */
   void Clear() ITK_OVERRIDE;
@@ -215,6 +233,48 @@ protected:
     this->m_MagnificationMatrices.push_back(m);
     this->Modified();
   }
+
+  /** Verify that the specified Euler angles in ZXY result in a rotation matrix
+   * which corresponds to the specified detector orientation. Rationale for this
+   * utility method is that in some situations numerical instabilities (e.g. if
+   * gantry=+90deg,in-plane=-90deg or vice versa, "invalid" angles may be
+   * computed using the standard ITK Euler transform) may occur.
+   * @param outOfPlaneAngleRAD out-of-plane angle of the detector in radians
+   * @param gantryAngleRAD gantry angle of the detector in radians
+   * @param inPlaneAngleRAD in-plane angle of the detector in radians
+   * @param referenceMatrix reference matrix which reflects detector orientation
+   * in WCS
+   * @return TRUE if the angles correspond the implicitly specified final
+   * rotation matrix; if FALSE is returned, the angles should be fixed
+   * (@see FixAngles())
+   * @warning {Internally, the matrix check is performed with a tolerance level
+   * of 1e-6!}
+   */
+  bool VerifyAngles(const double outOfPlaneAngleRAD, const double gantryAngleRAD,
+                    const double inPlaneAngleRAD,
+                    const Matrix3x3Type &referenceMatrix) const;
+
+  /** Try to fix Euler angles, which were found incorrect, to match the specified
+   * reference matrix.
+   * @param [out] outOfPlaneAngleRAD out-of-plane angle of the detector in radians;
+   * if this method returns TRUE, this angle can be safely considered
+   * @param [out] gantryAngleRAD gantry angle of the detector in radians;
+   * if this method returns TRUE, this angle can be safely considered
+   * @param [out] inPlaneAngleRAD in-plane angle of the detector in radians;
+   * if this method returns TRUE, this angle can be safely considered
+   * @param referenceMatrix reference matrix which reflects detector orientation
+   * in WCS
+   * @return TRUE if the angles were fixed and can be safely considered;
+   * if FALSE is returned, the method could not find angles which generate the
+   * desired matrix with respect to ZXY Euler order and the internal tolerance
+   * level
+   * @see VerifyAngles()
+   * @warning {Internally, the matrix check is performed with a tolerance level
+   * of 1e-6!}
+   */
+  bool FixAngles(double &outOfPlaneAngleRAD, double &gantryAngleRAD,
+                 double &inPlaneAngleRAD,
+                 const Matrix3x3Type &referenceMatrix) const;
 
   /** Circular geometry parameters per projection (angles in degrees between 0
     and 360). */
