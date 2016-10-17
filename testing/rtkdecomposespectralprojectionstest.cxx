@@ -104,11 +104,10 @@ int main(int , char** )
   simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   simplex->SetThresholds(thresholds);
   simplex->SetNumberOfIterations(10000);
-  simplex->SetNumberOfThreads(1);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
-  CheckVectorImageQuality<DecomposedProjectionType>(simplex->GetOutput(), decomposedProjectionReader->GetOutput(), 0.00001, 15, 2.0);
+  CheckVectorImageQuality<DecomposedProjectionType>(simplex->GetOutput(), decomposedProjectionReader->GetOutput(), 0.4, 8, 2.0);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
