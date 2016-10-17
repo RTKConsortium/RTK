@@ -45,6 +45,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
   m_NumberOfIterations=300;
   m_NumberOfMaterials = 4;
   m_NumberOfEnergies = 100;
+  m_OptimizeWithRestarts = false;
 
   // Fill in the vectors and matrices with zeros
   m_MaterialAttenuations.Fill(0.); //Not sure this works

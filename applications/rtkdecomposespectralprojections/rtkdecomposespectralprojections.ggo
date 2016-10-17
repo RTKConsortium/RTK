@@ -12,3 +12,4 @@ option "attenuations" a "Material attenuations file"                            
 option "niterations" n "Number of iterations"                                             int                           no   default="300"
 option "thresholds" t "Lower threshold of bins, expressed in pulse height"                int                          yes multiple                         
 option "weightsmap" w "File name for the output weights map (inverse noise variance)"     string                        no
+option "restarts"   r "Allow random restarts during optimization"                         flag                         off

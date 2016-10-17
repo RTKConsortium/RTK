@@ -93,6 +93,10 @@ public:
 
   itkSetMacro(NumberOfMaterials, unsigned int)
   itkGetMacro(NumberOfMaterials, unsigned int)
+
+  itkSetMacro(OptimizeWithRestarts, bool)
+  itkGetMacro(OptimizeWithRestarts, bool)
+
 protected:
   SimplexProjectionsDecompositionImageFilter();
   ~SimplexProjectionsDecompositionImageFilter() ITK_OVERRIDE {}
@@ -116,9 +120,10 @@ protected:
   DetectorResponseType       m_DetectorResponse;
   unsigned int               m_NumberOfEnergies;
 
-  /** Number of simplex iterations */
+  /** Parameters */
   unsigned int m_NumberOfIterations;
   unsigned int m_NumberOfMaterials;
+  bool         m_OptimizeWithRestarts;
 
 private:
   //purposely not implemented
