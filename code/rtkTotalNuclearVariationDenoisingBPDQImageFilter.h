@@ -16,30 +16,33 @@
  *
  *=========================================================================*/
 
-#ifndef rtkTotalVariationDenoisingBPDQImageFilter_h
-#define rtkTotalVariationDenoisingBPDQImageFilter_h
+#ifndef rtkTotalNuclearVariationDenoisingBPDQImageFilter_h
+#define rtkTotalNuclearVariationDenoisingBPDQImageFilter_h
 
+#include "rtkSingularValueThresholdImageFilter.h"
 #include "rtkDenoisingBPDQImageFilter.h"
-#include "rtkMagnitudeThresholdImageFilter.h"
-
-#include <itkPeriodicBoundaryCondition.h>
 
 namespace rtk
 {
-/** \class TotalVariationDenoisingBPDQImageFilter
- * \brief Applies a total variation denoising, only alm_SingularValueThresholdFilterong the dimensions specified, on an image.
+/** \class TotalNuclearVariationDenoisingBPDQImageFilter
+ * \brief Performs total nuclear variation denoising
  *
- * This filter finds the minimum of || f - f_0 ||_2^2 + gamma * TV(f)
- * using basis pursuit dequantization, where f is the current image, f_0 the
- * input image, and TV the total variation calculated with only the gradients
- * along the dimensions specified. This filter can be used, for example, to
- * perform 3D total variation denoising on a 4D dataset
- * (by calling SetDimensionsProcessed([true true true false]).
- * More information on the algorithm can be found at
- * http://wiki.epfl.ch/bpdq#download
+ * This filter implements "Joint reconstruction of multi-channel, spectral CT data
+ * via constrained total nuclear variation minimization", by Rigie & LaRivière, in
+ * Physics in Medicine and Biology 2015.
+ *
+ * It uses basis pursuit dequantization, and is (mathematically) only a generalization
+ * of the TotalVariationDenoisingBPDQImageFilter to process multiple channel images.
+ * It outputs a multiple channel image close to the input one, for which the spatial
+ * gradient of each channel is sparser, and the gradient vectors are more similar (ie. colinear) across channels,
+ * than in the input.
+ *
+ * The order of the channels is not taken into account, which makes this regularization
+ * more suitable when the channels describe materials (i.e. in spectral CT) or
+ * colors (i.e. in RGB images) than when they describe time frames (i.e. in dynamic CT).
  *
  * \dot
- * digraph TotalVariationDenoisingBPDQImageFilter
+ * digraph TotalNuclearVariationDenoisingBPDQImageFilter
  * {
  *
  * subgraph clusterFirstIteration
@@ -52,13 +55,13 @@ namespace rtk
  *   node [shape=box];
  *   FI_Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
  *   FI_Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
- *   FI_MagnitudeThreshold [ label="rtk::MagnitudeThresholdImageFilter" URL="\ref rtk::MagnitudeThresholdImageFilter"];
- *   FI_OutOfMagnitudeTreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ *   FI_SingularValueThreshold [ label="rtk::SingularValueThresholdImageFilter" URL="\ref rtk::SingularValueThresholdImageFilter"];
+ *   FI_OutOfSingularValueThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
  *
  *   FI_Input -> FI_Multiply;
  *   FI_Multiply -> FI_Gradient;
- *   FI_Gradient -> FI_MagnitudeThreshold;
- *   FI_MagnitudeThreshold -> FI_OutOfMagnitudeTreshold [style=dashed];
+ *   FI_Gradient -> FI_SingularValueThreshold;
+ *   FI_SingularValueThreshold -> FI_OutOfSingularValueThreshold [style=dashed];
  *   }
  *
  * subgraph clusterAfterFirstIteration
@@ -76,9 +79,9 @@ namespace rtk
  *   Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
  *   Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
  *   SubtractGradient [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
- *   MagnitudeThreshold [ label="rtk::MagnitudeThresholdImageFilter" URL="\ref rtk::MagnitudeThresholdImageFilter"];
+ *   SingularValueThreshold [ label="rtk::SingularValueThresholdImageFilter" URL="\ref rtk::SingularValueThresholdImageFilter"];
  *   OutOfSubtract [label="", fixedsize="false", width=0, height=0, shape=none];
- *   OutOfMagnitudeTreshold [label="", fixedsize="false", width=0, height=0, shape=none];
+ *   OutOfSingularValueThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
  *   BeforeDivergence [label="", fixedsize="false", width=0, height=0, shape=none];
  *
  *   Input -> Subtract;
@@ -88,9 +91,9 @@ namespace rtk
  *   OutOfSubtract -> Multiply;
  *   Multiply -> Gradient;
  *   Gradient -> SubtractGradient;
- *   SubtractGradient -> MagnitudeThreshold;
- *   MagnitudeThreshold -> OutOfMagnitudeTreshold;
- *   OutOfMagnitudeTreshold -> BeforeDivergence [style=dashed, constraint=false];
+ *   SubtractGradient -> SingularValueThreshold;
+ *   SingularValueThreshold -> OutOfSingularValueThreshold;
+ *   OutOfSingularValueThreshold -> BeforeDivergence [style=dashed, constraint=false];
  *   BeforeDivergence -> Divergence;
  *   BeforeDivergence -> SubtractGradient;
  *   }
@@ -104,15 +107,15 @@ namespace rtk
  */
 
 template< typename TOutputImage, typename TGradientImage =
-    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
+    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension - 1>,
     TOutputImage::ImageDimension > >
-class TotalVariationDenoisingBPDQImageFilter :
+class TotalNuclearVariationDenoisingBPDQImageFilter :
         public rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >
 {
 public:
 
   /** Standard class typedefs. */
-  typedef TotalVariationDenoisingBPDQImageFilter                        Self;
+  typedef TotalNuclearVariationDenoisingBPDQImageFilter                 Self;
   typedef rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage > Superclass;
   typedef itk::SmartPointer<Self>                                       Pointer;
   typedef itk::SmartPointer<const Self>                                 ConstPointer;
@@ -121,38 +124,33 @@ public:
   itkNewMacro(Self)
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
+  itkTypeMacro(TotalNuclearVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
 
   /** Sub filter type definitions */
-  typedef MagnitudeThresholdImageFilter<TGradientImage>                 MagnitudeThresholdFilterType;
-
-  void SetDimensionsProcessed(bool* arg);
-
-  /** In some cases, regularization must use periodic boundary condition */
-  void SetBoundaryConditionToPeriodic();
+  typedef SingularValueThresholdImageFilter<TGradientImage>             SingularValueThresholdFilterType;
 
 protected:
-  TotalVariationDenoisingBPDQImageFilter();
-  ~TotalVariationDenoisingBPDQImageFilter() ITK_OVERRIDE {}
+  TotalNuclearVariationDenoisingBPDQImageFilter();
+  ~TotalNuclearVariationDenoisingBPDQImageFilter() ITK_OVERRIDE {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
   /** Sub filter pointers */
-  typename MagnitudeThresholdFilterType::Pointer   m_ThresholdFilter;
+  typename SingularValueThresholdFilterType::Pointer    m_ThresholdFilter;
   virtual typename Superclass::ThresholdFilterType* GetThresholdFilter()
   {
     return dynamic_cast<typename Superclass::ThresholdFilterType*>(this->m_ThresholdFilter.GetPointer());
   }
 
 private:
-  TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
+  TotalNuclearVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkTotalVariationDenoisingBPDQImageFilter.hxx"
+#include "rtkTotalNuclearVariationDenoisingBPDQImageFilter.hxx"
 #endif
 
-#endif //__rtkTotalVariationDenoisingBPDQImageFilter__
+#endif //__rtkTotalNuclearVariationDenoisingBPDQImageFilter__

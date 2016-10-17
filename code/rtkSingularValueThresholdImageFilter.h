@@ -16,33 +16,46 @@
  *
  *=========================================================================*/
 
-#ifndef rtkMagnitudeThresholdImageFilter_h
-#define rtkMagnitudeThresholdImageFilter_h
+#ifndef rtkSingularValueThresholdImageFilter_h
+#define rtkSingularValueThresholdImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>
 
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  #include <itkImageRegionSplitterDirection.h>
+#endif
+
 namespace rtk
 {
-/** \class MagnitudeThresholdImageFilter
+/** \class SingularValueThresholdImageFilter
  *
- * \brief Performs thresholding on the norm of each vector-valued input pixel
+ * \brief Performs thresholding on the singular values
  *
- * If the norm of a vector is higher than the threshold, divides the
- * components of the vector by norm / threshold. Mathematically, it amounts
- * to projecting onto the L_2 ball of radius m_Threshold
+ * The image is assumed to be of dimension N+1, and to contain
+ * itk::CovariantVector of length N. The last dimension is assumed
+ * to be the channel dimension (color, or time, or materials in spectral CT), of size L.
+ * The input image must contain the spatial gradient of each channel.
+ *
+ * The filter walks the pixels of a single channel. For each of these pixels,
+ * it constructs a matrix by concatenating the gradient vectors of the L channels.
+ * The matrix is decomposed using SVD, its singular values are thresholded, and
+ * then reconstructed. The resulting matrix is then cut back into L gradient vectors,
+ * which are written in output.
+ *
+ * \author Cyril Mory
  *
  */
 template< typename TInputImage,
           typename TRealType = float,
           typename TOutputImage = TInputImage>
-class ITK_EXPORT MagnitudeThresholdImageFilter:
+class ITK_EXPORT SingularValueThresholdImageFilter:
         public itk::InPlaceImageFilter< TInputImage, TOutputImage >
 {
 public:
   
   /** Standard class typedefs. */
-  typedef MagnitudeThresholdImageFilter                        Self;
+  typedef SingularValueThresholdImageFilter                    Self;
   typedef itk::ImageToImageFilter< TInputImage, TOutputImage > Superclass;
   typedef itk::SmartPointer< Self >                            Pointer;
   typedef itk::SmartPointer< const Self >                      ConstPointer;
@@ -51,7 +64,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods) */
-  itkTypeMacro(MagnitudeThresholdImageFilter, ImageToImageFilter);
+  itkTypeMacro(SingularValueThresholdImageFilter, ImageToImageFilter);
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */
@@ -93,22 +106,29 @@ public:
   itkSetMacro(Threshold, TRealType)
     
 protected:
-  MagnitudeThresholdImageFilter();
-  ~MagnitudeThresholdImageFilter() ITK_OVERRIDE {}
+  SingularValueThresholdImageFilter();
+  ~SingularValueThresholdImageFilter() ITK_OVERRIDE {}
 
+  void BeforeThreadedGenerateData();
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             itk::ThreadIdType threadId) ITK_OVERRIDE;
+
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+    /** Splits the OutputRequestedRegion along the first direction, not the last */
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+#endif
 
 private:
   TRealType m_Threshold;
 
-  MagnitudeThresholdImageFilter(const Self &); //purposely not implemented
+  SingularValueThresholdImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);                     //purposely not implemented
 };
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkMagnitudeThresholdImageFilter.hxx"
+#include "rtkSingularValueThresholdImageFilter.hxx"
 #endif
 
 #endif
