@@ -124,7 +124,7 @@ int main(int argc, char * argv[])
   typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType> SimplexFilterType;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
-  simplex->SetInputSpectralProjections(spectralProjectionReader->GetOutput());
+  simplex->SetInputMeasuredProjections(spectralProjectionReader->GetOutput());
   simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
   simplex->SetDetectorResponse(detectorResponseReader->GetOutput());
   simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
