@@ -107,7 +107,7 @@ int main(int , char** )
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
-  CheckVectorImageQuality<DecomposedProjectionType>(simplex->GetOutput(), decomposedProjectionReader->GetOutput(), 0.4, 8, 2.0);
+  CheckVectorImageQuality<DecomposedProjectionType>(simplex->GetOutput(), decomposedProjectionReader->GetOutput(), 0.01, 15, 2.0);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
