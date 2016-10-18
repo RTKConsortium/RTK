@@ -43,7 +43,6 @@ public:
   typedef itk::SingleValuedCostFunction                     Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
-  itkNewMacro( Self );
   itkTypeMacro( ProjectionsDecompositionNegativeLogLikelihood, SingleValuedCostFunction );
 
 //  enum { SpaceDimension=m_NumberOfMaterials };
@@ -67,10 +66,10 @@ public:
   {
   }
 
-  virtual vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE {}
-  virtual MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE {}
+  virtual vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const = 0;
+  virtual MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE = 0;
   virtual void GetDerivative( const ParametersType & lineIntegrals,
-                      DerivativeType & derivatives ) const ITK_OVERRIDE {}
+                      DerivativeType & derivatives ) const ITK_OVERRIDE = 0;
 
   unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
   {
