@@ -383,3 +383,7 @@ add_test(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
 add_executable(rtkargsinfomanagertest rtkargsinfomanagertest.cxx)
 target_link_libraries(rtkargsinfomanagertest RTK)
 add_test(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest)
+
+add_executable(rtkgeometryfrommatrixtest rtkgeometryfrommatrixtest.cxx)
+target_link_libraries(rtkgeometryfrommatrixtest ${RTK_LIBRARIES})
+add_test(rtkgeometryfrommatrixtest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryfrommatrixtest)

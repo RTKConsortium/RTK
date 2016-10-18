@@ -103,6 +103,144 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
   this->Modified();
 }
 
+bool rtk::ThreeDCircularProjectionGeometry::
+AddProjection(const PointType &sourcePosition,
+              const PointType &detectorPosition,
+              const VectorType &detectorRowVector,
+              const VectorType &detectorColumnVector)
+{
+  typedef itk::Euler3DTransform<double> EulerType;
+
+  // these parameters relate absolutely to the WCS (IEC-based):
+  const VectorType &r = detectorRowVector; // row dir
+  const VectorType &c = detectorColumnVector; // column dir
+  VectorType n = itk::CrossProduct(r, c); // normal
+  const PointType &S = sourcePosition; // source pos
+  const PointType &R = detectorPosition; // detector pos
+
+  if (fabs(r * c) > 1e-6) // non-orthogonal row/column vectors
+    return false;
+
+  // Euler angles (ZXY convention) from detector orientation in IEC-based WCS:
+  double ga; // gantry angle
+  double oa; // out-of-plane angle
+  double ia; // in-plane angle
+  // extract Euler angles from the orthogonal matrix which is established
+  // by the detector orientation; however, we would like RTK to internally
+  // store the inverse of this rotation matrix, therefore the corresponding
+  // angles are computed here:
+  Matrix3x3Type rm; // reference matrix
+  // NOTE: This transposed matrix should internally
+  // set by rtk::ThreeDProjectionGeometry (inverse)
+  // of external rotation!
+  rm[0][0] = r[0]; rm[0][1] = r[1]; rm[0][2] = r[2];
+  rm[1][0] = c[0]; rm[1][1] = c[1]; rm[1][2] = c[2];
+  rm[2][0] = n[0]; rm[2][1] = n[1]; rm[2][2] = n[2];
+  // extract Euler angles by using the standard ITK implementation:
+  EulerType::Pointer euler = EulerType::New();
+  euler->SetComputeZYX(false); // ZXY order
+  // workaround: Orthogonality tolerance problem when using
+  // Euler3DTransform->SetMatrix() due to error magnification.
+  // Parent class MatrixOffsetTransformBase does not perform an
+  // orthogonality check on the matrix!
+  euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(rm);
+  oa = euler->GetAngleX(); // delivers radians
+  ga = euler->GetAngleY();
+  ia = euler->GetAngleZ();
+  // verify that extracted ZXY angles result in the *desired* matrix:
+  // (at some angle constellations we may run into numerical troubles, therefore,
+  // verify angles and try to fix instabilities)
+  if (!VerifyAngles(oa, ga, ia, rm))
+  {
+    if (!FixAngles(oa, ga, ia, rm))
+      return false;
+  }
+  // since rtk::ThreeDCircularProjectionGeometry::AddProjection() mirrors the
+  // angles (!) internally, let's invert the computed ones in order to
+  // get at the end what we would like (see above); convert rad->deg:
+  ga *= -1.;
+  oa *= -1.;
+  ia *= -1.;
+
+  // SID: distance from source to isocenter along detector normal
+  double SID = n[0] * S[0] + n[1] * S[1] + n[2] * S[2];
+  // SDD: distance from source to detector along detector normal
+  double SDD = n[0] * (S[0] - R[0]) + n[1] * (S[1] - R[1]) + n[2] * (S[2] - R[2]);
+  if (fabs(SDD) < 1e-6) // source is in detector plane
+    return false;
+
+  // source offset: compute source's "in-plane" x/y shift off isocenter
+  VectorType Sv;
+  Sv[0] = S[0];
+  Sv[1] = S[1];
+  Sv[2] = S[2];
+  double oSx = Sv * r;
+  double oSy = Sv * c;
+
+  // detector offset: compute detector's in-plane x/y shift off isocenter
+  VectorType Rv;
+  Rv[0] = R[0];
+  Rv[1] = R[1];
+  Rv[2] = R[2];
+  double oRx = Rv * r;
+  double oRy = Rv * c;
+
+  // configure native RTK geometry
+  this->AddProjectionInRadians(SID, SDD, ga, oRx, oRy, oa, ia, oSx, oSy);
+
+  return true;
+}
+
+bool rtk::ThreeDCircularProjectionGeometry::
+AddProjection(const HomogeneousProjectionMatrixType &pMat)
+{
+  // Extract parameters thanks to a matrix factorization formula specific to the pinhole model.
+  // Parameters are u0, v0, alpha_u, alpha_v
+  double u0 = (pMat(0, 0)*pMat(2, 0)) + (pMat(0, 1)*pMat(2, 1)) + (pMat(0, 2)*pMat(2, 2));
+  double v0 = (pMat(1, 0)*pMat(2, 0)) + (pMat(1, 1)*pMat(2, 1)) + (pMat(1, 2)*pMat(2, 2));
+  double aU = -1.*sqrt(pMat(0, 0)*pMat(0, 0) + pMat(0, 1)*pMat(0, 1) + pMat(0, 2)*pMat(0, 2) - u0*u0);
+  double aV = -1.*sqrt(pMat(1, 0)*pMat(1, 0) + pMat(1, 1)*pMat(1, 1) + pMat(1, 2)*pMat(1, 2) - v0*v0);
+
+  // focal of the system, here we take the mean value
+  double sdd = -0.5 * (aU + aV);
+  double tx = (pMat(0, 3) - u0*pMat(2, 3))/aU;
+  double ty = (pMat(1, 3) - v0*pMat(2, 3))/aV;
+  double sid = -1.*pMat(2, 3);
+
+  Matrix3x3Type rm;
+  for (unsigned int i = 0; i < 3; i++)
+    {
+    rm(0,i) = (pMat(0, i)-u0*pMat(2, i))/aU;
+    rm(1,i) = (pMat(1, i)-v0*pMat(2, i))/aV;
+    rm(2,i) = pMat(2, i);
+    }
+
+  //Declare a 3D euler transform in order to properly extract angles
+  typedef itk::Euler3DTransform<double> EulerType;
+  EulerType::Pointer euler = EulerType::New();
+  euler->SetComputeZYX(false); // ZXY order
+
+  //Extract angle using parent method without orthogonality check, see Reg23ProjectionGeometry.cxx for more
+  euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(rm);
+  double oa = euler->GetAngleX();
+  double ga = euler->GetAngleY();
+  double ia = euler->GetAngleZ();
+
+  // verify that extracted ZXY angles result in the *desired* matrix:
+  // (at some angle constellations we may run into numerical troubles, therefore,
+  // verify angles and try to fix instabilities)
+  if (!VerifyAngles(oa, ga, ia, rm))
+  {
+    if (!FixAngles(oa, ga, ia, rm))
+      return false;
+  }
+
+  // Add to geometry
+  this->AddProjectionInRadians(sid, sdd, -1.*ga, -tx-u0, -ty-v0, -1.*oa, -1.*ia, -tx, -ty);
+
+  return true;
+}
+
 void rtk::ThreeDCircularProjectionGeometry::Clear()
 {
   Superclass::Clear();
@@ -470,92 +608,4 @@ FixAngles(double &outOfPlaneAngleRAD,
       }
     }
   return false;
-}
-
-bool rtk::ThreeDCircularProjectionGeometry::
-AddProjection(const PointType &sourcePosition,
-              const PointType &detectorPosition,
-              const VectorType &detectorRowVector,
-              const VectorType &detectorColumnVector)
-{
-  typedef itk::Euler3DTransform<double> EulerType;
-
-  // these parameters relate absolutely to the WCS (IEC-based):
-  const VectorType &r = detectorRowVector; // row dir
-  const VectorType &c = detectorColumnVector; // column dir
-  VectorType n = itk::CrossProduct(r, c); // normal
-  const PointType &S = sourcePosition; // source pos
-  const PointType &R = detectorPosition; // detector pos
-
-  if (fabs(r * c) > 1e-6) // non-orthogonal row/column vectors
-    return false;
-
-  // Euler angles (ZXY convention) from detector orientation in IEC-based WCS:
-  double ga; // gantry angle
-  double oa; // out-of-plane angle
-  double ia; // in-plane angle
-  // extract Euler angles from the orthogonal matrix which is established
-  // by the detector orientation; however, we would like RTK to internally
-  // store the inverse of this rotation matrix, therefore the corresponding
-  // angles are computed here:
-  Matrix3x3Type rm; // reference matrix
-  // NOTE: This transposed matrix should internally
-  // set by rtk::ThreeDProjectionGeometry (inverse)
-  // of external rotation!
-  rm[0][0] = r[0]; rm[0][1] = r[1]; rm[0][2] = r[2];
-  rm[1][0] = c[0]; rm[1][1] = c[1]; rm[1][2] = c[2];
-  rm[2][0] = n[0]; rm[2][1] = n[1]; rm[2][2] = n[2];
-  // extract Euler angles by using the standard ITK implementation:
-  EulerType::Pointer euler = EulerType::New();
-  euler->SetComputeZYX(false); // ZXY order
-  // workaround: Orthogonality tolerance problem when using
-  // Euler3DTransform->SetMatrix() due to error magnification.
-  // Parent class MatrixOffsetTransformBase does not perform an
-  // orthogonality check on the matrix!
-  euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(rm);
-  oa = euler->GetAngleX(); // delivers radians
-  ga = euler->GetAngleY();
-  ia = euler->GetAngleZ();
-  // verify that extracted ZXY angles result in the *desired* matrix:
-  // (at some angle constellations we may run into numerical troubles, therefore,
-  // verify angles and try to fix instabilities)
-  if (!VerifyAngles(oa, ga, ia, rm))
-  {
-    if (!FixAngles(oa, ga, ia, rm))
-      return false;
-  }
-  // since rtk::ThreeDCircularProjectionGeometry::AddProjection() mirrors the
-  // angles (!) internally, let's invert the computed ones in order to
-  // get at the end what we would like (see above); convert rad->deg:
-  ga *= -57.29577951308232;
-  oa *= -57.29577951308232;
-  ia *= -57.29577951308232;
-
-  // SID: distance from source to isocenter along detector normal
-  double SID = n[0] * S[0] + n[1] * S[1] + n[2] * S[2];
-  // SDD: distance from source to detector along detector normal
-  double SDD = n[0] * (S[0] - R[0]) + n[1] * (S[1] - R[1]) + n[2] * (S[2] - R[2]);
-  if (fabs(SDD) < 1e-6) // source is in detector plane
-    return false;
-
-  // source offset: compute source's "in-plane" x/y shift off isocenter
-  VectorType Sv;
-  Sv[0] = S[0];
-  Sv[1] = S[1];
-  Sv[2] = S[2];
-  double oSx = Sv * r;
-  double oSy = Sv * c;
-
-  // detector offset: compute detector's in-plane x/y shift off isocenter
-  VectorType Rv;
-  Rv[0] = R[0];
-  Rv[1] = R[1];
-  Rv[2] = R[2];
-  double oRx = Rv * r;
-  double oRy = Rv * c;
-
-  // configure native RTK geometry
-  AddProjection(SID, SDD, ga, oRx, oRy, oa, ia, oSx, oSy);
-
-  return true;
 }

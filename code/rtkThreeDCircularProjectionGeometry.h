@@ -59,6 +59,7 @@ public:
   typedef itk::Matrix<double, 4, 4 >       ThreeDHomogeneousMatrixType;
   typedef itk::Point<double, 3>            PointType;
   typedef itk::Matrix<double, 3, 3>        Matrix3x3Type;
+  typedef Superclass::MatrixType           HomogeneousProjectionMatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro( Self );
@@ -93,6 +94,9 @@ public:
                      const VectorType &detectorRowVector,
                      const VectorType &detectorColumnVector);
 
+
+  /** Add projection from a projection matrix. */
+  bool AddProjection(const HomogeneousProjectionMatrixType &pMat);
 
   /** Empty the geometry object. */
   void Clear() ITK_OVERRIDE;
