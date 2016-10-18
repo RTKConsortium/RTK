@@ -73,8 +73,10 @@ public:
   {
   // Variable length vector and variable size matrix cannot be used in linear algebra operations
   // Get their vnl counterparts, which can
-  vnl_vector<float> vnl_vec_he(GetAttenuatedIncidentSpectrum(m_HighEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(m_HighEnergyIncidentSpectrum, lineIntegrals).GetSize());
-  vnl_vector<float> vnl_vec_le(GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetSize());
+  vnl_vector<float> vnl_vec_he(GetAttenuatedIncidentSpectrum(m_HighEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(),
+                               GetAttenuatedIncidentSpectrum(m_HighEnergyIncidentSpectrum, lineIntegrals).GetSize());
+  vnl_vector<float> vnl_vec_le(GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(),
+                               GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetSize());
 
   // Apply detector response, getting the lambdas
   return (m_DetectorResponse.GetVnlMatrix() * vnl_vec_he + m_DetectorResponse.GetVnlMatrix() * vnl_vec_le);

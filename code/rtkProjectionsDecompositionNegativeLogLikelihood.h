@@ -39,10 +39,10 @@ class ProjectionsDecompositionNegativeLogLikelihood : public itk::SingleValuedCo
 {
 public:
 
-  typedef ProjectionsDecompositionNegativeLogLikelihood   Self;
-  typedef itk::SingleValuedCostFunction       Superclass;
-  typedef itk::SmartPointer<Self>             Pointer;
-  typedef itk::SmartPointer<const Self>       ConstPointer;
+  typedef ProjectionsDecompositionNegativeLogLikelihood     Self;
+  typedef itk::SingleValuedCostFunction                     Superclass;
+  typedef itk::SmartPointer<Self>                           Pointer;
+  typedef itk::SmartPointer<const Self>                     ConstPointer;
   itkNewMacro( Self );
   itkTypeMacro( ProjectionsDecompositionNegativeLogLikelihood, SingleValuedCostFunction );
 
