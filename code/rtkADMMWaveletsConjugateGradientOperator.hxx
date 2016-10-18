@@ -34,7 +34,7 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
   m_ZeroMultiplyProjectionFilter = MultiplyFilterType::New();
   m_ZeroMultiplyVolumeFilter = MultiplyFilterType::New();
   m_AddFilter = AddFilterType::New();
-  //m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent connections
   m_AddFilter->SetInput2( m_MultiplyFilter->GetOutput() );
@@ -42,14 +42,14 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
   // Set permanent parameters
   m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  //m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management options
   m_ZeroMultiplyProjectionFilter->ReleaseDataFlagOn();
   m_ZeroMultiplyVolumeFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
   m_AddFilter->ReleaseDataFlagOff();
-  //m_DisplacedDetectorFilter->ReleaseDataFlagOn();
+  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
 template< typename TOutputImage >
@@ -80,7 +80,7 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
 {
   m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
   m_ForwardProjectionFilter->SetGeometry(_arg);
-  //m_DisplacedDetectorFilter->SetGeometry(_arg);
+  m_DisplacedDetectorFilter->SetGeometry(_arg);
 }
 
 template< typename TOutputImage >
@@ -110,11 +110,9 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
   // forward and back projection filters, which are set
   // at runtime
   m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyProjectionFilter->GetOutput());
- //m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
-
+  m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  //m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));

@@ -221,7 +221,7 @@ protected:
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForConjugateGradient;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
-    //typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
+    typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
     typename GatingWeightsFilterType::Pointer                                   m_GatingWeightsFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning

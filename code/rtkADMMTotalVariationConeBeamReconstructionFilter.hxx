@@ -52,7 +52,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_SoftThresholdFilter = SoftThresholdTVFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
-  //m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_GatingWeightsFilter = GatingWeightsFilterType::New();
 
   // Set permanent connections
@@ -74,7 +74,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   // Set permanent parameters
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ZeroMultiplyGradientFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  //m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 
   // Set memory management parameters
   m_ZeroMultiplyVolumeFilter->ReleaseDataFlagOn();
@@ -89,7 +89,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_SubtractFilter1->ReleaseDataFlagOff(); // Output used in two filters
   m_SoftThresholdFilter->ReleaseDataFlagOff(); // Output is g_k+1
   m_SubtractFilter2->ReleaseDataFlagOff(); //Output is d_k+1
-  //m_DisplacedDetectorFilter->ReleaseDataFlagOn();
+  m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
 template< typename TOutputImage, typename TGradientOutputImage> 
@@ -178,27 +178,26 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
     // Insert the gating filter into the pipeline
     m_GatingWeightsFilter->SetInput(this->GetInput(1));
     m_GatingWeightsFilter->SetVector(m_GatingWeights);
-    //m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
+    m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
 
     // Also perform gating in the conjugate gradient operator
     m_CGOperator->SetGatingWeights(m_GatingWeights);
     }
   else
     {
-    //m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
+    m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
     }
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
-  //m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
-  m_BackProjectionFilter->SetInput(1, this->GetInput(1) );
+  m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_SubtractVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
 
   // For the same reason, set geometry now
   m_CGOperator->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
-  //m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);
