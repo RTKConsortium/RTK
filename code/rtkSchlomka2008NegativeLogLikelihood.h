@@ -71,7 +71,7 @@ public:
   {
   }
 
-  vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const
+  vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE
   {
   // Variable length vector and variable size matrix cannot be used in linear algebra operations
   // Get their vnl counterparts, which can
@@ -195,9 +195,10 @@ public:
   vnl_vector<float> lambdas = ForwardModel(parameters);
 
   // Compute the negative log likelihood from the lambdas
-  MeasureType measure = 0;
+  long double measure = 0;
   for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
-    measure += lambdas[i] - std::log(lambdas[i]) * m_MeasuredData[i];
+    measure += lambdas[i] - std::log((long double)lambdas[i]) * m_MeasuredData[i];
+
   return measure;
   }
 
