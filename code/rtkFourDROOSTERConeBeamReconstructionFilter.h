@@ -31,6 +31,7 @@
 #include "rtkWarpSequenceImageFilter.h"
 #include "rtkUnwarpSequenceImageFilter.h"
 #include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
+#include "rtkTotalNuclearVariationDenoisingBPDQImageFilter.h"
 
 #include <itkThresholdImageFilter.h>
 #include <itkSubtractImageFilter.h>
@@ -59,6 +60,7 @@ namespace rtk
    * - Applying wavelets denoising in space
    * - Applying total variation denoising in time
    * - Applying gradient's L0 norm denoising in time
+   * - Applying total nuclear variation denoising
    * and starting over as many times as the number of main loop iterations desired.
    *
    * If both the displacement vector fields to a reference phase and from a reference phase are provided,
@@ -102,6 +104,7 @@ namespace rtk
    * Warp [group=regul, label="rtk::WarpSequenceImageFilter (direct field)" URL="\ref rtk::WarpSequenceImageFilter"];
    * TVTime [group=regul, label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
    * L0Time [group=regul, label="rtk::LastDimensionL0GradientDenoisingImageFilter (along time)" URL="\ref rtk::LastDimensionL0GradientDenoisingImageFilter"];
+   * TNV [group=regul, label="rtk::TotalNuclearVariationDenoisingBPDQImageFilter" URL="\ref rtk::TotalNuclearVariationDenoisingBPDQImageFilter"];
    * Unwarp [group=regul, label="rtk::UnwarpSequenceImageFilter" URL="\ref rtk::UnwarpSequenceImageFilter"];
    * Subtract [group=invwarp, label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    * InverseWarp [group=invwarp, label="rtk::WarpSequenceImageFilter (inverse field)" URL="\ref rtk::WarpSequenceImageFilter"];
@@ -116,6 +119,7 @@ namespace rtk
    * AfterWarp [group=invisible, label="m_PerformTVTemporalDenoising ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterTVTime [group=invisible, label="m_PerformL0TemporalDenoising ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterL0Time [group=invisible, label="m_ComputeInverseWarpingByConjugateGradient ?", fixedsize="false", width=0, height=0, shape=none];
+   * AfterTNV [group=invisible, label="m_PerformTNVDenoising ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterUnwarp [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
    *
    * InputDisplacementField -> Warp;
@@ -142,7 +146,9 @@ namespace rtk
    * TVTime -> AfterTVTime [arrowhead=none];
    * AfterTVTime -> L0Time [label="true"];
    * L0Time -> AfterL0Time;
-   * AfterL0Time -> Unwarp [label="true"];
+   * AfterL0Time -> TNV [label="true"];
+   * TNV -> AfterTNV;
+   * AfterTNV -> Unwarp [label="true"];
    * Unwarp -> AfterUnwarp
    * AfterUnwarp -> Output;
    * AfterUnwarp -> AfterPrimaryInput [style=dashed];
@@ -161,7 +167,8 @@ namespace rtk
    * AfterWavelets -> AfterWarp [label="false"];
    * AfterWarp -> AfterTVTime [label="false"];
    * AfterTVTime -> AfterL0Time [label="false"];
-   * AfterL0Time -> AfterUnwarp [label="m_PerformWarping = false"];
+   * AfterL0Time -> AfterTNV [label="false"];
+   * AfterTNV -> AfterUnwarp [label="m_PerformWarping = false"];
    *
    * // Invisible edges between the regularization filters
    * edge[style=invis];
@@ -171,7 +178,8 @@ namespace rtk
    * Wavelets -> Warp;
    * Warp -> TVTime;
    * TVTime -> L0Time;
-   * L0Time -> Unwarp;
+   * L0Time -> TNV;
+   * TNV -> Unwarp;
    *
    * InputInverseDisplacementField -> Subtract;
    * }
@@ -245,6 +253,7 @@ public:
   typedef itk::SubtractImageFilter<VolumeSeriesType, VolumeSeriesType>                                      SubtractFilterType;
   typedef itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>                                           AddFilterType;
   typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>                                TemporalL0DenoisingFilterType;
+  typedef rtk::TotalNuclearVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>    TNVDenoisingFilterType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void SetForwardProjectionFilter(int fwtype) ITK_OVERRIDE;
@@ -273,6 +282,8 @@ public:
   itkGetMacro(PerformTVTemporalDenoising, bool)
   itkSetMacro(PerformL0TemporalDenoising, bool)
   itkGetMacro(PerformL0TemporalDenoising, bool)
+  itkSetMacro(PerformTNVDenoising, bool)
+  itkGetMacro(PerformTNVDenoising, bool)
   itkSetMacro(ComputeInverseWarpingByConjugateGradient, bool)
   itkGetMacro(ComputeInverseWarpingByConjugateGradient, bool)
   itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
@@ -289,6 +300,8 @@ public:
   itkGetMacro(GammaTVSpace, float)
   itkSetMacro(GammaTVTime, float)
   itkGetMacro(GammaTVTime, float)
+  itkSetMacro(GammaTNV, float)
+  itkGetMacro(GammaTNV, float)
   itkSetMacro(LambdaL0Time, float)
   itkGetMacro(LambdaL0Time, float)
   itkSetMacro(SoftThresholdWavelets, float)
@@ -350,6 +363,7 @@ protected:
   typename SubtractFilterType::Pointer                    m_SubtractFilter;
   typename AddFilterType::Pointer                         m_AddFilter;
   typename TemporalL0DenoisingFilterType::Pointer         m_L0DenoisingTime;
+  typename TNVDenoisingFilterType::Pointer                m_TNVDenoising;
 
   // Booleans :
   // should warping be performed ?
@@ -362,6 +376,7 @@ protected:
   bool  m_PerformWarping;
   bool  m_PerformTVTemporalDenoising;
   bool  m_PerformL0TemporalDenoising;
+  bool  m_PerformTNVDenoising;
   bool  m_ComputeInverseWarpingByConjugateGradient;
   bool  m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
   bool  m_CudaConjugateGradient;
@@ -370,6 +385,7 @@ protected:
   // Regularization parameters
   float m_GammaTVSpace;
   float m_GammaTVTime;
+  float m_GammaTNV;
   float m_LambdaL0Time;
   float m_SoftThresholdWavelets;
   float m_PhaseShift;
@@ -399,6 +415,7 @@ protected:
   itk::TimeProbe m_TVSpatialDenoisingProbe;
   itk::TimeProbe m_WaveletsSpatialDenoisingProbe;
   itk::TimeProbe m_TVTemporalDenoisingProbe;
+  itk::TimeProbe m_TNVDenoisingProbe;
   itk::TimeProbe m_L0TemporalDenoisingProbe;  
   itk::TimeProbe m_WarpingProbe;
   itk::TimeProbe m_UnwarpingProbe;

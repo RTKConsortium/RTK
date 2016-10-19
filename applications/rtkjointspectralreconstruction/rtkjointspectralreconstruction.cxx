@@ -268,7 +268,15 @@ int main(int argc, char * argv[])
   else
     rooster->SetPerformL0TemporalDenoising(false);
 
-
+  // Total nuclear variation
+  if (args_info.gamma_tnv_given)
+    {
+    rooster->SetGammaTNV(args_info.gamma_tnv_arg);
+    rooster->SetTV_iterations(args_info.tviter_arg);
+    rooster->SetPerformTNVDenoising(true);
+    }
+  else
+    rooster->SetPerformTNVDenoising(false);
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)

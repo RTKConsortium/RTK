@@ -149,6 +149,16 @@ add_executable(rtklutbasedvarI0rawtoatttest rtklutbasedvarI0rawtoatttest.cxx)
 target_link_libraries(rtklutbasedvarI0rawtoatttest ${RTK_LIBRARIES})
 add_test(rtklutbasedvarI0rawtoatttest ${EXECUTABLE_OUTPUT_PATH}/rtklutbasedvarI0rawtoatttest)
 
+add_executable(rtkdecomposespectralprojectionstest rtkdecomposespectralprojectionstest.cxx)
+target_link_libraries(rtkdecomposespectralprojectionstest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkdecomposespectralprojectionstest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdecomposespectralprojectionstest
+             DATA{Data/Baseline/Spectral/ref_output.mha}
+             DATA{Data/Input/Spectral/incident_spectrum.mha}
+             DATA{Data/Input/Spectral/material_attenuations.mha}
+             DATA{Data/Input/Spectral/photon_count.mha}
+             DATA{Data/Input/Spectral/detector_response.mha})
+             
 add_executable(rtkvectorimageconverterstest rtkvectorimageconverterstest.cxx)
 target_link_libraries(rtkvectorimageconverterstest ${RTK_LIBRARIES})
 add_test(rtkvectorimageconverterstest ${EXECUTABLE_OUTPUT_PATH}/rtkvectorimageconverterstest)

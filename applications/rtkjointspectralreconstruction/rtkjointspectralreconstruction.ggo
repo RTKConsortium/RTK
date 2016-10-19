@@ -18,7 +18,7 @@ option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Jos
 
 section "Regularization"
 option "nopositivity" - "Do not enforce positivity"                                                             flag    off
-option "tviter"      - "Total variation (spatial and temporal) regularization: number of iterations"            int     no      default="10"
+option "tviter"      - "Total variation (spatial, temporal and nuclear) regularization: number of iterations"   int     no      default="10"
 option "gamma_space" - "Total variation spatial regularization parameter. The larger, the smoother"             double  no
 option "threshold"   - "Daubechies wavelets spatial regularization: soft threshold"                             float   no
 option "order"       - "Daubechies wavelets spatial regularization: order of the wavelets"                      int     no      default="5"
@@ -26,3 +26,4 @@ option "levels"      - "Daubechies wavelets spatial regularization: number of de
 option "gamma_time"  - "Total variation temporal regularization parameter. The larger, the smoother"            double  no
 option "lambda_time" - "Temporal gradient's L0 norm regularization parameter. The larger, the stronger"         double  no
 option "l0iter"      - "Temporal gradient's L0 norm regularization: number of iterations"                       int     no      default="5"
+option "gamma_tnv"   - "Total nuclear variation regularization parameter. The larger, the smoother"             double  no
