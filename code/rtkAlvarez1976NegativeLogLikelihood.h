@@ -78,8 +78,12 @@ public:
   vnl_vector<float> vnl_vec_le(GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(),
                                GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetSize());
 
-  // Apply detector response, getting the lambdas
-  return (m_DetectorResponse.GetVnlMatrix() * vnl_vec_he + m_DetectorResponse.GetVnlMatrix() * vnl_vec_le);
+  // Apply detector response, getting the expectedEnergies
+  vnl_vector<float> expectedEnergies;
+  expectedEnergies.set_size(this->m_NumberOfMaterials);
+  expectedEnergies[0] = (m_DetectorResponse.GetVnlMatrix() * vnl_vec_he).sum(); // There should only be one term, the sum is just for type correctness
+  expectedEnergies[1] = (m_DetectorResponse.GetVnlMatrix() * vnl_vec_le).sum();
+  return expectedEnergies;
   }
 
   itk::VariableLengthVector<float> GetAttenuatedIncidentSpectrum(IncidentSpectrumType incident, const ParametersType & lineIntegrals) const
@@ -111,14 +115,23 @@ public:
   // Main method
   MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
-  // Forward model: compute the expected number of counts in each bin
-  vnl_vector<float> lambdas = ForwardModel(parameters);
+  // Forward model: compute the expectedEnergies integrated by the detector
+  vnl_vector<float> expectedEnergies = ForwardModel(parameters);
 
-  // Compute the negative log likelihood from the lambdas
-  MeasureType measure = 0;
-  for (unsigned int i=0; i<2; i++)
-    measure += lambdas[i] - std::log(lambdas[i]) * m_MeasuredData[i];
+  // Compute the negative log likelihood from the expectedEnergies
+  long double measure = 0;
+  for (unsigned int i=0; i<this->m_NumberOfMaterials; i++)
+    measure += expectedEnergies[i] - std::log((long double)expectedEnergies[i]) * this->m_MeasuredData[i];
   return measure;
+  }
+
+  itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
+  {
+  // Dummy function at the moment, returns a vector filled with zeros
+  itk::VariableLengthVector<float> diag;
+  diag.SetSize(m_NumberOfMaterials);
+  diag.Fill(0);
+  return diag;
   }
 
   void GetDerivative( const ParametersType & lineIntegrals,
@@ -135,7 +148,6 @@ public:
 protected:
   IncidentSpectrumType        m_HighEnergyIncidentSpectrum;
   IncidentSpectrumType        m_LowEnergyIncidentSpectrum;
-
 
 private:
   Alvarez1976NegativeLogLikelihood(const Self &); //purposely not implemented

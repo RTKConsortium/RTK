@@ -3,7 +3,7 @@ purpose "Decomposes spectral projections into materials"
 
 option "verbose"    v "Verbose execution"                                                 flag                         off
 option "config"     - "Config file"                                                       string                       no
-option "output"     o "Basename for output files (one file will be written per material)" string                       yes
+option "output"     o "Output file name (decomposed projections)"                         string                       yes
 option "input"      i "Decomposed projections for initialization file name"               string                       yes
 option "spectral"   s "Spectral projections to be decomposed"                             string                       yes
 option "detector"   d "Detector response file"                                            string                       yes

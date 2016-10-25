@@ -32,7 +32,6 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SimplexProjectionsDecompositionImageFilter()
 {
-  this->SetNumberOfRequiredInputs(5); // decomposed projections, photon counts, incident spectrum, detector response, material attenuations
   this->SetNumberOfIndexedOutputs(2); // decomposed projections, inverse variance of decomposition noise
 
   // Initial decomposed projections
@@ -69,7 +68,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetInputMeasuredProjections(const MeasuredProjectionsType *SpectralProjections)
 {
-  this->SetNthInput(1, const_cast<MeasuredProjectionsType*>(SpectralProjections));
+  this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType*>(SpectralProjections));
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -79,7 +78,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetDetectorResponse(const DetectorResponseImageType *DetectorResponse)
 {
-  this->SetNthInput(3, const_cast<DetectorResponseImageType*>(DetectorResponse));
+  this->SetInput("DetectorResponse", const_cast<DetectorResponseImageType*>(DetectorResponse));
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -89,7 +88,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetMaterialAttenuations(const MaterialAttenuationsImageType *MaterialAttenuations)
 {
-  this->SetNthInput(4, const_cast<MaterialAttenuationsImageType*>(MaterialAttenuations));
+  this->SetInput("MaterialAttenuations", const_cast<MaterialAttenuationsImageType*>(MaterialAttenuations));
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -111,7 +110,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
 ::GetInputMeasuredProjections()
 {
   return static_cast< const MeasuredProjectionsType * >
-          ( this->itk::ProcessObject::GetInput(1) );
+          ( this->itk::ProcessObject::GetInput("MeasuredProjections") );
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -122,7 +121,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
 ::GetDetectorResponse()
 {
   return static_cast< const DetectorResponseImageType * >
-          ( this->itk::ProcessObject::GetInput(3) );
+          ( this->itk::ProcessObject::GetInput("DetectorResponse") );
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -133,7 +132,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
 ::GetMaterialAttenuations()
 {
   return static_cast< const MaterialAttenuationsImageType * >
-          ( this->itk::ProcessObject::GetInput(4) );
+          ( this->itk::ProcessObject::GetInput("MaterialAttenuations") );
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
