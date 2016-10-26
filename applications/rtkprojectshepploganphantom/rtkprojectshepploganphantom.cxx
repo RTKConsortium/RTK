@@ -69,9 +69,9 @@ int main(int argc, char * argv[])
     offset[1] = args_info.offset_arg[1];
     offset[2] = args_info.offset_arg[2];
     }
+  scale.Fill(args_info.phantomscale_arg[0]);
   if(args_info.phantomscale_given)
     {
-    scale.Fill(args_info.phantomscale_arg[0]);
     for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
       scale[i] = args_info.phantomscale_arg[i];
     }
