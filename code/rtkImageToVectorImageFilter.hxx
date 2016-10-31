@@ -127,7 +127,7 @@ void ImageToVectorImageFilter<InputImageType, OutputImageType>
 
 template< typename InputImageType, typename OutputImageType>
 void ImageToVectorImageFilter<InputImageType, OutputImageType>
-::ThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
   const unsigned int InputDimension = InputImageType::ImageDimension;
   const unsigned int OutputDimension = OutputImageType::ImageDimension;

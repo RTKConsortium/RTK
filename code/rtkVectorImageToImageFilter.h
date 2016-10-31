@@ -52,6 +52,8 @@ public:
     typedef itk::ImageToImageFilter< InputImageType, OutputImageType >  Superclass;
     typedef itk::SmartPointer< Self >                                   Pointer;
 
+    typedef typename OutputImageType::RegionType                        OutputImageRegionType;
+
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
 
@@ -66,7 +68,7 @@ protected:
     void GenerateInputRequestedRegion();
 
     /** Does the real work. */
-    void ThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
     void BeforeThreadedGenerateData();
 
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
