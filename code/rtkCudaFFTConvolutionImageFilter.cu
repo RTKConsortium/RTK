@@ -95,8 +95,10 @@ CUDA_fft_convolution(const int3 &inputDimension,
   else
     result = cufftPlan3d(&fftFwd, inputDimension.z, inputDimension.y, inputDimension.x, CUFFT_R2C);
   CUFFT_CHECK_ERROR(result);
+#if (CUDA_VERSION<8000)
   result = cufftSetCompatibilityMode(fftFwd, CUFFT_COMPATIBILITY_FFTW_ALL);
   CUFFT_CHECK_ERROR(result);
+#endif
   result = cufftExecR2C(fftFwd, deviceProjection, deviceProjectionFFT);
   CUFFT_CHECK_ERROR(result);
   cufftDestroy(fftFwd);
@@ -129,8 +131,10 @@ CUDA_fft_convolution(const int3 &inputDimension,
   else
     result = cufftPlan3d(&fftInv, inputDimension.z, inputDimension.y, inputDimension.x, CUFFT_C2R);
   CUFFT_CHECK_ERROR(result);
+#if (CUDA_VERSION<8000)
   result = cufftSetCompatibilityMode(fftInv, CUFFT_COMPATIBILITY_FFTW_ALL);
   CUFFT_CHECK_ERROR(result);
+#endif
   result = cufftExecC2R(fftInv, deviceProjectionFFT, deviceProjection);
   CUFFT_CHECK_ERROR(result);
 
