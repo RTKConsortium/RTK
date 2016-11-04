@@ -1,5 +1,8 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkStreamingImageFilter.h>
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  #include <itkImageRegionSplitterDirection.h>
+#endif
 
 #include "rtkTest.h"
 #include "rtkSheppLoganPhantomFilter.h"
@@ -155,7 +158,7 @@ int main(int, char** )
   direction[2][0] = 0;
   direction[2][1] = 0;
   direction[2][2] = 1;
-  tomographySource->SetDirection(direction); // Splitting along direction 1, NOT 2
+  tomographySource->SetDirection(direction);
   origin[0] = -127.;
   origin[1] =  127.;
   origin[2] = -127.;
@@ -178,7 +181,7 @@ int main(int, char** )
   direction[2][0] = 0;
   direction[2][1] = 0;
   direction[2][2] = 1;
-  tomographySource->SetDirection(direction); // Splitting along direction 1, NOT 2
+  tomographySource->SetDirection(direction);
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -198,6 +201,11 @@ int main(int, char** )
   StreamingType::Pointer streamer = StreamingType::New();
   streamer->SetInput(0, fov->GetOutput());
   streamer->SetNumberOfStreamDivisions(8);
+#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
+  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+  splitter->SetDirection(2); // Splitting along dimension 3, NOT 2
+  streamer->SetRegionSplitter(splitter);
+#endif
   TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() );
 
   CheckImageQuality<OutputImageType>(streamer->GetOutput(), dsl->GetOutput(), 0.03, 26, 2.0);
