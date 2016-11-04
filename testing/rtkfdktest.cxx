@@ -203,7 +203,7 @@ int main(int, char** )
   streamer->SetNumberOfStreamDivisions(8);
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
-  splitter->SetDirection(2); // Splitting along dimension 3, NOT 2
+  splitter->SetDirection(2); // Prevent splitting along z axis. As a result, splitting will be performed along y axis
   streamer->SetRegionSplitter(splitter);
 #endif
   TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() );
