@@ -30,7 +30,7 @@ int main(int argc, char * argv[])
 {
   GGO(rtkdecomposedualenergyprojections, args_info);
 
-  typedef float PixelValueType;
+  typedef double PixelValueType;
   const unsigned int Dimension = 3;
 
   typedef itk::Image< PixelValueType, Dimension > DecomposedProjectionType;
@@ -161,7 +161,7 @@ int main(int argc, char * argv[])
         spLowIt.GoToBegin();
 
       vnl_vector<PixelValueType> vnlSpHigh(spHighIt.Get().GetDataPointer(), spHighIt.Get().GetSize());
-      vnl_vector<PixelValueType> vnlSpLow(spHighIt.Get().GetDataPointer(), spHighIt.Get().GetSize());
+      vnl_vector<PixelValueType> vnlSpLow(spLowIt.Get().GetDataPointer(), spLowIt.Get().GetSize());
 
       PixelValueType I_zero_High = dot_product(vnlDetectorResponse, vnlSpHigh);
       PixelValueType I_zero_Low = dot_product(vnlDetectorResponse, vnlSpLow);
@@ -177,7 +177,11 @@ int main(int argc, char * argv[])
     }
 
   // Create and set the filter
-  typedef rtk::SimplexDualEnergyProjectionsDecompositionImageFilter<VectorDecomposedProjectionType, VectorMeasuredDataType, IncidentSpectrumImageType> SimplexFilterType;
+  typedef rtk::SimplexDualEnergyProjectionsDecompositionImageFilter<VectorDecomposedProjectionType,
+                                                                    VectorMeasuredDataType,
+                                                                    IncidentSpectrumImageType,
+                                                                    DetectorResponseImageType,
+                                                                    MaterialAttenuationsImageType> SimplexFilterType;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(vectorDecomposedProjections);
   simplex->SetInputMeasuredProjections(vectorMeasuredData);
