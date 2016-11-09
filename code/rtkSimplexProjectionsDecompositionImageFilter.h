@@ -58,8 +58,8 @@ public:
   typedef DecomposedProjectionsType                 OutputImageType;
 
   /** Convenient information */
-  typedef itk::VariableSizeMatrix<float>                    DetectorResponseType;
-  typedef itk::VariableSizeMatrix<float>                    MaterialAttenuationsType;
+  typedef itk::VariableSizeMatrix<double>                   DetectorResponseType;
+  typedef itk::VariableSizeMatrix<double>                   MaterialAttenuationsType;
   typedef ProjectionsDecompositionNegativeLogLikelihood     CostFunctionType;
 
   /** Standard New method. */
