@@ -3,6 +3,7 @@
    Memcheck:Leak
    ...
    fun:_dl_allocate_tls
+   ...
    fun:pthread_create@@GLIBC_2.2.5
    ...
 }
@@ -44,35 +45,35 @@
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcuda.so.*
+   obj:*/libcuda.so.*
    ...
 }
 {
    CUDA
    Memcheck:Cond
    ...
-   obj:/usr/lib64/libcuda.so.*
+   obj:*/libcuda.so.*
    ...
 }
 {
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcufft.so.*
+   obj:*/libcufft.so.*
    ...
 }
 {
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcufft.so.*
+   obj:*/libcufft.so.*
    ...
 }
 {
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcublas.so.*
+   obj:*/libcublas.so.*
    ...
 }
 {
@@ -93,37 +94,14 @@
    CUDA
    Memcheck:Leak
    ...
-   obj:/usr/lib64/libcudart.so.*
+   fun:cudaGetLastError
    ...
 }
 {
-   OpenCL
+   CUDA
    Memcheck:Leak
    ...
-   fun:clGetPlatformIDs
-   ...
-}
-{
-   OpenCL
-   Memcheck:Leak
-   ...
-   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter12GenerateDataEv
-   ...
-}
-{
-   OpenCL
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   ...
-   fun:_Z41CreateAndBuildOpenCLProgramFromSourceFileSsRKP11_cl_contextRP11_cl_program
-   ...
-}
-{
-   OpenCL
-   Memcheck:Leak
-   ...
-   fun:_ZN3rtk34OpenCLFDKBackProjectionImageFilter10InitDeviceEv
+   obj:*/libcudart.so.*
    ...
 }
 {
