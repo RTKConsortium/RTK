@@ -193,9 +193,11 @@ int main(int argc, char * argv[])
   // Split the output into two distinct files
   DecomposedProjectionType::Pointer materialOneProjection = DecomposedProjectionType::New();
   materialOneProjection->SetRegions(largest);
+  materialOneProjection->CopyInformation(materialOneProjectionReader->GetOutput());
   materialOneProjection->Allocate();
   DecomposedProjectionType::Pointer materialTwoProjection = DecomposedProjectionType::New();
   materialTwoProjection->SetRegions(largest);
+  materialTwoProjection->CopyInformation(materialTwoProjectionReader->GetOutput());
   materialTwoProjection->Allocate();
 
   itk::ImageRegionIterator<VectorDecomposedProjectionType> out_vdpIt(simplex->GetOutput(0), largest);
