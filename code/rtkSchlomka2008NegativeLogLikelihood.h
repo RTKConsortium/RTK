@@ -56,10 +56,10 @@ public:
   typedef Superclass::DerivativeType          DerivativeType;
   typedef Superclass::MeasureType             MeasureType;
 
-  typedef itk::VariableSizeMatrix<float>      DetectorResponseType;
-  typedef itk::VariableSizeMatrix<float>      MaterialAttenuationsType;
-  typedef itk::VariableLengthVector<float>    MeasuredDataType;
-  typedef itk::VariableLengthVector<float>    IncidentSpectrumType;
+  typedef Superclass::DetectorResponseType      DetectorResponseType;
+  typedef Superclass::MaterialAttenuationsType  MaterialAttenuationsType;
+  typedef Superclass::MeasuredDataType          MeasuredDataType;
+  typedef Superclass::IncidentSpectrumType      IncidentSpectrumType;
 
   // Constructor
   Schlomka2008NegativeLogLikelihood()
@@ -71,17 +71,17 @@ public:
   {
   }
 
-  vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE
+  vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE
   {
   // Variable length vector and variable size matrix cannot be used in linear algebra operations
   // Get their vnl counterparts, which can
-  vnl_vector<float> vnl_vec(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<double> vnl_vec(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
 
   // Apply detector response, getting the lambdas
   return (m_DetectorResponse.GetVnlMatrix() * vnl_vec);
   }
 
-  itk::VariableLengthVector<float> GetAttenuatedIncidentSpectrum(const ParametersType & lineIntegrals) const
+  itk::VariableLengthVector<double> GetAttenuatedIncidentSpectrum(const ParametersType & lineIntegrals) const
   {
   // Solid angle of detector pixel, exposure time and mAs should already be
   // taken into account in the incident spectrum image
@@ -107,20 +107,20 @@ public:
   itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
   {
   // Get some required data
-  vnl_vector<float> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
-  vnl_vector<float> lambdas = ForwardModel(lineIntegrals);
+  vnl_vector<double> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
 
   // Compute the vector of m_b / lambda_b²
-  vnl_vector<float> weights;
+  vnl_vector<double> weights;
   weights.set_size(m_NumberOfSpectralBins);
   for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
     weights[i] = m_MeasuredData[i] / (lambdas[i] * lambdas[i]);
 
   // Prepare intermediate variables
-  vnl_vector<float> intermediate_a;
-  vnl_vector<float> intermediate_a_prime;
-  vnl_vector<float> partial_derivative_a;
-  vnl_vector<float> partial_derivative_a_prime;
+  vnl_vector<double> intermediate_a;
+  vnl_vector<double> intermediate_a_prime;
+  vnl_vector<double> partial_derivative_a;
+  vnl_vector<double> partial_derivative_a_prime;
 
   // Compute the Fischer information matrix
   itk::VariableSizeMatrix<float> Fischer;
@@ -143,7 +143,7 @@ public:
     }
 
   // Invert the Fischer matrix
-  itk::VariableLengthVector<float> diag;
+  itk::VariableLengthVector<double> diag;
   diag.SetSize(m_NumberOfMaterials);
   diag.Fill(0);
 
@@ -164,18 +164,18 @@ public:
   derivatives.set_size(m_NumberOfMaterials);
 
   // Get some required data
-  vnl_vector<float> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
-  vnl_vector<float> lambdas = ForwardModel(lineIntegrals);
+  vnl_vector<double> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
 
   // Compute the vector of 1 - m_b / lambda_b
-  vnl_vector<float> weights;
+  vnl_vector<double> weights;
   weights.set_size(m_NumberOfSpectralBins);
   for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
     weights[i] = 1 - (m_MeasuredData[i] / lambdas[i]);
 
   // Prepare intermediate variables
-  vnl_vector<float> intermediate_a;
-  vnl_vector<float> partial_derivative_a;
+  vnl_vector<double> intermediate_a;
+  vnl_vector<double> partial_derivative_a;
 
   for (unsigned int a=0; a<m_NumberOfMaterials; a++)
     {
@@ -192,7 +192,7 @@ public:
   MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
   // Forward model: compute the expected number of counts in each bin
-  vnl_vector<float> lambdas = ForwardModel(parameters);
+  vnl_vector<double> lambdas = ForwardModel(parameters);
 
   // Compute the negative log likelihood from the lambdas
   long double measure = 0;
