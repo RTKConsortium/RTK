@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkdecomposespectralprojections_ggo.h"
+#include "rtkspectralsimplexdecomposition_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
@@ -27,7 +27,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkdecomposespectralprojections, args_info);
+  GGO(rtkspectralsimplexdecomposition, args_info);
 
   typedef float PixelValueType;
   const unsigned int Dimension = 3;

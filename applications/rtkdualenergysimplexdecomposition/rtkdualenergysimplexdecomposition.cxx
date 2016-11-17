@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkdecomposedualenergyprojections_ggo.h"
+#include "rtkdualenergysimplexdecomposition_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
@@ -28,7 +28,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkdecomposedualenergyprojections, args_info);
+  GGO(rtkdualenergysimplexdecomposition, args_info);
 
   typedef double PixelValueType;
   const unsigned int Dimension = 3;
