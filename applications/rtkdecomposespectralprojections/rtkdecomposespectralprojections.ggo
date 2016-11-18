@@ -1,0 +1,15 @@
+package "rtkdecomposespectralprojections"
+purpose "Decomposes spectral projections into materials"
+
+option "verbose"    v "Verbose execution"                                                 flag                         off
+option "config"     - "Config file"                                                       string                       no
+option "output"     o "Output file name (decomposed projections)"                         string                       yes
+option "input"      i "Decomposed projections for initialization file name"               string                       yes
+option "spectral"   s "Spectral projections to be decomposed"                             string                       yes
+option "detector"   d "Detector response file"                                            string                       yes
+option "incident"   - "Incident spectrum file"                                            string                       yes
+option "attenuations" a "Material attenuations file"                                      string                       yes
+option "niterations" n "Number of iterations"                                             int                           no   default="300"
+option "thresholds" t "Lower threshold of bins, expressed in pulse height"                int                          yes multiple                         
+option "weightsmap" w "File name for the output weights map (inverse noise variance)"     string                        no
+option "restarts"   r "Allow random restarts during optimization"                         flag                         off

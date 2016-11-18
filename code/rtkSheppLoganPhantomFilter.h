@@ -66,8 +66,8 @@ public:
   /** Get / Set the scaling factor of the spatial dimensions of the phantom. By
    * default, the scaling factor is 128 and the outer ellipse of the phantom is
    * 88.32 x 115.2 x 117.76. */
-  itkSetMacro(PhantomScale, double);
-  itkGetMacro(PhantomScale, double);
+  itkSetMacro(PhantomScale, VectorType);
+  itkGetMacro(PhantomScale, VectorType);
 
   /** Get / Set the spatial position of the Shepp Logan phantom relative to its`
    * center. The default value is (0, 0, 0). The offset is applied before
@@ -84,12 +84,20 @@ protected:
   ~SheppLoganPhantomFilter() ITK_OVERRIDE {};
 
   void GenerateData() ITK_OVERRIDE;
-
+  void SetEllipsoid(typename REIType::Pointer rei,
+                    double spax,
+                    double spay,
+                    double spaz,
+                    double centerx,
+                    double centery,
+                    double centerz,
+                    double angle,
+                    double density);
 private:
   SheppLoganPhantomFilter(const Self&); //purposely not implemented
   void operator=(const Self&);          //purposely not implemented
 
-  double          m_PhantomScale;
+  VectorType      m_PhantomScale;
   VectorType      m_OriginOffset;
   GeometryPointer m_Geometry;
 };

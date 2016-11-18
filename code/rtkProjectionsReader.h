@@ -223,6 +223,11 @@ public:
   itkGetConstMacro(ComputeLineIntegral, bool);
   itkBooleanMacro(ComputeLineIntegral);
 
+  /** Set/Get the index of the component to be extracted
+   * if the projection data contains vectors instead of scalars. */
+  itkGetMacro(VectorComponent, unsigned int)
+  itkSetMacro(VectorComponent, unsigned int)
+
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
   void GenerateOutputInformation(void) ITK_OVERRIDE;
@@ -255,6 +260,7 @@ private:
   itk::ProcessObject::Pointer m_RawDataReader;
 
   /** Pointers for pre-processing filters that are created only when required. */
+  itk::ProcessObject::Pointer m_VectorComponentSelectionFilter;
   itk::ProcessObject::Pointer m_ChangeInformationFilter;
   itk::ProcessObject::Pointer m_ElektaRawFilter;
   itk::ProcessObject::Pointer m_CropFilter;
@@ -293,6 +299,7 @@ private:
   double                       m_IDark;
   WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
   bool                         m_ComputeLineIntegral;
+  unsigned int                 m_VectorComponent;
 };
 
 } //namespace rtk

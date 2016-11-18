@@ -95,6 +95,7 @@ protected:
   /** Destructor. **/
   ~Reg23ProjectionGeometry() ITK_OVERRIDE;
 
+<<<<<<< HEAD
   /** Verify that the specified Euler angles in ZXY result in a rotation matrix
    * which corresponds to the specified detector orientation. Rationale for this
    * utility method is that in some situations numerical instabilities (e.g. if
@@ -137,6 +138,8 @@ protected:
                  double &inPlaneAngleRAD,
                  const Matrix3x3Type &referenceMatrix) const;
 
+=======
+>>>>>>> master
 private:
   /** Purposely not implemented. **/
   Reg23ProjectionGeometry(const Self&);

@@ -31,6 +31,31 @@ SheppLoganPhantomFilter<TInputImage, TOutputImage>
 }
 
 template< class TInputImage, class TOutputImage >
+void SheppLoganPhantomFilter< TInputImage, TOutputImage >::SetEllipsoid(typename REIType::Pointer rei,
+                                                                        double spax,
+                                                                        double spay,
+                                                                        double spaz,
+                                                                        double centerx,
+                                                                        double centery,
+                                                                        double centerz,
+                                                                        double angle,
+                                                                        double density)
+{
+  VectorType semiprincipalaxis, center;
+  semiprincipalaxis[0] = spax * m_PhantomScale[0];
+  semiprincipalaxis[1] = spay * m_PhantomScale[1];
+  semiprincipalaxis[2] = spaz * m_PhantomScale[2];
+  center[0] = (centerx + m_OriginOffset[0]) * m_PhantomScale[0];
+  center[1] = (centery + m_OriginOffset[1]) * m_PhantomScale[1];
+  center[2] = (centerz + m_OriginOffset[2]) * m_PhantomScale[2];
+  rei->SetAxis(semiprincipalaxis);
+  rei->SetCenter(center);
+  rei->SetAngle(angle);
+  rei->SetDensity(density);
+  rei->SetFigure("Ellipsoid");
+}
+
+template< class TInputImage, class TOutputImage >
 void SheppLoganPhantomFilter< TInputImage, TOutputImage >::GenerateData()
 {
   std::vector< typename REIType::Pointer > rei(10);
@@ -40,126 +65,16 @@ void SheppLoganPhantomFilter< TInputImage, TOutputImage >::GenerateData()
       rei[j] = REIType::New();
     }
 
-  VectorType semiprincipalaxis, center;
-  semiprincipalaxis[0] = 0.69;
-  semiprincipalaxis[1] = 0.90;
-  semiprincipalaxis[2] = 0.92;
-  center[0] = 0.;
-  center[1] = 0.;
-  center[2] = 0.;
-  rei[0]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[0]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[0]->SetAngle(0.);
-  rei[0]->SetDensity(2.);
-  rei[0]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.6624;
-  semiprincipalaxis[1] = 0.880;
-  semiprincipalaxis[2] = 0.874;
-  center[0] = 0.;
-  center[1] = 0.;
-  center[2] = 0.;
-  rei[1]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[1]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[1]->SetAngle(0.);
-  rei[1]->SetDensity(-0.98);
-  rei[1]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.41;
-  semiprincipalaxis[1] = 0.21;
-  semiprincipalaxis[2] = 0.16;
-  center[0] = -0.22;
-  center[1] = -0.25;
-  center[2] = 0.;
-  rei[2]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[2]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[2]->SetAngle(108.);
-  rei[2]->SetDensity(-0.02);
-  rei[2]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.31;
-  semiprincipalaxis[1] = 0.22;
-  semiprincipalaxis[2] = 0.11;
-  center[0] = 0.22;
-  center[1] = -0.25;
-  center[2] = 0.;
-  rei[3]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[3]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[3]->SetAngle(72.);
-  rei[3]->SetDensity(-0.02);
-  rei[3]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.21;
-  semiprincipalaxis[1] = 0.50;
-  semiprincipalaxis[2] = 0.25;
-  center[0] = 0.;
-  center[1] = -0.25;
-  center[2] = 0.35;
-  rei[4]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[4]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[4]->SetAngle(0.);
-  rei[4]->SetDensity(0.02);
-  rei[4]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.046;
-  semiprincipalaxis[1] = 0.046;
-  semiprincipalaxis[2] = 0.046;
-  center[0] = 0.;
-  center[1] = -0.25;
-  center[2] = 0.10;
-  rei[5]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[5]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[5]->SetAngle(0.);
-  rei[5]->SetDensity(0.02);
-  rei[5]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.046;
-  semiprincipalaxis[1] = 0.020;
-  semiprincipalaxis[2] = 0.023;
-  center[0] = -0.08;
-  center[1] = -0.250;
-  center[2] = -0.650;
-  rei[6]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[6]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[6]->SetAngle(0.);
-  rei[6]->SetDensity(0.01);
-  rei[6]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.046;
-  semiprincipalaxis[1] = 0.020;
-  semiprincipalaxis[2] = 0.023;
-  center[0] = 0.06;
-  center[1] = -0.25;
-  center[2] = -0.65;
-  rei[7]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[7]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[7]->SetAngle(90.);
-  rei[7]->SetDensity(0.01);
-  rei[7]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.056;
-  semiprincipalaxis[1] = 0.010;
-  semiprincipalaxis[2] = 0.040;
-  center[0] = 0.060;
-  center[1] = 0.625;
-  center[2] = -0.105;
-  rei[8]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[8]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[8]->SetAngle(90.);
-  rei[8]->SetDensity(0.02);
-  rei[8]->SetFigure("Ellipsoid");
-
-  semiprincipalaxis[0] = 0.056;
-  semiprincipalaxis[1] = 0.100;
-  semiprincipalaxis[2] = 0.056;
-  center[0] = 0.;
-  center[1] = 0.625;
-  center[2] = 0.100;
-  rei[9]->SetAxis(m_PhantomScale * semiprincipalaxis);
-  rei[9]->SetCenter(m_PhantomScale * (m_OriginOffset + center) );
-  rei[9]->SetAngle(0.);
-  rei[9]->SetDensity(-0.02);
-  rei[9]->SetFigure("Ellipsoid");
+  SetEllipsoid(rei[0], 0.69, 0.90, 0.92, 0., 0., 0., 0., 2.);
+  SetEllipsoid(rei[1], 0.6624, 0.880, 0.874, 0., 0., 0., 0., -0.98);
+  SetEllipsoid(rei[2], 0.41, 0.21, 0.16, -0.22, -0.25, 0., 108., -0.02);
+  SetEllipsoid(rei[3], 0.31, 0.22, 0.11, 0.22, -0.25, 0., 72., -0.02);
+  SetEllipsoid(rei[4], 0.21, 0.50, 0.25, 0., -0.25, 0.35, 0., 0.02);
+  SetEllipsoid(rei[5], 0.046, 0.046, 0.046, 0., -0.25, 0.10, 0., 0.02);
+  SetEllipsoid(rei[6], 0.046, 0.02, 0.023, -0.08, -0.25, -0.65, 0., 0.01);
+  SetEllipsoid(rei[7], 0.046, 0.02, 0.023, 0.06, -0.25, -0.65, 90., 0.01);
+  SetEllipsoid(rei[8], 0.056, 0.01, 0.04, 0.06, 0.625, -0.105, 90., 0.02);
+  SetEllipsoid(rei[9], 0.056, 0.1, 0.056, 0., 0.625, 0.1, 0., -0.02);
 
   for ( unsigned int i = 0; i < NumberOfFig; i++ )
     {
