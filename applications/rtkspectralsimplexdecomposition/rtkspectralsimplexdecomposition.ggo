@@ -1,4 +1,4 @@
-package "rtkdecomposespectralprojections"
+package "rtkspectralsimplexdecomposition"
 purpose "Decomposes spectral projections into materials"
 
 option "verbose"    v "Verbose execution"                                                 flag                         off

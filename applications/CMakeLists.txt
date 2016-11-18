@@ -63,9 +63,9 @@ add_subdirectory(rtkwarpedbackprojectsequence)
 add_subdirectory(rtkmotioncompensatedfourdconjugategradient)
 add_subdirectory(rtklagcorrection)
 add_subdirectory(rtkgaincorrection)
-add_subdirectory(rtkdecomposespectralprojections)
-add_subdirectory(rtkdecomposedualenergyprojections)
-add_subdirectory(rtkjointspectralreconstruction)
+add_subdirectory(rtkspectralsimplexdecomposition)
+add_subdirectory(rtkdualenergysimplexdecomposition)
+add_subdirectory(rtkspectralrooster)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 add_subdirectory(rtkvarianobigeometry)

@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkdecomposedualenergyprojections_ggo.h"
+#include "rtkdualenergysimplexdecomposition_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
@@ -28,7 +28,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkdecomposedualenergyprojections, args_info);
+  GGO(rtkdualenergysimplexdecomposition, args_info);
 
   typedef double PixelValueType;
   const unsigned int Dimension = 3;
@@ -197,9 +197,11 @@ int main(int argc, char * argv[])
   // Split the output into two distinct files
   DecomposedProjectionType::Pointer materialOneProjection = DecomposedProjectionType::New();
   materialOneProjection->SetRegions(largest);
+  materialOneProjection->CopyInformation(materialOneProjectionReader->GetOutput());
   materialOneProjection->Allocate();
   DecomposedProjectionType::Pointer materialTwoProjection = DecomposedProjectionType::New();
   materialTwoProjection->SetRegions(largest);
+  materialTwoProjection->CopyInformation(materialTwoProjectionReader->GetOutput());
   materialTwoProjection->Allocate();
 
   itk::ImageRegionIterator<VectorDecomposedProjectionType> out_vdpIt(simplex->GetOutput(0), largest);
