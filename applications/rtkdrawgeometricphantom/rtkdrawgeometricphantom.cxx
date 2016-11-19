@@ -31,17 +31,36 @@ int main(int argc, char * argv[])
   const unsigned int Dimension = 3;
   typedef itk::Image< OutputPixelType, Dimension >  OutputImageType;
 
-  // Empty projection images
+  // Empty volume image
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawgeometricphantom>(constantImageSource, args_info);
 
-  // Reference
   typedef rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType> DQType;
+
+  // Offset, scale
+  DQType::VectorType offset(0.);
+  DQType::VectorType scale;
+  if(args_info.offset_given)
+    {
+    offset[0] = args_info.offset_arg[0];
+    offset[1] = args_info.offset_arg[1];
+    offset[2] = args_info.offset_arg[2];
+    }
+  scale.Fill(args_info.phantomscale_arg[0]);
+  if(args_info.phantomscale_given)
+    {
+    for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
+      scale[i] = args_info.phantomscale_arg[i];
+    }
+
+  // Reference
   if(args_info.verbose_flag)
     std::cout << "Creating reference... " << std::flush;
   DQType::Pointer dq = DQType::New();
   dq->SetInput( constantImageSource->GetOutput() );
+  dq->SetPhantomScale( scale );
+  dq->SetOriginOffset(offset);
   dq->SetConfigFile(args_info.phantomfile_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dq->Update() )
 

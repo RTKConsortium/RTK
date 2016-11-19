@@ -82,12 +82,14 @@ public:
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
-//  struct FigureType
-//  {
-//    //FigureType():angle(0.),density(0.){};
-//    VectorOfVectorType       parameters;
-//    std::vector<std::string> figure;
-//  };
+  /** Multiplicative Scaling factor for the phantom described ConfigFile. */
+  itkSetMacro(PhantomScale, VectorType);
+  itkGetMacro(PhantomScale, VectorType);
+
+  /** Get / Set the spatial position of the phantom Shepp Logan phantom relative to its
+   * center. The default value is (0, 0, 0). */
+  itkSetMacro(OriginOffset, VectorType);
+  itkGetMacro(OriginOffset, VectorType);
 
   virtual VectorOfVectorType GetFig ();
   virtual void SetFig (const VectorOfVectorType _arg);
@@ -98,16 +100,15 @@ protected:
 
   void GenerateData() ITK_OVERRIDE;
 
-  /** Translate user parameteres to quadric parameters.
-   * A call to this function will assume modification of the function.*/
-
-
 private:
   ProjectGeometricPhantomImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
   VectorOfVectorType     m_Fig;
   StringType             m_ConfigFile;
+
+  VectorType m_PhantomScale;
+  VectorType m_OriginOffset;
 };
 
 } // end namespace rtk
