@@ -41,13 +41,20 @@ template<typename DecomposedProjectionsType,
          typename DetectorResponseImageType = itk::Image<float, 2>,
          typename MaterialAttenuationsImageType = itk::Image<float, 2> >
 class ITK_EXPORT SimplexDualEnergyProjectionsDecompositionImageFilter :
-  public rtk::SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>
+  public rtk::SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType,
+                                                         MeasuredProjectionsType,
+                                                         IncidentSpectrumImageType,
+                                                         DetectorResponseImageType,
+                                                         MaterialAttenuationsImageType>
 {
 public:
   /** Standard class typedefs. */
   typedef SimplexDualEnergyProjectionsDecompositionImageFilter                           Self;
   typedef rtk::SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType,
-                                                          DecomposedProjectionsType>     Superclass;
+                                                          MeasuredProjectionsType,
+                                                          IncidentSpectrumImageType,
+                                                          DetectorResponseImageType,
+                                                          MaterialAttenuationsImageType> Superclass;
   typedef itk::SmartPointer<Self>                                                        Pointer;
   typedef itk::SmartPointer<const Self>                                                  ConstPointer;
 

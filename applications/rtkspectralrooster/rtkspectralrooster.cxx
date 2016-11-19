@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkjointspectralreconstruction_ggo.h"
+#include "rtkspectralrooster_ggo.h"
 #include "rtkGgoFunctions.h"
 
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
@@ -37,7 +37,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkjointspectralreconstruction, args_info);
+  GGO(rtkspectralrooster, args_info);
 
   typedef float PixelValueType;
   const unsigned int Dimension = 3;

@@ -54,10 +54,10 @@ public:
   typedef Superclass::DerivativeType          DerivativeType;
   typedef Superclass::MeasureType             MeasureType;
 
-  typedef itk::VariableSizeMatrix<float>      DetectorResponseType;
-  typedef itk::VariableSizeMatrix<float>      MaterialAttenuationsType;
-  typedef itk::VariableLengthVector<float>    MeasuredDataType;
-  typedef itk::VariableLengthVector<float>    IncidentSpectrumType;
+  typedef Superclass::DetectorResponseType      DetectorResponseType;
+  typedef Superclass::MaterialAttenuationsType  MaterialAttenuationsType;
+  typedef Superclass::MeasuredDataType          MeasuredDataType;
+  typedef Superclass::IncidentSpectrumType      IncidentSpectrumType;
 
   // Constructor
   Alvarez1976NegativeLogLikelihood()
@@ -69,24 +69,24 @@ public:
   {
   }
 
-  vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const
+  vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const
   {
   // Variable length vector and variable size matrix cannot be used in linear algebra operations
   // Get their vnl counterparts, which can
-  vnl_vector<float> vnl_vec_he(GetAttenuatedIncidentSpectrum(m_HighEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(),
+  vnl_vector<double> vnl_vec_he(GetAttenuatedIncidentSpectrum(m_HighEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(),
                                GetAttenuatedIncidentSpectrum(m_HighEnergyIncidentSpectrum, lineIntegrals).GetSize());
-  vnl_vector<float> vnl_vec_le(GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(),
+  vnl_vector<double> vnl_vec_le(GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetDataPointer(),
                                GetAttenuatedIncidentSpectrum(m_LowEnergyIncidentSpectrum, lineIntegrals).GetSize());
 
   // Apply detector response, getting the expectedEnergies
-  vnl_vector<float> expectedEnergies;
+  vnl_vector<double> expectedEnergies;
   expectedEnergies.set_size(this->m_NumberOfMaterials);
   expectedEnergies[0] = (m_DetectorResponse.GetVnlMatrix() * vnl_vec_he).sum(); // There should only be one term, the sum is just for type correctness
   expectedEnergies[1] = (m_DetectorResponse.GetVnlMatrix() * vnl_vec_le).sum();
   return expectedEnergies;
   }
 
-  itk::VariableLengthVector<float> GetAttenuatedIncidentSpectrum(IncidentSpectrumType incident, const ParametersType & lineIntegrals) const
+  itk::VariableLengthVector<double> GetAttenuatedIncidentSpectrum(IncidentSpectrumType incident, const ParametersType & lineIntegrals) const
   {
   // Solid angle of detector pixel, exposure time and mAs should already be
   // taken into account in the incident spectrum image
@@ -95,12 +95,12 @@ public:
       itkGenericExceptionMacro(<< "Incident spectrum does not have the correct size")
 
   // Apply attenuation at each energy
-  itk::VariableLengthVector<float> attenuatedIncidentSpectrum;
+  itk::VariableLengthVector<double> attenuatedIncidentSpectrum;
   attenuatedIncidentSpectrum.SetSize(m_NumberOfEnergies);
   attenuatedIncidentSpectrum.Fill(0);
   for (unsigned int e=0; e<m_NumberOfEnergies; e++)
     {
-    float totalAttenuation = 0.;
+    double totalAttenuation = 0.;
     for (unsigned int m=0; m<2; m++)
       {
       totalAttenuation += lineIntegrals[m] * m_MaterialAttenuations[m][e];
@@ -116,7 +116,7 @@ public:
   MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
   // Forward model: compute the expectedEnergies integrated by the detector
-  vnl_vector<float> expectedEnergies = ForwardModel(parameters);
+  vnl_vector<double> expectedEnergies = ForwardModel(parameters);
 
   // Compute the negative log likelihood from the expectedEnergies
   long double measure = 0;
@@ -125,10 +125,10 @@ public:
   return measure;
   }
 
-  itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
+  itk::VariableLengthVector<double> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
   {
   // Dummy function at the moment, returns a vector filled with zeros
-  itk::VariableLengthVector<float> diag;
+  itk::VariableLengthVector<double> diag;
   diag.SetSize(m_NumberOfMaterials);
   diag.Fill(0);
   return diag;

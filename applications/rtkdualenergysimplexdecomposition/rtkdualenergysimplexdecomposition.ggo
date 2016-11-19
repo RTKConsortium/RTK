@@ -1,14 +1,14 @@
-package "rtkdecomposespectralprojections"
+package "rtkdualenergysimplexdecomposition"
 purpose "Decomposes dual energy projections into materials"
 
 option "verbose"          v "Verbose execution"                                                 flag                         off
 option "config"           - "Config file"                                                       string                       no
-option "out_material_one" - "Basename for output files (one file will be written per material)" string                       yes
-option "out_material_two" - "Basename for output files (one file will be written per material)" string                       yes
+option "out_material_one" - "Output file name for material one"                                 string                       yes
+option "out_material_two" - "Output file name for material two"                                 string                       yes
 option "in_material_one"  - "Initial solution for material one, file name"                      string                       yes
 option "in_material_two"  - "Initial solution for material two, file name"                      string                       yes
-option "measured_high"    - "Measured projections to be decomposed"                             string                       yes
-option "measured_low"     - "Measured projections to be decomposed"                             string                       yes
+option "measured_high"    - "Projections to be decomposed, measured with high energy spectrum"  string                       yes
+option "measured_low"     - "Projections to be decomposed, measured with low energy spectrum"   string                       yes
 option "detector"         d "Detector response file"                                            string                       yes
 option "sp_high"          - "High energy incident spectrum file"                                string                       yes
 option "sp_low"           - "Low energy incident spectrum file"                                 string                       yes
