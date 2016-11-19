@@ -34,6 +34,14 @@
 
 namespace rtk
 {
+template <class TInputImage, class TOutputImage>
+ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>
+::ProjectGeometricPhantomImageFilter():
+m_PhantomScale(1.),
+m_OriginOffset(0.)
+{
+}
+
 template< class TInputImage, class TOutputImage >
 void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData()
 {

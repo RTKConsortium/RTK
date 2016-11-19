@@ -95,7 +95,7 @@ public:
   virtual void SetFig (const VectorOfVectorType _arg);
 
 protected:
-  ProjectGeometricPhantomImageFilter() {}
+  ProjectGeometricPhantomImageFilter();
   ~ProjectGeometricPhantomImageFilter() ITK_OVERRIDE {};
 
   void GenerateData() ITK_OVERRIDE;
