@@ -112,7 +112,7 @@ ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
   // Convert cylindrical angle to coordinates in the (u,v,u^v) coordinate system
   double a = m_InverseRadius * posProj[0];
   posProj[0] = vcl_sin(a) * m_Radius;
-  posProj[2] = m_SourceToIsocenterDistance - vcl_cos(a) * m_Radius;
+  posProj[2] += (1. - vcl_cos(a)) * m_Radius;
 
   // Rotate and apply m_PostMultiplyMatrix
   for(unsigned int i=0; i<this->GetImageDimension(); i++)
