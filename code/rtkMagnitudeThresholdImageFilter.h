@@ -30,7 +30,7 @@ namespace rtk
  *
  * If the norm of a vector is higher than the threshold, divides the
  * components of the vector by norm / threshold. Mathematically, it amounts
- * to projecting onto the L_infinite ball of radius m_Threshold
+ * to projecting onto the L_2 ball of radius m_Threshold
  *
  */
 template< typename TInputImage,

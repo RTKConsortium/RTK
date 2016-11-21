@@ -38,6 +38,18 @@
 #endif
 
 #if defined( SRTKDLL )
+#ifdef SimpleRTKBasicFilters1_EXPORTS
+#define SRTKBasicFilters1_EXPORT SRTK_ABI_EXPORT
+#else
+#define SRTKBasicFilters1_EXPORT SRTK_ABI_IMPORT
+#endif  /* SimpleRTKBasicFilters1_EXPORTS */
+#else
+// Don't hide symbols in the static SimpleRTKBasicFilters library in case
+// -fvisibility=hidden is used
+#define SRTKBasicFilters1_EXPORT
+#endif
+
+#if defined( SRTKDLL )
   #ifdef SimpleRTKBasicFilters_EXPORTS
     #define SRTKBasicFilters_EXPORT SRTK_ABI_EXPORT
   #else

@@ -1,9 +1,10 @@
 package "rtkdrawgeometricphantom"
 purpose "Computes a 3D voxelized phantom from a phantom description file"
 
-option "verbose"     v "Verbose execution"                           flag    off
-option "config"      - "Config file"                                 string  no
-option "output"      o "Output projections file name"                string  yes
-option "phantomfile" - "Parameters of the phantom reference"         string  no
-option "noise"       - "Gaussian noise parameter (SD)"               double  no
-
+option "verbose"      v "Verbose execution"                         flag            off
+option "config"       - "Config file"                               string          no
+option "output"       o "Output projections file name"              string          yes
+option "phantomfile"  - "Parameters of the phantom reference"       string          yes
+option "noise"        - "Gaussian noise parameter (SD)"             double          no
+option "phantomscale" - "Scaling factor for the phantom dimensions" double multiple no default="1."
+option "offset"       - "3D spatial offset of the phantom center"   double multiple no

@@ -38,6 +38,27 @@ m_OriginOffset(0.)
 {
 }
 
+template< class TInputImage, class TOutputImage >
+void DrawSheppLoganFilter<TInputImage, TOutputImage>::SetEllipsoid( FigureType* ellipsoid,
+                                                                    double spax,
+                                                                    double spay,
+                                                                    double spaz,
+                                                                    double centerx,
+                                                                    double centery,
+                                                                    double centerz,
+                                                                    double angle,
+                                                                    double density)
+{
+  ellipsoid->semiprincipalaxis[0] = spax * m_PhantomScale[0];
+  ellipsoid->semiprincipalaxis[1] = spay * m_PhantomScale[1];
+  ellipsoid->semiprincipalaxis[2] = spaz * m_PhantomScale[2];
+  ellipsoid->center[0] = (centerx + m_OriginOffset[0]) * m_PhantomScale[0];
+  ellipsoid->center[1] = (centery + m_OriginOffset[1]) * m_PhantomScale[1];
+  ellipsoid->center[2] = (centerz + m_OriginOffset[2]) * m_PhantomScale[2];
+  ellipsoid->angle = angle;
+  ellipsoid->attenuation = density;
+}
+
 template <class TInputImage, class TOutputImage>
 void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                                                                              ThreadIdType itkNotUsed(threadId) )
@@ -48,96 +69,16 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
   std::vector< FigureType > shepplogan(10, figParam);
   unsigned int NumberOfFig = 10;
 
-  shepplogan[0].semiprincipalaxis[0] = 0.69;
-  shepplogan[0].semiprincipalaxis[1] = 0.90;
-  shepplogan[0].semiprincipalaxis[2] = 0.92;
-  shepplogan[0].center[0] = 0.;
-  shepplogan[0].center[1] = 0.;
-  shepplogan[0].center[2] = 0.;
-  shepplogan[0].angle = 0.;
-  shepplogan[0].attenuation = 2.;
-
-  shepplogan[1].semiprincipalaxis[0] = 0.6624;
-  shepplogan[1].semiprincipalaxis[1] = 0.880;
-  shepplogan[1].semiprincipalaxis[2] = 0.874;
-  shepplogan[1].center[0] = 0.;
-  shepplogan[1].center[1] = 0.;
-  shepplogan[1].center[2] = 0.;
-  shepplogan[1].angle = 0.;
-  shepplogan[1].attenuation = -0.98;
-
-  shepplogan[2].semiprincipalaxis[0] = 0.41;
-  shepplogan[2].semiprincipalaxis[1] = 0.21;
-  shepplogan[2].semiprincipalaxis[2] = 0.16;
-  shepplogan[2].center[0] = -0.22;
-  shepplogan[2].center[1] = -0.25;
-  shepplogan[2].center[2] = 0.;
-  shepplogan[2].angle = 108.;
-  shepplogan[2].attenuation = -0.02;
-
-  shepplogan[3].semiprincipalaxis[0] = 0.31;
-  shepplogan[3].semiprincipalaxis[1] = 0.22;
-  shepplogan[3].semiprincipalaxis[2] = 0.11;
-  shepplogan[3].center[0] = 0.22;
-  shepplogan[3].center[1] = -0.25;
-  shepplogan[3].center[2] = 0.;
-  shepplogan[3].angle = 72.;
-  shepplogan[3].attenuation = -0.02;
-
-  shepplogan[4].semiprincipalaxis[0] = 0.21;
-  shepplogan[4].semiprincipalaxis[1] = 0.50;
-  shepplogan[4].semiprincipalaxis[2] = 0.25;
-  shepplogan[4].center[0] = 0.;
-  shepplogan[4].center[1] = -0.25;
-  shepplogan[4].center[2] = 0.35;
-  shepplogan[4].angle = 0.;
-  shepplogan[4].attenuation = 0.02;
-
-  shepplogan[5].semiprincipalaxis[0] = 0.046;
-  shepplogan[5].semiprincipalaxis[1] = 0.046;
-  shepplogan[5].semiprincipalaxis[2] = 0.046;
-  shepplogan[5].center[0] = 0.;
-  shepplogan[5].center[1] = -0.25;
-  shepplogan[5].center[2] = 0.10;
-  shepplogan[5].angle = 0.;
-  shepplogan[5].attenuation = 0.02;
-
-  shepplogan[6].semiprincipalaxis[0] = 0.046;
-  shepplogan[6].semiprincipalaxis[1] = 0.020;
-  shepplogan[6].semiprincipalaxis[2] = 0.023;
-  shepplogan[6].center[0] = -0.08;
-  shepplogan[6].center[1] = -0.250;
-  shepplogan[6].center[2] = -0.650;
-  shepplogan[6].angle = 0.;
-  shepplogan[6].attenuation = 0.01;
-
-  shepplogan[7].semiprincipalaxis[0] = 0.046;
-  shepplogan[7].semiprincipalaxis[1] = 0.020;
-  shepplogan[7].semiprincipalaxis[2] = 0.023;
-  shepplogan[7].center[0] = 0.06;
-  shepplogan[7].center[1] = -0.25;
-  shepplogan[7].center[2] = -0.65;
-  shepplogan[7].angle = 90.;
-  shepplogan[7].attenuation = 0.01;
-
-  shepplogan[8].semiprincipalaxis[0] = 0.056;
-  shepplogan[8].semiprincipalaxis[1] = 0.010;
-  shepplogan[8].semiprincipalaxis[2] = 0.040;
-  shepplogan[8].center[0] = 0.060;
-  shepplogan[8].center[1] = 0.625;
-  shepplogan[8].center[2] = -0.105;
-  shepplogan[8].angle = 90.;
-  shepplogan[8].attenuation = 0.02;
-
-  shepplogan[9].semiprincipalaxis[0] = 0.056;
-  shepplogan[9].semiprincipalaxis[1] = 0.100;
-  shepplogan[9].semiprincipalaxis[2] = 0.056;
-  shepplogan[9].center[0] = 0.;
-  shepplogan[9].center[1] = 0.625;
-  shepplogan[9].center[2] = 0.100;
-  shepplogan[9].angle = 0.;
-  shepplogan[9].attenuation = -0.02;
-
+  SetEllipsoid(&(shepplogan[0]), 0.69, 0.90, 0.92, 0., 0., 0., 0., 2.);
+  SetEllipsoid(&(shepplogan[1]), 0.6624, 0.880, 0.874, 0., 0., 0., 0., -0.98);
+  SetEllipsoid(&(shepplogan[2]), 0.41, 0.21, 0.16, -0.22, -0.25, 0., 108., -0.02);
+  SetEllipsoid(&(shepplogan[3]), 0.31, 0.22, 0.11, 0.22, -0.25, 0., 72., -0.02);
+  SetEllipsoid(&(shepplogan[4]), 0.21, 0.50, 0.25, 0., -0.25, 0.35, 0., 0.02);
+  SetEllipsoid(&(shepplogan[5]), 0.046, 0.046, 0.046, 0., -0.25, 0.10, 0., 0.02);
+  SetEllipsoid(&(shepplogan[6]), 0.046, 0.02, 0.023, -0.08, -0.25, -0.65, 0., 0.01);
+  SetEllipsoid(&(shepplogan[7]), 0.046, 0.02, 0.023, 0.06, -0.25, -0.65, 90., 0.01);
+  SetEllipsoid(&(shepplogan[8]), 0.056, 0.01, 0.04, 0.06, 0.625, -0.105, 90., 0.02);
+  SetEllipsoid(&(shepplogan[9]), 0.056, 0.1, 0.056, 0., 0.625, 0.1, 0., -0.02);
 
   typename TOutputImage::PointType point;
   const    TInputImage *           input = this->GetInput();
@@ -149,10 +90,13 @@ void DrawSheppLoganFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const
 
     //Set type of Figure
     sqpFunctor->SetFigure("Ellipsoid");
+
     //Translate from regular expression to quadric
-    sqpFunctor->Translate(shepplogan[i].semiprincipalaxis * m_PhantomScale);
+    sqpFunctor->Translate(shepplogan[i].semiprincipalaxis);
+
     //Applies rotation and translation if necessary
-    sqpFunctor->Rotate(shepplogan[i].angle, (shepplogan[i].center + m_OriginOffset) * m_PhantomScale);
+    sqpFunctor->Rotate(shepplogan[i].angle, shepplogan[i].center);
+
     while( !itOut.IsAtEnd() )
       {
       this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
