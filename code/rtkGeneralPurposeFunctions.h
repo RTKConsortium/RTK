@@ -70,10 +70,15 @@ ReadSignalFile(std::string filename)
     }
 
   double value;
-  while( !is.eof() )
+  std::string s;
+  while (getline(is, s))
     {
-    is >> value;
-    signalVector.push_back(itk::Math::Round<double>(value * 100) / 100);
+    if (!s.empty())
+      {
+      std::istringstream tmp(s);
+      tmp >> value;
+      signalVector.push_back(itk::Math::Round<double>(value * 100) / 100);
+      }
     }
 
   return signalVector;
