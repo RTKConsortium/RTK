@@ -1,4 +1,4 @@
-$(if number_of_inputs > 0 then
+$(if (number_of_inputs) > 0 or (inputs and #inputs > 0 ) then
 OUT=[[
   // Define the input and output image types
   typedef TImageType     InputImageType;
@@ -11,12 +11,7 @@ OUT=OUT .. '  typedef TImageType     InputImageType' .. nimg .. ';\n'
   typedef ${output_image_type} OutputImageType;]]
   elseif output_pixel_type then
   OUT=[[// Define output image type
-#ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
-#else
-  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
-#endif
-  ]]
+  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;]]
   else
   OUT=[[typedef InputImageType OutputImageType;]]
   end)

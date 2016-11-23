@@ -21,7 +21,7 @@
 #include "srtkMacro.h"
 #include "srtkCommon.h"
 
-#ifndef __srtkMacro_h
+#ifndef srtkMacro_h
 #error "srtkMacro.h must be included before srtkExceptionObject.h"
 #endif //__srtkMacro_h
 #ifndef __srtkCommon_h

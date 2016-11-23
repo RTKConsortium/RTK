@@ -29,22 +29,22 @@
 # Check something was found
 if( NOT CSHARP_COMPILER )
   message( WARNING "A C# compiler executable was not found on your system" )
-endif()
+endif( NOT CSHARP_COMPILER )
 
 # Include type-based USE_FILE
 if( CSHARP_TYPE MATCHES ".NET" )
   include( ${DotNetFrameworkSdk_USE_FILE} )
 elseif ( CSHARP_TYPE MATCHES "Mono" )
   include( ${Mono_USE_FILE} )
-endif ()
+endif ( CSHARP_TYPE MATCHES ".NET" )
 
 macro( CSHARP_ADD_LIBRARY name )
   CSHARP_ADD_PROJECT( "library" ${name} ${ARGN} )
-endmacro()
+endmacro( CSHARP_ADD_LIBRARY )
 
 macro( CSHARP_ADD_EXECUTABLE name )
   CSHARP_ADD_PROJECT( "exe" ${name} ${ARGN} )
-endmacro()
+endmacro( CSHARP_ADD_EXECUTABLE )
 
 # Private macro
 macro( CSHARP_ADD_PROJECT type name )
@@ -56,14 +56,14 @@ macro( CSHARP_ADD_PROJECT type name )
     set( output "dll" )
   elseif( ${type} MATCHES "exe" )
     set( output "exe" )
-  endif()
+  endif( ${type} MATCHES "library" )
 
   # Step through each argument
   foreach( it ${ARGN} )
     if( ${it} MATCHES "(.*)(dll)" )
        # Argument is a dll, add reference
        list( APPEND refs /reference:${it} )
-    else()
+    else( )
       # Argument is a source file
       if( EXISTS ${it} )
         list( APPEND sources ${it} )
@@ -73,29 +73,32 @@ macro( CSHARP_ADD_PROJECT type name )
         list( APPEND sources_dep ${CSHARP_SOURCE_DIRECTORY}/${it} )
       elseif( ${it} MATCHES "[*]" )
         # For dependencies, we need to expand wildcards
-        file( GLOB it_glob ${it} )
+        FILE( GLOB it_glob ${it} )
         list( APPEND sources ${it} )
         list( APPEND sources_dep ${it_glob} )
-      endif()
-    endif ()
-  endforeach()
+      elseif( IS_ABSOLUTE ${it} )
+        list( APPEND sources ${it} )
+        list( APPEND sources_dep ${it} )
+      endif( )
+    endif ( )
+  endforeach( )
 
   # Check we have at least one source
   list( LENGTH sources_dep sources_length )
   if ( ${sources_length} LESS 1 )
-    message( SEND_ERROR "No C# sources were specified for ${type} ${name}" )
+    MESSAGE( SEND_ERROR "No C# sources were specified for ${type} ${name}" )
   endif ()
   list( SORT sources_dep )
 
   # Perform platform specific actions
   if (WIN32)
     string( REPLACE "/" "\\" sources ${sources} )
-  else ()
+  else (UNIX)
     string( REPLACE "\\" "/" sources ${sources} )
-  endif ()
+  endif (WIN32)
 
   # Add custom target and command
-  message( STATUS "Adding C# ${type} ${name}: '${CSHARP_COMPILER} /t:${type} /out:${name}.${output} /platform:${CSHARP_PLATFORM} ${CSHARP_SDK} ${refs} ${sources}'" )
+  MESSAGE( STATUS "Adding C# ${type} ${name}: '${CSHARP_COMPILER} /t:${type} /out:${name}.${output} /platform:${CSHARP_PLATFORM} ${CSHARP_SDK} ${refs} ${sources}'" )
   add_custom_command(
     COMMENT "Compiling C# ${type} ${name}: '${CSHARP_COMPILER} /t:${type} /out:${name}.${output} /platform:${CSHARP_PLATFORM} ${CSHARP_SDK} ${refs} ${sources}'"
     OUTPUT ${CSHARP_BINARY_DIRECTORY}/${name}.${output}
@@ -109,4 +112,4 @@ macro( CSHARP_ADD_PROJECT type name )
     DEPENDS ${CSHARP_BINARY_DIRECTORY}/${name}.${output}
     SOURCES ${sources_dep}
   )
-endmacro()
+endmacro( CSHARP_ADD_PROJECT )

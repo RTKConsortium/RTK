@@ -1,22 +1,22 @@
 /*=========================================================================
- *
- *  Copyright Insight Software Consortium & RTK Consortium
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- *=========================================================================*/
-#ifndef __srtkEvent_h
-#define __srtkEvent_h
+*
+*  Copyright RTK Consortium
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0.txt
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*=========================================================================*/
+#ifndef srtkEvent_h
+#define srtkEvent_h
 
 #include "srtkCommon.h"
 #include <ostream>
@@ -50,6 +50,13 @@ enum EventEnum {
   /** \brief Occurs when then itk::ProcessObject is starting.
    */
   srtkStartEvent = 6,
+  /** \brief Occurs when some filters change processing to a different
+   * scale
+   *
+   * \note This event is a sub-event of the more general
+   * IterationEvent. The general iteration event will also be invoked.
+   */
+  srtkMultiResolutionIterationEvent = 9,
   /** \brief Other events may fall into this enumeration.
    */
   srtkUserEvent = 7
@@ -60,6 +67,6 @@ SRTKCommon_EXPORT std::ostream& operator<<(std::ostream& os, const EventEnum k);
 #endif
 
 } // end namespace simple
-} // end namespace rtk
+} // end namespace itk
 
 #endif

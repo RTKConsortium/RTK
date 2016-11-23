@@ -37,13 +37,14 @@ set ( SimpleRTKBasicFiltersSource
   srtkStatisticsImageFilter.cxx
   srtkHashImageFilter.cxx
   srtkMeasurementMap.cxx
+  srtkCreateInterpolator.hxx
 )
 # sort the list to en-sure the same list across platforms
 list ( SORT SimpleRTKBasicFiltersGeneratedSource )
 
 # add additional files which may depend on Filters0
 list ( APPEND SimpleRTKBasicFiltersSource ${SimpleRTKBasicFiltersGeneratedSource} )
-#list ( APPEND SimpleRTKBasicFiltersSource srtkAdditionalProcedures.cxx )
+list ( APPEND SimpleRTKBasicFiltersSource srtkAdditionalProcedures.cxx )
 
 list ( LENGTH SimpleRTKBasicFiltersSource _length )
 math( EXPR _end_range "${_length} - 1 " )
