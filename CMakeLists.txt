@@ -33,7 +33,7 @@ endif()
 
 #=========================================================
 set(RTK_VERSION_MAJOR "1")
-set(RTK_VERSION_MINOR "2")
+set(RTK_VERSION_MINOR "3")
 set(RTK_VERSION_PATCH "0")
 
 #=========================================================

@@ -71,8 +71,17 @@ public:
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
+  /** Multiplicative Scaling factor for the phantom described ConfigFile. */
+  itkSetMacro(PhantomScale, VectorType);
+  itkGetMacro(PhantomScale, VectorType);
+
+  /** Get / Set the spatial position of the phantom Shepp Logan phantom relative to its
+   * center. The default value is (0, 0, 0). */
+  itkSetMacro(OriginOffset, VectorType);
+  itkGetMacro(OriginOffset, VectorType);
+
 protected:
-  DrawGeometricPhantomImageFilter() {}
+  DrawGeometricPhantomImageFilter();
   ~DrawGeometricPhantomImageFilter() ITK_OVERRIDE {};
 
   void GenerateData() ITK_OVERRIDE;
@@ -82,6 +91,8 @@ private:
   void operator=(const Self&);            //purposely not implemented
   StringType m_ConfigFile;
 
+  VectorType m_PhantomScale;
+  VectorType m_OriginOffset;
 };
 
 } // end namespace rtk
