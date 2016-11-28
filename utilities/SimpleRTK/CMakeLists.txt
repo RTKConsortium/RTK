@@ -135,9 +135,7 @@ mark_as_advanced ( SITK_EXPRESS_INSTANTIATEDPIXELS )
 #-----------------------------------------------------------------------------
 # SimpleRTK build configuration options.
 option(BUILD_SHARED_LIBS "Build SimpleRTK ITK with shared libraries. This does not effect wrapped languages." OFF)
-set(SITK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
-
-
+set(SRTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
 set(JAR_FILE "simplertk-${SimpleRTK_VERSION}.jar")
 set(JAVADOC_FILE "simplertk-javadoc-${SimpleRTK_VERSION}.jar")

@@ -1,0 +1,9 @@
+package "rtktotalnuclearvariationdenoising"
+purpose "Performs total nuclear variation denoising of a 3D + channels image."
+
+option "verbose"   v "Verbose execution"                                            flag         off
+option "config"    - "Config file"                                                  string       no
+option "input"     i "Input file name"                                              string       yes
+option "output"    o "Output file name"                                             string       yes
+option "gamma"     g "TV term's weighting parameter"                                double       no  default="1.0"
+option "niter"     n "Number of iterations"                                         int          no  default="5"

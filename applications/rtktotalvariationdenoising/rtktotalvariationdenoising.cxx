@@ -26,6 +26,8 @@
   #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #endif
 
+#include "rtkTotalVariationImageFilter.h"
+
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
@@ -35,66 +37,57 @@ int main(int argc, char * argv[])
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3; // Number of dimensions of the input image
-  const unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector 
-      < OutputPixelType, DimensionsProcessed >, Dimension >                GradientOutputImageType;
-  typedef rtk::CudaTotalVariationDenoisingBPDQImageFilter                  TVDenoisingFilterType;
+  typedef itk::CudaImage< OutputPixelType, Dimension >          OutputImageType;
+  typedef itk::CudaImage< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >               GradientOutputImageType;
+  typedef rtk::CudaTotalVariationDenoisingBPDQImageFilter       TVDenoisingFilterType;
 #else
-  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+  typedef itk::Image< OutputPixelType, Dimension >              OutputImageType;
   typedef itk::Image< itk::CovariantVector 
-      < OutputPixelType, DimensionsProcessed >, Dimension >                GradientOutputImageType;
+      < OutputPixelType, Dimension >, Dimension >               GradientOutputImageType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter
-      <OutputImageType, GradientOutputImageType>                           TVDenoisingFilterType;
+      <OutputImageType, GradientOutputImageType>                TVDenoisingFilterType;
 #endif
   
   // Read input
-  typedef itk::ImageFileReader<OutputImageType> ReaderType;
+  typedef itk::ImageFileReader<OutputImageType>                 ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
-  reader->ReleaseDataFlagOn();
+  reader->Update();
+
+  // Compute total variation before denoising
+  typedef rtk::TotalVariationImageFilter<OutputImageType>       TVFilterType;
+  TVFilterType::Pointer tv = TVFilterType::New();
+  tv->SetInput(reader->GetOutput());
+  if (args_info.verbose_flag)
+    {
+    tv->Update();
+    std::cout << "TV before denoising = " << tv->GetTotalVariation() << std::endl;
+    }
 
   // Apply total variation denoising
-  TVDenoisingFilterType::Pointer tv = TVDenoisingFilterType::New();
-  tv->SetInput(reader->GetOutput());
-  tv->SetGamma(args_info.gamma_arg);
-  tv->SetNumberOfIterations(args_info.niter_arg);
-
-  bool* dimsProcessed = new bool[Dimension];
-  int count = 0;
-  for (unsigned int i=0; i<Dimension; i++)
-    {
-    if ((args_info.dim_given) && (args_info.dim_arg[i] == 0)) dimsProcessed[i] = false;
-    else
-      {
-      dimsProcessed[i] = true;
-      count++;
-      }
-    }
-
-  // Check that the number of dimensions processed matches the size of the covariant vector
-  if (count != DimensionsProcessed)
-    {
-    itkGenericExceptionMacro( << "Size of covariant vector ("
-                              << DimensionsProcessed
-                              << ") does not match number of dimensions marked for processing ("
-                              << count
-                              << ")");
-    }
-
-  tv->SetDimensionsProcessed(dimsProcessed);
-  tv->ReleaseDataFlagOn();
+  TVDenoisingFilterType::Pointer tvdenoising = TVDenoisingFilterType::New();
+  tvdenoising->SetInput(reader->GetOutput());
+  tvdenoising->SetGamma(args_info.gamma_arg);
+  tvdenoising->SetNumberOfIterations(args_info.niter_arg);
 
   // Write
   typedef itk::ImageFileWriter<OutputImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput(tv->GetOutput());
+  writer->SetInput(tvdenoising->GetOutput());
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
 
-  delete[] dimsProcessed;
+  // Compute total variation after denoising
+  if (args_info.verbose_flag)
+    {
+    tv->SetInput(tvdenoising->GetOutput());
+    tv->Update();
+    std::cout << "TV after denoising = " << tv->GetTotalVariation() << std::endl;
+    }
+
   return EXIT_SUCCESS;
 }

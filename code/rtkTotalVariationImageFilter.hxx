@@ -43,6 +43,9 @@ TotalVariationImageFilter< TInputImage >
     this->itk::ProcessObject::SetNthOutput( 1, output.GetPointer() );
 
   this->GetTotalVariationOutput()->Set(itk::NumericTraits< RealType >::Zero);
+
+  // Initialize
+  m_UseImageSpacing = true;
 }
 
 template< typename TInputImage >
@@ -173,9 +176,16 @@ TotalVariationImageFilter< TInputImage >
 
   itk::SizeValueType c = (itk::SizeValueType) (iit.Size() / 2); // get offset of center pixel
   itk::SizeValueType strides[ImageDimension]; // get offsets to access neighboring pixels
+  itk::Vector<RealType, ImageDimension> invSpacingCoeffs;
   for (int dim=0; dim<ImageDimension; dim++)
     {
     strides[dim] = iit.GetStride(dim);
+
+    invSpacingCoeffs[dim] = 1;
+    if ( m_UseImageSpacing == true )
+      {
+      invSpacingCoeffs[dim] = 1.0 / this->GetOutput()->GetSpacing()[dim];
+      }
     }
 
   // Run through the image
@@ -186,7 +196,7 @@ TotalVariationImageFilter< TInputImage >
     float sumOfSquaredDifferences = 0;
     for (int dim = 0; dim < ImageDimension; dim++)
       {
-      difference = iit.GetPixel(c + strides[dim]) - iit.GetPixel(c);
+      difference = (iit.GetPixel(c + strides[dim]) - iit.GetPixel(c)) * invSpacingCoeffs[dim];
       sumOfSquaredDifferences += difference * difference;
       }
     sumOfSquareRoots += sqrt(sumOfSquaredDifferences);

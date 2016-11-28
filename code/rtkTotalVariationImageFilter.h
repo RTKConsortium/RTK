@@ -105,6 +105,21 @@ public:
   // End concept checking
 #endif
 
+  /** Use the image spacing information in calculations. Use this option if you
+   *  want derivatives in physical space. Default is UseImageSpacingOn. */
+  void SetUseImageSpacingOn()
+  { this->SetUseImageSpacing(true); }
+
+  /** Ignore the image spacing. Use this option if you want derivatives in
+      isotropic pixel space.  Default is UseImageSpacingOn. */
+  void SetUseImageSpacingOff()
+  { this->SetUseImageSpacing(false); }
+
+  /** Set/Get whether or not the filter will use the spacing of the input
+      image in its calculations */
+  itkSetMacro(UseImageSpacing, bool);
+  itkGetConstMacro(UseImageSpacing, bool);
+
 protected:
   TotalVariationImageFilter();
   ~TotalVariationImageFilter() ITK_OVERRIDE {}
@@ -132,6 +147,8 @@ protected:
 
   // Override since the filter produces all of its output
   void EnlargeOutputRequestedRegion(itk::DataObject *data) ITK_OVERRIDE;
+
+  bool                        m_UseImageSpacing;
 
 private:
   TotalVariationImageFilter(const Self &); //purposely not implemented

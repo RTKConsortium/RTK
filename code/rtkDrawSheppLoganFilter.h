@@ -74,10 +74,10 @@ public:
 
   /** Multiplicative Scaling factor for the phantom parameters described in
    * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(PhantomScale, double);
-  itkGetMacro(PhantomScale, double);
+  itkSetMacro(PhantomScale, VectorType);
+  itkGetMacro(PhantomScale, VectorType);
 
-  /** Get / Set the spatial position of the Shepp Logan phantom relative to its`
+  /** Get / Set the spatial position of the Shepp Logan phantom relative to its
    * center. The default value is (0, 0, 0). */
   itkSetMacro(OriginOffset, VectorType);
   itkGetMacro(OriginOffset, VectorType);
@@ -87,12 +87,20 @@ protected:
   ~DrawSheppLoganFilter() ITK_OVERRIDE {};
 
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
-
+  void SetEllipsoid(FigureType* rei,
+                    double spax,
+                    double spay,
+                    double spaz,
+                    double centerx,
+                    double centery,
+                    double centerz,
+                    double angle,
+                    double density);
 private:
   DrawSheppLoganFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  double     m_PhantomScale;
+  VectorType m_PhantomScale;
   VectorType m_OriginOffset;
 };
 
