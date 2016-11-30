@@ -390,17 +390,17 @@ if ( BUILD_TESTING )
     message( FATAL_ERROR "BUILD_TESTING ON requires CMake 2.8.11 or newer." )
   endif()
 
-  include( SimpleRTKExternalData )
-  file( GLOB_RECURSE content_links
-    RELATIVE "${SimpleRTK_SOURCE_DIR}" "Testing/Data/*.md5" )
-  foreach(link ${content_links})
-    string( REGEX REPLACE "\\.md5$" "" link ${link} )
-    ExternalData_Expand_Arguments( SimpleRTKData
-      link_location
-      DATA{${link}}
-      )
-  endforeach()
-  ExternalData_Add_Target( SimpleRTKData )
+ # include( SimpleRTKExternalData )
+ # file( GLOB_RECURSE content_links
+ #   RELATIVE "${SimpleRTK_SOURCE_DIR}" "Testing/Data/*.md5" )
+ # foreach(link ${content_links})
+ #   string( REGEX REPLACE "\\.md5$" "" link ${link} )
+ #   ExternalData_Expand_Arguments( SimpleRTKData
+ #     link_location
+ #     DATA{${link}}
+ #     )
+ # endforeach()
+ # ExternalData_Add_Target( SimpleRTKData )
 
   enable_testing()
   add_subdirectory ( Testing )
