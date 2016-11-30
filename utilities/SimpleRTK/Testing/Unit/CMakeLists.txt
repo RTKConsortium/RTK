@@ -1,5 +1,7 @@
 include_directories(${ITK_INCLUDE_DIRS})
 
+find_package( GTest REQUIRED )
+
 set ( SimpleRTKUnitTestSourceBase
   SimpleRTKTestHarness.cxx
   srtkImageCompare.cxx
@@ -28,7 +30,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/CSharpTests)
 set( PythonVirtualenvHome ${SimpleRTK_BINARY_DIR}/Testing/Installation/PythonVirtualenv )
 
 add_executable(SimpleRTKUnitTestDriver0 SimpleRTKUnitTestDriver.cxx ${SimpleRTKUnitTestSource})
-target_link_libraries ( SimpleRTKUnitTestDriver0 gtest SimpleRTKUnitTestBase ${SimpleRTK_LIBRARIES} )
+target_link_libraries ( SimpleRTKUnitTestDriver0 ${GTEST_LIBRARIES} SimpleRTKUnitTestBase ${SimpleRTK_LIBRARIES} )
 
 #
 # Glob for necessary template files up front, before the foreach loop over
@@ -57,7 +59,7 @@ set ( _i 0 )
 foreach(FILTERNAME ${NOTHING})
   if ( NOT _i LESS _stride )
     add_executable(SimpleRTKUnitTestDriver${_exec_i} SimpleRTKUnitTestDriver.cxx ${GENERATED_TEST_SOURCE})
-    target_link_libraries ( SimpleRTKUnitTestDriver${_exec_i} gtest SimpleRTKUnitTestBase ${SimpleRTK_LIBRARIES} )
+    target_link_libraries ( SimpleRTKUnitTestDriver${_exec_i} ${GTEST_LIBRARIES} SimpleRTKUnitTestBase ${SimpleRTK_LIBRARIES} )
     math(EXPR _exec_i "${_exec_i}+1")
     set(GENERATED_TEST_SOURCE "")
     set ( _i 0 )
@@ -179,7 +181,7 @@ foreach(FILTERNAME ${NOTHING})
 endforeach()
 
 add_executable(SimpleRTKUnitTestDriver${_exec_i} SimpleRTKUnitTestDriver.cxx ${GENERATED_TEST_SOURCE})
-target_link_libraries ( SimpleRTKUnitTestDriver${_exec_i} gtest SimpleRTKUnitTestBase ${SimpleRTK_LIBRARIES} )
+target_link_libraries ( SimpleRTKUnitTestDriver${_exec_i} ${GTEST_LIBRARIES} SimpleRTKUnitTestBase ${SimpleRTK_LIBRARIES} )
 
 # Build Google Test
 find_package(Threads)
@@ -195,9 +197,12 @@ set(TEST_HARNESS_DATA_DIRECTORY ${SimpleRTK_BINARY_DIR}/ExternalData/Testing/Dat
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/SimpleRTKTestHarnessPaths.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/SimpleRTKTestHarnessPaths.h ESCAPE_QUOTES)
 
-include_directories ( ${GTEST_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-include_directories ( ${SimpleRTK_INCLUDE_DIRS} )
+include_directories ( 
+${GTEST_INCLUDE_DIRS} 
+${CMAKE_CURRENT_SOURCE_DIR} 
+${CMAKE_CURRENT_BINARY_DIR}
+${SimpleRTK_INCLUDE_DIRS} 
+)
 
 add_custom_target(WrappedGeneratedTests ALL
   DEPENDS ${WRAPPED_GENERATED_TEST_SOURCE}
