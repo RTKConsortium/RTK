@@ -70,6 +70,7 @@ public:
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
 
+  /** Displays the conjugate gradient cost function at each iteration. */
   itkGetMacro(IterationCosts, bool)
   itkSetMacro(IterationCosts, bool)
   

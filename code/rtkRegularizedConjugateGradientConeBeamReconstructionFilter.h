@@ -132,6 +132,10 @@ public:
   void SetInputWeights(const TImage* Projection);
   typename TImage::Pointer   GetInputWeights();
 
+  /** Set the support mask, if any, for support constraint in reconstruction */
+  void SetSupportMask(const TImage *SupportMask);
+  typename TImage::ConstPointer GetSupportMask();
+
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<TImage>                    CGFilterType;
   typedef itk::ThresholdImageFilter<TImage>                                             ThresholdFilterType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter<TImage, GradientImageType>        TVDenoisingFilterType;
@@ -171,6 +175,10 @@ public:
   /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
   itkGetMacro(Order, unsigned int)
   itkSetMacro(Order, unsigned int)
+
+  /** Displays the conjugate gradient cost function at each iteration. */
+  itkSetMacro(IterationCosts, bool)
+  itkGetMacro(IterationCosts, bool)
 
   // Iterations
   itkSetMacro(MainLoop_iterations, int)
@@ -240,6 +248,10 @@ protected:
   /** Information for the wavelets denoising filter */
   unsigned int    m_Order;
   unsigned int    m_NumberOfLevels;
+
+  /** Conjugate gradient parameters */
+  bool            m_IterationCosts;
+
 
   // Iterations
   int   m_MainLoop_iterations;

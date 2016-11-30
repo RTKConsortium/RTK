@@ -85,6 +85,14 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   this->SetInput("Weights", const_cast<TImage*>(Weights));
 }
 
+template< typename TOutputImage>
+void
+RegularizedConjugateGradientConeBeamReconstructionFilter<TOutputImage>::
+SetSupportMask(const TOutputImage *SupportMask)
+{
+  this->SetInput("SupportMask", const_cast<TOutputImage*>(SupportMask));
+}
+
 template< typename TImage >
 typename TImage::ConstPointer
 RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
@@ -110,6 +118,15 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
 {
   return static_cast< TImage * >
           ( this->itk::ProcessObject::GetInput("Weights") );
+}
+
+template< typename TOutputImage>
+typename TOutputImage::ConstPointer
+RegularizedConjugateGradientConeBeamReconstructionFilter<TOutputImage>::
+GetSupportMask()
+{
+  return static_cast< const TOutputImage * >
+          ( this->itk::ProcessObject::GetInput("SupportMask") );
 }
 
 template< typename TImage >
@@ -163,12 +180,14 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->SetInput(0, this->GetInputVolume());
   m_CGFilter->SetInput(1, this->GetInputProjectionStack());
   m_CGFilter->SetInput(2, this->GetInputWeights());
+  m_CGFilter->SetSupportMask(this->GetSupportMask());
   m_CGFilter->SetGeometry(this->m_Geometry);
   m_CGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_CGFilter->SetPreconditioned(m_Preconditioned);
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_CGFilter->SetRegularized(this->m_RegularizedCG);
   m_CGFilter->SetGamma(this->m_Gamma);
+  m_CGFilter->SetIterationCosts(m_IterationCosts);
 
   currentDownstreamFilter = m_CGFilter;
 
