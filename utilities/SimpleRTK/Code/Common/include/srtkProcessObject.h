@@ -292,7 +292,7 @@ namespace rtk {
                 template<typename, unsigned int> class TVector >
         static Image CastITKToImage( itk::Image< TVector< TPixelType, VLength >, VImageDimension> *img )
       {
-        typedef rtk::VectorImage< TPixelType, VImageDimension > VectorImageType;
+        typedef itk::VectorImage< TPixelType, VImageDimension > VectorImageType;
 
         size_t numberOfElements = img->GetBufferedRegion().GetNumberOfPixels();
         typename VectorImageType::InternalPixelType* buffer = reinterpret_cast<typename VectorImageType::InternalPixelType*>( img->GetPixelContainer()->GetBufferPointer() );
