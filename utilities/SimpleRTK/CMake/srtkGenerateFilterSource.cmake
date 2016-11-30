@@ -206,9 +206,7 @@ macro(generate_filter_source)
     get_filename_component ( class ${f} NAME_WE )
 	
 	string(FIND ${class} "Cuda" position)	
-	if(${position} EQUAL -1 OR RTK_USE_CUDA)
-	 message(${class})
-	
+	if(${position} EQUAL -1 OR RTK_USE_CUDA)	
       expand_template ( ${class}
                       ${generated_code_input_path}
                       ${generated_code_output_path}

@@ -187,12 +187,6 @@ if (CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available.
   set(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=1")
 endif()
 
-# The gtest include file directories.
-set(GTEST_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/GoogleTest" PARENT_SCOPE)
-
-# The gtest library directories.
-set(GTEST_LIBRARY_DIRS "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
-
 # Test data directory
 set(TEST_HARNESS_TEMP_DIRECTORY ${SimpleRTK_BINARY_DIR}/Testing/Temporary)
 set(TEST_HARNESS_DATA_DIRECTORY ${SimpleRTK_BINARY_DIR}/ExternalData/Testing/Data)
@@ -201,16 +195,7 @@ set(TEST_HARNESS_DATA_DIRECTORY ${SimpleRTK_BINARY_DIR}/ExternalData/Testing/Dat
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/SimpleRTKTestHarnessPaths.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/SimpleRTKTestHarnessPaths.h ESCAPE_QUOTES)
 
-# Build Google Testing
-set ( GTestSource
-  GoogleTest/gtest/gtest-all.cc
-)
-include_directories ( GoogleTest ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-add_library(gtest STATIC ${GTestSource})
-if (CMAKE_USE_PTHREADS_INIT)
-  target_link_libraries(gtest ${CMAKE_THREAD_LIBS_INIT})
-endif()
+include_directories ( ${GTEST_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories ( ${SimpleRTK_INCLUDE_DIRS} )
 
