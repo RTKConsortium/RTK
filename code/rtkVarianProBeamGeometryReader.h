@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkVarianProBeamGeometryReader_h
-#define __rtkVarianProBeamGeometryReader_h
+#ifndef rtkVarianProBeamGeometryReader_h
+#define rtkVarianProBeamGeometryReader_h
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
@@ -27,7 +27,7 @@ namespace rtk
 
 /** \class VarianProBeamGeometryReader
  *
- * Creates a 3D circular geometry from Varian ProBeam data. 
+ * Creates a 3D circular geometry from Varian ProBeam data.
  *
  * \test rtkvariantest.cxx
  *
@@ -41,8 +41,8 @@ class RTK_EXPORT VarianProBeamGeometryReader :
 public:
   /** Standard typedefs */
   typedef VarianProBeamGeometryReader Self;
-  typedef itk::LightProcessObject Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  typedef itk::LightProcessObject     Superclass;
+  typedef itk::SmartPointer<Self>     Pointer;
 
   /** Convenient typedefs */
   typedef ThreeDCircularProjectionGeometry GeometryType;

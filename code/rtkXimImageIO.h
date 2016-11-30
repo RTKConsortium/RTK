@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkXimImageIO_h
-#define __rtkXimImageIO_h
+#ifndef rtkXimImageIO_h
+#define rtkXimImageIO_h
 
 // itk include
 #include <itkImageIOBase.h>
@@ -50,21 +50,21 @@ public:
   typedef signed short int        PixelType;
 
   typedef struct xim_header {
-	//Actual Header:
+    //Actual Header:
     char sFileType[32];
-	itk::int32_t FileVersion;
-	itk::int32_t SizeX;
-	itk::int32_t SizeY;
-	itk::int32_t dBitsPerPixel;
-	itk::int32_t dBytesPerPixel;
-	itk::int32_t dCompressionIndicator;
-	itk::int32_t lookUpTableSize;
-	itk::int32_t compressedPixelBufferSize;
-	itk::int32_t unCompressedPixelBufferSize;
-	//Header after pixel-data:
-	itk::int32_t binsInHistogram;
-	itk::int32_t * histogramData;
-	itk::int32_t numberOfProperties;
+    itk::int32_t FileVersion;
+    itk::int32_t SizeX;
+    itk::int32_t SizeY;
+    itk::int32_t dBitsPerPixel;
+    itk::int32_t dBytesPerPixel;
+    itk::int32_t dCompressionIndicator;
+    itk::int32_t lookUpTableSize;
+    itk::int32_t compressedPixelBufferSize;
+    itk::int32_t unCompressedPixelBufferSize;
+    //Header after pixel-data:
+    itk::int32_t binsInHistogram;
+    itk::int32_t * histogramData;
+    itk::int32_t numberOfProperties;
     unsigned int nPixelOffset;
     double dCollX1;
     double dCollX2;
@@ -83,8 +83,8 @@ public:
     double dXRayKV;
     double dXRayMA;
     double dCTProjectionAngle; //KVSourceRtn in file
-	double dDetectorOffsetX; // KVDetectorLat
-	double dDetectorOffsetY; // KVDetectorLng
+    double dDetectorOffsetX; // KVDetectorLat
+    double dDetectorOffsetY; // KVDetectorLng
     double dCTNormChamber;
     double dGatingTimeTag;
     double dGating4DInfoX;
@@ -118,9 +118,10 @@ public:
   virtual void Write(const void* buffer);
 
 private:
-	template<typename T> size_t SetPropertyValue(char property_name[32], itk::uint32_t value_length, FILE *fp, Xim_header *xim);
-	int imageDataStart;
-	itk::int32_t m_bytes_per_pixel;
+  template<typename T> size_t SetPropertyValue(char property_name[32], itk::uint32_t value_length, FILE *fp, Xim_header *xim);
+
+  int          m_ImageDataStart;
+  itk::int32_t m_BytesPerPixel;
 
 }; // end class XimImageIO
 

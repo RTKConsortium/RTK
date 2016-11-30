@@ -54,7 +54,7 @@ rtk::VarianProBeamGeometryReader
   rtk::XimImageIOFactory::RegisterOneFactory();
   // Projection matrices
   for(unsigned int noProj=0; noProj<m_ProjectionsFileNames.size(); noProj++)
-  {
+    {
     typedef unsigned int                    InputPixelType;
     typedef itk::Image< InputPixelType, 2 > InputImageType;
 
@@ -66,7 +66,7 @@ rtk::VarianProBeamGeometryReader
     const double angle =
       dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
     if (angle != 6000)
-    {
+      {
       /* Warning: The offsets in the test scans were very small,
       however this configuration improved reconstruction quality slightly.*/
       const double offsetx =
@@ -76,6 +76,6 @@ rtk::VarianProBeamGeometryReader
       /*The angle-direction of RTK is opposite of the Xim properties
       (There doesn't seem to be a flag for direction in neither the xml nor xim file) */
       m_Geometry->AddProjection(sid, sdd, 180.0 - angle, offsetx, offsety);
-    }
+      }
   }
 }

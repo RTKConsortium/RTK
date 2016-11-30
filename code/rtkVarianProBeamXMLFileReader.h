@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkVarianProBeamXMLFileReader_h
-#define __rtkVarianProBeamXMLFileReader_h
+#ifndef rtkVarianProBeamXMLFileReader_h
+#define rtkVarianProBeamXMLFileReader_h
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -39,7 +39,7 @@ class VarianProBeamXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary
 {
 public:
   /** Standard typedefs */
-  typedef VarianProBeamXMLFileReader                  Self;
+  typedef VarianProBeamXMLFileReader              Self;
   typedef itk::XMLReader<itk::MetaDataDictionary> Superclass;
   typedef itk::SmartPointer<Self>                 Pointer;
 

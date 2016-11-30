@@ -25,76 +25,76 @@
 template<typename T>
 size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t value_length, FILE *fp, Xim_header *xim)
 {
-	T property_value;
-	T * unused_property_value;
-	size_t addNelements = 0;
+  T property_value;
+  T * unused_property_value;
+  size_t addNelements = 0;
 
-	if (value_length > 1)
-	{
-		unused_property_value = new T[value_length];
-		addNelements += fread((void *)unused_property_value, sizeof(T), value_length, fp);
-		return addNelements;
-	}
+  if (value_length > 1)
+  {
+    unused_property_value = new T[value_length];
+    addNelements += fread((void *)unused_property_value, sizeof(T), value_length, fp);
+    return addNelements;
+  }
 
-	addNelements += fread((void *)&property_value, sizeof(T), value_length, fp);
+  addNelements += fread((void *)&property_value, sizeof(T), value_length, fp);
 
-	bool not_set = true;
+  bool not_set = true;
 
-	if (strncmp(property_name, "CouchLat", 8) == 0)
-		xim->dCouchLat = property_value;
-	else if (strncmp(property_name, "CouchLng", 8) == 0)
-		xim->dCouchLng = property_value;
-	else if (strncmp(property_name, "CouchVrt", 8) == 0)
-		xim->dCouchVrt = property_value;
-	else if (strncmp(property_name,"DataOffset", 10) == 0)
-		xim->nPixelOffset = property_value;
-	else if (strncmp(property_name, "KVSourceRtn", 11) == 0)
-		xim->dCTProjectionAngle = property_value;
-	else if (strncmp(property_name, "KVDetectorLat", 13) == 0)
-		xim->dDetectorOffsetX = property_value;
-	else if (strncmp(property_name, "KVDetectorLng", 13) == 0)
-		xim->dDetectorOffsetY = property_value;
-	else if (strncmp(property_name, "KVCollimatorX1", 14) == 0)
-		xim->dCollX1 = property_value;
-	else if (strncmp(property_name, "KVCollimatorX2", 14) == 0)
-		xim->dCollX2 = property_value;
-	else if (strncmp(property_name, "KVCollimatorY1", 14) == 0)
-		xim->dCollY1 = property_value;
-	else if (strncmp(property_name, "KVCollimatorY2", 14) == 0)
-		xim->dCollY2 = property_value;
-	else if (strncmp(property_name, "KVKiloVolts", 11) == 0)
-		xim->dXRayKV = property_value;
-	else if (strncmp(property_name, "KVMilliAmperes", 14) == 0)
-		xim->dXRayMA = property_value;
-	else if (strncmp(property_name, "KVNormChamber", 13) == 0)
-		xim->dCTNormChamber = property_value;
-	else if (strncmp(property_name, "MMTrackingRemainderX", 20) == 0)
-		xim->dGating4DInfoX = property_value;
-	else if (strncmp(property_name, "MMTrackingRemainderY", 20) == 0)
-		xim->dGating4DInfoY = property_value;
-	else if (strncmp(property_name, "MMTrackingRemainderZ", 20) == 0)
-		xim->dGating4DInfoZ = property_value;
-	else if (strncmp(property_name, "MVCollimatorRtn", 15) == 0)
-		xim->dCollRtn = property_value;
-	else if (strncmp(property_name, "MVCollimatorX1", 14) == 0)
-		xim->dCollX1 = property_value;
-	else if (strncmp(property_name, "MVCollimatorX2", 14) == 0)
-		xim->dCollX2 = property_value;
-	else if (strncmp(property_name, "MVCollimatorY1", 14) == 0)
-		xim->dCollY1 = property_value;
-	else if (strncmp(property_name, "MVCollimatorY2", 14) == 0)
-		xim->dCollY2 = property_value;
-	else if (strncmp(property_name, "MVDoseRate", 10) == 0)
-		xim->dDoseRate = property_value;
-	else if (strncmp(property_name, "MVEnergy", 8) == 0)
-		xim->dEnergy = property_value;
-	else if (strncmp(property_name, "PixelHeight", 11) == 0)
-		xim->dIDUResolutionY = property_value * 10.0;
-	else if (strncmp(property_name, "PixelWidth", 10) == 0)
-		xim->dIDUResolutionX = property_value * 10.0;
-	else
-		not_set = false;
-	return addNelements;
+  if (strncmp(property_name, "CouchLat", 8) == 0)
+    xim->dCouchLat = property_value;
+  else if (strncmp(property_name, "CouchLng", 8) == 0)
+    xim->dCouchLng = property_value;
+  else if (strncmp(property_name, "CouchVrt", 8) == 0)
+    xim->dCouchVrt = property_value;
+  else if (strncmp(property_name,"DataOffset", 10) == 0)
+    xim->nPixelOffset = property_value;
+  else if (strncmp(property_name, "KVSourceRtn", 11) == 0)
+    xim->dCTProjectionAngle = property_value;
+  else if (strncmp(property_name, "KVDetectorLat", 13) == 0)
+    xim->dDetectorOffsetX = property_value;
+  else if (strncmp(property_name, "KVDetectorLng", 13) == 0)
+    xim->dDetectorOffsetY = property_value;
+  else if (strncmp(property_name, "KVCollimatorX1", 14) == 0)
+    xim->dCollX1 = property_value;
+  else if (strncmp(property_name, "KVCollimatorX2", 14) == 0)
+    xim->dCollX2 = property_value;
+  else if (strncmp(property_name, "KVCollimatorY1", 14) == 0)
+    xim->dCollY1 = property_value;
+  else if (strncmp(property_name, "KVCollimatorY2", 14) == 0)
+    xim->dCollY2 = property_value;
+  else if (strncmp(property_name, "KVKiloVolts", 11) == 0)
+    xim->dXRayKV = property_value;
+  else if (strncmp(property_name, "KVMilliAmperes", 14) == 0)
+    xim->dXRayMA = property_value;
+  else if (strncmp(property_name, "KVNormChamber", 13) == 0)
+    xim->dCTNormChamber = property_value;
+  else if (strncmp(property_name, "MMTrackingRemainderX", 20) == 0)
+    xim->dGating4DInfoX = property_value;
+  else if (strncmp(property_name, "MMTrackingRemainderY", 20) == 0)
+    xim->dGating4DInfoY = property_value;
+  else if (strncmp(property_name, "MMTrackingRemainderZ", 20) == 0)
+    xim->dGating4DInfoZ = property_value;
+  else if (strncmp(property_name, "MVCollimatorRtn", 15) == 0)
+    xim->dCollRtn = property_value;
+  else if (strncmp(property_name, "MVCollimatorX1", 14) == 0)
+    xim->dCollX1 = property_value;
+  else if (strncmp(property_name, "MVCollimatorX2", 14) == 0)
+    xim->dCollX2 = property_value;
+  else if (strncmp(property_name, "MVCollimatorY1", 14) == 0)
+    xim->dCollY1 = property_value;
+  else if (strncmp(property_name, "MVCollimatorY2", 14) == 0)
+    xim->dCollY2 = property_value;
+  else if (strncmp(property_name, "MVDoseRate", 10) == 0)
+    xim->dDoseRate = property_value;
+  else if (strncmp(property_name, "MVEnergy", 8) == 0)
+    xim->dEnergy = property_value;
+  else if (strncmp(property_name, "PixelHeight", 11) == 0)
+    xim->dIDUResolutionY = property_value * 10.0;
+  else if (strncmp(property_name, "PixelWidth", 10) == 0)
+    xim->dIDUResolutionX = property_value * 10.0;
+  else
+    not_set = false;
+  return addNelements;
 }
 
 //--------------------------------------------------------------------
@@ -115,9 +115,9 @@ void rtk::XimImageIO::ReadImageInformation()
 
   nelements += fread((void *)&xim.dBitsPerPixel, sizeof(itk::int32_t), 1, fp);
   nelements += fread((void *)&xim.dBytesPerPixel, sizeof(itk::int32_t), 1, fp);
-  m_bytes_per_pixel = xim.dBytesPerPixel;
+  m_BytesPerPixel = xim.dBytesPerPixel;
   nelements += fread((void *)&xim.dCompressionIndicator, sizeof(itk::int32_t), 1, fp);
-  imageDataStart = ftell(fp);
+  m_ImageDataStart = ftell(fp);
   if (xim.dCompressionIndicator == 1)
   {
     nelements += fread((void *)&xim.lookUpTableSize, sizeof(itk::int32_t), 1, fp);
@@ -246,7 +246,7 @@ void rtk::XimImageIO::Read(void * buffer)
   if (fp == NULL)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
-  if(fseek (fp, imageDataStart, SEEK_SET) != 0)
+  if(fseek (fp, m_ImageDataStart, SEEK_SET) != 0)
     itkGenericExceptionMacro(<< "Could not seek to image data in: " << m_FileName);
 
   size_t nelements = 0;

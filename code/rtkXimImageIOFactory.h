@@ -19,8 +19,8 @@
 //#ifndef ITKHNDIMAGEIOFACTORY_H
 //#define ITKHNDIMAGEIOFACTORY_H
 
-#ifndef __rtkXimImageIOFactory_h
-#define __rtkXimImageIOFactory_h
+#ifndef rtkXimImageIOFactory_h
+#define rtkXimImageIOFactory_h
 
 #include "rtkWin32Header.h"
 #include "rtkXimImageIO.h"

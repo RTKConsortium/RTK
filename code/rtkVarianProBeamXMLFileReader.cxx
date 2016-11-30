@@ -62,9 +62,9 @@ EndElement(const char *name)
 #define MODIFY_META_DATA_DOUBLE_MULTIPLY(metaName, encapsulatedName) \
   if(itksys::SystemTools::Strucmp(name, metaName) == 0) { \
     double d = atof(m_CurCharacterData.c_str() ); \
-	typedef itk::MetaDataObject< double > MetaDataDoubleType;\
+    typedef itk::MetaDataObject< double > MetaDataDoubleType;\
     const double multiplier = dynamic_cast<MetaDataDoubleType *>(m_Dictionary[encapsulatedName].GetPointer())->GetMetaDataObjectValue(); \
-	itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d * multiplier); \
+    itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d * multiplier); \
     }
 
 #define ENCAPLULATE_META_DATA_STRING(metaName) \
