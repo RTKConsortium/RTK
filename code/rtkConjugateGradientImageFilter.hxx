@@ -41,15 +41,15 @@ template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
 ::SetC(const double _arg)
 {
-    this->m_C = _arg;
-    this->Modified();
+  this->m_C = _arg;
+  this->Modified();
 }
 
 template<typename OutputImageType>
 const double ConjugateGradientImageFilter<OutputImageType>
 ::GetC()
 {
-    return this->m_C;
+  return this->m_C;
 }
 
 template<typename OutputImageType>
@@ -73,30 +73,30 @@ void ConjugateGradientImageFilter<OutputImageType>
  *           -> C is the constant involved in the cost function. If it is known, it can be added by setting its value to the attribute C (default 0).
  */
 {
-    typename StatisticsImageFilterType::Pointer IterationCostsStatisticsImageFilter = StatisticsImageFilterType::New();
-    typename SubtractFilterType::Pointer IterationCostsSubtractFilter = SubtractFilterType::New();
-    typename MultiplyFilterType::Pointer IterationCostsMultiplyFilter = MultiplyFilterType::New();
+  typename StatisticsImageFilterType::Pointer IterationCostsStatisticsImageFilter = StatisticsImageFilterType::New();
+  typename SubtractFilterType::Pointer IterationCostsSubtractFilter = SubtractFilterType::New();
+  typename MultiplyFilterType::Pointer IterationCostsMultiplyFilter = MultiplyFilterType::New();
 
-    IterationCostsMultiplyFilter->SetConstant(-1);
-    IterationCostsMultiplyFilter->SetInput(R_kPlusOne);
-    IterationCostsMultiplyFilter->Update();
-    IterationCostsSubtractFilter->SetInput(0,IterationCostsMultiplyFilter->GetOutput());
-    IterationCostsSubtractFilter->SetInput(1, this->GetB());
-    IterationCostsSubtractFilter->Update();
-    IterationCostsMultiplyFilter->SetConstant(1);
-    IterationCostsMultiplyFilter->SetInput(0,X_kPlusOne);
-    IterationCostsMultiplyFilter->SetInput(1,IterationCostsSubtractFilter->GetOutput());
-    IterationCostsMultiplyFilter->Update();
-    IterationCostsStatisticsImageFilter->SetInput(IterationCostsMultiplyFilter->GetOutput());
-    IterationCostsStatisticsImageFilter->Update();
-    m_ResidualCosts.push_back(0.5*IterationCostsStatisticsImageFilter->GetSum()+this->GetC());
+  IterationCostsMultiplyFilter->SetConstant(-1);
+  IterationCostsMultiplyFilter->SetInput(R_kPlusOne);
+  IterationCostsMultiplyFilter->Update();
+  IterationCostsSubtractFilter->SetInput(0,IterationCostsMultiplyFilter->GetOutput());
+  IterationCostsSubtractFilter->SetInput(1, this->GetB());
+  IterationCostsSubtractFilter->Update();
+  IterationCostsMultiplyFilter->SetConstant(1);
+  IterationCostsMultiplyFilter->SetInput(0,X_kPlusOne);
+  IterationCostsMultiplyFilter->SetInput(1,IterationCostsSubtractFilter->GetOutput());
+  IterationCostsMultiplyFilter->Update();
+  IterationCostsStatisticsImageFilter->SetInput(IterationCostsMultiplyFilter->GetOutput());
+  IterationCostsStatisticsImageFilter->Update();
+  m_ResidualCosts.push_back(0.5*IterationCostsStatisticsImageFilter->GetSum()+this->GetC());
 }
 
 template<typename OutputImageType>
 const std::vector<double> &ConjugateGradientImageFilter<OutputImageType>
 ::GetResidualCosts()
 {
-    return this->m_ResidualCosts;
+  return this->m_ResidualCosts;
 }
 
 template<typename OutputImageType>
