@@ -30,7 +30,7 @@ if(NOT PCRE_DIR)
   set(pcre_install_dir ${CMAKE_CURRENT_BINARY_DIR}/PCRE)
 
   configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/pcre_configure_step.cmake.in
+    ${CMAKE_CURRENT_LIST_DIR}/pcre_configure_step.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/pcre_configure_step.cmake
     @ONLY)
 
