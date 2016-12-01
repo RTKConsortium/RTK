@@ -102,20 +102,20 @@ public:
   itkTypeMacro(XimImageIO, itk::ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  virtual void ReadImageInformation();
+  virtual void ReadImageInformation() ITK_OVERRIDE;
 
-  virtual bool CanReadFile( const char* FileNameToRead );
+  virtual bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
 
-  virtual void Read(void * buffer);
+  virtual void Read(void * buffer) ITK_OVERRIDE;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void WriteImageInformation(bool /*keepOfStream*/) { }
 
-  virtual void WriteImageInformation() { WriteImageInformation(false); }
+  virtual void WriteImageInformation()  ITK_OVERRIDE { WriteImageInformation(false); }
 
-  virtual bool CanWriteFile(const char* filename);
+  virtual bool CanWriteFile(const char* filename) ITK_OVERRIDE;
 
-  virtual void Write(const void* buffer);
+  virtual void Write(const void* buffer) ITK_OVERRIDE;
 
 private:
   template<typename T> size_t SetPropertyValue(char property_name[32], itk::uint32_t value_length, FILE *fp, Xim_header *xim);

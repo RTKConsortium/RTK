@@ -69,7 +69,7 @@ public:
   {
   }
 
-  vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const
+  vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE
   {
   // Variable length vector and variable size matrix cannot be used in linear algebra operations
   // Get their vnl counterparts, which can
