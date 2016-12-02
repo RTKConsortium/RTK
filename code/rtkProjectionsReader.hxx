@@ -36,6 +36,7 @@
 
 // Varian Obi includes
 #include "rtkHndImageIOFactory.h"
+#include "rtkXimImageIOFactory.h"
 #include "rtkVarianObiRawImageFilter.h"
 
 // Elekta Synergy includes
@@ -212,7 +213,8 @@ void ProjectionsReader<TOutputImage>
         m_RawCastFilter = castFilter;
         }
       }
-    else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
+    else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") ||
+             !strcmp(imageIO->GetNameOfClass(), "XimImageIO") )
       {
       /////////// Varian OBI
       typedef unsigned int                                       InputPixelType;

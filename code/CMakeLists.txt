@@ -14,8 +14,12 @@ set(RTK_LIBRARY_FILES
             rtkDbf.cxx
             rtkHndImageIO.cxx
             rtkHndImageIOFactory.cxx
+            rtkXimImageIO.cxx
+            rtkXimImageIOFactory.cxx
             rtkVarianObiXMLFileReader.cxx
             rtkVarianObiGeometryReader.cxx
+            rtkVarianProBeamXMLFileReader.cxx
+            rtkVarianProBeamGeometryReader.cxx
             rtkEdfImageIO.cxx
             rtkEdfImageIOFactory.cxx
             rtkImagXImageIO.cxx

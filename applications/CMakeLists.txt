@@ -69,6 +69,7 @@ add_subdirectory(rtkspectralrooster)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 add_subdirectory(rtkvarianobigeometry)
+add_subdirectory(rtkvarianprobeamgeometry)
 add_subdirectory(rtksimulatedgeometry)
 add_subdirectory(rtkelektasynergygeometry)
 add_subdirectory(rtkdigisensgeometry)

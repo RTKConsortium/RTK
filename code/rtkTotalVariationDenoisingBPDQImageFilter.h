@@ -139,7 +139,7 @@ protected:
 
   /** Sub filter pointers */
   typename MagnitudeThresholdFilterType::Pointer   m_ThresholdFilter;
-  virtual typename Superclass::ThresholdFilterType* GetThresholdFilter()
+  virtual typename Superclass::ThresholdFilterType* GetThresholdFilter() ITK_OVERRIDE
   {
     return dynamic_cast<typename Superclass::ThresholdFilterType*>(this->m_ThresholdFilter.GetPointer());
   }
