@@ -21,6 +21,7 @@
 
 // itk include
 #include <itkImageIOBase.h>
+#include <itkMacro.h>
 
 #if defined (_MSC_VER) && (_MSC_VER < 1600)
 //SR: taken from
