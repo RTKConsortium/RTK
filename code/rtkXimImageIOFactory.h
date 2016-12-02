@@ -24,12 +24,12 @@
 
 #include "rtkWin32Header.h"
 #include "rtkXimImageIO.h"
+#include "rtkMacro.h"
 
 // itk include
 #include <itkImageIOBase.h>
 #include <itkObjectFactoryBase.h>
 #include <itkVersion.h>
-#include <itkMacro.h>
 
 namespace rtk
 {
