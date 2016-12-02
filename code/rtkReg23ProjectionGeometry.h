@@ -95,51 +95,6 @@ protected:
   /** Destructor. **/
   ~Reg23ProjectionGeometry() ITK_OVERRIDE;
 
-<<<<<<< HEAD
-  /** Verify that the specified Euler angles in ZXY result in a rotation matrix
-   * which corresponds to the specified detector orientation. Rationale for this
-   * utility method is that in some situations numerical instabilities (e.g. if
-   * gantry=+90deg,in-plane=-90deg or vice versa, "invalid" angles may be
-   * computed using the standard ITK Euler transform) may occur.
-   * @param outOfPlaneAngleRAD out-of-plane angle of the detector in radians
-   * @param gantryAngleRAD gantry angle of the detector in radians
-   * @param inPlaneAngleRAD in-plane angle of the detector in radians
-   * @param referenceMatrix reference matrix which reflects detector orientation
-   * in WCS
-   * @return TRUE if the angles correspond the implicitly specified final
-   * rotation matrix; if FALSE is returned, the angles should be fixed
-   * (@see FixAngles())
-   * @warning {Internally, the matrix check is performed with a tolerance level
-   * of 1e-6!}
-   */
-  bool VerifyAngles(const double outOfPlaneAngleRAD, const double gantryAngleRAD,
-                    const double inPlaneAngleRAD,
-                    const Matrix3x3Type &referenceMatrix) const;
-
-  /** Try to fix Euler angles, which were found incorrect, to match the specified
-   * reference matrix.
-   * @param [out] outOfPlaneAngleRAD out-of-plane angle of the detector in radians;
-   * if this method returns TRUE, this angle can be safely considered
-   * @param [out] gantryAngleRAD gantry angle of the detector in radians;
-   * if this method returns TRUE, this angle can be safely considered
-   * @param [out] inPlaneAngleRAD in-plane angle of the detector in radians;
-   * if this method returns TRUE, this angle can be safely considered
-   * @param referenceMatrix reference matrix which reflects detector orientation
-   * in WCS
-   * @return TRUE if the angles were fixed and can be safely considered;
-   * if FALSE is returned, the method could not find angles which generate the
-   * desired matrix with respect to ZXY Euler order and the internal tolerance
-   * level
-   * @see VerifyAngles()
-   * @warning {Internally, the matrix check is performed with a tolerance level
-   * of 1e-6!}
-   */
-  bool FixAngles(double &outOfPlaneAngleRAD, double &gantryAngleRAD,
-                 double &inPlaneAngleRAD,
-                 const Matrix3x3Type &referenceMatrix) const;
-
-=======
->>>>>>> master
 private:
   /** Purposely not implemented. **/
   Reg23ProjectionGeometry(const Self&);
