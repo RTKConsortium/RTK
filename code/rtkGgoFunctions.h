@@ -127,6 +127,12 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
               << " file(s)..."
               << std::endl;
 
+  // Vector component extraction
+  if(args_info.component_given)
+    {
+    reader->SetVectorComponent(args_info.component_arg);
+    }
+
   // Change image information
   const unsigned int Dimension = TProjectionsReaderType::OutputImageType::GetImageDimension();
   typename TProjectionsReaderType::OutputImageDirectionType direction;

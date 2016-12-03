@@ -32,6 +32,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   // Set the default values of member parameters
   m_GammaTVSpace = 0.00005;
   m_GammaTVTime = 0.0002;
+  m_GammaTNV = 0.0002;
   m_LambdaL0Time = 0.005;
   m_SoftThresholdWavelets = 0.001;
   
@@ -48,6 +49,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_PerformWarping = false;
   m_PerformTVTemporalDenoising = true;
   m_PerformL0TemporalDenoising = false;
+  m_PerformTNVDenoising = false;
   m_ComputeInverseWarpingByConjugateGradient=true;
 
   // Other parameters
@@ -76,6 +78,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_SubtractFilter = SubtractFilterType::New();
   m_AddFilter = AddFilterType::New();
   m_L0DenoisingTime = TemporalL0DenoisingFilterType::New();
+  m_TNVDenoising = TNVDenoisingFilterType::New();
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -356,7 +359,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   
     currentDownstreamFilter = m_WaveletsDenoisingSpace;
     }
-    
+
   if (m_PerformWarping)
     {
     currentDownstreamFilter->ReleaseDataFlagOff();
@@ -410,6 +413,22 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     currentDownstreamFilter = m_L0DenoisingTime;
     }
     
+  if (m_PerformTNVDenoising)
+    {
+    currentDownstreamFilter->ReleaseDataFlagOff();
+
+    if (m_PerformWarping && !m_ComputeInverseWarpingByConjugateGradient && !m_PerformTVTemporalDenoising && !m_PerformL0TemporalDenoising)
+      m_TNVDenoising->SetInPlace(false);
+    else
+      m_TNVDenoising->SetInPlace(true);
+
+    m_TNVDenoising->SetInput(currentDownstreamFilter->GetOutput());
+    m_TNVDenoising->SetNumberOfIterations(this->m_TV_iterations);
+    m_TNVDenoising->SetGamma(this->m_GammaTNV);
+
+    currentDownstreamFilter = m_TNVDenoising;
+    }
+
   if (m_PerformWarping)
     {
     if (m_ComputeInverseWarpingByConjugateGradient)
@@ -430,7 +449,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       {
       currentDownstreamFilter->ReleaseDataFlagOff();
         
-      // Compute the correction performed by TV and/or L0 denoising along time
+      // Compute the correction performed by temporal TV and/or temporal L0 and/or TNV
       m_SubtractFilter->SetInput1(currentDownstreamFilter->GetOutput());
       m_SubtractFilter->SetInput2(m_Warp->GetOutput());
 

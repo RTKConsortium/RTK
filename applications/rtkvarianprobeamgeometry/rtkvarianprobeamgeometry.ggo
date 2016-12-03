@@ -1,0 +1,8 @@
+package "rtkvarianobigeometry"
+purpose "Creates an RTK geometry file from a Varian ProBeam acquisition."
+
+option "verbose"   v "Verbose execution"                                     flag            off
+option "config"    - "Config file"                                           string          no
+option "xml_file"  x "Varian ProBeam XML information file on projections"    string          yes
+option "output"    o "Output file name"                                      string          yes
+

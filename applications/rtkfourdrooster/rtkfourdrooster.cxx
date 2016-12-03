@@ -188,7 +188,7 @@ int main(int argc, char * argv[])
     rooster->SetPerformTVTemporalDenoising(false);
 
   // Temporal L0
-  if (args_info.lambda_time_arg)
+  if (args_info.lambda_time_given)
     {
     rooster->SetLambdaL0Time(args_info.lambda_time_arg);
     rooster->SetL0_iterations(args_info.l0iter_arg);
@@ -197,6 +197,17 @@ int main(int argc, char * argv[])
   else
     rooster->SetPerformL0TemporalDenoising(false);
 
+  // Total nuclear variation
+  if (args_info.gamma_tnv_given)
+    {
+    rooster->SetGammaTNV(args_info.gamma_tnv_arg);
+    rooster->SetTV_iterations(args_info.tviter_arg);
+    rooster->SetPerformTNVDenoising(true);
+    }
+  else
+    rooster->SetPerformTNVDenoising(false);
+
+  // Warping
   if (args_info.dvf_given)
     {
     rooster->SetPerformWarping(true);

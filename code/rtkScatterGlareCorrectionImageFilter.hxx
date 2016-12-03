@@ -42,6 +42,10 @@ void
 ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::UpdateFFTConvolutionKernel(const SizeType size)
 {
+  if(m_Coefficients.size() != 2)
+    {
+    itkGenericExceptionMacro(<< "Expecting 2 coefficients in m_Coefficients)");
+    }
   double dx = this->GetInput()->GetSpacing()[0];
   double dy = this->GetInput()->GetSpacing()[1];
   CoefficientVectorType coeffs = m_Coefficients;

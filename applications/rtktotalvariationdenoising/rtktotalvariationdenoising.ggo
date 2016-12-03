@@ -6,5 +6,4 @@ option "config"    - "Config file"                                              
 option "input"     i "Input file name"                                              string       yes
 option "output"    o "Output file name"                                             string       yes
 option "gamma"     g "TV term's weighting parameter"                                double       no  default="1.0"
-option "dim" 	   d "Is denoising applied along this dimension (0=false, 1=true)"  int multiple no  default="1"
 option "niter"     n "Number of iterations"                                         int          no  default="5"
