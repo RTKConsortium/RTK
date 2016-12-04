@@ -87,9 +87,9 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
   for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
     {
     // Compute source position and change coordinate system
-    interpolator->SetFocalPoint( itIn->GetSourcePosition() );
+    interpolator->SetFocalPoint( &(itIn->GetSourcePosition()[0]) );
 
-    itOut.Set( itIn->Get() + interpolator->Evaluate(itIn->GetPixelPosition()) );
+    itOut.Set( itIn->Get() + interpolator->Evaluate( &(itIn->GetPixelPosition()[0]) ) );
     }
 }
 
