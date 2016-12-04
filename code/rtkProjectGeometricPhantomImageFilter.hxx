@@ -34,6 +34,14 @@
 
 namespace rtk
 {
+template <class TInputImage, class TOutputImage>
+ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>
+::ProjectGeometricPhantomImageFilter():
+m_PhantomScale(1.),
+m_OriginOffset(0.)
+{
+}
+
 template< class TInputImage, class TOutputImage >
 void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData()
 {
@@ -53,6 +61,16 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
 
   for ( unsigned int i = 0; i < m_Fig.size(); i++ )
   {
+    //Set figures parameters
+    VectorType semiprincipalaxis;
+    semiprincipalaxis[0] = m_Fig[i][1] * m_PhantomScale[0];
+    semiprincipalaxis[1] = m_Fig[i][2] * m_PhantomScale[1];
+    semiprincipalaxis[2] = m_Fig[i][3] * m_PhantomScale[2];
+    VectorType center;
+    center[0] = (m_Fig[i][4] + m_OriginOffset[0]) * m_PhantomScale[0];
+    center[1] = (m_Fig[i][5] + m_OriginOffset[1]) * m_PhantomScale[1];
+    center[2] = (m_Fig[i][6] + m_OriginOffset[2]) * m_PhantomScale[2];
+
     // Ellipsoid, Cylinder and Cone Case
     if(figType[i]!="Box")
       {
@@ -60,20 +78,12 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
 
       rei[ellip]->SetNumberOfThreads( this->GetNumberOfThreads() );
       rei[ellip]->SetDensity(m_Fig[i][8]);
-      VectorType semiprincipalaxis;
-      semiprincipalaxis[0] = m_Fig[i][1];
-      semiprincipalaxis[1] = m_Fig[i][2];
-      semiprincipalaxis[2] = m_Fig[i][3];
       if(figType[i]=="Cone")
         rei[ellip]->SetFigure("Cone");
       else
         rei[ellip]->SetFigure("Ellipsoid");
       rei[ellip]->SetAxis(semiprincipalaxis);
 
-      VectorType center;
-      center[0] = m_Fig[i][4];
-      center[1] = m_Fig[i][5];
-      center[2] = m_Fig[i][6];
       rei[ellip]->SetCenter(center);
 
       rei[ellip]->SetAngle(m_Fig[i][7]);

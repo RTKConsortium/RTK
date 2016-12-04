@@ -67,9 +67,15 @@ if("${CUDA_VERSION}" LESS 5.0)
      -gencode arch=compute_20,code=sm_20
      -gencode arch=compute_20,code=compute_20
     )
-else()
+elseif("${CUDA_VERSION}" LESS 8.0)
  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
      -gencode arch=compute_20,code=sm_20
+     -gencode arch=compute_30,code=sm_30
+     -gencode arch=compute_35,code=sm_35
+     -gencode arch=compute_35,code=compute_35
+     )
+else()
+ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
      -gencode arch=compute_30,code=sm_30
      -gencode arch=compute_35,code=sm_35
      -gencode arch=compute_35,code=compute_35

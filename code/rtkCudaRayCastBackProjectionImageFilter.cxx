@@ -49,28 +49,6 @@ CudaRayCastBackProjectionImageFilter
   const unsigned int nPixelsPerProj = this->GetInput(1)->GetBufferedRegion().GetSize(0) *
     this->GetInput(1)->GetBufferedRegion().GetSize(1);
 
-  // Allocate the output image
-  this->AllocateOutputs();
-
-  // Initialize output region with input region in case the filter is not in
-  // place
-  if(this->GetInput() != this->GetOutput() )
-    {
-    // Iterators on volume input and output
-    typedef itk::ImageRegionConstIterator<ImageType> InputRegionIterator;
-    InputRegionIterator itVolIn(this->GetInput(0), this->GetInput()->GetBufferedRegion());
-
-    typedef itk::ImageRegionIteratorWithIndex<ImageType> OutputRegionIterator;
-    OutputRegionIterator itVolOut(this->GetOutput(), this->GetInput()->GetBufferedRegion());
-
-    while(!itVolIn.IsAtEnd() )
-      {
-      itVolOut.Set(itVolIn.Get() );
-      ++itVolIn;
-      ++itVolOut;
-      }
-    }
-
   itk::Vector<double, 4> source_position;
 
   // Setting BoxMin and BoxMax
@@ -102,27 +80,32 @@ CudaRayCastBackProjectionImageFilter
   volumeSize[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   volumeSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
+  float *pin = *(float**)( this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pproj = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
+
+  // Account for system rotations
+  GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
+  volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(0) );
+
+  // Compute matrix to translate the pixel indices on the volume and the detector
+  // if the Requested region has non-zero index
+  GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
+  projIndexTranslation.SetIdentity();
+  volIndexTranslation.SetIdentity();
+  for(unsigned int i=0; i<3; i++)
+    {
+    projIndexTranslation[i][3] = this->GetInput(1)->GetBufferedRegion().GetIndex(i);
+    volIndexTranslation[i][3] = -this->GetInput(0)->GetBufferedRegion().GetIndex(i);
+    }
+
+  // Compute matrices to transform projection index to volume index, one per projection
+  float* matrices = new float[12 * nProj];
+  float* source_positions = new float[3 * nProj];
 
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
-    // Account for system rotations
-    GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
-    volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(0) );
-
-    // Compute matrix to translate the pixel indices on the volume and the detector
-    // if the Requested region has non-zero index
-    GeometryType::ThreeDHomogeneousMatrixType projIndexTranslation, volIndexTranslation;
-    projIndexTranslation.SetIdentity();
-    volIndexTranslation.SetIdentity();
-    for(unsigned int i=0; i<3; i++)
-      {
-      projIndexTranslation[i][3] = this->GetInput(1)->GetBufferedRegion().GetIndex(i);
-      volIndexTranslation[i][3] = -this->GetInput(0)->GetBufferedRegion().GetIndex(i);
-      }
-
     // Compute matrix to transform projection index to volume index
     GeometryType::ThreeDHomogeneousMatrixType d_matrix;
     d_matrix =
@@ -131,23 +114,33 @@ CudaRayCastBackProjectionImageFilter
       geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
       rtk::GetIndexToPhysicalPointMatrix( this->GetInput(1) ).GetVnlMatrix() *
       projIndexTranslation.GetVnlMatrix();
-    float matrix[4][4];
-    for (int j=0; j<4; j++)
+    for (int j=0; j<3; j++) // Ignore the 4th row
       for (int k=0; k<4; k++)
-        matrix[j][k] = (float)d_matrix[j][k];
+        matrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)d_matrix[j][k];
 
     // Set source position in volume indices
     source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
 
-    int projectionOffset = iProj - this->GetInput(1)->GetBufferedRegion().GetIndex(2);
+    // Copy it into a single large array
+    for (unsigned int d=0; d<3; d++)
+      source_positions[(iProj-iFirstProj)*3 + d] = source_position[d]; // Ignore the 4th component
+    }
+
+  int projectionOffset = 0;
+  for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
+    {
+    // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
+    projectionSize[2] = std::min(nProj-i, (unsigned int)SLAB_SIZE);
+    projectionOffset = iFirstProj + i - this->GetInput(1)->GetBufferedRegion().GetIndex(2);
 
     CUDA_ray_cast_back_project(projectionSize,
                         volumeSize,
-                        (float*)&(matrix[0][0]),
+                        (float*)&(matrices[12 * i]),
+                        pin,
                         pout,
                         pproj + nPixelsPerProj * projectionOffset,
                         m_StepSize,
-                        (double*)&(source_position[0]),
+                        (double*)&(source_positions[3 * i]),
                         boxMin,
                         boxMax,
                         spacing,
