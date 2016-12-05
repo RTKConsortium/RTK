@@ -3,6 +3,7 @@
 #include "rtkMacro.h"
 #include "rtkVarianObiGeometryReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkVarianProBeamGeometryReader.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 
@@ -36,7 +37,7 @@ int main(int, char** )
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) + 
+  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
                              std::string("/Baseline/Varian/geometry.xml") );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
@@ -59,6 +60,42 @@ int main(int, char** )
   fileNames.clear();
   fileNames.push_back( std::string(RTK_DATA_ROOT) +
                        std::string("/Baseline/Varian/attenuation.mha") );
+  readerRef->SetFileNames( fileNames );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
+
+  // 2. Compare read projections
+  CheckImageQuality< ImageType >(reader->GetOutput(), readerRef->GetOutput(), 1e-8, 100, 2.0);
+
+  ///////////////////// Xim file format
+  fileNames.clear();
+  fileNames.push_back( std::string(RTK_DATA_ROOT) +
+                       std::string("/Input/Varian/Proj_00000.xim") );
+
+  // Varian geometry
+  rtk::VarianProBeamGeometryReader::Pointer geoProBeamReader;
+  geoProBeamReader = rtk::VarianProBeamGeometryReader::New();
+  geoProBeamReader->SetXMLFileName( std::string(RTK_DATA_ROOT) +
+                                    std::string("/Input/Varian/acqui_probeam.xml") );
+  geoProBeamReader->SetProjectionsFileNames( fileNames );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( geoProBeamReader->UpdateOutputData() );
+
+  // Reference geometry
+  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
+                             std::string("/Baseline/Varian/geometryProBeam.xml") );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
+
+  // 1. Check geometries
+  CheckGeometries(geoProBeamReader->GetGeometry(), geoRefReader->GetOutputObject() );
+
+  // ******* COMPARING projections *******
+  // Varian projections reader
+  reader->SetFileNames( fileNames );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
+
+  // Reference projections reader
+  fileNames.clear();
+  fileNames.push_back( std::string(RTK_DATA_ROOT) +
+                       std::string("/Baseline/Varian/attenuationProBeam.mha") );
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
