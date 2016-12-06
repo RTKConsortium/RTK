@@ -33,6 +33,7 @@ size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t v
   {
     unused_property_value = new T[value_length];
     addNelements += fread((void *)unused_property_value, sizeof(T), value_length, fp);
+    delete[] unused_property_value;
     return addNelements;
   }
 
@@ -220,6 +221,7 @@ void rtk::XimImageIO::ReadImageInformation()
   }
   else
     itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", 6000);
+  delete[] xim.histogramData;
 }
 //--------------------------------------------------------------------
 bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
