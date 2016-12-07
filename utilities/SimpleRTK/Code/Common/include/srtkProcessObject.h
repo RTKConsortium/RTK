@@ -23,6 +23,7 @@
 #include "srtkTemplateFunctions.h"
 #include "srtkEvent.h"
 #include "srtkImage.h"
+#include "itkImage.h"
 
 #include <iostream>
 #include <list>
