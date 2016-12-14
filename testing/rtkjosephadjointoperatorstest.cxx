@@ -4,6 +4,10 @@
 #include "rtkConstantImageSource.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaForwardProjectionImageFilter.h"
+  #include "rtkCudaRayCastBackProjectionImageFilter.h"
+#endif
 
 /**
  * \file rtkjosephadjointoperatorstest.cxx
@@ -23,7 +27,7 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
 
-#ifdef USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -144,12 +148,35 @@ int main(int, char** )
   bp->SetInput(1, randomProjectionsSource->GetOutput());
   bp->SetGeometry( geometry.GetPointer() );
   
-//  std::cout << "Updating Back Projection filter" << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
-//  std::cout << "Updated Back Projection filter" << std::endl;
 
   CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
+
+#ifdef RTK_USE_CUDA
+  std::cout << "\n\n****** Cuda Ray Cast Forward projector ******" << std::endl;
+
+  typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> CudaForwardProjectorType;
+  CudaForwardProjectorType::Pointer cfw = CudaForwardProjectorType::New();
+  cfw->SetInput(0, constantProjectionsSource->GetOutput());
+  cfw->SetInput(1, randomVolumeSource->GetOutput());
+  cfw->SetGeometry( geometry );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( cfw->Update() );
+
+  std::cout << "\n\n****** Cuda Ray Cast Back projector ******" << std::endl;
+
+  typedef rtk::CudaRayCastBackProjectionImageFilter CudaRayCastBackProjectorType;
+  CudaRayCastBackProjectorType::Pointer cbp = CudaRayCastBackProjectorType::New();
+  cbp->SetInput(0, constantVolumeSource->GetOutput());
+  cbp->SetInput(1, randomProjectionsSource->GetOutput());
+  cbp->SetGeometry( geometry.GetPointer() );
+  cbp->SetNormalize(false);
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( cbp->Update() );
+
+  CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), cbp->GetOutput(), randomProjectionsSource->GetOutput(), cfw->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
 
   return EXIT_SUCCESS;
 }

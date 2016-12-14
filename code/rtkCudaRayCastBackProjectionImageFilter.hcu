@@ -20,14 +20,16 @@
 #define __rtkCudaRayCastBackProjectionImageFilter_hcu
 
 void
-CUDA_ray_cast_back_project(int projSize[2],
+CUDA_ray_cast_back_project(int projSize[3],
     int volSize[3],
-    float *matrices,
+    float *translatedProjectionIndexTransformMatrices,
+    float* translatedVolumeTransformMatrices,
     float *dev_vol_in,
     float *dev_vol_out,
     float *dev_proj,
     float t_step,
     double *source_positions,
+    float radiusCylindricalDetector,
     float box_min[3],
     float box_max[3],
     float spacing[3],
