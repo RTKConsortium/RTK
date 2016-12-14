@@ -10,14 +10,15 @@
 #endif
 
 /**
- * \file rtkjosephadjointoperatorstest.cxx
+ * \file rtkadjointoperatorstest.cxx
  *
- * \brief Tests whether Joseph forward and back projectors are matched
+ * \brief Tests whether forward and back projectors are matched
  *
  * This test generates a random volume "v" and a random set of projections "p",
- * and compares the scalar products <Rv , p> and <v, R* p>, where R is the 
- * Joseph forward projector and R* is the Joseph back projector. If R* is indeed 
- * the adjoint of R, these scalar products are equal.
+ * and compares the scalar products <Rv , p> and <v, R* p>, where R is either the
+ * Joseph forward projector or the Cuda ray cast forward projector,
+ * and R* is either the Joseph back projector or the Cuda ray cast back projector.
+ * If R* is indeed the adjoint of R, these scalar products are equal.
  *
  * \author Cyril Mory
  */
@@ -27,7 +28,7 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -153,7 +154,7 @@ int main(int, char** )
   CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   std::cout << "\n\n****** Cuda Ray Cast Forward projector ******" << std::endl;
 
   typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> CudaForwardProjectorType;

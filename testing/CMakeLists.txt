@@ -258,9 +258,10 @@ target_link_libraries(rtkwarpprojectionstacktofourdtest ${RTK_LIBRARIES})
 add_test(rtkwarpprojectionstacktofourdtest ${EXECUTABLE_OUTPUT_PATH}/rtkwarpprojectionstacktofourdtest)
 ADD_CUDA_TEST(rtkwarpprojectionstacktofourd rtkwarpprojectionstacktofourdtest.cxx)
 
-add_executable(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
-target_link_libraries(rtkjosephadjointoperatorstest ${RTK_LIBRARIES})
-add_test(rtkjosephadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkjosephadjointoperatorstest)
+add_executable(rtkadjointoperatorstest rtkadjointoperatorstest.cxx)
+target_link_libraries(rtkadjointoperatorstest ${RTK_LIBRARIES})
+add_test(rtkadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkadjointoperatorstest)
+ADD_CUDA_TEST(rtkadjointoperators rtkadjointoperatorstest.cxx)
 
 add_executable(rtkfourdadjointoperatorstest rtkfourdadjointoperatorstest.cxx)
 target_link_libraries(rtkfourdadjointoperatorstest ${RTK_LIBRARIES})
