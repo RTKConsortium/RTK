@@ -71,7 +71,7 @@ CudaRayCastBackProjectionImageFilter
     }
 
   // Cuda convenient format for dimensions
-  int projectionSize[2];
+  int projectionSize[3];
   projectionSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
 
@@ -159,7 +159,6 @@ CudaRayCastBackProjectionImageFilter
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
     projectionSize[2] = std::min(nProj-i, (unsigned int)SLAB_SIZE);
     projectionOffset = iFirstProj + i - this->GetInput(1)->GetBufferedRegion().GetIndex(2);
-    std::cout << projectionOffset << std::endl;
 
     CUDA_ray_cast_back_project(projectionSize,
                         volumeSize,

@@ -149,8 +149,9 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
   unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y*blockDim.y + threadIdx.y;
   unsigned int numThread = j*c_projSize.x + i;
+  unsigned int proj = blockIdx.z*blockDim.z + threadIdx.z;
 
-  if (i >= c_projSize.x || j >= c_projSize.y)
+  if (i >= c_projSize.x || j >= c_projSize.y || proj >= c_projSize.z)
     return;
 
   // Declare variables used in the loop
@@ -158,8 +159,6 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
   float3 pixelPos;
   float tnear, tfar;
 
-  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
-    {
     // Setting ray origin
     ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
 
@@ -228,7 +227,6 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
         splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
         }
       }
-    }
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -284,8 +282,8 @@ CUDA_ray_cast_back_project( int projSize[3],
   cudaMemset((void *)dev_accumulate_weights, 0, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
 
   // Calling kernels
-  dim3 dimBlock  = dim3(16, 16, 1);
-  dim3 dimGrid = dim3(iDivUp(projSize[0], dimBlock.x), iDivUp(projSize[1], dimBlock.y));
+  dim3 dimBlock  = dim3(8, 8, 4);
+  dim3 dimGrid = dim3(iDivUp(projSize[0], dimBlock.x), iDivUp(projSize[1], dimBlock.y), iDivUp(projSize[2], dimBlock.z));
 
   kernel_ray_cast_back_project <<< dimGrid, dimBlock >>> (dev_accumulate_values, dev_proj, dev_accumulate_weights);
 
