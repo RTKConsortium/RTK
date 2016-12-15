@@ -239,7 +239,7 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_ray_cast_backproject() //////////////////////////////////
 void
-CUDA_ray_cast_back_project( int projSize[2],
+CUDA_ray_cast_back_project( int projSize[3],
                       int volSize[3],
                       float* translatedProjectionIndexTransformMatrices,
                       float* translatedVolumeTransformMatrices,
