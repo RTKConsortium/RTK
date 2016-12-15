@@ -159,74 +159,74 @@ void kernel_ray_cast_back_project(float *dev_accumulate_values,  float *dev_proj
   float3 pixelPos;
   float tnear, tfar;
 
-    // Setting ray origin
-    ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
+  // Setting ray origin
+  ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
 
-    if (c_radius == 0)
+  if (c_radius == 0)
+    {
+    pixelPos = matrix_multiply(make_float3(i,j,0), &(c_translatedProjectionIndexTransformMatrices[12*proj]));
+    }
+  else
+    {
+    float3 posProj;
+    posProj = matrix_multiply(make_float3(i,j,0), &(c_translatedProjectionIndexTransformMatrices[12*proj]));
+    double a = posProj.x / c_radius;
+    posProj.x = sin(a) * c_radius;
+    posProj.z += (1. - cos(a)) * c_radius;
+    pixelPos = matrix_multiply(posProj, &(c_translatedVolumeTransformMatrices[12*proj]));
+    }
+
+  ray.d = pixelPos - ray.o;
+  ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
+
+  // Detect intersection with box
+  if ( intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f) )
+    {
+    if (tnear < 0.f)
+      tnear = 0.f; // clamp to near plane
+
+    // Step length in mm
+    float3 dirInMM = c_spacing * ray.d;
+    float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
+    float3 step = vStep * ray.d;
+
+    // First position in the box
+    float3 pos;
+    float halfVStep = 0.5f*vStep;
+    tnear = tnear + halfVStep;
+    pos = ray.o + tnear*ray.d;
+
+    float  t;
+
+    float toSplat;
+    long int indices[8];
+    float weights[8];
+    int3 floor_pos;
+
+    if (tfar - tnear > halfVStep)
       {
-      pixelPos = matrix_multiply(make_float3(i,j,0), &(c_translatedProjectionIndexTransformMatrices[12*proj]));
-      }
-    else
-      {
-      float3 posProj;
-      posProj = matrix_multiply(make_float3(i,j,0), &(c_translatedProjectionIndexTransformMatrices[12*proj]));
-      double a = posProj.x / c_radius;
-      posProj.x = sin(a) * c_radius;
-      posProj.z += (1. - cos(a)) * c_radius;
-      pixelPos = matrix_multiply(posProj, &(c_translatedVolumeTransformMatrices[12*proj]));
-      }
-
-    ray.d = pixelPos - ray.o;
-    ray.d = ray.d / sqrtf(dot(ray.d,ray.d));
-
-    // Detect intersection with box
-    if ( intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f) )
-      {
-      if (tnear < 0.f)
-        tnear = 0.f; // clamp to near plane
-
-      // Step length in mm
-      float3 dirInMM = c_spacing * ray.d;
-      float vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
-      float3 step = vStep * ray.d;
-
-      // First position in the box
-      float3 pos;
-      float halfVStep = 0.5f*vStep;
-      tnear = tnear + halfVStep;
-      pos = ray.o + tnear*ray.d;
-
-      float  t;
-
-      float toSplat;
-      long int indices[8];
-      float weights[8];
-      int3 floor_pos;
-
-      if (tfar - tnear > halfVStep)
+      for(t=tnear; t<=tfar; t+=vStep)
         {
-        for(t=tnear; t<=tfar; t+=vStep)
-          {
-          floor_pos.x = floor(pos.x);
-          floor_pos.y = floor(pos.y);
-          floor_pos.z = floor(pos.z);
+        floor_pos.x = floor(pos.x);
+        floor_pos.y = floor(pos.y);
+        floor_pos.z = floor(pos.z);
 
-          // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
-          splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
+        // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
+        splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
 
-          // Compute the value to be splatted
-          toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep;
-          splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
-
-          // Move to next position
-          pos += step;
-          }
-
-        // Last position
-        toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep * (tfar - t + halfVStep) / vStep;
+        // Compute the value to be splatted
+        toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep;
         splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
+
+        // Move to next position
+        pos += step;
         }
+
+      // Last position
+      toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep * (tfar - t + halfVStep) / vStep;
+      splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
       }
+    }
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
