@@ -10,7 +10,7 @@
 #endif
 
 /**
- * \file rtkconjugategradienttest.cxx
+ * \file rtkconjugategradientreconstructiontest.cxx
  *
  * \brief Functional test for ConjugateGradient reconstruction
  *
