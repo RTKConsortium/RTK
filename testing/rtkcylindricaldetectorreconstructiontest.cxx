@@ -97,7 +97,7 @@ int main(int, char** )
   // Geometry object
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
-  geometry->SetRadiusCylindricalDetector(600);
+  geometry->SetRadiusCylindricalDetector(200);
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
@@ -144,7 +144,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 1: Joseph forward and back projectors ******" << std::endl;
 
   conjugategradient->SetForwardProjectionFilter(0);
-  conjugategradient->SetBackProjectionFilter( 0 );
+  conjugategradient->SetBackProjectionFilter(1);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
