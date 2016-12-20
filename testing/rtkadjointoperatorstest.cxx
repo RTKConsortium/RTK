@@ -40,7 +40,6 @@ int main(int, char** )
   const unsigned int NumberOfProjectionImages = 180;
 #endif
 
-
   // Random image sources
   typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
@@ -55,7 +54,6 @@ int main(int, char** )
   RandomImageSourceType::PointType origin;
   RandomImageSourceType::SizeType size;
   RandomImageSourceType::SpacingType spacing;
-
 
   // Volume metadata
   origin[0] = -127.;
@@ -125,59 +123,69 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( randomProjectionsSource->Update() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( constantProjectionsSource->Update() );
 
-
   // Geometry object
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
-  std::cout << "\n\n****** Joseph Forward projector ******" << std::endl;
+  for (unsigned int panel = 0; panel<2; panel++)
+    {
+    if (panel==0)
+      std::cout << "\n\n****** Testing with flat panel ******" << std::endl;
+    else
+      {
+      std::cout << "\n\n****** Testing with cylindrical panel ******" << std::endl;
+      geometry->SetRadiusCylindricalDetector(200);
+      }
 
-  typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JosephForwardProjectorType;
-  JosephForwardProjectorType::Pointer fw = JosephForwardProjectorType::New();
-  fw->SetInput(0, constantProjectionsSource->GetOutput());
-  fw->SetInput(1, randomVolumeSource->GetOutput());
-  fw->SetGeometry( geometry );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
+      std::cout << "\n\n****** Joseph Forward projector ******" << std::endl;
 
-  std::cout << "\n\n****** Joseph Back projector ******" << std::endl;
-  
-  typedef rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType> JosephBackProjectorType;
-  JosephBackProjectorType::Pointer bp = JosephBackProjectorType::New();
-  bp->SetInput(0, constantVolumeSource->GetOutput());
-  bp->SetInput(1, randomProjectionsSource->GetOutput());
-  bp->SetGeometry( geometry.GetPointer() );
-  
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
+      typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JosephForwardProjectorType;
+      JosephForwardProjectorType::Pointer fw = JosephForwardProjectorType::New();
+      fw->SetInput(0, constantProjectionsSource->GetOutput());
+      fw->SetInput(1, randomVolumeSource->GetOutput());
+      fw->SetGeometry( geometry );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
 
-  CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
-  std::cout << "\n\nTest PASSED! " << std::endl;
+      std::cout << "\n\n****** Joseph Back projector ******" << std::endl;
 
-#ifdef USE_CUDA
-  std::cout << "\n\n****** Cuda Ray Cast Forward projector ******" << std::endl;
+      typedef rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType> JosephBackProjectorType;
+      JosephBackProjectorType::Pointer bp = JosephBackProjectorType::New();
+      bp->SetInput(0, constantVolumeSource->GetOutput());
+      bp->SetInput(1, randomProjectionsSource->GetOutput());
+      bp->SetGeometry( geometry.GetPointer() );
 
-  typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> CudaForwardProjectorType;
-  CudaForwardProjectorType::Pointer cfw = CudaForwardProjectorType::New();
-  cfw->SetInput(0, constantProjectionsSource->GetOutput());
-  cfw->SetInput(1, randomVolumeSource->GetOutput());
-  cfw->SetGeometry( geometry );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cfw->Update() );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
 
-  std::cout << "\n\n****** Cuda Ray Cast Back projector ******" << std::endl;
+      CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
+      std::cout << "\n\nTest PASSED! " << std::endl;
 
-  typedef rtk::CudaRayCastBackProjectionImageFilter CudaRayCastBackProjectorType;
-  CudaRayCastBackProjectorType::Pointer cbp = CudaRayCastBackProjectorType::New();
-  cbp->SetInput(0, constantVolumeSource->GetOutput());
-  cbp->SetInput(1, randomProjectionsSource->GetOutput());
-  cbp->SetGeometry( geometry.GetPointer() );
-  cbp->SetNormalize(false);
+    #ifdef USE_CUDA
+      std::cout << "\n\n****** Cuda Ray Cast Forward projector ******" << std::endl;
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cbp->Update() );
+      typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> CudaForwardProjectorType;
+      CudaForwardProjectorType::Pointer cfw = CudaForwardProjectorType::New();
+      cfw->SetInput(0, constantProjectionsSource->GetOutput());
+      cfw->SetInput(1, randomVolumeSource->GetOutput());
+      cfw->SetGeometry( geometry );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( cfw->Update() );
 
-  CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), cbp->GetOutput(), randomProjectionsSource->GetOutput(), cfw->GetOutput());
-  std::cout << "\n\nTest PASSED! " << std::endl;
-#endif
+      std::cout << "\n\n****** Cuda Ray Cast Back projector ******" << std::endl;
+
+      typedef rtk::CudaRayCastBackProjectionImageFilter CudaRayCastBackProjectorType;
+      CudaRayCastBackProjectorType::Pointer cbp = CudaRayCastBackProjectorType::New();
+      cbp->SetInput(0, constantVolumeSource->GetOutput());
+      cbp->SetInput(1, randomProjectionsSource->GetOutput());
+      cbp->SetGeometry( geometry.GetPointer() );
+      cbp->SetNormalize(false);
+
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( cbp->Update() );
+
+      CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), cbp->GetOutput(), randomProjectionsSource->GetOutput(), cfw->GetOutput());
+      std::cout << "\n\nTest PASSED! " << std::endl;
+    #endif
+    }
 
   return EXIT_SUCCESS;
 }
