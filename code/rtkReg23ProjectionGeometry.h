@@ -19,7 +19,6 @@
 #ifndef rtkReg23ProjectionGeometry_h
 #define rtkReg23ProjectionGeometry_h
 
-
 //RTK
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkWin32Header.h"
