@@ -131,9 +131,9 @@ public:
   itkTypeMacro(CudaDataManager, Object);
 
   /** total buffer size in bytes */
-  void SetBufferSize(unsigned int num);
+  void SetBufferSize(size_t num);
 
-  unsigned int GetBufferSize() 
+  size_t GetBufferSize() 
     {
     return m_BufferSize;
     }
@@ -210,7 +210,7 @@ private:
 
 protected:
 
-  unsigned int m_BufferSize;   // # of bytes
+  size_t m_BufferSize;   // # of bytes
 
   CudaContextManager* m_ContextManager;
 
