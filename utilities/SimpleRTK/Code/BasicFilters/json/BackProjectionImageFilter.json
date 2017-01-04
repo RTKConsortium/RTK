@@ -16,7 +16,7 @@
       "type" : "ThreeDCircularProjectionGeometry*",
       "default" : "0",
 	  "itk_type" : "typename FilterType::GeometryPointer",
-      "custom_itk_cast" : "filter->SetGeometry( (ProjectionGeometry<3>*)this->m_Geometry->GetRTKBase() );"
+      "custom_itk_cast" : "filter->SetGeometry( const_cast<rtk::ThreeDCircularProjectionGeometry*>(dynamic_cast<const rtk::ThreeDCircularProjectionGeometry*>(this->GetGeometry()->GetRTKBase())) );"
     }
   ]
 }
