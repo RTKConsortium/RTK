@@ -23,7 +23,7 @@
 
 #include <itkInPlaceImageFilter.h>
 #include <itkConceptChecking.h>
-#include "rtkProjectionGeometry.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
 {
@@ -55,7 +55,7 @@ public:
   typedef typename TInputImage::PixelType                   InputPixelType;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
-  typedef rtk::ProjectionGeometry<TOutputImage::ImageDimension>     GeometryType;
+  typedef rtk::ThreeDCircularProjectionGeometry                     GeometryType;
   typedef typename GeometryType::Pointer                            GeometryPointer;
   typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
   typedef itk::Image<InputPixelType, TInputImage::ImageDimension-1> ProjectionImageType;
@@ -114,12 +114,12 @@ protected:
       instead of the physical point to physical point projection matrix provided by Geometry */
   ProjectionMatrixType GetIndexToIndexProjectionMatrix(const unsigned int iProj);
 
+  /** RTK geometry object */
+  GeometryPointer m_Geometry;
+
 private:
   BackProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
-
-  /** RTK geometry object */
-  GeometryPointer m_Geometry;
 
   /** Flip projection flag: infludences GetProjection and
     GetIndexToIndexProjectionMatrix for optimization */

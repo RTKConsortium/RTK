@@ -176,7 +176,7 @@ public:
                                       double transZ);
 
   /** Compute the magnification matrix from 3D to 2D given a source to detector
-   * and to detector distance. */
+   * and to isocenter distance. */
   static Superclass::MatrixType ComputeProjectionMagnificationMatrix(double sdd,
                                                                      double sid);
 
