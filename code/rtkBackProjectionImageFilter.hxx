@@ -149,6 +149,12 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   this->SetTranspose(true);
+
+  // Check if detector is cylindrical
+  if(this->m_Geometry->GetRadiusCylindricalDetector() != 0)
+    {
+    itkGenericExceptionMacro(<< "Voxel-based back projector can currently not handle cylindrical detectors")
+    }
 }
 
 /**

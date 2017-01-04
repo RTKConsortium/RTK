@@ -61,6 +61,8 @@ protected:
   FDKBackProjectionImageFilter() {};
   ~FDKBackProjectionImageFilter() ITK_OVERRIDE {};
 
+  void GenerateOutputInformation() ITK_OVERRIDE;
+
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
