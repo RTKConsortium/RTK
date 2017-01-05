@@ -2,7 +2,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 
 #ifdef USE_CUDA
@@ -10,13 +9,13 @@
 #endif
 
 /**
- * \file rtkconjugategradientreconstructiontest.cxx
+ * \file rtkcylindricaldetectorreconstructiontest.cxx
  *
- * \brief Functional test for ConjugateGradient reconstruction
+ * \brief Functional test for conjugate gradient reconstruction with cylindrical-detector
  *
- * This test generates the projections of an ellipsoid and reconstructs the CT
- * image using the ConjugateGradient algorithm with different backprojectors (Voxel-Based,
- * Joseph). The generated results are compared to the
+ * This test generates the projections of an ellipsoid onto a cylindrical detector,
+ * and reconstructs the CT image using the conjugate gradient algorithm
+ * with different backprojectors (Joseph, CudaRayCast). The generated results are compared to the
  * expected results (analytical calculation).
  *
  * \author Cyril Mory
@@ -27,7 +26,7 @@ int main(int, char** )
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
 
-#ifdef USE_CUDA
+#ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -38,7 +37,6 @@ int main(int, char** )
 #else
   const unsigned int NumberOfProjectionImages = 180;
 #endif
-
 
   // Constant image sources
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
@@ -97,6 +95,7 @@ int main(int, char** )
   // Geometry object
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometry = GeometryType::New();
+  geometry->SetRadiusCylindricalDetector(200);
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
@@ -125,62 +124,40 @@ int main(int, char** )
   dsl->SetInput( tomographySource->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
+  // Define weights (for weighted least squares)
+  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
+  uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
+  uniformWeightsSource->SetConstant(1.0);
+
   // ConjugateGradient reconstruction filtering
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter< OutputImageType > ConjugateGradientType;
   ConjugateGradientType::Pointer conjugategradient = ConjugateGradientType::New();
   conjugategradient->SetInput( tomographySource->GetOutput() );
   conjugategradient->SetInput(1, rei->GetOutput());
+  conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
   conjugategradient->SetGeometry( geometry );
   conjugategradient->SetNumberOfIterations( 5 );
+  conjugategradient->SetRegularized(false);
 
-  // In all cases, use the Joseph forward projector
+  std::cout << "\n\n****** Case 1: Joseph forward and back projectors ******" << std::endl;
+
   conjugategradient->SetForwardProjectionFilter(0);
-  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
-  uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
-  uniformWeightsSource->SetConstant(1.0);
-
-  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
-
-  conjugategradient->SetBackProjectionFilter( 0 );
-  conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
-
-  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-
-  std::cout << "\n\n****** Case 2: Joseph Backprojector, laplacian regularization ******" << std::endl;
-
-  conjugategradient->SetBackProjectionFilter( 1 );
-  conjugategradient->SetRegularized(true);
-  conjugategradient->SetGamma(0.01);
+  conjugategradient->SetBackProjectionFilter(1);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
+  std::cout << "\n\n****** Case 2: CUDA ray cast forward and back projectors ******" << std::endl;
 
-  conjugategradient->SetForwardProjectionFilter(2);
-  conjugategradient->SetBackProjectionFilter( 2 );
-  conjugategradient->SetRegularized(false);
+  conjugategradient->SetForwardProjectionFilter(1);
+  conjugategradient->SetBackProjectionFilter(4);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
-
-  std::cout << "\n\n****** Case 4: Joseph Backprojector, weighted least squares  ******" << std::endl;
-
-  uniformWeightsSource->SetConstant(2.0);
-  conjugategradient->SetPreconditioned(true);
-  conjugategradient->SetRegularized(false);
-
-  conjugategradient->SetBackProjectionFilter( 1 );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
-
-  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
 }

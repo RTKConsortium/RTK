@@ -37,6 +37,12 @@ void
 CudaBackProjectionImageFilter
 ::GPUGenerateData()
 {
+  // Check if detector is cylindrical
+  if(this->m_Geometry->GetRadiusCylindricalDetector() != 0)
+    {
+    itkGenericExceptionMacro(<< "Cuda Voxel-based back projector can currently not handle cylindrical detectors")
+    }
+
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
