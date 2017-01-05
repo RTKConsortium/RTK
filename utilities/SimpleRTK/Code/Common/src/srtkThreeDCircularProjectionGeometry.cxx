@@ -1,4 +1,4 @@
-/*=========================================================================
+ /*=========================================================================
  *
  *  Copyright RTK Consortium
  *
@@ -160,6 +160,16 @@ public:
     return std::vector< double >( m.GetVnlMatrix().begin(), m.GetVnlMatrix().end() );
     }
 
+  const double GetRadiusCylindricalDetector()
+    {
+    return this->m_ProjectionGeometry->GetRadiusCylindricalDetector();
+    }
+
+  void SetRadiusCylindricalDetector( const double radius )
+    {
+    this->m_ProjectionGeometry->SetRadiusCylindricalDetector(radius);
+    }
+
   /** Add the projection */
   void AddProjection(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
     {
@@ -313,6 +323,18 @@ const std::vector<double>  ThreeDCircularProjectionGeometry::GetProjectionCoordi
     assert( m_PimpleThreeDCircularProjectionGeometry );
     return this->m_PimpleThreeDCircularProjectionGeometry->GetProjectionCoordinatesToFixedSystemMatrix(i);
   }
+
+const double ThreeDCircularProjectionGeometry::GetRadiusCylindricalDetector()
+  {
+  assert( m_PimpleThreeDCircularProjectionGeometry );
+  return this->m_PimpleThreeDCircularProjectionGeometry->GetRadiusCylindricalDetector();
+  }
+
+void ThreeDCircularProjectionGeometry::SetRadiusCylindricalDetector( const double radius )
+  {
+  this->m_PimpleThreeDCircularProjectionGeometry->SetRadiusCylindricalDetector(radius);
+  }
+
 
 void ThreeDCircularProjectionGeometry::AddProjection(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy)
   {

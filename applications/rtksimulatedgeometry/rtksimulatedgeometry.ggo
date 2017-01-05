@@ -16,4 +16,5 @@ option "source_x"    - "In-place x source position wrt to central ray"         d
 option "source_y"    - "In-place y source position wrt to central ray"         double no  default="0"
 option "out_angle"   - "Out of plane angle"                                    double no  default="0"
 option "in_angle"    - "In plane angle"                                        double no  default="0"
+option "rad_cyl"     - "Radius cylinder of cylindrical detector"               double no  default="0"
 

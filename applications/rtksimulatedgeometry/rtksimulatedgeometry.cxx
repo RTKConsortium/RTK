@@ -44,6 +44,10 @@ int main(int argc, char * argv[])
                             args_info.source_y_arg);
     }
 
+  // Set cylindrical detector radius
+  if (args_info.rad_cyl_given)
+    geometry->SetRadiusCylindricalDetector(args_info.rad_cyl_arg);
+
   // Write
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
     rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();

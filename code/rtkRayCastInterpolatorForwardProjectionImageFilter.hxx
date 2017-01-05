@@ -47,12 +47,6 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
   interpolator->SetInputImage( this->GetInput(1) );
   interpolator->SetTransform(itk::IdentityTransform<double,3>::New());
 
-  // Iterators on volume input and output
-  typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
-  InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
-  OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
-
   // Get inverse volume direction in an homogeneous matrix
   itk::Matrix<double, Dimension, Dimension> volDirInvNotHom;
   volDirInvNotHom = this->GetInput(1)->GetDirection().GetInverse();
@@ -81,36 +75,21 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
   typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volMatrix;
   volMatrix = volRayCastOrigin * volDirectionInv * volOriginInv;
 
-  // Go over each projection
-  for(unsigned int iProj=outputRegionForThread.GetIndex(2);
-                   iProj<outputRegionForThread.GetIndex(2)+outputRegionForThread.GetSize(2);
-                   iProj++)
+  // Iterators on volume input and output
+  typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+  InputRegionIterator *itIn = geometry->GetProjectionsRegionConstIteratorRayBased(this->GetInput(),
+                                                                                  outputRegionForThread,
+                                                                                  volMatrix);
+  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+  OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
+
+  // Go over each projection pixel
+  for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
     {
     // Compute source position and change coordinate system
-    typename Superclass::GeometryType::HomogeneousVectorType sourcePosition;
-    sourcePosition = volMatrix * geometry->GetSourcePosition(iProj);
-    interpolator->SetFocalPoint( &sourcePosition[0] );
+    interpolator->SetFocalPoint( &(itIn->GetSourcePosition()[0]) );
 
-    // Compute matrix to transform projection index to volume coordinates
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType matrix;
-    matrix = volMatrix.GetVnlMatrix() *
-             geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-             GetIndexToPhysicalPointMatrix( this->GetOutput() ).GetVnlMatrix();
-
-    // Go over each pixel of the projection
-    typename TInputImage::PointType point;
-    for(unsigned int pix=0; pix<nPixelPerProj; pix++, ++itIn, ++itOut)
-      {
-      // Compute point coordinate in volume depending on projection index
-      for(unsigned int i=0; i<Dimension; i++)
-        {
-        point[i] = matrix[i][Dimension];
-        for(unsigned int j=0; j<Dimension; j++)
-          point[i] += matrix[i][j] * itOut.GetIndex()[j];
-        }
-
-      itOut.Set( itIn.Get() + interpolator->Evaluate(point) );
-      }
+    itOut.Set( itIn->Get() + interpolator->Evaluate( &(itIn->GetPixelPosition()[0]) ) );
     }
 }
 

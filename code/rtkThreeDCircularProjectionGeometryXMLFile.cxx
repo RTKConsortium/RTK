@@ -75,7 +75,9 @@ StartElement(const char * name,const char **atts)
         m_Version = atoi(atts[1]);
       atts += 2;
       }
-    if(m_Version != this->CurrentVersion)
+    // Version 3 is backward compatible with version 2
+    if(  m_Version != this->CurrentVersion &&
+       !(m_Version == 2 && this->CurrentVersion == 3) )
       itkGenericExceptionMacro(<< "Incompatible version of input geometry (v" << m_Version
                                << ") with current geometry (v" << this->CurrentVersion
                                << "). You must re-generate your geometry file again.");
@@ -119,6 +121,12 @@ EndElement(const char *name)
 
   if(itksys::SystemTools::Strucmp(name, "ProjectionOffsetY") == 0)
     m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str() );
+
+  if(itksys::SystemTools::Strucmp(name, "RadiusCylindricalDetector") == 0)
+    {
+    double radiusCylindricalDetector = atof(this->m_CurCharacterData.c_str() );
+    this->m_OutputObject->SetRadiusCylindricalDetector(radiusCylindricalDetector);
+    }
 
   if(itksys::SystemTools::Strucmp(name, "Matrix") == 0)
     {
@@ -242,6 +250,10 @@ WriteFile()
                                "OutOfPlaneAngle",
                                true);
 
+  const double radius = this->m_InputObject->GetRadiusCylindricalDetector();
+  if (0. != radius)
+    WriteLocalParameter(output, indent, radius, "RadiusCylindricalDetector");
+
   // Second, write per projection parameters (if corresponding parameter is not global)
   const double radiansToDegrees = 45. / vcl_atan(1.);
   for(unsigned int i = 0; i<this->m_InputObject->GetMatrices().size(); i++)
@@ -335,19 +347,18 @@ WriteGlobalParameter(std::ofstream &output,
     double val = v[0];
     if(convertToDegrees)
       val *= 45. / vcl_atan(1.);
-    std::string ss(s);
-    output << indent;
-    this->WriteStartElement(ss, output);
-    output << val;
-    this->WriteEndElement(ss,output);
-    output << std::endl;
+
+    WriteLocalParameter(output, indent, val, s);
     }
   return true;
 }
 
 void
 ThreeDCircularProjectionGeometryXMLFileWriter::
-WriteLocalParameter(std::ofstream &output, const std::string &indent, const double &v, const std::string &s)
+WriteLocalParameter(std::ofstream &output,
+                    const std::string &indent,
+                    const double &v,
+                    const std::string &s)
 {
   std::string ss(s);
   output << indent << indent;

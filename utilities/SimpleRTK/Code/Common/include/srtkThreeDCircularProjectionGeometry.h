@@ -79,6 +79,9 @@ public:
   const std::vector<double>  GetMatrix( const unsigned int i) const;
   const std::vector<double>  GetProjectionCoordinatesToFixedSystemMatrix( const unsigned int i) const;
 
+  const double GetRadiusCylindricalDetector();
+  void SetRadiusCylindricalDetector(const double radius);
+
   /** Add the projection with angles in degress
    * @{
    */

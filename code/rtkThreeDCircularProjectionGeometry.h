@@ -21,7 +21,6 @@
 
 #include "rtkWin32Header.h"
 #include "rtkProjectionGeometry.h"
-#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -45,6 +44,9 @@ namespace rtk
  *
  * \ingroup ProjectionGeometry
  */
+
+template<class TImage> class ProjectionsRegionConstIteratorRayBased;
+
 class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
@@ -198,6 +200,13 @@ public:
   const HomogeneousVectorType GetSourcePosition(const unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
+   * in the detector coordinate system (u,v,u^v). Note that the matrix is square but the
+   * third element of the projection coordinates is ignored because projection
+   * coordinates are 2D. This is meant to manipulate more easily stack of
+   * projection images. */
+  const ThreeDHomogeneousMatrixType GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const;
+
+  /** Compute the ith matrix to convert projection coordinates to coordinates
    * in the fixed coordinate system. Note that the matrix is square but the
    * third element of the projection coordinates is ignored because projection
    * coordinates are 2D. This is meant to manipulate more easily stack of
@@ -217,8 +226,24 @@ public:
   double ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
                                          const double tiltedCoord) const;
 
+  template<class TImage>
+  ProjectionsRegionConstIteratorRayBased<TImage>*
+  GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
+                                            const typename TImage::RegionType & region,
+                                            const ThreeDHomogeneousMatrixType &postMat);
+
+  template<class TImage>
+  ProjectionsRegionConstIteratorRayBased<TImage>*
+  GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
+                                            const typename TImage::RegionType & region);
+
+  /** Accessor for the radius of curved detector. The default is 0 and it means
+   * a flat detector. */
+  itkGetMacro(RadiusCylindricalDetector, double)
+  itkSetMacro(RadiusCylindricalDetector, double)
+
 protected:
-  ThreeDCircularProjectionGeometry() {};
+  ThreeDCircularProjectionGeometry();
   ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
@@ -293,6 +318,10 @@ protected:
   std::vector<double> m_ProjectionOffsetsX;
   std::vector<double> m_ProjectionOffsetsY;
 
+  /** Radius of curved detector. The default is 0 and it means a flat detector. */
+  double m_RadiusCylindricalDetector;
+
+  /** Matrices to change coordiate systems. */
   std::vector<TwoDHomogeneousMatrixType>         m_ProjectionTranslationMatrices;
   std::vector<Superclass::MatrixType>            m_MagnificationMatrices;
   std::vector<ThreeDHomogeneousMatrixType>       m_RotationMatrices;
@@ -304,4 +333,38 @@ private:
 };
 }
 
-#endif // rtkThreeDCircularProjectionGeometry_h
+#include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
+#include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"
+
+template<class TImage>
+rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
+rtk::ThreeDCircularProjectionGeometry::
+GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
+                                          const typename TImage::RegionType & region,
+                                          const ThreeDHomogeneousMatrixType &postMat)
+{
+  if(m_RadiusCylindricalDetector==0.)
+    {
+    typedef ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage> IteratorType;
+    return new IteratorType(ptr, region, this, postMat);
+    }
+  else
+    {
+    typedef ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage> IteratorType;
+    return new IteratorType(ptr, region, this, postMat);
+    }
+}
+
+template<class TImage>
+rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
+rtk::ThreeDCircularProjectionGeometry::
+GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
+                                          const typename TImage::RegionType & region)
+{
+  ThreeDHomogeneousMatrixType postMat;
+  postMat.SetIdentity();
+  return this->GetProjectionsRegionConstIteratorRayBased(ptr, region, postMat);
+}
+
+
+#endif // __rtkThreeDCircularProjectionGeometry_h

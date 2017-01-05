@@ -63,7 +63,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
 
-
 template< typename TOutputImage>
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::
@@ -298,16 +297,16 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   typename MultiplyFilterType::Pointer MultiplyFilterForC = MultiplyFilterType::New();
 
   if (m_IterationCosts)
-  {
-      MultiplyFilterForC->SetInput(0,this->GetInput(1));
-      MultiplyFilterForC->SetInput(1,this->GetInput(2));
-      MultiplyFilterForC->Update();
-      MultiplyFilterForC->SetInput(1,MultiplyFilterForC->GetOutput());
-      MultiplyFilterForC->Update();
-      StatisticsImageFilterForC->SetInput(MultiplyFilterForC->GetOutput());
-      StatisticsImageFilterForC->Update();
-      m_ConjugateGradientFilter->SetC(0.5*StatisticsImageFilterForC->GetSum());
-  }
+    {
+    MultiplyFilterForC->SetInput(0,this->GetInput(1));
+    MultiplyFilterForC->SetInput(1,this->GetInput(2));
+    MultiplyFilterForC->Update();
+    MultiplyFilterForC->SetInput(1,MultiplyFilterForC->GetOutput());
+    MultiplyFilterForC->Update();
+    StatisticsImageFilterForC->SetInput(MultiplyFilterForC->GetOutput());
+    StatisticsImageFilterForC->Update();
+    m_ConjugateGradientFilter->SetC(0.5*StatisticsImageFilterForC->GetSum());
+    }
 
   if(m_MeasureExecutionTimes)
     {

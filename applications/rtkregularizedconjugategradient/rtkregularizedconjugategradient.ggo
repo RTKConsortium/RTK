@@ -1,18 +1,20 @@
 package "rtkregularizedconjugategradient"
 purpose "Alternates between conjugate gradient reconstruction and regularization"
 
-option "verbose"     v "Verbose execution"                                     flag   off
-option "config"      - "Config file"                                           string no
-option "geometry"    g "XML geometry file name"                                string yes
-option "output"      o "Output file name"                                      string yes
-option "niter"       n "Number of iterations"                                  int    no   default="5"
-option "time"        t "Records elapsed time during the process"               flag   off
-option "input"       i "Input volume"                                          string no
-option "weights"     w "Weights file for Weighted Least Squares (WLS)"         string no
-option "preconditioned" - "For WLS only: performs preconditioned CG with a preconditioner computed from the weights" flag off
-option "gammalaplacian"	     - "Laplacian regularization weight"			float no default="0"
-option "cgiter"      - "Number of conjugate gradient nested iterations"        int    no   default="4"
-option "nocudacg"    - "Do not perform conjugate gradient calculations on GPU"        flag   off
+option "verbose"        v "Verbose execution"                                                                         flag   off
+option "config"         - "Config file"                                                                               string no
+option "geometry"       g "XML geometry file name"                                                                    string yes
+option "output"         o "Output file name"                                                                          string yes
+option "niter"          n "Number of iterations"                                                                      int    no   default="5"
+option "time"           t "Records elapsed time during the process"                                                   flag   off  
+option "input"          i "Input volume"                                                                              string no
+option "weights"        w "Weights file for Weighted Least Squares (WLS)"                                             string no
+option "preconditioned" - "For WLS only: performs preconditioned CG with a preconditioner computed from the weights"  flag   off
+option "gammalaplacian"	- "Laplacian regularization weight"                                                           float  no   default="0"
+option "cgiter"         - "Number of conjugate gradient nested iterations"                                            int    no   default="4"
+option "nocudacg"       - "Do not perform conjugate gradient calculations on GPU"                                     flag   off
+option "mask"           m "Apply a support binary mask: reconstruction kept null outside the mask)"                   string no
+option "costs"          - "Show residual costs at each iteration at the end of the process"                           flag   off
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"

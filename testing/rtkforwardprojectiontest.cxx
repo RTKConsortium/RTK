@@ -210,7 +210,19 @@ int main(int , char** )
   CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 4: Shepp-Logan, inner ray source ******" << std::endl;
+  std::cout << "\n\n****** Case 4: Shepp-Logan, outer ray source, cylindrical detector ******" << std::endl;
+  geometry->SetRadiusCylindricalDetector(600);
+
+  slp->SetGeometry(geometry);
+  slp->Update();
+
+  jfp->SetGeometry( geometry );
+  stream->Update();
+
+  CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 44, 255.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 5: Shepp-Logan, inner ray source ******" << std::endl;
   geometry = GeometryType::New();
   for(unsigned int i=0; i<NumberOfProjectionImages; i++)
     geometry->AddProjection(120., 1000., i*8.);
