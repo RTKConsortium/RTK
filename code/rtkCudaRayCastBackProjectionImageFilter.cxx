@@ -109,8 +109,8 @@ CudaRayCastBackProjectionImageFilter
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
-    typename GeometryType::ThreeDHomogeneousMatrixType translatedProjectionIndexTransformMatrix;
-    typename GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix;
+    GeometryType::ThreeDHomogeneousMatrixType translatedProjectionIndexTransformMatrix;
+    GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix;
     translatedVolumeTransformMatrix.Fill(0);
 
     // The matrices required depend on the type of detector
