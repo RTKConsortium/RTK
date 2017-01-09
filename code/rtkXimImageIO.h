@@ -120,7 +120,7 @@ public:
   virtual void Write(const void* buffer) ITK_OVERRIDE;
 
 private:
-  template<typename T> size_t SetPropertyValue(char property_name[32], itk::uint32_t value_length, FILE *fp, Xim_header *xim);
+  template<typename T> size_t SetPropertyValue(char *property_name, itk::uint32_t value_length, FILE *fp, Xim_header *xim);
 
   int          m_ImageDataStart;
   itk::int32_t m_BytesPerPixel;

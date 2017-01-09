@@ -81,6 +81,7 @@ StartElement(const char * name,const char **atts)
       itkGenericExceptionMacro(<< "Incompatible version of input geometry (v" << m_Version
                                << ") with current geometry (v" << this->CurrentVersion
                                << "). You must re-generate your geometry file again.");
+    this->m_OutputObject->Clear();
     }
 }
 

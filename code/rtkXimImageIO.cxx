@@ -22,8 +22,10 @@
 #include "rtkXimImageIO.h"
 #include <itkMetaDataObject.h>
 
+#define PROPERTY_NAME_MAX_LENGTH 256
+
 template<typename T>
-size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t value_length, FILE *fp, Xim_header *xim)
+size_t rtk::XimImageIO::SetPropertyValue(char *property_name, itk::uint32_t value_length, FILE *fp, Xim_header *xim)
 {
   T property_value;
   T * unused_property_value;
@@ -33,6 +35,7 @@ size_t rtk::XimImageIO::SetPropertyValue(char property_name[32], itk::uint32_t v
   {
     unused_property_value = new T[value_length];
     addNelements += fread((void *)unused_property_value, sizeof(T), value_length, fp);
+    delete[] unused_property_value;
     return addNelements;
   }
 
@@ -152,7 +155,7 @@ void rtk::XimImageIO::ReadImageInformation()
   // Properties Readding:
   nelements += fread((void *)&xim.numberOfProperties, sizeof(itk::int32_t), 1, fp);
   itk::int32_t property_name_length;
-  char property_name[32];
+  char property_name[PROPERTY_NAME_MAX_LENGTH];
   itk::int32_t property_type;
   itk::int32_t property_value_length = 0;
   size_t theoretical_nelements = nelements; // Same as reseting
@@ -160,6 +163,8 @@ void rtk::XimImageIO::ReadImageInformation()
   for (size_t i = 0; i < xim.numberOfProperties; i++)
   {
     nelements += fread((void *)&property_name_length, sizeof(itk::int32_t), 1, fp);
+    if(property_name_length>PROPERTY_NAME_MAX_LENGTH)
+      itkGenericExceptionMacro(<< "Property name is too long, i.e., " << property_name_length);
     nelements += fread((void *)&property_name, sizeof(char), property_name_length, fp);
     nelements += fread((void *)&property_type, sizeof(itk::int32_t), 1, fp);
     theoretical_nelements += property_name_length + 2;
@@ -220,6 +225,7 @@ void rtk::XimImageIO::ReadImageInformation()
   }
   else
     itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", 6000);
+  delete[] xim.histogramData;
 }
 //--------------------------------------------------------------------
 bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)

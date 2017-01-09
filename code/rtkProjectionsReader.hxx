@@ -380,7 +380,8 @@ void ProjectionsReader<TOutputImage>
       !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
       imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
     PropagateParametersToMiniPipeline< itk::Image<unsigned short, OutputImageDimension> >();
-  else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") )
+  else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") ||
+           !strcmp(imageIO->GetNameOfClass(), "XimImageIO"))
     PropagateParametersToMiniPipeline< itk::Image<unsigned int, OutputImageDimension> >();
   else
     PropagateParametersToMiniPipeline< OutputImageType >();

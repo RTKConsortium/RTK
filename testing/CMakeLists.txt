@@ -174,8 +174,8 @@ add_executable(rtkvariantest rtkvariantest.cxx)
 target_link_libraries(rtkvariantest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkvariantest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest
-             DATA{Data/Input/Varian/raw.hnd,acqui.xml}
-             DATA{Data/Baseline/Varian/attenuation.mha,geometry.xml})
+             DATA{Data/Input/Varian/raw.hnd,acqui.xml,Proj_00000.xim,acqui_probeam.xml}
+             DATA{Data/Baseline/Varian/attenuation.mha,geometry.xml,attenuationProBeam.mha,geometryProBeam.xml})
 
 add_executable(rtkelektatest rtkelektatest.cxx)
 target_link_libraries(rtkelektatest ${RTK_LIBRARIES})
