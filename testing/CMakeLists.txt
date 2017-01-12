@@ -403,3 +403,12 @@ add_test(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest
 add_executable(rtkgeometryfrommatrixtest rtkgeometryfrommatrixtest.cxx)
 target_link_libraries(rtkgeometryfrommatrixtest ${RTK_LIBRARIES})
 add_test(rtkgeometryfrommatrixtest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryfrommatrixtest)
+
+add_executable(rtkoratest rtkoratest.cxx)
+target_link_libraries(rtkoratest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkoratest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkoratest
+             DATA{Data/Input/Ora/0_afterLog.ora.xml}
+             DATA{Data/Baseline/Ora/geometry.xml})
+
+
