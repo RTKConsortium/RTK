@@ -104,6 +104,32 @@ void OraGeometryReader::GenerateData()
       itkExceptionMacro(<< "No direction or Direction in " << m_ProjectionsFileNames[noProj]);
     Matrix3x3Type mat = ReadMatrix3x3FromString(matx->GetTextChild()->GetText());
 
+    // Find table height
+    const itk::DOMNode *thx = vmi->GetChild("models");
+    if(thx != ITK_NULLPTR)
+      thx = thx->GetChild("table_model");
+    if(thx != ITK_NULLPTR)
+      thx = thx->GetChild("table");
+    if(thx != ITK_NULLPTR)
+      thx = thx->GetChild("table_axis_distance_cm");
+    if(thx == ITK_NULLPTR)
+      itkExceptionMacro(<< "Could not read table_axis_distance_cm " << m_ProjectionsFileNames[noProj]);
+    double th = atof(thx->GetTextChild()->GetText().c_str());
+    sp[2] -= th*10.;
+    dp[2] -= th*10.;
+
+    // Find ring axial position
+    const itk::DOMNode *ax = vmi->GetChild("fppi");
+    if(ax != ITK_NULLPTR)
+      ax = ax->GetChild("metadata");
+    if(ax != ITK_NULLPTR)
+      ax = ax->GetChild("longitudinalposition_cm");
+    if(ax == ITK_NULLPTR)
+      itkExceptionMacro(<< "Could not read longitudinalposition_cm" << m_ProjectionsFileNames[noProj]);
+    double a = atof(ax->GetTextChild()->GetText().c_str());
+    sp[1] -= a*10.;
+    dp[1] -= a*10.;
+
     // Got it, add to geometry
     m_Geometry->AddProjection(sp,
                               dp,

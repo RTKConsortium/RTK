@@ -32,6 +32,12 @@ int main(int argc, char * argv[])
   names->SetRegularExpression(args_info.regexp_arg);
   names->SetSubMatch(args_info.submatch_arg);
 
+  if(args_info.verbose_flag)
+    std::cout << "Regular expression matches "
+              << names->GetFileNames().size()
+              << " file(s)..."
+              << std::endl;
+
   // Create geometry reader
   rtk::OraGeometryReader::Pointer oraReader = rtk::OraGeometryReader::New();
   oraReader->SetProjectionsFileNames(names->GetFileNames());
