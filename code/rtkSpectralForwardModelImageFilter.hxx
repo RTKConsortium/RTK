@@ -216,10 +216,15 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
     indexDet[0] = energy;
     for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
       {
-      for (unsigned int pulseHeight=m_Thresholds[bin]-1; pulseHeight<m_Thresholds[bin+1]-1; pulseHeight++)
+      for (unsigned int pulseHeight=m_Thresholds[bin]-1; pulseHeight<m_Thresholds[bin+1]; pulseHeight++)
         {
         indexDet[1] = pulseHeight;
-        this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet);
+        // Linear interpolation on the pulse heights: half of the pulses that have "threshold"
+        // height are considered below threshold, the other half are considered above threshold
+        if ((pulseHeight == m_Thresholds[bin]-1) || (pulseHeight == m_Thresholds[bin+1] - 1))
+          this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet) / 2;
+        else
+          this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet);
         }
       }
     }
