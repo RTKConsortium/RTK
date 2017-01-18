@@ -347,7 +347,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
 
   // Special management of single or empty dataset
   if(nProj==1)
-    angularGaps[0] = vnl_math::pi;
+    angularGaps[0] = 2*vnl_math::pi;
   if(nProj<2)
     return angularGaps;
 
