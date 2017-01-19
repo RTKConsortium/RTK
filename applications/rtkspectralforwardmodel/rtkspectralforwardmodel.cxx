@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
   const unsigned int NumberOfSpectralBins = args_info.thresholds_given;
   const unsigned int MaximumEnergy = incidentSpectrumReader->GetOutput()->GetVectorLength();
 
-  // Generate a set of zero-filled decomposed projections
+  // Generate a set of zero-filled photon count projections
   SpectralProjectionsType::Pointer photonCounts = SpectralProjectionsType::New();
   photonCounts->CopyInformation(decomposedProjectionReader->GetOutput());
   photonCounts->SetVectorLength(NumberOfSpectralBins);
