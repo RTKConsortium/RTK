@@ -153,10 +153,8 @@ add_executable(rtkdecomposespectralprojectionstest rtkdecomposespectralprojectio
 target_link_libraries(rtkdecomposespectralprojectionstest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkdecomposespectralprojectionstest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdecomposespectralprojectionstest
-             DATA{Data/Baseline/Spectral/ref_output.mha}
              DATA{Data/Input/Spectral/incident_spectrum.mha}
              DATA{Data/Input/Spectral/material_attenuations.mha}
-             DATA{Data/Input/Spectral/photon_count.mha}
              DATA{Data/Input/Spectral/detector_response.mha})
              
 add_executable(rtkvectorimageconverterstest rtkvectorimageconverterstest.cxx)
