@@ -176,6 +176,10 @@ public:
     itkSetMacro(Preconditioned, bool)
     itkGetMacro(Preconditioned, bool)
 
+    /** Set / Get whether the displaced detector filter should be disabled */
+    itkSetMacro(DisableDisplacedDetectorFilter, bool)
+    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
     /** If Regularized, perform laplacian-based regularization during
      *  reconstruction (gamma is the strength of the regularization) */
     itkSetMacro(Regularized, bool)
@@ -240,6 +244,7 @@ private:
     bool                         m_Preconditioned;
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
+    bool                         m_DisableDisplacedDetectorFilter;
 };
 } //namespace ITK
 

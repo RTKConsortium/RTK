@@ -103,6 +103,13 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 
   typename TOutputImage::RegionType outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
 
+  if(m_Disable)
+    {
+    this->SetInPlace( true );
+    outputPtr->SetLargestPossibleRegion( outputLargestPossibleRegion );
+    return;
+    }
+
   // Compute the X coordinates of the corners of the image
   typename Superclass::InputImageType::PointType corner;
   inputPtr->TransformIndexToPhysicalPoint(inputPtr->GetLargestPossibleRegion().GetIndex(), corner);
@@ -178,7 +185,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   itOut.GoToBegin();
 
   // Not displaced, nothing to do
-  if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
+  if( (fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner)) || m_Disable)
     {
     // If not in place, copy is required
     if(this->GetInput() != this->GetOutput() )
