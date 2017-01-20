@@ -10,6 +10,7 @@ option "subsetsize" - "Streaming option: number of projections processed at a ti
 option "niterations" n "Number of iterations"                                       int                          no   default="3"
 option "lambda"      - "Convergence factor"                                         double                       no   default="0.3"
 option "positivity"  - "Enforces positivity during the reconstruction"              flag                         off
+option "nodisplaced"    - "Disable the displaced detector filter"                   flag                         off
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"

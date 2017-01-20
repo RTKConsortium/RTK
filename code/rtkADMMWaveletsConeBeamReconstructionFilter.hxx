@@ -63,6 +63,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   // Set permanent parameters
   m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisableDisplacedDetectorFilter = false;
 
   // Set memory management parameters
   m_ZeroMultiplyFilter->ReleaseDataFlagOn();
@@ -155,6 +156,8 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_SoftThresholdFilter->SetNumberOfLevels(this->GetNumberOfLevels());
   m_SoftThresholdFilter->SetOrder(this->GetOrder());
   m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * m_Beta));
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
+  m_CGOperator->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
 
   // Have the last filter calculate its output information
   m_SubtractFilter2->UpdateOutputInformation();

@@ -196,6 +196,9 @@ public:
   /** In the case of a gated SART, set the gating weights */
   void SetGatingWeights(std::vector<float> weights);
 
+  /** Set / Get whether the displaced detector filter should be disabled */
+  itkSetMacro(DisableDisplacedDetectorFilter, bool)
+  itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   SARTConeBeamReconstructionFilter();
   ~SARTConeBeamReconstructionFilter() ITK_OVERRIDE {}
@@ -228,6 +231,7 @@ protected:
   typename GatingWeightsFilterType::Pointer      m_GatingWeightsFilter;
 
   bool m_EnforcePositivity;
+  bool m_DisableDisplacedDetectorFilter;
 
 private:
   /** Number of projections processed before the volume is updated (1 for SART,

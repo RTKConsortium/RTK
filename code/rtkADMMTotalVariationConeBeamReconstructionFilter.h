@@ -197,6 +197,10 @@ public:
 
     void PrintTiming(std::ostream& os) const;
 
+    /** Set / Get whether the displaced detector filter should be disabled */
+    itkSetMacro(DisableDisplacedDetectorFilter, bool)
+    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
     ADMMTotalVariationConeBeamReconstructionFilter();
     ~ADMMTotalVariationConeBeamReconstructionFilter() ITK_OVERRIDE {}
@@ -238,6 +242,7 @@ protected:
      * the gating weights filter */
     bool                m_IsGated;
     std::vector<float>  m_GatingWeights;
+    bool                m_DisableDisplacedDetectorFilter;
 
 private:
     ADMMTotalVariationConeBeamReconstructionFilter(const Self &); //purposely not implemented

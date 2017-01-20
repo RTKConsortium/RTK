@@ -48,6 +48,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_MultiplyFilter = MultiplyFilterType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
   m_FourDToProjectionStackFilter = FourDToProjectionStackFilterType::New();
+  m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_ProjectionStackToFourDFilter = ProjectionStackToFourDFilterType::New();
 
   // Create the filters required for correct weighting of the difference
@@ -71,11 +72,14 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_RayBoxFilter->SetInput(m_ExtractFilterRayBox->GetOutput());
   m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
   m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
+  m_DisplacedDetectorFilter->SetInput(m_DivideFilter->GetOutput());
 
   // Default parameters
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
   m_ExtractFilterRayBox->SetDirectionCollapseToSubmatrix();
   m_NumberOfProjectionsPerSubset = 1; //Default is the SART behavior
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisableDisplacedDetectorFilter = false;
 }
 
 template<class VolumeSeriesType, class ProjectionStackType>
@@ -190,6 +194,8 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   const unsigned int Dimension = ProjectionStackType::ImageDimension;
   unsigned int numberOfProjections = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
 
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
+
   if(!m_ProjectionsOrderInitialized)
     {
     // Fill and shuffle randomly the projection order.
@@ -220,7 +226,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_ConstantVolumeSeriesSource->UpdateOutputInformation();
 
   m_ProjectionStackToFourDFilter->SetInputVolumeSeries( this->GetInputVolumeSeries() );
-  m_ProjectionStackToFourDFilter->SetInputProjectionStack( m_DivideFilter->GetOutput() );
+  m_ProjectionStackToFourDFilter->SetInputProjectionStack( m_DisplacedDetectorFilter->GetOutput() );
   m_ProjectionStackToFourDFilter->SetSignal(this->m_Signal);
 
   m_AddFilter->SetInput1(m_ProjectionStackToFourDFilter->GetOutput());
@@ -245,6 +251,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     }
   m_FourDToProjectionStackFilter->SetGeometry(this->m_Geometry);
   m_ProjectionStackToFourDFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   m_ConstantProjectionStackSource->SetInformationFromImage(const_cast<ProjectionStackType *>(this->GetInputProjectionStack().GetPointer()));
   m_ConstantProjectionStackSource->SetConstant(0);
@@ -406,6 +413,10 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_DivideFilter->Update();
       m_DivideProbe.Stop();
 
+      m_DisplacedDetectorProbe.Start();
+      m_DisplacedDetectorFilter->Update();
+      m_DisplacedDetectorProbe.Stop();
+
       m_BackProjectionProbe.Start();
       m_ProjectionStackToFourDFilter->Update();
       m_BackProjectionProbe.Stop();
@@ -462,6 +473,8 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
      << ' ' << m_RayBoxProbe.GetUnit() << std::endl;
   os << "  Division: " << m_DivideProbe.GetTotal()
      << ' ' << m_DivideProbe.GetUnit() << std::endl;
+  os << "  Displaced detector: " << m_DisplacedDetectorProbe.GetTotal()
+     << ' ' << m_DisplacedDetectorProbe.GetUnit() << std::endl;
   os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
      << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
   os << "  Volume update: " << m_AddProbe.GetTotal()

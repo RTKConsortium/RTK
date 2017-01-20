@@ -9,6 +9,7 @@ option "niterations" n "Number of iterations"                                  i
 option "time"        t "Records elapsed time during the process"               flag   off
 option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
 option "input"       i "Input volume"                                          string no
+option "nodisplaced" - "Disable the displaced detector filter"                 flag   off
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes

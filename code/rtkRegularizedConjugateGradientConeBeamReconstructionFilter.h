@@ -206,6 +206,10 @@ public:
   itkSetMacro(CudaConjugateGradient, bool)
   itkGetMacro(CudaConjugateGradient, bool)
 
+  /** Set / Get whether the displaced detector filter should be disabled */
+  itkSetMacro(DisableDisplacedDetectorFilter, bool)
+  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
   RegularizedConjugateGradientConeBeamReconstructionFilter();
   ~RegularizedConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
@@ -251,7 +255,7 @@ protected:
 
   /** Conjugate gradient parameters */
   bool            m_IterationCosts;
-
+  bool            m_DisableDisplacedDetectorFilter;
 
   // Iterations
   int   m_MainLoop_iterations;
@@ -271,7 +275,6 @@ protected:
 private:
   RegularizedConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace ITK
 
