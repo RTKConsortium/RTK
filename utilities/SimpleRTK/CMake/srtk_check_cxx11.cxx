@@ -14,7 +14,7 @@ int main(void)
 
 //-------------------------------------
 
-#ifdef SRTK_HAS_CXX11_FUNCTIONAL
+#ifdef SRTK_HAS_CXX11_NULLPTR
 
 struct C {
   void func();
