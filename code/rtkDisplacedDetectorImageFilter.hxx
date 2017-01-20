@@ -109,6 +109,12 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     outputPtr->SetLargestPossibleRegion( outputLargestPossibleRegion );
     return;
     }
+  else if (this->GetGeometry()->GetRadiusCylindricalDetector() != 0)
+    {
+    itkGenericExceptionMacro(<< "Displaced detector cannot handle cylindrical detector. "
+                             << "Consider disabling it by setting m_Disable=true "
+                             << "or using the nodisplaced flag of the application you are running");
+    }
 
   // Compute the X coordinates of the corners of the image
   typename Superclass::InputImageType::PointType corner;
