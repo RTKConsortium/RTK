@@ -120,6 +120,7 @@ int main(int argc, char * argv[])
   regularizedConjugateGradient->SetGeometry( geometryReader->GetOutputObject() );
   regularizedConjugateGradient->SetMainLoop_iterations( args_info.niter_arg );
   regularizedConjugateGradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
+  regularizedConjugateGradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
   if(args_info.mask_given)
     {
     regularizedConjugateGradient->SetSupportMask(supportmaskSource->GetOutput() );

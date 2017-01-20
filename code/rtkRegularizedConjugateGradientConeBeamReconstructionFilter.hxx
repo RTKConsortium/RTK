@@ -52,6 +52,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
   m_CudaConjugateGradient = true; // 3D volumes of usual size fit on GPUs
   m_Order = 5;
   m_NumberOfLevels = 3;
+  m_DisableDisplacedDetectorFilter = false;
 
   // Create the filters
   m_CGFilter = CGFilterType::New();
@@ -188,6 +189,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->SetRegularized(this->m_RegularizedCG);
   m_CGFilter->SetGamma(this->m_Gamma);
   m_CGFilter->SetIterationCosts(m_IterationCosts);
+  m_CGFilter->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
 
   currentDownstreamFilter = m_CGFilter;
 

@@ -11,6 +11,7 @@ option "lambda"      l "Convergence factor"                                    d
 option "positivity"  - "Enforces positivity during the reconstruction"         flag   off
 option "input"     i "Input volume"              string          no
 option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (1 for SART, several for OSSART, all for SIRT)" int no default="1"
+option "nodisplaced"    - "Disable the displaced detector filter"              flag   off
 
 section "Phase gating"
 option "signal"       - "File containing the phase of each projection"                                              string              no

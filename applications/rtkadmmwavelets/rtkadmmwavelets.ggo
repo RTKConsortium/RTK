@@ -13,6 +13,7 @@ option "CGiter"     - "Number of nested iterations of conjugate gradient"       
 option "order"      - "The order of the Daubechies wavelets"                    int                       no default="3"
 option "levels"     - "The number of decomposition levels in the wavelets transform" int                  no default="5"
 option "input"     i "Input volume"                     string                       no
+option "nodisplaced" - "Disable the displaced detector filter"                  flag                      off
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast","Siddon" enum no default="Joseph"

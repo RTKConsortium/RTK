@@ -34,7 +34,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   m_MaximumOffset(0.),
   m_OffsetsSet(false),
   m_InferiorCorner(0.),
-  m_SuperiorCorner(0.)
+  m_SuperiorCorner(0.),
+  m_Disable(false)
 {
 }
 

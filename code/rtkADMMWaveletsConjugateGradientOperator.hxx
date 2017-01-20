@@ -43,6 +43,7 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
   m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisableDisplacedDetectorFilter = false;
 
   // Set memory management options
   m_ZeroMultiplyProjectionFilter->ReleaseDataFlagOn();
@@ -121,6 +122,7 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
 
   // Set runtime parameters
   m_MultiplyFilter->SetConstant2( m_Beta );
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
 
   // Set memory management parameters for forward
   // and back projection filters

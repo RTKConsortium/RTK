@@ -138,6 +138,7 @@ int main(int, char** )
   conjugategradient->SetGeometry( geometry );
   conjugategradient->SetNumberOfIterations( 5 );
   conjugategradient->SetRegularized(false);
+  conjugategradient->SetDisableDisplacedDetectorFilter(true);
 
   std::cout << "\n\n****** Case 1: Joseph forward and back projectors ******" << std::endl;
 

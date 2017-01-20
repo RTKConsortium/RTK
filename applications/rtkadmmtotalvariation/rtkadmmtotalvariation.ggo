@@ -11,6 +11,7 @@ option "alpha"     - "Regularization parameter"         			 float               
 option "beta"      - "Augmented Lagrangian constraint multiplier"         	 float                        no   default="1"
 option "CGiter"     - "Number of nested iterations of conjugate gradient"       int                       no      default="5"
 option "input"     i "Input volume"                     string                       no
+option "nodisplaced"  - "Disable the displaced detector filter"                  flag                     off
 
 section "Phase gating"
 option "phases"       - "File containing the phase of each projection"                                              string              no

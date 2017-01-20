@@ -127,6 +127,7 @@ int main(int argc, char * argv[])
   rooster->SetPhaseShift(args_info.shift_arg);
   rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
   rooster->SetUseCudaCyclicDeformation(args_info.cudadvfinterpolation_flag);
+  rooster->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
   
   // Set the newly ordered arguments
   rooster->SetInputProjectionStack( reorder->GetOutput() );

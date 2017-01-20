@@ -133,6 +133,7 @@ int main(int argc, char * argv[])
     admmFilter->SetInput(1, projectionsReader->GetOutput() );
     admmFilter->SetGeometry( geometryReader->GetOutputObject() );
     }
+  admmFilter->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() )
 

@@ -113,6 +113,7 @@ int main(int argc, char * argv[])
   fourdsart->SetWeights(phaseReader->GetOutput());
   fourdsart->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   fourdsart->SetLambda( args_info.lambda_arg );
+  fourdsart->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   itk::TimeProbe totalTimeProbe;
   if(args_info.time_flag)

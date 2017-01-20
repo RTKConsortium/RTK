@@ -59,6 +59,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_UseCudaCyclicDeformation = false;
   m_Order = 5;
   m_NumberOfLevels = 3;
+  m_DisableDisplacedDetectorFilter = false;
 
   // Create the filters
   m_FourDCGFilter = FourDCGFilterType::New();
@@ -278,6 +279,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_FourDCGFilter->SetGeometry(this->m_Geometry);
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
+  m_FourDCGFilter->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
   currentDownstreamFilter = m_FourDCGFilter;
   
   // Plug the positivity filter if requested

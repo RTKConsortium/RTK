@@ -174,6 +174,10 @@ public:
   itkGetMacro(ProjectionSubsetSize, unsigned int);
   itkSetMacro(ProjectionSubsetSize, unsigned int);
 
+  /** Set / Get whether the displaced detector filter should be disabled */
+  itkSetMacro(DisableDisplacedDetectorFilter, bool)
+  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
   IterativeFDKConeBeamReconstructionFilter();
   ~IterativeFDKConeBeamReconstructionFilter() ITK_OVERRIDE {}
@@ -205,6 +209,7 @@ protected:
   double m_HannCutFrequency;
   double m_HannCutFrequencyY;
   double m_ProjectionSubsetSize;
+  bool   m_DisableDisplacedDetectorFilter;
 
 private:
   //purposely not implemented
