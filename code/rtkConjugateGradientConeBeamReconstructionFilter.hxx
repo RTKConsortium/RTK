@@ -37,6 +37,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
   m_Gamma = 0;
   m_Regularized = false;
   m_CudaConjugateGradient = true;
+  m_DisableDisplacedDetectorFilter = false;
 
   // Create the filters
 #ifdef RTK_USE_CUDA
@@ -189,6 +190,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
   m_CGOperator->SetInput(1, this->GetInput(1));
   m_CGOperator->SetSupportMask(this->GetSupportMask());
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
   m_DisplacedDetectorFilter->SetInput(this->GetInput(2));
 
   // Links with the m_BackProjectionFilter should be set here and not

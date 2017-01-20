@@ -101,6 +101,11 @@ public:
   itkGetMacro(MinimumOffset, double);
   itkGetMacro(MaximumOffset, double);
 
+  /** Get / Set the Disable parameter
+   */
+  itkGetMacro(Disable, bool);
+  itkSetMacro(Disable, bool);
+
 protected:
   DisplacedDetectorImageFilter();
 
@@ -145,6 +150,11 @@ private:
    */
   double m_InferiorCorner;
   double m_SuperiorCorner;
+
+  /** When using a geometry that the displaced detector cannot manage,
+   * it has to be disabled
+   */
+  bool m_Disable;
 
 }; // end of class
 
