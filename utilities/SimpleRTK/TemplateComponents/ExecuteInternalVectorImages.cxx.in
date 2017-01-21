@@ -6,9 +6,13 @@ OUT=[[
 template <class TImageType> Image
 ${name}::ExecuteInternalVectorImage ( const Image& inImage1 )
 {
-  typedef TImageType                                                               VectorInputImageType;
-  typedef typename VectorInputImageType::InternalPixelType                         ComponentType;
-  typedef typename itk::Image<ComponentType, VectorInputImageType::ImageDimension> ComponentImageType;
+  typedef TImageType                                                                   VectorInputImageType;
+  typedef typename VectorInputImageType::InternalPixelType                             ComponentType;
+#ifdef RTK_USE_CUDA
+  typedef typename itk::CudaImage<ComponentType, VectorInputImageType::ImageDimension> ComponentImageType;
+#else
+  typedef typename itk::Image<ComponentType, VectorInputImageType::ImageDimension>     ComponentImageType;
+#endif
 
   // we must define the input and output image types should be the
   // same as the scalar execute internal method
@@ -21,7 +25,11 @@ OUT=OUT..[[
 elseif output_pixel_type then
 OUT=OUT..[[
   // Define output image type
-  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;]]
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
+#else
+  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension >     OutputImageType;
+#endif]]
 else
   OUT=OUT..[[
   // Define output image type

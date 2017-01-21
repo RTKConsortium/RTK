@@ -23,7 +23,6 @@
 #include "srtkTemplateFunctions.h"
 #include "srtkEvent.h"
 #include "srtkImage.h"
-#include "itkImage.h"
 
 #include <iostream>
 #include <list>
@@ -291,7 +290,11 @@ namespace rtk {
 #ifndef SWIG
       template< class TPixelType, unsigned int VImageDimension, unsigned int  VLength,
                 template<typename, unsigned int> class TVector >
+#ifdef RTK_USE_CUDA
+        static Image CastITKToImage( itk::CudaImage< TVector< TPixelType, VLength >, VImageDimension> *img )
+#else
         static Image CastITKToImage( itk::Image< TVector< TPixelType, VLength >, VImageDimension> *img )
+#endif
       {
         typedef itk::VectorImage< TPixelType, VImageDimension > VectorImageType;
 
