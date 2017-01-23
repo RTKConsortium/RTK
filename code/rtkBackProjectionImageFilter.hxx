@@ -58,7 +58,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if(m_Geometry.GetPointer() == ITK_NULLPTR)
+  if((m_Geometry.GetPointer() == ITK_NULLPTR) || m_Geometry->GetRadiusCylindricalDetector() )
     {
     inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
     return;
@@ -151,9 +151,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   this->SetTranspose(true);
 
   // Check if detector is cylindrical
-  if(this->m_Geometry->GetRadiusCylindricalDetector() != 0)
+  if(this->m_Geometry->GetRadiusCylindricalDetector() != this->m_Geometry->GetSourceToDetectorDistances()[0])
     {
-    itkGenericExceptionMacro(<< "Voxel-based back projector can currently not handle cylindrical detectors")
+    itkGenericExceptionMacro(<< "Voxel-based back projector can currently handle a cylindrical detector only when it is centered on the source")
     }
 }
 
@@ -236,6 +236,15 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       perspFactor = 1/perspFactor;
       for(unsigned int i=0; i<Dimension-1; i++)
         pointProj[i] = pointProj[i]*perspFactor;
+
+      // Apply correction if the detector is cylindrical
+      double radius = m_Geometry->GetRadiusCylindricalDetector();
+      if (radius != 0)
+        {
+        double u = pointProj[0];
+        pointProj[0] = radius * atan(u / radius);
+        pointProj[1] = pointProj[1] * radius / sqrt(radius * radius + u * u);
+        }
 
       // Interpolate if in projection
       if( interpolator->IsInsideBuffer(pointProj) )
