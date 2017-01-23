@@ -75,7 +75,7 @@ template< typename VolumeType, typename VolumeSeriesType>
 void SplatWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::SetProjectionNumber(int n)
 {
   // Check whether the weights change from the old projection number to the new one
-  for (int row=0; row < m_Weights.rows(); row++)
+  for (unsigned int row=0; row < m_Weights.rows(); row++)
     {
     if (m_Weights[row][m_ProjectionNumber] != m_Weights[row][n])
       this->Modified();
