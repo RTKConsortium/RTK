@@ -127,6 +127,7 @@ int main(int argc, char * argv[])
   mcrooster->SetMainLoop_iterations( args_info.niter_arg );
   mcrooster->SetCudaConjugateGradient(args_info.cudacg_flag);
   mcrooster->SetUseCudaCyclicDeformation(args_info.cudadvfinterpolation_flag);
+  mcrooster->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   // Set the newly ordered arguments
   mcrooster->SetInputProjectionStack( reorder->GetOutput() );

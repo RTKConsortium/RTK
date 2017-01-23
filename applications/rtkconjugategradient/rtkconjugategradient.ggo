@@ -14,6 +14,7 @@ option "gamma"          - "Laplacian regularization weight"                     
 option "nocudacg"       - "Do not perform conjugate gradient calculations on GPU"                                     flag   off
 option "mask"           m "Apply a support binary mask: reconstruction kept null outside the mask)"                   string no
 option "costs"          - "Show residual costs at each iteration at the end of the process"                           flag   off
+option "nodisplaced"    - "Disable the displaced detector filter"                                                     flag   off
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"

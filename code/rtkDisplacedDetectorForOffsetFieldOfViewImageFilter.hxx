@@ -63,6 +63,19 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
 
   typename TOutputImage::RegionType outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
 
+  if(this->GetDisable())
+    {
+    this->SetInPlace( true );
+    outputPtr->SetLargestPossibleRegion( outputLargestPossibleRegion );
+    return;
+    }
+  else if (this->GetGeometry()->GetRadiusCylindricalDetector() != 0)
+    {
+    itkGenericExceptionMacro(<< "Displaced detector cannot handle cylindrical detector. "
+                             << "Consider disabling it by setting m_Disable=true "
+                             << "or using the nodisplaced flag of the application you are running");
+    }
+
   typedef typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
   typename FOVFilterType::Pointer fieldofview = FOVFilterType::New();
   fieldofview->SetProjectionsStack( inputPtr.GetPointer() );
@@ -120,7 +133,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
 
   // Not displaced, nothing to do
   if( this->GetInput()->GetLargestPossibleRegion().GetSize()[0] ==
-      this->GetOutput()->GetLargestPossibleRegion().GetSize()[0] )
+      this->GetOutput()->GetLargestPossibleRegion().GetSize()[0] || this->GetDisable())
     {
     // If not in place, copy is required
     if(this->GetInput() != this->GetOutput() )

@@ -54,6 +54,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 
   // Filter parameters
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisableDisplacedDetectorFilter = false;
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -111,6 +112,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 
   //Initial internal connections
   m_DisplacedDetectorFilter->SetInput( this->GetInput(1) );
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
 
   m_ParkerFilter->SetInput( m_DisplacedDetectorFilter->GetOutput() );
 

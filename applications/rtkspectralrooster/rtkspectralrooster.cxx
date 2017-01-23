@@ -208,6 +208,7 @@ int main(int argc, char * argv[])
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );
   rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
+  rooster->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   // Set the newly ordered arguments
   rooster->SetInputProjectionStack( vproj2proj->GetOutput() );

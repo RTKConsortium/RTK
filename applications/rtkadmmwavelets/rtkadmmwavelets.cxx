@@ -116,6 +116,8 @@ int main(int argc, char * argv[])
   // Set the inputs of the ADMM filter
   admmFilter->SetInput(0, inputFilter->GetOutput() );
   admmFilter->SetInput(1, projectionsReader->GetOutput() );
+  
+  admmFilter->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() )
 

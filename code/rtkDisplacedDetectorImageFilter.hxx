@@ -34,7 +34,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   m_MaximumOffset(0.),
   m_OffsetsSet(false),
   m_InferiorCorner(0.),
-  m_SuperiorCorner(0.)
+  m_SuperiorCorner(0.),
+  m_Disable(false)
 {
 }
 
@@ -102,6 +103,19 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   outputPtr->SetNumberOfComponentsPerPixel( inputPtr->GetNumberOfComponentsPerPixel() );
 
   typename TOutputImage::RegionType outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
+
+  if(m_Disable)
+    {
+    this->SetInPlace( true );
+    outputPtr->SetLargestPossibleRegion( outputLargestPossibleRegion );
+    return;
+    }
+  else if (this->GetGeometry()->GetRadiusCylindricalDetector() != 0)
+    {
+    itkGenericExceptionMacro(<< "Displaced detector cannot handle cylindrical detector. "
+                             << "Consider disabling it by setting m_Disable=true "
+                             << "or using the nodisplaced flag of the application you are running");
+    }
 
   // Compute the X coordinates of the corners of the image
   typename Superclass::InputImageType::PointType corner;
@@ -178,7 +192,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   itOut.GoToBegin();
 
   // Not displaced, nothing to do
-  if( fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner) )
+  if( (fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner)) || m_Disable)
     {
     // If not in place, copy is required
     if(this->GetInput() != this->GetOutput() )

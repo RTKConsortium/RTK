@@ -198,6 +198,7 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   DDFType::Pointer ddf = DDFType::New();
   ddf->SetInput( extract->GetOutput() );
   ddf->SetGeometry( geometry );
+  ddf->SetDisable(threadInfo->args_info->nodisplaced_flag);
 
   // Short scan image filter
 //  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFType;

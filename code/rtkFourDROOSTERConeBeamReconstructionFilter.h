@@ -266,6 +266,9 @@ public:
 
   void PrintTiming(std::ostream& os) const;
 
+  /** Set / Get whether the displaced detector filter should be disabled */
+  itkSetMacro(DisableDisplacedDetectorFilter, bool)
+  itkGetMacro(DisableDisplacedDetectorFilter, bool)
 
   // Regularization steps to perform
   itkSetMacro(PerformPositivity, bool)
@@ -381,6 +384,7 @@ protected:
   bool  m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
   bool  m_CudaConjugateGradient;
   bool  m_UseCudaCyclicDeformation;
+  bool  m_DisableDisplacedDetectorFilter;
 
   // Regularization parameters
   float m_GammaTVSpace;

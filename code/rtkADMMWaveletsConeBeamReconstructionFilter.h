@@ -199,6 +199,10 @@ public:
 
     void PrintTiming(std::ostream& os) const;
 
+    /** Set / Get whether the displaced detector filter should be disabled */
+    itkSetMacro(DisableDisplacedDetectorFilter, bool)
+    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
     ADMMWaveletsConeBeamReconstructionFilter();
     ~ADMMWaveletsConeBeamReconstructionFilter() ITK_OVERRIDE {}
@@ -241,6 +245,7 @@ private:
     unsigned int    m_CG_iterations;
     unsigned int    m_Order;
     unsigned int    m_NumberOfLevels;
+    bool            m_DisableDisplacedDetectorFilter;
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
