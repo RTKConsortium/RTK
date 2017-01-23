@@ -89,6 +89,11 @@ protected:
 
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
+  /** Special case when the detector is cylindrical and centered on source */
+  virtual void CylindricalDetectorCenteredOnSourceBackprojection(const OutputImageRegionType& region,
+                                                                 const ProjectionMatrixType& matrix,
+                                                                 const ProjectionImagePointer projection);
+
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
     and matrix[2][0] are zeros. */
   virtual void OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,

@@ -58,7 +58,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if((m_Geometry.GetPointer() == ITK_NULLPTR) || m_Geometry->GetRadiusCylindricalDetector() )
+  if(m_Geometry.GetPointer() == ITK_NULLPTR)
     {
     inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
     return;
@@ -122,6 +122,15 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
             return;
             }
 
+          // Apply correction if the detector is cylindrical
+          double radius = m_Geometry->GetRadiusCylindricalDetector();
+          if (radius != 0)
+            {
+            double u = point[0];
+            point[0] = radius * atan(u / radius);
+            point[1] = point[1] * radius / sqrt(radius * radius + u * u);
+            }
+
           // Look for extremas on projection to calculate requested region
           for(int i=0; i<2; i++)
             {
@@ -151,9 +160,12 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   this->SetTranspose(true);
 
   // Check if detector is cylindrical
-  if(this->m_Geometry->GetRadiusCylindricalDetector() != this->m_Geometry->GetSourceToDetectorDistances()[0])
+  double radius = m_Geometry->GetRadiusCylindricalDetector();
+  if((radius != 0) && (radius != this->m_Geometry->GetSourceToDetectorDistances()[0]))
     {
-    itkGenericExceptionMacro(<< "Voxel-based back projector can currently handle a cylindrical detector only when it is centered on the source")
+    itkGenericExceptionMacro(<< "Voxel-based back projector can currently handle a cylindrical detector only when it is centered on the source. "
+                             << "Detector radius is " << radius
+                             << ", should be " << this->m_Geometry->GetSourceToDetectorDistances()[0])
     }
 }
 
@@ -205,6 +217,13 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj);
     interpolator->SetInputImage(projection);
 
+    // Cylindrical detector centered on source case
+    if (m_Geometry->GetRadiusCylindricalDetector()!= 0)
+      {
+      CylindricalDetectorCenteredOnSourceBackprojection( outputRegionForThread, matrix, projection);
+      continue;
+      }
+
     // Optimized version
     if (fabs(matrix[1][0])<1e-10 && fabs(matrix[2][0])<1e-10)
       {
@@ -237,15 +256,6 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       for(unsigned int i=0; i<Dimension-1; i++)
         pointProj[i] = pointProj[i]*perspFactor;
 
-      // Apply correction if the detector is cylindrical
-      double radius = m_Geometry->GetRadiusCylindricalDetector();
-      if (radius != 0)
-        {
-        double u = pointProj[0];
-        pointProj[0] = radius * atan(u / radius);
-        pointProj[1] = pointProj[1] * radius / sqrt(radius * radius + u * u);
-        }
-
       // Interpolate if in projection
       if( interpolator->IsInsideBuffer(pointProj) )
         {
@@ -256,6 +266,64 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       }
     }
 }
+
+template <class TInputImage, class TOutputImage>
+void
+BackProjectionImageFilter<TInputImage,TOutputImage>
+::CylindricalDetectorCenteredOnSourceBackprojection(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
+                                                    const ProjectionImagePointer projection)
+{
+  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+  OutputRegionIterator itOut(this->GetOutput(), region);
+
+  const unsigned int Dimension = TInputImage::ImageDimension;
+
+  // Create interpolator, could be any interpolation
+  typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
+  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  interpolator->SetInputImage(projection);
+
+  // Get radius of the cylindrical detector
+  double radius = m_Geometry->GetRadiusCylindricalDetector();
+
+  // Continuous index at which we interpolate
+  itk::ContinuousIndex<double, Dimension-1> pointProj;
+
+  // Go over each voxel
+  itOut.GoToBegin();
+  while(!itOut.IsAtEnd() )
+    {
+    // Compute projection index
+    for(unsigned int i=0; i<Dimension-1; i++)
+      {
+      pointProj[i] = matrix[i][Dimension];
+      for(unsigned int j=0; j<Dimension; j++)
+        pointProj[i] += matrix[i][j] * itOut.GetIndex()[j];
+      }
+
+    // Apply perspective
+    double perspFactor = matrix[Dimension-1][Dimension];
+    for(unsigned int j=0; j<Dimension; j++)
+      perspFactor += matrix[Dimension-1][j] * itOut.GetIndex()[j];
+    perspFactor = 1/perspFactor;
+    for(unsigned int i=0; i<Dimension-1; i++)
+      pointProj[i] = pointProj[i]*perspFactor;
+
+    // Apply correction for cylindrical centered on source
+    double u = pointProj[0];
+    pointProj[0] = radius * atan(u / radius);
+    pointProj[1] = pointProj[1] * radius / sqrt(radius * radius + u * u);
+
+    // Interpolate if in projection
+    if( interpolator->IsInsideBuffer(pointProj) )
+      {
+      itOut.Set( itOut.Get() + interpolator->EvaluateAtContinuousIndex(pointProj) );
+      }
+
+    ++itOut;
+    }
+}
+
 
 template <class TInputImage, class TOutputImage>
 void
