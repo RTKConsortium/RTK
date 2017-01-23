@@ -218,7 +218,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     interpolator->SetInputImage(projection);
 
     // Cylindrical detector centered on source case
-    if (m_Geometry->GetRadiusCylindricalDetector()!= 0)
+    if (m_Geometry->GetRadiusCylindricalDetector() != 0)
       {
       CylindricalDetectorCenteredOnSourceBackprojection( outputRegionForThread, matrix, projection);
       continue;
