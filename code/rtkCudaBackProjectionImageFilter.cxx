@@ -37,17 +37,11 @@ void
 CudaBackProjectionImageFilter
 ::GPUGenerateData()
 {
-  // Check if detector is cylindrical
-  if(this->m_Geometry->GetRadiusCylindricalDetector() != 0)
-    {
-    itkGenericExceptionMacro(<< "Cuda Voxel-based back projector can currently not handle cylindrical detectors")
-    }
-
   const unsigned int Dimension = ImageType::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
-  if (nProj>1024)
-    itkGenericExceptionMacro("The CUDA voxel based back projection image filter can only handle stacks of at most 1024 projections")
+  if (SLAB_SIZE>1024)
+    itkGenericExceptionMacro("The CUDA voxel based back projection image filter can only handle slabs of at most 1024 projections")
 
   // Rotation center (assumed to be at 0 yet)
   ImageType::PointType rotCenterPoint;
@@ -121,7 +115,8 @@ CudaBackProjectionImageFilter
                       fMatrix + 12 * i,
                       pin,
                       pout,
-                      stackGPUPointer + projSize * i
+                      stackGPUPointer + projSize * i,
+                      this->m_Geometry->GetRadiusCylindricalDetector()
                       );
 
     // Re-use the output as input
