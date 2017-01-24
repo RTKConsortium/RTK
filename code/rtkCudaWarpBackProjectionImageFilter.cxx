@@ -257,7 +257,8 @@ CudaWarpBackProjectionImageFilter
                             pDVF,
                             fIndexInputToIndexDVFMatrix,
                             fPPInputToIndexInputMatrix,
-                            fIndexInputToPPInputMatrix
+                            fIndexInputToPPInputMatrix,
+                            this->m_Geometry->GetRadiusCylindricalDetector()
                             );
 
     // Re-use the output as input

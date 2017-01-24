@@ -176,5 +176,17 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+#ifdef USE_CUDA
+  std::cout << "\n\n****** Case 4: CUDA ray cast forward projection, CUDA voxel based back projection ******" << std::endl;
+
+  conjugategradient->SetForwardProjectionFilter(1);
+  conjugategradient->SetBackProjectionFilter(2);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
+
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
+
+
   return EXIT_SUCCESS;
 }
