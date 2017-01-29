@@ -97,12 +97,26 @@ if (RTK_USE_CUDA)
     set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES "${itkMacroPath};${itkConfigurePath};${rtkConfigurationPath}")
   endif()
 
+  # This is a fix for when using Module_ITKVtkGlue
+  # (https://gitlab.kitware.com/vtk/vtk/issues/15895)
+  get_directory_property(defCom COMPILE_DEFINITIONS)
+  set(defComSansVTK)
+  foreach(def ${defCom})
+    if(NOT def MATCHES "^vtkRenderingCore_INCLUDE=.*")
+      list(APPEND defComSansVTK ${def})
+    endif()
+  endforeach()
+  set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${defComSansVTK}")
+
   CUDA_COMPILE (rtkcuda_CUDA_WRAPPERS ${rtkcuda_CUDA_FILES})
 
   # Rollback to all includes
   if(WIN32)
     set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES "${dirInc}")
   endif()
+
+  # Rollback to all compile definitions
+  set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${defCom}")
 
   add_library(rtkcuda
               rtkCudaFDKWeightProjectionFilter.cxx
