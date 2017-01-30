@@ -39,33 +39,6 @@ ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
 }
 
 template< typename TImage >
-ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
-::ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel(const TImage *ptr,
-                                                             const RegionType & region,
-                                                             ThreeDCircularProjectionGeometry *geometry,
-                                                             const HomogeneousMatrixType &postMat):
-  ProjectionsRegionConstIteratorRayBased< TImage >(ptr, region, geometry, postMat),
-  m_Radius(geometry->GetRadiusCylindricalDetector()),
-  m_InverseRadius(1./geometry->GetRadiusCylindricalDetector())
-{
-  NewProjection();
-  NewPixel();
-}
-
-template< typename TImage >
-ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
-::ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel(const TImage *ptr,
-                                                             const RegionType & region,
-                                                             ThreeDCircularProjectionGeometry *geometry):
-  ProjectionsRegionConstIteratorRayBased< TImage >(ptr, region, geometry),
-  m_Radius(geometry->GetRadiusCylindricalDetector()),
-  m_InverseRadius(1./geometry->GetRadiusCylindricalDetector())
-{
-  NewProjection();
-  NewPixel();
-}
-
-template< typename TImage >
 void
 ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
 ::NewProjection()

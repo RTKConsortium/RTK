@@ -47,23 +47,14 @@ public:
   typedef itk::Matrix< double, 4, 4 >          HomogeneousMatrixType;
 
   /** Constructor establishes an iterator to walk a particular image and a
-   * particular region of that image. */
-  ProjectionsRegionConstIteratorRayBasedWithFlatPanel(const TImage *ptr,
-                                                      const RegionType & region,
-                                                      ThreeDCircularProjectionGeometry *geometry);
-
-  /** Set the matrix by which the 3D coordinates of the projection can be
+   * particular region of that image.
+   * Set the matrix by which the 3D coordinates of the projection can be
    * multiplied. A typical example is the conversion from 3D physical
    * coordinates to voxel indices in an itk Image. */
   ProjectionsRegionConstIteratorRayBasedWithFlatPanel(const TImage *ptr,
                                                       const RegionType & region,
                                                       ThreeDCircularProjectionGeometry *geometry,
                                                       const MatrixType &postMat);
-
-  ProjectionsRegionConstIteratorRayBasedWithFlatPanel(const TImage *ptr,
-                                                      const RegionType & region,
-                                                      ThreeDCircularProjectionGeometry *geometry,
-                                                      const HomogeneousMatrixType &postMat);
 
 protected:
   /** Init the parameters common to a new 2D projection in the 3D stack. */

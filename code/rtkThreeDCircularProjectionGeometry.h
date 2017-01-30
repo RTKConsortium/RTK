@@ -45,8 +45,6 @@ namespace rtk
  * \ingroup ProjectionGeometry
  */
 
-template<class TImage> class ProjectionsRegionConstIteratorRayBased;
-
 class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
@@ -226,17 +224,6 @@ public:
   double ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
                                          const double tiltedCoord) const;
 
-  template<class TImage>
-  ProjectionsRegionConstIteratorRayBased<TImage>*
-  GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                            const typename TImage::RegionType & region,
-                                            const ThreeDHomogeneousMatrixType &postMat);
-
-  template<class TImage>
-  ProjectionsRegionConstIteratorRayBased<TImage>*
-  GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                            const typename TImage::RegionType & region);
-
   /** Accessor for the radius of curved detector. The default is 0 and it means
    * a flat detector. */
   itkGetMacro(RadiusCylindricalDetector, double)
@@ -331,39 +318,6 @@ private:
   ThreeDCircularProjectionGeometry(const Self&); //purposely not implemented
   void operator=(const Self&);                   //purposely not implemented
 };
-}
-
-#include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
-#include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"
-
-template<class TImage>
-rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
-rtk::ThreeDCircularProjectionGeometry::
-GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                          const typename TImage::RegionType & region,
-                                          const ThreeDHomogeneousMatrixType &postMat)
-{
-  if(m_RadiusCylindricalDetector==0.)
-    {
-    typedef ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage> IteratorType;
-    return new IteratorType(ptr, region, this, postMat);
-    }
-  else
-    {
-    typedef ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage> IteratorType;
-    return new IteratorType(ptr, region, this, postMat);
-    }
-}
-
-template<class TImage>
-rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
-rtk::ThreeDCircularProjectionGeometry::
-GetProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                          const typename TImage::RegionType & region)
-{
-  ThreeDHomogeneousMatrixType postMat;
-  postMat.SetIdentity();
-  return this->GetProjectionsRegionConstIteratorRayBased(ptr, region, postMat);
 }
 
 
