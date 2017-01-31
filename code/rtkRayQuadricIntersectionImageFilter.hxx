@@ -23,6 +23,7 @@
 #include <itkImageRegionIteratorWithIndex.h>
 
 #include "rtkHomogeneousMatrix.h"
+#include "rtkProjectionsRegionConstIteratorRayBased.h"
 
 namespace rtk
 {
@@ -76,8 +77,10 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
 
   // Iterators on input and output
   typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
-  InputRegionIterator *itIn = m_Geometry->GetProjectionsRegionConstIteratorRayBased(this->GetInput(),
-                                                                                    outputRegionForThread);
+  InputRegionIterator *itIn;
+  itIn = InputRegionIterator::New(this->GetInput(),
+                                  outputRegionForThread,
+                                  m_Geometry);
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
@@ -96,6 +99,8 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
     else
       itOut.Set( itIn->Get() );
     }
+
+  delete itIn;
 }
 
 } // end namespace rtk

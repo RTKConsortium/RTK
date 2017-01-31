@@ -21,6 +21,7 @@
 
 #include "rtkHomogeneousMatrix.h"
 #include "rtkRayCastInterpolateImageFunction.h"
+#include "rtkProjectionsRegionConstIteratorRayBased.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -77,9 +78,11 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
 
   // Iterators on volume input and output
   typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
-  InputRegionIterator *itIn = geometry->GetProjectionsRegionConstIteratorRayBased(this->GetInput(),
-                                                                                  outputRegionForThread,
-                                                                                  volMatrix);
+  InputRegionIterator *itIn;
+  itIn = InputRegionIterator::New(this->GetInput(),
+                                  outputRegionForThread,
+                                  geometry,
+                                  volMatrix);
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
@@ -91,6 +94,8 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
 
     itOut.Set( itIn->Get() + interpolator->Evaluate( &(itIn->GetPixelPosition()[0]) ) );
     }
+
+  delete itIn;
 }
 
 } // end namespace rtk

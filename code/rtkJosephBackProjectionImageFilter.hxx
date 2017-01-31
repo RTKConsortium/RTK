@@ -21,6 +21,7 @@
 
 #include "rtkHomogeneousMatrix.h"
 #include "rtkRayBoxIntersectionFunction.h"
+#include "rtkProjectionsRegionConstIteratorRayBased.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -89,9 +90,11 @@ JosephBackProjectionImageFilter<TInputImage,
 
   // Iterators on projections input
   typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
-  InputRegionIterator *itIn = geometry->GetProjectionsRegionConstIteratorRayBased(this->GetInput(1),
-                                                                                  buffReg,
-                                                                                  volPPToIndex);
+  InputRegionIterator *itIn;
+  itIn = InputRegionIterator::New(this->GetInput(1),
+                                  buffReg,
+                                  geometry,
+                                  volPPToIndex);
 
   // Create intersection functions, one for each possible main direction
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
@@ -227,6 +230,7 @@ JosephBackProjectionImageFilter<TInputImage,
         }
       }
     }
+  delete itIn;
 }
 
 template <class TInputImage,
