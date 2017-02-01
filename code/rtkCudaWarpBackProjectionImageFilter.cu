@@ -52,6 +52,8 @@ texture<float, 3, cudaReadModeElementType> tex_zdvf;
 
 // CONSTANTS //////////////////////////////////////////////////////////////
 __constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
+__constant__ float c_volIndexToProjPP[SLAB_SIZE * 12];
+__constant__ float c_projPPToProjIndex[9];
 __constant__ int3 c_projSize;
 __constant__ int3 c_volSize;
 __constant__ float c_IndexInputToIndexDVFMatrix[12];
@@ -141,7 +143,7 @@ void kernel_warp_back_project_cylindrical_detector(float *dev_vol_in, float * de
   // Index row major into the volume
   long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
 
-  float3 IndexInDVF, Displacement, PP, IndexInInput, ip;
+  float3 IndexInDVF, Displacement, PP, IndexInInput, ip, pp;
   float  voxel_data = 0;
 
   for (unsigned int proj = 0; proj<c_projSize.z; proj++)
@@ -161,17 +163,21 @@ void kernel_warp_back_project_cylindrical_detector(float *dev_vol_in, float * de
     IndexInInput = matrix_multiply(PP,  c_PPInputToIndexInputMatrix);
 
     // Project the voxel onto the detector to find out which value to add to it
-    ip = matrix_multiply(IndexInInput, &(c_matrices[12*proj]));;
+    pp = matrix_multiply(IndexInInput, &(c_volIndexToProjPP[12*proj]));
 
     // Change coordinate systems
-    ip.z = 1 / ip.z;
-    ip.x = ip.x * ip.z;
-    ip.y = ip.y * ip.z;
+    pp.z = 1 / pp.z;
+    pp.x = pp.x * pp.z;
+    pp.y = pp.y * pp.z;
 
     // Apply correction for cylindrical detector
-    double u = ip.y;
-    ip.y = radius * atan(u / radius);
-    ip.x = ip.x * radius / sqrt(radius * radius + u * u);
+    double u = pp.x;
+    pp.x = radius * atan(u / radius);
+    pp.y = pp.y * radius / sqrt(radius * radius + u * u);
+
+    // Get projection index
+    ip.x = c_projPPToProjIndex[0 * 3 + 0] * pp.x + c_projPPToProjIndex[0 * 3 + 1] * pp.y + c_projPPToProjIndex[0 * 3 + 2];
+    ip.y = c_projPPToProjIndex[1 * 3 + 0] * pp.x + c_projPPToProjIndex[1 * 3 + 1] * pp.y + c_projPPToProjIndex[1 * 3 + 2];
 
     // Get texture point, clip left to GPU
     voxel_data += tex3D(tex_proj_3D, ip.x, ip.y, proj + 0.5);
@@ -246,7 +252,7 @@ void kernel_warp_back_project_3Dgrid_cylindrical_detector(float *dev_vol_in, flo
   // Index row major into the volume
   long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
 
-  float3 IndexInDVF, Displacement, PP, IndexInInput, ip;
+  float3 IndexInDVF, Displacement, PP, IndexInInput, ip, pp;
   float  voxel_data = 0;
 
   for (unsigned int proj = 0; proj<c_projSize.z; proj++)
@@ -266,17 +272,21 @@ void kernel_warp_back_project_3Dgrid_cylindrical_detector(float *dev_vol_in, flo
     IndexInInput = matrix_multiply(PP,  c_PPInputToIndexInputMatrix);
 
     // Project the voxel onto the detector to find out which value to add to it
-    ip = matrix_multiply(IndexInInput, &(c_matrices[12*proj]));;
+    pp = matrix_multiply(IndexInInput, &(c_volIndexToProjPP[12*proj]));
 
     // Change coordinate systems
-    ip.z = 1 / ip.z;
-    ip.x = ip.x * ip.z;
-    ip.y = ip.y * ip.z;
+    pp.z = 1 / pp.z;
+    pp.x = pp.x * pp.z;
+    pp.y = pp.y * pp.z;
 
     // Apply correction for cylindrical detector
-    double u = ip.y;
-    ip.y = radius * atan(u / radius);
-    ip.x = ip.x * radius / sqrt(radius * radius + u * u);
+    double u = pp.x;
+    pp.x = radius * atan(u / radius);
+    pp.y = pp.y * radius / sqrt(radius * radius + u * u);
+
+    // Get projection index
+    ip.x = c_projPPToProjIndex[0 * 3 + 0] * pp.x + c_projPPToProjIndex[0 * 3 + 1] * pp.y + c_projPPToProjIndex[0 * 3 + 2];
+    ip.y = c_projPPToProjIndex[1 * 3 + 0] * pp.x + c_projPPToProjIndex[1 * 3 + 1] * pp.y + c_projPPToProjIndex[1 * 3 + 2];
 
     // Get texture point, clip left to GPU
     voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj);
@@ -297,6 +307,8 @@ CUDA_warp_back_project(int projSize[3],
   int volSize[3],
   int dvf_size[3],
   float *matrices,
+  float *volIndexToProjPPs,
+  float *projPPToProjIndex,
   float *dev_vol_in,
   float *dev_vol_out,
   float *dev_proj,
@@ -318,7 +330,9 @@ CUDA_warp_back_project(int projSize[3],
   cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
 
   // Copy the projection matrices into constant memory
-  cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projSize[2]);
+  cudaMemcpyToSymbol(c_matrices,          &(matrices[0]),          12 * sizeof(float) * projSize[2]);
+  cudaMemcpyToSymbol(c_volIndexToProjPP,  &(volIndexToProjPPs[0]), 12 * sizeof(float) * projSize[2]);
+  cudaMemcpyToSymbol(c_projPPToProjIndex, &(projPPToProjIndex[0]), 9 * sizeof(float));
 
   // set texture parameters
   tex_proj.addressMode[0] = cudaAddressModeBorder;

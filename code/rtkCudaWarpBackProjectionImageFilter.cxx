@@ -214,31 +214,50 @@ CudaWarpBackProjectionImageFilter
   stackGPUPointer += projSize * (iFirstProj-this->GetInputProjectionStack()->GetBufferedRegion().GetIndex()[2]);
 
   // Allocate a large matrix to hold the matrix of all projections
+  // fMatrix is for flat detector, the other two are for cylindrical
   float *fMatrix = new float[12 * nProj];
+  float *fvolIndexToProjPP = new float[12 * nProj];
+  float *fprojPPToProjIndex = new float[9];
+
+  // Projection physical point to projection index matrix
+  itk::Matrix<double, 3, 3> projPPToProjIndex = GetProjectionPhysicalPointToProjectionIndexMatrix();
+
+  // Correction for non-zero indices in the projections
+  itk::Matrix<double, 3, 3> matrixIdxProj;
+  matrixIdxProj.SetIdentity();
+  for(unsigned int i=0; i<2; i++)
+    //SR: 0.5 for 2D texture
+    matrixIdxProj[i][2] = -1*(this->GetInput(1)->GetBufferedRegion().GetIndex()[i])+0.5;
+
+  projPPToProjIndex = matrixIdxProj.GetVnlMatrix() * projPPToProjIndex.GetVnlMatrix();
+
+  for (int j = 0; j < 9; j++)
+    fprojPPToProjIndex[j] = projPPToProjIndex[j/3][j%3];
 
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
-    // Index to index matrix normalized to have a correct backprojection weight
+    // Volume index to projection physical point matrix
+    // normalized to have a correct backprojection weight
     // (1 at the isocenter)
-    ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj);
+    ProjectionMatrixType volIndexToProjPP = GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
 
-    // We correct the matrix for non zero indexes
-    itk::Matrix<double, 3, 3> matrixIdxProj;
-    matrixIdxProj.SetIdentity();
-    for(unsigned int i=0; i<2; i++)
-      //SR: 0.5 for 2D texture
-      matrixIdxProj[i][2] = -1*(this->GetInputProjectionStack()->GetBufferedRegion().GetIndex()[i])+0.5;
+    // Correction for non-zero indices in the volume
+    volIndexToProjPP = volIndexToProjPP.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
 
-    matrix = matrixIdxProj.GetVnlMatrix() * matrix.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
-
-    double perspFactor = matrix[Dimension-1][Dimension];
+    double perspFactor = volIndexToProjPP[Dimension-1][Dimension];
     for(unsigned int j=0; j<Dimension; j++)
-      perspFactor += matrix[Dimension-1][j] * rotCenterIndex[j];
-    matrix /= perspFactor;
+      perspFactor += volIndexToProjPP[Dimension-1][j] * rotCenterIndex[j];
+    volIndexToProjPP /= perspFactor;
 
+    ProjectionMatrixType matrix = ProjectionMatrixType(projPPToProjIndex.GetVnlMatrix() * volIndexToProjPP.GetVnlMatrix());
+
+    // Fill float arrays with matrices coefficients, to be passed to GPU
     for (int j = 0; j < 12; j++)
+      {
+      fvolIndexToProjPP[j + (iProj-iFirstProj) * 12] = volIndexToProjPP[j/4][j%4];
       fMatrix[j + (iProj-iFirstProj) * 12] = matrix[j/4][j%4];
+      }
     }
 
   for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
@@ -251,6 +270,8 @@ CudaWarpBackProjectionImageFilter
                             volumeSize,
                             inputDVFSize,
                             fMatrix + 12 * i,
+                            fvolIndexToProjPP + 12 * i,
+                            fprojPPToProjIndex,
                             pin,
                             pout,
                             stackGPUPointer + projSize * i,
@@ -266,6 +287,8 @@ CudaWarpBackProjectionImageFilter
     }
 
   delete[] fMatrix;
+  delete[] fvolIndexToProjPP;
+  delete[] fprojPPToProjIndex;
 }
 
 } // end namespace rtk
