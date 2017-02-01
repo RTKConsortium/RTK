@@ -58,7 +58,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if(m_Geometry.GetPointer() == ITK_NULLPTR)
+  if(m_Geometry.GetPointer() == ITK_NULLPTR || m_Geometry->GetRadiusCylindricalDetector() != 0 )
     {
     inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
     return;
@@ -120,15 +120,6 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
             {
             inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
             return;
-            }
-
-          // Apply correction if the detector is cylindrical
-          double radius = m_Geometry->GetRadiusCylindricalDetector();
-          if (radius != 0)
-            {
-            double u = point[0];
-            point[0] = radius * atan(u / radius);
-            point[1] = point[1] * radius / sqrt(radius * radius + u * u);
             }
 
           // Look for extremas on projection to calculate requested region
@@ -291,20 +282,20 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   double radius = m_Geometry->GetRadiusCylindricalDetector();
 
   // Continuous index at which we interpolate
-  itk::ContinuousIndex<double, Dimension-1> pointProj;
-  itk::Vector<double, Dimension> projPP, pointProjExtended;
+  itk::ContinuousIndex<double, Dimension-1> pointProj, pointProjIdx;
   itk::Vector<double, Dimension + 1> volIndexExtended;
 
   // Go over each voxel
   itOut.GoToBegin();
   while(!itOut.IsAtEnd() )
     {
-    volIndexExtended[Dimension]=1;
-    for (int i=0; i<Dimension; i++)
-        volIndexExtended[i]=itOut.GetIndex()[i];
-
-    // Compute projection physical point
-    projPP = volIndexToProjPP * volIndexExtended;
+    // Compute projection index
+    for(unsigned int i=0; i<Dimension-1; i++)
+      {
+      pointProj[i] = volIndexToProjPP[i][Dimension];
+      for(unsigned int j=0; j<Dimension; j++)
+        pointProj[i] += volIndexToProjPP[i][j] * itOut.GetIndex()[j];
+      }
 
     // Apply perspective
     double perspFactor = volIndexToProjPP[Dimension-1][Dimension];
@@ -312,37 +303,25 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       perspFactor += volIndexToProjPP[Dimension-1][j] * itOut.GetIndex()[j];
     perspFactor = 1/perspFactor;
     for(unsigned int i=0; i<Dimension-1; i++)
-      projPP[i] = projPP[i]*perspFactor;
+      pointProj[i] = pointProj[i]*perspFactor;
 
     // Apply correction for cylindrical centered on source
-    double u = projPP[0];
-    projPP[0] = radius * atan(u / radius);
-    projPP[1] = projPP[1] * radius / sqrt(radius * radius + u * u);
+    const double u = pointProj[0];
+    pointProj[0] = radius * atan(u / radius);
+    pointProj[1] = pointProj[1] * radius / sqrt(radius * radius + u * u);
 
     // Convert to projection index
-    pointProjExtended = projPPToProjIndex * projPP;
     for(unsigned int i=0; i<Dimension-1; i++)
       {
-      pointProj[i] = pointProjExtended[i];
+      pointProjIdx[i] = projPPToProjIndex[i][Dimension-1];
+      for(unsigned int j=0; j<Dimension-1; j++)
+        pointProjIdx[i] += projPPToProjIndex[i][j] * pointProj[j];
       }
 
-//    // Apply perspective
-//    double perspFactor = volIndexToProjPP[Dimension-1][Dimension];
-//    for(unsigned int j=0; j<Dimension; j++)
-//      perspFactor += volIndexToProjPP[Dimension-1][j] * itOut.GetIndex()[j];
-//    perspFactor = 1/perspFactor;
-//    for(unsigned int i=0; i<Dimension-1; i++)
-//      pointProj[i] = pointProj[i]*perspFactor;
-
-//    // Apply correction for cylindrical centered on source
-//    double u = pointProj[0];
-//    pointProj[0] = radius * atan(u / radius);
-//    pointProj[1] = pointProj[1] * radius / sqrt(radius * radius + u * u);
-
     // Interpolate if in projection
-    if( interpolator->IsInsideBuffer(pointProj) )
+    if( interpolator->IsInsideBuffer(pointProjIdx) )
       {
-      itOut.Set( itOut.Get() + interpolator->EvaluateAtContinuousIndex(pointProj) );
+      itOut.Set( itOut.Get() + interpolator->EvaluateAtContinuousIndex(pointProjIdx) );
       }
 
     ++itOut;
