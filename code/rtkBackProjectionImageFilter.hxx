@@ -283,7 +283,6 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
   // Continuous index at which we interpolate
   itk::ContinuousIndex<double, Dimension-1> pointProj, pointProjIdx;
-  itk::Vector<double, Dimension + 1> volIndexExtended;
 
   // Go over each voxel
   itOut.GoToBegin();
