@@ -61,22 +61,31 @@ public:
   typedef itk::Matrix< double, 4, 4 >          HomogeneousMatrixType;
 
   /** Constructor establishes an iterator to walk a particular image and a
-   * particular region of that image. */
-  ProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                         const RegionType & region,
-                                         ThreeDCircularProjectionGeometry *geometry);
-
-  /** Set the matrix by which the 3D coordinates of the projection can be
+   * particular region of that image.
+   * Set the matrix by which the 3D coordinates of the projection can be
    * multiplied. A typical example is the conversion from 3D physical
    * coordinates to voxel indices in an itk Image. */
   ProjectionsRegionConstIteratorRayBased(const TImage *ptr,
                                          const RegionType & region,
                                          ThreeDCircularProjectionGeometry *geometry,
                                          const MatrixType &postMat);
-  ProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                         const RegionType & region,
-                                         ThreeDCircularProjectionGeometry *geometry,
-                                         const HomogeneousMatrixType &postMat);
+
+  static Self *
+  New(const TImage *ptr,
+      const RegionType & region,
+      ThreeDCircularProjectionGeometry *geometry,
+      const MatrixType &postMat);
+
+  static Self *
+  New(const TImage *ptr,
+      const RegionType & region,
+      ThreeDCircularProjectionGeometry *geometry,
+      const HomogeneousMatrixType &postMat);
+
+  static Self *
+  New(const TImage *ptr,
+      const RegionType & region,
+      ThreeDCircularProjectionGeometry *geometry);
 
   /** Increment (prefix) the fastest moving dimension of the iterator's index.
    * This operator will constrain the iterator within the region (i.e. the

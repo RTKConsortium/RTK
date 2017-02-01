@@ -19,6 +19,8 @@
 #define rtkProjectionsRegionConstIteratorRayBased_hxx
 
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
+#include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
+#include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"
 #include "rtkHomogeneousMatrix.h"
 #include "rtkMacro.h"
 
@@ -34,29 +36,6 @@ ProjectionsRegionConstIteratorRayBased< TImage >
   m_Geometry(geometry),
   m_PostMultiplyMatrix(postMat)
 {
-}
-
-template< typename TImage >
-ProjectionsRegionConstIteratorRayBased< TImage >
-::ProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                         const RegionType & region,
-                                         ThreeDCircularProjectionGeometry *geometry,
-                                         const HomogeneousMatrixType &postMat):
-  itk::ImageConstIteratorWithIndex< TImage >(ptr, region),
-  m_Geometry(geometry),
-  m_PostMultiplyMatrix(MatrixType::InternalMatrixType(postMat[0]))
-{
-}
-
-template< typename TImage >
-ProjectionsRegionConstIteratorRayBased< TImage >
-::ProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                         const RegionType & region,
-                                         ThreeDCircularProjectionGeometry *geometry):
-  itk::ImageConstIteratorWithIndex< TImage >(ptr, region),
-  m_Geometry(geometry)
-{
-  m_PostMultiplyMatrix.SetIdentity();
 }
 
 template< typename TImage >
@@ -98,6 +77,53 @@ ProjectionsRegionConstIteratorRayBased< TImage >
   NewPixel();
 
   return *this;
+}
+
+template< typename TImage >
+ProjectionsRegionConstIteratorRayBased< TImage > *
+ProjectionsRegionConstIteratorRayBased< TImage >
+::New(const TImage *ptr,
+      const RegionType & region,
+      ThreeDCircularProjectionGeometry *geometry,
+      const MatrixType &postMat)
+{
+  if(geometry->GetRadiusCylindricalDetector() == 0.)
+    {
+    typedef ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage> IteratorType;
+    return new IteratorType(ptr, region, geometry, postMat);
+    }
+  else
+    {
+    typedef ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage> IteratorType;
+    return new IteratorType(ptr, region, geometry, postMat);
+    }
+}
+
+template< typename TImage >
+ProjectionsRegionConstIteratorRayBased< TImage > *
+ProjectionsRegionConstIteratorRayBased< TImage >
+::New(const TImage *ptr,
+      const RegionType & region,
+      ThreeDCircularProjectionGeometry *geometry,
+      const HomogeneousMatrixType &postMat)
+{
+  MatrixType pm;
+  for(int i=0; i<MatrixType::RowDimensions; i++)
+    for(int j=0; j<MatrixType::ColumnDimensions; j++)
+        pm[i][j] = postMat[i][j];
+  return New(ptr, region, geometry, pm);
+}
+
+template<class TImage>
+rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
+ProjectionsRegionConstIteratorRayBased< TImage >
+::New(const TImage *ptr,
+      const RegionType & region,
+      ThreeDCircularProjectionGeometry *geometry)
+{
+  MatrixType postMat;
+  postMat.SetIdentity();
+  return New(ptr, region, geometry, postMat);
 }
 
 } // end namespace itk
