@@ -220,7 +220,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     // Cylindrical detector centered on source case
     if (m_Geometry->GetRadiusCylindricalDetector() != 0)
       {
-      CylindricalDetectorCenteredOnSourceBackprojection( outputRegionForThread, matrix, projection);
+      ProjectionMatrixType volIndexToProjPP = GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
+      itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> projPPToProjIndex = GetProjectionPhysicalPointToProjectionIndexMatrix();
+      CylindricalDetectorCenteredOnSourceBackprojection( outputRegionForThread, volIndexToProjPP, projPPToProjIndex, projection);
       continue;
       }
 
@@ -270,7 +272,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 BackProjectionImageFilter<TInputImage,TOutputImage>
-::CylindricalDetectorCenteredOnSourceBackprojection(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
+::CylindricalDetectorCenteredOnSourceBackprojection(const OutputImageRegionType& region,
+                                                    const ProjectionMatrixType& volIndexToProjPP,
+                                                    const itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>& projPPToProjIndex,
                                                     const ProjectionImagePointer projection)
 {
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
@@ -288,31 +292,52 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
   // Continuous index at which we interpolate
   itk::ContinuousIndex<double, Dimension-1> pointProj;
+  itk::Vector<double, Dimension> projPP, pointProjExtended;
+  itk::Vector<double, Dimension + 1> volIndexExtended;
 
   // Go over each voxel
   itOut.GoToBegin();
   while(!itOut.IsAtEnd() )
     {
-    // Compute projection index
-    for(unsigned int i=0; i<Dimension-1; i++)
-      {
-      pointProj[i] = matrix[i][Dimension];
-      for(unsigned int j=0; j<Dimension; j++)
-        pointProj[i] += matrix[i][j] * itOut.GetIndex()[j];
-      }
+    volIndexExtended[Dimension]=1;
+    for (int i=0; i<Dimension; i++)
+        volIndexExtended[i]=itOut.GetIndex()[i];
+
+    // Compute projection physical point
+    projPP = volIndexToProjPP * volIndexExtended;
 
     // Apply perspective
-    double perspFactor = matrix[Dimension-1][Dimension];
+    double perspFactor = volIndexToProjPP[Dimension-1][Dimension];
     for(unsigned int j=0; j<Dimension; j++)
-      perspFactor += matrix[Dimension-1][j] * itOut.GetIndex()[j];
+      perspFactor += volIndexToProjPP[Dimension-1][j] * itOut.GetIndex()[j];
     perspFactor = 1/perspFactor;
     for(unsigned int i=0; i<Dimension-1; i++)
-      pointProj[i] = pointProj[i]*perspFactor;
+      projPP[i] = projPP[i]*perspFactor;
 
     // Apply correction for cylindrical centered on source
-    double u = pointProj[0];
-    pointProj[0] = radius * atan(u / radius);
-    pointProj[1] = pointProj[1] * radius / sqrt(radius * radius + u * u);
+    double u = projPP[0];
+    projPP[0] = radius * atan(u / radius);
+    projPP[1] = projPP[1] * radius / sqrt(radius * radius + u * u);
+
+    // Convert to projection index
+    pointProjExtended = projPPToProjIndex * projPP;
+    for(unsigned int i=0; i<Dimension-1; i++)
+      {
+      pointProj[i] = pointProjExtended[i];
+      }
+
+//    // Apply perspective
+//    double perspFactor = volIndexToProjPP[Dimension-1][Dimension];
+//    for(unsigned int j=0; j<Dimension; j++)
+//      perspFactor += volIndexToProjPP[Dimension-1][j] * itOut.GetIndex()[j];
+//    perspFactor = 1/perspFactor;
+//    for(unsigned int i=0; i<Dimension-1; i++)
+//      pointProj[i] = pointProj[i]*perspFactor;
+
+//    // Apply correction for cylindrical centered on source
+//    double u = pointProj[0];
+//    pointProj[0] = radius * atan(u / radius);
+//    pointProj[1] = pointProj[1] * radius / sqrt(radius * radius + u * u);
 
     // Interpolate if in projection
     if( interpolator->IsInsideBuffer(pointProj) )
@@ -543,6 +568,54 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
                               this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
                               matrixVol.GetVnlMatrix() );
 }
+
+template <class TInputImage, class TOutputImage>
+typename BackProjectionImageFilter<TInputImage,TOutputImage>::ProjectionMatrixType
+BackProjectionImageFilter<TInputImage,TOutputImage>
+::GetVolumeIndexToProjectionPhysicalPointMatrix(const unsigned int iProj)
+{
+  const unsigned int Dimension = TInputImage::ImageDimension;
+
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol =
+    GetIndexToPhysicalPointMatrix< TOutputImage >( this->GetOutput() );
+
+  return ProjectionMatrixType(this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
+                              matrixVol.GetVnlMatrix() );
+}
+
+template <class TInputImage, class TOutputImage>
+itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>
+BackProjectionImageFilter<TInputImage,TOutputImage>
+::GetProjectionPhysicalPointToProjectionIndexMatrix()
+{
+  const unsigned int Dimension = TInputImage::ImageDimension;
+
+  itk::Matrix<double, Dimension+1, Dimension+1> matrixStackProj =
+    GetPhysicalPointToIndexMatrix< TOutputImage >( this->GetInput(1) );
+
+  itk::Matrix<double, Dimension, Dimension> matrixProj;
+  matrixProj.SetIdentity();
+  for(unsigned int i=0; i<Dimension-1; i++)
+    {
+    matrixProj[i][Dimension-1] = matrixStackProj[i][Dimension];
+    for(unsigned int j=0; j<Dimension-1; j++)
+      matrixProj[i][j] = matrixStackProj[i][j];
+    }
+
+  // Transpose projection for optimization
+  itk::Matrix<double, Dimension, Dimension> matrixFlip;
+  matrixFlip.SetIdentity();
+  if(this->GetTranspose() )
+    {
+    std::swap(matrixFlip[0][0], matrixFlip[0][1]);
+    std::swap(matrixFlip[1][0], matrixFlip[1][1]);
+    }
+
+  return itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>
+          (matrixFlip.GetVnlMatrix() *
+           matrixProj.GetVnlMatrix());
+}
+
 
 } // end namespace rtk
 
