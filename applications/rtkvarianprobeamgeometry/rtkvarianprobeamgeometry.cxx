@@ -20,25 +20,17 @@
 #include "rtkMacro.h"
 #include "rtkVarianProBeamGeometryReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-
-#include <itkRegularExpressionSeriesFileNames.h>
+#include "rtkGgoFunctions.h"
 
 int main(int argc, char * argv[])
 {
   GGO(rtkvarianprobeamgeometry, args_info);
 
-  // Generate file names of projections
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(args_info.nsort_flag);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(args_info.submatch_arg);
-
   // Create geometry reader
   rtk::VarianProBeamGeometryReader::Pointer reader;
   reader = rtk::VarianProBeamGeometryReader::New();
   reader->SetXMLFileName(args_info.xml_file_arg);
-  reader->SetProjectionsFileNames(names->GetFileNames());
+  reader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputData() )
 
   // Write

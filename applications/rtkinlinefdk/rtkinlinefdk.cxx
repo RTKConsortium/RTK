@@ -29,7 +29,6 @@
 # include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
 
-#include <itkRegularExpressionSeriesFileNames.h>
 #include <itkImageFileWriter.h>
 #include <itkSimpleFastMutexLock.h>
 #include <itkMultiThreader.h>
@@ -93,18 +92,8 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
 
   threadInfo->mutex.Lock();
 
-  // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(threadInfo->args_info->path_arg);
-  names->SetNumericSort(threadInfo->args_info->nsort_flag);
-  names->SetRegularExpression(threadInfo->args_info->regexp_arg);
-  names->SetSubMatch(threadInfo->args_info->submatch_arg);
-
-  if(threadInfo->args_info->verbose_flag)
-    std::cout << "Regular expression matches "
-              << names->GetFileNames().size()
-              << " file(s)..."
-              << std::endl;
+  // Get file names
+  std::vector<std::string> names = rtk::GetProjectionsFileNamesFromGgo( *(threadInfo->args_info) );
 
   // Geometry
   if(threadInfo->args_info->verbose_flag)
@@ -140,7 +129,7 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
     threadInfo->outOfPlaneAngle = geometry->GetOutOfPlaneAngles()[i];
     threadInfo->minimumOffsetX = minOffset;
     threadInfo->maximumOffsetX = maxOffset;
-    threadInfo->fileName = names->GetFileNames()[ vnl_math_min( i, (unsigned int)names->GetFileNames().size()-1 ) ];
+    threadInfo->fileName = names[ vnl_math_min( i, (unsigned int)names.size()-1 ) ];
     threadInfo->nproj = i+1;
     threadInfo->stop = (i==nproj-1);
     if(threadInfo->args_info->verbose_flag)

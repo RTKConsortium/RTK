@@ -30,16 +30,9 @@ int main(int argc, char * argv[])
   const unsigned int Dimension = 3;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 
-  // Generate file names of projections
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(args_info.nsort_flag);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(args_info.submatch_arg);
-
   // Create geometry reader
   rtk::ImagXGeometryReader<OutputImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<OutputImageType>::New();
-  imagxReader->SetProjectionsFileNames(names->GetFileNames());
+  imagxReader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
   if (args_info.dicomcalibration_flag)
     {
     imagxReader->SetReadCalibrationFromProjections(true);

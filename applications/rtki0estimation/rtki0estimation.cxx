@@ -37,15 +37,9 @@ int main(int argc, char *argv[])
   typedef itk::Image< InputPixelType, Dimension > InputImageType;
   typedef itk::Image< unsigned, Dimension >       OutputHistogramType;
 
-  typedef itk::RegularExpressionSeriesFileNames RegexpType;
-  RegexpType::Pointer names = RegexpType::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(args_info.nsort_flag);
-  names->SetRegularExpression(args_info.regexp_arg);
-
   typedef rtk::ProjectionsReader< InputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( names->GetFileNames() );
+  reader->SetFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
   typedef itk::ExtractImageFilter< InputImageType, InputImageType > ExtractFilterType;
