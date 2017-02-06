@@ -517,34 +517,14 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
 
-  itk::Matrix<double, Dimension+1, Dimension+1> matrixVol =
-    GetIndexToPhysicalPointMatrix< TOutputImage >( this->GetOutput() );
+  ProjectionMatrixType VolumeIndexToProjectionPhysicalPointMatrix =
+    GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
 
-  itk::Matrix<double, Dimension+1, Dimension+1> matrixStackProj =
-    GetPhysicalPointToIndexMatrix< TOutputImage >( this->GetInput(1) );
+  itk::Matrix<double, Dimension, Dimension> ProjectionPhysicalPointToProjectionIndexMatrix =
+    GetProjectionPhysicalPointToProjectionIndexMatrix();
 
-  itk::Matrix<double, Dimension, Dimension> matrixProj;
-  matrixProj.SetIdentity();
-  for(unsigned int i=0; i<Dimension-1; i++)
-    {
-    matrixProj[i][Dimension-1] = matrixStackProj[i][Dimension];
-    for(unsigned int j=0; j<Dimension-1; j++)
-      matrixProj[i][j] = matrixStackProj[i][j];
-    }
-
-  // Transpose projection for optimization
-  itk::Matrix<double, Dimension, Dimension> matrixFlip;
-  matrixFlip.SetIdentity();
-  if(this->GetTranspose() )
-    {
-    std::swap(matrixFlip[0][0], matrixFlip[0][1]);
-    std::swap(matrixFlip[1][0], matrixFlip[1][1]);
-    }
-
-  return ProjectionMatrixType(matrixFlip.GetVnlMatrix() *
-                              matrixProj.GetVnlMatrix() *
-                              this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
-                              matrixVol.GetVnlMatrix() );
+  return ProjectionMatrixType(ProjectionPhysicalPointToProjectionIndexMatrix.GetVnlMatrix() *
+                              VolumeIndexToProjectionPhysicalPointMatrix.GetVnlMatrix() );
 }
 
 template <class TInputImage, class TOutputImage>
