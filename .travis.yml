@@ -39,10 +39,10 @@ matrix:
       env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=7.5-18 TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.2.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON
 
 cache:
   - directories:
@@ -97,5 +97,5 @@ script:
   - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
   - cmake .. $CMAKE_OPTIONS
   - if test $TRAVIS_OS_NAME == linux ; then make StyleCheckCode; fi
-  - make --jobs=$NUM_THREADS --keep-going all
-  - if test "$TESTING" == ON; then make test; fi
+#  - make --jobs=$NUM_THREADS --keep-going all
+#  - if test [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test; fi
