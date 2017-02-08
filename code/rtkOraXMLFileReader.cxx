@@ -17,7 +17,6 @@
  *=========================================================================*/
 
 #include "rtkOraXMLFileReader.h"
-#include "itkMacro.h"
 
 #include <itksys/SystemTools.hxx>
 #include <itkMetaDataObject.h>

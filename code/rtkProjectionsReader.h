@@ -69,12 +69,15 @@ namespace rtk
  * BeforeXRad [label="", fixedsize="false", width=0, height=0, shape=none];
  * XRad [label="rtk::XRadRawToAttenuationImageFilter"  URL="\ref rtk::XRadRawToAttenuationImageFilter"];
  * Cast [label="itk::CastImageFilter"  URL="\ref itk::CastImageFilter"];
+ * OraRaw [label="rtk::OraLookupTableImageFilter" URL="\ref rtk::OraLookupTableImageFilter"];
  *
  * Raw->ChangeInformation [label="Default"]
  * ChangeInformation->Crop
  * Crop->ElektaRaw [label="Elekta"]
  * ElektaRaw->Binning
  * Crop->Binning [label="Default"]
+ * Binning->OraRaw [label="Ora && ushort"]
+ * OraRaw->WPC
  * Binning->Scatter [label="Elekta, Varian, IBA, ushort"]
  * Scatter->I0est [label="Default"]
  * I0est->BeforeLUT
@@ -99,7 +102,7 @@ namespace rtk
  *
  * Binning->WPC [label="Default"]
  *
- * {rank=same; XRad EDF Varian LUT}
+ * {rank=same; XRad EDF Varian LUT OraRaw}
  * }
  * \enddot
  *
@@ -218,7 +221,7 @@ public:
     }
 
   /** Convert the projection data to line integrals after pre-processing.
-  ** Default is off. */
+  ** Default is on. */
   itkSetMacro(ComputeLineIntegral, bool);
   itkGetConstMacro(ComputeLineIntegral, bool);
   itkBooleanMacro(ComputeLineIntegral);
