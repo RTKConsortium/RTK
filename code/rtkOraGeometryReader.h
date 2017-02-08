@@ -82,9 +82,6 @@ protected:
 
   ~OraGeometryReader() ITK_OVERRIDE {};
 
-  PointType ReadPointFromString(std::string s);
-  Matrix3x3Type ReadMatrix3x3FromString(std::string s);
-
 private:
   //purposely not implemented
   OraGeometryReader(const Self&);

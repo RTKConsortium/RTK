@@ -39,7 +39,10 @@ set(RTK_LIBRARY_FILES
             rtkIOFactories.cxx
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
             rtkDrawQuadricSpatialObject.cxx
-            rtkOraGeometryReader.cxx)
+            rtkOraXMLFileReader.cxx
+            rtkOraGeometryReader.cxx
+            rtkOraImageIO.cxx
+            rtkOraImageIOFactory.cxx)
 
 if(RTK_TIME_EACH_FILTER)
     set(RTK_LIBRARY_FILES

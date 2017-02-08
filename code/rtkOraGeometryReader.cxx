@@ -21,114 +21,80 @@
 
 #include "rtkMacro.h"
 #include "rtkOraGeometryReader.h"
+#include "rtkOraXMLFileReader.h"
+#include "rtkIOFactories.h"
 
-#include <itkDOMNodeXMLReader.h>
+#include <itkImageIOBase.h>
+#include <itkImageIOFactory.h>
 
 namespace rtk
 {
 
-OraGeometryReader::PointType
-OraGeometryReader::ReadPointFromString(std::string s)
-{
-  GeometryType::PointType p;
-  std::istringstream iss(s);
-  for(int i=0; i<3; i++)
-    {
-    iss >> p[i];
-    iss.ignore(1);
-    }
-  return p;
-}
-
-OraGeometryReader::Matrix3x3Type
-OraGeometryReader::ReadMatrix3x3FromString(std::string s)
-{
-  Matrix3x3Type m;
-  std::istringstream iss(s);
-  for(int i=0; i<3; i++)
-    {
-    for(int j=0; j<3; j++)
-      {
-      iss >> m[i][j];
-      iss.ignore(1);
-      }
-    }
-  return m;
-}
 
 void OraGeometryReader::GenerateData()
 {
   m_Geometry = GeometryType::New();
-
-  for(unsigned int noProj=0; noProj < m_ProjectionsFileNames.size(); noProj++)
+  RegisterIOFactories();
+  for(size_t noProj=0; noProj < m_ProjectionsFileNames.size(); noProj++)
     {
-    itk::DOMNodeXMLReader::Pointer parser = itk::DOMNodeXMLReader::New();
-    parser->SetFileName(m_ProjectionsFileNames[noProj]);
-    parser->Update();
+    itk::ImageIOBase::Pointer reader;
+    reader = itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[noProj].c_str(),
+                                                itk::ImageIOFactory::ReadMode);
+    if (!reader)
+      {
+      itkExceptionMacro("Error reading file " << m_ProjectionsFileNames[noProj]);
+      }
+    reader->SetFileName( m_ProjectionsFileNames[noProj].c_str() );
+    reader->ReadImageInformation();
+    itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
 
-    // Find volume_meta_info section
-    const itk::DOMNode *vmi = parser->GetOutput()->GetChild("volume_meta_info");
-    if(vmi == ITK_NULLPTR)
-      vmi = parser->GetOutput()->GetChild("VOLUME_META_INFO");
-    if(vmi == ITK_NULLPTR)
-      itkExceptionMacro(<< "No volume_meta_info or VOLUME_META_INFO in " << m_ProjectionsFileNames[noProj]);
+    typedef itk::MetaDataObject< VectorType >    MetaDataVectorType;
+    typedef itk::MetaDataObject< Matrix3x3Type > MetaDataMatrixType;
+    typedef itk::MetaDataObject< double >        MetaDataDoubleType;
 
-    // Find basic section in volume_meta_info section
-    const itk::DOMNode *basic = vmi->GetChild("basic");
-    if(basic == ITK_NULLPTR)
-      basic = vmi->GetChild("BASIC");
-    if(basic == ITK_NULLPTR)
-      itkExceptionMacro(<< "No basic or BASIC in " << m_ProjectionsFileNames[noProj]);
+    // Source position
+    MetaDataVectorType *spMeta = dynamic_cast<MetaDataVectorType *>(dic["SourcePosition"].GetPointer() );
+    if(spMeta==ITK_NULLPTR)
+      {
+      itkExceptionMacro(<< "No SourcePosition in " << m_ProjectionsFileNames[noProj]);
+      }
+    PointType sp = spMeta->GetMetaDataObjectValue();
 
-    // Find source position in basic
-    const itk::DOMNode *spx = basic->GetChild("sourceposition");
-    if(spx == ITK_NULLPTR)
-      spx = basic->GetChild("SourcePosition");
-    if(spx == ITK_NULLPTR)
-      itkExceptionMacro(<< "No sourceposition or SourcePosition in " << m_ProjectionsFileNames[noProj]);
-    PointType sp = ReadPointFromString(spx->GetTextChild()->GetText());
+    // Origin (detector position)
+    MetaDataVectorType *dpMeta = dynamic_cast<MetaDataVectorType *>(dic["Origin"].GetPointer() );
+    if(dpMeta == ITK_NULLPTR)
+      {
+      itkExceptionMacro(<< "No Origin in " << m_ProjectionsFileNames[noProj]);
+      }
+    PointType dp = dpMeta->GetMetaDataObjectValue();
 
-    // Find detector position in basic
-    const itk::DOMNode *dpx = basic->GetChild("origin");
-    if(dpx == ITK_NULLPTR)
-      dpx = basic->GetChild("Origin");
-    if(dpx == ITK_NULLPTR)
-      itkExceptionMacro(<< "No origin or Origin in " << m_ProjectionsFileNames[noProj]);
-    PointType dp = ReadPointFromString(dpx->GetTextChild()->GetText());
+    // Direction (detector orientation)
+    MetaDataMatrixType *matMeta = dynamic_cast<MetaDataMatrixType *>(dic["Direction"].GetPointer() );
+    if(matMeta == ITK_NULLPTR)
+      {
+      itkExceptionMacro(<< "No Direction in " << m_ProjectionsFileNames[noProj]);
+      }
+    Matrix3x3Type mat = matMeta->GetMetaDataObjectValue();
 
-    // Find detector direction in basic
-    const itk::DOMNode *matx = basic->GetChild("direction");
-    if(matx == ITK_NULLPTR)
-      matx = basic->GetChild("Direction");
-    if(matx == ITK_NULLPTR)
-      itkExceptionMacro(<< "No direction or Direction in " << m_ProjectionsFileNames[noProj]);
-    Matrix3x3Type mat = ReadMatrix3x3FromString(matx->GetTextChild()->GetText());
-
-    // Find table height
-    const itk::DOMNode *thx = vmi->GetChild("models");
-    if(thx != ITK_NULLPTR)
-      thx = thx->GetChild("table_model");
-    if(thx != ITK_NULLPTR)
-      thx = thx->GetChild("table");
-    if(thx != ITK_NULLPTR)
-      thx = thx->GetChild("table_axis_distance_cm");
-    if(thx == ITK_NULLPTR)
-      itkExceptionMacro(<< "Could not read table_axis_distance_cm " << m_ProjectionsFileNames[noProj]);
-    double th = atof(thx->GetTextChild()->GetText().c_str());
+    // table_axis_distance_cm
+    MetaDataDoubleType *thMeta = dynamic_cast<MetaDataDoubleType *>(dic["table_axis_distance_cm"].GetPointer() );
+    if(thMeta == ITK_NULLPTR)
+      {
+      itkExceptionMacro(<< "No table_axis_distance_cm in " << m_ProjectionsFileNames[noProj]);
+      }
+    double th = thMeta->GetMetaDataObjectValue();
     sp[2] -= th*10.;
     dp[2] -= th*10.;
 
-    // Find ring axial position
-    const itk::DOMNode *ax = vmi->GetChild("fppi");
-    if(ax != ITK_NULLPTR)
-      ax = ax->GetChild("metadata");
-    if(ax != ITK_NULLPTR)
-      ax = ax->GetChild("longitudinalposition_cm");
-    if(ax == ITK_NULLPTR)
-      itkExceptionMacro(<< "Could not read longitudinalposition_cm" << m_ProjectionsFileNames[noProj]);
-    double a = atof(ax->GetTextChild()->GetText().c_str());
-    sp[1] -= a*10.;
-    dp[1] -= a*10.;
+    // longitudinalposition_cm
+    MetaDataDoubleType *axMeta = dynamic_cast<MetaDataDoubleType *>(dic["longitudinalposition_cm"].GetPointer() );
+    if(axMeta == ITK_NULLPTR)
+      {
+      itkExceptionMacro(<< "No longitudinalposition_cm in " << m_ProjectionsFileNames[noProj]);
+      }
+    double ax = axMeta->GetMetaDataObjectValue();
+    sp[1] -= ax*10.;
+    dp[1] -= ax*10.;
 
     // Got it, add to geometry
     m_Geometry->AddProjection(sp,
