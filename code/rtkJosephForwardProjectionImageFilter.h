@@ -83,9 +83,9 @@ public:
     return !( *this != other );
     }
 
-  inline void operator()( const ThreadIdType itkNotUsed(threadId),
+  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
                           const TInput &input,
-                          TOutput &output,
+                          TOutput current,
                           const TOutput &rayCastValue,
                           const VectorType &stepInMM,
                           const VectorType &itkNotUsed(source),
@@ -93,7 +93,7 @@ public:
                           const VectorType &itkNotUsed(nearestPoint),
                           const VectorType &itkNotUsed(farthestPoint)) const
     {
-    output = input + rayCastValue * stepInMM.GetNorm();
+    return(input + rayCastValue * stepInMM.GetNorm());
     }
 };
 

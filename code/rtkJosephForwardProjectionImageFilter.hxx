@@ -221,26 +221,26 @@ JosephForwardProjectionImageFilter<TInputImage,
       stepMM[mainDir]       = this->GetInput(1)->GetSpacing()[mainDir];
 
       // Accumulate
-      m_ProjectedValueAccumulation(threadId,
+      itOut.Set(m_ProjectedValueAccumulation(threadId,
                                    itIn->Get(),
-                                   itOut.Value(),
+                                   itOut.Get(),
                                    sum,
                                    stepMM,
                                    sourcePosition,
                                    dirVox,
                                    np,
-                                   fp);
+                                   fp));
       }
     else
-      m_ProjectedValueAccumulation(threadId,
+      itOut.Set(m_ProjectedValueAccumulation(threadId,
                                    itIn->Get(),
-                                   itOut.Value(),
+                                   itOut.Get(),
                                    sum,
                                    sourcePosition,
                                    sourcePosition,
                                    dirVox,
                                    sourcePosition,
-                                   sourcePosition);
+                                   sourcePosition));
     }
   delete itIn;
 }
