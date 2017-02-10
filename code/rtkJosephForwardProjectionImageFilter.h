@@ -66,7 +66,7 @@ public:
  *
  * \ingroup Functions
  */
-template< class TInput, class TOutput >
+template< class TInput, class TOutput, class TInternalInput, class TInternalOutput >
 class ProjectedValueAccumulation
 {
 public:
@@ -117,8 +117,8 @@ public:
 
 template <class TInputImage,
           class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType, double>,
-          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>
+          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType, double, typename TOutputImage::PixelType>,
+          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType, typename TInputImage::InternalPixelType, typename TOutputImage::InternalPixelType>
           >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
@@ -130,8 +130,10 @@ public:
   typedef itk::SmartPointer<Self>                                Pointer;
   typedef itk::SmartPointer<const Self>                          ConstPointer;
   typedef typename TInputImage::PixelType                        InputPixelType;
+  typedef typename TInputImage::InternalPixelType                InputInternalPixelType;
   typedef typename TOutputImage::PixelType                       OutputPixelType;
   typedef typename TOutputImage::RegionType                      OutputImageRegionType;
+  typedef typename TOutputImage::InternalPixelType               OutputInternalPixelType;
   typedef double                                                 CoordRepType;
   typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
 

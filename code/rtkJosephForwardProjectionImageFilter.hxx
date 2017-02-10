@@ -48,13 +48,18 @@ JosephForwardProjectionImageFilter<TInputImage,
   offsets[0] = 1;
   offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+  for (unsigned int dim=0; dim<3; dim++)
+    {
+    offsets[dim] *= sizeof(typename TInputImage::PixelType) / sizeof(typename TInputImage::InternalPixelType);
+    }
+
   const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
 
   // beginBuffer is pointing at point with index (0,0,0) in memory, even if
   // it is not in the allocated memory
-  const typename TInputImage::PixelType *beginBuffer =
-      this->GetInput(1)->GetBufferPointer() -
-      offsets[0] * this->GetInput(1)->GetBufferedRegion().GetIndex()[0] -
+  typename TInputImage::PixelType *beginBuffer =
+      reinterpret_cast<typename TInputImage::PixelType *>(const_cast<InputInternalPixelType*>(this->GetInput(1)->GetBufferPointer()));
+  beginBuffer -= offsets[0] * this->GetInput(1)->GetBufferedRegion().GetIndex()[0] -
       offsets[1] * this->GetInput(1)->GetBufferedRegion().GetIndex()[1] -
       offsets[2] * this->GetInput(1)->GetBufferedRegion().GetIndex()[2];
 
@@ -111,6 +116,9 @@ JosephForwardProjectionImageFilter<TInputImage,
         mainDir = i;
       }
 
+    // Initialize the accumulation
+    typename TOutputImage::PixelType sum(0);
+
     // Test if there is an intersection
     if( rbi[mainDir]->Evaluate(&dirVox[0]) &&
         rbi[mainDir]->GetFarthestDistance()>=0. && // check if detector after the source
@@ -161,9 +169,6 @@ JosephForwardProjectionImageFilter<TInputImage,
       const CoordRepType stepy = dirVox[notMainDirSup] * norm;
       CoordRepType currentx = np[notMainDirInf] + residual * stepx;
       CoordRepType currenty = np[notMainDirSup] + residual * stepy;
-
-      // Initialize the accumulation
-      typename TOutputImage::PixelType sum = 0;
 
       if (fs == ns) //If the voxel is a corner, we can skip most steps
         {
@@ -230,7 +235,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       m_ProjectedValueAccumulation(threadId,
                                    itIn->Get(),
                                    itOut.Value(),
-                                   0.,
+                                   sum,
                                    sourcePosition,
                                    sourcePosition,
                                    dirVox,
@@ -328,7 +333,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   int offset_xs = 0;
   int offset_ys = 0;
 
-  OutputPixelType result=0;
+  OutputPixelType result(0);
   if(ix < minx) offset_xi = ox;
   if(iy < miny) offset_yi = oy;
   if(ix >= maxx) offset_xs = -ox;
