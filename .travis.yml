@@ -52,6 +52,7 @@ cache:
     - $HOME/itk-v4.5.0-build
     - $HOME/itk-v4.10.0
     - $HOME/itk-v4.10.0-build
+    - $HOME/build/ExternalData
 
 before_install:
   - if test "$CUDA" != NONE; then echo "Installing CUDA library"; fi
