@@ -48,7 +48,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   offsets[0] = 1;
   offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
-  for (unsigned int dim=0; dim<3; dim++)
+  for (unsigned int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
     offsets[dim] *= sizeof(typename TInputImage::PixelType) / sizeof(typename TInputImage::InternalPixelType);
     }
@@ -57,11 +57,11 @@ JosephForwardProjectionImageFilter<TInputImage,
 
   // beginBuffer is pointing at point with index (0,0,0) in memory, even if
   // it is not in the allocated memory
-  typename TInputImage::PixelType *beginBuffer =
-      reinterpret_cast<typename TInputImage::PixelType *>(const_cast<InputInternalPixelType*>(this->GetInput(1)->GetBufferPointer()));
-  beginBuffer -= offsets[0] * this->GetInput(1)->GetBufferedRegion().GetIndex()[0] -
-      offsets[1] * this->GetInput(1)->GetBufferedRegion().GetIndex()[1] -
-      offsets[2] * this->GetInput(1)->GetBufferedRegion().GetIndex()[2];
+  const typename TInputImage::PixelType *beginBuffer =
+    this->GetInput(1)->GetBufferPointer() -
+    offsets[0] * this->GetInput(1)->GetBufferedRegion().GetIndex()[0] -
+    offsets[1] * this->GetInput(1)->GetBufferedRegion().GetIndex()[1] -
+    offsets[2] * this->GetInput(1)->GetBufferedRegion().GetIndex()[2];
 
   // volPPToIndex maps the physical 3D coordinates of a point (in mm) to the
   // corresponding 3D volume index
@@ -117,7 +117,9 @@ JosephForwardProjectionImageFilter<TInputImage,
       }
 
     // Initialize the accumulation
-    typename TOutputImage::PixelType sum(0);
+    typename TOutputImage::PixelType sum;
+    sum.SetSize(this->GetInput(0)->GetVectorLength());
+    sum.Fill(0);
 
     // Test if there is an intersection
     if( rbi[mainDir]->Evaluate(&dirVox[0]) &&
@@ -155,12 +157,17 @@ JosephForwardProjectionImageFilter<TInputImage,
       const int offsetx = offsets[notMainDirInf];
       const int offsety = offsets[notMainDirSup];
       const int offsetz = offsets[mainDir];
-      const typename TInputImage::PixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
+      typename TInputImage::PixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
 
       pxiyi = beginBuffer + ns * offsetz;
       pxsyi = pxiyi + offsetx;
       pxiys = pxiyi + offsety;
       pxsys = pxsyi + offsety;
+
+      pxiyi->SetSize(this->GetInput(0)->GetVectorLength());
+      pxsyi->SetSize(this->GetInput(0)->GetVectorLength());
+      pxiys->SetSize(this->GetInput(0)->GetVectorLength());
+      pxsys->SetSize(this->GetInput(0)->GetVectorLength());
 
       // Compute step size and go to first voxel
       const CoordRepType residual = ns - np[mainDir];
@@ -333,7 +340,9 @@ JosephForwardProjectionImageFilter<TInputImage,
   int offset_xs = 0;
   int offset_ys = 0;
 
-  OutputPixelType result(0);
+  OutputPixelType result;
+  result.SetSize(this->GetInput(0)->GetVectorLength());
+  result.Fill(0);
   if(ix < minx) offset_xi = ox;
   if(iy < miny) offset_yi = oy;
   if(ix >= maxx) offset_xs = -ox;

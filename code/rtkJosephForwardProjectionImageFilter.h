@@ -55,7 +55,12 @@ public:
                              const TInput *p,
                              const int i ) const
   {
-    return weight*p[i];
+    std::cout << p[1] << std::endl;
+    TInput result;
+    result.SetSize(3);
+    result = weight * (p[1]);
+    std::cout << result << std::endl;
+    return result;
   }
 };
 
