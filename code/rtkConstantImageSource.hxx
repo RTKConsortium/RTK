@@ -23,9 +23,8 @@
 
 namespace rtk
 {
-
-template <class TOutputImage>
-ConstantImageSource<TOutputImage>
+template <class TOutputImage, class TConstantConstructor>
+ConstantImageSource<TOutputImage, TConstantConstructor>
 ::ConstantImageSource()
 {
   //Initial image is 64 wide in each direction.
@@ -40,18 +39,20 @@ ConstantImageSource<TOutputImage>
       m_Direction[i][j] = (i==j)?1.:0.;
     }
 
+  m_VectorLength = 0; // 0 means the image is not a vector image
+
   m_Constant = 0.;
 }
 
-template <class TOutputImage>
-ConstantImageSource<TOutputImage>
+template <class TOutputImage, class TConstantConstructor>
+ConstantImageSource<TOutputImage, TConstantConstructor>
 ::~ConstantImageSource()
 {
 }
 
-template <class TOutputImage>
+template <class TOutputImage, class TConstantConstructor>
 void
-ConstantImageSource<TOutputImage>
+ConstantImageSource<TOutputImage, TConstantConstructor>
 ::SetSize( SizeValueArrayType sizeArray )
 {
   const unsigned int count = TOutputImage::ImageDimension;
@@ -73,17 +74,17 @@ ConstantImageSource<TOutputImage>
     }
 }
 
-template <class TOutputImage>
-const typename ConstantImageSource<TOutputImage>::SizeValueType *
-ConstantImageSource<TOutputImage>
+template <class TOutputImage, class TConstantConstructor>
+const typename ConstantImageSource<TOutputImage, TConstantConstructor>::SizeValueType *
+ConstantImageSource<TOutputImage, TConstantConstructor>
 ::GetSize() const
 {
   return this->m_Size.GetSize();
 }
 
-template <class TOutputImage>
+template <class TOutputImage, class TConstantConstructor>
 void
-ConstantImageSource<TOutputImage>
+ConstantImageSource<TOutputImage, TConstantConstructor>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
@@ -113,9 +114,9 @@ ConstantImageSource<TOutputImage>
   os << m_Size[i] << "]" << std::endl;
 }
 
-template <class TOutputImage>
+template <class TOutputImage, class TConstantConstructor>
 void
-ConstantImageSource<TOutputImage>
+ConstantImageSource<TOutputImage, TConstantConstructor>
 ::SetInformationFromImage(const typename TOutputImage::Superclass* image)
 {
   this->SetSize( image->GetLargestPossibleRegion().GetSize() );
@@ -126,9 +127,9 @@ ConstantImageSource<TOutputImage>
 }
 
 //----------------------------------------------------------------------------
-template <typename TOutputImage>
+template <class TOutputImage, class TConstantConstructor>
 void 
-ConstantImageSource<TOutputImage>
+ConstantImageSource<TOutputImage, TConstantConstructor>
 ::GenerateOutputInformation()
 {
   TOutputImage *output;
@@ -142,17 +143,21 @@ ConstantImageSource<TOutputImage>
   output->SetSpacing(m_Spacing);
   output->SetOrigin(m_Origin);
   output->SetDirection(m_Direction);
+
+  bool isVectorImage(strcmp(output->GetNameOfClass(), "VectorImage") == 0);
+  if (isVectorImage)
+      output->SetVectorLength(this->GetVectorLength());
 }
 
 //----------------------------------------------------------------------------
-template <typename TOutputImage>
+template <class TOutputImage, class TConstantConstructor>
 void 
-ConstantImageSource<TOutputImage>
+ConstantImageSource<TOutputImage, TConstantConstructor>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
   for (; !it.IsAtEnd(); ++it)
-    it.Set( this->GetConstant() );
+    it.Set( m_ConstantConstructor(this->GetConstant()));
 }
 
 } // end namespace rtk

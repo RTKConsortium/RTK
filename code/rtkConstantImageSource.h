@@ -24,9 +24,51 @@
 
 #include <itkImageSource.h>
 #include <itkNumericTraits.h>
+#include <itkVariableLengthVector.h>
 
 namespace rtk
 {
+namespace Functor
+{
+/** \class PixelInitialization
+ * \brief Function to initialize pixel value, used to deal with vector and non-vector types
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup Functions
+ */
+
+template< class PixelValueType, unsigned int VectorLength=3 >
+class VectorConstantConstructor
+{
+public:
+  VectorConstantConstructor() {};
+  ~VectorConstantConstructor() {};
+
+  inline itk::VariableLengthVector<PixelValueType> operator()( const PixelValueType value ) const
+  {
+  itk::VariableLengthVector<PixelValueType> result;
+  result.SetSize(VectorLength);
+  result.Fill(value);
+  return result;
+  }
+};
+
+template< class PixelType >
+class ConstantConstructor
+{
+public:
+  ConstantConstructor() {};
+  ~ConstantConstructor() {};
+
+  inline PixelType operator()( const PixelType value ) const
+  {
+  return value;
+  }
+};
+
+} // end namespace Functor
+
 
 /** \class ConstantImageSource
  * \brief Generate an n-dimensional image with constant pixel values.
@@ -46,7 +88,7 @@ namespace rtk
  *
  * \ingroup ImageSource
  */
-template <typename TOutputImage>
+template <typename TOutputImage, typename TConstantConstructor = Functor::ConstantConstructor<typename TOutputImage::InternalPixelType> >
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
 {
 public:
@@ -59,8 +101,9 @@ public:
   /** Typedef for the output image type. */
   typedef TOutputImage OutputImageType;
 
-  /** Typedef for the output image PixelType. */
+  /** Typedefs for the output image PixelType. */
   typedef typename TOutputImage::PixelType OutputImagePixelType;
+  typedef typename TOutputImage::InternalPixelType OutputImageInternalPixelType;
 
   /** Typedef to describe the output image region type. */
   typedef typename TOutputImage::RegionType OutputImageRegionType;
@@ -107,11 +150,26 @@ public:
   itkGetMacro( Index, IndexType );
 
   /** Set/Get the pixel value of output */
-  itkSetMacro(Constant, OutputImagePixelType);
-  itkGetConstMacro(Constant, OutputImagePixelType);
+  itkSetMacro(Constant, OutputImageInternalPixelType);
+  itkGetConstMacro(Constant, OutputImageInternalPixelType);
+
+  /** Set/Get the vector length, in case of a VectorImage */
+  itkSetMacro(VectorLength, unsigned int);
+  itkGetConstMacro(VectorLength, unsigned int);
 
   /** Set output image information from an existing image */
   void SetInformationFromImage(const typename TOutputImage::Superclass* image);
+
+  /** Get/Set the functor that is used to initialize the constant */
+  TConstantConstructor &       GetConstantConstructor() { return m_ConstantConstructor; }
+  void SetConstantConstructor(const TConstantConstructor & _arg)
+    {
+    if ( m_ConstantConstructor != _arg )
+      {
+      m_ConstantConstructor = _arg;
+      this->Modified();
+      }
+    }
 
 protected:
   ConstantImageSource();
@@ -127,8 +185,11 @@ protected:
   PointType      m_Origin;
   DirectionType  m_Direction;
   IndexType      m_Index;
+  unsigned int   m_VectorLength;
 
-  typename TOutputImage::PixelType m_Constant;
+  OutputImageInternalPixelType m_Constant;
+
+  TConstantConstructor m_ConstantConstructor;
 
 private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented
