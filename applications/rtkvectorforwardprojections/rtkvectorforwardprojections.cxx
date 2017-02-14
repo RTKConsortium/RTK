@@ -57,17 +57,6 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << " done." << std::endl;
 
-  // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType, rtk::Functor::VectorConstantConstructor<OutputPixelType, Dimension> > ConstantImageSourceType;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorforwardprojections>(constantImageSource, args_info);
-
-  // Adjust size according to geometry
-  ConstantImageSourceType::SizeType sizeOutput;
-  sizeOutput[0] = constantImageSource->GetSize()[0];
-  sizeOutput[1] = constantImageSource->GetSize()[1];
-  sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
-  constantImageSource->SetSize( sizeOutput );
 
   // Input reader
   if(args_info.verbose_flag)
@@ -87,20 +76,22 @@ int main(int argc, char * argv[])
               << readerProbe.GetMean() << ' ' << readerProbe.GetUnit()
               << '.' << std::endl;
 
-  // Set the constant projections source to use the same number of
-  // channels as found in the volume
-    constantImageSource->SetVectorLength(reader->GetOutput()->GetVectorLength());
+  // Create a stack of empty projection images
+  typedef rtk::ConstantImageSource< OutputImageType,
+                                    rtk::Functor::VectorPixelFiller<OutputPixelType>,
+                                    rtk::Functor::VectorLengthGetter<OutputImageType>,
+                                    rtk::Functor::VectorLengthSetter<OutputImageType> > ConstantImageSourceType;
+  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorforwardprojections>(constantImageSource, args_info);
+  unsigned int NumberOfChannels = reader->GetOutput()->GetVectorLength();
+  constantImageSource->SetVectorLength(NumberOfChannels);
 
-//// Initialize the projections to the same size as the volume (very wrong)
-//  OutputImageType::Pointer inputProjections = OutputImageType::New();
-//  inputProjections->CopyInformation(reader->GetOutput());
-//  inputProjections->SetVectorLength(reader->GetOutput()->GetVectorLength());
-//  inputProjections->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
-//  inputProjections->Allocate();
-//  typename OutputImageType::PixelType vectorPixel;
-//  vectorPixel.SetSize(reader->GetOutput()->GetVectorLength());
-//  vectorPixel.Fill(0);
-//  inputProjections->FillBuffer(vectorPixel);
+  // Adjust size according to geometry
+  ConstantImageSourceType::SizeType sizeOutput;
+  sizeOutput[0] = constantImageSource->GetSize()[0];
+  sizeOutput[1] = constantImageSource->GetSize()[1];
+  sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
+  constantImageSource->SetSize( sizeOutput );
 
   // Create forward projection image filter
   if(args_info.verbose_flag)
@@ -112,11 +103,21 @@ int main(int argc, char * argv[])
   switch(args_info.fp_arg)
   {
   case(fp_arg_Joseph):
-    forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType,
+                                                                OutputImageType,
+                                                                rtk::Functor::VectorInterpolationWeightMultiplication<typename OutputImageType::InternalPixelType,
+                                                                                                                      double,
+                                                                                                                      typename OutputImageType::PixelType>,
+                                                                rtk::Functor::ProjectedValueAccumulation<typename OutputImageType::PixelType,
+                                                                                                         typename OutputImageType::PixelType,
+                                                                                                         typename OutputImageType::InternalPixelType,
+                                                                                                         typename OutputImageType::InternalPixelType>,
+                                                                rtk::Functor::VectorLengthGetter<OutputImageType>,
+                                                                rtk::Functor::VectorPixelFiller<typename OutputImageType::InternalPixelType> >::New();
     break;
-  case(fp_arg_RayCastInterpolator):
-    forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
+//  case(fp_arg_RayCastInterpolator):
+//    forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+//    break;
   case(fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
     forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();

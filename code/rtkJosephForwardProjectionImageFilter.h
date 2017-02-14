@@ -22,6 +22,7 @@
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
+#include "rtkFunctors.h"
 
 namespace rtk
 {
@@ -45,6 +46,28 @@ public:
     return false;
   }
   bool operator==(const InterpolationWeightMultiplication & other) const
+  {
+    return !( *this != other );
+  }
+
+  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+                             const double itkNotUsed(stepLengthInVoxel),
+                             const TCoordRepType weight,
+                             const TInput *p,
+                             const int i ) const
+  {return (weight * p[i]);}
+};
+
+template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
+class VectorInterpolationWeightMultiplication
+{
+public:
+  VectorInterpolationWeightMultiplication() {};
+  ~VectorInterpolationWeightMultiplication() {};
+  bool operator!=( const VectorInterpolationWeightMultiplication & ) const {
+    return false;
+  }
+  bool operator==(const VectorInterpolationWeightMultiplication & other) const
   {
     return !( *this != other );
   }
@@ -102,6 +125,7 @@ public:
     }
 };
 
+
 } // end namespace Functor
 
 
@@ -123,7 +147,9 @@ public:
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::InternalPixelType, double, typename TOutputImage::PixelType>,
-          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType, typename TInputImage::InternalPixelType, typename TOutputImage::InternalPixelType>
+          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType, typename TInputImage::InternalPixelType, typename TOutputImage::InternalPixelType>,
+          class TLengthGetter                      = Functor::LengthGetter<TInputImage>,
+          class TPixelFiller                       = Functor::PixelFiller<typename TInputImage::InternalPixelType>
           >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
@@ -173,6 +199,32 @@ public:
       }
     }
 
+  /** Get/Set the functor that returns the number of elements in each pixel
+   * (i.e. 1 for scalar images, and n for vector images). */
+  TLengthGetter &       GetLengthGetter() { return m_LengthGetter; }
+  const TLengthGetter & GetLengthGetter() const { return m_LengthGetter; }
+  void SetLengthGetter(const TLengthGetter & _arg)
+    {
+    if ( m_LengthGetter != _arg )
+      {
+      m_LengthGetter = _arg;
+      this->Modified();
+      }
+    }
+
+  /** Get/Set the functor that fills a pixel's elements
+   * (i.e. 1 for scalar images, and n for vector images) with a given value. */
+  TPixelFiller &       GetPixelFiller() { return m_PixelFiller; }
+  const TPixelFiller & GetPixelFiller() const { return m_PixelFiller; }
+  void SetPixelFiller(const TPixelFiller & _arg)
+    {
+    if ( m_PixelFiller != _arg )
+      {
+      m_PixelFiller = _arg;
+      this->Modified();
+      }
+    }
+
 protected:
   JosephForwardProjectionImageFilter() {}
   ~JosephForwardProjectionImageFilter() ITK_OVERRIDE {}
@@ -213,8 +265,11 @@ private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
 
+  // Functors
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TProjectedValueAccumulation        m_ProjectedValueAccumulation;
+  TLengthGetter                      m_LengthGetter;
+  TPixelFiller                       m_PixelFiller;
 };
 
 } // end namespace rtk

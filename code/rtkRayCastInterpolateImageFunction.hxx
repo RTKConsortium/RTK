@@ -1421,7 +1421,7 @@ RayCastHelper<TInputImage, TCoordRep>
     {
     intensity = this->GetCurrentIntensity();
 
-    if (intensity.GetNorm() > threshold)
+    if (intensity > threshold)
       {
       integral += intensity;
       }

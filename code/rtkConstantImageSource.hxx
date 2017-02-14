@@ -23,8 +23,8 @@
 
 namespace rtk
 {
-template <class TOutputImage, class TConstantConstructor>
-ConstantImageSource<TOutputImage, TConstantConstructor>
+template <class TOutputImage, class TPixelFiller, class TLengthGetter, class TLengthSetter>
+ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>
 ::ConstantImageSource()
 {
   //Initial image is 64 wide in each direction.
@@ -44,15 +44,15 @@ ConstantImageSource<TOutputImage, TConstantConstructor>
   m_Constant = 0.;
 }
 
-template <class TOutputImage, class TConstantConstructor>
-ConstantImageSource<TOutputImage, TConstantConstructor>
+template <class TOutputImage, class TPixelFiller, class TLengthGetter, class TLengthSetter>
+ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>
 ::~ConstantImageSource()
 {
 }
 
-template <class TOutputImage, class TConstantConstructor>
+template <class TOutputImage, class TPixelFiller, class TLengthGetter, class TLengthSetter>
 void
-ConstantImageSource<TOutputImage, TConstantConstructor>
+ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>
 ::SetSize( SizeValueArrayType sizeArray )
 {
   const unsigned int count = TOutputImage::ImageDimension;
@@ -74,17 +74,17 @@ ConstantImageSource<TOutputImage, TConstantConstructor>
     }
 }
 
-template <class TOutputImage, class TConstantConstructor>
-const typename ConstantImageSource<TOutputImage, TConstantConstructor>::SizeValueType *
-ConstantImageSource<TOutputImage, TConstantConstructor>
+template <class TOutputImage, class TPixelFiller, class TLengthGetter, class TLengthSetter>
+const typename ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>::SizeValueType *
+ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>
 ::GetSize() const
 {
   return this->m_Size.GetSize();
 }
 
-template <class TOutputImage, class TConstantConstructor>
+template <class TOutputImage, class TPixelFiller, class TLengthGetter, class TLengthSetter>
 void
-ConstantImageSource<TOutputImage, TConstantConstructor>
+ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>
 ::PrintSelf(std::ostream& os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
@@ -114,9 +114,9 @@ ConstantImageSource<TOutputImage, TConstantConstructor>
   os << m_Size[i] << "]" << std::endl;
 }
 
-template <class TOutputImage, class TConstantConstructor>
+template <class TOutputImage, class TPixelFiller, class TLengthGetter, class TLengthSetter>
 void
-ConstantImageSource<TOutputImage, TConstantConstructor>
+ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>
 ::SetInformationFromImage(const typename TOutputImage::Superclass* image)
 {
   this->SetSize( image->GetLargestPossibleRegion().GetSize() );
@@ -127,9 +127,9 @@ ConstantImageSource<TOutputImage, TConstantConstructor>
 }
 
 //----------------------------------------------------------------------------
-template <class TOutputImage, class TConstantConstructor>
+template <class TOutputImage, class TPixelFiller, class TLengthGetter, class TLengthSetter>
 void 
-ConstantImageSource<TOutputImage, TConstantConstructor>
+ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>
 ::GenerateOutputInformation()
 {
   TOutputImage *output;
@@ -143,21 +143,18 @@ ConstantImageSource<TOutputImage, TConstantConstructor>
   output->SetSpacing(m_Spacing);
   output->SetOrigin(m_Origin);
   output->SetDirection(m_Direction);
-
-  bool isVectorImage(strcmp(output->GetNameOfClass(), "VectorImage") == 0);
-  if (isVectorImage)
-      output->SetVectorLength(this->GetVectorLength());
+  m_LengthSetter(output, m_VectorLength);
 }
 
 //----------------------------------------------------------------------------
-template <class TOutputImage, class TConstantConstructor>
+template <class TOutputImage, class TPixelFiller, class TLengthGetter, class TLengthSetter>
 void 
-ConstantImageSource<TOutputImage, TConstantConstructor>
+ConstantImageSource<TOutputImage, TPixelFiller, TLengthGetter, TLengthSetter>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
   for (; !it.IsAtEnd(); ++it)
-    it.Set( m_ConstantConstructor(this->GetConstant()));
+    it.Set( m_PixelFiller(this->GetConstant(), m_LengthGetter(this->GetOutput())));
 }
 
 } // end namespace rtk

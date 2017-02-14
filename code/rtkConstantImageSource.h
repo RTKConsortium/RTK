@@ -21,6 +21,7 @@
 
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
+#include "rtkFunctors.h"
 
 #include <itkImageSource.h>
 #include <itkNumericTraits.h>
@@ -28,48 +29,6 @@
 
 namespace rtk
 {
-namespace Functor
-{
-/** \class PixelInitialization
- * \brief Function to initialize pixel value, used to deal with vector and non-vector types
- *
- * \author Cyril Mory
- *
- * \ingroup Functions
- */
-
-template< class PixelValueType, unsigned int VectorLength=3 >
-class VectorConstantConstructor
-{
-public:
-  VectorConstantConstructor() {};
-  ~VectorConstantConstructor() {};
-
-  inline itk::VariableLengthVector<PixelValueType> operator()( const PixelValueType value ) const
-  {
-  itk::VariableLengthVector<PixelValueType> result;
-  result.SetSize(VectorLength);
-  result.Fill(value);
-  return result;
-  }
-};
-
-template< class PixelType >
-class ConstantConstructor
-{
-public:
-  ConstantConstructor() {};
-  ~ConstantConstructor() {};
-
-  inline PixelType operator()( const PixelType value ) const
-  {
-  return value;
-  }
-};
-
-} // end namespace Functor
-
-
 /** \class ConstantImageSource
  * \brief Generate an n-dimensional image with constant pixel values.
  *
@@ -88,7 +47,10 @@ public:
  *
  * \ingroup ImageSource
  */
-template <typename TOutputImage, typename TConstantConstructor = Functor::ConstantConstructor<typename TOutputImage::InternalPixelType> >
+template <typename TOutputImage,
+          typename TPixelFiller  = Functor::PixelFiller<typename TOutputImage::InternalPixelType>,
+          typename TLengthGetter = Functor::LengthGetter<TOutputImage>,
+          typename TLengthSetter = Functor::LengthSetter<TOutputImage> >
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
 {
 public:
@@ -160,17 +122,6 @@ public:
   /** Set output image information from an existing image */
   void SetInformationFromImage(const typename TOutputImage::Superclass* image);
 
-  /** Get/Set the functor that is used to initialize the constant */
-  TConstantConstructor &       GetConstantConstructor() { return m_ConstantConstructor; }
-  void SetConstantConstructor(const TConstantConstructor & _arg)
-    {
-    if ( m_ConstantConstructor != _arg )
-      {
-      m_ConstantConstructor = _arg;
-      this->Modified();
-      }
-    }
-
 protected:
   ConstantImageSource();
   ~ConstantImageSource() ITK_OVERRIDE;
@@ -189,7 +140,10 @@ protected:
 
   OutputImageInternalPixelType m_Constant;
 
-  TConstantConstructor m_ConstantConstructor;
+  // Functors
+  TPixelFiller   m_PixelFiller;
+  TLengthGetter  m_LengthGetter;
+  TLengthSetter  m_LengthSetter;
 
 private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented

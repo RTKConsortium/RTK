@@ -33,25 +33,25 @@ namespace rtk
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation>
+          class TProjectedValueAccumulation,
+          class TLengthGetter,
+          class TPixelFiller>
 void
 JosephForwardProjectionImageFilter<TInputImage,
                                    TOutputImage,
                                    TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation>
+                                   TProjectedValueAccumulation,
+                                   TLengthGetter,
+                                   TPixelFiller>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType threadId )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-  const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
-  int offsets[3];
-  offsets[0] = 1;
-  offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
-  offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
-  for (unsigned int dim=0; dim<TOutputImage::ImageDimension; dim++)
-    {
-    offsets[dim] *= this->GetInput(0)->GetVectorLength();
-    }
+//  const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
+  int offsets[Dimension];
+  offsets[0] = m_LengthGetter(this->GetInput(1));
+  for (unsigned int i=1; i<Dimension; i++)
+    offsets[i] = this->GetInput(1)->GetBufferedRegion().GetSize()[i-1] * offsets[i-1];
 
   const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
 
@@ -117,9 +117,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       }
 
     // Initialize the accumulation
-    typename TOutputImage::PixelType sum;
-    sum.SetSize(this->GetInput(0)->GetVectorLength());
-    sum.Fill(0);
+    typename TOutputImage::PixelType sum = m_PixelFiller(0, m_LengthGetter(this->GetInput(1)));
 
     // Test if there is an intersection
     if( rbi[mainDir]->Evaluate(&dirVox[0]) &&
@@ -250,15 +248,21 @@ JosephForwardProjectionImageFilter<TInputImage,
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation>
+          class TProjectedValueAccumulation,
+          class TLengthGetter,
+          class TPixelFiller>
 typename JosephForwardProjectionImageFilter<TInputImage,
                                             TOutputImage,
                                             TInterpolationWeightMultiplication,
-                                            TProjectedValueAccumulation>::OutputPixelType
+                                            TProjectedValueAccumulation,
+                                            TLengthGetter,
+                                            TPixelFiller>::OutputPixelType
 JosephForwardProjectionImageFilter<TInputImage,
                                    TOutputImage,
                                    TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation>
+                                   TProjectedValueAccumulation,
+                                   TLengthGetter,
+                                   TPixelFiller>
 ::BilinearInterpolation( const ThreadIdType threadId,
                          const double stepLengthInVoxel,
                          const InputInternalPixelType *pxiyi,
@@ -298,15 +302,21 @@ JosephForwardProjectionImageFilter<TInputImage,
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation>
+          class TProjectedValueAccumulation,
+          class TLengthGetter,
+          class TPixelFiller>
 typename JosephForwardProjectionImageFilter<TInputImage,
                                             TOutputImage,
                                             TInterpolationWeightMultiplication,
-                                            TProjectedValueAccumulation>::OutputPixelType
+                                            TProjectedValueAccumulation,
+                                            TLengthGetter,
+                                            TPixelFiller>::OutputPixelType
 JosephForwardProjectionImageFilter<TInputImage,
                                    TOutputImage,
                                    TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation>
+                                   TProjectedValueAccumulation,
+                                   TLengthGetter,
+                                   TPixelFiller>
 ::BilinearInterpolationOnBorders( const ThreadIdType threadId,
                            const double stepLengthInVoxel,
                            const InputInternalPixelType *pxiyi,
@@ -335,9 +345,8 @@ JosephForwardProjectionImageFilter<TInputImage,
   int offset_xs = 0;
   int offset_ys = 0;
 
-  OutputPixelType result;
-  result.SetSize(this->GetInput(0)->GetVectorLength());
-  result.Fill(0);
+  OutputPixelType result = m_PixelFiller(0, m_LengthGetter(this->GetInput(0)));
+
   if(ix < minx) offset_xi = ox;
   if(iy < miny) offset_yi = oy;
   if(ix >= maxx) offset_xs = -ox;
