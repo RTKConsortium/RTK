@@ -50,14 +50,14 @@ JosephForwardProjectionImageFilter<TInputImage,
   offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
   for (unsigned int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
-    offsets[dim] *= sizeof(typename TInputImage::PixelType) / sizeof(typename TInputImage::InternalPixelType);
+    offsets[dim] *= this->GetInput(0)->GetVectorLength();
     }
 
   const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
 
   // beginBuffer is pointing at point with index (0,0,0) in memory, even if
   // it is not in the allocated memory
-  const typename TInputImage::PixelType *beginBuffer =
+  const typename TInputImage::InternalPixelType *beginBuffer =
     this->GetInput(1)->GetBufferPointer() -
     offsets[0] * this->GetInput(1)->GetBufferedRegion().GetIndex()[0] -
     offsets[1] * this->GetInput(1)->GetBufferedRegion().GetIndex()[1] -
@@ -157,17 +157,12 @@ JosephForwardProjectionImageFilter<TInputImage,
       const int offsetx = offsets[notMainDirInf];
       const int offsety = offsets[notMainDirSup];
       const int offsetz = offsets[mainDir];
-      typename TInputImage::PixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
+      const typename TInputImage::InternalPixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
 
       pxiyi = beginBuffer + ns * offsetz;
       pxsyi = pxiyi + offsetx;
       pxiys = pxiyi + offsety;
       pxsys = pxsyi + offsety;
-
-      pxiyi->SetSize(this->GetInput(0)->GetVectorLength());
-      pxsyi->SetSize(this->GetInput(0)->GetVectorLength());
-      pxiys->SetSize(this->GetInput(0)->GetVectorLength());
-      pxsys->SetSize(this->GetInput(0)->GetVectorLength());
 
       // Compute step size and go to first voxel
       const CoordRepType residual = ns - np[mainDir];
@@ -266,10 +261,10 @@ JosephForwardProjectionImageFilter<TInputImage,
                                    TProjectedValueAccumulation>
 ::BilinearInterpolation( const ThreadIdType threadId,
                          const double stepLengthInVoxel,
-                         const InputPixelType *pxiyi,
-                         const InputPixelType *pxsyi,
-                         const InputPixelType *pxiys,
-                         const InputPixelType *pxsys,
+                         const InputInternalPixelType *pxiyi,
+                         const InputInternalPixelType *pxsyi,
+                         const InputInternalPixelType *pxiys,
+                         const InputInternalPixelType *pxsys,
                          const CoordRepType x,
                          const CoordRepType y,
                          const int ox,
@@ -314,10 +309,10 @@ JosephForwardProjectionImageFilter<TInputImage,
                                    TProjectedValueAccumulation>
 ::BilinearInterpolationOnBorders( const ThreadIdType threadId,
                            const double stepLengthInVoxel,
-                           const InputPixelType *pxiyi,
-                           const InputPixelType *pxsyi,
-                           const InputPixelType *pxiys,
-                           const InputPixelType *pxsys,
+                           const InputInternalPixelType *pxiyi,
+                           const InputInternalPixelType *pxsyi,
+                           const InputInternalPixelType *pxiys,
+                           const InputInternalPixelType *pxsys,
                            const CoordRepType x,
                            const CoordRepType y,
                            const int ox,

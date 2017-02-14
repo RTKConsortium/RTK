@@ -55,12 +55,12 @@ public:
                              const TInput *p,
                              const int i ) const
   {
-    std::cout << p[1] << std::endl;
-    TInput result;
+    itk::VariableLengthVector<TInput> result;
     result.SetSize(3);
-    result = weight * (p[1]);
-    std::cout << result << std::endl;
-    return result;
+    result[0] = p[i];
+    result[1] = p[i+1];
+    result[2] = p[i+2];
+    return (result * weight);
   }
 };
 
@@ -122,7 +122,7 @@ public:
 
 template <class TInputImage,
           class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType, double, typename TOutputImage::PixelType>,
+          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::InternalPixelType, double, typename TOutputImage::PixelType>,
           class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType, typename TInputImage::InternalPixelType, typename TOutputImage::InternalPixelType>
           >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
@@ -185,10 +185,10 @@ protected:
 
   inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,
-                                               const InputPixelType *pxiyi,
-                                               const InputPixelType *pxsyi,
-                                               const InputPixelType *pxiys,
-                                               const InputPixelType *pxsys,
+                                               const InputInternalPixelType *pxiyi,
+                                               const InputInternalPixelType *pxsyi,
+                                               const InputInternalPixelType *pxiys,
+                                               const InputInternalPixelType *pxsys,
                                                const double x,
                                                const double y,
                                                const int ox,
@@ -196,10 +196,10 @@ protected:
 
   inline OutputPixelType BilinearInterpolationOnBorders(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,
-                                               const InputPixelType *pxiyi,
-                                               const InputPixelType *pxsyi,
-                                               const InputPixelType *pxiys,
-                                               const InputPixelType *pxsys,
+                                               const InputInternalPixelType *pxiyi,
+                                               const InputInternalPixelType *pxsyi,
+                                               const InputInternalPixelType *pxiys,
+                                               const InputInternalPixelType *pxsys,
                                                const double x,
                                                const double y,
                                                const int ox,

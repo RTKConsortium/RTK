@@ -57,17 +57,17 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << " done." << std::endl;
 
-//  // Create a stack of empty projection images
-//  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
-//  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-//  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorforwardprojections>(constantImageSource, args_info);
+  // Create a stack of empty projection images
+  typedef rtk::ConstantImageSource< OutputImageType, rtk::Functor::VectorConstantConstructor<OutputPixelType, Dimension> > ConstantImageSourceType;
+  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorforwardprojections>(constantImageSource, args_info);
 
-//  // Adjust size according to geometry
-//  ConstantImageSourceType::SizeType sizeOutput;
-//  sizeOutput[0] = constantImageSource->GetSize()[0];
-//  sizeOutput[1] = constantImageSource->GetSize()[1];
-//  sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
-//  constantImageSource->SetSize( sizeOutput );
+  // Adjust size according to geometry
+  ConstantImageSourceType::SizeType sizeOutput;
+  sizeOutput[0] = constantImageSource->GetSize()[0];
+  sizeOutput[1] = constantImageSource->GetSize()[1];
+  sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
+  constantImageSource->SetSize( sizeOutput );
 
   // Input reader
   if(args_info.verbose_flag)
@@ -87,16 +87,20 @@ int main(int argc, char * argv[])
               << readerProbe.GetMean() << ' ' << readerProbe.GetUnit()
               << '.' << std::endl;
 
-// Initialize the projections to the same size as the volume (very wrong)
-  OutputImageType::Pointer inputProjections = OutputImageType::New();
-  inputProjections->CopyInformation(reader->GetOutput());
-  inputProjections->SetVectorLength(reader->GetOutput()->GetVectorLength());
-  inputProjections->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
-  inputProjections->Allocate();
-  typename OutputImageType::PixelType vectorPixel;
-  vectorPixel.SetSize(reader->GetOutput()->GetVectorLength());
-  vectorPixel.Fill(0);
-  inputProjections->FillBuffer(vectorPixel);
+  // Set the constant projections source to use the same number of
+  // channels as found in the volume
+    constantImageSource->SetVectorLength(reader->GetOutput()->GetVectorLength());
+
+//// Initialize the projections to the same size as the volume (very wrong)
+//  OutputImageType::Pointer inputProjections = OutputImageType::New();
+//  inputProjections->CopyInformation(reader->GetOutput());
+//  inputProjections->SetVectorLength(reader->GetOutput()->GetVectorLength());
+//  inputProjections->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
+//  inputProjections->Allocate();
+//  typename OutputImageType::PixelType vectorPixel;
+//  vectorPixel.SetSize(reader->GetOutput()->GetVectorLength());
+//  vectorPixel.Fill(0);
+//  inputProjections->FillBuffer(vectorPixel);
 
   // Create forward projection image filter
   if(args_info.verbose_flag)
@@ -126,7 +130,7 @@ int main(int argc, char * argv[])
     std::cerr << "Unhandled --method value." << std::endl;
     return EXIT_FAILURE;
   }
-  forwardProjection->SetInput( inputProjections );
+  forwardProjection->SetInput( constantImageSource->GetOutput() );
   forwardProjection->SetInput( 1, reader->GetOutput() );
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   projProbe.Start();
