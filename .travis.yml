@@ -98,5 +98,5 @@ script:
   - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
   - cmake .. $CMAKE_OPTIONS
   - if test $TRAVIS_OS_NAME == linux ; then make StyleCheckCode; fi
-  - make --jobs=$NUM_THREADS --keep-going all
-  - if test [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test; fi
+#  - make --jobs=$NUM_THREADS --keep-going all
+#  - if test [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test; fi
