@@ -130,7 +130,7 @@ public:
    *
    * \return True if a valid ray was specified.
    */
-  bool IntegrateAboveThreshold(typename InputImageType::PixelType &integral, double threshold);
+  bool IntegrateAboveThreshold(double &integral, double threshold);
 
   /** \brief
    * Increment each of the intensities of the 4 planar voxels
@@ -144,7 +144,7 @@ public:
   void Reset(void);
 
   /// Return the interpolated intensity of the current ray point.
-  typename InputImageType::PixelType GetCurrentIntensity(void) const;
+  double GetCurrentIntensity(void) const;
 
   /// Return the ray point spacing in mm
   double GetRayPointSpacing(void) const {
@@ -1164,9 +1164,6 @@ RayCastHelper<TInputImage, TCoordRep>
   m_RayIntersectionVoxelIndex[1] = Iy;
   m_RayIntersectionVoxelIndex[2] = Iz;
 
-  typename TInputImage::PixelType *buffer =
-      reinterpret_cast<typename TInputImage::PixelType *>(const_cast<typename TInputImage::InternalPixelType*>(this->m_Image->GetBufferPointer()));
-
   switch( m_TraversalDirection )
     {
     case TRANSVERSE_IN_X:
@@ -1179,19 +1176,19 @@ RayCastHelper<TInputImage, TCoordRep>
         
         index[0]=Ix; index[1]=Iy; index[2]=Iz;
         m_RayIntersectionVoxels[0]
-          = buffer + this->m_Image->ComputeOffset(index);
+          = this->m_Image->GetBufferPointer() + this->m_Image->ComputeOffset(index);
         
         index[0]=Ix; index[1]=Iy+1; index[2]=Iz;
         m_RayIntersectionVoxels[1]
-          = buffer + this->m_Image->ComputeOffset(index);
+          = ( this->m_Image->GetBufferPointer() + this->m_Image->ComputeOffset(index) );
         
         index[0]=Ix; index[1]=Iy; index[2]=Iz+1;
         m_RayIntersectionVoxels[2]
-          = buffer + this->m_Image->ComputeOffset(index);
+          = ( this->m_Image->GetBufferPointer() + this->m_Image->ComputeOffset(index) );
         
         index[0]=Ix; index[1]=Iy+1; index[2]=Iz+1;
         m_RayIntersectionVoxels[3]
-          = buffer + this->m_Image->ComputeOffset(index);
+          = ( this->m_Image->GetBufferPointer() + this->m_Image->ComputeOffset(index) );
         }
       else
         {
@@ -1212,16 +1209,20 @@ RayCastHelper<TInputImage, TCoordRep>
         {
         
         index[0]=Ix; index[1]=Iy; index[2]=Iz;
-        m_RayIntersectionVoxels[0] = buffer + this->m_Image->ComputeOffset(index);
+        m_RayIntersectionVoxels[0] = ( this->m_Image->GetBufferPointer()
+                                       + this->m_Image->ComputeOffset(index) );
         
         index[0]=Ix+1; index[1]=Iy; index[2]=Iz;
-        m_RayIntersectionVoxels[1] = buffer + this->m_Image->ComputeOffset(index);
+        m_RayIntersectionVoxels[1] = ( this->m_Image->GetBufferPointer()
+                                       + this->m_Image->ComputeOffset(index) );
         
         index[0]=Ix; index[1]=Iy; index[2]=Iz+1;
-        m_RayIntersectionVoxels[2] = buffer + this->m_Image->ComputeOffset(index);
+        m_RayIntersectionVoxels[2] = ( this->m_Image->GetBufferPointer()
+                                       + this->m_Image->ComputeOffset(index) );
         
         index[0]=Ix+1; index[1]=Iy; index[2]=Iz+1;
-        m_RayIntersectionVoxels[3] = buffer + this->m_Image->ComputeOffset(index);
+        m_RayIntersectionVoxels[3] = ( this->m_Image->GetBufferPointer()
+                                       + this->m_Image->ComputeOffset(index) );
         }
       else
         {
@@ -1242,16 +1243,20 @@ RayCastHelper<TInputImage, TCoordRep>
         {
         
         index[0]=Ix; index[1]=Iy; index[2]=Iz;
-        m_RayIntersectionVoxels[0] = buffer + this->m_Image->ComputeOffset(index);
+        m_RayIntersectionVoxels[0] = ( this->m_Image->GetBufferPointer()
+                                       + this->m_Image->ComputeOffset(index) );
         
         index[0]=Ix+1; index[1]=Iy; index[2]=Iz;
-        m_RayIntersectionVoxels[1] = buffer + this->m_Image->ComputeOffset(index);
+        m_RayIntersectionVoxels[1] = ( this->m_Image->GetBufferPointer()
+                                       + this->m_Image->ComputeOffset(index) );
         
         index[0]=Ix; index[1]=Iy+1; index[2]=Iz;
-        m_RayIntersectionVoxels[2] = buffer + this->m_Image->ComputeOffset(index);
+        m_RayIntersectionVoxels[2] = ( this->m_Image->GetBufferPointer()
+                                       + this->m_Image->ComputeOffset(index) );
         
         index[0]=Ix+1; index[1]=Iy+1; index[2]=Iz;
-        m_RayIntersectionVoxels[3] = buffer + this->m_Image->ComputeOffset(index);
+        m_RayIntersectionVoxels[3] = ( this->m_Image->GetBufferPointer()
+                                       + this->m_Image->ComputeOffset(index) );
         
         }
       else
@@ -1316,22 +1321,21 @@ RayCastHelper<TInputImage, TCoordRep>
    ----------------------------------------------------------------------- */
 
 template<class TInputImage, class TCoordRep>
-typename TInputImage::PixelType
+double
 RayCastHelper<TInputImage, TCoordRep>
 ::GetCurrentIntensity(void) const
 {
-  typename TInputImage::PixelType a, b, c, d;
+  double a, b, c, d;
   double y, z;
 
   if (! m_ValidRay)
     {
-    typename TInputImage::PixelType r(0);
-    return r;
+    return 0;
     }
-  a = *m_RayIntersectionVoxels[0];
-  b = *m_RayIntersectionVoxels[1] - a;
-  c = *m_RayIntersectionVoxels[2] - a;
-  d = *m_RayIntersectionVoxels[3] - a - b - c;
+  a = (double) (*m_RayIntersectionVoxels[0]);
+  b = (double) (*m_RayIntersectionVoxels[1] - a);
+  c = (double) (*m_RayIntersectionVoxels[2] - a);
+  d = (double) (*m_RayIntersectionVoxels[3] - a - b - c);
 
   switch( m_TraversalDirection )
     {
@@ -1360,8 +1364,7 @@ RayCastHelper<TInputImage, TCoordRep>
       err.SetDescription( "The ray traversal direction is unset "
                           "- GetCurrentIntensity().");
       throw err;
-      typename TInputImage::PixelType r(0);
-      return r;
+      return 0;
       }
     }
 
@@ -1399,9 +1402,9 @@ RayCastHelper<TInputImage, TCoordRep>
 template<class TInputImage, class TCoordRep>
 bool
 RayCastHelper<TInputImage, TCoordRep>
-::IntegrateAboveThreshold(typename TInputImage::PixelType &integral, double threshold)
+::IntegrateAboveThreshold(double &integral, double threshold)
 {
-  typename TInputImage::PixelType intensity;
+  double intensity;
 //  double posn3D_x, posn3D_y, posn3D_z;
 
   integral = 0.;
@@ -1551,7 +1554,7 @@ typename RayCastInterpolateImageFunction< TInputImage, TCoordRep >
 RayCastInterpolateImageFunction< TInputImage, TCoordRep >
 ::Evaluate( const PointType& point ) const
 {
-  typename TInputImage::PixelType integral(0);
+  double integral = 0;
 
   OutputPointType transformedFocalPoint
     = m_Transform->TransformPoint( m_FocalPoint );
