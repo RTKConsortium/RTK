@@ -26,7 +26,6 @@
 #endif
 
 #include <itkImageFileWriter.h>
-#include <itkRegularExpressionSeriesFileNames.h>
 
 int main(int argc, char * argv[])
 {

@@ -25,22 +25,9 @@ int main(int argc, char * argv[])
 {
   GGO(rtkorageometry, args_info);
 
-  // Generate file names of projections
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(args_info.nsort_flag);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(args_info.submatch_arg);
-
-  if(args_info.verbose_flag)
-    std::cout << "Regular expression matches "
-              << names->GetFileNames().size()
-              << " file(s)..."
-              << std::endl;
-
   // Create geometry reader
   rtk::OraGeometryReader::Pointer oraReader = rtk::OraGeometryReader::New();
-  oraReader->SetProjectionsFileNames(names->GetFileNames());
+  oraReader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( oraReader->UpdateOutputData() )
 
   // Write

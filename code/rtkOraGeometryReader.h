@@ -21,6 +21,7 @@
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -35,7 +36,7 @@ namespace rtk
  *
  * \ingroup IOFilters
  */
-class OraGeometryReader : public itk::LightProcessObject
+class RTK_EXPORT OraGeometryReader : public itk::LightProcessObject
 {
 public:
   /** Standard typedefs */
