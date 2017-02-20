@@ -24,6 +24,8 @@
 #include "rtkMacro.h"
 #include "rtkFunctors.h"
 
+#include "rtkRayBoxIntersectionFunction.h"
+#include "rtkProjectionsRegionConstIteratorRayBased.h"
 namespace rtk
 {
 namespace Functor
@@ -94,7 +96,38 @@ public:
  *
  * \ingroup Functions
  */
-template< class TInput, class TOutput, class TInternalInput, class TInternalOutput >
+template< class TInput, class TOutput >
+class VectorProjectedValueAccumulation
+{
+public:
+  typedef itk::Vector<double, 3> VectorType;
+
+  VectorProjectedValueAccumulation() {};
+  ~VectorProjectedValueAccumulation() {};
+  bool operator!=( const VectorProjectedValueAccumulation & ) const
+    {
+    return false;
+    }
+  bool operator==(const VectorProjectedValueAccumulation & other) const
+    {
+    return !( *this != other );
+    }
+
+  inline TOutput operator()(  const ThreadIdType itkNotUsed(threadId),
+                              const TInput &input,
+                              TOutput current,
+                              const TOutput &rayCastValue,
+                              const VectorType &stepInMM,
+                              const VectorType &itkNotUsed(source),
+                              const VectorType &itkNotUsed(sourceToPixel),
+                              const VectorType &itkNotUsed(nearestPoint),
+                              const VectorType &itkNotUsed(farthestPoint)) const
+    {
+    return (current + input + rayCastValue * stepInMM.GetNorm());
+    }
+};
+
+template< class TInput, class TOutput >
 class ProjectedValueAccumulation
 {
 public:
@@ -111,9 +144,9 @@ public:
     return !( *this != other );
     }
 
-  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+  inline void operator()( const ThreadIdType itkNotUsed(threadId),
                           const TInput &input,
-                          TOutput current,
+                          TOutput &current,
                           const TOutput &rayCastValue,
                           const VectorType &stepInMM,
                           const VectorType &itkNotUsed(source),
@@ -121,7 +154,7 @@ public:
                           const VectorType &itkNotUsed(nearestPoint),
                           const VectorType &itkNotUsed(farthestPoint)) const
     {
-    return(input + rayCastValue * stepInMM.GetNorm());
+    current += input + rayCastValue * stepInMM.GetNorm();
     }
 };
 
@@ -147,7 +180,7 @@ public:
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::InternalPixelType, double, typename TOutputImage::PixelType>,
-          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType, typename TInputImage::InternalPixelType, typename TOutputImage::InternalPixelType>,
+          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
           class TLengthGetter                      = Functor::LengthGetter<TInputImage>,
           class TPixelFiller                       = Functor::PixelFiller<typename TInputImage::InternalPixelType>
           >
@@ -261,6 +294,17 @@ protected:
                                                const double maxx,
                                                const double maxy);
 
+  void Accumulate(ThreadIdType threadId,
+                  rtk::ProjectionsRegionConstIteratorRayBased<TInputImage> *itIn,
+                  itk::ImageRegionIteratorWithIndex<TOutputImage> itOut,
+                  typename TOutputImage::PixelType sum,
+                  typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType stepMM,
+                  typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType sourcePosition,
+                  typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType dirVox,
+                  typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType np,
+                  typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType fp);
+
+
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
@@ -271,6 +315,24 @@ private:
   TLengthGetter                      m_LengthGetter;
   TPixelFiller                       m_PixelFiller;
 };
+
+template <>
+void
+rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
+                                        itk::VectorImage<float, 3>,
+                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
+                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float>>,
+                                        Functor::VectorLengthGetter<itk::VectorImage<float, 3> >,
+                                        Functor::VectorPixelFiller<float> >
+::Accumulate(ThreadIdType threadId,
+                            rtk::ProjectionsRegionConstIteratorRayBased<itk::VectorImage<float, 3> >* itIn,
+                            itk::ImageRegionIteratorWithIndex<itk::VectorImage<float, 3> > itOut,
+                            itk::VariableLengthVector<float> sum,
+                            rtk::RayBoxIntersectionFunction<double, 3>::VectorType stepMM,
+                            rtk::RayBoxIntersectionFunction<double, 3>::VectorType sourcePosition,
+                            rtk::RayBoxIntersectionFunction<double, 3>::VectorType dirVox,
+                            rtk::RayBoxIntersectionFunction<double, 3>::VectorType np,
+                            rtk::RayBoxIntersectionFunction<double, 3>::VectorType fp);
 
 } // end namespace rtk
 

@@ -38,11 +38,11 @@ int main(int argc, char * argv[])
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
-  #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  #else
-    typedef itk::VectorImage< OutputPixelType, Dimension > OutputImageType;
-  #endif
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+#else
+  typedef itk::VectorImage< OutputPixelType, Dimension > OutputImageType;
+#endif
 
   // Geometry
   if(args_info.verbose_flag)
@@ -108,10 +108,8 @@ int main(int argc, char * argv[])
                                                                 rtk::Functor::VectorInterpolationWeightMultiplication<typename OutputImageType::InternalPixelType,
                                                                                                                       double,
                                                                                                                       typename OutputImageType::PixelType>,
-                                                                rtk::Functor::ProjectedValueAccumulation<typename OutputImageType::PixelType,
-                                                                                                         typename OutputImageType::PixelType,
-                                                                                                         typename OutputImageType::InternalPixelType,
-                                                                                                         typename OutputImageType::InternalPixelType>,
+                                                                rtk::Functor::VectorProjectedValueAccumulation<typename OutputImageType::PixelType,
+                                                                                                               typename OutputImageType::PixelType>,
                                                                 rtk::Functor::VectorLengthGetter<OutputImageType>,
                                                                 rtk::Functor::VectorPixelFiller<typename OutputImageType::InternalPixelType> >::New();
     break;

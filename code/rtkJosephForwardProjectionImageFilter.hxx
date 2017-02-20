@@ -221,26 +221,26 @@ JosephForwardProjectionImageFilter<TInputImage,
       stepMM[mainDir]       = this->GetInput(1)->GetSpacing()[mainDir];
 
       // Accumulate
-      itOut.Set(m_ProjectedValueAccumulation(threadId,
-                                   itIn->Get(),
-                                   itOut.Get(),
-                                   sum,
-                                   stepMM,
-                                   sourcePosition,
-                                   dirVox,
-                                   np,
-                                   fp));
+      Accumulate(threadId,
+                 itIn,
+                 itOut,
+                 sum,
+                 stepMM,
+                 sourcePosition,
+                 dirVox,
+                 np,
+                 fp);
       }
     else
-      itOut.Set(m_ProjectedValueAccumulation(threadId,
-                                   itIn->Get(),
-                                   itOut.Get(),
-                                   sum,
-                                   sourcePosition,
-                                   sourcePosition,
-                                   dirVox,
-                                   sourcePosition,
-                                   sourcePosition));
+      Accumulate(threadId,
+                 itIn,
+                 itOut,
+                 sum,
+                 sourcePosition,
+                 sourcePosition,
+                 dirVox,
+                 sourcePosition,
+                 sourcePosition);
     }
   delete itIn;
 }
@@ -359,6 +359,40 @@ JosephForwardProjectionImageFilter<TInputImage,
   return (stepLengthInVoxel * result);
 }
 
+
+template <class TInputImage,
+          class TOutputImage,
+          class TInterpolationWeightMultiplication,
+          class TProjectedValueAccumulation,
+          class TLengthGetter,
+          class TPixelFiller>
+void
+JosephForwardProjectionImageFilter<TInputImage,
+                                   TOutputImage,
+                                   TInterpolationWeightMultiplication,
+                                   TProjectedValueAccumulation,
+                                   TLengthGetter,
+                                   TPixelFiller>
+::Accumulate(ThreadIdType threadId,
+             typename rtk::ProjectionsRegionConstIteratorRayBased<TInputImage> *itIn,
+             itk::ImageRegionIteratorWithIndex<TOutputImage> itOut,
+             typename TOutputImage::PixelType sum,
+             typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType stepMM,
+             typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType sourcePosition,
+             typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType dirVox,
+             typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType np,
+             typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType fp)
+{
+  m_ProjectedValueAccumulation(threadId,
+                               itIn->Get(),
+                               itOut.Value(),
+                               sum,
+                               stepMM,
+                               sourcePosition,
+                               dirVox,
+                               np,
+                               fp);
+}
 
 } // end namespace rtk
 
