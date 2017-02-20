@@ -64,6 +64,7 @@ public:
   // Constructor
   Schlomka2008NegativeLogLikelihood()
   {
+  m_NumberOfSpectralBins = 0;
   }
 
   // Destructor
