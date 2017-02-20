@@ -25,7 +25,8 @@ CUDA_back_project(int projSize[3],
                   float* matrices,
                   float *dev_vol_in,
                   float *dev_vol_out,
-                  float *dev_img
+                  float *dev_img,
+                  double radiusCylindricalDetector
                   );
 
 #endif

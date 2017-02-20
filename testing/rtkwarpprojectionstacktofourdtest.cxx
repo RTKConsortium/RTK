@@ -147,231 +147,240 @@ int main(int, char** )
   oneProjectionSource->SetSize( size );
   oneProjectionSource->SetConstant( 0. );
 
-  // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
-  GeometryType::Pointer geometry = GeometryType::New();
-
-  // Projections
-  typedef rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType> REIType;
-  typedef itk::PasteImageFilter <ProjectionStackType, ProjectionStackType, ProjectionStackType > PasteImageFilterType;
-  ProjectionStackType::IndexType destinationIndex;
-  destinationIndex[0] = 0;
-  destinationIndex[1] = 0;
-  destinationIndex[2] = 0;
-
-  PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
-  pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
-
-  PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
-  pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
-
-  std::ofstream signalFile("signal.txt");
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
+  for (double radius=0; radius<2; radius++)
     {
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
-
     // Geometry object
-    GeometryType::Pointer oneProjGeometry = GeometryType::New();
-    oneProjGeometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
+    typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+    GeometryType::Pointer geometry = GeometryType::New();
 
-    // Ellipse 1
-    REIType::Pointer e1 = REIType::New();
-    REIType::VectorType semiprincipalaxis, center;
-    semiprincipalaxis.Fill(60.);
-    semiprincipalaxis[1]=30;
-    center.Fill(0.);
-    e1->SetInput(oneProjectionSource->GetOutput());
-    e1->SetGeometry(oneProjGeometry);
-    e1->SetDensity(1.);
-    e1->SetAxis(semiprincipalaxis);
-    e1->SetCenter(center);
-    e1->SetAngle(0.);
-    e1->InPlaceOff();
-    e1->Update();
+    // Projections
+    typedef rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType> REIType;
+    typedef itk::PasteImageFilter <ProjectionStackType, ProjectionStackType, ProjectionStackType > PasteImageFilterType;
+    ProjectionStackType::IndexType destinationIndex;
+    destinationIndex[0] = 0;
+    destinationIndex[1] = 0;
+    destinationIndex[2] = 0;
 
-    // Ellipse 2
-    REIType::Pointer e2 = REIType::New();
-    semiprincipalaxis.Fill(8.);
-    center[0] = 4*(vcl_abs( (4+noProj) % 8 - 4.) - 2.);
-    center[1] = 0.;
-    center[2] = 0.;
-    e2->SetInput(e1->GetOutput());
-    e2->SetGeometry(oneProjGeometry);
-    e2->SetDensity(-1.);
-    e2->SetAxis(semiprincipalaxis);
-    e2->SetCenter(center);
-    e2->SetAngle(0.);
-    e2->Update();
+    PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
+    pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
-    // Ellipse 2 without motion
-    REIType::Pointer e2static = REIType::New();
-    semiprincipalaxis.Fill(8.);
-    center[0] = 0;
-    center[1] = 0.;
-    center[2] = 0.;
-    e2static->SetInput(e1->GetOutput());
-    e2static->SetGeometry(oneProjGeometry);
-    e2static->SetDensity(-1.);
-    e2static->SetAxis(semiprincipalaxis);
-    e2static->SetCenter(center);
-    e2static->SetAngle(0.);
-    e2static->Update();
+    PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
+    pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
 
-    // Adding each projection to the projection stacks
-    if (noProj > 0) // After the first projection, we use the output as input
+    std::ofstream signalFile("signal.txt");
+
+    for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
       {
-      ProjectionStackType::Pointer wholeImage = pasteFilter->GetOutput();
-      wholeImage->DisconnectPipeline();
-      pasteFilter->SetDestinationImage(wholeImage);
+      geometry->SetRadiusCylindricalDetector(radius * 1200.);
+      geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
-      ProjectionStackType::Pointer wholeImageStatic = pasteFilterStaticProjections->GetOutput();
-      wholeImageStatic->DisconnectPipeline();
-      pasteFilterStaticProjections->SetDestinationImage(wholeImageStatic);
+      // Geometry object
+      GeometryType::Pointer oneProjGeometry = GeometryType::New();
+      oneProjGeometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
+
+      // Ellipse 1
+      REIType::Pointer e1 = REIType::New();
+      REIType::VectorType semiprincipalaxis, center;
+      semiprincipalaxis.Fill(60.);
+      semiprincipalaxis[1]=30;
+      center.Fill(0.);
+      e1->SetInput(oneProjectionSource->GetOutput());
+      e1->SetGeometry(oneProjGeometry);
+      e1->SetDensity(1.);
+      e1->SetAxis(semiprincipalaxis);
+      e1->SetCenter(center);
+      e1->SetAngle(0.);
+      e1->InPlaceOff();
+      e1->Update();
+
+      // Ellipse 2
+      REIType::Pointer e2 = REIType::New();
+      semiprincipalaxis.Fill(8.);
+      center[0] = 4*(vcl_abs( (4+noProj) % 8 - 4.) - 2.);
+      center[1] = 0.;
+      center[2] = 0.;
+      e2->SetInput(e1->GetOutput());
+      e2->SetGeometry(oneProjGeometry);
+      e2->SetDensity(-1.);
+      e2->SetAxis(semiprincipalaxis);
+      e2->SetCenter(center);
+      e2->SetAngle(0.);
+      e2->Update();
+
+      // Ellipse 2 without motion
+      REIType::Pointer e2static = REIType::New();
+      semiprincipalaxis.Fill(8.);
+      center[0] = 0;
+      center[1] = 0.;
+      center[2] = 0.;
+      e2static->SetInput(e1->GetOutput());
+      e2static->SetGeometry(oneProjGeometry);
+      e2static->SetDensity(-1.);
+      e2static->SetAxis(semiprincipalaxis);
+      e2static->SetCenter(center);
+      e2static->SetAngle(0.);
+      e2static->Update();
+
+      // Adding each projection to the projection stacks
+      if (noProj > 0) // After the first projection, we use the output as input
+        {
+        ProjectionStackType::Pointer wholeImage = pasteFilter->GetOutput();
+        wholeImage->DisconnectPipeline();
+        pasteFilter->SetDestinationImage(wholeImage);
+
+        ProjectionStackType::Pointer wholeImageStatic = pasteFilterStaticProjections->GetOutput();
+        wholeImageStatic->DisconnectPipeline();
+        pasteFilterStaticProjections->SetDestinationImage(wholeImageStatic);
+        }
+      pasteFilter->SetSourceImage(e2->GetOutput());
+      pasteFilter->SetSourceRegion(e2->GetOutput()->GetLargestPossibleRegion());
+      pasteFilter->SetDestinationIndex(destinationIndex);
+      pasteFilter->UpdateLargestPossibleRegion();
+
+      pasteFilterStaticProjections->SetSourceImage(e2static->GetOutput());
+      pasteFilterStaticProjections->SetSourceRegion(e2static->GetOutput()->GetLargestPossibleRegion());
+      pasteFilterStaticProjections->SetDestinationIndex(destinationIndex);
+      pasteFilterStaticProjections->UpdateLargestPossibleRegion();
+
+      destinationIndex[2]++;
+
+      // Signal
+      signalFile << (noProj % 8) / 8. << std::endl;
       }
-    pasteFilter->SetSourceImage(e2->GetOutput());
-    pasteFilter->SetSourceRegion(e2->GetOutput()->GetLargestPossibleRegion());
-    pasteFilter->SetDestinationIndex(destinationIndex);
-    pasteFilter->UpdateLargestPossibleRegion();
 
-    pasteFilterStaticProjections->SetSourceImage(e2static->GetOutput());
-    pasteFilterStaticProjections->SetSourceRegion(e2static->GetOutput()->GetLargestPossibleRegion());
-    pasteFilterStaticProjections->SetDestinationIndex(destinationIndex);
-    pasteFilterStaticProjections->UpdateLargestPossibleRegion();
+    // Create a vector field and its (very rough) inverse
+    typedef itk::ImageRegionIteratorWithIndex< DVFSequenceImageType > IteratorType;
 
-    destinationIndex[2]++;
+    DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
+    DVFSequenceImageType::Pointer inverseDeformationField = DVFSequenceImageType::New();
 
-    // Signal
-    signalFile << (noProj % 8) / 8. << std::endl;
-    }
+    DVFSequenceImageType::IndexType startMotion;
+    startMotion[0] = 0; // first index on X
+    startMotion[1] = 0; // first index on Y
+    startMotion[2] = 0; // first index on Z
+    startMotion[3] = 0; // first index on t
+    DVFSequenceImageType::SizeType sizeMotion;
+    sizeMotion[0] = fourDSize[0];
+    sizeMotion[1] = fourDSize[1];
+    sizeMotion[2] = fourDSize[2];
+    sizeMotion[3] = 2;
+    DVFSequenceImageType::PointType originMotion;
+    originMotion[0] = -63.;
+    originMotion[1] = -31.;
+    originMotion[2] = -63.;
+    originMotion[3] = 0.;
+    DVFSequenceImageType::RegionType regionMotion;
+    regionMotion.SetSize( sizeMotion );
+    regionMotion.SetIndex( startMotion );
 
-  // Create a vector field and its (very rough) inverse
-  typedef itk::ImageRegionIteratorWithIndex< DVFSequenceImageType > IteratorType;
+    DVFSequenceImageType::SpacingType spacingMotion;
+    spacingMotion[0] = fourDSpacing[0];
+    spacingMotion[1] = fourDSpacing[1];
+    spacingMotion[2] = fourDSpacing[2];
+    spacingMotion[3] = fourDSpacing[3];
 
-  DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
-  DVFSequenceImageType::Pointer inverseDeformationField = DVFSequenceImageType::New();
+    deformationField->SetRegions( regionMotion );
+    deformationField->SetOrigin(originMotion);
+    deformationField->SetSpacing(spacingMotion);
+    deformationField->Allocate();
 
-  DVFSequenceImageType::IndexType startMotion;
-  startMotion[0] = 0; // first index on X
-  startMotion[1] = 0; // first index on Y
-  startMotion[2] = 0; // first index on Z
-  startMotion[3] = 0; // first index on t
-  DVFSequenceImageType::SizeType sizeMotion;
-  sizeMotion[0] = fourDSize[0];
-  sizeMotion[1] = fourDSize[1];
-  sizeMotion[2] = fourDSize[2];
-  sizeMotion[3] = 2;
-  DVFSequenceImageType::PointType originMotion;
-  originMotion[0] = -63.;
-  originMotion[1] = -31.;
-  originMotion[2] = -63.;
-  originMotion[3] = 0.;
-  DVFSequenceImageType::RegionType regionMotion;
-  regionMotion.SetSize( sizeMotion );
-  regionMotion.SetIndex( startMotion );
+    inverseDeformationField->SetRegions( regionMotion );
+    inverseDeformationField->SetOrigin(originMotion);
+    inverseDeformationField->SetSpacing(spacingMotion);
+    inverseDeformationField->Allocate();
 
-  DVFSequenceImageType::SpacingType spacingMotion;
-  spacingMotion[0] = fourDSpacing[0];
-  spacingMotion[1] = fourDSpacing[1];
-  spacingMotion[2] = fourDSpacing[2];
-  spacingMotion[3] = fourDSpacing[3];
+    // Vector Field initilization
+    DVFVectorType vec;
+    IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
+    IteratorType idvfIt( inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion() );
 
-  deformationField->SetRegions( regionMotion );
-  deformationField->SetOrigin(originMotion);
-  deformationField->SetSpacing(spacingMotion);
-  deformationField->Allocate();
-
-  inverseDeformationField->SetRegions( regionMotion );
-  inverseDeformationField->SetOrigin(originMotion);
-  inverseDeformationField->SetSpacing(spacingMotion);
-  inverseDeformationField->Allocate();
-
-  // Vector Field initilization
-  DVFVectorType vec;
-  IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
-  IteratorType idvfIt( inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion() );
-
-  DVFSequenceImageType::OffsetType DVFCenter;
-  DVFSequenceImageType::IndexType toCenter;
-  DVFCenter.Fill(0);
-  DVFCenter[0] = sizeMotion[0]/2;
-  DVFCenter[1] = sizeMotion[1]/2;
-  DVFCenter[2] = sizeMotion[2]/2;
-  while (!dvfIt.IsAtEnd())
-    {
-    vec.Fill(0.);
-    toCenter = dvfIt.GetIndex() - DVFCenter;
-
-    if (0.3 * toCenter[0] * toCenter[0] + 0.5*toCenter[1] * toCenter[1] + 0.5*toCenter[2] * toCenter[2] < 40)
+    DVFSequenceImageType::OffsetType DVFCenter;
+    DVFSequenceImageType::IndexType toCenter;
+    DVFCenter.Fill(0);
+    DVFCenter[0] = sizeMotion[0]/2;
+    DVFCenter[1] = sizeMotion[1]/2;
+    DVFCenter[2] = sizeMotion[2]/2;
+    while (!dvfIt.IsAtEnd())
       {
-      if(dvfIt.GetIndex()[3]==0)
-        vec[0] = -8.;
-      else
-        vec[0] = 8.;
+      vec.Fill(0.);
+      toCenter = dvfIt.GetIndex() - DVFCenter;
+
+      if (0.3 * toCenter[0] * toCenter[0] + 0.5*toCenter[1] * toCenter[1] + 0.5*toCenter[2] * toCenter[2] < 40)
+        {
+        if(dvfIt.GetIndex()[3]==0)
+          vec[0] = -8.;
+        else
+          vec[0] = 8.;
+        }
+      dvfIt.Set(vec);
+      idvfIt.Set(-vec);
+
+      ++dvfIt;
+      ++idvfIt;
       }
-    dvfIt.Set(vec);
-    idvfIt.Set(-vec);
 
-    ++dvfIt;
-    ++idvfIt;
-    }
+    // Input 4D volume sequence
+    typedef itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType> JoinFilterType;
+    JoinFilterType::Pointer join = JoinFilterType::New();
 
-  // Input 4D volume sequence
-  typedef itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType> JoinFilterType;
-  JoinFilterType::Pointer join = JoinFilterType::New();
+    // Read the phases file
+    rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
+    phaseReader->SetFileName("signal.txt");
+    phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
+    phaseReader->Update();
 
-  // Read the phases file
-  rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName("signal.txt");
-  phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
-  phaseReader->Update();
+    // The CPU voxel-based static 3D back projection used as a reference for comparison
+    typedef rtk::BackProjectionImageFilter<VolumeType,VolumeType> StaticBackProjectionFilterType;
+    StaticBackProjectionFilterType::Pointer backprojection = StaticBackProjectionFilterType::New();
+    backprojection->SetInput(0, tomographySource->GetOutput());
+    backprojection->SetInput(1, pasteFilterStaticProjections->GetOutput());
+    backprojection->SetGeometry(geometry.GetPointer());
+    backprojection->Update();
 
-  // The CPU voxel-based static 3D back projection used as a reference for comparison
-  typedef rtk::BackProjectionImageFilter<VolumeType,VolumeType> StaticBackProjectionFilterType;
-  StaticBackProjectionFilterType::Pointer backprojection = StaticBackProjectionFilterType::New();
-  backprojection->SetInput(0, tomographySource->GetOutput());
-  backprojection->SetInput(1, pasteFilterStaticProjections->GetOutput());
-  backprojection->SetGeometry(geometry.GetPointer());
-  backprojection->Update();
+    // Divide the result by the number of volumes in the 4D sequence,
+    // for the attenuation results to approximately match
+    typedef itk::DivideImageFilter<VolumeType, VolumeType, VolumeType> DivideFilterType;
+    DivideFilterType::Pointer divide = DivideFilterType::New();
+    divide->SetInput1(backprojection->GetOutput());
+    divide->SetConstant2(fourDSize[3]);
+    divide->Update();
 
-  // Divide the result by the number of volumes in the 4D sequence,
-  // for the attenuation results to approximately match
-  typedef itk::DivideImageFilter<VolumeType, VolumeType, VolumeType> DivideFilterType;
-  DivideFilterType::Pointer divide = DivideFilterType::New();
-  divide->SetInput1(backprojection->GetOutput());
-  divide->SetConstant2(fourDSize[3]);
-  divide->Update();
+    // Concatenate n times the 3D reconstruction with itself to compare the result with
+    // the 4D output of warpbackproject
+    for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
+      join->SetInput(n, divide->GetOutput());
+    join->Update();
 
-  // Concatenate n times the 3D reconstruction with itself to compare the result with
-  // the 4D output of warpbackproject
-  for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
-    join->SetInput(n, divide->GetOutput());
-  join->Update();
+    // Create and set the warped forward projection filter
+    typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType> WarpProjectionStackToFourDType;
+    WarpProjectionStackToFourDType::Pointer warpbackproject = WarpProjectionStackToFourDType::New();
+    warpbackproject->SetInputVolumeSeries(fourdSource->GetOutput() );
+    warpbackproject->SetInputProjectionStack(pasteFilter->GetOutput());
+    warpbackproject->SetGeometry(geometry);
+    warpbackproject->SetDisplacementField(deformationField);
+    warpbackproject->SetWeights(phaseReader->GetOutput());
+    warpbackproject->SetSignal(rtk::ReadSignalFile("signal.txt"));
 
-  // Create and set the warped forward projection filter
-  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType> WarpProjectionStackToFourDType;
-  WarpProjectionStackToFourDType::Pointer warpbackproject = WarpProjectionStackToFourDType::New();
-  warpbackproject->SetInputVolumeSeries(fourdSource->GetOutput() );
-  warpbackproject->SetInputProjectionStack(pasteFilter->GetOutput());
-  warpbackproject->SetGeometry(geometry);
-  warpbackproject->SetDisplacementField(deformationField);
-  warpbackproject->SetWeights(phaseReader->GetOutput());
-  warpbackproject->SetSignal(rtk::ReadSignalFile("signal.txt"));
+  #ifndef RTK_USE_CUDA
+    std::cout << "\n\n****** Case " << 1 + 2*radius <<": Non-warped voxel based back projection (warped back projection exists only in CUDA) ******" << std::endl;
+    if (radius)
+      std::cout << "\n\n****** Cylindrical detector ******" << std::endl;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackproject->Update() );
+    CheckImageQuality<VolumeSeriesType>(warpbackproject->GetOutput(), join->GetOutput(), 15, 33, 800.0);
+    std::cout << "\n\nTest PASSED! " << std::endl;
+  #endif
 
-#ifndef RTK_USE_CUDA
-  std::cout << "\n\n****** Case 1: Non-warped voxel based back projection (warped back projection exists only in CUDA) ******" << std::endl;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackproject->Update() );
-  CheckImageQuality<VolumeSeriesType>(warpbackproject->GetOutput(), join->GetOutput(), 15, 33, 800.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-#endif
-
-#ifdef USE_CUDA
-  std::cout << "\n\n****** Case 2: CUDA warped back projection ******" << std::endl;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackproject->Update() );
-  CheckImageQuality<VolumeSeriesType>(warpbackproject->GetOutput(), join->GetOutput(), 15, 33, 800.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-#endif
+  #ifdef USE_CUDA
+    std::cout << "\n\n****** Case " << 2 + 2*radius << ": CUDA warped back projection ******" << std::endl;
+    if (radius)
+      std::cout << "\n\n****** Cylindrical detector ******" << std::endl;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackproject->Update() );
+    CheckImageQuality<VolumeSeriesType>(warpbackproject->GetOutput(), join->GetOutput(), 15, 33, 800.0);
+    std::cout << "\n\nTest PASSED! " << std::endl;
+  #endif
 
   itksys::SystemTools::RemoveFile("signal.txt");
+  }
 
   return EXIT_SUCCESS;
 }

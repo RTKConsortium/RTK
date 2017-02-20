@@ -160,5 +160,33 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
+  std::cout << "\n\n****** Case 3: Joseph forward projector, voxel-based back projector ******" << std::endl;
+
+  // Only works with a cylindrical detector centered on the source, therefore a new geometry has to be simulated
+  geometry = GeometryType::New();
+  geometry->SetRadiusCylindricalDetector(1200);
+  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+
+  conjugategradient->SetGeometry(geometry);
+  conjugategradient->SetForwardProjectionFilter(0);
+  conjugategradient->SetBackProjectionFilter(0);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
+
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+#ifdef USE_CUDA
+  std::cout << "\n\n****** Case 4: CUDA ray cast forward projection, CUDA voxel based back projection ******" << std::endl;
+
+  conjugategradient->SetForwardProjectionFilter(1);
+  conjugategradient->SetBackProjectionFilter(2);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
+
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
+
+
   return EXIT_SUCCESS;
 }
