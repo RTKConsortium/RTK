@@ -22,10 +22,11 @@
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
-#include "rtkFunctors.h"
 
 #include "rtkRayBoxIntersectionFunction.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
+
+#include <itkVectorImage.h>
 namespace rtk
 {
 namespace Functor
@@ -180,10 +181,7 @@ public:
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::InternalPixelType, double, typename TOutputImage::PixelType>,
-          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
-          class TLengthGetter                      = Functor::LengthGetter<TInputImage>,
-          class TPixelFiller                       = Functor::PixelFiller<typename TInputImage::InternalPixelType>
-          >
+          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType> >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
 {
@@ -228,32 +226,6 @@ public:
     if ( m_ProjectedValueAccumulation != _arg )
       {
       m_ProjectedValueAccumulation = _arg;
-      this->Modified();
-      }
-    }
-
-  /** Get/Set the functor that returns the number of elements in each pixel
-   * (i.e. 1 for scalar images, and n for vector images). */
-  TLengthGetter &       GetLengthGetter() { return m_LengthGetter; }
-  const TLengthGetter & GetLengthGetter() const { return m_LengthGetter; }
-  void SetLengthGetter(const TLengthGetter & _arg)
-    {
-    if ( m_LengthGetter != _arg )
-      {
-      m_LengthGetter = _arg;
-      this->Modified();
-      }
-    }
-
-  /** Get/Set the functor that fills a pixel's elements
-   * (i.e. 1 for scalar images, and n for vector images) with a given value. */
-  TPixelFiller &       GetPixelFiller() { return m_PixelFiller; }
-  const TPixelFiller & GetPixelFiller() const { return m_PixelFiller; }
-  void SetPixelFiller(const TPixelFiller & _arg)
-    {
-    if ( m_PixelFiller != _arg )
-      {
-      m_PixelFiller = _arg;
       this->Modified();
       }
     }
@@ -304,6 +276,8 @@ protected:
                   typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType np,
                   typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType fp);
 
+  unsigned int GetInputVectorLength(){ return 1; }
+  OutputPixelType FillPixel(OutputInternalPixelType value) {return value;}
 
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
@@ -312,8 +286,6 @@ private:
   // Functors
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TProjectedValueAccumulation        m_ProjectedValueAccumulation;
-  TLengthGetter                      m_LengthGetter;
-  TPixelFiller                       m_PixelFiller;
 };
 
 template <>
@@ -321,9 +293,7 @@ void
 rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
                                         itk::VectorImage<float, 3>,
                                         Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
-                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float>>,
-                                        Functor::VectorLengthGetter<itk::VectorImage<float, 3> >,
-                                        Functor::VectorPixelFiller<float> >
+                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
 ::Accumulate(ThreadIdType threadId,
                             rtk::ProjectionsRegionConstIteratorRayBased<itk::VectorImage<float, 3> >* itIn,
                             itk::ImageRegionIteratorWithIndex<itk::VectorImage<float, 3> > itOut,
@@ -333,6 +303,22 @@ rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType dirVox,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType np,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType fp);
+
+template <>
+unsigned int
+rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
+                                        itk::VectorImage<float, 3>,
+                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
+                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
+::GetInputVectorLength();
+
+template <>
+itk::VariableLengthVector<float>
+rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
+                                        itk::VectorImage<float, 3>,
+                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
+                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
+::FillPixel(float value);
 
 } // end namespace rtk
 

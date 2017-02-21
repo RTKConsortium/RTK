@@ -26,9 +26,7 @@ void
 rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
                                         itk::VectorImage<float, 3>,
                                         Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
-                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float>>,
-                                        Functor::VectorLengthGetter<itk::VectorImage<float, 3> >,
-                                        Functor::VectorPixelFiller<float> >
+                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
 ::Accumulate(ThreadIdType threadId,
              rtk::ProjectionsRegionConstIteratorRayBased<itk::VectorImage<float, 3> >* itIn,
              itk::ImageRegionIteratorWithIndex<itk::VectorImage<float, 3> > itOut,
@@ -50,5 +48,29 @@ rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
                                            fp));
 }
 
+template<>
+unsigned int
+rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
+                                        itk::VectorImage<float, 3>,
+                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
+                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
+::GetInputVectorLength()
+{
+return (this->GetInput(1)->GetVectorLength());
+}
+
+template <>
+itk::VariableLengthVector<float>
+rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
+                                        itk::VectorImage<float, 3>,
+                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
+                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
+::FillPixel(float value)
+{
+itk::VariableLengthVector<float> vect;
+vect.SetSize(this->GetInputVectorLength());
+vect.Fill(value);
+return (vect);
+}
 
 } // end namespace rtk

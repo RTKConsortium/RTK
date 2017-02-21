@@ -77,10 +77,7 @@ int main(int argc, char * argv[])
               << '.' << std::endl;
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType,
-                                    rtk::Functor::VectorPixelFiller<OutputPixelType>,
-                                    rtk::Functor::VectorLengthGetter<OutputImageType>,
-                                    rtk::Functor::VectorLengthSetter<OutputImageType> > ConstantImageSourceType;
+  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorforwardprojections>(constantImageSource, args_info);
   unsigned int NumberOfChannels = reader->GetOutput()->GetVectorLength();
@@ -109,9 +106,7 @@ int main(int argc, char * argv[])
                                                                                                                       double,
                                                                                                                       typename OutputImageType::PixelType>,
                                                                 rtk::Functor::VectorProjectedValueAccumulation<typename OutputImageType::PixelType,
-                                                                                                               typename OutputImageType::PixelType>,
-                                                                rtk::Functor::VectorLengthGetter<OutputImageType>,
-                                                                rtk::Functor::VectorPixelFiller<typename OutputImageType::InternalPixelType> >::New();
+                                                                                                               typename OutputImageType::PixelType> >::New();
     break;
 //  case(fp_arg_RayCastInterpolator):
 //    forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();

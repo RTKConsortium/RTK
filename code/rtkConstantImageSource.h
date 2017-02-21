@@ -21,11 +21,11 @@
 
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
-#include "rtkFunctors.h"
 
 #include <itkImageSource.h>
 #include <itkNumericTraits.h>
 #include <itkVariableLengthVector.h>
+#include <itkVectorImage.h>
 
 namespace rtk
 {
@@ -47,10 +47,7 @@ namespace rtk
  *
  * \ingroup ImageSource
  */
-template <typename TOutputImage,
-          typename TPixelFiller  = Functor::PixelFiller<typename TOutputImage::InternalPixelType>,
-          typename TLengthGetter = Functor::LengthGetter<TOutputImage>,
-          typename TLengthSetter = Functor::LengthSetter<TOutputImage> >
+template <typename TOutputImage>
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
 {
 public:
@@ -131,6 +128,9 @@ protected:
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
+  OutputImagePixelType FillPixel(OutputImageInternalPixelType value) {return value;}
+  void SetImageVectorLength(OutputImageType* image) {return;} // Default behavior is to produce a scalar image, no need to set length
+
   SizeType       m_Size;
   SpacingType    m_Spacing;
   PointType      m_Origin;
@@ -140,15 +140,20 @@ protected:
 
   OutputImageInternalPixelType m_Constant;
 
-  // Functors
-  TPixelFiller   m_PixelFiller;
-  TLengthGetter  m_LengthGetter;
-  TLengthSetter  m_LengthSetter;
-
 private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented
   void operator=(const ConstantImageSource&); //purposely not implemented
 };
+
+template <>
+itk::VariableLengthVector<float>
+rtk::ConstantImageSource<itk::VectorImage<float, 3> >
+::FillPixel(float value);
+
+template <>
+void
+rtk::ConstantImageSource<itk::VectorImage<float, 3> >
+::SetImageVectorLength(OutputImageType* image);
 
 } // end namespace rtk
 
