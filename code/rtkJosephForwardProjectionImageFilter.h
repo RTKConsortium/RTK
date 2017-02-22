@@ -57,8 +57,9 @@ public:
                              const double itkNotUsed(stepLengthInVoxel),
                              const TCoordRepType weight,
                              const TInput *p,
-                             const int i ) const
-  {return (weight * p[i]);}
+                             const int i,
+                             const int itkNotUsed(vectorLength)) const
+  {  return (weight * p[i]); }
 };
 
 template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
@@ -75,18 +76,20 @@ public:
     return !( *this != other );
   }
 
-  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
-                             const double itkNotUsed(stepLengthInVoxel),
-                             const TCoordRepType weight,
-                             const TInput *p,
-                             const int i ) const
+inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+                           const double itkNotUsed(stepLengthInVoxel),
+                           const TCoordRepType weight,
+                           const TInput *p,
+                           const int i,
+                           const int vectorLength) const
   {
-    itk::VariableLengthVector<TInput> result;
-    result.SetSize(3);
-    result[0] = p[i];
-    result[1] = p[i+1];
-    result[2] = p[i+2];
-    return (result * weight);
+  TOutput result;
+  itk::NumericTraits<TOutput>::SetLength(result,vectorLength);
+  for (int component=0; component<vectorLength; component++)
+    {
+    result[component] = p[i + component];
+    }
+  return (result * weight);
   }
 };
 

@@ -272,10 +272,10 @@ JosephForwardProjectionImageFilter<TInputImage,
   CoordRepType ly = y - iy;
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
-  return ( m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
-           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx) +
-           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx) +
-           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx) );
+  return ( m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx, this->GetInput(1)->GetNumberOfComponentsPerPixel()) +
+           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx, this->GetInput(1)->GetNumberOfComponentsPerPixel()) +
+           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx, this->GetInput(1)->GetNumberOfComponentsPerPixel()) +
+           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx, this->GetInput(1)->GetNumberOfComponentsPerPixel()) );
 /* Alternative slower solution
   const unsigned int ix = itk::Math::Floor(x);
   const unsigned int iy = itk::Math::Floor(y);
@@ -338,10 +338,10 @@ JosephForwardProjectionImageFilter<TInputImage,
   if(iy < miny) offset_yi = oy;
   if(ix >= maxx) offset_xs = -ox;
   if(iy >= maxy) offset_ys = -oy;
-  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
-  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx + offset_xi + offset_ys);
-  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx + offset_xs + offset_yi);
-  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx + offset_xs + offset_ys);
+  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi, this->GetInput(1)->GetNumberOfComponentsPerPixel());
+  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx + offset_xi + offset_ys, this->GetInput(1)->GetNumberOfComponentsPerPixel());
+  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx + offset_xs + offset_yi, this->GetInput(1)->GetNumberOfComponentsPerPixel());
+  result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx + offset_xs + offset_ys, this->GetInput(1)->GetNumberOfComponentsPerPixel());
 
   return (stepLengthInVoxel * result);
 }
