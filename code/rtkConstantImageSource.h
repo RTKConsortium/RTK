@@ -128,8 +128,6 @@ protected:
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
-  OutputImagePixelType FillPixel(OutputImageInternalPixelType value) {return value;}
-
   SizeType       m_Size;
   SpacingType    m_Spacing;
   PointType      m_Origin;
@@ -143,11 +141,6 @@ private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented
   void operator=(const ConstantImageSource&); //purposely not implemented
 };
-
-template <>
-itk::VariableLengthVector<float>
-rtk::ConstantImageSource<itk::VectorImage<float, 3> >
-::FillPixel(float value);
 
 } // end namespace rtk
 

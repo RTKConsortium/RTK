@@ -152,8 +152,17 @@ ConstantImageSource<TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
+
+  // Initialize the pixel, be it a scalar or a variableLengthVector
+  // In the latter case, all components of the variableLenghtVector
+  // are set to this->m_Constant
+  OutputImagePixelType pix;
+  itk::NumericTraits<OutputImagePixelType>::SetLength(pix, this->GetVectorLength());
+  pix = itk::NumericTraits<OutputImagePixelType>::OneValue(pix) * this->GetConstant();
+
+  // Write it everywhere in the image
   for (; !it.IsAtEnd(); ++it)
-    it.Set( FillPixel(this->GetConstant()));
+    it.Set(pix);
 }
 
 } // end namespace rtk
