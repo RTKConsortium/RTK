@@ -32,23 +32,26 @@ namespace rtk
 
 template <class TInputImage,
           class TOutputImage,
-          class TSplatWeightMultiplication>
+          class TSplatWeightMultiplication,
+          class TProjectionImage>
 void
 JosephBackProjectionImageFilter<TInputImage,
                                 TOutputImage,
-                                TSplatWeightMultiplication>
+                                TSplatWeightMultiplication,
+                                TProjectionImage>
 ::GenerateData()
 {
   // Allocate the output image
+  this->GetOutput()->SetNumberOfComponentsPerPixel(this->GetInput(0)->GetNumberOfComponentsPerPixel());
   this->AllocateOutputs();
 
   const unsigned int Dimension = TInputImage::ImageDimension;
   typename TInputImage::RegionType buffReg = this->GetInput(1)->GetBufferedRegion();
-  const unsigned int nPixelPerProj = buffReg.GetSize(0) * buffReg.GetSize(1);
-  int offsets[3];
-  offsets[0] = 1;
-  offsets[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];
-  offsets[2] = this->GetInput(0)->GetBufferedRegion().GetSize()[0] * this->GetInput(0)->GetBufferedRegion().GetSize()[1];
+//  const unsigned int nPixelPerProj = buffReg.GetSize(0) * buffReg.GetSize(1);
+  int offsets[Dimension];
+  offsets[0] = this->GetInput(0)->GetNumberOfComponentsPerPixel();
+  for (unsigned int i=1; i<Dimension; i++)
+    offsets[i] = this->GetInput(0)->GetBufferedRegion().GetSize()[i-1] * offsets[i-1];
 
   GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
   if( !geometry )
@@ -58,7 +61,7 @@ JosephBackProjectionImageFilter<TInputImage,
 
   // beginBuffer is pointing at point with index (0,0,0) in memory, even if
   // it is not in the allocated memory
-  typename TOutputImage::PixelType *beginBuffer =
+  typename TOutputImage::InternalPixelType *beginBuffer =
       this->GetOutput()->GetBufferPointer() -
       offsets[0] * this->GetOutput()->GetBufferedRegion().GetIndex()[0] -
       offsets[1] * this->GetOutput()->GetBufferedRegion().GetIndex()[1] -
@@ -168,7 +171,7 @@ JosephBackProjectionImageFilter<TInputImage,
       const int offsetx = offsets[notMainDirInf];
       const int offsety = offsets[notMainDirSup];
       const int offsetz = offsets[mainDir];
-      OutputPixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
+      OutputInternalPixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
 
       pxiyi = beginBuffer + ns * offsetz;
       pxsyi = pxiyi + offsetx;
@@ -235,18 +238,20 @@ JosephBackProjectionImageFilter<TInputImage,
 
 template <class TInputImage,
           class TOutputImage,
-          class TSplatWeightMultiplication>
+          class TSplatWeightMultiplication,
+          class TProjectionImage>
 void
 JosephBackProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TSplatWeightMultiplication>
+                                TOutputImage,
+                                TSplatWeightMultiplication,
+                                TProjectionImage>
 ::BilinearSplat(const InputPixelType rayValue,
                                                const double stepLengthInVoxel,
                                                const double voxelSize,
-                                               OutputPixelType *pxiyi,
-                                               OutputPixelType *pxsyi,
-                                               OutputPixelType *pxiys,
-                                               OutputPixelType *pxsys,
+                                               OutputInternalPixelType *pxiyi,
+                                               OutputInternalPixelType *pxsyi,
+                                               OutputInternalPixelType *pxiys,
+                                               OutputInternalPixelType *pxsys,
                                                const double x,
                                                const double y,
                                                const int ox,
@@ -264,23 +269,24 @@ JosephBackProjectionImageFilter<TInputImage,
   pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
   pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
   pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
-
 }
 
 template <class TInputImage,
           class TOutputImage,
-          class TSplatWeightMultiplication>
+          class TSplatWeightMultiplication,
+          class TProjectionImage>
 void
 JosephBackProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TSplatWeightMultiplication>
+                                TOutputImage,
+                                TSplatWeightMultiplication,
+                                TProjectionImage>
 ::BilinearSplatOnBorders(const InputPixelType rayValue,
                                                const double stepLengthInVoxel,
                                                const double voxelSize,
-                                               OutputPixelType *pxiyi,
-                                               OutputPixelType *pxsyi,
-                                               OutputPixelType *pxiys,
-                                               OutputPixelType *pxsys,
+                                               OutputInternalPixelType *pxiyi,
+                                               OutputInternalPixelType *pxsyi,
+                                               OutputInternalPixelType *pxiys,
+                                               OutputInternalPixelType *pxsys,
                                                const double x,
                                                const double y,
                                                const int ox,

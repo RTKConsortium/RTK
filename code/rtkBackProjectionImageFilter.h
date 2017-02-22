@@ -42,7 +42,7 @@ namespace rtk
  *
  * \ingroup Projector
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class TProjectionImage = itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1> >
 class BackProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
@@ -53,12 +53,13 @@ public:
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TInputImage::PixelType                   InputPixelType;
+  typedef typename TInputImage::InternalPixelType           InternalInputPixelType;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
   typedef rtk::ThreeDCircularProjectionGeometry                     GeometryType;
   typedef typename GeometryType::Pointer                            GeometryPointer;
   typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
-  typedef itk::Image<InputPixelType, TInputImage::ImageDimension-1> ProjectionImageType;
+  typedef TProjectionImage                                          ProjectionImageType;
   typedef typename ProjectionImageType::Pointer                     ProjectionImagePointer;
 
   /** Method for creation through the object factory. */
@@ -107,7 +108,6 @@ protected:
       for efficiency during interpolation. Use of itk::ExtractImageFilter is
       not threadsafe in ThreadedGenerateData, this one is. The output can be multiplied by a constant.
       The function is templated to allow getting an itk::CudaImage. */
-  template<class TProjectionImage>
   typename TProjectionImage::Pointer GetProjection(const unsigned int iProj);
 
   /** Creates iProj index to index projection matrices with current inputs

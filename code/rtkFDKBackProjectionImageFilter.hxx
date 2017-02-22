@@ -92,7 +92,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
     {
     // Extract the current slice
     ProjectionImagePointer projection;
-    projection = this->template GetProjection< ProjectionImageType >(iProj);
+    projection = this->template GetProjection(iProj);
     interpolator->SetInputImage(projection);
 
     // Index to index matrix normalized to have a correct backprojection weight

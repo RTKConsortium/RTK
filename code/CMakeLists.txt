@@ -40,7 +40,8 @@ set(RTK_LIBRARY_FILES
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
             rtkDrawQuadricSpatialObject.cxx
             rtkOraGeometryReader.cxx
-	    rtkJosephForwardProjectionImageFilter.cxx)
+	    rtkJosephForwardProjectionImageFilter.cxx
+	    rtkJosephBackProjectionImageFilter.cxx)
 
 if(RTK_TIME_EACH_FILTER)
     set(RTK_LIBRARY_FILES

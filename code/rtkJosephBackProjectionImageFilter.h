@@ -23,6 +23,7 @@
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
+#include <itkVectorImage.h>
 namespace rtk
 {
 namespace Functor
@@ -78,9 +79,10 @@ public:
 
 template <class TInputImage,
           class TOutputImage,
-          class TSplatWeightMultiplication = Functor::SplatWeightMultiplication<typename TInputImage::PixelType, double, typename TOutputImage::PixelType> >
+          class TSplatWeightMultiplication = Functor::SplatWeightMultiplication<typename TInputImage::InternalPixelType, double, typename TOutputImage::InternalPixelType>,
+          class TProjectionImage = itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1> >
 class ITK_EXPORT JosephBackProjectionImageFilter :
-  public BackProjectionImageFilter<TInputImage,TOutputImage>
+  public BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
 {
 public:
   /** Standard class typedefs. */
@@ -89,8 +91,10 @@ public:
   typedef itk::SmartPointer<Self>                                Pointer;
   typedef itk::SmartPointer<const Self>                          ConstPointer;
   typedef typename TInputImage::PixelType                        InputPixelType;
+  typedef typename TInputImage::InternalPixelType                InputInternalPixelType;
   typedef typename TOutputImage::PixelType                       OutputPixelType;
   typedef typename TOutputImage::RegionType                      OutputImageRegionType;
+  typedef typename TOutputImage::InternalPixelType               OutputInternalPixelType;
   typedef double                                                 CoordRepType;
   typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
   typedef rtk::ThreeDCircularProjectionGeometry                  GeometryType;
@@ -128,10 +132,10 @@ protected:
   inline void BilinearSplat(const InputPixelType rayValue,
                             const double stepLengthInVoxel,
                             const double voxelSize,
-                            OutputPixelType *pxiyi,
-                            OutputPixelType *pxsyi,
-                            OutputPixelType *pxiys,
-                            OutputPixelType *pxsys,
+                            OutputInternalPixelType *pxiyi,
+                            OutputInternalPixelType *pxsyi,
+                            OutputInternalPixelType *pxiys,
+                            OutputInternalPixelType *pxsys,
                             const double x,
                             const double y,
                             const int ox,
@@ -140,10 +144,10 @@ protected:
   inline void BilinearSplatOnBorders(const InputPixelType rayValue,
                                      const double stepLengthInVoxel,
                                      const double voxelSize,
-                                     OutputPixelType *pxiyi,
-                                     OutputPixelType *pxsyi,
-                                     OutputPixelType *pxiys,
-                                     OutputPixelType *pxsys,
+                                     OutputInternalPixelType *pxiyi,
+                                     OutputInternalPixelType *pxsyi,
+                                     OutputInternalPixelType *pxiys,
+                                     OutputInternalPixelType *pxsys,
                                      const double x,
                                      const double y,
                                      const int ox,
@@ -161,6 +165,46 @@ private:
   /** Functor */
   TSplatWeightMultiplication m_SplatWeightMultiplication;
 };
+
+template<>
+void
+rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
+                                     itk::VectorImage<float, 3>,
+                                     Functor::SplatWeightMultiplication< float, double, float >,
+                                     itk::VectorImage<float, 2> >
+::BilinearSplat(const itk::VariableLengthVector<float> rayValue,
+                const double stepLengthInVoxel,
+                const double voxelSize,
+                float *pxiyi,
+                float *pxsyi,
+                float *pxiys,
+                float *pxsys,
+                const double x,
+                const double y,
+                const int ox,
+                const int oy);
+
+template<>
+void
+rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
+                                     itk::VectorImage<float, 3>,
+                                     Functor::SplatWeightMultiplication< float, double, float >,
+                                     itk::VectorImage<float, 2> >
+::BilinearSplatOnBorders(const itk::VariableLengthVector<float> rayValue,
+                         const double stepLengthInVoxel,
+                         const double voxelSize,
+                         float *pxiyi,
+                         float *pxsyi,
+                         float *pxiys,
+                         float *pxsys,
+                         const double x,
+                         const double y,
+                         const int ox,
+                         const int oy,
+                         const double minx,
+                         const double miny,
+                         const double maxx,
+                         const double maxy);
 
 } // end namespace rtk
 

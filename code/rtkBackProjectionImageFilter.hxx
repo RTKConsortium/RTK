@@ -28,9 +28,9 @@
 namespace rtk
 {
 
-template <class TInputImage, class  TOutputImage>
+template <class TInputImage, class  TOutputImage, class TProjectionImage>
 void
-BackProjectionImageFilter<TInputImage,TOutputImage>
+BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume in which we backproject
@@ -143,9 +143,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 }
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class TProjectionImage>
 void
-BackProjectionImageFilter<TInputImage,TOutputImage>
+BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
 ::BeforeThreadedGenerateData()
 {
   this->SetTranspose(true);
@@ -160,9 +160,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 /**
  * GenerateData performs the accumulation
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class TProjectionImage>
 void
-BackProjectionImageFilter<TInputImage,TOutputImage>
+BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType itkNotUsed(threadId) )
 {
@@ -200,7 +200,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
     // Extract the current slice
-    ProjectionImagePointer projection = GetProjection<ProjectionImageType>(iProj);
+    ProjectionImagePointer projection = GetProjection(iProj);
 
     ProjectionMatrixType   matrix = GetIndexToIndexProjectionMatrix(iProj);
     interpolator->SetInputImage(projection);
@@ -248,9 +248,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 }
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class TProjectionImage>
 void
-BackProjectionImageFilter<TInputImage,TOutputImage>
+BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
 ::OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
                            const ProjectionImagePointer projection)
 {
@@ -258,8 +258,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
   typename TOutputImage::SizeType vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
   typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
-  typename TInputImage::PixelType *pProj;
-  typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
+  typename TInputImage::InternalPixelType *pProj;
+  typename TOutputImage::InternalPixelType *pVol, *pVolZeroPointer;
 
   // Pointers in memory to index (0,0,0) which do not necessarily exist
   pVolZeroPointer = this->GetOutput()->GetBufferPointer();
@@ -312,9 +312,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     } //k
 }
 
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class TProjectionImage>
 void
-BackProjectionImageFilter<TInputImage,TOutputImage>
+BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
 ::OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
                            const ProjectionImagePointer projection)
 {
@@ -322,8 +322,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
   typename TOutputImage::SizeType vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
   typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
-  typename TInputImage::PixelType *pProj;
-  typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
+  typename TInputImage::InternalPixelType *pProj;
+  typename TOutputImage::InternalPixelType *pVol, *pVolZeroPointer;
 
   // Pointers in memory to index (0,0,0) which do not necessarily exist
   pVolZeroPointer = this->GetOutput()->GetBufferPointer();
@@ -373,10 +373,10 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     } //k
 }
 
-template <class TInputImage, class TOutputImage>
-template <class TProjectionImage>
+template <class TInputImage, class TOutputImage, class TProjectionImage>
+//template <class TProjectionImage>
 typename TProjectionImage::Pointer
-BackProjectionImageFilter<TInputImage,TOutputImage>
+BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
 ::GetProjection(const unsigned int iProj)
 {
 
@@ -412,9 +412,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   projection->SetRegions(region);
   projection->Allocate();
 
-  const unsigned int    npixels = projection->GetBufferedRegion().GetNumberOfPixels();
-  const InputPixelType *pi = stack->GetBufferPointer() + (iProj-iProjBuff)*npixels;
-  InputPixelType *      po = projection->GetBufferPointer();
+  const unsigned int       npixels = projection->GetBufferedRegion().GetNumberOfPixels();
+  const InternalInputPixelType *pi = stack->GetBufferPointer() + (iProj-iProjBuff)*npixels;
+  InternalInputPixelType *      po = projection->GetBufferPointer();
 
   // Transpose projection for optimization
   if(this->GetTranspose() )
@@ -430,9 +430,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   return projection;
 }
 
-template <class TInputImage, class TOutputImage>
-typename BackProjectionImageFilter<TInputImage,TOutputImage>::ProjectionMatrixType
-BackProjectionImageFilter<TInputImage,TOutputImage>
+template <class TInputImage, class TOutputImage, class TProjectionImage>
+typename BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>::ProjectionMatrixType
+BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
 ::GetIndexToIndexProjectionMatrix(const unsigned int iProj)
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
