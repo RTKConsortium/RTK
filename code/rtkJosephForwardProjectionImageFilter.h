@@ -147,7 +147,7 @@ public:
 
   inline void operator()( const ThreadIdType itkNotUsed(threadId),
                           const TInput &input,
-                          TOutput &current,
+                          TOutput &output,
                           const TOutput &rayCastValue,
                           const VectorType &stepInMM,
                           const VectorType &itkNotUsed(source),
@@ -155,7 +155,7 @@ public:
                           const VectorType &itkNotUsed(nearestPoint),
                           const VectorType &itkNotUsed(farthestPoint)) const
     {
-    current += input + rayCastValue * stepInMM.GetNorm();
+    output = input + rayCastValue * stepInMM.GetNorm();
     }
 };
 
