@@ -43,9 +43,8 @@ JosephForwardProjectionImageFilter<TInputImage,
                        ThreadIdType threadId )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-//  const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
   int offsets[Dimension];
-  offsets[0] = GetInputVectorLength();
+  offsets[0] = this->GetInput(1)->GetNumberOfComponentsPerPixel();
   for (unsigned int i=1; i<Dimension; i++)
     offsets[i] = this->GetInput(1)->GetBufferedRegion().GetSize()[i-1] * offsets[i-1];
 

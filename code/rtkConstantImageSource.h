@@ -129,7 +129,6 @@ protected:
   void GenerateOutputInformation() ITK_OVERRIDE;
 
   OutputImagePixelType FillPixel(OutputImageInternalPixelType value) {return value;}
-  void SetImageVectorLength(OutputImageType* image) {return;} // Default behavior is to produce a scalar image, no need to set length
 
   SizeType       m_Size;
   SpacingType    m_Spacing;
@@ -149,11 +148,6 @@ template <>
 itk::VariableLengthVector<float>
 rtk::ConstantImageSource<itk::VectorImage<float, 3> >
 ::FillPixel(float value);
-
-template <>
-void
-rtk::ConstantImageSource<itk::VectorImage<float, 3> >
-::SetImageVectorLength(OutputImageType* image);
 
 } // end namespace rtk
 

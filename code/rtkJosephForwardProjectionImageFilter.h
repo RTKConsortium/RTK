@@ -276,7 +276,6 @@ protected:
                   typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType np,
                   typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType fp);
 
-  unsigned int GetInputVectorLength(){ return 1; }
   OutputPixelType FillPixel(OutputInternalPixelType value) {return value;}
 
 private:
@@ -303,14 +302,6 @@ rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType dirVox,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType np,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType fp);
-
-template <>
-unsigned int
-rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
-                                        itk::VectorImage<float, 3>,
-                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
-                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
-::GetInputVectorLength();
 
 template <>
 itk::VariableLengthVector<float>

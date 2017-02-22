@@ -142,7 +142,7 @@ ConstantImageSource<TOutputImage>
   output->SetSpacing(m_Spacing);
   output->SetOrigin(m_Origin);
   output->SetDirection(m_Direction);
-  SetImageVectorLength(output);
+  output->SetNumberOfComponentsPerPixel(this->GetVectorLength());
 }
 
 //----------------------------------------------------------------------------
