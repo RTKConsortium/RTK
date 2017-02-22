@@ -112,7 +112,9 @@ JosephForwardProjectionImageFilter<TInputImage,
       }
 
     // Initialize the accumulation
-    typename TOutputImage::PixelType sum = FillPixel(0);
+    OutputPixelType sum;
+    itk::NumericTraits<OutputPixelType>::SetLength(sum, this->GetInput(1)->GetNumberOfComponentsPerPixel());
+    sum = itk::NumericTraits<OutputPixelType>::ZeroValue(sum);
 
     // Test if there is an intersection
     if( rbi[mainDir]->Evaluate(&dirVox[0]) &&
@@ -328,7 +330,9 @@ JosephForwardProjectionImageFilter<TInputImage,
   int offset_xs = 0;
   int offset_ys = 0;
 
-  OutputPixelType result = FillPixel(0);
+  OutputPixelType result;
+  itk::NumericTraits<OutputPixelType>::SetLength(result, this->GetInput(1)->GetNumberOfComponentsPerPixel());
+  result = itk::NumericTraits<OutputPixelType>::ZeroValue(result);
 
   if(ix < minx) offset_xi = ox;
   if(iy < miny) offset_yi = oy;

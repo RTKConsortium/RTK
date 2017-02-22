@@ -276,8 +276,6 @@ protected:
                   typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType np,
                   typename rtk::RayBoxIntersectionFunction<CoordRepType, TOutputImage::ImageDimension>::VectorType fp);
 
-  OutputPixelType FillPixel(OutputInternalPixelType value) {return value;}
-
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
@@ -302,14 +300,6 @@ rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType dirVox,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType np,
                             rtk::RayBoxIntersectionFunction<double, 3>::VectorType fp);
-
-template <>
-itk::VariableLengthVector<float>
-rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
-                                        itk::VectorImage<float, 3>,
-                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
-                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
-::FillPixel(float value);
 
 } // end namespace rtk
 

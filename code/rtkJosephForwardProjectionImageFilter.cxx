@@ -48,18 +48,4 @@ rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
                                            fp));
 }
 
-template <>
-itk::VariableLengthVector<float>
-rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
-                                        itk::VectorImage<float, 3>,
-                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
-                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
-::FillPixel(float value)
-{
-itk::VariableLengthVector<float> vect;
-vect.SetSize(this->GetInput(1)->GetNumberOfComponentsPerPixel());
-vect.Fill(value);
-return (vect);
-}
-
 } // end namespace rtk
