@@ -75,7 +75,7 @@ namespace rtk
 
   template<class TImageType>
   typename EnableIf<IsBasic<TImageType>::Value>::Type
-  Image::AllocateInternal ( unsigned int Width, unsigned int Height, unsigned int Depth, unsigned int numberOfComponents )
+  Image::AllocateInternal ( unsigned int Width, unsigned int Height, unsigned int Depth, unsigned int dim4, unsigned int numberOfComponents )
   {
     if ( numberOfComponents != 1  && numberOfComponents != 0 )
       {
@@ -86,16 +86,27 @@ namespace rtk
     typename TImageType::IndexType  index;
     typename TImageType::SizeType   size;
     typename TImageType::RegionType region;
+
     index.Fill ( 0 );
     size.Fill(1);
     size[0] = Width;
     size[1] = Height;
-    if ( TImageType::ImageDimension > 2 ) {
-    assert(Depth != 0 );
-    size[2] = Depth;
-    }
+
+    if ( TImageType::ImageDimension > 2 )
+      {
+      assert( Depth != 0 );
+      size[2] = Depth;
+      }
+
+    if ( TImageType::ImageDimension > 3 )
+      {
+      assert(  dim4 != 0 );
+      size[3] =  dim4;
+      }
+
     region.SetSize ( size );
     region.SetIndex ( index );
+
     typename TImageType::Pointer image = TImageType::New();
     image->SetRegions ( region );
     image->Allocate();
@@ -108,7 +119,7 @@ namespace rtk
 
   template<class TImageType>
   typename EnableIf<IsVector<TImageType>::Value>::Type
-  Image::AllocateInternal ( unsigned int Width, unsigned int Height, unsigned int Depth, unsigned int numberOfComponents )
+  Image::AllocateInternal ( unsigned int Width, unsigned int Height, unsigned int Depth, unsigned int dim4, unsigned int numberOfComponents )
   {
     if ( numberOfComponents == 0 )
       {
@@ -124,11 +135,19 @@ namespace rtk
     size.Fill(1);
     size[0] = Width;
     size[1] = Height;
+
     if ( TImageType::ImageDimension > 2 )
       {
-      assert(Depth != 0 );
+      assert( Depth != 0 );
       size[2] = Depth;
       }
+
+    if ( TImageType::ImageDimension > 3 )
+      {
+      assert(  dim4 != 0 );
+      size[3] =  dim4;
+      }
+
     region.SetSize ( size );
     region.SetIndex ( index );
 
@@ -149,7 +168,7 @@ namespace rtk
 
   template<class TImageType>
   typename EnableIf<IsLabel<TImageType>::Value>::Type
-  Image::AllocateInternal ( unsigned int Width, unsigned int Height, unsigned int Depth, unsigned int numberOfComponents )
+  Image::AllocateInternal ( unsigned int Width, unsigned int Height, unsigned int Depth, unsigned int dim4, unsigned int numberOfComponents )
   {
     if ( numberOfComponents != 1 && numberOfComponents != 0 )
       {
@@ -165,11 +184,19 @@ namespace rtk
     size.Fill(1);
     size[0] = Width;
     size[1] = Height;
+
     if ( TImageType::ImageDimension > 2 )
       {
-      assert(Depth != 0 );
+      assert( Depth != 0 );
       size[2] = Depth;
       }
+
+    if ( TImageType::ImageDimension > 3 )
+      {
+      assert(  dim4 != 0 );
+      size[3] =  dim4;
+      }
+
     region.SetSize ( size );
     region.SetIndex ( index );
 

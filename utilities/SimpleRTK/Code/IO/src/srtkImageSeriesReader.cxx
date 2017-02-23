@@ -33,10 +33,10 @@
 namespace rtk {
   namespace simple {
 
-  Image ReadImage ( const std::vector<std::string> &filenames )
+  Image ReadImage ( const std::vector<std::string> &filenames, PixelIDValueEnum outputPixelType )
     {
     ImageSeriesReader reader;
-    return reader.SetFileNames ( filenames ).Execute();
+    return reader.SetFileNames ( filenames ).SetOutputPixelType(outputPixelType).Execute();
     }
 
 
@@ -83,10 +83,10 @@ namespace rtk {
   std::string ImageSeriesReader::ToString() const {
 
       std::ostringstream out;
-      out << "rtk::simple::ImageSeriesReader";
+      out << "itk::simple::ImageSeriesReader";
       out << std::endl;
 
-      out << "  FileNames: " << std::endl;
+      out << "  FileNames:" << std::endl;
       std::vector<std::string>::const_iterator iter  = m_FileNames.begin();
       while( iter != m_FileNames.end() )
         {
@@ -94,6 +94,7 @@ namespace rtk {
         ++iter;
         }
 
+      out << ImageReaderBase::ToString();
       return out.str();
     }
 
@@ -110,22 +111,37 @@ namespace rtk {
 
   Image ImageSeriesReader::Execute ()
     {
-    // todo check if filename does not exits for robust error handling
-    assert( !this->m_FileNames.empty() );
+    if( this->m_FileNames.empty() )
+      {
+      srtkExceptionMacro( "File names information is empty. Cannot read series." );
+      }
 
-    PixelIDValueType type = srtkUnknown;
+
+    PixelIDValueType type =  this->GetOutputPixelType();
     unsigned int dimension = 0;
 
-    this->GetPixelIDFromImageIO( this->m_FileNames.front(), type, dimension );
+
+    itk::ImageIOBase::Pointer imageio = this->GetImageIOBase( this->m_FileNames.front() );
+    if (type == srtkUnknown)
+      {
+      this->GetPixelIDFromImageIO( imageio, type, dimension );
+      }
+    else
+      {
+      PixelIDValueType unused;
+      this->GetPixelIDFromImageIO( imageio, unused, dimension );
+      }
 
     // increment for series
     ++dimension;
 
     if (dimension == 4)
       {
-      unsigned int size = this->GetDimensionFromImageIO( this->m_FileNames.front(), 2);
+      unsigned int size = this->GetDimensionFromImageIO( imageio, 2);
       if (size == 1)
-      --dimension;
+        {
+        --dimension;
+        }
       }
 
     if ( dimension != 2 && dimension != 3 )
@@ -141,21 +157,25 @@ namespace rtk {
                           << "Refusing to load! " << std::endl );
       }
 
-    return this->m_MemberFactory->GetMemberFunction( type, dimension )();
+    return this->m_MemberFactory->GetMemberFunction( type, dimension )(imageio);
     }
 
   template <class TImageType> Image
-  ImageSeriesReader::ExecuteInternal( void )
+  ImageSeriesReader::ExecuteInternal( itk::ImageIOBase* imageio )
     {
 
     typedef TImageType                        ImageType;
     typedef itk::ImageSeriesReader<ImageType> Reader;
 
     // if the IsInstantiated is correctly implemented this should
-    // not occour
+    // not occur
     assert( ImageTypeToPixelIDValue<ImageType>::Result != (int)srtkUnknown );
+    assert( imageio != SRTK_NULLPTR );
     typename Reader::Pointer reader = Reader::New();
+    reader->SetImageIO( imageio );
     reader->SetFileNames( this->m_FileNames );
+    // save some computation by not updating this unneeded data-structure
+    reader->MetaDataDictionaryArrayUpdateOff();
 
     this->PreUpdate( reader.GetPointer() );
 

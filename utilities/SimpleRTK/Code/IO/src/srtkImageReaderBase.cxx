@@ -36,17 +36,30 @@
 #include <itkImage.h>
 #include <itkImageIOBase.h>
 #include <itkImageIOFactory.h>
-#include "rtkIOFactories.h"
+#include <itkGDCMImageIO.h>
+#include <itksys/SystemTools.hxx>
 
 namespace rtk {
 namespace simple {
 
 ImageReaderBase
 ::ImageReaderBase()
+  : m_OutputPixelType(srtkUnknown),
+    m_LoadPrivateTags(false)
 {
-  static bool firstTime = true;
-  if(firstTime)
-    rtk::RegisterIOFactories();
+}
+
+std::string
+ImageReaderBase
+::ToString() const
+{
+  std::ostringstream out;
+  out << "  OutputPixelType: ";
+  this->ToStringHelper(out, this->m_OutputPixelType) << std::endl;
+  out << "  LoadPrivateTags: ";
+  this->ToStringHelper(out, this->m_LoadPrivateTags) << std::endl;
+  out << ProcessObject::ToString();
+  return out.str();
 }
 
 itk::SmartPointer<itk::ImageIOBase>
@@ -56,17 +69,82 @@ ImageReaderBase
   itk::ImageIOBase::Pointer iobase =
     itk::ImageIOFactory::CreateImageIO( fileName.c_str(), itk::ImageIOFactory::ReadMode);
 
+
   if ( iobase.IsNull() )
+     {
+     if ( !itksys::SystemTools::FileExists( fileName.c_str() ) )
+       {
+       srtkExceptionMacro( "The file \"" << fileName << "\" does not exist." );
+       }
+
+     if ( !bool(std::ifstream( fileName.c_str() )) )
+       {
+       srtkExceptionMacro( "Unable to open \"" << fileName << "\" for reading." );
+       }
+
+     srtkExceptionMacro( "Unable to determine ImageIO reader for \"" << fileName << "\"" );
+    }
+
+  // Try additional parameters
+  itk::GDCMImageIO *ioGDCMImage = dynamic_cast<itk::GDCMImageIO*>(iobase.GetPointer());
+  if (ioGDCMImage)
     {
-    srtkExceptionMacro( "Unable to determine ImageIO reader for \"" << fileName << "\"" );
+    ioGDCMImage->SetLoadPrivateTags(this->m_LoadPrivateTags);
     }
 
   // Read the image information
   iobase->SetFileName( fileName );
   iobase->ReadImageInformation();
 
+
   return iobase;
 }
+
+ImageReaderBase::Self&
+ImageReaderBase
+::SetOutputPixelType( PixelIDValueEnum pixelID )
+{
+  this->m_OutputPixelType = pixelID;
+  return *this;
+}
+
+PixelIDValueEnum
+ImageReaderBase
+::GetOutputPixelType( void ) const
+{
+  return this->m_OutputPixelType;
+}
+
+
+ImageReaderBase::Self&
+ImageReaderBase
+::SetLoadPrivateTags(bool loadPrivateTags)
+{
+  this->m_LoadPrivateTags = loadPrivateTags;
+  return *this;
+}
+
+bool
+ImageReaderBase
+::GetLoadPrivateTags() const
+{
+  return this->m_LoadPrivateTags;
+}
+
+void
+ImageReaderBase
+::LoadPrivateTagsOn()
+{
+  this->SetLoadPrivateTags(true);
+}
+
+void
+ImageReaderBase
+::LoadPrivateTagsOff()
+{
+  this->SetLoadPrivateTags(false);
+}
+
 
 void
 ImageReaderBase
@@ -74,9 +152,18 @@ ImageReaderBase
                          PixelIDValueType &outPixelType,
                          unsigned int & outDimensions )
 {
-
   itk::ImageIOBase::Pointer iobase = this->GetImageIOBase(fileName);
 
+
+  this->GetPixelIDFromImageIO(iobase, outPixelType, outDimensions);
+}
+
+void
+ImageReaderBase
+::GetPixelIDFromImageIO( itk::ImageIOBase *iobase,
+                         PixelIDValueType &outPixelType,
+                         unsigned int & outDimensions )
+{
 
   // get output information about input image
   unsigned int dimension = iobase->GetNumberOfDimensions();
@@ -115,16 +202,24 @@ ImageReaderBase
     srtkExceptionMacro(  "Unknown PixelType: "  << (int) componentType );
     }
 
-  srtkExceptionMacro( "Unable to load image \"" << fileName << "\"" );
+  srtkExceptionMacro( "Unable to load image." );
 }
 
 unsigned int
 ImageReaderBase
-::GetDimensionFromImageIO( const std::string &fileName, unsigned int i)
+::GetDimensionFromImageIO( itk::ImageIOBase* iobase, unsigned int i)
 {
-  itk::ImageIOBase::Pointer iobase = this->GetImageIOBase(fileName);
-
   return iobase->GetDimensions(i);
+}
+
+
+unsigned int
+ImageReaderBase
+::GetDimensionFromImageIO(const std::string &filename, unsigned int i)
+{
+  itk::ImageIOBase::Pointer iobase = this->GetImageIOBase(filename);
+
+  return this->GetDimensionFromImageIO(iobase.GetPointer(), i);
 }
 
 
@@ -134,40 +229,6 @@ ImageReaderBase
 {
   const unsigned int UnusedDimension = 2;
 
-#ifdef RTK_USE_CUDA
-  switch(componentType)
-    {
-    case itk::ImageIOBase::CHAR:
-      return ImageTypeToPixelIDValue< itk::CudaImage<int8_t, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::UCHAR:
-      return ImageTypeToPixelIDValue< itk::CudaImage<uint8_t, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::SHORT:
-      return ImageTypeToPixelIDValue< itk::CudaImage<int16_t, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::USHORT:
-      return ImageTypeToPixelIDValue< itk::CudaImage<uint16_t, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::INT:
-      return ImageTypeToPixelIDValue< itk::CudaImage<int32_t, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::UINT:
-      return ImageTypeToPixelIDValue< itk::CudaImage<uint32_t, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::LONG:
-      return ImageTypeToPixelIDValue< itk::CudaImage<long, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::ULONG:
-      return ImageTypeToPixelIDValue< itk::CudaImage<unsigned long, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::FLOAT:
-      return ImageTypeToPixelIDValue< itk::CudaImage<float, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::DOUBLE:
-      return ImageTypeToPixelIDValue< itk::CudaImage<double, UnusedDimension> >::Result;
-      break;
-#else
   switch(componentType)
     {
     case itk::ImageIOBase::CHAR:
@@ -200,7 +261,6 @@ ImageReaderBase
     case itk::ImageIOBase::DOUBLE:
       return ImageTypeToPixelIDValue< itk::Image<double, UnusedDimension> >::Result;
       break;
-#endif
     case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
     default:
       assert( false ); // should never get here unless we forgot a type
@@ -217,21 +277,12 @@ ImageReaderBase
 
   switch(componentType)
     {
-#ifdef RTK_USE_CUDA
-    case itk::ImageIOBase::FLOAT:
-      return ImageTypeToPixelIDValue< itk::CudaImage<std::complex<float>, UnusedDimension> >::Result;
-      break;
-    case itk::ImageIOBase::DOUBLE:
-      return ImageTypeToPixelIDValue< itk::CudaImage<std::complex<double>, UnusedDimension> >::Result;
-      break;
-#else
     case itk::ImageIOBase::FLOAT:
       return ImageTypeToPixelIDValue< itk::Image<std::complex<float>, UnusedDimension> >::Result;
       break;
     case itk::ImageIOBase::DOUBLE:
       return ImageTypeToPixelIDValue< itk::Image<std::complex<double>, UnusedDimension> >::Result;
       break;
-#endif
     case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
     default:
       srtkExceptionMacro( "Only Complex image with float and double are supported!" );

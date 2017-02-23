@@ -61,7 +61,7 @@ namespace rtk {
        * \sa itk::GDCMSeriesFileNames
        **/
       static std::vector<std::string> GetGDCMSeriesFileNames( const std::string &directory,
-                                                              bool useSeriesDetails= true,
+                                                              bool useSeriesDetails = false,
                                                               bool recursive = false,
                                                               bool loadSequences = false,
                                                               bool loadPrivateTags = false )
@@ -90,7 +90,7 @@ namespace rtk {
        **/
       static std::vector<std::string> GetGDCMSeriesFileNames( const std::string &directory,
                                                               const std::string &seriesID,
-                                                              bool useSeriesDetails= true,
+                                                              bool useSeriesDetails = false,
                                                               bool recursive = false,
                                                               bool loadSequences = false,
                                                               bool loadPrivateTags = false );
@@ -102,27 +102,27 @@ namespace rtk {
        **/
       static std::vector<std::string> GetGDCMSeriesIDs( const std::string &directory );
 
-      Self& SetFileNames ( const std::vector<std::string> &fileNames );
+      SRTK_RETURN_SELF_TYPE_HEADER SetFileNames ( const std::vector<std::string> &fileNames );
       const std::vector<std::string> &GetFileNames() const;
 
       Image Execute();
 
     protected:
 
-      template <class TImageType> Image ExecuteInternal ( void );
+      template <class TImageType> Image ExecuteInternal ( itk::ImageIOBase * );
 
     private:
 
       // function pointer type
-      typedef Image (Self::*MemberFunctionType)( void );
+      typedef Image (Self::*MemberFunctionType)( itk::ImageIOBase * );
 
       // friend to get access to executeInternal member
       friend struct detail::MemberFunctionAddressor<MemberFunctionType>;
-      std::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
+      nsstd::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
 
       std::vector<std::string> m_FileNames;
     };
-  SRTKIO_EXPORT Image ReadImage ( const std::vector<std::string> &fileNames );
+  SRTKIO_EXPORT Image ReadImage ( const std::vector<std::string> &fileNames, PixelIDValueEnum outputPixelType=srtkUnknown );
   }
 }
 

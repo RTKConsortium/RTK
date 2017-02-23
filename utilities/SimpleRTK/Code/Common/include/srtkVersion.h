@@ -39,6 +39,12 @@ namespace simple
     static const std::string &VersionString();
     static const std::string &BuildDate();
 
+
+    static unsigned int RTKMajorVersion();
+    static unsigned int RTKMinorVersion();
+    static unsigned int RTKPatchVersion();
+    static const std::string &RTKVersionString();
+
     static const std::string &ExtendedVersionString();
     std::string ToString() { return Version::ExtendedVersionString(); }
   };
