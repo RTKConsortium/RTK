@@ -1,20 +1,20 @@
 /*=========================================================================
- *
- *  Copyright Insight Software Consortium & RTK Consortium
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- *=========================================================================*/
+*
+*  Copyright Insight Software Consortium & RTK Consortium
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0.txt
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*=========================================================================*/
 #ifdef _MFC_VER
 #pragma warning(disable:4996)
 #endif
@@ -22,10 +22,6 @@
 #include "srtkImportImageFilter.h"
 #include "srtkExceptionObject.h"
 
-#include <rtkConfiguration.h>
-#ifdef RTK_USE_CUDA
-# include <itkCudaImage.h>
-#endif
 #include <itkImage.h>
 #include <itkVectorImage.h>
 
@@ -223,8 +219,10 @@ ImportImageFilter::ImportImageFilter()
 
   this->m_MemberFactory.reset( new detail::MemberFunctionFactory<MemberFunctionType>( this ) );
 
+  this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 4 > ();
   this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 3 > ();
   this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 2 > ();
+      
 }
 
 ImportImageFilter::Self& ImportImageFilter::SetSpacing( const std::vector< double > &spacing )
@@ -277,11 +275,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsInt8( int8_t * buffer, un
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<int8_t, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<int8_t, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -295,11 +289,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsUInt8( uint8_t * buffer, 
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<uint8_t, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<uint8_t, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -313,11 +303,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsInt16( int16_t * buffer, 
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<int16_t, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<int16_t, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -331,11 +317,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsUInt16( uint16_t * buffer
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<uint16_t, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<uint16_t, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -349,11 +331,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsInt32( int32_t * buffer, 
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<int32_t, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<int32_t, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -367,11 +345,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsUInt32( uint32_t * buffer
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<uint32_t, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<uint32_t, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -385,11 +359,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsInt64( int64_t * buffer, 
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<int64_t, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<int64_t, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -403,11 +373,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsUInt64( uint64_t * buffer
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<uint64_t, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<uint64_t, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -422,11 +388,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsFloat( float * buffer, un
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<float, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<float, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -440,11 +402,7 @@ ImportImageFilter::Self& ImportImageFilter::SetBufferAsDouble( double * buffer, 
   this->m_NumberOfComponentsPerPixel = numberOfComponents;
   if ( this->m_NumberOfComponentsPerPixel == 1 )
     {
-#ifdef RTK_USE_CUDA
-    this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::CudaImage<double, UnusedDimension> >::Result;
-#else
     this->m_PixelIDValue = ImageTypeToPixelIDValue< itk::Image<double, UnusedDimension> >::Result;
-#endif
     }
   else
     {
@@ -460,7 +418,7 @@ std::string ImportImageFilter::ToString() const
 {
   std::ostringstream out;
 
-  out << "rtk::simple::ImportImageFilter\n"
+  out << "itk::simple::ImportImageFilter\n"
       << PRINT_IVAR_MACRO( m_NumberOfComponentsPerPixel )
       << PRINT_IVAR_MACRO( m_PixelIDValue )
       << PRINT_IVAR_MACRO( m_Origin )
@@ -505,7 +463,6 @@ Image ImportImageFilter::ExecuteInternal( )
 {
 
   typedef TImageType                            ImageType;
-  typedef typename ImageType::InternalPixelType PixelType;
   const unsigned int Dimension = ImageType::ImageDimension;
 
   // if the InstantiatedToken is correctly implemented this should
@@ -515,6 +472,20 @@ Image ImportImageFilter::ExecuteInternal( )
   typename ImageType::Pointer image = ImageType::New();
 
 
+
+
+  //
+  //  Origin
+  //
+  typename ImageType::PointType origin = srtkSTLVectorToITK< typename ImageType::PointType >( this->m_Origin );
+  image->SetOrigin( origin );
+
+  //
+  //  Spacing
+  //
+  typename ImageType::SpacingType spacing = srtkSTLVectorToITK< typename ImageType::SpacingType >( this->m_Spacing );
+  image->SetSpacing( spacing );
+
   //
   //  Size and Region
   //
@@ -523,6 +494,15 @@ Image ImportImageFilter::ExecuteInternal( )
   region.SetSize(size);
   // set the size and region to the ITK image.
   image->SetRegions( region );
+
+  //
+  // Direction, if m_Direction is not set, use ITK's default which is
+  // an identity.
+  //
+  if (this->m_Direction.size() != 0 )
+    {
+    image->SetDirection(  srtkSTLToITKDirection<typename ImageType::DirectionType>( this->m_Direction ) );
+    }
 
 
   size_t numberOfElements = m_NumberOfComponentsPerPixel;
@@ -544,35 +524,9 @@ Image ImportImageFilter::ExecuteInternal( )
   //
   this->SetNumberOfComponentsOnImage( image.GetPointer() );
 
-  Image srtkimage( image );
-
-  this->m_Origin.resize( Dimension );
-  this->m_Spacing.resize( Dimension );
-
-  srtkimage.SetOrigin( this->m_Origin );
-  srtkimage.SetSpacing( this->m_Spacing );
-
-  if (this->m_Direction.size() != 0 )
-      srtkimage.SetDirection( this->m_Direction );
-  else if (Dimension == 2)
-    {
-    // make a 2x2 identity matrix
-    std::vector<double> dir(4, 0.);
-    dir[0] = 1.;
-    dir[3] = 1.;
-    srtkimage.SetDirection( dir );
-    }
-  else if (Dimension == 3)
-    {
-    // make a 3x3 identity matrix
-    std::vector<double> dir(9, 0.);
-    dir[0] = 1.;
-    dir[4] = 1.;
-    dir[8] = 1.;
-    srtkimage.SetDirection( dir );
-    }
-
-  return srtkimage;
+  // This line must be the last line in the function to prevent a deep
+  // copy caused by a implicit srtk::MakeUnique
+  return Image( image );
 }
 
 template <class TFilterType>
