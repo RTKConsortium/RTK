@@ -92,7 +92,6 @@ script:
     -DUSE_FFTWD=ON
     -DUSE_FFTWF=ON
     -DUSE_SYSTEM_FFTW=ON; make --jobs=$NUM_THREADS --keep-going; SKIP_RTK_BUILD=true; fi
-  - if ! test $SKIP_RTK_BUILD == true; then 
   - cd $HOME
   - if ! test -d build; then mkdir build; fi
   - cd $HOME/build
@@ -100,6 +99,5 @@ script:
   - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
   - cmake .. $CMAKE_OPTIONS
   - if test $TRAVIS_OS_NAME == linux ; then make StyleCheckCode; fi
-  - make --jobs=$NUM_THREADS --keep-going all
-  - if test [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test; fi
-  - fi
+  - if [ $SKIP_RTK_BUILD == false ]; then make --jobs=$NUM_THREADS --keep-going all || travis_terminate 1; fi
+  - if [ "$TESTING" == ON ] && [ "$CUDA" == NONE ] && [ $SKIP_RTK_BUILD == false ]; then make test || travis_terminate 1; fi
