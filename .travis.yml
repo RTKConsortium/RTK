@@ -79,6 +79,7 @@ before_script:
   - if ! test -d ${ITK_BUILD_DIR}; then mkdir ${ITK_BUILD_DIR}; fi
 
 script:
+  - SKIP_RTK_BUILD=false
   - cd ${ITK_BUILD_DIR}
   - if ! test -e ${ITK_BUILD_DIR}/Makefile; then cmake ${ITK_SOURCE_DIR}
     -DCMAKE_BUILD_TYPE=Release
@@ -90,7 +91,8 @@ script:
     -DITK_USE_SYSTEM_FFTW=ON
     -DUSE_FFTWD=ON
     -DUSE_FFTWF=ON
-    -DUSE_SYSTEM_FFTW=ON; make --jobs=$NUM_THREADS --keep-going; exit; fi
+    -DUSE_SYSTEM_FFTW=ON; make --jobs=$NUM_THREADS --keep-going; SKIP_RTK_BUILD=true; fi
+  - if ! test $SKIP_RTK_BUILD == true; then 
   - cd $HOME
   - if ! test -d build; then mkdir build; fi
   - cd $HOME/build
@@ -100,3 +102,4 @@ script:
   - if test $TRAVIS_OS_NAME == linux ; then make StyleCheckCode; fi
   - make --jobs=$NUM_THREADS --keep-going all
   - if test [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test; fi
+  - fi
