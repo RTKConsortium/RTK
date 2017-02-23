@@ -53,6 +53,7 @@ cache:
     - $HOME/itk-v4.10.0
     - $HOME/itk-v4.10.0-build
     - $HOME/build/ExternalData
+  - timeout: 1000
 
 before_install:
   - if test "$CUDA" != NONE; then echo "Installing CUDA library"; fi
@@ -76,8 +77,10 @@ before_script:
   - if ! test -e ${ITK_SOURCE_DIR}/CMakeLists.txt; then rm -fr $ITK_SOURCE_DIR; fi
   - if ! test -d ${ITK_SOURCE_DIR}; then git clone --branch ${ITK_VERSION} git://itk.org/ITK.git ${ITK_SOURCE_DIR}; fi
   - if ! test -d ${ITK_BUILD_DIR}; then mkdir ${ITK_BUILD_DIR}; fi
+
+script:
   - cd ${ITK_BUILD_DIR}
-  - cmake ${ITK_SOURCE_DIR}
+  - if ! test -e ${ITK_BUILD_DIR}/Makefile; then cmake ${ITK_SOURCE_DIR}
     -DCMAKE_BUILD_TYPE=Release
     -DBUILD_EXAMPLES=OFF
     -DBUILD_TESTING=OFF
@@ -87,16 +90,13 @@ before_script:
     -DITK_USE_SYSTEM_FFTW=ON
     -DUSE_FFTWD=ON
     -DUSE_FFTWF=ON
-    -DUSE_SYSTEM_FFTW=ON
-  - make --jobs=$NUM_THREADS --keep-going
-  - cd -
-
-script:
+    -DUSE_SYSTEM_FFTW=ON; make --jobs=$NUM_THREADS --keep-going; exit; fi
+  - cd $HOME
   - if ! test -d build; then mkdir build; fi
-  - cd build
+  - cd $HOME/build
   - CMAKE_OPTIONS="-DBUILD_APPLICATIONS=${APPLICATIONS} -DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
   - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
   - cmake .. $CMAKE_OPTIONS
   - if test $TRAVIS_OS_NAME == linux ; then make StyleCheckCode; fi
   - make --jobs=$NUM_THREADS --keep-going all
-#  - if test [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test; fi
+  - if test [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test; fi
