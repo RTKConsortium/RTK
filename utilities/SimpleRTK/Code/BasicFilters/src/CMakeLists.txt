@@ -36,6 +36,8 @@ set ( SimpleRTKBasicFiltersSource
   srtkCastImageFilter.cxx
   srtkHashImageFilter.cxx
   srtkCreateInterpolator.hxx
+  srtkMeasurementMap.cxx
+  srtkStatisticsImageFilter.cxx
 )
 # sort the list to en-sure the same list across platforms
 list ( SORT SimpleRTKBasicFiltersGeneratedSource )

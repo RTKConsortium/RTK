@@ -48,6 +48,7 @@
 
 #include "srtkHashImageFilter.h"
 #include "srtkPixelIDTypeLists.h"
+#include "srtkStatisticsImageFilter.h"
 #include "srtkCastImageFilter.h"
 
 // These headers are auto-generated
