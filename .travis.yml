@@ -92,9 +92,9 @@ script:
     -DUSE_FFTWD=ON
     -DUSE_FFTWF=ON
     -DUSE_SYSTEM_FFTW=ON; make --jobs=$NUM_THREADS --keep-going; DO_BUILD_RTK=false; fi
-  - cd $HOME/SimonRit/RTK
+  - cd -
   - if ! test -d build; then mkdir build; fi
-  - cd $HOME/SimonRit/RTK/build
+  - cd build
   - CMAKE_OPTIONS="-DBUILD_APPLICATIONS=${APPLICATIONS} -DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
   - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
   - if [ $DO_BUILD_RTK == true ]; then cmake .. $CMAKE_OPTIONS || travis_terminate 1; fi
