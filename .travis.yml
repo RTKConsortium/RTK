@@ -52,7 +52,7 @@ cache:
     - $HOME/itk-v4.5.0-build
     - $HOME/itk-v4.10.0
     - $HOME/itk-v4.10.0-build
-    - $HOME/build/ExternalData
+    - $HOME/build/SimonRit/RTK/build/ExternalData
   - timeout: 1000
 
 before_install:
