@@ -75,11 +75,11 @@ before_script:
   - export ITK_SOURCE_DIR=$HOME/itk-${ITK_VERSION}
   - export ITK_BUILD_DIR=${ITK_SOURCE_DIR}-build
   - if ! test -e ${ITK_SOURCE_DIR}/CMakeLists.txt; then rm -fr $ITK_SOURCE_DIR; fi
-  - if ! test -d ${ITK_SOURCE_DIR}; then git clone --branch ${ITK_VERSION} git://itk.org/ITK.git ${ITK_SOURCE_DIR}; fi
+  - if ! test -d ${ITK_SOURCE_DIR}; then git clone --depth 1 --branch ${ITK_VERSION} https://github.com/InsightSoftwareConsortium/ITK.git ${ITK_SOURCE_DIR}; fi
   - if ! test -d ${ITK_BUILD_DIR}; then mkdir ${ITK_BUILD_DIR}; fi
 
 script:
-  - SKIP_RTK_BUILD=false
+  - DO_BUILD_RTK=true
   - cd ${ITK_BUILD_DIR}
   - if ! test -e ${ITK_BUILD_DIR}/Makefile; then cmake ${ITK_SOURCE_DIR}
     -DCMAKE_BUILD_TYPE=Release
@@ -91,13 +91,13 @@ script:
     -DITK_USE_SYSTEM_FFTW=ON
     -DUSE_FFTWD=ON
     -DUSE_FFTWF=ON
-    -DUSE_SYSTEM_FFTW=ON; make --jobs=$NUM_THREADS --keep-going; SKIP_RTK_BUILD=true; fi
+    -DUSE_SYSTEM_FFTW=ON; make --jobs=$NUM_THREADS --keep-going; DO_BUILD_RTK=false; fi
   - cd $HOME
   - if ! test -d build; then mkdir build; fi
   - cd $HOME/build
   - CMAKE_OPTIONS="-DBUILD_APPLICATIONS=${APPLICATIONS} -DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
   - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
   - cmake .. $CMAKE_OPTIONS
-  - if test $TRAVIS_OS_NAME == linux ; then make StyleCheckCode; fi
-  - if [ $SKIP_RTK_BUILD == false ]; then make --jobs=$NUM_THREADS --keep-going all || travis_terminate 1; fi
-  - if [ "$TESTING" == ON ] && [ "$CUDA" == NONE ] && [ $SKIP_RTK_BUILD == false ]; then make test || travis_terminate 1; fi
+  - if [ "$TRAVIS_OS_NAME" == linux ] && [ $DO_BUILD_RTK == true ] ; then make StyleCheckCode || travis_terminate 1; fi
+  - if [ $DO_BUILD_RTK == true ]; then make --jobs=$NUM_THREADS --keep-going all || travis_terminate 1; fi
+  - if [ "$TESTING" == ON ] && [ "$CUDA" == NONE ] && [ $DO_BUILD_RTK == true ]; then make test || travis_terminate 1; fi
