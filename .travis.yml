@@ -97,7 +97,7 @@ script:
   - cd $HOME/build
   - CMAKE_OPTIONS="-DBUILD_APPLICATIONS=${APPLICATIONS} -DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
   - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
-  - cmake .. $CMAKE_OPTIONS
-  - if [ "$TRAVIS_OS_NAME" == linux ] && [ $DO_BUILD_RTK == true ] ; then make StyleCheckCode || travis_terminate 1; fi
+  - if [ $DO_BUILD_RTK == true ]; then cmake .. $CMAKE_OPTIONS || travis_terminate 1; fi
+  - if [ $DO_BUILD_RTK == true ] && [ "$TRAVIS_OS_NAME" == linux ]; then make StyleCheckCode || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ]; then make --jobs=$NUM_THREADS --keep-going all || travis_terminate 1; fi
-  - if [ "$TESTING" == ON ] && [ "$CUDA" == NONE ] && [ $DO_BUILD_RTK == true ]; then make test || travis_terminate 1; fi
+  - if [ $DO_BUILD_RTK == true ] && [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test || travis_terminate 1; fi
