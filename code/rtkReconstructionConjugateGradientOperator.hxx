@@ -24,8 +24,8 @@
 namespace rtk
 {
 
-template< typename TOutputImage>
-ReconstructionConjugateGradientOperator<TOutputImage>
+template< typename TOutputImage, typename TSingleComponentImage>
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
 ::ReconstructionConjugateGradientOperator():
   m_Geometry(ITK_NULLPTR),
   m_Preconditioned(false),
@@ -63,42 +63,42 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_MultiplyLaplacianFilter->ReleaseDataFlagOn();
 }
 
-template< typename TOutputImage>
+template< typename TOutputImage, typename TSingleComponentImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage>::
-SetSupportMask(const TOutputImage *SupportMask)
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>::
+SetSupportMask(const TSingleComponentImage *SupportMask)
 {
-  this->SetInput("SupportMask", const_cast<TOutputImage*>(SupportMask));
+  this->SetInput("SupportMask", const_cast<TSingleComponentImage*>(SupportMask));
 }
 
-template< typename TOutputImage>
-typename TOutputImage::ConstPointer
-ReconstructionConjugateGradientOperator<TOutputImage>::
+template< typename TOutputImage, typename TSingleComponentImage>
+typename TSingleComponentImage::ConstPointer
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>::
 GetSupportMask()
 {
-  return static_cast< const TOutputImage * >
+  return static_cast< const TSingleComponentImage * >
           ( this->itk::ProcessObject::GetInput("SupportMask") );
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TSingleComponentImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
 ::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
 {
   m_BackProjectionFilter = _arg;
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TSingleComponentImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TSingleComponentImage>
 const TOutputImage *
-ReconstructionConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
 ::ApplySupportMask (const TOutputImage *_arg)
 {
   if (this->GetSupportMask().IsNotNull())
@@ -113,9 +113,9 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   }
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TSingleComponentImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume in which we backproject
@@ -152,17 +152,17 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // Input "SupportMask" is the support constraint mask on volume, if any
   if (this->GetSupportMask().IsNotNull())
     {
-    typename Superclass::InputImagePointer inputSupportMaskPtr =
-            const_cast< TOutputImage * >( this->GetSupportMask().GetPointer() );
+    typename TSingleComponentImage::Pointer inputSupportMaskPtr =
+            const_cast< TSingleComponentImage * >( this->GetSupportMask().GetPointer() );
     if ( !inputSupportMaskPtr )
         return;
     inputSupportMaskPtr->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
     }
 }
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TSingleComponentImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage>
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections, and connections with
@@ -243,8 +243,8 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     }
 }
 
-template< typename TOutputImage >
-void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
+template< typename TOutputImage, typename TSingleComponentImage>
+void ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>::GenerateData()
 {
   // Execute Pipeline
   if (m_Preconditioned)

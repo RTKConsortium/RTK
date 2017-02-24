@@ -30,6 +30,7 @@
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkLaplacianImageFilter.h"
+#include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaConjugateGradientImageFilter_3f.h"
@@ -117,7 +118,7 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 
-template< typename TOutputImage >
+template< typename TOutputImage, typename TSingleComponentImage=TOutputImage >
 class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
@@ -138,17 +139,18 @@ public:
     /** The gated measured projections */
     void SetInputProjectionStack(const TOutputImage* Projection);
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >  ForwardProjectionFilterType;
-    typedef typename ForwardProjectionFilterType::Pointer                    ForwardProjectionFilterPointer;
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
-    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                  ConjugateGradientFilterType;
-    typedef itk::MultiplyImageFilter<TOutputImage>                           MultiplyFilterType;
-    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>       CGOperatorFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                  DisplacedDetectorFilterType;
-    typedef rtk::ConstantImageSource<TOutputImage>                           ConstantImageSourceType;
-    typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                    DivideFilterType;
-    typedef itk::StatisticsImageFilter<TOutputImage>                         StatisticsImageFilterType;
-    typedef typename TOutputImage::Pointer                                   OutputImagePointer;
+    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >                 ForwardProjectionFilterType;
+    typedef typename ForwardProjectionFilterType::Pointer                                   ForwardProjectionFilterPointer;
+    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                    BackProjectionFilterType;
+    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                                 ConjugateGradientFilterType;
+    typedef itk::MultiplyImageFilter<TOutputImage, TSingleComponentImage, TOutputImage>     MultiplyFilterType;
+    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage> CGOperatorFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                                 DisplacedDetectorFilterType;
+    typedef rtk::ConstantImageSource<TOutputImage>                                          ConstantImageSourceType;
+    typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                                   DivideFilterType;
+    typedef itk::StatisticsImageFilter<TOutputImage>                                        StatisticsImageFilterType;
+    typedef typename TOutputImage::Pointer                                                  OutputImagePointer;
+    typedef rtk::BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage>                 MatrixVectorMultiplyFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
@@ -157,8 +159,8 @@ public:
     void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
 
     /** Set the support mask, if any, for support constraint in reconstruction */
-    void SetSupportMask(const TOutputImage *SupportMask);
-    typename TOutputImage::ConstPointer GetSupportMask();
+    void SetSupportMask(const TSingleComponentImage *SupportMask);
+    typename TSingleComponentImage::ConstPointer GetSupportMask();
 
     /** Pass the geometry to all filters needing it */
     itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
@@ -220,6 +222,7 @@ protected:
     typename DivideFilterType::Pointer                                          m_DivideFilter;
     typename MultiplyFilterType::Pointer                                        m_MultiplySupportMaskFilter;
     typename MultiplyFilterType::Pointer                                        m_MultiplySupportMaskFilterForOutput;
+    typename MatrixVectorMultiplyFilterType::Pointer                            m_MatrixVectorMultiplyFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -246,7 +249,32 @@ private:
     bool                         m_CudaConjugateGradient;
     bool                         m_DisableDisplacedDetectorFilter;
 };
-} //namespace ITK
+
+template<>
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+::ConjugateGradientConeBeamReconstructionFilter();
+
+//template<>
+//void
+//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+//::SetSupportMask(const itk::Image<float, 3> *SupportMask);
+
+//template<>
+//typename itk::Image<float, 3>::ConstPointer
+//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+//::GetSupportMask();
+
+template<>
+void
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+::GenerateOutputInformation();
+
+template<>
+void
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+::GenerateData();
+
+} //namespace RTK
 
 
 #ifndef ITK_MANUAL_INSTANTIATION

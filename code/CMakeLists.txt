@@ -41,7 +41,10 @@ set(RTK_LIBRARY_FILES
             rtkDrawQuadricSpatialObject.cxx
             rtkOraGeometryReader.cxx
 	    rtkJosephForwardProjectionImageFilter.cxx
-	    rtkJosephBackProjectionImageFilter.cxx)
+	    rtkJosephBackProjectionImageFilter.cxx
+	    rtkConjugateGradientConeBeamReconstructionFilter.cxx
+	    rtkReconstructionConjugateGradientOperator.cxx
+	    rtkIterativeConeBeamReconstructionFilter.cxx)
 
 if(RTK_TIME_EACH_FILTER)
     set(RTK_LIBRARY_FILES

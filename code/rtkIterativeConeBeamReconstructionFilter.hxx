@@ -23,17 +23,17 @@
 
 namespace rtk
 {
-  template<class TOutputImage, class ProjectionStackType>
-  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
+  template<class TOutputImage, class ProjectionStackType, class TProjectionImage>
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType, TProjectionImage>
   ::IterativeConeBeamReconstructionFilter()
   {
     m_CurrentForwardProjectionConfiguration = -1;
     m_CurrentBackProjectionConfiguration = -1;
   }
 
-  template<class TOutputImage, class ProjectionStackType>
-  typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::ForwardProjectionPointerType
-  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
+  template<class TOutputImage, class ProjectionStackType, class TProjectionImage>
+  typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType, TProjectionImage>::ForwardProjectionPointerType
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType, TProjectionImage>
   ::InstantiateForwardProjectionFilter (int fwtype)
   {
     ForwardProjectionPointerType fw;
@@ -59,9 +59,9 @@ namespace rtk
     return fw;
   }
 
-  template<class TOutputImage, class ProjectionStackType>
-  typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::BackProjectionPointerType
-  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::InstantiateBackProjectionFilter(int bptype)
+  template<class TOutputImage, class ProjectionStackType, class TProjectionImage>
+  typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType, TProjectionImage>::BackProjectionPointerType
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType, TProjectionImage>::InstantiateBackProjectionFilter(int bptype)
   {
     BackProjectionPointerType bp;
     switch(bptype)
@@ -95,9 +95,9 @@ namespace rtk
     return bp;
   }
 
-  template<class TOutputImage, class ProjectionStackType>
+  template<class TOutputImage, class ProjectionStackType, class TProjectionImage>
   void
-  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType, TProjectionImage>
   ::SetForwardProjectionFilter (int fwtype)
   {
     if (m_CurrentForwardProjectionConfiguration != fwtype)
@@ -106,9 +106,9 @@ namespace rtk
       }
   }
 
-  template<class TOutputImage, class ProjectionStackType>
+  template<class TOutputImage, class ProjectionStackType, class TProjectionImage>
   void
-  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
+  IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType, TProjectionImage>
   ::SetBackProjectionFilter (int bptype)
   {
     if (m_CurrentBackProjectionConfiguration != bptype)
