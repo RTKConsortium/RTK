@@ -32,13 +32,11 @@ namespace rtk
 
 template <class TInputImage,
           class TOutputImage,
-          class TSplatWeightMultiplication,
-          class TProjectionImage>
+          class TSplatWeightMultiplication>
 void
 JosephBackProjectionImageFilter<TInputImage,
                                 TOutputImage,
-                                TSplatWeightMultiplication,
-                                TProjectionImage>
+                                TSplatWeightMultiplication>
 ::GenerateData()
 {
   // Allocate the output image
@@ -238,13 +236,11 @@ JosephBackProjectionImageFilter<TInputImage,
 
 template <class TInputImage,
           class TOutputImage,
-          class TSplatWeightMultiplication,
-          class TProjectionImage>
+          class TSplatWeightMultiplication>
 void
 JosephBackProjectionImageFilter<TInputImage,
                                 TOutputImage,
-                                TSplatWeightMultiplication,
-                                TProjectionImage>
+                                TSplatWeightMultiplication>
 ::BilinearSplat(const InputPixelType rayValue,
                                                const double stepLengthInVoxel,
                                                const double voxelSize,
@@ -273,13 +269,11 @@ JosephBackProjectionImageFilter<TInputImage,
 
 template <class TInputImage,
           class TOutputImage,
-          class TSplatWeightMultiplication,
-          class TProjectionImage>
+          class TSplatWeightMultiplication>
 void
 JosephBackProjectionImageFilter<TInputImage,
                                 TOutputImage,
-                                TSplatWeightMultiplication,
-                                TProjectionImage>
+                                TSplatWeightMultiplication>
 ::BilinearSplatOnBorders(const InputPixelType rayValue,
                                                const double stepLengthInVoxel,
                                                const double voxelSize,

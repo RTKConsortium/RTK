@@ -44,7 +44,8 @@ set(RTK_LIBRARY_FILES
 	    rtkJosephBackProjectionImageFilter.cxx
 	    rtkConjugateGradientConeBeamReconstructionFilter.cxx
 	    rtkReconstructionConjugateGradientOperator.cxx
-	    rtkIterativeConeBeamReconstructionFilter.cxx)
+	    rtkIterativeConeBeamReconstructionFilter.cxx
+	    rtkConjugateGradientGetR_kPlusOneImageFilter.cxx)
 
 if(RTK_TIME_EACH_FILTER)
     set(RTK_LIBRARY_FILES

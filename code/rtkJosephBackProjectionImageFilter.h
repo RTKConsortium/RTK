@@ -79,10 +79,9 @@ public:
 
 template <class TInputImage,
           class TOutputImage,
-          class TSplatWeightMultiplication = Functor::SplatWeightMultiplication<typename TInputImage::InternalPixelType, double, typename TOutputImage::InternalPixelType>,
-          class TProjectionImage = itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1> >
+          class TSplatWeightMultiplication = Functor::SplatWeightMultiplication<typename TInputImage::InternalPixelType, double, typename TOutputImage::InternalPixelType> >
 class ITK_EXPORT JosephBackProjectionImageFilter :
-  public BackProjectionImageFilter<TInputImage,TOutputImage, TProjectionImage>
+  public BackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
@@ -170,8 +169,7 @@ template<>
 void
 rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
                                      itk::VectorImage<float, 3>,
-                                     Functor::SplatWeightMultiplication< float, double, float >,
-                                     itk::VectorImage<float, 2> >
+                                     Functor::SplatWeightMultiplication< float, double, float > >
 ::BilinearSplat(const itk::VariableLengthVector<float> rayValue,
                 const double stepLengthInVoxel,
                 const double voxelSize,
@@ -188,8 +186,7 @@ template<>
 void
 rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
                                      itk::VectorImage<float, 3>,
-                                     Functor::SplatWeightMultiplication< float, double, float >,
-                                     itk::VectorImage<float, 2> >
+                                     Functor::SplatWeightMultiplication< float, double, float > >
 ::BilinearSplatOnBorders(const itk::VariableLengthVector<float> rayValue,
                          const double stepLengthInVoxel,
                          const double voxelSize,

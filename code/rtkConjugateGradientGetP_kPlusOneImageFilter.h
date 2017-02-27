@@ -35,6 +35,8 @@ public:
   typedef itk::ImageToImageFilter< TInputImage, TInputImage>  Superclass;
   typedef itk::SmartPointer< Self >                           Pointer;
   typedef typename TInputImage::RegionType                    OutputImageRegionType;
+  typedef itk::Image<typename TInputImage::InternalPixelType,
+                              TInputImage::ImageDimension>    BetaImage;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -51,8 +53,8 @@ public:
   itkSetMacro(SquaredNormR_kPlusOne, float)
 
   /** Typedefs for sub filters */
-  typedef itk::AddImageFilter<TInputImage>      AddFilterType;
-  typedef itk::MultiplyImageFilter<TInputImage> MultiplyFilterType;
+  typedef itk::AddImageFilter<TInputImage>                              AddFilterType;
+  typedef itk::MultiplyImageFilter<TInputImage, BetaImage, TInputImage> MultiplyFilterType;
 
 protected:
   ConjugateGradientGetP_kPlusOneImageFilter();

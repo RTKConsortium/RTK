@@ -23,13 +23,11 @@ namespace rtk
 
 
 template<>
-typename rtk::BackProjectionImageFilter<itk::VectorImage<float, 3>,
-itk::VectorImage<float, 3>,
-itk::VectorImage<float, 2> >::Pointer
-IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3>, itk::VectorImage<float, 2> >
+typename rtk::BackProjectionImageFilter<itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >::Pointer
+IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >
 ::InstantiateBackProjectionFilter(int bptype)
 {
-  rtk::BackProjectionImageFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3>, itk::VectorImage<float, 2> >::Pointer bp;
+  rtk::BackProjectionImageFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >::Pointer bp;
   switch(bptype)
     {
 //    case(0):
@@ -38,8 +36,7 @@ IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorIm
     case(1):
       bp = rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
               itk::VectorImage<float, 3>,
-              Functor::SplatWeightMultiplication< float, double, float >,
-              itk::VectorImage<float, 2> >::New();
+              Functor::SplatWeightMultiplication< float, double, float > >::New();
       break;
 //    case(2):
 //    #ifdef RTK_USE_CUDA
@@ -66,7 +63,7 @@ IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorIm
 
 template<>
 typename rtk::ForwardProjectionImageFilter<itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >::Pointer
-IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3>, itk::VectorImage<float, 2> >
+IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >
 ::InstantiateForwardProjectionFilter(int fwtype)
 {
   rtk::ForwardProjectionImageFilter<itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >::Pointer fw;

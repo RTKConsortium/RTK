@@ -20,6 +20,7 @@
 #define rtkConjugateGradientGetR_kPlusOneImageFilter_h
 
 #include <itkImageToImageFilter.h>
+#include <itkVectorImage.h>
 #include <itkBarrier.h>
 
 #include "rtkConfiguration.h"
@@ -90,7 +91,15 @@ private:
     std::vector<float> m_PktApkVector;
 
 };
-} //namespace ITK
+
+template<>
+void
+ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<float, 3>>
+::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType &
+                           outputRegionForThread,
+                           ThreadIdType threadId);
+
+} //namespace RTK
 
 
 #ifndef ITK_MANUAL_INSTANTIATION

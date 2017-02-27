@@ -189,7 +189,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_CGFilter->SetRegularized(this->m_RegularizedCG);
   m_CGFilter->SetGamma(this->m_Gamma);
-  m_CGFilter->SetIterationCosts(m_IterationCosts);
+//  m_CGFilter->SetIterationCosts(m_IterationCosts);
   m_CGFilter->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
 
   currentDownstreamFilter = m_CGFilter;

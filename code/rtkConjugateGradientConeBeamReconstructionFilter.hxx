@@ -32,7 +32,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_MeasureExecutionTimes=false;
-  m_IterationCosts=false;
+//  m_IterationCosts=false;
   m_Preconditioned=false;
   m_Gamma = 0;
   m_Regularized = false;
@@ -81,12 +81,12 @@ GetSupportMask()
           ( this->itk::ProcessObject::GetInput("SupportMask") );
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
-const std::vector<double> &ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>
-::GetResidualCosts()
-{
-  return m_ConjugateGradientFilter->GetResidualCosts();
-}
+//template< typename TOutputImage, typename TSingleComponentImage>
+//const std::vector<double> &ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>
+//::GetResidualCosts()
+//{
+//  return m_ConjugateGradientFilter->GetResidualCosts();
+//}
 
 template< typename TOutputImage, typename TSingleComponentImage>
 void
@@ -183,7 +183,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
     m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
-  m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
+//  m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
   
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
@@ -298,17 +298,17 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   typename StatisticsImageFilterType::Pointer StatisticsImageFilterForC = StatisticsImageFilterType::New();
   typename MultiplyFilterType::Pointer MultiplyFilterForC = MultiplyFilterType::New();
 
-  if (m_IterationCosts)
-    {
-    MultiplyFilterForC->SetInput(0,this->GetInput(1));
-    MultiplyFilterForC->SetInput(1,this->GetInput(2));
-    MultiplyFilterForC->Update();
-    MultiplyFilterForC->SetInput(1,MultiplyFilterForC->GetOutput());
-    MultiplyFilterForC->Update();
-    StatisticsImageFilterForC->SetInput(MultiplyFilterForC->GetOutput());
-    StatisticsImageFilterForC->Update();
-    m_ConjugateGradientFilter->SetC(0.5*StatisticsImageFilterForC->GetSum());
-    }
+//  if (m_IterationCosts)
+//    {
+//    MultiplyFilterForC->SetInput(0,this->GetInput(1));
+//    MultiplyFilterForC->SetInput(1,this->GetInput(2));
+//    MultiplyFilterForC->Update();
+//    MultiplyFilterForC->SetInput(1,MultiplyFilterForC->GetOutput());
+//    MultiplyFilterForC->Update();
+//    StatisticsImageFilterForC->SetInput(MultiplyFilterForC->GetOutput());
+//    StatisticsImageFilterForC->Update();
+//    m_ConjugateGradientFilter->SetC(0.5*StatisticsImageFilterForC->GetSum());
+//    }
 
   if(m_MeasureExecutionTimes)
     {

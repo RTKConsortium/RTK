@@ -129,7 +129,7 @@ int main(int argc, char * argv[])
     {
     conjugategradient->SetSupportMask(supportmaskSource->GetOutput() );
     }
-  conjugategradient->SetIterationCosts(args_info.costs_flag);
+//  conjugategradient->SetIterationCosts(args_info.costs_flag);
 
   if (args_info.gamma_given)
     {
@@ -157,12 +157,12 @@ int main(int argc, char * argv[])
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
-  if(args_info.costs_given)
-    {
-    costs=conjugategradient->GetResidualCosts();
-    std::cout << "Residual costs at each iteration :" << std::endl;
-    copy(costs.begin(),costs.end(),costs_it);
-    }
+//  if(args_info.costs_given)
+//    {
+//    costs=conjugategradient->GetResidualCosts();
+//    std::cout << "Residual costs at each iteration :" << std::endl;
+//    copy(costs.begin(),costs.end(),costs_it);
+//    }
 
   // Write
   typedef itk::ImageFileWriter< OutputImageType > WriterType;

@@ -25,8 +25,7 @@ template<>
 void
 rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
                                      itk::VectorImage<float, 3>,
-                                     Functor::SplatWeightMultiplication< float, double, float >,
-                                     itk::VectorImage<float, 2> >
+                                     Functor::SplatWeightMultiplication< float, double, float >>
 ::BilinearSplat(const itk::VariableLengthVector<float> rayValue,
                 const double stepLengthInVoxel,
                 const double voxelSize,
@@ -61,8 +60,7 @@ template<>
 void
 rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
                                      itk::VectorImage<float, 3>,
-                                     Functor::SplatWeightMultiplication< float, double, float >,
-                                     itk::VectorImage<float, 2> >
+                                     Functor::SplatWeightMultiplication< float, double, float > >
 ::BilinearSplatOnBorders(const itk::VariableLengthVector<float> rayValue,
                          const double stepLengthInVoxel,
                          const double voxelSize,

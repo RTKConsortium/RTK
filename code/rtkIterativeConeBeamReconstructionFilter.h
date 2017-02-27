@@ -51,8 +51,7 @@ namespace rtk
  * \ingroup ReconstructionAlgorithm
  */
 template<class TOutputImage,
-         class ProjectionStackType=TOutputImage,
-         class TProjectionImage = itk::Image<typename ProjectionStackType::PixelType, ProjectionStackType::ImageDimension - 1> >
+         class ProjectionStackType=TOutputImage>
 class ITK_EXPORT IterativeConeBeamReconstructionFilter :
   public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
@@ -67,10 +66,10 @@ public:
   typedef ProjectionStackType VolumeType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >                  ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType, TProjectionImage >   BackProjectionFilterType;
-  typedef typename ForwardProjectionFilterType::Pointer                                         ForwardProjectionPointerType;
-  typedef typename BackProjectionFilterType::Pointer                                            BackProjectionPointerType;
+  typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >    ForwardProjectionFilterType;
+  typedef rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >       BackProjectionFilterType;
+  typedef typename ForwardProjectionFilterType::Pointer                           ForwardProjectionPointerType;
+  typedef typename BackProjectionFilterType::Pointer                              BackProjectionPointerType;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -109,15 +108,13 @@ private:
 }; // end of class
 
 template<>
-rtk::BackProjectionImageFilter<itk::VectorImage<float, 3>,
-itk::VectorImage<float, 3>,
-itk::VectorImage<float, 2> >::Pointer
-IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3>, itk::VectorImage<float, 2> >
+rtk::BackProjectionImageFilter<itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >::Pointer
+IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >
 ::InstantiateBackProjectionFilter(int bptype);
 
 template<>
 rtk::ForwardProjectionImageFilter<itk::VectorImage<float, 3>,itk::VectorImage<float, 3> >::Pointer
-IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3>, itk::VectorImage<float, 2> >
+IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >
 ::InstantiateForwardProjectionFilter(int fwtype);
 
 } // end namespace rtk

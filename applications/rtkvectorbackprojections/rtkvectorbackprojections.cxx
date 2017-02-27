@@ -78,7 +78,7 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Backprojecting volume..." << std::flush;
   itk::TimeProbe bpProbe;
-  rtk::BackProjectionImageFilter<OutputImageType, OutputImageType, ProjectionImageType>::Pointer bp;
+  rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
 
 //  // In case warp backprojection is used, we create a deformation
 //  typedef itk::Vector<float,3> DVFPixelType;
@@ -115,8 +115,7 @@ int main(int argc, char * argv[])
                                                 OutputImageType,
                                                 rtk::Functor::SplatWeightMultiplication< typename OutputImageType::InternalPixelType,
                                                                                          double,
-                                                                                         typename OutputImageType::InternalPixelType>,
-                                                 ProjectionImageType>::New();
+                                                                                         typename OutputImageType::InternalPixelType> >::New();
 //      break;
 //    case(bp_arg_NormalizedJoseph):
 //      bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();

@@ -73,7 +73,7 @@ public:
   typedef TInputImage                                     InputImageType;
   typedef TOutputImage                                    OutputImageType;
   typedef typename OutputImageType::RegionType            OutputImageRegionType;
-  typedef itk::Image<typename TOutputImage::PixelType, 1> WeightImageType;
+  typedef itk::Image<typename TOutputImage::InternalPixelType, 1> WeightImageType;
 
   typedef ThreeDCircularProjectionGeometry GeometryType;
   typedef GeometryType::Pointer            GeometryPointer;
