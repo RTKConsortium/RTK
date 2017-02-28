@@ -56,7 +56,7 @@ public:
   result.SetSize(A.GetSize());
   result.SetData(vnl_result.data_block(),A.GetSize(),false);
 
-  return result;
+  return static_cast< TOutput >( result );
   }
 };
 }
