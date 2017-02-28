@@ -17,7 +17,6 @@
  *=========================================================================*/
 
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
-#include "rtkGeneralPurposeFunctions.h"
 
 namespace rtk
 {
