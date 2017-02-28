@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 namespace rtk
 {
@@ -87,6 +88,7 @@ ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::
 
     // Set runtime connections
     m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
+
     m_CGOperator->SetInput(1, this->GetInput(1));
     m_CGOperator->SetSupportMask(this->GetSupportMask());
     m_ConjugateGradientFilter->SetX(this->GetInput(0));
@@ -99,8 +101,8 @@ ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::
     m_ConjugateGradientFilter->SetB(m_BackProjectionFilterForB->GetOutput());
 
     // Multiply the projections by the weights map
-    m_MatrixVectorMultiplyFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput()); // First input is the matrix
-    m_MatrixVectorMultiplyFilter->SetInput2(this->GetInput(1));  // Second input is the vector
+    m_MatrixVectorMultiplyFilter->SetInput1(this->GetInput(1));  // First input is the vector
+    m_MatrixVectorMultiplyFilter->SetInput2(m_DisplacedDetectorFilter->GetOutput()); // Second input is the matrix
     m_CGOperator->SetInput(2, m_DisplacedDetectorFilter->GetOutput());
     m_BackProjectionFilterForB->SetInput(1, m_MatrixVectorMultiplyFilter->GetOutput());
 
@@ -122,8 +124,8 @@ ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::
     m_CGOperator->SetGamma(m_Gamma);
 
     // Set memory management parameters
-    m_MatrixVectorMultiplyFilter->ReleaseDataFlagOn();
-    m_BackProjectionFilterForB->ReleaseDataFlagOn();
+//    m_MatrixVectorMultiplyFilter->ReleaseDataFlagOn();
+//    m_BackProjectionFilterForB->ReleaseDataFlagOn();
 
     if (this->GetSupportMask().IsNotNull())
       {

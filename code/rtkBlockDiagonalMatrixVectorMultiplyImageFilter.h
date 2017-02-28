@@ -44,17 +44,17 @@ public:
     return !( *this != other );
   }
 
-  // Input 1 is the matrix image, Input 2 is the vector image
+  // Input 1 is the vector image, Input 2 is the matrix image
   inline TOutput operator()(const TInput1 & A, const TInput2 & B) const
   {
-  vnl_matrix<typename TInput1::ComponentType> mat = vnl_matrix<typename TInput1::ComponentType>(B.GetSize(), B.GetSize());
-  mat.copy_in(A.GetDataPointer());
-  vnl_vector<typename TInput2::ComponentType> vect(B.GetDataPointer(),B.GetSize());
-  vnl_vector<typename TInput2::ComponentType> vnl_result = mat * vect;
+  vnl_matrix<typename TInput2::ComponentType> mat = vnl_matrix<typename TInput2::ComponentType>(A.GetSize(), A.GetSize());
+  mat.copy_in(B.GetDataPointer());
+  vnl_vector<typename TInput1::ComponentType> vect(A.GetDataPointer(),A.GetSize());
+  vnl_vector<typename TInput1::ComponentType> vnl_result = mat * vect;
 
   TOutput result;
-  result.SetSize(B.GetSize());
-  result.SetData(vnl_result.data_block(),B.GetSize(),false);
+  result.SetSize(A.GetSize());
+  result.SetData(vnl_result.data_block(),A.GetSize(),false);
 
   return result;
   }

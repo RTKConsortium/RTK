@@ -89,8 +89,8 @@ ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<
 //      }
 
     // Multiply the projections
-    m_MatrixVectorMultiplyFilter->SetInput1(this->GetInput(2)); // First input is the matrix
-    m_MatrixVectorMultiplyFilter->SetInput2(this->GetInput(1));  // Second input is the vector
+    m_MatrixVectorMultiplyFilter->SetInput1(this->GetInput(1)); // First input is the vector
+    m_MatrixVectorMultiplyFilter->SetInput2(this->GetInput(2)); // Second input is the matrix
     m_BackProjectionFilter->SetInput(1, m_MatrixVectorMultiplyFilter->GetOutput());
 
 //    if (m_Preconditioned)
