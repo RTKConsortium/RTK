@@ -86,7 +86,7 @@ ReadSignalFile(std::string filename)
 
 template< typename ImageType >
 void
-WriteImage(typename ImageType::Pointer input, std::string name)
+WriteImage(typename ImageType::ConstPointer input, std::string name)
 {
   //Create an itk::ImageFileWriter
   typedef itk::ImageFileWriter<ImageType> WriterType;
