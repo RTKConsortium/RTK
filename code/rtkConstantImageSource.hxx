@@ -123,6 +123,7 @@ ConstantImageSource<TOutputImage>
   this->SetSpacing( image->GetSpacing() );
   this->SetOrigin( image->GetOrigin() );
   this->SetDirection( image->GetDirection() );
+  this->SetVectorLength( image->GetNumberOfComponentsPerPixel() );
 }
 
 //----------------------------------------------------------------------------

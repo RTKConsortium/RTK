@@ -98,9 +98,9 @@ rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
   for (int component=0; component<rayValue.GetSize(); component++)
     {
     pxiyi[idx + offset_xi + offset_yi + component] += m_SplatWeightMultiplication(rayValue[component], stepLengthInVoxel, voxelSize, lxc * lyc);
-    pxsyi[idx + offset_xi + offset_yi + component] += m_SplatWeightMultiplication(rayValue[component], stepLengthInVoxel, voxelSize, lx * lyc);
-    pxiys[idx + offset_xi + offset_yi + component] += m_SplatWeightMultiplication(rayValue[component], stepLengthInVoxel, voxelSize, lxc * ly);
-    pxsys[idx + offset_xi + offset_yi + component] += m_SplatWeightMultiplication(rayValue[component], stepLengthInVoxel, voxelSize, lx * ly);
+    pxsyi[idx + offset_xs + offset_yi + component] += m_SplatWeightMultiplication(rayValue[component], stepLengthInVoxel, voxelSize, lx * lyc);
+    pxiys[idx + offset_xi + offset_ys + component] += m_SplatWeightMultiplication(rayValue[component], stepLengthInVoxel, voxelSize, lxc * ly);
+    pxsys[idx + offset_xs + offset_ys + component] += m_SplatWeightMultiplication(rayValue[component], stepLengthInVoxel, voxelSize, lx * ly);
     }
 }
 
