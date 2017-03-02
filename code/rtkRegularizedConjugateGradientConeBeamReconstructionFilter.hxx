@@ -53,6 +53,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
   m_Order = 5;
   m_NumberOfLevels = 3;
   m_DisableDisplacedDetectorFilter = false;
+  m_IterationCosts = false;
 
   // Create the filters
   m_CGFilter = CGFilterType::New();
