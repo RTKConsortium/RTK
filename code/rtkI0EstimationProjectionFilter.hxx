@@ -26,15 +26,15 @@
 
 namespace rtk
 {
-template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+template< class TInputImage, class TOutputImage, unsigned char bitShift >
 I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::I0EstimationProjectionFilter()
 {
-  m_NBins = (unsigned int)( 1 << ( 16 - bitShift ) );
+  m_NBins = (unsigned int)( 1 << ( std::numeric_limits<InputImagePixelType>::digits - bitShift ) );
 
   m_Histogram.resize(m_NBins, 0);
 
-  m_MaxPixelValue = 49152;       // Thales 4343RF value
+  m_MaxPixelValue = std::numeric_limits<InputImagePixelType>::max();
   m_ExpectedI0 = m_MaxPixelValue;
 
   m_SaveHistograms = false;
@@ -53,11 +53,11 @@ I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
   m_Mutex = itk::MutexLock::New();
 }
 
-template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+template< class TInputImage, class TOutputImage, unsigned char bitShift >
 void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::BeforeThreadedGenerateData()
 {
-  std::vector< unsigned >::iterator it = m_Histogram.begin();
+  std::vector< unsigned int >::iterator it = m_Histogram.begin();
 
   for (; it != m_Histogram.end(); ++it )
     {
@@ -73,7 +73,7 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
     }
 }
 
-template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+template< class TInputImage, class TOutputImage, unsigned char bitShift >
 void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                        ThreadIdType itkNotUsed(threadId))
@@ -95,7 +95,7 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 
   // Computation of region histogram
 
-  std::vector< unsigned > m_thHisto;   // Per-thread histogram
+  std::vector< unsigned int > m_thHisto;   // Per-thread histogram
   m_thHisto.resize(m_NBins, 0);
 
   // Fill in its own histogram
@@ -160,18 +160,18 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
   m_Mutex->Unlock();
 }
 
-template< class TInputImage, class  TOutputImage, unsigned char bitShift >
+template< class TInputImage, class TOutputImage, unsigned char bitShift >
 void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::AfterThreadedGenerateData()
 {
   // Search for the background mode in the last quarter of the histogram
 
-  unsigned       startIdx = (3 * (m_Imax >> 2)) >> bitShift;
-  unsigned       idx = startIdx;
-  unsigned short maxId = startIdx;
-  unsigned       maxVal = m_Histogram[startIdx];
+  unsigned int        startIdx = (3 * (m_Imax >> 2)) >> bitShift;
+  unsigned int        idx = startIdx;
+  unsigned int        maxId = startIdx;
+  InputImagePixelType maxVal = m_Histogram[startIdx];
 
-  while (idx < (unsigned)(m_Imax >> bitShift))
+  while (idx < (unsigned int)(m_Imax >> bitShift))
   {
     if (m_Histogram[idx] >= maxVal)
     {
@@ -180,26 +180,26 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
     }
     ++idx;
   }
-  m_I0 = unsigned((maxId) << bitShift);
-  m_I0rls = (m_Np > 1) ? (unsigned short)((float)(m_I0rls * m_Lambda) + (float)(m_I0)* (1. - m_Lambda)) : m_I0;
+  m_I0 = InputImagePixelType((maxId) << bitShift);
+  m_I0rls = (m_Np > 1) ? (InputImagePixelType)((float)(m_I0rls * m_Lambda) + (float)(m_I0)* (1. - m_Lambda)) : m_I0;
 
   // If estimated I0 at the boundaries, either startIdx or Imax then we missed
   // smth or no background mode
 
-  unsigned short widthval = (unsigned short) (float) (maxVal >> 1);
-  unsigned short lowBound = maxId;
+  InputImagePixelType widthval = (InputImagePixelType) (float) (maxVal >> 1);
+  unsigned int lowBound = maxId;
   while ( ( m_Histogram[lowBound] > widthval ) && ( lowBound > 0 ) )
     {
     lowBound--;
     }
 
-  unsigned short highBound = maxId;
+  unsigned int highBound = maxId;
   while ( ( m_Histogram[highBound] > widthval ) && ( highBound < m_Imax ) )
     {
     highBound++;
     }
 
-  unsigned peakFwhm = ( ( highBound - lowBound ) << bitShift );
+  unsigned int peakFwhm = ( ( highBound - lowBound ) << bitShift );
   m_I0fwhm = peakFwhm;
 
   m_LowBound = ( lowBound << bitShift );
@@ -211,7 +211,7 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
     {
     std::ofstream paramFile;
     paramFile.open("i0est_histogram.csv", std::ofstream::out | std::ofstream::app);
-    std::vector< unsigned >::const_iterator itf = m_Histogram.begin();
+    std::vector< unsigned int >::const_iterator itf = m_Histogram.begin();
     for (; itf != m_Histogram.end(); ++itf )
       {
       paramFile << *itf << ",";
