@@ -41,7 +41,9 @@ namespace rtk
  * \ingroup InPlaceImageFilter
  */
 
-template< class TInputImage, class TOutputImage, unsigned char bitShift >
+template<class TInputImage = itk::Image< unsigned short, 3>,
+         class TOutputImage = TInputImage,
+         unsigned char bitShift = 2 >
 class ITK_EXPORT I0EstimationProjectionFilter:
   public         itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
@@ -124,11 +126,11 @@ private:
                                           // and bitshift
 
   // Main variables
-  std::vector< unsigned int > m_Histogram;// compressed (bitshifted) histogram
-  InputImagePixelType          m_I0;      // I0 estimate with no a priori for
-                                          // each new image
-  InputImagePixelType          m_I0rls;   // Updated RLS estimate
-  InputImagePixelType          m_I0fwhm;  // FWHM of the I0 mode
+  std::vector< unsigned int > m_Histogram; // compressed (bitshifted) histogram
+  InputImagePixelType         m_I0;        // I0 estimate with no a priori for
+                                           // each new image
+  InputImagePixelType         m_I0rls;     // Updated RLS estimate
+  InputImagePixelType         m_I0fwhm;    // FWHM of the I0 mode
 
   // Secondary variables
   unsigned int m_Np;                      // Number of previously analyzed
