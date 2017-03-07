@@ -76,7 +76,8 @@ private:
   CudaFFTConvolutionImageFilter(const Self&); // purposely not implemented
   void operator=(const Self&);                // purposely not implemented
 
-  CudaFFTOutputImagePointer m_fftKCUDA;
+  CudaFFTOutputImagePointer m_FftKCUDA;
+  typename Superclass::FFTOutputImageType::SizeType m_currentPaddedSize;
 
 }; // end of class
 
