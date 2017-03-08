@@ -231,6 +231,9 @@ public:
   itkGetMacro(VectorComponent, unsigned int)
   itkSetMacro(VectorComponent, unsigned int)
 
+  /** Get the image IO that was used for reading the projection. */
+  itkGetMacro(ImageIO,  itk::ImageIOBase::Pointer);
+
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
   void GenerateOutputInformation(void) ITK_OVERRIDE;

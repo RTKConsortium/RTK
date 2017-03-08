@@ -59,6 +59,10 @@ OraXMLFileReader
   EncapsulateDouble("rescale_slope", name);
   EncapsulateDouble("rescale_intercept", name);
   EncapsulateString("MHD_File", name);
+  EncapsulateDouble("xrayx1_cm", name);
+  EncapsulateDouble("xrayx2_cm", name);
+  EncapsulateDouble("xrayy1_cm", name);
+  EncapsulateDouble("xrayy2_cm", name);
 }
 
 void
