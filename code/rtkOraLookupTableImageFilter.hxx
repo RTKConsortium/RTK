@@ -71,6 +71,13 @@ OraLookupTableImageFilter<TOutputImage>
   it.GoToBegin();
   if(m_ComputeLineIntegral)
     {
+    int negidx = itk::Math::Floor<int, double>(std::floor(-intercept/slope));
+    double negval = -1. * vcl_log(slope * (negidx+1) + intercept);
+    while( !it.IsAtEnd() && (int)it.GetIndex()[0] <= negidx )
+      {
+      it.Set(negval);
+      ++it;
+      }
     while( !it.IsAtEnd() )
       {
       it.Set( -1. * vcl_log(slope * it.GetIndex()[0] + intercept) );
