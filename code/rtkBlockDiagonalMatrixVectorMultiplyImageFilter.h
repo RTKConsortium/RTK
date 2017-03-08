@@ -61,11 +61,7 @@ public:
 };
 }
 /** \class rtkBlockDiagonalMatrixVectorMultiplyImageFilter
- * \brief Pixel-wise multiplication of two images.
- *
- * This class is templated over the types of the two
- * input images and the type of the output image.
- * Numeric conversions (castings) are done by the C++ defaults.
+ * \brief
  *
  */
 template< typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1 >
@@ -100,6 +96,7 @@ public:
 protected:
   BlockDiagonalMatrixVectorMultiplyImageFilter() {}
   virtual ~BlockDiagonalMatrixVectorMultiplyImageFilter() {}
+  void VerifyInputInformation(){}
 
 private:
   ITK_DISALLOW_COPY_AND_ASSIGN(BlockDiagonalMatrixVectorMultiplyImageFilter);
