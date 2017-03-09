@@ -114,7 +114,6 @@ int main(int argc, char * argv[])
     supportmaskSource = supportmaskReader;
     }
 
-
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();

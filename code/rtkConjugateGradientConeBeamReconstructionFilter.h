@@ -214,7 +214,6 @@ private:
     float                        m_Gamma;
     bool                         m_MeasureExecutionTimes;
     bool                         m_IterationCosts;
-//    bool                         m_Preconditioned;
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
     bool                         m_DisableDisplacedDetectorFilter;
