@@ -135,7 +135,6 @@ public:
   typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
   typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
 
-//   typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
   typedef rtk::ConstantImageSource<TOutputImage>                          ConstantSourceType;
   typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
   typedef itk::AddImageFilter<TOutputImage>                               AddFilterType;
@@ -156,10 +155,6 @@ public:
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
-
-  /** If Weighted && Preconditioned, multiplies by preconditioning weights to speed up CG convergence */
-  itkSetMacro(Preconditioned, bool)
-  itkGetMacro(Preconditioned, bool)
   
   /** If Regularized, perform laplacian-based regularization during 
   *  reconstruction (gamma is the strength of the regularization) */
@@ -174,8 +169,6 @@ protected:
 
   /** Does the real work. */
   void GenerateData() ITK_OVERRIDE;
-
-  const TOutputImage * ApplySupportMask(const TOutputImage *_arg);
 
   /** Member pointers to the filters used internally (for convenience)*/
   BackProjectionFilterPointer            m_BackProjectionFilter;
@@ -193,7 +186,6 @@ protected:
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
-  bool                                              m_Preconditioned; //Multiply by preconditioning weights ?
   bool                                              m_Regularized;
   float                                             m_Gamma; //Strength of the regularization
 

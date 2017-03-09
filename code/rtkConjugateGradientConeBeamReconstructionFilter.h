@@ -172,9 +172,9 @@ public:
     itkSetMacro(IterationCosts, bool)
     itkGetMacro(IterationCosts, bool)
 
-    /** If Weighted and Preconditioned, computes preconditioning weights to speed up CG convergence */
-    itkSetMacro(Preconditioned, bool)
-    itkGetMacro(Preconditioned, bool)
+//    /** If Weighted and Preconditioned, computes preconditioning weights to speed up CG convergence */
+//    itkSetMacro(Preconditioned, bool)
+//    itkGetMacro(Preconditioned, bool)
 
     /** Set / Get whether the displaced detector filter should be disabled */
     itkSetMacro(DisableDisplacedDetectorFilter, bool)
@@ -201,8 +201,6 @@ protected:
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;
 
-    const TOutputImage * ApplySupportMask(const TOutputImage *_arg);
-
     /** Member pointers to the filters used internally (for convenience)*/
     typename MultiplyFilterType::Pointer                                        m_MultiplyProjectionsFilter;
     typename MultiplyFilterType::Pointer                                        m_MultiplyVolumeFilter;
@@ -212,14 +210,14 @@ protected:
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForB;
-    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForPreconditioning;
-    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForNormalization;
+//    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForPreconditioning;
+//    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForNormalization;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
     typename ConstantImageSourceType::Pointer                                   m_ConstantVolumeSource;
-    typename ConstantImageSourceType::Pointer                                   m_ConstantProjectionsSource;
-    typename DivideFilterType::Pointer                                          m_DivideFilter;
-    typename MultiplyFilterType::Pointer                                        m_MultiplySupportMaskFilter;
-    typename MultiplyFilterType::Pointer                                        m_MultiplySupportMaskFilterForOutput;
+//    typename ConstantImageSourceType::Pointer                                   m_ConstantProjectionsSource;
+//    typename DivideFilterType::Pointer                                          m_DivideFilter;
+//    typename MultiplyFilterType::Pointer                                        m_MultiplySupportMaskFilter;
+//    typename MultiplyFilterType::Pointer                                        m_MultiplySupportMaskFilterForOutput;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -241,7 +239,7 @@ private:
     float                        m_Gamma;
     bool                         m_MeasureExecutionTimes;
     bool                         m_IterationCosts;
-    bool                         m_Preconditioned;
+//    bool                         m_Preconditioned;
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
     bool                         m_DisableDisplacedDetectorFilter;
