@@ -41,6 +41,11 @@ ConstantImageSource<TOutputImage>
 
   m_VectorLength = 1; // Default behavior is to generate a scalar image
   m_Constant = 0.;
+
+  OutputImagePixelType pix;
+  itk::NumericTraits<OutputImagePixelType>::SetLength(pix, 1);
+  pix = itk::NumericTraits<OutputImagePixelType>::ZeroValue(pix);
+  m_VectorConstant = pix;
 }
 
 template <class TOutputImage>
@@ -155,11 +160,17 @@ ConstantImageSource<TOutputImage>
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
 
   // Initialize the pixel, be it a scalar or a variableLengthVector
-  // In the latter case, all components of the variableLenghtVector
-  // are set to this->m_Constant
   OutputImagePixelType pix;
   itk::NumericTraits<OutputImagePixelType>::SetLength(pix, this->GetVectorLength());
-  pix = itk::NumericTraits<OutputImagePixelType>::OneValue(pix) * this->GetConstant();
+
+  // If a vector has been passed as the constant, use it. Otherwise,
+  // use the scalar constant, and if the output is a VectorImage, fill its components
+  // with that scalar
+  unsigned int VectorConstantLength = itk::NumericTraits<OutputImagePixelType>::GetLength(m_VectorConstant);
+  if ((VectorConstantLength != 1) && (VectorConstantLength == this->GetVectorLength()))
+    pix = m_VectorConstant;
+  else
+    pix = itk::NumericTraits<OutputImagePixelType>::OneValue(pix) * this->GetConstant();
 
   // Write it everywhere in the image
   for (; !it.IsAtEnd(); ++it)

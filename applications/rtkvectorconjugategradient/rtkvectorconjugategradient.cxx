@@ -99,10 +99,17 @@ int main(int argc, char * argv[])
     typedef rtk::ConstantImageSource< OutputImageType > ConstantWeightsSourceType;
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
     
-    // Set the weights to be like the projections
+    // Set the weights to the identity matrix
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
     constantWeightsSource->SetInformationFromImage(reader->GetOutput());
-    constantWeightsSource->SetConstant(1.0);
+    unsigned int nbComponents = reader->GetOutput()->GetNumberOfComponentsPerPixel();
+    itk::VariableLengthVector<OutputPixelType> vForConstant;
+    vForConstant.SetSize(nbComponents * nbComponents);
+    vForConstant.Fill(0);
+    for (unsigned int i=0; i< nbComponents; i++)
+      for (unsigned int j=0; j< nbComponents; j++)
+        if (i==j) vForConstant[i + nbComponents * j]=1;
+    constantWeightsSource->SetVectorConstant(vForConstant);
     constantWeightsSource->SetVectorLength(reader->GetOutput()->GetNumberOfComponentsPerPixel() * reader->GetOutput()->GetNumberOfComponentsPerPixel());
     weightsSource = constantWeightsSource;
     }

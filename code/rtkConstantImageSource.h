@@ -112,6 +112,10 @@ public:
   itkSetMacro(Constant, OutputImageInternalPixelType);
   itkGetConstMacro(Constant, OutputImageInternalPixelType);
 
+  /** Set/Get the pixel value of output */
+  itkSetMacro(VectorConstant, OutputImagePixelType);
+  itkGetConstMacro(VectorConstant, OutputImagePixelType);
+
   /** Set/Get the vector length, in case of a VectorImage */
   itkSetMacro(VectorLength, unsigned int);
   itkGetConstMacro(VectorLength, unsigned int);
@@ -136,6 +140,7 @@ protected:
   unsigned int   m_VectorLength;
 
   OutputImageInternalPixelType m_Constant;
+  OutputImagePixelType m_VectorConstant;
 
 private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented
