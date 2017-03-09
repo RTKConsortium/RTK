@@ -67,7 +67,7 @@ namespace rtk
    * Input1 [shape=Mdiamond];
    * Input2 [label="Input 2 (Weights)"];
    * Input2 [shape=Mdiamond];
-   * Input3 [label="Input 3 (Preconditioning weights)"];
+   * Input3 [label="Input Support Mask"];
    * Input3 [shape=Mdiamond];
    * Output [label="Output (Volume)"];
    * Output [shape=Mdiamond];
@@ -188,6 +188,9 @@ protected:
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
   bool                                              m_Regularized;
   float                                             m_Gamma; //Strength of the regularization
+
+  /** Pointers to intermediate images, used to simplify complex branching */
+  typename TOutputImage::Pointer                    m_FloatingInputPointer, m_FloatingOutputPointer;
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */

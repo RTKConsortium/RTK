@@ -134,31 +134,25 @@ void
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::GenerateOutputInformation()
 {
-  // Create image pointers to manage the fact that
-  // some filters must be plugged or not, depending
-  // on regularization and support mask
-  typename TOutputImage::Pointer floatingInput0 = TOutputImage::New();
-  typename TOutputImage::Pointer floatingBPOutput = TOutputImage::New();
-
   // Set runtime connections, and connections with
   // forward and back projection filters, which are set
   // at runtime
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
 
-  floatingInput0 = const_cast<TOutputImage *>(this->GetInput(0));
+  m_FloatingInputPointer = const_cast<TOutputImage *>(this->GetInput(0));
 
   // Set the first multiply filter to use the Support Mask, if any
   if (this->GetSupportMask().IsNotNull())
     {
-    m_MultiplyInputVolumeFilter->SetInput1( floatingInput0 );
+    m_MultiplyInputVolumeFilter->SetInput1( m_FloatingInputPointer );
     m_MultiplyInputVolumeFilter->SetInput2( this->GetSupportMask() );
-    floatingInput0 = m_MultiplyInputVolumeFilter->GetOutput();
+    m_FloatingInputPointer = m_MultiplyInputVolumeFilter->GetOutput();
     }
 
   // Set the forward projection filter's inputs
   m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
-  m_ForwardProjectionFilter->SetInput(1, floatingInput0);
+  m_ForwardProjectionFilter->SetInput(1, m_FloatingInputPointer);
 
   // Set the multiply filter's inputs for the projection weights (for WLS minimization)
   m_MultiplyProjectionsFilter->SetInput1(m_ForwardProjectionFilter->GetOutput());
@@ -167,12 +161,12 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // Set the back projection filter's inputs
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
-  floatingBPOutput = m_BackProjectionFilter->GetOutput();
+  m_FloatingOutputPointer= m_BackProjectionFilter->GetOutput();
 
   // Set the filters to compute the regularization, if any
   if (m_Regularized)
     {
-    m_LaplacianFilter->SetInput(floatingInput0);
+    m_LaplacianFilter->SetInput(m_FloatingInputPointer);
     m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
     // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian"
     // for correctly applying quadratic regularization || grad f ||_2^2
@@ -181,15 +175,15 @@ ReconstructionConjugateGradientOperator<TOutputImage>
     m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
     m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
 
-    floatingBPOutput = m_AddFilter->GetOutput();
+    m_FloatingOutputPointer= m_AddFilter->GetOutput();
     }
 
   // Set the second multiply filter to use the Support Mask, if any
   if (this->GetSupportMask().IsNotNull())
     {
-    m_MultiplyOutputVolumeFilter->SetInput1( floatingBPOutput );
+    m_MultiplyOutputVolumeFilter->SetInput1( m_FloatingOutputPointer);
     m_MultiplyOutputVolumeFilter->SetInput2( this->GetSupportMask() );
-    floatingBPOutput = m_MultiplyOutputVolumeFilter->GetOutput();
+    m_FloatingOutputPointer= m_MultiplyOutputVolumeFilter->GetOutput();
     }
 
   // Set geometry
@@ -204,32 +198,16 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_BackProjectionFilter->SetReleaseDataFlag(this->GetSupportMask().IsNotNull() || m_Regularized);
 
   // Update output information on the last filter of the pipeline
-  floatingBPOutput->UpdateOutputInformation();
-  this->GetOutput()->CopyInformation( floatingBPOutput );
+  m_FloatingOutputPointer->UpdateOutputInformation();
+  this->GetOutput()->CopyInformation( m_FloatingOutputPointer);
 }
 
 template< typename TOutputImage >
 void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
 {
   // Execute Pipeline
-  if (this->GetSupportMask().IsNotNull())
-    {
-    m_MultiplyOutputVolumeFilter->Update();
-    this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
-    }
-  else
-    {
-    if (m_Regularized)
-      {
-      m_AddFilter->Update();
-      this->GraftOutput( const_cast<  TOutputImage* >(m_AddFilter->GetOutput()) );
-      }
-    else
-      {
-      m_BackProjectionFilter->Update();
-      this->GraftOutput( const_cast< TOutputImage* >(m_BackProjectionFilter->GetOutput()) );
-      }
-    }
+  m_FloatingOutputPointer->Update();
+  this->GraftOutput( m_FloatingOutputPointer );
 }
 
 }// end namespace
