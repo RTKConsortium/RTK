@@ -9,7 +9,6 @@ option "niter"          n "Number of iterations"                                
 option "time"           t "Records elapsed time during the process"                                                   flag   off  
 option "input"          i "Input volume"                                                                              string no
 option "weights"        w "Weights file for Weighted Least Squares (WLS)"                                             string no
-option "preconditioned" - "For WLS only: performs preconditioned CG with a preconditioner computed from the weights"  flag   off
 option "gammalaplacian"	- "Laplacian regularization weight"                                                           float  no   default="0"
 option "cgiter"         - "Number of conjugate gradient nested iterations"                                            int    no   default="4"
 option "nocudacg"       - "Do not perform conjugate gradient calculations on GPU"                                     flag   off
