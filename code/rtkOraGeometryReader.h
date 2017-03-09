@@ -77,8 +77,15 @@ public:
     return m_ProjectionsFileNames;
     }
 
+  /** Collimation margin: adds a small margin to the collimation edge to remove
+   * collimator shadow. A positive value means less collimation. Default is 0.
+   * */
+  itkGetMacro(CollimationMargin, double)
+  itkSetMacro(CollimationMargin, double)
+
+
 protected:
-  OraGeometryReader(): m_Geometry(ITK_NULLPTR) {};
+  OraGeometryReader(): m_Geometry(ITK_NULLPTR), m_CollimationMargin(0.) {};
 
   ~OraGeometryReader() ITK_OVERRIDE {};
 
@@ -91,6 +98,7 @@ private:
 
   GeometryType::Pointer m_Geometry;
   FileNamesContainer    m_ProjectionsFileNames;
+  double                m_CollimationMargin;
 };
 
 }

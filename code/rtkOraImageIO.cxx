@@ -78,4 +78,3 @@ rtk::OraImageIO::CanWriteFile( const char* itkNotUsed(FileNameToWrite) )
 {
   return false;
 }
-

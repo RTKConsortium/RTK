@@ -28,6 +28,7 @@ int main(int argc, char * argv[])
   // Create geometry reader
   rtk::OraGeometryReader::Pointer oraReader = rtk::OraGeometryReader::New();
   oraReader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
+  oraReader->SetCollimationMargin(args_info.margin_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( oraReader->UpdateOutputData() )
 
   // Write

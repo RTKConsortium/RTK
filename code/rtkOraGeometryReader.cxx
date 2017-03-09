@@ -101,6 +101,37 @@ void OraGeometryReader::GenerateData()
                               dp,
                               VectorType( &(mat[0][0]) ),
                               VectorType( &(mat[1][0]) ) );
+
+    // Now add the collimation
+    // longitudinalposition_cm
+    double uinf = std::numeric_limits<double>::max();
+    MetaDataDoubleType *uinfMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayx1_cm"].GetPointer() );
+    if(uinfMeta != ITK_NULLPTR)
+      {
+      uinf = 10.*uinfMeta->GetMetaDataObjectValue()+m_CollimationMargin;
+      }
+
+    double usup = std::numeric_limits<double>::max();
+    MetaDataDoubleType *usupMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayx2_cm"].GetPointer() );
+    if(usupMeta != ITK_NULLPTR)
+      {
+      usup = 10.*usupMeta->GetMetaDataObjectValue()+m_CollimationMargin;
+      }
+
+    double vinf = std::numeric_limits<double>::max();
+    MetaDataDoubleType *vinfMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayy1_cm"].GetPointer() );
+    if(vinfMeta != ITK_NULLPTR)
+      {
+      vinf = 10.*vinfMeta->GetMetaDataObjectValue()+m_CollimationMargin;
+      }
+
+    double vsup = std::numeric_limits<double>::max();
+    MetaDataDoubleType *vsupMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayy2_cm"].GetPointer() );
+    if(vsupMeta != ITK_NULLPTR)
+      {
+      vsup = 10.*vsupMeta->GetMetaDataObjectValue()+m_CollimationMargin;
+      }
+    m_Geometry->SetCollimationOfLastProjection(uinf, usup, vinf, vsup);
     }
 }
 } //namespace rtk

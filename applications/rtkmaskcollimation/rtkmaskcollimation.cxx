@@ -16,18 +16,18 @@
  *
  *=========================================================================*/
 
-#include "rtkorafieldmask_ggo.h"
+#include "rtkmaskcollimation_ggo.h"
 #include "rtkGgoFunctions.h"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkOraFieldMaskImageFilter.h"
+#include "rtkMaskCollimationImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkorafieldmask, args_info);
+  GGO(rtkmaskcollimation, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
@@ -48,10 +48,10 @@ int main(int argc, char * argv[])
   // Projections reader
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkorafieldmask>(reader, args_info);
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmaskcollimation>(reader, args_info);
 
   // Create projection image filter
-  typedef rtk::OraFieldMaskImageFilter<OutputImageType, OutputImageType> OFMType;
+  typedef rtk::MaskCollimationImageFilter<OutputImageType, OutputImageType> OFMType;
   OFMType::Pointer ofm = OFMType::New();
   ofm->SetInput( reader->GetOutput() );
   ofm->SetGeometry( geometryReader->GetOutputObject() );

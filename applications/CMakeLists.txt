@@ -67,7 +67,7 @@ add_subdirectory(rtkspectralsimplexdecomposition)
 add_subdirectory(rtkdualenergysimplexdecomposition)
 add_subdirectory(rtkspectralrooster)
 add_subdirectory(rtkspectralforwardmodel)
-add_subdirectory(rtkorafieldmask)
+add_subdirectory(rtkmaskcollimation)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 add_subdirectory(rtkvarianobigeometry)
