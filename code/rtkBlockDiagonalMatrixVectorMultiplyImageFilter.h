@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright Insight Software Consortium
+ *  Copyright RTK Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -75,15 +75,14 @@ class ITK_EXPORT BlockDiagonalMatrixVectorMultiplyImageFilter:
 {
 public:
   /** Standard class typedefs. */
-  typedef BlockDiagonalMatrixVectorMultiplyImageFilter Self;
+  typedef BlockDiagonalMatrixVectorMultiplyImageFilter                            Self;
   typedef itk::BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
-                                    Functor::MatrixVectorMult<
-                                      typename TInputImage1::PixelType,
-                                      typename TInputImage2::PixelType,
-                                      typename TOutputImage::PixelType >
-                                    >                                 Superclass;
-  typedef itk::SmartPointer< Self >       Pointer;
-  typedef itk::SmartPointer< const Self > ConstPointer;
+                                         Functor::MatrixVectorMult<
+                                            typename TInputImage1::PixelType,
+                                            typename TInputImage2::PixelType,
+                                            typename TOutputImage::PixelType > >  Superclass;
+  typedef itk::SmartPointer< Self >                                               Pointer;
+  typedef itk::SmartPointer< const Self >                                         ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -91,7 +90,6 @@ public:
   /** Runtime information support. */
   itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter,
                itk::BinaryFunctorImageFilter);
-
 
 protected:
   BlockDiagonalMatrixVectorMultiplyImageFilter() {}

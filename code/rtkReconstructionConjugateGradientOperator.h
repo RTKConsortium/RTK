@@ -68,7 +68,7 @@ namespace rtk
    * Input1 [shape=Mdiamond];
    * Input2 [label="Input 2 (Weights)"];
    * Input2 [shape=Mdiamond];
-   * Input3 [label="Input 3 (Preconditioning weights)"];
+   * Input3 [label="Input Support Mask"];
    * Input3 [shape=Mdiamond];
    * Output [label="Output (Volume)"];
    * Output [shape=Mdiamond];
@@ -157,10 +157,6 @@ public:
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
-
-  /** If Weighted && Preconditioned, multiplies by preconditioning weights to speed up CG convergence */
-  itkSetMacro(Preconditioned, bool)
-  itkGetMacro(Preconditioned, bool)
   
   /** If Regularized, perform laplacian-based regularization during 
   *  reconstruction (gamma is the strength of the regularization) */
@@ -175,8 +171,6 @@ protected:
 
   /** Does the real work. */
   void GenerateData() ITK_OVERRIDE;
-
-  const TOutputImage * ApplySupportMask(const TOutputImage *_arg);
 
   /** Member pointers to the filters used internally (for convenience)*/
   BackProjectionFilterPointer            m_BackProjectionFilter;
@@ -195,9 +189,11 @@ protected:
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
-  bool                                              m_Preconditioned; //Multiply by preconditioning weights ?
   bool                                              m_Regularized;
   float                                             m_Gamma; //Strength of the regularization
+
+  /** Pointers to intermediate images, used to simplify complex branching */
+  typename TOutputImage::Pointer                    m_FloatingInputPointer, m_FloatingOutputPointer;
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */
@@ -221,11 +217,6 @@ template<>
 void
 ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
 ::GenerateOutputInformation();
-
-template<>
-void
-ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
-::GenerateData();
 
 } //namespace RTK
 

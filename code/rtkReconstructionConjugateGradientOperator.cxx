@@ -25,7 +25,6 @@ template<>
 ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
 ::ReconstructionConjugateGradientOperator():
 m_Geometry(ITK_NULLPTR),
-m_Preconditioned(false),
 m_Regularized(false),
 m_Gamma(0)
 {
@@ -65,109 +64,73 @@ void
 ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
 ::GenerateOutputInformation()
 {
-    // Set runtime connections, and connections with
-    // forward and back projection filters, which are set
-    // at runtime
-    m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
-    m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-    m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
-    m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
-    m_MultiplySupportMaskFilter->SetInput2(this->GetSupportMask());
-    m_ForwardProjectionFilter->SetInput(1, ApplySupportMask(this->GetInput(0)));
+  // Set runtime connections, and connections with
+  // forward and back projection filters, which are set
+  // at runtime
+  m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
+  m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
 
-//    if (m_Regularized)
-//      {
-//      m_LaplacianFilter->SetInput(ApplySupportMask(this->GetInput(0)));
+  m_FloatingInputPointer = const_cast< itk::VectorImage<float, 3> *>(this->GetInput(0));
 
-//      m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
-//      // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian"
-//      // for correctly applying quadratic regularization || grad f ||_2^2
-//      m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
+  // Set the first multiply filter to use the Support Mask, if any
+  if (this->GetSupportMask().IsNotNull())
+    {
+    m_MultiplyInputVolumeFilter->SetInput1( m_FloatingInputPointer );
+    m_MultiplyInputVolumeFilter->SetInput2( this->GetSupportMask() );
+    m_FloatingInputPointer = m_MultiplyInputVolumeFilter->GetOutput();
+    }
 
-//      m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
-//      m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
-//      }
+  // Set the forward projection filter's inputs
+  m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
+  m_ForwardProjectionFilter->SetInput(1, m_FloatingInputPointer);
 
-    // Multiply the projections
-    m_MatrixVectorMultiplyFilter->SetInput1(m_ForwardProjectionFilter->GetOutput()); // First input is the vector
-    m_MatrixVectorMultiplyFilter->SetInput2(this->GetInput(2)); // Second input is the matrix
-    m_BackProjectionFilter->SetInput(1, m_MatrixVectorMultiplyFilter->GetOutput());
+  // Set the matrix vector multiply filter's inputs for multiplication
+  // by the inverse covariance matrix (for GLS minimization)
+  m_MatrixVectorMultiplyFilter->SetInput1(m_ForwardProjectionFilter->GetOutput()); // First input is the vector
+  m_MatrixVectorMultiplyFilter->SetInput2(this->GetInput(2)); // Second input is the matrix
 
-//    if (m_Preconditioned)
-//      {
-//      // Multiply the input volume
-//      m_MultiplyInputVolumeFilter->SetInput1( ApplySupportMask(this->GetInput(0)) );
-//      m_MultiplyInputVolumeFilter->SetInput2( this->GetInput(3) );
-//      m_ForwardProjectionFilter->SetInput(1, m_MultiplyInputVolumeFilter->GetOutput());
+  // Set the back projection filter's inputs
+  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_MatrixVectorMultiplyFilter->GetOutput());
+  m_FloatingOutputPointer= m_BackProjectionFilter->GetOutput();
 
-//      // Multiply the volume
-//      m_MultiplyOutputVolumeFilter->SetInput1(ApplySupportMask(m_BackProjectionFilter->GetOutput()));
-//      m_MultiplyOutputVolumeFilter->SetInput2(this->GetInput(3));
+  // Set the filters to compute the regularization, if any
+  if (m_Regularized)
+    {
+    m_LaplacianFilter->SetInput(m_FloatingInputPointer);
+    m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
+    // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian"
+    // for correctly applying quadratic regularization || grad f ||_2^2
+    m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
 
-//      // If a regularization is added, it needs to be added to the output of the
-//      // m_MultiplyOutputVolumeFilter, instead of that of the m_BackProjectionFilter
-//      if (m_Regularized)
-//        {
-//        m_LaplacianFilter->SetInput(m_MultiplyInputVolumeFilter->GetOutput());
-//        m_MultiplyOutputVolumeFilter->SetInput1( ApplySupportMask(m_AddFilter->GetOutput()));
-//        }
-//      }
+    m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
+    m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
 
-    // Set geometry
-    m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-    m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+    m_FloatingOutputPointer= m_AddFilter->GetOutput();
+    }
 
-    // Set memory management parameters for forward
-    // and back projection filters
-    m_ForwardProjectionFilter->SetInPlace(!m_Preconditioned);
-    m_ForwardProjectionFilter->ReleaseDataFlagOn();
+  // Set the second multiply filter to use the Support Mask, if any
+  if (this->GetSupportMask().IsNotNull())
+    {
+    m_MultiplyOutputVolumeFilter->SetInput1( m_FloatingOutputPointer);
+    m_MultiplyOutputVolumeFilter->SetInput2( this->GetSupportMask() );
+    m_FloatingOutputPointer= m_MultiplyOutputVolumeFilter->GetOutput();
+    }
 
-//    // Update output information on the last filter of the pipeline
-//    if (m_Preconditioned)
-//      {
-//      m_MultiplyOutputVolumeFilter->UpdateOutputInformation();
-//      this->GetOutput()->CopyInformation( m_MultiplyOutputVolumeFilter->GetOutput() );
-//      }
-//    else
-//      {
-//      if (m_Regularized)
-//        {
-//        m_AddFilter->UpdateOutputInformation();
-//        this->GetOutput()->CopyInformation( m_AddFilter->GetOutput() );
-//        }
-//      else
-//        {
-        m_BackProjectionFilter->UpdateOutputInformation();
-        this->GetOutput()->CopyInformation( m_BackProjectionFilter->GetOutput() );
-//        }
-//      }
-}
+  // Set geometry
+  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
 
-template<>
-void
-ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
-::GenerateData()
-{
-    // Execute Pipeline
-//    if (m_Preconditioned)
-//      {
-//      m_MultiplyOutputVolumeFilter->Update();
-//      this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
+  // Set memory management parameters for forward
+  // and back projection filters
+  m_ForwardProjectionFilter->SetInPlace(true);
+  m_ForwardProjectionFilter->ReleaseDataFlagOn();
+  m_BackProjectionFilter->SetInPlace(true);
+  m_BackProjectionFilter->SetReleaseDataFlag(this->GetSupportMask().IsNotNull() || m_Regularized);
 
-//      }
-//    else
-//      {
-//      if (m_Regularized)
-//        {
-//        m_AddFilter->Update();
-//        this->GraftOutput( const_cast<  itk::VectorImage<float, 3>* >(ApplySupportMask(m_AddFilter->GetOutput())) );
-//        }
-//      else
-//        {
-        m_BackProjectionFilter->Update();
-        this->GraftOutput( const_cast< itk::VectorImage<float, 3>* >(ApplySupportMask(m_BackProjectionFilter->GetOutput())) );
-//        }
-//      }
+  // Update output information on the last filter of the pipeline
+  m_FloatingOutputPointer->UpdateOutputInformation();
+  this->GetOutput()->CopyInformation( m_FloatingOutputPointer);
 }
 
 } // end namespace rtk

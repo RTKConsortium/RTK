@@ -61,8 +61,8 @@ public:
   typedef TOutputImage OutputImageType;
 
   /** Typedefs for the output image PixelType. */
-  typedef typename TOutputImage::PixelType OutputImagePixelType;
-  typedef typename TOutputImage::InternalPixelType OutputImageInternalPixelType;
+  typedef typename TOutputImage::PixelType          OutputImagePixelType;
+  typedef typename TOutputImage::InternalPixelType  OutputImageInternalPixelType;
 
   /** Typedef to describe the output image region type. */
   typedef typename TOutputImage::RegionType OutputImageRegionType;
@@ -139,8 +139,8 @@ protected:
   IndexType      m_Index;
   unsigned int   m_VectorLength;
 
-  OutputImageInternalPixelType m_Constant;
-  OutputImagePixelType m_VectorConstant;
+  OutputImageInternalPixelType  m_Constant;
+  OutputImagePixelType          m_VectorConstant;
 
 private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented

@@ -116,7 +116,6 @@ int main(int argc, char * argv[])
   regularizedConjugateGradient->SetInputVolume(inputFilter->GetOutput() );
   regularizedConjugateGradient->SetInputProjectionStack(reader->GetOutput());
   regularizedConjugateGradient->SetInputWeights( weightsSource->GetOutput());
-  regularizedConjugateGradient->SetPreconditioned(args_info.preconditioned_flag);
   regularizedConjugateGradient->SetGeometry( geometryReader->GetOutputObject() );
   regularizedConjugateGradient->SetMainLoop_iterations( args_info.niter_arg );
   regularizedConjugateGradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);

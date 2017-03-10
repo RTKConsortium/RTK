@@ -61,16 +61,18 @@ public:
   typedef typename TInputImage::InternalPixelType           InternalInputPixelType;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
-  typedef rtk::ThreeDCircularProjectionGeometry                     GeometryType;
-  typedef typename GeometryType::Pointer                            GeometryPointer;
-  typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
-  typedef itk::Image<InternalInputPixelType, TInputImage::ImageDimension-1>  SliceType;
-  typedef itk::VectorImage<InternalInputPixelType, TInputImage::ImageDimension-1>  VectorSliceType;
-  typedef typename std::conditional<std::is_same<typename TInputImage::PixelType,
-                                                 itk::VariableLengthVector<typename TInputImage::InternalPixelType> >::value,
-                                    VectorSliceType,
-                                    SliceType>::type ProjectionImageType;
-  typedef typename ProjectionImageType::Pointer                     ProjectionImagePointer;
+  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
+  typedef typename GeometryType::Pointer                    GeometryPointer;
+  typedef typename GeometryType::MatrixType                 ProjectionMatrixType;
+  typedef itk::Image< InternalInputPixelType,
+                      TInputImage::ImageDimension-1>        SliceType;
+  typedef itk::VectorImage< InternalInputPixelType,
+                            TInputImage::ImageDimension-1>  VectorSliceType;
+  typedef typename std::conditional<std::is_same< typename TInputImage::PixelType,
+                                                  itk::VariableLengthVector<typename TInputImage::InternalPixelType> >::value,
+                                                  VectorSliceType,
+                                                  SliceType>::type ProjectionImageType;
+  typedef typename ProjectionImageType::Pointer                    ProjectionImagePointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
