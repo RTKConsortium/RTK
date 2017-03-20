@@ -29,7 +29,8 @@ namespace rtk
  * \brief Lookup table for Ora data.
  *
  * The lookup table uses the slope and intercept from the meta information to
- * create a linear lookup table.
+ * create a linear lookup table. The log is taken depending on the flag
+ * ComputeLineIntegral.
  *
  * \test rtkoratest.cxx
  *
