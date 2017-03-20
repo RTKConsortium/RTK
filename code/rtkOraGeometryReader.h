@@ -49,6 +49,7 @@ public:
   typedef GeometryType::PointType          PointType;
   typedef GeometryType::Matrix3x3Type      Matrix3x3Type;
   typedef GeometryType::VectorType         VectorType;
+  typedef itk::Vector<double, 4>           MarginVectorType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(OraGeometryReader, itk::LightProcessObject);
@@ -79,9 +80,10 @@ public:
 
   /** Collimation margin: adds a small margin to the collimation edge to remove
    * collimator shadow. A positive value means less collimation. Default is 0.
+   * The order is uinf, usup, vinf, vsup.
    * */
-  itkGetMacro(CollimationMargin, double)
-  itkSetMacro(CollimationMargin, double)
+  itkGetMacro(CollimationMargin, MarginVectorType)
+  itkSetMacro(CollimationMargin, MarginVectorType)
 
 
 protected:
@@ -98,7 +100,7 @@ private:
 
   GeometryType::Pointer m_Geometry;
   FileNamesContainer    m_ProjectionsFileNames;
-  double                m_CollimationMargin;
+  MarginVectorType      m_CollimationMargin;
 };
 
 }

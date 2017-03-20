@@ -108,28 +108,28 @@ void OraGeometryReader::GenerateData()
     MetaDataDoubleType *uinfMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayx1_cm"].GetPointer() );
     if(uinfMeta != ITK_NULLPTR)
       {
-      uinf = 10.*uinfMeta->GetMetaDataObjectValue()+m_CollimationMargin;
+      uinf = 10.*uinfMeta->GetMetaDataObjectValue()+m_CollimationMargin[0];
       }
 
     double usup = std::numeric_limits<double>::max();
     MetaDataDoubleType *usupMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayx2_cm"].GetPointer() );
     if(usupMeta != ITK_NULLPTR)
       {
-      usup = 10.*usupMeta->GetMetaDataObjectValue()+m_CollimationMargin;
+      usup = 10.*usupMeta->GetMetaDataObjectValue()+m_CollimationMargin[1];
       }
 
     double vinf = std::numeric_limits<double>::max();
     MetaDataDoubleType *vinfMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayy1_cm"].GetPointer() );
     if(vinfMeta != ITK_NULLPTR)
       {
-      vinf = 10.*vinfMeta->GetMetaDataObjectValue()+m_CollimationMargin;
+      vinf = 10.*vinfMeta->GetMetaDataObjectValue()+m_CollimationMargin[2];
       }
 
     double vsup = std::numeric_limits<double>::max();
     MetaDataDoubleType *vsupMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayy2_cm"].GetPointer() );
     if(vsupMeta != ITK_NULLPTR)
       {
-      vsup = 10.*vsupMeta->GetMetaDataObjectValue()+m_CollimationMargin;
+      vsup = 10.*vsupMeta->GetMetaDataObjectValue()+m_CollimationMargin[3];
       }
     m_Geometry->SetCollimationOfLastProjection(uinf, usup, vinf, vsup);
     }
