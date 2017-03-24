@@ -34,11 +34,14 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
 {
   this->SetNumberOfIndexedOutputs(2); // decomposed projections, inverse variance of decomposition noise
 
-  // Initial decomposed projections
+  // Decomposed projections
   this->SetNthOutput( 0, this->MakeOutput( 0 ) );
 
-  // Measured photon counts
+  // Inverse variance of decomposition noise
   this->SetNthOutput( 1, this->MakeOutput( 1 ) );
+
+  // Fischer matrix (estimate of inverse covariance of decomposition)
+  this->SetNthOutput( 2, this->MakeOutput( 2 ) );
 
   // Set the default values of member parameters
   m_NumberOfIterations=300;
@@ -152,6 +155,9 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
     case 1:
       output = ( DecomposedProjectionsType::New() ).GetPointer();
       break;
+    case 2:
+      output = ( DecomposedProjectionsType::New() ).GetPointer();
+      break;
     }
   return output.GetPointer();
 }
@@ -198,6 +204,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
   Superclass::GenerateOutputInformation();
   this->GetOutput(0)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
   this->GetOutput(1)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
+  this->GetOutput(2)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,

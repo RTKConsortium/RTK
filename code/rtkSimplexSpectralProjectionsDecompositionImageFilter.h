@@ -77,6 +77,11 @@ public:
   itkSetMacro(NumberOfSpectralBins, unsigned int)
   itkGetMacro(NumberOfSpectralBins, unsigned int)
 
+  itkSetMacro(OutputInverseCramerRaoLowerBound, bool)
+  itkGetMacro(OutputInverseCramerRaoLowerBound, bool)
+
+  itkSetMacro(OutputFischerMatrix, bool)
+  itkGetMacro(OutputFischerMatrix, bool)
 
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
@@ -95,6 +100,8 @@ protected:
 
   ThresholdsType             m_Thresholds;
   unsigned int               m_NumberOfSpectralBins;
+  bool                       m_OutputInverseCramerRaoLowerBound;
+  bool                       m_OutputFischerMatrix;
 
 private:
   //purposely not implemented
