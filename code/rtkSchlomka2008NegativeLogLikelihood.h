@@ -50,8 +50,6 @@ public:
   itkNewMacro( Self );
   itkTypeMacro( Schlomka2008NegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood );
 
-//  enum { SpaceDimension=m_NumberOfMaterials };
-
   typedef Superclass::ParametersType          ParametersType;
   typedef Superclass::DerivativeType          DerivativeType;
   typedef Superclass::MeasureType             MeasureType;
@@ -105,55 +103,29 @@ public:
   return attenuatedIncidentSpectrum;
   }
 
-  itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
+  itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()
   {
-  // Get some required data
-  vnl_vector<double> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
-  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
-
-  // Compute the vector of m_b / lambda_b²
-  vnl_vector<double> weights;
-  weights.set_size(m_NumberOfSpectralBins);
-  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
-    weights[i] = m_MeasuredData[i] / (lambdas[i] * lambdas[i]);
-
-  // Prepare intermediate variables
-  vnl_vector<double> intermediate_a;
-  vnl_vector<double> intermediate_a_prime;
-  vnl_vector<double> partial_derivative_a;
-  vnl_vector<double> partial_derivative_a_prime;
-
-  // Compute the Fischer information matrix
-  itk::VariableSizeMatrix<float> Fischer;
-  Fischer.SetSize(m_NumberOfMaterials, m_NumberOfMaterials);
-  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
-    {
-    for (unsigned int a_prime=0; a_prime<m_NumberOfMaterials; a_prime++)
-      {
-      // Compute the partial derivatives of lambda_b with respect to the material line integrals
-      intermediate_a = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a));
-      intermediate_a_prime = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a_prime));
-
-      partial_derivative_a = m_DetectorResponse.GetVnlMatrix() * intermediate_a;
-      partial_derivative_a_prime = m_DetectorResponse.GetVnlMatrix() * intermediate_a_prime;
-
-      // Multiply them together element-wise, then dot product with the weights
-      partial_derivative_a_prime = element_product(partial_derivative_a, partial_derivative_a_prime);
-      Fischer[a][a_prime] = dot_product(partial_derivative_a_prime,weights);
-      }
-    }
-
-  // Invert the Fischer matrix
+  // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS reconstruction)
   itk::VariableLengthVector<double> diag;
   diag.SetSize(m_NumberOfMaterials);
   diag.Fill(0);
 
-  Fischer = Fischer.GetInverse();
-
-  // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS reconstruction)
   for (unsigned int mat=0; mat<m_NumberOfMaterials; mat++)
-    diag[mat] = 1./Fischer[mat][mat];
+    diag[mat] = 1./m_Fischer.GetInverse()[mat][mat];
   return diag;
+  }
+
+  itk::VariableLengthVector<float> GetFischerMatrix()
+  {
+  // Return the whole Fischer information matrix
+  itk::VariableLengthVector<double> fischer;
+  fischer.SetSize(m_NumberOfMaterials * m_NumberOfMaterials);
+  fischer.Fill(0);
+
+  for (unsigned int i=0; i<m_NumberOfMaterials; i++)
+    for (unsigned int j=0; j<m_NumberOfMaterials; j++)
+    fischer[i * m_NumberOfMaterials + j] = m_Fischer[i][j];
+  return fischer;
   }
 
   // Not used with a simplex optimizer, but may be useful later
@@ -209,9 +181,49 @@ public:
   itkSetMacro(NumberOfSpectralBins, unsigned int)
   itkGetMacro(NumberOfSpectralBins, unsigned int)
 
+  void ComputeFischerMatrix(const ParametersType & lineIntegrals)
+  {
+  // Get some required data
+  vnl_vector<double> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
+
+  // Compute the vector of m_b / lambda_b²
+  vnl_vector<double> weights;
+  weights.set_size(m_NumberOfSpectralBins);
+  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
+    weights[i] = m_MeasuredData[i] / (lambdas[i] * lambdas[i]);
+
+  // Prepare intermediate variables
+  vnl_vector<double> intermediate_a;
+  vnl_vector<double> intermediate_a_prime;
+  vnl_vector<double> partial_derivative_a;
+  vnl_vector<double> partial_derivative_a_prime;
+
+  // Compute the Fischer information matrix
+  m_Fischer.SetSize(m_NumberOfMaterials, m_NumberOfMaterials);
+  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
+    {
+    for (unsigned int a_prime=0; a_prime<m_NumberOfMaterials; a_prime++)
+      {
+      // Compute the partial derivatives of lambda_b with respect to the material line integrals
+      intermediate_a = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a));
+      intermediate_a_prime = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a_prime));
+
+      partial_derivative_a = m_DetectorResponse.GetVnlMatrix() * intermediate_a;
+      partial_derivative_a_prime = m_DetectorResponse.GetVnlMatrix() * intermediate_a_prime;
+
+      // Multiply them together element-wise, then dot product with the weights
+      partial_derivative_a_prime = element_product(partial_derivative_a, partial_derivative_a_prime);
+      m_Fischer[a][a_prime] = dot_product(partial_derivative_a_prime,weights);
+      }
+    }
+  }
+
+
 protected:
-  IncidentSpectrumType        m_IncidentSpectrum;
-  unsigned int                m_NumberOfSpectralBins;
+  IncidentSpectrumType              m_IncidentSpectrum;
+  unsigned int                      m_NumberOfSpectralBins;
+  itk::VariableSizeMatrix<float>    m_Fischer;
 
 private:
   Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented

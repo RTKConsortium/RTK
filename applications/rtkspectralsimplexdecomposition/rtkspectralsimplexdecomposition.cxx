@@ -139,6 +139,12 @@ int main(int argc, char * argv[])
   // The default behavior, used for example in the tests, is not to use this feature
   // (SetOptimizeWithRestart(false)), which makes the output reproducible.
 
+  if (args_info.weightsmap_given)
+    simplex->SetOutputInverseCramerRaoLowerBound(true);
+
+  if (args_info.fischer_given)
+    simplex->SetOutputFischerMatrix(true);
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
   // Write output
@@ -152,6 +158,14 @@ int main(int argc, char * argv[])
     {
     writer->SetInput(simplex->GetOutput(1));
     writer->SetFileName(args_info.weightsmap_arg);
+    writer->Update();
+    }
+
+  // If requested, write the fisher information matrix
+  if (args_info.fischer_given)
+    {
+    writer->SetInput(simplex->GetOutput(2));
+    writer->SetFileName(args_info.fischer_arg);
     writer->Update();
     }
 
