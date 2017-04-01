@@ -59,6 +59,8 @@ public:
   // Constructor
   ProjectionsDecompositionNegativeLogLikelihood()
   {
+  m_NumberOfEnergies = 0;
+  m_NumberOfMaterials = 0;
   }
 
   // Destructor
