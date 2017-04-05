@@ -1,0 +1,8 @@
+package "rtkprojections"
+purpose "Reads raw projection images, converts them to attenuation and stacks them into a single output image file"
+
+option "verbose"  v "Verbose execution"                                                                                   flag      off
+option "config"   - "Config file"                                                                                         string    no
+option "output"   o "Output file name"                                                                                    string    yes
+option "threshold" t "Threshold multiplier (actual threshold is obtained by multiplying by standard dev. of neighborhood)" double no default="1"
+option "radius"    - "Radius of neighborhood in each direction (actual radius is 2r+1)"                                   int     multiple no   default="1"
