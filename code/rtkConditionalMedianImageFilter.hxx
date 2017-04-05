@@ -19,6 +19,7 @@
 #define rtkConditionalMedianImageFilter_hxx
 
 #include "rtkConditionalMedianImageFilter.h"
+#include <itkImageRegionIterator.h>
 #include <numeric>
 
 namespace rtk

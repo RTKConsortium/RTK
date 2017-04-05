@@ -22,6 +22,7 @@
 #include "rtkConditionalMedianImageFilter.h"
 
 #include <itkImageFileWriter.h>
+#include <itkImageFileReader.h>
 
 int main(int argc, char * argv[])
 {
@@ -29,12 +30,17 @@ int main(int argc, char * argv[])
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  typedef itk::VectorImage< OutputPixelType, Dimension > OutputImageType;
 
-  // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+//  // Projections reader
+//  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+//  ReaderType::Pointer reader = ReaderType::New();
+//  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkremoveaberrantpixels>(reader, args_info);
+
+  // Reader
+  typedef itk::ImageFileReader<  OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkremoveaberrantpixels>(reader, args_info);
+  reader->SetFileName( args_info.input_arg );
 
   // Remove aberrant pixels
   typedef rtk::ConditionalMedianImageFilter<OutputImageType> MedianType;

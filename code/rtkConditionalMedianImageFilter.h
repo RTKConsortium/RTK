@@ -20,6 +20,7 @@
 
 #include "itkImageToImageFilter.h"
 #include <itkConstNeighborhoodIterator.h>
+#include <itkVectorImage.h>
 
 #include "rtkMacro.h"
 
@@ -79,6 +80,12 @@ private:
     void operator=(const Self &);  //purposely not implemented
 
 };
+
+template <>
+void
+rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
+::ThreadedGenerateData(const typename itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+
 } //namespace RTK
 
 

@@ -1,4 +1,4 @@
-WRAP_GGO(rtkremoveaberrantpixels_GGO_C rtkremoveaberrantpixels.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+WRAP_GGO(rtkremoveaberrantpixels_GGO_C rtkremoveaberrantpixels.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 add_executable(rtkremoveaberrantpixels rtkremoveaberrantpixels.cxx ${rtkremoveaberrantpixels_GGO_C})
 target_link_libraries(rtkremoveaberrantpixels RTK)
 
