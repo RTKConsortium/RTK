@@ -22,6 +22,7 @@
 #include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
 #include "rtkFFTConvolutionImageFilter.h"
+#include "rtkMacro.h"
 
 // The Set macro is redefined to clear the current FFT kernel when a parameter
 // is modified.
