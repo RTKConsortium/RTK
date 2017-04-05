@@ -27,10 +27,6 @@
 
 namespace rtk
 {
-
-template <typename TPixelType, unsigned int VImageDimension > class VectorImage;
-
-
 /** \class ForwardDifferenceGradientImageFilter
  * \brief Computes the gradient of an image using forward difference.
  *

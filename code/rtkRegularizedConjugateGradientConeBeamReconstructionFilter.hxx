@@ -185,7 +185,6 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->SetSupportMask(this->GetSupportMask());
   m_CGFilter->SetGeometry(this->m_Geometry);
   m_CGFilter->SetNumberOfIterations(this->m_CG_iterations);
-  m_CGFilter->SetPreconditioned(m_Preconditioned);
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_CGFilter->SetRegularized(this->m_RegularizedCG);
   m_CGFilter->SetGamma(this->m_Gamma);
