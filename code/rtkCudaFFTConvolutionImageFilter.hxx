@@ -101,25 +101,22 @@ CudaFFTConvolutionImageFilter<TParentImageFilter>
   // Get FFT ramp kernel. Must be itk::Image because GetFFTConvolutionKernel is not
   // compatible with itk::CudaImage + ITK 3.20.
   typename Superclass::FFTOutputImageType::SizeType s = paddedImage->GetLargestPossibleRegion().GetSize();
-
-  if(!m_FftKCUDA || (s[0] != m_currentPaddedSize[0]) || (s[1] != m_currentPaddedSize[1]))
+  this->UpdateFFTConvolutionKernel(s);
+  if(this->m_KernelFFTCUDA.GetPointer() == ITK_NULLPTR ||
+     this->m_KernelFFTCUDA->GetTimeStamp() < this->m_KernelFFT->GetTimeStamp())
     {
-
-	 m_currentPaddedSize = s; // Save padded image size
-
-     this->UpdateFFTConvolutionKernel(s);
 
      // Create the itk::CudaImage holding the kernel
      typename Superclass::FFTOutputImageType::RegionType kreg = this->m_KernelFFT->GetLargestPossibleRegion();
 
-     m_FftKCUDA = CudaFFTOutputImageType::New();
-     m_FftKCUDA->SetRegions(kreg);
-     m_FftKCUDA->Allocate();
+     this->m_KernelFFTCUDA = CudaFFTOutputImageType::New();
+     this->m_KernelFFTCUDA->SetRegions(kreg);
+     this->m_KernelFFTCUDA->Allocate();
 
      // CUFFT scales by the number of element, correct for it in kernel.
      // Also transfer the kernel from the itk::Image to the itk::CudaImage.
      itk::ImageRegionIterator<typename TParentImageFilter::FFTOutputImageType> itKI(this->m_KernelFFT, kreg);
-     itk::ImageRegionIterator<CudaFFTOutputImageType> itKO(m_FftKCUDA, kreg);
+     itk::ImageRegionIterator<CudaFFTOutputImageType> itKO(this->m_KernelFFTCUDA, kreg);
      typename TParentImageFilter::FFTPrecisionType invNPixels;
      invNPixels = 1 / double(paddedImage->GetBufferedRegion().GetNumberOfPixels() );
      while(!itKO.IsAtEnd() )
@@ -138,7 +135,7 @@ CudaFFTConvolutionImageFilter<TParentImageFilter>
   CUDA_fft_convolution(inputDimension,
                        kernelDimension,
                        *(float**)(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),
-                       *(float2**)(m_FftKCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
+                       *(float2**)(this->m_KernelFFTCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 
   // CUDA Cropping and Graft Output
   typedef CudaCropImageFilter CropFilter;

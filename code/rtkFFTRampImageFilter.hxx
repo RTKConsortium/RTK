@@ -42,11 +42,26 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 }
 
+template <class TInputImage, class TOutputImage, class TFFTPrecision>
+void
+FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+::GenerateInputRequestedRegion()
+{
+  this->m_KernelDimension = (m_HannCutFrequencyY == 0.)?1:2;
+  Superclass::GenerateInputRequestedRegion();
+}
+
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::UpdateFFTConvolutionKernel(const SizeType s)
 {
+  if(this->m_KernelFFT.GetPointer() != ITK_NULLPTR && s == this->m_PreviousKernelUpdateSize)
+    {
+    return;
+    }
+  m_PreviousKernelUpdateSize = s;
+
   const int width = s[0];
   const int height = s[1];
 
