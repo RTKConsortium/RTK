@@ -529,7 +529,7 @@ void ProjectionsReader<TOutputImage>
 
     // Conditional median
     MedianRadiusType defaultMedianRadius;
-    defaultMedianRadius.Fill(1);
+    defaultMedianRadius.Fill(0);
     if(m_MedianRadius != defaultMedianRadius)
       {
       if(m_ConditionalMedianFilter.GetPointer() == ITK_NULLPTR)
