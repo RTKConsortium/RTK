@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkremoveaberrantpixels_ggo.h"
+#include "rtkspectraldenoiseprojections_ggo.h"
 #include "rtkMacro.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConditionalMedianImageFilter.h"
@@ -26,16 +26,11 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkremoveaberrantpixels, args_info);
+  GGO(rtkspectraldenoiseprojections, args_info);
 
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
   typedef itk::VectorImage< OutputPixelType, Dimension > OutputImageType;
-
-//  // Projections reader
-//  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
-//  ReaderType::Pointer reader = ReaderType::New();
-//  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkremoveaberrantpixels>(reader, args_info);
 
   // Reader
   typedef itk::ImageFileReader<  OutputImageType > ReaderType;
@@ -45,7 +40,7 @@ int main(int argc, char * argv[])
   // Remove aberrant pixels
   typedef rtk::ConditionalMedianImageFilter<OutputImageType> MedianType;
   MedianType::Pointer median = MedianType::New();
-  median->SetThresholdMultiplier(args_info.threshold_arg);
+  median->SetThresholdMultiplier(args_info.multiplier_arg);
   typename MedianType::MedianRadiusType radius;
   if(args_info.radius_given)
   {
