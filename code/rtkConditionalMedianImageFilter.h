@@ -18,7 +18,7 @@
 #ifndef rtkConditionalMedianImageFilter_h
 #define rtkConditionalMedianImageFilter_h
 
-#include "itkImageToImageFilter.h"
+#include "itkInPlaceImageFilter.h"
 #include <itkConstNeighborhoodIterator.h>
 #include <itkVectorImage.h>
 
@@ -33,6 +33,9 @@ namespace rtk
  * in a neighborhood around each pixel. If the input pixel value is close
  * to the computed median, it is kept unchanged and copied to the output.
  * Otherwise it is replaced by the computed median.
+ * Note that if m_ThresholdMultiplier = 0, this filter behaves like a usual
+ * median filter, and if m_Radius = [0, 0, ..., 0], the image passes through
+ * unchanged.
  *
  * \test TODO
  *
@@ -40,20 +43,20 @@ namespace rtk
  *
  */
 template< typename TInputImage>
-class ConditionalMedianImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
+class ConditionalMedianImageFilter : public itk::InPlaceImageFilter<TInputImage>
 {
 public:
     /** Standard class typedefs. */
-    typedef ConditionalMedianImageFilter                              Self;
-    typedef itk::ImageToImageFilter<TInputImage, TInputImage>         Superclass;
-    typedef itk::SmartPointer< Self >                                 Pointer;
-    typedef typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType   MedianRadiusType;
+    typedef ConditionalMedianImageFilter                                        Self;
+    typedef itk::InPlaceImageFilter<TInputImage>                                Superclass;
+    typedef itk::SmartPointer< Self >                                           Pointer;
+    typedef typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType    MedianRadiusType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ConditionalMedianImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(ConditionalMedianImageFilter, itk::InPlaceImageFilter)
 
     /** Set/Get neighborhood radius */
     itkSetMacro(Radius, MedianRadiusType)
