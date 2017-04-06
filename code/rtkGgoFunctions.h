@@ -204,6 +204,15 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
     upperCrop[i] = args_info.uppercrop_arg[i];
   reader->SetUpperBoundaryCropSize(upperCrop);
 
+  // Conditional median
+  typename TProjectionsReaderType::MedianRadiusType medianRadius;
+  medianRadius.Fill(1);
+  for(unsigned int i=0; i<args_info.radius_given; i++)
+    medianRadius[i] = args_info.radius_arg[i];
+  reader->SetMedianRadius(medianRadius);
+  if(args_info.multiplier_given)
+    reader->SetConditionalMedianThresholdMultiplier(args_info.multiplier_arg);
+
   // Shrink / Binning
   typename TProjectionsReaderType::ShrinkFactorsType binFactors;
   binFactors.Fill(1);
