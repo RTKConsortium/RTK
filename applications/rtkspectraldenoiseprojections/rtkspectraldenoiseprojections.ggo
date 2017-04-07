@@ -1,0 +1,9 @@
+package "rtkspectraldenoiseprojections"
+purpose "Replaces aberrant pixels by the median in a small neighborhood around them. Pixels are aberrant if the difference between their value and the median is larger that threshold multiplier * the standard deviation in the neighborhood"
+
+option "verbose"  v "Verbose execution"                                                                                   flag      off
+option "config"   - "Config file"                                                                                         string    no
+option "input"    i "Input file name"                                                                                    string    yes
+option "output"   o "Output file name"                                                                                    string    yes
+option "multiplier" m "Threshold multiplier (actual threshold is obtained by multiplying by standard dev. of neighborhood)" double no default="1"
+option "radius"    r "Radius of neighborhood in each direction (actual radius is 2r+1)"                                   int     multiple no   default="1"

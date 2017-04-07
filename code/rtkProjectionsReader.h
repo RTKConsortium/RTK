@@ -26,6 +26,7 @@
 
 // RTK
 #include "rtkWaterPrecorrectionImageFilter.h"
+#include "rtkConditionalMedianImageFilter.h"
 
 // Standard lib
 #include <vector>
@@ -56,6 +57,7 @@ namespace rtk
  * ChangeInformation [label="itk::ChangeInformationImageFilter" URL="\ref itk::ChangeInformationImageFilter" style=dashed];
  * Crop [label="itk::CropImageFilter" URL="\ref itk::CropImageFilter" style=dashed];
  * Binning [label="itk::BinShrinkImageFilter" URL="\ref itk::BinShrinkImageFilter" style=dashed];
+ * ConditionalMedian [label="rtk::ConditionalMedianImageFilter" URL="\ref rtk::ConditionalMedianImageFilter" style=dashed];
  * Scatter [label="rtk::BoellaardScatterCorrectionImageFilter" URL="\ref rtk::BoellaardScatterCorrectionImageFilter" style=dashed];
  * I0est [label="rtk::I0EstimationProjectionFilter" URL="\ref rtk::I0EstimationProjectionFilter" style=dashed];
  * BeforeLUT [label="", fixedsize="false", width=0, height=0, shape=none];
@@ -73,8 +75,9 @@ namespace rtk
  * Raw->ChangeInformation [label="Default"]
  * ChangeInformation->Crop
  * Crop->ElektaRaw [label="Elekta"]
- * ElektaRaw->Binning
- * Crop->Binning [label="Default"]
+ * ElektaRaw->ConditionalMedian
+ * Crop->ConditionalMedian[label="Default"]
+ * ConditionalMedian->Binning
  * Binning->Scatter [label="Elekta, Varian, IBA, ushort"]
  * Scatter->I0est [label="Default"]
  * I0est->BeforeLUT
@@ -135,9 +138,10 @@ public:
   typedef typename OutputImageType::PointType      OutputImagePointType;
   typedef typename OutputImageType::SizeType       OutputImageSizeType;
 
-  typedef std::vector<std::string>                                      FileNamesContainer;
-  typedef itk::FixedArray< unsigned int, TOutputImage::ImageDimension > ShrinkFactorsType;
-  typedef std::vector< double >                                         WaterPrecorrectionVectorType;
+  typedef std::vector<std::string>                                                    FileNamesContainer;
+  typedef itk::FixedArray< unsigned int, TOutputImage::ImageDimension >               ShrinkFactorsType;
+  typedef typename rtk::ConditionalMedianImageFilter<TOutputImage>::MedianRadiusType  MedianRadiusType;
+  typedef std::vector< double >                                                       WaterPrecorrectionVectorType;
 
   /** Typdefs of filters of the mini-pipeline that do not depend on the raw
    * data type. */
@@ -182,6 +186,12 @@ public:
   /** Set/Get itk::BinShrinkImageFilter parameters */
   itkSetMacro(ShrinkFactors, ShrinkFactorsType);
   itkGetConstReferenceMacro(ShrinkFactors, ShrinkFactorsType);
+
+  /** Set/Get itk::ConditionalMedianImageFilter parameters */
+  itkSetMacro(MedianRadius, MedianRadiusType);
+  itkGetConstReferenceMacro(MedianRadius, MedianRadiusType);
+  itkGetMacro(ConditionalMedianThresholdMultiplier, double);
+  itkSetMacro(ConditionalMedianThresholdMultiplier, double);
 
   /** Set/Get rtk::BoellaardScatterCorrectionImageFilter */
   itkGetMacro(AirThreshold, double);
@@ -264,6 +274,7 @@ private:
   itk::ProcessObject::Pointer m_ChangeInformationFilter;
   itk::ProcessObject::Pointer m_ElektaRawFilter;
   itk::ProcessObject::Pointer m_CropFilter;
+  itk::ProcessObject::Pointer m_ConditionalMedianFilter;
   itk::ProcessObject::Pointer m_BinningFilter;
   itk::ProcessObject::Pointer m_ScatterFilter;
   itk::ProcessObject::Pointer m_I0EstimationFilter;
@@ -292,11 +303,13 @@ private:
   OutputImageSizeType          m_LowerBoundaryCropSize;
   OutputImageSizeType          m_UpperBoundaryCropSize;
   ShrinkFactorsType            m_ShrinkFactors;
+  MedianRadiusType             m_MedianRadius;
   double                       m_AirThreshold;
   double                       m_ScatterToPrimaryRatio;
   double                       m_NonNegativityConstraintThreshold;
   double                       m_I0;
   double                       m_IDark;
+  double                       m_ConditionalMedianThresholdMultiplier;
   WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
   bool                         m_ComputeLineIntegral;
   unsigned int                 m_VectorComponent;
