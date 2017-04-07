@@ -34,6 +34,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 {
   // Initial lengths, set to incorrect values to make sure that they are indeed updated
   m_NumberOfSpectralBins = 8;
+  m_OutputInverseCramerRaoLowerBound = false;
+  m_OutputFischerMatrix = false;
 }
 
 template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
@@ -165,6 +167,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   // Walk the output projection stack. For each pixel, set the cost function's member variables and run the optimizer.
   itk::ImageRegionIterator<DecomposedProjectionsType> output0It (this->GetOutput(0), outputRegionForThread);
   itk::ImageRegionIterator<DecomposedProjectionsType> output1It (this->GetOutput(1), outputRegionForThread);
+  itk::ImageRegionIterator<DecomposedProjectionsType> output2It (this->GetOutput(2), outputRegionForThread);
   itk::ImageRegionConstIterator<DecomposedProjectionsType> inputIt (this->GetInputDecomposedProjections(), outputRegionForThread);
   itk::ImageRegionConstIterator<MeasuredProjectionsType> spectralProjIt (this->GetInputMeasuredProjections(), outputRegionForThread);
 
@@ -205,12 +208,22 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
       outputPixel[m] = optimizer->GetCurrentPosition()[m];
     output0It.Set(outputPixel);
 
-    // Compute the inverse variance of decomposition noise, and store it into output(1)
-    output1It.Set(cost->GetInverseCramerRaoLowerBound(optimizer->GetCurrentPosition()));
+    // If required, compute the Fischer matrix
+    if (m_OutputInverseCramerRaoLowerBound || m_OutputFischerMatrix)
+      cost->ComputeFischerMatrix(optimizer->GetCurrentPosition());
+
+    // If requested, compute the inverse variance of decomposition noise, and store it into output(1)
+    if (m_OutputInverseCramerRaoLowerBound)
+      output1It.Set(cost->GetInverseCramerRaoLowerBound());
+
+    // If requested, store the Fischer matrix into output(2)
+    if (m_OutputFischerMatrix)
+      output2It.Set(cost->GetFischerMatrix());
 
     // Move forward
     ++output0It;
     ++output1It;
+    ++output2It;
     ++inputIt;
     ++spectralProjIt;
     ++spectrumIt;
