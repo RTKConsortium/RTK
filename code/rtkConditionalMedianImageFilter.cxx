@@ -63,7 +63,7 @@ while(!outIt.IsAtEnd())
     std::nth_element( pixels[mat].begin(), pixels[mat].begin() + pixels[mat].size()/2, pixels[mat].end() );
 
     // If the pixel value is too far from the median, replace it by the median
-    if(std::abs(pixels[mat][pixels[mat].size()/2] - nIt.GetCenterPixel()[mat]) > (m_ThresholdMultiplier * stdev) )
+    if(fabs(pixels[mat][pixels[mat].size()/2] - nIt.GetCenterPixel()[mat]) > (m_ThresholdMultiplier * stdev) )
       vlv[mat] = pixels[mat][pixels[mat].size()/2];
     else // Otherwise, leave it as is
       vlv[mat] = nIt.GetCenterPixel()[mat];
