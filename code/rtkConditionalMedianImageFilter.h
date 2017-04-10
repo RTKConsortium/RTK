@@ -87,7 +87,7 @@ private:
 template <>
 void
 rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
-::ThreadedGenerateData(const typename itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
 
 } //namespace RTK
 

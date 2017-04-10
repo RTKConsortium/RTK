@@ -98,7 +98,7 @@ ConditionalMedianImageFilter< TInputImage >
     std::nth_element( pixels.begin(), pixels.begin() + pixels.size()/2, pixels.end() );
 
     // If the pixel value is too far from the median, replace it by the median
-    if(fabs(pixels[pixels.size()/2] - nIt.GetCenterPixel()) > (m_ThresholdMultiplier * stdev) )
+    if(vnl_math_abs(pixels[pixels.size()/2] - nIt.GetCenterPixel()) > (m_ThresholdMultiplier * stdev) )
       outIt.Set(pixels[pixels.size()/2]);
     else // Otherwise, leave it as is
       outIt.Set(nIt.GetCenterPixel());
