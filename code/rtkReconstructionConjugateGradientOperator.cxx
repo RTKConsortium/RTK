@@ -41,9 +41,6 @@ m_ConstantVolumeSource = ConstantSourceType::New();
 //m_LaplacianFilter = LaplacianFilterType::New();
 #endif
 m_MatrixVectorMultiplyFilter = MatrixVectorMultiplyFilterType::New();
-//m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
-//m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
-m_MultiplySupportMaskFilter = MultiplyFilterType::New();
 m_MultiplyTikhonovFilter = MultiplyFilterType::New();
 m_AddTikhonovFilter = AddFilterType::New();
 
@@ -76,6 +73,9 @@ ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<
   // Set the first multiply filter to use the Support Mask, if any
   if (this->GetSupportMask().IsNotNull())
     {
+    m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
+    m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
+
     m_MultiplyInputVolumeFilter->SetInput1( m_FloatingInputPointer );
     m_MultiplyInputVolumeFilter->SetInput2( this->GetSupportMask() );
     m_FloatingInputPointer = m_MultiplyInputVolumeFilter->GetOutput();

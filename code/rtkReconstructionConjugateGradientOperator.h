@@ -189,7 +189,6 @@ protected:
   typename AddFilterType::Pointer                   m_AddLaplacianFilter;
   typename AddFilterType::Pointer                   m_AddTikhonovFilter;
   typename LaplacianFilterType::Pointer             m_LaplacianFilter;
-  typename MultiplyFilterType::Pointer              m_MultiplySupportMaskFilter;
   typename MatrixVectorMultiplyFilterType::Pointer  m_MatrixVectorMultiplyFilter;
 
   /** Member attributes */
