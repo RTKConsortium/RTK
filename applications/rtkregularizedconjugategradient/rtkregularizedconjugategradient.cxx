@@ -133,12 +133,9 @@ int main(int argc, char * argv[])
     regularizedConjugateGradient->SetPerformPositivity(true);
 
   if (args_info.gammalaplacian_given)
-    {
-    regularizedConjugateGradient->SetRegularizedCG(true);
     regularizedConjugateGradient->SetGamma(args_info.gammalaplacian_arg);
-    }
-  else
-    regularizedConjugateGradient->SetRegularizedCG(false);
+  if (args_info.tikhonov_given)
+    regularizedConjugateGradient->SetTikhonov(args_info.tikhonov_arg);
 
   // Spatial TV
   if (args_info.gammatv_given)

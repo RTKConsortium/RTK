@@ -28,8 +28,8 @@ template< typename TOutputImage, typename TSingleComponentImage>
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
 ::ReconstructionConjugateGradientOperator():
   m_Geometry(ITK_NULLPTR),
-  m_Regularized(false),
-  m_Gamma(0)
+  m_Gamma(0),
+  m_Tikhonov(0)
 {
   this->SetNumberOfRequiredInputs(3);
 
@@ -46,9 +46,11 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
-  m_AddFilter = AddFilterType::New();
+  m_AddLaplacianFilter = AddFilterType::New();
+  m_AddTikhonovFilter = AddFilterType::New();
 
   m_MultiplyLaplacianFilter = MultiplyFilterType::New();
+  m_MultiplyTikhonovFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
   m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -163,8 +165,8 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
   m_BackProjectionFilter->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
   m_FloatingOutputPointer= m_BackProjectionFilter->GetOutput();
 
-  // Set the filters to compute the regularization, if any
-  if (m_Regularized)
+  // Set the filters to compute the laplacian regularization, if any
+  if (m_Gamma != 0)
     {
     m_LaplacianFilter->SetInput(m_FloatingInputPointer);
     m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
@@ -172,10 +174,22 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
     // for correctly applying quadratic regularization || grad f ||_2^2
     m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
 
-    m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
-    m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
+    m_AddLaplacianFilter->SetInput(0, m_BackProjectionFilter->GetOutput());
+    m_AddLaplacianFilter->SetInput(1, m_MultiplyLaplacianFilter->GetOutput());
 
-    m_FloatingOutputPointer= m_AddFilter->GetOutput();
+    m_FloatingOutputPointer= m_AddLaplacianFilter->GetOutput();
+    }
+
+  // Set the filters to compute the Tikhonov regularization, if any
+  if (m_Tikhonov != 0)
+    {
+    m_MultiplyTikhonovFilter->SetInput(m_FloatingInputPointer);
+    m_MultiplyTikhonovFilter->SetConstant2(m_Tikhonov);
+
+    m_AddTikhonovFilter->SetInput(0, m_MultiplyTikhonovFilter->GetOutput());
+    m_AddTikhonovFilter->SetInput(1, m_FloatingOutputPointer);
+
+    m_FloatingOutputPointer= m_AddTikhonovFilter->GetOutput();
     }
 
   // Set the second multiply filter to use the Support Mask, if any
@@ -195,7 +209,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
   m_ForwardProjectionFilter->SetInPlace(true);
   m_ForwardProjectionFilter->ReleaseDataFlagOn();
   m_BackProjectionFilter->SetInPlace(true);
-  m_BackProjectionFilter->SetReleaseDataFlag(this->GetSupportMask().IsNotNull() || m_Regularized);
+  m_BackProjectionFilter->SetReleaseDataFlag(this->GetSupportMask().IsNotNull() || (m_Gamma != 0) || (m_Tikhonov != 0));
 
   // Update output information on the last filter of the pipeline
   m_FloatingOutputPointer->UpdateOutputInformation();

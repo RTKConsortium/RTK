@@ -35,6 +35,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 //  m_IterationCosts=false;
 
   m_Gamma = 0;
+  m_Tikhonov = 0;
   m_Regularized = false;
   m_CudaConjugateGradient = true;
   m_DisableDisplacedDetectorFilter = false;
@@ -200,8 +201,8 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
-  m_CGOperator->SetRegularized(m_Regularized);
   m_CGOperator->SetGamma(m_Gamma);
+  m_CGOperator->SetTikhonov(m_Tikhonov);
 
   // Set memory management parameters
   m_MultiplyProjectionsFilter->ReleaseDataFlagOn();

@@ -165,8 +165,8 @@ public:
 
     /** If Regularized, perform laplacian-based regularization during
      *  reconstruction (gamma is the strength of the regularization) */
-    itkSetMacro(Regularized, bool)
-    itkGetMacro(Regularized, bool)
+    itkSetMacro(Tikhonov, float)
+    itkGetMacro(Tikhonov, float)
     itkSetMacro(Gamma, float)
     itkGetMacro(Gamma, float)
 
@@ -215,6 +215,7 @@ private:
 
     int                          m_NumberOfIterations;
     float                        m_Gamma;
+    float                        m_Tikhonov;
     bool                         m_MeasureExecutionTimes;
 //    bool                         m_IterationCosts;
     bool                         m_Regularized;

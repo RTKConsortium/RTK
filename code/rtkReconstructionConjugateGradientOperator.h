@@ -45,7 +45,7 @@ namespace rtk
    *
    * This filter implements the operator A used in the conjugate gradient reconstruction method,
    * which attempts to find the f that minimizes
-   * || sqrt(D) (Rf -p) ||_2^2 + gamma || grad f ||_2^2,
+   * || sqrt(D) (Rf -p) ||_2^2 + gamma || grad f ||_2^2 + Tikhonov || f ||_2^2,
    * with R the forward projection operator,
    * p the measured projections, and D the displaced detector weighting operator.
    *
@@ -56,8 +56,7 @@ namespace rtk
    * at a time), and ConjugateGradient a conjugate gradient method
    * (projects and back projects all projections together).
    *
-   * This filter takes in input f and outputs R_t D R f + gamma Laplacian f
-   * If m_Regularized is false (default), regularization is ignored, and gamma is considered null 
+   * This filter takes in input f and outputs R_t D R f + gamma Laplacian f + Tikhonov f
    *
    * \dot
    * digraph ReconstructionConjugateGradientOperator {
@@ -83,9 +82,12 @@ namespace rtk
    * MultiplyOutput [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
    * Laplacian [ label="rtk::LaplacianImageFilter" URL="\ref rtk::LaplacianImageFilter"];
    * MultiplyLaplacian [ label="itk::MultiplyImageFilter (by gamma)" URL="\ref itk::MultiplyImageFilter"];
-   * Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+   * MultiplyTikhonov [ label="itk::MultiplyImageFilter (by Tikhonov parameter)" URL="\ref itk::MultiplyImageFilter"];
+   * AddLaplacian [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+   * AddTikhonov [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    *
    * Input0 -> MultiplyInput;
+   * MultiplyInput -> MultiplyTikhonov;
    * Input3 -> MultiplyInput;
    * MultiplyInput -> ForwardProjection;
    * ConstantProjectionsSource -> ForwardProjection;
@@ -93,12 +95,14 @@ namespace rtk
    * ForwardProjection -> Multiply;
    * Input2 -> Multiply;
    * Multiply -> BackProjection;
-   * BackProjection -> Add;
+   * BackProjection -> AddLaplacian;
    * Input3 -> MultiplyOutput;
    * MultiplyInput -> Laplacian;
    * Laplacian -> MultiplyLaplacian;
-   * MultiplyLaplacian -> Add;
-   * Add -> MultiplyOutput;
+   * MultiplyLaplacian -> AddLaplacian;
+   * AddLaplacian -> AddTikhonov;
+   * MultiplyTikhonov -> AddTikhonov;
+   * AddTikhonov -> MultiplyOutput;
    * MultiplyOutput -> Output;
    * }
    * \enddot
@@ -157,13 +161,12 @@ public:
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
-  
-  /** If Regularized, perform laplacian-based regularization during 
-  *  reconstruction (gamma is the strength of the regularization) */
-  itkSetMacro(Regularized, bool)
-  itkGetMacro(Regularized, bool)
+
+  /** Set/Get macros for the regularization parameters */
   itkSetMacro(Gamma, float)
   itkGetMacro(Gamma, float)
+  itkSetMacro(Tikhonov, float)
+  itkGetMacro(Tikhonov, float)
 
 protected:
   ReconstructionConjugateGradientOperator();
@@ -173,8 +176,8 @@ protected:
   void GenerateData() ITK_OVERRIDE;
 
   /** Member pointers to the filters used internally (for convenience)*/
-  BackProjectionFilterPointer            m_BackProjectionFilter;
-  ForwardProjectionFilterPointer         m_ForwardProjectionFilter;
+  BackProjectionFilterPointer                       m_BackProjectionFilter;
+  ForwardProjectionFilterPointer                    m_ForwardProjectionFilter;
 
   typename ConstantSourceType::Pointer              m_ConstantProjectionsSource;
   typename ConstantSourceType::Pointer              m_ConstantVolumeSource;
@@ -182,15 +185,17 @@ protected:
   typename MultiplyFilterType::Pointer              m_MultiplyOutputVolumeFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyInputVolumeFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyLaplacianFilter;
-  typename AddFilterType::Pointer                   m_AddFilter;
+  typename MultiplyFilterType::Pointer              m_MultiplyTikhonovFilter;
+  typename AddFilterType::Pointer                   m_AddLaplacianFilter;
+  typename AddFilterType::Pointer                   m_AddTikhonovFilter;
   typename LaplacianFilterType::Pointer             m_LaplacianFilter;
   typename MultiplyFilterType::Pointer              m_MultiplySupportMaskFilter;
   typename MatrixVectorMultiplyFilterType::Pointer  m_MatrixVectorMultiplyFilter;
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
-  bool                                              m_Regularized;
-  float                                             m_Gamma; //Strength of the regularization
+  float                                             m_Gamma; //Strength of the laplacian regularization
+  float                                             m_Tikhonov; //Strength of the Tikhonov regularization
 
   /** Pointers to intermediate images, used to simplify complex branching */
   typename TOutputImage::Pointer                    m_FloatingInputPointer, m_FloatingOutputPointer;
