@@ -84,7 +84,7 @@ namespace rtk
  * BeforeLUT->LUT [label="ComputeLineIntegral\n(default)"]
  * BeforeLUT->Cast
  * LUT->WPC
- * Scatter->BeforeVarian [label="Varian"]
+ * I0est->BeforeVarian [label="Varian"]
  * BeforeVarian->Varian [label="ComputeLineIntegral\n(default)"]
  * BeforeVarian->Cast
  * Varian->WPC

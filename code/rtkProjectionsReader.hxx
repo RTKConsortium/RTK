@@ -254,6 +254,11 @@ void ProjectionsReader<TOutputImage>
       typename ScatterFilterType::Pointer scatter = ScatterFilterType::New();
       m_ScatterFilter = scatter;
 
+      // I0 estimation filter (shunt from pipeline by default)
+      typedef rtk::I0EstimationProjectionFilter<InputImageType, InputImageType> I0EstimationFilterType;
+      typename I0EstimationFilterType::Pointer i0est = I0EstimationFilterType::New();
+      m_I0EstimationFilter = i0est;
+
       // Convert raw to Projections
       typedef rtk::VarianObiRawImageFilter<InputImageType, OutputImageType> RawFilterType;
       typename RawFilterType::Pointer rawFilter = RawFilterType::New();
@@ -672,23 +677,41 @@ template <class TOutputImage>
 void ProjectionsReader<TOutputImage>
 ::PropagateI0(itk::ImageBase<OutputImageDimension> **nextInputBase)
 {
-  typedef itk::Image<unsigned short, OutputImageDimension> InputImageType;
-  InputImageType *nextInput = dynamic_cast<InputImageType*>(*nextInputBase);
-  assert(nextInput != ITK_NULLPTR);
-  if(m_I0==0)
+  typedef itk::Image<unsigned short, OutputImageDimension> UnsignedShortImageType;
+  UnsignedShortImageType *nextInputUShort = dynamic_cast<UnsignedShortImageType*>(*nextInputBase);
+  if(nextInputUShort != ITK_NULLPTR)
     {
-    typedef rtk::I0EstimationProjectionFilter< InputImageType, InputImageType > I0EstimationType;
-    I0EstimationType *i0est = dynamic_cast<I0EstimationType*>(m_I0EstimationFilter.GetPointer());
-    assert(i0est != ITK_NULLPTR);
-    i0est->SetInput(nextInput);
-    *nextInputBase = i0est->GetOutput();
+    if(m_I0==0)
+      {
+      typedef rtk::I0EstimationProjectionFilter< UnsignedShortImageType, UnsignedShortImageType > I0EstimationType;
+      I0EstimationType *i0est = dynamic_cast<I0EstimationType*>(m_I0EstimationFilter.GetPointer());
+      assert(i0est != ITK_NULLPTR);
+      i0est->SetInput(nextInputUShort);
+      *nextInputBase = i0est->GetOutput();
+      }
+    typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter< UnsignedShortImageType, OutputImageType > I0Type;
+    I0Type *i0 = dynamic_cast<I0Type*>(m_RawToAttenuationFilter.GetPointer());
+    i0->SetI0(m_I0);
+    i0->SetIDark(m_IDark);
     }
 
-  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter< InputImageType, OutputImageType > I0Type;
-  I0Type *i0 = dynamic_cast<I0Type*>(m_RawToAttenuationFilter.GetPointer());
-  assert(i0 != ITK_NULLPTR);
-  i0->SetI0(m_I0);
-  i0->SetIDark(m_IDark);
+  typedef itk::Image<unsigned int, OutputImageDimension> UnsignedIntImageType;
+  UnsignedIntImageType *nextInputUInt = dynamic_cast<UnsignedIntImageType*>(*nextInputBase);
+  if(nextInputUInt != ITK_NULLPTR)
+    {
+    if(m_I0==0)
+      {
+      typedef rtk::I0EstimationProjectionFilter< UnsignedIntImageType, UnsignedIntImageType > I0EstimationType;
+      I0EstimationType *i0est = dynamic_cast<I0EstimationType*>(m_I0EstimationFilter.GetPointer());
+      assert(i0est != ITK_NULLPTR);
+      i0est->SetInput(nextInputUInt);
+      *nextInputBase = i0est->GetOutput();
+      }
+    typedef rtk::VarianObiRawImageFilter<UnsignedIntImageType, OutputImageType> I0Type;
+    I0Type *i0 = dynamic_cast<I0Type*>(m_RawToAttenuationFilter.GetPointer());
+    i0->SetI0(m_I0);
+    i0->SetIDark(m_IDark);
+    }
   // Pipeline connection for m_RawToAttenuationFilter is done after the call to this function
 }
 
