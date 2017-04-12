@@ -129,6 +129,7 @@ ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
   m_CGOperator->SetGamma(m_Gamma);
+  m_CGOperator->SetTikhonov(m_Tikhonov);
 
   // Set memory management parameters
   m_MatrixVectorMultiplyFilter->ReleaseDataFlagOn();
