@@ -33,7 +33,7 @@ itk::ConstNeighborhoodIterator<TInputImage> nIt(m_Radius, this->GetInput(), outp
 itk::ImageRegionIterator<TInputImage> outIt(this->GetOutput(), outputRegionForThread);
 
 // Build a vector in which all pixel of the neighborhood will be temporarily stored
-std::vector< std::vector< typename TInputImage::InternalPixelType > > pixels;
+std::vector< std::vector< TInputImage::InternalPixelType > > pixels;
 pixels.resize(this->GetInput()->GetVectorLength());
 for (unsigned int mat = 0; mat<pixels.size(); mat++)
   pixels[mat].resize(nIt.Size());
