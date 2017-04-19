@@ -7,8 +7,8 @@ set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
 set(dashboard_binary_name "RTK_lin64_gcc472_cuda40_itk4")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64_gcc_472")
 set(ENV{CUDA_BIN_PATH} "/home/srit/Download/cuda40/bin")
-set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia")
-set(CTEST_BUILD_FLAGS -j8)
+set(ENV{CUDA_LIB_PATH} "/usr/lib64")
+set(CTEST_BUILD_FLAGS -j12)
 
 set(ENV{CC} "/home/srit/src/gcc/gcc472-install/bin/gcc")
 set(ENV{CXX} "/home/srit/src/gcc/gcc472-install/bin/c++")
@@ -22,4 +22,3 @@ set(CONFIGURE_OPTIONS
   )
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
-

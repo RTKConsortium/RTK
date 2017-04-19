@@ -7,17 +7,14 @@ set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
 set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk490")
 set(ENV{ITK_DIR} "/home/srit/src/itk490/lin64-dg/lib/cmake/ITK-4.9")
 set(ENV{CUDA_BIN_PATH} "/usr/bin")
-set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia")
-set(CTEST_BUILD_FLAGS -j8)
+set(ENV{CUDA_LIB_PATH} "/usr/lib64")
+set(CTEST_BUILD_FLAGS -j12)
 
-# OpenCL
-set(ENV{LD_LIBRARY_PATH} "/usr/lib64/nvidia:$ENV{LD_LIBRARY_PATH}")
+set(ENV{LD_LIBRARY_PATH} "/usr/lib64:$ENV{LD_LIBRARY_PATH}")
 set(CONFIGURE_OPTIONS
-   -DOPENCL_LIBRARIES:PATH=/usr/lib64/nvidia/libOpenCL.so.1
-   -DOPENCL_INCLUDE_DIRS:PATH=/usr/include
    -DRTK_USE_CUDA:BOOL=ON
    -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/libcuda.so
-   -DRTK_USE_OPENCL:BOOL=ON
+   -DCUDA_NVCC_FLAGS:STRING=-std=c++11
   )
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
