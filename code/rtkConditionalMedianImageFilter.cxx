@@ -18,9 +18,6 @@
 
 #include "rtkConditionalMedianImageFilter.h"
 
-namespace rtk
-{
-
 template <>
 void
 rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
@@ -74,5 +71,3 @@ while(!outIt.IsAtEnd())
   ++outIt;
   }
 }
-
-} // end namespace rtk
