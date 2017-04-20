@@ -98,4 +98,3 @@ ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
 #endif
 
 #endif // rtkConditionalMedianImageFilter_h
-
