@@ -98,7 +98,7 @@ public:
 protected:
   ImagXGeometryReader(): m_Geometry(ITK_NULLPTR), m_DetectorOffset(0.f), m_ReadCalibrationFromProjections(false) {};
 
-  ~ImagXGeometryReader() ITK_OVERRIDE {};
+  ~ImagXGeometryReader() {}
 
 
 private:

@@ -96,7 +96,7 @@ public:
 
 protected:
   DrawImageFilter();
-  ~DrawImageFilter() ITK_OVERRIDE {};
+  ~DrawImageFilter() {}
   void ThreadedGenerateData ( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
   TFunction      m_Fillerfunctor;

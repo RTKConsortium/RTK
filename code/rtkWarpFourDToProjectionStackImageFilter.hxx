@@ -120,7 +120,7 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
   bool firstProjectionProcessed = false;
 
   // Process the projections in order
-  for (unsigned int proj = FirstProj; proj < FirstProj+NumberProjs; proj++)
+  for (int proj = FirstProj; proj < FirstProj+NumberProjs; proj++)
     {
     // After the first update, we need to use the output as input.
     if(firstProjectionProcessed)

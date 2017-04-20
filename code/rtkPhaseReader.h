@@ -60,7 +60,7 @@ public:
 protected:
 
     PhaseReader();
-    ~PhaseReader () ITK_OVERRIDE {}
+    ~PhaseReader () {}
 
     /** Print the reader. */
     void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;

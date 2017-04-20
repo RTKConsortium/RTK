@@ -75,7 +75,7 @@ public:
 
 protected:
   DrawCylinderImageFilter();
-  ~DrawCylinderImageFilter() ITK_OVERRIDE {};
+  ~DrawCylinderImageFilter() {}
 
 private:
   DrawCylinderImageFilter(const Self&); //purposely not implemented

@@ -96,7 +96,7 @@ public:
 
 protected:
     SplatWithKnownWeightsImageFilter();
-    ~SplatWithKnownWeightsImageFilter() ITK_OVERRIDE {}
+    ~SplatWithKnownWeightsImageFilter() {}
 
     typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
     typename VolumeType::Pointer GetInputVolume();

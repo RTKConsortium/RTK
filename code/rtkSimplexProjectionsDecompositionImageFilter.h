@@ -99,7 +99,7 @@ public:
 
 protected:
   SimplexProjectionsDecompositionImageFilter();
-  ~SimplexProjectionsDecompositionImageFilter() ITK_OVERRIDE {}
+  ~SimplexProjectionsDecompositionImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

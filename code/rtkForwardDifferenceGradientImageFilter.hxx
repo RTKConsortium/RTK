@@ -230,7 +230,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
     while ( !nit.IsAtEnd() )
       {
-      for ( int i = 0; i < dimsToProcess.size(); ++i )
+      for (std::vector<int>::size_type i = 0; i < dimsToProcess.size(); ++i )
         {
         gradient[i] = SIP(x_slice[dimsToProcess[i]], nit, op[dimsToProcess[i]]);
         }

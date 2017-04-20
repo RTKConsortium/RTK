@@ -88,7 +88,7 @@ public:
 
 protected:
   SubSelectImageFilter();
-  ~SubSelectImageFilter() ITK_OVERRIDE {}
+  ~SubSelectImageFilter() {}
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

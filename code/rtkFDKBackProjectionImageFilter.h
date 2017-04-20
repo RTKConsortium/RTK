@@ -59,7 +59,7 @@ public:
 
 protected:
   FDKBackProjectionImageFilter() {};
-  ~FDKBackProjectionImageFilter() ITK_OVERRIDE {};
+  ~FDKBackProjectionImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

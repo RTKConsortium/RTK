@@ -80,7 +80,7 @@ public:
 protected:
   OraGeometryReader(): m_Geometry(ITK_NULLPTR) {};
 
-  ~OraGeometryReader() ITK_OVERRIDE {};
+  ~OraGeometryReader() {}
 
   PointType ReadPointFromString(std::string s);
   Matrix3x3Type ReadMatrix3x3FromString(std::string s);

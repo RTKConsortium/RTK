@@ -62,7 +62,7 @@ public:
 
 protected:
   RayCastInterpolatorForwardProjectionImageFilter() {}
-  ~RayCastInterpolatorForwardProjectionImageFilter() ITK_OVERRIDE {}
+  ~RayCastInterpolatorForwardProjectionImageFilter() {}
 
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 

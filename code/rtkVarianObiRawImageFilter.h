@@ -27,7 +27,7 @@
 
 namespace rtk
 {
-  
+
 namespace Function {  
   
 /** \class ObiAttenuation
@@ -94,8 +94,8 @@ public:
                itk::UnaryFunctorImageFilter);
 
 protected:
-  VarianObiRawImageFilter() {}
-  ~VarianObiRawImageFilter() ITK_OVERRIDE {}
+  VarianObiRawImageFilter();
+  ~VarianObiRawImageFilter() {}
 
 private:
   VarianObiRawImageFilter(const Self&); //purposely not implemented

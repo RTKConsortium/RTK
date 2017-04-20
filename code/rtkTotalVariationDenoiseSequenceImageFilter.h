@@ -113,7 +113,7 @@ public:
 
 protected:
     TotalVariationDenoiseSequenceImageFilter();
-    ~TotalVariationDenoiseSequenceImageFilter() ITK_OVERRIDE {}
+    ~TotalVariationDenoiseSequenceImageFilter() {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

@@ -156,7 +156,7 @@ public:
 
 protected:
     ProjectionStackToFourDImageFilter();
-    ~ProjectionStackToFourDImageFilter() ITK_OVERRIDE {}
+    ~ProjectionStackToFourDImageFilter() {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

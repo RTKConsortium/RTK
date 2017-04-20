@@ -156,7 +156,7 @@ public:
 
 protected:
   DrawCubeImageFilter();
-  ~DrawCubeImageFilter() ITK_OVERRIDE {};
+  ~DrawCubeImageFilter() {}
 
 private:
   DrawCubeImageFilter ( const Self& ); //purposely not implemented

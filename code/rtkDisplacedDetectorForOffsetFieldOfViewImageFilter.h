@@ -65,8 +65,7 @@ public:
 
 protected:
   DisplacedDetectorForOffsetFieldOfViewImageFilter();
-  ~DisplacedDetectorForOffsetFieldOfViewImageFilter() ITK_OVERRIDE {
-  }
+  ~DisplacedDetectorForOffsetFieldOfViewImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

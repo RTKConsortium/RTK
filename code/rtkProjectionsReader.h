@@ -244,7 +244,7 @@ public:
 
 protected:
   ProjectionsReader();
-  ~ProjectionsReader() ITK_OVERRIDE {};
+  ~ProjectionsReader() {}
   void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
   /** Does the real work. */

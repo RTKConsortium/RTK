@@ -72,8 +72,7 @@ public:
 protected:
   ReorderProjectionsImageFilter();
 
-  ~ReorderProjectionsImageFilter() ITK_OVERRIDE {
-  }
+  ~ReorderProjectionsImageFilter() {}
 
   void GenerateData() ITK_OVERRIDE;
 

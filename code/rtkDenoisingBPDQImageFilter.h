@@ -75,7 +75,7 @@ public:
 
 protected:
   DenoisingBPDQImageFilter();
-  ~DenoisingBPDQImageFilter() ITK_OVERRIDE {}
+  ~DenoisingBPDQImageFilter() {}
 
   void GenerateData() ITK_OVERRIDE;
 

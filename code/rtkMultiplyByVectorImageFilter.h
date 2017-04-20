@@ -54,7 +54,7 @@ public:
 
 protected:
     MultiplyByVectorImageFilter();
-    ~MultiplyByVectorImageFilter() ITK_OVERRIDE {}
+    ~MultiplyByVectorImageFilter() {}
 
     /** Does the real work. */
     void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
