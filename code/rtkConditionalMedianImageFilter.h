@@ -18,10 +18,11 @@
 #ifndef rtkConditionalMedianImageFilter_h
 #define rtkConditionalMedianImageFilter_h
 
-#include "itkInPlaceImageFilter.h"
+#include <itkInPlaceImageFilter.h>
 #include <itkConstNeighborhoodIterator.h>
 #include <itkVectorImage.h>
 
+#include "rtkWin32Header.h"
 #include "rtkMacro.h"
 
 namespace rtk
@@ -68,7 +69,7 @@ public:
 
 protected:
     ConditionalMedianImageFilter();
-    ~ConditionalMedianImageFilter() ITK_OVERRIDE {}
+    ~ConditionalMedianImageFilter() {}
 
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
@@ -85,15 +86,16 @@ private:
 };
 
 template <>
+RTK_EXPORT
 void
-rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
+ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
 ::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
 
-} //namespace RTK
+} //namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkConditionalMedianImageFilter.hxx"
 #endif
 
-#endif
+#endif // rtkConditionalMedianImageFilter_h
