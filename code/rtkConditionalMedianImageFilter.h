@@ -68,7 +68,7 @@ public:
 
 protected:
     ConditionalMedianImageFilter();
-    ~ConditionalMedianImageFilter() ITK_OVERRIDE {}
+    ~ConditionalMedianImageFilter() {}
 
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
