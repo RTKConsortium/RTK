@@ -18,13 +18,10 @@
 
 #include "rtkConditionalMedianImageFilter.h"
 
-namespace rtk
-{
-
 template <>
 void
 rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
-::ThreadedGenerateData(const typename itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
 typedef itk::VectorImage<float, 3> TInputImage;
 
@@ -33,7 +30,7 @@ itk::ConstNeighborhoodIterator<TInputImage> nIt(m_Radius, this->GetInput(), outp
 itk::ImageRegionIterator<TInputImage> outIt(this->GetOutput(), outputRegionForThread);
 
 // Build a vector in which all pixel of the neighborhood will be temporarily stored
-std::vector< std::vector< typename TInputImage::InternalPixelType > > pixels;
+std::vector< std::vector< TInputImage::InternalPixelType > > pixels;
 pixels.resize(this->GetInput()->GetVectorLength());
 for (unsigned int mat = 0; mat<pixels.size(); mat++)
   pixels[mat].resize(nIt.Size());
@@ -74,5 +71,3 @@ while(!outIt.IsAtEnd())
   ++outIt;
   }
 }
-
-} // end namespace rtk
