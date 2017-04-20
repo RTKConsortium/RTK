@@ -1,12 +1,12 @@
 # client maintainer: simon.rit@creatis.insa-lyon.fr
 set(CTEST_SITE "linux15.dg.creatis.insa-lyon.fr")
-set(CTEST_BUILD_NAME "Linux-64bit-gcc472-cuda40-itk4")
+set(CTEST_BUILD_NAME "Linux-64bit-gcc472-cuda50-itk4")
 set(CTEST_BUILD_CONFIGURATION Release)
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
-set(dashboard_binary_name "RTK_lin64_gcc472_cuda40_itk4")
+set(dashboard_binary_name "RTK_lin64_gcc472_cuda50_itk4")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64_gcc_472")
-set(ENV{CUDA_BIN_PATH} "/home/srit/Download/cuda40/bin")
+set(ENV{CUDA_BIN_PATH} "/home/srit/Download/cuda50/bin")
 set(ENV{CUDA_LIB_PATH} "/usr/lib64")
 set(CTEST_BUILD_FLAGS -j12)
 
