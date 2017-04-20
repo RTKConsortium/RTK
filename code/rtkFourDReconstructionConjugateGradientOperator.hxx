@@ -162,6 +162,9 @@ void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  // Set runtime parameters
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
+
   // Create the interpolation filter and the displaced detector filter
   // (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_InterpolationFilter = InterpolationFilterType::New();
