@@ -13,3 +13,4 @@ option "niterations" n "Number of iterations"                                   
 option "thresholds" t "Lower threshold of bins, expressed in pulse height"                int                          yes multiple                         
 option "weightsmap" w "File name for the output weights map (inverse noise variance)"     string                        no
 option "restarts"   r "Allow random restarts during optimization"                         flag                         off
+option "fischer"     f "File name for the Fischer information matrix"                       string                        no

@@ -33,6 +33,7 @@
 #include "rtkIOFactories.h"
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
 #include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
+#include "rtkConditionalMedianImageFilter.h"
 
 // Varian Obi includes
 #include "rtkHndImageIOFactory.h"
@@ -109,6 +110,7 @@ ProjectionsReader<TOutputImage>
   m_NonNegativityConstraintThreshold( itk::NumericTraits<double>::NonpositiveMin() ),
   m_I0( itk::NumericTraits<double>::NonpositiveMin() ),
   m_IDark( 0. ),
+  m_ConditionalMedianThresholdMultiplier( 1. ),
   m_ComputeLineIntegral(true),
   m_VectorComponent(0)
 {
@@ -123,6 +125,7 @@ ProjectionsReader<TOutputImage>
   m_LowerBoundaryCropSize.Fill(0);
   m_UpperBoundaryCropSize.Fill(0);
   m_ShrinkFactors.Fill(1);
+  m_MedianRadius.Fill(0);
 }
 
 //--------------------------------------------------------------------
@@ -165,6 +168,7 @@ void ProjectionsReader<TOutputImage>
     m_ChangeInformationFilter = ITK_NULLPTR;
     m_ElektaRawFilter = ITK_NULLPTR;
     m_CropFilter = ITK_NULLPTR;
+    m_ConditionalMedianFilter = ITK_NULLPTR;
     m_BinningFilter = ITK_NULLPTR;
     m_ScatterFilter = ITK_NULLPTR;
     m_I0EstimationFilter = ITK_NULLPTR;
@@ -238,6 +242,11 @@ void ProjectionsReader<TOutputImage>
       typename CropType::Pointer crop = CropType::New();
       m_CropFilter = crop;
 
+      // Conditional median
+      typedef rtk::ConditionalMedianImageFilter< InputImageType > ConditionalMedianType;
+      typename ConditionalMedianType::Pointer cond = ConditionalMedianType::New();
+      m_ConditionalMedianFilter = cond;
+
       // Bin
       typedef itk::BinShrinkImageFilter< InputImageType, InputImageType > BinType;
       typename BinType::Pointer bin = BinType::New();
@@ -300,6 +309,11 @@ void ProjectionsReader<TOutputImage>
         if( m_I0 == itk::NumericTraits<double>::NonpositiveMin() )
           m_I0 = 65536;
         }
+
+      // Conditional median
+      typedef rtk::ConditionalMedianImageFilter< InputImageType > ConditionalMedianType;
+      typename ConditionalMedianType::Pointer cond = ConditionalMedianType::New();
+      m_ConditionalMedianFilter = cond;
 
       // Bin
       typedef itk::BinShrinkImageFilter< InputImageType, InputImageType > BinType;
@@ -372,6 +386,11 @@ void ProjectionsReader<TOutputImage>
       typedef itk::CropImageFilter< OutputImageType, OutputImageType > CropType;
       typename CropType::Pointer crop = CropType::New();
       m_CropFilter = crop;
+
+      // Conditional median
+      typedef rtk::ConditionalMedianImageFilter< OutputImageType > ConditionalMedianType;
+      typename ConditionalMedianType::Pointer cond = ConditionalMedianType::New();
+      m_ConditionalMedianFilter = cond;
 
       // Bin
       typedef itk::BinShrinkImageFilter< OutputImageType, OutputImageType > BinType;
@@ -513,6 +532,27 @@ void ProjectionsReader<TOutputImage>
     ConnectElektaRawFilter(&nextInputBase);
     nextInput = dynamic_cast<TInputImage *>(nextInputBase);
     assert(nextInput != ITK_NULLPTR);
+
+    // Conditional median
+    MedianRadiusType defaultMedianRadius;
+    defaultMedianRadius.Fill(0);
+    if(m_MedianRadius != defaultMedianRadius)
+      {
+      if(m_ConditionalMedianFilter.GetPointer() == ITK_NULLPTR)
+        {
+          itkGenericExceptionMacro(<< "Can not apply conditional median filter on this input (not implemented)");
+        }
+      else
+        {
+        typedef rtk::ConditionalMedianImageFilter< TInputImage > ConditionalMedianType;
+        ConditionalMedianType *cond = dynamic_cast<ConditionalMedianType*>(m_ConditionalMedianFilter.GetPointer());
+        assert(cond != ITK_NULLPTR);
+        cond->SetRadius(m_MedianRadius);
+        cond->SetInput(nextInput);
+        cond->SetThresholdMultiplier(m_ConditionalMedianThresholdMultiplier);
+        nextInput = cond->GetOutput();
+        }
+      }
 
     // Binning
     ShrinkFactorsType defaultShrinkFactors;
