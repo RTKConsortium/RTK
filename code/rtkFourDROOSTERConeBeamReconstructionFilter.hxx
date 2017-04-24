@@ -547,6 +547,15 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       currentDownstreamFilter = m_WaveletsDenoisingSpace;
       }  
     
+    if (m_PerformTNVDenoising)
+      {
+      m_TNVDenoisingProbe.Start();
+      m_TNVDenoising->Update();
+      m_TNVDenoisingProbe.Stop();
+
+      currentDownstreamFilter = m_TNVDenoising;
+      }
+
     if (m_PerformWarping)
       {
       m_WarpingProbe.Start();
