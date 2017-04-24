@@ -49,6 +49,7 @@ __constant__ float c_radius;
 __constant__ float c_translatedProjectionIndexTransformMatrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_translatedVolumeTransformMatrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_sourcePos[SLAB_SIZE * 3]; //Can process stacks of at most SLAB_SIZE projections
+__constant__ bool c_normalize;
 
 //__constant__ float3 spacingSquare;  // inverse view matrix
 
@@ -115,7 +116,7 @@ void splat3D(float toSplat,
 
 // KERNEL normalize
 __global__
-void kernel_normalize_and_add_to_output(float * dev_vol_in, float * dev_vol_out, float * dev_accumulate_weights, float * dev_accumulate_values, bool normalize)
+void kernel_normalize_and_add_to_output(float * dev_vol_in, float * dev_vol_out, float * dev_accumulate_weights, float * dev_accumulate_values)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -132,11 +133,13 @@ void kernel_normalize_and_add_to_output(float * dev_vol_in, float * dev_vol_out,
   float eps = 1e-6;
 
   // Divide the output volume's voxels by the accumulated splat weights
-  // unless the accumulated splat weights are equal to zero
-  if (normalize)
+//   unless the accumulated splat weights are equal to zero
+  if (c_normalize)
     {
     if (abs(dev_accumulate_weights[out_idx]) > eps)
-      dev_vol_out[out_idx] += (dev_accumulate_values[out_idx] / dev_accumulate_weights[out_idx]);
+      dev_vol_out[out_idx] = dev_vol_in[out_idx] + (dev_accumulate_values[out_idx] / dev_accumulate_weights[out_idx]);
+    else
+      dev_vol_out[out_idx] = dev_vol_in[out_idx];
     }
   else
     dev_vol_out[out_idx] = dev_vol_in[out_idx] + dev_accumulate_values[out_idx];
@@ -260,6 +263,7 @@ CUDA_ray_cast_back_project( int projSize[3],
   cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
   cudaMemcpyToSymbol(c_radius, &radiusCylindricalDetector, sizeof(float));
+  cudaMemcpyToSymbol(c_normalize, &normalize, sizeof(bool));
 
   // Copy the source position matrix into a float3 in constant memory
   cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projSize[2]);
@@ -293,7 +297,7 @@ CUDA_ray_cast_back_project( int projSize[3],
   dim3 dimBlockVol = dim3(16, 4, 4);
   dim3 dimGridVol = dim3(iDivUp(volSize[0], dimBlockVol.x), iDivUp(volSize[1], dimBlockVol.y), iDivUp(volSize[2], dimBlockVol.z));
 
-  kernel_normalize_and_add_to_output <<< dimGridVol, dimBlockVol >>> ( dev_vol_in, dev_vol_out, dev_accumulate_weights, dev_accumulate_values, normalize);
+  kernel_normalize_and_add_to_output <<< dimGridVol, dimBlockVol >>> ( dev_vol_in, dev_vol_out, dev_accumulate_weights, dev_accumulate_values);
 
   CUDA_CHECK_ERROR;
 
