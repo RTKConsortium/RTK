@@ -58,6 +58,7 @@ public:
   typedef Superclass::MaterialAttenuationsType  MaterialAttenuationsType;
   typedef Superclass::MeasuredDataType          MeasuredDataType;
   typedef Superclass::IncidentSpectrumType      IncidentSpectrumType;
+  typedef itk::VariableSizeMatrix<double>       MeanAttenuationInBinType;
 
   // Constructor
   Schlomka2008NegativeLogLikelihood()
@@ -68,6 +69,49 @@ public:
   // Destructor
   ~Schlomka2008NegativeLogLikelihood()
   {
+  }
+
+  itk::VariableLengthVector<double> GuessInitialization() const
+  {
+  itk::VariableLengthVector<double> initialGuess;
+  initialGuess.SetSize(m_NumberOfMaterials);
+  std::vector<double> lengthEstimates;
+  for (unsigned int mat = 0; mat<m_NumberOfMaterials; mat++)
+    {
+    lengthEstimates.clear();
+    for (unsigned int bin = 0; bin<m_NumberOfSpectralBins; bin++)
+      {
+      // Compute the length of current material required to obtain the attenuation
+      // observed in current bin
+      lengthEstimates.push_back(this->BinwiseLogTransform()[bin] / m_MeanAttenuationInBin[mat][bin]);
+      }
+
+    // Compute the smallest length over all bins
+    initialGuess[mat] = *std::min_element(std::begin(lengthEstimates), std::end(lengthEstimates));
+    }
+  return initialGuess;
+  }
+
+  itk::VariableLengthVector<double> BinwiseLogTransform() const
+  {
+  // Multiply input spectrum by detector response
+  // to obtain the binned spectrum as seen by the detector
+  vnl_vector<double> vnl_spectrum(m_IncidentSpectrum.GetDataPointer(), m_IncidentSpectrum.GetSize());
+  vnl_vector<double> vnl_spectrumAsSeenByDetector = m_DetectorResponse.GetVnlMatrix() * vnl_spectrum;
+  itk::VariableLengthVector<double> logTransforms;
+  logTransforms.SetSize(m_NumberOfSpectralBins);
+
+  for (unsigned int i=0; i<m_MeasuredData.GetSize(); i++)
+    {
+    // Divide by the actually measured photon counts
+    if (m_MeasuredData[i] > 0)
+      vnl_spectrumAsSeenByDetector[i] /= m_MeasuredData[i];
+
+    // Apply log
+    logTransforms[i] = log(vnl_spectrumAsSeenByDetector[i]);
+    }
+
+  return logTransforms;
   }
 
   vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE
@@ -175,12 +219,6 @@ public:
   return measure;
   }
 
-  itkSetMacro(IncidentSpectrum, IncidentSpectrumType)
-  itkGetMacro(IncidentSpectrum, IncidentSpectrumType)
-
-  itkSetMacro(NumberOfSpectralBins, unsigned int)
-  itkGetMacro(NumberOfSpectralBins, unsigned int)
-
   void ComputeFischerMatrix(const ParametersType & lineIntegrals)
   {
   // Get some required data
@@ -220,10 +258,20 @@ public:
   }
 
 
+  itkSetMacro(IncidentSpectrum, IncidentSpectrumType)
+  itkGetMacro(IncidentSpectrum, IncidentSpectrumType)
+
+  itkSetMacro(NumberOfSpectralBins, unsigned int)
+  itkGetMacro(NumberOfSpectralBins, unsigned int)
+
+  itkSetMacro(MeanAttenuationInBin, MeanAttenuationInBinType)
+  itkGetMacro(MeanAttenuationInBin, MeanAttenuationInBinType)
+
 protected:
   IncidentSpectrumType              m_IncidentSpectrum;
   unsigned int                      m_NumberOfSpectralBins;
   itk::VariableSizeMatrix<float>    m_Fischer;
+  MeanAttenuationInBinType          m_MeanAttenuationInBin;
 
 private:
   Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented

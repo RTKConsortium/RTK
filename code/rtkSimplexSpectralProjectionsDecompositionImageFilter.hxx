@@ -36,6 +36,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   m_NumberOfSpectralBins = 8;
   m_OutputInverseCramerRaoLowerBound = false;
   m_OutputFischerMatrix = false;
+  m_LogTransformEachBin = false;
+  m_GuessInitialization = false;
 }
 
 template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
@@ -72,6 +74,9 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   this->m_NumberOfSpectralBins = this->GetInputMeasuredProjections()->GetVectorLength();
   this->m_NumberOfMaterials = this->GetInputDecomposedProjections()->GetVectorLength();
   this->m_NumberOfEnergies = this->GetInputIncidentSpectrum()->GetVectorLength();
+
+  if (m_LogTransformEachBin)
+    this->GetOutput(0)->SetVectorLength(this->m_NumberOfMaterials + this->m_NumberOfSpectralBins);
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -135,6 +140,26 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
         }
       }
     }
+
+  // Compute the weighted mean attenuation of each material in each bin
+  // Used for initial guess calculation
+  this->m_MeanAttenuationInBin.SetSize(this->m_NumberOfMaterials, this->m_NumberOfSpectralBins);
+  this->m_MeanAttenuationInBin.Fill(0);
+  typename MaterialAttenuationsImageType::IndexType indexMatAtt;
+  for (unsigned int mat = 0; mat<this->m_NumberOfMaterials; mat++)
+    {
+    indexMatAtt[0] = mat;
+    for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
+      {
+      double accumulate = 0;
+      for (unsigned int energy=m_Thresholds[bin]-1; energy<m_Thresholds[bin+1]; energy++)
+        {
+        indexMatAtt[1] = energy;
+        accumulate += this->GetMaterialAttenuations()->GetPixel(indexMatAtt);
+        }
+      this->m_MeanAttenuationInBin[mat][bin] = accumulate / (m_Thresholds[bin+1] - m_Thresholds[bin] + 1);
+      }
+    }
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -155,6 +180,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 
   // Pass the attenuation functions to the cost function
   cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
+  if (m_GuessInitialization)
+    cost->SetMeanAttenuationInBin(m_MeanAttenuationInBin);
 
   // Pass the binned detector response to the cost function
   cost->SetDetectorResponse(this->m_DetectorResponse);
@@ -194,8 +221,17 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 
     // Run the optimizer
     typename CostFunctionType::ParametersType startingPosition(this->m_NumberOfMaterials);
-    for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
-      startingPosition[m] = inputIt.Get()[m];
+    if (m_GuessInitialization)
+      {
+      itk::VariableLengthVector<double> guess = cost->GuessInitialization();
+      for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
+        startingPosition[m] = guess[m];
+      }
+    else
+      {
+      for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
+        startingPosition[m] = inputIt.Get()[m];
+      }
 
     optimizer->SetInitialPosition(startingPosition);
     optimizer->SetAutomaticInitialSimplex(true);
@@ -203,9 +239,18 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     optimizer->StartOptimization();
 
     typename DecomposedProjectionsType::PixelType outputPixel;
-    outputPixel.SetSize(this->m_NumberOfMaterials);
+    if (m_LogTransformEachBin)
+      {
+      outputPixel.SetSize(this->m_NumberOfMaterials + this->m_NumberOfSpectralBins);
+      for (unsigned int bin=0; bin<this->m_NumberOfSpectralBins; bin++)
+        outputPixel[bin+this->m_NumberOfMaterials] = cost->BinwiseLogTransform()[bin];
+      }
+    else
+      outputPixel.SetSize(this->m_NumberOfMaterials);
+
     for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
       outputPixel[m] = optimizer->GetCurrentPosition()[m];
+
     output0It.Set(outputPixel);
 
     // If required, compute the Fischer matrix
