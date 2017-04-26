@@ -206,7 +206,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
 
   // Conditional median
   typename TProjectionsReaderType::MedianRadiusType medianRadius;
-  medianRadius.Fill(1);
+  medianRadius.Fill(0);
   for(unsigned int i=0; i<args_info.radius_given; i++)
     medianRadius[i] = args_info.radius_arg[i];
   reader->SetMedianRadius(medianRadius);

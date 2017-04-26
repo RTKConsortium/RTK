@@ -174,6 +174,9 @@ CudaRayCastBackProjectionImageFilter
                         boxMax,
                         spacing,
                         m_Normalize);
+
+    // Re-use the output as input
+    pin = pout;
     }
 
   delete[] translatedProjectionIndexTransformMatrices;
