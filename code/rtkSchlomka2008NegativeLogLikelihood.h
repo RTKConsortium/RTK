@@ -50,15 +50,17 @@ public:
   itkNewMacro( Self );
   itkTypeMacro( Schlomka2008NegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood );
 
-  typedef Superclass::ParametersType          ParametersType;
-  typedef Superclass::DerivativeType          DerivativeType;
-  typedef Superclass::MeasureType             MeasureType;
+  typedef Superclass::ParametersType                ParametersType;
+  typedef Superclass::DerivativeType                DerivativeType;
+  typedef Superclass::MeasureType                   MeasureType;
 
-  typedef Superclass::DetectorResponseType      DetectorResponseType;
-  typedef Superclass::MaterialAttenuationsType  MaterialAttenuationsType;
-  typedef Superclass::MeasuredDataType          MeasuredDataType;
-  typedef Superclass::IncidentSpectrumType      IncidentSpectrumType;
-  typedef itk::VariableSizeMatrix<double>       MeanAttenuationInBinType;
+  typedef Superclass::DetectorResponseType          DetectorResponseType;
+  typedef Superclass::MaterialAttenuationsType      MaterialAttenuationsType;
+  typedef Superclass::MeasuredDataType              MeasuredDataType;
+  typedef Superclass::IncidentSpectrumType          IncidentSpectrumType;
+  typedef itk::VariableLengthVector<unsigned int>   ThresholdsType;
+  typedef itk::VariableSizeMatrix<double>           MeanAttenuationInBinType;
+
 
   // Constructor
   Schlomka2008NegativeLogLikelihood()
@@ -73,21 +75,41 @@ public:
 
   itk::VariableLengthVector<double> GuessInitialization() const
   {
+  // Compute the mean attenuation in each bin, weighted by the input spectrum
+  // Needs to be done for each pixel, since the input spectrum is variable
+  MeanAttenuationInBinType MeanAttenuationInBin;
+  MeanAttenuationInBin.SetSize(this->m_NumberOfMaterials, this->m_NumberOfSpectralBins);
+  MeanAttenuationInBin.Fill(0);
+
+  for (unsigned int mat = 0; mat<this->m_NumberOfMaterials; mat++)
+    {
+    for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
+      {
+      double accumulate = 0;
+      double accumulateWeights = 0;
+      for (unsigned int energy=m_Thresholds[bin]-1; (energy<m_Thresholds[bin+1]) && (energy < this->m_MaterialAttenuations.Cols()); energy++)
+        {
+        accumulate += this->m_MaterialAttenuations[mat][energy] * this->m_IncidentSpectrum[energy];
+        accumulateWeights += this->m_IncidentSpectrum[energy];
+        }
+      MeanAttenuationInBin[mat][bin] = accumulate / accumulateWeights;
+      }
+    }
+
   itk::VariableLengthVector<double> initialGuess;
   initialGuess.SetSize(m_NumberOfMaterials);
-  std::vector<double> lengthEstimates;
   for (unsigned int mat = 0; mat<m_NumberOfMaterials; mat++)
     {
-    lengthEstimates.clear();
+    // Initialise to a very high value
+    initialGuess[mat] = 1e10;
     for (unsigned int bin = 0; bin<m_NumberOfSpectralBins; bin++)
       {
       // Compute the length of current material required to obtain the attenuation
-      // observed in current bin
-      lengthEstimates.push_back(this->BinwiseLogTransform()[bin] / m_MeanAttenuationInBin[mat][bin]);
+      // observed in current bin. Keep only the minimum among all bins
+      double requiredLength = this->BinwiseLogTransform()[bin] / MeanAttenuationInBin[mat][bin];
+      if (initialGuess[mat] > requiredLength)
+        initialGuess[mat] = requiredLength;
       }
-
-    // Compute the smallest length over all bins
-    initialGuess[mat] = *std::min_element(std::begin(lengthEstimates), std::end(lengthEstimates));
     }
   return initialGuess;
   }
@@ -264,14 +286,14 @@ public:
   itkSetMacro(NumberOfSpectralBins, unsigned int)
   itkGetMacro(NumberOfSpectralBins, unsigned int)
 
-  itkSetMacro(MeanAttenuationInBin, MeanAttenuationInBinType)
-  itkGetMacro(MeanAttenuationInBin, MeanAttenuationInBinType)
+  itkSetMacro(Thresholds, ThresholdsType)
+  itkGetMacro(Thresholds, ThresholdsType)
 
 protected:
   IncidentSpectrumType              m_IncidentSpectrum;
   unsigned int                      m_NumberOfSpectralBins;
   itk::VariableSizeMatrix<float>    m_Fischer;
-  MeanAttenuationInBinType          m_MeanAttenuationInBin;
+  ThresholdsType                    m_Thresholds;
 
 private:
   Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented

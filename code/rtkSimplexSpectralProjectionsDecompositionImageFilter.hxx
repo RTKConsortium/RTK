@@ -140,26 +140,6 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
         }
       }
     }
-
-  // Compute the weighted mean attenuation of each material in each bin
-  // Used for initial guess calculation
-  this->m_MeanAttenuationInBin.SetSize(this->m_NumberOfMaterials, this->m_NumberOfSpectralBins);
-  this->m_MeanAttenuationInBin.Fill(0);
-  typename MaterialAttenuationsImageType::IndexType indexMatAtt;
-  for (unsigned int mat = 0; mat<this->m_NumberOfMaterials; mat++)
-    {
-    indexMatAtt[0] = mat;
-    for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
-      {
-      double accumulate = 0;
-      for (unsigned int energy=m_Thresholds[bin]-1; energy<m_Thresholds[bin+1]; energy++)
-        {
-        indexMatAtt[1] = energy;
-        accumulate += this->GetMaterialAttenuations()->GetPixel(indexMatAtt);
-        }
-      this->m_MeanAttenuationInBin[mat][bin] = accumulate / (m_Thresholds[bin+1] - m_Thresholds[bin] + 1);
-      }
-    }
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -181,7 +161,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   // Pass the attenuation functions to the cost function
   cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
   if (m_GuessInitialization)
-    cost->SetMeanAttenuationInBin(m_MeanAttenuationInBin);
+    cost->SetThresholds(this->m_Thresholds);
 
   // Pass the binned detector response to the cost function
   cost->SetDetectorResponse(this->m_DetectorResponse);
@@ -218,6 +198,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 
     // Pass the detector counts vector to cost function
     cost->SetMeasuredData(spectralProjIt.Get());
+
 
     // Run the optimizer
     typename CostFunctionType::ParametersType startingPosition(this->m_NumberOfMaterials);
