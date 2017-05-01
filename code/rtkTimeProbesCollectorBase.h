@@ -18,7 +18,7 @@
 #ifndef rtkTimeProbesCollectorBase_h
 #define rtkTimeProbesCollectorBase_h
 
-#include "itkTimeProbesCollectorBase.h"
+#include <itkTimeProbesCollectorBase.h>
 
 namespace rtk
 {
@@ -31,7 +31,7 @@ class ITKCommon_EXPORT TimeProbesCollectorBase: public itk::TimeProbesCollectorB
 {
 public:
   /** Report the summary of results from the probes */
-  virtual void Report(std::ostream & os = std::cout) const;
+  virtual void ConstReport(std::ostream & os = std::cout) const;
 };
 }
 
