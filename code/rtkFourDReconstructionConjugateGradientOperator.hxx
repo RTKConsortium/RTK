@@ -266,7 +266,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
     sizeOfSlabs.push_back(1);
   else
     {
-    for (unsigned int proj = FirstProj+1; proj < FirstProj+NumberProjs; proj++)
+    for (int proj = FirstProj+1; proj < FirstProj+NumberProjs; proj++)
       {
       if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
         {
