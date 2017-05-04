@@ -70,7 +70,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>
 
   os << i << "m_Order=" << this->GetOrder() << std::endl;
   os << i << "m_Pass=" << std::endl;
-  for (int dim=0; dim<TImage::ImageDimension; dim++)
+  for (unsigned int dim=0; dim<TImage::ImageDimension; dim++)
     {
     os << i << i << this->m_Pass[dim] << std::endl;
     }

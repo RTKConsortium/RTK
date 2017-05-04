@@ -43,6 +43,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                        ThreadIdType threadId )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
+
   int offsets[Dimension];
   offsets[0] = this->GetInput(0)->GetNumberOfComponentsPerPixel();
   for (unsigned int i=1; i<Dimension; i++)

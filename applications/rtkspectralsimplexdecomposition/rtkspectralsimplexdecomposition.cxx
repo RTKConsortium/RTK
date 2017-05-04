@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
   materialAttenuationsReader->Update();
 
   // Get parameters from the images
-  const unsigned int NumberOfMaterials = decomposedProjectionReader->GetOutput()->GetVectorLength();
+  const unsigned int NumberOfMaterials = materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
   const unsigned int NumberOfSpectralBins = spectralProjectionReader->GetOutput()->GetVectorLength();
   const unsigned int MaximumEnergy = incidentSpectrumReader->GetOutput()->GetVectorLength();
 
@@ -124,6 +124,7 @@ int main(int argc, char * argv[])
   typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType> SimplexFilterType;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
+  simplex->SetGuessInitialization(args_info.guess_flag);
   simplex->SetInputMeasuredProjections(spectralProjectionReader->GetOutput());
   simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
   simplex->SetDetectorResponse(detectorResponseReader->GetOutput());
@@ -131,6 +132,7 @@ int main(int argc, char * argv[])
   simplex->SetThresholds(thresholds);
   simplex->SetNumberOfIterations(args_info.niterations_arg);
   simplex->SetOptimizeWithRestarts(args_info.restarts_flag);
+  simplex->SetLogTransformEachBin(args_info.log_flag);
 
   // Note: The simplex filter is set to perform several searches for each pixel,
   // with different initializations, and keep the best one (SetOptimizeWithRestart(true)).

@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
   typedef rtk::ConditionalMedianImageFilter<OutputImageType> MedianType;
   MedianType::Pointer median = MedianType::New();
   median->SetThresholdMultiplier(args_info.multiplier_arg);
-  typename MedianType::MedianRadiusType radius;
+  MedianType::MedianRadiusType radius;
   if(args_info.radius_given)
   {
   radius.Fill(args_info.radius_arg[0]);

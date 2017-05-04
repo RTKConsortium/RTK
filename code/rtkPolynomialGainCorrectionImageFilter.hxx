@@ -91,7 +91,6 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
 
     // Create power LUT: the values for the different orders for the same pixel value are close to each other
     int npixValues = 65536;   // Input values are 16-bit unsigned
-    int lutSize = m_ModelOrder*npixValues;
     for (int pid = 0; pid < npixValues; ++pid)
       {
       float value = static_cast<float>(pid);

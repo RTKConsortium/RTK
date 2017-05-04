@@ -36,7 +36,7 @@ WaterPrecorrectionImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class  TOutputImage>
 void WaterPrecorrectionImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId)
+::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   const int csize = m_Coefficients.size();
 
