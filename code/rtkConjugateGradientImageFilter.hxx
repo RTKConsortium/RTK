@@ -30,6 +30,7 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   this->SetNumberOfRequiredInputs(2);
 
   m_NumberOfIterations = 1;
+  m_TargetSumOfSquaresBetweenConsecutiveIterates = 0;
 //  m_IterationCosts = false;
 //  m_C=0.0;
 //  m_MeasureExecutionTimes = false;
@@ -178,6 +179,7 @@ void ConjugateGradientImageFilter<OutputImageType>
   typename GetP_kPlusOne_FilterType::Pointer GetP_kPlusOne_Filter = GetP_kPlusOne_FilterType::New();
   typename GetR_kPlusOne_FilterType::Pointer GetR_kPlusOne_Filter = GetR_kPlusOne_FilterType::New();
   typename GetX_kPlusOne_FilterType::Pointer GetX_kPlusOne_Filter = GetX_kPlusOne_FilterType::New();
+  typename SS_FilterType::Pointer SumOfSquaresFilter = SS_FilterType::New();
 
   // Compute P_zero = R_zero
   typename OutputImageType::Pointer P_zero = SubtractFilter->GetOutput();
@@ -205,8 +207,11 @@ void ConjugateGradientImageFilter<OutputImageType>
   typename OutputImageType::Pointer P_kPlusOne;
   typename OutputImageType::Pointer X_kPlusOne;
 
+  bool stopIterations = false;
+  int iter = 0;
+
   // Start the iterative procedure
-  for (int iter=0; iter<m_NumberOfIterations; iter++)
+  while ((iter<m_NumberOfIterations) && !stopIterations)
     {
     if(iter>0)
       {
@@ -229,10 +234,13 @@ void ConjugateGradientImageFilter<OutputImageType>
       GetR_kPlusOne_Filter->SetAPk(m_A->GetOutput());
 
       GetP_kPlusOne_Filter->SetRk(R_kPlusOne);
-      GetP_kPlusOne_Filter->SetPk(P_kPlusOne);
       GetP_kPlusOne_Filter->SetR_kPlusOne(GetR_kPlusOne_Filter->GetOutput());
 
-      GetX_kPlusOne_Filter->SetPk(P_kPlusOne);
+      SumOfSquaresFilter->SetInput(P_kPlusOne);
+
+      GetP_kPlusOne_Filter->SetPk(SumOfSquaresFilter->GetOutput());
+
+      GetX_kPlusOne_Filter->SetPk(SumOfSquaresFilter->GetOutput());
       GetX_kPlusOne_Filter->SetXk(X_kPlusOne);
 
       P_zero->ReleaseData();
@@ -242,9 +250,24 @@ void ConjugateGradientImageFilter<OutputImageType>
     GetR_kPlusOne_Filter->Update();
     GetX_kPlusOne_Filter->SetAlphak(GetR_kPlusOne_Filter->GetAlphak());
     GetX_kPlusOne_Filter->Update();
+
+    // Compare the squared difference between X_k and X_kPlusOne
+    // with the stopping criterion
+    if(iter>0)
+      {
+      double SDD = SumOfSquaresFilter->GetSumOfSquares() * GetR_kPlusOne_Filter->GetAlphak() * GetR_kPlusOne_Filter->GetAlphak();
+      if ( SDD < m_TargetSumOfSquaresBetweenConsecutiveIterates)
+        {
+        stopIterations = true;
+        std::cout << "Reached target difference between consecutive iterates in "<< iter << " iterations." << std::endl;
+        }
+      }
+
     GetP_kPlusOne_Filter->SetSquaredNormR_k(GetR_kPlusOne_Filter->GetSquaredNormR_k());
     GetP_kPlusOne_Filter->SetSquaredNormR_kPlusOne(GetR_kPlusOne_Filter->GetSquaredNormR_kPlusOne());
     GetP_kPlusOne_Filter->Update();
+
+    iter++;
     }
 
   this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());

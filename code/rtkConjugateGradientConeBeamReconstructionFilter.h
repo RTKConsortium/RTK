@@ -174,6 +174,10 @@ public:
     itkGetMacro(CudaConjugateGradient, bool)
     itkSetMacro(CudaConjugateGradient, bool)
 
+    /** Set/Get a stopping criterion */
+    itkGetMacro(TargetSumOfSquaresBetweenConsecutiveIterates, double)
+    itkSetMacro(TargetSumOfSquaresBetweenConsecutiveIterates, double)
+
     /** Getter for ResidualCosts storing array **/
     const std::vector<double> &GetResidualCosts();
 
@@ -221,6 +225,7 @@ private:
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
     bool                         m_DisableDisplacedDetectorFilter;
+    double                       m_TargetSumOfSquaresBetweenConsecutiveIterates;
 };
 
 template<>

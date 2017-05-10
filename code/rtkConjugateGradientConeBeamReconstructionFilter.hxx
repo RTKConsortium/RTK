@@ -39,6 +39,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   m_Regularized = false;
   m_CudaConjugateGradient = true;
   m_DisableDisplacedDetectorFilter = false;
+  m_TargetSumOfSquaresBetweenConsecutiveIterates = 0;
 
   // Create the filters
 #ifdef RTK_USE_CUDA
@@ -159,6 +160,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
     m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
+  m_ConjugateGradientFilter->SetTargetSumOfSquaresBetweenConsecutiveIterates(m_TargetSumOfSquaresBetweenConsecutiveIterates);
 //  m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
   
   // Set runtime connections

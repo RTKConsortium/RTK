@@ -85,6 +85,7 @@ ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::
     m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
+  m_ConjugateGradientFilter->SetTargetSumOfSquaresBetweenConsecutiveIterates(m_TargetSumOfSquaresBetweenConsecutiveIterates);
 //  m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
 
   // Set runtime connections

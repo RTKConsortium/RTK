@@ -22,6 +22,7 @@
 #include "itkImageToImageFilter.h"
 #include "itkSubtractImageFilter.h"
 #include "itkStatisticsImageFilter.h"
+#include "rtkSumOfSquaresImageFilter.h"
 
 #include "rtkConjugateGradientGetR_kPlusOneImageFilter.h"
 #include "rtkConjugateGradientGetX_kPlusOneImageFilter.h"
@@ -61,6 +62,7 @@ public:
   typedef typename rtk::ConjugateGradientGetP_kPlusOneImageFilter<OutputImageType>  GetP_kPlusOne_FilterType;
   typedef typename rtk::ConjugateGradientGetR_kPlusOneImageFilter<OutputImageType>  GetR_kPlusOne_FilterType;
   typedef typename rtk::ConjugateGradientGetX_kPlusOneImageFilter<OutputImageType>  GetX_kPlusOne_FilterType;
+  typedef typename rtk::SumOfSquaresImageFilter<OutputImageType>                    SS_FilterType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -79,6 +81,10 @@ public:
 //    CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
 //  itkSetMacro(MeasureExecutionTimes, bool)
 //  itkGetMacro(MeasureExecutionTimes, bool)
+
+  /** Set/Get a stopping criterion */
+  itkGetMacro(TargetSumOfSquaresBetweenConsecutiveIterates, double)
+  itkSetMacro(TargetSumOfSquaresBetweenConsecutiveIterates, double)
 
   void SetA(ConjugateGradientOperatorPointerType _arg );
 
@@ -115,6 +121,7 @@ protected:
   bool                m_IterationCosts;
 //  std::vector<double> m_ResidualCosts;
   double              m_C;
+  double              m_TargetSumOfSquaresBetweenConsecutiveIterates;
 
 //  void CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne);
 
