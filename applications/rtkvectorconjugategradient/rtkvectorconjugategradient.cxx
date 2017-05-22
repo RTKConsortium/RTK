@@ -84,6 +84,7 @@ int main(int argc, char * argv[])
     constantImageSource->SetVectorLength(reader->GetOutput()->GetNumberOfComponentsPerPixel());
     inputFilter = constantImageSource;
     }
+  inputFilter->Update();
 
   // Read weights if given, otherwise default to weights all equal to one
   itk::ImageSource< OutputImageType >::Pointer weightsSource;
@@ -129,7 +130,7 @@ int main(int argc, char * argv[])
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
   conjugategradient->SetForwardProjectionFilter(0);
   conjugategradient->SetBackProjectionFilter(1);
-  conjugategradient->SetInput( inputFilter->GetOutput() );
+  conjugategradient->SetInput(0, inputFilter->GetOutput() );
   conjugategradient->SetInput(1, reader->GetOutput());
   conjugategradient->SetInput(2, weightsSource->GetOutput());
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);

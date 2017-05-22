@@ -25,6 +25,7 @@
 #include "rtkCudaForwardProjectionImageFilter.h"
 #endif
 #include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
+#include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -138,6 +139,21 @@ int main(int argc, char * argv[])
               << projProbe.GetMean() << ' ' << projProbe.GetUnit()
               << '.' << std::endl;
 
+  // If a block diagonal matrix is given in input, perform multiplication
+  typedef rtk::BlockDiagonalMatrixVectorMultiplyImageFilter<OutputImageType> MatrixVectorMultiplyFilterType;
+  MatrixVectorMultiplyFilterType::Pointer matrixVectorMultiplyFilter = MatrixVectorMultiplyFilterType::New();
+  if (args_info.matrix_given)
+    {
+    // Read a block diagonal matrix image (typically inverse covariance matrix)
+    ReaderType::Pointer matrixReader = ReaderType::New();
+    matrixReader->SetFileName( args_info.matrix_arg );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( matrixReader->Update() )
+
+    // Multiply by block diagonal matrix
+    matrixVectorMultiplyFilter->SetInput1(forwardProjection->GetOutput()); // First input is the vector
+    matrixVectorMultiplyFilter->SetInput2(matrixReader->GetOutput()); // Second input is the matrix
+    }
+
   // Write
   if(args_info.verbose_flag)
     std::cout << "Writing... " << std::flush;
@@ -145,7 +161,10 @@ int main(int argc, char * argv[])
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( forwardProjection->GetOutput() );
+  if (args_info.matrix_given)
+    writer->SetInput( matrixVectorMultiplyFilter->GetOutput() );
+  else
+    writer->SetInput( forwardProjection->GetOutput() );
 //  if(args_info.lowmem_flag)
 //    {
 //    writer->SetNumberOfStreamDivisions(sizeOutput[2]);
