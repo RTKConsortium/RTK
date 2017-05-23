@@ -49,8 +49,8 @@ public:
   void SetRk(const TInputImage* Rk);
   void SetPk(const TInputImage* Pk);
 
-  itkSetMacro(SquaredNormR_k, float)
-  itkSetMacro(SquaredNormR_kPlusOne, float)
+  itkSetMacro(SquaredNormR_k, double)
+  itkSetMacro(SquaredNormR_kPlusOne, double)
 
   /** Typedefs for sub filters */
   typedef itk::AddImageFilter<TInputImage>                              AddFilterType;
@@ -73,9 +73,9 @@ private:
   ConjugateGradientGetP_kPlusOneImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
 
-  float m_SquaredNormR_k;
-  float m_SquaredNormR_kPlusOne;
-  float m_Betak;
+  double m_SquaredNormR_k;
+  double m_SquaredNormR_kPlusOne;
+  double m_Betak;
 
   /** Pointers to sub filters */
   typename AddFilterType::Pointer       m_AddFilter;

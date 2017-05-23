@@ -107,7 +107,7 @@ template< typename TInputType>
 void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
 ::ThreadedGenerateData(const typename TInputType::RegionType & outputRegionForThread, ThreadIdType threadId)
 {
-  float eps=1e-8;
+  double eps=1e-8;
 
   // Prepare iterators
   typedef itk::ImageRegionIterator<TInputType> RegionIterator;
@@ -135,14 +135,14 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   m_Barrier->Wait();
 
   // Each thread computes alpha_k
-  float squaredNormR_k = 0;
-  float p_k_t_A_p_k = 0;
+  double squaredNormR_k = 0;
+  double p_k_t_A_p_k = 0;
   for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
     {
     squaredNormR_k += m_SquaredNormR_kVector[i];
     p_k_t_A_p_k += m_PktApkVector[i];
     }
-  float alphak = squaredNormR_k / (p_k_t_A_p_k + eps);
+  double alphak = squaredNormR_k / (p_k_t_A_p_k + eps);
 
   // Compute Rk+1 and write it on the output
   RegionIterator outputIt(this->GetOutput(), outputRegionForThread);
@@ -163,13 +163,13 @@ template< typename TInputType>
 void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
 ::AfterThreadedGenerateData()
 {
-  float eps=1e-8;
+  double eps=1e-8;
 
   // Set the members m_Alphak, m_SquaredNormR_k and
   // m_SquaredNormR_kPlusOne, as they will be passed to other filters
   m_SquaredNormR_k = 0;
   m_SquaredNormR_kPlusOne = 0;
-  float p_k_t_A_p_k = 0;
+  double p_k_t_A_p_k = 0;
   for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
     {
     m_SquaredNormR_k += m_SquaredNormR_kVector[i];

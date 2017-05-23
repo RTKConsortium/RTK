@@ -28,7 +28,7 @@ ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<float, 3>>
                            outputRegionForThread,
                            ThreadIdType threadId)
 {
-    float eps=1e-8;
+    double eps=1e-8;
     typedef itk::VectorImage<float, 3> TInputType;
 
     // Prepare iterators
@@ -66,14 +66,14 @@ ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<float, 3>>
     m_Barrier->Wait();
 
     // Each thread computes alpha_k
-    float squaredNormR_k = 0;
-    float p_k_t_A_p_k = 0;
+    double squaredNormR_k = 0;
+    double p_k_t_A_p_k = 0;
     for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
       {
       squaredNormR_k += m_SquaredNormR_kVector[i];
       p_k_t_A_p_k += m_PktApkVector[i];
       }
-    float alphak = squaredNormR_k / (p_k_t_A_p_k + eps);
+    double alphak = squaredNormR_k / (p_k_t_A_p_k + eps);
 
     // Compute Rk+1 and write it on the output
     RegionIterator outputIt(this->GetOutput(), outputRegionForThread);
