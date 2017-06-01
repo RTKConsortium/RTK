@@ -60,6 +60,7 @@ public:
   /** Convenient information */
   typedef itk::VariableSizeMatrix<double>                   DetectorResponseType;
   typedef itk::VariableSizeMatrix<double>                   MaterialAttenuationsType;
+  typedef itk::VariableLengthVector<double>                 RescalingFactorsType;
   typedef ProjectionsDecompositionNegativeLogLikelihood     CostFunctionType;
 
   /** Standard New method. */
@@ -97,6 +98,11 @@ public:
   itkSetMacro(OptimizeWithRestarts, bool)
   itkGetMacro(OptimizeWithRestarts, bool)
 
+  itkSetMacro(RescaleAttenuations, bool)
+  itkGetMacro(RescaleAttenuations, bool)
+
+  itkGetMacro(RescalingFactors, RescalingFactorsType)
+
 protected:
   SimplexProjectionsDecompositionImageFilter();
   ~SimplexProjectionsDecompositionImageFilter() ITK_OVERRIDE {}
@@ -106,6 +112,8 @@ protected:
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
+
+  void RescaleMaterialAttenuations();
 
   /**  Create the Output */
   typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
@@ -117,13 +125,16 @@ protected:
   void VerifyInputInformation() ITK_OVERRIDE {}
 
   MaterialAttenuationsType   m_MaterialAttenuations;
+  MaterialAttenuationsType   m_RescaledMaterialAttenuations;
   DetectorResponseType       m_DetectorResponse;
   unsigned int               m_NumberOfEnergies;
 
   /** Parameters */
-  unsigned int m_NumberOfIterations;
-  unsigned int m_NumberOfMaterials;
-  bool         m_OptimizeWithRestarts;
+  unsigned int          m_NumberOfIterations;
+  unsigned int          m_NumberOfMaterials;
+  bool                  m_OptimizeWithRestarts;
+  bool                  m_RescaleAttenuations;
+  RescalingFactorsType  m_RescalingFactors;
 
 private:
   //purposely not implemented
