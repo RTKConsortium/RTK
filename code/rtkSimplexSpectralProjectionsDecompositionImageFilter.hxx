@@ -163,7 +163,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   cost->SetNumberOfSpectralBins(this->GetNumberOfSpectralBins());
 
   // Pass the attenuation functions to the cost function
-  cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
+  if (this->m_RescaleAttenuations)
+    cost->SetMaterialAttenuations(this->m_RescaledMaterialAttenuations);
+  else
+    cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
   if (m_GuessInitialization)
     cost->SetThresholds(this->m_Thresholds);
 
