@@ -197,6 +197,19 @@ ImportImageFilter< TImage >
   // opposed to the container) if the user wants it to.
   outputPtr->GetPixelContainer()->SetImportPointer(m_ImportPointer,
                                                    m_Size, false);
+
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<typename TImage::PixelType, TImage::ImageDimension> TCudaImage;
+  if (TCudaImage* cudaOutputPtr = dynamic_cast<TCudaImage*>(outputPtr.GetPointer()))
+    {
+    cudaOutputPtr->GetDataManager()->SetBufferSize(m_Size * sizeof(typename OutputImageType::PixelType));
+    cudaOutputPtr->GetDataManager()->SetImagePointer(outputPtr);
+    cudaOutputPtr->GetDataManager()->SetCPUBufferPointer(m_ImportPointer);
+    cudaOutputPtr->GetDataManager()->SetGPUDirtyFlag(true);
+    cudaOutputPtr->GetDataManager()->SetCPUDirtyFlag(false);
+    cudaOutputPtr->GetDataManager()->SetTimeStamp(outputPtr->GetPixelContainer()->GetTimeStamp());
+    }
+#endif
 }
 
 //----------------------------------------------------------------------------
