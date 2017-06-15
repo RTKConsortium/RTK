@@ -379,7 +379,7 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
 
   // QI
   double ratio = scalarProductT1 / scalarProductT2;
-  std::cout << "ratio = " << ratio << std::endl;
+  std::cout << "1 - ratio = " << 1 - ratio << std::endl;
 
 //  // It is often necessary to write the images and look at them
 //  // to understand why a given test fails. This portion of code

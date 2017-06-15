@@ -75,6 +75,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   this->m_NumberOfMaterials = this->GetInputDecomposedProjections()->GetVectorLength();
   this->m_NumberOfEnergies = this->GetInputIncidentSpectrum()->GetVectorLength();
 
+  // Set vector length for the fischer matrix
+  this->GetOutput(2)->SetVectorLength(this->m_NumberOfMaterials * this->m_NumberOfMaterials);
+
+  // Change vector length for the decomposed projections, if required
   if (m_LogTransformEachBin)
     this->GetOutput(0)->SetVectorLength(this->m_NumberOfMaterials + this->m_NumberOfSpectralBins);
 }
@@ -159,7 +163,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   cost->SetNumberOfSpectralBins(this->GetNumberOfSpectralBins());
 
   // Pass the attenuation functions to the cost function
-  cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
+  if (this->m_RescaleAttenuations)
+    cost->SetMaterialAttenuations(this->m_RescaledMaterialAttenuations);
+  else
+    cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
   if (m_GuessInitialization)
     cost->SetThresholds(this->m_Thresholds);
 

@@ -48,10 +48,13 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
   m_NumberOfMaterials = 4;
   m_NumberOfEnergies = 100;
   m_OptimizeWithRestarts = false;
+  m_RescaleAttenuations = false;
 
   // Fill in the vectors and matrices with zeros
   m_MaterialAttenuations.Fill(0.); //Not sure this works
+  m_RescaledMaterialAttenuations.Fill(0.);
   m_DetectorResponse.Fill(0.);
+  m_RescalingFactors.Fill(0.);
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -226,6 +229,48 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
       m_MaterialAttenuations[material][energy] = this->GetMaterialAttenuations()->GetPixel(indexMat);
       }
     }
+
+  // If resquested, rescale these attenuations
+  if(m_RescaleAttenuations)
+    this->RescaleMaterialAttenuations();
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+void
+SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::RescaleMaterialAttenuations() // Rescale the material attenuation functions to match the order of magnitude of the first material's one
+{
+  m_RescalingFactors.SetSize(m_NumberOfMaterials);
+  m_RescalingFactors.Fill(0);
+  m_RescalingFactors[0] = 1;
+
+  // Compute the rescaling factors (one per material, except for the first material which serves as a reference)
+  // Criterion: the ratio between the attenuation of one material and the attenuation of the first material must
+  // have a mean value of one over the range of energies used
+  for (unsigned int material=1; material<m_NumberOfMaterials; material++)
+    {
+    typename MaterialAttenuationsImageType::PixelType nonZeroAttenuationsCount = 0;
+    for(unsigned int energy=0; energy<m_NumberOfEnergies; energy++)
+      {
+      // Make sure both the first and the current material's attenuations are non-zero
+      if ((m_MaterialAttenuations[0][energy] != 0) && (m_MaterialAttenuations[material][energy] != 0))
+        {
+        m_RescalingFactors[material] += m_MaterialAttenuations[material][energy] / m_MaterialAttenuations[0][energy];
+        nonZeroAttenuationsCount += 1;
+        }
+      }
+    m_RescalingFactors[material] /= nonZeroAttenuationsCount ;
+    }
+
+  // Initialize the rescaled material attenuations matrix
+  m_RescaledMaterialAttenuations.SetSize(m_NumberOfMaterials, m_NumberOfEnergies);
+
+  // Compute the rescaled attenuations
+  for (unsigned int material=0; material<m_NumberOfMaterials; material++)
+    for(unsigned int energy=0; energy<m_NumberOfEnergies; energy++)
+      m_RescaledMaterialAttenuations[material][energy] = m_MaterialAttenuations[material][energy] / m_RescalingFactors[material];
 }
 
 
