@@ -4,7 +4,7 @@ purpose "Backprojects a volume according to a geometry file."
 option "verbose"   v "Verbose execution"                                         flag     off
 option "config"    - "Config file"                                               string   no
 option "geometry"  g  "XML geometry file name"                                   string   yes
-option "output"    o "Output projections file name"                              string   yes
+option "output"    o "Output volume file name"                                   string   yes
 
 section "Projectors"
 option "bp"    - "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","NormalizedJoseph","CudaFDKBackProjection","CudaBackProjection","CudaRayCast"  enum no default="VoxelBasedBackProjection"

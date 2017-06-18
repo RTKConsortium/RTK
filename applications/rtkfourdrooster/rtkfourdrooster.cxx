@@ -127,6 +127,7 @@ int main(int argc, char * argv[])
   rooster->SetPhaseShift(args_info.shift_arg);
   rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
   rooster->SetUseCudaCyclicDeformation(args_info.cudadvfinterpolation_flag);
+  rooster->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
   
   // Set the newly ordered arguments
   rooster->SetInputProjectionStack( reorder->GetOutput() );
@@ -242,12 +243,12 @@ int main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
 
-  if(args_info.time_flag)
-    {
-    rooster->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
+//  if(args_info.time_flag)
+//    {
+//    rooster->PrintTiming(std::cout);
+//    readerProbe.Stop();
+//    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+//    }
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;

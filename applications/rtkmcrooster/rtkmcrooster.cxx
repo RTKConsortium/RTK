@@ -127,6 +127,7 @@ int main(int argc, char * argv[])
   mcrooster->SetMainLoop_iterations( args_info.niter_arg );
   mcrooster->SetCudaConjugateGradient(args_info.cudacg_flag);
   mcrooster->SetUseCudaCyclicDeformation(args_info.cudadvfinterpolation_flag);
+  mcrooster->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   // Set the newly ordered arguments
   mcrooster->SetInputProjectionStack( reorder->GetOutput() );
@@ -218,12 +219,12 @@ int main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mcrooster->Update() )
 
-  if(args_info.time_flag)
-    {
-    mcrooster->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
+//  if(args_info.time_flag)
+//    {
+//    mcrooster->PrintTiming(std::cout);
+//    readerProbe.Stop();
+//    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+//    }
 
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
   WriterType::Pointer writer = WriterType::New();

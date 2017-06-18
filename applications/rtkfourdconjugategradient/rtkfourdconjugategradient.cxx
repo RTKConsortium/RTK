@@ -119,6 +119,7 @@ int main(int argc, char * argv[])
   conjugategradient->SetInputVolumeSeries(inputFilter->GetOutput() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetCudaConjugateGradient(args_info.cudacg_flag);
+  conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   // Set the newly ordered arguments
   conjugategradient->SetInputProjectionStack( reorder->GetOutput() );

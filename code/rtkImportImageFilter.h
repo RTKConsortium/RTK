@@ -31,7 +31,9 @@ namespace rtk
  * ImportImageFilter is an image source, so it behaves like any other pipeline
  * object.
  *
- * This class is templated over the image type of the output image.
+ * This class is templated over the image type of the output image, unlike
+ * itk::ImportImageFilter which is templated over the pixel type and the dimension
+ * and is therefore incompatible with itk::CudaImage.
  *
  * \author Marc Vila
  **/

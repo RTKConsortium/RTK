@@ -1,0 +1,39 @@
+{
+  "name" : "ProjectGeometricPhantomImageFilter",
+  "template_code_filename" : "RTKImageFilter",
+  "template_test_filename" : "ImageFilter",
+  "number_of_inputs" : 1,
+  "doc" : "",
+  "output_image_type" : "TImageType",
+  "pixel_types" : "RealPixelIDTypeList",
+  "filter_type" : "rtk::ProjectGeometricPhantomImageFilter<InputImageType, InputImageType>",
+  "include_files" : [
+    "srtkThreeDCircularProjectionGeometry.h"
+  ],
+  "members" : [
+	{
+      "name" : "Geometry",
+      "type" : "ThreeDCircularProjectionGeometry*",
+      "default" : "0",
+	  "itk_type" : "typename FilterType::GeometryPointer",
+      "custom_itk_cast" : "typename FilterType::GeometryType* itkTx;\n    if ( !(itkTx = dynamic_cast<typename FilterType::GeometryType *>(this->m_Geometry->GetRTKBase() )) ) {\n      srtkExceptionMacro( \"Unexpected error converting geometry\" );\n     }\n    else { filter->SetGeometry( itkTx ); }"
+    },
+    {
+      "name" : "OriginOffset",
+      "type" : "double",
+      "default" : "std::vector<double>(3, 0)",
+      "dim_vec" : 1,
+	  "itk_type" : "typename FilterType::VectorType"
+    },
+    {
+      "name" : "PhantomScale",
+      "type" : "double",
+      "default" : "128."
+    },
+    {
+      "name" : "ConfigFile",
+      "type" : "std::string",
+      "default" : "\"\""
+    }
+  ]
+}

@@ -9,6 +9,7 @@ option "hardware"   - "Hardware used for computation"                           
 option "lowmem"     l "Load only one projection per thread in memory"               flag                         off
 option "divisions"  d "Streaming option: number of stream divisions of the CT"      int                          no   default="1"
 option "subsetsize" - "Streaming option: number of projections processed at a time" int                          no   default="16"
+option "nodisplaced" - "Disable the displaced detector filter"                      flag                         off
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"

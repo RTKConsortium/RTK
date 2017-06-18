@@ -132,6 +132,10 @@ public:
     /** Set the regularization parameter */
     itkSetMacro(Beta, float)
 
+    /** Set / Get whether the displaced detector filter should be disabled */
+    itkSetMacro(DisableDisplacedDetectorFilter, bool)
+    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
     ADMMWaveletsConjugateGradientOperator();
     ~ADMMWaveletsConjugateGradientOperator() ITK_OVERRIDE {}
@@ -150,6 +154,7 @@ protected:
     typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
 
     float m_Beta;
+    bool  m_DisableDisplacedDetectorFilter;
 
     /** When the inputs have the same type, ITK checks whether they occupy the
     * same physical space or not. Obviously they dont, so we have to remove this check

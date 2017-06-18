@@ -156,6 +156,9 @@ public:
   /** Store the phase signal in a member variable */
   virtual void SetSignal(const std::vector<double> signal);
 
+  /** Set / Get whether the displaced detector filter should be disabled */
+  itkSetMacro(DisableDisplacedDetectorFilter, bool)
+  itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
   ~FourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
@@ -181,6 +184,7 @@ protected:
 
   bool                    m_CudaConjugateGradient;
   std::vector<double>     m_Signal;
+  bool                    m_DisableDisplacedDetectorFilter;
 
 private:
   //purposely not implemented

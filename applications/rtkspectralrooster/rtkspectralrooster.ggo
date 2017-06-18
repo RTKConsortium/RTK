@@ -1,5 +1,5 @@
-package "rtkjointspectralreconstruction"
-purpose "Reconstructs a 3D + material vector volume from a vector projection stack, with a conjugate gradient technique"
+package "rtkspectralrooster"
+purpose "Reconstructs a 3D + material vector volume from a vector projection stack, alternating between conjugate gradient optimization and regularization, including between materials"
 
 option "verbose"     v "Verbose execution"                                     flag   off
 option "config"      - "Config file"                                           string no
@@ -11,6 +11,7 @@ option "cudacg"      - "Perform conjugate gradient calculations on GPU"        f
 option "time"        t "Records elapsed time during the process"               flag   off
 option "input"       i "Input volume"                                          string no
 option "projection"  p "Vector projections file"                               string yes
+option "nodisplaced" - "Disable the displaced detector filter"                 flag   off
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"

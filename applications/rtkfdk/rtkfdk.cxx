@@ -105,6 +105,7 @@ int main(int argc, char * argv[])
     ddf = DDFOFFFOVType::New();
   ddf->SetInput( reader->GetOutput() );
   ddf->SetGeometry( geometryReader->GetOutputObject() );
+  ddf->SetDisable(args_info.nodisplaced_flag);
 
   // Short scan image filter
   typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFCPUType;

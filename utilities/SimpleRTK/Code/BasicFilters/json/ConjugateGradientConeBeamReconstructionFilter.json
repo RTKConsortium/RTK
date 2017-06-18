@@ -34,11 +34,6 @@
       "default" : "0"
     },
     {
-      "name" : "Preconditioned",
-      "type" : "bool",
-      "default" : "0"
-    },
-    {
       "name" : "Regularized",
       "type" : "bool",
       "default" : "0"

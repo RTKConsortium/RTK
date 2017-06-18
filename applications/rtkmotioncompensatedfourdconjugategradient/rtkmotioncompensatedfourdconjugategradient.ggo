@@ -9,6 +9,7 @@ option "output"      o "Output file name"                                      s
 option "niter"       n "Number of main loop iterations"                        int    no   default="5"
 option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
 option "time"        t "Records elapsed time during the process"               flag   off
+option "nodisplaced" - "Disable the displaced detector filter"                 flag   off
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes

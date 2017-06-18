@@ -71,7 +71,7 @@ CudaRayCastBackProjectionImageFilter
     }
 
   // Cuda convenient format for dimensions
-  int projectionSize[2];
+  int projectionSize[3];
   projectionSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
 
@@ -100,26 +100,53 @@ CudaRayCastBackProjectionImageFilter
     }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  float* matrices = new float[12 * nProj];
-  float* source_positions = new float[3 * nProj];
+  float* translatedProjectionIndexTransformMatrices = new float[12 * nProj];
+  float* translatedVolumeTransformMatrices = new float[12 * nProj];
+  float* source_positions = new float[4 * nProj];
+
+  float radiusCylindricalDetector = geometry->GetRadiusCylindricalDetector();
 
   // Go over each projection
   for(unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
     {
-    // Compute matrix to transform projection index to volume index
-    GeometryType::ThreeDHomogeneousMatrixType d_matrix;
-    d_matrix =
-      volIndexTranslation.GetVnlMatrix() *
-      volPPToIndex.GetVnlMatrix() *
-      geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-      rtk::GetIndexToPhysicalPointMatrix( this->GetInput(1) ).GetVnlMatrix() *
-      projIndexTranslation.GetVnlMatrix();
-    for (int j=0; j<3; j++) // Ignore the 4th row
-      for (int k=0; k<4; k++)
-        matrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)d_matrix[j][k];
+    GeometryType::ThreeDHomogeneousMatrixType translatedProjectionIndexTransformMatrix;
+    GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix;
+    translatedVolumeTransformMatrix.Fill(0);
 
-    // Set source position in volume indices
-    source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
+    // The matrices required depend on the type of detector
+    if (radiusCylindricalDetector == 0)
+      {
+      translatedProjectionIndexTransformMatrix =
+        volIndexTranslation.GetVnlMatrix() *
+        volPPToIndex.GetVnlMatrix() *
+        geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
+        rtk::GetIndexToPhysicalPointMatrix( this->GetInput(1) ).GetVnlMatrix() *
+        projIndexTranslation.GetVnlMatrix();
+      for (int j=0; j<3; j++) // Ignore the 4th row
+        for (int k=0; k<4; k++)
+          translatedProjectionIndexTransformMatrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)translatedProjectionIndexTransformMatrix[j][k];
+      }
+    else
+      {
+      translatedProjectionIndexTransformMatrix =
+        geometry->GetProjectionCoordinatesToDetectorSystemMatrix(iProj).GetVnlMatrix() *
+        rtk::GetIndexToPhysicalPointMatrix( this->GetInput(1) ).GetVnlMatrix() *
+        projIndexTranslation.GetVnlMatrix();
+      for (int j=0; j<3; j++) // Ignore the 4th row
+        for (int k=0; k<4; k++)
+          translatedProjectionIndexTransformMatrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)translatedProjectionIndexTransformMatrix[j][k];
+
+      translatedVolumeTransformMatrix =
+        volIndexTranslation.GetVnlMatrix() *
+        volPPToIndex.GetVnlMatrix() *
+        geometry->GetRotationMatrices()[iProj].GetInverse();
+      for (int j=0; j<3; j++) // Ignore the 4th row
+        for (int k=0; k<4; k++)
+          translatedVolumeTransformMatrices[(j + 3 * (iProj-iFirstProj))*4+k] = (float)translatedVolumeTransformMatrix[j][k];
+      }
+
+    // Compute source position in volume indices
+    source_position= volPPToIndex * geometry->GetSourcePosition(iProj);
 
     // Copy it into a single large array
     for (unsigned int d=0; d<3; d++)
@@ -135,17 +162,26 @@ CudaRayCastBackProjectionImageFilter
 
     CUDA_ray_cast_back_project(projectionSize,
                         volumeSize,
-                        (float*)&(matrices[12 * i]),
+                        (float*)&(translatedProjectionIndexTransformMatrices[12 * i]),
+                        (float*)&(translatedVolumeTransformMatrices[12 * i]),
                         pin,
                         pout,
                         pproj + nPixelsPerProj * projectionOffset,
                         m_StepSize,
                         (double*)&(source_positions[3 * i]),
+                        radiusCylindricalDetector,
                         boxMin,
                         boxMax,
                         spacing,
                         m_Normalize);
+
+    // Re-use the output as input
+    pin = pout;
     }
+
+  delete[] translatedProjectionIndexTransformMatrices;
+  delete[] translatedVolumeTransformMatrices;
+  delete[] source_positions;
 }
 
 } // end namespace rtk

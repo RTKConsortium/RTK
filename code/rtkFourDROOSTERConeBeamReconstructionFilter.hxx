@@ -59,6 +59,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_UseCudaCyclicDeformation = false;
   m_Order = 5;
   m_NumberOfLevels = 3;
+  m_DisableDisplacedDetectorFilter = false;
 
   // Create the filters
   m_FourDCGFilter = FourDCGFilterType::New();
@@ -79,6 +80,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_AddFilter = AddFilterType::New();
   m_L0DenoisingTime = TemporalL0DenoisingFilterType::New();
   m_TNVDenoising = TNVDenoisingFilterType::New();
+
+  // Initialize downstream filter
+  m_DownstreamFilter = m_FourDCGFilter;
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -267,10 +271,6 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
   const int Dimension = VolumeType::ImageDimension;
 
-  // Construct the pipeline, adding regularization filters if the user wants them
-  // Connect the last filter's output to the next filter's input using the currentDownstreamFilter pointer
-  typename itk::ImageToImageFilter<VolumeSeriesType, VolumeSeriesType>::Pointer currentDownstreamFilter;
-  
   // The 4D conjugate gradient filter is the only part that must be in the pipeline
   // whatever was the user wants
   m_FourDCGFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
@@ -278,7 +278,8 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_FourDCGFilter->SetGeometry(this->m_Geometry);
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
-  currentDownstreamFilter = m_FourDCGFilter;
+  m_FourDCGFilter->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
+  m_DownstreamFilter = m_FourDCGFilter;
   
   // Plug the positivity filter if requested
   if (m_PerformPositivity)
@@ -287,9 +288,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
     m_PositivityFilter->SetOutsideValue(0.0);
     m_PositivityFilter->ThresholdBelow(0.0);
-    m_PositivityFilter->SetInput(currentDownstreamFilter->GetOutput());
+    m_PositivityFilter->SetInput(m_DownstreamFilter->GetOutput());
   
-    currentDownstreamFilter = m_PositivityFilter;
+    m_DownstreamFilter = m_PositivityFilter;
     }
   
   // Etc..
@@ -297,7 +298,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     {
     m_AverageOutOfROIFilter->SetInPlace(true);  
       
-    m_AverageOutOfROIFilter->SetInput(currentDownstreamFilter->GetOutput());
+    m_AverageOutOfROIFilter->SetInput(m_DownstreamFilter->GetOutput());
     m_ResampleFilter->SetInput(this->GetMotionMask());
     m_AverageOutOfROIFilter->SetROI(m_ResampleFilter->GetOutput());
 
@@ -329,14 +330,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_ResampleFilter->SetOutputOrigin(VolumeOrigin);
     m_ResampleFilter->SetOutputDirection(VolumeDirection);
     
-    currentDownstreamFilter = m_AverageOutOfROIFilter;
+    m_DownstreamFilter = m_AverageOutOfROIFilter;
     }
     
   if (m_PerformTVSpatialDenoising)
     {
-    currentDownstreamFilter->ReleaseDataFlagOn();
+    m_DownstreamFilter->ReleaseDataFlagOn();
 
-    m_TVDenoisingSpace->SetInput(currentDownstreamFilter->GetOutput());
+    m_TVDenoisingSpace->SetInput(m_DownstreamFilter->GetOutput());
     m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
     m_TVDenoisingSpace->SetGamma(this->m_GammaTVSpace);
     m_DimensionsProcessedForTVSpace[0]=true;
@@ -345,44 +346,44 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_DimensionsProcessedForTVSpace[3]=false;
     m_TVDenoisingSpace->SetDimensionsProcessed(this->m_DimensionsProcessedForTVSpace);
   
-    currentDownstreamFilter = m_TVDenoisingSpace;
+    m_DownstreamFilter = m_TVDenoisingSpace;
     }
     
   if (m_PerformWaveletsSpatialDenoising)
     {
-    currentDownstreamFilter->ReleaseDataFlagOn();
+    m_DownstreamFilter->ReleaseDataFlagOn();
       
-    m_WaveletsDenoisingSpace->SetInput(currentDownstreamFilter->GetOutput());
+    m_WaveletsDenoisingSpace->SetInput(m_DownstreamFilter->GetOutput());
     m_WaveletsDenoisingSpace->SetOrder(m_Order);
     m_WaveletsDenoisingSpace->SetThreshold(m_SoftThresholdWavelets);
     m_WaveletsDenoisingSpace->SetNumberOfLevels(m_NumberOfLevels);
   
-    currentDownstreamFilter = m_WaveletsDenoisingSpace;
+    m_DownstreamFilter = m_WaveletsDenoisingSpace;
     }
 
   if (m_PerformWarping)
     {
-    currentDownstreamFilter->ReleaseDataFlagOff();
+    m_DownstreamFilter->ReleaseDataFlagOff();
       
-    m_Warp->SetInput(currentDownstreamFilter->GetOutput());
+    m_Warp->SetInput(m_DownstreamFilter->GetOutput());
     m_Warp->SetDisplacementField(this->GetDisplacementField());
     m_Warp->SetPhaseShift(m_PhaseShift);
     m_Warp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
     m_Warp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
   
-    currentDownstreamFilter = m_Warp;
+    m_DownstreamFilter = m_Warp;
     }
     
   if (m_PerformTVTemporalDenoising)
     {
-    currentDownstreamFilter->ReleaseDataFlagOff();
+    m_DownstreamFilter->ReleaseDataFlagOff();
   
     if (m_PerformWarping && !m_ComputeInverseWarpingByConjugateGradient)
       m_TVDenoisingTime->SetInPlace(false);
     else
       m_TVDenoisingTime->SetInPlace(true);
 
-    m_TVDenoisingTime->SetInput(currentDownstreamFilter->GetOutput());
+    m_TVDenoisingTime->SetInput(m_DownstreamFilter->GetOutput());
     m_TVDenoisingTime->SetNumberOfIterations(this->m_TV_iterations);
     m_TVDenoisingTime->SetGamma(this->m_GammaTVTime);
     m_DimensionsProcessedForTVTime[0]=false;
@@ -392,12 +393,12 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_TVDenoisingTime->SetDimensionsProcessed(this->m_DimensionsProcessedForTVTime);
     m_TVDenoisingTime->SetBoundaryConditionToPeriodic();
     
-    currentDownstreamFilter = m_TVDenoisingTime;
+    m_DownstreamFilter = m_TVDenoisingTime;
     }
     
   if (m_PerformL0TemporalDenoising)
     {
-    currentDownstreamFilter->ReleaseDataFlagOff();
+    m_DownstreamFilter->ReleaseDataFlagOff();
 
     if (m_PerformWarping && !m_ComputeInverseWarpingByConjugateGradient && !m_PerformTVTemporalDenoising)
       m_L0DenoisingTime->SetInPlace(false);
@@ -406,51 +407,51 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       
     m_L0DenoisingTime->SetInPlace(false);
       
-    m_L0DenoisingTime->SetInput(currentDownstreamFilter->GetOutput());
+    m_L0DenoisingTime->SetInput(m_DownstreamFilter->GetOutput());
     m_L0DenoisingTime->SetNumberOfIterations(this->m_L0_iterations);
     m_L0DenoisingTime->SetLambda(this->m_LambdaL0Time);
   
-    currentDownstreamFilter = m_L0DenoisingTime;
+    m_DownstreamFilter = m_L0DenoisingTime;
     }
     
   if (m_PerformTNVDenoising)
     {
-    currentDownstreamFilter->ReleaseDataFlagOff();
+    m_DownstreamFilter->ReleaseDataFlagOff();
 
     if (m_PerformWarping && !m_ComputeInverseWarpingByConjugateGradient && !m_PerformTVTemporalDenoising && !m_PerformL0TemporalDenoising)
       m_TNVDenoising->SetInPlace(false);
     else
       m_TNVDenoising->SetInPlace(true);
 
-    m_TNVDenoising->SetInput(currentDownstreamFilter->GetOutput());
+    m_TNVDenoising->SetInput(m_DownstreamFilter->GetOutput());
     m_TNVDenoising->SetNumberOfIterations(this->m_TV_iterations);
     m_TNVDenoising->SetGamma(this->m_GammaTNV);
 
-    currentDownstreamFilter = m_TNVDenoising;
+    m_DownstreamFilter = m_TNVDenoising;
     }
 
   if (m_PerformWarping)
     {
     if (m_ComputeInverseWarpingByConjugateGradient)
       {
-      currentDownstreamFilter->ReleaseDataFlagOn();
+      m_DownstreamFilter->ReleaseDataFlagOn();
 
       m_Unwarp->SetNumberOfIterations(4);
-      m_Unwarp->SetInput(currentDownstreamFilter->GetOutput());
+      m_Unwarp->SetInput(m_DownstreamFilter->GetOutput());
       m_Unwarp->SetDisplacementField(this->GetDisplacementField());
       m_Unwarp->SetPhaseShift(m_PhaseShift);
       m_Unwarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
       m_Unwarp->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
       m_Unwarp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
-      currentDownstreamFilter = m_Unwarp;
+      m_DownstreamFilter = m_Unwarp;
       }
     else
       {
-      currentDownstreamFilter->ReleaseDataFlagOff();
+      m_DownstreamFilter->ReleaseDataFlagOff();
         
       // Compute the correction performed by temporal TV and/or temporal L0 and/or TNV
-      m_SubtractFilter->SetInput1(currentDownstreamFilter->GetOutput());
+      m_SubtractFilter->SetInput1(m_DownstreamFilter->GetOutput());
       m_SubtractFilter->SetInput2(m_Warp->GetOutput());
 
       // Deform only that correction with the inverse field
@@ -464,7 +465,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_AddFilter->SetInput1(m_InverseWarp->GetOutput());
       m_AddFilter->SetInput2(m_Warp->GetInput());
 
-      currentDownstreamFilter = m_AddFilter;
+      m_DownstreamFilter = m_AddFilter;
       
       m_Warp->ReleaseDataFlagOff();
       m_SubtractFilter->ReleaseDataFlagOn();
@@ -474,11 +475,11 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     }
     
   // Have the last filter calculate its output information
-  currentDownstreamFilter->ReleaseDataFlagOff();
-  currentDownstreamFilter->UpdateOutputInformation();
+  m_DownstreamFilter->ReleaseDataFlagOff();
+  m_DownstreamFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( currentDownstreamFilter->GetOutput() );
+  this->GetOutput()->CopyInformation( m_DownstreamFilter->GetOutput() );
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -487,7 +488,6 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateData()
 {
   // Declare the pointer that will be used to plug the output back as input
-  typename itk::ImageToImageFilter<VolumeSeriesType, VolumeSeriesType>::Pointer currentDownstreamFilter;
   typename VolumeSeriesType::Pointer pimg;
 
   for (int i=0; i<m_MainLoop_iterations; i++)
@@ -495,7 +495,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     // After the first iteration, we need to use the output as input
     if (i>0)
       {
-      pimg = currentDownstreamFilter->GetOutput();
+      pimg = m_DownstreamFilter->GetOutput();
 
       pimg->DisconnectPipeline();
       m_FourDCGFilter->SetInputVolumeSeries(pimg);
@@ -504,149 +504,61 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       this->GetInputVolumeSeries()->GetBufferPointer();
       }
 
-    m_CGProbe.Start();
-    m_FourDCGFilter->Update();
-    m_CGProbe.Stop();
-    currentDownstreamFilter = m_FourDCGFilter;
-
-    if (m_PerformPositivity)
-      {
-      m_PositivityProbe.Start();
-      m_PositivityFilter->Update();
-      m_PositivityProbe.Stop();
-    
-      currentDownstreamFilter = m_PositivityFilter;
-      }
-    
-    if (m_PerformMotionMask)
-      {
-      m_MotionMaskProbe.Start();
-      m_AverageOutOfROIFilter->Update();
-      m_MotionMaskProbe.Stop();
-    
-      currentDownstreamFilter = m_AverageOutOfROIFilter;
-      }
-    
-    if (m_PerformTVSpatialDenoising)
-      {
-      m_TVSpatialDenoisingProbe.Start();
-      m_TVDenoisingSpace->Update();
-      m_TVSpatialDenoisingProbe.Stop();
-    
-      currentDownstreamFilter = m_TVDenoisingSpace;
-      }
-      
-    if (m_PerformWaveletsSpatialDenoising)
-      {
-      m_WaveletsSpatialDenoisingProbe.Start();
-      m_WaveletsDenoisingSpace->Update();
-      m_WaveletsSpatialDenoisingProbe.Stop();
-    
-      currentDownstreamFilter = m_WaveletsDenoisingSpace;
-      }  
-    
-    if (m_PerformWarping)
-      {
-      m_WarpingProbe.Start();
-      m_Warp->Update();
-      m_WarpingProbe.Stop();
-    
-      currentDownstreamFilter = m_Warp;
-      }
-      
-    if (m_PerformTVTemporalDenoising)
-      {
-      m_TVTemporalDenoisingProbe.Start();
-      m_TVDenoisingTime->Update();
-      m_TVTemporalDenoisingProbe.Stop();
-    
-      currentDownstreamFilter = m_TVDenoisingTime;
-      }  
-
-    if (m_PerformL0TemporalDenoising)
-      {
-      m_L0TemporalDenoisingProbe.Start();
-      m_L0DenoisingTime->Update();
-      m_L0TemporalDenoisingProbe.Stop();
-    
-      currentDownstreamFilter = m_L0DenoisingTime;
-      }  
-      
-    if (m_PerformWarping)
-      {
-      m_UnwarpingProbe.Start();
-
-      if (m_ComputeInverseWarpingByConjugateGradient)
-        {
-        m_Unwarp->Update();
-      
-        currentDownstreamFilter = m_Unwarp;
-        }
-      else
-        {
-        m_SubtractFilter->Update();
-        m_InverseWarp->Update();
-        m_AddFilter->Update();
-
-        currentDownstreamFilter = m_AddFilter;
-        }
-
-      m_UnwarpingProbe.Stop();
-      }
+    m_DownstreamFilter->Update();
     }
 
-  this->GraftOutput( currentDownstreamFilter->GetOutput() );
+  this->GraftOutput( m_DownstreamFilter->GetOutput() );
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
-void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::PrintTiming(std::ostream& os) const
-{
-  os << "FourDROOSTERConeBeamReconstructionFilter timing:" << std::endl;
-  os << "  4D conjugate gradient reconstruction: " << m_CGProbe.GetTotal()
-     << ' ' << m_CGProbe.GetUnit() << std::endl;
-  if (m_PerformPositivity)
-    {
-    os << "  Positivity enforcement: " << m_PositivityProbe.GetTotal()
-      << ' ' << m_PositivityProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformMotionMask)
-    {
-    os << "  Averaging along time outside the ROI where movement is allowed: " << m_MotionMaskProbe.GetTotal()
-      << ' ' << m_MotionMaskProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformTVSpatialDenoising)
-    {
-    os << "  Total Variation spatial denoising: " << m_TVSpatialDenoisingProbe.GetTotal()
-      << ' ' << m_TVSpatialDenoisingProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformWaveletsSpatialDenoising)
-    {
-    os << "  Wavelets spatial denoising: " << m_WaveletsSpatialDenoisingProbe.GetTotal()
-      << ' ' << m_WaveletsSpatialDenoisingProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformWarping)
-    {
-    os << "  Warping volumes to reference position: " << m_WarpingProbe.GetTotal()
-       << ' ' << m_WarpingProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformTVTemporalDenoising)
-    {
-    os << "  Temporal total variation denoising: " << m_TVTemporalDenoisingProbe.GetTotal()
-      << ' ' << m_TVTemporalDenoisingProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformL0TemporalDenoising)
-    {
-    os << "  Gradient's L0 norm temporal denoising: " << m_L0TemporalDenoisingProbe.GetTotal()
-      << ' ' << m_L0TemporalDenoisingProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformWarping)
-    {
-    os << "  Warping volumes back from average position: " << m_UnwarpingProbe.GetTotal()
-       << ' ' << m_UnwarpingProbe.GetUnit() << std::endl;
-    }
-}
+//template< typename VolumeSeriesType, typename ProjectionStackType>
+//void
+//FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+//::PrintTiming(std::ostream& os) const
+//{
+//  os << "FourDROOSTERConeBeamReconstructionFilter timing:" << std::endl;
+//  os << "  4D conjugate gradient reconstruction: " << m_CGProbe.GetTotal()
+//     << ' ' << m_CGProbe.GetUnit() << std::endl;
+//  if (m_PerformPositivity)
+//    {
+//    os << "  Positivity enforcement: " << m_PositivityProbe.GetTotal()
+//      << ' ' << m_PositivityProbe.GetUnit() << std::endl;
+//    }
+//  if (m_PerformMotionMask)
+//    {
+//    os << "  Averaging along time outside the ROI where movement is allowed: " << m_MotionMaskProbe.GetTotal()
+//      << ' ' << m_MotionMaskProbe.GetUnit() << std::endl;
+//    }
+//  if (m_PerformTVSpatialDenoising)
+//    {
+//    os << "  Total Variation spatial denoising: " << m_TVSpatialDenoisingProbe.GetTotal()
+//      << ' ' << m_TVSpatialDenoisingProbe.GetUnit() << std::endl;
+//    }
+//  if (m_PerformWaveletsSpatialDenoising)
+//    {
+//    os << "  Wavelets spatial denoising: " << m_WaveletsSpatialDenoisingProbe.GetTotal()
+//      << ' ' << m_WaveletsSpatialDenoisingProbe.GetUnit() << std::endl;
+//    }
+//  if (m_PerformWarping)
+//    {
+//    os << "  Warping volumes to reference position: " << m_WarpingProbe.GetTotal()
+//       << ' ' << m_WarpingProbe.GetUnit() << std::endl;
+//    }
+//  if (m_PerformTVTemporalDenoising)
+//    {
+//    os << "  Temporal total variation denoising: " << m_TVTemporalDenoisingProbe.GetTotal()
+//      << ' ' << m_TVTemporalDenoisingProbe.GetUnit() << std::endl;
+//    }
+//  if (m_PerformL0TemporalDenoising)
+//    {
+//    os << "  Gradient's L0 norm temporal denoising: " << m_L0TemporalDenoisingProbe.GetTotal()
+//      << ' ' << m_L0TemporalDenoisingProbe.GetUnit() << std::endl;
+//    }
+//  if (m_PerformWarping)
+//    {
+//    os << "  Warping volumes back from average position: " << m_UnwarpingProbe.GetTotal()
+//       << ' ' << m_UnwarpingProbe.GetUnit() << std::endl;
+//    }
+//}
 
 }// end namespace
 

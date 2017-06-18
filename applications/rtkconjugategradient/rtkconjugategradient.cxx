@@ -114,7 +114,6 @@ int main(int argc, char * argv[])
     supportmaskSource = supportmaskReader;
     }
 
-
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
@@ -123,7 +122,6 @@ int main(int argc, char * argv[])
   conjugategradient->SetInput( inputFilter->GetOutput() );
   conjugategradient->SetInput(1, reader->GetOutput());
   conjugategradient->SetInput(2, weightsSource->GetOutput());
-  conjugategradient->SetPreconditioned(args_info.preconditioned_flag);
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
   if(args_info.mask_given)
     {
@@ -139,6 +137,7 @@ int main(int argc, char * argv[])
 
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
+  conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)

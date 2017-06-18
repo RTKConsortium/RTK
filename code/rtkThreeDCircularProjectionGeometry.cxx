@@ -25,6 +25,11 @@
 #include <itkCenteredEuler3DTransform.h>
 #include <itkEuler3DTransform.h>
 
+rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry():
+    m_RadiusCylindricalDetector(0.)
+{
+}
+
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
   double result = a-360*floor(a/360); // between -360 and 360
@@ -342,7 +347,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
 
   // Special management of single or empty dataset
   if(nProj==1)
-    angularGaps[0] = vnl_math::pi;
+    angularGaps[0] = 2*vnl_math::pi;
   if(nProj<2)
     return angularGaps;
 
@@ -463,7 +468,7 @@ GetSourcePosition(const unsigned int i) const
 
 const rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
 rtk::ThreeDCircularProjectionGeometry::
-GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
+GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const
 {
   // Compute projection inverse and distance to source
   ThreeDHomogeneousMatrixType matrix;
@@ -472,9 +477,16 @@ GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
   matrix[1][3] = this->GetProjectionOffsetsY()[i];
   matrix[2][3] = this->GetSourceToIsocenterDistances()[i]-this->GetSourceToDetectorDistances()[i];
   matrix[2][2] = 0.; // Force z to axis to detector distance
+  return matrix;
+}
 
-  // Rotate
-  matrix = this->GetRotationMatrices()[i].GetInverse() * matrix.GetVnlMatrix();
+const rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+rtk::ThreeDCircularProjectionGeometry::
+GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
+{
+  ThreeDHomogeneousMatrixType matrix;
+  matrix = this->GetRotationMatrices()[i].GetInverse() *
+           GetProjectionCoordinatesToDetectorSystemMatrix(i).GetVnlMatrix();
   return matrix;
 }
 

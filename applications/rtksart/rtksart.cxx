@@ -114,6 +114,7 @@ int main(int argc, char * argv[])
   sart->SetNumberOfIterations( args_info.niterations_arg );
   sart->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
   sart->SetLambda( args_info.lambda_arg );
+  sart->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   itk::TimeProbe totalTimeProbe;
   if(args_info.time_flag)

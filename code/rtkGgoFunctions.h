@@ -26,6 +26,7 @@
 #include "rtkConstantImageSource.h"
 #include "rtkProjectionsReader.h"
 #include <itkRegularExpressionSeriesFileNames.h>
+#include <itksys/RegularExpression.hxx>
 
 namespace rtk
 {
@@ -110,9 +111,9 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
  *
  * \ingroup Functions
  */
-template< class TProjectionsReaderType, class TArgsInfo >
-void
-SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, const TArgsInfo &args_info)
+template< class TArgsInfo >
+const std::vector< std::string >
+GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
 {
   // Generate file names
   itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
@@ -126,6 +127,38 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
               << names->GetFileNames().size()
               << " file(s)..."
               << std::endl;
+
+  // Check submatch in file names
+  if(args_info.submatch_given)
+    {
+    // Check that the submatch number returns something relevant
+    itksys::RegularExpression reg;
+    if ( !reg.compile( args_info.regexp_arg ) )
+      {
+      itkGenericExceptionMacro(<< "Error compiling regular expression " <<  args_info.regexp_arg);
+      }
+
+    // Store the full filename and the selected sub expression match
+    for(size_t i=0; i<names->GetFileNames().size(); i++)
+      {
+      reg.find( names->GetFileNames()[i] );
+      if (reg.match(args_info.submatch_arg) == std::string(""))
+        {
+        itkGenericExceptionMacro(<< "Cannot find submatch " << args_info.submatch_arg
+                                 << " in " << names->GetFileNames()[i]
+                                 << " from regular expression " << args_info.regexp_arg);
+        }
+      }
+    }
+  return names->GetFileNames();
+}
+
+template< class TProjectionsReaderType, class TArgsInfo >
+void
+SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
+                            const TArgsInfo &args_info)
+{
+  const std::vector< std::string > fileNames = GetProjectionsFileNamesFromGgo(args_info);
 
   // Vector component extraction
   if(args_info.component_given)
@@ -171,6 +204,15 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
     upperCrop[i] = args_info.uppercrop_arg[i];
   reader->SetUpperBoundaryCropSize(upperCrop);
 
+  // Conditional median
+  typename TProjectionsReaderType::MedianRadiusType medianRadius;
+  medianRadius.Fill(0);
+  for(unsigned int i=0; i<args_info.radius_given; i++)
+    medianRadius[i] = args_info.radius_arg[i];
+  reader->SetMedianRadius(medianRadius);
+  if(args_info.multiplier_given)
+    reader->SetConditionalMedianThresholdMultiplier(args_info.multiplier_arg);
+
   // Shrink / Binning
   typename TProjectionsReaderType::ShrinkFactorsType binFactors;
   binFactors.Fill(1);
@@ -204,7 +246,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
     }
 
   // Pass list to projections reader
-  reader->SetFileNames( names->GetFileNames() );
+  reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() );
 }
 

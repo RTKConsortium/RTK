@@ -34,6 +34,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 {
   // Initial lengths, set to incorrect values to make sure that they are indeed updated
   m_NumberOfSpectralBins = 8;
+  m_OutputInverseCramerRaoLowerBound = false;
+  m_OutputFischerMatrix = false;
+  m_LogTransformEachBin = false;
+  m_GuessInitialization = false;
 }
 
 template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
@@ -70,6 +74,9 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   this->m_NumberOfSpectralBins = this->GetInputMeasuredProjections()->GetVectorLength();
   this->m_NumberOfMaterials = this->GetInputDecomposedProjections()->GetVectorLength();
   this->m_NumberOfEnergies = this->GetInputIncidentSpectrum()->GetVectorLength();
+
+  if (m_LogTransformEachBin)
+    this->GetOutput(0)->SetVectorLength(this->m_NumberOfMaterials + this->m_NumberOfSpectralBins);
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -121,10 +128,15 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     indexDet[0] = energy;
     for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
       {
-      for (unsigned int pulseHeight=m_Thresholds[bin]-1; pulseHeight<m_Thresholds[bin+1]-1; pulseHeight++)
+      for (unsigned int pulseHeight=m_Thresholds[bin]-1; pulseHeight<m_Thresholds[bin+1]; pulseHeight++)
         {
         indexDet[1] = pulseHeight;
-        this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet);
+        // Linear interpolation on the pulse heights: half of the pulses that have "threshold"
+        // height are considered below threshold, the other half are considered above threshold
+        if ((pulseHeight == m_Thresholds[bin]-1) || (pulseHeight == m_Thresholds[bin+1] - 1))
+          this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet) / 2;
+        else
+          this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet);
         }
       }
     }
@@ -148,6 +160,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 
   // Pass the attenuation functions to the cost function
   cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
+  if (m_GuessInitialization)
+    cost->SetThresholds(this->m_Thresholds);
 
   // Pass the binned detector response to the cost function
   cost->SetDetectorResponse(this->m_DetectorResponse);
@@ -160,6 +174,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   // Walk the output projection stack. For each pixel, set the cost function's member variables and run the optimizer.
   itk::ImageRegionIterator<DecomposedProjectionsType> output0It (this->GetOutput(0), outputRegionForThread);
   itk::ImageRegionIterator<DecomposedProjectionsType> output1It (this->GetOutput(1), outputRegionForThread);
+  itk::ImageRegionIterator<DecomposedProjectionsType> output2It (this->GetOutput(2), outputRegionForThread);
   itk::ImageRegionConstIterator<DecomposedProjectionsType> inputIt (this->GetInputDecomposedProjections(), outputRegionForThread);
   itk::ImageRegionConstIterator<MeasuredProjectionsType> spectralProjIt (this->GetInputMeasuredProjections(), outputRegionForThread);
 
@@ -184,10 +199,20 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     // Pass the detector counts vector to cost function
     cost->SetMeasuredData(spectralProjIt.Get());
 
+
     // Run the optimizer
     typename CostFunctionType::ParametersType startingPosition(this->m_NumberOfMaterials);
-    for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
-      startingPosition[m] = inputIt.Get()[m];
+    if (m_GuessInitialization)
+      {
+      itk::VariableLengthVector<double> guess = cost->GuessInitialization();
+      for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
+        startingPosition[m] = guess[m];
+      }
+    else
+      {
+      for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
+        startingPosition[m] = inputIt.Get()[m];
+      }
 
     optimizer->SetInitialPosition(startingPosition);
     optimizer->SetAutomaticInitialSimplex(true);
@@ -195,17 +220,36 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     optimizer->StartOptimization();
 
     typename DecomposedProjectionsType::PixelType outputPixel;
-    outputPixel.SetSize(this->m_NumberOfMaterials);
+    if (m_LogTransformEachBin)
+      {
+      outputPixel.SetSize(this->m_NumberOfMaterials + this->m_NumberOfSpectralBins);
+      for (unsigned int bin=0; bin<this->m_NumberOfSpectralBins; bin++)
+        outputPixel[bin+this->m_NumberOfMaterials] = cost->BinwiseLogTransform()[bin];
+      }
+    else
+      outputPixel.SetSize(this->m_NumberOfMaterials);
+
     for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
       outputPixel[m] = optimizer->GetCurrentPosition()[m];
+
     output0It.Set(outputPixel);
 
-    // Compute the inverse variance of decomposition noise, and store it into output(1)
-    output1It.Set(cost->GetInverseCramerRaoLowerBound(optimizer->GetCurrentPosition()));
+    // If required, compute the Fischer matrix
+    if (m_OutputInverseCramerRaoLowerBound || m_OutputFischerMatrix)
+      cost->ComputeFischerMatrix(optimizer->GetCurrentPosition());
+
+    // If requested, compute the inverse variance of decomposition noise, and store it into output(1)
+    if (m_OutputInverseCramerRaoLowerBound)
+      output1It.Set(cost->GetInverseCramerRaoLowerBound());
+
+    // If requested, store the Fischer matrix into output(2)
+    if (m_OutputFischerMatrix)
+      output2It.Set(cost->GetFischerMatrix());
 
     // Move forward
     ++output0It;
     ++output1It;
+    ++output2It;
     ++inputIt;
     ++spectralProjIt;
     ++spectrumIt;

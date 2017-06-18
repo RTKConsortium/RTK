@@ -21,7 +21,6 @@
 
 #include "rtkWin32Header.h"
 #include "rtkProjectionGeometry.h"
-#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -45,6 +44,7 @@ namespace rtk
  *
  * \ingroup ProjectionGeometry
  */
+
 class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
@@ -174,7 +174,7 @@ public:
                                       double transZ);
 
   /** Compute the magnification matrix from 3D to 2D given a source to detector
-   * and to detector distance. */
+   * and to isocenter distance. */
   static Superclass::MatrixType ComputeProjectionMagnificationMatrix(double sdd,
                                                                      double sid);
 
@@ -198,6 +198,13 @@ public:
   const HomogeneousVectorType GetSourcePosition(const unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
+   * in the detector coordinate system (u,v,u^v). Note that the matrix is square but the
+   * third element of the projection coordinates is ignored because projection
+   * coordinates are 2D. This is meant to manipulate more easily stack of
+   * projection images. */
+  const ThreeDHomogeneousMatrixType GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const;
+
+  /** Compute the ith matrix to convert projection coordinates to coordinates
    * in the fixed coordinate system. Note that the matrix is square but the
    * third element of the projection coordinates is ignored because projection
    * coordinates are 2D. This is meant to manipulate more easily stack of
@@ -217,8 +224,13 @@ public:
   double ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
                                          const double tiltedCoord) const;
 
+  /** Accessor for the radius of curved detector. The default is 0 and it means
+   * a flat detector. */
+  itkGetMacro(RadiusCylindricalDetector, double)
+  itkSetMacro(RadiusCylindricalDetector, double)
+
 protected:
-  ThreeDCircularProjectionGeometry() {};
+  ThreeDCircularProjectionGeometry();
   ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
@@ -293,6 +305,10 @@ protected:
   std::vector<double> m_ProjectionOffsetsX;
   std::vector<double> m_ProjectionOffsetsY;
 
+  /** Radius of curved detector. The default is 0 and it means a flat detector. */
+  double m_RadiusCylindricalDetector;
+
+  /** Matrices to change coordiate systems. */
   std::vector<TwoDHomogeneousMatrixType>         m_ProjectionTranslationMatrices;
   std::vector<Superclass::MatrixType>            m_MagnificationMatrices;
   std::vector<ThreeDHomogeneousMatrixType>       m_RotationMatrices;
@@ -304,4 +320,5 @@ private:
 };
 }
 
-#endif // rtkThreeDCircularProjectionGeometry_h
+
+#endif // __rtkThreeDCircularProjectionGeometry_h

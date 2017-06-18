@@ -51,14 +51,16 @@ public:
   typedef Superclass::DerivativeType      DerivativeType;
   typedef Superclass::MeasureType         MeasureType;
 
-  typedef itk::VariableSizeMatrix<float>      DetectorResponseType;
-  typedef itk::VariableSizeMatrix<float>      MaterialAttenuationsType;
-  typedef itk::VariableLengthVector<float>    MeasuredDataType;
-  typedef itk::VariableLengthVector<float>    IncidentSpectrumType;
+  typedef itk::VariableSizeMatrix<double>      DetectorResponseType;
+  typedef itk::VariableSizeMatrix<double>      MaterialAttenuationsType;
+  typedef itk::VariableLengthVector<double>    MeasuredDataType;
+  typedef itk::VariableLengthVector<double>    IncidentSpectrumType;
 
   // Constructor
   ProjectionsDecompositionNegativeLogLikelihood()
   {
+  m_NumberOfEnergies = 0;
+  m_NumberOfMaterials = 0;
   }
 
   // Destructor
@@ -66,7 +68,7 @@ public:
   {
   }
 
-  virtual vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const = 0;
+  virtual vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const = 0;
   virtual MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE = 0;
   virtual void GetDerivative( const ParametersType & lineIntegrals,
                       DerivativeType & derivatives ) const ITK_OVERRIDE = 0;

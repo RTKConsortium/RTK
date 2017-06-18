@@ -23,6 +23,9 @@
 // Varian Obi includes
 #include "rtkHndImageIOFactory.h"
 
+// Varian ProBeam includes
+#include "rtkXimImageIOFactory.h"
+
 // Elekta Synergy includes
 #include "rtkHisImageIOFactory.h"
 
@@ -49,6 +52,7 @@ void RegisterIOFactories()
     itk::GDCMImageIOFactory::UnRegisterFactory(*it);
     }
   rtk::HndImageIOFactory::RegisterOneFactory();
+  rtk::XimImageIOFactory::RegisterOneFactory();
   rtk::HisImageIOFactory::RegisterOneFactory();
   rtk::ImagXImageIOFactory::RegisterOneFactory();
   rtk::DCMImagXImageIOFactory::RegisterOneFactory();

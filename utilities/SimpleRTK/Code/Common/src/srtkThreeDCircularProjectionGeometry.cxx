@@ -1,4 +1,4 @@
-/*=========================================================================
+ /*=========================================================================
  *
  *  Copyright RTK Consortium
  *
@@ -160,6 +160,16 @@ public:
     return std::vector< double >( m.GetVnlMatrix().begin(), m.GetVnlMatrix().end() );
     }
 
+  const double GetRadiusCylindricalDetector()
+    {
+    return this->m_ProjectionGeometry->GetRadiusCylindricalDetector();
+    }
+
+  void SetRadiusCylindricalDetector( const double radius )
+    {
+    this->m_ProjectionGeometry->SetRadiusCylindricalDetector(radius);
+    }
+
   /** Add the projection */
   void AddProjection(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
     {
@@ -168,6 +178,12 @@ public:
   void AddProjectionInRadians(float sid,float sdd,float angle,float isox=0.,float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.)
     {
     this->m_ProjectionGeometry->AddProjectionInRadians(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
+    }
+  void AddProjection(const std::vector<double> matrix)
+    {
+    ProjectionGeometryType::MatrixType itkMatrix;
+    std::copy( matrix.begin(), matrix.end(), itkMatrix.GetVnlMatrix().begin() );
+    this->m_ProjectionGeometry->AddProjection(itkMatrix);
     }
 
   /** Clears the geometry */
@@ -314,6 +330,18 @@ const std::vector<double>  ThreeDCircularProjectionGeometry::GetProjectionCoordi
     return this->m_PimpleThreeDCircularProjectionGeometry->GetProjectionCoordinatesToFixedSystemMatrix(i);
   }
 
+const double ThreeDCircularProjectionGeometry::GetRadiusCylindricalDetector()
+  {
+  assert( m_PimpleThreeDCircularProjectionGeometry );
+  return this->m_PimpleThreeDCircularProjectionGeometry->GetRadiusCylindricalDetector();
+  }
+
+void ThreeDCircularProjectionGeometry::SetRadiusCylindricalDetector( const double radius )
+  {
+  this->m_PimpleThreeDCircularProjectionGeometry->SetRadiusCylindricalDetector(radius);
+  }
+
+
 void ThreeDCircularProjectionGeometry::AddProjection(float sid,float sdd,float angle,float isox,float isoy, float oa, float ia, float sx, float sy)
   {
   assert( m_PimpleThreeDCircularProjectionGeometry );
@@ -324,6 +352,12 @@ void ThreeDCircularProjectionGeometry::AddProjectionInRadians(float sid,float sd
   {
   assert( m_PimpleThreeDCircularProjectionGeometry );
   this->m_PimpleThreeDCircularProjectionGeometry->AddProjectionInRadians(sid,sdd,angle,isox,isoy,oa,ia,sx,sy);
+  }
+
+void ThreeDCircularProjectionGeometry::AddProjection(const std::vector<double> matrix)
+  {
+  assert( m_PimpleThreeDCircularProjectionGeometry );
+  this->m_PimpleThreeDCircularProjectionGeometry->AddProjection(matrix);
   }
 
 void ThreeDCircularProjectionGeometry::Clear()

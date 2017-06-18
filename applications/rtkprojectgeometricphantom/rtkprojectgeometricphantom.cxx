@@ -59,9 +59,28 @@ int main(int argc, char * argv[])
   constantImageSource->SetSize( sizeOutput );
 
   typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> PPCType;
+
+  // Offset, scale
+  PPCType::VectorType offset(0.);
+  PPCType::VectorType scale;
+  if(args_info.offset_given)
+    {
+    offset[0] = args_info.offset_arg[0];
+    offset[1] = args_info.offset_arg[1];
+    offset[2] = args_info.offset_arg[2];
+    }
+  scale.Fill(args_info.phantomscale_arg[0]);
+  if(args_info.phantomscale_given)
+    {
+    for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
+      scale[i] = args_info.phantomscale_arg[i];
+    }
+
   PPCType::Pointer ppc = PPCType::New();
   ppc->SetInput(constantImageSource->GetOutput());
   ppc->SetGeometry(geometryReader->GetOutputObject());
+  ppc->SetPhantomScale( scale );
+  ppc->SetOriginOffset(offset);
   ppc->SetConfigFile(args_info.phantomfile_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( ppc->Update() )
 

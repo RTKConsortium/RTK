@@ -10,7 +10,7 @@
 #endif
 
 /**
- * \file rtkconjugategradienttest.cxx
+ * \file rtkconjugategradientreconstructiontest.cxx
  *
  * \brief Functional test for ConjugateGradient reconstruction
  *
@@ -173,7 +173,6 @@ int main(int, char** )
   std::cout << "\n\n****** Case 4: Joseph Backprojector, weighted least squares  ******" << std::endl;
 
   uniformWeightsSource->SetConstant(2.0);
-  conjugategradient->SetPreconditioned(true);
   conjugategradient->SetRegularized(false);
 
   conjugategradient->SetBackProjectionFilter( 1 );

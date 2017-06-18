@@ -49,14 +49,7 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkgaincorrection>(reader, args_info);
   reader->ComputeLineIntegralOff();   // Don't want to preprocess data
-
-  // Generate namefiles projections
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
-  names->SetDirectory(args_info.path_arg);
-  names->SetNumericSort(args_info.nsort_flag);
-  names->SetRegularExpression(args_info.regexp_arg);
-  names->SetSubMatch(args_info.submatch_arg);
-  reader->SetFileNames( names->GetFileNames() );
+  reader->SetFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
   // Input projection parameters

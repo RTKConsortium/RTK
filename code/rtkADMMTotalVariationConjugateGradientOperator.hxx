@@ -53,6 +53,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisableDisplacedDetectorFilter = false;
 
   // Set memory management options
   m_ZeroMultiplyProjectionFilter->ReleaseDataFlagOn();
@@ -132,6 +133,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
     {
     m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
     }
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_SubtractFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));

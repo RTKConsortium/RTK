@@ -57,6 +57,7 @@ public:
 
   /** Convenient information */
   typedef itk::VariableLengthVector<unsigned int>   ThresholdsType;
+  typedef itk::VariableSizeMatrix<double>           MeanAttenuationInBinType;
 
   /** Typedefs of each subfilter of this composite filter */
   typedef Schlomka2008NegativeLogLikelihood                             CostFunctionType;
@@ -77,6 +78,17 @@ public:
   itkSetMacro(NumberOfSpectralBins, unsigned int)
   itkGetMacro(NumberOfSpectralBins, unsigned int)
 
+  itkSetMacro(OutputInverseCramerRaoLowerBound, bool)
+  itkGetMacro(OutputInverseCramerRaoLowerBound, bool)
+
+  itkSetMacro(OutputFischerMatrix, bool)
+  itkGetMacro(OutputFischerMatrix, bool)
+
+  itkSetMacro(LogTransformEachBin, bool)
+  itkGetMacro(LogTransformEachBin, bool)
+
+  itkSetMacro(GuessInitialization, bool)
+  itkGetMacro(GuessInitialization, bool)
 
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
@@ -95,6 +107,11 @@ protected:
 
   ThresholdsType             m_Thresholds;
   unsigned int               m_NumberOfSpectralBins;
+  bool                       m_OutputInverseCramerRaoLowerBound;
+  bool                       m_OutputFischerMatrix;
+  bool                       m_LogTransformEachBin;
+  bool                       m_GuessInitialization;
+  MeanAttenuationInBinType   m_MeanAttenuationInBin;
 
 private:
   //purposely not implemented

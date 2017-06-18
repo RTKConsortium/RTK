@@ -23,6 +23,7 @@
 #include <itkImageRegionIteratorWithIndex.h>
 
 #include "rtkHomogeneousMatrix.h"
+#include "rtkProjectionsRegionConstIteratorRayBased.h"
 
 namespace rtk
 {
@@ -75,8 +76,11 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
   rqiFunctor->SetJ( m_RQIFunctor->GetJ() );
 
   // Iterators on input and output
-  typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
-  InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
+  typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+  InputRegionIterator *itIn;
+  itIn = InputRegionIterator::New(this->GetInput(),
+                                  outputRegionForThread,
+                                  m_Geometry);
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
@@ -84,46 +88,19 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
   const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
 
   // Go over each projection
-  for(unsigned int iProj=outputRegionForThread.GetIndex(2);
-                   iProj<outputRegionForThread.GetIndex(2)+outputRegionForThread.GetSize(2);
-                   iProj++)
+  for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
     {
-    // Set source position
-    GeometryType::HomogeneousVectorType sourcePosition = m_Geometry->GetSourcePosition(iProj);
-    rqiFunctor->SetRayOrigin( &(sourcePosition[0]) );
 
-    // Compute matrix to transform projection index to volume coordinates
-    GeometryType::ThreeDHomogeneousMatrixType matrix;
-    matrix = m_Geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-             GetIndexToPhysicalPointMatrix( this->GetOutput() ).GetVnlMatrix();
+    rqiFunctor->SetRayOrigin( itIn->GetSourcePosition() );
 
-    // Go over each pixel of the projection
-    typename RQIFunctionType::VectorType direction;
-    for(unsigned int pix=0; pix<nPixelPerProj; pix++, ++itIn, ++itOut)
-      {
-      // Compute point coordinate in volume depending on projection index
-      for(unsigned int i=0; i<Dimension; i++)
-        {
-        direction[i] = matrix[i][Dimension];
-        for(unsigned int j=0; j<Dimension; j++)
-          direction[i] += matrix[i][j] * itOut.GetIndex()[j];
-
-        // Direction (projection position - source position)
-        direction[i] -= sourcePosition[i];
-        }
-
-      // Normalize direction
-      double invNorm = 1/direction.GetNorm();
-      for(unsigned int i=0; i<Dimension; i++)
-        direction[i] *= invNorm;
-
-      // Compute ray intersection length
-      if( rqiFunctor->Evaluate(direction) )
-        itOut.Set( itIn.Get() + m_Density*(rqiFunctor->GetFarthestDistance() - rqiFunctor->GetNearestDistance() ));
-      else
-        itOut.Set( itIn.Get() );
-      }
+    // Compute ray intersection length
+    if( rqiFunctor->Evaluate(itIn->GetDirection()) )
+      itOut.Set( itIn->Get() + m_Density*(rqiFunctor->GetFarthestDistance() - rqiFunctor->GetNearestDistance() ));
+    else
+      itOut.Set( itIn->Get() );
     }
+
+  delete itIn;
 }
 
 } // end namespace rtk

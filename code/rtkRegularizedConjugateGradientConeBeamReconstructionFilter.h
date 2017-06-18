@@ -132,6 +132,10 @@ public:
   void SetInputWeights(const TImage* Projection);
   typename TImage::Pointer   GetInputWeights();
 
+  /** Set the support mask, if any, for support constraint in reconstruction */
+  void SetSupportMask(const TImage *SupportMask);
+  typename TImage::ConstPointer GetSupportMask();
+
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<TImage>                    CGFilterType;
   typedef itk::ThresholdImageFilter<TImage>                                             ThresholdFilterType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter<TImage, GradientImageType>        TVDenoisingFilterType;
@@ -172,6 +176,10 @@ public:
   itkGetMacro(Order, unsigned int)
   itkSetMacro(Order, unsigned int)
 
+  /** Displays the conjugate gradient cost function at each iteration. */
+  itkSetMacro(IterationCosts, bool)
+  itkGetMacro(IterationCosts, bool)
+
   // Iterations
   itkSetMacro(MainLoop_iterations, int)
   itkGetMacro(MainLoop_iterations, int)
@@ -197,6 +205,10 @@ public:
   /** Perform CG operations on GPU ? */
   itkSetMacro(CudaConjugateGradient, bool)
   itkGetMacro(CudaConjugateGradient, bool)
+
+  /** Set / Get whether the displaced detector filter should be disabled */
+  itkSetMacro(DisableDisplacedDetectorFilter, bool)
+  itkGetMacro(DisableDisplacedDetectorFilter, bool)
 
 protected:
   RegularizedConjugateGradientConeBeamReconstructionFilter();
@@ -241,6 +253,10 @@ protected:
   unsigned int    m_Order;
   unsigned int    m_NumberOfLevels;
 
+  /** Conjugate gradient parameters */
+  bool            m_IterationCosts;
+  bool            m_DisableDisplacedDetectorFilter;
+
   // Iterations
   int   m_MainLoop_iterations;
   int   m_CG_iterations;
@@ -259,7 +275,6 @@ protected:
 private:
   RegularizedConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace ITK
 

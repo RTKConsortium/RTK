@@ -17,3 +17,5 @@ option "airthres"     - "Boellaard scatter correction: air threshold"           
 option "i0"           - "I0 value (when assumed constant per projection), 0 means auto" double           no
 option "idark"        - "IDark value, i.e., value when beam is off"                     double           no   default="0"
 option "component"    - "Vector component to extract, for multi-material projections"   int              no   default="0"
+option "radius"       - "Radius of neighborhood for conditional median filtering"       int     multiple no   default="0"
+option "multiplier"   - "Threshold multiplier for conditional median filtering"         double           no   default="0"

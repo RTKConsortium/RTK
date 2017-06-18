@@ -79,6 +79,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_IsGated = false;
   m_NumberOfProjectionsPerSubset = 1; //Default is the SART behavior
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisableDisplacedDetectorFilter = false;
 }
 
 template<class TInputImage, class TOutputImage>
@@ -142,6 +143,8 @@ void
 SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
+
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
   typename ExtractFilterType::InputImageRegionType projRegion;

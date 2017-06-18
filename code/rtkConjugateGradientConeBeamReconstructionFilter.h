@@ -66,6 +66,8 @@ namespace rtk
    * Input1 [shape=Mdiamond];
    * Input2 [label="Input 2 (Weights)"];
    * Input2 [shape=Mdiamond];
+   * Input3 [label="Input Support mask"];
+   * Input3 [shape=Mdiamond];
    * Output [label="Output (Volume)"];
    * Output [shape=Mdiamond];
    *
@@ -77,32 +79,15 @@ namespace rtk
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * VolumeSource [ label="rtk::ConstantImageSource (Volume)" URL="\ref rtk::ConstantImageSource"];
-   * ProjectionsSource [ label="rtk::ConstantImageSource (Projections)" URL="\ref rtk::ConstantImageSource"];
-   * BackProjForPreconditioning [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
-   * BackProjForNormalization [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
-   * Divide [label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
-   *
-   * AfterVolumeSource [label="", fixedsize="false", width=0, height=0, shape=none];
-   * AfterDisplaced [label="", fixedsize="false", width=0, height=0, shape=none];
-   * AfterDivide [label="Preconditioning weights", fixedsize="false", width=0, height=0, shape=none];
-   *
+
    * Input0 -> ConjugateGradient;
    * Input1 -> MultiplyProjections;
    * Input2 -> Displaced;
-   * Displaced -> AfterDisplaced [arrowhead=none];
-   * AfterDisplaced -> BackProjForPreconditioning;
-   * AfterDisplaced -> MultiplyProjections;
+   * Displaced -> MultiplyProjections;
    * MultiplyProjections -> BackProjection;
-   * VolumeSource -> AfterVolumeSource [arrowhead=none];
-   * AfterVolumeSource -> BackProjection;
-   * AfterVolumeSource -> BackProjForPreconditioning;
-   * AfterVolumeSource -> BackProjForNormalization;
-   * ProjectionsSource -> BackProjForNormalization;
-   * BackProjForPreconditioning -> Divide;
-   * BackProjForNormalization -> Divide;
-   * Divide -> AfterDivide [arrowhead=none];
-   * AfterDivide -> MultiplyVolumes;
-   * AfterDivide -> MultiplyOutput;
+   * VolumeSource -> BackProjection;
+   * Input3 -> MultiplyVolumes;
+   * Input3 -> MultiplyOutput;
    * BackProjection -> MultiplyVolumes;
    * MultiplyVolumes -> ConjugateGradient;
    * ConjugateGradient -> MultiplyOutput;
@@ -172,9 +157,9 @@ public:
     itkSetMacro(IterationCosts, bool)
     itkGetMacro(IterationCosts, bool)
 
-    /** If Weighted and Preconditioned, computes preconditioning weights to speed up CG convergence */
-    itkSetMacro(Preconditioned, bool)
-    itkGetMacro(Preconditioned, bool)
+    /** Set / Get whether the displaced detector filter should be disabled */
+    itkSetMacro(DisableDisplacedDetectorFilter, bool)
+    itkGetMacro(DisableDisplacedDetectorFilter, bool)
 
     /** If Regularized, perform laplacian-based regularization during
      *  reconstruction (gamma is the strength of the regularization) */
@@ -197,8 +182,6 @@ protected:
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;
 
-    const TOutputImage * ApplySupportMask(const TOutputImage *_arg);
-
     /** Member pointers to the filters used internally (for convenience)*/
     typename MultiplyFilterType::Pointer                                        m_MultiplyProjectionsFilter;
     typename MultiplyFilterType::Pointer                                        m_MultiplyVolumeFilter;
@@ -208,14 +191,8 @@ protected:
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForB;
-    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForPreconditioning;
-    typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForNormalization;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
     typename ConstantImageSourceType::Pointer                                   m_ConstantVolumeSource;
-    typename ConstantImageSourceType::Pointer                                   m_ConstantProjectionsSource;
-    typename DivideFilterType::Pointer                                          m_DivideFilter;
-    typename MultiplyFilterType::Pointer                                        m_MultiplySupportMaskFilter;
-    typename MultiplyFilterType::Pointer                                        m_MultiplySupportMaskFilterForOutput;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -237,9 +214,9 @@ private:
     float                        m_Gamma;
     bool                         m_MeasureExecutionTimes;
     bool                         m_IterationCosts;
-    bool                         m_Preconditioned;
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
+    bool                         m_DisableDisplacedDetectorFilter;
 };
 } //namespace ITK
 

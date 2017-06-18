@@ -22,6 +22,25 @@
 #include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
 #include "rtkFFTConvolutionImageFilter.h"
+#include "rtkMacro.h"
+
+// The Set macro is redefined to clear the current FFT kernel when a parameter
+// is modified.
+#undef itkSetMacro
+#define itkSetMacro(name, type)                     \
+  virtual void Set##name (const type _arg)          \
+    {                                               \
+    itkDebugMacro("setting " #name " to " << _arg); \
+CLANG_PRAGMA_PUSH                                   \
+CLANG_SUPPRESS_Wfloat_equal                         \
+    if ( this->m_##name != _arg )                   \
+      {                                             \
+      this->m_##name = _arg;                        \
+      this->Modified();                             \
+      this->m_KernelFFT = ITK_NULLPTR;              \
+      }                                             \
+CLANG_PRAGMA_POP                                    \
+    }
 
 namespace rtk
 {
@@ -84,16 +103,7 @@ public:
 
   /** Set/Get the Hann window frequency in Y direction. 0 (default) disables it */
   itkGetConstMacro(HannCutFrequencyY, double);
-  virtual void SetHannCutFrequencyY(const double _arg)
-    {
-    itkDebugMacro("setting HannCutFrequencyY to " << _arg);
-    if ( this->m_HannCutFrequencyY != _arg )
-      {
-      this->m_HannCutFrequencyY = _arg;
-      this->Modified();
-      this->m_KernelDimension = (_arg == 0.)?1:2;
-      }
-    }
+  itkSetMacro(HannCutFrequencyY, double);
 
   /** Set/Get the Ram-Lak window frequency (0...1). 0 (default) disable it.
    * Equation and further explanation about Ram-Lak filter could be found in:
@@ -119,6 +129,8 @@ protected:
   FFTRampImageFilter();
   ~FFTRampImageFilter() ITK_OVERRIDE {}
 
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
+
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.  */
   void UpdateFFTConvolutionKernel(const SizeType size) ITK_OVERRIDE;
@@ -140,6 +152,8 @@ private:
     */
   double m_RamLakCutFrequency;
   double m_SheppLoganCutFrequency;
+
+  SizeType m_PreviousKernelUpdateSize;
 }; // end of class
 
 } // end namespace rtk
@@ -147,5 +161,21 @@ private:
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkFFTRampImageFilter.hxx"
 #endif
+
+// Rollback to the original definition of the Set macro
+#undef itkSetMacro
+#define itkSetMacro(name, type)                     \
+  virtual void Set##name (const type _arg)          \
+    {                                               \
+    itkDebugMacro("setting " #name " to " << _arg); \
+CLANG_PRAGMA_PUSH                                   \
+CLANG_SUPPRESS_Wfloat_equal                         \
+    if ( this->m_##name != _arg )                   \
+      {                                             \
+      this->m_##name = _arg;                        \
+      this->Modified();                             \
+      }                                             \
+CLANG_PRAGMA_POP                                    \
+    }
 
 #endif

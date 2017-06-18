@@ -28,7 +28,6 @@ template< typename TOutputImage>
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::ReconstructionConjugateGradientOperator():
   m_Geometry(ITK_NULLPTR),
-  m_Preconditioned(false),
   m_Regularized(false),
   m_Gamma(0)
 {
@@ -47,7 +46,6 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
-  m_MultiplySupportMaskFilter = MultiplyFilterType::New();
   m_AddFilter = AddFilterType::New();
 
   m_MultiplyLaplacianFilter = MultiplyFilterType::New();
@@ -97,23 +95,6 @@ ReconstructionConjugateGradientOperator<TOutputImage>
 }
 
 template< typename TOutputImage >
-const TOutputImage *
-ReconstructionConjugateGradientOperator<TOutputImage>
-::ApplySupportMask (const TOutputImage *_arg)
-{
-  if (this->GetSupportMask().IsNotNull())
-  {
-    m_MultiplySupportMaskFilter->SetInput(0,_arg);
-    m_MultiplySupportMaskFilter->Update();
-    return m_MultiplySupportMaskFilter->GetOutput();
-  }
-  else
-  {
-    return _arg;
-  }
-}
-
-template< typename TOutputImage >
 void
 ReconstructionConjugateGradientOperator<TOutputImage>
 ::GenerateInputRequestedRegion()
@@ -137,18 +118,6 @@ ReconstructionConjugateGradientOperator<TOutputImage>
       return;
   inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
 
-  if (m_Preconditioned)
-    {
-    this->SetNumberOfRequiredInputs(4);
-
-    // Input 3 is the weights map on volumes, if any
-    typename Superclass::InputImagePointer  inputPtr3 =
-            const_cast< TOutputImage * >( this->GetInput(3) );
-    if ( !inputPtr3 )
-        return;
-    inputPtr3->SetRequestedRegion( inputPtr3->GetLargestPossibleRegion() );
-    }
-
   // Input "SupportMask" is the support constraint mask on volume, if any
   if (this->GetSupportMask().IsNotNull())
     {
@@ -168,49 +137,53 @@ ReconstructionConjugateGradientOperator<TOutputImage>
   // Set runtime connections, and connections with
   // forward and back projection filters, which are set
   // at runtime
-  m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
-  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
-  m_MultiplySupportMaskFilter->SetInput(1,this->GetSupportMask());
-  m_ForwardProjectionFilter->SetInput(1, ApplySupportMask(this->GetInput(0)));
 
+  m_FloatingInputPointer = const_cast<TOutputImage *>(this->GetInput(0));
+
+  // Set the first multiply filter to use the Support Mask, if any
+  if (this->GetSupportMask().IsNotNull())
+    {
+    m_MultiplyInputVolumeFilter->SetInput1( m_FloatingInputPointer );
+    m_MultiplyInputVolumeFilter->SetInput2( this->GetSupportMask() );
+    m_FloatingInputPointer = m_MultiplyInputVolumeFilter->GetOutput();
+    }
+
+  // Set the forward projection filter's inputs
+  m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionsSource->GetOutput());
+  m_ForwardProjectionFilter->SetInput(1, m_FloatingInputPointer);
+
+  // Set the multiply filter's inputs for the projection weights (for WLS minimization)
+  m_MultiplyProjectionsFilter->SetInput1(m_ForwardProjectionFilter->GetOutput());
+  m_MultiplyProjectionsFilter->SetInput2(this->GetInput(2));
+
+  // Set the back projection filter's inputs
+  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
+  m_FloatingOutputPointer= m_BackProjectionFilter->GetOutput();
+
+  // Set the filters to compute the regularization, if any
   if (m_Regularized)
     {
-    m_LaplacianFilter->SetInput(ApplySupportMask(this->GetInput(0)));
-
+    m_LaplacianFilter->SetInput(m_FloatingInputPointer);
     m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
-    // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian" 
+    // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian"
     // for correctly applying quadratic regularization || grad f ||_2^2
     m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
 
     m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput());
     m_AddFilter->SetInput2( m_MultiplyLaplacianFilter->GetOutput());
+
+    m_FloatingOutputPointer= m_AddFilter->GetOutput();
     }
 
-    // Multiply the projections
-    m_MultiplyProjectionsFilter->SetInput1(m_ForwardProjectionFilter->GetOutput());
-    m_MultiplyProjectionsFilter->SetInput2(this->GetInput(2));
-    m_BackProjectionFilter->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
-
-  if (m_Preconditioned)
+  // Set the second multiply filter to use the Support Mask, if any
+  if (this->GetSupportMask().IsNotNull())
     {
-    // Multiply the input volume
-    m_MultiplyInputVolumeFilter->SetInput1( ApplySupportMask(this->GetInput(0)) );
-    m_MultiplyInputVolumeFilter->SetInput2( this->GetInput(3) );
-    m_ForwardProjectionFilter->SetInput(1, m_MultiplyInputVolumeFilter->GetOutput());
-
-    // Multiply the volume
-    m_MultiplyOutputVolumeFilter->SetInput1(ApplySupportMask(m_BackProjectionFilter->GetOutput()));
-    m_MultiplyOutputVolumeFilter->SetInput2(this->GetInput(3));
-
-    // If a regularization is added, it needs to be added to the output of the
-    // m_MultiplyOutputVolumeFilter, instead of that of the m_BackProjectionFilter
-    if (m_Regularized)
-      {
-      m_LaplacianFilter->SetInput(m_MultiplyInputVolumeFilter->GetOutput());
-      m_MultiplyOutputVolumeFilter->SetInput1( ApplySupportMask(m_AddFilter->GetOutput()));
-      }
+    m_MultiplyOutputVolumeFilter->SetInput1( m_FloatingOutputPointer);
+    m_MultiplyOutputVolumeFilter->SetInput2( this->GetSupportMask() );
+    m_FloatingOutputPointer= m_MultiplyOutputVolumeFilter->GetOutput();
     }
 
   // Set geometry
@@ -219,53 +192,22 @@ ReconstructionConjugateGradientOperator<TOutputImage>
 
   // Set memory management parameters for forward
   // and back projection filters
-  m_ForwardProjectionFilter->SetInPlace(!m_Preconditioned);
+  m_ForwardProjectionFilter->SetInPlace(true);
   m_ForwardProjectionFilter->ReleaseDataFlagOn();
+  m_BackProjectionFilter->SetInPlace(true);
+  m_BackProjectionFilter->SetReleaseDataFlag(this->GetSupportMask().IsNotNull() || m_Regularized);
 
   // Update output information on the last filter of the pipeline
-  if (m_Preconditioned)
-    {
-    m_MultiplyOutputVolumeFilter->UpdateOutputInformation();
-    this->GetOutput()->CopyInformation( m_MultiplyOutputVolumeFilter->GetOutput() );
-    }
-  else
-    {
-    if (m_Regularized)
-      {
-      m_AddFilter->UpdateOutputInformation();
-      this->GetOutput()->CopyInformation( m_AddFilter->GetOutput() );
-      }
-    else
-      {
-      m_BackProjectionFilter->UpdateOutputInformation();
-      this->GetOutput()->CopyInformation( m_BackProjectionFilter->GetOutput() );
-      }
-    }
+  m_FloatingOutputPointer->UpdateOutputInformation();
+  this->GetOutput()->CopyInformation( m_FloatingOutputPointer);
 }
 
 template< typename TOutputImage >
 void ReconstructionConjugateGradientOperator<TOutputImage>::GenerateData()
 {
   // Execute Pipeline
-  if (m_Preconditioned)
-    {
-    m_MultiplyOutputVolumeFilter->Update();
-    this->GraftOutput( m_MultiplyOutputVolumeFilter->GetOutput() );
-
-    }
-  else
-    {
-    if (m_Regularized)
-      {
-      m_AddFilter->Update();
-      this->GraftOutput( const_cast<  TOutputImage* >(ApplySupportMask(m_AddFilter->GetOutput())) );
-      }
-    else
-      {
-      m_BackProjectionFilter->Update();
-      this->GraftOutput( const_cast< TOutputImage* >(ApplySupportMask(m_BackProjectionFilter->GetOutput())) );
-      }
-    }
+  m_FloatingOutputPointer->Update();
+  this->GraftOutput( m_FloatingOutputPointer );
 }
 
 }// end namespace

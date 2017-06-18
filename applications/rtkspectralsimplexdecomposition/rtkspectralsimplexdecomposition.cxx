@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkdecomposespectralprojections_ggo.h"
+#include "rtkspectralsimplexdecomposition_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
@@ -27,7 +27,7 @@
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkdecomposespectralprojections, args_info);
+  GGO(rtkspectralsimplexdecomposition, args_info);
 
   typedef float PixelValueType;
   const unsigned int Dimension = 3;
@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
   materialAttenuationsReader->Update();
 
   // Get parameters from the images
-  const unsigned int NumberOfMaterials = decomposedProjectionReader->GetOutput()->GetVectorLength();
+  const unsigned int NumberOfMaterials = materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
   const unsigned int NumberOfSpectralBins = spectralProjectionReader->GetOutput()->GetVectorLength();
   const unsigned int MaximumEnergy = incidentSpectrumReader->GetOutput()->GetVectorLength();
 
@@ -124,6 +124,7 @@ int main(int argc, char * argv[])
   typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType> SimplexFilterType;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
+  simplex->SetGuessInitialization(args_info.guess_flag);
   simplex->SetInputMeasuredProjections(spectralProjectionReader->GetOutput());
   simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
   simplex->SetDetectorResponse(detectorResponseReader->GetOutput());
@@ -131,6 +132,7 @@ int main(int argc, char * argv[])
   simplex->SetThresholds(thresholds);
   simplex->SetNumberOfIterations(args_info.niterations_arg);
   simplex->SetOptimizeWithRestarts(args_info.restarts_flag);
+  simplex->SetLogTransformEachBin(args_info.log_flag);
 
   // Note: The simplex filter is set to perform several searches for each pixel,
   // with different initializations, and keep the best one (SetOptimizeWithRestart(true)).
@@ -138,6 +140,12 @@ int main(int argc, char * argv[])
   // which makes the output non-reproducible.
   // The default behavior, used for example in the tests, is not to use this feature
   // (SetOptimizeWithRestart(false)), which makes the output reproducible.
+
+  if (args_info.weightsmap_given)
+    simplex->SetOutputInverseCramerRaoLowerBound(true);
+
+  if (args_info.fischer_given)
+    simplex->SetOutputFischerMatrix(true);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
@@ -152,6 +160,14 @@ int main(int argc, char * argv[])
     {
     writer->SetInput(simplex->GetOutput(1));
     writer->SetFileName(args_info.weightsmap_arg);
+    writer->Update();
+    }
+
+  // If requested, write the fisher information matrix
+  if (args_info.fischer_given)
+    {
+    writer->SetInput(simplex->GetOutput(2));
+    writer->SetFileName(args_info.fischer_arg);
     writer->Update();
     }
 

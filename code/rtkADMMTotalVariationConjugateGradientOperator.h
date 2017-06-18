@@ -148,6 +148,10 @@ public:
     /** In the case of a gated reconstruction, set the gating weights */
     void SetGatingWeights(std::vector<float> weights);
 
+    /** Set / Get whether the displaced detector filter should be disabled */
+    itkSetMacro(DisableDisplacedDetectorFilter, bool)
+    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
     ADMMTotalVariationConjugateGradientOperator();
     ~ADMMTotalVariationConjugateGradientOperator() ITK_OVERRIDE {}
@@ -170,6 +174,7 @@ protected:
 
     ThreeDCircularProjectionGeometry::Pointer         m_Geometry;
     float                                             m_Beta;
+    bool                                              m_DisableDisplacedDetectorFilter;
 
     /** Have gating weights been set ? If so, apply them, otherwise ignore
      * the gating weights filter */

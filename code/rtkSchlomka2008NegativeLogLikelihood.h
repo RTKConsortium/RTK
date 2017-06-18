@@ -50,20 +50,22 @@ public:
   itkNewMacro( Self );
   itkTypeMacro( Schlomka2008NegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood );
 
-//  enum { SpaceDimension=m_NumberOfMaterials };
+  typedef Superclass::ParametersType                ParametersType;
+  typedef Superclass::DerivativeType                DerivativeType;
+  typedef Superclass::MeasureType                   MeasureType;
 
-  typedef Superclass::ParametersType          ParametersType;
-  typedef Superclass::DerivativeType          DerivativeType;
-  typedef Superclass::MeasureType             MeasureType;
+  typedef Superclass::DetectorResponseType          DetectorResponseType;
+  typedef Superclass::MaterialAttenuationsType      MaterialAttenuationsType;
+  typedef Superclass::MeasuredDataType              MeasuredDataType;
+  typedef Superclass::IncidentSpectrumType          IncidentSpectrumType;
+  typedef itk::VariableLengthVector<unsigned int>   ThresholdsType;
+  typedef itk::VariableSizeMatrix<double>           MeanAttenuationInBinType;
 
-  typedef itk::VariableSizeMatrix<float>      DetectorResponseType;
-  typedef itk::VariableSizeMatrix<float>      MaterialAttenuationsType;
-  typedef itk::VariableLengthVector<float>    MeasuredDataType;
-  typedef itk::VariableLengthVector<float>    IncidentSpectrumType;
 
   // Constructor
   Schlomka2008NegativeLogLikelihood()
   {
+  m_NumberOfSpectralBins = 0;
   }
 
   // Destructor
@@ -71,17 +73,80 @@ public:
   {
   }
 
-  vnl_vector<float> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE
+  itk::VariableLengthVector<double> GuessInitialization() const
+  {
+  // Compute the mean attenuation in each bin, weighted by the input spectrum
+  // Needs to be done for each pixel, since the input spectrum is variable
+  MeanAttenuationInBinType MeanAttenuationInBin;
+  MeanAttenuationInBin.SetSize(this->m_NumberOfMaterials, this->m_NumberOfSpectralBins);
+  MeanAttenuationInBin.Fill(0);
+
+  for (unsigned int mat = 0; mat<this->m_NumberOfMaterials; mat++)
+    {
+    for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
+      {
+      double accumulate = 0;
+      double accumulateWeights = 0;
+      for (unsigned int energy=m_Thresholds[bin]-1; (energy<m_Thresholds[bin+1]) && (energy < this->m_MaterialAttenuations.Cols()); energy++)
+        {
+        accumulate += this->m_MaterialAttenuations[mat][energy] * this->m_IncidentSpectrum[energy];
+        accumulateWeights += this->m_IncidentSpectrum[energy];
+        }
+      MeanAttenuationInBin[mat][bin] = accumulate / accumulateWeights;
+      }
+    }
+
+  itk::VariableLengthVector<double> initialGuess;
+  initialGuess.SetSize(m_NumberOfMaterials);
+  for (unsigned int mat = 0; mat<m_NumberOfMaterials; mat++)
+    {
+    // Initialise to a very high value
+    initialGuess[mat] = 1e10;
+    for (unsigned int bin = 0; bin<m_NumberOfSpectralBins; bin++)
+      {
+      // Compute the length of current material required to obtain the attenuation
+      // observed in current bin. Keep only the minimum among all bins
+      double requiredLength = this->BinwiseLogTransform()[bin] / MeanAttenuationInBin[mat][bin];
+      if (initialGuess[mat] > requiredLength)
+        initialGuess[mat] = requiredLength;
+      }
+    }
+  return initialGuess;
+  }
+
+  itk::VariableLengthVector<double> BinwiseLogTransform() const
+  {
+  // Multiply input spectrum by detector response
+  // to obtain the binned spectrum as seen by the detector
+  vnl_vector<double> vnl_spectrum(m_IncidentSpectrum.GetDataPointer(), m_IncidentSpectrum.GetSize());
+  vnl_vector<double> vnl_spectrumAsSeenByDetector = m_DetectorResponse.GetVnlMatrix() * vnl_spectrum;
+  itk::VariableLengthVector<double> logTransforms;
+  logTransforms.SetSize(m_NumberOfSpectralBins);
+
+  for (unsigned int i=0; i<m_MeasuredData.GetSize(); i++)
+    {
+    // Divide by the actually measured photon counts
+    if (m_MeasuredData[i] > 0)
+      vnl_spectrumAsSeenByDetector[i] /= m_MeasuredData[i];
+
+    // Apply log
+    logTransforms[i] = log(vnl_spectrumAsSeenByDetector[i]);
+    }
+
+  return logTransforms;
+  }
+
+  vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE
   {
   // Variable length vector and variable size matrix cannot be used in linear algebra operations
   // Get their vnl counterparts, which can
-  vnl_vector<float> vnl_vec(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<double> vnl_vec(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
 
   // Apply detector response, getting the lambdas
   return (m_DetectorResponse.GetVnlMatrix() * vnl_vec);
   }
 
-  itk::VariableLengthVector<float> GetAttenuatedIncidentSpectrum(const ParametersType & lineIntegrals) const
+  itk::VariableLengthVector<double> GetAttenuatedIncidentSpectrum(const ParametersType & lineIntegrals) const
   {
   // Solid angle of detector pixel, exposure time and mAs should already be
   // taken into account in the incident spectrum image
@@ -104,55 +169,29 @@ public:
   return attenuatedIncidentSpectrum;
   }
 
-  itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound(const ParametersType & lineIntegrals) const
+  itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()
   {
-  // Get some required data
-  vnl_vector<float> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
-  vnl_vector<float> lambdas = ForwardModel(lineIntegrals);
-
-  // Compute the vector of m_b / lambda_b²
-  vnl_vector<float> weights;
-  weights.set_size(m_NumberOfSpectralBins);
-  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
-    weights[i] = m_MeasuredData[i] / (lambdas[i] * lambdas[i]);
-
-  // Prepare intermediate variables
-  vnl_vector<float> intermediate_a;
-  vnl_vector<float> intermediate_a_prime;
-  vnl_vector<float> partial_derivative_a;
-  vnl_vector<float> partial_derivative_a_prime;
-
-  // Compute the Fischer information matrix
-  itk::VariableSizeMatrix<float> Fischer;
-  Fischer.SetSize(m_NumberOfMaterials, m_NumberOfMaterials);
-  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
-    {
-    for (unsigned int a_prime=0; a_prime<m_NumberOfMaterials; a_prime++)
-      {
-      // Compute the partial derivatives of lambda_b with respect to the material line integrals
-      intermediate_a = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a));
-      intermediate_a_prime = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a_prime));
-
-      partial_derivative_a = m_DetectorResponse.GetVnlMatrix() * intermediate_a;
-      partial_derivative_a_prime = m_DetectorResponse.GetVnlMatrix() * intermediate_a_prime;
-
-      // Multiply them together element-wise, then dot product with the weights
-      partial_derivative_a_prime = element_product(partial_derivative_a, partial_derivative_a_prime);
-      Fischer[a][a_prime] = dot_product(partial_derivative_a_prime,weights);
-      }
-    }
-
-  // Invert the Fischer matrix
-  itk::VariableLengthVector<float> diag;
+  // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS reconstruction)
+  itk::VariableLengthVector<double> diag;
   diag.SetSize(m_NumberOfMaterials);
   diag.Fill(0);
 
-  Fischer = Fischer.GetInverse();
-
-  // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS reconstruction)
   for (unsigned int mat=0; mat<m_NumberOfMaterials; mat++)
-    diag[mat] = 1./Fischer[mat][mat];
+    diag[mat] = 1./m_Fischer.GetInverse()[mat][mat];
   return diag;
+  }
+
+  itk::VariableLengthVector<float> GetFischerMatrix()
+  {
+  // Return the whole Fischer information matrix
+  itk::VariableLengthVector<double> fischer;
+  fischer.SetSize(m_NumberOfMaterials * m_NumberOfMaterials);
+  fischer.Fill(0);
+
+  for (unsigned int i=0; i<m_NumberOfMaterials; i++)
+    for (unsigned int j=0; j<m_NumberOfMaterials; j++)
+    fischer[i * m_NumberOfMaterials + j] = m_Fischer[i][j];
+  return fischer;
   }
 
   // Not used with a simplex optimizer, but may be useful later
@@ -164,18 +203,18 @@ public:
   derivatives.set_size(m_NumberOfMaterials);
 
   // Get some required data
-  vnl_vector<float> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
-  vnl_vector<float> lambdas = ForwardModel(lineIntegrals);
+  vnl_vector<double> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
 
   // Compute the vector of 1 - m_b / lambda_b
-  vnl_vector<float> weights;
+  vnl_vector<double> weights;
   weights.set_size(m_NumberOfSpectralBins);
   for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
     weights[i] = 1 - (m_MeasuredData[i] / lambdas[i]);
 
   // Prepare intermediate variables
-  vnl_vector<float> intermediate_a;
-  vnl_vector<float> partial_derivative_a;
+  vnl_vector<double> intermediate_a;
+  vnl_vector<double> partial_derivative_a;
 
   for (unsigned int a=0; a<m_NumberOfMaterials; a++)
     {
@@ -192,7 +231,7 @@ public:
   MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
   // Forward model: compute the expected number of counts in each bin
-  vnl_vector<float> lambdas = ForwardModel(parameters);
+  vnl_vector<double> lambdas = ForwardModel(parameters);
 
   // Compute the negative log likelihood from the lambdas
   long double measure = 0;
@@ -202,15 +241,59 @@ public:
   return measure;
   }
 
+  void ComputeFischerMatrix(const ParametersType & lineIntegrals)
+  {
+  // Get some required data
+  vnl_vector<double> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
+  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
+
+  // Compute the vector of m_b / lambda_b²
+  vnl_vector<double> weights;
+  weights.set_size(m_NumberOfSpectralBins);
+  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
+    weights[i] = m_MeasuredData[i] / (lambdas[i] * lambdas[i]);
+
+  // Prepare intermediate variables
+  vnl_vector<double> intermediate_a;
+  vnl_vector<double> intermediate_a_prime;
+  vnl_vector<double> partial_derivative_a;
+  vnl_vector<double> partial_derivative_a_prime;
+
+  // Compute the Fischer information matrix
+  m_Fischer.SetSize(m_NumberOfMaterials, m_NumberOfMaterials);
+  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
+    {
+    for (unsigned int a_prime=0; a_prime<m_NumberOfMaterials; a_prime++)
+      {
+      // Compute the partial derivatives of lambda_b with respect to the material line integrals
+      intermediate_a = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a));
+      intermediate_a_prime = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a_prime));
+
+      partial_derivative_a = m_DetectorResponse.GetVnlMatrix() * intermediate_a;
+      partial_derivative_a_prime = m_DetectorResponse.GetVnlMatrix() * intermediate_a_prime;
+
+      // Multiply them together element-wise, then dot product with the weights
+      partial_derivative_a_prime = element_product(partial_derivative_a, partial_derivative_a_prime);
+      m_Fischer[a][a_prime] = dot_product(partial_derivative_a_prime,weights);
+      }
+    }
+  }
+
+
   itkSetMacro(IncidentSpectrum, IncidentSpectrumType)
   itkGetMacro(IncidentSpectrum, IncidentSpectrumType)
 
   itkSetMacro(NumberOfSpectralBins, unsigned int)
   itkGetMacro(NumberOfSpectralBins, unsigned int)
 
+  itkSetMacro(Thresholds, ThresholdsType)
+  itkGetMacro(Thresholds, ThresholdsType)
+
 protected:
-  IncidentSpectrumType        m_IncidentSpectrum;
-  unsigned int                m_NumberOfSpectralBins;
+  IncidentSpectrumType              m_IncidentSpectrum;
+  unsigned int                      m_NumberOfSpectralBins;
+  itk::VariableSizeMatrix<float>    m_Fischer;
+  ThresholdsType                    m_Thresholds;
 
 private:
   Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented

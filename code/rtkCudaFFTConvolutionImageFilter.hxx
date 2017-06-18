@@ -102,24 +102,29 @@ CudaFFTConvolutionImageFilter<TParentImageFilter>
   // compatible with itk::CudaImage + ITK 3.20.
   typename Superclass::FFTOutputImageType::SizeType s = paddedImage->GetLargestPossibleRegion().GetSize();
   this->UpdateFFTConvolutionKernel(s);
-
-  // Create the itk::CudaImage holding the kernel
-  typename Superclass::FFTOutputImageType::RegionType kreg = this->m_KernelFFT->GetLargestPossibleRegion();
-  CudaFFTOutputImagePointer fftKCUDA = CudaFFTOutputImageType::New();
-  fftKCUDA->SetRegions(kreg);
-  fftKCUDA->Allocate();
-
-  // CUFFT scales by the number of element, correct for it in kernel.
-  // Also transfer the kernel from the itk::Image to the itk::CudaImage.
-  itk::ImageRegionIterator<typename TParentImageFilter::FFTOutputImageType> itKI(this->m_KernelFFT, kreg);
-  itk::ImageRegionIterator<CudaFFTOutputImageType> itKO(fftKCUDA, kreg);
-  typename TParentImageFilter::FFTPrecisionType invNPixels;
-  invNPixels = 1 / double(paddedImage->GetBufferedRegion().GetNumberOfPixels() );
-  while(!itKO.IsAtEnd() )
+  if(this->m_KernelFFTCUDA.GetPointer() == ITK_NULLPTR ||
+     this->m_KernelFFTCUDA->GetTimeStamp() < this->m_KernelFFT->GetTimeStamp())
     {
-    itKO.Set(itKI.Get() * invNPixels );
-    ++itKI;
-    ++itKO;
+
+     // Create the itk::CudaImage holding the kernel
+     typename Superclass::FFTOutputImageType::RegionType kreg = this->m_KernelFFT->GetLargestPossibleRegion();
+
+     this->m_KernelFFTCUDA = CudaFFTOutputImageType::New();
+     this->m_KernelFFTCUDA->SetRegions(kreg);
+     this->m_KernelFFTCUDA->Allocate();
+
+     // CUFFT scales by the number of element, correct for it in kernel.
+     // Also transfer the kernel from the itk::Image to the itk::CudaImage.
+     itk::ImageRegionIterator<typename TParentImageFilter::FFTOutputImageType> itKI(this->m_KernelFFT, kreg);
+     itk::ImageRegionIterator<CudaFFTOutputImageType> itKO(this->m_KernelFFTCUDA, kreg);
+     typename TParentImageFilter::FFTPrecisionType invNPixels;
+     invNPixels = 1 / double(paddedImage->GetBufferedRegion().GetNumberOfPixels() );
+     while(!itKO.IsAtEnd() )
+       {
+       itKO.Set(itKI.Get() * invNPixels );
+       ++itKI;
+       ++itKO;
+       }
     }
 
   CudaImageType *cuPadImgP = dynamic_cast<CudaImageType*>(paddedImage.GetPointer());
@@ -130,7 +135,7 @@ CudaFFTConvolutionImageFilter<TParentImageFilter>
   CUDA_fft_convolution(inputDimension,
                        kernelDimension,
                        *(float**)(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),
-                       *(float2**)(fftKCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
+                       *(float2**)(this->m_KernelFFTCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 
   // CUDA Cropping and Graft Output
   typedef CudaCropImageFilter CropFilter;

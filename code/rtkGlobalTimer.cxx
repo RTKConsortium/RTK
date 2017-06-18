@@ -131,7 +131,7 @@ GlobalTimer
 ::Report(std::ostream & os) const
 {
   m_Mutex.Lock();
-  m_TimeProbesCollectorBase.Report(os);
+  m_TimeProbesCollectorBase.ConstReport(os);
   m_Mutex.Unlock();
 }
 

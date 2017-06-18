@@ -98,6 +98,16 @@ int main(int argc, char * argv[])
     weightsSource = constantWeightsSource;
     }
 
+  // Read Support Mask if given
+  itk::ImageSource< OutputImageType >::Pointer supportmaskSource;
+  if(args_info.mask_given)
+    {
+    typedef itk::ImageFileReader<  OutputImageType > MaskReaderType;
+    MaskReaderType::Pointer supportmaskReader = MaskReaderType::New();
+    supportmaskReader->SetFileName( args_info.mask_arg );
+    supportmaskSource = supportmaskReader;
+    }
+
   // Set the forward and back projection filters to be used
   typedef rtk::RegularizedConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer regularizedConjugateGradient = ConjugateGradientFilterType::New();
@@ -106,10 +116,15 @@ int main(int argc, char * argv[])
   regularizedConjugateGradient->SetInputVolume(inputFilter->GetOutput() );
   regularizedConjugateGradient->SetInputProjectionStack(reader->GetOutput());
   regularizedConjugateGradient->SetInputWeights( weightsSource->GetOutput());
-  regularizedConjugateGradient->SetPreconditioned(args_info.preconditioned_flag);
   regularizedConjugateGradient->SetGeometry( geometryReader->GetOutputObject() );
   regularizedConjugateGradient->SetMainLoop_iterations( args_info.niter_arg );
   regularizedConjugateGradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
+  regularizedConjugateGradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
+  if(args_info.mask_given)
+    {
+    regularizedConjugateGradient->SetSupportMask(supportmaskSource->GetOutput() );
+    }
+  regularizedConjugateGradient->SetIterationCosts(args_info.costs_flag);
 
   // Positivity
   if (args_info.nopositivity_flag)

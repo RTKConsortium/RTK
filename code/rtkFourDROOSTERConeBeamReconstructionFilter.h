@@ -264,8 +264,11 @@ public:
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void SetWeights(const itk::Array2D<float> _arg);
 
-  void PrintTiming(std::ostream& os) const;
+//  void PrintTiming(std::ostream& os) const;
 
+  /** Set / Get whether the displaced detector filter should be disabled */
+  itkSetMacro(DisableDisplacedDetectorFilter, bool)
+  itkGetMacro(DisableDisplacedDetectorFilter, bool)
 
   // Regularization steps to perform
   itkSetMacro(PerformPositivity, bool)
@@ -381,6 +384,7 @@ protected:
   bool  m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
   bool  m_CudaConjugateGradient;
   bool  m_UseCudaCyclicDeformation;
+  bool  m_DisableDisplacedDetectorFilter;
 
   // Regularization parameters
   float m_GammaTVSpace;
@@ -391,6 +395,8 @@ protected:
   float m_PhaseShift;
   bool  m_DimensionsProcessedForTVSpace[VolumeSeriesType::ImageDimension];
   bool  m_DimensionsProcessedForTVTime[VolumeSeriesType::ImageDimension];
+
+  typename itk::ImageToImageFilter<VolumeSeriesType, VolumeSeriesType>::Pointer m_DownstreamFilter;
 
   /** Information for the wavelets denoising filter */
   unsigned int    m_Order;
@@ -408,17 +414,17 @@ protected:
   // Signal
   std::vector<double>                            m_Signal;
 
-  /** Time probes */
-  itk::TimeProbe m_CGProbe;
-  itk::TimeProbe m_PositivityProbe;
-  itk::TimeProbe m_MotionMaskProbe;
-  itk::TimeProbe m_TVSpatialDenoisingProbe;
-  itk::TimeProbe m_WaveletsSpatialDenoisingProbe;
-  itk::TimeProbe m_TVTemporalDenoisingProbe;
-  itk::TimeProbe m_TNVDenoisingProbe;
-  itk::TimeProbe m_L0TemporalDenoisingProbe;  
-  itk::TimeProbe m_WarpingProbe;
-  itk::TimeProbe m_UnwarpingProbe;
+//  /** Time probes */
+//  itk::TimeProbe m_CGProbe;
+//  itk::TimeProbe m_PositivityProbe;
+//  itk::TimeProbe m_MotionMaskProbe;
+//  itk::TimeProbe m_TVSpatialDenoisingProbe;
+//  itk::TimeProbe m_WaveletsSpatialDenoisingProbe;
+//  itk::TimeProbe m_TVTemporalDenoisingProbe;
+//  itk::TimeProbe m_TNVDenoisingProbe;
+//  itk::TimeProbe m_L0TemporalDenoisingProbe;
+//  itk::TimeProbe m_WarpingProbe;
+//  itk::TimeProbe m_UnwarpingProbe;
 
 private:
   FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented

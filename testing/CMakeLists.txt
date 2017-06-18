@@ -153,10 +153,8 @@ add_executable(rtkdecomposespectralprojectionstest rtkdecomposespectralprojectio
 target_link_libraries(rtkdecomposespectralprojectionstest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkdecomposespectralprojectionstest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkdecomposespectralprojectionstest
-             DATA{Data/Baseline/Spectral/ref_output.mha}
              DATA{Data/Input/Spectral/incident_spectrum.mha}
              DATA{Data/Input/Spectral/material_attenuations.mha}
-             DATA{Data/Input/Spectral/photon_count.mha}
              DATA{Data/Input/Spectral/detector_response.mha})
              
 add_executable(rtkvectorimageconverterstest rtkvectorimageconverterstest.cxx)
@@ -174,8 +172,8 @@ add_executable(rtkvariantest rtkvariantest.cxx)
 target_link_libraries(rtkvariantest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkvariantest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkvariantest
-             DATA{Data/Input/Varian/raw.hnd,acqui.xml}
-             DATA{Data/Baseline/Varian/attenuation.mha,geometry.xml})
+             DATA{Data/Input/Varian/raw.hnd,acqui.xml,Proj_00000.xim,acqui_probeam.xml}
+             DATA{Data/Baseline/Varian/attenuation.mha,geometry.xml,attenuationProBeam.mha,geometryProBeam.xml})
 
 add_executable(rtkelektatest rtkelektatest.cxx)
 target_link_libraries(rtkelektatest ${RTK_LIBRARIES})
@@ -258,9 +256,15 @@ target_link_libraries(rtkwarpprojectionstacktofourdtest ${RTK_LIBRARIES})
 add_test(rtkwarpprojectionstacktofourdtest ${EXECUTABLE_OUTPUT_PATH}/rtkwarpprojectionstacktofourdtest)
 ADD_CUDA_TEST(rtkwarpprojectionstacktofourd rtkwarpprojectionstacktofourdtest.cxx)
 
-add_executable(rtkjosephadjointoperatorstest rtkjosephadjointoperatorstest.cxx)
-target_link_libraries(rtkjosephadjointoperatorstest ${RTK_LIBRARIES})
-add_test(rtkjosephadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkjosephadjointoperatorstest)
+add_executable(rtkcylindricaldetectorreconstructiontest rtkcylindricaldetectorreconstructiontest.cxx)
+target_link_libraries(rtkcylindricaldetectorreconstructiontest ${RTK_LIBRARIES})
+add_test(rtkcylindricaldetectorreconstructiontest ${EXECUTABLE_OUTPUT_PATH}/rtkcylindricaldetectorreconstructiontest)
+ADD_CUDA_TEST(rtkcylindricaldetectorreconstruction rtkcylindricaldetectorreconstructiontest.cxx)
+
+add_executable(rtkadjointoperatorstest rtkadjointoperatorstest.cxx)
+target_link_libraries(rtkadjointoperatorstest ${RTK_LIBRARIES})
+add_test(rtkadjointoperatorstest ${EXECUTABLE_OUTPUT_PATH}/rtkadjointoperatorstest)
+ADD_CUDA_TEST(rtkadjointoperators rtkadjointoperatorstest.cxx)
 
 add_executable(rtkfourdadjointoperatorstest rtkfourdadjointoperatorstest.cxx)
 target_link_libraries(rtkfourdadjointoperatorstest ${RTK_LIBRARIES})
@@ -397,3 +401,12 @@ add_test(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest
 add_executable(rtkgeometryfrommatrixtest rtkgeometryfrommatrixtest.cxx)
 target_link_libraries(rtkgeometryfrommatrixtest ${RTK_LIBRARIES})
 add_test(rtkgeometryfrommatrixtest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryfrommatrixtest)
+
+add_executable(rtkoratest rtkoratest.cxx)
+target_link_libraries(rtkoratest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkoratest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkoratest
+             DATA{Data/Input/Ora/0_afterLog.ora.xml}
+             DATA{Data/Baseline/Ora/geometry.xml})
+
+

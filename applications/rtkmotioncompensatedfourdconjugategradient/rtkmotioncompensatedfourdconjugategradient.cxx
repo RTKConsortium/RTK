@@ -113,6 +113,7 @@ int main(int argc, char * argv[])
   mcfourdcg->SetNumberOfIterations( args_info.niter_arg );
   mcfourdcg->SetCudaConjugateGradient(args_info.cudacg_flag);
   mcfourdcg->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
+  mcfourdcg->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
   
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();

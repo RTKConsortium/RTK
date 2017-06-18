@@ -32,6 +32,14 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
+DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>
+::DrawGeometricPhantomImageFilter():
+m_PhantomScale(1.),
+m_OriginOffset(0.)
+{
+}
+
+template <class TInputImage, class TOutputImage>
 void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   VectorOfVectorType figParam;
@@ -50,12 +58,12 @@ void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
   for(unsigned int i=0; i<NumberOfFig; i++)
   {
     //Set figures parameters
-    semiprincipalaxis[0] = figParam[i][1];
-    semiprincipalaxis[1] = figParam[i][2];
-    semiprincipalaxis[2] = figParam[i][3];
-    center[0] = figParam[i][4];
-    center[1] = figParam[i][5];
-    center[2] = figParam[i][6];
+    semiprincipalaxis[0] = figParam[i][1] * m_PhantomScale[0];
+    semiprincipalaxis[1] = figParam[i][2] * m_PhantomScale[1];
+    semiprincipalaxis[2] = figParam[i][3] * m_PhantomScale[2];
+    center[0] = (figParam[i][4] + m_OriginOffset[0]) * m_PhantomScale[0];
+    center[1] = (figParam[i][5] + m_OriginOffset[1]) * m_PhantomScale[1];
+    center[2] = (figParam[i][6] + m_OriginOffset[2]) * m_PhantomScale[2];
 
     //Deciding which figure to draw
     switch ((int)figParam[i][0])
