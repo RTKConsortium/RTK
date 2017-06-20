@@ -122,6 +122,10 @@ int main(int argc, char * argv[])
                                            geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
                                            geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
                                            geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
+    outputGeometry->SetCollimationOfLastProjection(geometryReader->GetOutputObject()->GetCollimationUInf()[indices[i]],
+                                                   geometryReader->GetOutputObject()->GetCollimationUSup()[indices[i]],
+                                                   geometryReader->GetOutputObject()->GetCollimationVInf()[indices[i]],
+                                                   geometryReader->GetOutputObject()->GetCollimationVSup()[indices[i]] );
     }
 
   // Geometry writer

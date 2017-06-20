@@ -34,7 +34,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
 
-  float sid, sdd, angleOffsetProjection;
+  float sid, sdd;
   std::vector<float> Px,Py,Pz, // Detector translations
                      Rx,Ry,Rz, // Detector rotations
                      Tx,Ty,Tz; // Source translations
@@ -65,7 +65,6 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
 
     sid = atof(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sid").c_str());
     sdd = atof(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sdd").c_str());
-    angleOffsetProjection = atof(parser->GetOutput()->GetChild("Axis")->GetChild("AngleOffset")->GetAttribute("projection").c_str());
 
     // Read calbration model's parameters in the DICOM info of the first projection
     std::string calibrationTagKey = "3001|0013";
@@ -106,7 +105,6 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
     // Reading iMagX calibration file
     // iMagX axisName parameter
     std::string axisName, sid_s, sdd_s;
-    angleOffsetProjection = -90; //hard-coded offset
 
     // iMagX deformation model parameters
     for (unsigned int i=0; i<5; i++)

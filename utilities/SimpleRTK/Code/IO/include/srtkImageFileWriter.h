@@ -44,9 +44,6 @@ namespace rtk {
     public:
       typedef ImageFileWriter Self;
 
-      // function pointer type
-      typedef Self& (Self::*MemberFunctionType)( const Image& );
-
       // list of pixel types supported
       typedef NonLabelPixelIDTypeList PixelIDTypeList;
 
@@ -64,18 +61,18 @@ namespace rtk {
        * get's passed to image file's itk::ImageIO object. This is
        * only a request as not all file formatts support compression.
        * @{ */
-      Self& SetUseCompression( bool UseCompression );
+      SRTK_RETURN_SELF_TYPE_HEADER SetUseCompression( bool UseCompression );
       bool GetUseCompression( void ) const;
 
-      Self & UseCompressionOn( void ) { return this->SetUseCompression(true); }
-      Self & UseCompressionOff( void ) { return this->SetUseCompression(false); }
+      SRTK_RETURN_SELF_TYPE_HEADER UseCompressionOn( void ) { return this->SetUseCompression(true); }
+      SRTK_RETURN_SELF_TYPE_HEADER UseCompressionOff( void ) { return this->SetUseCompression(false); }
       /** @} */
 
-      Self& SetFileName ( std::string fileName );
+      SRTK_RETURN_SELF_TYPE_HEADER SetFileName ( std::string fileName );
       std::string GetFileName() const;
 
-      Self& Execute ( const Image& );
-      Self& Execute ( const Image& , const std::string &inFileName, bool inUseCompression );
+      SRTK_RETURN_SELF_TYPE_HEADER Execute ( const Image& );
+      SRTK_RETURN_SELF_TYPE_HEADER Execute ( const Image& , const std::string &inFileName, bool inUseCompression );
 
     private:
 
@@ -84,10 +81,13 @@ namespace rtk {
       bool m_UseCompression;
       std::string m_FileName;
 
+      // function pointer type
+      typedef Self& (Self::*MemberFunctionType)( const Image& );
+
       // friend to get access to executeInternal member
       friend struct detail::MemberFunctionAddressor<MemberFunctionType>;
 
-      std::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
+      nsstd::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
 
     };
 

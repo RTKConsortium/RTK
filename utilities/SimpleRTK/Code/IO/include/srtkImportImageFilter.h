@@ -32,7 +32,10 @@ namespace rtk {
      *
      * This filter is intended to interface SimpleRTK to other image processing
      * libraries and applications that may have their own representation of an
-     * image class.
+     * image class. It creates a SimpleITK image which shares the bulk
+     * data buffer as what is set. SimpleITK will not responsible to
+     * delete the buffer afterwards, and it buffer must remain valid
+     * while in use.
      *
      * \sa rtk::simple::ImportAsInt8, rtk::simple::ImportAsUInt8,
      * rtk::simple::ImportAsInt16, rtk::simple::ImportAsUInt16,
@@ -54,28 +57,28 @@ namespace rtk {
       /** return user readable name fo the filter */
       virtual std::string GetName() const { return std::string("ImportImageFilter"); }
 
-      Self& SetSize( const std::vector< unsigned int > &size );
+      SRTK_RETURN_SELF_TYPE_HEADER SetSize( const std::vector< unsigned int > &size );
       const std::vector< unsigned int > &GetSize( ) const;
 
-      Self& SetSpacing( const std::vector< double > &spacing );
+      SRTK_RETURN_SELF_TYPE_HEADER SetSpacing( const std::vector< double > &spacing );
       const std::vector< double > &GetSpacing( ) const;
 
-      Self& SetOrigin( const std::vector< double > &origin );
+      SRTK_RETURN_SELF_TYPE_HEADER SetOrigin( const std::vector< double > &origin );
       const std::vector< double > &GetOrigin( ) const;
 
-      Self& SetDirection( const std::vector< double > &direction );
+      SRTK_RETURN_SELF_TYPE_HEADER SetDirection( const std::vector< double > &direction );
       const std::vector< double > &GetDirection( ) const;
 
-      Self& SetBufferAsInt8( int8_t * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsUInt8( uint8_t * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsInt16( int16_t * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsUInt16( uint16_t * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsInt32( int32_t * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsUInt32( uint32_t * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsInt64( int64_t * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsUInt64( uint64_t * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsFloat( float * buffer, unsigned int numberOfComponents = 1 );
-      Self& SetBufferAsDouble( double * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsInt8( int8_t * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsUInt8( uint8_t * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsInt16( int16_t * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsUInt16( uint16_t * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsInt32( int32_t * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsUInt32( uint32_t * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsInt64( int64_t * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsUInt64( uint64_t * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsFloat( float * buffer, unsigned int numberOfComponents = 1 );
+      SRTK_RETURN_SELF_TYPE_HEADER SetBufferAsDouble( double * buffer, unsigned int numberOfComponents = 1 );
 
       Image Execute();
 
@@ -101,7 +104,7 @@ namespace rtk {
 
       // friend to get access to executeInternal member
       friend struct detail::MemberFunctionAddressor<MemberFunctionType>;
-      std::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
+      nsstd::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
 
       unsigned int     m_NumberOfComponentsPerPixel;
       PixelIDValueType m_PixelIDValue;

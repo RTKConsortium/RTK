@@ -40,6 +40,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 #endif
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisableDisplacedDetectorFilter = false;
 
   // Set memory management flags
   m_DisplacedDetectorFilter->SetInPlace(true);
@@ -162,6 +163,9 @@ void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
+  // Set runtime parameters
+  m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
+
   // Create the interpolation filter and the displaced detector filter
   // (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_InterpolationFilter = InterpolationFilterType::New();
@@ -262,7 +266,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
     sizeOfSlabs.push_back(1);
   else
     {
-    for (unsigned int proj = FirstProj+1; proj < FirstProj+NumberProjs; proj++)
+    for (int proj = FirstProj+1; proj < FirstProj+NumberProjs; proj++)
       {
       if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
         {

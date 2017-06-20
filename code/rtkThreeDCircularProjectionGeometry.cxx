@@ -105,6 +105,12 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
     a = 2. * vnl_math::pi - a;
   m_SourceAngles.push_back( ConvertAngleBetween0And2PIRadians(a) );
 
+  // Default collimation (uncollimated)
+  m_CollimationUInf.push_back(std::numeric_limits< double >::max());
+  m_CollimationUSup.push_back(std::numeric_limits< double >::max());
+  m_CollimationVInf.push_back(std::numeric_limits< double >::max());
+  m_CollimationVSup.push_back(std::numeric_limits< double >::max());
+
   this->Modified();
 }
 
@@ -449,6 +455,19 @@ ComputeProjectionMagnificationMatrix(double sdd, const double sid)
   matrix[2][2] = (sdd==0.)?0.:1.;
   matrix[2][3] = (sdd==0.)?1.:sid;
   return matrix;
+}
+
+void
+rtk::ThreeDCircularProjectionGeometry::
+SetCollimationOfLastProjection(const double uinf,
+                               const double usup,
+                               const double vinf,
+                               const double vsup)
+{
+  m_CollimationUInf.back() = uinf;
+  m_CollimationUSup.back() = usup;
+  m_CollimationVInf.back() = vinf;
+  m_CollimationVSup.back() = vsup;
 }
 
 const rtk::ThreeDCircularProjectionGeometry::HomogeneousVectorType

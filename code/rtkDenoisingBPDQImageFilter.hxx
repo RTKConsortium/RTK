@@ -70,7 +70,7 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   // and set the filters to use them
   double numberOfDimensionsProcessed = 0;
   m_MinSpacing = this->GetInput()->GetSpacing()[0];
-  for (int dim=0; dim<TOutputImage::ImageDimension; dim++)
+  for (unsigned int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
     if (m_DimensionsProcessed[dim])
       {

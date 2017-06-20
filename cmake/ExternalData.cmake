@@ -1,129 +1,316 @@
-# - Manage data files stored outside source tree
-# Use this module to unambiguously reference data files stored outside the
-# source tree and fetch them at build time from arbitrary local and remote
-# content-addressed locations.  Functions provided by this module recognize
-# arguments with the syntax "DATA{<name>}" as references to external data,
-# replace them with full paths to local copies of those data, and create build
-# rules to fetch and update the local copies.
+#.rst:
+# ExternalData
+# ------------
 #
-# The DATA{} syntax is literal and the <name> is a full or relative path
-# within the source tree.  The source tree must contain either a real data
-# file at <name> or a "content link" at <name><ext> containing a hash of the
-# real file using a hash algorithm corresponding to <ext>.  For example, the
-# argument "DATA{img.png}" may be satisfied by either a real "img.png" file in
-# the current source directory or a "img.png.md5" file containing its MD5 sum.
+# .. only:: html
 #
-# The 'ExternalData_Expand_Arguments' function evaluates DATA{} references
-# in its arguments and constructs a new list of arguments:
-#  ExternalData_Expand_Arguments(
-#    <target>   # Name of data management target
-#    <outVar>   # Output variable
-#    [args...]  # Input arguments, DATA{} allowed
+#    .. contents::
+#
+# Manage data files stored outside source tree
+#
+# Introduction
+# ^^^^^^^^^^^^
+#
+# Use this module to unambiguously reference data files stored outside
+# the source tree and fetch them at build time from arbitrary local and
+# remote content-addressed locations.  Functions provided by this module
+# recognize arguments with the syntax ``DATA{<name>}`` as references to
+# external data, replace them with full paths to local copies of those
+# data, and create build rules to fetch and update the local copies.
+#
+# For example:
+#
+# .. code-block:: cmake
+#
+#  include(ExternalData)
+#  set(ExternalData_URL_TEMPLATES "file:///local/%(algo)/%(hash)"
+#                                 "file:////host/share/%(algo)/%(hash)"
+#                                 "http://data.org/%(algo)/%(hash)")
+#  ExternalData_Add_Test(MyData
+#    NAME MyTest
+#    COMMAND MyExe DATA{MyInput.png}
 #    )
-# It replaces each DATA{} reference in an argument with the full path of a
-# real data file on disk that will exist after the <target> builds.
+#  ExternalData_Add_Target(MyData)
 #
-# The 'ExternalData_Add_Test' function wraps around the CMake add_test()
-# command but supports DATA{} references in its arguments:
-#  ExternalData_Add_Test(
-#    <target>   # Name of data management target
-#    ...        # Arguments of add_test(), DATA{} allowed
-#    )
-# It passes its arguments through ExternalData_Expand_Arguments and then
-# invokes add_test() using the results.
+# When test ``MyTest`` runs the ``DATA{MyInput.png}`` argument will be
+# replaced by the full path to a real instance of the data file
+# ``MyInput.png`` on disk.  If the source tree contains a content link
+# such as ``MyInput.png.md5`` then the ``MyData`` target creates a real
+# ``MyInput.png`` in the build tree.
 #
-# The 'ExternalData_Add_Target' function creates a custom target to manage
-# local instances of data files stored externally:
-#  ExternalData_Add_Target(
-#    <target>   # Name of data management target
-#    )
-# It creates custom commands in the target as necessary to make data files
-# available for each DATA{} reference previously evaluated by other functions
-# provided by this module.  A list of URL templates must be provided in the
-# variable ExternalData_URL_TEMPLATES using the placeholders "%(algo)" and
-# "%(hash)" in each template.  Data fetch rules try each URL template in order
-# by substituting the hash algorithm name for "%(algo)" and the hash value for
-# "%(hash)".
+# Module Functions
+# ^^^^^^^^^^^^^^^^
 #
-# The following hash algorithms are supported:
-#    %(algo)     <ext>     Description
-#    -------     -----     -----------
-#    MD5         .md5      Message-Digest Algorithm 5, RFC 1321
+# .. command:: ExternalData_Expand_Arguments
+#
+#   The ``ExternalData_Expand_Arguments`` function evaluates ``DATA{}``
+#   references in its arguments and constructs a new list of arguments::
+#
+#     ExternalData_Expand_Arguments(
+#       <target>   # Name of data management target
+#       <outVar>   # Output variable
+#       [args...]  # Input arguments, DATA{} allowed
+#       )
+#
+#   It replaces each ``DATA{}`` reference in an argument with the full path of
+#   a real data file on disk that will exist after the ``<target>`` builds.
+#
+# .. command:: ExternalData_Add_Test
+#
+#   The ``ExternalData_Add_Test`` function wraps around the CMake
+#   :command:`add_test` command but supports ``DATA{}`` references in
+#   its arguments::
+#
+#     ExternalData_Add_Test(
+#       <target>   # Name of data management target
+#       ...        # Arguments of add_test(), DATA{} allowed
+#       )
+#
+#   It passes its arguments through ``ExternalData_Expand_Arguments`` and then
+#   invokes the :command:`add_test` command using the results.
+#
+# .. command:: ExternalData_Add_Target
+#
+#   The ``ExternalData_Add_Target`` function creates a custom target to
+#   manage local instances of data files stored externally::
+#
+#     ExternalData_Add_Target(
+#       <target>   # Name of data management target
+#       )
+#
+#   It creates custom commands in the target as necessary to make data
+#   files available for each ``DATA{}`` reference previously evaluated by
+#   other functions provided by this module.
+#   Data files may be fetched from one of the URL templates specified in
+#   the ``ExternalData_URL_TEMPLATES`` variable, or may be found locally
+#   in one of the paths specified in the ``ExternalData_OBJECT_STORES``
+#   variable.
+#
+# Module Variables
+# ^^^^^^^^^^^^^^^^
+#
+# The following variables configure behavior.  They should be set before
+# calling any of the functions provided by this module.
+#
+# .. variable:: ExternalData_BINARY_ROOT
+#
+#   The ``ExternalData_BINARY_ROOT`` variable may be set to the directory to
+#   hold the real data files named by expanded ``DATA{}`` references.  The
+#   default is ``CMAKE_BINARY_DIR``.  The directory layout will mirror that of
+#   content links under ``ExternalData_SOURCE_ROOT``.
+#
+# .. variable:: ExternalData_CUSTOM_SCRIPT_<key>
+#
+#   Specify a full path to a ``.cmake`` custom fetch script identified by
+#   ``<key>`` in entries of the ``ExternalData_URL_TEMPLATES`` list.
+#   See `Custom Fetch Scripts`_.
+#
+# .. variable:: ExternalData_LINK_CONTENT
+#
+#   The ``ExternalData_LINK_CONTENT`` variable may be set to the name of a
+#   supported hash algorithm to enable automatic conversion of real data
+#   files referenced by the ``DATA{}`` syntax into content links.  For each
+#   such ``<file>`` a content link named ``<file><ext>`` is created.  The
+#   original file is renamed to the form ``.ExternalData_<algo>_<hash>`` to
+#   stage it for future transmission to one of the locations in the list
+#   of URL templates (by means outside the scope of this module).  The
+#   data fetch rule created for the content link will use the staged
+#   object if it cannot be found using any URL template.
+#
+# .. variable:: ExternalData_NO_SYMLINKS
+#
+#   The real data files named by expanded ``DATA{}`` references may be made
+#   available under ``ExternalData_BINARY_ROOT`` using symbolic links on
+#   some platforms.  The ``ExternalData_NO_SYMLINKS`` variable may be set
+#   to disable use of symbolic links and enable use of copies instead.
+#
+# .. variable:: ExternalData_OBJECT_STORES
+#
+#   The ``ExternalData_OBJECT_STORES`` variable may be set to a list of local
+#   directories that store objects using the layout ``<dir>/%(algo)/%(hash)``.
+#   These directories will be searched first for a needed object.  If the
+#   object is not available in any store then it will be fetched remotely
+#   using the URL templates and added to the first local store listed.  If
+#   no stores are specified the default is a location inside the build
+#   tree.
+#
+# .. variable:: ExternalData_SERIES_PARSE
+#               ExternalData_SERIES_PARSE_PREFIX
+#               ExternalData_SERIES_PARSE_NUMBER
+#               ExternalData_SERIES_PARSE_SUFFIX
+#               ExternalData_SERIES_MATCH
+#
+#   See `Referencing File Series`_.
+#
+# .. variable:: ExternalData_SOURCE_ROOT
+#
+#   The ``ExternalData_SOURCE_ROOT`` variable may be set to the highest source
+#   directory containing any path named by a ``DATA{}`` reference.  The
+#   default is ``CMAKE_SOURCE_DIR``.  ``ExternalData_SOURCE_ROOT`` and
+#   ``CMAKE_SOURCE_DIR`` must refer to directories within a single source
+#   distribution (e.g.  they come together in one tarball).
+#
+# .. variable:: ExternalData_TIMEOUT_ABSOLUTE
+#
+#   The ``ExternalData_TIMEOUT_ABSOLUTE`` variable sets the download
+#   absolute timeout, in seconds, with a default of ``300`` seconds.
+#   Set to ``0`` to disable enforcement.
+#
+# .. variable:: ExternalData_TIMEOUT_INACTIVITY
+#
+#   The ``ExternalData_TIMEOUT_INACTIVITY`` variable sets the download
+#   inactivity timeout, in seconds, with a default of ``60`` seconds.
+#   Set to ``0`` to disable enforcement.
+#
+# .. variable:: ExternalData_URL_ALGO_<algo>_<key>
+#
+#   Specify a custom URL component to be substituted for URL template
+#   placeholders of the form ``%(algo:<key>)``, where ``<key>`` is a
+#   valid C identifier, when fetching an object referenced via hash
+#   algorithm ``<algo>``.  If not defined, the default URL component
+#   is just ``<algo>`` for any ``<key>``.
+#
+# .. variable:: ExternalData_URL_TEMPLATES
+#
+#   The ``ExternalData_URL_TEMPLATES`` may be set to provide a list of
+#   of URL templates using the placeholders ``%(algo)`` and ``%(hash)``
+#   in each template.  Data fetch rules try each URL template in order
+#   by substituting the hash algorithm name for ``%(algo)`` and the hash
+#   value for ``%(hash)``.  Alternatively one may use ``%(algo:<key>)``
+#   with ``ExternalData_URL_ALGO_<algo>_<key>`` variables to gain more
+#   flexibility in remote URLs.
+#
+# Referencing Files
+# ^^^^^^^^^^^^^^^^^
+#
+# Referencing Single Files
+# """"""""""""""""""""""""
+#
+# The ``DATA{}`` syntax is literal and the ``<name>`` is a full or relative path
+# within the source tree.  The source tree must contain either a real
+# data file at ``<name>`` or a "content link" at ``<name><ext>`` containing a
+# hash of the real file using a hash algorithm corresponding to ``<ext>``.
+# For example, the argument ``DATA{img.png}`` may be satisfied by either a
+# real ``img.png`` file in the current source directory or a ``img.png.md5``
+# file containing its MD5 sum.
+#
+# Referencing File Series
+# """""""""""""""""""""""
+#
+# The ``DATA{}`` syntax can be told to fetch a file series using the form
+# ``DATA{<name>,:}``, where the ``:`` is literal.  If the source tree
+# contains a group of files or content links named like a series then a
+# reference to one member adds rules to fetch all of them.  Although all
+# members of a series are fetched, only the file originally named by the
+# ``DATA{}`` argument is substituted for it.  The default configuration
+# recognizes file series names ending with ``#.ext``, ``_#.ext``, ``.#.ext``,
+# or ``-#.ext`` where ``#`` is a sequence of decimal digits and ``.ext`` is
+# any single extension.  Configure it with a regex that parses ``<number>``
+# and ``<suffix>`` parts from the end of ``<name>``::
+#
+#  ExternalData_SERIES_PARSE = regex of the form (<number>)(<suffix>)$
+#
+# For more complicated cases set::
+#
+#  ExternalData_SERIES_PARSE = regex with at least two () groups
+#  ExternalData_SERIES_PARSE_PREFIX = <prefix> regex group number, if any
+#  ExternalData_SERIES_PARSE_NUMBER = <number> regex group number
+#  ExternalData_SERIES_PARSE_SUFFIX = <suffix> regex group number
+#
+# Configure series number matching with a regex that matches the
+# ``<number>`` part of series members named ``<prefix><number><suffix>``::
+#
+#  ExternalData_SERIES_MATCH = regex matching <number> in all series members
+#
+# Note that the ``<suffix>`` of a series does not include a hash-algorithm
+# extension.
+#
+# Referencing Associated Files
+# """"""""""""""""""""""""""""
+#
+# The ``DATA{}`` syntax can alternatively match files associated with the
+# named file and contained in the same directory.  Associated files may
+# be specified by options using the syntax
+# ``DATA{<name>,<opt1>,<opt2>,...}``.  Each option may specify one file by
+# name or specify a regular expression to match file names using the
+# syntax ``REGEX:<regex>``.  For example, the arguments::
+#
+#  DATA{MyData/MyInput.mhd,MyInput.img}                   # File pair
+#  DATA{MyData/MyFrames00.png,REGEX:MyFrames[0-9]+\\.png} # Series
+#
+# will pass ``MyInput.mha`` and ``MyFrames00.png`` on the command line but
+# ensure that the associated files are present next to them.
+#
+# Referencing Directories
+# """""""""""""""""""""""
+#
+# The ``DATA{}`` syntax may reference a directory using a trailing slash and
+# a list of associated files.  The form ``DATA{<name>/,<opt1>,<opt2>,...}``
+# adds rules to fetch any files in the directory that match one of the
+# associated file options.  For example, the argument
+# ``DATA{MyDataDir/,REGEX:.*}`` will pass the full path to a ``MyDataDir``
+# directory on the command line and ensure that the directory contains
+# files corresponding to every file or content link in the ``MyDataDir``
+# source directory.
+#
+# Hash Algorithms
+# ^^^^^^^^^^^^^^^
+#
+# The following hash algorithms are supported::
+#
+#  %(algo)     <ext>     Description
+#  -------     -----     -----------
+#  MD5         .md5      Message-Digest Algorithm 5, RFC 1321
+#  SHA1        .sha1     US Secure Hash Algorithm 1, RFC 3174
+#  SHA224      .sha224   US Secure Hash Algorithms, RFC 4634
+#  SHA256      .sha256   US Secure Hash Algorithms, RFC 4634
+#  SHA384      .sha384   US Secure Hash Algorithms, RFC 4634
+#  SHA512      .sha512   US Secure Hash Algorithms, RFC 4634
+#
 # Note that the hashes are used only for unique data identification and
-# download verification.  This is not security software.
+# download verification.
 #
-# Example usage:
-#   include(ExternalData)
-#   set(ExternalData_URL_TEMPLATES "file:///local/%(algo)/%(hash)"
-#                                  "http://data.org/%(algo)/%(hash)")
-#   ExternalData_Add_Test(MyData
-#     NAME MyTest
-#     COMMAND MyExe DATA{MyInput.png}
-#     )
-#   ExternalData_Add_Target(MyData)
-# When test "MyTest" runs the "DATA{MyInput.png}" argument will be replaced by
-# the full path to a real instance of the data file "MyInput.png" on disk.  If
-# the source tree contains a content link such as "MyInput.png.md5" then the
-# "MyData" target creates a real "MyInput.png" in the build tree.
+# .. _`ExternalData Custom Fetch Scripts`:
 #
-# The DATA{} syntax can automatically recognize and fetch a file series.  If
-# the source tree contains a group of files or content links named like a
-# series then a DATA{} reference to one member adds rules to fetch all of
-# them.  Although all members of a series are fetched, only the file
-# originally named by the DATA{} argument is substituted for it.  Two
-# variables configure recognition of a series from DATA{<name>}.  First,
-# ExternalData_SERIES_PARSE is a regex of the form "^(...)(...)(...)$" to
-# parse <prefix>, <number>, and <suffix> parts from <name>.  Second,
-# ExternalData_SERIES_MATCH is a regex matching the <number> part of series
-# members named <prefix><number><suffix>.  Note that the <suffix> of a series
-# does not include a hash-algorithm extension.  Both series configuration
-# variables have default values that work well for common cases.
+# Custom Fetch Scripts
+# ^^^^^^^^^^^^^^^^^^^^
 #
-# The DATA{} syntax can alternatively match files associated with the named
-# file and contained in the same directory.  Associated files may be specified
-# by options using the syntax DATA{<name>,<opt1>,<opt2>,...}.  Each option may
-# specify one file by name or specify a regular expression to match file names
-# using the syntax REGEX:<regex>.  For example, the arguments
-#   DATA{MyData/MyInput.mhd,MyInput.img}                   # File pair
-#   DATA{MyData/MyFrames00.png,REGEX:MyFrames[0-9]+\\.png} # Series
-# will pass MyInput.mha and MyFrames00.png on the command line but ensure
-# that the associated files are present next to them.
+# When a data file must be fetched from one of the URL templates
+# specified in the ``ExternalData_URL_TEMPLATES`` variable, it is
+# normally downloaded using the :command:`file(DOWNLOAD)` command.
+# One may specify usage of a custom fetch script by using a URL
+# template of the form ``ExternalDataCustomScript://<key>/<loc>``.
+# The ``<key>`` must be a C identifier, and the ``<loc>`` must
+# contain the ``%(algo)`` and ``%(hash)`` placeholders.
+# A variable corresponding to the key, ``ExternalData_CUSTOM_SCRIPT_<key>``,
+# must be set to the full path to a ``.cmake`` script file.  The script
+# will be included to perform the actual fetch, and provided with
+# the following variables:
 #
-# The variable ExternalData_LINK_CONTENT may be set to the name of a supported
-# hash algorithm to enable automatic conversion of real data files referenced
-# by the DATA{} syntax into content links.  For each such <file> a content
-# link named "<file><ext>" is created.  The original file is renamed to the
-# form ".ExternalData_<algo>_<hash>" to stage it for future transmission to
-# one of the locations in the list of URL templates (by means outside the
-# scope of this module).  The data fetch rule created for the content link
-# will use the staged object if it cannot be found using any URL template.
+# .. variable:: ExternalData_CUSTOM_LOCATION
 #
-# The variable ExternalData_OBJECT_STORES may be set to a list of local
-# directories that store objects using the layout <dir>/%(algo)/%(hash).
-# These directories will be searched first for a needed object.  If the object
-# is not available in any store then it will be fetched remotely using the URL
-# templates and added to the first local store listed.  If no stores are
-# specified the default is a location inside the build tree.
+#   When a custom fetch script is loaded, this variable is set to the
+#   location part of the URL, which will contain the substituted hash
+#   algorithm name and content hash value.
 #
-# The variable ExternalData_SOURCE_ROOT may be set to the highest source
-# directory containing any path named by a DATA{} reference.  The default is
-# CMAKE_SOURCE_DIR.  ExternalData_SOURCE_ROOT and CMAKE_SOURCE_DIR must refer
-# to directories within a single source distribution (e.g. they come together
-# in one tarball).
+# .. variable:: ExternalData_CUSTOM_FILE
 #
-# The variable ExternalData_BINARY_ROOT may be set to the directory to hold
-# the real data files named by expanded DATA{} references.  The default is
-# CMAKE_BINARY_DIR.  The directory layout will mirror that of content links
-# under ExternalData_SOURCE_ROOT.
+#   When a custom fetch script is loaded, this variable is set to the
+#   full path to a file in which the script must store the fetched
+#   content.  The name of the file is unspecified and should not be
+#   interpreted in any way.
 #
-# Variables ExternalData_TIMEOUT_INACTIVITY and ExternalData_TIMEOUT_ABSOLUTE
-# set the download inactivity and absolute timeouts, in seconds.  The defaults
-# are 60 seconds and 300 seconds, respectively.  Set either timeout to 0
-# seconds to disable enforcement.  The inactivity timeout is enforced only
-# with CMake >= 2.8.5.
+# The custom fetch script is expected to store fetched content in the
+# file or set a variable:
+#
+# .. variable:: ExternalData_CUSTOM_ERROR
+#
+#   When a custom fetch script fails to fetch the requested content,
+#   it must set this variable to a short one-line message describing
+#   the reason for failure.
 
 #=============================================================================
-# Copyright 2010-2011 Kitware, Inc.
+# Copyright 2010-2015 Kitware, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -156,17 +343,69 @@
 #=============================================================================
 
 function(ExternalData_add_test target)
-  ExternalData_expand_arguments("${target}" testArgs ${ARGN})
+  # Expand all arguments as a single string to preserve escaped semicolons.
+  ExternalData_expand_arguments("${target}" testArgs "${ARGN}")
   add_test(${testArgs})
 endfunction()
 
 function(ExternalData_add_target target)
-  if(NOT ExternalData_URL_TEMPLATES)
-    message(FATAL_ERROR "ExternalData_URL_TEMPLATES is not set!")
+  if(NOT ExternalData_URL_TEMPLATES AND NOT ExternalData_OBJECT_STORES)
+    message(FATAL_ERROR
+      "Neither ExternalData_URL_TEMPLATES nor ExternalData_OBJECT_STORES is set!")
   endif()
   if(NOT ExternalData_OBJECT_STORES)
     set(ExternalData_OBJECT_STORES ${CMAKE_BINARY_DIR}/ExternalData/Objects)
   endif()
+  set(_ExternalData_CONFIG_CODE "")
+
+  # Store custom script configuration.
+  foreach(url_template IN LISTS ExternalData_URL_TEMPLATES)
+    if("${url_template}" MATCHES "^ExternalDataCustomScript://([^/]*)/(.*)$")
+      set(key "${CMAKE_MATCH_1}")
+      if(key MATCHES "^[A-Za-z_][A-Za-z0-9_]*$")
+        if(ExternalData_CUSTOM_SCRIPT_${key})
+          if(IS_ABSOLUTE "${ExternalData_CUSTOM_SCRIPT_${key}}")
+            string(CONCAT _ExternalData_CONFIG_CODE "${_ExternalData_CONFIG_CODE}\n"
+              "set(ExternalData_CUSTOM_SCRIPT_${key} \"${ExternalData_CUSTOM_SCRIPT_${key}}\")")
+          else()
+            message(FATAL_ERROR
+              "No ExternalData_CUSTOM_SCRIPT_${key} is not set to a full path:\n"
+              " ${ExternalData_CUSTOM_SCRIPT_${key}}")
+          endif()
+        else()
+          message(FATAL_ERROR
+            "No ExternalData_CUSTOM_SCRIPT_${key} is set for URL template:\n"
+            " ${url_template}")
+        endif()
+      else()
+        message(FATAL_ERROR
+          "Bad ExternalDataCustomScript key '${key}' in URL template:\n"
+          " ${url_template}\n"
+          "The key must be a valid C identifier.")
+      endif()
+    endif()
+
+    # Store custom algorithm name to URL component maps.
+    if("${url_template}" MATCHES "%\\(algo:([^)]*)\\)")
+      set(key "${CMAKE_MATCH_1}")
+      if(key MATCHES "^[A-Za-z_][A-Za-z0-9_]*$")
+        string(REPLACE "|" ";" _algos "${_ExternalData_REGEX_ALGO}")
+        foreach(algo ${_algos})
+          if(DEFINED ExternalData_URL_ALGO_${algo}_${key})
+            set(_ExternalData_CONFIG_CODE
+              "${_ExternalData_CONFIG_CODE}\nset(ExternalData_URL_ALGO_${algo}_${key} \"${ExternalData_URL_ALGO_${algo}_${key}}\")")
+          endif()
+        endforeach()
+      else()
+        message(FATAL_ERROR
+          "Bad %(algo:${key}) in URL template:\n"
+          " ${url_template}\n"
+          "The transform name must be a valid C identifier.")
+      endif()
+    endif()
+  endforeach()
+
+  # Store configuration for use by build-time script.
   set(config ${CMAKE_CURRENT_BINARY_DIR}/${target}_config.cmake)
   configure_file(${_ExternalData_SELF_DIR}/ExternalData_config.cmake.in ${config} @ONLY)
 
@@ -191,7 +430,7 @@ function(ExternalData_add_target target)
                                  -DExternalData_ACTION=local
                                  -DExternalData_CONFIG=${config}
                                  -P ${_ExternalData_SELF}
-        DEPENDS "${name}"
+        MAIN_DEPENDENCY "${name}"
         )
       list(APPEND files "${file}")
     endif()
@@ -222,7 +461,7 @@ function(ExternalData_add_target target)
                                  -DExternalData_CONFIG=${config}
                                  -P ${_ExternalData_SELF}
         # Update whenever the object hash changes.
-        DEPENDS "${name}${ext}"
+        MAIN_DEPENDENCY "${name}${ext}"
         )
       list(APPEND files "${file}${stamp}")
     endif()
@@ -234,31 +473,36 @@ endfunction()
 
 function(ExternalData_expand_arguments target outArgsVar)
   # Replace DATA{} references with real arguments.
-  set(data_regex "DATA{([^{}\r\n]*)}")
+  set(data_regex "DATA{([^;{}\r\n]*)}")
   set(other_regex "([^D]|D[^A]|DA[^T]|DAT[^A]|DATA[^{])+|.")
   set(outArgs "")
+  # This list expansion un-escapes semicolons in list element values so we
+  # must re-escape them below anywhere a new list expansion will occur.
   foreach(arg IN LISTS ARGN)
     if("x${arg}" MATCHES "${data_regex}")
+      # Re-escape in-value semicolons before expansion in foreach below.
+      string(REPLACE ";" "\\;" tmp "${arg}")
       # Split argument into DATA{}-pieces and other pieces.
-      string(REGEX MATCHALL "${data_regex}|${other_regex}" pieces "${arg}")
+      string(REGEX MATCHALL "${data_regex}|${other_regex}" pieces "${tmp}")
       # Compose output argument with DATA{}-pieces replaced.
       set(outArg "")
       foreach(piece IN LISTS pieces)
         if("x${piece}" MATCHES "^x${data_regex}$")
           # Replace this DATA{}-piece with a file path.
-          string(REGEX REPLACE "${data_regex}" "\\1" data "${piece}")
-          _ExternalData_arg("${target}" "${piece}" "${data}" file)
+          _ExternalData_arg("${target}" "${piece}" "${CMAKE_MATCH_1}" file)
           set(outArg "${outArg}${file}")
         else()
           # No replacement needed for this piece.
           set(outArg "${outArg}${piece}")
         endif()
       endforeach()
-      list(APPEND outArgs "${outArg}")
     else()
       # No replacements needed in this argument.
-      list(APPEND outArgs "${arg}")
+      set(outArg "${arg}")
     endif()
+    # Re-escape in-value semicolons in resulting list.
+    string(REPLACE ";" "\\;" outArg "${outArg}")
+    list(APPEND outArgs "${outArg}")
   endforeach()
   set("${outArgsVar}" "${outArgs}" PARENT_SCOPE)
 endfunction()
@@ -266,30 +510,25 @@ endfunction()
 #-----------------------------------------------------------------------------
 # Private helper interface
 
+set(_ExternalData_REGEX_ALGO "MD5")
+set(_ExternalData_REGEX_EXT "md5")
 set(_ExternalData_SELF "${CMAKE_CURRENT_LIST_FILE}")
 get_filename_component(_ExternalData_SELF_DIR "${_ExternalData_SELF}" PATH)
 
 function(_ExternalData_compute_hash var_hash algo file)
-  if("${algo}" STREQUAL "MD5")
-    # TODO: Errors
+  if("${algo}" MATCHES "^${_ExternalData_REGEX_ALGO}$")
+    # TODO: Require CMake 2.8.7 to support other hashes with file(${algo} ...)
     execute_process(COMMAND "${CMAKE_COMMAND}" -E md5sum "${file}"
       OUTPUT_VARIABLE output)
     string(SUBSTRING "${output}" 0 32 hash)
     set("${var_hash}" "${hash}" PARENT_SCOPE)
   else()
-    # TODO: Other hashes.
     message(FATAL_ERROR "Hash algorithm ${algo} unimplemented.")
   endif()
 endfunction()
 
 function(_ExternalData_random var)
-  if(NOT ${CMAKE_VERSION} VERSION_LESS 2.8.5)
-    string(RANDOM LENGTH 6 random)
-  elseif(EXISTS /dev/urandom)
-    file(READ /dev/urandom random LIMIT 4 HEX)
-  else()
-    message(FATAL_ERROR "CMake >= 2.8.5 required in this environment")
-  endif()
+  string(RANDOM LENGTH 6 random)
   set("${var}" "${random}" PARENT_SCOPE)
 endfunction()
 
@@ -306,7 +545,7 @@ function(_ExternalData_atomic_write file content)
 endfunction()
 
 function(_ExternalData_link_content name var_ext)
-  if("${ExternalData_LINK_CONTENT}" MATCHES "^(MD5)$")
+  if("${ExternalData_LINK_CONTENT}" MATCHES "^(${_ExternalData_REGEX_ALGO})$")
     set(algo "${ExternalData_LINK_CONTENT}")
   else()
     message(FATAL_ERROR
@@ -316,7 +555,7 @@ function(_ExternalData_link_content name var_ext)
   _ExternalData_compute_hash(hash "${algo}" "${name}")
   get_filename_component(dir "${name}" PATH)
   set(staged "${dir}/.ExternalData_${algo}_${hash}")
-  set(ext ".md5")
+  string(TOLOWER ".${algo}" ext)
   _ExternalData_atomic_write("${name}${ext}" "${hash}\n")
   file(RENAME "${name}" "${staged}")
   set("${var_ext}" "${ext}" PARENT_SCOPE)
@@ -331,13 +570,20 @@ function(_ExternalData_arg target arg options var_file)
   list(GET options 0 data)
   list(REMOVE_AT options 0)
 
+  # Interpret trailing slashes as directories.
+  set(data_is_directory 0)
+  if("x${data}" MATCHES "^x(.*)([/\\])$")
+    set(data_is_directory 1)
+    set(data "${CMAKE_MATCH_1}")
+  endif()
+
   # Convert to full path.
   if(IS_ABSOLUTE "${data}")
     set(absdata "${data}")
   else()
-    # TODO: If ${data} does not start in "./" or "../" then use search path?
-    get_filename_component(absdata "${CMAKE_CURRENT_SOURCE_DIR}/${data}" ABSOLUTE)
+    set(absdata "${CMAKE_CURRENT_SOURCE_DIR}/${data}")
   endif()
+  get_filename_component(absdata "${absdata}" ABSOLUTE)
 
   # Convert to relative path under the source tree.
   if(NOT ExternalData_SOURCE_ROOT)
@@ -350,6 +596,13 @@ function(_ExternalData_arg target arg options var_file)
       "  ${arg}\n"
       "does not lie under the top-level source directory\n"
       "  ${top_src}\n")
+  endif()
+  if(data_is_directory AND NOT IS_DIRECTORY "${top_src}/${reldata}")
+    message(FATAL_ERROR "Data directory referenced by argument\n"
+      "  ${arg}\n"
+      "corresponds to source tree path\n"
+      "  ${reldata}\n"
+      "that does not exist as a directory!")
   endif()
   if(NOT ExternalData_BINARY_ROOT)
     set(ExternalData_BINARY_ROOT "${CMAKE_BINARY_DIR}")
@@ -367,16 +620,20 @@ function(_ExternalData_arg target arg options var_file)
 
   set(external "") # Entries external to the source tree.
   set(internal "") # Entries internal to the source tree.
-  set(have_original 0)
+  set(have_original ${data_is_directory})
+  set(have_original_as_dir 0)
 
   # Process options.
+  set(series_option "")
   set(associated_files "")
   set(associated_regex "")
   foreach(opt ${options})
-    if("x${opt}" MATCHES "^xREGEX:[^:/]+$")
-      # Regular expression to match associated files.
-      string(REGEX REPLACE "^REGEX:" "" regex "${opt}")
-      list(APPEND associated_regex "${regex}")
+    # Regular expression to match associated files.
+    if("x${opt}" MATCHES "^xREGEX:([^:/]+)$")
+      list(APPEND associated_regex "${CMAKE_MATCH_1}")
+    elseif(opt STREQUAL ":")
+      # Activate series matching.
+      set(series_option "${opt}")
     elseif("x${opt}" MATCHES "^[^][:/*?]+$")
       # Specific associated file.
       list(APPEND associated_files "${opt}")
@@ -386,24 +643,46 @@ function(_ExternalData_arg target arg options var_file)
     endif()
   endforeach()
 
-  if(associated_files OR associated_regex)
-    # Load the named data file and listed/matching associated files.
-    _ExternalData_arg_single()
-    _ExternalData_arg_associated()
-  elseif("${reldata}" MATCHES "(^|/)[^/.]+$")
-    # Files with no extension cannot be a series.
-    _ExternalData_arg_single()
-  else()
-    # Match a whole file series by default.
+  if(series_option)
+    if(data_is_directory)
+      message(FATAL_ERROR "Series option \"${series_option}\" not allowed with directories.")
+    endif()
+    if(associated_files OR associated_regex)
+      message(FATAL_ERROR "Series option \"${series_option}\" not allowed with associated files.")
+    endif()
+    # Load a whole file series.
     _ExternalData_arg_series()
+  elseif(data_is_directory)
+    if(associated_files OR associated_regex)
+      # Load listed/matching associated files in the directory.
+      _ExternalData_arg_associated()
+    else()
+      message(FATAL_ERROR "Data directory referenced by argument\n"
+        "  ${arg}\n"
+        "must list associated files.")
+    endif()
+  else()
+    # Load the named data file.
+    _ExternalData_arg_single()
+    if(associated_files OR associated_regex)
+      # Load listed/matching associated files.
+      _ExternalData_arg_associated()
+    endif()
   endif()
 
   if(NOT have_original)
-    message(FATAL_ERROR "Data file referenced by argument\n"
+    if(have_original_as_dir)
+      set(msg_kind FATAL_ERROR)
+      set(msg "that is directory instead of a file!")
+    else()
+      set(msg_kind AUTHOR_WARNING)
+      set(msg "that does not exist as a file (with or without an extension)!")
+    endif()
+    message(${msg_kind} "Data file referenced by argument\n"
       "  ${arg}\n"
       "corresponds to source tree path\n"
       "  ${reldata}\n"
-      "that does not exist (with or without an extension)!")
+      "${msg}")
   endif()
 
   if(external)
@@ -421,7 +700,11 @@ endfunction()
 
 macro(_ExternalData_arg_associated)
   # Associated files lie in the same directory.
-  get_filename_component(reldir "${reldata}" PATH)
+  if(data_is_directory)
+    set(reldir "${reldata}")
+  else()
+    get_filename_component(reldir "${reldata}" PATH)
+  endif()
   if(reldir)
     set(reldir "${reldir}/")
   endif()
@@ -451,27 +734,40 @@ endmacro()
 
 macro(_ExternalData_arg_series)
   # Configure series parsing and matching.
+  set(series_parse_prefix "")
+  set(series_parse_number "\\1")
+  set(series_parse_suffix "\\2")
   if(ExternalData_SERIES_PARSE)
-    if(NOT "${ExternalData_SERIES_PARSE}" MATCHES
-        "^\\^\\([^()]*\\)\\([^()]*\\)\\([^()]*\\)\\$$")
+    if(ExternalData_SERIES_PARSE_NUMBER AND ExternalData_SERIES_PARSE_SUFFIX)
+      if(ExternalData_SERIES_PARSE_PREFIX)
+        set(series_parse_prefix "\\${ExternalData_SERIES_PARSE_PREFIX}")
+      endif()
+      set(series_parse_number "\\${ExternalData_SERIES_PARSE_NUMBER}")
+      set(series_parse_suffix "\\${ExternalData_SERIES_PARSE_SUFFIX}")
+    elseif(NOT "x${ExternalData_SERIES_PARSE}" MATCHES "^x\\([^()]*\\)\\([^()]*\\)\\$$")
       message(FATAL_ERROR
         "ExternalData_SERIES_PARSE is set to\n"
         "  ${ExternalData_SERIES_PARSE}\n"
         "which is not of the form\n"
-        "  ^(...)(...)(...)$\n")
+        "  (<number>)(<suffix>)$\n"
+        "Fix the regular expression or set variables\n"
+        "  ExternalData_SERIES_PARSE_PREFIX = <prefix> regex group number, if any\n"
+        "  ExternalData_SERIES_PARSE_NUMBER = <number> regex group number\n"
+        "  ExternalData_SERIES_PARSE_SUFFIX = <suffix> regex group number\n"
+        )
     endif()
     set(series_parse "${ExternalData_SERIES_PARSE}")
   else()
-    set(series_parse "^(.*)()(\\.[^./]*)$")
+    set(series_parse "([0-9]*)(\\.[^./]*)$")
   endif()
   if(ExternalData_SERIES_MATCH)
     set(series_match "${ExternalData_SERIES_MATCH}")
   else()
-    set(series_match "[_.]?[0-9]*")
+    set(series_match "[_.-]?[0-9]*")
   endif()
 
   # Parse the base, number, and extension components of the series.
-  string(REGEX REPLACE "${series_parse}" "\\1;\\2;\\3" tuple "${reldata}")
+  string(REGEX REPLACE "${series_parse}" "${series_parse_prefix};${series_parse_number};${series_parse_suffix}" tuple "${reldata}")
   list(LENGTH tuple len)
   if(NOT "${len}" EQUAL 3)
     message(FATAL_ERROR "Data file referenced by argument\n"
@@ -485,7 +781,7 @@ macro(_ExternalData_arg_series)
   list(GET tuple 2 ext)
 
   # Glob files that might match the series.
-  # Then match match base, number, and extension.
+  # Then match base, number, and extension.
   _ExternalData_exact_regex(series_base "${relbase}")
   _ExternalData_exact_regex(series_ext "${ext}")
   _ExternalData_arg_find_files("${relbase}*${ext}"
@@ -495,29 +791,41 @@ endmacro()
 function(_ExternalData_arg_find_files pattern regex)
   file(GLOB globbed RELATIVE "${top_src}" "${top_src}/${pattern}*")
   foreach(entry IN LISTS globbed)
-    string(REGEX REPLACE "^(${regex})(\\.md5|)$" "\\1;\\2" tuple "${entry}")
-    list(LENGTH tuple len)
-    if("${len}" EQUAL 2)
-      list(GET tuple 0 relname)
-      list(GET tuple 1 alg)
-      set(name "${top_src}/${relname}")
-      set(file "${top_bin}/${relname}")
-      if(alg)
-        list(APPEND external "${file}|${name}|${alg}")
-      elseif(ExternalData_LINK_CONTENT)
-        _ExternalData_link_content("${name}" alg)
-        list(APPEND external "${file}|${name}|${alg}")
-      elseif(NOT top_same)
-        list(APPEND internal "${file}|${name}")
-      endif()
-      if("${relname}" STREQUAL "${reldata}")
-        set(have_original 1)
+    if("x${entry}" MATCHES "^x(.*)(\\.(${_ExternalData_REGEX_EXT}))$")
+      set(relname "${CMAKE_MATCH_1}")
+      set(alg "${CMAKE_MATCH_2}")
+    else()
+      set(relname "${entry}")
+      set(alg "")
+    endif()
+    if("x${relname}" MATCHES "^x${regex}$" # matches
+        AND NOT "x${relname}" MATCHES "(^x|/)\\.ExternalData_" # not staged obj
+        )
+      if(IS_DIRECTORY "${top_src}/${entry}")
+        if("${relname}" STREQUAL "${reldata}")
+          set(have_original_as_dir 1)
+        endif()
+      else()
+        set(name "${top_src}/${relname}")
+        set(file "${top_bin}/${relname}")
+        if(alg)
+          list(APPEND external "${file}|${name}|${alg}")
+        elseif(ExternalData_LINK_CONTENT)
+          _ExternalData_link_content("${name}" alg)
+          list(APPEND external "${file}|${name}|${alg}")
+        elseif(NOT top_same)
+          list(APPEND internal "${file}|${name}")
+        endif()
+        if("${relname}" STREQUAL "${reldata}")
+          set(have_original 1)
+        endif()
       endif()
     endif()
   endforeach()
   set(external "${external}" PARENT_SCOPE)
   set(internal "${internal}" PARENT_SCOPE)
   set(have_original "${have_original}" PARENT_SCOPE)
+  set(have_original_as_dir "${have_original_as_dir}" PARENT_SCOPE)
 endfunction()
 
 #-----------------------------------------------------------------------------
@@ -530,8 +838,9 @@ endif()
 if(ExternalData_CONFIG)
   include(${ExternalData_CONFIG})
 endif()
-if(NOT ExternalData_URL_TEMPLATES)
-  message(FATAL_ERROR "No ExternalData_URL_TEMPLATES set!")
+if(NOT ExternalData_URL_TEMPLATES AND NOT ExternalData_OBJECT_STORES)
+  message(FATAL_ERROR
+    "Neither ExternalData_URL_TEMPLATES nor ExternalData_OBJECT_STORES is set!")
 endif()
 
 function(_ExternalData_link_or_copy src dst)
@@ -540,7 +849,7 @@ function(_ExternalData_link_or_copy src dst)
   file(MAKE_DIRECTORY "${dst_dir}")
   _ExternalData_random(random)
   set(tmp "${dst}.tmp${random}")
-  if(UNIX)
+  if(UNIX AND NOT ExternalData_NO_SYMLINKS)
     # Create a symbolic link.
     set(tgt "${src}")
     if(relative_top)
@@ -570,14 +879,10 @@ function(_ExternalData_download_file url file err_var msg_var)
   set(retry 3)
   while(retry)
     math(EXPR retry "${retry} - 1")
-    if("${CMAKE_VERSION}" VERSION_GREATER 2.8.4.20110602)
-      if(ExternalData_TIMEOUT_INACTIVITY)
-        set(inactivity_timeout INACTIVITY_TIMEOUT ${ExternalData_TIMEOUT_INACTIVITY})
-      elseif(NOT "${ExternalData_TIMEOUT_INACTIVITY}" EQUAL 0)
-        set(inactivity_timeout INACTIVITY_TIMEOUT 60)
-      else()
-        set(inactivity_timeout "")
-      endif()
+    if(ExternalData_TIMEOUT_INACTIVITY)
+      set(inactivity_timeout INACTIVITY_TIMEOUT ${ExternalData_TIMEOUT_INACTIVITY})
+    elseif(NOT "${ExternalData_TIMEOUT_INACTIVITY}" EQUAL 0)
+      set(inactivity_timeout INACTIVITY_TIMEOUT 60)
     else()
       set(inactivity_timeout "")
     endif()
@@ -610,7 +915,32 @@ function(_ExternalData_download_file url file err_var msg_var)
   set("${msg_var}" "${msg}" PARENT_SCOPE)
 endfunction()
 
+function(_ExternalData_custom_fetch key loc file err_var msg_var)
+  if(NOT ExternalData_CUSTOM_SCRIPT_${key})
+    set(err 1)
+    set(msg "No ExternalData_CUSTOM_SCRIPT_${key} set!")
+  elseif(NOT EXISTS "${ExternalData_CUSTOM_SCRIPT_${key}}")
+    set(err 1)
+    set(msg "No '${ExternalData_CUSTOM_SCRIPT_${key}}' exists!")
+  else()
+    set(ExternalData_CUSTOM_LOCATION "${loc}")
+    set(ExternalData_CUSTOM_FILE "${file}")
+    unset(ExternalData_CUSTOM_ERROR)
+    include("${ExternalData_CUSTOM_SCRIPT_${key}}")
+    if(DEFINED ExternalData_CUSTOM_ERROR)
+      set(err 1)
+      set(msg "${ExternalData_CUSTOM_ERROR}")
+    else()
+      set(err 0)
+      set(msg "no error")
+    endif()
+  endif()
+  set("${err_var}" "${err}" PARENT_SCOPE)
+  set("${msg_var}" "${msg}" PARENT_SCOPE)
+endfunction()
+
 function(_ExternalData_download_object name hash algo var_obj)
+  
   # Search all object stores for an existing object.
   foreach(dir ${ExternalData_OBJECT_STORES})
     set(obj "${dir}/${algo}/${hash}")
@@ -632,8 +962,23 @@ function(_ExternalData_download_object name hash algo var_obj)
   foreach(url_template IN LISTS ExternalData_URL_TEMPLATES)
     string(REPLACE "%(hash)" "${hash}" url_tmp "${url_template}")
     string(REPLACE "%(algo)" "${algo}" url "${url_tmp}")
+	
+    if(url MATCHES "^(.*)%\\(algo:([A-Za-z_][A-Za-z0-9_]*)\\)(.*)$")
+      set(lhs "${CMAKE_MATCH_1}")
+      set(key "${CMAKE_MATCH_2}")
+      set(rhs "${CMAKE_MATCH_3}")
+      if(DEFINED ExternalData_URL_ALGO_${algo}_${key})
+        set(url "${lhs}${ExternalData_URL_ALGO_${algo}_${key}}${rhs}")
+      else()
+        set(url "${lhs}${algo}${rhs}")
+      endif()
+    endif()
     message(STATUS "Fetching \"${url}\"")
-    _ExternalData_download_file("${url}" "${tmp}" err errMsg)
+    if(url MATCHES "^ExternalDataCustomScript://([A-Za-z_][A-Za-z0-9_]*)/(.*)$")
+      _ExternalData_custom_fetch("${CMAKE_MATCH_1}" "${CMAKE_MATCH_2}" "${tmp}" err errMsg)
+    else()
+      _ExternalData_download_file("${url}" "${tmp}" err errMsg)
+    endif()
     set(tried "${tried}\n  ${url}")
     if(err)
       set(tried "${tried} (${errMsg})")
@@ -663,6 +1008,9 @@ function(_ExternalData_download_object name hash algo var_obj)
     set(obj "${staged}")
     message(STATUS "Staged object: \"${obj}\"")
   else()
+    if(NOT tried)
+      set(tried "\n  (No ExternalData_URL_TEMPLATES given)")
+    endif()
     message(FATAL_ERROR "Object ${algo}=${hash} not found at:${tried}")
   endif()
 
@@ -679,8 +1027,8 @@ if("${ExternalData_ACTION}" STREQUAL "fetch")
   file(READ "${name}${ext}" hash)
   string(STRIP "${hash}" hash)
 
-  if("${ext}" STREQUAL ".md5")
-    set(algo "MD5")
+  if("${ext}" MATCHES "^\\.(${_ExternalData_REGEX_EXT})$")
+    string(TOUPPER "${CMAKE_MATCH_1}" algo)
   else()
     message(FATAL_ERROR "Unknown hash algorithm extension \"${ext}\"")
   endif()
@@ -715,16 +1063,6 @@ elseif("${ExternalData_ACTION}" STREQUAL "local")
     endif()
   endforeach()
   _ExternalData_link_or_copy("${name}" "${file}")
-elseif("${ExternalData_ACTION}" STREQUAL "store")
-  foreach(v dir file)
-    if(NOT DEFINED "${v}")
-      message(FATAL_ERROR "No \"-D${v}=\" value provided!")
-    endif()
-  endforeach()
-  if(NOT DEFINED algo)
-    set(algo "MD5")
-  endif()
-  _ExternalData_compute_hash(hash "${algo}" "${file}")
 else()
-  message(FATAL_ERROR "Unknnown ExternalData_ACTION=[${ExternalData_ACTION}]")
+  message(FATAL_ERROR "Unknown ExternalData_ACTION=[${ExternalData_ACTION}]")
 endif()

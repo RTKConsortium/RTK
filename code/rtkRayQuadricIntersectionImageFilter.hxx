@@ -84,9 +84,6 @@ RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
   typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
-  const unsigned int Dimension = TInputImage::ImageDimension;
-  const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
-
   // Go over each projection
   for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
     {

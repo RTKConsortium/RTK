@@ -56,6 +56,9 @@
 #include "rtkXRadImageIOFactory.h"
 #include "rtkXRadRawToAttenuationImageFilter.h"
 
+// Ora (medPhoton) image files
+#include "rtkOraLookupTableImageFilter.h"
+
 // Macro to handle input images with vector pixel type in GenerateOutputInformation()
 #define SET_INPUT_IMAGE_VECTOR_TYPE(componentType, numberOfComponents) \
 if ( !strcmp(imageIO->GetComponentTypeAsString(imageIO->GetComponentType()).c_str(), #componentType) \
@@ -269,12 +272,9 @@ void ProjectionsReader<TOutputImage>
       typename CastFilterType::Pointer castFilter = CastFilterType::New();
       m_RawCastFilter = castFilter;
       }
-    else if( !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
-             !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
-             !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
-             imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
+    else if( imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
       {
-      /////////// Elekta synergy, IBA / iMagX, unsigned short
+      /////////// Ora, Elekta synergy, IBA / iMagX, unsigned short
       typedef unsigned short                                     InputPixelType;
       typedef itk::Image< InputPixelType, OutputImageDimension > InputImageType;
 
@@ -325,25 +325,35 @@ void ProjectionsReader<TOutputImage>
       typename BinType::Pointer bin = BinType::New();
       m_BinningFilter = bin;
 
-      // Scatter correction
-      typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
-      typename ScatterFilterType::Pointer scatter = ScatterFilterType::New();
-      m_ScatterFilter = scatter;
+      // Ora & ushort specific conversion of input raw data
+      if( !strcmp(imageIO->GetNameOfClass(), "OraImageIO") )
+        {
+        typedef rtk::OraLookupTableImageFilter< OutputImageType > OraRawType;
+        typename OraRawType::Pointer oraraw = OraRawType::New();
+        m_RawToAttenuationFilter = oraraw;
+        }
+      else
+        {
+        // Scatter correction
+        typedef rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>  ScatterFilterType;
+        typename ScatterFilterType::Pointer scatter = ScatterFilterType::New();
+        m_ScatterFilter = scatter;
 
-      // I0 estimation filter (shunt from pipeline by default)
-      typedef rtk::I0EstimationProjectionFilter<InputImageType, InputImageType> I0EstimationFilterType;
-      typename I0EstimationFilterType::Pointer i0est = I0EstimationFilterType::New();
-      m_I0EstimationFilter = i0est;
+        // I0 estimation filter (shunt from pipeline by default)
+        typedef rtk::I0EstimationProjectionFilter<InputImageType, InputImageType> I0EstimationFilterType;
+        typename I0EstimationFilterType::Pointer i0est = I0EstimationFilterType::New();
+        m_I0EstimationFilter = i0est;
 
-      // Convert raw to Projections
-      typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
-      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
-      m_RawToAttenuationFilter = rawFilter;
+        // Convert raw to Projections
+        typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType, OutputImageType> RawFilterType;
+        typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+        m_RawToAttenuationFilter = rawFilter;
 
-      // Or just casts to OutputImageType
-      typedef itk::CastImageFilter<InputImageType, OutputImageType> CastFilterType;
-      typename CastFilterType::Pointer castFilter = CastFilterType::New();
-      m_RawCastFilter = castFilter;
+        // Or just casts to OutputImageType
+        typedef itk::CastImageFilter<InputImageType, OutputImageType> CastFilterType;
+        typename CastFilterType::Pointer castFilter = CastFilterType::New();
+        m_RawCastFilter = castFilter;
+        }
       }
     else
       {
@@ -398,11 +408,7 @@ void ProjectionsReader<TOutputImage>
     }
 
   // Parameter propagation
-  if( !strcmp(imageIO->GetNameOfClass(), "XRadImageIO") ||
-      !strcmp(imageIO->GetNameOfClass(), "HisImageIO") ||
-      !strcmp(imageIO->GetNameOfClass(), "DCMImagXImageIO") ||
-      !strcmp(imageIO->GetNameOfClass(), "ImagXImageIO") ||
-      imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
+  if( imageIO->GetComponentType() == itk::ImageIOBase::USHORT )
     PropagateParametersToMiniPipeline< itk::Image<unsigned short, OutputImageDimension> >();
   else if( !strcmp(imageIO->GetNameOfClass(), "HndImageIO") ||
            !strcmp(imageIO->GetNameOfClass(), "XimImageIO"))
@@ -615,11 +621,19 @@ void ProjectionsReader<TOutputImage>
     // Raw to attenuation or cast filter, change of type
     if(m_RawToAttenuationFilter.GetPointer() != ITK_NULLPTR)
       {
-      typedef itk::ImageToImageFilter<TInputImage, OutputImageType> IToIFilterType;
+      // Check if Ora pointer
+      typedef rtk::OraLookupTableImageFilter< OutputImageType > OraRawType;
+      OraRawType *oraraw = dynamic_cast<OraRawType*>( m_RawToAttenuationFilter.GetPointer() );
+      if(oraraw != ITK_NULLPTR)
+        {
+        oraraw->SetComputeLineIntegral(m_ComputeLineIntegral);
+        oraraw->SetFileNames(m_FileNames);
+        }
 
       // Cast or convert to line integral depending on m_ComputeLineIntegral
+      typedef itk::ImageToImageFilter<TInputImage, OutputImageType> IToIFilterType;
       IToIFilterType * itoi = ITK_NULLPTR;
-      if(m_ComputeLineIntegral)
+      if(m_ComputeLineIntegral || oraraw != ITK_NULLPTR)
         itoi = dynamic_cast<IToIFilterType*>( m_RawToAttenuationFilter.GetPointer() );
       else
         itoi = dynamic_cast<IToIFilterType*>( m_RawCastFilter.GetPointer() );

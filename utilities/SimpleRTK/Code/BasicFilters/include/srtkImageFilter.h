@@ -21,7 +21,7 @@
 #include "srtkMacro.h"
 #include "srtkMemberFunctionFactory.h"
 #include "srtkBasicFilters.h"
-#include "srtkImageFilterExecuteBase.h"
+#include "srtkProcessObject.h"
 
 namespace rtk {
 
@@ -35,7 +35,7 @@ namespace rtk {
    */
   template < unsigned int N>
   class SRTKBasicFilters0_EXPORT ImageFilter:
-      public ImageFilterExecuteBase<N>
+      public ProcessObject
   {
     public:
       typedef ImageFilter Self;

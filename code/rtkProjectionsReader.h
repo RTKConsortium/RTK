@@ -71,10 +71,13 @@ namespace rtk
  * BeforeXRad [label="", fixedsize="false", width=0, height=0, shape=none];
  * XRad [label="rtk::XRadRawToAttenuationImageFilter"  URL="\ref rtk::XRadRawToAttenuationImageFilter"];
  * Cast [label="itk::CastImageFilter"  URL="\ref itk::CastImageFilter"];
+ * OraRaw [label="rtk::OraLookupTableImageFilter" URL="\ref rtk::OraLookupTableImageFilter"];
  *
  * Raw->ChangeInformation [label="Default"]
  * ChangeInformation->Crop
  * Crop->ElektaRaw [label="Elekta"]
+ * Binning->OraRaw [label="Ora && ushort"]
+ * OraRaw->WPC
  * ElektaRaw->ConditionalMedian
  * Crop->ConditionalMedian[label="Default"]
  * ConditionalMedian->Binning
@@ -102,7 +105,7 @@ namespace rtk
  *
  * Binning->WPC [label="Default"]
  *
- * {rank=same; XRad EDF Varian LUT}
+ * {rank=same; XRad EDF Varian LUT OraRaw}
  * }
  * \enddot
  *
@@ -228,7 +231,7 @@ public:
     }
 
   /** Convert the projection data to line integrals after pre-processing.
-  ** Default is off. */
+  ** Default is on. */
   itkSetMacro(ComputeLineIntegral, bool);
   itkGetConstMacro(ComputeLineIntegral, bool);
   itkBooleanMacro(ComputeLineIntegral);
@@ -237,6 +240,9 @@ public:
    * if the projection data contains vectors instead of scalars. */
   itkGetMacro(VectorComponent, unsigned int)
   itkSetMacro(VectorComponent, unsigned int)
+
+  /** Get the image IO that was used for reading the projection. */
+  itkGetMacro(ImageIO,  itk::ImageIOBase::Pointer);
 
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */

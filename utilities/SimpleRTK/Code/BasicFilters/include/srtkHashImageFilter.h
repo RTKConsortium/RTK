@@ -49,7 +49,7 @@ namespace rtk {
       HashImageFilter();
 
       enum HashFunction { SHA1, MD5 };
-      Self& SetHashFunction ( HashFunction hashFunction );
+      SRTK_RETURN_SELF_TYPE_HEADER SetHashFunction ( HashFunction hashFunction );
       HashFunction GetHashFunction () const;
 
       /** Name of this class */
@@ -71,7 +71,7 @@ namespace rtk {
       friend struct detail::MemberFunctionAddressor<MemberFunctionType>;
       friend struct detail::ExecuteInternalLabelImageAddressor<MemberFunctionType>;
 
-      std::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
+      nsstd::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
     };
 
     SRTKBasicFilters_EXPORT std::string Hash ( const Image& image, HashImageFilter::HashFunction function = HashImageFilter::SHA1 );

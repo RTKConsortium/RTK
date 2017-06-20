@@ -60,8 +60,6 @@ void LagCorrectionImageFilter<TImage, ModelOrder>
   outputLargestPossibleRegion = inputPtr->GetLargestPossibleRegion();
 
   // Compute the X coordinates of the corners of the image (images offset incl. in origin?)
-  typename Superclass::InputImageType::SizeType size = inputPtr->GetLargestPossibleRegion().GetSize();
-  typename Superclass::InputImageType::SpacingType spacing = inputPtr->GetSpacing();
   typename Superclass::InputImageType::PointType origin = inputPtr->GetOrigin();
 
   outputPtr->SetOrigin(origin);

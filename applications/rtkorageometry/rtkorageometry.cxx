@@ -25,9 +25,17 @@ int main(int argc, char * argv[])
 {
   GGO(rtkorageometry, args_info);
 
+  rtk::OraGeometryReader::MarginVectorType margin;
+  margin.Fill(args_info.margin_arg[0]);
+  for(unsigned int i=0;
+                   i<vnl_math_min(args_info.margin_given, margin.GetVectorDimension());
+                   i++)
+    margin[i] = args_info.margin_arg[i];
+
   // Create geometry reader
   rtk::OraGeometryReader::Pointer oraReader = rtk::OraGeometryReader::New();
   oraReader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
+  oraReader->SetCollimationMargin(margin);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( oraReader->UpdateOutputData() )
 
   // Write

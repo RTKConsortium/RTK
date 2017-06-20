@@ -25,11 +25,11 @@ file( GLOB_RECURSE EXAMPLES_LIST
 file( REMOVE ${OUTPUT_FILE} )
 
 # begin comment
-file( APPEND ${OUTPUT_FILE} "namespace srtk = rtk::simple;/**\n")
+file( APPEND ${OUTPUT_FILE} "namespace sitk = itk::simple;/**\n")
 
-foreach( f IN LISTS EXAMPLES_LIST )
+FOREACH( f IN LISTS EXAMPLES_LIST )
   file( APPEND ${OUTPUT_FILE}  "\\example ${f}\n" )
-endforeach()
+ENDFOREACH( )
 
 # end comment
 file( APPEND ${OUTPUT_FILE}  "*/\n" )

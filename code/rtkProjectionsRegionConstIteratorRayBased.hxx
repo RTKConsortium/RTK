@@ -108,8 +108,8 @@ ProjectionsRegionConstIteratorRayBased< TImage >
       const HomogeneousMatrixType &postMat)
 {
   MatrixType pm;
-  for(int i=0; i<MatrixType::RowDimensions; i++)
-    for(int j=0; j<MatrixType::ColumnDimensions; j++)
+  for(unsigned int i=0; i<MatrixType::RowDimensions; i++)
+    for(unsigned int j=0; j<MatrixType::ColumnDimensions; j++)
         pm[i][j] = postMat[i][j];
   return New(ptr, region, geometry, pm);
 }

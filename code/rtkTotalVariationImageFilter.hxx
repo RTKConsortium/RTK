@@ -177,7 +177,7 @@ TotalVariationImageFilter< TInputImage >
   itk::SizeValueType c = (itk::SizeValueType) (iit.Size() / 2); // get offset of center pixel
   itk::SizeValueType strides[ImageDimension]; // get offsets to access neighboring pixels
   itk::Vector<RealType, ImageDimension> invSpacingCoeffs;
-  for (int dim=0; dim<ImageDimension; dim++)
+  for (unsigned int dim=0; dim<ImageDimension; dim++)
     {
     strides[dim] = iit.GetStride(dim);
 
@@ -194,7 +194,7 @@ TotalVariationImageFilter< TInputImage >
     // Compute the local differences around the central pixel
     float difference;
     float sumOfSquaredDifferences = 0;
-    for (int dim = 0; dim < ImageDimension; dim++)
+    for (unsigned int dim = 0; dim < ImageDimension; dim++)
       {
       difference = (iit.GetPixel(c + strides[dim]) - iit.GetPixel(c)) * invSpacingCoeffs[dim];
       sumOfSquaredDifferences += difference * difference;
