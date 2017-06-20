@@ -48,7 +48,7 @@ void OraGeometryReader::GenerateData()
     reader->ReadImageInformation();
     itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
 
-    typedef itk::MetaDataObject< VectorType >    MetaDataVectorType;
+    typedef itk::MetaDataObject< PointType >     MetaDataVectorType;
     typedef itk::MetaDataObject< Matrix3x3Type > MetaDataMatrixType;
     typedef itk::MetaDataObject< double >        MetaDataDoubleType;
 

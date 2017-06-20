@@ -24,8 +24,9 @@
 # undef OF
 #endif
 
-// itk include
 #include <itkMetaImageIO.h>
+
+#include "rtkMacro.h"
 
 namespace rtk
 {
