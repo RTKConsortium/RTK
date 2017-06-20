@@ -23,6 +23,8 @@
 #include <itkConceptChecking.h>
 #include <itkNumericTraits.h>
 
+#include "rtkMacro.h"
+
 namespace rtk
 {
   
