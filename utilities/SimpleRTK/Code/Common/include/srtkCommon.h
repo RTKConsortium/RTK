@@ -20,7 +20,7 @@
 
 #include "srtkMacro.h"
 
-#ifndef __srtkMacro_h
+#ifndef srtkMacro_h
 #error "srtkMacro.h must be included before srtkCommon.h"
 #endif
 

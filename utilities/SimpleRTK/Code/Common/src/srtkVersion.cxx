@@ -18,17 +18,21 @@
 #include "srtkVersion.h"
 #include "srtkVersionConfig.h"
 
+#include "rtkConfiguration.h"
+
 namespace
 {
 
 std::string MakeExtendedVersionString()
 {
   std::ostringstream v;
-  v << "SimpleRTK Version: " << rtk::simple::Version::VersionString() << std::endl
+  v << "SimpleRTK Version: " << rtk::simple::Version::VersionString()
+    << " (RTK " << RTK_VERSION_STRING << ", ITK "  << ITK_VERSION_STRING << ")" << std::endl
     << "Compiled: " << rtk::simple::Version::BuildDate() << std::endl;
   return v.str();
 }
 
+static const std::string rtkVersionString = RTK_VERSION_STRING;
 static const std::string extendedVersionString = MakeExtendedVersionString();
 
 }
@@ -63,6 +67,22 @@ namespace rtk
   {
     static const std::string v( __DATE__ " " __TIME__ );
     return v;
+  }
+  unsigned int Version::RTKMajorVersion()
+  {
+    return RTK_VERSION_MAJOR;
+  }
+  unsigned int Version::RTKMinorVersion()
+  {
+    return RTK_VERSION_MINOR;
+  }
+  unsigned int Version::RTKPatchVersion()
+  {
+    return RTK_VERSION_PATCH;
+  }
+  const std::string &Version::RTKVersionString()
+  {
+    return rtkVersionString;
   }
   const std::string &Version::ExtendedVersionString()
   {

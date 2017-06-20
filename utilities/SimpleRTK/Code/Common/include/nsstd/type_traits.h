@@ -20,14 +20,14 @@
 
 #include "srtkConfigure.h"
 
-#if defined SRTK_HAS_TR1_TYPE_TRAITS || defined SRTK_HAS_CXX11_TYPE_TRAITS
-#if defined SRTK_HAS_TR1_SUB_INCLUDE
-#include <tr1/type_traits>
-#else
-#include <type_traits>
+#if !defined SRTK_HAS_TR1_TYPE_TRAITS && !defined SRTK_HAS_CXX11_TYPE_TRAITS
+#error "No system (tr1/c++11) type_traits header available!"
 #endif
+
+#if defined SRTK_HAS_CXX11_TYPE_TRAITS || !defined SRTK_HAS_TR1_SUB_INCLUDE
+#include <type_traits>
 #else
-#error "No system (tr1) type_traits header available!"
+#include <tr1/type_traits>
 #endif
 
 
@@ -37,7 +37,7 @@ namespace simple
 {
 namespace nsstd
 {
-#if defined SRTK_HAS_TR1_TYPE_TRAITS
+#if defined SRTK_HAS_TR1_TYPE_TRAITS && !defined SRTK_HAS_CXX11_TYPE_TRAITS
 using std::tr1::is_same;
 using std::tr1::true_type;
 using std::tr1::false_type;
@@ -52,4 +52,4 @@ using std::integral_constant;
 }
 }
 
-#endif //__srtk_nsstd_type_traits_h
+#endif // srtk_nsstd_type_traits_h

@@ -31,31 +31,33 @@
 namespace rtk {
   namespace simple {
 
-    Image ReadImage ( std::string filename ) {
-      ImageFileReader reader; return reader.SetFileName ( filename ).Execute();
+  Image ReadImage ( std::string filename, PixelIDValueEnum outputPixelType )
+    {
+      ImageFileReader reader;
+      return reader.SetFileName ( filename ).SetOutputPixelType(outputPixelType).Execute();
     }
 
-    ImageFileReader::ImageFileReader() {
-
+    ImageFileReader::ImageFileReader()
+      {
       // list of pixel types supported
       typedef NonLabelPixelIDTypeList PixelIDTypeList;
 
       this->m_MemberFactory.reset( new detail::MemberFunctionFactory<MemberFunctionType>( this ) );
 
+      this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 4 > ();
       this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 3 > ();
       this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 2 > ();
-    }
+      }
 
     std::string ImageFileReader::ToString() const {
 
       std::ostringstream out;
       out << "rtk::simple::ImageFileReader";
       out << std::endl;
-
       out << "  FileName: \"";
-      this->ToStringHelper(out, this->m_FileName);
-      out << "\"" << std::endl;
+      this->ToStringHelper(out, this->m_FileName) << "\"" << std::endl;
 
+      out << ImageReaderBase::ToString();
       return out.str();
     }
 
@@ -70,12 +72,26 @@ namespace rtk {
 
     Image ImageFileReader::Execute () {
 
-      PixelIDValueType type = srtkUnknown;
+      PixelIDValueType type = this->GetOutputPixelType();
       unsigned int dimension = 0;
 
-      this->GetPixelIDFromImageIO( this->m_FileName, type, dimension );
 
+      itk::ImageIOBase::Pointer imageio = this->GetImageIOBase( this->m_FileName );
+      if (type == srtkUnknown)
+        {
+        this->GetPixelIDFromImageIO( imageio, type, dimension );
+        }
+      else
+        {
+        PixelIDValueType unused;
+        this->GetPixelIDFromImageIO( imageio, unused, dimension );
+        }
+
+#ifdef SRTK_4D_IMAGES
+      if ( dimension != 2 && dimension != 3  && dimension != 4 )
+#else
       if ( dimension != 2 && dimension != 3 )
+#endif
         {
         srtkExceptionMacro( "The file in the series have unsupported " << dimension - 1 << " dimensions." );
         }
@@ -88,12 +104,12 @@ namespace rtk {
                             << "Refusing to load! " << std::endl );
         }
 
-      return this->m_MemberFactory->GetMemberFunction( type, dimension )();
+      return this->m_MemberFactory->GetMemberFunction( type, dimension )(imageio.GetPointer());
     }
 
   template <class TImageType>
   Image
-  ImageFileReader::ExecuteInternal( void )
+  ImageFileReader::ExecuteInternal( itk::ImageIOBase *imageio )
   {
 
     typedef TImageType                      ImageType;
@@ -102,8 +118,9 @@ namespace rtk {
     // if the InstantiatedToken is correctly implemented this should
     // not occour
     assert( ImageTypeToPixelIDValue<ImageType>::Result != (int)srtkUnknown );
-
+    assert( imageio != SRTK_NULLPTR );
     typename Reader::Pointer reader = Reader::New();
+    reader->SetImageIO( imageio );
     reader->SetFileName( this->m_FileName.c_str() );
 
     this->PreUpdate( reader.GetPointer() );

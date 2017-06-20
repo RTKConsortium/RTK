@@ -54,7 +54,7 @@
       "detaileddescriptionSet" : "Set the angle of the ellipsoid.",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : "Get the angle of the ellipsoid."
-    }
+    },
 	{
       "name" : "Density",
       "type" : "double",

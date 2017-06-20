@@ -8,7 +8,7 @@
  *
  *         http://www.apache.org/licenses/LICENSE-2.0.txt
  *
- *  Unless required by applicable law or agreed to in writing, software
+ *  Unless  by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
@@ -38,6 +38,12 @@ namespace simple
     static unsigned int TweakVersion();
     static const std::string &VersionString();
     static const std::string &BuildDate();
+
+
+    static unsigned int RTKMajorVersion();
+    static unsigned int RTKMinorVersion();
+    static unsigned int RTKPatchVersion();
+    static const std::string &RTKVersionString();
 
     static const std::string &ExtendedVersionString();
     std::string ToString() { return Version::ExtendedVersionString(); }
