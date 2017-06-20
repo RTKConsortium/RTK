@@ -29,17 +29,17 @@ if( DEFINED CSHARP_DOTNET_FOUND )
     set( CSHARP_DOTNET_FOUND 0 )
     set( CSHARP_DOTNET_VERSION "CSHARP_DOTNET_VERSION-NOTVALID" CACHE STRING "C# .NET compiler version, choices: ${CSHARP_DOTNET_VERSIONS}" FORCE )
     message( FATAL_ERROR "The C# .NET version '${csharp_dotnet_version_user}' is not valid. Please enter one of the following: ${CSHARP_DOTNET_VERSIONS}" )
-  endif()
-endif()
+  endif( )
+endif( )
 
 unset( CSHARP_DOTNET_VERSIONS CACHE ) # Clear versions
 
 # Get the framework directory based on platform
 if( ${CSHARP_PLATFORM} MATCHES "x64|itanium" )
   set( csharp_dotnet_framework_dir "$ENV{windir}/Microsoft.NET/Framework64" )
-else()
+else( )
   set( csharp_dotnet_framework_dir "$ENV{windir}/Microsoft.NET/Framework" )
-endif()
+endif( )
 
 # Search for .NET versions
 string( REPLACE "\\" "/" csharp_dotnet_framework_dir ${csharp_dotnet_framework_dir} )
@@ -56,19 +56,19 @@ foreach ( csharp_dotnet_executable ${csharp_dotnet_executables} )
     # Add variable holding executable
     set( CSHARP_DOTNET_COMPILER_${csharp_dotnet_version_temp} ${csharp_dotnet_executable} CACHE STRING "C# .NET compiler ${csharp_dotnet_version}" FORCE )
     mark_as_advanced( CSHARP_DOTNET_COMPILER_${csharp_dotnet_version_temp} )
-  endif()
+  endif( )
   
   # Create a list of supported compiler versions
   if( NOT DEFINED CSHARP_DOTNET_VERSIONS )
     set( CSHARP_DOTNET_VERSIONS "${csharp_dotnet_version_temp}" CACHE STRING "Available C# .NET compiler versions" FORCE )
-  else()
+  else( )
     set( CSHARP_DOTNET_VERSIONS "${CSHARP_DOTNET_VERSIONS}, ${csharp_dotnet_version_temp}"  CACHE STRING "Available C# .NET compiler versions" FORCE )
-  endif()
+  endif( )
   mark_as_advanced( CSHARP_DOTNET_VERSIONS )
 
   # We found at least one .NET compiler version
   set( CSHARP_DOTNET_FOUND 1 CACHE INTERNAL "Boolean indicating if C# .NET was found" )
-endforeach()
+endforeach( csharp_dotnet_executable )
 
 if( CSHARP_DOTNET_FOUND )
   # Report the found versions
@@ -79,13 +79,13 @@ if( CSHARP_DOTNET_FOUND )
   if ( DEFINED CSHARP_DOTNET_COMPILER_v2.0.50727 )
     # If available, select .NET v2.0.50727 (this is the minimal version as it supports generics, and allows use of VS2008)
     set( CSHARP_DOTNET_VERSION "v2.0.50727" CACHE STRING "C# .NET compiler version" )
-  else()
+  else( )
     # Select the highest version (first in reverse sorted list)
     list( GET CSHARP_DOTNET_VERSIONS 0 csharp_dotnet_version_temp )
     set( CSHARP_DOTNET_VERSION ${csharp_dotnet_version_temp} CACHE STRING "C# .NET compiler version" )
-  endif()
+  endif( )
   mark_as_advanced( CSHARP_DOTNET_VERSION )
-endif()
+endif( )
 
 # Set USE_FILE
 get_filename_component( current_list_path ${CMAKE_CURRENT_LIST_FILE} PATH )

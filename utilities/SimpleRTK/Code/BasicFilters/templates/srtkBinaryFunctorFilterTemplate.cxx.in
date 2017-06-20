@@ -59,6 +59,7 @@ $(include ConstructorVectorPixels.cxx.in)
   this->m_MemberFactory2->RegisterMemberFunctions< PixelIDTypeList, 2 > ();
 }
 
+$(include DesctuctorDefinition.cxx.in)
 
 $(include CustomMethods.cxx.in)
 

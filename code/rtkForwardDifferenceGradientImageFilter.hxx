@@ -46,7 +46,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   this->m_UseImageDirection = true;
 
   // default behaviour is to process all dimensions
-  for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
     m_DimensionsProcessed[dim] = true;
     }
@@ -69,7 +69,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 ::SetDimensionsProcessed(bool* DimensionsProcessed)
 {
   bool Modified=false;
-  for (int dim=0; dim<TInputImage::ImageDimension; dim++)
+  for (unsigned int dim=0; dim<TInputImage::ImageDimension; dim++)
     {
     if (m_DimensionsProcessed[dim] != DimensionsProcessed[dim])
       {
@@ -160,7 +160,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
 //  std::vector<int> dimsNotToProcess;
-  for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
     if(m_DimensionsProcessed[dim]) dimsToProcess.push_back(dim);
 //    else dimsNotToProcess.push_back(dim);
@@ -169,7 +169,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   // Set up operators
   itk::ForwardDifferenceOperator< OperatorValueType, InputImageDimension > op[InputImageDimension];
 
-  for ( int i = 0; i < InputImageDimension; i++ )
+  for ( unsigned int i = 0; i < InputImageDimension; i++ )
     {
     op[i].SetDirection(0);
     op[i].CreateDirectional();
@@ -190,7 +190,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
   // Calculate iterator radius
   itk::Size< InputImageDimension > radius;
-  for ( int i = 0; i < InputImageDimension; ++i )
+  for ( unsigned int i = 0; i < InputImageDimension; ++i )
     {
     radius[i]  = op[0].GetRadius()[0];
     }
@@ -211,7 +211,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
   std::slice          x_slice[InputImageDimension];
   const itk::SizeValueType center = nit.Size() / 2;
-  for ( int i = 0; i < InputImageDimension; ++i )
+  for ( unsigned int i = 0; i < InputImageDimension; ++i )
     {
     x_slice[i] = std::slice( center - nit.GetStride(i) * radius[i],
                              op[i].GetSize()[0], nit.GetStride(i) );
@@ -230,7 +230,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
     while ( !nit.IsAtEnd() )
       {
-      for ( int i = 0; i < dimsToProcess.size(); ++i )
+      for ( unsigned int i = 0; i < dimsToProcess.size(); ++i )
         {
         gradient[i] = SIP(x_slice[dimsToProcess[i]], nit, op[dimsToProcess[i]]);
         }

@@ -201,11 +201,19 @@ int main(int , char** )
   simplex->SetDetectorResponse(detectorResponseReader->GetOutput());
   simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   simplex->SetThresholds(thresholds);
-  simplex->SetNumberOfIterations(1000);
+  simplex->SetNumberOfIterations(10000);
+
+  std::cout << "\n\n****** Case 1: User-provided initial values ******" << std::endl;
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
-
   CheckVectorImageQuality<DecomposedProjectionType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
+
+  std::cout << "\n\n****** Case 2: Heuristically-determined initial values ******" << std::endl;
+
+  simplex->SetGuessInitialization(true);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
+  CheckVectorImageQuality<DecomposedProjectionType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
+
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;

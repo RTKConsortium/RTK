@@ -29,7 +29,7 @@ TotalNuclearVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::TotalNuclearVariationDenoisingBPDQImageFilter()
 {
   // Default behaviour is to process all spatial dimensions, i.e. all but the last one, which contains channels
-  for (int dim = 0; dim < TOutputImage::ImageDimension - 1; dim++)
+  for (unsigned int dim = 0; dim < TOutputImage::ImageDimension - 1; dim++)
     {
     this->m_DimensionsProcessed[dim] = true;
     }

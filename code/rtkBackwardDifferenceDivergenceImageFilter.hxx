@@ -43,7 +43,7 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
   m_IsBoundaryConditionOverriden = false;
 
   // default behaviour is to process all dimensions
-  for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
     m_DimensionsProcessed[dim] = true;
     }
@@ -63,7 +63,7 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
 ::SetDimensionsProcessed(bool* DimensionsProcessed)
 {
   bool Modified=false;
-  for (int dim=0; dim<TInputImage::ImageDimension; dim++)
+  for (unsigned int dim=0; dim<TInputImage::ImageDimension; dim++)
     {
     if (m_DimensionsProcessed[dim] != DimensionsProcessed[dim])
       {
@@ -144,7 +144,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
   else
     {
     m_InvSpacingCoeffs= this->GetInput()->GetSpacing();
-    for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
+    for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
       {
       m_InvSpacingCoeffs[dim] = 1.0/m_InvSpacingCoeffs[dim];
       }
@@ -159,7 +159,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
   dimsToProcess.reserve(TInputImage::ImageDimension);
-  for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
     if(m_DimensionsProcessed[dim]) dimsToProcess.push_back(dim);
     }
@@ -179,7 +179,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
 
   const itk::SizeValueType c = (itk::SizeValueType) (iit.Size() / 2); // get offset of center pixel
   itk::SizeValueType strides[TOutputImage::ImageDimension]; // get offsets to access neighboring pixels
-  for (int dim=0; dim<TOutputImage::ImageDimension; dim++)
+  for (unsigned int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
     strides[dim] = iit.GetStride(dim);
     }
@@ -206,7 +206,7 @@ BackwardDifferenceDivergenceImageFilter< TInputImage, TOutputImage>
   if (m_IsBoundaryConditionOverriden) return;
 
   std::vector<int> dimsToProcess;
-  for (int dim = 0; dim < TInputImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
     {
     if(m_DimensionsProcessed[dim]) dimsToProcess.push_back(dim);
     }

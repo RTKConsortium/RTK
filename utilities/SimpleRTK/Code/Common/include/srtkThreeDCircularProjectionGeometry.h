@@ -94,6 +94,12 @@ public:
   void AddProjectionInRadians(float sid, float sdd, float angle, float isox=0., float isoy=0., float oa=0., float ia=0., float sx=0., float sy=0.);
   /**@}*/
 
+  /** Add the projection with projection matrix 
+   * @{
+   */
+  void AddProjection(const std::vector<double> matrix);
+  /**@}*/
+
   /** Clear the geometry object
    * @{
    */

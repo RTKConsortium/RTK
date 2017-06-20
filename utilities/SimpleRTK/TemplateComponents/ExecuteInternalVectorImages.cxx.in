@@ -13,6 +13,7 @@ ${name}::ExecuteInternalVectorImage ( const Image& inImage1 )
 #else
   typedef typename itk::Image<ComponentType, VectorInputImageType::ImageDimension>     ComponentImageType;
 #endif
+
   // we must define the input and output image types should be the
   // same as the scalar execute internal method
   typedef ComponentImageType  InputImageType;
@@ -27,9 +28,8 @@ OUT=OUT..[[
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
 #else
-  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension > OutputImageType;
-#endif
-  ]]
+  typedef itk::Image< ${output_pixel_type}, InputImageType::ImageDimension >     OutputImageType;
+#endif]]
 else
   OUT=OUT..[[
   // Define output image type

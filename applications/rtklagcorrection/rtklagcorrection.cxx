@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
     }
 
   VectorType a, b;
-  for (int i = 0; i < ModelOrder; ++i)
+  for (unsigned int i = 0; i < ModelOrder; ++i)
     {
     a[i] = args_info.rates_arg[i];
     b[i] = args_info.coefficients_arg[i];

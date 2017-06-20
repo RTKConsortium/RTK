@@ -243,12 +243,12 @@ int main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
 
-  if(args_info.time_flag)
-    {
-    rooster->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
+//  if(args_info.time_flag)
+//    {
+//    rooster->PrintTiming(std::cout);
+//    readerProbe.Stop();
+//    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+//    }
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;

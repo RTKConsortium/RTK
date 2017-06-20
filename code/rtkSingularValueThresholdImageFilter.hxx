@@ -99,7 +99,7 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
       SingleVoxelRegion.SetSize(dim, 1);
 
   // Create a variable to store the jacobian matrix
-  vnl_matrix<float> jacobian (outputRegionForThread.GetSize()[TInputImage::ImageDimension - 1], TInputImage::ImageDimension - 1);
+  vnl_matrix<double> jacobian (outputRegionForThread.GetSize()[TInputImage::ImageDimension - 1], TInputImage::ImageDimension - 1);
 
   while(!FakeIterator.IsAtEnd())
     {
@@ -112,11 +112,15 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
     unsigned int row=0;
     for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator, row++)
       {
-      jacobian.set_row(row, inputIterator.Get().GetVnlVector());
+      typename TInputImage::PixelType gradient = inputIterator.Get();
+      for (unsigned int column=0; column<TInputImage::ImageDimension - 1; column++)
+        {
+        jacobian[row][column] = gradient[column];
+        }
       }
 
     // Perform the singular value decomposition of the jacobian matrix
-    vnl_svd<float> svd(jacobian);
+    vnl_svd<double> svd(jacobian);
 
     // Threshold the singular values. Since they are sorted in descending order, we
     // can stop as soon as we reach one that is below threshold

@@ -10,7 +10,7 @@
     {
       "name" : "Coefficients",
       "type" : "std::vector<double>",
-      "default" : "std::vector<double>(2,0)"
+      "default" : "std::vector<double>(2,0)",
 	  "itk_type" : "std::vector<double>"
     }
   ]

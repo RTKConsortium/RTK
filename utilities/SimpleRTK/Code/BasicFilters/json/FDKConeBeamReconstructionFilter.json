@@ -32,7 +32,7 @@
       "detaileddescriptionSet" : "Set the percentage of the image widthfeathered with data to correct for truncation.",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : "Get he percentage of the image widthfeathered with data to correct for truncation."
-    }
+    },
 	{
       "name" : "HannCutFrequency",
       "type" : "double",

@@ -15,42 +15,62 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+
+#if defined(_MSC_VER) && _MSC_VER == 1700
+// VS11 (Visual Studio 2012) has limited variadic argument support for
+// std::bind, the following increases the number of supported
+// arguments.
+// https://connect.microsoft.com/VisualStudio/feedback/details/723448/very-few-function-arguments-for-std-bind
+
+ #if defined(_VARIADIC_MAX) && _VARIADIC_MAX < 10
+  #error "_VARIADIC_MAX already defined. Some STL classes may have insufficient number of template parameters."
+ #else
+  #define _VARIADIC_MAX 10
+ #endif
+#endif
+
+
 #include "srtkImage.hxx"
 #include "srtkMemberFunctionFactory.h"
-
 
 namespace rtk
 {
   namespace simple
   {
-
-  void Image::Allocate ( unsigned int Width, unsigned int Height, unsigned int Depth, PixelIDValueEnum ValueEnum, unsigned int numberOfComponents )
-  {
+    void Image::Allocate ( unsigned int Width, unsigned int Height, unsigned int Depth, unsigned int dim4, PixelIDValueEnum ValueEnum, unsigned int numberOfComponents )
+    {
       // initialize member function factory for allocating images
 
       // The pixel IDs supported
       typedef AllPixelIDTypeList              PixelIDTypeList;
 
-      typedef void (Self::*MemberFunctionType)( unsigned int , unsigned int, unsigned int, unsigned int );
+      typedef void ( Self::*MemberFunctionType )( unsigned int, unsigned int, unsigned int, unsigned int, unsigned int );
 
-      typedef AllocateMemberFunctionAddressor<MemberFunctionType> AllocateAddressor;
+      typedef AllocateMemberFunctionAddressor< MemberFunctionType > AllocateAddressor;
 
-      detail::MemberFunctionFactory<MemberFunctionType> allocateMemberFactory(this);
-      allocateMemberFactory.RegisterMemberFunctions< PixelIDTypeList, 3,  AllocateAddressor > ();
-      allocateMemberFactory.RegisterMemberFunctions< PixelIDTypeList, 2,  AllocateAddressor > ();
+      detail::MemberFunctionFactory< MemberFunctionType > allocateMemberFactory( this );
+      allocateMemberFactory.RegisterMemberFunctions< PixelIDTypeList, 2, AllocateAddressor > ();
+      allocateMemberFactory.RegisterMemberFunctions< PixelIDTypeList, 3, AllocateAddressor > ();
+      allocateMemberFactory.RegisterMemberFunctions< PixelIDTypeList, 4, AllocateAddressor > ();
 
       if ( ValueEnum == srtkUnknown )
         {
         srtkExceptionMacro( "Unable to construct image of unsupported pixel type" );
         }
 
-      if ( Depth == 0 ) {
-      allocateMemberFactory.GetMemberFunction( ValueEnum, 2 )( Width, Height, Depth, numberOfComponents );
-      } else {
-      allocateMemberFactory.GetMemberFunction( ValueEnum, 3 )( Width, Height, Depth, numberOfComponents );
-      }
+      if ( Depth == 0 )
+        {
+        allocateMemberFactory.GetMemberFunction( ValueEnum, 2 )( Width, Height, Depth, dim4, numberOfComponents );
+        }
+      else if ( dim4 == 0 )
+        {
+        allocateMemberFactory.GetMemberFunction( ValueEnum, 3 )( Width, Height, Depth, dim4, numberOfComponents );
+        }
+      else
+        {
+        allocateMemberFactory.GetMemberFunction( ValueEnum, 4 )( Width, Height, Depth, dim4, numberOfComponents );
+        }
     }
-
   }
 }
 
@@ -70,9 +90,11 @@ namespace rtk
                                                                            _D>::ImageType *i ); \
   } }
 
-
+#ifdef SRTK_4D_IMAGES
+#define SRTK_TEMPLATE_InternalInitialization( _I ) SRTK_TEMPLATE_InternalInitialization_D( _I, 2 ) SRTK_TEMPLATE_InternalInitialization_D( _I, 3 ) SRTK_TEMPLATE_InternalInitialization_D( _I, 4 )
+#else
 #define SRTK_TEMPLATE_InternalInitialization( _I ) SRTK_TEMPLATE_InternalInitialization_D( _I, 2 ) SRTK_TEMPLATE_InternalInitialization_D( _I, 3 )
-
+#endif
 
 
 // Instantiate for all types in the lists

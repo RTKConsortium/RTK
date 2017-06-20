@@ -50,7 +50,7 @@ ExternalProject_Add(${proj}
   -C "${CMAKE_CURRENT_BINARY_DIR}/${proj}-build/CMakeCacheInit.txt"
   ${ep_rtk_args}
   ${ep_common_args}
-  -DITK_DIR:PATH=${ITK_DIR}
+  -DRTK_DIR:PATH=${RTK_DIR}
   -DBUILD_APPLICATIONS:BOOL=OFF
   -DBUILD_EXAMPLES:BOOL=OFF
   -DBUILD_TESTING:BOOL=OFF

@@ -180,6 +180,6 @@ HashImageFilter<TImageType>::PrintSelf(std::ostream & os, Indent indent) const
 }
 
 
-} // end namespace rtk
+} // end namespace itk
 
 #endif // __itkHashImageFilter_hxx
