@@ -30,6 +30,8 @@ namespace rtk
  * \brief Mask out everything behind the jaws (typically in Ora file format,
  * i.e., the medPhoton scanner)
  *
+ * \test rtkoratest
+ *
  * \author Simon Rit
  *
  * \ingroup InPlaceImageFilter

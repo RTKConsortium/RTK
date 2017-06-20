@@ -48,7 +48,7 @@ void OraGeometryReader::GenerateData()
     reader->ReadImageInformation();
     itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
 
-    typedef itk::MetaDataObject< PointType >     MetaDataVectorType;
+    typedef itk::MetaDataObject< VectorType >    MetaDataVectorType;
     typedef itk::MetaDataObject< Matrix3x3Type > MetaDataMatrixType;
     typedef itk::MetaDataObject< double >        MetaDataDoubleType;
 
@@ -58,7 +58,7 @@ void OraGeometryReader::GenerateData()
       {
       itkExceptionMacro(<< "No SourcePosition in " << m_ProjectionsFileNames[noProj]);
       }
-    PointType sp = spMeta->GetMetaDataObjectValue();
+    PointType sp(&(spMeta->GetMetaDataObjectValue()[0]));
 
     // Origin (detector position)
     MetaDataVectorType *dpMeta = dynamic_cast<MetaDataVectorType *>(dic["Origin"].GetPointer() );
@@ -66,7 +66,7 @@ void OraGeometryReader::GenerateData()
       {
       itkExceptionMacro(<< "No Origin in " << m_ProjectionsFileNames[noProj]);
       }
-    PointType dp = dpMeta->GetMetaDataObjectValue();
+    PointType dp(&(dpMeta->GetMetaDataObjectValue()[0]));
 
     // Direction (detector orientation)
     MetaDataMatrixType *matMeta = dynamic_cast<MetaDataMatrixType *>(dic["Direction"].GetPointer() );
