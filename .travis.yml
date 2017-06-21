@@ -1,5 +1,7 @@
 language: cpp
 
+python: "2.7.11"
+
 sudo: required
 
 dist: trusty
