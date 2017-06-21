@@ -39,11 +39,7 @@ if (CMAKE_VERSION VERSION_LESS "3")
 else()
   find_package ( Lua ${_QUIET} )
 endif()
-if ( LUA_FOUND )
-  set( WRAP_LUA_DEFAULT ON )
-else()
-  set( WRAP_LUA_DEFAULT OFF )
-endif()
+set( WRAP_LUA_DEFAULT OFF )
 
 set( LUA_ADDITIONAL_LIBRARIES "" CACHE STRING "Additional libraries which may be needed for lua such as readline.")
 mark_as_advanced( LUA_ADDITIONAL_LIBRARIES )
@@ -105,11 +101,7 @@ endif ()
 set_QUIET( WRAP_JAVA )
 find_package ( Java COMPONENTS Development Runtime ${_QUIET} )
 find_package ( JNI ${_QUIET} )
-if ( ${JAVA_FOUND} AND ${JNI_FOUND} )
-  set( WRAP_JAVA_DEFAULT ON )
-else ( ${JAVA_FOUND} AND ${JNI_FOUND} )
-  set( WRAP_JAVA_DEFAULT OFF )
-endif ( ${JAVA_FOUND} AND ${JNI_FOUND} )
+set( WRAP_JAVA_DEFAULT OFF )
 
 option ( WRAP_JAVA "Wrap Java" ${WRAP_JAVA_DEFAULT} )
 
@@ -143,11 +135,7 @@ set_QUIET(WRAP_TCL)
 
 find_package ( TCL ${_QUIET} )
 
-if ( ${TCL_FOUND} )
-  set ( WRAP_TCL_DEFAULT ON )
-else ( ${TCL_FOUND} )
-  set ( WRAP_TCL_DEFAULT OFF )
-endif ( ${TCL_FOUND} )
+set ( WRAP_TCL_DEFAULT OFF )
 
 option ( WRAP_TCL "Wrap Tcl" ${WRAP_TCL_DEFAULT} )
 
@@ -166,11 +154,7 @@ endif()
 set_QUIET( WRAP_RUBY )
 
 find_package ( Ruby ${_QUIET} )
-if ( ${RUBY_FOUND} )
-  set ( WRAP_RUBY_DEFAULT ON )
-else ( ${RUBY_FOUND} )
-  set ( WRAP_RUBY_DEFAULT OFF )
-endif ( ${RUBY_FOUND} )
+set ( WRAP_RUBY_DEFAULT OFF )
 
 option ( WRAP_RUBY "Wrap Ruby" ${WRAP_RUBY_DEFAULT} )
 
@@ -193,11 +177,7 @@ else()
 endif()
 
 find_package( CSharp ${_QUIET} )
-if ( ${CSHARP_FOUND} AND NOT MINGW )
-  set ( WRAP_CSHARP_DEFAULT ON )
-else ()
-  set ( WRAP_CSHARP_DEFAULT OFF )
-endif ()
+set ( WRAP_CSHARP_DEFAULT OFF )
 
 option ( WRAP_CSHARP "Wrap C#" ${WRAP_CSHARP_DEFAULT} )
 
@@ -213,11 +193,7 @@ endif()
 set_QUIET( WRAP_R )
 
 find_package(R ${_QUIET})
-if ( ${R_FOUND} AND NOT WIN32 )
-  set ( WRAP_R_DEFAULT ON )
-else( )
-  set ( WRAP_R_DEFAULT OFF )
-endif( )
+set ( WRAP_R_DEFAULT OFF )
 
 option ( WRAP_R "Wrap R" ${WRAP_R_DEFAULT} )
 
