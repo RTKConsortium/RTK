@@ -4,6 +4,7 @@ set( SimpleRTKIOSource
   srtkImageFileWriter.cxx
   srtkImageReaderBase.cxx
   srtkImageSeriesReader.cxx
+  srtkImageSeriesWriter.cxx
   srtkImportImageFilter.cxx
   srtkShow.cxx
   srtkThreeDCircularProjectionGeometryXMLFileReader.cxx

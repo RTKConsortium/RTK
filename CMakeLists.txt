@@ -80,6 +80,13 @@ if(ITK_FOUND)
 else()
   message(FATAL_ERROR "Cannot build without ITK. Set ITK_DIR.")
 endif()
+set(ITK_LIBRARIES_SANS_VTK)
+foreach(lib ${ITK_LIBRARIES})
+  if(NOT lib MATCHES "ITKVtkGlue")
+    list(APPEND ITK_LIBRARIES_SANS_VTK ${lib})
+  endif()
+endforeach()
+set(ITK_LIBRARIES ${ITK_LIBRARIES_SANS_VTK})
 
 # GPU optional dependencies
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})

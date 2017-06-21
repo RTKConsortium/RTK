@@ -44,7 +44,6 @@ JosephBackProjectionImageFilter<TInputImage,
 
   const unsigned int Dimension = TInputImage::ImageDimension;
   typename TInputImage::RegionType buffReg = this->GetInput(1)->GetBufferedRegion();
-  const unsigned int nPixelPerProj = buffReg.GetSize(0) * buffReg.GetSize(1);
   int offsets[3];
   offsets[0] = 1;
   offsets[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];

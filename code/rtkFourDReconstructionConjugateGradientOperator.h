@@ -184,6 +184,10 @@ public:
     /** Store the phase signal in a member variable */
     virtual void SetSignal(const std::vector<double> signal);
 
+    /** Set / Get whether the displaced detector filter should be disabled */
+    itkSetMacro(DisableDisplacedDetectorFilter, bool)
+    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
     FourDReconstructionConjugateGradientOperator();
     ~FourDReconstructionConjugateGradientOperator() {}
@@ -217,6 +221,7 @@ protected:
     bool                                                  m_UseCudaSources;
     itk::Array2D<float>                                   m_Weights;
     std::vector<double>                                   m_Signal;
+    bool                                                  m_DisableDisplacedDetectorFilter;
 
 private:
     FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented

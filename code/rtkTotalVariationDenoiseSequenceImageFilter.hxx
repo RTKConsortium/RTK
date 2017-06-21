@@ -113,7 +113,7 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
 ::SetDimensionsProcessed(bool* arg)
 {
   bool Modified=false;
-  for (int dim=0; dim<TImage::ImageDimension; dim++)
+  for (unsigned int dim=0; dim<TImage::ImageDimension; dim++)
     {
     if (m_DimensionsProcessed[dim] != arg[dim])
       {

@@ -39,7 +39,10 @@ set(RTK_LIBRARY_FILES
             rtkIOFactories.cxx
             rtkConvertEllipsoidToQuadricParametersFunction.cxx
             rtkDrawQuadricSpatialObject.cxx
+            rtkOraXMLFileReader.cxx
             rtkOraGeometryReader.cxx
+            rtkOraImageIO.cxx
+            rtkOraImageIOFactory.cxx
 	    rtkConditionalMedianImageFilter.cxx)
 
 if(RTK_TIME_EACH_FILTER)

@@ -89,7 +89,9 @@ template
   typename T13 = NullType, typename T14  = NullType, typename T15 = NullType,
   typename T16 = NullType, typename T17  = NullType, typename T18 = NullType,
   typename T19 = NullType, typename T20  = NullType, typename T21 = NullType,
-  typename T22 = NullType, typename T23  = NullType, typename T24 = NullType
+  typename T22 = NullType, typename T23  = NullType, typename T24 = NullType,
+  typename T25 = NullType, typename T26  = NullType, typename T27 = NullType,
+  typename T28 = NullType, typename T29  = NullType, typename T30 = NullType
 >
 struct MakeTypeList
 {
@@ -103,7 +105,9 @@ private:
   T14, T15, T16,
   T17, T18, T19,
   T20, T21, T22,
-  T23, T24
+  T23, T24, T25,
+  T26, T27, T28,
+  T29, T30
   >::Type TailType;
 public:
   typedef TypeList< T1, TailType > Type;
@@ -241,7 +245,7 @@ struct Append<TypeList<Head, Tail>, NullType>
  * int index = typelist::IndexOf<MyTypeList, int>::Result;
  * \endcode
  *
- * IndexOf<TTypeList, T>::value
+ * IndexOf<TTypeList, T>::Result
  * returns the position of T in TList, or NullType if T is not found in TList
  */
 template <class TTypeList, class TType> struct IndexOf;
@@ -274,8 +278,8 @@ public:
  * bool query = typelist::HasType<MyTypeList, short>::Result;
  * \endcode
  *
- * IndexOf<TList, T>::value
- * returns the position of T in TList, or NullType if T is not found in TList
+ * HasType<TList, T>::Result
+ * evaluates to true if TList contains T, false otherwise.
  */
 template <class TTypeList, class TType> struct HasType;
 template <class TType>
@@ -398,15 +402,14 @@ struct DualVisit
 template < typename TLeftTypeList, typename TRightTypeList >
 struct DualVisitImpl
 {
+  typedef typename TLeftTypeList::Head  LeftHead;
+  typedef typename TRightTypeList::Head RightHead;
+  typedef typename TLeftTypeList::Tail  LeftTail;
+  typedef typename TRightTypeList::Tail RightTail;
+
   template <typename Visitor>
   void operator()( Visitor &visitor ) const
   {
-    typedef typename TLeftTypeList::Head  LeftHead;
-    typedef typename TRightTypeList::Head RightHead;
-    typedef typename TLeftTypeList::Tail  LeftTail;
-    typedef typename TRightTypeList::Tail RightTail;
-
-
     DualVisitImpl< TLeftTypeList, TRightTypeList> goRight;
     goRight.visitRHS<Visitor>( visitor );
 
@@ -417,12 +420,6 @@ struct DualVisitImpl
   template <typename Visitor>
   void operator()( const Visitor &visitor ) const
   {
-    typedef typename TLeftTypeList::Head  LeftHead;
-    typedef typename TRightTypeList::Head RightHead;
-    typedef typename TLeftTypeList::Tail  LeftTail;
-    typedef typename TRightTypeList::Tail RightTail;
-
-
     DualVisitImpl< TLeftTypeList, TRightTypeList> goRight;
     goRight.visitRHS<Visitor>( visitor );
 
@@ -433,11 +430,6 @@ struct DualVisitImpl
   template <typename Visitor>
   void visitRHS( Visitor &visitor ) const
   {
-    typedef typename TLeftTypeList::Head  LeftHead;
-    typedef typename TRightTypeList::Head RightHead;
-    typedef typename TLeftTypeList::Tail  LeftTail;
-    typedef typename TRightTypeList::Tail RightTail;
-
     visitor.CLANG_TEMPLATE operator()<LeftHead, RightHead>( );
 
     DualVisitImpl< TLeftTypeList, RightTail> goRight;
@@ -446,11 +438,6 @@ struct DualVisitImpl
   template <typename Visitor>
   void visitRHS( const Visitor &visitor ) const
   {
-    typedef typename TLeftTypeList::Head  LeftHead;
-    typedef typename TRightTypeList::Head RightHead;
-    typedef typename TLeftTypeList::Tail  LeftTail;
-    typedef typename TRightTypeList::Tail RightTail;
-
     visitor.CLANG_TEMPLATE operator()<LeftHead, RightHead>( );
 
     DualVisitImpl< TLeftTypeList, RightTail> goRight;

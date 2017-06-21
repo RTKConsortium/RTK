@@ -1,12 +1,12 @@
-set (CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS   99)
-set (CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 999)
+SET (CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS   99)
+SET (CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 999)
 
 # test to ignore for memcheck
-set (CTEST_CUSTOM_MEMCHECK_IGNORE
+SET (CTEST_CUSTOM_MEMCHECK_IGNORE
   "ProcessObjectDeathTest.DeleteCommandActiveProcess"
   )
 
-set(CTEST_CUSTOM_COVERAGE_EXCLUDE
+SET(CTEST_CUSTOM_COVERAGE_EXCLUDE
  ${CTEST_CUSTOM_COVERAGE_EXCLUDE}
 
  # Exclude try_compile sources from coverage results:
@@ -23,7 +23,7 @@ set(CTEST_CUSTOM_COVERAGE_EXCLUDE
  "/Wrapping/.*_wrap.cxx"
  )
 
-set(CTEST_CUSTOM_WARNING_EXCEPTION
+SET(CTEST_CUSTOM_WARNING_EXCEPTION
   ${CTEST_CUSTOM_WARNING_EXCEPTION}
 
   # Ignore warning for files with no symbols
@@ -48,6 +48,9 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
   # Ignore warning in lua about the use of `tmpnam' is dangerous
   "loslib"
 
+  # RH5 GCC 4.1 is producing warnings internally for functional headers
+  "mu_iterate.h.*warning? unused parameter '__tuple'"
+
   # Ignore CSharp invalid version warning for dev
   "warning CS1607.*The version number.*dev.*is invalid"
   "warning CS1607.*The version.*dev.*is not in the normal"
@@ -57,5 +60,14 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
 
   # Warning when compiling ITK v4.5.1 with clang
   "clang: warning: argument unused during.*-fno-ipa-cp-clone"
+
+  # Warning from RHEL5 GCC 4.1 about visibility change
+  "warning: lowering visibility of .* to match its type"
+
+  # Warning from SWIG with self member type
+  "srtkCommand.* [wW]arning 314.*self.*is a python keyword"
+
+  # Warning from RH5 gcc 4.1.2
+  "tr1/mu_iterate.h.* warning: unused parameter '__tuple'"
 )
 

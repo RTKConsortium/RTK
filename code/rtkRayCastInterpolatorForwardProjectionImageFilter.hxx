@@ -38,7 +38,6 @@ RayCastInterpolatorForwardProjectionImageFilter<TInputImage,TOutputImage>
                        ThreadIdType itkNotUsed(threadId) )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-  const unsigned int nPixelPerProj = outputRegionForThread.GetSize(0)*outputRegionForThread.GetSize(1);
   const typename Superclass::GeometryPointer geometry = this->GetGeometry();
 
   // Create interpolator

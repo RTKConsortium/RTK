@@ -8,13 +8,13 @@
 
 # Version info
 
-set(SimpleRTK_VERSION_MAJOR 0)
-set(SimpleRTK_VERSION_MINOR 9)
+set(SimpleRTK_VERSION_MAJOR 1)
+set(SimpleRTK_VERSION_MINOR 0)
 set(SimpleRTK_VERSION_PATCH 0)
 #set(SimpleRTK_VERSION_TWEAK "")
 
-# Not using this for now as we are not in a GIT directory
-#include(srtkSourceVersion)
+
+include(srtkSourceVersion)
 
 # pre-release codes are defined based on suffix of most recent tags.
 

@@ -45,8 +45,8 @@ public:
   typedef CastImageFilter      Self;
 
   /** Set/Get the output pixel type */
-  Self& SetOutputPixelType( PixelIDValueEnum pixelID );
-  Self& SetOutputPixelType( PixelIDValueType pixelID );
+  SRTK_RETURN_SELF_TYPE_HEADER SetOutputPixelType( PixelIDValueEnum pixelID );
+  SRTK_RETURN_SELF_TYPE_HEADER SetOutputPixelType( PixelIDValueType pixelID );
   PixelIDValueEnum GetOutputPixelType( void ) const;
 
   /**
@@ -169,7 +169,7 @@ private:
   /** @} */
 
   typedef Image (Self::*MemberFunctionType)( const Image& );
-  std::auto_ptr<detail::DualMemberFunctionFactory<MemberFunctionType> > m_DualMemberFactory;
+  nsstd::auto_ptr<detail::DualMemberFunctionFactory<MemberFunctionType> > m_DualMemberFactory;
 
 };
 

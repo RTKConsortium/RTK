@@ -11,6 +11,27 @@ int main(void)
 
 #endif
 
+
+//-------------------------------------
+
+#ifdef SRTK_HAS_CXX11_NULLPTR
+
+struct C {
+  void func();
+};
+
+int main(void)
+{
+  int *x = nullptr;
+  char *c = nullptr;
+  void (C::*pmf)() = nullptr;
+  if (nullptr==c) {}
+  if (nullptr==pmf) {}
+  return 0;
+}
+
+#endif
+
 //-------------------------------------
 
 #ifdef SRTK_HAS_CXX11_FUNCTIONAL
@@ -28,6 +49,35 @@ return 0;
 }
 
 #endif
+
+//-------------------------------------
+
+#ifdef SRTK_HAS_CXX11_ALIAS_TEMPLATE
+
+template<class T>
+using ptr = T*;
+
+int main(void)
+{
+ptr<int> x;
+return 0;
+}
+
+#endif
+
+//-------------------------------------
+
+#ifdef SRTK_HAS_CXX11_UNIQUE_PTR
+
+#include <memory>
+
+int main(void) {
+  std::unique_ptr<int> p1(new int);
+  return 0;
+}
+
+#endif
+
 
 
 //-------------------------------------

@@ -24,6 +24,8 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
 
+struct _lprec;
+
 namespace rtk
 {
 
@@ -98,6 +100,11 @@ public:
    * The function may be called without out computing the output, but
    * m_Geometry and ProjectionsStack must be set.*/
   virtual bool ComputeFOVRadius(const FOVRadiusType type, double &x, double &z, double &r);
+
+  /** Add collimation constraints. This function is always called from
+   * ComputeFOVRadius but it has an effect only if the geometry has the
+   * m_CollimationUInf or m_CollimationUSup which are non infinity (default). */
+  void AddCollimationConstraints(const FOVRadiusType type, _lprec *lp);
 
 protected:
   FieldOfViewImageFilter();

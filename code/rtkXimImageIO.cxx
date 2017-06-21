@@ -41,8 +41,6 @@ size_t rtk::XimImageIO::SetPropertyValue(char *property_name, itk::uint32_t valu
 
   addNelements += fread((void *)&property_value, sizeof(T), value_length, fp);
 
-  bool not_set = true;
-
   if (strncmp(property_name, "CouchLat", 8) == 0)
     xim->dCouchLat = property_value;
   else if (strncmp(property_name, "CouchLng", 8) == 0)
@@ -95,8 +93,6 @@ size_t rtk::XimImageIO::SetPropertyValue(char *property_name, itk::uint32_t valu
     xim->dIDUResolutionY = property_value * 10.0;
   else if (strncmp(property_name, "PixelWidth", 10) == 0)
     xim->dIDUResolutionX = property_value * 10.0;
-  else
-    not_set = false;
   return addNelements;
 }
 
@@ -140,7 +136,7 @@ void rtk::XimImageIO::ReadImageInformation()
   }
 
   // Histogram Reading:
-  size_t nhistElements = 0;
+  int nhistElements = 0;
   nhistElements += fread((void *)&xim.binsInHistogram, sizeof(itk::int32_t), 1, fp);
 
   xim.histogramData = new int[xim.binsInHistogram];
@@ -161,7 +157,7 @@ void rtk::XimImageIO::ReadImageInformation()
   size_t theoretical_nelements = nelements; // Same as reseting
 
   for (itk::int32_t i = 0; i < xim.numberOfProperties; i++)
-  {
+    {
     nelements += fread((void *)&property_name_length, sizeof(itk::int32_t), 1, fp);
     if(property_name_length>PROPERTY_NAME_MAX_LENGTH)
       itkGenericExceptionMacro(<< "Property name is too long, i.e., " << property_name_length);
@@ -271,7 +267,6 @@ void rtk::XimImageIO::Read(void * buffer)
     buf[i] = a;
   }
 
-  int lookup_table_pos = 0;
   char  diff8;
   short diff16;
   long  diff32, diff = 0;

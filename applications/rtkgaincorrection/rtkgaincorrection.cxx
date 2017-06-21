@@ -53,8 +53,6 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
   // Input projection parameters
-  InputImageType::SizeType    sizeInput = reader->GetOutput()->GetLargestPossibleRegion().GetSize();;
-  InputImageType::SpacingType spacingInput = reader->GetOutput()->GetSpacing();
   int Nprojections = reader->GetOutput()->GetLargestPossibleRegion().GetSize(2);
   if (!Nprojections)
     {

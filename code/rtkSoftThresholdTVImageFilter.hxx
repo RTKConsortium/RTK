@@ -57,7 +57,7 @@ SoftThresholdTVImageFilter< TInputImage, TRealType, TOutputImage >
     while ( !InputIt.IsAtEnd() )
     {
         float TV = 0;
-        for ( int i = 0; i < ImageDimension; ++i )
+        for ( unsigned int i = 0; i < ImageDimension; ++i )
         {
             TV += InputIt.Get()[i] * InputIt.Get()[i];
         }

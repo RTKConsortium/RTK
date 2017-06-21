@@ -179,6 +179,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
+  m_CGOperator->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
 
   // Have the last filter calculate its output information
   m_ConjugateGradientFilter->UpdateOutputInformation();

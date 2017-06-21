@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.11 FATAL_ERROR )
+cmake_minimum_required (VERSION 3.0 FATAL_ERROR )
 
 # Explicitly add INCREMENTAL linking option to command lines.
 # http://www.cmake.org/pipermail/cmake/2010-February/035174.html
@@ -6,10 +6,19 @@ set(MSVC_INCREMENTAL_DEFAULT ON)
 
 project ( SimpleRTK )
 
-cmake_policy( VERSION 2.8.1 )
+cmake_policy( VERSION 3.0 )
+
+foreach(p
+    CMP0042 # CMake 3.0
+    CMP0063 # CMake 3.3.2
+    )
+  if(POLICY ${p})
+    cmake_policy(SET ${p} NEW)
+  endif()
+endforeach()
 
 # Include extra CMake files
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 #-----------------------------------------------------------------------------
 # Version information
@@ -131,6 +140,8 @@ option( SITK_INT64_PIXELIDS "Instantiate 64-bit integer pixels, including unsign
 option ( SITK_EXPRESS_INSTANTIATEDPIXELS "Instantiate very few pixel types ( for use for development only )" OFF )
 mark_as_advanced ( SITK_EXPRESS_INSTANTIATEDPIXELS )
 
+option( SRTK_4D_IMAGES "Add Image and I/O support for four spatial dimensions." OFF )
+mark_as_advanced( SRTK_4D_IMAGES )
 
 #-----------------------------------------------------------------------------
 # SimpleRTK build configuration options.
@@ -390,17 +401,17 @@ if ( BUILD_TESTING )
     message( FATAL_ERROR "BUILD_TESTING ON requires CMake 2.8.11 or newer." )
   endif()
 
-  include( SimpleRTKExternalData )
-  file( GLOB_RECURSE content_links
-    RELATIVE "${SimpleRTK_SOURCE_DIR}" "Testing/Data/*.md5" )
-  foreach(link ${content_links})
-    string( REGEX REPLACE "\\.md5$" "" link ${link} )
-    ExternalData_Expand_Arguments( SimpleRTKData
-      link_location
-      DATA{${link}}
-      )
-  endforeach()
-  ExternalData_Add_Target( SimpleRTKData )
+ # include( SimpleRTKExternalData )
+ # file( GLOB_RECURSE content_links
+ #   RELATIVE "${SimpleRTK_SOURCE_DIR}" "Testing/Data/*.md5" )
+ # foreach(link ${content_links})
+ #   string( REGEX REPLACE "\\.md5$" "" link ${link} )
+ #   ExternalData_Expand_Arguments( SimpleRTKData
+ #     link_location
+ #     DATA{${link}}
+ #     )
+ # endforeach()
+ # ExternalData_Add_Target( SimpleRTKData )
 
   enable_testing()
   add_subdirectory ( Testing )

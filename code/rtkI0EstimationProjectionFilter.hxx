@@ -30,13 +30,7 @@ template< class TInputImage, class TOutputImage, unsigned char bitShift >
 I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::I0EstimationProjectionFilter()
 {
-  m_NBins = (unsigned int)( 1 << ( std::numeric_limits<InputImagePixelType>::digits - bitShift ) );
-
-  m_Histogram.resize(m_NBins, 0);
-
-  m_MaxPixelValue = std::numeric_limits<InputImagePixelType>::max();
-  m_ExpectedI0 = m_MaxPixelValue;
-
+  m_MaxPixelValue = (InputImagePixelType)((1<<24)-1);
   m_SaveHistograms = false;
   m_Reset = false;
 
@@ -57,6 +51,11 @@ template< class TInputImage, class TOutputImage, unsigned char bitShift >
 void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::BeforeThreadedGenerateData()
 {
+  m_ExpectedI0 = m_MaxPixelValue;
+  m_NBins = (std::vector<unsigned int>::size_type)(m_MaxPixelValue >>bitShift);
+  m_Imax = m_MaxPixelValue;
+  m_Histogram.resize(m_NBins, 0);
+
   std::vector< unsigned int >::iterator it = m_Histogram.begin();
 
   for (; it != m_Histogram.end(); ++it )

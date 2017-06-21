@@ -358,6 +358,6 @@ SliceImageFilter< TInputImage, TOutputImage >
 
 }
 
-} // end namespace rtk
+} // end namespace itk
 
 #endif

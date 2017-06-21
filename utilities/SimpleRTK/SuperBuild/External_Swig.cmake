@@ -11,30 +11,49 @@ if(DEFINED Swig_DIR AND NOT EXISTS ${Swig_DIR})
 endif()
 
 if(NOT SWIG_DIR)
-  set(SWIG_TARGET_VERSION 2.0.12-1)
-  set(SWIG_DOWNLOAD_SOURCE_HASH "44af22bffb53d1795b0f5cb3bff5eb1a")
-  set(SWIG_DOWNLOAD_WIN_HASH "439bc49355dc76490b3fe0dffac2774d")
+
+  if (NOT MSVC)
+    option(USE_SWIG_FROM_GIT "Use a version of swig pulled from the git repo. This will require automake tools and does not work under windows." OFF )
+
+    mark_as_advanced(USE_SWIG_FROM_GIT)
+  endif()
+
+  if( USE_SWIG_FROM_GIT )
+    set(SWIG_GIT_REPOSITORY "${git_protocol}://github.com/swig/swig.git" CACHE STRING "URL of swig git repo")
+    set(SWIG_GIT_TAG "rel-3.0.10" CACHE STRING "Tag in swig git repo")
+    mark_as_advanced(SWIG_GIT_REPO)
+    mark_as_advanced(SWIG_GIT_TAG)
+  endif()
+
+  set(SWIG_TARGET_VERSION "3.0.10" )
+  set(SWIG_DOWNLOAD_SOURCE_HASH "bb4ab8047159469add7d00910e203124")
+  set(SWIGWIN_DOWNLOAD_HASH "f229724fe856aa78df6128ecfefe6e0a")
+  set(SWIGWIN_URL "https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${SWIGWIN_DOWNLOAD_HASH}&name=swigwin-${SWIG_TARGET_VERSION}.zip")
+  set(SWIG_URL "https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${SWIG_DOWNLOAD_SOURCE_HASH}&name=swig-${SWIG_TARGET_VERSION}.tar.gz")
 
 
   if(WIN32)
     # binary SWIG for windows
     #------------------------------------------------------------------------------
 
+    srtkSourceDownload(SWIGWIN_URL "swigwin-${SWIG_TARGET_VERSION}.zip"  ${SWIGWIN_DOWNLOAD_HASH})
 
     set(swig_source_dir ${CMAKE_CURRENT_BINARY_DIR}/swigwin-${SWIG_TARGET_VERSION})
-
+	
     # swig.exe available as pre-built binary on Windows:
     ExternalProject_Add(Swig
-      URL http://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${SWIG_DOWNLOAD_WIN_HASH}&name=swigwin-${SWIG_TARGET_VERSION}.zip
-      URL_MD5 ${SWIG_DOWNLOAD_WIN_HASH}
+      URL "${SWIGWIN_URL}"
+      URL_MD5 ${SWIGWIN_DOWNLOAD_HASH}
       SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/swigwin-${SWIG_TARGET_VERSION}
       CONFIGURE_COMMAND ""
       BUILD_COMMAND ""
       INSTALL_COMMAND ""
       )
+    add_dependencies(Swig  "SuperBuildSimpleRTKSource")
 
     set(SWIG_DIR ${CMAKE_CURRENT_BINARY_DIR}/swigwin-${SWIG_TARGET_VERSION}) # path specified as source in ep
     set(SWIG_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/swigwin-${SWIG_TARGET_VERSION}/swig.exe)
+
   else()
     # compiled SWIG for others
     #------------------------------------------------------------------------------
@@ -53,9 +72,12 @@ if(NOT SWIG_DIR)
     #
 
     # swig uses bison find it by cmake and pass it down
-    find_package(BISON)
-    set(BISON_FLAGS "" CACHE STRING "Flags used by bison")
-    mark_as_advanced( BISON_FLAGS)
+    if(USE_SWIG_FROM_GIT)
+      set(BISON_REQUIRED "REQUIRED")
+    endif()
+    find_package(BISON ${BISON_REQUIRED})
+    set(BISON_FLAGS "-y" CACHE STRING "Flags used by bison")
+    mark_as_advanced(BISON_FLAGS)
 
 
     # follow the standard EP_PREFIX locations
@@ -70,17 +92,31 @@ if(NOT SWIG_DIR)
       @ONLY)
     set(swig_CONFIGURE_COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/swig_configure_step.cmake)
 
+    if(USE_SWIG_FROM_GIT)
+      set(SWIG_DOWNLOAD_STEP
+        GIT_REPOSITORY "${SWIG_GIT_REPOSITORY}"
+        GIT_TAG "${SWIG_GIT_TAG}"
+        )
+    else()
+      srtkSourceDownload(${proj}_URL "swig-${SWIG_TARGET_VERSION}.tar.gz" ${SWIG_DOWNLOAD_SOURCE_HASH})
+      set(SWIG_DOWNLOAD_STEP
+        URL "${SWIG_URL}"
+        URL_MD5 "${SWIG_DOWNLOAD_SOURCE_HASH}"
+        )
+    endif()
 
     ExternalProject_add(Swig
-      URL http://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&checksum=${SWIG_DOWNLOAD_SOURCE_HASH}&name=swig-${SWIG_TARGET_VERSION}.tar.gz
-      URL_MD5 ${SWIG_DOWNLOAD_SOURCE_HASH}
+      ${SWIG_DOWNLOAD_STEP}
       CONFIGURE_COMMAND ${swig_CONFIGURE_COMMAND}
       DEPENDS "${Swig_DEPENDENCIES}"
-
       )
+
+    if(NOT USE_SWIG_FROM_GIT)
+      srtkSourceDownloadDependency(Swig)
+    endif()
 
     set(SWIG_DIR ${swig_install_dir}/share/swig/${SWIG_TARGET_VERSION})
     set(SWIG_EXECUTABLE ${swig_install_dir}/bin/swig)
 
   endif()
-endif()
+endif(NOT SWIG_DIR)

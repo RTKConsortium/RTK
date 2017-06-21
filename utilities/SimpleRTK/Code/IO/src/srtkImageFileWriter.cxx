@@ -31,8 +31,8 @@ namespace simple {
 
 void WriteImage ( const Image& image, const std::string &inFileName, bool inUseCompression )
   {
-  ImageFileWriter writer;
-  writer.Execute ( image, inFileName, inUseCompression );
+    ImageFileWriter writer;
+    writer.Execute ( image, inFileName, inUseCompression );
   }
 
 
@@ -42,8 +42,10 @@ ImageFileWriter::ImageFileWriter()
 
   this->m_MemberFactory.reset( new detail::MemberFunctionFactory<MemberFunctionType>( this ) );
 
+  this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 4 > ();
   this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 3 > ();
   this->m_MemberFactory->RegisterMemberFunctions< PixelIDTypeList, 2 > ();
+  
   }
 
 
@@ -61,19 +63,20 @@ std::string ImageFileWriter::ToString() const
   this->ToStringHelper(out, this->m_FileName);
   out << "\"" << std::endl;
 
+  out << ProcessObject::ToString();
   return out.str();
   }
 
-ImageFileWriter::Self&
-ImageFileWriter::SetUseCompression( bool UseCompression )
+  ImageFileWriter::Self&
+  ImageFileWriter::SetUseCompression( bool UseCompression )
   {
-  this->m_UseCompression = UseCompression;
-  return *this;
+    this->m_UseCompression = UseCompression;
+    return *this;
   }
 
-bool ImageFileWriter::GetUseCompression( void ) const
+  bool ImageFileWriter::GetUseCompression( void ) const
   {
-  return this->m_UseCompression;
+    return this->m_UseCompression;
   }
 
 ImageFileWriter& ImageFileWriter::SetFileName ( std::string fn )
@@ -87,11 +90,11 @@ std::string ImageFileWriter::GetFileName() const
   return this->m_FileName;
   }
 
-ImageFileWriter& ImageFileWriter::Execute ( const Image& image, const std::string &inFileName, bool inUseCompression )
+  ImageFileWriter& ImageFileWriter::Execute ( const Image& image, const std::string &inFileName, bool inUseCompression )
   {
-  this->SetFileName( inFileName );
-  this->SetUseCompression( inUseCompression );
-  return this->Execute( image );
+    this->SetFileName( inFileName );
+    this->SetUseCompression( inUseCompression );
+    return this->Execute( image );
   }
 
 ImageFileWriter& ImageFileWriter::Execute ( const Image& image )
@@ -106,19 +109,20 @@ ImageFileWriter& ImageFileWriter::Execute ( const Image& image )
 template <class InputImageType>
 ImageFileWriter& ImageFileWriter::ExecuteInternal( const Image& inImage )
   {
-  typename InputImageType::ConstPointer image =
+    typename InputImageType::ConstPointer image =
       dynamic_cast <const InputImageType*> ( inImage.GetITKBase() );
 
-  typedef itk::ImageFileWriter<InputImageType> Writer;
-  typename Writer::Pointer writer = Writer::New();
-  writer->SetUseCompression( this->m_UseCompression );
-  writer->SetFileName ( this->m_FileName.c_str() );
-  writer->SetInput ( image );
+    typedef itk::ImageFileWriter<InputImageType> Writer;
+    typename Writer::Pointer writer = Writer::New();
+    writer->SetUseCompression( this->m_UseCompression );
+    writer->SetFileName ( this->m_FileName.c_str() );
+    writer->SetInput ( image );
 
-  this->PreUpdate( writer.GetPointer() );
-  writer->Update();
+    this->PreUpdate( writer.GetPointer() );
 
-  return *this;
+    writer->Update();
+
+    return *this;
   }
 
 } // end namespace simple

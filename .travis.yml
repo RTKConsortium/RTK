@@ -1,8 +1,12 @@
 language: cpp
 
+python: "2.7.11"
+
 sudo: required
 
 dist: trusty
+
+group: edge
 
 addons:
   apt:
@@ -15,34 +19,43 @@ matrix:
   include:
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.5.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
+      env: ITK_VERSION=v4.5.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.5.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.5.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
+      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
+    - os: osx
+      compiler: clang
+      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
+      env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
+      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON
+      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON
+      env: ITK_VERSION=v4.2.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON SIMPLERTK=OFF
+    - os: linux
+      compiler: gcc
+      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON SIMPLERTK=OFF
+    - os: linux
+      compiler: gcc
+      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
 
 cache:
   - directories:
@@ -69,6 +82,7 @@ before_install:
   - if test "$CUDA" != NONE; then export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-${CUDA%%-*}; fi
   - if test "$CUDA" != NONE; then export PATH=${CUDA_TOOLKIT_ROOT_DIR}/bin:${PATH}; fi
   - if test $TRAVIS_OS_NAME == osx ; then brew update; brew install fftw; fi
+  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
 
 before_script:
   - export NUM_THREADS=4
@@ -95,8 +109,10 @@ script:
   - cd -
   - if ! test -d build; then mkdir build; fi
   - cd build
-  - CMAKE_OPTIONS="-DBUILD_APPLICATIONS=${APPLICATIONS} -DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
-  - if test $TRAVIS_OS_NAME == linux ; then export CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON"; fi
+  - CMAKE_OPTIONS="-DBUILD_APPLICATIONS=${APPLICATIONS} ${CMAKE_OPTIONS}"
+  - CMAKE_OPTIONS="-DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
+  - if test $SIMPLERTK == ON ; then CMAKE_OPTIONS="-DBUILD_SIMPLERTK=ON -DWRAP_PYTHON=ON ${CMAKE_OPTIONS}"; fi
+  - if test $TRAVIS_OS_NAME == linux ; then CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON ${CMAKE_OPTIONS}"; fi
   - if [ $DO_BUILD_RTK == true ]; then cmake .. $CMAKE_OPTIONS || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ] && [ "$TRAVIS_OS_NAME" == linux ]; then make StyleCheckCode || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ]; then make --jobs=$NUM_THREADS --keep-going all || travis_terminate 1; fi

@@ -36,6 +36,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   m_NumberOfSpectralBins = 8;
   m_OutputInverseCramerRaoLowerBound = false;
   m_OutputFischerMatrix = false;
+  m_LogTransformEachBin = false;
+  m_GuessInitialization = false;
 }
 
 template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
@@ -72,6 +74,13 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   this->m_NumberOfSpectralBins = this->GetInputMeasuredProjections()->GetVectorLength();
   this->m_NumberOfMaterials = this->GetInputDecomposedProjections()->GetVectorLength();
   this->m_NumberOfEnergies = this->GetInputIncidentSpectrum()->GetVectorLength();
+
+  // Set vector length for the fischer matrix
+  this->GetOutput(2)->SetVectorLength(this->m_NumberOfMaterials * this->m_NumberOfMaterials);
+
+  // Change vector length for the decomposed projections, if required
+  if (m_LogTransformEachBin)
+    this->GetOutput(0)->SetVectorLength(this->m_NumberOfMaterials + this->m_NumberOfSpectralBins);
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -154,7 +163,12 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   cost->SetNumberOfSpectralBins(this->GetNumberOfSpectralBins());
 
   // Pass the attenuation functions to the cost function
-  cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
+  if (this->m_RescaleAttenuations)
+    cost->SetMaterialAttenuations(this->m_RescaledMaterialAttenuations);
+  else
+    cost->SetMaterialAttenuations(this->m_MaterialAttenuations);
+  if (m_GuessInitialization)
+    cost->SetThresholds(this->m_Thresholds);
 
   // Pass the binned detector response to the cost function
   cost->SetDetectorResponse(this->m_DetectorResponse);
@@ -192,10 +206,20 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     // Pass the detector counts vector to cost function
     cost->SetMeasuredData(spectralProjIt.Get());
 
+
     // Run the optimizer
     typename CostFunctionType::ParametersType startingPosition(this->m_NumberOfMaterials);
-    for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
-      startingPosition[m] = inputIt.Get()[m];
+    if (m_GuessInitialization)
+      {
+      itk::VariableLengthVector<double> guess = cost->GuessInitialization();
+      for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
+        startingPosition[m] = guess[m];
+      }
+    else
+      {
+      for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
+        startingPosition[m] = inputIt.Get()[m];
+      }
 
     optimizer->SetInitialPosition(startingPosition);
     optimizer->SetAutomaticInitialSimplex(true);
@@ -203,9 +227,18 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     optimizer->StartOptimization();
 
     typename DecomposedProjectionsType::PixelType outputPixel;
-    outputPixel.SetSize(this->m_NumberOfMaterials);
+    if (m_LogTransformEachBin)
+      {
+      outputPixel.SetSize(this->m_NumberOfMaterials + this->m_NumberOfSpectralBins);
+      for (unsigned int bin=0; bin<this->m_NumberOfSpectralBins; bin++)
+        outputPixel[bin+this->m_NumberOfMaterials] = cost->BinwiseLogTransform()[bin];
+      }
+    else
+      outputPixel.SetSize(this->m_NumberOfMaterials);
+
     for (unsigned int m=0; m<this->m_NumberOfMaterials; m++)
       outputPixel[m] = optimizer->GetCurrentPosition()[m];
+
     output0It.Set(outputPixel);
 
     // If required, compute the Fischer matrix
