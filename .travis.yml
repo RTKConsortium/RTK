@@ -28,10 +28,10 @@ matrix:
       env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=ON
+      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=OFF SIMPLERTK=OFF
+      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
     - os: linux
       compiler: gcc
       env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
@@ -82,6 +82,7 @@ before_install:
   - if test "$CUDA" != NONE; then export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-${CUDA%%-*}; fi
   - if test "$CUDA" != NONE; then export PATH=${CUDA_TOOLKIT_ROOT_DIR}/bin:${PATH}; fi
   - if test $TRAVIS_OS_NAME == osx ; then brew update; brew install fftw; fi
+  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
 
 before_script:
   - export NUM_THREADS=4
