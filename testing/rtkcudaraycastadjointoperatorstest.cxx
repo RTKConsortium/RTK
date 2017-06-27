@@ -124,7 +124,7 @@ int main(int, char** )
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
-  std::cout << "\n\n****** CUDA ray cast Forward projector ******" << std::endl;
+  std::cout << "\n\n****** CUDA ray cast Forward projector, flat panel detector ******" << std::endl;
 
   typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> ForwardProjectorType;
   ForwardProjectorType::Pointer fw = ForwardProjectorType::New();
@@ -133,7 +133,7 @@ int main(int, char** )
   fw->SetGeometry( geometry );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
 
-  std::cout << "\n\n****** CUDA ray cast Back projector ******" << std::endl;
+  std::cout << "\n\n****** CUDA ray cast Back projector, flat panel detector ******" << std::endl;
   
   typedef rtk::CudaRayCastBackProjectionImageFilter BackProjectorType;
   BackProjectorType::Pointer bp = BackProjectorType::New();
@@ -142,6 +142,23 @@ int main(int, char** )
   bp->SetGeometry( geometry.GetPointer() );
   bp->SetNormalize(false);
   
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
+
+  CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  // Start over with cylindrical detector
+  geometry->SetRadiusCylindricalDetector(200);
+  std::cout << "\n\n****** CUDA ray cast Forward projector, cylindrical detector ******" << std::endl;
+
+  fw->SetGeometry( geometry );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
+
+  std::cout << "\n\n****** CUDA ray cast Back projector, cylindrical detector ******" << std::endl;
+
+  bp->SetGeometry( geometry.GetPointer() );
+  bp->SetNormalize(false);
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
 
   CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());

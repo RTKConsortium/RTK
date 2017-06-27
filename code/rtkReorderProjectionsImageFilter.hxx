@@ -93,6 +93,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
       }
 
     // Copy the geometry
+    m_OutputGeometry->SetRadiusCylindricalDetector(m_InputGeometry->GetRadiusCylindricalDetector());
     m_OutputGeometry->AddProjectionInRadians(m_InputGeometry->GetSourceToIsocenterDistances()[permutation[proj]],
                                              m_InputGeometry->GetSourceToDetectorDistances()[permutation[proj]],
                                              m_InputGeometry->GetGantryAngles()[permutation[proj]],
