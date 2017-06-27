@@ -113,6 +113,7 @@ int main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( paste->Update() )
 
     // Fill in the output geometry object
+    outputGeometry->SetRadiusCylindricalDetector(geometryReader->GetOutputObject()->GetRadiusCylindricalDetector());
     outputGeometry->AddProjectionInRadians(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[indices[i]],
                                            geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[indices[i]],
                                            geometryReader->GetOutputObject()->GetGantryAngles()[indices[i]],

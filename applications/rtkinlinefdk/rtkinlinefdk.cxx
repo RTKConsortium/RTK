@@ -42,6 +42,7 @@ struct ThreadInfoStruct
   args_info_rtkinlinefdk *args_info;
   bool stop;
   unsigned int nproj;
+  double radius;
   double sid;
   double sdd;
   double gantryAngle;
@@ -109,6 +110,9 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
   // Computes the minimum and maximum offsets from Geometry
   computeOffsetsFromGeometry(geometryReader->GetOutputObject(), &minOffset, &maxOffset);
   std::cout << " main :"<<  minOffset << " "<< maxOffset <<std::endl;
+
+  // Set the radius of the cylindrical detector (0 means flat)
+  threadInfo->radius = geometryReader->GetOutputObject()->GetRadiusCylindricalDetector();
 
   threadInfo->mutex.Unlock();
 
@@ -230,6 +234,9 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
   typedef itk::ImageFileWriter<  CPUOutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( threadInfo->args_info->output_arg );
+
+  // Set the cylindrical detector's radius
+  geometry->SetRadiusCylindricalDetector(threadInfo->radius);
 
   threadInfo->mutex.Unlock();
 
