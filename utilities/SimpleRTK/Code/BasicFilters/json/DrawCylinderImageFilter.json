@@ -11,12 +11,12 @@
       "name" : "Density",
       "type" : "double",
       "default" : "1."
-    }
+    },
     {
       "name" : "Angle",
       "type" : "double",
       "default" : "0."
-    }
+    },
     {
       "name" : "Axis",
       "type" : "double",

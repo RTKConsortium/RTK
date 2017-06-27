@@ -26,6 +26,10 @@
 #include <ostream>
 #include <iterator>
 
+namespace itk {
+  template<unsigned int VImageDimension> class ImageRegion;
+  }
+
 namespace rtk {
 namespace simple {
 
@@ -93,6 +97,76 @@ std::vector<TType> SRTKCommon_HIDDEN srtkITKVectorToSTL( const TITKVector & in )
     }
   return out;
 }
+
+
+template<typename TType, typename TITKVector>
+std::vector<TType> SRTKCommon_HIDDEN srtkITKVectorToSTL(const std::vector<TITKVector> & in)
+  {
+  std::vector<TType> out;
+  out.reserve(in.size()*TITKVector::Dimension);
+  typename std::vector<TITKVector>::const_iterator iter = in.begin();
+  while (iter != in.end())
+    {
+    for (unsigned int i = 0; i < TITKVector::Dimension; ++i)
+      {
+      out.push_back(static_cast<TType>((*iter)[i]));
+      }
+    ++iter;
+    }
+
+  return out;
+  }
+
+/** \brief Convert an ITK ImageRegion to and std::vector with the
+* first part being the start index followed by the size.
+*/
+template<unsigned int VImageDimension>
+std::vector<unsigned int> SRTKCommon_HIDDEN srtkITKImageRegionToSTL(const itk::ImageRegion<VImageDimension> & in)
+  {
+  std::vector<unsigned int> out(VImageDimension * 2);
+  for (unsigned int i = 0; i < VImageDimension; ++i)
+    {
+    out[i] = static_cast<unsigned int>(in.GetIndex(i));
+    out[VImageDimension + i] = static_cast<unsigned int>(in.GetSize(i));
+    }
+  return out;
+  }
+
+
+/* \brief Convert to an itk::Matrix type, where the vector is in row
+* major form. If the vector is of 0-size then an identity matrix will
+* be constructed.
+*/
+template< typename TDirectionType >
+TDirectionType SRTKCommon_HIDDEN  srtkSTLToITKDirection(const std::vector<double> &direction)
+  {
+  TDirectionType itkDirection;
+
+  if (direction.size() == 0)
+    {
+    itkDirection.SetIdentity();
+    }
+  else if (direction.size() == TDirectionType::RowDimensions*TDirectionType::ColumnDimensions)
+    {
+    std::copy(direction.begin(), direction.end(), itkDirection.GetVnlMatrix().begin());
+    }
+  else
+    {
+    srtkExceptionMacro(<< "Length of input (" << direction.size() << ") does not match matrix dimensions ("
+      << TDirectionType::RowDimensions << ", " << TDirectionType::ColumnDimensions << ").\n");
+    }
+  return itkDirection;
+  }
+
+
+template< typename TDirectionType >
+std::vector<double> SRTKCommon_HIDDEN  srtkITKDirectionToSTL(const TDirectionType & d)
+  {
+  return std::vector<double>(d.GetVnlMatrix().begin(), d.GetVnlMatrix().end());
+  }
+
+
+
 
 }
 }

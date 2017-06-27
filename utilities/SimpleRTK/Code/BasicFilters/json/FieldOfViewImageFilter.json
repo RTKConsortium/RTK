@@ -16,20 +16,20 @@
         "default" : "Image()",
         "custom_itk_cast" : "filter->SetProjectionsStack(const_cast<InputImageType*>( this->CastImageToITK<InputImageType>(this->m_ProjectionsStack).GetPointer() ) );",
         "no_print" : true
-        }
+        },
         {
         "name" : "Geometry",
         "type" : "ThreeDCircularProjectionGeometry*",
         "default" : "0",
     	"itk_type" : "rtk::ThreeDCircularProjectionGeometry*",
         "custom_itk_cast" : "filter->SetGeometry( (rtk::ThreeDCircularProjectionGeometry*) this->m_Geometry->GetRTKBase() );"
-        }
+        },
         {
         "name" : "Mask",
         "type" : "bool",
         "default" : "false"
-        }
-	{
+        },
+	    {
         "name" : "DisplacedDetector",
         "type" : "bool",
         "default" : "false"

@@ -13,8 +13,8 @@
 	{
       "name" : "Geometry",
       "type" : "ThreeDCircularProjectionGeometry*",
-      "default" : "0"
-    	  "itk_type" : "rtk::ThreeDCircularProjectionGeometry*",
+      "default" : "0",
+      "itk_type" : "rtk::ThreeDCircularProjectionGeometry*",
       "custom_itk_cast" : "filter->SetGeometry( (rtk::ThreeDCircularProjectionGeometry*) this->m_Geometry->GetRTKBase() );"
 }
   ]

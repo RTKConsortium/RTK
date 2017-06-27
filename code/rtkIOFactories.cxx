@@ -39,6 +39,9 @@
 // Xrad small animal scanner
 #include "rtkXRadImageIOFactory.h"
 
+// Ora / medPhoton file format
+#include "rtkOraImageIOFactory.h"
+
 namespace rtk
 {
 
@@ -58,6 +61,7 @@ void RegisterIOFactories()
   rtk::DCMImagXImageIOFactory::RegisterOneFactory();
   rtk::EdfImageIOFactory::RegisterOneFactory();
   rtk::XRadImageIOFactory::RegisterOneFactory();
+  rtk::OraImageIOFactory::RegisterOneFactory();
   itk::GDCMImageIOFactory::RegisterOneFactory();
 }
 

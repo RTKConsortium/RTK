@@ -16,7 +16,6 @@
  *
  *=========================================================================*/
 #include "srtkImageFilter.h"
-#include "srtkImageFilterExecuteBase.hxx"
 
 #include "itkProcessObject.h"
 

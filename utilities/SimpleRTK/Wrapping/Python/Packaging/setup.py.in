@@ -1,0 +1,84 @@
+import sys
+
+if "setuptools" in sys.modules.keys():
+    from setuptools import setup, Distribution
+else:
+    from distutils.core import setup
+    from distutils.dist import Distribution
+
+import re
+
+doc_files = @SimpleRTK_DOC_FILES_AS_LIST@
+
+def get_pep386version():
+    """This method examines the SimpleRTK's CMake version variables to make a pep 386 compliant version string when building a version indented for distribution."""
+    srtkMAJOR = "@SimpleRTK_VERSION_MAJOR@"
+    srtkMINOR = "@SimpleRTK_VERSION_MINOR@"
+    srtkPATCH = "@SimpleRTK_VERSION_PATCH@"
+    srtkTWEAK = "@SimpleRTK_VERSION_TWEAK@"
+    srtkRC    = "@SimpleRTK_VERSION_RC@"
+    srtkPOST   = "@SimpleRTK_VERSION_POST@"
+    srtkDEV    = "@SimpleRTK_VERSION_DEV@"
+    srtkHASH   = "@SimpleRTK_VERSION_HASH@"
+
+
+    version = srtkMAJOR+"."+srtkMINOR
+
+    if srtkPATCH:
+        version += "."+srtkPATCH
+        if srtkTWEAK:
+            version += "."+srtkTWEAK
+
+    if  srtkRC:
+        version += srtkRC
+
+    if srtkPOST:
+        version += ".post"+srtkPOST
+    elif srtkDEV:
+        version += ".dev"+srtkDEV
+
+    # Local Version Identifier
+    if srtkHASH and not "@SimpleRTK_BUILD_DISTRIBUTE@" in ['1', 'ON']:
+        version += "+g"+srtkHASH
+
+    return version
+
+
+# HACK
+# We are using the "data_files" parameter to package up the SimpleRTK
+# libraries. However distribute does not detect this as an extension
+# and does not build a egg with the platform name in the egg file
+# name. So we forcable overload a method so that distutils, always
+# reports that we are always an extension.
+def always_has_ext_modules (self):
+    """Always returns true, to force extensimon behavior in packaging."""
+    return True
+Distribution.has_ext_modules =  always_has_ext_modules
+
+
+
+setup(
+    name = 'SimpleRTK',
+    version = get_pep386version(),
+    author = 'Insight Software Consortium',
+    author_email = 'insight-users@itk.org',
+    packages= ['SimpleRTK'],
+    package_dir = {'SimpleRTK':r'@SIMPLERTK_PYTHON_PACKAGE_DIR@'},
+    package_data = {'SimpleRTK':[r'@SIMPLERTK_RELATIVE_BINARY_MODULE@']},
+    download_url = r'https://www.itk.org/SimpleRTKDoxygen/html/PyDownloadPage.html',
+    platforms = [],
+    description = r'Simplified interface to the Insight Toolkit for image registration and segmentation',
+    long_description  = 'Provide an abstraction layer to ITK that enables developers\
+    and users to access the powerful features of the InsightToolkit in a more \
+    simplified manner.',
+    classifiers=[
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python",
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Topic :: Scientific/Engineering"
+        ],
+    license='Apache',
+    keywords = 'ITK InsightToolkit segmentation registration image',
+    url = r'http://simpleitk.org/'
+    )
