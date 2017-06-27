@@ -63,7 +63,7 @@ public:
 
 protected:
   Reg1DExtractShroudSignalImageFilter();
-  ~Reg1DExtractShroudSignalImageFilter() ITK_OVERRIDE {}
+  ~Reg1DExtractShroudSignalImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
   void GenerateInputRequestedRegion() ITK_OVERRIDE;

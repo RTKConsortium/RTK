@@ -128,7 +128,7 @@ public:
 
 protected:
     WarpFourDToProjectionStackImageFilter();
-    ~WarpFourDToProjectionStackImageFilter() ITK_OVERRIDE {}
+    ~WarpFourDToProjectionStackImageFilter() {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

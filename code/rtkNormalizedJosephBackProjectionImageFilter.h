@@ -103,7 +103,7 @@ public:
 
 protected:
   NormalizedJosephBackProjectionImageFilter();
-  ~NormalizedJosephBackProjectionImageFilter() ITK_OVERRIDE {}
+  ~NormalizedJosephBackProjectionImageFilter() {}
 
   void GenerateData() ITK_OVERRIDE;
 

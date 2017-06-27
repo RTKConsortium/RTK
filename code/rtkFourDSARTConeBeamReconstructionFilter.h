@@ -202,7 +202,7 @@ public:
 
 protected:
   FourDSARTConeBeamReconstructionFilter();
-  ~FourDSARTConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~FourDSARTConeBeamReconstructionFilter() {}
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

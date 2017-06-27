@@ -148,7 +148,7 @@ public:
 
 protected:
     WarpSequenceImageFilter();
-    ~WarpSequenceImageFilter() ITK_OVERRIDE {}
+    ~WarpSequenceImageFilter() {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

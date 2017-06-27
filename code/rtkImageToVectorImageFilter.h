@@ -67,7 +67,7 @@ public:
 
 protected:
     ImageToVectorImageFilter();
-    ~ImageToVectorImageFilter() ITK_OVERRIDE {}
+    ~ImageToVectorImageFilter() {}
 
     void GenerateOutputInformation() ITK_OVERRIDE;
     void GenerateInputRequestedRegion() ITK_OVERRIDE;

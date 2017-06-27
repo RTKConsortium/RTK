@@ -115,7 +115,7 @@ public:
 
 protected:
   FFTConvolutionImageFilter();
-  ~FFTConvolutionImageFilter() ITK_OVERRIDE {}
+  ~FFTConvolutionImageFilter() {}
 
   virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

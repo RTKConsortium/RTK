@@ -67,7 +67,7 @@ public:
 
 protected:
   DPExtractShroudSignalImageFilter();
-  ~DPExtractShroudSignalImageFilter() ITK_OVERRIDE {}
+  ~DPExtractShroudSignalImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
   void GenerateInputRequestedRegion() ITK_OVERRIDE;

@@ -59,7 +59,7 @@ public:
 
 protected:
   HilbertImageFilter(){}
-  ~HilbertImageFilter() ITK_OVERRIDE {}
+  ~HilbertImageFilter() {}
 
   void GenerateData() ITK_OVERRIDE;
 

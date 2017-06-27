@@ -107,7 +107,7 @@ public:
     
 protected:
   SingularValueThresholdImageFilter();
-  ~SingularValueThresholdImageFilter() ITK_OVERRIDE {}
+  ~SingularValueThresholdImageFilter() {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,

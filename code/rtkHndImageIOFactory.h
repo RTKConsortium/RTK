@@ -69,7 +69,7 @@ public:
 
 protected:
   HndImageIOFactory();
-  ~HndImageIOFactory() ITK_OVERRIDE {};
+  ~HndImageIOFactory() {}
   typedef HndImageIOFactory myProductType;
   const myProductType* m_MyProduct;
 

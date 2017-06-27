@@ -129,7 +129,7 @@ public:
 
 protected:
     UnwarpSequenceImageFilter();
-    ~UnwarpSequenceImageFilter() ITK_OVERRIDE {}
+    ~UnwarpSequenceImageFilter() {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

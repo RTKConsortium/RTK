@@ -79,8 +79,7 @@ public:
 
 protected:
   EdfRawToAttenuationImageFilter();
-  ~EdfRawToAttenuationImageFilter() ITK_OVERRIDE {
-  }
+  ~EdfRawToAttenuationImageFilter() {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

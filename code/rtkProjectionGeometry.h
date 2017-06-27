@@ -74,7 +74,7 @@ public:
 
 protected:
   ProjectionGeometry(){};
-  ~ProjectionGeometry() ITK_OVERRIDE {};
+  ~ProjectionGeometry() {}
 
   void PrintSelf( std::ostream& os, itk::Indent indent ) const ITK_OVERRIDE;
 

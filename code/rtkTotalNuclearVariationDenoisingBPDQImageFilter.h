@@ -131,7 +131,7 @@ public:
 
 protected:
   TotalNuclearVariationDenoisingBPDQImageFilter();
-  ~TotalNuclearVariationDenoisingBPDQImageFilter() ITK_OVERRIDE {}
+  ~TotalNuclearVariationDenoisingBPDQImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

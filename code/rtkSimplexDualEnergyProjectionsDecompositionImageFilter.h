@@ -81,7 +81,7 @@ public:
 
 protected:
   SimplexDualEnergyProjectionsDecompositionImageFilter();
-  ~SimplexDualEnergyProjectionsDecompositionImageFilter() ITK_OVERRIDE {}
+  ~SimplexDualEnergyProjectionsDecompositionImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

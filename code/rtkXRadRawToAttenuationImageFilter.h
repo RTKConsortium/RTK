@@ -57,8 +57,7 @@ public:
 
 protected:
   XRadRawToAttenuationImageFilter();
-  ~XRadRawToAttenuationImageFilter() ITK_OVERRIDE {
-  }
+  ~XRadRawToAttenuationImageFilter() {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

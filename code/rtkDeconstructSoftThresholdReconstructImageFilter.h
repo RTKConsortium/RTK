@@ -87,7 +87,7 @@ public:
 
 protected:
     DeconstructSoftThresholdReconstructImageFilter();
-    ~DeconstructSoftThresholdReconstructImageFilter() ITK_OVERRIDE {}
+    ~DeconstructSoftThresholdReconstructImageFilter() {}
     void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
 
     /** Generate the output data. */

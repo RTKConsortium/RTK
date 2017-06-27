@@ -106,7 +106,7 @@ public:
 
 protected:
   SpectralForwardModelImageFilter();
-  ~SpectralForwardModelImageFilter() ITK_OVERRIDE {}
+  ~SpectralForwardModelImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

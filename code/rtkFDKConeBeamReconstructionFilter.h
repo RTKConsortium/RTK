@@ -113,7 +113,7 @@ public:
 
 protected:
   FDKConeBeamReconstructionFilter();
-  ~FDKConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~FDKConeBeamReconstructionFilter() {}
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

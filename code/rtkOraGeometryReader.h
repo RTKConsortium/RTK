@@ -89,7 +89,7 @@ public:
 protected:
   OraGeometryReader(): m_Geometry(ITK_NULLPTR), m_CollimationMargin(0.) {};
 
-  ~OraGeometryReader() ITK_OVERRIDE {};
+  ~OraGeometryReader() {}
 
 private:
   //purposely not implemented

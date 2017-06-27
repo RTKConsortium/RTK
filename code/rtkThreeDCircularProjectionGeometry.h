@@ -252,7 +252,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometry();
-  ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
+  ~ThreeDCircularProjectionGeometry() {}
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);

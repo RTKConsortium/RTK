@@ -73,7 +73,7 @@ public:
 
 protected:
   DivergenceOfGradientConjugateGradientOperator();
-  ~DivergenceOfGradientConjugateGradientOperator() ITK_OVERRIDE {}
+  ~DivergenceOfGradientConjugateGradientOperator() {}
 
   void GenerateData() ITK_OVERRIDE;
 

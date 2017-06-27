@@ -141,7 +141,7 @@ public:
 
 protected:
   ForwardDifferenceGradientImageFilter();
-  ~ForwardDifferenceGradientImageFilter() ITK_OVERRIDE;
+  ~ForwardDifferenceGradientImageFilter();
   void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
 
   /** ForwardDifferenceGradientImageFilter can be implemented as a multithreaded filter.

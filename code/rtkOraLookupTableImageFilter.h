@@ -89,7 +89,7 @@ public:
 
 protected:
   OraLookupTableImageFilter(): m_ComputeLineIntegral(true){}
-  ~OraLookupTableImageFilter() ITK_OVERRIDE {}
+  ~OraLookupTableImageFilter() {}
 
 private:
   OraLookupTableImageFilter(const Self&); //purposely not implemented

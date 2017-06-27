@@ -86,7 +86,7 @@ public:
 
 protected:
   RayBoxIntersectionImageFilter() : m_RBIFunctor(RBIFunctionType::New()), m_Geometry(ITK_NULLPTR), m_Density(1.) {}
-  ~RayBoxIntersectionImageFilter() ITK_OVERRIDE {};
+  ~RayBoxIntersectionImageFilter() {}
 
   /** Apply changes to the input image requested region. */
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;

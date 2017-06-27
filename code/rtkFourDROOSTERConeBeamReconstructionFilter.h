@@ -339,7 +339,7 @@ public:
 
 protected:
   FourDROOSTERConeBeamReconstructionFilter();
-  ~FourDROOSTERConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~FourDROOSTERConeBeamReconstructionFilter() {}
 
   /** Does the real work. */
   void GenerateData() ITK_OVERRIDE;

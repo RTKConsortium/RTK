@@ -171,7 +171,7 @@ public:
   /** Check if a point is inside the image buffer.
    * \warning For efficiency, no validity checking of
    * the input image pointer is done. */
-  inline bool IsInsideBuffer( const PointType & ) const ITK_OVERRIDE
+  inline bool IsInsideBuffer( const PointType & ) const
     { 
     return true;
     }
@@ -190,7 +190,7 @@ protected:
   RayCastInterpolateImageFunction();
 
   /// Destructor
-  ~RayCastInterpolateImageFunction() ITK_OVERRIDE {};
+  ~RayCastInterpolateImageFunction() {}
 
   /// Print the object
   void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;

@@ -58,7 +58,7 @@ public:
 
 protected:
   SelectOneProjectionPerCycleImageFilter();
-  ~SelectOneProjectionPerCycleImageFilter() ITK_OVERRIDE {}
+  ~SelectOneProjectionPerCycleImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

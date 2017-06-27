@@ -27,7 +27,7 @@
 
 namespace rtk
 {
-  
+
 namespace Function {  
   
 /** \class ObiAttenuation
@@ -110,7 +110,7 @@ public:
 
 protected:
   VarianObiRawImageFilter();
-  ~VarianObiRawImageFilter() ITK_OVERRIDE {}
+  ~VarianObiRawImageFilter() {}
 
 private:
   VarianObiRawImageFilter(const Self&); //purposely not implemented
