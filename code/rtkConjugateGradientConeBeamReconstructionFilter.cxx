@@ -33,9 +33,11 @@ ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::
 //  m_IterationCosts=false;
 
   m_Gamma = 0;
+  m_Tikhonov = 0;
   m_Regularized = false;
   m_CudaConjugateGradient = true;
   m_DisableDisplacedDetectorFilter = false;
+  m_TargetSumOfSquaresBetweenConsecutiveIterates = 0;
 
   // Create the filters
 #ifdef RTK_USE_CUDA
