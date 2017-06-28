@@ -31,14 +31,11 @@ include(GetGitRevisionDescription)
 
 get_git_head_revision(GIT_REFVAR _GIT_VERSION_HASH)
 
-message(${_GIT_VERSION_HASH})
-message(${GIT_REFVAR})
-
 # if there is not git directory we should be in a distributed package
 # which should contain this additional cmake file with the
 # _GIT_VERSION variables
 if(_GIT_VERSION_HASH STREQUAL "GITDIR-NOTFOUND")
-  include( "${CMAKE_CURRENT_SOURCE_DIR}/CMake/srtkSourceVersionVars.cmake" )
+  include( "${CMAKE_CURRENT_LIST_DIR}/srtkSourceVersionVars.cmake" )
   return()
 endif()
 
@@ -47,7 +44,7 @@ if(_GIT_VERSION_HASH MATCHES "[a-fA-F0-9]+")
 endif()
 
 # find the closest anotated tag with the v prefix for version
-git_describe(_GIT_TAG "--match=v* --tags")
+git_describe(_GIT_TAG "--match=v*")
 
 git_commits_since("${PROJECT_SOURCE_DIR}/Version.cmake" _GIT_VERSION_COUNT)
 
@@ -111,10 +108,10 @@ if(_GIT_VERSION VERSION_EQUAL _${CMAKE_PROJECT_NAME}_VERSION)
 else()
   # The first commit after a tag should increase the project version
   # number in Version.cmake and be "dev1"
-  math(EXPR _GIT_VERSION_COUNT "${_GIT_VERSION_COUNT}+1")
+  MATH(EXPR _GIT_VERSION_COUNT "${_GIT_VERSION_COUNT}+1")
   set(_GIT_VERSION_DEV "${_GIT_VERSION_COUNT}")
 endif()
 
 # save variable in a configuration file in case we have no git directory
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/CMake/srtkSourceVersionVars.cmake.in"
+configure_file("${CMAKE_CURRENT_LIST_DIR}/srtkSourceVersionVars.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/srtkSourceVersionVars.cmake"  @ONLY)
