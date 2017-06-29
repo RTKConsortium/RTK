@@ -23,13 +23,13 @@ namespace rtk
 
 template<>
 void
-ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<float, 3>>
-::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType &
+ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<double, 3>>
+::ThreadedGenerateData(const itk::VectorImage<double, 3>::RegionType &
                            outputRegionForThread,
                            ThreadIdType threadId)
 {
     double eps=1e-8;
-    typedef itk::VectorImage<float, 3> TInputType;
+    typedef itk::VectorImage<double, 3> TInputType;
 
     // Prepare iterators
     typedef itk::ImageRegionIterator<TInputType> RegionIterator;

@@ -73,8 +73,8 @@ private:
 
 template <>
 void
-SumOfSquaresImageFilter<itk::VectorImage<float, 3>>
-::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType threadId);
+SumOfSquaresImageFilter<itk::VectorImage<double, 3>>
+::ThreadedGenerateData(const itk::VectorImage<double, 3>::RegionType& outputRegionForThread, itk::ThreadIdType threadId);
 
 } // end namespace rtk
 

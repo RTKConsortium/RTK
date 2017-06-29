@@ -214,12 +214,12 @@ private:
 };
 
 template<>
-ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ReconstructionConjugateGradientOperator< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::ReconstructionConjugateGradientOperator();
 
 template<>
 void
-ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ReconstructionConjugateGradientOperator< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::GenerateOutputInformation();
 
 } //namespace RTK

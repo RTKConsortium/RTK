@@ -23,14 +23,14 @@ namespace rtk
 
 template<>
 void
-rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
-                                        itk::VectorImage<float, 3>,
-                                        Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
-                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > >
+rtk::JosephForwardProjectionImageFilter<itk::VectorImage<double, 3>,
+                                        itk::VectorImage<double, 3>,
+                                        Functor::VectorInterpolationWeightMultiplication<double, double, itk::VariableLengthVector<double>>,
+                                        Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<double>, itk::VariableLengthVector<double> > >
 ::Accumulate(ThreadIdType threadId,
-             rtk::ProjectionsRegionConstIteratorRayBased<itk::VectorImage<float, 3> >* itIn,
-             itk::ImageRegionIteratorWithIndex<itk::VectorImage<float, 3> > itOut,
-             itk::VariableLengthVector<float> sum,
+             rtk::ProjectionsRegionConstIteratorRayBased<itk::VectorImage<double, 3> >* itIn,
+             itk::ImageRegionIteratorWithIndex<itk::VectorImage<double, 3> > itOut,
+             itk::VariableLengthVector<double> sum,
              rtk::RayBoxIntersectionFunction<double, 3>::VectorType stepMM,
              rtk::RayBoxIntersectionFunction<double, 3>::VectorType sourcePosition,
              rtk::RayBoxIntersectionFunction<double, 3>::VectorType dirVox,

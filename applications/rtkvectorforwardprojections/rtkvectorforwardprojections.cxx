@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
 {
   GGO(rtkvectorforwardprojections, args_info);
 
-  typedef float OutputPixelType;
+  typedef double OutputPixelType;
   const unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA

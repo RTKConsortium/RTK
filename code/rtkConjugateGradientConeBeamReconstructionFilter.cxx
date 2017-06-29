@@ -22,7 +22,7 @@ namespace rtk
 {
 
 template<>
-ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::ConjugateGradientConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(3);
@@ -60,24 +60,24 @@ ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::
 
 //template<>
 //void
-//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
-//::SetSupportMask(const itk::Image<float, 3> *SupportMask)
+//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
+//::SetSupportMask(const itk::Image<double, 3> *SupportMask)
 //{
-//  this->SetInput("SupportMask", const_cast<itk::Image<float, 3>*>(SupportMask));
+//  this->SetInput("SupportMask", const_cast<itk::Image<double, 3>*>(SupportMask));
 //}
 
 //template<>
-//typename itk::Image<float, 3>::ConstPointer
-//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+//typename itk::Image<double, 3>::ConstPointer
+//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 //::GetSupportMask()
 //{
-//  return static_cast< const itk::Image<float, 3> * >
+//  return static_cast< const itk::Image<double, 3> * >
 //          ( this->itk::ProcessObject::GetInput("SupportMask") );
 //}
 
 template<>
 void
-ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::GenerateOutputInformation()
 {
   // Choose between cuda or non-cuda conjugate gradient filter
@@ -152,7 +152,7 @@ ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::
 
 template<>
 void
-ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::GenerateData()
 {
   itk::TimeProbe ConjugateGradientTimeProbe;

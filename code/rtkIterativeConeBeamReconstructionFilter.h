@@ -108,13 +108,13 @@ private:
 }; // end of class
 
 template<>
-rtk::BackProjectionImageFilter<itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >::Pointer
-IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >
+rtk::BackProjectionImageFilter<itk::VectorImage<double, 3>, itk::VectorImage<double, 3> >::Pointer
+IterativeConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::VectorImage<double, 3> >
 ::InstantiateBackProjectionFilter(int bptype);
 
 template<>
-rtk::ForwardProjectionImageFilter<itk::VectorImage<float, 3>,itk::VectorImage<float, 3> >::Pointer
-IterativeConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::VectorImage<float, 3> >
+rtk::ForwardProjectionImageFilter<itk::VectorImage<double, 3>,itk::VectorImage<double, 3> >::Pointer
+IterativeConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::VectorImage<double, 3> >
 ::InstantiateForwardProjectionFilter(int fwtype);
 
 } // end namespace rtk

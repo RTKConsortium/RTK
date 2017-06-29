@@ -22,7 +22,7 @@ namespace rtk
 {
 
 template<>
-ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ReconstructionConjugateGradientOperator< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::ReconstructionConjugateGradientOperator():
 m_Geometry(ITK_NULLPTR),
 m_Gamma(0),
@@ -59,7 +59,7 @@ m_ConstantVolumeSource->ReleaseDataFlagOn();
 
 template<>
 void
-ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ReconstructionConjugateGradientOperator< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::GenerateOutputInformation()
 {
   // Set runtime connections, and connections with
@@ -68,7 +68,7 @@ ReconstructionConjugateGradientOperator< itk::VectorImage<float, 3>, itk::Image<
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
 
-  m_FloatingInputPointer = const_cast< itk::VectorImage<float, 3> *>(this->GetInput(0));
+  m_FloatingInputPointer = const_cast< itk::VectorImage<double, 3> *>(this->GetInput(0));
 
   // Set the first multiply filter to use the Support Mask, if any
   if (this->GetSupportMask().IsNotNull())

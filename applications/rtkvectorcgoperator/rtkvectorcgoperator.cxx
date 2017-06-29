@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
 {
   GGO(rtkvectorcgoperator, args_info);
 
-  typedef float OutputPixelType;
+  typedef double OutputPixelType;
   const unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
@@ -102,16 +102,16 @@ int main(int argc, char * argv[])
   op->SetTikhonov(0);
   op->SetGeometry(geometryReader->GetOutputObject());
 
-  typedef rtk::JosephForwardProjectionImageFilter<itk::VectorImage<float, 3>,
-              itk::VectorImage<float, 3>,
-              rtk::Functor::VectorInterpolationWeightMultiplication<float, double, itk::VariableLengthVector<float>>,
-              rtk::Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<float>, itk::VariableLengthVector<float> > > FWFilterType;
+  typedef rtk::JosephForwardProjectionImageFilter<itk::VectorImage<OutputPixelType, 3>,
+              itk::VectorImage<OutputPixelType, 3>,
+              rtk::Functor::VectorInterpolationWeightMultiplication<OutputPixelType, double, itk::VariableLengthVector<OutputPixelType>>,
+              rtk::Functor::VectorProjectedValueAccumulation<itk::VariableLengthVector<OutputPixelType>, itk::VariableLengthVector<OutputPixelType> > > FWFilterType;
   FWFilterType::Pointer forwardProjectionFilter = FWFilterType::New();
   op->SetForwardProjectionFilter( forwardProjectionFilter.GetPointer() );
 
-  typedef rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
-              itk::VectorImage<float, 3>,
-              rtk::Functor::SplatWeightMultiplication< float, double, float > > BPFilterType;
+  typedef rtk::JosephBackProjectionImageFilter<itk::VectorImage<OutputPixelType, 3>,
+              itk::VectorImage<OutputPixelType, 3>,
+              rtk::Functor::SplatWeightMultiplication< OutputPixelType, double, OutputPixelType > > BPFilterType;
   BPFilterType::Pointer backProjectionFilter = BPFilterType::New();
   op->SetBackProjectionFilter( backProjectionFilter.GetPointer() );
 

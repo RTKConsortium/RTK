@@ -23,11 +23,11 @@ namespace rtk
 
 template <>
 void
-SumOfSquaresImageFilter<itk::VectorImage<float, 3>>
-::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType threadId)
+SumOfSquaresImageFilter<itk::VectorImage<double, 3>>
+::ThreadedGenerateData(const itk::VectorImage<double, 3>::RegionType& outputRegionForThread, itk::ThreadIdType threadId)
 {
-  itk::ImageRegionConstIterator<itk::VectorImage<float, 3>> inIt(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator<itk::VectorImage<float, 3>> outIt(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionConstIterator<itk::VectorImage<double, 3>> inIt(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIterator<itk::VectorImage<double, 3>> outIt(this->GetOutput(), outputRegionForThread);
 
   while(!outIt.IsAtEnd())
     {

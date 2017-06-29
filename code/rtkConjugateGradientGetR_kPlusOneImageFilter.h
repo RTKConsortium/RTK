@@ -94,8 +94,8 @@ private:
 
 template<>
 void
-ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<float, 3>>
-::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType &
+ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<double, 3>>
+::ThreadedGenerateData(const itk::VectorImage<double, 3>::RegionType &
                            outputRegionForThread,
                            ThreadIdType threadId);
 

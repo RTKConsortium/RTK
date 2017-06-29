@@ -167,16 +167,16 @@ private:
 
 template<>
 void
-rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
-                                     itk::VectorImage<float, 3>,
-                                     Functor::SplatWeightMultiplication< float, double, float > >
-::BilinearSplat(const itk::VariableLengthVector<float> rayValue,
+rtk::JosephBackProjectionImageFilter<itk::VectorImage<double, 3>,
+                                     itk::VectorImage<double, 3>,
+                                     Functor::SplatWeightMultiplication< double, double, double > >
+::BilinearSplat(const itk::VariableLengthVector<double> rayValue,
                 const double stepLengthInVoxel,
                 const double voxelSize,
-                float *pxiyi,
-                float *pxsyi,
-                float *pxiys,
-                float *pxsys,
+                double *pxiyi,
+                double *pxsyi,
+                double *pxiys,
+                double *pxsys,
                 const double x,
                 const double y,
                 const int ox,
@@ -184,16 +184,16 @@ rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
 
 template<>
 void
-rtk::JosephBackProjectionImageFilter<itk::VectorImage<float, 3>,
-                                     itk::VectorImage<float, 3>,
-                                     Functor::SplatWeightMultiplication< float, double, float > >
-::BilinearSplatOnBorders(const itk::VariableLengthVector<float> rayValue,
+rtk::JosephBackProjectionImageFilter<itk::VectorImage<double, 3>,
+                                     itk::VectorImage<double, 3>,
+                                     Functor::SplatWeightMultiplication< double, double, double > >
+::BilinearSplatOnBorders(const itk::VariableLengthVector<double> rayValue,
                          const double stepLengthInVoxel,
                          const double voxelSize,
-                         float *pxiyi,
-                         float *pxsyi,
-                         float *pxiys,
-                         float *pxsys,
+                         double *pxiyi,
+                         double *pxsyi,
+                         double *pxiys,
+                         double *pxsys,
                          const double x,
                          const double y,
                          const int ox,

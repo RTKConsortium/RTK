@@ -36,10 +36,10 @@ int main(int argc, char * argv[])
 {
   GGO(rtkvectorconjugategradient, args_info);
 
-  typedef float OutputPixelType;
+  typedef double OutputPixelType;
   const unsigned int Dimension = 3;
-  std::vector<double> costs;
-  std::ostream_iterator<double> costs_it(std::cout,"\n");
+//  std::vector<double> costs;
+//  std::ostream_iterator<double> costs_it(std::cout,"\n");
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension >   OutputImageType;

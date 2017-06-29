@@ -229,27 +229,27 @@ private:
 };
 
 template<>
-ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::ConjugateGradientConeBeamReconstructionFilter();
 
 //template<>
 //void
-//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 //::SetSupportMask(const itk::Image<float, 3> *SupportMask);
 
 //template<>
 //typename itk::Image<float, 3>::ConstPointer
-//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+//ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 //::GetSupportMask();
 
 template<>
 void
-ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::GenerateOutputInformation();
 
 template<>
 void
-ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<float, 3>, itk::Image<float, 3> >
+ConjugateGradientConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::Image<double, 3> >
 ::GenerateData();
 
 } //namespace RTK
