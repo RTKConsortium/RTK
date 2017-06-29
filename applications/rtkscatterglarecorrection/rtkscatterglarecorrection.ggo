@@ -8,5 +8,5 @@ option "bufferSize"   - "Number of projections computed at the same time"       
 option "difference"   d "Output the difference between input and corrected images"  flag      off
 
 section "Algorithm parameters"
-option "coefficients"  c  "Deconvolution kernel coefficients"                   float   multiple no
+option "coefficients"  c  "Deconvolution kernel coefficients"                   float   multiple yes
 
