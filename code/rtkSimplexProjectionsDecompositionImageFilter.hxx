@@ -261,7 +261,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
         nonZeroAttenuationsCount += 1;
         }
       }
-    m_RescalingFactors[material] /= nonZeroAttenuationsCount ;
+    m_RescalingFactors[material] /= nonZeroAttenuationsCount;
     }
 
   // Initialize the rescaled material attenuations matrix

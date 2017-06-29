@@ -122,7 +122,7 @@ public:
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
-  ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
   void GenerateInputRequestedRegion() ITK_OVERRIDE;

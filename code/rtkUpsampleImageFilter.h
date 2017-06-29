@@ -114,7 +114,7 @@ public:
 
 protected:
   UpsampleImageFilter();
-  ~UpsampleImageFilter() ITK_OVERRIDE {}
+  ~UpsampleImageFilter() {}
 
   /** UpsampleImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData() routine

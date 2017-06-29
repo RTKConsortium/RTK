@@ -180,7 +180,7 @@ int main(int argc, char * argv[])
     {
     for (unsigned int proj=0; proj<initialNumberOfProjections; proj++)
       {
-      fakeSignal.push_back(round((double)material / (double)NumberOfMaterials * 1000) / 1000);
+      fakeSignal.push_back(itk::Math::Round<double, double>((double)material / (double)NumberOfMaterials * 1000) / 1000);
       }
     }
 

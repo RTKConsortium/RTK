@@ -201,7 +201,7 @@ public:
   itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   SARTConeBeamReconstructionFilter();
-  ~SARTConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~SARTConeBeamReconstructionFilter() {}
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

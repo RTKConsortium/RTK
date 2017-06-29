@@ -17,42 +17,32 @@
       "default" : "0",
 	  "itk_type" : "ThreeDCircularProjectionGeometry",
       "custom_itk_cast" : "filter->SetGeometry( const_cast<rtk::ThreeDCircularProjectionGeometry*>(dynamic_cast<const rtk::ThreeDCircularProjectionGeometry*>(this->m_Geometry->GetRTKBase())) );\n"
-    }
+    },
     {
       "name" : "NumberOfIterations",
       "type" : "int",
       "default" : "5"
-    }
+    },
     {
       "name" : "ForwardProjectionFilter",
       "type" : "int",
       "default" : "0"
-    }
+    },
     {
       "name" : "BackProjectionFilter",
       "type" : "int",
       "default" : "0"
-    }
-    {
-      "name" : "Regularized",
-      "type" : "bool",
-      "default" : "0"
-    }
+    },
     {
       "name" : "Gamma",
       "type" : "float",
       "default" : "0"
-    }
+    },
     {
       "name" : "CudaConjugateGradient",
       "type" : "bool",
       "default" : "0"
-    }
-    {
-      "name" : "IterationCosts",
-      "type" : "bool",
-      "default" : "0"
-    }
+    },
     {
       "name" : "SupportMask",
       "type" : "Image",

@@ -133,7 +133,7 @@ public:
 
 protected:
   TotalVariationDenoisingBPDQImageFilter();
-  ~TotalVariationDenoisingBPDQImageFilter() ITK_OVERRIDE {}
+  ~TotalVariationDenoisingBPDQImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

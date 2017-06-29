@@ -69,7 +69,7 @@ public:
 
 protected:
   DrawEllipsoidImageFilter();
-  ~DrawEllipsoidImageFilter() ITK_OVERRIDE {};
+  ~DrawEllipsoidImageFilter() {}
 
 private:
   DrawEllipsoidImageFilter ( const Self& ); //purposely not implemented

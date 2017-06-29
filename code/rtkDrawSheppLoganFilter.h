@@ -84,7 +84,7 @@ public:
 
 protected:
   DrawSheppLoganFilter();
-  ~DrawSheppLoganFilter() ITK_OVERRIDE {};
+  ~DrawSheppLoganFilter() {}
 
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
   void SetEllipsoid(FigureType* rei,

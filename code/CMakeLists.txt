@@ -39,7 +39,10 @@ set(RTK_LIBRARY_FILES
     rtkIOFactories.cxx
     rtkConvertEllipsoidToQuadricParametersFunction.cxx
     rtkDrawQuadricSpatialObject.cxx
+    rtkOraXMLFileReader.cxx
     rtkOraGeometryReader.cxx
+    rtkOraImageIO.cxx
+    rtkOraImageIOFactory.cxx
     rtkJosephForwardProjectionImageFilter.cxx
     rtkJosephBackProjectionImageFilter.cxx
     rtkConjugateGradientConeBeamReconstructionFilter.cxx

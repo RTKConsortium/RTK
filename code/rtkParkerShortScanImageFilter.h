@@ -76,7 +76,7 @@ public:
 
 protected:
   ParkerShortScanImageFilter(){ this->SetInPlace(true); }
-  ~ParkerShortScanImageFilter() ITK_OVERRIDE {}
+  ~ParkerShortScanImageFilter() {}
 
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 

@@ -59,8 +59,7 @@ protected:
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
 
-  ~ForwardProjectionImageFilter() ITK_OVERRIDE {
-  }
+  ~ForwardProjectionImageFilter() {}
 
   /** Apply changes to the input image requested region. */
   void GenerateInputRequestedRegion() ITK_OVERRIDE;

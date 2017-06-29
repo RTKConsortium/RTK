@@ -92,8 +92,7 @@ protected:
   BackProjectionImageFilter() : m_Geometry(ITK_NULLPTR), m_Transpose(false) {
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
-  ~BackProjectionImageFilter() ITK_OVERRIDE {
-  }
+  ~BackProjectionImageFilter() {}
 
   /** Apply changes to the input image requested region. */
   void GenerateInputRequestedRegion() ITK_OVERRIDE;

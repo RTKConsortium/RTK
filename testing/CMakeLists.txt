@@ -406,7 +406,7 @@ add_executable(rtkoratest rtkoratest.cxx)
 target_link_libraries(rtkoratest ${RTK_LIBRARIES})
 RTK_ADD_TEST(NAME rtkoratest
              COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkoratest
-             DATA{Data/Input/Ora/0_afterLog.ora.xml}
-             DATA{Data/Baseline/Ora/geometry.xml})
+             DATA{Data/Input/Ora/0_afterLog.ora.xml,0_afterLog.mhd,0_afterLog.raw}
+             DATA{Data/Baseline/Ora/geometry.xml,attenuation.mha})
 
 

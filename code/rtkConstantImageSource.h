@@ -125,7 +125,7 @@ public:
 
 protected:
   ConstantImageSource();
-  ~ConstantImageSource() ITK_OVERRIDE;
+  ~ConstantImageSource();
   void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;

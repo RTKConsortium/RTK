@@ -135,7 +135,7 @@ public:
 
 protected:
   DrawQuadricImageFilter();
-  ~DrawQuadricImageFilter() ITK_OVERRIDE {};
+  ~DrawQuadricImageFilter() {}
 
 private:
   DrawQuadricImageFilter(const Self&); //purposely not implemented

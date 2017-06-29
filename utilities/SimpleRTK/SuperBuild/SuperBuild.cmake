@@ -1,9 +1,7 @@
-find_package(Git REQUIRED)
-
 #-----------------------------------------------------------------------------
 # CTest Related Settings
 #-----------------------------------------------------------------------------
-set(BUILDNAME "NoBuildNameGiven")
+set(BUILDNAME "NoBuldNameGiven")
 set(SITE      "NoSiteGiven")
 set(BUILD_TESTING_DEFAULT ON)
 if(CMAKE_VERSION VERSION_LESS 2.8.11)
@@ -16,6 +14,9 @@ if( BUILD_TESTING AND CMAKE_VERSION VERSION_LESS 2.8.11 )
   message( FATAL_ERROR "BUILD_TESTING ON requires CMake 2.8.11 or newer." )
 endif()
 
+if(CMAKE_GENERATOR MATCHES "Ninja" AND CMAKE_VERSION VERSION_LESS 3.2 )
+  message( FATAL_ERROR "Using \"Ninja\" generator requires CMake 3.2.0 or newer." )
+endif()
 
 configure_file(../CMake/CTestCustom.cmake.in CTestCustom.cmake)
 
@@ -53,19 +54,54 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   )
 
-include(PreventInSourceBuilds)
-include(PreventInBuildInstalls)
+include(srtkPreventInSourceBuilds)
+include(srtkPreventInBuildInstalls)
 include(VariableList)
+include(srtkExternalData)
 
+
+add_custom_target( SuperBuildSimpleRTKSource )
+
+#
+# srtkSourceDownload( <output variable> <filename> <md5 hash> )
+#
+# A function to get a filename for an ExternalData source file used in
+# a superbuild. Adds a target which downloads all source code
+# needed for superbuild projects. The source file is cached with in
+# the build tree, and can be locally cache with other ExternalData
+# controlled environment variables.
+#
+# The "SuperBuildSimpleRTKSource" target needs to be manually added as
+# a dependencies to the ExternalProject.
+#
+#   add_dependencies( PROJ "SuperBuildSimpleRTKSource" )
+#
+# Note: Hash files are created under the SOURCE directory in the
+# .ExternalSource sub-directory during configuration.
+#
+function(srtkSourceDownload outVar filename hash)
+  set(link_file "${CMAKE_CURRENT_SOURCE_DIR}/.ExternalSource/${filename}")
+  file(WRITE  "${link_file}.md5" ${hash} )
+  ExternalData_Expand_arguments(
+    SuperBuildSimpleRTKSourceReal
+    link
+    DATA{${link_file}}
+    )
+  set(${outVar} "${link}" PARENT_SCOPE)
+endfunction()
+
+function(srtkSourceDownloadDependency proj)
+  if (CMAKE_VERSION VERSION_LESS 3.2)
+    add_dependencies(${proj}  "SuperBuildSimpleRTKSource")
+  else()
+    ExternalProject_Add_StepDependencies(${proj} download "SuperBuildSimpleRTKSource")
+  endif()
+endfunction()
 
 #-----------------------------------------------------------------------------
 # Prerequisites
 #------------------------------------------------------------------------------
 #
-# SimpleRTK Addition: install to the common library
-# directory, so that all libs/include etc ends up
-# in one common tree
-set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "Where all the prerequisite libraries go" FORCE)
 
 # Compute -G arg for configuring external projects with the same CMake generator:
 if(CMAKE_EXTRA_GENERATOR)
@@ -74,12 +110,26 @@ else()
   set(gen "${CMAKE_GENERATOR}")
 endif()
 
+#-----------------------------------------------------------------------------
+# Use GIT protocol
+#------------------------------------------------------------------------------
+find_package(Git)
+set(SRTK_GIT_PROTOCOL_default "https")
+if (GIT_VERSION_STRING VERSION_LESS "1.7.10")
+  # minimum version for https support
+  set(SRTK_GIT_PROTOCOL_default "git")
+endif()
+set(SRTK_GIT_PROTOCOL  ${SRTK_GIT_PROTOCOL_default} CACHE STRING "If behind a firewall turn set this to 'https' or 'http'." )
+mark_as_advanced(SRTK_GIT_PROTOCOL)
+set_property(CACHE SRTK_GIT_PROTOCOL PROPERTY STRINGS "https;http;git")
+set(git_protocol ${SRTK_GIT_PROTOCOL})
+
 
 #-----------------------------------------------------------------------------
 # SimpleRTK options
 #------------------------------------------------------------------------------
 
-option( BUILD_EXAMPLES "Enable Building of the SimpleRTK Examples as a separate project." OFF )
+option( BUILD_EXAMPLES "Enable Building of the SimpleRTK Examples as a separate project." ON )
 
 # Set a default build type if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -90,10 +140,13 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # Default to build shared libraries off
-option(BUILD_SHARED_LIBS "Build SimpleRTK ITK with shared libraries. This does not effect wrapped languages." OFF)
+option(BUILD_SHARED_LIBS "Build SimpleRTK RTK with shared libraries. This does not effect wrapped languages." OFF)
 
 # as this option does not robustly work across platforms it will be marked as advanced
 mark_as_advanced( FORCE BUILD_SHARED_LIBS )
+
+option( SRTK_4D_IMAGES "Add Image and I/O support for four spatial dimensions." OFF )
+mark_as_advanced( SRTK_4D_IMAGES )
 
 #-----------------------------------------------------------------------------
 # Setup build type
@@ -112,16 +165,8 @@ endif()
 #-------------------------------------------------------------------------
 # augment compiler flags
 #-------------------------------------------------------------------------
-include(CompilerFlagSettings)
-
-
-# the hidden visibility for inline methods should be consistent between ITK and SimpleRTK
-if(NOT WIN32 AND CMAKE_COMPILER_IS_GNUCXX AND BUILD_SHARED_LIBS)
-  check_cxx_compiler_flag("-fvisibility-inlines-hidden" CXX_HAS-fvisibility-inlines-hidden)
-  if( CXX_HAS-fvisibility-inlines-hidden )
-    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden" )
-  endif()
-endif()
+include(srtkCheckRequiredFlags)
+set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SimpleRTK_REQUIRED_CXX_FLAGS}" )
 
 #------------------------------------------------------------------------------
 # BuildName used for dashboard reporting
@@ -145,16 +190,6 @@ endif()
 #------------------------------------------------------------------------------
 # Setup build locations.
 #------------------------------------------------------------------------------
-if(NOT SETIFEMPTY)
-  macro(SETIFEMPTY) # A macro to set empty variables to meaninful defaults
-    set(KEY ${ARGV0})
-    set(VALUE ${ARGV1})
-    if(NOT ${KEY})
-      set(${ARGV})
-    endif()
-  endmacro()
-endif()
-
 
 #------------------------------------------------------------------------------
 # Common Build Options to pass to all subsequent tools
@@ -162,6 +197,7 @@ endif()
 list( APPEND ep_common_list
   MAKECOMMAND
   CMAKE_BUILD_TYPE
+  CMAKE_MAKE_PROGRAM
 
   CMAKE_C_COMPILER
   CMAKE_C_COMPILER_ARG1
@@ -181,6 +217,8 @@ list( APPEND ep_common_list
   CMAKE_CXX_FLAGS_RELEASE
   CMAKE_CXX_FLAGS_RELWITHDEBINFO
 
+  CMAKE_LINKER
+
   CMAKE_EXE_LINKER_FLAGS
   CMAKE_EXE_LINKER_FLAGS_DEBUG
   CMAKE_EXE_LINKER_FLAGS_MINSIZEREL
@@ -198,6 +236,15 @@ list( APPEND ep_common_list
   CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO
 
   CMAKE_STRIP
+
+  CMAKE_PREFIX_PATH
+  CMAKE_FRAMEWORK_PATH
+  CMAKE_SYSTEM_PREFIX_PATH
+  CMAKE_SYSTEM_INCLUDE_PATH
+  CMAKE_SYSTEM_LIBRARY_PATH
+  CMAKE_SYSTEM_PROGRAM_PATH
+  CMAKE_SYSTEM_IGNORE_PATH
+
 
   CMAKE_GENERATOR
   CMAKE_EXTRA_GENERATOR
@@ -233,6 +280,24 @@ include(srtkLanguageOptions)
 
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 include(ExternalProject)
+
+#------------------------------------------------------------------------------
+# Lua
+#------------------------------------------------------------------------------
+option ( USE_SYSTEM_LUA "Use a pre-compiled version of LUA 5.1 previously configured for your system" OFF )
+mark_as_advanced(USE_SYSTEM_LUA)
+if ( USE_SYSTEM_LUA )
+  find_package( LuaInterp REQUIRED 5.1 )
+  set( SRTK_LUA_EXECUTABLE ${LUA_EXECUTABLE} CACHE PATH "Lua executable used for code generation." )
+  mark_as_advanced( SRTK_LUA_EXECUTABLE )
+  unset( LUA_EXECUTABLE CACHE )
+else()
+  include(External_Lua)
+  list(APPEND ${CMAKE_PROJECT_NAME}_DEPENDENCIES Lua)
+  set( SRTK_LUA_EXECUTABLE ${SRTK_LUA_EXECUTABLE} CACHE PATH "Lua executable used for code generation." )
+  mark_as_advanced( SRTK_LUA_EXECUTABLE )
+endif()
+
 #------------------------------------------------------------------------------
 # Swig
 #------------------------------------------------------------------------------
@@ -240,65 +305,99 @@ option ( USE_SYSTEM_SWIG "Use a pre-compiled version of SWIG 2.0 previously conf
 mark_as_advanced(USE_SYSTEM_SWIG)
 if(USE_SYSTEM_SWIG)
   find_package ( SWIG 2 REQUIRED )
-  include ( UseSWIGLocal )
 else()
   include(External_Swig)
   list(APPEND ${CMAKE_PROJECT_NAME}_DEPENDENCIES Swig)
 endif()
 
 #------------------------------------------------------------------------------
+# Google Test
+#------------------------------------------------------------------------------
+option( USE_SYSTEM_GTEST "Use a pre-compiled version of GoogleTest. " OFF )
+mark_as_advanced(USE_SYSTEM_GTEST)
+if ( BUILD_TESTING )
+  if (USE_SYSTEM_GTEST)
+    find_package( GTest REQUIRED )
+    list(APPEND SimpleRTK_VARS GTEST_LIBRARIES GTEST_INCLUDE_DIRS GTEST_MAIN_LIBRARIES)
+  else()
+    include(External_GTest)
+    set( GTEST_ROOT ${GTEST_ROOT} )
+    list(APPEND SimpleRTK_VARS GTEST_ROOT)
+    list(APPEND ${CMAKE_PROJECT_NAME}_DEPENDENCIES GTest)
+  endif()
+endif()
+
+#------------------------------------------------------------------------------
+# Python virtualenv
+#------------------------------------------------------------------------------
+option( USE_SYSTEM_VIRTUALENV "Use a system version of Python's virtualenv. " OFF )
+mark_as_advanced(USE_SYSTEM_VIRTUALENV)
+if( NOT DEFINED SRTK_PYTHON_USE_VIRTUALENV OR SRTK_PYTHON_USE_VIRTUALENV )
+  if ( USE_SYSTEM_VIRTUALENV )
+    find_package( PythonVirtualEnv REQUIRED)
+  else()
+    include(External_virtualenv)
+    if ( WRAP_PYTHON )
+      list(APPEND ${CMAKE_PROJECT_NAME}_DEPENDENCIES virtualenv)
+    endif()
+  endif()
+  list(APPEND SimpleRTK_VARS PYTHON_VIRTUALENV_SCRIPT)
+endif()
+
+#------------------------------------------------------------------------------
 # ITK
 #------------------------------------------------------------------------------
-
-set(ITK_WRAPPING OFF CACHE BOOL "Turn OFF wrapping ITK with WrapITK")
-mark_as_advanced( FORCE ITK_WRAPPING )
-if(ITK_WRAPPING)
-  list(APPEND ITK_DEPENDENCIES Swig)
-endif()
 option(USE_SYSTEM_ITK "Use a pre-built version of ITK" OFF)
 mark_as_advanced(USE_SYSTEM_ITK)
 if(USE_SYSTEM_ITK)
   find_package(ITK REQUIRED)
+  #we require certain packages be turned on in RTK
+  include(srtkCheckForRTKModuleDependencies)
 else()
+  set(ITK_WRAPPING OFF)
   include(External_ITK)
-  list(APPEND ${CMAKE_PROJECT_NAME}_DEPENDENCIES ITK)
+  list(APPEND ${CMAKE_PROJECT_NAME}_DEPENDENCIES RTK)
 endif()
 
-get_cmake_property( _varNames VARIABLES )
-foreach (_varName ${_varNames})
-  if(_varName MATCHES "^SimpleRTK_" )
-    message( STATUS "Passing variable \"${_varName}=${${_varName}}\" to SimpleRTK external project.")
-    list(APPEND SimpleRTKITK_VARS ${_varName})
-  endif()
-endforeach()
 
 #------------------------------------------------------------------------------
 # RTK
 #------------------------------------------------------------------------------
 option(USE_SYSTEM_RTK "Use a pre-built version of RTK" OFF)
 mark_as_advanced(USE_SYSTEM_RTK)
-list(APPEND RTK_DEPENDENCIES ITK)
 if(USE_SYSTEM_RTK)
   find_package(RTK REQUIRED)
+  #we require certain packages be turned on in RTK
+  include(srtkCheckForRTKModuleDependencies)
 else()
   include(External_RTK)
   list(APPEND ${CMAKE_PROJECT_NAME}_DEPENDENCIES RTK)
 endif()
 
+
+
 get_cmake_property( _varNames VARIABLES )
+
 foreach (_varName ${_varNames})
-  if(_varName MATCHES "^SimpleRTK_" )
-    message( STATUS "Passing variable \"${_varName}=${${_varName}}\" to SimpleRTK external project.")
-    list(APPEND SimpleRTKRTK_VARS ${_varName})
+  if(_varName MATCHES "^SimpleRTK_" OR _varName MATCHES "^SRTK_" )
+    if (NOT _varName MATCHES "^SRTK_LANGUAGES_VARS"
+          AND
+        NOT _varName MATCHES "^SimpleRTK_VARS"
+          AND
+        NOT _varName MATCHES "^SimpleRTK_REQUIRED_"
+          AND
+        NOT _varName MATCHES "^SRTK_UNDEFINED_SYMBOLS_ALLOWED")
+      message( STATUS "Passing variable \"${_varName}=${${_varName}}\" to SimpleRTK external project.")
+      list(APPEND SimpleRTK_VARS ${_varName})
+    endif()
   endif()
 endforeach()
 
 
-
 VariableListToCache( SimpleRTK_VARS  ep_simplertk_cache )
-VariableListToArgs( SimpleRTKITK_VARS  ep_simplertk_args )
-VariableListToCache( SITK_LANGUAGES_VARS  ep_languages_cache )
-VariableListToArgs( SITK_LANGUAGES_VARS  ep_languages_args )
+VariableListToArgs( SimpleRTK_VARS  ep_simplertk_args )
+VariableListToCache( SRTK_LANGUAGES_VARS  ep_languages_cache )
+VariableListToArgs( SRTK_LANGUAGES_VARS  ep_languages_args )
 
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/SimpleRTK-build/CMakeCacheInit.txt" "${ep_simplertk_cache}${ep_common_cache}\n${ep_languages_cache}" )
 
@@ -315,7 +414,7 @@ ExternalProject_Add(${proj}
     ${ep_simplertk_args}
     ${ep_common_args}
     -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
-    -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}\ ${CXX_ADDITIONAL_WARNING_FLAGS}
+    -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=<BINARY_DIR>/lib
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY:PATH=<BINARY_DIR>/lib
@@ -324,7 +423,7 @@ ExternalProject_Add(${proj}
     ${ep_languages_args}
     # ITK
     -DITK_DIR:PATH=${ITK_DIR}
-	# RTK
+	# ITK
     -DRTK_DIR:PATH=${RTK_DIR}
     # Swig
     -DSWIG_DIR:PATH=${SWIG_DIR}
@@ -349,10 +448,22 @@ ExternalProject_Add_Step(${proj} forcebuild
   ALWAYS 1
 )
 
+
+#------------------------------------------------------------------------------
+# SimpleRTKExamples
+#------------------------------------------------------------------------------
+
+# We build SimpleRTKExamples as an enternal project to verify
+# installation of SimpleRTK
+
+include(External_SimpleRTKExamples)
+
+
 #------------------------------------------------------------------------------
 # List of external projects
 #------------------------------------------------------------------------------
-set(external_project_list ITK RTK Swig SimpleRTKExamples PCRE ${CMAKE_PROJECT_NAME})
+set(external_project_list RTK Swig SimpleRTKExamples PCRE Lua GTest virtualenv ${CMAKE_PROJECT_NAME})
+
 
 #-----------------------------------------------------------------------------
 # Dump external project dependencies
@@ -362,3 +473,9 @@ foreach(ep ${external_project_list})
   set(ep_dependency_graph "${ep_dependency_graph}\n${ep}: ${${ep}_DEPENDENCIES}")
 endforeach()
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/ExternalProjectDependencies.txt "${ep_dependency_graph}\n")
+
+
+if(COMMAND ExternalData_Add_Target)
+  ExternalData_Add_Target(SuperBuildSimpleRTKSourceReal)
+  add_dependencies(SuperBuildSimpleRTKSource SuperBuildSimpleRTKSourceReal)
+endif()

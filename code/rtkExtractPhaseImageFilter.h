@@ -96,7 +96,7 @@ public:
 
 protected:
   ExtractPhaseImageFilter();
-  ~ExtractPhaseImageFilter() ITK_OVERRIDE {}
+  ~ExtractPhaseImageFilter() {}
 
   void GenerateData() ITK_OVERRIDE;
 

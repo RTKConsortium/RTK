@@ -22,6 +22,7 @@
 #include "srtkInterpolator.h"
 
 // todo this should be moved to a more local place
+#include "nsstd/auto_ptr.h"
 #include "srtkTransform.h"
 #include "srtkThreeDCircularProjectionGeometry.h"
 

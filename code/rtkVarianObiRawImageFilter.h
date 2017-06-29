@@ -23,17 +23,18 @@
 #include <itkConceptChecking.h>
 #include <itkNumericTraits.h>
 
-#define HND_INTENSITY_MAX (139000.)
+#include "rtkMacro.h"
 
 namespace rtk
 {
-  
+
 namespace Function {  
   
 /** \class ObiAttenuation
  * \brief Converts a raw value measured by the Varian OBI system to attenuation
  *
- * The current implementation assues a maximum possible value for hnd of 139000.
+ * The user can specify I0 and IDark values. The defaults are 139000 and 0,
+ * respectively.
  *
  * \author Simon Rit
  *
@@ -55,9 +56,15 @@ public:
     }
   inline TOutput operator()( const TInput & A ) const
     {
-    return (!A)?0.:TOutput( vcl_log(HND_INTENSITY_MAX ) - vcl_log( double(A) ) );
+    return (!A)?0.:TOutput( vcl_log(m_I0-m_IDark) - vcl_log( A-m_IDark ) );
     }
-}; 
+  void SetI0(double i0) {m_I0 = i0;}
+  void SetIDark(double idark) {m_IDark = idark;}
+
+private:
+  double m_I0;
+  double m_IDark;
+};
 }
 
 /** \class VarianObiRawImageFilter
@@ -93,17 +100,30 @@ public:
   itkTypeMacro(VarianObiRawImageFilter,
                itk::UnaryFunctorImageFilter);
 
+  itkGetMacro(I0, double);
+  itkSetMacro(I0, double);
+
+  itkGetMacro(IDark, double);
+  itkSetMacro(IDark, double);
+
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+
 protected:
-  VarianObiRawImageFilter() {}
-  ~VarianObiRawImageFilter() ITK_OVERRIDE {}
+  VarianObiRawImageFilter();
+  ~VarianObiRawImageFilter() {}
 
 private:
   VarianObiRawImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
+  double m_I0;
+  double m_IDark;
 };
 
 } // end namespace rtk
 
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkVarianObiRawImageFilter.hxx"
+#endif
 
 #endif

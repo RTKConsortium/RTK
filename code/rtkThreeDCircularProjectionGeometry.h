@@ -193,6 +193,27 @@ public:
     return this->m_MagnificationMatrices;
   }
 
+  /** Get the vector containing the collimation jaw parameters. */
+  const std::vector<double> &GetCollimationUInf() const {
+    return this->m_CollimationUInf;
+  }
+  const std::vector<double> &GetCollimationUSup() const {
+    return this->m_CollimationUSup;
+  }
+  const std::vector<double> &GetCollimationVInf() const {
+    return this->m_CollimationVInf;
+  }
+  const std::vector<double> &GetCollimationVSup() const {
+    return this->m_CollimationVSup;
+  }
+
+  /** Set the collimation of the latest added projection (to be called after
+   * AddProjection). */
+  void SetCollimationOfLastProjection(const double uinf,
+                                      const double usup,
+                                      const double vinf,
+                                      const double vsup);
+
   /** Get the source position for the ith projection in the fixed reference
    * system and in homogeneous coordinates. */
   const HomogeneousVectorType GetSourcePosition(const unsigned int i) const;
@@ -231,7 +252,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometry();
-  ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {};
+  ~ThreeDCircularProjectionGeometry() {}
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);
@@ -307,6 +328,18 @@ protected:
 
   /** Radius of curved detector. The default is 0 and it means a flat detector. */
   double m_RadiusCylindricalDetector;
+
+  /** Parameters of the collimation jaws.
+   * The collimation position is with respect to the distance of the m_RotationCenter along
+   * - the m_RotationAxis for the m_CollimationVInf and m_CollimationVSup,
+   * - the m_SourceCenter ^ m_RotationAxis for the m_CollimationUInf and m_CollimationUSup.
+   * The default is +infinity (itk::NumericTraits<double>::max) is completely
+   * opened, negative values are allowed if the collimation travels beyond the m_RotationCenter.
+   */
+  std::vector<double> m_CollimationUInf;
+  std::vector<double> m_CollimationUSup;
+  std::vector<double> m_CollimationVInf;
+  std::vector<double> m_CollimationVSup;
 
   /** Matrices to change coordiate systems. */
   std::vector<TwoDHomogeneousMatrixType>         m_ProjectionTranslationMatrices;

@@ -113,6 +113,7 @@ int main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( paste->Update() )
 
     // Fill in the output geometry object
+    outputGeometry->SetRadiusCylindricalDetector(geometryReader->GetOutputObject()->GetRadiusCylindricalDetector());
     outputGeometry->AddProjectionInRadians(geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[indices[i]],
                                            geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[indices[i]],
                                            geometryReader->GetOutputObject()->GetGantryAngles()[indices[i]],
@@ -122,6 +123,10 @@ int main(int argc, char * argv[])
                                            geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
                                            geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
                                            geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
+    outputGeometry->SetCollimationOfLastProjection(geometryReader->GetOutputObject()->GetCollimationUInf()[indices[i]],
+                                                   geometryReader->GetOutputObject()->GetCollimationUSup()[indices[i]],
+                                                   geometryReader->GetOutputObject()->GetCollimationVInf()[indices[i]],
+                                                   geometryReader->GetOutputObject()->GetCollimationVSup()[indices[i]] );
     }
 
   // Geometry writer

@@ -203,7 +203,7 @@ public:
 
 protected:
     ADMMTotalVariationConeBeamReconstructionFilter();
-    ~ADMMTotalVariationConeBeamReconstructionFilter() ITK_OVERRIDE {}
+    ~ADMMTotalVariationConeBeamReconstructionFilter() {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

@@ -58,7 +58,7 @@ public:
 
 protected:
   ConjugateGradientGetP_kPlusOneImageFilter();
-  ~ConjugateGradientGetP_kPlusOneImageFilter() ITK_OVERRIDE {}
+  ~ConjugateGradientGetP_kPlusOneImageFilter() {}
 
   typename TInputImage::Pointer GetR_kPlusOne();
   typename TInputImage::Pointer GetRk();

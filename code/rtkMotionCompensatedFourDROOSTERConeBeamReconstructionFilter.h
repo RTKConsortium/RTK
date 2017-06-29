@@ -169,7 +169,7 @@ public:
 
 protected:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter();
-  ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter() {}
 
   /** Does the real work. */
   void GenerateData() ITK_OVERRIDE;

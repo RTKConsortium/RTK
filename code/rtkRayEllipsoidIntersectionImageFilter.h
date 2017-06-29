@@ -77,7 +77,7 @@ public:
 
 protected:
   RayEllipsoidIntersectionImageFilter();
-  ~RayEllipsoidIntersectionImageFilter() ITK_OVERRIDE {};
+  ~RayEllipsoidIntersectionImageFilter() {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

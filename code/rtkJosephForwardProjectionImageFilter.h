@@ -235,7 +235,7 @@ public:
 
 protected:
   JosephForwardProjectionImageFilter() {}
-  ~JosephForwardProjectionImageFilter() ITK_OVERRIDE {}
+  ~JosephForwardProjectionImageFilter() {}
 
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 

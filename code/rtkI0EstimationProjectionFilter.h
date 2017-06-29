@@ -74,7 +74,9 @@ public:
   itkGetMacro(I0fwhm, InputImagePixelType)
   itkGetMacro(I0rls, InputImagePixelType)
 
-  /** Maximum encodable detector value if different from (2^16-1) */
+  /** Maximum encodable detector value if different from (2^16-1). The default
+   * is the minimum between 2^24-1 and the numerical limit of the input pixel
+   * type. This allows to limit histogram size to 2^(24-bitShift)-1. */
   itkSetMacro(MaxPixelValue, InputImagePixelType)
   itkGetMacro(MaxPixelValue, InputImagePixelType)
 
@@ -100,7 +102,7 @@ public:
 
 protected:
   I0EstimationProjectionFilter();
-  ~I0EstimationProjectionFilter() ITK_OVERRIDE {}
+  ~I0EstimationProjectionFilter() {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
@@ -122,8 +124,8 @@ private:
   bool           m_Reset;                 // Reset counters
 
   // Secondary inputs
-  unsigned int m_NBins;                   // Histogram size, computed from 2^16
-                                          // and bitshift
+  std::vector<unsigned int>::size_type m_NBins; // Histogram size, computed
+                                                // from m_MaxPixelValue and bitshift
 
   // Main variables
   std::vector< unsigned int > m_Histogram; // compressed (bitshifted) histogram

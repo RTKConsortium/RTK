@@ -102,7 +102,7 @@ public:
 
 protected:
     DaubechiesWaveletsConvolutionImageFilter();
-    ~DaubechiesWaveletsConvolutionImageFilter() ITK_OVERRIDE;
+    ~DaubechiesWaveletsConvolutionImageFilter();
 
     typedef std::vector<typename TImage::PixelType> CoefficientVector;
 

@@ -170,7 +170,7 @@ public:
 
 protected:
   ReconstructionConjugateGradientOperator();
-  ~ReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
+  ~ReconstructionConjugateGradientOperator() {}
 
   /** Does the real work. */
   void GenerateData() ITK_OVERRIDE;

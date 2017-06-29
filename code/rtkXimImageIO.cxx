@@ -156,8 +156,8 @@ void rtk::XimImageIO::ReadImageInformation()
   itk::int32_t property_value_length = 0;
   size_t theoretical_nelements = nelements; // Same as reseting
 
-  for (int i = 0; i < xim.numberOfProperties; i++)
-  {
+  for (itk::int32_t i = 0; i < xim.numberOfProperties; i++)
+    {
     nelements += fread((void *)&property_name_length, sizeof(itk::int32_t), 1, fp);
     if(property_name_length>PROPERTY_NAME_MAX_LENGTH)
       itkGenericExceptionMacro(<< "Property name is too long, i.e., " << property_name_length);
@@ -242,7 +242,7 @@ void rtk::XimImageIO::Read(void * buffer)
   FILE *fp;
   itk::uint32_t *buf = (itk::uint32_t*)buffer;
   itk::int32_t  a;
-  unsigned int i;
+  itk::ImageIOBase::SizeValueType i;
 
   fp = fopen (m_FileName.c_str(), "rb");
   if (fp == NULL)

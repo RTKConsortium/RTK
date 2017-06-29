@@ -112,7 +112,7 @@ public:
 
 protected:
   LUTbasedVariableI0RawToAttenuationImageFilter();
-  ~LUTbasedVariableI0RawToAttenuationImageFilter() ITK_OVERRIDE {}
+  ~LUTbasedVariableI0RawToAttenuationImageFilter() {}
 
 private:
   LUTbasedVariableI0RawToAttenuationImageFilter(const Self &); //purposely not implemented

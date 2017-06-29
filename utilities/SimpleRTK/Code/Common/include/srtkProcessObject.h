@@ -1,27 +1,28 @@
 /*=========================================================================
- *
- *  Copyright Insight Software Consortium & RTK Consortium
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- *=========================================================================*/
-#ifndef __srtkProcessObject_h
-#define __srtkProcessObject_h
+*
+*  Copyright RTK Consortium
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*         http://www.apache.org/licenses/LICENSE-2.0.txt
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*=========================================================================*/
+#ifndef srtkProcessObject_h
+#define srtkProcessObject_h
 
 #include "srtkCommon.h"
 #include "srtkNonCopyable.h"
 #include "srtkTemplateFunctions.h"
 #include "srtkEvent.h"
+#include "srtkImage.h"
 
 #include <iostream>
 #include <list>
@@ -29,6 +30,9 @@
 namespace itk {
 
 #ifndef SWIG
+
+  template< typename T, unsigned int NVectorDimension > class Vector;
+
   class ProcessObject;
   class Command;
   class EventObject;
@@ -63,7 +67,7 @@ namespace rtk {
       virtual ~ProcessObject();
 
       // Print ourselves out
-      virtual std::string ToString() const = 0;
+      virtual std::string ToString() const;
 
       /** return user readable name for the filter */
       virtual std::string GetName() const = 0;
@@ -121,6 +125,25 @@ namespace rtk {
       static unsigned int GetGlobalDefaultNumberOfThreads();
       /**@}*/
 
+      /** \brief Access the global tolerance to determine congruent spaces.
+       *
+       * The default tolerance is governed by the
+       * GlobalDefaultCoordinateTolerance and the
+       * GlobalDefaultDirectionTolerance properties, defaulting to
+       * 1.0e-6. The default tolerance for spatial comparison is then
+       * scaled by the voxelSpacing for coordinates (i.e. the
+       * coordinates must be the same to within one part per
+       * million). For the direction cosines the values must be within
+       * the current absolute tolerance.
+       * @{
+       */
+      static double GetGlobalDefaultCoordinateTolerance();
+      static void SetGlobalDefaultCoordinateTolerance(double );
+
+      static double GetGlobalDefaultDirectionTolerance();
+      static void SetGlobalDefaultDirectionTolerance(double);
+      /**@}*/
+
       /** The number of threads used when executing a filter if the
        * filter is multi-threaded
        * @{
@@ -148,20 +171,24 @@ namespace rtk {
        * have valid values during events, and access the underlying
        * ITK object.
        *
-       * Deleting a registered command during execution causes
-       * program termination.
+       * Deleting a command this object has during a command call-back
+       * will produce undefined behavior.
        *
        * For more information see the page \ref CommandPage.
        *
        * \note The return value is reserved for latter usage.
        */
-      virtual int AddCommand(EventEnum event, Command &cmd);
+      virtual int AddCommand(rtk::simple::EventEnum event, rtk::simple::Command &cmd);
 
-      /** \brief Remove all registered commands. */
+      /** \brief Remove all registered commands.
+       *
+       * Calling when this object is invoking anther command will
+       * produce undefined behavior.
+       */
       virtual void RemoveAllCommands();
 
       /** \brief Query of this object has any registered commands for event. */
-      virtual bool HasCommand( EventEnum event ) const;
+      virtual bool HasCommand( rtk::simple::EventEnum event ) const;
 
 
       /** \brief An Active Measurement of the progress of execution.
@@ -195,12 +222,37 @@ namespace rtk {
     protected:
 
       #ifndef SWIG
+
+      struct EventCommand
+      {
+        EventCommand(EventEnum e, Command *c)
+          : m_Event(e), m_Command(c), m_ITKTag(std::numeric_limits<unsigned long>::max())
+          {}
+        EventEnum     m_Event;
+        Command *     m_Command;
+
+        // set to max if currently not registered
+        unsigned long m_ITKTag;
+
+        inline bool operator==(const EventCommand &o) const
+          { return m_Command == o.m_Command; }
+        inline bool operator<(const EventCommand &o) const
+          { return m_Command < o.m_Command; }
+      };
+
       // method called before filter update to set parameters and
       // connect commands.
       virtual void PreUpdate( itk::ProcessObject *p );
 
-      // overidable method to add a command.
-      virtual void PreUpdateAddObserver( itk::ProcessObject *p, const itk::EventObject &, itk::Command *);
+      // overridable method to add a command, the return value is
+      // placed in the m_ITKTag of the EventCommand object.
+      virtual unsigned long AddITKObserver(const itk::EventObject &, itk::Command *);
+
+      // overridable method to remove a command
+      virtual void RemoveITKObserver( EventCommand &e );
+
+      // Create an ITK EventObject from the SimpleITK enumerated type.
+      static const itk::EventObject &GetITKEventObject(EventEnum e);
 
       // returns the current active process, if no active process then
       // an exception is throw.
@@ -214,6 +266,57 @@ namespace rtk {
       // references between command and process objects.
       virtual void onCommandDelete(const rtk::simple::Command *cmd) throw();
       #endif
+
+
+      template< class TImageType >
+        static typename TImageType::ConstPointer CastImageToITK( const Image &img )
+      {
+        typename TImageType::ConstPointer itkImage =
+          dynamic_cast < const TImageType* > ( img.GetITKBase() );
+
+        if ( itkImage.IsNull() )
+          {
+          srtkExceptionMacro( "Unexpected template dispatch error!" );
+          }
+        return itkImage;
+      }
+
+      template< class TImageType >
+        static Image CastITKToImage( TImageType *img )
+      {
+        return Image(img);
+      }
+
+#ifndef SWIG
+      template< class TPixelType, unsigned int VImageDimension, unsigned int  VLength,
+                template<typename, unsigned int> class TVector >
+#ifdef RTK_USE_CUDA
+        static Image CastITKToImage( itk::CudaImage< TVector< TPixelType, VLength >, VImageDimension> *img )
+#else
+        static Image CastITKToImage( itk::Image< TVector< TPixelType, VLength >, VImageDimension> *img )
+#endif
+      {
+        typedef itk::VectorImage< TPixelType, VImageDimension > VectorImageType;
+
+        size_t numberOfElements = img->GetBufferedRegion().GetNumberOfPixels();
+        typename VectorImageType::InternalPixelType* buffer = reinterpret_cast<typename VectorImageType::InternalPixelType*>( img->GetPixelContainer()->GetBufferPointer() );
+
+        // Unlike an image of Vectors a VectorImage's container is a
+        // container of TPixelType, whos size is the image's number of
+        // pixels * number of pixels per component
+        numberOfElements *= VImageDimension;
+
+        typename VectorImageType::Pointer out = VectorImageType::New();
+
+        // Set the image's pixel container to import the pointer provided.
+        out->GetPixelContainer()->SetImportPointer(buffer, numberOfElements, true );
+        img->GetPixelContainer()->ContainerManageMemoryOff();
+        out->CopyInformation( img );
+        out->SetRegions( img->GetBufferedRegion() );
+
+        return Image(out.GetPointer());
+      }
+#endif
 
       /**
        * Output operator to os with conversion to a printable type.
@@ -235,11 +338,22 @@ namespace rtk {
 
     private:
 
+      // Add command to active process object, the EventCommand's
+      // ITKTag must be unset as max or else an exception is
+      // thrown. The EventCommand's ITKTag is updated to the command
+      // registered to ITK's ProcessObject. It's assumed that there is
+      // an current active process
+      unsigned long AddObserverToActiveProcessObject( EventCommand &e );
+
+      // Remove the command from the active processes. Its is assumed
+      // that an active process exists. The tag is set to max after it
+      // is removed.
+      void RemoveObserverFromActiveProcessObject( EventCommand &e );
+
       bool m_Debug;
       unsigned int m_NumberOfThreads;
 
-      typedef std::pair<EventEnum, Command*> EventCommandPairType;
-      std::list<EventCommandPairType> m_Commands;
+      std::list<EventCommand> m_Commands;
 
       itk::ProcessObject *m_ActiveProcess;
 

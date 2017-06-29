@@ -47,29 +47,30 @@ namespace rtk {
       /** return user readable name fo the filter */
       virtual std::string GetName() const { return std::string("ImageFileReader"); }
 
-      Self& SetFileName ( std::string fn );
+      SRTK_RETURN_SELF_TYPE_HEADER SetFileName ( std::string fn );
       std::string GetFileName() const;
+
       Image Execute();
 
       ImageFileReader();
 
     protected:
 
-      template <class TImageType> Image ExecuteInternal ( void );
+      template <class TImageType> Image ExecuteInternal ( itk::ImageIOBase * );
 
     private:
 
       // function pointer type
-      typedef Image (Self::*MemberFunctionType)( void );
+      typedef Image (Self::*MemberFunctionType)( itk::ImageIOBase * );
 
       // friend to get access to executeInternal member
       friend struct detail::MemberFunctionAddressor<MemberFunctionType>;
-      std::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
+      nsstd::auto_ptr<detail::MemberFunctionFactory<MemberFunctionType> > m_MemberFactory;
 
       std::string m_FileName;
     };
 
-    SRTKIO_EXPORT Image ReadImage ( std::string filename );
+  SRTKIO_EXPORT Image ReadImage ( std::string filename, PixelIDValueEnum outputPixelType = srtkUnknown );
   }
 }
 

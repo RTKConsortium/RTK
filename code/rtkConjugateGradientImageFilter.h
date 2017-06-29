@@ -103,7 +103,7 @@ public:
   
 protected:
   ConjugateGradientImageFilter();
-  ~ConjugateGradientImageFilter() ITK_OVERRIDE {}
+  ~ConjugateGradientImageFilter() {}
 
   OutputImagePointer GetX();
   OutputImagePointer GetB();

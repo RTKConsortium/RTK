@@ -71,7 +71,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();
-  ~ThreeDCircularProjectionGeometryXMLFileReader() ITK_OVERRIDE { };
+  ~ThreeDCircularProjectionGeometryXMLFileReader() {}
 
   /** Callback function -- called from XML parser with start-of-element
    * information.
@@ -103,6 +103,10 @@ private:
   double m_SourceToDetectorDistance;
   double m_ProjectionOffsetX;
   double m_ProjectionOffsetY;
+  double m_CollimationUInf;
+  double m_CollimationUSup;
+  double m_CollimationVInf;
+  double m_CollimationVSup;
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;
@@ -142,7 +146,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileWriter() {};
-  ~ThreeDCircularProjectionGeometryXMLFileWriter() ITK_OVERRIDE {};
+  ~ThreeDCircularProjectionGeometryXMLFileWriter() {}
   
   /** If all values are equal in v, write first value (if not 0.) in
       output file with parameter value s and return true. Return false
@@ -150,7 +154,8 @@ protected:
    */
   bool WriteGlobalParameter(std::ofstream &output, const std::string &indent,
                             const std::vector<double> &v, const std::string &s,
-                            bool convertToDegrees=false);
+                            bool convertToDegrees=false,
+                            double defval=0.);
 
   /** Write projection specific parameter with name s. */
   void WriteLocalParameter(std::ofstream &output, const std::string &indent,

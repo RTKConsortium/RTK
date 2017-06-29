@@ -8,31 +8,63 @@
 # Additionally it give the option to wrap LUA.
 #
 
+include(srtkTargetLinkLibrariesWithDynamicLookup)
 
-# for wrapping to wrok correctly fPIC is needed on certain system.
-macro(check_PIC_flag Language)
-  string( TOUPPER ${Language} LANGUAGE )
-  if ( UNIX AND NOT APPLE AND WRAP_${LANGUAGE} )
-    if ( NOT ${CMAKE_CXX_FLAGS} MATCHES "-fPIC")
-      message ( FATAL_ERROR "${Language} wrapping requires CMAKE_CXX_FLAGS (or equivalent) to include -fPIC and RTK built with this flag." )
-    endif()
+#
+# Macro to set "_QUIET" and "_QUIET_LIBRARY" based on the first
+# argument being defined and true, to either REQUIRED or QUIET.
+#
+macro(set_QUIET var)
+  if ( DEFINED  ${var} AND ${var} )
+    set( _QUIET "REQUIRED" )
+  else()
+    set( _QUIET "QUIET" )
+  endif()
+  if ( SRTK_UNDEFINED_SYMBOLS_ALLOWED )
+    set( _QUIET_LIBRARY "QUIET" )
+  else()
+    set( _QUIET_LIBRARY ${_QUIET} )
   endif()
 endmacro()
-
 
 #
 # Setup the option for each language
 #
-option ( WRAP_LUA "Wrap Lua" OFF )
+set_QUIET( WRAP_LUA )
+if (CMAKE_VERSION VERSION_LESS "3")
+  find_package ( Lua51 ${_QUIET} )
+  if ( NOT LUA_FOUND )
+    find_package ( Lua50 ${_QUIET} )
+  endif()
+else()
+  find_package ( Lua ${_QUIET} )
+endif()
+set( WRAP_LUA_DEFAULT OFF )
 
-find_package ( PythonInterp QUIET)
+set( LUA_ADDITIONAL_LIBRARIES "" CACHE STRING "Additional libraries which may be needed for lua such as readline.")
+mark_as_advanced( LUA_ADDITIONAL_LIBRARIES )
 
-# If you're not using python or it's the first time, be quiet
-if (NOT WRAP_PYTHON)
-  set(_QUIET "QUIET")
+option ( WRAP_LUA "Wrap Lua" ${WRAP_LUA_DEFAULT} )
+
+if ( WRAP_LUA )
+  find_package( LuaInterp REQUIRED )
+  list( APPEND SRTK_LANGUAGES_VARS
+    LUA_EXECUTABLE
+    LUA_LIBRARIES
+    LUA_INCLUDE_DIR
+    LUA_VERSION_STRING
+    LUA_MATH_LIBRARY
+    LUA_ADDITIONAL_LIBRARIES
+    )
 endif()
 
-find_package ( PythonLibs ${PYTHON_VERSION_STRING} EXACT ${_QUIET} )
+
+
+# If you're not using python or it's the first time, be quiet
+
+set_QUIET( WRAP_PYTHON )
+find_package ( PythonInterp ${_QUIET})
+find_package ( PythonLibs ${PYTHON_VERSION_STRING} EXACT ${_QUIET_LIBRARY} )
 
 if (PYTHON_VERSION_STRING VERSION_LESS 2.6)
   message( WARNING "Python version less that 2.6: \"${PYTHON_VERSION_STRING}\"." )
@@ -44,114 +76,136 @@ if ( PYTHONLIBS_FOUND AND PYTHONINTERP_FOUND
 else()
   set( WRAP_PYTHON_DEFAULT OFF )
 endif()
-list( APPEND SRTK_LANGUAGES_VARS
-  PYTHON_DEBUG_LIBRARY
-  PYTHON_EXECUTABLE
-  PYTHON_LIBRARY
-  PYTHON_INCLUDE_DIR
-#  PYTHON_INCLUDE_PATH ( deprecated )
-   )
+
+option( WRAP_PYTHON "Wrap Python" ${WRAP_PYTHON_DEFAULT} )
+
+if ( WRAP_PYTHON )
+  list( APPEND SRTK_LANGUAGES_VARS
+    PYTHON_DEBUG_LIBRARY
+    PYTHON_EXECUTABLE
+    PYTHON_LIBRARY
+    PYTHON_INCLUDE_DIR
+    #  PYTHON_INCLUDE_PATH ( deprecated )
+    )
 # Debian "jessie" has this additional variable required to match
 # python versions.
-if(PYTHON_INCLUDE_DIR2)
+  if(PYTHON_INCLUDE_DIR2)
+    list( APPEND SRTK_LANGUAGES_VARS
+      PYTHON_INCLUDE_DIR2
+      )
+  endif()
+endif ()
+
+
+
+set_QUIET( WRAP_JAVA )
+find_package ( Java COMPONENTS Development Runtime ${_QUIET} )
+find_package ( JNI ${_QUIET} )
+set( WRAP_JAVA_DEFAULT OFF )
+
+option ( WRAP_JAVA "Wrap Java" ${WRAP_JAVA_DEFAULT} )
+
+if ( WRAP_JAVA )
   list( APPEND SRTK_LANGUAGES_VARS
-    PYTHON_INCLUDE_DIR2
+    Java_JAVA_EXECUTABLE
+    Java_JAVAC_EXECUTABLE
+    Java_JAR_EXECUTABLE
+    Java_JAVADOC_EXECUTABLE
+    Java_JAVAH_EXECUTABLE
+    Java_VERSION_STRING
+    Java_VERSION_MAJOR
+    Java_VERSION_MINOR
+    Java_VERSION_PATCH
+    Java_VERSION_TWEAK
+    Java_VERSION
+    Java_INCLUDE_DIRS
+    Java_LIBRARIES
+    JNI_INCLUDE_DIRS
+    JNI_LIBRARIES
+    JAVA_AWT_LIBRARY
+    JAVA_JVM_LIBRARY
+    JAVA_INCLUDE_PATH
+    JAVA_INCLUDE_PATH2
+    JAVA_AWT_INCLUDE_PATH
     )
 endif()
-option( WRAP_PYTHON "Wrap Python" ${WRAP_PYTHON_DEFAULT} )
-check_PIC_flag ( Python )
 
-find_package ( Java COMPONENTS Development Runtime QUIET )
-find_package ( JNI QUIET )
-if ( ${JAVA_FOUND} AND ${JNI_FOUND} )
-  set( WRAP_JAVA_DEFAULT ON )
-else ()
-  set( WRAP_JAVA_DEFAULT OFF )
-endif ()
-list( APPEND SRTK_LANGUAGES_VARS
-  Java_JAVA_EXECUTABLE
-  Java_JAVAC_EXECUTABLE
-  Java_JAR_EXECUTABLE
-  Java_VERSION_STRING
-  Java_VERSION_MAJOR
-  Java_VERSION_MINOR
-  Java_VERSION_PATCH
-  Java_VERSION_TWEAK
-  Java_VERSION
-  Java_INCLUDE_DIRS
-  Java_LIBRARIES
-  JNI_INCLUDE_DIRS
-  JNI_LIBRARIES
-  JAVA_AWT_LIBRARY
-  JAVA_JVM_LIBRARY
-  JAVA_INCLUDE_PATH
-  JAVA_INCLUDE_PATH2
-  JAVA_AWT_INCLUDE_PATH
 
-  )
-option ( WRAP_JAVA "Wrap Java" ${WRAP_JAVA_DEFAULT} )
-check_PIC_flag ( Java )
+set_QUIET(WRAP_TCL)
 
-find_package ( TCL QUIET )
-#if ( ${TCL_FOUND} )
-#  set ( WRAP_TCL_DEFAULT ON )
-#else ()
+find_package ( TCL ${_QUIET} )
+
 set ( WRAP_TCL_DEFAULT OFF )
-#endif ()
-list( APPEND SRTK_LANGUAGES_VARS
-  TCL_LIBRARY
-  TCL_INCLUDE_PATH
-  TCL_TCLSH
-  TK_LIBRARY
-  TK_INCLUDE_PATH
-  TK_WISH )
+
 option ( WRAP_TCL "Wrap Tcl" ${WRAP_TCL_DEFAULT} )
 
-find_package ( Ruby QUIET )
-if ( ${RUBY_FOUND} )
-  set ( WRAP_RUBY_DEFAULT ON )
-else ()
-  set ( WRAP_RUBY_DEFAULT OFF )
-endif ()
-check_PIC_flag ( Ruby )
-list( APPEND SRTK_LANGUAGES_VARS
-  RUBY_EXECUTABLE
-  RUBY_INCLUDE_DIRS
-  RUBY_LIBRARY
-  RUBY_VERSION
-  RUBY_FOUND
-  RUBY_INCLUDE_PATH )
-option ( WRAP_RUBY "Wrap Ruby" ${WRAP_RUBY_DEFAULT} )
-check_PIC_flag ( Ruby )
-
-find_package( CSharp QUIET )
-if ( ${CSHARP_FOUND} AND NOT MINGW )
-  set ( WRAP_CSHARP_DEFAULT ON )
-else ()
-  set ( WRAP_CSHARP_DEFAULT OFF )
-endif ()
-list( APPEND SRTK_LANGUAGES_VARS
-  CSHARP_COMPILER
-  CSHARP_INTERPRETER
-  CSHARP_PLATFORM
-)
-option ( WRAP_CSHARP "Wrap C#" ${WRAP_CSHARP_DEFAULT} )
-
-find_package(R QUIET)
-if ( ${R_FOUND} AND NOT WIN32 )
-  set ( WRAP_R_DEFAULT ON )
-else()
-  set ( WRAP_R_DEFAULT OFF )
+if ( WRAP_TCL )
+  list( APPEND SRTK_LANGUAGES_VARS
+    TCL_LIBRARY
+    TCL_INCLUDE_PATH
+    TCL_TCLSH
+    TK_LIBRARY
+    TK_INCLUDE_PATH
+    TK_WISH
+    )
 endif()
 
 
-list( APPEND SRTK_LANGUAGES_VARS
- R_INCLUDE_DIR
- R_LIBRARIES
- R_LIBRARY_BASE
- R_COMMAND
- RSCRIPT_EXECUTABLE )
+set_QUIET( WRAP_RUBY )
+
+find_package ( Ruby ${_QUIET} )
+set ( WRAP_RUBY_DEFAULT OFF )
+
+option ( WRAP_RUBY "Wrap Ruby" ${WRAP_RUBY_DEFAULT} )
+
+if ( WRAP_RUBY )
+  list( APPEND SRTK_LANGUAGES_VARS
+    RUBY_EXECUTABLE
+    RUBY_INCLUDE_DIRS
+    RUBY_LIBRARY
+    RUBY_VERSION
+    RUBY_FOUND
+    RUBY_INCLUDE_PATH
+    )
+endif()
+
+
+if (DEFINED  WRAP_CSHARP AND WRAP_CSHARP)
+  set(_QUIET "REQUIRED")
+else()
+  set(_QUIET "QUIET")
+endif()
+
+find_package( CSharp ${_QUIET} )
+set ( WRAP_CSHARP_DEFAULT OFF )
+
+option ( WRAP_CSHARP "Wrap C#" ${WRAP_CSHARP_DEFAULT} )
+
+if ( WRAP_CSHARP )
+  list( APPEND SRTK_LANGUAGES_VARS
+    CSHARP_COMPILER
+    CSHARP_INTERPRETER
+    CSHARP_PLATFORM
+    )
+endif()
+
+
+set_QUIET( WRAP_R )
+
+find_package(R ${_QUIET})
+set ( WRAP_R_DEFAULT OFF )
+
 option ( WRAP_R "Wrap R" ${WRAP_R_DEFAULT} )
+
+if ( WRAP_R )
+  list( APPEND SRTK_LANGUAGES_VARS
+    R_INCLUDE_DIR
+    R_LIBRARIES
+    R_LIBRARY_BASE
+    R_COMMAND
+    RSCRIPT_EXECUTABLE )
+endif()
+
 
 if( WIN32 )
   mark_as_advanced( WRAP_R )
