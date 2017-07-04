@@ -52,7 +52,7 @@ template< class TInputImage, class TOutputImage, unsigned char bitShift >
 void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::BeforeThreadedGenerateData()
 {
-  m_NBins = (std::vector<unsigned int>::size_type)(m_MaxPixelValue+1 >>bitShift);
+  m_NBins = (std::vector<unsigned int>::size_type)( (m_MaxPixelValue+1) >>bitShift);
   m_Imax = m_MaxPixelValue;
   m_Histogram.resize(m_NBins, 0);
 
