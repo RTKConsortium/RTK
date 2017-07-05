@@ -166,7 +166,7 @@ JosephBackProjectionImageFilter<TInputImage,
   // Must process projections one by one, otherwise two threads
   // back projecting different slabs of two opposite projections
   // may collide because of the cone angle
-  for (unsigned int proj=0; proj<inputRegionForThread.GetSize()[2]; proj++)
+  for (unsigned int proj=inputRegionForThread.GetIndex()[2]; proj<inputRegionForThread.GetIndex()[2]+inputRegionForThread.GetSize()[2]; proj++)
     {
     // Process even slabs first, then odd slabs,
     // to avoid collisions between threads
