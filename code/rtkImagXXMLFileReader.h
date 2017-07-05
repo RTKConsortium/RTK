@@ -57,7 +57,7 @@ public:
 
 protected:
   ImagXXMLFileReader() {m_OutputObject = &m_Dictionary;}
-  ~ImagXXMLFileReader() ITK_OVERRIDE {}
+  ~ImagXXMLFileReader() {}
 
   void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
 

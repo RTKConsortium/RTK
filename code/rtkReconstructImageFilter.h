@@ -187,7 +187,7 @@ public:
 
 protected:
     ReconstructImageFilter();
-    ~ReconstructImageFilter() ITK_OVERRIDE {}
+    ~ReconstructImageFilter() {}
 
     void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
 

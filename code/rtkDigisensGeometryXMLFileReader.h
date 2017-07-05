@@ -54,8 +54,7 @@ public:
 
 protected:
   DigisensGeometryXMLFileReader();
-  ~DigisensGeometryXMLFileReader() ITK_OVERRIDE {
-  }
+  ~DigisensGeometryXMLFileReader() {}
 
   void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
 

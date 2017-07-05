@@ -81,7 +81,7 @@ public:
 
 protected:
   SheppLoganPhantomFilter();
-  ~SheppLoganPhantomFilter() ITK_OVERRIDE {};
+  ~SheppLoganPhantomFilter() {}
 
   void GenerateData() ITK_OVERRIDE;
   void SetEllipsoid(typename REIType::Pointer rei,

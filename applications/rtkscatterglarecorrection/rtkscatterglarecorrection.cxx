@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
     }
   else
     {
-    coef.push_back(0.0787f);
-    coef.push_back(106.244f);
+    std::cerr << "--coefficients requires exactly 2 coefficients" << std::endl;
+    return EXIT_FAILURE;
     }
 
 #ifdef RTK_USE_CUDA

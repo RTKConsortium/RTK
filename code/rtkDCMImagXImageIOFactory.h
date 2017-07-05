@@ -64,7 +64,7 @@ public:
 
 protected:
   DCMImagXImageIOFactory();
-  ~DCMImagXImageIOFactory() ITK_OVERRIDE {}
+  ~DCMImagXImageIOFactory() {}
   typedef DCMImagXImageIOFactory myProductType;
   const myProductType* m_MyProduct;
 

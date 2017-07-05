@@ -101,6 +101,8 @@ void SubSelectImageFilter<ProjectionStackType>
   // because downstream forward and backprojection filters will need this geometry
   // to compute their output information and input requested region
   m_OutputGeometry->Clear();
+  m_OutputGeometry->SetRadiusCylindricalDetector(m_InputGeometry->GetRadiusCylindricalDetector());
+
   for(unsigned long i=0; i < m_SelectedProjections.size(); i++)
     {
     if (m_SelectedProjections[i])

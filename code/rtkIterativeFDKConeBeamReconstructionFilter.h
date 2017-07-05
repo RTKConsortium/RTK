@@ -180,7 +180,7 @@ public:
 
 protected:
   IterativeFDKConeBeamReconstructionFilter();
-  ~IterativeFDKConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~IterativeFDKConeBeamReconstructionFilter() {}
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

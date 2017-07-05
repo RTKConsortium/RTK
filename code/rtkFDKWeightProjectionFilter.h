@@ -75,7 +75,7 @@ public:
 
 protected:
   FDKWeightProjectionFilter()  {}
-  ~FDKWeightProjectionFilter() ITK_OVERRIDE {}
+  ~FDKWeightProjectionFilter() {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

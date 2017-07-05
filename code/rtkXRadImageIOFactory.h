@@ -63,7 +63,7 @@ public:
 
 protected:
   XRadImageIOFactory();
-  ~XRadImageIOFactory() ITK_OVERRIDE {}
+  ~XRadImageIOFactory() {}
 
   typedef XRadImageIOFactory myProductType;
   const myProductType* m_MyProduct;

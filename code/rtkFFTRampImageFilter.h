@@ -127,7 +127,7 @@ public:
   
 protected:
   FFTRampImageFilter();
-  ~FFTRampImageFilter() ITK_OVERRIDE {}
+  ~FFTRampImageFilter() {}
 
   virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

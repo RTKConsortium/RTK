@@ -121,13 +121,13 @@ protected:
   JosephBackProjectionImageFilter();
   ~JosephBackProjectionImageFilter() ITK_OVERRIDE {}
 
-//  void GenerateData() ITK_OVERRIDE;
   void ThreadedGenerateData( const OutputImageRegionType& inputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
   unsigned int SplitRequestedRegion(unsigned int i, unsigned int pieces, OutputImageRegionType &splitRegion) ITK_OVERRIDE;
   const itk::ImageRegionSplitterBase* GetImageRegionSplitter() const;
 
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
+
   // Thread synchronization tool
   itk::Barrier::Pointer m_Barrier;
 

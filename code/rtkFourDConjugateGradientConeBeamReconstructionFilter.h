@@ -161,7 +161,7 @@ public:
   itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
-  ~FourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~FourDConjugateGradientConeBeamReconstructionFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

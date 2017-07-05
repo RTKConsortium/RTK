@@ -190,7 +190,7 @@ protected:
   RayCastInterpolateImageFunction();
 
   /// Destructor
-  ~RayCastInterpolateImageFunction() ITK_OVERRIDE {};
+  ~RayCastInterpolateImageFunction() {}
 
   /// Print the object
   void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;

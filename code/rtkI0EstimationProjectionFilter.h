@@ -102,7 +102,7 @@ public:
 
 protected:
   I0EstimationProjectionFilter();
-  ~I0EstimationProjectionFilter() ITK_OVERRIDE {}
+  ~I0EstimationProjectionFilter() {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

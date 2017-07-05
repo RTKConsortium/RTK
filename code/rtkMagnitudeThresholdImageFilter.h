@@ -94,7 +94,7 @@ public:
     
 protected:
   MagnitudeThresholdImageFilter();
-  ~MagnitudeThresholdImageFilter() ITK_OVERRIDE {}
+  ~MagnitudeThresholdImageFilter() {}
 
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             itk::ThreadIdType threadId) ITK_OVERRIDE;

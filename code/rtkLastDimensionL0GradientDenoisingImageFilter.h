@@ -65,7 +65,7 @@ public:
     
 protected:
     LastDimensionL0GradientDenoisingImageFilter();
-    ~LastDimensionL0GradientDenoisingImageFilter() ITK_OVERRIDE {}
+    ~LastDimensionL0GradientDenoisingImageFilter() {}
 
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

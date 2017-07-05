@@ -78,7 +78,7 @@ public:
 
 protected:
   FDKWarpBackProjectionImageFilter():m_DeformationUpdateError(false) {};
-  ~FDKWarpBackProjectionImageFilter() ITK_OVERRIDE {};
+  ~FDKWarpBackProjectionImageFilter() {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

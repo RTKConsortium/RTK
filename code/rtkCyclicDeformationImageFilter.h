@@ -93,7 +93,7 @@ public:
 
 protected:
   CyclicDeformationImageFilter(): m_Frame(0) {}
-  ~CyclicDeformationImageFilter() ITK_OVERRIDE {}
+  ~CyclicDeformationImageFilter() {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
