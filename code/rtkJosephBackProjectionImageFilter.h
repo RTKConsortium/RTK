@@ -22,7 +22,7 @@
 #include "rtkConfiguration.h"
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include <itkImageRegionSplitterDirection.h>
+#include "rtkImageRegionSplitterArbitraryDimension.h"
 #include <itkBarrier.h>
 
 namespace rtk
@@ -128,10 +128,9 @@ protected:
 
   unsigned int GetOptimalNumberOfSplits();
 
-  itk::ImageRegionSplitterDirection::Pointer m_Splitter;
-  unsigned int m_SplittingAxis;
+  rtk::ImageRegionSplitterArbitraryDimension::Pointer m_Splitter;
+  unsigned int m_SplitAxis;
   unsigned int m_NumberOfSubsplits;
-
 
   // Thread synchronization tool
   itk::Barrier::Pointer m_Barrier;

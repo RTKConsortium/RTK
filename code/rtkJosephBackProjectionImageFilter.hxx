@@ -40,8 +40,7 @@ JosephBackProjectionImageFilter<TInputImage,
 {
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   // Set the direction along which the requested region should NOT be split
-  m_Splitter = itk::ImageRegionSplitterDirection::New();
-  m_Splitter->SetDirection(TInputImage::ImageDimension - 1);
+  m_Splitter = rtk::ImageRegionSplitterArbitraryDimension::New();
   m_NumberOfSubsplits = 4;
 #else
   // Old versions of ITK (before 4.4) do not have the ImageRegionSplitterDirection
@@ -150,9 +149,10 @@ JosephBackProjectionImageFilter<TInputImage,
     normalizedExtent[i] = extent[i] / spacing[i];
     }
   if(normalizedExtent[0] > normalizedExtent[1])
-    m_SplittingAxis = 0;
+    m_SplitAxis = 0;
   else
-    m_SplittingAxis = 1;
+    m_SplitAxis = 1;
+  m_Splitter->SetSplitAxis(m_SplitAxis);
 
   // Compute the radius of a bounding ball around the volume
   float volumeRadius = 0;
@@ -169,14 +169,14 @@ JosephBackProjectionImageFilter<TInputImage,
 
   // Make sure we are not requesting too many threads for the dimension along which we split
   unsigned int requestedThreads = this->GetNumberOfThreads();
-  while ((requestedThreads * m_NumberOfSubsplits > buffReg.GetSize()[m_SplittingAxis]) && (requestedThreads > 1))
+  while ((requestedThreads * m_NumberOfSubsplits > buffReg.GetSize()[m_SplitAxis]) && (requestedThreads > 1))
     requestedThreads /= 2;
 
   // If the size along the dimension we want to split is too small, and we can't use multiple threads, revert to single threading. Otherwise, go on
   if (requestedThreads > 1)
     {
     // Initial estimate, using as many splits as threads available, and m_NumberOfSubsplits subsplits (default is 4)
-    distanceBetweenSlabs = buffReg.GetSize()[m_SplittingAxis] * this->GetInput(1)->GetSpacing()[m_SplittingAxis] * (m_NumberOfSubsplits-1) / (m_NumberOfSubsplits * requestedThreads);
+    distanceBetweenSlabs = buffReg.GetSize()[m_SplitAxis] * this->GetInput(1)->GetSpacing()[m_SplitAxis] * (m_NumberOfSubsplits-1) / (m_NumberOfSubsplits * requestedThreads);
     GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
     if( !geometry )
       {
@@ -185,7 +185,7 @@ JosephBackProjectionImageFilter<TInputImage,
     float sid = geometry->GetSourceToIsocenterDistances()[0];
     float sdd = geometry->GetSourceToDetectorDistances()[0];
     projectedDistanceBetweenSlabs = distanceBetweenSlabs * (sid - volumeRadius) / sdd;
-    ratio = projectedDistanceBetweenSlabs / spacing[m_SplittingAxis];
+    ratio = projectedDistanceBetweenSlabs / spacing[m_SplitAxis];
 
     // In order to be safe and "compensate" for all the approximations, we should strive to obtain a ratio of 4 or more.
     if (ratio < 4.0)
@@ -214,7 +214,7 @@ JosephBackProjectionImageFilter<TInputImage,
   // It will process the first half of its slab, wait for the other threads, and process the second half
   // The following code computes the splitting in half (along the same dimension as SplitRequestedRegion did)
   typename TInputImage::RegionType singleProjectionInputRegionForThread;
-  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+  rtk::ImageRegionSplitterArbitraryDimension::Pointer splitter = rtk::ImageRegionSplitterArbitraryDimension::New();
 
   GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
   if( !geometry )
@@ -247,9 +247,8 @@ JosephBackProjectionImageFilter<TInputImage,
       singleProjectionInputRegionForThread = inputRegionForThread;
       singleProjectionInputRegionForThread.SetSize(2,1);
       singleProjectionInputRegionForThread.SetIndex(2,proj);
-      splitter->SetDirection(2);
+      splitter->SetSplitAxis(m_SplitAxis);
       splitter->GetSplit(subsplit, m_NumberOfSubsplits, singleProjectionInputRegionForThread);
-
 
       // Iterators on projections input
       typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;

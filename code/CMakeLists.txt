@@ -43,7 +43,8 @@ set(RTK_LIBRARY_FILES
             rtkOraGeometryReader.cxx
             rtkOraImageIO.cxx
             rtkOraImageIOFactory.cxx
-	    rtkConditionalMedianImageFilter.cxx)
+	    rtkConditionalMedianImageFilter.cxx
+	    rtkImageRegionSplitterArbitraryDimension.cxx)
 
 if(RTK_TIME_EACH_FILTER)
     set(RTK_LIBRARY_FILES
