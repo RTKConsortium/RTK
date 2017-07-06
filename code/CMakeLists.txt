@@ -50,7 +50,8 @@ set(RTK_LIBRARY_FILES
     rtkIterativeConeBeamReconstructionFilter.cxx
     rtkConjugateGradientGetR_kPlusOneImageFilter.cxx
     rtkConditionalMedianImageFilter.cxx
-    rtkSumOfSquaresImageFilter.cxx)
+    rtkSumOfSquaresImageFilter.cxx
+    rtkImageRegionSplitterArbitraryDimension.cxx)
 
 if(RTK_TIME_EACH_FILTER)
     set(RTK_LIBRARY_FILES

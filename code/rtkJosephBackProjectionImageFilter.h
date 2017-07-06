@@ -22,6 +22,8 @@
 #include "rtkConfiguration.h"
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkImageRegionSplitterArbitraryDimension.h"
+#include <itkBarrier.h>
 
 #include <itkVectorImage.h>
 namespace rtk
@@ -119,10 +121,22 @@ public:
 
 
 protected:
-  JosephBackProjectionImageFilter() {}
-  ~JosephBackProjectionImageFilter() {}
+  JosephBackProjectionImageFilter();
+  ~JosephBackProjectionImageFilter() ITK_OVERRIDE {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& inputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  unsigned int SplitRequestedRegion(unsigned int i, unsigned int pieces, OutputImageRegionType &splitRegion) ITK_OVERRIDE;
+  const itk::ImageRegionSplitterBase* GetImageRegionSplitter() const;
+
+  unsigned int GetOptimalNumberOfSplits();
+
+  rtk::ImageRegionSplitterArbitraryDimension::Pointer m_Splitter;
+  unsigned int m_SplitAxis;
+  unsigned int m_NumberOfSubsplits;
+
+  // Thread synchronization tool
+  itk::Barrier::Pointer m_Barrier;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
