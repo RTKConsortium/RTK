@@ -150,7 +150,7 @@ function(git_describe _var)
 
   #message(STATUS "Arguments to execute_process: ${ARGN}")
 
-  execute_process(COMMAND "${GIT_EXECUTABLE}" describe ${hash} ${ARGN}
+  execute_process(COMMAND "${GIT_EXECUTABLE}" describe ${hash} ${ARGN} "--tags"
     WORKING_DIRECTORY "${src_dir}"
     RESULT_VARIABLE res
     OUTPUT_VARIABLE out
