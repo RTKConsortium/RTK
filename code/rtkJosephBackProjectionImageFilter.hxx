@@ -183,7 +183,7 @@ JosephBackProjectionImageFilter<TInputImage,
       bool isSingleProjectionRegionSplitAlongDimZero = (inputRegionForThread.GetSize()[0] != singleProjectionInputRegionForThread.GetSize()[0]);
       if (isBufferedRegionSplitAlongDimOne && isSingleProjectionRegionSplitAlongDimZero)
         {
-        itkWarningMacro(<< "During JosephBackProjectionImageFilter: splitting pattern may result in several threads competing for write access to the same voxels. Consider using less threads");
+        itkGenericExceptionMacro(<< "During JosephBackProjectionImageFilter: splitting pattern may result in several threads competing for write access to the same voxels. Consider using less threads");
         }
 
       // Iterators on projections input
@@ -196,28 +196,60 @@ JosephBackProjectionImageFilter<TInputImage,
 
       // Create intersection functions, one for each possible main direction
       typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
-      typename RBIFunctionType::Pointer rbi[Dimension];
-      for(unsigned int j=0; j<Dimension; j++)
+      typename RBIFunctionType::Pointer rbi = RBIFunctionType::New();
+      typename RBIFunctionType::VectorType boxMin, boxMax;
+      for(unsigned int i=0; i<Dimension; i++)
         {
-        rbi[j] = RBIFunctionType::New();
-        typename RBIFunctionType::VectorType boxMin, boxMax;
-        for(unsigned int i=0; i<Dimension; i++)
-          {
-          boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
-          boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
-                      this->GetOutput()->GetRequestedRegion().GetSize()[i] - 1;
-          }
-        rbi[j]->SetBoxMin(boxMin);
-        rbi[j]->SetBoxMax(boxMax);
+        boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
+        boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
+                    this->GetOutput()->GetRequestedRegion().GetSize()[i] - 1;
         }
+      rbi->SetBoxMin(boxMin);
+      rbi->SetBoxMax(boxMax);
 
       typename RBIFunctionType::VectorType stepMM, np, fp;
 
       // TODO: Check that the voxels are small enough that the ones closest to the source
       // are not updated by several slabs at a time
+
+      // Very crude check at the moment: assumes a flat and centered detector,
+      // a centered volume of which we calculate the bounding ball,
+      // and neglects the fact that off-center slabs are thinner
+      float volumeRadius = 0;
+      for (unsigned int dim=0; dim<Dimension; dim++)
+        {
+        float length = this->GetOutput()->GetRequestedRegion().GetSize()[dim] * this->GetOutput()->GetSpacing()[dim];
+        volumeRadius += length * length;
+        }
+      volumeRadius = sqrt(volumeRadius);
+
+      // Project the distance between two slabs onto the plane parallel to the detector
+      // and "at the entrance" of the bounding box ball (i.e. closest to the source)
+      float distanceBetweenSlabs, projectedDistanceBetweenSlabs, voxelSize;
+      float sid = geometry->GetSourceToIsocenterDistances()[0];
+      float sdd = geometry->GetSourceToDetectorDistances()[0];
+      bool isDistanceBetweenSlabsSufficient;
+      if(isBufferedRegionSplitAlongDimOne)
+        {
+        distanceBetweenSlabs = singleProjectionInputRegionForThread.GetSize()[1] * this->GetInput(1)->GetSpacing()[1];
+        projectedDistanceBetweenSlabs = distanceBetweenSlabs * (sid - volumeRadius) / sdd;
+        voxelSize = this->GetOutput()->GetSpacing()[1];
+        }
+      else
+        {
+        distanceBetweenSlabs = singleProjectionInputRegionForThread.GetSize()[0] * this->GetInput(1)->GetSpacing()[0];
+        projectedDistanceBetweenSlabs = distanceBetweenSlabs * (sid - volumeRadius) / sdd;
+        voxelSize = std::max(this->GetOutput()->GetSpacing()[0], this->GetOutput()->GetSpacing()[2]);
+        }
+      isDistanceBetweenSlabsSufficient = (projectedDistanceBetweenSlabs / voxelSize) > 1; // 1 would be enough if we had done no approximation, 2 is careful
+//      if (!isDistanceBetweenSlabsSufficient)
+//        {
+//        itkGenericExceptionMacro(<< "During JosephBackProjectionImageFilter: splitting pattern may result in several threads competing for write access to the same voxels. Consider using less threads");
+//        }
+      std::cout << isDistanceBetweenSlabsSufficient << std::endl;
+
       // TODO: If the voxels are too large, consider splitting inputRegionForThread into more than
       // two subregions
-
 
       // Go over each pixel of the projection
       for(unsigned int pix=0; pix<singleProjectionInputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next())
@@ -226,8 +258,7 @@ JosephBackProjectionImageFilter<TInputImage,
         typename InputRegionIterator::PointType dirVox = itIn->GetSourceToPixel();
 
         //Set source
-        for(unsigned int i=0; i<Dimension; i++)
-          rbi[i]->SetRayOrigin( sourcePosition );
+        rbi->SetRayOrigin( sourcePosition );
 
         // Select main direction
         unsigned int mainDir = 0;
@@ -240,17 +271,17 @@ JosephBackProjectionImageFilter<TInputImage,
           }
 
         // Test if there is an intersection
-        if( rbi[mainDir]->Evaluate(&dirVox[0]) &&
-            rbi[mainDir]->GetFarthestDistance()>=0. && // check if detector after the source
-            rbi[mainDir]->GetNearestDistance()<=1.)    // check if detector after or in the volume
+        if( rbi->Evaluate(&dirVox[0]) &&
+            rbi->GetFarthestDistance()>=0. && // check if detector after the source
+            rbi->GetNearestDistance()<=1.)    // check if detector after or in the volume
           {
           // Clip the casting between source and pixel of the detector
-          rbi[mainDir]->SetNearestDistance ( std::max(rbi[mainDir]->GetNearestDistance() , 0.) );
-          rbi[mainDir]->SetFarthestDistance( std::min(rbi[mainDir]->GetFarthestDistance(), 1.) );
+          rbi->SetNearestDistance ( std::max(rbi->GetNearestDistance() , 0.) );
+          rbi->SetFarthestDistance( std::min(rbi->GetFarthestDistance(), 1.) );
 
           // Compute and sort intersections: (n)earest and (f)arthest (p)points
-          np = rbi[mainDir]->GetNearestPoint();
-          fp = rbi[mainDir]->GetFarthestPoint();
+          np = rbi->GetNearestPoint();
+          fp = rbi->GetFarthestPoint();
           if(np[mainDir]>fp[mainDir])
             std::swap(np, fp);
 
@@ -264,10 +295,10 @@ JosephBackProjectionImageFilter<TInputImage,
           if(notMainDirInf>notMainDirSup)
             std::swap(notMainDirInf, notMainDirSup);
 
-          const CoordRepType minx = rbi[mainDir]->GetBoxMin()[notMainDirInf];
-          const CoordRepType miny = rbi[mainDir]->GetBoxMin()[notMainDirSup];
-          const CoordRepType maxx = rbi[mainDir]->GetBoxMax()[notMainDirInf];
-          const CoordRepType maxy = rbi[mainDir]->GetBoxMax()[notMainDirSup];
+          const CoordRepType minx = rbi->GetBoxMin()[notMainDirInf];
+          const CoordRepType miny = rbi->GetBoxMin()[notMainDirSup];
+          const CoordRepType maxx = rbi->GetBoxMax()[notMainDirInf];
+          const CoordRepType maxy = rbi->GetBoxMax()[notMainDirSup];
 
           // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
           const int offsetx = offsets[notMainDirInf];
@@ -295,9 +326,9 @@ JosephBackProjectionImageFilter<TInputImage,
 
           if (fs == ns) //If the voxel is a corner, we can skip most steps
             {
-              BilinearSplatOnBorders(itIn->Get(), fp[mainDir] - np[mainDir], stepMM.GetNorm(),
-                                      pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
-                                      offsetx, offsety, minx, miny, maxx, maxy);
+            BilinearSplatOnBorders(itIn->Get(), fp[mainDir] - np[mainDir], stepMM.GetNorm(),
+                                    pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
+                                    offsetx, offsety, minx, miny, maxx, maxy);
             }
           else
             {
