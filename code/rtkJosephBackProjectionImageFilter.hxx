@@ -42,6 +42,7 @@ JosephBackProjectionImageFilter<TInputImage,
   // Set the direction along which the requested region should NOT be split
   m_Splitter = itk::ImageRegionSplitterDirection::New();
   m_Splitter->SetDirection(TInputImage::ImageDimension - 1);
+  m_NumberOfSubsplits = 4;
 #else
   // Old versions of ITK (before 4.4) do not have the ImageRegionSplitterDirection
   // and should run this filter with only one thread
@@ -63,7 +64,6 @@ JosephBackProjectionImageFilter<TInputImage,
 }
 #endif
 
-
 template <class TInputImage,
           class TOutputImage,
           class TSplatWeightMultiplication>
@@ -76,7 +76,7 @@ JosephBackProjectionImageFilter<TInputImage,
 const itk::ImageRegionSplitterBase * splitter = this->GetImageRegionSplitter();
 
 splitRegion = this->GetInput(1)->GetBufferedRegion();
-return splitter->GetSplit( i, pieces, splitRegion );
+return splitter->GetSplit( i, this->GetOptimalNumberOfSplits(), splitRegion );
 }
 
 template <class TInputImage,
@@ -88,37 +88,110 @@ JosephBackProjectionImageFilter<TInputImage,
                                 TSplatWeightMultiplication>
 ::BeforeThreadedGenerateData()
 {
-// Allocate the output image
-this->AllocateOutputs();
+  // Allocate the output image
+  this->AllocateOutputs();
 
-// Initialize output region with input region in case the filter is not in
-// place
-if(this->GetInput() != this->GetOutput() )
-  {
-  // Iterators on volume input and output
-  typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
-  InputRegionIterator itVolIn(this->GetInput(0), this->GetInput()->GetBufferedRegion());
-
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
-  OutputRegionIterator itVolOut(this->GetOutput(), this->GetInput()->GetBufferedRegion());
-
-  while(!itVolIn.IsAtEnd() )
+  // Initialize output region with input region in case the filter is not in
+  // place
+  if(this->GetInput() != this->GetOutput() )
     {
-    itVolOut.Set(itVolIn.Get() );
-    ++itVolIn;
-    ++itVolOut;
+    // Iterators on volume input and output
+    typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
+    InputRegionIterator itVolIn(this->GetInput(0), this->GetInput()->GetBufferedRegion());
+
+    typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+    OutputRegionIterator itVolOut(this->GetOutput(), this->GetInput()->GetBufferedRegion());
+
+    while(!itVolIn.IsAtEnd() )
+      {
+      itVolOut.Set(itVolIn.Get() );
+      ++itVolIn;
+      ++itVolOut;
+      }
     }
-  }
 
   // Instead of using GetNumberOfThreads, we need to split the image into the
   // number of regions that will actually be returned by
   // itkImageSource::SplitRequestedRegion. Sometimes this number is less than
   // the number of threads requested.
   OutputImageRegionType dummy;
-  unsigned int actualThreads = this->SplitRequestedRegion(0, this->GetNumberOfThreads(), dummy);
+  unsigned int actualThreads = this->SplitRequestedRegion(0, this->GetOptimalNumberOfSplits(), dummy);
 
   m_Barrier = itk::Barrier::New();
   m_Barrier->Initialize(actualThreads);
+}
+
+template <class TInputImage,
+          class TOutputImage,
+          class TSplatWeightMultiplication>
+unsigned int
+JosephBackProjectionImageFilter<TInputImage,
+                                TOutputImage,
+                                TSplatWeightMultiplication>
+::GetOptimalNumberOfSplits()
+{
+  // Very crude approximation at the moment: assumes a flat and centered detector,
+  // a centered volume of which we calculate the bounding ball,
+  // and neglects the fact that off-center slabs are thinner
+
+  const unsigned int Dimension = TInputImage::ImageDimension;
+  typename TInputImage::RegionType buffReg = this->GetInput(1)->GetBufferedRegion();
+  buffReg.SetSize(Dimension-1,1);
+
+  // Compute the best splitting axis
+  std::vector<float> extent(2);
+  std::vector<float> spacing(2);
+  std::vector<float> normalizedExtent(2);
+  spacing[0] = std::max(this->GetOutput()->GetSpacing()[0], this->GetOutput()->GetSpacing()[2]);
+  spacing[1] = this->GetOutput()->GetSpacing()[1];
+  for(unsigned int i=0; i<2; i++)
+    {
+    extent[i] = this->GetInput(1)->GetSpacing()[i] * buffReg.GetSize()[i];
+    normalizedExtent[i] = extent[i] / spacing[i];
+    }
+  if(normalizedExtent[0] > normalizedExtent[1])
+    m_SplittingAxis = 0;
+  else
+    m_SplittingAxis = 1;
+
+  // Compute the radius of a bounding ball around the volume
+  float volumeRadius = 0;
+  for (unsigned int dim=0; dim<Dimension; dim++)
+    {
+    float length = this->GetOutput()->GetRequestedRegion().GetSize()[dim] * this->GetOutput()->GetSpacing()[dim];
+    volumeRadius += length * length;
+    }
+  volumeRadius = sqrt(volumeRadius);
+
+  // Project the distance between two slabs onto the plane parallel to the detector
+  // and "at the entrance" of the bounding box ball (i.e. closest to the source)
+  float distanceBetweenSlabs, projectedDistanceBetweenSlabs, ratio;
+
+  // Make sure we are not requesting too many threads for the dimension along which we split
+  unsigned int requestedThreads = this->GetNumberOfThreads();
+  while ((requestedThreads * m_NumberOfSubsplits > buffReg.GetSize()[m_SplittingAxis]) && (requestedThreads > 1))
+    requestedThreads /= 2;
+
+  // If the size along the dimension we want to split is too small, and we can't use multiple threads, revert to single threading. Otherwise, go on
+  if (requestedThreads > 1)
+    {
+    // Initial estimate, using as many splits as threads available, and m_NumberOfSubsplits subsplits (default is 4)
+    distanceBetweenSlabs = buffReg.GetSize()[m_SplittingAxis] * this->GetInput(1)->GetSpacing()[m_SplittingAxis] * (m_NumberOfSubsplits-1) / (m_NumberOfSubsplits * requestedThreads);
+    GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
+    if( !geometry )
+      {
+      itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");
+      }
+    float sid = geometry->GetSourceToIsocenterDistances()[0];
+    float sdd = geometry->GetSourceToDetectorDistances()[0];
+    projectedDistanceBetweenSlabs = distanceBetweenSlabs * (sid - volumeRadius) / sdd;
+    ratio = projectedDistanceBetweenSlabs / spacing[m_SplittingAxis];
+
+    // In order to be safe and "compensate" for all the approximations, we should strive to obtain a ratio of 4 or more.
+    if (ratio < 4.0)
+      requestedThreads = floor((double) requestedThreads * ratio / 4.0);
+    }
+  return requestedThreads;
 }
 
 template <class TInputImage,
@@ -132,7 +205,6 @@ JosephBackProjectionImageFilter<TInputImage,
 {
   // Get the full buffered region in the input projections
   const unsigned int Dimension = TInputImage::ImageDimension;
-  typename TInputImage::RegionType buffReg = this->GetInput(1)->GetBufferedRegion();
   int offsets[3];
   offsets[0] = 1;
   offsets[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];
@@ -170,21 +242,14 @@ JosephBackProjectionImageFilter<TInputImage,
     {
     // Process even slabs first, then odd slabs,
     // to avoid collisions between threads
-    for (unsigned int evenOrOdd=0; evenOrOdd<2; evenOrOdd++)
+    for (unsigned int subsplit=0; subsplit<m_NumberOfSubsplits; subsplit++)
       {
       singleProjectionInputRegionForThread = inputRegionForThread;
       singleProjectionInputRegionForThread.SetSize(2,1);
       singleProjectionInputRegionForThread.SetIndex(2,proj);
       splitter->SetDirection(2);
-      splitter->GetSplit(evenOrOdd, 2, singleProjectionInputRegionForThread);
+      splitter->GetSplit(subsplit, m_NumberOfSubsplits, singleProjectionInputRegionForThread);
 
-      // Check that the split was performed along the same dimension as during this->SplitRequestedRegion()
-      bool isBufferedRegionSplitAlongDimOne = (buffReg.GetSize()[1] != inputRegionForThread.GetSize()[1]);
-      bool isSingleProjectionRegionSplitAlongDimZero = (inputRegionForThread.GetSize()[0] != singleProjectionInputRegionForThread.GetSize()[0]);
-      if (isBufferedRegionSplitAlongDimOne && isSingleProjectionRegionSplitAlongDimZero)
-        {
-        itkGenericExceptionMacro(<< "During JosephBackProjectionImageFilter: splitting pattern may result in several threads competing for write access to the same voxels. Consider using less threads");
-        }
 
       // Iterators on projections input
       typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
@@ -209,47 +274,6 @@ JosephBackProjectionImageFilter<TInputImage,
 
       typename RBIFunctionType::VectorType stepMM, np, fp;
 
-      // TODO: Check that the voxels are small enough that the ones closest to the source
-      // are not updated by several slabs at a time
-
-      // Very crude check at the moment: assumes a flat and centered detector,
-      // a centered volume of which we calculate the bounding ball,
-      // and neglects the fact that off-center slabs are thinner
-      float volumeRadius = 0;
-      for (unsigned int dim=0; dim<Dimension; dim++)
-        {
-        float length = this->GetOutput()->GetRequestedRegion().GetSize()[dim] * this->GetOutput()->GetSpacing()[dim];
-        volumeRadius += length * length;
-        }
-      volumeRadius = sqrt(volumeRadius);
-
-      // Project the distance between two slabs onto the plane parallel to the detector
-      // and "at the entrance" of the bounding box ball (i.e. closest to the source)
-      float distanceBetweenSlabs, projectedDistanceBetweenSlabs, voxelSize;
-      float sid = geometry->GetSourceToIsocenterDistances()[0];
-      float sdd = geometry->GetSourceToDetectorDistances()[0];
-      bool isDistanceBetweenSlabsSufficient;
-      if(isBufferedRegionSplitAlongDimOne)
-        {
-        distanceBetweenSlabs = singleProjectionInputRegionForThread.GetSize()[1] * this->GetInput(1)->GetSpacing()[1];
-        projectedDistanceBetweenSlabs = distanceBetweenSlabs * (sid - volumeRadius) / sdd;
-        voxelSize = this->GetOutput()->GetSpacing()[1];
-        }
-      else
-        {
-        distanceBetweenSlabs = singleProjectionInputRegionForThread.GetSize()[0] * this->GetInput(1)->GetSpacing()[0];
-        projectedDistanceBetweenSlabs = distanceBetweenSlabs * (sid - volumeRadius) / sdd;
-        voxelSize = std::max(this->GetOutput()->GetSpacing()[0], this->GetOutput()->GetSpacing()[2]);
-        }
-      isDistanceBetweenSlabsSufficient = (projectedDistanceBetweenSlabs / voxelSize) > 1; // 1 would be enough if we had done no approximation, 2 is careful
-//      if (!isDistanceBetweenSlabsSufficient)
-//        {
-//        itkGenericExceptionMacro(<< "During JosephBackProjectionImageFilter: splitting pattern may result in several threads competing for write access to the same voxels. Consider using less threads");
-//        }
-      std::cout << isDistanceBetweenSlabsSufficient << std::endl;
-
-      // TODO: If the voxels are too large, consider splitting inputRegionForThread into more than
-      // two subregions
 
       // Go over each pixel of the projection
       for(unsigned int pix=0; pix<singleProjectionInputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next())

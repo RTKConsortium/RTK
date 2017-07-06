@@ -126,7 +126,12 @@ protected:
   unsigned int SplitRequestedRegion(unsigned int i, unsigned int pieces, OutputImageRegionType &splitRegion) ITK_OVERRIDE;
   const itk::ImageRegionSplitterBase* GetImageRegionSplitter() const;
 
+  unsigned int GetOptimalNumberOfSplits();
+
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
+  unsigned int m_SplittingAxis;
+  unsigned int m_NumberOfSubsplits;
+
 
   // Thread synchronization tool
   itk::Barrier::Pointer m_Barrier;
