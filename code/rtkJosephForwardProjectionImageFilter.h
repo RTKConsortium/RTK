@@ -53,13 +53,14 @@ public:
     return !( *this != other );
   }
 
-  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+  inline void operator()( const ThreadIdType itkNotUsed(threadId),
                              const double itkNotUsed(stepLengthInVoxel),
                              const TCoordRepType weight,
                              const TInput *p,
                              const int i,
-                             const int itkNotUsed(vectorLength)) const
-  {  return (weight * p[i]); }
+                             const int itkNotUsed(vectorLength),
+                             TOutput &result) const
+  {  result += weight * p[i]; }
 };
 
 template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
@@ -76,20 +77,16 @@ public:
     return !( *this != other );
   }
 
-inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
+inline void operator()( const ThreadIdType itkNotUsed(threadId),
                            const double itkNotUsed(stepLengthInVoxel),
                            const TCoordRepType weight,
                            const TInput *p,
                            const int i,
-                           const int vectorLength) const
+                           const int vectorLength,
+                           TOutput &result) const
   {
-  TOutput result;
-  itk::NumericTraits<TOutput>::SetLength(result,vectorLength);
   for (int component=0; component<vectorLength; component++)
-    {
-    result[component] = p[i + component];
-    }
-  return (result * weight);
+    result[component] += weight * p[i + component];
   }
 };
 
@@ -243,7 +240,7 @@ protected:
    * to verify. */
   void VerifyInputInformation() ITK_OVERRIDE {}
 
-  inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
+  inline void BilinearInterpolation(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,
                                                const InputInternalPixelType *pxiyi,
                                                const InputInternalPixelType *pxsyi,
@@ -252,9 +249,10 @@ protected:
                                                const double x,
                                                const double y,
                                                const int ox,
-                                               const int oy);
+                                               const int oy,
+                                               OutputPixelType &sum);
 
-  inline OutputPixelType BilinearInterpolationOnBorders(const ThreadIdType threadId,
+  inline void BilinearInterpolationOnBorders(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,
                                                const InputInternalPixelType *pxiyi,
                                                const InputInternalPixelType *pxsyi,
@@ -267,7 +265,8 @@ protected:
                                                const double minx,
                                                const double miny,
                                                const double maxx,
-                                               const double maxy);
+                                               const double maxy,
+                                               OutputPixelType &sum);
 
   void Accumulate(ThreadIdType threadId,
                   rtk::ProjectionsRegionConstIteratorRayBased<TInputImage> *itIn,
