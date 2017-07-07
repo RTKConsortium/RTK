@@ -35,7 +35,7 @@ namespace Functor
  *
  * \ingroup Functions
  */
-template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
+template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplication
 {
 public:
@@ -53,10 +53,9 @@ public:
                              const double itkNotUsed(stepLengthInVoxel),
                              const TCoordRepType weight,
                              const TInput *p,
-                             const int i ) const
-  {
-    return weight*p[i];
-  }
+                             const int i,
+                             TOutput &result ) const
+  {  result += weight * p[i]; }
 };
 
 /** \class ProjectedValueAccumulation
@@ -176,7 +175,7 @@ protected:
    * to verify. */
   void VerifyInputInformation() ITK_OVERRIDE {}
 
-  inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
+  inline void BilinearInterpolation(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,
                                                const InputPixelType *pxiyi,
                                                const InputPixelType *pxsyi,
@@ -185,9 +184,10 @@ protected:
                                                const double x,
                                                const double y,
                                                const int ox,
-                                               const int oy);
+                                               const int oy,
+                                               OutputPixelType &sum);
 
-  inline OutputPixelType BilinearInterpolationOnBorders(const ThreadIdType threadId,
+  inline void BilinearInterpolationOnBorders(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,
                                                const InputPixelType *pxiyi,
                                                const InputPixelType *pxsyi,
@@ -200,7 +200,8 @@ protected:
                                                const double minx,
                                                const double miny,
                                                const double maxx,
-                                               const double maxy);
+                                               const double maxy,
+                                               OutputPixelType &sum);
 
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
