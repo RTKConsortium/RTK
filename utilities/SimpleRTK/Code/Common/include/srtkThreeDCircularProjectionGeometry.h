@@ -100,6 +100,12 @@ public:
   void AddProjection(const std::vector<double> matrix);
   /**@}*/
 
+  /** Add the projection with source and detector positions and orientations 
+   * @{
+   */
+  void AddProjection(const std::vector<double> sourcePosition, const std::vector<double> detectorPosition, const std::vector<double> detectorRowVector, const std::vector<double> detectorColumnVector);
+  /**@}*/
+
   /** Clear the geometry object
    * @{
    */
