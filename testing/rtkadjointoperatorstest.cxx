@@ -26,11 +26,12 @@
 int main(int, char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
 
 #ifdef USE_CUDA
+  typedef float                                        OutputPixelType;
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
 #else
+  typedef double                                   OutputPixelType;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 #endif
 
@@ -155,6 +156,7 @@ int main(int, char** )
       bp->SetInput(0, constantVolumeSource->GetOutput());
       bp->SetInput(1, randomProjectionsSource->GetOutput());
       bp->SetGeometry( geometry.GetPointer() );
+      bp->SetNumberOfThreads(1);
 
       TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
 
