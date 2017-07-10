@@ -415,4 +415,84 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
 }
 #endif
 
+template<class TImage1, class TImage2>
+#if FAST_TESTS_NO_CHECKS
+void CheckVectorScalarProducts(typename TImage1::Pointer itkNotUsed(im1A),
+                         typename TImage1::Pointer itkNotUsed(im1B),
+                         typename TImage2::Pointer itkNotUsed(im2A),
+                         typename TImage2::Pointer itkNotUsed(im2B))
+{
+}
+#else
+void CheckVectorScalarProducts(typename TImage1::Pointer im1A,
+                         typename TImage1::Pointer im1B,
+                         typename TImage2::Pointer im2A,
+                         typename TImage2::Pointer im2B)
+{
+  typedef itk::ImageRegionConstIterator<TImage1> Image1IteratorType;
+  typedef itk::ImageRegionConstIterator<TImage2> Image2IteratorType;
+  Image1IteratorType itIm1A( im1A, im1A->GetLargestPossibleRegion() );
+  Image1IteratorType itIm1B( im1B, im1B->GetLargestPossibleRegion() );
+  Image2IteratorType itIm2A( im2A, im2A->GetLargestPossibleRegion() );
+  Image2IteratorType itIm2B( im2B, im2B->GetLargestPossibleRegion() );
+
+  typename TImage2::InternalPixelType scalarProductT1, scalarProductT2;
+  scalarProductT1 = 0;
+  scalarProductT2 = 0;
+  unsigned int vectorLength = im1A->GetVectorLength();
+
+  while( !itIm1A.IsAtEnd() )
+    {
+    for (unsigned int component=0; component<vectorLength; component++)
+      scalarProductT1 += itIm1A.Get()[component] * itIm1B.Get()[component];
+    ++itIm1A;
+    ++itIm1B;
+    }
+
+  while( !itIm2A.IsAtEnd() )
+    {
+    for (unsigned int component=0; component<vectorLength; component++)
+      scalarProductT2 += itIm2A.Get()[component] * itIm2B.Get()[component];
+    ++itIm2A;
+    ++itIm2B;
+    }
+
+  // QI
+  double ratio = scalarProductT1 / scalarProductT2;
+  std::cout << "1 - ratio = " << 1 - ratio << std::endl;
+
+//  // It is often necessary to write the images and look at them
+//  // to understand why a given test fails. This portion of code
+//  // does that. It should be left here but commented out, since
+//  // it is only useful in specific debugging tasks
+//  typedef itk::ImageFileWriter<TImage1> FileWriterType1;
+//  typename FileWriterType1::Pointer writer = FileWriterType1::New();
+//  writer->SetInput(im1A);
+//  writer->SetFileName("im1A.mhd");
+//  writer->Update();
+//  writer->SetInput(im1B);
+//  writer->SetFileName("im1B.mhd");
+//  writer->Update();
+
+//  typedef itk::ImageFileWriter<TImage2> FileWriterType2;
+//  typename FileWriterType2::Pointer writer2 = FileWriterType2::New();
+//  writer2->SetInput(im2A);
+//  writer2->SetFileName("im2A.mhd");
+//  writer2->Update();
+//  writer2->SetInput(im2B);
+//  writer2->SetFileName("im2B.mhd");
+//  writer2->Update();
+//  // End of results writing
+
+
+  // Checking results
+  if (!(vcl_abs(ratio-1)<0.001))
+  {
+    std::cerr << "Test Failed, ratio not valid! "
+              << ratio << " instead of 1 +/- 0.001" << std::endl;
+    exit( EXIT_FAILURE);
+  }
+}
+#endif
+
 #endif //rtkTest_h

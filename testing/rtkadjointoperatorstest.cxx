@@ -156,11 +156,126 @@ int main(int, char** )
       bp->SetInput(0, constantVolumeSource->GetOutput());
       bp->SetInput(1, randomProjectionsSource->GetOutput());
       bp->SetGeometry( geometry.GetPointer() );
-      bp->SetNumberOfThreads(1);
 
       TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
 
       CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
+      std::cout << "\n\nTest PASSED! " << std::endl;
+
+      typedef itk::VectorImage<OutputPixelType, Dimension> VectorImageType;
+      VectorImageType::Pointer vectorRandomProjections = VectorImageType::New();
+      VectorImageType::Pointer vectorConstantProjections = VectorImageType::New();
+      VectorImageType::Pointer vectorRandomVolume = VectorImageType::New();
+      VectorImageType::Pointer vectorConstantVolume = VectorImageType::New();
+      vectorRandomProjections->SetVectorLength(3);
+      vectorRandomProjections->CopyInformation(randomProjectionsSource->GetOutput());
+      vectorRandomProjections->SetRegions(randomProjectionsSource->GetOutput()->GetLargestPossibleRegion());
+      vectorRandomProjections->Allocate();
+      itk::ImageRegionIterator<VectorImageType> outIt1(vectorRandomProjections, vectorRandomProjections->GetLargestPossibleRegion());
+      itk::ImageRegionIterator<OutputImageType> inIt1(randomProjectionsSource->GetOutput(), randomProjectionsSource->GetOutput()->GetLargestPossibleRegion());
+      while(!outIt1.IsAtEnd())
+        {
+        itk::VariableLengthVector<OutputPixelType> temp;
+        temp.SetSize(3);
+        temp[0] = inIt1.Get();
+        temp[1] = inIt1.Get() * 10;
+        temp[2] = inIt1.Get() / 10;
+        outIt1.Set(temp);
+        ++outIt1;
+        ++inIt1;
+        }
+
+      constantVolumeSource->Update();
+      vectorConstantVolume->SetVectorLength(3);
+      vectorConstantVolume->CopyInformation(constantVolumeSource->GetOutput());
+      vectorConstantVolume->SetRegions(constantVolumeSource->GetOutput()->GetLargestPossibleRegion());
+      vectorConstantVolume->Allocate();
+      itk::ImageRegionIterator<VectorImageType> outIt2(vectorConstantVolume, vectorConstantVolume->GetLargestPossibleRegion());
+      itk::ImageRegionIterator<OutputImageType> inIt2(constantVolumeSource->GetOutput(), constantVolumeSource->GetOutput()->GetLargestPossibleRegion());
+      while(!outIt2.IsAtEnd())
+        {
+        itk::VariableLengthVector<OutputPixelType> temp;
+        temp.SetSize(3);
+        temp[0] = inIt2.Get();
+        temp[1] = inIt2.Get() * 10;
+        temp[2] = inIt2.Get() / 10;
+        outIt2.Set(temp);
+        ++outIt2;
+        ++inIt2;
+        }
+
+      constantProjectionsSource->Update();
+      vectorConstantProjections->SetVectorLength(3);
+      vectorConstantProjections->CopyInformation(constantProjectionsSource->GetOutput());
+      vectorConstantProjections->SetRegions(constantProjectionsSource->GetOutput()->GetLargestPossibleRegion());
+      vectorConstantProjections->Allocate();
+      itk::ImageRegionIterator<VectorImageType> outIt3(vectorConstantProjections, vectorConstantProjections->GetLargestPossibleRegion());
+      itk::ImageRegionIterator<OutputImageType> inIt3(constantProjectionsSource->GetOutput(), constantProjectionsSource->GetOutput()->GetLargestPossibleRegion());
+      while(!outIt3.IsAtEnd())
+        {
+        itk::VariableLengthVector<OutputPixelType> temp;
+        temp.SetSize(3);
+        temp[0] = inIt3.Get();
+        temp[1] = inIt3.Get() * 10;
+        temp[2] = inIt3.Get() / 10;
+        outIt3.Set(temp);
+        ++outIt3;
+        ++inIt3;
+        }
+
+      vectorRandomVolume->SetVectorLength(3);
+      vectorRandomVolume->CopyInformation(randomVolumeSource->GetOutput());
+      vectorRandomVolume->SetRegions(randomVolumeSource->GetOutput()->GetLargestPossibleRegion());
+      vectorRandomVolume->Allocate();
+      itk::ImageRegionIterator<VectorImageType> outIt4(vectorRandomVolume, vectorRandomVolume->GetLargestPossibleRegion());
+      itk::ImageRegionIterator<OutputImageType> inIt4(randomVolumeSource->GetOutput(), randomVolumeSource->GetOutput()->GetLargestPossibleRegion());
+      while(!outIt4.IsAtEnd())
+        {
+        itk::VariableLengthVector<OutputPixelType> temp;
+        temp.SetSize(3);
+        temp[0] = inIt4.Get();
+        temp[1] = inIt4.Get() * 10;
+        temp[2] = inIt4.Get() / 10;
+        outIt4.Set(temp);
+        ++outIt4;
+        ++inIt4;
+        }
+
+      std::cout << "\n\n****** Joseph Vector Forward projector ******" << std::endl;
+
+      typedef rtk::JosephForwardProjectionImageFilter
+      <VectorImageType,
+       VectorImageType,
+       rtk::Functor::VectorInterpolationWeightMultiplication
+                     <typename VectorImageType::InternalPixelType,
+                      double,
+                      typename VectorImageType::PixelType>,
+       rtk::Functor::VectorProjectedValueAccumulation
+                     <typename VectorImageType::PixelType,
+                      typename VectorImageType::PixelType>
+      >
+      VectorJosephForwardProjectorType;
+
+      VectorJosephForwardProjectorType::Pointer vfw = VectorJosephForwardProjectorType::New();
+      vfw->SetInput(0, vectorConstantProjections);
+      vfw->SetInput(1, vectorRandomVolume);
+      vfw->SetGeometry( geometry );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( vfw->Update() );
+
+      std::cout << "\n\n****** Joseph Vector Back projector ******" << std::endl;
+      typedef rtk::JosephBackProjectionImageFilter<VectorImageType,
+                                                VectorImageType,
+                                                rtk::Functor::SplatWeightMultiplication< typename VectorImageType::InternalPixelType,
+                                                                                         double,
+                                                                                         typename VectorImageType::InternalPixelType> > VectorJosephBackProjectorType;
+      VectorJosephBackProjectorType::Pointer vbp = VectorJosephBackProjectorType::New();
+      vbp->SetInput(0, vectorConstantVolume);
+      vbp->SetInput(1, vectorRandomProjections);
+      vbp->SetGeometry( geometry.GetPointer() );
+
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( vbp->Update() );
+
+      CheckVectorScalarProducts<VectorImageType, VectorImageType>(vectorRandomVolume, vbp->GetOutput(), vectorRandomProjections, vfw->GetOutput());
       std::cout << "\n\nTest PASSED! " << std::endl;
 
     #ifdef USE_CUDA
