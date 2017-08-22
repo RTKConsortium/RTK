@@ -57,6 +57,9 @@ add_library(RTK ${RTK_LIBRARY_FILES})
 
 target_link_libraries(RTK ${ITK_LIBRARIES})
 target_link_libraries(RTK lpsolve55)
+
+target_include_directories(RTK PUBLIC $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}>)
+
 #=========================================================
 
 #=========================================================
@@ -154,7 +157,9 @@ if (RTK_USE_CUDA)
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   set_target_properties (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
-  target_link_libraries(rtkcuda ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_cublas_LIBRARY} RTK ITKCudaCommon)
+  target_link_libraries(rtkcuda $<BUILD_INTERFACE:${CUDA_LIBRARIES}> $<BUILD_INTERFACE:${CUDA_cufft_LIBRARY}> $<BUILD_INTERFACE:${CUDA_cublas_LIBRARY}> RTK ITKCudaCommon)
+  
+  target_include_directories(rtkcuda PUBLIC $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}>)
 endif ()
 #=========================================================
 
@@ -162,14 +167,26 @@ endif ()
 # Installation code
 if(NOT RTK_INSTALL_NO_DEVELOPMENT)
   # Generate RTKConfig.cmake for the install tree.
-  set (RTK_USE_FILE "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_PACKAGE_DIR}/UseRTK.cmake")
-  set (RTK_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR};${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_INCLUDE_DIR}/lpsolve")
-  set (RTK_LIBRARY_DIRS "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
+  # Paths for RTK install should be machine independent
+  set (RTK_USE_FILE "\${RTK_INSTALL_PATH}/${RTK_INSTALL_PACKAGE_DIR}/UseRTK.cmake")
+  set (RTK_INCLUDE_DIRS "\${RTK_INSTALL_PATH}/${RTK_INSTALL_INCLUDE_DIR};\${RTK_INSTALL_PATH}/${RTK_INSTALL_INCLUDE_DIR}/lpsolve")
+  set (RTK_LIBRARY_DIRS "\${RTK_INSTALL_PATH}/${RTK_INSTALL_LIB_DIR}")
+  set (RTK_LIBRARIES_TEMP ${RTK_LIBRARIES})
+  set (RTK_LIBRARIES "\${CUDA_CUDA_LIBRARY}" "\${CUDA_CUDART_LIBRARY}" "\${CUDA_cufft_LIBRARY}" "\${CUDA_cublas_LIBRARY}")
+  foreach(lib IN LISTS RTK_LIBRARIES_TEMP)
+    if(TARGET ${lib})
+      set (RTK_LIBRARIES ${RTK_LIBRARIES} ${lib})
+    endif()
+  endforeach()
   configure_file (${PROJECT_SOURCE_DIR}/cmake/RTKConfig.cmake.in ${RTK_BINARY_DIR}/CMakeFiles/RTKConfig.cmake @ONLY)
   configure_file (${PROJECT_SOURCE_DIR}/cmake/RTKConfigVersion.cmake.in ${RTK_BINARY_DIR}/CMakeFiles/RTKConfigVersion.cmake @ONLY)
+  set (RTK_LIBRARIES ${RTK_LIBRARIES_TEMP})
   install(FILES ${RTK_BINARY_DIR}/CMakeFiles/RTKConfig.cmake
                 ${RTK_BINARY_DIR}/CMakeFiles/RTKConfigVersion.cmake
                 ${RTK_SOURCE_DIR}/cmake/UseRTK.cmake
+                ${RTK_SOURCE_DIR}/cmake/FindCUDA_wrap.cmake
+                ${RTK_SOURCE_DIR}/cmake/nvcc-check.cmake
+                ${RTK_SOURCE_DIR}/cmake/has_cuda_gpu.c
           DESTINATION ${RTK_INSTALL_PACKAGE_DIR})
 
   # Include .h and .hxx files
@@ -187,13 +204,13 @@ if(NOT RTK_INSTALL_NO_DEVELOPMENT)
 endif()
 
 if(NOT RTK_INSTALL_NO_LIBRARIES)
-  install(TARGETS RTK
+  install(TARGETS RTK EXPORT RTK
     RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
     LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
     ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
 
   if(RTK_USE_CUDA)
-    install(TARGETS rtkcuda
+    install(TARGETS rtkcuda EXPORT RTK
       RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
