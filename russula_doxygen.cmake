@@ -12,10 +12,7 @@ set(ENV{ITK_DIR} "/home/srit/src/itk/lin64")
 
 file(WRITE ${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake
   "set(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION}
-  \"warning: Duplicate anchor RegistrationMetrics found\"
-  \"rtkDigisensGeometryXMLFileReader.cxx:49: warning: member with no name found.\"
-  \"warning: member ThreadedGenerateData belongs to two different groups. The second one found here will be ignored.\"
-  \"rtkTimeProbesCollectorBase.cxx:26: warning: no uniquely matching class member found for\"
+  \"warning: multiple use of section label\"
   )")
 CTEST_READ_CUSTOM_FILES("${CTEST_BINARY_DIRECTORY}")
 
