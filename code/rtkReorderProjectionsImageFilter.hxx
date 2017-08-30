@@ -103,6 +103,10 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
                                              m_InputGeometry->GetInPlaneAngles()[permutation[proj]],
                                              m_InputGeometry->GetSourceOffsetsX()[permutation[proj]],
                                              m_InputGeometry->GetSourceOffsetsY()[permutation[proj]]);
+    m_OutputGeometry->SetCollimationOfLastProjection(m_InputGeometry->GetCollimationUInf()[permutation[proj]],
+                                                     m_InputGeometry->GetCollimationUSup()[permutation[proj]],
+                                                     m_InputGeometry->GetCollimationVInf()[permutation[proj]],
+                                                     m_InputGeometry->GetCollimationVSup()[permutation[proj]]);
 
     // Copy the signal
     m_OutputSignal.push_back(m_InputSignal[permutation[proj]]);
