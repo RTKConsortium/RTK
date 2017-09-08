@@ -185,7 +185,7 @@ CudaWarpForwardProjectionImageFilter
     }
 
   // Cuda convenient format for dimensions
-  int projectionSize[2];
+  int projectionSize[3];
   projectionSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
 
