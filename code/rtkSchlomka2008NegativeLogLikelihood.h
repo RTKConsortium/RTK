@@ -92,23 +92,11 @@ public:
       {
       double accumulate = 0;
       double accumulateWeights = 0;
-      if (m_IsSpectralCT)
+      for (unsigned int energy=m_Thresholds[bin]-1; (energy<m_Thresholds[bin+1]) && (energy < this->m_MaterialAttenuations.rows()); energy++)
         {
-        for (unsigned int energy=m_Thresholds[bin]-1; (energy<m_Thresholds[bin+1]) && (energy < this->m_MaterialAttenuations.rows()); energy++)
-          {
-          accumulate += this->m_MaterialAttenuations[energy][mat] * this->m_IncidentSpectrum[0][energy];
-          accumulateWeights += this->m_IncidentSpectrum[0][energy];
-          }
+        accumulate += this->m_MaterialAttenuations[energy][mat] * this->m_IncidentSpectrum[0][energy];
+        accumulateWeights += this->m_IncidentSpectrum[0][energy];
         }
-      if (m_IsDualEnergyCT) // In this case there are no real bins, but we still use almost the same method
-        {
-        for (unsigned int energy=0; energy<m_NumberOfEnergies; energy++)
-          {
-          accumulate += this->m_MaterialAttenuations[energy][mat] * this->m_IncidentSpectrum[bin][energy];
-          accumulateWeights += this->m_IncidentSpectrum[bin][energy];
-          }
-        }
-
       MeanAttenuationInBin[mat][bin] = accumulate / accumulateWeights;
       }
     }
@@ -169,6 +157,12 @@ public:
     {
     m_IsSpectralCT = false;
     m_IsDualEnergyCT = true;
+    // Even though in this case, there are no bins, set the number of bins to two
+    // so as to be able to use methods designed for spectral CT later on
+    m_NumberOfSpectralBins = 2;
+    m_Thresholds.SetSize(2);
+    m_Thresholds[0]=1;
+    m_Thresholds[1]=m_NumberOfEnergies;
     }
 
   // In spectral CT, m_DetectorResponse has as many rows as the number of bins,
@@ -188,10 +182,6 @@ public:
   // has two rows (one for high energy, the other for low)
   if(m_IsDualEnergyCT) // Dual energy CT
     {
-    // Even though in this case, there are no bins, set the number of bins to two
-    // so as to be able to use methods designed for spectral CT later on
-    m_NumberOfSpectralBins = 2;
-
     m_IncidentSpectrumAndDetectorResponseProduct.set_size(2, m_DetectorResponse.cols());
     for (unsigned int i=0; i<2; i++)
       for (unsigned int j=0; j<m_DetectorResponse.cols(); j++)
