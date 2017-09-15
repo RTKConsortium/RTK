@@ -42,7 +42,6 @@ namespace rtk
 
 template<typename DecomposedProjectionsType,
          typename MeasuredProjectionsType,
-         typename CostFunctionType,
          typename IncidentSpectrumImageType = itk::VectorImage<float, 2>,
          typename DetectorResponseImageType = itk::Image<float, 2>,
          typename MaterialAttenuationsImageType = itk::Image<float, 2> >
@@ -105,6 +104,9 @@ public:
   itkSetMacro(NumberOfEnergies, unsigned int)
   itkGetMacro(NumberOfEnergies, unsigned int)
 
+  itkSetMacro(IsSpectralCT, bool)
+  itkGetMacro(IsSpectralCT, bool)
+
 protected:
   SpectralForwardModelImageFilter();
   ~SpectralForwardModelImageFilter() {}
@@ -131,6 +133,7 @@ protected:
   unsigned int m_NumberOfIterations;
   unsigned int m_NumberOfMaterials;
   bool         m_OptimizeWithRestarts;
+  bool         m_IsSpectralCT; // If not, it is dual energy CT
 
 private:
   //purposely not implemented

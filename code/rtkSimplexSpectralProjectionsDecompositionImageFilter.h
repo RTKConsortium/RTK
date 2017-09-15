@@ -38,7 +38,6 @@ namespace rtk
 
 template<typename DecomposedProjectionsType,
          typename MeasuredProjectionsType,
-         typename CostFunctionType,
          typename IncidentSpectrumImageType = itk::VectorImage<float, 2>,
          typename DetectorResponseImageType = itk::Image<float, 2>,
          typename MaterialAttenuationsImageType = itk::Image<float, 2> >
@@ -91,6 +90,9 @@ public:
   itkSetMacro(GuessInitialization, bool)
   itkGetMacro(GuessInitialization, bool)
 
+  itkSetMacro(IsSpectralCT, bool)
+  itkGetMacro(IsSpectralCT, bool)
+
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
   ~SimplexSpectralProjectionsDecompositionImageFilter() {}
@@ -112,6 +114,7 @@ protected:
   bool                       m_OutputFischerMatrix;
   bool                       m_LogTransformEachBin;
   bool                       m_GuessInitialization;
+  bool                       m_IsSpectralCT; //If not, is is dual energy CT
   MeanAttenuationInBinType   m_MeanAttenuationInBin;
 
 private:
