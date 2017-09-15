@@ -21,6 +21,7 @@
 
 #include "rtkSimplexProjectionsDecompositionImageFilter.h"
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
+#include "rtkDualEnergyNegativeLogLikelihood.h"
 
 namespace rtk
 {
@@ -37,6 +38,7 @@ namespace rtk
 
 template<typename DecomposedProjectionsType,
          typename MeasuredProjectionsType,
+         typename CostFunctionType,
          typename IncidentSpectrumImageType = itk::VectorImage<float, 2>,
          typename DetectorResponseImageType = itk::Image<float, 2>,
          typename MaterialAttenuationsImageType = itk::Image<float, 2> >
@@ -58,9 +60,6 @@ public:
   /** Convenient information */
   typedef itk::VariableLengthVector<unsigned int>   ThresholdsType;
   typedef itk::VariableSizeMatrix<double>           MeanAttenuationInBinType;
-
-  /** Typedefs of each subfilter of this composite filter */
-  typedef Schlomka2008NegativeLogLikelihood                             CostFunctionType;
 
   /** Standard New method. */
   itkNewMacro(Self)

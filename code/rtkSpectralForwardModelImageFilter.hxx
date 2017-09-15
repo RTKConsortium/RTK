@@ -26,9 +26,9 @@
 namespace rtk
 {
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SpectralForwardModelImageFilter()
 {
@@ -36,70 +36,70 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
   m_NumberOfSpectralBins = 8;
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetInputMeasuredProjections(const MeasuredProjectionsType *SpectralProjections)
 {
   this->SetNthInput(0, const_cast<MeasuredProjectionsType*>(SpectralProjections));
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, SpectralProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetInputIncidentSpectrum(const IncidentSpectrumImageType *IncidentSpectrum)
 {
   this->SetInput("IncidentSpectrum", const_cast<IncidentSpectrumImageType*>(IncidentSpectrum));
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, SpectralProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType *SecondIncidentSpectrum)
 {
   this->SetInput("SecondIncidentSpectrum", const_cast<IncidentSpectrumImageType*>(SecondIncidentSpectrum));
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetInputDecomposedProjections(const DecomposedProjectionsType* DecomposedProjections)
 {
   this->SetInput("DecomposedProjections", const_cast<DecomposedProjectionsType*>(DecomposedProjections));
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetDetectorResponse(const DetectorResponseImageType *DetectorResponse)
 {
   this->SetInput("DetectorResponse", const_cast<DetectorResponseImageType*>(DetectorResponse));
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetMaterialAttenuations(const MaterialAttenuationsImageType *MaterialAttenuations)
 {
   this->SetInput("MaterialAttenuations", const_cast<MaterialAttenuationsImageType*>(MaterialAttenuations));
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 typename MeasuredProjectionsType::ConstPointer
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GetInputMeasuredProjections()
 {
@@ -107,10 +107,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
           ( this->itk::ProcessObject::GetInput(0) );
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 typename IncidentSpectrumImageType::ConstPointer
-SpectralForwardModelImageFilter<DecomposedProjectionsType, SpectralProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GetInputIncidentSpectrum()
 {
@@ -118,10 +118,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, SpectralProjectionsTy
           ( this->itk::ProcessObject::GetInput("IncidentSpectrum") );
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 typename IncidentSpectrumImageType::ConstPointer
-SpectralForwardModelImageFilter<DecomposedProjectionsType, SpectralProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GetInputSecondIncidentSpectrum()
 {
@@ -129,10 +129,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, SpectralProjectionsTy
           ( this->itk::ProcessObject::GetInput("SecondIncidentSpectrum") );
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 typename DecomposedProjectionsType::ConstPointer
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GetInputDecomposedProjections()
 {
@@ -140,10 +140,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
           ( this->itk::ProcessObject::GetInput("DecomposedProjections") );
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 typename DetectorResponseImageType::ConstPointer
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GetDetectorResponse()
 {
@@ -151,10 +151,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
           ( this->itk::ProcessObject::GetInput("DetectorResponse") );
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 typename MaterialAttenuationsImageType::ConstPointer
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GetMaterialAttenuations()
 {
@@ -162,10 +162,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
           ( this->itk::ProcessObject::GetInput("MaterialAttenuations") );
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GenerateOutputInformation()
 {
@@ -176,10 +176,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
   this->m_NumberOfEnergies = this->GetInputIncidentSpectrum()->GetVectorLength();
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GenerateInputRequestedRegion()
 {
@@ -207,10 +207,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
   inputPtr2->SetRequestedRegion( requested );
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::BeforeThreadedGenerateData()
 {
@@ -268,10 +268,10 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
     }
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::ThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {

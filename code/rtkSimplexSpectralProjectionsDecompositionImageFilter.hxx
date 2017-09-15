@@ -26,9 +26,9 @@
 namespace rtk
 {
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SimplexSpectralProjectionsDecompositionImageFilter()
 {
@@ -40,30 +40,30 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   m_GuessInitialization = false;
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetInputIncidentSpectrum(const IncidentSpectrumImageType *IncidentSpectrum)
 {
   this->SetInput("IncidentSpectrum", const_cast<IncidentSpectrumImageType*>(IncidentSpectrum));
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType *SecondIncidentSpectrum)
 {
   this->SetInput("SecondIncidentSpectrum", const_cast<IncidentSpectrumImageType*>(SecondIncidentSpectrum));
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 typename IncidentSpectrumImageType::ConstPointer
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GetInputIncidentSpectrum()
 {
@@ -71,10 +71,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
           ( this->itk::ProcessObject::GetInput("IncidentSpectrum") );
 }
 
-template<typename DecomposedProjectionsType, typename SpectralProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 typename IncidentSpectrumImageType::ConstPointer
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, SpectralProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GetInputSecondIncidentSpectrum()
 {
@@ -82,10 +82,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Sp
           ( this->itk::ProcessObject::GetInput("SecondIncidentSpectrum") );
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GenerateOutputInformation()
 {
@@ -103,10 +103,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     this->GetOutput(0)->SetVectorLength(this->m_NumberOfMaterials + this->m_NumberOfSpectralBins);
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GenerateInputRequestedRegion()
 {
@@ -134,10 +134,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 }
 
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::BeforeThreadedGenerateData()
 {
@@ -195,10 +195,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     }
 }
 
-template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType, typename CostFunctionType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, CostFunctionType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
@@ -312,16 +312,16 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     output0It.Set(outputPixel);
 
     // If required, compute the Fischer matrix
-//    if (m_OutputInverseCramerRaoLowerBound || m_OutputFischerMatrix)
-//      cost->ComputeFischerMatrix(optimizer->GetCurrentPosition());
+    if (m_OutputInverseCramerRaoLowerBound || m_OutputFischerMatrix)
+      cost->ComputeFischerMatrix(optimizer->GetCurrentPosition());
 
     // If requested, compute the inverse variance of decomposition noise, and store it into output(1)
-//    if (m_OutputInverseCramerRaoLowerBound)
-//      output1It.Set(cost->GetInverseCramerRaoLowerBound());
+    if (m_OutputInverseCramerRaoLowerBound)
+      output1It.Set(cost->GetInverseCramerRaoLowerBound());
 
     // If requested, store the Fischer matrix into output(2)
-//    if (m_OutputFischerMatrix)
-//      output2It.Set(cost->GetFischerMatrix());
+    if (m_OutputFischerMatrix)
+      output2It.Set(cost->GetFischerMatrix());
 
     // Move forward
     ++output0It;

@@ -58,16 +58,11 @@ public:
   typedef Superclass::MaterialAttenuationsType      MaterialAttenuationsType;
   typedef Superclass::MeasuredDataType              MeasuredDataType;
   typedef Superclass::IncidentSpectrumType          IncidentSpectrumType;
-  typedef itk::VariableLengthVector<unsigned int>   ThresholdsType;
-  typedef itk::VariableSizeMatrix<double>           MeanAttenuationInBinType;
-
 
   // Constructor
   Schlomka2008NegativeLogLikelihood()
   {
   m_NumberOfSpectralBins = 0;
-  m_IsSpectralCT = false;
-  m_IsDualEnergyCT = false;
   }
 
   // Destructor
@@ -75,153 +70,18 @@ public:
   {
   }
 
-  itk::VariableLengthVector<double> GuessInitialization() const
-  {
-  itk::VariableLengthVector<double> initialGuess;
-  initialGuess.SetSize(m_NumberOfMaterials);
-
-  // Compute the mean attenuation in each bin, weighted by the input spectrum
-  // Needs to be done for each pixel, since the input spectrum is variable
-  MeanAttenuationInBinType MeanAttenuationInBin;
-  MeanAttenuationInBin.SetSize(this->m_NumberOfMaterials, this->m_NumberOfSpectralBins);
-  MeanAttenuationInBin.Fill(0);
-
-  for (unsigned int mat = 0; mat<this->m_NumberOfMaterials; mat++)
-    {
-    for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
-      {
-      double accumulate = 0;
-      double accumulateWeights = 0;
-      for (unsigned int energy=m_Thresholds[bin]-1; (energy<m_Thresholds[bin+1]) && (energy < this->m_MaterialAttenuations.rows()); energy++)
-        {
-        accumulate += this->m_MaterialAttenuations[energy][mat] * this->m_IncidentSpectrum[0][energy];
-        accumulateWeights += this->m_IncidentSpectrum[0][energy];
-        }
-      MeanAttenuationInBin[mat][bin] = accumulate / accumulateWeights;
-      }
-    }
-
-  for (unsigned int mat = 0; mat<m_NumberOfMaterials; mat++)
-    {
-    // Initialise to a very high value
-    initialGuess[mat] = 1e10;
-    for (unsigned int bin = 0; bin<m_NumberOfSpectralBins; bin++)
-      {
-      // Compute the length of current material required to obtain the attenuation
-      // observed in current bin. Keep only the minimum among all bins
-      double requiredLength = this->BinwiseLogTransform()[bin] / MeanAttenuationInBin[mat][bin];
-      if (initialGuess[mat] > requiredLength)
-        initialGuess[mat] = requiredLength;
-      }
-    }
-
-  return initialGuess;
-  }
-
-  itk::VariableLengthVector<double> BinwiseLogTransform() const
-  {
-  itk::VariableLengthVector<double> logTransforms;
-  logTransforms.SetSize(m_NumberOfSpectralBins);
-
-  vnl_vector<double> ones, nonAttenuated;
-  ones.set_size(m_NumberOfEnergies);
-  ones.fill(1.0);
-
-  // The way m_IncidentSpectrumAndDetectorResponseProduct works is
-  // it is mutliplied by the vector of attenuations factors (here
-  // filled with ones, since we want the non-attenuated signal)
-  nonAttenuated = m_IncidentSpectrumAndDetectorResponseProduct * ones;
-
-  for (unsigned int i=0; i<m_MeasuredData.GetSize(); i++)
-    {
-    // Divide by the actually measured photon counts and apply log
-    if (m_MeasuredData[i] > 0)
-      logTransforms[i] = log(nonAttenuated[i] / m_MeasuredData[i]);
-    }
-
-  return logTransforms;
-  }
-
   void Initialize()
   {
   // This method computes the combined m_IncidentSpectrumAndDetectorResponseProduct
   // from m_DetectorResponse and m_IncidentSpectrum
 
-  // First, determine whether we are in the spectral of dual energy CT case
-  if( (m_DetectorResponse.rows() == m_NumberOfSpectralBins) && (m_IncidentSpectrum.rows() == 1) && (m_DetectorResponse.cols() == m_IncidentSpectrum.cols()) )
-    {
-    m_IsSpectralCT = true;
-    m_IsDualEnergyCT = false;
-    }
-  if( (m_DetectorResponse.rows() == 1) && (m_IncidentSpectrum.rows() == 2) && (m_DetectorResponse.cols() == m_IncidentSpectrum.cols()) )
-    {
-    m_IsSpectralCT = false;
-    m_IsDualEnergyCT = true;
-    // Even though in this case, there are no bins, set the number of bins to two
-    // so as to be able to use methods designed for spectral CT later on
-    m_NumberOfSpectralBins = 2;
-    m_Thresholds.SetSize(2);
-    m_Thresholds[0]=1;
-    m_Thresholds[1]=m_NumberOfEnergies;
-    }
-
   // In spectral CT, m_DetectorResponse has as many rows as the number of bins,
   // and m_IncidentSpectrum has only one row (there is only one spectrum illuminating
   // the object)
-  if(m_IsSpectralCT) // Spectral CT
-    {
-    m_IncidentSpectrumAndDetectorResponseProduct.set_size(m_DetectorResponse.rows(), m_DetectorResponse.cols());
-    for (unsigned int i=0; i<m_DetectorResponse.rows(); i++)
-      for (unsigned int j=0; j<m_DetectorResponse.cols(); j++)
-        m_IncidentSpectrumAndDetectorResponseProduct[i][j] = m_DetectorResponse[i][j] * m_IncidentSpectrum[0][j];
-    }
-
-  // In dual energy CT, one possible design is to illuminate the object with
-  // either a low energy or a high energy spectrum, alternating between the two. In that case
-  // m_DetectorResponse has only one row (there is a single detector) and m_IncidentSpectrum
-  // has two rows (one for high energy, the other for low)
-  if(m_IsDualEnergyCT) // Dual energy CT
-    {
-    m_IncidentSpectrumAndDetectorResponseProduct.set_size(2, m_DetectorResponse.cols());
-    for (unsigned int i=0; i<2; i++)
-      for (unsigned int j=0; j<m_DetectorResponse.cols(); j++)
-        m_IncidentSpectrumAndDetectorResponseProduct[i][j] = m_DetectorResponse[0][j] * m_IncidentSpectrum[i][j];
-    }
-
-  // An alternative dual energy CT design is the so-called sandwich detector, but it is
-  // already covered by the spectral CT case
-  }
-
-  vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const ITK_OVERRIDE
-  {
-  // Variable length vector and variable size matrix cannot be used in linear algebra operations
-  // Get their vnl counterparts, which can
-  vnl_vector<double> attenuationFactors;
-  attenuationFactors.set_size(m_NumberOfEnergies);
-  GetAttenuationFactors(lineIntegrals, attenuationFactors);
-
-  // Apply detector response, getting the lambdas
-  return (m_IncidentSpectrumAndDetectorResponseProduct * attenuationFactors);
-  }
-
-  void GetAttenuationFactors(const ParametersType & lineIntegrals, vnl_vector<double> & attenuationFactors) const
-  {
-  // Apply attenuation at each energy
-  vnl_vector<double> vnlLineIntegrals;
-
-  // Initialize the line integrals vnl vector
-  vnlLineIntegrals.set_size(m_NumberOfMaterials);
-  for (unsigned int m=0; m<m_NumberOfMaterials; m++)
-    vnlLineIntegrals[m] = lineIntegrals[m];
-
-  // Apply the material attenuations matrix
-  attenuationFactors = this->m_MaterialAttenuations * vnlLineIntegrals;
-
-  // Compute the negative exponential
-  for (unsigned int energy = 0; energy<m_NumberOfEnergies; energy++)
-    {
-    attenuationFactors[energy] = std::exp(-attenuationFactors[energy]);
-    }
+  m_IncidentSpectrumAndDetectorResponseProduct.set_size(m_DetectorResponse.rows(), m_DetectorResponse.cols());
+  for (unsigned int i=0; i<m_DetectorResponse.rows(); i++)
+    for (unsigned int j=0; j<m_DetectorResponse.cols(); j++)
+      m_IncidentSpectrumAndDetectorResponseProduct[i][j] = m_DetectorResponse[i][j] * m_IncidentSpectrum[0][j];
   }
 
   itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()
@@ -283,31 +143,15 @@ public:
   }
 
   // Main method
-  MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
+  MeasureType  GetValue( const ParametersType & parameters ) const
   {
   // Forward model: compute the expected number of counts in each bin
   vnl_vector<double> forward = ForwardModel(parameters);
 
   long double measure = 0;
-  if (m_IsSpectralCT)
-    {
   // Compute the negative log likelihood from the lambdas
   for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
     measure += forward[i] - std::log((long double)forward[i]) * m_MeasuredData[i];
-    }
-  if (m_IsDualEnergyCT)
-    {
-    // TODO: Improve this estimation
-    // We assume that the variance of the integrated energy is equal to the mean
-    // From equation (5) of "Cramér–Rao lower bound of basis image noise in multiple-energy x-ray imaging", PMB 2009, Roessl et al,
-    // we replace the variance with the mean
-
-    // Compute the negative log likelihood from the expectedEnergies
-    for (unsigned int i=0; i<this->m_NumberOfMaterials; i++)
-      measure += std::log((long double)forward[i]) + (forward[i] - this->m_MeasuredData[i]) * (forward[i] - this->m_MeasuredData[i]) / forward[i];
-    measure *= 0.5;
-    }
-
   return measure;
   }
 
@@ -349,23 +193,8 @@ public:
 //    }
 //  }
 
-
-  itkSetMacro(IncidentSpectrum, IncidentSpectrumType)
-  itkGetMacro(IncidentSpectrum, IncidentSpectrumType)
-
-  itkSetMacro(NumberOfSpectralBins, unsigned int)
-  itkGetMacro(NumberOfSpectralBins, unsigned int)
-
-  itkSetMacro(Thresholds, ThresholdsType)
-  itkGetMacro(Thresholds, ThresholdsType)
-
 protected:
-  IncidentSpectrumType              m_IncidentSpectrum;
-  vnl_matrix<double>                m_IncidentSpectrumAndDetectorResponseProduct;
-  unsigned int                      m_NumberOfSpectralBins;
   itk::VariableSizeMatrix<float>    m_Fischer;
-  ThresholdsType                    m_Thresholds;
-  bool                              m_IsSpectralCT, m_IsDualEnergyCT;
 
 private:
   Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented
