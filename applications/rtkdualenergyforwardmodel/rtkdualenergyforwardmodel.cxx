@@ -22,7 +22,6 @@
 #include "rtkMacro.h"
 #include "rtkSpectralForwardModelImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "itkJoinSeriesImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -120,6 +119,7 @@ int main(int argc, char * argv[])
   forward->SetInputSecondIncidentSpectrum(incidentSpectrumReaderLowEnergy->GetOutput());
   forward->SetDetectorResponse(detectorImage);
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
+  forward->SetIsSpectralCT(false);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 

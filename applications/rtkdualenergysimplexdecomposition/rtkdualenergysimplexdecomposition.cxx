@@ -125,6 +125,7 @@ int main(int argc, char * argv[])
   simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   simplex->SetNumberOfIterations(args_info.niterations_arg);
   simplex->SetOptimizeWithRestarts(args_info.restarts_flag);
+  simplex->SetIsSpectralCT(false);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
