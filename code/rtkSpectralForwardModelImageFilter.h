@@ -60,8 +60,8 @@ public:
 
   /** Convenient information */
   typedef itk::VariableLengthVector<unsigned int>           ThresholdsType;
-  typedef itk::VariableSizeMatrix<double>                   DetectorResponseType;
-  typedef itk::VariableSizeMatrix<double>                   MaterialAttenuationsType;
+  typedef vnl_matrix<double>                   DetectorResponseType;
+  typedef vnl_matrix<double>                   MaterialAttenuationsType;
 
   /** Typedefs of each subfilter of this composite filter */
   typedef Schlomka2008NegativeLogLikelihood                             CostFunctionType;
@@ -72,9 +72,11 @@ public:
   /** Runtime information support. */
   itkTypeMacro(SpectralForwardModelImageFilter, InPlaceImageFilter)
 
-  /** Set/Get the incident spectrum input image */
+  /** Set/Get the incident spectrum input images */
   void SetInputIncidentSpectrum(const IncidentSpectrumImageType* IncidentSpectrum);
+  void SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType* IncidentSpectrum);
   typename IncidentSpectrumImageType::ConstPointer GetInputIncidentSpectrum();
+  typename IncidentSpectrumImageType::ConstPointer GetInputSecondIncidentSpectrum();
 
   /** Set/Get the input material-decomposed stack of projections (only used for initialization) */
   void SetInputDecomposedProjections(const DecomposedProjectionsType* DecomposedProjections);

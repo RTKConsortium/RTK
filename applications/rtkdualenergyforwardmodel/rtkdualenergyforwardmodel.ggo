@@ -5,6 +5,7 @@ option "verbose"    v "Verbose execution"                                       
 option "config"     - "Config file"                                                       string                       no
 option "output"     o "Output file name (high and low energy projections)"                string                       yes
 option "input"      i "Material-decomposed projections"                                   string                       yes
-option "high"       - "Combined spectrum and detector response file, high energy"         string                       yes
-option "low"        - "Combined spectrum and detector response file, low energy"          string                       yes
+option "high"       - "Incident spectrum image, high energy"                              string                       yes
+option "low"        - "Incident spectrum image, low energy"                               string                       yes
+option "detector"   d "Detector response file"                                            string                       no
 option "attenuations" a "Material attenuations file"                                      string                       yes

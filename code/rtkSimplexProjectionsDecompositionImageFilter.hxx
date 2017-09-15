@@ -51,9 +51,9 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
   m_RescaleAttenuations = false;
 
   // Fill in the vectors and matrices with zeros
-  m_MaterialAttenuations.Fill(0.); //Not sure this works
-  m_RescaledMaterialAttenuations.Fill(0.);
-  m_DetectorResponse.Fill(0.);
+  m_MaterialAttenuations.fill(0.); //Not sure this works
+  m_RescaledMaterialAttenuations.fill(0.);
+  m_DetectorResponse.fill(0.);
   m_RescalingFactors.Fill(0.);
 }
 
@@ -219,14 +219,14 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
 {
   // Read the material attenuations image as a matrix
   typename MaterialAttenuationsImageType::IndexType indexMat;
-  m_MaterialAttenuations.SetSize(m_NumberOfMaterials, m_NumberOfEnergies);
+  m_MaterialAttenuations.set_size(m_NumberOfEnergies, m_NumberOfMaterials);
   for (unsigned int energy=0; energy<m_NumberOfEnergies; energy++)
     {
     indexMat[1] = energy;
     for (unsigned int material=0; material<m_NumberOfMaterials; material++)
       {
       indexMat[0] = material;
-      m_MaterialAttenuations[material][energy] = this->GetMaterialAttenuations()->GetPixel(indexMat);
+      m_MaterialAttenuations[energy][material] = this->GetMaterialAttenuations()->GetPixel(indexMat);
       }
     }
 
@@ -265,7 +265,7 @@ SimplexProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredPr
     }
 
   // Initialize the rescaled material attenuations matrix
-  m_RescaledMaterialAttenuations.SetSize(m_NumberOfMaterials, m_NumberOfEnergies);
+  m_RescaledMaterialAttenuations.set_size(m_NumberOfMaterials, m_NumberOfEnergies);
 
   // Compute the rescaled attenuations
   for (unsigned int material=0; material<m_NumberOfMaterials; material++)

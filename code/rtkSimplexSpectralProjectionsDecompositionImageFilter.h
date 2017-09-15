@@ -68,9 +68,11 @@ public:
   /** Runtime information support. */
   itkTypeMacro(SimplexSpectralProjectionsDecompositionImageFilter, SimplexProjectionsDecompositionImageFilter)
 
-  /** Set/Get the incident spectrum input image */
+  /** Set/Get the incident spectrum input images */
   void SetInputIncidentSpectrum(const IncidentSpectrumImageType* IncidentSpectrum);
+  void SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType* IncidentSpectrum);
   typename IncidentSpectrumImageType::ConstPointer GetInputIncidentSpectrum();
+  typename IncidentSpectrumImageType::ConstPointer GetInputSecondIncidentSpectrum();
 
   itkSetMacro(Thresholds, ThresholdsType)
   itkGetMacro(Thresholds, ThresholdsType)

@@ -51,10 +51,10 @@ public:
   typedef Superclass::DerivativeType      DerivativeType;
   typedef Superclass::MeasureType         MeasureType;
 
-  typedef itk::VariableSizeMatrix<double>      DetectorResponseType;
-  typedef itk::VariableSizeMatrix<double>      MaterialAttenuationsType;
+  typedef vnl_matrix<double>      DetectorResponseType;
+  typedef vnl_matrix<double>      MaterialAttenuationsType;
   typedef itk::VariableLengthVector<double>    MeasuredDataType;
-  typedef itk::VariableLengthVector<double>    IncidentSpectrumType;
+  typedef vnl_matrix<float>    IncidentSpectrumType;
 
   // Constructor
   ProjectionsDecompositionNegativeLogLikelihood()
