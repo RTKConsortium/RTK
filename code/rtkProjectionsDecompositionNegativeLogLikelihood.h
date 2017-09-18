@@ -87,8 +87,6 @@ public:
 
   virtual vnl_vector<double> ForwardModel(const ParametersType & lineIntegrals) const
   {
-  // Variable length vector and variable size matrix cannot be used in linear algebra operations
-  // Get their vnl counterparts, which can
   vnl_vector<double> attenuationFactors;
   attenuationFactors.set_size(m_NumberOfEnergies);
   GetAttenuationFactors(lineIntegrals, attenuationFactors);

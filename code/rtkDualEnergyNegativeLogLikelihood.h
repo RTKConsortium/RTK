@@ -98,8 +98,9 @@ public:
   // Main method
   MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
-  // Forward model: compute the expected number of counts in each bin
+  // Forward model: compute the expected total energy measured by the detector for each spectrum
   vnl_vector<double> forward = ForwardModel(parameters);
+  vnl_vector<double> variances = GetVariances(parameters);
 
   long double measure = 0;
   // TODO: Improve this estimation
@@ -109,10 +110,25 @@ public:
 
   // Compute the negative log likelihood from the expectedEnergies
   for (unsigned int i=0; i<this->m_NumberOfMaterials; i++)
-    measure += std::log((long double)forward[i]) + (forward[i] - this->m_MeasuredData[i]) * (forward[i] - this->m_MeasuredData[i]) / forward[i];
+    measure += std::log((long double)variances[i]) + (forward[i] - this->m_MeasuredData[i]) * (forward[i] - this->m_MeasuredData[i]) / variances[i];
   measure *= 0.5;
 
   return measure;
+  }
+
+  vnl_vector<double>  GetVariances( const ParametersType & lineIntegrals ) const
+  {
+  vnl_vector<double> attenuationFactors;
+  attenuationFactors.set_size(m_NumberOfEnergies);
+  GetAttenuationFactors(lineIntegrals, attenuationFactors);
+
+  // Apply detector response, getting the lambdas
+  vnl_vector<double> intermediate;
+  intermediate.set_size(m_NumberOfEnergies);
+  for (unsigned int i=0; i<m_NumberOfEnergies; i++)
+    intermediate[i]=i+1;
+  intermediate = element_product(attenuationFactors, intermediate);
+  return (m_IncidentSpectrumAndDetectorResponseProduct * intermediate);
   }
 
 protected:
