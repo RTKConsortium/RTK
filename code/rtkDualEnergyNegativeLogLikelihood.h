@@ -30,6 +30,9 @@ namespace rtk
   /** \class rtkDualEnergyNegativeLogLikelihood
    * \brief Cost function for dual energy decomposition into material, and associated forward model
    *
+   * This class requires the method "Initialize()" to be run once, before it
+   * is passed to the simplex minimizer
+   *
    * \author Cyril Mory
    *
    * \ingroup ReconstructionAlgorithm

@@ -30,6 +30,8 @@ namespace rtk
   /** \class rtkSchlomka2008NegativeLogLikelihood
    * \brief Cost function from the Schlomka 2008 PMB paper
    *
+   * This class requires the method "Initialize()" to be run once, before it
+   * is passed to the simplex minimizer
    * See the reference paper: "Experimental feasibility of multi-energy photon-counting
    * K-edge imaging in pre-clinical computed tomography", Schlomka et al, PMB 2008
    *
@@ -114,32 +116,34 @@ public:
   void GetDerivative( const ParametersType & lineIntegrals,
                       DerivativeType & derivatives ) const ITK_OVERRIDE
   {
-//  // Set the size of the derivatives vector
-//  derivatives.set_size(m_NumberOfMaterials);
+  // Set the size of the derivatives vector
+  derivatives.set_size(m_NumberOfMaterials);
 
-//  // Get some required data
-//  vnl_vector<double> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
-//  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
+  // Get some required data
+  vnl_vector<double> attenuationFactors;
+  attenuationFactors.set_size(this->m_NumberOfEnergies);
+  GetAttenuationFactors(lineIntegrals, attenuationFactors);
+  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
 
-//  // Compute the vector of 1 - m_b / lambda_b
-//  vnl_vector<double> weights;
-//  weights.set_size(m_NumberOfSpectralBins);
-//  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
-//    weights[i] = 1 - (m_MeasuredData[i] / lambdas[i]);
+  // Compute the vector of 1 - m_b / lambda_b
+  vnl_vector<double> weights;
+  weights.set_size(m_NumberOfSpectralBins);
+  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
+    weights[i] = 1 - (m_MeasuredData[i] / lambdas[i]);
 
-//  // Prepare intermediate variables
-//  vnl_vector<double> intermediate_a;
-//  vnl_vector<double> partial_derivative_a;
+  // Prepare intermediate variables
+  vnl_vector<double> intermediate_a;
+  vnl_vector<double> partial_derivative_a;
 
-//  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
-//    {
-//    // Compute the partial derivatives of lambda_b with respect to the material line integrals
-//    intermediate_a = element_product(-attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a));
-//    partial_derivative_a = m_DetectorResponse.GetVnlMatrix() * intermediate_a;
+  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
+    {
+    // Compute the partial derivatives of lambda_b with respect to the material line integrals
+    intermediate_a = element_product(-attenuationFactors, m_MaterialAttenuations.get_column(a));
+    partial_derivative_a = m_IncidentSpectrumAndDetectorResponseProduct * intermediate_a;
 
-//    // Multiply them together element-wise, then dot product with the weights
-//    derivatives[a] = dot_product(partial_derivative_a,weights);
-//    }
+    // Multiply them together element-wise, then dot product with the weights
+    derivatives[a] = dot_product(partial_derivative_a,weights);
+    }
   }
 
   // Main method
@@ -155,43 +159,45 @@ public:
   return measure;
   }
 
-//  void ComputeFischerMatrix(const ParametersType & lineIntegrals)
-//  {
-//  // Get some required data
-//  vnl_vector<double> attenuatedIncidentSpectrum(GetAttenuatedIncidentSpectrum(lineIntegrals).GetDataPointer(), GetAttenuatedIncidentSpectrum(lineIntegrals).GetSize());
-//  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
+  void ComputeFischerMatrix(const ParametersType & lineIntegrals)
+  {
+  // Get some required data
+  vnl_vector<double> attenuationFactors;
+  attenuationFactors.set_size(this->m_NumberOfEnergies);
+  GetAttenuationFactors(lineIntegrals, attenuationFactors);
+  vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
 
-//  // Compute the vector of m_b / lambda_b²
-//  vnl_vector<double> weights;
-//  weights.set_size(m_NumberOfSpectralBins);
-//  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
-//    weights[i] = m_MeasuredData[i] / (lambdas[i] * lambdas[i]);
+  // Compute the vector of m_b / lambda_b²
+  vnl_vector<double> weights;
+  weights.set_size(m_NumberOfSpectralBins);
+  for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)
+    weights[i] = m_MeasuredData[i] / (lambdas[i] * lambdas[i]);
 
-//  // Prepare intermediate variables
-//  vnl_vector<double> intermediate_a;
-//  vnl_vector<double> intermediate_a_prime;
-//  vnl_vector<double> partial_derivative_a;
-//  vnl_vector<double> partial_derivative_a_prime;
+  // Prepare intermediate variables
+  vnl_vector<double> intermediate_a;
+  vnl_vector<double> intermediate_a_prime;
+  vnl_vector<double> partial_derivative_a;
+  vnl_vector<double> partial_derivative_a_prime;
 
-//  // Compute the Fischer information matrix
-//  m_Fischer.SetSize(m_NumberOfMaterials, m_NumberOfMaterials);
-//  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
-//    {
-//    for (unsigned int a_prime=0; a_prime<m_NumberOfMaterials; a_prime++)
-//      {
-//      // Compute the partial derivatives of lambda_b with respect to the material line integrals
-//      intermediate_a = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a));
-//      intermediate_a_prime = element_product(attenuatedIncidentSpectrum, m_MaterialAttenuations.GetVnlMatrix().get_row(a_prime));
+  // Compute the Fischer information matrix
+  m_Fischer.SetSize(m_NumberOfMaterials, m_NumberOfMaterials);
+  for (unsigned int a=0; a<m_NumberOfMaterials; a++)
+    {
+    for (unsigned int a_prime=0; a_prime<m_NumberOfMaterials; a_prime++)
+      {
+      // Compute the partial derivatives of lambda_b with respect to the material line integrals
+      intermediate_a = element_product(-attenuationFactors, m_MaterialAttenuations.get_column(a));
+      intermediate_a_prime = element_product(-attenuationFactors, m_MaterialAttenuations.get_column(a_prime));
 
-//      partial_derivative_a = m_DetectorResponse.GetVnlMatrix() * intermediate_a;
-//      partial_derivative_a_prime = m_DetectorResponse.GetVnlMatrix() * intermediate_a_prime;
+      partial_derivative_a = m_IncidentSpectrumAndDetectorResponseProduct * intermediate_a;
+      partial_derivative_a_prime = m_IncidentSpectrumAndDetectorResponseProduct * intermediate_a_prime;
 
-//      // Multiply them together element-wise, then dot product with the weights
-//      partial_derivative_a_prime = element_product(partial_derivative_a, partial_derivative_a_prime);
-//      m_Fischer[a][a_prime] = dot_product(partial_derivative_a_prime,weights);
-//      }
-//    }
-//  }
+      // Multiply them together element-wise, then dot product with the weights
+      partial_derivative_a_prime = element_product(partial_derivative_a, partial_derivative_a_prime);
+      m_Fischer[a][a_prime] = dot_product(partial_derivative_a_prime,weights);
+      }
+    }
+  }
 
 protected:
   itk::VariableSizeMatrix<float>    m_Fischer;
