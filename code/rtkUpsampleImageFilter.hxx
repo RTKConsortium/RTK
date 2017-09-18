@@ -30,9 +30,6 @@
 namespace rtk
 {
 
-/**
- *   Constructor
- */
 template <class TInputImage, class TOutputImage>
 UpsampleImageFilter<TInputImage,TOutputImage>
 ::UpsampleImageFilter()
@@ -43,9 +40,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
   this->m_OutputIndex.Fill(0);
 }
 
-/**
- *
- */
 template <class TInputImage, class TOutputImage>
 void
 UpsampleImageFilter<TInputImage,TOutputImage>
@@ -64,9 +58,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     }
 }
 
-/**
- *
- */
 template <class TInputImage, class TOutputImage>
 void
 UpsampleImageFilter<TInputImage,TOutputImage>
@@ -88,18 +79,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     }
 }
 
-//template <class TInputImage, class TOutputImage>
-//void
-//UpsampleImageFilter<TInputImage,TOutputImage>
-//::BeforeThreadedGenerateData()
-//{
-//  std::cout << "In UpsampleImageFilter : BeforeThreadedGenerateData, input size = " << this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
-//}
-
-
-/**
- *
- */
 template <class TInputImage, class TOutputImage>
 void 
 UpsampleImageFilter<TInputImage,TOutputImage>
@@ -213,17 +192,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
     }
 }
 
-//template <class TInputImage, class TOutputImage>
-//void
-//UpsampleImageFilter<TInputImage,TOutputImage>
-//::AfterThreadedGenerateData()
-//{
-//  std::cout << "In UpsampleImageFilter : AfterThreadedGenerateData" << std::endl;
-//}
-
-/** 
- *
- */
 template <class TInputImage, class TOutputImage>
 void 
 UpsampleImageFilter<TInputImage,TOutputImage>
@@ -244,9 +212,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
-/** 
- *
- */
 template <class TInputImage, class TOutputImage>
 void 
 UpsampleImageFilter<TInputImage,TOutputImage>
