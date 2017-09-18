@@ -135,7 +135,6 @@ int main(int argc, char * argv[])
   simplex->SetNumberOfIterations(args_info.niterations_arg);
   simplex->SetOptimizeWithRestarts(args_info.restarts_flag);
   simplex->SetLogTransformEachBin(args_info.log_flag);
-  simplex->SetRescaleAttenuations(args_info.rescale_flag);
   simplex->SetIsSpectralCT(true);
 
   // Note: The simplex filter is set to perform several searches for each pixel,
@@ -174,10 +173,6 @@ int main(int argc, char * argv[])
     writer->SetFileName(args_info.fischer_arg);
     writer->Update();
     }
-
-  // If a rescale of the material attenuations was performed, display the scaling factors on the command line
-  if (args_info.rescale_flag)
-    std::cout << "Material attenuation rescaling factors: " << simplex->GetRescalingFactors() << std::endl;
 
   return EXIT_SUCCESS;
 }

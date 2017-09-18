@@ -16,4 +16,3 @@ option "restarts"   r "Allow random restarts during optimization"               
 option "fischer"    f "File name for the Fischer information matrix"                       string                      no
 option "log"        l "Log transform each bin, and concatenate the projections with the decomposed ones"      flag     off
 option "guess"      g "Ignore values in input and initialize the simplex with a simple heuristic instead"     flag     off
-option "rescale"    - "Scales attenuations to the order of magnitude of that of the first material"           flag     off

@@ -19,7 +19,7 @@
 #ifndef rtkSpectralForwardModelImageFilter_h
 #define rtkSpectralForwardModelImageFilter_h
 
-#include "rtkSimplexProjectionsDecompositionImageFilter.h"
+#include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
 #include "rtkDualEnergyNegativeLogLikelihood.h"
 

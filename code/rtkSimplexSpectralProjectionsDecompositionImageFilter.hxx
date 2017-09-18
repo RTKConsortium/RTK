@@ -32,6 +32,27 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::SimplexSpectralProjectionsDecompositionImageFilter()
 {
+  this->SetNumberOfIndexedOutputs(2); // decomposed projections, inverse variance of decomposition noise
+
+  // Decomposed projections
+  this->SetNthOutput( 0, this->MakeOutput( 0 ) );
+
+  // Inverse variance of decomposition noise
+  this->SetNthOutput( 1, this->MakeOutput( 1 ) );
+
+  // Fischer matrix (estimate of inverse covariance of decomposition)
+  this->SetNthOutput( 2, this->MakeOutput( 2 ) );
+
+  // Set the default values of member parameters
+  m_NumberOfIterations=300;
+  m_NumberOfMaterials = 4;
+  m_NumberOfEnergies = 100;
+  m_OptimizeWithRestarts = false;
+
+  // Fill in the vectors and matrices with zeros
+  m_MaterialAttenuations.fill(0.); //Not sure this works
+  m_DetectorResponse.fill(0.);
+
   // Initial lengths, set to incorrect values to make sure that they are indeed updated
   m_NumberOfSpectralBins = 8;
   m_OutputInverseCramerRaoLowerBound = false;
@@ -40,6 +61,47 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   m_GuessInitialization = false;
   m_IsSpectralCT = true;
 }
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+void
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::SetInputDecomposedProjections(const DecomposedProjectionsType* DecomposedProjections)
+{
+  this->SetNthInput(0, const_cast<DecomposedProjectionsType*>(DecomposedProjections));
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+void
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::SetInputMeasuredProjections(const MeasuredProjectionsType *SpectralProjections)
+{
+  this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType*>(SpectralProjections));
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+void
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::SetDetectorResponse(const DetectorResponseImageType *DetectorResponse)
+{
+  this->SetInput("DetectorResponse", const_cast<DetectorResponseImageType*>(DetectorResponse));
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+void
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::SetMaterialAttenuations(const MaterialAttenuationsImageType *MaterialAttenuations)
+{
+  this->SetInput("MaterialAttenuations", const_cast<MaterialAttenuationsImageType*>(MaterialAttenuations));
+}
+
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
@@ -59,6 +121,50 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 ::SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType *SecondIncidentSpectrum)
 {
   this->SetInput("SecondIncidentSpectrum", const_cast<IncidentSpectrumImageType*>(SecondIncidentSpectrum));
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+typename DecomposedProjectionsType::ConstPointer
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::GetInputDecomposedProjections()
+{
+  return static_cast< const DecomposedProjectionsType * >
+          ( this->itk::ProcessObject::GetInput(0) );
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+typename MeasuredProjectionsType::ConstPointer
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::GetInputMeasuredProjections()
+{
+  return static_cast< const MeasuredProjectionsType * >
+          ( this->itk::ProcessObject::GetInput("MeasuredProjections") );
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+typename DetectorResponseImageType::ConstPointer
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::GetDetectorResponse()
+{
+  return static_cast< const DetectorResponseImageType * >
+          ( this->itk::ProcessObject::GetInput("DetectorResponse") );
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+typename MaterialAttenuationsImageType::ConstPointer
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::GetMaterialAttenuations()
+{
+  return static_cast< const MaterialAttenuationsImageType * >
+          ( this->itk::ProcessObject::GetInput("MaterialAttenuations") );
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -85,12 +191,39 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
          typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+itk::DataObject::Pointer
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::MakeOutput(DataObjectPointerArraySizeType idx)
+{
+  itk::DataObject::Pointer output;
+
+  switch ( idx )
+    {
+    case 0:
+      output = ( DecomposedProjectionsType::New() ).GetPointer();
+      break;
+    case 1:
+      output = ( DecomposedProjectionsType::New() ).GetPointer();
+      break;
+    case 2:
+      output = ( DecomposedProjectionsType::New() ).GetPointer();
+      break;
+    }
+  return output.GetPointer();
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
 void
 SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
 ::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
+  this->GetOutput(0)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
+  this->GetOutput(1)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
+  this->GetOutput(2)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
 
   this->m_NumberOfSpectralBins = this->GetInputMeasuredProjections()->GetVectorLength();
   this->m_NumberOfMaterials = this->GetInputDecomposedProjections()->GetVectorLength();
@@ -113,6 +246,18 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
 {
   Superclass::GenerateInputRequestedRegion();
 
+  // Input 0 is the initial decomposed projections
+  typename DecomposedProjectionsType::Pointer inputPtr0 =
+    const_cast< DecomposedProjectionsType * >( this->GetInputDecomposedProjections().GetPointer() );
+  if ( !inputPtr0 ) return;
+  inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+
+  // Input 1 is the spectral projections
+  typename MeasuredProjectionsType::Pointer inputPtr1 =
+    const_cast< MeasuredProjectionsType * >( this->GetInputMeasuredProjections().GetPointer() );
+  if ( !inputPtr1 ) return;
+  inputPtr1->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+
   // Input 2 is the incident spectrum image (same dimension as a single projection)
   typename IncidentSpectrumImageType::Pointer inputPtr2 =
     const_cast< IncidentSpectrumImageType * >( this->GetInputIncidentSpectrum().GetPointer() );
@@ -132,6 +277,18 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
   requested.SetSize(sizeRequested);
 
   inputPtr2->SetRequestedRegion( requested );
+
+  // Input 3 is the detector response image (2D float)
+  typename DetectorResponseImageType::Pointer inputPtr3 =
+    const_cast< DetectorResponseImageType * >( this->GetDetectorResponse().GetPointer() );
+  if ( !inputPtr3 ) return;
+  inputPtr3->SetRequestedRegion( inputPtr3->GetLargestPossibleRegion() );
+
+  // Input 4 is the material attenuations image (2D float)
+  typename MaterialAttenuationsImageType::Pointer inputPtr4 =
+    const_cast< MaterialAttenuationsImageType * >( this->GetMaterialAttenuations().GetPointer() );
+  if ( !inputPtr4 ) return;
+  inputPtr4->SetRequestedRegion( inputPtr4->GetLargestPossibleRegion() );
 }
 
 
