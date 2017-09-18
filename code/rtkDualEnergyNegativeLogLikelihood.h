@@ -43,7 +43,7 @@ class DualEnergyNegativeLogLikelihood : public rtk::ProjectionsDecompositionNega
 {
 public:
 
-  typedef DualEnergyNegativeLogLikelihood                     Self;
+  typedef DualEnergyNegativeLogLikelihood                       Self;
   typedef rtk::ProjectionsDecompositionNegativeLogLikelihood    Superclass;
   typedef itk::SmartPointer<Self>                               Pointer;
   typedef itk::SmartPointer<const Self>                         ConstPointer;
