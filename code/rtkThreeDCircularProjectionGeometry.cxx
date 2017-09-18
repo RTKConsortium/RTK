@@ -266,6 +266,10 @@ void rtk::ThreeDCircularProjectionGeometry::Clear()
   m_SourceToDetectorDistances.clear();
   m_ProjectionOffsetsX.clear();
   m_ProjectionOffsetsY.clear();
+  m_CollimationUInf.clear();
+  m_CollimationUSup.clear();
+  m_CollimationVInf.clear();
+  m_CollimationVSup.clear();
 
   m_ProjectionTranslationMatrices.clear();
   m_MagnificationMatrices.clear();

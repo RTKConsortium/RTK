@@ -171,6 +171,10 @@ int main(int argc, char * argv[])
                                         geometry->GetInPlaneAngles()[proj],
                                         geometry->GetSourceOffsetsX()[proj],
                                         geometry->GetSourceOffsetsY()[proj]);
+      geometry->SetCollimationOfLastProjection(geometry->GetCollimationUInf()[proj],
+                                               geometry->GetCollimationUSup()[proj],
+                                               geometry->GetCollimationVInf()[proj],
+                                               geometry->GetCollimationVSup()[proj]);
       }
     }
 
