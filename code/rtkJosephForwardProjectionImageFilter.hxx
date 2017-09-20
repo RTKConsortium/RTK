@@ -74,20 +74,16 @@ JosephForwardProjectionImageFilter<TInputImage,
 
   // Create intersection functions, one for each possible main direction
   typedef rtk::RayBoxIntersectionFunction<CoordRepType, Dimension> RBIFunctionType;
-  typename RBIFunctionType::Pointer rbi[Dimension];
-  for(unsigned int j=0; j<Dimension; j++)
+  typename RBIFunctionType::Pointer rbi = RBIFunctionType::New();
+  typename RBIFunctionType::VectorType boxMin, boxMax;
+  for(unsigned int i=0; i<Dimension; i++)
     {
-    rbi[j] = RBIFunctionType::New();
-    typename RBIFunctionType::VectorType boxMin, boxMax;
-    for(unsigned int i=0; i<Dimension; i++)
-      {
-      boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
-      boxMax[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] +
-                  this->GetInput(1)->GetBufferedRegion().GetSize()[i] - 1;
-      }
-    rbi[j]->SetBoxMin(boxMin);
-    rbi[j]->SetBoxMax(boxMax);
+    boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
+    boxMax[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] +
+                this->GetInput(1)->GetBufferedRegion().GetSize()[i] - 1;
     }
+  rbi->SetBoxMin(boxMin);
+  rbi->SetBoxMax(boxMax);
 
   // Go over each pixel of the projection
   typename RBIFunctionType::VectorType stepMM, np, fp;
@@ -97,8 +93,7 @@ JosephForwardProjectionImageFilter<TInputImage,
     typename InputRegionIterator::PointType dirVox = itIn->GetSourceToPixel();
 
     //Set source
-    for(unsigned int i=0; i<Dimension; i++)
-      rbi[i]->SetRayOrigin( sourcePosition );
+    rbi->SetRayOrigin( sourcePosition );
 
     // Select main direction
     unsigned int mainDir = 0;
@@ -111,21 +106,19 @@ JosephForwardProjectionImageFilter<TInputImage,
       }
 
     // Test if there is an intersection
-    if( rbi[mainDir]->Evaluate(&dirVox[0]) &&
-        rbi[mainDir]->GetFarthestDistance()>=0. && // check if detector after the source
-        rbi[mainDir]->GetNearestDistance()<=1.)    // check if detector after or in the volume
+    if( rbi->Evaluate(&dirVox[0]) &&
+        rbi->GetFarthestDistance()>=0. && // check if detector after the source
+        rbi->GetNearestDistance()<=1.)    // check if detector after or in the volume
       {
       // Clip the casting between source and pixel of the detector
-      rbi[mainDir]->SetNearestDistance ( std::max(rbi[mainDir]->GetNearestDistance() , 0.) );
-      rbi[mainDir]->SetFarthestDistance( std::min(rbi[mainDir]->GetFarthestDistance(), 1.) );
+      rbi->SetNearestDistance ( std::max(rbi->GetNearestDistance() , 0.) );
+      rbi->SetFarthestDistance( std::min(rbi->GetFarthestDistance(), 1.) );
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
-      np = rbi[mainDir]->GetNearestPoint();
-      fp = rbi[mainDir]->GetFarthestPoint();
+      np = rbi->GetNearestPoint();
+      fp = rbi->GetFarthestPoint();
       if(np[mainDir]>fp[mainDir])
-        {
         std::swap(np, fp);
-        }
 
       // Compute main nearest and farthest slice indices
       const int ns = vnl_math_rnd( np[mainDir]);
@@ -137,10 +130,10 @@ JosephForwardProjectionImageFilter<TInputImage,
       if(notMainDirInf>notMainDirSup)
         std::swap(notMainDirInf, notMainDirSup);
 
-      const CoordRepType minx = rbi[mainDir]->GetBoxMin()[notMainDirInf];
-      const CoordRepType miny = rbi[mainDir]->GetBoxMin()[notMainDirSup];
-      const CoordRepType maxx = rbi[mainDir]->GetBoxMax()[notMainDirInf];
-      const CoordRepType maxy = rbi[mainDir]->GetBoxMax()[notMainDirSup];
+      const CoordRepType minx = rbi->GetBoxMin()[notMainDirInf];
+      const CoordRepType miny = rbi->GetBoxMin()[notMainDirSup];
+      const CoordRepType maxx = rbi->GetBoxMax()[notMainDirInf];
+      const CoordRepType maxy = rbi->GetBoxMax()[notMainDirSup];
 
       // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
       const int offsetx = offsets[notMainDirInf];

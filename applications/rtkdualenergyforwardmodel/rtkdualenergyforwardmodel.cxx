@@ -16,29 +16,28 @@
  *
  *=========================================================================*/
 
-#include "rtkdualenergysimplexdecomposition_ggo.h"
+#include "rtkdualenergyforwardmodel_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
-#include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
+#include "rtkSpectralForwardModelImageFilter.h"
+#include "rtkConstantImageSource.h"
 
-#include <itkImageRegionIterator.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])
 {
-  GGO(rtkdualenergysimplexdecomposition, args_info);
+  GGO(rtkdualenergyforwardmodel, args_info);
 
   typedef float PixelValueType;
   const unsigned int Dimension = 3;
 
   typedef itk::VectorImage< PixelValueType, Dimension > DecomposedProjectionType;
   typedef itk::ImageFileReader<DecomposedProjectionType> DecomposedProjectionReaderType;
-  typedef itk::ImageFileWriter<DecomposedProjectionType> DecomposedProjectionWriterType;
 
   typedef itk::VectorImage< PixelValueType, Dimension > DualEnergyProjectionsType;
-  typedef itk::ImageFileReader< DualEnergyProjectionsType > DualEnergyProjectionReaderType;
+  typedef itk::ImageFileWriter< DualEnergyProjectionsType > DualEnergyProjectionWriterType;
 
   typedef itk::VectorImage< PixelValueType, Dimension-1 > IncidentSpectrumImageType;
   typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
@@ -53,10 +52,6 @@ int main(int argc, char * argv[])
   DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
   decomposedProjectionReader->SetFileName( args_info.input_arg );
   decomposedProjectionReader->Update();
-
-  DualEnergyProjectionReaderType::Pointer dualEnergyProjectionReader = DualEnergyProjectionReaderType::New();
-  dualEnergyProjectionReader->SetFileName( args_info.dual_arg );
-  dualEnergyProjectionReader->Update();
 
   IncidentSpectrumReaderType::Pointer incidentSpectrumReaderHighEnergy = IncidentSpectrumReaderType::New();
   incidentSpectrumReaderHighEnergy->SetFileName( args_info.high_arg );
@@ -95,43 +90,42 @@ int main(int argc, char * argv[])
   // Get parameters from the images
   const unsigned int MaximumEnergy = incidentSpectrumReaderHighEnergy->GetOutput()->GetVectorLength();
 
-  IncidentSpectrumImageType::IndexType indexIncident;
-  indexIncident.Fill(0);
-  if (incidentSpectrumReaderLowEnergy->GetOutput()->GetPixel(indexIncident).Size() != MaximumEnergy)
-    itkGenericExceptionMacro(<< "Low energy incident spectrum image has vector size "
-                             << incidentSpectrumReaderLowEnergy->GetOutput()->GetPixel(indexIncident).Size()
-                             << ", should be "
-                             << MaximumEnergy);
+  // Generate a set of zero-filled intensity projections
+  DualEnergyProjectionsType::Pointer dualEnergyProjections = DualEnergyProjectionsType::New();
+  dualEnergyProjections->CopyInformation(decomposedProjectionReader->GetOutput());
+  dualEnergyProjections->SetVectorLength(2);
+  dualEnergyProjections->Allocate();
 
-  if (detectorImage->GetLargestPossibleRegion().GetSize()[1] != MaximumEnergy)
-    itkGenericExceptionMacro(<< "Detector response image has "
-                             << detectorImage->GetLargestPossibleRegion().GetSize()[1]
+  // Check that the inputs have the expected size
+  DecomposedProjectionType::IndexType indexDecomp;
+  indexDecomp.Fill(0);
+  if (decomposedProjectionReader->GetOutput()->GetVectorLength() != 2)
+    itkGenericExceptionMacro(<< "Decomposed projections (i.e. initialization data) image has vector length "
+                             << decomposedProjectionReader->GetOutput()->GetVectorLength()
+                             << ", should be 2");
+
+  if (materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1] != MaximumEnergy)
+    itkGenericExceptionMacro(<< "Material attenuations image has "
+                             << materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1]
                              << "energies, should have "
                              << MaximumEnergy);
 
   // Create and set the filter
-  typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
-                                                                    DualEnergyProjectionsType,
-                                                                    IncidentSpectrumImageType,
-                                                                    DetectorResponseImageType,
-                                                                    MaterialAttenuationsImageType> SimplexFilterType;
-  SimplexFilterType::Pointer simplex = SimplexFilterType::New();
-  simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
-  simplex->SetGuessInitialization(args_info.guess_flag);
-  simplex->SetInputMeasuredProjections(dualEnergyProjectionReader->GetOutput());
-  simplex->SetInputIncidentSpectrum(incidentSpectrumReaderHighEnergy->GetOutput());
-  simplex->SetInputSecondIncidentSpectrum(incidentSpectrumReaderLowEnergy->GetOutput());
-  simplex->SetDetectorResponse(detectorImage);
-  simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
-  simplex->SetNumberOfIterations(args_info.niterations_arg);
-  simplex->SetOptimizeWithRestarts(args_info.restarts_flag);
-  simplex->SetIsSpectralCT(false);
+  typedef rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, DualEnergyProjectionsType> ForwardModelFilterType;
+  ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
+  forward->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
+  forward->SetInputMeasuredProjections(dualEnergyProjections);
+  forward->SetInputIncidentSpectrum(incidentSpectrumReaderHighEnergy->GetOutput());
+  forward->SetInputSecondIncidentSpectrum(incidentSpectrumReaderLowEnergy->GetOutput());
+  forward->SetDetectorResponse(detectorImage);
+  forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
+  forward->SetIsSpectralCT(false);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
-  // Write outputs
-  DecomposedProjectionWriterType::Pointer writer = DecomposedProjectionWriterType::New();
-  writer->SetInput(simplex->GetOutput(0));
+  // Write output
+  DualEnergyProjectionWriterType::Pointer writer = DualEnergyProjectionWriterType::New();
+  writer->SetInput(forward->GetOutput());
   writer->SetFileName(args_info.output_arg);
   writer->Update();
 
