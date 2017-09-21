@@ -125,6 +125,7 @@ int main(int argc, char * argv[])
   forward->SetDetectorResponse(detectorResponseReader->GetOutput());
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   forward->SetThresholds(thresholds);
+  forward->SetIsSpectralCT(true);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 

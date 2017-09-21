@@ -1,0 +1,12 @@
+package "rtkspectralforwardmodel"
+purpose "Computes expected photon counts from incident spectrum, material attenuations, detector response and material-decomposed projections"
+
+option "verbose"    v "Verbose execution"                                                 flag                         off
+option "config"     - "Config file"                                                       string                       no
+option "output"     o "Output file name (high and low energy projections)"                string                       yes
+option "input"      i "Material-decomposed projections"                                   string                       yes
+option "high"       - "Incident spectrum image, high energy"                              string                       yes
+option "low"        - "Incident spectrum image, low energy"                               string                       yes
+option "detector"   d "Detector response file"                                            string                       no
+option "attenuations" a "Material attenuations file"                                      string                       yes
+option "variances"  - "Output variances of measured energies, file name"                  string                       no

@@ -57,7 +57,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
   // Create the filter that enforces positivity
   m_ThresholdFilter = ThresholdFilterType::New();
-  
+
   //Permanent internal connections
   m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
   m_ZeroMultiplyFilter->SetInput2( m_ExtractFilter->GetOutput() );
@@ -206,7 +206,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
   m_RayBoxFilter->SetBoxMin(Corner1);
   m_RayBoxFilter->SetBoxMax(Corner2);
-  
+
   if(m_EnforcePositivity)
     {
     m_ThresholdFilter->SetOutsideValue(0);
@@ -266,7 +266,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   std::random_shuffle( projOrder.begin(), projOrder.end() );
 
   m_MultiplyFilter->SetInput1( (const float) m_Lambda/(double)m_NumberOfProjectionsPerSubset  );
-  
+
   // Create the zero projection stack used as input by RayBoxIntersectionFilter
   m_ConstantProjectionStackSource->Update();
 
@@ -277,45 +277,8 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
     {
     unsigned int projectionsProcessedInSubset = 0;
-
     for(unsigned int i = 0; i < nProj; i++)
       {
-      // When we reach the number of projections per subset:
-      // - plug the output of the pipeline back into the Forward projection filter
-      // - set the input of the Back projection filter to zero
-      // - reset the projectionsProcessedInSubset to zero
-      if (projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset)
-        {
-        if (m_EnforcePositivity)
-          pimg = m_ThresholdFilter->GetOutput();
-        else
-          pimg = m_AddFilter->GetOutput();
-
-        pimg->DisconnectPipeline();
-
-        m_ForwardProjectionFilter->SetInput(1, pimg );
-        m_AddFilter->SetInput2(pimg);
-        m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-
-        projectionsProcessedInSubset = 0;
-        }
-
-      // Otherwise, just plug the output of the back projection filter
-      // back as its input
-      else
-        {
-        if (i)
-          {
-          pimg = m_BackProjectionFilter->GetOutput();
-          pimg->DisconnectPipeline();
-          m_BackProjectionFilter->SetInput(0, pimg);
-          }
-        else
-          {
-          m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-          }
-        }
-
       // Change projection subset
       subsetRegion.SetIndex( Dimension-1, projOrder[i] );
       m_ExtractFilter->SetExtractionRegion(subsetRegion);
@@ -390,18 +353,32 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
           m_ThresholdFilter->Update();
           m_ThresholdProbe.Stop();
           }
-        }
 
+        // To start a new subset:
+        // - plug the output of the pipeline back into the Forward projection filter
+        // - set the input of the Back projection filter to zero
+        if (m_EnforcePositivity)
+          pimg = m_ThresholdFilter->GetOutput();
+        else
+          pimg = m_AddFilter->GetOutput();
+        pimg->DisconnectPipeline();
+
+        m_ForwardProjectionFilter->SetInput(1, pimg );
+        m_AddFilter->SetInput2(pimg);
+        m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+
+        projectionsProcessedInSubset = 0;
+        }
+      // Backproject in the same image otherwise.
+      else
+        {
+        pimg = m_BackProjectionFilter->GetOutput();
+        pimg->DisconnectPipeline();
+        m_BackProjectionFilter->SetInput(0, pimg);
+        }
       }
     }
-  if (m_EnforcePositivity)
-    {
-    this->GraftOutput( m_ThresholdFilter->GetOutput() );
-    }
-  else
-    {
-    this->GraftOutput( m_AddFilter->GetOutput() );
-    }
+  this->GraftOutput( pimg );
 }
 
 template<class TInputImage, class TOutputImage>
@@ -433,7 +410,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   os << "  Volume update: " << m_AddProbe.GetTotal()
      << ' ' << m_AddProbe.GetUnit() << std::endl;
   if (m_EnforcePositivity)
-    {  
+    {
     os << "  Positivity enforcement: " << m_ThresholdProbe.GetTotal()
     << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
     }

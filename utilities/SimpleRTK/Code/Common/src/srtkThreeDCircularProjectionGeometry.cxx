@@ -185,6 +185,19 @@ public:
     std::copy( matrix.begin(), matrix.end(), itkMatrix.GetVnlMatrix().begin() );
     this->m_ProjectionGeometry->AddProjection(itkMatrix);
     }
+  void AddProjection(const std::vector<double> sourcePosition, const std::vector<double> detectorPosition, const std::vector<double> detectorRowVector, const std::vector<double> detectorColumnVector)
+    {
+    ProjectionGeometryType::PointType source, detector;
+    ProjectionGeometryType::VectorType row, col;
+    for(int i=0; i<3; i++)
+      {
+      source[i] = sourcePosition[i];
+      detector[i] = detectorPosition[i];
+      row[i] = detectorRowVector[i];
+      col[i] = detectorColumnVector[i];
+      }
+    this->m_ProjectionGeometry->AddProjection(source,detector,row,col);
+    }
 
   /** Clears the geometry */
   void Clear()
@@ -358,6 +371,12 @@ void ThreeDCircularProjectionGeometry::AddProjection(const std::vector<double> m
   {
   assert( m_PimpleThreeDCircularProjectionGeometry );
   this->m_PimpleThreeDCircularProjectionGeometry->AddProjection(matrix);
+  }
+
+void ThreeDCircularProjectionGeometry::AddProjection(const std::vector<double> sourcePosition, const std::vector<double> detectorPosition, const std::vector<double> detectorRowVector, const std::vector<double> detectorColumnVector)
+  {
+  assert( m_PimpleThreeDCircularProjectionGeometry );
+  this->m_PimpleThreeDCircularProjectionGeometry->AddProjection(sourcePosition,detectorPosition,detectorRowVector,detectorColumnVector);
   }
 
 void ThreeDCircularProjectionGeometry::Clear()
