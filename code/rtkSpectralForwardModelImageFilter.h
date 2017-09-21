@@ -107,9 +107,17 @@ public:
   itkSetMacro(IsSpectralCT, bool)
   itkGetMacro(IsSpectralCT, bool)
 
+  itkSetMacro(ComputeVariances, bool)
+  itkGetMacro(ComputeVariances, bool)
+
 protected:
   SpectralForwardModelImageFilter();
   ~SpectralForwardModelImageFilter() {}
+
+  /**  Create the Output */
+  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using Superclass::MakeOutput;
+  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
@@ -134,6 +142,7 @@ protected:
   unsigned int m_NumberOfMaterials;
   bool         m_OptimizeWithRestarts;
   bool         m_IsSpectralCT; // If not, it is dual energy CT
+  bool         m_ComputeVariances; // Only implemented for dual energy CT
 
 private:
   //purposely not implemented

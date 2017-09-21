@@ -9,3 +9,4 @@ option "high"       - "Incident spectrum image, high energy"                    
 option "low"        - "Incident spectrum image, low energy"                               string                       yes
 option "detector"   d "Detector response file"                                            string                       no
 option "attenuations" a "Material attenuations file"                                      string                       yes
+option "variances"  - "Output variances of measured energies, file name"                  string                       no

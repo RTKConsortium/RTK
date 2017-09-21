@@ -120,6 +120,7 @@ int main(int argc, char * argv[])
   forward->SetDetectorResponse(detectorImage);
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   forward->SetIsSpectralCT(false);
+  forward->SetComputeVariances(args_info.variances_given);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
@@ -128,6 +129,14 @@ int main(int argc, char * argv[])
   writer->SetInput(forward->GetOutput());
   writer->SetFileName(args_info.output_arg);
   writer->Update();
+
+  // If requested, write the variances
+  if (args_info.variances_given)
+    {
+    writer->SetInput(forward->GetOutput(1));
+    writer->SetFileName(args_info.variances_arg);
+    writer->Update();
+    }
 
   return EXIT_SUCCESS;
 }

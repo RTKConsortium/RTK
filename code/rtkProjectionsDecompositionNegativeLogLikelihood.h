@@ -182,6 +182,14 @@ public:
   return logTransforms;
   }
 
+  virtual vnl_vector<double>  GetVariances( const ParametersType & lineIntegrals ) const
+  {
+  vnl_vector<double> meaninglessResult;
+  meaninglessResult.set_size(m_NumberOfSpectralBins);
+  meaninglessResult.fill(0.);
+  return(meaninglessResult);
+  }
+
   itkSetMacro(MeasuredData, MeasuredDataType)
   itkGetMacro(MeasuredData, MeasuredDataType)
 

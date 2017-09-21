@@ -35,6 +35,15 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
   // Initial lengths, set to incorrect values to make sure that they are indeed updated
   m_NumberOfSpectralBins = 8;
   m_IsSpectralCT = true;
+  m_ComputeVariances = false;
+
+  this->SetNumberOfIndexedOutputs(2); // decomposed projections, inverse variance of decomposition noise
+
+  // Dual energy projections (mean of the distribution)
+  this->SetNthOutput( 0, this->MakeOutput( 0 ) );
+
+  // Variance of the distribution
+  this->SetNthOutput( 1, this->MakeOutput( 1 ) );
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -161,6 +170,27 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
 {
   return static_cast< const MaterialAttenuationsImageType * >
           ( this->itk::ProcessObject::GetInput("MaterialAttenuations") );
+}
+
+template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
+         typename IncidentSpectrumImageType, typename DetectorResponseImageType, typename MaterialAttenuationsImageType>
+itk::DataObject::Pointer
+SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+::MakeOutput(DataObjectPointerArraySizeType idx)
+{
+  itk::DataObject::Pointer output;
+
+  switch ( idx )
+    {
+    case 0:
+      output = ( DecomposedProjectionsType::New() ).GetPointer();
+      break;
+    case 1:
+      output = ( DecomposedProjectionsType::New() ).GetPointer();
+      break;
+    }
+  return output.GetPointer();
 }
 
 template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
@@ -296,7 +326,8 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Walk the output projection stack. For each pixel, set the cost function's member variables and run the optimizer.
-  itk::ImageRegionIterator<MeasuredProjectionsType> outIt (this->GetOutput(0), outputRegionForThread);
+  itk::ImageRegionIterator<MeasuredProjectionsType> output0It (this->GetOutput(0), outputRegionForThread);
+  itk::ImageRegionIterator<DecomposedProjectionsType> output1It (this->GetOutput(1), outputRegionForThread);
   itk::ImageRegionConstIterator<DecomposedProjectionsType> inIt (this->GetInputDecomposedProjections(), outputRegionForThread);
 
   typename IncidentSpectrumImageType::RegionType incidentSpectrumRegionForThread = this->GetInputIncidentSpectrum()->GetLargestPossibleRegion();
@@ -312,7 +343,7 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
   if (this->GetInputSecondIncidentSpectrum())
     secondSpectrumIt = itk::ImageRegionConstIterator<IncidentSpectrumImageType>(this->GetInputSecondIncidentSpectrum(), incidentSpectrumRegionForThread);
 
-  while(!outIt.IsAtEnd())
+  while(!output0It.IsAtEnd())
     {
     // The input incident spectrum image typically has lower dimension than decomposed projections
     // This condition makes the iterator cycle over and over on the same image, following the other ones
@@ -357,10 +388,17 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
       outputPixel[m] = forward[m];
 
     // Write it to the output
-    outIt.Set(outputPixel);
+    output0It.Set(outputPixel);
+
+    // If requested, store the variances into output(1)
+    if (m_ComputeVariances)
+      {
+      output1It.Set(itk::VariableLengthVector<double>(cost->GetVariances(in).data_block(), this->m_NumberOfSpectralBins));
+      ++output1It;
+      }
 
     // Move forward
-    ++outIt;
+    ++output0It;
     ++inIt;
     ++spectrumIt;
     if (this->GetInputSecondIncidentSpectrum())
