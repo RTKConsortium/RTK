@@ -86,31 +86,6 @@ public:
       m_IncidentSpectrumAndDetectorResponseProduct[i][j] = m_DetectorResponse[i][j] * m_IncidentSpectrum[0][j];
   }
 
-  itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()
-  {
-  // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS reconstruction)
-  itk::VariableLengthVector<double> diag;
-  diag.SetSize(m_NumberOfMaterials);
-  diag.Fill(0);
-
-  for (unsigned int mat=0; mat<m_NumberOfMaterials; mat++)
-    diag[mat] = 1./m_Fischer.GetInverse()[mat][mat];
-  return diag;
-  }
-
-  itk::VariableLengthVector<float> GetFischerMatrix()
-  {
-  // Return the whole Fischer information matrix
-  itk::VariableLengthVector<double> fischer;
-  fischer.SetSize(m_NumberOfMaterials * m_NumberOfMaterials);
-  fischer.Fill(0);
-
-  for (unsigned int i=0; i<m_NumberOfMaterials; i++)
-    for (unsigned int j=0; j<m_NumberOfMaterials; j++)
-    fischer[i * m_NumberOfMaterials + j] = m_Fischer[i][j];
-  return fischer;
-  }
-
   // Not used with a simplex optimizer, but may be useful later
   // for gradient based methods
   void GetDerivative( const ParametersType & lineIntegrals,
@@ -198,9 +173,6 @@ public:
       }
     }
   }
-
-protected:
-  itk::VariableSizeMatrix<float>    m_Fischer;
 
 private:
   Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented

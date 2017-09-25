@@ -72,12 +72,39 @@ public:
   {
   }
 
-  virtual MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE {}
+  virtual MeasureType GetValue( const ParametersType & parameters ) const ITK_OVERRIDE {
+  long double measure = 0;
+  return measure;
+  }
   virtual void GetDerivative( const ParametersType & lineIntegrals,
                       DerivativeType & derivatives ) const ITK_OVERRIDE {}
   virtual void Initialize() {}
-  virtual itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound(){}
-  virtual itk::VariableLengthVector<float> GetFischerMatrix(){}
+
+  virtual itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()
+  {
+  // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS reconstruction)
+  itk::VariableLengthVector<double> diag;
+  diag.SetSize(m_NumberOfMaterials);
+  diag.Fill(0);
+
+  for (unsigned int mat=0; mat<m_NumberOfMaterials; mat++)
+    diag[mat] = 1./m_Fischer.GetInverse()[mat][mat];
+  return diag;
+  }
+
+  virtual itk::VariableLengthVector<float> GetFischerMatrix()
+  {
+  // Return the whole Fischer information matrix
+  itk::VariableLengthVector<double> fischer;
+  fischer.SetSize(m_NumberOfMaterials * m_NumberOfMaterials);
+  fischer.Fill(0);
+
+  for (unsigned int i=0; i<m_NumberOfMaterials; i++)
+    for (unsigned int j=0; j<m_NumberOfMaterials; j++)
+    fischer[i * m_NumberOfMaterials + j] = m_Fischer[i][j];
+  return fischer;
+  }
+
   virtual void ComputeFischerMatrix(const ParametersType & lineIntegrals){}
 
   unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
@@ -215,16 +242,17 @@ public:
   itkGetMacro(Thresholds, ThresholdsType)
 
 protected:
-  MaterialAttenuationsType    m_MaterialAttenuations;
-  DetectorResponseType        m_DetectorResponse;
-  MeasuredDataType            m_MeasuredData;
-  ThresholdsType              m_Thresholds;
-  IncidentSpectrumType        m_IncidentSpectrum;
-  vnl_matrix<double>          m_IncidentSpectrumAndDetectorResponseProduct;
-  unsigned int                m_NumberOfEnergies;
-  unsigned int                m_NumberOfMaterials;
-  unsigned int                m_NumberOfSpectralBins;
-  bool                        m_Initialized;
+  MaterialAttenuationsType          m_MaterialAttenuations;
+  DetectorResponseType              m_DetectorResponse;
+  MeasuredDataType                  m_MeasuredData;
+  ThresholdsType                    m_Thresholds;
+  IncidentSpectrumType              m_IncidentSpectrum;
+  vnl_matrix<double>                m_IncidentSpectrumAndDetectorResponseProduct;
+  unsigned int                      m_NumberOfEnergies;
+  unsigned int                      m_NumberOfMaterials;
+  unsigned int                      m_NumberOfSpectralBins;
+  bool                              m_Initialized;
+  itk::VariableSizeMatrix<float>    m_Fischer;
 
 private:
   ProjectionsDecompositionNegativeLogLikelihood(const Self &); //purposely not implemented
