@@ -166,10 +166,13 @@ AddProjection(const PointType &sourcePosition,
   // (at some angle constellations we may run into numerical troubles, therefore,
   // verify angles and try to fix instabilities)
   if (!VerifyAngles(oa, ga, ia, rm))
-  {
+    {
     if (!FixAngles(oa, ga, ia, rm))
+      {
+      itkWarningMacro(<< "Failed to AddProjection");
       return false;
-  }
+      }
+    }
   // since rtk::ThreeDCircularProjectionGeometry::AddProjection() mirrors the
   // angles (!) internally, let's invert the computed ones in order to
   // get at the end what we would like (see above); convert rad->deg:
@@ -257,7 +260,7 @@ AddProjection(const HomogeneousProjectionMatrixType &pMat)
   EulerType::Pointer euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
 
-  //Extract angle using parent method without orthogonality check, see Reg23ProjectionGeometry.cxx for more
+  //Extract angle using parent method without orthogonality check
   euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(R);
   double oa = euler->GetAngleX();
   double ga = euler->GetAngleY();
@@ -267,10 +270,13 @@ AddProjection(const HomogeneousProjectionMatrixType &pMat)
   // (at some angle constellations we may run into numerical troubles, therefore,
   // verify angles and try to fix instabilities)
   if (!VerifyAngles(oa, ga, ia, R))
-  {
+    {
     if (!FixAngles(oa, ga, ia, R))
+      {
+      itkWarningMacro(<< "Failed to AddProjection");
       return false;
-  }
+      }
+    }
 
   // Coordinates of source in oriented coord sys :
   // (sx,sy,sid) = RS = R(-A^{-1}P[:,3]) = -K^{-1}P[:,3]
@@ -590,7 +596,7 @@ VerifyAngles(const double outOfPlaneAngleRAD,
   typedef itk::Euler3DTransform<double> EulerType;
 
   const Matrix3x3Type &rm = referenceMatrix; // shortcut
-  const double EPSILON = 1e-6; // internal tolerance for comparison
+  const double EPSILON = 1e-5; // internal tolerance for comparison
 
   EulerType::Pointer euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
