@@ -95,7 +95,10 @@ public:
                      const VectorType &detectorColumnVector);
 
 
-  /** Add projection from a projection matrix. */
+  /** Add projection from a projection matrix. A projection matrix is defined
+   * up to a scaling factor. The function here Assumes that the input matrix
+   * pMat is normalized such that pMat*(x,y,z,1)'=(u,v,1)'.
+   * This code assumes that the SourceToDetectorDistance is positive. */
   bool AddProjection(const HomogeneousProjectionMatrixType &pMat);
 
   /** Empty the geometry object. */
