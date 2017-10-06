@@ -10,7 +10,7 @@ set(CTEST_BUILD_FLAGS -j12)
 
 set(ENV{CC} "/home/srit/src/gcc/gcc472-install/bin/gcc")
 set(ENV{CXX} "/home/srit/src/gcc/gcc472-install/bin/c++")
-set(ENV{PATH} "/home/srit/src/gcc/gcc441-install/bin:$ENV{PATH}")
+set(ENV{PATH} "/home/srit/src/gcc/gcc440-install/bin:$ENV{PATH}")
 set(ENV{CXXFLAGS} "")
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
