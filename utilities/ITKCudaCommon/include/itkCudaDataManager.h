@@ -25,7 +25,7 @@
 #include "itkCudaContextManager.h"
 #include "itkSimpleFastMutexLock.h"
 #include "itkMutexLockHolder.h"
-#include "rtkWin32Header.h"
+#include "itkCudaWin32Header.h"
 
 #include <memory>
 

@@ -19,6 +19,8 @@
 #ifndef __rtkMedianImageFilter_cxx
 #define __rtkMedianImageFilter_cxx
 
+#include "rtkMedianImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 

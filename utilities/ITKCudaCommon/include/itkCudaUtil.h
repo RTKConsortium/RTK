@@ -33,7 +33,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
-#include "rtkWin32Header.h"
+#include "itkCudaWin32Header.h"
 
 namespace itk
 {

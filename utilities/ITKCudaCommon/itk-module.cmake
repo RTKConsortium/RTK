@@ -1,23 +1,16 @@
-if (ITK_USE_CUDA)
+# if (ITK_USE_CUDA)
 
-  get_filename_component(MY_CURENT_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-  file(READ "${MY_CURENT_DIR}/README" DOCUMENTATION)
+set(DOCUMENTATION "")
 
-  option(Module_ITKCudaCommon "Compile the ITK Cuda external module" FALSE)
+itk_module(ITKCudaCommon
+  EXCLUDE_FROM_DEFAULT
+  COMPILE_DEPENDS
+    ITKCommon
+  TEST_DEPENDS
+    ITKTestKernel
+  DESCRIPTION
+    "${DOCUMENTATION}"
+  )
 
-  if (${Module_ITKCudaCommon})
-
-    # define the dependencies of the include module and the tests
-    itk_module(ITKCudaCommon
-      DEPENDS
-        ITKCommon
-      TEST_DEPENDS
-        ITKTestKernel
-      DESCRIPTION
-        "${DOCUMENTATION}"
-    )
-
-  endif()
-
-endif()
+# endif()
   
