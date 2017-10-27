@@ -19,6 +19,8 @@
 #ifndef rtkDrawGeometricPhantomImageFilter_hxx
 #define rtkDrawGeometricPhantomImageFilter_hxx
 
+#include "rtkDrawGeometricPhantomImageFilter.h"
+
 #include <iostream>
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkDrawCylinderImageFilter.h"

@@ -19,6 +19,8 @@
 #ifndef rtkRayQuadricIntersectionImageFilter_hxx
 #define rtkRayQuadricIntersectionImageFilter_hxx
 
+#include "rtkRayQuadricIntersectionImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 

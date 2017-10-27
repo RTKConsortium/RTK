@@ -19,6 +19,8 @@
 #ifndef rtkI0EstimationProjectionFilter_hxx
 #define rtkI0EstimationProjectionFilter_hxx
 
+#include "rtkI0EstimationProjectionFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 #include <algorithm>

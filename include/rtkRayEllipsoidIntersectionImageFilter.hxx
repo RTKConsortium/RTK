@@ -19,6 +19,8 @@
 #ifndef rtkRayEllipsoidIntersectionImageFilter_hxx
 #define rtkRayEllipsoidIntersectionImageFilter_hxx
 
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 

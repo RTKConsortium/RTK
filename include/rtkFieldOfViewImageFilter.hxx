@@ -19,6 +19,8 @@
 #ifndef rtkFieldOfViewImageFilter_hxx
 #define rtkFieldOfViewImageFilter_hxx
 
+#include "rtkFieldOfViewImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionConstIteratorWithIndex.h>
 

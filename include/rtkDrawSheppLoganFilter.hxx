@@ -19,6 +19,8 @@
 #ifndef rtkDrawSheppLoganFilter_hxx
 #define rtkDrawSheppLoganFilter_hxx
 
+#include "rtkDrawSheppLoganFilter.h"
+
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>

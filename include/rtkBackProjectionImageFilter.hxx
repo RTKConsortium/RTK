@@ -19,6 +19,8 @@
 #ifndef rtkBackProjectionImageFilter_hxx
 #define rtkBackProjectionImageFilter_hxx
 
+#include "rtkBackProjectionImageFilter.h"
+
 #include "rtkHomogeneousMatrix.h"
 
 #include <itkImageRegionConstIterator.h>

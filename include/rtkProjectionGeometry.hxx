@@ -19,6 +19,8 @@
 #ifndef rtkProjectionGeometry_hxx
 #define rtkProjectionGeometry_hxx
 
+#include "rtkProjectionGeometry.h"
+
 namespace rtk {
 
 template< unsigned int TDimension >

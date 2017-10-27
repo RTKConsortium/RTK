@@ -19,6 +19,8 @@
 #ifndef rtkBoellaardScatterCorrectionImageFilter_hxx
 #define rtkBoellaardScatterCorrectionImageFilter_hxx
 
+#include "rtkBoellaardScatterCorrectionImageFilter.h"
+
 #include <itkImageRegionIteratorWithIndex.h>
 
 namespace rtk

@@ -19,6 +19,8 @@
 #ifndef rtkScatterGlareCorrectionImageFilter_hxx
 #define rtkScatterGlareCorrectionImageFilter_hxx
 
+#include "rtkScatterGlareCorrectionImageFilter.h"
+
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154
 #include <itkRealToHalfHermitianForwardFFTImageFilter.h>

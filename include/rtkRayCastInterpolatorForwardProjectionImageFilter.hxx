@@ -19,6 +19,8 @@
 #ifndef rtkRayCastInterpolatorForwardProjectionImageFilter_hxx
 #define rtkRayCastInterpolatorForwardProjectionImageFilter_hxx
 
+#include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
+
 #include "rtkHomogeneousMatrix.h"
 #include "rtkRayCastInterpolateImageFunction.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"

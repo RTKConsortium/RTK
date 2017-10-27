@@ -19,6 +19,8 @@
 #ifndef rtkFDKWeightProjectionFilter_hxx
 #define rtkFDKWeightProjectionFilter_hxx
 
+#include "rtkFDKWeightProjectionFilter.h"
+
 #include <itkImageRegionIterator.h>
 
 namespace rtk

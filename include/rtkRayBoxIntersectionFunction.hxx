@@ -19,6 +19,8 @@
 #ifndef rtkRayBoxIntersectionFunction_hxx
 #define rtkRayBoxIntersectionFunction_hxx
 
+#include "rtkRayBoxIntersectionFunction.h"
+
 namespace rtk
 {
 

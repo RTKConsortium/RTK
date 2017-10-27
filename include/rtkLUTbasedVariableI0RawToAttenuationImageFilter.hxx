@@ -19,6 +19,8 @@
 #ifndef rtkLUTbasedVariableI0RawToAttenuationImageFilter_hxx
 #define rtkLUTbasedVariableI0RawToAttenuationImageFilter_hxx
 
+#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 #include "rtkI0EstimationProjectionFilter.h"

@@ -19,6 +19,8 @@
 #ifndef rtkProjectionsReader_hxx
 #define rtkProjectionsReader_hxx
 
+#include "rtkProjectionsReader.h"
+
 // ITK
 #include <itkConfigure.h>
 #include <itkImageSeriesReader.h>

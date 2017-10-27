@@ -19,6 +19,8 @@
 #ifndef rtkCyclicDeformationImageFilter_hxx
 #define rtkCyclicDeformationImageFilter_hxx
 
+#include "rtkCyclicDeformationImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 

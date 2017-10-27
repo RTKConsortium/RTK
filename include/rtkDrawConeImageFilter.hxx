@@ -19,6 +19,8 @@
 #ifndef rtkDrawConeImageFilter_hxx
 #define rtkDrawConeImageFilter_hxx
 
+#include "rtkDrawConeImageFilter.h"
+
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>

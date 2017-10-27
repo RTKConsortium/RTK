@@ -19,6 +19,8 @@
 #ifndef rtkRayBoxIntersectionImageFilter_hxx
 #define rtkRayBoxIntersectionImageFilter_hxx
 
+#include "rtkRayBoxIntersectionImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 

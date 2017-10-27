@@ -19,6 +19,8 @@
 #ifndef rtkOraLookupTableImageFilter_hxx
 #define rtkOraLookupTableImageFilter_hxx
 
+#include "rtkOraLookupTableImageFilter.h"
+
 #include <itkImageIOBase.h>
 
 namespace rtk

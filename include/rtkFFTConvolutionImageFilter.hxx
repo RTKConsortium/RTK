@@ -19,6 +19,8 @@
 #ifndef rtkFFTConvolutionImageFilter_hxx
 #define rtkFFTConvolutionImageFilter_hxx
 
+#include "rtkFFTConvolutionImageFilter.h"
+
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154
 #include <itkRealToHalfHermitianForwardFFTImageFilter.h>

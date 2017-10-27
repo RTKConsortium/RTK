@@ -19,6 +19,8 @@
 #ifndef rtkMaskCollimationImageFilter_hxx
 #define rtkMaskCollimationImageFilter_hxx
 
+#include "rtkMaskCollimationImageFilter.h"
+
 #include <itkImageRegionIteratorWithIndex.h>
 
 #include "rtkHomogeneousMatrix.h"

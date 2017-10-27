@@ -19,6 +19,8 @@
 #ifndef rtkDrawEllipsoidImageFilter_hxx
 #define rtkDrawEllipsoidImageFilter_hxx
 
+#include "rtkDrawEllipsoidImageFilter.h"
+
 
 namespace rtk
 {

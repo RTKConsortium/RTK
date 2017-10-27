@@ -19,6 +19,8 @@
 #ifndef rtkDrawCubeImageFilter_hxx
 #define rtkDrawCubeImageFilter_hxx
 
+#include "rtkDrawCubeImageFilter.h"
+
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>

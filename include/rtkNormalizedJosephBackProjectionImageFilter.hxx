@@ -19,6 +19,8 @@
 #ifndef rtkNormalizedJosephBackProjectionImageFilter_hxx
 #define rtkNormalizedJosephBackProjectionImageFilter_hxx
 
+#include "rtkNormalizedJosephBackProjectionImageFilter.h"
+
 namespace rtk
 {
 

@@ -19,6 +19,8 @@
 #ifndef rtkFDKConeBeamReconstructionFilter_hxx
 #define rtkFDKConeBeamReconstructionFilter_hxx
 
+#include "rtkFDKConeBeamReconstructionFilter.h"
+
 namespace rtk
 {
 

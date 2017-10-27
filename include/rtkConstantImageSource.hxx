@@ -19,6 +19,8 @@
 #ifndef rtkConstantImageSource_hxx
 #define rtkConstantImageSource_hxx
 
+#include "rtkConstantImageSource.h"
+
 #include <itkImageRegionIterator.h>
 
 namespace rtk

@@ -19,6 +19,8 @@
 #ifndef rtkXRadRawToAttenuationImageFilter_hxx
 #define rtkXRadRawToAttenuationImageFilter_hxx
 
+#include "rtkXRadRawToAttenuationImageFilter.h"
+
 #include <itkImageFileReader.h>
 #include <itkImageRegionIterator.h>
 #include "rtkConfiguration.h"

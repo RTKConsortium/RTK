@@ -19,6 +19,8 @@
 #ifndef rtkDPExtractShroudSignalImageFilter_hxx
 #define rtkDPExtractShroudSignalImageFilter_hxx
 
+#include "rtkDPExtractShroudSignalImageFilter.h"
+
 #include <itkArray.h>
 
 namespace rtk

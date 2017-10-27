@@ -19,6 +19,8 @@
 #ifndef rtkProjectGeometricPhantomImageFilter_hxx
 #define rtkProjectGeometricPhantomImageFilter_hxx
 
+#include "rtkProjectGeometricPhantomImageFilter.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>

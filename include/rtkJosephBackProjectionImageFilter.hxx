@@ -19,6 +19,8 @@
 #ifndef rtkJosephBackProjectionImageFilter_hxx
 #define rtkJosephBackProjectionImageFilter_hxx
 
+#include "rtkJosephBackProjectionImageFilter.h"
+
 #include "rtkHomogeneousMatrix.h"
 #include "rtkRayBoxIntersectionFunction.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"

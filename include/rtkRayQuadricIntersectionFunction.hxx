@@ -19,6 +19,8 @@
 #ifndef rtkRayQuadricIntersectionFunction_hxx
 #define rtkRayQuadricIntersectionFunction_hxx
 
+#include "rtkRayQuadricIntersectionFunction.h"
+
 namespace rtk
 {
 

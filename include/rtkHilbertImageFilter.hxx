@@ -19,6 +19,8 @@
 #ifndef rtkHilbertImageFilter_hxx
 #define rtkHilbertImageFilter_hxx
 
+#include "rtkHilbertImageFilter.h"
+
 #include <itkConfigure.h>
 #include <itkForwardFFTImageFilter.h>
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7)

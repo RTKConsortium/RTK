@@ -19,6 +19,8 @@
 #ifndef rtkDisplacedDetectorImageFilter_hxx
 #define rtkDisplacedDetectorImageFilter_hxx
 
+#include "rtkDisplacedDetectorImageFilter.h"
+
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
