@@ -19,6 +19,10 @@
 #ifndef rtkCudaPolynomialGainCorrectionImageFilter_h
 #define rtkCudaPolynomialGainCorrectionImageFilter_h
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkPolynomialGainCorrectionImageFilter.h"
 #include "rtkWin32Header.h"
 
@@ -77,5 +81,7 @@ private:
 };
 
 }
+
+#endif //end conditional definition of the class
 
 #endif // rtkCudaPolynomialGainCorrectionImageFilter_h

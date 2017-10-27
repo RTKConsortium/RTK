@@ -19,6 +19,10 @@
 #ifndef rtkCudaSplatImageFilter_h
 #define rtkCudaSplatImageFilter_h
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "itkCudaImage.h"
 #include "itkCudaInPlaceImageFilter.h"
@@ -68,5 +72,7 @@ private:
 }; // end of class
 
 } // end namespace rtk
+
+#endif //end conditional definition of the class
 
 #endif

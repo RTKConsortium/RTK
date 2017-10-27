@@ -19,6 +19,10 @@
 #ifndef rtkCudaRayCastBackProjectionImageFilter_h
 #define rtkCudaRayCastBackProjectionImageFilter_h
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkWin32Header.h"
 
@@ -91,5 +95,7 @@ private:
 };
 
 } // end namespace rtk
+
+#endif //end conditional definition of the class
 
 #endif

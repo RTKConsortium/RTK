@@ -19,6 +19,10 @@
 #ifndef rtkCudaForwardProjectionImageFilter_h
 #define rtkCudaForwardProjectionImageFilter_h
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkForwardProjectionImageFilter.h"
 #include "itkCudaInPlaceImageFilter.h"
 #include "itkCudaUtil.h"
@@ -93,5 +97,7 @@ private:
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkCudaForwardProjectionImageFilter.hxx"
 #endif
+
+#endif //end conditional definition of the class
 
 #endif

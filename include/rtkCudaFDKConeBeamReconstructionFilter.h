@@ -19,6 +19,10 @@
 #ifndef rtkCudaFDKConeBeamReconstructionFilter_h
 #define rtkCudaFDKConeBeamReconstructionFilter_h
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkCudaFDKWeightProjectionFilter.h"
 #include "rtkCudaFFTRampImageFilter.h"
@@ -77,5 +81,7 @@ private:
 }; // end of class
 
 } // end namespace rtk
+
+#endif //end conditional definition of the class
 
 #endif

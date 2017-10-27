@@ -19,6 +19,10 @@
 #ifndef rtkCudaParkerShortScanImageFilter_h
 #define rtkCudaParkerShortScanImageFilter_h
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkParkerShortScanImageFilter.h"
 #include "rtkWin32Header.h"
 
@@ -78,5 +82,7 @@ private:
 };
 
 }
+
+#endif //end conditional definition of the class
 
 #endif // rtkCudaParkerShortScanImageFilter_h

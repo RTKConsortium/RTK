@@ -19,6 +19,10 @@
 #ifndef rtkCudaFFTConvolutionImageFilter_h
 #define rtkCudaFFTConvolutionImageFilter_h
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include <itkCudaImage.h>
 #include <itkCudaImageToImageFilter.h>
 
@@ -84,5 +88,7 @@ private:
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "rtkCudaFFTConvolutionImageFilter.hxx"
 #endif
+
+#endif //end conditional definition of the class
 
 #endif

@@ -19,6 +19,10 @@
 #ifndef rtkCudaForwardWarpImageFilter_h
 #define rtkCudaForwardWarpImageFilter_h
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkWin32Header.h"
 #include "rtkForwardWarpImageFilter.h"
 
@@ -76,5 +80,7 @@ private:
 };
 
 } // end namespace rtk
+
+#endif //end conditional definition of the class
 
 #endif
