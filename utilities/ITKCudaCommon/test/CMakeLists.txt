@@ -1,4 +1,4 @@
-# if (ITK_USE_CUDA)
+if (ITK_USE_CUDA)
 
   # With MS compilers on Win64, we need the /bigobj switch, else generated
   # code results in objects with number of sections exceeding object file
@@ -19,4 +19,4 @@
   itk_add_test(NAME itkCudaImageTest COMMAND ITKCudaCommonTestDriver itkCudaImageTest)
   itk_add_test(NAME itkCudaReductionTest COMMAND ITKCudaCommonTestDriver itkCudaReductionTest)
 
-# endif()
+endif()

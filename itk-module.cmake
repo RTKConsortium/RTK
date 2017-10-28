@@ -1,27 +1,13 @@
 set(DOCUMENTATION "")
 
+# -----------------------------------------
+#  Required Modules to build RTK library :
 set(RTK_IO_DEPENDS
-  # ITKIOBioRad
-  # ITKIOBMP
-  #ITKIOBruker
-  # ITKIOCSV
+  ITKIOCSV
   ITKIOGDCM
-  # ITKIOGE
-  # ITKIOGIPL
-  # ITKIOHDF5
-  # ITKIOImageBase
-  # ITKIOJPEG
-  # ITKIOLSM
   ITKIOMeta
-  # ITKIOMINC
-  # ITKIOMRC
-  # ITKIONIFTI
-  # ITKIONRRD
-  # ITKIOPNG
   ITKIORAW
-  # ITKIOStimulate
-  # ITKIOTIFF
-  # ITKIOVTK
+  ITKIOTIFF
   ITKIOXML
   )
 
@@ -29,19 +15,23 @@ set(RTK_DEPENDS
   ITKCommon
   ITKConvolution
   ITKFFT
-  ITKImageIntensity
   ITKOptimizers
   ITKRegistrationCommon
   ITKSmoothing
-  ITKThresholding
-  ITKTransform
-  ITKVNL
   ${RTK_IO_DEPENDS}
   )
 
-#=========================================================
+# -----------------------------------------
+#  Required Modules to build RTK tests :
+set(RTK_TEST_DEPENDS
+  ITKTestKernel)
+
+if(NOT ${ITK_VERSION} VERSION_LESS "4.6.0")
+  list(APPEND RTK_TEST_DEPENDS ITKImageNoise) #required by rtkRegularizedConjugateGradientTest
+endif()
+
+# -----------------------------------------
 # CUDA optional dependencies
-#=========================================================
 if(${RTK_USE_CUDA})
   list(APPEND RTK_DEPENDS ITKCudaCommon)
 endif()
@@ -55,7 +45,7 @@ itk_module(RTK
   DEPENDS
     ${RTK_DEPENDS}
   TEST_DEPENDS
-    ITKTestKernel
+    ${RTK_TEST_DEPENDS}
   DESCRIPTION
     "${DOCUMENTATION}"
   )

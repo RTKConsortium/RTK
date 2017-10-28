@@ -20,6 +20,8 @@
 
 #include "rtkMotionCompensatedFourDReconstructionConjugateGradientOperator.h"
 
+#include "rtkJosephForwardProjectionImageFilter.h"
+
 namespace rtk
 {
 
