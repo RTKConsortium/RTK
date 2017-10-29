@@ -60,6 +60,12 @@ set(LPSOLVE_INCLUDE_DIRS
 list(APPEND RTK_INCLUDE_DIRS
   "${LPSOLVE_INCLUDE_DIRS}")
 
+# --------------------------------------------------------
+# Find ITK (required)
+if(NOT ITK_SOURCE_DIR)
+  find_package(ITK 4.2.0 REQUIRED)
+endif()
+
 #=========================================================
 # ITKCudaCommon
 #=========================================================
@@ -83,7 +89,6 @@ set(RTK_SYSTEM_INCLUDE_DIRS ${RTK_INCLUDE_DIRS})
 # Configure and build ITK external module
 #=========================================================
 if(NOT ITK_SOURCE_DIR)
-  find_package(ITK REQUIRED)
   list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
   include(ITKModuleExternal)
 else()

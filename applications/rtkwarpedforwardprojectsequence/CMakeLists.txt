@@ -2,10 +2,6 @@ WRAP_GGO(rtkwarpedforwardprojectsequence_GGO_C rtkwarpedforwardprojectsequence.g
 add_executable(rtkwarpedforwardprojectsequence rtkwarpedforwardprojectsequence.cxx ${rtkwarpedforwardprojectsequence_GGO_C})
 target_link_libraries(rtkwarpedforwardprojectsequence RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkwarpedforwardprojectsequence rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkwarpedforwardprojectsequence) 

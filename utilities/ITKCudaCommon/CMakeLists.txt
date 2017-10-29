@@ -1,30 +1,16 @@
 project(ITKCudaCommon)
 
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 
 include(itkCUDA)
 
 set(ITKCudaCommon_LIBRARIES ITKCudaCommon)
-
-list(APPEND ITKCudaCommon_INCLUDE_DIRS
-  ${ITKCudaCommon__SOURCE_DIR}/include
-  ${ITKCommon_BINARY_DIR}
-  ${CUDA_TOOLKIT_INCLUDE}
-  ${CUDA_INCLUDE_DIRS}
-  ${ITK_INCLUDE_DIRS})
-
-include_directories(${ITKCudaCommon_INCLUDE_DIRS})
-
 set(ITKCudaCommon_SYSTEM_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
-set(ITKCudaCommon_SYSTEM_LIBRARY_DIRS ${CUDA_LIBRARIES} )
+set(ITKCudaCommon_SYSTEM_LIBRARY_DIRS ${CUDA_LIBRARIES})
 
-if(NOT ITK_SOURCE_DIR)
-  find_package(ITK REQUIRED)   
-  list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR}) 
-  include(ITKModuleExternal)
-else()
-  itk_module_impl()
-endif()
+include_directories(${ITKCudaCommon_SOURCE_DIR}/include)
+add_subdirectory(src)
 
 # Installation
 if(NOT RTK_INSTALL_NO_DEVELOPMENT)

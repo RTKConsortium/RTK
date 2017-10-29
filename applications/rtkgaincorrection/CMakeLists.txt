@@ -2,10 +2,6 @@ WRAP_GGO(rtkgaincorrection_GGO_C rtkgaincorrection.ggo ../rtkinputprojections_se
 add_executable(rtkgaincorrection rtkgaincorrection.cxx ${rtkgaincorrection_GGO_C})
 target_link_libraries(rtkgaincorrection RTK)
 
-if(RTK_USE_CUDA)
-  target_link_libraries(rtkgaincorrection rtkcuda)
-endif()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkgaincorrection) 

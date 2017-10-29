@@ -2,10 +2,6 @@ WRAP_GGO(rtktotalvariationdenoising_GGO_C rtktotalvariationdenoising.ggo ${RTK_B
 add_executable(rtktotalvariationdenoising rtktotalvariationdenoising.cxx ${rtktotalvariationdenoising_GGO_C})
 target_link_libraries(rtktotalvariationdenoising RTK)
 
-if(RTK_USE_CUDA)
-  target_link_libraries(rtktotalvariationdenoising rtkcuda)
-endif()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtktotalvariationdenoising) 

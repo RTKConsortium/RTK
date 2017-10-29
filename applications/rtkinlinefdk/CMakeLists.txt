@@ -2,10 +2,6 @@ WRAP_GGO(rtkinlinefdk_GGO_C rtkinlinefdk.ggo ../rtkinputprojections_section.ggo 
 add_executable(rtkinlinefdk rtkinlinefdk.cxx ${rtkinlinefdk_GGO_C})
 target_link_libraries(rtkinlinefdk RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkinlinefdk rtkcuda)
-endif()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkinlinefdk) 

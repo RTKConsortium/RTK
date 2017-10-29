@@ -2,10 +2,6 @@ WRAP_GGO(rtkspectralrooster_GGO_C rtkspectralrooster.ggo ../rtk3Doutputimage_sec
 add_executable(rtkspectralrooster rtkspectralrooster.cxx ${rtkspectralrooster_GGO_C})
 target_link_libraries(rtkspectralrooster RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkspectralrooster rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkspectralrooster) 
