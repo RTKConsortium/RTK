@@ -22,6 +22,9 @@
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 
+#include <vector>
+#include <array>
+
 namespace rtk
 {
 
@@ -31,7 +34,7 @@ namespace rtk
  *
  * \test rtkimagxtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, C. Mory, S. Brousmiche (IBA)
  *
  * \ingroup IOFilters
  */
@@ -63,22 +66,14 @@ public:
   typedef typename InputImageType::PixelType  InputImagePixelType;
   typedef std::vector<std::string>            FileNamesContainer;
 
-  /** Set the iMagX calibration xml file*/
+  /** Set the iMagX calibration xml file
+    */
   itkGetMacro(CalibrationXMLFileName, std::string);
   itkSetMacro(CalibrationXMLFileName, std::string);
 
   /** Set the iMagX room setup xml file*/
   itkGetMacro(RoomXMLFileName, std::string);
   itkSetMacro(RoomXMLFileName, std::string);
-
-  /** Set detector displacement for LFOV*/
-  itkGetMacro(DetectorOffset, float);
-  itkSetMacro(DetectorOffset, float);
-
-  /** Whether or not calibration data should be taken from the projections' DICOM info*/
-  itkGetMacro(ReadCalibrationFromProjections, bool);
-  itkSetMacro(ReadCalibrationFromProjections, bool);
-
 
   /** Set the vector of strings that contains the projection file names. Files
    * are processed in sequential order. */
@@ -96,7 +91,8 @@ public:
     }
 
 protected:
-  ImagXGeometryReader(): m_Geometry(ITK_NULLPTR), m_DetectorOffset(0.f), m_ReadCalibrationFromProjections(false) {};
+  ImagXGeometryReader()
+	  : m_Geometry(ITK_NULLPTR), m_CalibrationXMLFileName(""), m_RoomXMLFileName("") {};
 
   ~ImagXGeometryReader() {}
 
@@ -108,12 +104,60 @@ private:
 
   void GenerateData() ITK_OVERRIDE;
 
+  // DICOM tag for AI versions
+  static const std::string AI_VERSION_1p5;
+  static const std::string AI_VERSION_2p1;
+
+  // DICOM tags depend on AI version
+  std::string getAIversion();
+
+  // Structure containing the flexmap (for AI versions >= 2.0)
+  struct FlexmapType {
+	  bool isValid;
+	  std::string activeArcName;
+	  std::string activeGeocalUID;
+	  float sid, sdd, sourceToNozzleOffsetAngle;
+	  float constantDetectorOffset, xMinus, xPlus;
+	  bool isCW;
+	  std::vector<float> anglesDeg;  // Gantry angles [deg]
+	  std::vector<float> Px, Py, Pz, // Detector translations
+		                 Rx, Ry, Rz, // Detector rotations
+		                 Tx, Ty, Tz; // Source translations
+  };
+
+  FlexmapType GetGeometryForAI2p1();
+
+  struct InterpResultType {
+	  int id0, id1; // indices of angles just below and above the target angle
+	  float a0, a1; // weights (1/distance) to angles below and above
+  };
+
+  InterpResultType interpolate(const std::vector<float>& flexAngles, bool isCW, float angleDegree);
+  
+  // Structure containing the calibration models (for AI versions < 2.0)
+  struct CalibrationModelType {
+	  bool isValid;
+	  float sid, sdd, sourceToNozzleOffsetAngle;
+	  std::vector<float> Px, Py, Pz, // Detector translations model
+						 Rx, Ry, Rz, // Detector rotations model
+						 Tx, Ty, Tz; // Source translations model
+  };
+  
+  CalibrationModelType GetGeometryForAI1p5();
+
+  CalibrationModelType GetGeometryForAI1p5FromXMLFiles();
+  
+  void addEntryToGeometry(float gantryAngleDegree, float nozzleToRadAngleOffset, float sid, float sdd, 
+	                      std::array<float, 3>& P, std::array<float, 3>& R, std::array<float, 3>& T);
+
+  void addEntryToGeometry(const FlexmapType& flex, float gantryAngleDegree);
+
+  void addEntryToGeometry(const CalibrationModelType& calibModel, float gantryAngleDegree);
+
   GeometryType::Pointer m_Geometry;
   std::string           m_CalibrationXMLFileName;
   std::string           m_RoomXMLFileName;
   FileNamesContainer    m_ProjectionsFileNames;
-  float                 m_DetectorOffset;
-  bool                  m_ReadCalibrationFromProjections;
 };
 
 }
