@@ -116,6 +116,10 @@ void SubSelectImageFilter<ProjectionStackType>
                                                 m_InputGeometry->GetInPlaneAngles()[i],
                                                 m_InputGeometry->GetSourceOffsetsX()[i],
                                                 m_InputGeometry->GetSourceOffsetsY()[i]);
+      m_OutputGeometry->SetCollimationOfLastProjection(m_InputGeometry->GetCollimationUInf()[i],
+                                                       m_InputGeometry->GetCollimationUSup()[i],
+                                                       m_InputGeometry->GetCollimationVInf()[i],
+                                                       m_InputGeometry->GetCollimationVSup()[i]);
       }
     }
 }

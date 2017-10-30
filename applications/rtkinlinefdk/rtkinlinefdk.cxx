@@ -52,6 +52,10 @@ struct ThreadInfoStruct
   double inPlaneAngle;
   double sourceOffsetX;
   double sourceOffsetY;
+  double collimationUInf;
+  double collimationUSup;
+  double collimationVInf;
+  double collimationVSup;
   double minimumOffsetX;    // Used for Wang weighting
   double maximumOffsetX;
   std::string fileName;
@@ -131,6 +135,10 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
     threadInfo->projOffsetY = geometry->GetProjectionOffsetsY()[i];
     threadInfo->inPlaneAngle = geometry->GetInPlaneAngles()[i];
     threadInfo->outOfPlaneAngle = geometry->GetOutOfPlaneAngles()[i];
+    threadInfo->collimationUInf = geometry->GetCollimationUInf()[i];
+    threadInfo->collimationUSup = geometry->GetCollimationUSup()[i];
+    threadInfo->collimationVInf = geometry->GetCollimationVInf()[i];
+    threadInfo->collimationVSup = geometry->GetCollimationVSup()[i];
     threadInfo->minimumOffsetX = minOffset;
     threadInfo->maximumOffsetX = maxOffset;
     threadInfo->fileName = names[ vnl_math_min( i, (unsigned int)names.size()-1 ) ];
@@ -258,6 +266,10 @@ static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
                                        threadInfo->projOffsetX, threadInfo->projOffsetY,
                                        threadInfo->outOfPlaneAngle, threadInfo->inPlaneAngle,
                                        threadInfo->sourceOffsetX, threadInfo->sourceOffsetY);
+      geometry->SetCollimationOfLastProjection(threadInfo->collimationUInf,
+                                               threadInfo->collimationUSup,
+                                               threadInfo->collimationVInf,
+                                               threadInfo->collimationVSup);
 
       std::cout << "Geometry size : "<<geometry->GetMatrices().size() << std::endl;
 

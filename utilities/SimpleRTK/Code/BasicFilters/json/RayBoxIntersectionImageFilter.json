@@ -1,0 +1,49 @@
+{
+  "name" : "RayBoxIntersectionImageFilter",
+  "template_code_filename" : "ImageFilter",
+  "template_test_filename" : "ImageFilter",
+  "number_of_inputs" : 1,
+  "doc" : "",
+  "output_image_type" : "TImageType",
+  "pixel_types" : "RealPixelIDTypeList",
+  "include_files" : [
+    "srtkThreeDCircularProjectionGeometry.h"
+  ],
+  "members" : [
+	{
+      "name" : "Geometry",
+      "type" : "ThreeDCircularProjectionGeometry*",
+      "default" : "0",
+	  "itk_type" : "typename FilterType::GeometryPointer",
+      "custom_itk_cast" : "typename FilterType::GeometryType* itkTx;\n    if ( !(itkTx = dynamic_cast<typename FilterType::GeometryType *>(this->m_Geometry->GetRTKBase() )) ) {\n      srtkExceptionMacro( \"Unexpected error converting geometry\" );\n     }\n    else { filter->SetGeometry( itkTx ); }",
+      "doc" : "",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the geometry input.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the geometry input."
+    },
+    {
+      "name" : "BoxMin",
+      "type" : "double",
+      "default" : "std::vector<double>(3, 1)",
+      "dim_vec" : 1,
+	  "itk_type" : "typename FilterType::VectorType"
+    },
+	{
+      "name" : "BoxMax",
+      "type" : "double",
+      "default" : "std::vector<double>(3, 1)",
+      "dim_vec" : 1,
+	  "itk_type" : "typename FilterType::VectorType"
+    },
+	{
+      "name" : "Density",
+      "type" : "double",
+      "default" : "0.0",
+      "briefdescriptionSet" : "",
+      "detaileddescriptionSet" : "Set the multiplicative constant of the volume.",
+      "briefdescriptionGet" : "",
+      "detaileddescriptionGet" : "Get the multiplicative constant of the volume."
+    }
+  ]
+}
