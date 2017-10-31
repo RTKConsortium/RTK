@@ -50,29 +50,19 @@ namespace rtk
  *
  * \ingroup ImageToImageFilter
  */
-template <class TOutputImage>
+template <class TInputImage, class TOutputImage>
 class ITK_EXPORT CyclicDeformationImageFilter:
-  public itk::ImageToImageFilter<
-#ifdef RTK_USE_CUDA
-    itk::CudaImage<typename TOutputImage::PixelType, TOutputImage::ImageDimension+1>,
-#else
-    itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension+1>,
-#endif
-    TOutputImage >
+  public itk::ImageToImageFilter<TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef CyclicDeformationImageFilter                                                 Self;
-#ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<typename TOutputImage::PixelType, TOutputImage::ImageDimension+1> InputImageType;
-#else
-  typedef itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension+1> InputImageType;
-#endif
-  typedef TOutputImage                                                                 OutputImageType;
-  typedef itk::ImageToImageFilter<InputImageType, OutputImageType>                     Superclass;
-  typedef itk::SmartPointer<Self>                                                      Pointer;
-  typedef itk::SmartPointer<const Self>                                                ConstPointer;
-  typedef typename OutputImageType::RegionType                                         OutputImageRegionType;
+  typedef CyclicDeformationImageFilter                              Self;
+  typedef TInputImage                                               InputImageType;
+  typedef TOutputImage                                              OutputImageType;
+  typedef itk::ImageToImageFilter<InputImageType, OutputImageType>  Superclass;
+  typedef itk::SmartPointer<Self>                                   Pointer;
+  typedef itk::SmartPointer<const Self>                             ConstPointer;
+  typedef typename OutputImageType::RegionType                      OutputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

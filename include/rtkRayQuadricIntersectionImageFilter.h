@@ -63,7 +63,7 @@ public:
 
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, GeometryPointer);
-  itkSetMacro(Geometry, GeometryPointer);
+  itkSetObjectMacro(Geometry, GeometryType);
 
   /** Get / Set the multiplicative constant of the volume */
   itkGetMacro(Density, double);

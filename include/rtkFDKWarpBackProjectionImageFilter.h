@@ -74,7 +74,7 @@ public:
 
   /** Set the deformation. */
   itkGetMacro(Deformation, DeformationPointer);
-  itkSetMacro(Deformation, DeformationPointer);
+  itkSetObjectMacro(Deformation, DeformationType);
 
 protected:
   FDKWarpBackProjectionImageFilter():m_DeformationUpdateError(false) {};

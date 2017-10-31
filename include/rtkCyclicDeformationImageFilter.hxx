@@ -29,9 +29,9 @@
 namespace rtk
 {
 
-template <class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TOutputImage>
+CyclicDeformationImageFilter<TInputImage, TOutputImage>
 ::GenerateOutputInformation()
 {
   typename OutputImageType::PointType   origin;
@@ -49,9 +49,9 @@ CyclicDeformationImageFilter<TOutputImage>
   this->GetOutput()->SetLargestPossibleRegion( region );
 }
 
-template <class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TOutputImage>
+CyclicDeformationImageFilter<TInputImage, TOutputImage>
 ::GenerateInputRequestedRegion()
 {
   typename InputImageType::Pointer inputPtr = const_cast< InputImageType * >( this->GetInput() );
@@ -60,9 +60,9 @@ CyclicDeformationImageFilter<TOutputImage>
   inputPtr->SetRequestedRegion( inputPtr->GetLargestPossibleRegion() );
 }
 
-template <class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TOutputImage>
+CyclicDeformationImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   unsigned int nframe = this->GetInput()->GetLargestPossibleRegion().GetSize(OutputImageType::ImageDimension);
@@ -88,9 +88,9 @@ CyclicDeformationImageFilter<TOutputImage>
   m_FrameSup = m_FrameSup % nframe;
 }
 
-template <class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TOutputImage>
+CyclicDeformationImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType itkNotUsed(threadId) )
 {
@@ -122,9 +122,9 @@ CyclicDeformationImageFilter<TOutputImage>
     }
 }
 
-template <class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TOutputImage>
+CyclicDeformationImageFilter<TInputImage, TOutputImage>
 ::SetSignalFilename (const std::string _arg)
 {
   itkDebugMacro("setting SignalFilename to " << _arg);
@@ -148,9 +148,9 @@ CyclicDeformationImageFilter<TOutputImage>
     }
 }
 
-template <class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TOutputImage>
+CyclicDeformationImageFilter<TInputImage, TOutputImage>
 ::SetSignalVector (std::vector<double> _arg)
 {
   if ( m_Signal != _arg )

@@ -133,8 +133,9 @@ int main(int argc, char * argv[])
   // compensation are set, we still create the object before hand to avoid auto
   // destruction.
   typedef itk::Vector<float,3> DVFPixelType;
+  typedef itk::Image< DVFPixelType, 4 > DVFImageSequenceType;
   typedef itk::Image< DVFPixelType, 3 > DVFImageType;
-  typedef rtk::CyclicDeformationImageFilter< DVFImageType > DeformationType;
+  typedef rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType > DeformationType;
   typedef itk::ImageFileReader<DeformationType::InputImageType> DVFReaderType;
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   DeformationType::Pointer def = DeformationType::New();

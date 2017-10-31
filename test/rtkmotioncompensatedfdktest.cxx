@@ -161,10 +161,11 @@ int main(int, char** )
     }
 
   // Create vector field
-  typedef itk::Vector<float,3>                                                 DVFPixelType;
-  typedef itk::Image< DVFPixelType, 3 >                                        DVFImageType;
-  typedef rtk::CyclicDeformationImageFilter< DVFImageType >                    DeformationType;
-  typedef itk::ImageRegionIteratorWithIndex< DeformationType::InputImageType > IteratorType;
+  typedef itk::Vector<float,3>                                                     DVFPixelType;
+  typedef itk::Image< DVFPixelType, 4 >                                            DVFImageSequenceType;
+  typedef itk::Image< DVFPixelType, 3 >                                            DVFImageType;
+  typedef rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType >  DeformationType;
+  typedef itk::ImageRegionIteratorWithIndex< DeformationType::InputImageType >     IteratorType;
 
   DeformationType::InputImageType::Pointer deformationField;
   deformationField = DeformationType::InputImageType::New();

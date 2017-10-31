@@ -110,8 +110,8 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(WarpFourDToProjectionStackImageFilter, rtk::FourDToProjectionStackImageFilter)
 
-    typedef rtk::CyclicDeformationImageFilter<DVFImageType>                  DVFInterpolatorType;
-    typedef std::vector<double>                                              SignalVectorType;
+    typedef rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>  DVFInterpolatorType;
+    typedef std::vector<double>                                                    SignalVectorType;
 
     /** The forward projection filter cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer _arg) {}

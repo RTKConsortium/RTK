@@ -86,7 +86,7 @@ public:
 
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, GeometryPointer);
-  itkSetMacro(Geometry, GeometryPointer);
+  itkSetObjectMacro(Geometry, GeometryType);
 
   /** Get / Set whether the projections should be padded
    * (yes for FDK, no for iterative) */

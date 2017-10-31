@@ -71,7 +71,7 @@ public:
 
   /** Get/ Set geometry structure */
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
-  itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
+  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
 protected:
   FDKWeightProjectionFilter()  {}

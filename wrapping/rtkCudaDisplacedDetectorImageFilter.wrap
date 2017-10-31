@@ -1,0 +1,26 @@
+
+#-----------------------------------------------------------------------------
+#Add unexisting itk::CudaImageToImageFilter templates
+#-----------------------------------------------------------------------------
+itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
+  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("CI${ITKM_${t}}${d}CI${ITKM_${t}}${d}DiDIFCI${ITKM_${t}}${d}"
+      "itk::CudaImage<${ITKT_${t}}, ${d}>, itk::CudaImage<${ITKT_${t}}, ${d}>, rtk::DisplacedDetectorImageFilter< itk::CudaImage<${ITKT_${t}}, ${d}> >")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()
+
+itk_wrap_class("itk::CudaInPlaceImageFilter" POINTER)
+  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("CI${ITKM_${t}}${d}CI${ITKM_${t}}${d}DDIFCI${ITKM_${t}}${d}" "itk::CudaImage<${ITKT_${t}}, ${d}>, itk::CudaImage<${ITKT_${t}}, ${d}>, rtk::DisplacedDetectorImageFilter< itk::CudaImage<${ITKT_${t}}, ${d}> >")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()
+
+#-----------------------------------------------------------------------------
+# rtk::CudaConstantVolumeSource
+#-----------------------------------------------------------------------------
+itk_wrap_simple_class("rtk::CudaDisplacedDetectorImageFilter" POINTER)
+

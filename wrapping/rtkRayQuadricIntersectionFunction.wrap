@@ -1,0 +1,3 @@
+itk_wrap_class("rtk::RayQuadricIntersectionFunction" POINTER)
+  itk_wrap_template("${ITKM_D}3" "${ITKT_D}, 3")
+itk_end_wrap_class()

@@ -69,7 +69,7 @@ public:
 
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, GeometryPointer);
-  itkSetMacro(Geometry, GeometryPointer);
+  itkSetObjectMacro(Geometry, GeometryType);
 
   /** Get / Set the transpose flag for 2D projections (optimization trick) */
   itkGetMacro(Transpose, bool);

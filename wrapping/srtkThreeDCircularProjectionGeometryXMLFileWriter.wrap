@@ -1,0 +1,5 @@
+itk_wrap_include("srtkThreeDCircularProjectionGeometryXMLFileWriter.h")
+
+itk_wrap_named_simple_class("rtk::simple::ThreeDCircularProjectionGeometryXMLFileWriter"
+  srtkThreeDCircularProjectionGeometryXMLFileWriter
+  POINTER)

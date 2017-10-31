@@ -90,7 +90,7 @@ public:
 
   /** Get / Set the object pointer to projection geometry */
   virtual ThreeDCircularProjectionGeometry::Pointer GetGeometry();
-  virtual void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+  virtual void SetGeometry(ThreeDCircularProjectionGeometry *_arg);
 
   /** Get pointer to the weighting filter used by the feldkamp reconstruction */
   typename WeightFilterType::Pointer GetWeightFilter() { return m_WeightFilter; }

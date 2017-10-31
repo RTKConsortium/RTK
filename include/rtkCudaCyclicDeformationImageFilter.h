@@ -44,16 +44,16 @@ namespace rtk
 class ITK_EXPORT CudaCyclicDeformationImageFilter :
 public itk::CudaImageToImageFilter< itk::CudaImage<itk::CovariantVector<float,3>, 4>,
                                     itk::CudaImage<itk::CovariantVector<float,3>, 3>,
-                                    CyclicDeformationImageFilter< itk::CudaImage<itk::CovariantVector<float,3>, 3> > >
+                                    CyclicDeformationImageFilter< itk::CudaImage<itk::CovariantVector<float, 3>, 4>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
 {
 public:
   /** Standard class typedefs. */
-  typedef rtk::CudaCyclicDeformationImageFilter                       Self;
-  typedef itk::CudaImage<itk::CovariantVector<float,3>, 4>            InputImageType;
-  typedef itk::CudaImage<itk::CovariantVector<float,3>, 3>            OutputImageType;
-  typedef rtk::CyclicDeformationImageFilter< OutputImageType >        Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  typedef rtk::CudaCyclicDeformationImageFilter                                 Self;
+  typedef itk::CudaImage<itk::CovariantVector<float,3>, 4>                      InputImageType;
+  typedef itk::CudaImage<itk::CovariantVector<float,3>, 3>                      OutputImageType;
+  typedef rtk::CyclicDeformationImageFilter< InputImageType, OutputImageType >  Superclass;
+  typedef itk::SmartPointer<Self>                                               Pointer;
+  typedef itk::SmartPointer<const Self>                                         ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self)

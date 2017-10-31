@@ -118,7 +118,7 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(MotionCompensatedFourDReconstructionConjugateGradientOperator, FourDReconstructionConjugateGradientOperator)
 
-    typedef rtk::CyclicDeformationImageFilter<DVFImageType>                  DVFInterpolatorType;
+    typedef rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>                  DVFInterpolatorType;
 
     /** The forward and back projection filters cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer _arg) {}

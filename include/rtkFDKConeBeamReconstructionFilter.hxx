@@ -161,13 +161,13 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
+::SetGeometry(ThreeDCircularProjectionGeometry* _arg)
 {
   itkDebugMacro("setting GeometryPointer to " << _arg);
   if (this->GetGeometry() != _arg)
     {
     m_WeightFilter->SetGeometry(_arg);
-    m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
+    m_BackProjectionFilter->SetGeometry(_arg);
     this->Modified();
     }
 }

@@ -141,7 +141,7 @@ public:
     typedef itk::LinearInterpolateImageFunction<TImage, double >              LinearInterpolatorType;
     typedef itk::NearestNeighborInterpolateImageFunction<TImage, double >     NearestNeighborInterpolatorType;
     typedef itk::ExtractImageFilter<TImageSequence, TImage>                   ExtractFilterType;
-    typedef rtk::CyclicDeformationImageFilter<TDVFImage>                      DVFInterpolatorType;
+    typedef rtk::CyclicDeformationImageFilter<TDVFImageSequence, TDVFImage>   DVFInterpolatorType;
     typedef itk::PasteImageFilter<TImageSequence,TImageSequence>              PasteFilterType;
     typedef itk::CastImageFilter<TImage, TImageSequence>                      CastFilterType;
     typedef rtk::ConstantImageSource<TImageSequence>                          ConstantImageSourceType;

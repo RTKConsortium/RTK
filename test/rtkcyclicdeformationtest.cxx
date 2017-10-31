@@ -132,7 +132,7 @@ int main(int, char** )
   signalFile << "0.3" << std::endl;
 
   // Set the forward and back projection filters to be used
-  typedef rtk::CyclicDeformationImageFilter<DVFImageType> CyclicDeformationType;
+  typedef rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType> CyclicDeformationType;
 
   std::cout << "\n\n****** Case 1: CPU cyclic deformation field ******" << std::endl;
 

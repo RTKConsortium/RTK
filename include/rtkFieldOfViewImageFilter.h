@@ -56,7 +56,8 @@ public:
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
-  typedef typename TInputImage::Superclass::Pointer         ProjectionsStackPointer;
+  typedef typename TInputImage::Superclass                  ProjectionsStackType;
+  typedef typename ProjectionsStackType::Pointer            ProjectionsStackPointer;
   typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
   typedef typename GeometryType::Pointer                    GeometryPointer;
   typedef enum {RADIUSINF,RADIUSSUP,RADIUSBOTH}             FOVRadiusType;
@@ -70,7 +71,7 @@ public:
 
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, GeometryPointer);
-  itkSetMacro(Geometry, GeometryPointer);
+  itkSetObjectMacro(Geometry, GeometryType);
 
   /** Get / Set of the member Mask. If set, all the pixels in the field of view
    * are set to 1. The data value is kept otherwise. Pixels outside the mask
@@ -82,7 +83,7 @@ public:
     FOV radius. Note that only the geometric information is required, the
     data are therefore not updated. */
   itkGetMacro(ProjectionsStack, ProjectionsStackPointer);
-  itkSetMacro(ProjectionsStack, ProjectionsStackPointer);
+  itkSetObjectMacro(ProjectionsStack, ProjectionsStackType);
 
   /** Assume that a displaced detector image filter, e.g.,
    * rtk::DisplacedDetectorImageFilter, has been used. */
