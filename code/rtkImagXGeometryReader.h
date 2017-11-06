@@ -92,7 +92,7 @@ public:
 
 protected:
   ImagXGeometryReader()
-	  : m_Geometry(ITK_NULLPTR), m_CalibrationXMLFileName(""), m_RoomXMLFileName("") {};
+     : m_Geometry(ITK_NULLPTR), m_CalibrationXMLFileName(""), m_RoomXMLFileName("") {};
 
   ~ImagXGeometryReader() {}
 
@@ -105,42 +105,42 @@ private:
   void GenerateData() ITK_OVERRIDE;
 
   // DICOM tag for AI versions
-  static const std::string AI_VERSION_1p5;
-  static const std::string AI_VERSION_2p1;
+  static const std::string m_AI_VERSION_1p5;
+  static const std::string m_AI_VERSION_2p1;
 
   // DICOM tags depend on AI version
   std::string getAIversion();
 
   // Structure containing the flexmap (for AI versions >= 2.0)
   struct FlexmapType {
-	  bool isValid;
-	  std::string activeArcName;
-	  std::string activeGeocalUID;
-	  float sid, sdd, sourceToNozzleOffsetAngle;
-	  float constantDetectorOffset, xMinus, xPlus;
-	  bool isCW;
-	  std::vector<float> anglesDeg;  // Gantry angles [deg]
-	  std::vector<float> Px, Py, Pz, // Detector translations
-		                 Rx, Ry, Rz, // Detector rotations
-		                 Tx, Ty, Tz; // Source translations
+      bool isValid;
+      std::string activeArcName;
+      std::string activeGeocalUID;
+      float sid, sdd, sourceToNozzleOffsetAngle;
+      float constantDetectorOffset, xMinus, xPlus;
+      bool isCW;
+      std::vector<float> anglesDeg;  // Gantry angles [deg]
+      std::vector<float> Px, Py, Pz, // Detector translations
+                         Rx, Ry, Rz, // Detector rotations
+                         Tx, Ty, Tz; // Source translations
   };
 
   FlexmapType GetGeometryForAI2p1();
 
   struct InterpResultType {
-	  int id0, id1; // indices of angles just below and above the target angle
-	  float a0, a1; // weights (1/distance) to angles below and above
+      int id0, id1; // indices of angles just below and above the target angle
+      float a0, a1; // weights (1/distance) to angles below and above
   };
 
   InterpResultType interpolate(const std::vector<float>& flexAngles, bool isCW, float angleDegree);
   
   // Structure containing the calibration models (for AI versions < 2.0)
   struct CalibrationModelType {
-	  bool isValid;
-	  float sid, sdd, sourceToNozzleOffsetAngle;
-	  std::vector<float> Px, Py, Pz, // Detector translations model
-						 Rx, Ry, Rz, // Detector rotations model
-						 Tx, Ty, Tz; // Source translations model
+      bool isValid;
+      float sid, sdd, sourceToNozzleOffsetAngle;
+      std::vector<float> Px, Py, Pz, // Detector translations model
+                         Rx, Ry, Rz, // Detector rotations model
+                         Tx, Ty, Tz; // Source translations model
   };
   
   CalibrationModelType GetGeometryForAI1p5();
@@ -148,7 +148,7 @@ private:
   CalibrationModelType GetGeometryForAI1p5FromXMLFiles();
   
   void addEntryToGeometry(float gantryAngleDegree, float nozzleToRadAngleOffset, float sid, float sdd, 
-	                      std::array<float, 3>& P, std::array<float, 3>& R, std::array<float, 3>& T);
+                          std::array<float, 3>& P, std::array<float, 3>& R, std::array<float, 3>& T);
 
   void addEntryToGeometry(const FlexmapType& flex, float gantryAngleDegree);
 
