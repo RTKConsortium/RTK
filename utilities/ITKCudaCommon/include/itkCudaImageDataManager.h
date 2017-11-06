@@ -29,7 +29,7 @@
 
 namespace itk
 {
-template < class TPixel, unsigned int NDimension > class CudaImage;
+//template < class TPixel, unsigned int NDimension > class CudaImage;
 
 /**
  * \class CudaImageDataManager
@@ -44,7 +44,7 @@ class ITK_EXPORT CudaImageDataManager : public CudaDataManager
 {
   // allow CudaKernelManager to access Cuda buffer pointer
   friend class CudaKernelManager;
-  friend class CudaImage< typename ImageType::PixelType, ImageType::ImageDimension >;
+  //friend class CudaImage< typename ImageType::PixelType, ImageType::ImageDimension >;
 
 public:
   typedef CudaImageDataManager      Self;

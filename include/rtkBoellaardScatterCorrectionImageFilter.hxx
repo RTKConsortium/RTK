@@ -21,7 +21,8 @@
 
 #include "rtkBoellaardScatterCorrectionImageFilter.h"
 
-#include <itkImageRegionIteratorWithIndex.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
 
 namespace rtk
 {
