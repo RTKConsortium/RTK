@@ -44,7 +44,7 @@ namespace rtk
  * \author peter
  * \version 0.1
  */
-class CudaDisplacedDetectorImageFilter :
+class RTK_EXPORT CudaDisplacedDetectorImageFilter :
     public  itk::CudaInPlaceImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>,
             rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3> > >
 {
@@ -68,7 +68,7 @@ public:
 
 protected:
   /** Standard constructor **/
-  rtkcuda_EXPORT CudaDisplacedDetectorImageFilter();
+  CudaDisplacedDetectorImageFilter();
   /** Destructor **/
   virtual ~CudaDisplacedDetectorImageFilter();
 

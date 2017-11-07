@@ -41,6 +41,8 @@ set(RTK_SRCS
   rtkXRadGeometryReader.cxx
   rtkXRadImageIO.cxx
   rtkXRadImageIOFactory.cxx
+  srtkThreeDCircularProjectionGeometryXMLFileReader.cxx
+  srtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
   )
 
 #=========================================================
@@ -114,12 +116,9 @@ if (RTK_USE_CUDA)
 endif ()
 #=========================================================
 
-add_library(RTK ${RTK_SRCS})
+itk_module_add_library(RTK ${RTK_SRCS})
 target_link_libraries(RTK LINK_PUBLIC lpsolve55)
 
 if (RTK_USE_CUDA)
   target_link_libraries( RTK LINK_PUBLIC ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )
 endif ()
-
-itk_module_link_dependencies()
-itk_module_target(RTK)

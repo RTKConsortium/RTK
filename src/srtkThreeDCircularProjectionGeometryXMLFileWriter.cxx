@@ -15,9 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __srtkThreeDCircularProjectionGeometryXMLFileWriter_hxx
-#define __srtkThreeDCircularProjectionGeometryXMLFileWriter_hxx
-
 #include "srtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 #include <rtkThreeDCircularProjectionGeometryXMLFile.h>
 
@@ -25,7 +22,7 @@ namespace rtk {
 namespace simple {
 
 ThreeDCircularProjectionGeometryXMLFileWriter
-::ThreeDCircularProjectionGeometryXMLFileWriter(void)
+::ThreeDCircularProjectionGeometryXMLFileWriter()
 {
   this->m_Writer = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
 }
@@ -62,5 +59,3 @@ ThreeDCircularProjectionGeometryXMLFileWriter
 
 } // end namespace simple
 } // end namespace rtk
-
-#endif

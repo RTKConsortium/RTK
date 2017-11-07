@@ -40,7 +40,7 @@ namespace rtk
  *
  * \ingroup CudaImageToImageFilter
  */
-class ITK_EXPORT CudaInterpolateImageFilter :
+class RTK_EXPORT CudaInterpolateImageFilter :
         public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
     InterpolatorWithKnownWeightsImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,4> > >
 {
@@ -58,7 +58,7 @@ public:
   itkTypeMacro(CudaInterpolateImageFilter, InterpolatorWithKnownWeightsImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaInterpolateImageFilter();
+  CudaInterpolateImageFilter();
   ~CudaInterpolateImageFilter(){
   }
 

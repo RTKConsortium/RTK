@@ -19,10 +19,8 @@
 #ifndef __rtkCudaWarpBackProjectionImageFilter_hcu
 #define __rtkCudaWarpBackProjectionImageFilter_hcu
 
-#include "rtkWin32Header.h"
-
 void
-rtkcuda_EXPORT CUDA_warp_back_project(int projSize[3],
+CUDA_warp_back_project(int projSize[3],
   int volSize[3],
   int dvf_size[3],
   float *matrices,

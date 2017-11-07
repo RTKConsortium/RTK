@@ -45,7 +45,7 @@ namespace rtk
 //FIXME: not templated yet
 //template <class TInputImage, class TOutputImage>
 typedef itk::Image<unsigned short, 2>  TImage;
-class ITK_EXPORT MedianImageFilter:
+class RTK_EXPORT MedianImageFilter:
   public itk::ImageToImageFilter< TImage, TImage >
 {
 public:

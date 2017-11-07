@@ -38,9 +38,9 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 
-  class ITK_EXPORT CudaLaplacianImageFilter :
-        public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-    LaplacianImageFilter< itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>,3> > >
+class RTK_EXPORT CudaLaplacianImageFilter :
+  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+  LaplacianImageFilter< itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>,3> > >
 {
 public:
   /** Standard class typedefs. */
@@ -58,7 +58,7 @@ public:
   itkTypeMacro(CudaLaplacianImageFilter, LaplacianImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaLaplacianImageFilter();
+  CudaLaplacianImageFilter();
   ~CudaLaplacianImageFilter(){}
 
   virtual void GPUGenerateData();

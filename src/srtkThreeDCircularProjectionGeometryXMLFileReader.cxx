@@ -15,9 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __srtkThreeDCircularProjectionGeometryXMLFileReader_hxx
-#define __srtkThreeDCircularProjectionGeometryXMLFileReader_hxx
-
 #include "srtkThreeDCircularProjectionGeometryXMLFileReader.h"
 #include <rtkThreeDCircularProjectionGeometryXMLFile.h>
 
@@ -25,7 +22,7 @@ namespace rtk {
 namespace simple {
 
 ThreeDCircularProjectionGeometryXMLFileReader
-::ThreeDCircularProjectionGeometryXMLFileReader(void)
+::ThreeDCircularProjectionGeometryXMLFileReader()
 {
   this->m_Reader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
 }
@@ -83,5 +80,3 @@ ThreeDCircularProjectionGeometryXMLFileReader
 
 } // end namespace simple
 } // end namespace rtk
-
-#endif

@@ -44,7 +44,7 @@ namespace rtk
  *
  * \ingroup Projector CudaImageToImageFilter
  */
-class rtkcuda_EXPORT CudaWarpBackProjectionImageFilter :
+class RTK_EXPORT CudaWarpBackProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   BackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
@@ -83,7 +83,7 @@ public:
 
 protected:
   CudaWarpBackProjectionImageFilter();
-  virtual ~CudaWarpBackProjectionImageFilter() {};
+  ~CudaWarpBackProjectionImageFilter() {};
 
   virtual void GenerateInputRequestedRegion();
 

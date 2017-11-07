@@ -43,7 +43,7 @@ namespace rtk
  *
  * \ingroup CudaImageToImageFilter
  */
-class CudaWarpImageFilter :
+class RTK_EXPORT CudaWarpImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
     itk::WarpImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
 {
@@ -68,7 +68,7 @@ public:
   itkTypeMacro(CudaWarpImageFilter, Superclass);
 
 protected:
-  rtkcuda_EXPORT CudaWarpImageFilter();
+  CudaWarpImageFilter();
   virtual ~CudaWarpImageFilter() {};
 
   virtual void GPUGenerateData();

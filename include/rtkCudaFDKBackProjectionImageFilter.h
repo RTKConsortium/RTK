@@ -43,7 +43,7 @@ namespace rtk
  *
  * \ingroup Projector CudaImageToImageFilter
  */
-class  CudaFDKBackProjectionImageFilter :
+class RTK_EXPORT CudaFDKBackProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   FDKBackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
@@ -68,7 +68,7 @@ public:
   itkTypeMacro(CudaFDKBackProjectionImageFilter, Superclass);
 
 protected:
-  rtkcuda_EXPORT CudaFDKBackProjectionImageFilter();
+  CudaFDKBackProjectionImageFilter();
   virtual ~CudaFDKBackProjectionImageFilter() {};
 
   virtual void GPUGenerateData();

@@ -23,8 +23,8 @@
 //Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkFFTRampImageFilter.h"
 #include "rtkCudaFFTConvolutionImageFilter.h"
+#include "rtkFFTRampImageFilter.h"
 
 namespace rtk
 {
@@ -55,7 +55,7 @@ public:
   itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
 
 protected:
-  rtkcuda_EXPORT CudaFFTRampImageFilter(){}
+  CudaFFTRampImageFilter(){}
   ~CudaFFTRampImageFilter(){}
 
 private:

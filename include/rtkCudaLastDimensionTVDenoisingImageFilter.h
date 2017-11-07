@@ -41,9 +41,9 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 
-  class ITK_EXPORT CudaLastDimensionTVDenoisingImageFilter :
-        public itk::CudaInPlaceImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
-    TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,4>, itk::CudaImage< itk::CovariantVector < float, 1 >, 4 > > >
+class RTK_EXPORT CudaLastDimensionTVDenoisingImageFilter :
+  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
+  TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,4>, itk::CudaImage< itk::CovariantVector < float, 1 >, 4 > > >
 {
 public:
   /** Standard class typedefs. */
@@ -61,7 +61,7 @@ public:
   itkTypeMacro(CudaLastDimensionTVDenoisingImageFilter, TotalVariationDenoisingBPDQImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaLastDimensionTVDenoisingImageFilter();
+  CudaLastDimensionTVDenoisingImageFilter();
   ~CudaLastDimensionTVDenoisingImageFilter(){}
 
   virtual void GPUGenerateData();

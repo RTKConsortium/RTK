@@ -40,7 +40,7 @@ namespace rtk
  *
  * \ingroup CudaImageToImageFilter
  */
-class ITK_EXPORT CudaSplatImageFilter :
+class RTK_EXPORT CudaSplatImageFilter :
     public itk::CudaInPlaceImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
   SplatWithKnownWeightsImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,3> > >
 
@@ -59,7 +59,7 @@ public:
   itkTypeMacro(CudaSplatImageFilter, SplatWithKnownWeightsImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaSplatImageFilter();
+  CudaSplatImageFilter();
   ~CudaSplatImageFilter(){
   }
 

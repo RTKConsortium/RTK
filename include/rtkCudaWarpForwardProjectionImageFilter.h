@@ -44,7 +44,7 @@
 namespace rtk
 {
 
-class rtkcuda_EXPORT CudaWarpForwardProjectionImageFilter :
+class RTK_EXPORT CudaWarpForwardProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   ForwardProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {

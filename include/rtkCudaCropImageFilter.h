@@ -45,7 +45,7 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  *
  */
-class CudaCropImageFilter :
+class RTK_EXPORT CudaCropImageFilter :
   public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   itk::CropImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
@@ -65,7 +65,7 @@ public:
   itkTypeMacro(CudaCropImageFilter, ImageToImageFilter);
 
 protected:
-  rtkcuda_EXPORT CudaCropImageFilter();
+  CudaCropImageFilter();
   virtual ~CudaCropImageFilter() {};
 
   virtual void GPUGenerateData();

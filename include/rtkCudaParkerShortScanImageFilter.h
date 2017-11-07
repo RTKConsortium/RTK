@@ -44,7 +44,7 @@ namespace rtk
  * \author peter
  * \version 0.1
  */
-class CudaParkerShortScanImageFilter :
+class RTK_EXPORT CudaParkerShortScanImageFilter :
     public  itk::CudaInPlaceImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>,
             rtk::ParkerShortScanImageFilter<itk::CudaImage<float, 3> > >
 {
@@ -68,7 +68,7 @@ public:
 
 protected:
   /** Standard constructor **/
-  rtkcuda_EXPORT CudaParkerShortScanImageFilter();
+  CudaParkerShortScanImageFilter();
   /** Destructor **/
   virtual ~CudaParkerShortScanImageFilter();
 

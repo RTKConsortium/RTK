@@ -41,7 +41,7 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 
-class ITK_EXPORT CudaCyclicDeformationImageFilter :
+class RTK_EXPORT CudaCyclicDeformationImageFilter :
 public itk::CudaImageToImageFilter< itk::CudaImage<itk::CovariantVector<float,3>, 4>,
                                     itk::CudaImage<itk::CovariantVector<float,3>, 3>,
                                     CyclicDeformationImageFilter< itk::CudaImage<itk::CovariantVector<float, 3>, 4>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
@@ -62,7 +62,7 @@ public:
   itkTypeMacro(CudaCyclicDeformationImageFilter, CyclicDeformationImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaCyclicDeformationImageFilter();
+  CudaCyclicDeformationImageFilter();
   ~CudaCyclicDeformationImageFilter(){
   }
 

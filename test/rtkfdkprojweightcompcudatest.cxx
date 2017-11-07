@@ -3,6 +3,7 @@
 #include "rtkCudaFDKWeightProjectionFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkSheppLoganPhantomFilter.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 
 #include <itkStreamingImageFilter.h>
 #if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)

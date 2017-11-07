@@ -20,7 +20,9 @@
 
 #include "rtkMacro.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "itkProcessObject.h"
+#include "rtkWin32Header.h"
+
+#include <itkProcessObject.h>
 
 #include <memory>
 
@@ -29,6 +31,10 @@ namespace rtk {
 
     /** \class ThreeDCircularProjectionGeometryXMLFileReader
      * \brief Reads in an RTK 3D circular geometry as XML
+	 * This class shadows rtk::ThreeDCircularProjectionGeometryXMLFileReader
+	 * defined in rtkThreeDCircularProjectionGeometryXMLFile.h to expose the
+	 * reader when wrapping RTK for python.
+	 * \sa rtkThreeDCircularProjectionGeometryXMLFile.h
      */
     class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileReader :
       public itk::ProcessObject
@@ -63,7 +69,7 @@ namespace rtk {
       GeometryPointer GetOutput();
 
     protected:
-      ThreeDCircularProjectionGeometryXMLFileReader(void);
+      ThreeDCircularProjectionGeometryXMLFileReader();
       ~ThreeDCircularProjectionGeometryXMLFileReader() {}
       //void PrintSelf(std::ostream & os, itk::Indent indent) const;
 
@@ -76,9 +82,5 @@ namespace rtk {
 
   }
 }
-
-#ifndef ITK_MANUAL_INSTANTIATION
-  #include "srtkThreeDCircularProjectionGeometryXMLFileReader.hxx"
-#endif
 
 #endif

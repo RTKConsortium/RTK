@@ -42,7 +42,7 @@ namespace itk
  * provides the GPU kernel source code as a const char*
  */
 #define itkCudaKernelClassMacro(kernel)  \
-class ITK_EXPORT kernel                  \
+class ITKCudaCommon_EXPORT kernel                  \
   {                                      \
     public:                              \
       static std::string GetCudaPTXSource(); \

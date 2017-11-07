@@ -40,9 +40,9 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 
-  class ITK_EXPORT CudaConstantVolumeSource :
-        public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-    ConstantImageSource< itk::CudaImage<float,3> > >
+class RTK_EXPORT CudaConstantVolumeSource :
+  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+         ConstantImageSource< itk::CudaImage<float,3> > >
 {
 public:
   /** Standard class typedefs. */
@@ -59,7 +59,7 @@ public:
   itkTypeMacro(CudaConstantVolumeSource, ImageToImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaConstantVolumeSource();
+  CudaConstantVolumeSource();
   ~CudaConstantVolumeSource(){
   }
 

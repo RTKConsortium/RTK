@@ -45,9 +45,9 @@ namespace rtk
  * \author peter
  * \version 0.1
  */
-class CudaFDKWeightProjectionFilter :
-    public  itk::CudaInPlaceImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-            rtk::FDKWeightProjectionFilter<itk::CudaImage<float, 3> > >
+class RTK_EXPORT CudaFDKWeightProjectionFilter :
+  public  itk::CudaInPlaceImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+          rtk::FDKWeightProjectionFilter<itk::CudaImage<float, 3> > >
 {
 public:
   /** Convenience typedefs **/
@@ -69,7 +69,7 @@ public:
 
 protected:
   /** Standard constructor **/
-  rtkcuda_EXPORT CudaFDKWeightProjectionFilter();
+  CudaFDKWeightProjectionFilter();
   /** Destructor **/
   virtual ~CudaFDKWeightProjectionFilter();
 

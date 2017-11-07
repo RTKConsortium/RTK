@@ -40,9 +40,9 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 
-  class ITK_EXPORT CudaConjugateGradientImageFilter_3f :
-        public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-    ConjugateGradientImageFilter< itk::CudaImage<float,3> > >
+class RTK_EXPORT CudaConjugateGradientImageFilter_3f :
+  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+         ConjugateGradientImageFilter< itk::CudaImage<float,3> > >
 {
 public:
   /** Standard class typedefs. */
@@ -59,7 +59,7 @@ public:
   itkTypeMacro(CudaConjugateGradientImageFilter_3f, ConjugateGradientImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaConjugateGradientImageFilter_3f();
+  CudaConjugateGradientImageFilter_3f();
   ~CudaConjugateGradientImageFilter_3f(){
   }
 

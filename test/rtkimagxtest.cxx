@@ -1,7 +1,8 @@
 #include "rtkTest.h"
-#include "rtkProjectionsReader.h"
 #include "rtkMacro.h"
 #include "rtkImagXGeometryReader.h"
+#include "rtkProjectionsReader.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 /**
  * \file rtkimagxtest.cxx

@@ -46,7 +46,7 @@ namespace rtk
  *
  * \ingroup ReconstructionAlgorithm CudaImageToImageFilter
  */
-class CudaFDKConeBeamReconstructionFilter :
+class RTK_EXPORT CudaFDKConeBeamReconstructionFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   FDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
@@ -69,7 +69,7 @@ public:
   itkTypeMacro(CudaFDKConeBeamReconstructionFilter, FDKConeBeamReconstructionFilter);
 
 protected:
-  rtkcuda_EXPORT CudaFDKConeBeamReconstructionFilter();
+  CudaFDKConeBeamReconstructionFilter();
   ~CudaFDKConeBeamReconstructionFilter(){}
 
   virtual void GPUGenerateData();

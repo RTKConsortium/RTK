@@ -22,7 +22,7 @@
 #include "rtkWin32Header.h"
 
 void
-rtkcuda_EXPORT CUDA_forward_project( int projSize[3],
+RTK_EXPORT CUDA_forward_project( int projSize[3],
                       int volSize[3],
                       float *translatedProjectionIndexTransformMatrices,
                       float* translatedVolumeTransformMatrices,

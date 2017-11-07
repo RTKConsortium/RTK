@@ -40,7 +40,7 @@ namespace rtk
  *
  * \ingroup CudaImageToImageFilter
  */
-class ITK_EXPORT CudaAverageOutOfROIImageFilter :
+class RTK_EXPORT CudaAverageOutOfROIImageFilter :
     public itk::CudaInPlaceImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
   AverageOutOfROIImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,3> > >
 
@@ -59,7 +59,7 @@ public:
   itkTypeMacro(CudaAverageOutOfROIImageFilter, AverageOutOfROIImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaAverageOutOfROIImageFilter();
+  CudaAverageOutOfROIImageFilter();
   ~CudaAverageOutOfROIImageFilter(){
   }
 

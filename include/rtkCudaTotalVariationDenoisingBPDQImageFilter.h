@@ -40,9 +40,9 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 
-  class ITK_EXPORT CudaTotalVariationDenoisingBPDQImageFilter :
-        public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-    TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,3>, itk::CudaImage< itk::CovariantVector < float, 3 >, 3 > > >
+class RTK_EXPORT CudaTotalVariationDenoisingBPDQImageFilter :
+  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+  TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,3>, itk::CudaImage< itk::CovariantVector < float, 3 >, 3 > > >
 {
 public:
   /** Standard class typedefs. */
@@ -60,7 +60,7 @@ public:
   itkTypeMacro(CudaTotalVariationDenoisingBPDQImageFilter, TotalVariationDenoisingBPDQImageFilter)
 
 protected:
-  rtkcuda_EXPORT CudaTotalVariationDenoisingBPDQImageFilter();
+  CudaTotalVariationDenoisingBPDQImageFilter();
   ~CudaTotalVariationDenoisingBPDQImageFilter(){
   }
 

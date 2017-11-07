@@ -43,7 +43,7 @@ namespace rtk
  *
  * \author Sebastien Brousmiche
  */
-class CudaPolynomialGainCorrectionImageFilter :
+class RTK_EXPORT CudaPolynomialGainCorrectionImageFilter :
     public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>,
     PolynomialGainCorrectionImageFilter <itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> > >
 {
@@ -67,7 +67,7 @@ public:
 
 protected:
   /** Standard constructor **/
-  rtkcuda_EXPORT CudaPolynomialGainCorrectionImageFilter();
+  CudaPolynomialGainCorrectionImageFilter();
   /** Destructor **/
   virtual ~CudaPolynomialGainCorrectionImageFilter();
 

@@ -43,7 +43,7 @@ namespace rtk
  *
  * \author Sebastien Brousmiche
  */
-class CudaLagCorrectionImageFilter :
+class RTK_EXPORT CudaLagCorrectionImageFilter :
   public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<unsigned short, 3>,
   LagCorrectionImageFilter < itk::CudaImage<unsigned short, 3>, 4> >
 {
@@ -66,7 +66,7 @@ public:
 
 protected:
   /** Standard constructor **/
-  rtkcuda_EXPORT CudaLagCorrectionImageFilter();
+  CudaLagCorrectionImageFilter();
   /** Destructor **/
   virtual ~CudaLagCorrectionImageFilter();
 

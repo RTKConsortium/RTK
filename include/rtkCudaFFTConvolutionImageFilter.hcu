@@ -24,13 +24,13 @@
 #include "rtkWin32Header.h"
 
 void
-rtkcuda_EXPORT CUDA_fft_convolution(const int3 &inputDimension,
+RTK_EXPORT CUDA_fft_convolution(const int3 &inputDimension,
                                     const int2 &kernelDimension,
                                     float *deviceProjection,
                                     float2 *deviceKernelFFT);
 
 void
-rtkcuda_EXPORT CUDA_padding(const int3 &paddingIndex,
+RTK_EXPORT CUDA_padding(const int3 &paddingIndex,
                             const uint3 &paddingSize,
                             const uint3 &inputSize,
                             float *deviceVolume,
