@@ -21,6 +21,8 @@
 
 #include "rtkReorderProjectionsImageFilter.h"
 
+#include "rtkGeneralPurposeFunctions.h"
+
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
