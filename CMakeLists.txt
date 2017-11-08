@@ -148,6 +148,7 @@ set (RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
 
+configure_file(CTestCustom.cmake ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 #-----------------------------------------------------------------------------
 # The subdirectories added below this line should use only the public
 # interface with find_package(ITK). Set ITK_DIR to use this ITK build.
