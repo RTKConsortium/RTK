@@ -39,6 +39,11 @@ namespace rtk
  * can handle parallel geometry with flat panels and cone-beam geometries with
  * flat and curved detectors. */
 template< typename TImage >
+class ProjectionsRegionConstIteratorRayBasedWithFlatPanel;
+template< typename TImage >
+class ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel;
+
+template< typename TImage >
 class ProjectionsRegionConstIteratorRayBased:
     public itk::ImageConstIteratorWithIndex< TImage >
 {

@@ -116,8 +116,11 @@ if (RTK_USE_CUDA)
 endif ()
 #=========================================================
 
-itk_module_add_library(RTK ${RTK_SRCS})
+add_library(RTK ${RTK_SRCS})
 target_link_libraries(RTK LINK_PUBLIC lpsolve55)
+
+itk_module_link_dependencies()
+itk_module_target(RTK NO_INSTALL)
 
 if (RTK_USE_CUDA)
   target_link_libraries( RTK LINK_PUBLIC ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )

@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build-and-test:
+    working_directory: ~/RTK-build
+    docker:
+      - image: insighttoolkit/module-ci:latest
+    steps:
+      - checkout:
+          path: ~/RTK
+      - run:
+          name: Configure
+          command: |
+            cmake \
+              -DITK_DIR:PATH=/ITK-build \
+              -DBUILD_TESTING:BOOL=ON \
+              -DBUILDNAME:STRING=External-RTK-${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM} \
+              -DRTK_USE_CUDA:BOOL=OFF \
+              -DCMAKE_BUILD_TYPE=MinSizeRel \
+              -DCUDA_HAVE_GPU:BOOL=OFF \
+              -DBUILD_SHARED_LIBS:BOOL=OFF \
+                ~/RTK \
+              && make -j 2 \
+      - run:
+          name: Build and Test
+          no_output_timeout: 1.0h
+          command: |
+            ctest -j 2 -VV -D Experimental
+
+workflows:
+    version: 2
+    build-test:
+      jobs:
+        - build-and-test

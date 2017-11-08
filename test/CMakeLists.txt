@@ -9,39 +9,15 @@ mark_as_advanced(RTK_DATA_ROOT)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
   ${RTK_BINARY_DIR}/rtkTestConfiguration.h)
   
-  
-#-----------------------------------------------------------------------------
-# Disable "Factory Registration Manager".
-#
-# * Ensure TestDriver associated with ITKModules do NOT attempt to include
-#     'itk(Image|Transform)IOFactoryRegisterManager.h'.
-#
-# * The driver does not rely on these files to register its IO factories.
-#
-# * Keeping the manager enabled is NOT supported by ITK build system and
-#     causes link errors.
-#
-# * Simply setting ITK_NO_IO_FACTORY_REGISTER_MANAGER to 1 is not sufficient
-#     because the compilation was possibly added in a parent directory.
-#
-# get_property( _definitions DIRECTORY PROPERTY COMPILE_DEFINITIONS)
-# list(REMOVE_ITEM _definitions ITK_IO_FACTORY_REGISTER_MANAGER)
-# set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${_definitions}")
-# 
-#-----------------------------------------------------------------------------
-# The subdirectories added below this line should use only the public
-# interface with find_package(ITK). Set ITK_DIR to use this ITK build.
-if(ITK_SOURCE_DIR)
-  set(ITK_DIR "${ITK_BINARY_DIR}")
-endif()
 #-----------------------------------------------------------------------------
 # Find ITK.
 # Required to include ITK_USE_FILE in order to Register IO factories
-find_package(ITK REQUIRED)
-
-set(ITK_MODULES_REQUESTED ${ITK_MODULE_RTK_DEPENDS})
-include(${ITK_USE_FILE})
-
+# Force requested modules to be RTK dependencies only.
+if(NOT ITK_SOURCE_DIR)
+  find_package(ITK REQUIRED)
+  set(ITK_MODULES_REQUESTED ${ITK_MODULE_RTK_DEPENDS})
+  include(${ITK_USE_FILE})
+endif()
 
 #-----------------------------------------------------------------------------
 # rtk_add_test(testname testfile [DATA{}])
@@ -70,12 +46,13 @@ function(rtk_add_cuda_test testname testfile)
   endif()
 endfunction()
 
+
+itk_module_test()
+
 #-----------------------------------------------------------------------------
 # Executable to check the image quality
 add_executable(rtkcheckimagequality rtkcheckimagequality.cxx)
-target_link_libraries(rtkcheckimagequality ${RTK_LIBRARIES})
-
-itk_module_test()  
+target_link_libraries(rtkcheckimagequality ${RTK_LIBRARIES} ${RTK-Test_LIBRARIES})
 
 rtk_add_test(rtkFDKTest rtkfdktest.cxx)
 rtk_add_cuda_test(rtkFDKCudaTest rtkfdktest.cxx)
