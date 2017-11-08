@@ -19,9 +19,8 @@
 #define itkCudaWin32Header_h
 
 #include "itkConfigure.h"
-#include "rtkConfiguration.h"
 
-#if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS) 
+#if (defined(_WIN32) || defined(WIN32)) && defined(ITK_BUILD_SHARED_LIBS)
 # ifdef ITKCudaCommon_EXPORTS
 #  define ITKCudaCommon_EXPORT __declspec(dllexport)
 # else
