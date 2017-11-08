@@ -1,5 +1,8 @@
 RTK: The Reconstruction ToolKit 
+-------------------------------
 
+.. image:: https://circleci.com/gh/LucasGandel/RTK-1.svg?style=shield
+    :target: https://circleci.com/gh/LucasGandel/RTK-1
 
 Links
 -----
