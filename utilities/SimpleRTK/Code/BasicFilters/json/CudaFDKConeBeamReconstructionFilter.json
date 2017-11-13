@@ -33,7 +33,7 @@
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : "Get he percentage of the image widthfeathered with data to correct for truncation."
     },
-	{
+    {
       "name" : "HannCutFrequency",
       "type" : "double",
       "default" : "0.0",
@@ -42,7 +42,47 @@
       "detaileddescriptionSet" : "Set the Hann window frequency.",
       "briefdescriptionGet" : "",
       "detaileddescriptionGet" : "Get the Hann window frequency."
-    }
+    },
+    {
+       "name" : "CosineCutFrequency",
+       "type" : "double",
+       "default" : "0.0",
+ 	  "custom_itk_cast" : "filter->GetRampFilter()->SetCosineCutFrequency( this->m_CosineCutFrequency );\n",
+       "briefdescriptionSet" : "",
+       "detaileddescriptionSet" : "Set the cosine window frequency.",
+       "briefdescriptionGet" : "",
+       "detaileddescriptionGet" : "Get the cosine window frequency."
+     },
+     {
+       "name" : "HammingFrequency",
+       "type" : "double",
+       "default" : "0.0",
+ 	  "custom_itk_cast" : "filter->GetRampFilter()->SetHammingFrequency( this->m_HammingFrequency );\n",
+       "briefdescriptionSet" : "",
+       "detaileddescriptionSet" : "Set the hamming frequency.",
+       "briefdescriptionGet" : "",
+       "detaileddescriptionGet" : "Get the hamming frequency."
+     },
+     {
+       "name" : "RamLakCutFrequency",
+       "type" : "double",
+       "default" : "0.0",
+ 	  "custom_itk_cast" : "filter->GetRampFilter()->SetRamLakCutFrequency( this->m_RamLakCutFrequency );\n",
+       "briefdescriptionSet" : "",
+       "detaileddescriptionSet" : "Set the Ram lak window frequency.",
+       "briefdescriptionGet" : "",
+       "detaileddescriptionGet" : "Get the Ram lak window frequency."
+     },
+     {
+       "name" : "SheppLoganCutFrequency",
+       "type" : "double",
+       "default" : "0.0",
+ 	  "custom_itk_cast" : "filter->GetRampFilter()->SetSheppLoganCutFrequency( this->m_SheppLoganCutFrequency );\n",
+       "briefdescriptionSet" : "",
+       "detaileddescriptionSet" : "Set the shepp logan window frequency.",
+       "briefdescriptionGet" : "",
+       "detaileddescriptionGet" : "Get the shepp logan window frequency."
+      }
   ],
   "briefdescription" : "Implements Feldkamp, David and Kress cone-beam reconstruction.",
   "detaileddescription" : "CudaFDKConeBeamReconstructionFilter is a mini-pipeline filter which combines the different steps of the FDK cone-beam reconstruction filter: \n\n - rtk::FDKWeightProjectionFilter for 2D weighting of the projections, \n\n - rtk::FFTRampImageFilter for ramp filtering, \n\n - rtk::FDKBackProjectionImageFilter for backprojection.\n\n The input stack of projections is processed piece by piece (the size is controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter to extract sub-stacks."
