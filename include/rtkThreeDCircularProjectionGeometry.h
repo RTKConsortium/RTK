@@ -253,7 +253,7 @@ public:
 
   /** Accessor for the radius of curved detector. The default is 0 and it means
    * a flat detector. */
-  itkGetMacro(RadiusCylindricalDetector, double)
+  itkGetConstMacro(RadiusCylindricalDetector, double)
   itkSetMacro(RadiusCylindricalDetector, double)
 
 protected:
@@ -318,6 +318,9 @@ protected:
   bool FixAngles(double &outOfPlaneAngleRAD, double &gantryAngleRAD,
                  double &inPlaneAngleRAD,
                  const Matrix3x3Type &referenceMatrix) const;
+
+  /** Clone the geometry object in a new one. */
+  virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
   /** Circular geometry parameters per projection (angles in degrees between 0
     and 360). */

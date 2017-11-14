@@ -252,6 +252,7 @@ rtk_add_test(rtkWaveletsTest rtkwaveletstest.cxx)
 # Test the manager used to automatically clean up the gengetopt args_info structures
 rtk_add_test(rtkArgsInfoManagerTest rtkargsinfomanagertest.cxx)
 
+rtk_add_test(rtkGeometryCloneTest rtkgeometryclonetest.cxx)
 rtk_add_test(rtkGeometryFromMatrixTest rtkgeometryfrommatrixtest.cxx)
 
 rtk_add_test(rtkOraTest rtkoratest.cxx

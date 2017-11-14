@@ -685,3 +685,28 @@ FixAngles(double &outOfPlaneAngleRAD,
     }
   return false;
 }
+
+itk::LightObject::Pointer
+rtk::ThreeDCircularProjectionGeometry::InternalClone() const
+{
+  LightObject::Pointer loPtr = Superclass::InternalClone();
+  Self::Pointer clone = dynamic_cast<Self *>(loPtr.GetPointer());
+  for(unsigned int iProj=0; iProj<this->GetGantryAngles().size(); iProj++)
+    {
+    clone->AddProjectionInRadians(this->GetSourceToIsocenterDistances()[iProj],
+                                  this->GetSourceToDetectorDistances()[iProj],
+                                  this->GetGantryAngles()[iProj],
+                                  this->GetProjectionOffsetsX()[iProj],
+                                  this->GetProjectionOffsetsY()[iProj],
+                                  this->GetOutOfPlaneAngles()[iProj],
+                                  this->GetInPlaneAngles()[iProj],
+                                  this->GetSourceOffsetsX()[iProj],
+                                  this->GetSourceOffsetsY()[iProj]);
+    clone->SetCollimationOfLastProjection( this->GetCollimationUInf()[iProj],
+                                           this->GetCollimationUSup()[iProj],
+                                           this->GetCollimationVInf()[iProj],
+                                           this->GetCollimationVSup()[iProj]);
+    }
+  clone->SetRadiusCylindricalDetector( this->GetRadiusCylindricalDetector() );
+  return loPtr;
+}

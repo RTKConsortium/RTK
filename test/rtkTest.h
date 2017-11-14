@@ -304,6 +304,12 @@ void CheckGeometries(GeometryType *g1, GeometryType *g2)
               << std::endl;
     exit(EXIT_FAILURE);
     }
+  if(e < std::fabs(g1->GetRadiusCylindricalDetector() -
+                   g2->GetRadiusCylindricalDetector()) )
+    {
+    std::cerr << "Geometries don't have the same cylindrical detector radius" << std::endl;
+    exit(EXIT_FAILURE);
+    }
 
   for(unsigned int i=0; i<nproj; i++)
     {
@@ -327,7 +333,15 @@ void CheckGeometries(GeometryType *g1, GeometryType *g2)
         e < std::fabs(g1->GetProjectionOffsetsX()[i] -
                       g2->GetProjectionOffsetsX()[i]) ||
         e < std::fabs(g1->GetProjectionOffsetsY()[i] -
-                      g2->GetProjectionOffsetsY()[i]) )
+                      g2->GetProjectionOffsetsY()[i]) ||
+        e < std::fabs(g1->GetCollimationUInf()[i] -
+                      g2->GetCollimationUInf()[i]) ||
+        e < std::fabs(g1->GetCollimationVInf()[i] -
+                      g2->GetCollimationVInf()[i]) ||
+        e < std::fabs(g1->GetCollimationUSup()[i] -
+                      g2->GetCollimationUSup()[i]) ||
+        e < std::fabs(g1->GetCollimationVSup()[i] -
+                      g2->GetCollimationVSup()[i]) )
       {
       std::cerr << "Geometry of projection #" << i << " is unvalid."
                 << std::endl;
