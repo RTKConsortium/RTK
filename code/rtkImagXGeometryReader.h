@@ -105,6 +105,7 @@ private:
   void GenerateData() ITK_OVERRIDE;
 
   // DICOM tag for AI versions
+  static const std::string m_AI_VERSION_1p2;
   static const std::string m_AI_VERSION_1p5;
   static const std::string m_AI_VERSION_2p1;
 
@@ -141,6 +142,19 @@ private:
       std::vector<float> Px, Py, Pz, // Detector translations model
                          Rx, Ry, Rz, // Detector rotations model
                          Tx, Ty, Tz; // Source translations model
+
+      CalibrationModelType() {
+          sourceToNozzleOffsetAngle = -90.f; 
+          Px = std::vector<float>(5, 0.f);
+          Py = std::vector<float>(5, 0.f);
+          Pz = std::vector<float>(5, 0.f);
+          Rx = std::vector<float>(5, 0.f);
+          Ry = std::vector<float>(5, 0.f);
+          Rz = std::vector<float>(5, 0.f);
+          Tx = std::vector<float>(5, 0.f);
+          Ty = std::vector<float>(5, 0.f);
+          Tz = std::vector<float>(5, 0.f);
+      }
   };
   
   CalibrationModelType GetGeometryForAI1p5();
@@ -149,13 +163,13 @@ private:
 
   bool isCW(const std::vector<float>& angles);
 
-  std::array<float, 3> getInterpolatedValue(const InterpResultType& ires, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz);
+  std::vector<float> getInterpolatedValue(const InterpResultType& ires, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz);
 
   // Evaluate the calibration models for a given angle
-  std::array<float, 3> getDeformations(float gantryAngle, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz);
+  std::vector<float> getDeformations(float gantryAngle, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz);
   
   void addEntryToGeometry(float gantryAngleDegree, float nozzleToRadAngleOffset, float sid, float sdd, 
-                          std::array<float, 3>& P, std::array<float, 3>& R, std::array<float, 3>& T);
+                          std::vector<float>& P, std::vector<float>& R, std::vector<float>& T);
 
   void addEntryToGeometry(const FlexmapType& flex, float gantryAngleDegree);
 

@@ -307,6 +307,7 @@ void CheckGeometries(GeometryType *g1, GeometryType *g2)
 
   for(unsigned int i=0; i<nproj; i++)
     {
+      std::cout << g1->GetGantryAngles()[i] << " " << g2->GetGantryAngles()[i] << std::endl;
     if( e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(
               std::fabs(g1->GetGantryAngles()[i] -
                         g2->GetGantryAngles()[i])) ||
