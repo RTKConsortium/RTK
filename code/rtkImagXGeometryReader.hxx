@@ -25,13 +25,6 @@
 #include <itkImageFileReader.h>
 #include <itkGDCMImageIO.h>
 
-//#include "gdcmReader.h"
-//#include "gdcmGlobal.h"
-//#include "gdcmDicts.h"
-//#include "gdcmDict.h"
-//#include "gdcmAttribute.h"
-//#include "gdcmStringFilter.h"
-
 #include <string>
 #include <istream>
 
@@ -194,7 +187,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
                         itk::DOMNode::ChildrenListType list_flexmap;
                         list_geocals[gid]->GetAllChildren(list_flexmap);
 
-                        for (auto flist_it = list_flexmap.begin(); flist_it != list_flexmap.end(); flist_it++)
+                        for (std::vector<float>::iterator flist_it = list_flexmap.begin(); flist_it != list_flexmap.end(); flist_it++)
                         {
                             std::string str = dynamic_cast<itk::DOMTextNode*>(*flist_it)->GetText();
                             std::stringstream iss(str);
@@ -585,7 +578,11 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngl
 {
     const int N = static_cast<int>(flexAngles.size());
 
-    InterpResultType ires = { 0, 0, 1.f, 0.f };
+    InterpResultType ires;
+    ires[0] = 0.f;
+    ires[1] = 0.f;
+    ires[2] = 1.f;
+    ires[3] = 0.f;
     if (N == 1) {
         return ires;
     }
@@ -605,11 +602,17 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngl
     
     // Clipping
     if (idc == 0 && ((delta < 0.f && isCW) || (delta > 0.f && !isCW)) ) {
-        ires = { 0, 0, 1.f, 0.f };
+        ires[0] = 0.f; 
+        ires[1] = 0.f;
+        ires[2] = 1.f;
+        ires[3] = 0.f;
         return ires;
     }
     else if (idc == N - 1 && ((delta > 0.f && isCW) || (delta < 0.f && !isCW))) {
-        ires = { N - 1, N - 1, 1.f, 0.f };
+        ires[0] = N-1;
+        ires[1] = N-1;
+        ires[2] = 1.f;
+        ires[3] = 0.f;
         return ires;
     }
 
@@ -617,21 +620,33 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngl
     if(isCW) {
         if (delta > 0.f) {
             float a = std::abs(delta / (flexAngles[idc + 1] - flexAngles[idc]));
-            ires = { idc, idc + 1, 1.f - a, a };
+            ires[0] = idc;
+            ires[1] = idc + 1;
+            ires[2] = 1 - a;
+            ires[3] = a;
         }
         else if (delta < 0.f) {
             float a = std::abs(delta / (flexAngles[idc] - flexAngles[idc - 1]));
-            ires = { idc - 1, idc, a, 1.f - a };
+            ires[0] = idc - 1;
+            ires[1] = idc;
+            ires[2] = a;
+            ires[3] = 1 - a;
         }
     }
     else {
         if (delta < 0.f) {
             float a = std::abs(delta / (flexAngles[idc + 1] - flexAngles[idc]));
-            ires = { idc, idc + 1, 1.f - a, a };
+            ires[0] = idc;
+            ires[1] = idc + 1;
+            ires[2] = 1 - a;
+            ires[3] = a;
         }
         else if (delta > 0.f) {
             float a = std::abs(delta / (flexAngles[idc] - flexAngles[idc - 1]));
-            ires = { idc - 1, idc, a, 1.f - a };
+            ires[0] = idc - 1;
+            ires[1] = idc;
+            ires[2] = a;
+            ires[3] = 1 - a;
         }
     }
     
