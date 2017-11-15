@@ -25,12 +25,12 @@
 #include <itkImageFileReader.h>
 #include <itkGDCMImageIO.h>
 
-#include "gdcmReader.h"
-#include "gdcmGlobal.h"
-#include "gdcmDicts.h"
-#include "gdcmDict.h"
-#include "gdcmAttribute.h"
-#include "gdcmStringFilter.h"
+//#include "gdcmReader.h"
+//#include "gdcmGlobal.h"
+//#include "gdcmDicts.h"
+//#include "gdcmDict.h"
+//#include "gdcmAttribute.h"
+//#include "gdcmStringFilter.h"
 
 #include <string>
 #include <istream>
