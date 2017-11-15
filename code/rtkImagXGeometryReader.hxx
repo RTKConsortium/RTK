@@ -190,9 +190,9 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
                         itk::DOMNode::ChildrenListType list_flexmap;
                         list_geocals[gid]->GetAllChildren(list_flexmap);
 
-                        for (auto flist_it = list_flexmap.begin(); flist_it != list_flexmap.end(); flist_it++)
+                        for (int flist_id = 0; flist_id < list_flexmap.size(); flist_id++)
                         {
-                            std::string str = dynamic_cast<itk::DOMTextNode*>(*flist_it)->GetText();
+                            std::string str = dynamic_cast<itk::DOMTextNode*>(list_flexmap[flist_id])->GetText();
                             std::stringstream iss(str);
                             std::vector<float> v;
                             while (iss.good())
