@@ -229,18 +229,20 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
             }
         }
     }
-    
-    auto isCW = [](const std::vector<float>& angles) {
-        std::vector<float> cp;
-        std::copy(angles.begin(), angles.end(), std::back_inserter(cp));
-        std::nth_element(cp.begin(), cp.begin() + cp.size() / 2, cp.end());
-        return (cp[cp.size() / 2] >= 0.f) ? true: false;
-    };
-
-    F.isCW = isCW(F.anglesDeg); // Needed for flexmap sampling
+  
+    F.isCW = this->isCW(F.anglesDeg); // Needed for flexmap sampling
     F.isValid = arcFound & FPOffsetfFound & gantryParametersFound & flexmapFoundAndLoaded;
 
     return F;
+}
+
+template< typename TInputImage >
+bool ImagXGeometryReader<TInputImage>::isCW(const std::vector<float>& angles) 
+{
+    std::vector<float> cp;
+    std::copy(angles.begin(), angles.end(), std::back_inserter(cp));
+    std::nth_element(cp.begin(), cp.begin() + cp.size() / 2, cp.end());
+    return (cp[cp.size() / 2] >= 0.f) ? true : false;
 }
 
 template< typename TInputImage >
@@ -637,34 +639,47 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngl
 }
 
 template< typename TInputImage >
+std::array<float, 3> 
+ImagXGeometryReader<TInputImage>::getInterpolatedValue(const InterpResultType& ires, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz)
+{
+    std::array<float, 3> d;
+    d[0] = ires.a0 * Dx[ires.id0] + ires.a1 * Dx[ires.id1];
+    d[1] = ires.a0 * Dy[ires.id0] + ires.a1 * Dy[ires.id1];
+    d[2] = ires.a0 * Dz[ires.id0] + ires.a1 * Dz[ires.id1];
+    return d;
+}
+
+template< typename TInputImage >
 void 
 ImagXGeometryReader<TInputImage>::addEntryToGeometry(const FlexmapType& f, float gantryAngle)
 {
     // Deformation obtained by sampling the flexmap
 
     InterpResultType ires = interpolate(f.anglesDeg, f.isCW, gantryAngle);
-
-    auto getInterpolatedValue = [ires](const std::vector<float>& Dx,
-                                       const std::vector<float>& Dy,
-                                       const std::vector<float>& Dz) {
-        std::array<float, 3> d;
-        d[0] = ires.a0 * Dx[ires.id0] + ires.a1 * Dx[ires.id1];
-        d[1] = ires.a0 * Dy[ires.id0] + ires.a1 * Dy[ires.id1];
-        d[2] = ires.a0 * Dz[ires.id0] + ires.a1 * Dz[ires.id1];
-        return d;
-    };
-
+    
     // Detector translation deformations
-    std::array<float, 3> detTrans = getInterpolatedValue(f.Px, f.Py, f.Pz);
+    std::array<float, 3> detTrans = this->getInterpolatedValue(ires, f.Px, f.Py, f.Pz);
 
     // Detector rotation deformations
-    std::array<float, 3> detRot = getInterpolatedValue(f.Rx, f.Ry, f.Rz);
+    std::array<float, 3> detRot = this->getInterpolatedValue(ires, f.Rx, f.Ry, f.Rz);
 
     // Source translation deformations
-    std::array<float, 3> srcTrans = getInterpolatedValue(f.Tx, f.Ty, f.Tz);
+    std::array<float, 3> srcTrans = this->getInterpolatedValue(ires, f.Tx, f.Ty, f.Tz);
 
     // Add new entry to RTK geometry
     addEntryToGeometry(gantryAngle, f.sourceToNozzleOffsetAngle, f.sid, f.sdd, detTrans, detRot, srcTrans);
+}
+
+template< typename TInputImage >
+std::array<float, 3> 
+ImagXGeometryReader<TInputImage>::getDeformations(float gantryAngle, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz)
+{ 
+    std::array<float, 3> d;
+    float gRad = gantryAngle*std::acos(-1.f) / 180.f;
+    d[0] = Dx[0] + Dx[1] * gantryAngle + Dx[2] * std::cos(Dx[3] * gRad + Dx[4]);
+    d[1] = Dy[0] + Dy[1] * gantryAngle + Dy[2] * std::cos(Dy[3] * gRad + Dy[4]);
+    d[2] = Dz[0] + Dz[1] * gantryAngle + Dz[2] * std::cos(Dz[3] * gRad + Dz[4]);
+    return d;
 }
 
 template< typename TInputImage >
@@ -673,26 +688,14 @@ ImagXGeometryReader<TInputImage>::addEntryToGeometry(const CalibrationModelType&
 {
     // Deformation computation following model: (a0 + a1*t) + a2*cos(a3*t + a4)
 
-    // Evaluate the models for that angle
-    auto getDeformations = [gantryAngle](const std::vector<float>& Dx, 
-                                        const std::vector<float>& Dy, 
-                                        const std::vector<float>& Dz) {
-        std::array<float, 3> d;
-        float gRad = gantryAngle*std::acos(-1.f)/180.f;
-        d[0] = Dx[0] + Dx[1] * gantryAngle + Dx[2] * std::cos(Dx[3] * gRad + Dx[4]);
-        d[1] = Dy[0] + Dy[1] * gantryAngle + Dy[2] * std::cos(Dy[3] * gRad + Dy[4]);
-        d[2] = Dz[0] + Dz[1] * gantryAngle + Dz[2] * std::cos(Dz[3] * gRad + Dz[4]);
-        return d;
-    };
-
     // Detector translation deformations
-    std::array<float, 3> detTrans = getDeformations(c.Px, c.Py, c.Pz);
+    std::array<float, 3> detTrans = this->getDeformations(gantryAngle, c.Px, c.Py, c.Pz);
     
     // Detector rotation deformations
-    std::array<float, 3> detRot = getDeformations(c.Rx, c.Ry, c.Rz);
+    std::array<float, 3> detRot = this->getDeformations(gantryAngle, c.Rx, c.Ry, c.Rz);
     
     // Source translation deformations
-    std::array<float, 3> srcTrans = getDeformations(c.Tx, c.Ty, c.Tz);
+    std::array<float, 3> srcTrans = this->getDeformations(gantryAngle, c.Tx, c.Ty, c.Tz);
     
     // Add new entry to RTK geometry
     addEntryToGeometry(gantryAngle, c.sourceToNozzleOffsetAngle, c.sid, c.sdd, detTrans, detRot, srcTrans);

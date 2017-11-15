@@ -146,6 +146,13 @@ private:
   CalibrationModelType GetGeometryForAI1p5();
 
   CalibrationModelType GetGeometryForAI1p5FromXMLFiles();
+
+  bool isCW(const std::vector<float>& angles);
+
+  std::array<float, 3> getInterpolatedValue(const InterpResultType& ires, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz);
+
+  // Evaluate the calibration models for a given angle
+  std::array<float, 3> getDeformations(float gantryAngle, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz);
   
   void addEntryToGeometry(float gantryAngleDegree, float nozzleToRadAngleOffset, float sid, float sdd, 
                           std::array<float, 3>& P, std::array<float, 3>& R, std::array<float, 3>& T);
