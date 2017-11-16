@@ -23,7 +23,6 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 #include <vector>
-#include <array>
 
 namespace rtk
 {
