@@ -1,5 +1,8 @@
 RTK: The Reconstruction ToolKit
 
+.. image:: https://circleci.com/gh/SimonRit/RTK.svg?style=shield
+    :target: https://circleci.com/gh/SimonRit/RTK
+
 .. image:: https://travis-ci.org/SimonRit/RTK.svg?branch=master
     :target: https://travis-ci.org/SimonRit/RTK/
 
