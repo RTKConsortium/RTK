@@ -32,7 +32,6 @@ int main(int, char** )
                                          std::string("/Input/ImagX/calibration.xml"));
   imagxReader->SetRoomXMLFileName(std::string(RTK_DATA_ROOT) +
                                   std::string("/Input/ImagX/room.xml"));
-  imagxReader->SetDetectorOffset(0);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( imagxReader->UpdateOutputData() );
 
   // Reference geometry
