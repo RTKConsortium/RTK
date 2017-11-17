@@ -102,14 +102,7 @@ list(APPEND RTK_INCLUDE_DIRS
 # --------------------------------------------------------
 # Find ITK (required)
 if(NOT ITK_SOURCE_DIR)
-  find_package(ITK 4.2.0 REQUIRED)
-endif()
-
-if(ITK_VERSION_MINOR LESS "4")
-  include_directories(BEFORE utilities/itkImageScanlineConstIterator)
-endif()
-if(ITK_VERSION_MINOR LESS "5")
-  include_directories(BEFORE utilities/itkBinShrinkImageFilter)
+  find_package(ITK 4.10.0 REQUIRED)
 endif()
 
 #=========================================================
