@@ -72,7 +72,7 @@ set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 # --------------------------------------------------------
 # Initialization
 if(NOT ITK_SOURCE_DIR)
-    include(itk-module-init.cmake)
+  include(itk-module-init.cmake)
 endif()
 
 #=========================================================
@@ -113,7 +113,8 @@ if(RTK_USE_CUDA)
     add_subdirectory(utilities/ITKCudaCommon)
   endif()
 endif()
-
+list(APPEND RTK_INCLUDE_DIRS
+  ${ITKCudaCommon_INCLUDE_DIRS})
 #=========================================================
 # Include directories
 #=========================================================

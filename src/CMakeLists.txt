@@ -123,5 +123,5 @@ itk_module_link_dependencies()
 itk_module_target(RTK NO_INSTALL)
 
 if (RTK_USE_CUDA)
-  target_link_libraries( RTK LINK_PUBLIC ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )
+  target_link_libraries( RTK LINK_PUBLIC ITKCudaCommon ${CUDA_LIBRARIES} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )
 endif ()
