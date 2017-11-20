@@ -19,8 +19,9 @@
 #ifndef rtkSpectralForwardModelImageFilter_h
 #define rtkSpectralForwardModelImageFilter_h
 
-#include "rtkSimplexProjectionsDecompositionImageFilter.h"
+#include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
+#include "rtkDualEnergyNegativeLogLikelihood.h"
 
 #include <itkInPlaceImageFilter.h>
 
@@ -60,11 +61,8 @@ public:
 
   /** Convenient information */
   typedef itk::VariableLengthVector<unsigned int>           ThresholdsType;
-  typedef itk::VariableSizeMatrix<double>                   DetectorResponseType;
-  typedef itk::VariableSizeMatrix<double>                   MaterialAttenuationsType;
-
-  /** Typedefs of each subfilter of this composite filter */
-  typedef Schlomka2008NegativeLogLikelihood                             CostFunctionType;
+  typedef vnl_matrix<double>                   DetectorResponseType;
+  typedef vnl_matrix<double>                   MaterialAttenuationsType;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -72,9 +70,11 @@ public:
   /** Runtime information support. */
   itkTypeMacro(SpectralForwardModelImageFilter, InPlaceImageFilter)
 
-  /** Set/Get the incident spectrum input image */
+  /** Set/Get the incident spectrum input images */
   void SetInputIncidentSpectrum(const IncidentSpectrumImageType* IncidentSpectrum);
+  void SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType* IncidentSpectrum);
   typename IncidentSpectrumImageType::ConstPointer GetInputIncidentSpectrum();
+  typename IncidentSpectrumImageType::ConstPointer GetInputSecondIncidentSpectrum();
 
   /** Set/Get the input material-decomposed stack of projections (only used for initialization) */
   void SetInputDecomposedProjections(const DecomposedProjectionsType* DecomposedProjections);
@@ -104,9 +104,20 @@ public:
   itkSetMacro(NumberOfEnergies, unsigned int)
   itkGetMacro(NumberOfEnergies, unsigned int)
 
+  itkSetMacro(IsSpectralCT, bool)
+  itkGetMacro(IsSpectralCT, bool)
+
+  itkSetMacro(ComputeVariances, bool)
+  itkGetMacro(ComputeVariances, bool)
+
 protected:
   SpectralForwardModelImageFilter();
   ~SpectralForwardModelImageFilter() {}
+
+  /**  Create the Output */
+  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using Superclass::MakeOutput;
+  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
@@ -130,6 +141,8 @@ protected:
   unsigned int m_NumberOfIterations;
   unsigned int m_NumberOfMaterials;
   bool         m_OptimizeWithRestarts;
+  bool         m_IsSpectralCT; // If not, it is dual energy CT
+  bool         m_ComputeVariances; // Only implemented for dual energy CT
 
 private:
   //purposely not implemented

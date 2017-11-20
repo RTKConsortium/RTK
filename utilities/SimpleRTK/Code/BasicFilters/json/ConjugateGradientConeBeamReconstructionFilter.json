@@ -59,8 +59,13 @@
       "default" : "Image()",
       "custom_itk_cast" : "if(dynamic_cast < const TImageType* > ( this->m_SupportMask.GetITKBase() )) filter->SetSupportMask(const_cast<InputImageType*>( this->CastImageToITK<InputImageType>(this->m_SupportMask).GetPointer() ));",
       "no_print" : true
+    },
+    {
+      "name" : "DisableDisplacedDetectorFilter",
+      "type" : "bool",
+      "default" : "0"
     }
-  ],
+],
   "measurements" : [
     {
       "name" : "ResidualCosts",

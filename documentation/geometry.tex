@@ -149,6 +149,10 @@ $$
 \end{array}
 $$
 
+\subsection{Detector radius}
+
+In addition to flat panel detectors, some of the forward and back projectors in RTK can handle cylindrical detectors. The radius of the cylindrical detector is stored only once, as the variable RadiusCylindricalDetector. Ray-based projectors can handle any radius, while voxel-based back projectors require the radius to be equal to the SourceToDetectorDistance. The default value for RadiusCylindricalDetector is 0, and indicates that the detector is a flat panel (i.e. infinite radius, but 0 is easier to deal with).
+
 \subsection{XML file}
 
 ThreeDCircularProjectionGeometry can be saved and loaded from an XML file. If the parameter is equal to the default value for all projections, it is not stored in the file. If it is equal for all projections but different from the default value, it is stored once. Otherwise, it is stored for each projection. The matrix is given for information. It is read and checked to be consistent with the parameters but a manual modification of the file must consistently modify both the parameters and the matrix. An example is given hereafter:
@@ -156,9 +160,10 @@ ThreeDCircularProjectionGeometry can be saved and loaded from an XML file. If th
 \begin{verbatim}
 <?xml version="1.0"?>
 <!DOCTYPE RTKGEOMETRY>
-<RTKThreeDCircularGeometry version="0">
+<RTKThreeDCircularGeometry version="3">
   <SourceToIsocenterDistance>1000</SourceToIsocenterDistance>
   <SourceToDetectorDistance>1536</SourceToDetectorDistance>
+  <RadiusCylindricalDetector>1536</RadiusCylindricalDetector>
   <Projection>
     <GantryAngle>271.847274780273</GantryAngle>
     <ProjectionOffsetX>-117.056503295898</ProjectionOffsetX>

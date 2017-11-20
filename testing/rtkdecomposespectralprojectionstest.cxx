@@ -176,6 +176,7 @@ int main(int , char** )
   forward->SetDetectorResponse(detectorResponseReader->GetOutput());
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   forward->SetThresholds(thresholds);
+  forward->SetIsSpectralCT(true);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
@@ -202,6 +203,7 @@ int main(int , char** )
   simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   simplex->SetThresholds(thresholds);
   simplex->SetNumberOfIterations(10000);
+  forward->SetIsSpectralCT(true);
 
   std::cout << "\n\n****** Case 1: User-provided initial values ******" << std::endl;
 

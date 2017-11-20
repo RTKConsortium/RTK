@@ -33,22 +33,14 @@ int main(int argc, char * argv[])
   // Create geometry reader
   rtk::ImagXGeometryReader<OutputImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<OutputImageType>::New();
   imagxReader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
-  if (args_info.dicomcalibration_flag)
-    {
-    imagxReader->SetReadCalibrationFromProjections(true);
-    }
-  else
-    {
-    if (! (args_info.calibration_given)&&(args_info.room_setup_given))
-        itkGenericExceptionMacro("Calibration and room setup information required, either from projection's DICOM information or from external xml files");
-
-    imagxReader->SetReadCalibrationFromProjections(false);
-    imagxReader->SetCalibrationXMLFileName(args_info.calibration_arg);
-    imagxReader->SetRoomXMLFileName(args_info.room_setup_arg);
-    }
-  imagxReader->SetDetectorOffset(args_info.offset_arg);
+  if (args_info.calibration_given) {
+	  imagxReader->SetCalibrationXMLFileName(args_info.calibration_arg);
+  }
+  if (args_info.room_setup_given) {
+	  imagxReader->SetRoomXMLFileName(args_info.room_setup_arg);
+  }
   TRY_AND_EXIT_ON_ITK_EXCEPTION( imagxReader->UpdateOutputData() )
-
+  
   // Write
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
