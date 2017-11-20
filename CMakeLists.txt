@@ -72,7 +72,7 @@ set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 # --------------------------------------------------------
 # Initialization
 if(NOT ITK_SOURCE_DIR)
-    include(itk-module-init.cmake)
+  include(itk-module-init.cmake)
 endif()
 
 #=========================================================
@@ -102,14 +102,7 @@ list(APPEND RTK_INCLUDE_DIRS
 # --------------------------------------------------------
 # Find ITK (required)
 if(NOT ITK_SOURCE_DIR)
-  find_package(ITK 4.2.0 REQUIRED)
-endif()
-
-if(ITK_VERSION_MINOR LESS "4")
-  include_directories(BEFORE utilities/itkImageScanlineConstIterator)
-endif()
-if(ITK_VERSION_MINOR LESS "5")
-  include_directories(BEFORE utilities/itkBinShrinkImageFilter)
+  find_package(ITK 4.12.0 REQUIRED)
 endif()
 
 #=========================================================
@@ -120,7 +113,8 @@ if(RTK_USE_CUDA)
     add_subdirectory(utilities/ITKCudaCommon)
   endif()
 endif()
-
+list(APPEND RTK_INCLUDE_DIRS
+  ${ITKCudaCommon_INCLUDE_DIRS})
 #=========================================================
 # Include directories
 #=========================================================
