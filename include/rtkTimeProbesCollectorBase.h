@@ -19,6 +19,7 @@
 #define rtkTimeProbesCollectorBase_h
 
 #include <itkTimeProbesCollectorBase.h>
+#include "rtkWin32Header.h"
 
 namespace rtk
 {
@@ -27,7 +28,7 @@ namespace rtk
  *
  *  Derives from itk::TimeProbesCollectorBase but improves the report output.
  */
-class ITKCommon_EXPORT TimeProbesCollectorBase: public itk::TimeProbesCollectorBase
+class RTK_EXPORT TimeProbesCollectorBase: public itk::TimeProbesCollectorBase
 {
 public:
   /** Report the summary of results from the probes */
