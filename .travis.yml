@@ -19,46 +19,22 @@ matrix:
   include:
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.5.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
+      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.5.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
-    - os: osx
-      compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
-    - os: osx
-      compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
-    - os: osx
-      compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
+      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
+      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
+      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
+      env: ITK_VERSION=v4.12.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=ON APPLICATIONS=ON SIMPLERTK=OFF
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON SIMPLERTK=OFF
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON SIMPLERTK=OFF
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
+      env: ITK_VERSION=v4.12.0 CUDA=7.5-18 TESTING=OFF APPLICATIONS=ON
 
 cache:
   - directories:
@@ -116,8 +92,6 @@ script:
   - cd build
   - CMAKE_OPTIONS="-DBUILD_APPLICATIONS=${APPLICATIONS} ${CMAKE_OPTIONS}"
   - CMAKE_OPTIONS="-DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
-  - if test $SIMPLERTK == ON ; then CMAKE_OPTIONS="-DBUILD_SIMPLERTK=ON -DWRAP_PYTHON=ON ${CMAKE_OPTIONS}"; fi
-  - if test $SIMPLERTK == ON ; then CMAKE_OPTIONS="-DPYTHON_LIBRARY=$(python-config --prefix)/lib/libpython2.7.dylib -DPYTHON_INCLUDE_DIR=$(python-config --prefix)/include/python2.7 ${CMAKE_OPTIONS}"; fi
   - if test $TRAVIS_OS_NAME == linux ; then CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON ${CMAKE_OPTIONS}"; fi
   - if [ $DO_BUILD_RTK == true ]; then cmake .. $CMAKE_OPTIONS || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ] && [ "$TRAVIS_OS_NAME" == linux ]; then make StyleCheckCode || travis_terminate 1; fi

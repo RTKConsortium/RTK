@@ -212,9 +212,7 @@ rtk_add_test(rtkWarpTest rtkwarptest.cxx)
 
 rtk_add_test(rtkI0EstimationTest rtkI0estimationtest.cxx)
 
-if(ITK_VERSION VERSION_GREATER 4.3.2)
-  rtk_add_test(rtkSelectOneProjPerCycleTest rtkselectoneprojpercycletest.cxx)
-endif()
+rtk_add_test(rtkSelectOneProjPerCycleTest rtkselectoneprojpercycletest.cxx)
 
 # We cannot compile these tests using CPU if GPU is present
 # This is because of rtkIterativeConeBeamReconstructionFilter

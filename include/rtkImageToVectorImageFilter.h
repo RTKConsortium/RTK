@@ -21,9 +21,8 @@
 #include "rtkMacro.h"
 
 #include <itkImageToImageFilter.h>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
+
 namespace rtk
 {
   /** \class ImageToVectorImageFilter
@@ -74,13 +73,10 @@ protected:
 
     /** Does the real work. */
     void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
-    void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     /** Splits the OutputRequestedRegion along the first direction, not the last */
     const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
-#endif
 
     unsigned int m_NumberOfChannels;
 

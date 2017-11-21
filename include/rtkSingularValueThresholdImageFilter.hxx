@@ -36,39 +36,17 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 {
   m_Threshold = 0;
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   // Set the direction along which the output requested region should NOT be split
   m_Splitter = itk::ImageRegionSplitterDirection::New();
   m_Splitter->SetDirection(TInputImage::ImageDimension - 1);
-#else
-  // Old versions of ITK (before 4.4) do not have the ImageRegionSplitterDirection
-  // and should run this filter with only one thread
-  this->SetNumberOfThreads(1);
-#endif
 }
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  template< typename TInputImage, typename TRealType, typename TOutputImage >
-  const itk::ImageRegionSplitterBase*
-  SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
-  ::GetImageRegionSplitter(void) const
-  {
-    return m_Splitter;
-  }
-#endif
-
-  template< typename TInputImage, typename TRealType, typename TOutputImage >
-  void
-  SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
-::BeforeThreadedGenerateData()
+template< typename TInputImage, typename TRealType, typename TOutputImage >
+const itk::ImageRegionSplitterBase*
+SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
+::GetImageRegionSplitter(void) const
 {
-#if !(ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4))
-  if (this->GetNumberOfThreads() > 1)
-    {
-    itkWarningMacro(<< "AverageOutOfROIImageFilter cannot use multiple threads with ITK versions older than v4.4. Reverting to single thread behavior");
-    this->SetNumberOfThreads(1);
-    }
-#endif
+  return m_Splitter;
 }
 
 template< typename TInputImage, typename TRealType, typename TOutputImage >

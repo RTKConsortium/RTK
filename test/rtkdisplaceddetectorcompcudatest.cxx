@@ -5,10 +5,7 @@
 #include "rtkSheppLoganPhantomFilter.h"
 
 #include <itkStreamingImageFilter.h>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
-
+#include <itkImageRegionSplitterDirection.h>
 
 /**
  * \file rtkdisplaceddetectorcompcudatest.cxx
@@ -102,14 +99,10 @@ int main(int, char** )
     typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamingType;
     StreamingType::Pointer streamingCUDA = StreamingType::New();
     streamingCUDA->SetInput( cudaddf->GetOutput() );
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     streamingCUDA->SetNumberOfStreamDivisions(4);
     itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
     splitter->SetDirection(2); // Splitting along direction 1, NOT 2
     streamingCUDA->SetRegionSplitter(splitter);
-#else
-    streamingCUDA->SetNumberOfStreamDivisions(2);
-#endif
     TRY_AND_EXIT_ON_ITK_EXCEPTION( streamingCUDA->Update() );
 
     cpuddf = CPUDDFType::New();

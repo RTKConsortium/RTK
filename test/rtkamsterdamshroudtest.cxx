@@ -303,7 +303,7 @@ int main(int, char** )
     exit( EXIT_FAILURE);
   }
 
-#if defined(USE_FFTWD) && (ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7))
+#if defined(USE_FFTWD)
   std::cout << "\n\n****** Extract phase from case 3 ******\n" << std::endl;
 
   //Check phase

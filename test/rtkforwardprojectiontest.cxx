@@ -6,9 +6,7 @@
 #include "rtkConstantImageSource.h"
 
 #include <itkStreamingImageFilter.h>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
 
 #ifdef USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
@@ -122,14 +120,10 @@ int main(int , char** )
   StreamingFilterType::Pointer stream = StreamingFilterType::New();
   stream->SetInput(jfp->GetOutput());
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   stream->SetNumberOfStreamDivisions(9);
   itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Splitting along direction 1, NOT 2
   stream->SetRegionSplitter(splitter);
-#else
-  stream->SetNumberOfStreamDivisions(1);
-#endif
 
   std::cout << "\n\n****** Case 1: inner ray source ******" << std::endl;
   // The circle is divided in 4 quarters

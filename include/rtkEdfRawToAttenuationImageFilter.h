@@ -34,11 +34,7 @@ namespace rtk
  */
 
 template<class TInputImage, class TOutputImage=TInputImage>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR > 4)
 class ITKIOImageBase_HIDDEN EdfRawToAttenuationImageFilter :
-#else
-class ITK_EXPORT EdfRawToAttenuationImageFilter :
-#endif
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:

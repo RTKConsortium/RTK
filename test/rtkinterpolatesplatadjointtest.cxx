@@ -155,13 +155,6 @@ int main(int, char** )
   splat->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
   splat->SetInputVolume(randomVolumeSource->GetOutput());
   splat->SetWeights(phaseReader->GetOutput());
-
-// If ITK version < 4.4, try to force the splat filter to use several threads
-// Splat filter should display a warning and revert to single threading
-#if !(ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4))
-  splat->SetNumberOfThreads(2);
-#endif
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( splat->Update() );
 
   CheckScalarProducts<VolumeSeriesType, VolumeType>(randomVolumeSeriesSource->GetOutput(), splat->GetOutput(), randomVolumeSource->GetOutput(), interp->GetOutput());

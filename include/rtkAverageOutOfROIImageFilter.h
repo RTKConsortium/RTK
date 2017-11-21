@@ -20,9 +20,7 @@
 
 #include "itkInPlaceImageFilter.h"
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
 
 #include "rtkMacro.h"
 
@@ -79,13 +77,10 @@ protected:
 
     /** Does the real work. */
     void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
-    void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     /** Splits the OutputRequestedRegion along the first direction, not the last */
     const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
-#endif
 
 private:
     AverageOutOfROIImageFilter(const Self &); //purposely not implemented

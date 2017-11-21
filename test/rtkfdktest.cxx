@@ -1,8 +1,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkStreamingImageFilter.h>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
 
 #include "rtkTest.h"
 #include "rtkSheppLoganPhantomFilter.h"
@@ -201,11 +199,9 @@ int main(int, char** )
   StreamingType::Pointer streamer = StreamingType::New();
   streamer->SetInput(0, fov->GetOutput());
   streamer->SetNumberOfStreamDivisions(8);
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Prevent splitting along z axis. As a result, splitting will be performed along y axis
   streamer->SetRegionSplitter(splitter);
-#endif
   TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() );
 
   CheckImageQuality<OutputImageType>(streamer->GetOutput(), dsl->GetOutput(), 0.03, 26, 2.0);

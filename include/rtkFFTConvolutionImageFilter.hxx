@@ -106,15 +106,6 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   else
     m_BackupNumberOfThreads = 1;
 
-#if !(ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 3))
-  if (this->GetNumberOfThreads() > 1)
-    {
-    itkWarningMacro(<< "ITK versions before 4.3 have a multithreading issue in FFTW, upgrade ITK for better performances."
-                    << "See http://www.itk.org/gitweb?p=ITK.git;a=commit;h=a0661da4252fcdd638c6415c89cd2f26edd9f553 for more information.");
-    this->SetNumberOfThreads(1);
-    }
-#endif
-
   // Update FFT ramp kernel (if required)
   RegionType paddedRegion = GetPaddedImageRegion( this->GetInput()->GetRequestedRegion() );
   UpdateFFTConvolutionKernel( paddedRegion.GetSize() );

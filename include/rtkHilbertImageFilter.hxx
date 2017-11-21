@@ -23,9 +23,7 @@
 
 #include <itkConfigure.h>
 #include <itkForwardFFTImageFilter.h>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7)
-# include <itkComplexToComplexFFTImageFilter.h>
-#endif
+#include <itkComplexToComplexFFTImageFilter.h>
 #include <itkImageRegionIteratorWithIndex.h>
 
 namespace rtk
@@ -80,7 +78,6 @@ HilbertImageFilter<TInputImage, TOutputImage>
     }
 #endif
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 7)
   typedef typename itk::ComplexToComplexFFTImageFilter<TOutputImage> InverseFFTFilterType;
   typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
   invFilt->SetTransformDirection(InverseFFTFilterType::FORWARD);
@@ -88,9 +85,6 @@ HilbertImageFilter<TInputImage, TOutputImage>
   invFilt->Update();
 
   this->GraftOutput( invFilt->GetOutput() );
-#else
-  itkExceptionMacro(<< "Only available for ITK versions greater than 4.7.");
-#endif
 }
 
 } // end of namespace rtk

@@ -30,26 +30,18 @@ namespace rtk
 template< typename InputImageType, typename OutputImageType>
 VectorImageToImageFilter<InputImageType, OutputImageType>::VectorImageToImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   // Set the direction along which the output requested region should NOT be split
   m_Splitter = itk::ImageRegionSplitterDirection::New();
   m_Splitter->SetDirection(OutputImageType::ImageDimension - 1);
-#else
-  // Old versions of ITK (before 4.4) do not have the ImageRegionSplitterDirection
-  // and should run this filter with only one thread
-  this->SetNumberOfThreads(1);
-#endif
 }
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  template< typename InputImageType, typename OutputImageType>
-  const itk::ImageRegionSplitterBase*
-  VectorImageToImageFilter< InputImageType, OutputImageType >
-  ::GetImageRegionSplitter(void) const
-  {
-    return m_Splitter;
-  }
-#endif
+template< typename InputImageType, typename OutputImageType>
+const itk::ImageRegionSplitterBase*
+VectorImageToImageFilter< InputImageType, OutputImageType >
+::GetImageRegionSplitter(void) const
+{
+  return m_Splitter;
+}
 
 template< typename InputImageType, typename OutputImageType>
 void VectorImageToImageFilter<InputImageType, OutputImageType>
@@ -111,19 +103,6 @@ void VectorImageToImageFilter<InputImageType, OutputImageType>
 {
   typename InputImageType::Pointer  inputPtr  = const_cast<InputImageType *>(this->GetInput());
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
-}
-
-template< typename InputImageType, typename OutputImageType>
-void VectorImageToImageFilter<InputImageType, OutputImageType>
-::BeforeThreadedGenerateData()
-{
-#if !(ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4))
-  if (this->GetNumberOfThreads() > 1)
-    {
-    itkWarningMacro(<< "Splat filter cannot use multiple threads with ITK versions older than v4.4. Reverting to single thread behavior");
-    this->SetNumberOfThreads(1);
-    }
-#endif
 }
 
 template< typename InputImageType, typename OutputImageType>

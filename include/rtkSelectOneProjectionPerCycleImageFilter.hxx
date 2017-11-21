@@ -35,10 +35,6 @@ template<typename ProjectionStackType>
 void SelectOneProjectionPerCycleImageFilter<ProjectionStackType>
 ::GenerateOutputInformation()
 {
-#if ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 4
-  itkExceptionMacro("Cannot use this filter with an ITK version prior to version 4.4, please update")
-#endif
-
   // Read signal file
   typedef itk::CSVArray2DFileReader<double> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();

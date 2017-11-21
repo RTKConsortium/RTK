@@ -20,15 +20,13 @@
 
 #include "itkInPlaceImageFilter.h"
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
 
 namespace rtk
 {
   /** \class LastDimensionL0GradientDenoisingImageFilter
    * \brief Denoises along the last dimension, reducing the L0 norm of the gradient
-   * 
+   *
    * This filter implements the "Fast and Effective L0 Gradient Minimization by Region Fusion"
    * method, developped by Nguyen and Brown. Their method is computationally demanding, but its
    * restriction to 1D can be implemented efficiently. This is what this filter does.
@@ -58,11 +56,11 @@ public:
     /** Get / Set the threshold. Default is 0.001 */
     itkGetMacro(Lambda, double);
     itkSetMacro(Lambda, double);
-    
+
     /** Get / Set the number of iterations. Default is 10 */
     itkGetMacro(NumberOfIterations, unsigned int);
     itkSetMacro(NumberOfIterations, unsigned int);
-    
+
 protected:
     LastDimensionL0GradientDenoisingImageFilter();
     ~LastDimensionL0GradientDenoisingImageFilter() {}
@@ -70,17 +68,14 @@ protected:
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Does the real work. */
-    void BeforeThreadedGenerateData() ITK_OVERRIDE;
     void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
     /** Splits the OutputRequestedRegion along the first direction, not the last */
     const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
-#endif
-    
+
     virtual void OneDimensionMinimizeL0NormOfGradient(InputPixelType* input, unsigned int length, double lambda, unsigned int nbIters);
-    
+
     double              m_Lambda;
     unsigned int        m_NumberOfIterations;
 

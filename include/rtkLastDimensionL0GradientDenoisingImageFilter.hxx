@@ -31,43 +31,21 @@ template< class TInputImage >
 LastDimensionL0GradientDenoisingImageFilter< TInputImage >
 ::LastDimensionL0GradientDenoisingImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   // Set the direction along which the output requested region should NOT be split
   m_Splitter = itk::ImageRegionSplitterDirection::New();
   m_Splitter->SetDirection(TInputImage::ImageDimension - 1);
-#else
-  // Old versions of ITK (before 4.4) do not have the ImageRegionSplitterDirection
-  // and should run this filter with only one thread
-  this->SetNumberOfThreads(1);
-#endif
 
   // Default parameters
   m_NumberOfIterations = 5;
   m_Lambda = 0.;
 }
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
 template< class TInputImage >
 const itk::ImageRegionSplitterBase*
 LastDimensionL0GradientDenoisingImageFilter< TInputImage >
 ::GetImageRegionSplitter(void) const
 {
   return m_Splitter;
-}
-#endif
-
-template< class TInputImage >
-void
-LastDimensionL0GradientDenoisingImageFilter< TInputImage >
-::BeforeThreadedGenerateData()
-{
-#if !(ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4))
-  if (this->GetNumberOfThreads() > 1)
-    {
-    itkWarningMacro(<< "LastDimensionL0GradientDenoisingImageFilter cannot use multiple threads with ITK versions older than v4.4. Reverting to single thread behavior");
-    this->SetNumberOfThreads(1);
-    }
-#endif
 }
 
 template< class TInputImage >

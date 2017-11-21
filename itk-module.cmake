@@ -18,6 +18,7 @@ set(RTK_DEPENDS
   ITKOptimizers
   ITKRegistrationCommon
   ITKSmoothing
+  ITKImageNoise
   ${RTK_IO_DEPENDS}
   )
 
@@ -25,10 +26,6 @@ set(RTK_DEPENDS
 #  Required Modules to build RTK tests :
 set(RTK_TEST_DEPENDS
   ITKTestKernel)
-
-if(NOT ${ITK_VERSION} VERSION_LESS "4.6.0")
-  list(APPEND RTK_TEST_DEPENDS ITKImageNoise) #required by rtkRegularizedConjugateGradientTest
-endif()
 
 # # -----------------------------------------
 # # CUDA optional dependencies

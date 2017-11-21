@@ -22,9 +22,7 @@
 #include <itkInPlaceImageFilter.h>
 #include <itkVector.h>
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
 
 namespace rtk
 {
@@ -53,7 +51,7 @@ class ITK_EXPORT SingularValueThresholdImageFilter:
         public itk::InPlaceImageFilter< TInputImage, TOutputImage >
 {
 public:
-  
+
   /** Standard class typedefs. */
   typedef SingularValueThresholdImageFilter                    Self;
   typedef itk::ImageToImageFilter< TInputImage, TOutputImage > Superclass;
@@ -104,20 +102,17 @@ public:
 
   itkGetMacro(Threshold, TRealType)
   itkSetMacro(Threshold, TRealType)
-    
+
 protected:
   SingularValueThresholdImageFilter();
   ~SingularValueThresholdImageFilter() {}
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             itk::ThreadIdType threadId) ITK_OVERRIDE;
 
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-    /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
-    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
-#endif
+  /** Splits the OutputRequestedRegion along the first direction, not the last */
+  const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+  itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
 private:
   TRealType m_Threshold;
