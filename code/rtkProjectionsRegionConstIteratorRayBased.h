@@ -104,7 +104,8 @@ public:
 
   /** Get ray information. A ray is described by the 3D coordinates of two points,
    * the (current) SourcePosition and the (current) PixelPosition in the
-   * projection stack. */
+   * projection stack. The difference, SourceToPixel, is also computed and
+   * stored for every ray. */
   const PointType &GetSourcePosition()
     {
     return this->m_SourcePosition;
@@ -113,20 +114,16 @@ public:
     {
     return this->m_PixelPosition;
     }
-
-  /** Computes and returns the vector from the source to the pixel positions,
-   * i.e., PixelPosition - SourcePosition. */
-  const PointType GetSourceToPixel()
+  const PointType &GetSourceToPixel()
     {
-    return this->m_PixelPosition - this->m_SourcePosition;
+    return this->m_SourceToPixel;
     }
 
   /** Computes and returns a unit vector pointing from the source to the
    * current pixel, i.e., GetSourceToPixel()/||GetSourceToPixel()||. */
   const PointType GetDirection()
     {
-    const PointType sourceToPixel = this->GetSourceToPixel();
-    return sourceToPixel / sourceToPixel.GetNorm();
+    return m_SourceToPixel / m_SourceToPixel.GetNorm();
     }
 
 protected:
@@ -141,6 +138,7 @@ protected:
   MatrixType                         m_PostMultiplyMatrix;
   PointType                          m_SourcePosition;
   PointType                          m_PixelPosition;
+  PointType                          m_SourceToPixel;
 };
 } // end namespace itk
 

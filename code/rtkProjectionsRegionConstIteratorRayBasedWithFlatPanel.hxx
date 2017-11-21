@@ -68,6 +68,8 @@ ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
     for(unsigned int j=0; j<this->GetImageDimension(); j++)
       this->m_PixelPosition[i] += m_ProjectionIndexTransformMatrix[i][j] * this->m_PositionIndex[j];
     }
+
+  this->m_SourceToPixel = this->m_PixelPosition - this->m_SourcePosition;
 }
 
 } // end namespace itk
