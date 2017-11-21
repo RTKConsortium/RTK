@@ -12,7 +12,7 @@
 #include "rtkDPExtractShroudSignalImageFilter.h"
 #include "rtkMacro.h"
 #include "rtkExtractPhaseImageFilter.h"
-#include "itkMetaImageIOFactory.h"
+
 /**
  * \file rtkamsterdamshroudtest.cxx
  *
@@ -38,14 +38,7 @@ int main(int, char** )
 #else
   const unsigned int NumberOfProjectionImages = 100;
 #endif
-  typedef std::list< itk::LightObject::Pointer > RegisteredObjectsContainerType;
-    RegisteredObjectsContainerType registeredIOs =
-    itk::ObjectFactoryBase::CreateAllInstance( "itkImageIOBase" );
-//       itk::MetaImageIOFactory::RegisterOneFactory();
-  std::cout << "When CMake is not used to register the IO classes, there are\n"
-            << registeredIOs.size()
-            << " IO objects available to the ImageFileReader.\n" << std::endl;
-  
+
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometryMain = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)

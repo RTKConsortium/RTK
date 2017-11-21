@@ -30,10 +30,12 @@ if(NOT ${ITK_VERSION} VERSION_LESS "4.6.0")
   list(APPEND RTK_TEST_DEPENDS ITKImageNoise) #required by rtkRegularizedConjugateGradientTest
 endif()
 
-# -----------------------------------------
-# CUDA optional dependencies
-if(${RTK_USE_CUDA})
-  list(APPEND RTK_DEPENDS ITKCudaCommon)
+# # -----------------------------------------
+# # CUDA optional dependencies
+if(ITK_SOURCE_DIR)
+  if(${RTK_USE_CUDA})
+    list(APPEND RTK_DEPENDS ITKCudaCommon)
+  endif()
 endif()
 
 #=========================================================

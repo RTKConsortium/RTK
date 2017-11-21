@@ -22,6 +22,7 @@
 #include "rtkGlobalTimerProbesCollector.h"
 #include "rtkTimeProbesCollectorBase.h"
 #include "rtkWatcherForTimer.h"
+#include "rtkWin32Header.h"
 #include <itkSimpleFastMutexLock.h>
 
 namespace rtk
@@ -33,7 +34,7 @@ namespace rtk
  * \ingroup ITKCommon
  */
 
-class ITKCommon_EXPORT GlobalTimer:public itk::Object
+class RTK_EXPORT GlobalTimer:public itk::Object
 {
 public:
   /** Standard class typedefs. */
