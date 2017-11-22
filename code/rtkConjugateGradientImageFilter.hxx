@@ -57,7 +57,9 @@ void ConjugateGradientImageFilter<OutputImageType>
 ::CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne)
 /* Perform the calculation of the residual cost function at each iteration :
  *
- *  Cost_residuals(kPlusOne) = (1/2) <X_kPlusOne,-R_kPlusOne-B> + C ( where <.,.> is the scalar product )
+ *  Cost_residuals(kPlusOne) = -(1/2) <X_kPlusOne, R_kPlusOne + B> + C ( where <.,.> is the scalar product )
+ *
+ *                           = (1/2) <X_kPlusOne, -R_kPlusOne - B> + C
  *
  *                                                  /                    \
  *                           = (1/2) X_kPlusOne^T . | A X_kPlusOne - 2 B | + C
@@ -74,22 +76,16 @@ void ConjugateGradientImageFilter<OutputImageType>
  */
 {
   typename StatisticsImageFilterType::Pointer IterationCostsStatisticsImageFilter = StatisticsImageFilterType::New();
-  typename SubtractFilterType::Pointer IterationCostsSubtractFilter = SubtractFilterType::New();
+  typename AddFilterType::Pointer IterationCostsAddFilter = AddFilterType::New();
   typename MultiplyFilterType::Pointer IterationCostsMultiplyFilter = MultiplyFilterType::New();
 
-  IterationCostsMultiplyFilter->SetConstant(-1);
-  IterationCostsMultiplyFilter->SetInput(R_kPlusOne);
-  IterationCostsMultiplyFilter->Update();
-  IterationCostsSubtractFilter->SetInput(0,IterationCostsMultiplyFilter->GetOutput());
-  IterationCostsSubtractFilter->SetInput(1, this->GetB());
-  IterationCostsSubtractFilter->Update();
-  IterationCostsMultiplyFilter->SetConstant(1);
-  IterationCostsMultiplyFilter->SetInput(0,X_kPlusOne);
-  IterationCostsMultiplyFilter->SetInput(1,IterationCostsSubtractFilter->GetOutput());
-  IterationCostsMultiplyFilter->Update();
+  IterationCostsAddFilter->SetInput(0, R_kPlusOne);
+  IterationCostsAddFilter->SetInput(1, this->GetB());
+  IterationCostsMultiplyFilter->SetInput(0, X_kPlusOne);
+  IterationCostsMultiplyFilter->SetInput(1, IterationCostsAddFilter->GetOutput());
   IterationCostsStatisticsImageFilter->SetInput(IterationCostsMultiplyFilter->GetOutput());
   IterationCostsStatisticsImageFilter->Update();
-  m_ResidualCosts.push_back(0.5*IterationCostsStatisticsImageFilter->GetSum()+this->GetC());
+  m_ResidualCosts.push_back(-0.5*IterationCostsStatisticsImageFilter->GetSum()+this->GetC());
 }
 
 template<typename OutputImageType>
