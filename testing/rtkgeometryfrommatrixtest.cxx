@@ -21,8 +21,9 @@ int main(int , char **)
     geometry1->AddProjection(sid, sdd, ga, px, py, oa, ia, sx, sy);
     geometry2->AddProjection(geometry1->GetMatrices().back());
 
-    double d = std::abs(geometry1->GetGantryAngles().back()-geometry2->GetGantryAngles().back());
-    if( geometry1->ConvertAngleBetween0And2PIRadians(d) > 0.01 )
+    double d = geometry1->GetGantryAngles().back()-geometry2->GetGantryAngles().back();
+    d = std::abs( geometry1->ConvertAngleBetweenMinusAndPlusPIRadians( d ) );
+    if( d > 0.01 )
       {
       std::cerr << "ERROR: GantryAngles 1 is "
                 << geometry1->GetGantryAngles().back()
@@ -31,8 +32,9 @@ int main(int , char **)
       return EXIT_FAILURE;
       }
 
-    d = std::abs(geometry1->GetInPlaneAngles().back()-geometry2->GetInPlaneAngles().back());
-    if( geometry1->ConvertAngleBetween0And2PIRadians(d) > 0.01 )
+    d = geometry1->GetInPlaneAngles().back()-geometry2->GetInPlaneAngles().back();
+    d = std::abs( geometry1->ConvertAngleBetweenMinusAndPlusPIRadians( d ) );
+    if( d > 0.01 )
       {
       std::cerr << "ERROR: InPlaneAngles 1 is "
                 << geometry1->GetInPlaneAngles().back()
@@ -41,8 +43,9 @@ int main(int , char **)
       return EXIT_FAILURE;
       }
 
-    d = std::abs(geometry1->GetOutOfPlaneAngles().back()-geometry2->GetOutOfPlaneAngles().back());
-    if( geometry1->ConvertAngleBetween0And2PIRadians(d) > 0.01 )
+    d = geometry1->GetOutOfPlaneAngles().back()-geometry2->GetOutOfPlaneAngles().back();
+    d = std::abs( geometry1->ConvertAngleBetweenMinusAndPlusPIRadians( d ) );
+    if( d > 0.01 )
       {
       std::cerr << "ERROR: OutOfPlaneAngle 1 is "
                 << geometry1->GetOutOfPlaneAngles().back()
@@ -106,5 +109,6 @@ int main(int , char **)
       }
 
     }
+  std::cout << "Test PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }

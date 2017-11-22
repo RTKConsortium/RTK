@@ -19,6 +19,7 @@
 #define rtkProjectionsRegionConstIteratorRayBased_hxx
 
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
+#include "rtkProjectionsRegionConstIteratorRayBasedParallel.h"
 #include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
 #include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"
 #include "rtkHomogeneousMatrix.h"
@@ -87,7 +88,20 @@ ProjectionsRegionConstIteratorRayBased< TImage >
       ThreeDCircularProjectionGeometry *geometry,
       const MatrixType &postMat)
 {
-  if(geometry->GetRadiusCylindricalDetector() == 0.)
+  if(geometry->GetSourceToDetectorDistances().size() == 0)
+    {
+    itkGenericExceptionMacro(<< "Geometry is empty, cannot determine iterator type.");
+    }
+  if(geometry->GetSourceToDetectorDistances()[0] == 0.)
+    {
+    if(geometry->GetRadiusCylindricalDetector() != 0.)
+      {
+      itkGenericExceptionMacro(<< "Parallel geometry assumes a flat panel detector.");
+      }
+    typedef ProjectionsRegionConstIteratorRayBasedParallel<TImage> IteratorType;
+    return new IteratorType(ptr, region, geometry, postMat);
+    }
+  else if(geometry->GetRadiusCylindricalDetector() == 0.)
     {
     typedef ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage> IteratorType;
     return new IteratorType(ptr, region, geometry, postMat);

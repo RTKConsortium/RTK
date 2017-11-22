@@ -46,6 +46,10 @@ add_test(rtkfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdktest)
 ADD_CUDA_TEST(rtkfdk rtkfdktest.cxx)
 ADD_CUDA_TEST(rtkfdkprojweightcomp rtkfdkprojweightcompcudatest.cxx)
 
+add_executable(rtkfbpparalleltest rtkfbpparalleltest.cxx)
+target_link_libraries(rtkfbpparalleltest ${RTK_LIBRARIES})
+add_test(rtkfbpparalleltest ${EXECUTABLE_OUTPUT_PATH}/rtkfbpparalleltest)
+
 add_executable(rtkimporttest rtkimporttest.cxx)
 target_link_libraries(rtkimporttest ${RTK_LIBRARIES})
 add_test(rtkimporttest ${EXECUTABLE_OUTPUT_PATH}/rtkimporttest)
@@ -397,6 +401,10 @@ add_test(rtkheadertest ${EXECUTABLE_OUTPUT_PATH}/rtkheadertest)
 add_executable(rtkargsinfomanagertest rtkargsinfomanagertest.cxx)
 target_link_libraries(rtkargsinfomanagertest RTK)
 add_test(rtkargsinfomanagertest ${EXECUTABLE_OUTPUT_PATH}/rtkargsinfomanagertest)
+
+add_executable(rtkgeometryclonetest rtkgeometryclonetest.cxx)
+target_link_libraries(rtkgeometryclonetest ${RTK_LIBRARIES})
+add_test(rtkgeometryclonetest ${EXECUTABLE_OUTPUT_PATH}/rtkgeometryclonetest)
 
 add_executable(rtkgeometryfrommatrixtest rtkgeometryfrommatrixtest.cxx)
 target_link_libraries(rtkgeometryfrommatrixtest ${RTK_LIBRARIES})

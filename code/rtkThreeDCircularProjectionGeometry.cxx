@@ -32,16 +32,20 @@ rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry():
 
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
-  double result = a-360*floor(a/360); // between -360 and 360
-  if(result<0) result += 360;         // between 0    and 360
-  return result;
+  return a-360*floor(a/360);
 }
 
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(const double a)
 {
-  double result = a-2*vnl_math::pi*floor( a / (2*vnl_math::pi) ); // between -2*PI and 2*PI
-  if(result<0) result += 2*vnl_math::pi;                          // between 0     and 2*PI
-  return result;
+  return a-2*vnl_math::pi*floor( a / (2*vnl_math::pi) );
+}
+
+double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetweenMinusAndPlusPIRadians(const double a)
+{
+  double d = ConvertAngleBetween0And2PIRadians(a);
+  if(d>vnl_math::pi)
+    d -= 2*vnl_math::pi;
+  return d;
 }
 
 void rtk::ThreeDCircularProjectionGeometry::AddProjection(
@@ -63,6 +67,19 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
   const double outOfPlaneAngle, const double inPlaneAngle,
   const double sourceOffsetX, const double sourceOffsetY)
 {
+  // Check parallel / divergent projections consistency
+  if( m_GantryAngles.size() )
+    {
+    if( sdd == 0. && m_SourceToDetectorDistances[0] != 0. )
+      {
+      itkGenericExceptionMacro(<< "Cannot add a parallel projection in a 3D geometry object containing divergent projections");
+      }
+    if( sdd != 0. && m_SourceToDetectorDistances[0] == 0. )
+      {
+      itkGenericExceptionMacro(<< "Cannot add a divergent projection in a 3D geometry object containing parallel projections");
+      }
+    }
+
   // Detector orientation parameters
   m_GantryAngles.push_back( ConvertAngleBetween0And2PIRadians(gantryAngle) );
   m_OutOfPlaneAngles.push_back( ConvertAngleBetween0And2PIRadians(outOfPlaneAngle) );
@@ -162,10 +179,13 @@ AddProjection(const PointType &sourcePosition,
   // (at some angle constellations we may run into numerical troubles, therefore,
   // verify angles and try to fix instabilities)
   if (!VerifyAngles(oa, ga, ia, rm))
-  {
+    {
     if (!FixAngles(oa, ga, ia, rm))
+      {
+      itkWarningMacro(<< "Failed to AddProjection");
       return false;
-  }
+      }
+    }
   // since rtk::ThreeDCircularProjectionGeometry::AddProjection() mirrors the
   // angles (!) internally, let's invert the computed ones in order to
   // get at the end what we would like (see above); convert rad->deg:
@@ -205,34 +225,56 @@ AddProjection(const PointType &sourcePosition,
 bool rtk::ThreeDCircularProjectionGeometry::
 AddProjection(const HomogeneousProjectionMatrixType &pMat)
 {
-  // Extract parameters thanks to a matrix factorization formula specific to the pinhole model.
-  // Parameters are u0, v0, alpha_u, alpha_v
+  Matrix3x3Type A;
+  for (unsigned int i = 0; i < 3; i++)
+    for (unsigned int j = 0; j < 3; j++)
+      {
+      A(i,j) = pMat(i,j);
+      }
+
+  VectorType p;
+  p[0] = pMat(0,3);
+  p[1] = pMat(1,3);
+  p[2] = pMat(2,3);
+
+  // Compute determinant of A
+  double d = pMat(0,0)*pMat(1,1)*pMat(2,2) +
+             pMat(0,1)*pMat(1,2)*pMat(2,0) +
+             pMat(0,2)*pMat(1,0)*pMat(2,1) -
+             pMat(0,0)*pMat(1,2)*pMat(2,1) -
+             pMat(0,1)*pMat(1,0)*pMat(2,2) -
+             pMat(0,2)*pMat(1,1)*pMat(2,0);
+  d = -1.*d/std::abs(d);
+
+  // Extract intrinsic parameters u0, v0 and f (f is chosen to be positive at that point)
+  // The extraction of u0 and v0 is independant of KR-decomp.
   double u0 = (pMat(0, 0)*pMat(2, 0)) + (pMat(0, 1)*pMat(2, 1)) + (pMat(0, 2)*pMat(2, 2));
   double v0 = (pMat(1, 0)*pMat(2, 0)) + (pMat(1, 1)*pMat(2, 1)) + (pMat(1, 2)*pMat(2, 2));
-  double aU = -1.*sqrt(pMat(0, 0)*pMat(0, 0) + pMat(0, 1)*pMat(0, 1) + pMat(0, 2)*pMat(0, 2) - u0*u0);
-  double aV = -1.*sqrt(pMat(1, 0)*pMat(1, 0) + pMat(1, 1)*pMat(1, 1) + pMat(1, 2)*pMat(1, 2) - v0*v0);
+  double aU = sqrt(pMat(0, 0)*pMat(0, 0) + pMat(0, 1)*pMat(0, 1) + pMat(0, 2)*pMat(0, 2) - u0*u0);
+  double aV = sqrt(pMat(1, 0)*pMat(1, 0) + pMat(1, 1)*pMat(1, 1) + pMat(1, 2)*pMat(1, 2) - v0*v0);
+  double sdd = 0.5 * (aU + aV);
 
-  // focal of the system, here we take the mean value
-  double sdd = -0.5 * (aU + aV);
-  double tx = (pMat(0, 3) - u0*pMat(2, 3))/aU;
-  double ty = (pMat(1, 3) - v0*pMat(2, 3))/aV;
-  double sid = -1.*pMat(2, 3);
+  // Def matrix K so that detK = det P[:,:3]
+  Matrix3x3Type K;
+  K.Fill(0.0f);
+  K(0,0) = sdd;
+  K(1,1) = sdd;
+  K(2,2) = -1.0;
+  K(0,2) = -1.*u0;
+  K(1,2) = -1.*v0;
+  K *= d;
 
-  Matrix3x3Type rm;
-  for (unsigned int i = 0; i < 3; i++)
-    {
-    rm(0,i) = (pMat(0, i)-u0*pMat(2, i))/aU;
-    rm(1,i) = (pMat(1, i)-v0*pMat(2, i))/aV;
-    rm(2,i) = pMat(2, i);
-    }
+  // Compute R (since det K = det P[:,:3], detR = 1 is enforced)
+  Matrix3x3Type invK(K.GetInverse());
+  Matrix3x3Type R = invK*A;
 
   //Declare a 3D euler transform in order to properly extract angles
   typedef itk::Euler3DTransform<double> EulerType;
   EulerType::Pointer euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
 
-  //Extract angle using parent method without orthogonality check, see Reg23ProjectionGeometry.cxx for more
-  euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(rm);
+  //Extract angle using parent method without orthogonality check
+  euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(R);
   double oa = euler->GetAngleX();
   double ga = euler->GetAngleY();
   double ia = euler->GetAngleZ();
@@ -240,14 +282,26 @@ AddProjection(const HomogeneousProjectionMatrixType &pMat)
   // verify that extracted ZXY angles result in the *desired* matrix:
   // (at some angle constellations we may run into numerical troubles, therefore,
   // verify angles and try to fix instabilities)
-  if (!VerifyAngles(oa, ga, ia, rm))
-  {
-    if (!FixAngles(oa, ga, ia, rm))
+  if (!VerifyAngles(oa, ga, ia, R))
+    {
+    if (!FixAngles(oa, ga, ia, R))
+      {
+      itkWarningMacro(<< "Failed to AddProjection");
       return false;
-  }
+      }
+    }
+
+  // Coordinates of source in oriented coord sys :
+  // (sx,sy,sid) = RS = R(-A^{-1}P[:,3]) = -K^{-1}P[:,3]
+  Matrix3x3Type invA(A.GetInverse());
+  VectorType v = invK*p;
+  v *= -1.;
+  double sx = v[0];
+  double sy = v[1];
+  double sid = v[2];
 
   // Add to geometry
-  this->AddProjectionInRadians(sid, sdd, -1.*ga, -tx-u0, -ty-v0, -1.*oa, -1.*ia, -tx, -ty);
+  this->AddProjectionInRadians(sid, sdd, -1.*ga, sx-u0, sy-v0, -1.*oa, -1.*ia, sx, sy);
 
   return true;
 }
@@ -498,7 +552,14 @@ GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const
   matrix.SetIdentity();
   matrix[0][3] = this->GetProjectionOffsetsX()[i];
   matrix[1][3] = this->GetProjectionOffsetsY()[i];
-  matrix[2][3] = this->GetSourceToIsocenterDistances()[i]-this->GetSourceToDetectorDistances()[i];
+  if(this->GetSourceToDetectorDistances()[i] == 0.)
+    {
+    matrix[2][3] = -1. * this->GetSourceToIsocenterDistances()[i];
+    }
+  else
+    {
+    matrix[2][3] = this->GetSourceToIsocenterDistances()[i]-this->GetSourceToDetectorDistances()[i];
+    }
   matrix[2][2] = 0.; // Force z to axis to detector distance
   return matrix;
 }
@@ -555,7 +616,7 @@ VerifyAngles(const double outOfPlaneAngleRAD,
   typedef itk::Euler3DTransform<double> EulerType;
 
   const Matrix3x3Type &rm = referenceMatrix; // shortcut
-  const double EPSILON = 1e-6; // internal tolerance for comparison
+  const double EPSILON = 1e-5; // internal tolerance for comparison
 
   EulerType::Pointer euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
@@ -643,4 +704,29 @@ FixAngles(double &outOfPlaneAngleRAD,
       }
     }
   return false;
+}
+
+itk::LightObject::Pointer
+rtk::ThreeDCircularProjectionGeometry::InternalClone() const
+{
+  LightObject::Pointer loPtr = Superclass::InternalClone();
+  Self::Pointer clone = dynamic_cast<Self *>(loPtr.GetPointer());
+  for(unsigned int iProj=0; iProj<this->GetGantryAngles().size(); iProj++)
+    {
+    clone->AddProjectionInRadians(this->GetSourceToIsocenterDistances()[iProj],
+                                  this->GetSourceToDetectorDistances()[iProj],
+                                  this->GetGantryAngles()[iProj],
+                                  this->GetProjectionOffsetsX()[iProj],
+                                  this->GetProjectionOffsetsY()[iProj],
+                                  this->GetOutOfPlaneAngles()[iProj],
+                                  this->GetInPlaneAngles()[iProj],
+                                  this->GetSourceOffsetsX()[iProj],
+                                  this->GetSourceOffsetsY()[iProj]);
+    clone->SetCollimationOfLastProjection( this->GetCollimationUInf()[iProj],
+                                           this->GetCollimationUSup()[iProj],
+                                           this->GetCollimationVInf()[iProj],
+                                           this->GetCollimationVSup()[iProj]);
+    }
+  clone->SetRadiusCylindricalDetector( this->GetRadiusCylindricalDetector() );
+  return loPtr;
 }

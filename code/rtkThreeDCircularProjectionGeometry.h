@@ -95,7 +95,10 @@ public:
                      const VectorType &detectorColumnVector);
 
 
-  /** Add projection from a projection matrix. */
+  /** Add projection from a projection matrix. A projection matrix is defined
+   * up to a scaling factor. The function here Assumes that the input matrix
+   * pMat is normalized such that pMat*(x,y,z,1)'=(u,v,1)'.
+   * This code assumes that the SourceToDetectorDistance is positive. */
   bool AddProjection(const HomogeneousProjectionMatrixType &pMat);
 
   /** Empty the geometry object. */
@@ -238,6 +241,9 @@ public:
   /** This function wraps an angle value between 0 and 2*PI radians. */
   static double ConvertAngleBetween0And2PIRadians(const double a);
 
+  /** This function wraps an angle value between -PI and PI radians. */
+  static double ConvertAngleBetweenMinusAndPlusPIRadians(const double a);
+
   /** Changes the coordinate on the projection image to the coordinate on a
    * virtual detector that is perpendicular to the source to isocenter line and
    * positioned at the isocenter.
@@ -247,7 +253,7 @@ public:
 
   /** Accessor for the radius of curved detector. The default is 0 and it means
    * a flat detector. */
-  itkGetMacro(RadiusCylindricalDetector, double)
+  itkGetConstMacro(RadiusCylindricalDetector, double)
   itkSetMacro(RadiusCylindricalDetector, double)
 
 protected:
@@ -312,6 +318,9 @@ protected:
   bool FixAngles(double &outOfPlaneAngleRAD, double &gantryAngleRAD,
                  double &inPlaneAngleRAD,
                  const Matrix3x3Type &referenceMatrix) const;
+
+  /** Clone the geometry object in a new one. */
+  virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
   /** Circular geometry parameters per projection (angles in degrees between 0
     and 360). */

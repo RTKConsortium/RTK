@@ -20,6 +20,7 @@
 #define rtkDualEnergyNegativeLogLikelihood_h
 
 #include "rtkProjectionsDecompositionNegativeLogLikelihood.h"
+#include "rtkMacro.h"
 
 #include <itkVectorImage.h>
 #include <itkVariableLengthVector.h>
@@ -70,7 +71,7 @@ public:
   {
   }
 
-  void Initialize()
+  void Initialize() ITK_OVERRIDE
   {
   // This method computes the combined m_IncidentSpectrumAndDetectorResponseProduct
   // from m_DetectorResponse and m_IncidentSpectrum
@@ -116,7 +117,7 @@ public:
   return measure;
   }
 
-  vnl_vector<double>  GetVariances( const ParametersType & lineIntegrals ) const
+  vnl_vector<double>  GetVariances( const ParametersType & lineIntegrals ) const ITK_OVERRIDE
   {
   vnl_vector<double> attenuationFactors;
   attenuationFactors.set_size(m_NumberOfEnergies);
