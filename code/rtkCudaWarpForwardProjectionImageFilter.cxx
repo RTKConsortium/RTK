@@ -93,9 +93,9 @@ CudaWarpForwardProjectionImageFilter
 ::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
-  
-  // Since we do not know where the DVF points, the 
-  // whole input volume is required. 
+
+  // Since we do not know where the DVF points, the
+  // whole input volume is required.
   this->GetInputVolume()->SetRequestedRegionToLargestPossibleRegion();
 
   // The requested region on the projection stack input is the same as the output requested region
@@ -103,7 +103,7 @@ CudaWarpForwardProjectionImageFilter
 
 #if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 8)
   this->GetDisplacementField()->SetRequestedRegionToLargestPossibleRegion();
-#else  
+#else
   // Determine the smallest region of the deformation field that fully
   // contains the physical space covered by the input volume's requested
   // region
@@ -146,16 +146,22 @@ void
 CudaWarpForwardProjectionImageFilter
 ::GPUGenerateData()
 {
+  if (this->GetGeometry()->GetSourceToDetectorDistances()[0] &&
+      this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0)
+    {
+    itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
+    }
+
   itk::Matrix<double, 4, 4> matrixIdxInputVol;
   itk::Matrix<double, 4, 4> indexInputToPPInputMatrix;
   itk::Matrix<double, 4, 4> indexInputToIndexDVFMatrix;
-  itk::Matrix<double, 4, 4> PPInputToIndexInputMatrix;  
+  itk::Matrix<double, 4, 4> PPInputToIndexInputMatrix;
   matrixIdxInputVol.SetIdentity();
   for(unsigned int i=0; i<3; i++)
     {
     matrixIdxInputVol[i][3] = this->GetInputVolume()->GetBufferedRegion().GetIndex()[i]; // Should 0.5 be added here ?
     }
-  
+
   const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
   const unsigned int Dimension = InputImageType::ImageDimension;
   const unsigned int iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension-1);
@@ -193,12 +199,12 @@ CudaWarpForwardProjectionImageFilter
   volumeSize[0] = this->GetInputVolume()->GetBufferedRegion().GetSize()[0];
   volumeSize[1] = this->GetInputVolume()->GetBufferedRegion().GetSize()[1];
   volumeSize[2] = this->GetInputVolume()->GetBufferedRegion().GetSize()[2];
-  
+
   int inputDVFSize[3];
   inputDVFSize[0] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[0];
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
-  
+
   float *pin = *(float**)( this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
   float *pvol = *(float**)( this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer() );
