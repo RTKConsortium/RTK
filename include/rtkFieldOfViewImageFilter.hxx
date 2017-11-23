@@ -27,6 +27,7 @@
 #include "lp_lib.h"
 
 #include "rtkProjectionsReader.h"
+#include "rtkProjectionsRegionConstIteratorRayBased.h"
 
 namespace rtk
 {
@@ -48,28 +49,12 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::ComputeFOVRadius(const FOVRadiusType type, double &x, double &z, double &r)
 {
   m_ProjectionsStack->UpdateOutputInformation();
-  const unsigned int Dimension = TInputImage::ImageDimension;
-
-  // Compute projection stack indices of corners of inferior X index
-  m_ProjectionsStack->UpdateOutputInformation();
-  typename TInputImage::IndexType indexCornerInfX1, indexCornerInfX2;
-  indexCornerInfX1 = m_ProjectionsStack->GetLargestPossibleRegion().GetIndex();
-  indexCornerInfX2 = indexCornerInfX1;
-  indexCornerInfX2[1] += m_ProjectionsStack->GetLargestPossibleRegion().GetSize()[1]-1;
-
-  // Compute projection stack indices of corners of superior X index
-  typename TInputImage::IndexType indexCornerSupX1, indexCornerSupX2;
-  indexCornerSupX1 = indexCornerInfX1;
-  indexCornerSupX1[0] += m_ProjectionsStack->GetLargestPossibleRegion().GetSize()[0]-1;
-  indexCornerSupX2 = indexCornerInfX2;
-  indexCornerSupX2[0] += m_ProjectionsStack->GetLargestPossibleRegion().GetSize()[0]-1;
-
-  // To physical coordinates
-  typename TInputImage::PointType cornerInfX1, cornerInfX2, cornerSupX1, cornerSupX2;
-  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCornerInfX1, cornerInfX1);
-  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCornerInfX2, cornerInfX2);
-  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCornerSupX1, cornerSupX1);
-  m_ProjectionsStack->TransformIndexToPhysicalPoint(indexCornerSupX2, cornerSupX2);
+  typename TInputImage::SizeType regSize;
+  regSize.Fill(1);
+  typename TInputImage::RegionType region = m_ProjectionsStack->GetLargestPossibleRegion();
+  region.SetSize(regSize);
+  typename TInputImage::Pointer dumImg = TInputImage::New();
+  dumImg->CopyInformation(m_ProjectionsStack);
 
   // Build model for lpsolve with 3 variables: x, z and r
   const int Ncol = 3;
@@ -88,66 +73,54 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
   REAL row[Ncol];
   for(unsigned int iProj=0; iProj<m_Geometry->GetGantryAngles().size(); iProj++)
     {
-    if( m_Geometry->GetSourceToDetectorDistances()[iProj] == 0. )
-      itkExceptionMacro(<< "FIXME: parallel case is not handled");
-
-    typename GeometryType::HomogeneousVectorType sourcePosition;
-    sourcePosition = m_Geometry->GetSourcePosition(iProj);
-
-    typename GeometryType::ThreeDHomogeneousMatrixType matrix;
-    matrix =  m_Geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix();
-
-    // Compute point coordinate in volume depending on projection index
-    typename TInputImage::PointType cornerInfX1t, cornerInfX2t, cornerSupX1t, cornerSupX2t;
-    for(unsigned int i=0; i<Dimension; i++)
+    const unsigned int NCORNERS = 4;
+    double a[NCORNERS];
+    double b[NCORNERS];
+    double c[NCORNERS];
+    double d[NCORNERS];
+    typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+    InputRegionIterator *itIn;
+    typename InputRegionIterator::PointType corners[NCORNERS];
+    for(unsigned int i=0; i<NCORNERS; i++)
       {
-      cornerInfX1t[i] = matrix[i][Dimension];
-      cornerInfX2t[i] = matrix[i][Dimension];
-      cornerSupX1t[i] = matrix[i][Dimension];
-      cornerSupX2t[i] = matrix[i][Dimension];
-      for(unsigned int j=0; j<Dimension; j++)
-        {
-        cornerInfX1t[i] += matrix[i][j] * cornerInfX1[j];
-        cornerInfX2t[i] += matrix[i][j] * cornerInfX2[j];
-        cornerSupX1t[i] += matrix[i][j] * cornerSupX1[j];
-        cornerSupX2t[i] += matrix[i][j] * cornerSupX2[j];
-        }
+      // Create image iterator with geometry for that particular pixel (== corner)
+      typename InputRegionIterator::PointType sourcePosition;
+      region.SetIndex(0,  m_ProjectionsStack->GetLargestPossibleRegion().GetIndex()[0] +
+              (i/2) * (m_ProjectionsStack->GetLargestPossibleRegion().GetSize()[0]-1) );
+      region.SetIndex(1,  m_ProjectionsStack->GetLargestPossibleRegion().GetIndex()[1] +
+              (i%2) * (m_ProjectionsStack->GetLargestPossibleRegion().GetSize()[1]-1) );
+      region.SetIndex(2,iProj);
+      dumImg->SetRegions(region);
+      dumImg->Allocate();
+      itIn = InputRegionIterator::New(dumImg, region, m_Geometry);
+
+      // Compute the equation of a line of the ax+by=c
+      // http://en.wikipedia.org/wiki/Linear_equation#Two-point_form
+      sourcePosition = itIn->GetSourcePosition();
+      corners[i] = itIn->GetPixelPosition();
+      delete itIn;
+
+      a[i] = corners[i][2] - sourcePosition[2];
+      b[i] = sourcePosition[0] - corners[i][0];
+      c[i] = sourcePosition[0] * corners[i][2] - corners[i][0] * sourcePosition[2];
+
+      // Then compute the coefficient in front of r as suggested in
+      // http://www.ifor.math.ethz.ch/teaching/lectures/intro_ss11/Exercises/solutionEx11-12.pdf
+      d[i] = std::sqrt(a[i]*a[i] + b[i]*b[i]);
       }
-
-    // Compute the equation of a line of the ax+by=c
-    // http://en.wikipedia.org/wiki/Linear_equation#Two-point_form
-    double aInf1 = cornerInfX1t[2] - sourcePosition[2];
-    double bInf1 = sourcePosition[0] - cornerInfX1t[0];
-    double cInf1 = sourcePosition[0] * cornerInfX1t[2] - cornerInfX1t[0] * sourcePosition[2];
-    double aInf2 = cornerInfX2t[2] - sourcePosition[2];
-    double bInf2 = sourcePosition[0] - cornerInfX2t[0];
-    double cInf2 = sourcePosition[0] * cornerInfX2t[2] - cornerInfX2t[0] * sourcePosition[2];
-    double aSup1 = cornerSupX1t[2] - sourcePosition[2];
-    double bSup1 = sourcePosition[0] - cornerSupX1t[0];
-    double cSup1 = sourcePosition[0] * cornerSupX1t[2] - cornerSupX1t[0] * sourcePosition[2];
-    double aSup2 = cornerSupX2t[2] - sourcePosition[2];
-    double bSup2 = sourcePosition[0] - cornerSupX2t[0];
-    double cSup2 = sourcePosition[0] * cornerSupX2t[2] - cornerSupX2t[0] * sourcePosition[2];
-
-    // Then compute the coefficient in front of r as suggested in
-    // http://www.ifor.math.ethz.ch/teaching/lectures/intro_ss11/Exercises/solutionEx11-12.pdf
-    double dInf1 = std::sqrt(aInf1*aInf1 + bInf1*bInf1);
-    double dInf2 = std::sqrt(aInf2*aInf2 + bInf2*bInf2);
-    double dSup1 = std::sqrt(aSup1*aSup1 + bSup1*bSup1);
-    double dSup2 = std::sqrt(aSup2*aSup2 + bSup2*bSup2);
 
     // Check on corners
-    if( aInf1*cornerSupX1t[0] + bInf1*cornerSupX1t[2] >= cInf1 &&
-        aInf2*cornerSupX2t[0] + bInf2*cornerSupX2t[2] >= cInf2 )
+    if( a[0]*corners[2][0] + b[0]*corners[2][2] >= c[0] &&
+        a[1]*corners[3][0] + b[1]*corners[3][2] >= c[1] )
       {
-      aInf1 *= -1.; bInf1 *= -1.; cInf1 *= -1.;
-      aInf2 *= -1.; bInf2 *= -1.; cInf2 *= -1.;
+      a[0] *= -1.; b[0] *= -1.; c[0] *= -1.;
+      a[1] *= -1.; b[1] *= -1.; c[1] *= -1.;
       }
-    else if( aSup1*cornerInfX1t[0] + bSup1*cornerInfX1t[2] >= cSup1 &&
-             aSup2*cornerInfX2t[0] + bSup2*cornerInfX2t[2] >= cSup2 )
+    else if( a[2]*corners[0][0] + b[2]*corners[0][2] >= c[2] &&
+             a[3]*corners[1][0] + b[3]*corners[1][2] >= c[3] )
       {
-      aSup1 *= -1.; bSup1 *= -1.; cSup1 *= -1.;
-      aSup2 *= -1.; bSup2 *= -1.; cSup2 *= -1.;
+      a[2] *= -1.; b[2] *= -1.; c[2] *= -1.;
+      a[3] *= -1.; b[3] *= -1.; c[3] *= -1.;
       }
     else
       {
@@ -157,20 +130,20 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
     // Now add the constraints of the form ax+by+dr<=c
     if(type==RADIUSINF || type==RADIUSBOTH)
       {
-      row[0] = aInf1; row[1] = bInf1; row[2] = dInf1;
-      if(!add_constraintex(lp, 3, row, colno, LE, cInf1))
+      row[0] = a[0]; row[1] = b[0]; row[2] = d[0];
+      if(!add_constraintex(lp, 3, row, colno, LE, c[0]))
         itkExceptionMacro(<< "Couldn't add simplex constraint");
-      row[0] = aInf2; row[1] = bInf2; row[2] = dInf2;
-      if(!add_constraintex(lp, 3, row, colno, LE, cInf2))
+      row[0] = a[1]; row[1] = b[1]; row[2] = d[1];
+      if(!add_constraintex(lp, 3, row, colno, LE, c[1]))
         itkExceptionMacro(<< "Couldn't add simplex constraint");
       }
     if(type==RADIUSSUP || type==RADIUSBOTH)
       {
-      row[0] = aSup1; row[1] = bSup1; row[2] = dSup1;
-      if(!add_constraintex(lp, 3, row, colno, LE, cSup1))
+      row[0] = a[2]; row[1] = b[2]; row[2] = d[2];
+      if(!add_constraintex(lp, 3, row, colno, LE, c[2]))
         itkExceptionMacro(<< "Couldn't add simplex constraint");
-      row[0] = aSup2; row[1] = bSup2; row[2] = dSup2;
-      if(!add_constraintex(lp, 3, row, colno, LE, cSup2))
+      row[0] = a[3]; row[1] = b[3]; row[2] = d[3];
+      if(!add_constraintex(lp, 3, row, colno, LE, c[3]))
         itkExceptionMacro(<< "Couldn't add simplex constraint");
       }
     }
@@ -297,7 +270,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     this->GetInput()->TransformIndexToPhysicalPoint( index, pointIncrement );
     for(unsigned int i=0; i<TInputImage::GetImageDimension(); i++)
       pointIncrement[i] -= pointBase[i];
-  
+
     // Iterators
     typedef itk::ImageRegionConstIterator<TInputImage> InputConstIterator;
     InputConstIterator itIn(this->GetInput(0), outputRegionForThread);
@@ -305,7 +278,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
     OutputIterator itOut(this->GetOutput(), outputRegionForThread);
     itOut.GoToBegin();
-  
+
     // Go over output, compute weights and avoid redundant computation
     typename TInputImage::PointType point = pointBase;
     for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
@@ -350,7 +323,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     OutputIterator itOut(this->GetOutput(), outputRegionForThread);
 
     typename TInputImage::PointType point;
-    while( !itIn.IsAtEnd() ) 
+    while( !itIn.IsAtEnd() )
       {
       this->GetInput()->TransformIndexToPhysicalPoint( itIn.GetIndex(), point );
       double radius = vcl_sqrt(point[0]*point[0] + point[2]*point[2]);

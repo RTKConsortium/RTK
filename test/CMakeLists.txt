@@ -59,6 +59,8 @@ rtk_add_cuda_test(rtkFDKCudaTest rtkfdktest.cxx)
 
 rtk_add_cuda_test(rtkFDKProjWeightCompCudaTest rtkfdkprojweightcompcudatest.cxx)
 
+rtk_add_test(rtkFBPParallelTest rtkfbpparalleltest.cxx)
+
 rtk_add_test(rtkImportTest rtkimporttest.cxx)
 rtk_add_cuda_test(rtkImportCudaTest rtkimporttest.cxx)
 
@@ -66,6 +68,7 @@ rtk_add_cuda_test(rtkCropFilterCudaTest rtkcroptest.cxx)
 
 rtk_add_test(rtkMotionCompensatedFDKTest rtkmotioncompensatedfdktest.cxx)
 
+rtk_add_test(rtkDisplacedDetectorTest rtkdisplaceddetectortest.cxx)
 rtk_add_cuda_test(rtkDisplacedDetectorCudaTest rtkdisplaceddetectortest.cxx)
 rtk_add_cuda_test(rtkDisplacedDetectorCompCudaTest rtkdisplaceddetectorcompcudatest.cxx)
 

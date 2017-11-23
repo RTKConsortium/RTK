@@ -20,6 +20,7 @@
 #define rtkSchlomka2008NegativeLogLikelihood_h
 
 #include "rtkProjectionsDecompositionNegativeLogLikelihood.h"
+#include "rtkMacro.h"
 
 #include <itkVectorImage.h>
 #include <itkVariableLengthVector.h>
@@ -72,7 +73,7 @@ public:
   {
   }
 
-  void Initialize()
+  void Initialize() ITK_OVERRIDE
   {
   // This method computes the combined m_IncidentSpectrumAndDetectorResponseProduct
   // from m_DetectorResponse and m_IncidentSpectrum
@@ -122,7 +123,7 @@ public:
   }
 
   // Main method
-  MeasureType  GetValue( const ParametersType & parameters ) const
+  MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
   {
   // Forward model: compute the expected number of counts in each bin
   vnl_vector<double> forward = ForwardModel(parameters);
@@ -134,7 +135,7 @@ public:
   return measure;
   }
 
-  void ComputeFischerMatrix(const ParametersType & lineIntegrals)
+  void ComputeFischerMatrix(const ParametersType & lineIntegrals) ITK_OVERRIDE
   {
   // Get some required data
   vnl_vector<double> attenuationFactors;

@@ -15,18 +15,18 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel_hxx
-#define rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel_hxx
+#ifndef rtkProjectionsRegionConstIteratorRayBasedParallel_hxx
+#define rtkProjectionsRegionConstIteratorRayBasedParallel_hxx
 
-#include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
+#include "rtkProjectionsRegionConstIteratorRayBasedParallel.h"
 #include "rtkHomogeneousMatrix.h"
 #include "rtkMacro.h"
 
 namespace rtk
 {
 template< typename TImage >
-ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
-::ProjectionsRegionConstIteratorRayBasedWithFlatPanel(const TImage *ptr,
+ProjectionsRegionConstIteratorRayBasedParallel< TImage >
+::ProjectionsRegionConstIteratorRayBasedParallel(const TImage *ptr,
                                          const RegionType & region,
                                          ThreeDCircularProjectionGeometry *geometry,
                                          const MatrixType &postMat):
@@ -38,13 +38,16 @@ ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
 
 template< typename TImage >
 void
-ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
+ProjectionsRegionConstIteratorRayBasedParallel< TImage >
 ::NewProjection()
 {
   // Set source position in volume indices
   // GetSourcePosition() returns coordinates in mm. Multiplying by
   // volPPToIndex gives the corresponding volume index
-  this->m_SourcePosition = this->m_PostMultiplyMatrix * this->m_Geometry->GetSourcePosition(this->m_PositionIndex[2]);
+  this->m_SourceToPixel[0] = this->m_Geometry->GetRotationMatrices()[this->m_PositionIndex[2]][2][0];
+  this->m_SourceToPixel[1] = this->m_Geometry->GetRotationMatrices()[this->m_PositionIndex[2]][2][1];
+  this->m_SourceToPixel[2] = this->m_Geometry->GetRotationMatrices()[this->m_PositionIndex[2]][2][2];
+  this->m_SourceToPixel *= -2. * this->m_Geometry->GetSourceToIsocenterDistances()[ this->m_PositionIndex[2] ];
 
   // Compute matrix to transform projection index to volume index
   // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)
@@ -58,7 +61,7 @@ ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
 
 template< typename TImage >
 void
-ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
+ProjectionsRegionConstIteratorRayBasedParallel< TImage >
 ::NewPixel()
 {
   // Compute point coordinate in volume depending on projection index
@@ -69,7 +72,7 @@ ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
       this->m_PixelPosition[i] += m_ProjectionIndexTransformMatrix[i][j] * this->m_PositionIndex[j];
     }
 
-  this->m_SourceToPixel = this->m_PixelPosition - this->m_SourcePosition;
+  this->m_SourcePosition = this->m_PixelPosition - this->m_SourceToPixel;
 }
 
 } // end namespace itk
