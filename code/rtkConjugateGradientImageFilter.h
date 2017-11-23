@@ -19,17 +19,17 @@
 #ifndef rtkConjugateGradientImageFilter_h
 #define rtkConjugateGradientImageFilter_h
 
-#include "itkImageToImageFilter.h"
-#include "itkSubtractImageFilter.h"
-#include "itkStatisticsImageFilter.h"
+#include <itkSubtractImageFilter.h>
+#include <itkStatisticsImageFilter.h>
+#include <itkTimeProbe.h>
+
+#include "rtkDotProductImageFilter.h"
 #include "rtkSumOfSquaresImageFilter.h"
 
 #include "rtkConjugateGradientGetR_kPlusOneImageFilter.h"
 #include "rtkConjugateGradientGetX_kPlusOneImageFilter.h"
 #include "rtkConjugateGradientGetP_kPlusOneImageFilter.h"
-
 #include "rtkConjugateGradientOperator.h"
-#include "itkTimeProbe.h"
 
 namespace rtk
 {
@@ -52,17 +52,18 @@ public:
   typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                Superclass;
   typedef itk::SmartPointer< Self >                                                 Pointer;
   typedef itk::Image<typename OutputImageType::InternalPixelType,
-                              OutputImageType::ImageDimension>    InternalImageType;
+                              OutputImageType::ImageDimension>                      InternalImageType;
   typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
-  typedef itk::MultiplyImageFilter<OutputImageType,InternalImageType,OutputImageType> MultiplyFilterType;
-//  typedef itk::StatisticsImageFilter<OutputImageType>                               StatisticsImageFilterType;
+  typedef itk::AddImageFilter<OutputImageType,OutputImageType,OutputImageType>      AddFilterType;
+  typedef rtk::DotProductImageFilter<OutputImageType>                               DotProductFilterType;
+  typedef itk::StatisticsImageFilter<InternalImageType>                             StatisticsImageFilterType;
   typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
   typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
   typedef typename OutputImageType::Pointer                                         OutputImagePointer;
-  typedef typename rtk::ConjugateGradientGetP_kPlusOneImageFilter<OutputImageType>  GetP_kPlusOne_FilterType;
-  typedef typename rtk::ConjugateGradientGetR_kPlusOneImageFilter<OutputImageType>  GetR_kPlusOne_FilterType;
-  typedef typename rtk::ConjugateGradientGetX_kPlusOneImageFilter<OutputImageType>  GetX_kPlusOne_FilterType;
-  typedef typename rtk::SumOfSquaresImageFilter<OutputImageType>                    SS_FilterType;
+  typedef rtk::ConjugateGradientGetP_kPlusOneImageFilter<OutputImageType>           GetP_kPlusOne_FilterType;
+  typedef rtk::ConjugateGradientGetR_kPlusOneImageFilter<OutputImageType>           GetR_kPlusOne_FilterType;
+  typedef rtk::ConjugateGradientGetX_kPlusOneImageFilter<OutputImageType>           GetX_kPlusOne_FilterType;
+  typedef rtk::SumOfSquaresImageFilter<OutputImageType>                             SS_FilterType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -77,8 +78,7 @@ public:
   /** Displays the conjugate gradient cost function at each iteration. */
   itkGetMacro(IterationCosts, bool)
   itkSetMacro(IterationCosts, bool)
-//  if (m_IterationCosts)
-//    CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
+
 //  itkSetMacro(MeasureExecutionTimes, bool)
 //  itkGetMacro(MeasureExecutionTimes, bool)
 
@@ -94,12 +94,12 @@ public:
   /** The image called "B" in the CG algorithm.*/
   void SetB(const OutputImageType* OutputImage);
 
-//  /** Set and Get the constant quantity BtWB for residual costs calculation */
-//  void SetC(const double _arg);
-//  const double GetC();
+  /** Set and Get the constant quantity BtWB for residual costs calculation */
+  void SetC(const double _arg);
+  const double GetC();
 
-//  /** Setter and getter for ResidualCosts storing array **/
-//  const std::vector<double> &GetResidualCosts();
+  /** Getter for ResidualCosts storing array **/
+  const std::vector<double> &GetResidualCosts();
   
 protected:
   ConjugateGradientImageFilter();
@@ -115,15 +115,16 @@ protected:
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
   void GenerateOutputInformation() ITK_OVERRIDE;
 
+  /** Evaluates the cost function at each iteration */
+  void CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne);
+
   ConjugateGradientOperatorPointerType m_A;
 
   int                 m_NumberOfIterations;
   bool                m_IterationCosts;
-//  std::vector<double> m_ResidualCosts;
+  std::vector<double> m_ResidualCosts;
   double              m_C;
   double              m_TargetSumOfSquaresBetweenConsecutiveIterates;
-
-//  void CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne);
 
 private:
   ConjugateGradientImageFilter(const Self &); //purposely not implemented

@@ -38,8 +38,8 @@ int main(int argc, char * argv[])
 
   typedef double OutputPixelType;
   const unsigned int Dimension = 3;
-//  std::vector<double> costs;
-//  std::ostream_iterator<double> costs_it(std::cout,"\n");
+  std::vector<double> costs;
+  std::ostream_iterator<double> costs_it(std::cout,"\n");
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension >   OutputImageType;
@@ -138,7 +138,7 @@ int main(int argc, char * argv[])
     {
     conjugategradient->SetSupportMask(supportmaskSource->GetOutput() );
     }
-//  conjugategradient->SetIterationCosts(args_info.costs_flag);
+  conjugategradient->SetIterationCosts(args_info.costs_flag);
 
   if (args_info.tikhonov_given)
     conjugategradient->SetTikhonov(args_info.tikhonov_arg);
@@ -164,12 +164,12 @@ int main(int argc, char * argv[])
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
-//  if(args_info.costs_given)
-//    {
-//    costs=conjugategradient->GetResidualCosts();
-//    std::cout << "Residual costs at each iteration :" << std::endl;
-//    copy(costs.begin(),costs.end(),costs_it);
-//    }
+  if(args_info.costs_given)
+    {
+    costs=conjugategradient->GetResidualCosts();
+    std::cout << "Residual costs at each iteration :" << std::endl;
+    copy(costs.begin(),costs.end(),costs_it);
+    }
 
   // Write
   typedef itk::ImageFileWriter< OutputImageType > WriterType;

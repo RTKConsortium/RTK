@@ -136,6 +136,8 @@ public:
     typedef itk::StatisticsImageFilter<TOutputImage>                                        StatisticsImageFilterType;
     typedef typename TOutputImage::Pointer                                                  OutputImagePointer;
     typedef rtk::BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage>                 MatrixVectorMultiplyFilterType;
+    typedef rtk::DotProductImageFilter<TOutputImage>                                        DotProductFilterType;
+    typedef itk::StatisticsImageFilter<TSingleComponentImage>                               StatisticsFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
@@ -156,8 +158,8 @@ public:
     itkSetMacro(MeasureExecutionTimes, bool)
     itkGetMacro(MeasureExecutionTimes, bool)
 
-//    itkSetMacro(IterationCosts, bool)
-//    itkGetMacro(IterationCosts, bool)
+    itkSetMacro(IterationCosts, bool)
+    itkGetMacro(IterationCosts, bool)
 
     /** Set / Get whether the displaced detector filter should be disabled */
     itkSetMacro(DisableDisplacedDetectorFilter, bool)
@@ -221,7 +223,7 @@ private:
     float                        m_Gamma;
     float                        m_Tikhonov;
     bool                         m_MeasureExecutionTimes;
-//    bool                         m_IterationCosts;
+    bool                         m_IterationCosts;
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
     bool                         m_DisableDisplacedDetectorFilter;
