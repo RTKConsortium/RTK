@@ -32,6 +32,7 @@ ProjectionsRegionConstIteratorRayBasedParallel< TImage >
                                          const MatrixType &postMat):
   ProjectionsRegionConstIteratorRayBased< TImage >(ptr, region, geometry, postMat)
 {
+  m_PostRotationMatrix = postMat.GetVnlMatrix().extract(3,3);
   NewProjection();
   NewPixel();
 }
@@ -48,6 +49,7 @@ ProjectionsRegionConstIteratorRayBasedParallel< TImage >
   this->m_SourceToPixel[1] = this->m_Geometry->GetRotationMatrices()[this->m_PositionIndex[2]][2][1];
   this->m_SourceToPixel[2] = this->m_Geometry->GetRotationMatrices()[this->m_PositionIndex[2]][2][2];
   this->m_SourceToPixel *= -2. * this->m_Geometry->GetSourceToIsocenterDistances()[ this->m_PositionIndex[2] ];
+  this->m_SourceToPixel = m_PostRotationMatrix * this->m_SourceToPixel;
 
   // Compute matrix to transform projection index to volume index
   // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)

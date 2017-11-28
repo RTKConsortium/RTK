@@ -219,7 +219,7 @@ following scheme:
 
 This scheme is based on the previous one with all offsets equal 0 but this is not required.
 
-\subsection PG Parallel geometry
+\subsection ParG Parallel geometry
 
 When SourceToDetectorDistance is set to 0, the geometry is assumed to be
 parallel (i.e. infinite distance, but 0 is easier to deal with). The detector
