@@ -22,6 +22,7 @@
 #include <itkNumericTraits.h>
 #include <vector>
 #include <itkImageBase.h>
+#include "rtkConfiguration.h"
 
 namespace rtk
 {
