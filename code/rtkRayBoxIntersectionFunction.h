@@ -29,12 +29,12 @@ namespace rtk
 /** \class RayBoxIntersectionFunction
  * \brief Compute the intersection between a ray and a box.
  *
- * The box is defined by two corners and is assumed to be parallel to the
- * image coordinate system. The ray origin must be set first. The direction
- * of the ray is then passed to the Evaluate function. It returns false if
- * there is no intersection. It returns true otherwise and the nearest and
- * farthest distance/point may be accessed. Nearest and farthest distance are
- * defined such that NearestDistance < FarthestDistance.
+ * The box is defined by two corners and the orientation can be set similarly
+ * to an itk::Image, by setting the m_Direction member. The ray origin must be
+ * set first. The direction of the ray is then passed to the Evaluate function.
+ * It returns false if there is no intersection. It returns true otherwise and
+ * the nearest and farthest distance/point may be accessed. Nearest and
+ * farthest distances are defined such that NearestDistance < FarthestDistance.
  *
  * The default behavior of the function is to return the intersection between
  * the line defined by the origin and direction. You need to modify the
@@ -59,14 +59,13 @@ public:
   typedef itk::SmartPointer<Self>       Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
-  typedef typename itk::ImageBase<VBoxDimension>::ConstPointer ImageBaseConstPointer;
-
-
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Useful defines. */
-  typedef itk::Vector<TCoordRep, VBoxDimension> VectorType;
+  typedef itk::Vector<TCoordRep, VBoxDimension>                                VectorType;
+  typedef itk::ImageBase<VBoxDimension>                                        ImageBaseType;
+  typedef itk::Matrix< itk::SpacePrecisionType, VBoxDimension, VBoxDimension > DirectionType;
 
   /** Evaluate the intersection points */
   bool Evaluate( const VectorType& input );
@@ -74,18 +73,25 @@ public:
   /** Set the box information (Min/Max corners) from an itk image.
    * \warning this method caches image information.
    * If the image information has changed, user must call
-   * SetBoxFromImage again to update cached values. */
-  void SetBoxFromImage( ImageBaseConstPointer img );
+   * SetBoxFromImage again to update cached values.
+   * bWithExternalHalfPixelBorder adds a half pixel border around the image, the
+   * box stops at the center of the first and the last voxel otherwise. */
+  void SetBoxFromImage( const ImageBaseType *img, bool bWithExternalHalfPixelBorder=true );
 
   /** Get / Set the box inferior corner. Every coordinate must be inferior to
    * those of the superior corner. */
-  virtual VectorType GetBoxMin() { return this->m_BoxMin; }
-  virtual void SetBoxMin(const VectorType _arg) { m_BoxMin = _arg; }
+  virtual VectorType GetBoxMin();
+  virtual void SetBoxMin(const VectorType _arg);
 
   /** Get / Set the box superior corner. Every coordinate must be superior to
    * those of the inferior corner. */
-  virtual VectorType GetBoxMax() { return this->m_BoxMax; }
-  virtual void SetBoxMax(const VectorType _arg) { m_BoxMax = _arg; }
+  virtual VectorType GetBoxMax();
+  virtual void SetBoxMax(const VectorType _arg);
+
+  /** Direction is the direction of the box, defined in the same sense as in
+    * itk::ImageBase. */
+  virtual DirectionType GetDirection();
+  virtual void SetDirection(const DirectionType _arg);
 
   /** Get / Set the ray origin. */
   virtual VectorType GetRayOrigin() { return this->m_RayOrigin; }
@@ -117,22 +123,26 @@ public:
 
 protected:
 
-  /// Constructor
   RayBoxIntersectionFunction();
 
-  /// Destructor
   ~RayBoxIntersectionFunction() {}
+
+  void TransformBoxCornersWithDirection();
 
   /// The focal point or position of the ray source
   VectorType m_FocalPoint;
 
   /** Corners of the image box */
-  VectorType m_BoxMin;
-  VectorType m_BoxMax;
-  VectorType m_RayOrigin;
-  VectorType m_RayDirection;
-  TCoordRep  m_NearestDistance;
-  TCoordRep  m_FarthestDistance;
+  VectorType    m_BoxMin;
+  VectorType    m_BoxMax;
+  VectorType    m_BoxMinT;
+  VectorType    m_BoxMaxT;
+  VectorType    m_RayOrigin;
+  VectorType    m_RayDirection;
+  TCoordRep     m_NearestDistance;
+  TCoordRep     m_FarthestDistance;
+  DirectionType m_Direction;
+  DirectionType m_DirectionT;
 
 private:
   RayBoxIntersectionFunction( const Self& ); //purposely not implemented
