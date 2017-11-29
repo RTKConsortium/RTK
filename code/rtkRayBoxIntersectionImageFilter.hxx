@@ -31,7 +31,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
-::SetBoxFromImage(OutputImageBaseConstPointer _arg)
+::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
 {
   m_RBIFunctor->SetBoxFromImage(_arg);
   this->Modified();
@@ -62,7 +62,7 @@ RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
                        ThreadIdType itkNotUsed(threadId) )
 {
   // Create local object for multithreading purposes
-  RBIFunctionType::Pointer rbiFunctor = RBIFunctionType::New();
+  typename RBIFunctionType::Pointer rbiFunctor = RBIFunctionType::New();
   rbiFunctor->SetBoxMin(m_RBIFunctor->GetBoxMin());
   rbiFunctor->SetBoxMax(m_RBIFunctor->GetBoxMax());
 

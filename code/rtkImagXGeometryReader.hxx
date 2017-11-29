@@ -35,7 +35,7 @@ namespace rtk
 template< typename TInputImage >
 const std::string ImagXGeometryReader<TInputImage>::m_AI_VERSION_1p2 = "IMAGX:1.2.3 ";
 
-template< typename TInputImage > 
+template< typename TInputImage >
 const std::string ImagXGeometryReader<TInputImage>::m_AI_VERSION_1p5 = "IMAGX:1.6.10";
 
 template< typename TInputImage >
@@ -68,7 +68,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
     {
         std::string tagName = list_child[i]->GetName();
 
-        // 1. From all available arcs, find the active one 
+        // 1. From all available arcs, find the active one
         if (!tagName.compare("arc") && !arcFound)
         {
             list.clear();
@@ -147,7 +147,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
             gantryParametersFound = sidFound & sadFound & angleOffsetFound;
         }
     }
-    
+
     // Depending on arc found
     bool flexmapFoundAndLoaded = false;
     if (arcFound)
@@ -172,7 +172,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
 
                 for (unsigned int gid = 0; gid < list_geocals.size(); gid++)
                 {
-                    if (list_geocals[gid]->GetName() == "geoCalModel") 
+                    if (list_geocals[gid]->GetName() == "geoCalModel")
                     {
                         list.clear();
                         list_geocals[gid]->GetAllAttributes(list);
@@ -226,7 +226,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
             }
         }
     }
-  
+
     F.isCW = this->isCW(F.anglesDeg); // Needed for flexmap sampling
     F.isValid = arcFound & FPOffsetfFound & gantryParametersFound & flexmapFoundAndLoaded;
 
@@ -234,7 +234,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
 }
 
 template< typename TInputImage >
-bool ImagXGeometryReader<TInputImage>::isCW(const std::vector<float>& angles) 
+bool ImagXGeometryReader<TInputImage>::isCW(const std::vector<float>& angles)
 {
     std::vector<float> cp;
     std::copy(angles.begin(), angles.end(), std::back_inserter(cp));
@@ -243,7 +243,7 @@ bool ImagXGeometryReader<TInputImage>::isCW(const std::vector<float>& angles)
 }
 
 template< typename TInputImage >
-typename ImagXGeometryReader<TInputImage>::CalibrationModelType 
+typename ImagXGeometryReader<TInputImage>::CalibrationModelType
 ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
 {
     CalibrationModelType Cm;
@@ -274,7 +274,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
     Cm.sid = atof(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sid").c_str());
     Cm.sdd = atof(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sdd").c_str());
     Cm.sourceToNozzleOffsetAngle = atof(parser->GetOutput()->GetChild("Axis")->GetChild("AngleOffset")->GetAttribute("projection").c_str());
-    
+
     // Read calibration model's parameters in the DICOM info of the first projection
     std::string calibrationTagKey = "3001|0013";
     std::string calibrationInfo;
@@ -466,7 +466,7 @@ template< typename TInputImage >
 void ImagXGeometryReader<TInputImage>::GenerateData()
 {
     const std::string version = getAIversion();
-    
+
     if(version.compare(m_AI_VERSION_2p1) && version.compare(m_AI_VERSION_1p2) && version.compare(m_AI_VERSION_1p5))
     {
         itkExceptionMacro("Unknown AI version : " << version);
@@ -478,11 +478,11 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
     if (!version.compare(m_AI_VERSION_2p1))
     {
         gantryAngleTag = "300a|011e";   // Warning: CBCT tube angle!
-        if (!m_CalibrationXMLFileName.empty()) 
+        if (!m_CalibrationXMLFileName.empty())
         {
             flex = GetGeometryForAI2p1();
         }
-        else 
+        else
         {
             itkExceptionMacro("With AI2.1, you need to provide a calibration file (XML)");
         }
@@ -497,10 +497,10 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
         gantryAngleTag = "300a|011e";   // Nozzle angle
         calibModel = GetGeometryForAI1p5FromXMLFiles();
     }
-    
+
     // Create new RTK geometry object
     m_Geometry = GeometryType::New();
-    
+
     // Projection matrices
     for (unsigned int noProj = 0; noProj < m_ProjectionsFileNames.size(); noProj++)
     {
@@ -535,8 +535,8 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
 }
 
 template< typename TInputImage >
-void 
-ImagXGeometryReader<TInputImage>::addEntryToGeometry(float gantryAngleDegree, float nozzleToRadAngleOffset, float sid, float sdd, 
+void
+ImagXGeometryReader<TInputImage>::addEntryToGeometry(float gantryAngleDegree, float nozzleToRadAngleOffset, float sid, float sdd,
                                                      std::vector<float>& detTrans, std::vector<float>& detRot, std::vector<float>& srcTrans)
 {
     float deg2rad = float(itk::Math::pi) / 180.f;
@@ -603,7 +603,7 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngl
             delta = angleDegree - flexAngles[i];
         }
     }
-    
+
     // Clipping
     if (idc == 0 && ((delta < 0.f && isCW) || (delta > 0.f && !isCW)) ) {
         ires.id0 = 0;
@@ -653,16 +653,16 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngl
             ires.a1 = 1.f - a;
         }
     }
-    
+
     return ires;
 }
 
 template< typename TInputImage >
-std::vector<float> 
+std::vector<float>
 ImagXGeometryReader<TInputImage>::getInterpolatedValue(const InterpResultType& ires, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz)
 {
     std::vector<float> d;
-    d.reserve(3);
+    d.resize(3);
     d[0] = ires.a0 * Dx[ires.id0] + ires.a1 * Dx[ires.id1];
     d[1] = ires.a0 * Dy[ires.id0] + ires.a1 * Dy[ires.id1];
     d[2] = ires.a0 * Dz[ires.id0] + ires.a1 * Dz[ires.id1];
@@ -670,13 +670,13 @@ ImagXGeometryReader<TInputImage>::getInterpolatedValue(const InterpResultType& i
 }
 
 template< typename TInputImage >
-void 
+void
 ImagXGeometryReader<TInputImage>::addEntryToGeometry(const FlexmapType& f, float gantryAngle)
 {
     // Deformation obtained by sampling the flexmap
 
     InterpResultType ires = interpolate(f.anglesDeg, f.isCW, gantryAngle);
-    
+
     // Detector translation deformations
     std::vector<float> detTrans = this->getInterpolatedValue(ires, f.Px, f.Py, f.Pz);
 
@@ -691,11 +691,11 @@ ImagXGeometryReader<TInputImage>::addEntryToGeometry(const FlexmapType& f, float
 }
 
 template< typename TInputImage >
-std::vector<float> 
+std::vector<float>
 ImagXGeometryReader<TInputImage>::getDeformations(float gantryAngle, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz)
-{ 
+{
     std::vector<float> d;
-    d.reserve(3);
+    d.resize(3);
     float gRad = gantryAngle*std::acos(-1.f) / 180.f;
     d[0] = Dx[0] + Dx[1] * gantryAngle + Dx[2] * std::cos(Dx[3] * gRad + Dx[4]);
     d[1] = Dy[0] + Dy[1] * gantryAngle + Dy[2] * std::cos(Dy[3] * gRad + Dy[4]);
@@ -704,20 +704,20 @@ ImagXGeometryReader<TInputImage>::getDeformations(float gantryAngle, const std::
 }
 
 template< typename TInputImage >
-void 
+void
 ImagXGeometryReader<TInputImage>::addEntryToGeometry(const CalibrationModelType& c, float gantryAngle)
 {
     // Deformation computation following model: (a0 + a1*t) + a2*cos(a3*t + a4)
 
     // Detector translation deformations
     std::vector<float> detTrans = this->getDeformations(gantryAngle, c.Px, c.Py, c.Pz);
-    
+
     // Detector rotation deformations
     std::vector<float> detRot = this->getDeformations(gantryAngle, c.Rx, c.Ry, c.Rz);
-    
+
     // Source translation deformations
     std::vector<float> srcTrans = this->getDeformations(gantryAngle, c.Tx, c.Ty, c.Tz);
-    
+
     // Add new entry to RTK geometry
     addEntryToGeometry(gantryAngle, c.sourceToNozzleOffsetAngle, c.sid, c.sdd, detTrans, detRot, srcTrans);
 }
