@@ -1,5 +1,7 @@
-itk_wrap_include("rtkThreeDCircularProjectionGeometryXMLFileReader.h")
+itk_wrap_named_class("itk::XMLReader" itkXMLReader)
+  itk_wrap_template(3DCPG "rtk::ThreeDCircularProjectionGeometry" )
+itk_end_wrap_class()
 
-itk_wrap_named_simple_class("rtk::ThreeDCircularProjectionGeometryXMLFileReader"
-  rtkThreeDCircularProjectionGeometryXMLFileReader
-  POINTER)
+itk_wrap_named_simple_class("itk::XMLReaderBase" itkXMLFile)
+
+itk_wrap_simple_class("rtk::ThreeDCircularProjectionGeometryXMLFileReader" POINTER)

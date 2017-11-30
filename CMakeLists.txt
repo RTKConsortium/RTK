@@ -108,6 +108,16 @@ if(NOT ITK_SOURCE_DIR)
   find_package(ITK 4.12.0 REQUIRED)
 endif()
 
+# --------------------------------------------------------
+# Check Image Dims required for Python wrapping
+list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+if ((${_index} EQUAL -1) AND RTK_WRAP_PYTHON)
+  message(FATAL_ERROR "
+    Image dimension 4 is required when wrapping RTK for Python.
+    Please rebuild ITK with ITK_WRAP_IMAGE_DIMS=\"2;3;4\" or
+    turn off python wrapping by setting RTK_WRAP_PYTHON:BOOL=OFF")
+endif()
+
 #=========================================================
 # ITKCudaCommon
 #=========================================================
