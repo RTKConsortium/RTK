@@ -29,7 +29,8 @@ set(RTK_SRCS
   rtkOraXMLFileReader.cxx
   rtkReg23ProjectionGeometry.cxx
   rtkThreeDCircularProjectionGeometry.cxx
-  rtkThreeDCircularProjectionGeometryXMLFile.cxx
+  rtkThreeDCircularProjectionGeometryXMLFileReader.cxx
+  rtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
   rtkTimeProbesCollectorBase.cxx
   rtkVarianObiGeometryReader.cxx
   rtkVarianObiXMLFileReader.cxx
@@ -41,8 +42,6 @@ set(RTK_SRCS
   rtkXRadGeometryReader.cxx
   rtkXRadImageIO.cxx
   rtkXRadImageIOFactory.cxx
-  srtkThreeDCircularProjectionGeometryXMLFileReader.cxx
-  srtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
   )
 
 #=========================================================
