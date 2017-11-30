@@ -51,6 +51,7 @@ public:
   typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                Superclass;
   typedef itk::SmartPointer< Self >                                                 Pointer;
   typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
+  typedef itk::AddImageFilter<OutputImageType,OutputImageType,OutputImageType>      AddFilterType;
   typedef itk::MultiplyImageFilter<OutputImageType,OutputImageType,OutputImageType> MultiplyFilterType;
   typedef itk::StatisticsImageFilter<OutputImageType>                               StatisticsImageFilterType;
   typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
