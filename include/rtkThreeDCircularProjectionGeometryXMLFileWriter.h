@@ -51,7 +51,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLFileWriter);
+  itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLWriterBase)
 
   /** Test whether a file is writable. */
   int CanWriteFile(const char* name) ITK_OVERRIDE;
@@ -60,7 +60,7 @@ public:
   int WriteFile() ITK_OVERRIDE;
 
 protected:
-  ThreeDCircularProjectionGeometryXMLFileWriter() {};
+  ThreeDCircularProjectionGeometryXMLFileWriter() {}
   ~ThreeDCircularProjectionGeometryXMLFileWriter() {}
   
   /** If all values are equal in v, write first value (if not 0.) in
