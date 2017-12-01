@@ -1,0 +1,2 @@
+testing/.*\.cxx Namespace Disable
+examples/.*\.cxx Namespace Disable
