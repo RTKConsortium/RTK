@@ -7,6 +7,9 @@ RTK: The Reconstruction ToolKit
 .. image:: https://travis-ci.org/SimonRit/RTK.svg?branch=RTK-ExternalModule
     :target: https://travis-ci.org/SimonRit/RTK/branches
 
+.. image:: https://ci.appveyor.com/api/projects/status/dpflok54d64t3dq9/branch/RTK-ExternalModule?svg=true
+    :target: https://ci.appveyor.com/project/simonrit/rtk
+
 Links
 -----
 
