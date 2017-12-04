@@ -1,36 +1,43 @@
 platform:
   - x64
 
-configuration:
-  - Release
-
 environment:
   APPVEYOR_SAVE_CACHE_ON_ERROR: true
   ITK_VERSION: v4.12.0
-  global:
-    CYG_ROOT: C:\cygwin
+  ITK_SOURCE_DIR: "C:/projects/ITK"
+  ITK_BINARY_DIR: "C:/projects/ITK-build"
+  BUILD_TYPE: Release
 
   matrix:
     - GENERATOR: "Visual Studio 14 2015 Win64"
 
 cache:
-  - 'C:/projects/ITK'
-  - 'C:/projects/ITK-build'
+  - '%ITK_SOURCE_DIR%'
+  - '%ITK_BINARY_DIR%'
+
+build:
+  parallel: true
+  verbosity: minimal
 
 before_build:
-  - if not exist "C:/projects/ITK" (
+  - if not exist "%ITK_SOURCE_DIR%" (
       cd C:/projects/ &
-      git clone --depth 1 --branch %ITK_VERSION% https://github.com/InsightSoftwareConsortium/ITK.git ITK &
-      cd C:/projects/%APPVEYOR_BUILD_FOLDER%
+      git clone --depth 1 --branch %ITK_VERSION% https://github.com/InsightSoftwareConsortium/ITK.git ITK
     )
-  - if not exist "C:/projects/ITK-build" (
+  - if not exist "%ITK_BINARY_DIR%" (
       cd C:/projects/ &
-      mkdir ITK-build & cd ITK-build & cmake -G "%GENERATOR%" -DBUILD_TESTING:BOOL=OFF ../ITK & cmake --build . &
-      cd C:/projects/%APPVEYOR_BUILD_FOLDER%
+      mkdir "%ITK_BINARY_DIR%" & cd "%ITK_BINARY_DIR%" & cmake -G "%GENERATOR%" -DBUILD_TESTING:BOOL=OFF ../ITK & cmake --build . --config %BUILD_TYPE% &
+      cd '%APPVEYOR_BUILD_FOLDER%'
+    )
+  - if exist "%ITK_BINARY_DIR%" (
+      cd "%ITK_BINARY_DIR%" &
+      cmake -DBUILD_TESTING:BOOL=ON . & cmake --build . --config %BUILD_TYPE% --target itkTestDriver
     )
 
 build_script:
-  - mkdir build & cd build & cmake -G "%GENERATOR%" -DITK_DIR="C:/projects/ITK-build" .. & cmake --build .
+  - cd "%APPVEYOR_BUILD_FOLDER%"
+  - mkdir build & cd build & cmake -G "%GENERATOR%" -DITK_DIR=%ITK_BINARY_DIR% .. & cmake --build . --config %BUILD_TYPE%
+  - cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --config %BUILD_TYPE% --target RUN_TESTS
 
 test: off
 
