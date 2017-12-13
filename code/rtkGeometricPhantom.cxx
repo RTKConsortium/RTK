@@ -16,36 +16,45 @@
  *
  *=========================================================================*/
 
-#ifndef rtkDrawSpatialObject_h
-#define rtkDrawSpatialObject_h
-
-#include <itkPoint.h>
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
-#include <iostream>
+#include "rtkGeometricPhantom.h"
 
 namespace rtk
 {
-/** \class DrawSpatialObject
- * \brief Base class for a 3D object. rtk::DrawImageFilter fills uses it (and IsInside) to fill a volume.
- *
- * \author Mathieu Dupont
- *
- */
-
-class DrawSpatialObject
+void
+GeometricPhantom
+::Rescale(const VectorType &r)
 {
-
-public:
-
-  typedef double ScalarType;
-  DrawSpatialObject(){}
-  typedef itk::Point< ScalarType, 3 > PointType;
-
-  /** Returns true if a point is inside the object. */
-  virtual bool IsInside(const PointType & point) const = 0;
-
-};
-
+  for(size_t i=0; i<m_ConvexObjects.size(); i++)
+    {
+    m_ConvexObjects[i]->Rescale(r);
+    }
 }
 
-#endif
+void
+GeometricPhantom
+::Translate(const VectorType &t)
+{
+  for(size_t i=0; i<m_ConvexObjects.size(); i++)
+    {
+    m_ConvexObjects[i]->Translate(t);
+    }
+}
+
+void
+GeometricPhantom
+::Rotate(const RotationMatrixType &r)
+{
+  for(size_t i=0; i<m_ConvexObjects.size(); i++)
+    {
+    m_ConvexObjects[i]->Rotate(r);
+    }
+}
+
+void
+GeometricPhantom
+::AddConvexObject(const ConvexObjectPointer &co)
+{
+  m_ConvexObjects.push_back(co);
+}
+
+}

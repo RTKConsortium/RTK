@@ -16,17 +16,17 @@
  *
  *=========================================================================*/
 
-#ifndef rtkRayBoxIntersectionImageFilter_h
-#define rtkRayBoxIntersectionImageFilter_h
+#ifndef rtkDrawBoxImageFilter_h
+#define rtkDrawBoxImageFilter_h
 
-#include "rtkRayConvexObjectIntersectionImageFilter.h"
+#include "rtkDrawConvexObjectImageFilter.h"
 #include "rtkConfiguration.h"
 #include "rtkBox.h"
 
 namespace rtk
 {
 
-/** \class RayBoxIntersectionImageFilter
+/** \class DrawBoxImageFilter
  * \brief Draws in a 3D image user defined Box.
  *
  * \test rtkdrawgeometricphantomtest.cxx
@@ -36,15 +36,15 @@ namespace rtk
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class RayBoxIntersectionImageFilter :
-public RayConvexObjectIntersectionImageFilter< TInputImage, TOutputImage >
+class DrawBoxImageFilter :
+public DrawConvexObjectImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef RayBoxIntersectionImageFilter                                    Self;
-  typedef RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                          Pointer;
-  typedef itk::SmartPointer<const Self>                                    ConstPointer;
+  typedef DrawBoxImageFilter                                    Self;
+  typedef DrawConvexObjectImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                               Pointer;
+  typedef itk::SmartPointer<const Self>                         ConstPointer;
 
   /** Convenient typedefs. */
   typedef Box::PointType          PointType;
@@ -57,7 +57,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RayBoxIntersectionImageFilter, RayConvexObjectIntersectionImageFilter);
+  itkTypeMacro(DrawBoxImageFilter, DrawConvexObjectImageFilter);
 
   /** Get / Set the constant density of the volume */
   itkGetMacro(Density, ScalarType);
@@ -69,39 +69,39 @@ public:
 
   void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
 
-  /** Set the box from an image. See rtkRayBoxIntersectionFunction::SetBoxFromImage. */
+  /** Set the box from an image. See rtkDrawBoxFunction::SetBoxFromImage. */
   void SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder=true);
 
-  itkGetMacro(BoxMin, PointType);
-  itkSetMacro(BoxMin, PointType);
-  itkGetMacro(BoxMax, PointType);
-  itkSetMacro(BoxMax, PointType);
+  itkGetMacro(BoxMin, VectorType);
+  itkSetMacro(BoxMin, VectorType);
+  itkGetMacro(BoxMax, VectorType);
+  itkSetMacro(BoxMax, VectorType);
   itkGetMacro(Direction, RotationMatrixType);
   itkSetMacro(Direction, RotationMatrixType);
 
 protected:
-  RayBoxIntersectionImageFilter();
-  ~RayBoxIntersectionImageFilter() {}
+  DrawBoxImageFilter();
+  ~DrawBoxImageFilter() {}
 
   void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
 
 private:
-  RayBoxIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
+  DrawBoxImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);     //purposely not implemented
 
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 
-  PointType               m_BoxMin;
-  PointType               m_BoxMax;
-  RotationMatrixType      m_Direction;
+  VectorType         m_BoxMin;
+  VectorType         m_BoxMax;
+  RotationMatrixType m_Direction;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayBoxIntersectionImageFilter.hxx"
+#include "rtkDrawBoxImageFilter.hxx"
 #endif
 
 #endif
