@@ -20,16 +20,9 @@
 #define rtkProjectGeometricPhantomImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
+#include <itkAddImageFilter.h>
+#include "rtkGeometricPhantom.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkRayQuadricIntersectionImageFilter.h"
-#include "rtkGeometricPhantomFileReader.h"
-
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkRayBoxIntersectionImageFilter.h"
-#include "itkAddImageFilter.h"
-
-#include <vector>
 
 namespace rtk
 {
@@ -49,34 +42,36 @@ namespace rtk
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT ProjectGeometricPhantomImageFilter :
-  public RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage>
+class ProjectGeometricPhantomImageFilter :
+  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef ProjectGeometricPhantomImageFilter                            Self;
-  typedef RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                 ConstPointer;
-  typedef typename TOutputImage::RegionType                             OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer               OutputImageBaseConstPointer;
+  typedef ProjectGeometricPhantomImageFilter                Self;
+  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                           Pointer;
+  typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef float OutputPixelType;
-
-  typedef TOutputImage                                                               OutputImageType;
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>       RBIType;
-  typedef itk::AddImageFilter <TOutputImage, TOutputImage, TOutputImage>             AddImageFilterType;
-  typedef itk::Vector<double, 3>                                                     VectorType;
-  typedef std::string                                                                StringType;
-  typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
-  typedef rtk::GeometricPhantomFileReader                                            CFRType;
+  /** Convenient typedefs. */
+  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
+  typedef typename GeometryType::Pointer                  GeometryPointer;
+  typedef GeometricPhantom::Pointer                       GeometricPhantomPointer;
+  typedef std::string                                     StringType;
+  typedef ConvexObject::VectorType                        VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ProjectGeometricPhantomImageFilter, RayEllipsoidIntersectionImageFilter);
+  itkTypeMacro(ProjectGeometricPhantomImageFilter, itk::InPlaceImageFilter);
+
+  /** Get / Set the object pointer to the geometry. */
+  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
+
+  /** Get / Set the object pointer to projection geometry */
+  itkGetObjectMacro(Geometry, GeometryType);
+  itkSetObjectMacro(Geometry, GeometryType);
 
   /** Get/Set Number of Figures.*/
   itkSetMacro(ConfigFile, StringType);
@@ -91,9 +86,6 @@ public:
   itkSetMacro(OriginOffset, VectorType);
   itkGetMacro(OriginOffset, VectorType);
 
-  virtual VectorOfVectorType GetFig ();
-  virtual void SetFig (const VectorOfVectorType _arg);
-
 protected:
   ProjectGeometricPhantomImageFilter();
   ~ProjectGeometricPhantomImageFilter() {}
@@ -102,13 +94,13 @@ protected:
 
 private:
   ProjectGeometricPhantomImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  void operator=(const Self&);                     //purposely not implemented
 
-  VectorOfVectorType     m_Fig;
-  StringType             m_ConfigFile;
-
-  VectorType m_PhantomScale;
-  VectorType m_OriginOffset;
+  GeometricPhantomPointer m_GeometricPhantom;
+  GeometryPointer         m_Geometry;
+  StringType              m_ConfigFile;
+  VectorType              m_PhantomScale;
+  VectorType              m_OriginOffset;
 };
 
 } // end namespace rtk

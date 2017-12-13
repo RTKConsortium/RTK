@@ -19,12 +19,8 @@
 #ifndef rtkGeometricPhantomFileReader_h
 #define rtkGeometricPhantomFileReader_h
 
-#include <itkNumericTraits.h>
-#include <vector>
-#include <itkImageBase.h>
-#include "rtkRayQuadricIntersectionFunction.h"
-#include "rtkMacro.h"
-#include "rtkWin32Header.h"
+#include <itkLightProcessObject.h>
+#include "rtkGeometricPhantom.h"
 
 namespace rtk
 {
@@ -40,42 +36,34 @@ namespace rtk
  * \ingroup Functions
  */
 class RTK_EXPORT GeometricPhantomFileReader :
-    public itk::Object
+    public itk::LightProcessObject
 {
 public:
   /** Standard class typedefs. */
-  typedef GeometricPhantomFileReader               Self;
-  typedef itk::Object                              Superclass;
-  typedef itk::SmartPointer<Self>                  Pointer;
-  typedef itk::SmartPointer<const Self>            ConstPointer;
+  typedef GeometricPhantomFileReader     Self;
+  typedef itk::Object                    Superclass;
+  typedef itk::SmartPointer<Self>        Pointer;
+  typedef itk::SmartPointer<const Self>  ConstPointer;
+
+  /** Convenient typedefs. */
+  typedef GeometricPhantom::Pointer      GeometricPhantomPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GeometricPhantomFileReader, itk::Object);
+  itkTypeMacro(GeometricPhantomFileReader, itk::LightProcessObject);
 
-  /** Useful defines. */
-  typedef std::vector<double>                VectorType;
-  typedef std::vector< std::vector<double> > VectorOfVectorType;
-  typedef std::string                        StringType;
+  /** Get / Set the object pointer to geometric phantom. */
+  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
 
-//FIXME: this struct should be used, but error with Get/Set Macros
-//  struct FigureType
-//  {
-//    //FigureType():angle(0.),density(0.){};
-//    VectorOfVectorType       parameters;
-//    std::vector<std::string> figure;
-//  };
+  /** Get/Set the filename to read. */
+  itkGetStringMacro(Filename);
+  itkSetStringMacro(Filename);
 
-  bool Config( const std::string input);
-
-  virtual VectorOfVectorType GetFig ();
-  virtual void SetFig (const VectorOfVectorType _arg);
-
-  /** Get/Set Number of Figures.*/
-  rtkSetStdVectorMacro(FigureTypes, std::vector<StringType>);
-  rtkGetStdVectorMacro(FigureTypes, std::vector<StringType>);
+  /** do the actual parsing of the input file */
+  virtual void GenerateOutputInformation();
 
 protected:
 
@@ -85,13 +73,12 @@ protected:
   /// Destructor
   ~GeometricPhantomFileReader() {}
 
-  /** Corners of the image Quadric */
-  VectorOfVectorType      m_Fig;
-  std::vector<StringType> m_FigureTypes;
-
 private:
   GeometricPhantomFileReader( const Self& ); //purposely not implemented
-  void operator=( const Self& ); //purposely not implemented
+  void operator=( const Self& );             //purposely not implemented
+
+  GeometricPhantomPointer m_GeometricPhantom;
+  std::string             m_Filename;
 };
 
 } // end namespace rtk

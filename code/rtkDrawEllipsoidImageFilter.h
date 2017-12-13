@@ -19,61 +19,79 @@
 #ifndef rtkDrawEllipsoidImageFilter_h
 #define rtkDrawEllipsoidImageFilter_h
 
-#include "rtkDrawQuadricImageFilter.h"
-#include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkDrawConvexObjectImageFilter.h"
 #include "rtkConfiguration.h"
-#include <vector>
 
 namespace rtk
 {
 
 /** \class DrawEllipsoidImageFilter
- * \brief Draws in a 3D image a user defined ellipsoid.
+ * \brief Draws in a 3D image user defined Ellipsoid.
  *
- * \test rtksarttest.cxx, rtkmotioncompensatedfdktest.cxx
+ * \test rtkdrawgeometricphantomtest.cxx
  *
  * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter
  */
-template <class TInputImage,
-         class TOutputImage,
-         typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
-         typename TInputImage::PixelType,
-         typename TOutputImage::PixelType>
-         >
-class ITK_EXPORT DrawEllipsoidImageFilter :
-  public DrawQuadricImageFilter < TInputImage,
-                                  TOutputImage,
-                                  DrawQuadricSpatialObject,
-                                  TFunction >
+template <class TInputImage, class TOutputImage>
+class DrawEllipsoidImageFilter :
+public DrawConvexObjectImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawEllipsoidImageFilter                           Self;
-  typedef DrawQuadricImageFilter < TInputImage,
-                                   TOutputImage,
-                                   DrawQuadricSpatialObject,
-                                   TFunction >               Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
-  typedef typename TOutputImage::RegionType                  OutputImageRegionType;
+  typedef DrawEllipsoidImageFilter                              Self;
+  typedef DrawConvexObjectImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                               Pointer;
+  typedef itk::SmartPointer<const Self>                         ConstPointer;
 
-  typedef itk::Vector<double,3>                              VectorType;
+  /** Convenient typedefs. */
+  typedef ConvexObject::PointType  PointType;
+  typedef ConvexObject::VectorType VectorType;
+  typedef ConvexObject::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
-  itkNewMacro ( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro ( DrawEllipsoidImageFilter, DrawQuadricImageFilter );
+  itkTypeMacro(DrawEllipsoidImageFilter, DrawConvexObjectImageFilter);
+  /** Get / Set the constant density of the volume */
+  itkGetMacro(Density, ScalarType);
+  itkSetMacro(Density, ScalarType);
+
+  /** Get reference to vector of plane parameters. */
+  itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
+  itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
+
+  void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
+
+
+  itkGetMacro(Center, PointType);
+  itkSetMacro(Center, PointType);
+
+  itkGetMacro(Axis, VectorType);
+  itkSetMacro(Axis, VectorType);
+
+  itkGetMacro(Angle, ScalarType);
+  itkSetMacro(Angle, ScalarType);
 
 protected:
   DrawEllipsoidImageFilter();
   ~DrawEllipsoidImageFilter() {}
 
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+
 private:
-  DrawEllipsoidImageFilter ( const Self& ); //purposely not implemented
-  void operator= ( const Self& );           //purposely not implemented
+  DrawEllipsoidImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);         //purposely not implemented
+
+  ScalarType              m_Density;
+  std::vector<VectorType> m_PlaneDirections;
+  std::vector<ScalarType> m_PlanePositions;
+
+  PointType  m_Center;
+  VectorType m_Axis;
+  ScalarType m_Angle;
 };
 
 } // end namespace rtk

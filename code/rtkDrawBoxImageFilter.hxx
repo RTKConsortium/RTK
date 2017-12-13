@@ -16,22 +16,22 @@
  *
  *=========================================================================*/
 
-#ifndef rtkRayBoxIntersectionImageFilter_hxx
-#define rtkRayBoxIntersectionImageFilter_hxx
+#ifndef rtkDrawBoxImageFilter_hxx
+#define rtkDrawBoxImageFilter_hxx
 
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkDrawBoxImageFilter.h"
 #include "rtkBox.h"
 
 namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
-::RayBoxIntersectionImageFilter():
+DrawBoxImageFilter<TInputImage, TOutputImage>
+::DrawBoxImageFilter():
   m_Density(1.),
   m_BoxMin(0.),
   m_BoxMax(0.)
@@ -41,7 +41,7 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void
-RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
+DrawBoxImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   if( this->GetConvexObject() == ITK_NULLPTR )
@@ -63,7 +63,7 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void
-RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
+DrawBoxImageFilter<TInputImage, TOutputImage>
 ::AddClippingPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
@@ -72,7 +72,7 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void
-RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
+DrawBoxImageFilter<TInputImage,TOutputImage>
 ::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
 {
   if( this->GetConvexObject() == ITK_NULLPTR )
@@ -84,7 +84,7 @@ RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
     }
   qo->SetBoxFromImage(_arg);
   SetBoxMin(qo->GetBoxMin());
-  SetBoxMax(qo->GetBoxMax());
+  SetBoxMax(qo->GetBoxMin());
   SetDirection(qo->GetDirection());
 }
 

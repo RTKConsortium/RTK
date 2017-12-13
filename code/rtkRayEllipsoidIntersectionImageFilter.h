@@ -25,7 +25,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 
 namespace rtk
 {
@@ -43,37 +42,44 @@ namespace rtk
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT RayEllipsoidIntersectionImageFilter :
-  public RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
+  public RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef RayEllipsoidIntersectionImageFilter                         Self;
-  typedef RayQuadricIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  typedef RayEllipsoidIntersectionImageFilter                              Self;
+  typedef RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                          Pointer;
+  typedef itk::SmartPointer<const Self>                                    ConstPointer;
 
-  typedef itk::Vector<double,3>                                       VectorType;
+  /** Convenient typedefs. */
+  typedef ConvexObject::PointType  PointType;
+  typedef ConvexObject::VectorType VectorType;
+  typedef ConvexObject::ScalarType ScalarType;
 
-  typedef ConvertEllipsoidToQuadricParametersFunction                 EQPFunctionType;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RayEllipsoidIntersectionImageFilter, RayQuadricIntersectionImageFilter);
+  itkTypeMacro(RayEllipsoidIntersectionImageFilter, RayConvexObjectIntersectionImageFilter);
 
-  /** Get/Set the semi-principal axes of the ellipsoid.*/
+  /** Get / Set the constant density of the volume */
+  itkGetMacro(Density, ScalarType);
+  itkSetMacro(Density, ScalarType);
 
-  itkSetMacro(Angle, double);
-  itkGetMacro(Angle, double);
+  /** Get reference to vector of plane parameters. */
+  itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
+  itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
-  itkSetMacro(Axis, VectorType);
+  void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
+
+  itkGetMacro(Center, PointType);
+  itkSetMacro(Center, PointType);
+
   itkGetMacro(Axis, VectorType);
+  itkSetMacro(Axis, VectorType);
 
-  itkSetMacro(Center, VectorType);
-  itkGetMacro(Center, VectorType);
-
-  itkSetMacro(Figure, std::string);
-  itkGetMacro(Figure, std::string);
+  itkGetMacro(Angle, ScalarType);
+  itkSetMacro(Angle, ScalarType);
 
 protected:
   RayEllipsoidIntersectionImageFilter();
@@ -85,12 +91,13 @@ private:
   RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  VectorType               m_Axis;
-  VectorType               m_Center;
-  double                   m_Attenuation;
-  double                   m_Angle;
-  std::string              m_Figure;
-  EQPFunctionType::Pointer m_EQPFunctor;
+  ScalarType              m_Density;
+  std::vector<VectorType> m_PlaneDirections;
+  std::vector<ScalarType> m_PlanePositions;
+
+  PointType               m_Center;
+  VectorType              m_Axis;
+  ScalarType              m_Angle;
 };
 
 } // end namespace rtk

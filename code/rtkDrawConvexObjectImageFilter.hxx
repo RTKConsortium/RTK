@@ -16,54 +16,60 @@
  *
  *=========================================================================*/
 
-#ifndef rtkDrawImageFilter_hxx
-#define rtkDrawImageFilter_hxx
+#ifndef rtkDrawConvexObjectImageFilter_hxx
+#define rtkDrawConvexObjectImageFilter_hxx
 
-#include <iostream>
+#include "rtkDrawConvexObjectImageFilter.h"
+
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
-
-#include "rtkHomogeneousMatrix.h"
-#include "rtkMacro.h"
-
-#include "rtkDrawImageFilter.h"
 
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage, class TSpatialObject, typename TFunction>
-DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>
-::DrawImageFilter()
+template <class TInputImage, class TOutputImage>
+DrawConvexObjectImageFilter<TInputImage, TOutputImage>
+::DrawConvexObjectImageFilter()
 {
-  m_Density = 1.; //backward compatibility
 }
 
-template <class TInputImage, class TOutputImage, class TSpatialObject, typename TFunction>
-void DrawImageFilter<TInputImage, TOutputImage, TSpatialObject, TFunction>::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                                                                              ThreadIdType itkNotUsed(threadId) )
+template <class TInputImage, class TOutputImage>
+void
+DrawConvexObjectImageFilter<TInputImage,TOutputImage>
+::BeforeThreadedGenerateData()
 {
+  if( this->m_ConvexObject.IsNull() )
+    itkExceptionMacro(<<"ConvexObject has not been set.")
+}
+
+template <class TInputImage, class TOutputImage>
+void
+DrawConvexObjectImageFilter<TInputImage, TOutputImage>
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
+                       ThreadIdType threadId )
+{
+  // Local convex object since convex objects are not thread safe
+  ConvexObjectPointer co = dynamic_cast<ConvexObject *>(m_ConvexObject->Clone().GetPointer());
+
   typename TOutputImage::PointType point;
-  const    TInputImage *           input = this->GetInput();
+  const    TInputImage * input = this->GetInput();
 
   typename itk::ImageRegionConstIterator<TInputImage> itIn( input, outputRegionForThread);
   typename itk::ImageRegionIterator<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
-
   while( !itOut.IsAtEnd() )
-  {
+    {
     this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
-
-    if(m_SpatialObject.IsInside(point))
-      itOut.Set( m_Fillerfunctor( m_Density, itIn.Get() ));
+    PointType p(&(point[0]));
+    if(co->IsInside(p))
+      itOut.Set( itIn.Get() + co->GetDensity() );
     else
       itOut.Set( itIn.Get() );
     ++itIn;
     ++itOut;
-  }
-
-
+    }
 }
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif

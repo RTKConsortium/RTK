@@ -19,86 +19,98 @@
 #ifndef rtkRayQuadricIntersectionImageFilter_h
 #define rtkRayQuadricIntersectionImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
+#include "rtkRayConvexObjectIntersectionImageFilter.h"
 #include "rtkConfiguration.h"
-#include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkRayQuadricIntersectionFunction.h"
 
 namespace rtk
 {
 
 /** \class RayQuadricIntersectionImageFilter
- * \brief Computes intersection of projection rays with quadric objects.
+ * \brief Draws in a 3D image user defined Quadric.
  *
- * Quadrics are ellipsoid, cone, cylinder... See
- * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
- * for more information.
+ * \test rtkdrawgeometricphantomtest.cxx
  *
- * \author Simon Rit
+ * \author Marc Vila
  *
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT RayQuadricIntersectionImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+class RayQuadricIntersectionImageFilter :
+public RayConvexObjectIntersectionImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef RayQuadricIntersectionImageFilter                 Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  typedef RayQuadricIntersectionImageFilter                                Self;
+  typedef RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                          Pointer;
+  typedef itk::SmartPointer<const Self>                                    ConstPointer;
 
-  typedef typename TOutputImage::RegionType               OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer OutputImageBaseConstPointer;
-  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
-  typedef typename GeometryType::Pointer                  GeometryPointer;
-  typedef RayQuadricIntersectionFunction<double, 3>       RQIFunctionType;
+  /** Convenient typedefs. */
+  typedef ConvexObject::PointType  PointType;
+  typedef ConvexObject::VectorType VectorType;
+  typedef ConvexObject::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RayQuadricIntersectionImageFilter, itk::ImageToImageFilter);
+  itkTypeMacro(RayQuadricIntersectionImageFilter, RayConvexObjectIntersectionImageFilter);
 
-  /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, GeometryPointer);
-  itkSetMacro(Geometry, GeometryPointer);
+  /** Get / Set the constant density of the volume */
+  itkGetMacro(Density, ScalarType);
+  itkSetMacro(Density, ScalarType);
 
-  /** Get / Set the multiplicative constant of the volume */
-  itkGetMacro(Density, double);
-  itkSetMacro(Density, double);
+  /** Get reference to vector of plane parameters. */
+  itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
+  itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
-  /** Get the RayQuadricIntersectionFunction to set its parameters.
-    * A call to this function will assume modification of the function.*/
-  RQIFunctionType::Pointer GetRQIFunctor();
+  void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
+
+  itkGetMacro(A, ScalarType);
+  itkSetMacro(A, ScalarType);
+  itkGetMacro(B, ScalarType);
+  itkSetMacro(B, ScalarType);
+  itkGetMacro(C, ScalarType);
+  itkSetMacro(C, ScalarType);
+  itkGetMacro(D, ScalarType);
+  itkSetMacro(D, ScalarType);
+  itkGetMacro(E, ScalarType);
+  itkSetMacro(E, ScalarType);
+  itkGetMacro(F, ScalarType);
+  itkSetMacro(F, ScalarType);
+  itkGetMacro(G, ScalarType);
+  itkSetMacro(G, ScalarType);
+  itkGetMacro(H, ScalarType);
+  itkSetMacro(H, ScalarType);
+  itkGetMacro(I, ScalarType);
+  itkSetMacro(I, ScalarType);
+  itkGetMacro(J, ScalarType);
+  itkSetMacro(J, ScalarType);
 
 protected:
   RayQuadricIntersectionImageFilter();
   ~RayQuadricIntersectionImageFilter() {}
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
-
-  /** Apply changes to the input image requested region. */
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                                     ThreadIdType threadId ) ITK_OVERRIDE;
-
-  /** The two inputs should not be in the same space so there is nothing
-   * to verify. */
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
 
 private:
   RayQuadricIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  void operator=(const Self&);         //purposely not implemented
 
-  /** Functor object to compute the intersection */
-  RQIFunctionType::Pointer m_RQIFunctor;
+  ScalarType              m_Density;
+  std::vector<VectorType> m_PlaneDirections;
+  std::vector<ScalarType> m_PlanePositions;
 
-  /** RTK geometry object */
-  GeometryPointer m_Geometry;
-
-  /** Multiplicative factor of intersection length */
-  double m_Density;
+  ScalarType m_A;
+  ScalarType m_B;
+  ScalarType m_C;
+  ScalarType m_D;
+  ScalarType m_E;
+  ScalarType m_F;
+  ScalarType m_G;
+  ScalarType m_H;
+  ScalarType m_I;
+  ScalarType m_J;
 };
 
 } // end namespace rtk

@@ -37,13 +37,17 @@ set(RTK_LIBRARY_FILES
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
-            rtkConvertEllipsoidToQuadricParametersFunction.cxx
-            rtkDrawQuadricSpatialObject.cxx
             rtkOraXMLFileReader.cxx
             rtkOraGeometryReader.cxx
             rtkOraImageIO.cxx
             rtkOraImageIOFactory.cxx
-	    rtkConditionalMedianImageFilter.cxx)
+            rtkConditionalMedianImageFilter.cxx
+            rtkConvexObject.cxx
+            rtkQuadric.cxx
+            rtkBox.cxx
+            rtkGeometricPhantom.cxx
+            rtkSheppLoganPhantom.cxx
+   )
 
 if(RTK_TIME_EACH_FILTER)
     set(RTK_LIBRARY_FILES
