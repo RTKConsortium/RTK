@@ -38,20 +38,43 @@ int main(int argc, char * argv[])
 
   typedef rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType> DQType;
 
-  // Offset, scale
+  // Offset, scale, rotation
   DQType::VectorType offset(0.);
-  DQType::VectorType scale;
   if(args_info.offset_given)
     {
+    if(args_info.offset_given>3)
+      {
+      std::cerr << "--offset needs up to 3 values" << std::endl;
+      exit(EXIT_FAILURE);
+      }
     offset[0] = args_info.offset_arg[0];
     offset[1] = args_info.offset_arg[1];
     offset[2] = args_info.offset_arg[2];
     }
+  DQType::VectorType scale;
   scale.Fill(args_info.phantomscale_arg[0]);
   if(args_info.phantomscale_given)
     {
+    if(args_info.phantomscale_given>3)
+      {
+      std::cerr << "--phantomscale needs up to 3 values" << std::endl;
+      exit(EXIT_FAILURE);
+      }
     for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
       scale[i] = args_info.phantomscale_arg[i];
+    }
+  DQType::RotationMatrixType rot;
+  rot.SetIdentity();
+  if(args_info.rotation_given)
+    {
+    if(args_info.rotation_given !=9)
+      {
+      std::cerr << "--phantomscale needs exactly 9 values" << std::endl;
+      exit(EXIT_FAILURE);
+      }
+    for(unsigned int i=0; i<Dimension; i++)
+      for(unsigned int j=0; j<Dimension; j++)
+        rot[i][j] = args_info.rotation_arg[i*3+j];
     }
 
   // Reference
@@ -61,7 +84,9 @@ int main(int argc, char * argv[])
   dq->SetInput( constantImageSource->GetOutput() );
   dq->SetPhantomScale( scale );
   dq->SetOriginOffset(offset);
+  dq->SetRotationMatrix(rot);
   dq->SetConfigFile(args_info.phantomfile_arg);
+  dq->SetIsForbildConfigFile(args_info.phantomfile_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dq->Update() )
 
   // Add noise

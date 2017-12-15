@@ -8,3 +8,6 @@ option "output"       o "Output projections file name"              string      
 option "phantomfile"  - "Configuration parameteres for the phantom" string          yes
 option "phantomscale" - "Scaling factor for the phantom dimensions" double multiple no default="1."
 option "offset"       - "3D spatial offset of the phantom center"   double multiple no
+option "forbild"      f "Interpret phantomfile as Forbild file"     flag            off
+option "rotation"     - "Rotation matrix for the phantom"           double multiple no
+
