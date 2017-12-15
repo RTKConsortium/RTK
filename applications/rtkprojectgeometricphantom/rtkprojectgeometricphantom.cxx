@@ -60,20 +60,43 @@ int main(int argc, char * argv[])
 
   typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> PPCType;
 
-  // Offset, scale
+  // Offset, scale, rotation
   PPCType::VectorType offset(0.);
-  PPCType::VectorType scale;
   if(args_info.offset_given)
     {
+    if(args_info.offset_given>3)
+      {
+      std::cerr << "--offset needs up to 3 values" << std::endl;
+      exit(EXIT_FAILURE);
+      }
     offset[0] = args_info.offset_arg[0];
     offset[1] = args_info.offset_arg[1];
     offset[2] = args_info.offset_arg[2];
     }
+  PPCType::VectorType scale;
   scale.Fill(args_info.phantomscale_arg[0]);
   if(args_info.phantomscale_given)
     {
+    if(args_info.phantomscale_given>3)
+      {
+      std::cerr << "--phantomscale needs up to 3 values" << std::endl;
+      exit(EXIT_FAILURE);
+      }
     for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
       scale[i] = args_info.phantomscale_arg[i];
+    }
+  PPCType::RotationMatrixType rot;
+  rot.SetIdentity();
+  if(args_info.rotation_given)
+    {
+    if(args_info.rotation_given !=9)
+      {
+      std::cerr << "--phantomscale needs exactly 9 values" << std::endl;
+      exit(EXIT_FAILURE);
+      }
+    for(unsigned int i=0; i<Dimension; i++)
+      for(unsigned int j=0; j<Dimension; j++)
+        rot[i][j] = args_info.rotation_arg[i*3+j];
     }
 
   PPCType::Pointer ppc = PPCType::New();
@@ -81,7 +104,10 @@ int main(int argc, char * argv[])
   ppc->SetGeometry(geometryReader->GetOutputObject());
   ppc->SetPhantomScale( scale );
   ppc->SetOriginOffset(offset);
+  ppc->SetRotationMatrix(rot);
   ppc->SetConfigFile(args_info.phantomfile_arg);
+  ppc->SetIsForbildConfigFile(args_info.phantomfile_arg);
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( ppc->Update() )
 
   // Write

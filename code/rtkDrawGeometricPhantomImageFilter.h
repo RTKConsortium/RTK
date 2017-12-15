@@ -55,6 +55,7 @@ public:
   typedef GeometricPhantom::Pointer                       GeometricPhantomPointer;
   typedef std::string                                     StringType;
   typedef ConvexObject::VectorType                        VectorType;
+  typedef ConvexObject::RotationMatrixType                RotationMatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -79,6 +80,16 @@ public:
   itkSetMacro(OriginOffset, VectorType);
   itkGetMacro(OriginOffset, VectorType);
 
+  /** Interpret config file as Forbild file (see
+   * http://www.imp.uni-erlangen.de/phantoms/). */
+  itkSetMacro(IsForbildConfigFile, bool);
+  itkGetConstMacro(IsForbildConfigFile, bool);
+  itkBooleanMacro(IsForbildConfigFile);
+
+  /** Get / Set a rotation matrix for the phantom. Default is identity. */
+  itkSetMacro(RotationMatrix, RotationMatrixType);
+  itkGetMacro(RotationMatrix, RotationMatrixType);
+
 protected:
   DrawGeometricPhantomImageFilter();
   ~DrawGeometricPhantomImageFilter() {}
@@ -93,6 +104,8 @@ private:
   StringType              m_ConfigFile;
   VectorType              m_PhantomScale;
   VectorType              m_OriginOffset;
+  bool                    m_IsForbildConfigFile;
+  RotationMatrixType      m_RotationMatrix;
 };
 
 } // end namespace rtk

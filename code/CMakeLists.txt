@@ -30,7 +30,6 @@ set(RTK_LIBRARY_FILES
             rtkThreeDCircularProjectionGeometry.cxx
             rtkReg23ProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
-            rtkGeometricPhantomFileReader.cxx
             rtkDigisensGeometryXMLFileReader.cxx
             rtkDigisensGeometryReader.cxx
             rtkXRadGeometryReader.cxx
@@ -45,7 +44,10 @@ set(RTK_LIBRARY_FILES
             rtkConvexObject.cxx
             rtkQuadric.cxx
             rtkBox.cxx
+            rtkIntersectionOfConvexObjects.cxx
             rtkGeometricPhantom.cxx
+            rtkGeometricPhantomFileReader.cxx
+            rtkForbildPhantomFileReader.cxx
             rtkSheppLoganPhantom.cxx
    )
 

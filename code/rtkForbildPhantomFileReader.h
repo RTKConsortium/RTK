@@ -1,0 +1,109 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef rtkForbildPhantomFileReader_h
+#define rtkForbildPhantomFileReader_h
+
+#include <itkLightProcessObject.h>
+#include "rtkGeometricPhantom.h"
+
+namespace rtk
+{
+
+/** \class ForbildPhantomFileReader
+ * \brief Reads configuration file containing specifications of a geometric
+ * phantom.
+ *
+ * \test rtkprojectgeometricphantomtest.cxx, rtkdrawgeometricphantomtest.cxx
+ *
+ * \author Marc Vila
+ *
+ * \ingroup Functions
+ */
+class RTK_EXPORT ForbildPhantomFileReader :
+    public itk::LightProcessObject
+{
+public:
+  /** Standard class typedefs. */
+  typedef ForbildPhantomFileReader       Self;
+  typedef itk::Object                    Superclass;
+  typedef itk::SmartPointer<Self>        Pointer;
+  typedef itk::SmartPointer<const Self>  ConstPointer;
+
+  /** Convenient typedefs. */
+  itkStaticConstMacro(Dimension, unsigned int, ConvexObject::Dimension);
+  typedef GeometricPhantom::Pointer            GeometricPhantomPointer;
+  typedef ConvexObject::ScalarType             ScalarType;
+  typedef ConvexObject::PointType              PointType;
+  typedef ConvexObject::VectorType             VectorType;
+  typedef ConvexObject::RotationMatrixType     RotationMatrixType;
+  typedef GeometricPhantom::ConvexObjectVector ConvexObjectVectorType;
+
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ForbildPhantomFileReader, itk::LightProcessObject);
+
+  /** Get / Set the object pointer to geometric phantom. */
+  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
+
+  /** Get/Set the filename to read. */
+  itkGetStringMacro(Filename);
+  itkSetStringMacro(Filename);
+
+  /** do the actual parsing of the input file */
+  virtual void GenerateOutputInformation();
+
+protected:
+
+  /// Constructor
+  ForbildPhantomFileReader() {};
+
+  /// Destructor
+  ~ForbildPhantomFileReader() {}
+
+  void CreateForbildSphere(const std::string &s);
+  void CreateForbildBox(const std::string &s);
+  void CreateForbildCylinder(const std::string &s, const std::string &fig);
+  void CreateForbildElliptCyl(const std::string &s, const std::string &fig);
+  void CreateForbildEllipsoid(const std::string &s, const std::string &fig);
+  void CreateForbildCone(const std::string &s, const std::string &fig);
+  void CreateForbildTetrahedron(const std::string &s);
+  RotationMatrixType ComputeRotationMatrixBetweenVectors(const VectorType& source, const VectorType & dest) const;
+
+  bool FindParameterInString(const std::string &name,const std::string &s, ScalarType & param);
+  bool FindVectorInString(const std::string &name,const std::string &s, VectorType & vec);
+  void FindClippingPlanes(const std::string &s);
+  void FindUnions(const std::string &s);
+
+private:
+  ForbildPhantomFileReader( const Self& ); //purposely not implemented
+  void operator=( const Self& );             //purposely not implemented
+
+  GeometricPhantomPointer m_GeometricPhantom;
+  std::string             m_Filename;
+  PointType               m_Center;
+  ConvexObject::Pointer   m_ConvexObject;
+  ConvexObjectVectorType  m_Unions;
+};
+
+} // end namespace rtk
+
+#endif

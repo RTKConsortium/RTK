@@ -21,6 +21,7 @@
 
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkGeometricPhantomFileReader.h"
+#include "rtkForbildPhantomFileReader.h"
 #include "rtkDrawConvexObjectImageFilter.h"
 
 #include <iostream>
@@ -35,8 +36,10 @@ template <class TInputImage, class TOutputImage>
 DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>
 ::DrawGeometricPhantomImageFilter():
 m_PhantomScale(1.),
-m_OriginOffset(0.)
+m_OriginOffset(0.),
+m_IsForbildConfigFile(false)
 {
+  m_RotationMatrix.SetIdentity();
 }
 
 template< class TInputImage, class TOutputImage >
@@ -45,14 +48,23 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
   //Reading figure config file
   if(! m_ConfigFile.empty() )
     {
-    typedef rtk::GeometricPhantomFileReader ReaderType;
-    ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFilename(m_ConfigFile);
-    reader->GenerateOutputInformation();
-    this->m_GeometricPhantom = reader->GetGeometricPhantom();
+    if(m_IsForbildConfigFile)
+      {
+      typedef rtk::ForbildPhantomFileReader ReaderType;
+      ReaderType::Pointer reader = ReaderType::New();
+      reader->SetFilename(m_ConfigFile);
+      reader->GenerateOutputInformation();
+      this->m_GeometricPhantom = reader->GetGeometricPhantom();
+      }
+    else
+      {
+      typedef rtk::GeometricPhantomFileReader ReaderType;
+      ReaderType::Pointer reader = ReaderType::New();
+      reader->SetFilename(m_ConfigFile);
+      reader->GenerateOutputInformation();
+      this->m_GeometricPhantom = reader->GetGeometricPhantom();
+      }
     }
-  this->m_GeometricPhantom->Translate( m_OriginOffset );
-  this->m_GeometricPhantom->Rescale( m_PhantomScale );
 
   //Check that it's not empty
   const GeometricPhantom::ConvexObjectVector &cov = m_GeometricPhantom->GetConvexObjects();
@@ -63,12 +75,17 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
   std::vector< typename itk::ImageSource<TOutputImage>::Pointer > drawers;
   for(size_t i=0; i<cov.size(); i++)
     {
+    ConvexObject::Pointer co = cov[i]->Clone();
+    co->Rotate( m_RotationMatrix );
+    co->Translate( m_OriginOffset );
+    co->Rescale( m_PhantomScale );
+
     if( drawers.size() )
       {
       typedef DrawConvexObjectImageFilter<TOutputImage, TOutputImage>  RCOIType;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(drawers.back()->GetOutput());
-      rcoi->SetConvexObject(cov[i]);
+      rcoi->SetConvexObject(co);
       drawers.push_back( rcoi.GetPointer() );
       }
     else
@@ -76,7 +93,7 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
       typedef DrawConvexObjectImageFilter<TInputImage, TOutputImage>  RCOIType;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(this->GetInput());
-      rcoi->SetConvexObject(cov[i]);
+      rcoi->SetConvexObject(co);
       drawers.push_back( rcoi.GetPointer() );
       }
     }
