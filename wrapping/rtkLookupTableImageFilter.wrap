@@ -1,0 +1,32 @@
+#-----------------------------------------------------------------------------
+# rtk::Functor< int, float >
+#-----------------------------------------------------------------------------
+set(WRAPPER_AUTO_INCLUDE_HEADERS OFF)
+itk_wrap_named_class("rtk::Functor::LUT" "rtkFunctorLUT")
+  foreach(i ${WRAP_ITK_INT})
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("${ITKM_${i}}${ITKM_${t}}" "${ITKT_${i}}, ${ITKT_${t}}")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()
+set(WRAPPER_AUTO_INCLUDE_HEADERS ON)
+
+#-----------------------------------------------------------------------------
+# itk::UnaryFunctorImageFilter< itk::Image< int, 3 >, itk::Image< float, 3 >,
+#   rtk::Functor::LUT< int, float > >
+#-----------------------------------------------------------------------------
+itk_wrap_class("itk::UnaryFunctorImageFilter" POINTER)
+  foreach(i ${WRAP_ITK_INT})
+    foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${i}}3I${ITKM_${t}}3LUT${ITKM_${i}}${ITKM_${t}}"
+      "itk::Image<${ITKT_${i}}, 3>, itk::Image<${ITKT_${t}}, 3>, rtk::Functor::LUT< ${ITKT_${i}}, ${ITKT_${t}} >")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()
+
+#-----------------------------------------------------------------------------
+# rtk::LookupTableImageFilter
+#-----------------------------------------------------------------------------
+itk_wrap_class("rtk::LookupTableImageFilter" POINTER)
+  itk_wrap_image_filter_combinations("${WRAP_ITK_INT}" "${WRAP_ITK_REAL}" 3)
+itk_end_wrap_class()

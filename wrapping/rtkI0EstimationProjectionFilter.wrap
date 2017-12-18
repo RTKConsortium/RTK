@@ -1,0 +1,7 @@
+itk_wrap_class("rtk::I0EstimationProjectionFilter" POINTER)
+  foreach(t ${WRAP_ITK_INT})
+    foreach(bitShift 2)
+      itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3${bitShift}" "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${bitShift}")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()
