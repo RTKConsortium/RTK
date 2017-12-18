@@ -22,6 +22,8 @@
 #include <itkImageToImageFilter.h>
 #include <itkImageSeriesReader.h>
 
+#include "rtkConfiguration.h"
+
 namespace rtk
 {
 
