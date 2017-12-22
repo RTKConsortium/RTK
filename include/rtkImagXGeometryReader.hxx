@@ -29,6 +29,7 @@
 
 #include <string>
 #include <istream>
+#include <iterator>
 
 namespace rtk
 {
