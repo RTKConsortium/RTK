@@ -89,7 +89,7 @@ fi
 
 #-----------------------------------------------------------------------------
 # Style hooks.
-. "$GIT_DIR/../utilities/Hooks/pre-commit-style.bash"
+. "$GIT_DIR/../cmake/Hooks/pre-commit-style.bash"
 
 #-----------------------------------------------------------------------------
 # Builtin whitespace checks.
