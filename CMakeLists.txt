@@ -1,10 +1,9 @@
 #=========================================================
 # RTK : Reconstruction Toolkit
 #=========================================================
-cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
-if(WIN32 OR NOT EXISTS /dev/urandom)
-  cmake_minimum_required(VERSION 2.8.5)
-endif()
+# Respect the CMAKE_CXX_STANDARD flags when building for
+# ITKv5 or C++11.
+cmake_minimum_required(VERSION 3.9.5 FATAL_ERROR)
 
 ## Tell CMake to be quiet
 cmake_policy(SET CMP0003 NEW)
