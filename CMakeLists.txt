@@ -1,7 +1,12 @@
 #=========================================================
-cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
-if(WIN32 OR NOT EXISTS /dev/urandom)
-  cmake_minimum_required(VERSION 2.8.5)
+if(CMAKE_CXX_STANDARD)
+  #If building for ITKv5 or C++11, then a newer version of cmake
+  #is needed to respect the CMAKE_CXX_STANDARD flags.
+  cmake_minimum_required(VERSION 3.8.2 FATAL_ERROR)
+elseif(WIN32 OR NOT EXISTS /dev/urandom)
+  cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
+else()
+  cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
 endif()
 
 #=========================================================
