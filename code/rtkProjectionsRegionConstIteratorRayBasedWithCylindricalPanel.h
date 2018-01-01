@@ -60,11 +60,11 @@ public:
 
 protected:
   /** Init the parameters common to a new 2D projection in the 3D stack. */
-  inline virtual void NewProjection();
+  virtual inline void NewProjection() ITK_OVERRIDE;
 
   /** Init a new pixel position in a 2D projection, assuming that the
    * NewProjection method has already been called. */
-  inline virtual void NewPixel();
+  virtual inline void NewPixel() ITK_OVERRIDE;
 
   HomogeneousMatrixType m_ProjectionIndexTransformMatrix;
   MatrixType            m_VolumeTransformMatrix;

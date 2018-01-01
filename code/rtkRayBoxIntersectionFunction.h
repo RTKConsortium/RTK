@@ -126,7 +126,7 @@ protected:
 
   RayBoxIntersectionFunction();
 
-  ~RayBoxIntersectionFunction() {}
+  virtual ~RayBoxIntersectionFunction() ITK_OVERRIDE {}
 
   void TransformBoxCornersWithDirection();
 

@@ -82,7 +82,7 @@ public:
 
 protected:
   DrawGeometricPhantomImageFilter();
-  ~DrawGeometricPhantomImageFilter() {}
+  virtual ~DrawGeometricPhantomImageFilter() ITK_OVERRIDE {}
 
   void GenerateData() ITK_OVERRIDE;
 

@@ -71,7 +71,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();
-  ~ThreeDCircularProjectionGeometryXMLFileReader() {}
+  virtual ~ThreeDCircularProjectionGeometryXMLFileReader() ITK_OVERRIDE {}
 
   /** Callback function -- called from XML parser with start-of-element
    * information.
@@ -146,7 +146,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileWriter() {};
-  ~ThreeDCircularProjectionGeometryXMLFileWriter() {}
+  virtual ~ThreeDCircularProjectionGeometryXMLFileWriter() ITK_OVERRIDE {}
   
   /** If all values are equal in v, write first value (if not 0.) in
       output file with parameter value s and return true. Return false

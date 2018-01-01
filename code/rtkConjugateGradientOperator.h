@@ -43,7 +43,7 @@ public:
 
 protected:
   ConjugateGradientOperator();
-  ~ConjugateGradientOperator() {}
+  virtual ~ConjugateGradientOperator() ITK_OVERRIDE {}
 
 private:
   ConjugateGradientOperator(const Self &); //purposely not implemented

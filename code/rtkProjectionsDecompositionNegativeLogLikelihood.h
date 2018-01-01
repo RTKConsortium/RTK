@@ -69,15 +69,15 @@ public:
   }
 
   // Destructor
-  ~ProjectionsDecompositionNegativeLogLikelihood()
+  virtual ~ProjectionsDecompositionNegativeLogLikelihood() ITK_OVERRIDE
   {
   }
 
-  virtual MeasureType GetValue( const ParametersType & ) const ITK_OVERRIDE {
+  MeasureType GetValue( const ParametersType & ) const ITK_OVERRIDE {
   long double measure = 0;
   return measure;
   }
-  virtual void GetDerivative( const ParametersType &,
+  void GetDerivative( const ParametersType &,
                       DerivativeType &) const ITK_OVERRIDE {}
   virtual void Initialize() {}
 

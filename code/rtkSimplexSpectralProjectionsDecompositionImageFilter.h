@@ -127,7 +127,7 @@ public:
 
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
-  ~SimplexSpectralProjectionsDecompositionImageFilter() {}
+  virtual ~SimplexSpectralProjectionsDecompositionImageFilter() ITK_OVERRIDE {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

@@ -154,7 +154,7 @@ public:
 
 protected:
     ADMMTotalVariationConjugateGradientOperator();
-    ~ADMMTotalVariationConjugateGradientOperator() {}
+    virtual ~ADMMTotalVariationConjugateGradientOperator() ITK_OVERRIDE {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

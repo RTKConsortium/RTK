@@ -66,7 +66,7 @@ public:
 
 protected:
   OraImageIOFactory();
-  ~OraImageIOFactory() {};
+  virtual ~OraImageIOFactory() ITK_OVERRIDE {};
   typedef OraImageIOFactory myProductType;
   const myProductType* m_MyProduct;
 
