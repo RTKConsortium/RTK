@@ -492,6 +492,33 @@ Change history:
   MSF has a default lpsolve driver, but the one on the sourceforge site is enhanced in functionality and performance.
   There is also documentation in the lpsolve reference guide.
 
+../../.. version 5.5.2.1
+- fixed a small error in new and improved MIP_stepOF function to find integer solutions.
+
+../../.. version 5.5.2.2
+- For integer models with semi-cont variables it happened sometimes that a message
+  "fillbranches_BB: Inconsistent equal-valued bounds for ..." occured and that the semi-cont condition
+  was not respected.
+- New functions added: get_accuracy to get the numeric accuracy after solve.
+- New functions added: set_break_numeric_accuracy, get_break_numeric_accuracy to let lp_solve return ACCURACYERROR
+  instead of FEASIBLE when numerical accuracy if worse then the provided values.
+  In the past, lp_solve only returned a non-optimal status in case of very severe numerical instability.
+  Now it will return already ACCURACYERROR when it finds a relative inaccuracy of 5e-7
+- When reading a model from the lp-format and important issues are detected such as already bounds on variables being overruled
+  later with for example a bin keyword, this is now reported in the default verbose level such that this is seen easier.
+
+08/05/16 version 5.5.2.3
+- For some models with integer variables, lp_solve did not find the most optimal solution.
+
+15/09/16 version 5.5.2.4
+- When using set_lowbo and set_upbo to set bounds on a variable and the new low/up bounds are very close to each other
+  but not equal then they are set equal for numerical stability.
+
+18/09/16 version 5.5.2.5
+- When all variables in the model are integer, but not all binary (in fact difference between upper and lower bound 1),
+  then it could happen that not the most optimal integer solution was found.
+- Updated/added scaling options to the lp_solve command line program
+
 We are thrilled to hear from you and your experiences with this new version. The good and the bad.
 Also we would be pleased to hear about your experiences with the different BFPs on your models.
 
