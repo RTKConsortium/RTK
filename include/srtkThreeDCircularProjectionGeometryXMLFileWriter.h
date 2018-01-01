@@ -61,7 +61,7 @@ namespace rtk {
       int CanWriteFile(const char *name);
 
       /** do the actual writing of the file */
-      void Update();
+      void Update() ITK_OVERRIDE;
 
       /** Set the input geometry */
       void SetInput(GeometryType* geometry);

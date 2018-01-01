@@ -190,7 +190,7 @@ public:
 
 protected:
     FourDReconstructionConjugateGradientOperator();
-    ~FourDReconstructionConjugateGradientOperator() {}
+    virtual ~FourDReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
 
     /** Builds the pipeline and computes output information */
     void GenerateOutputInformation() ITK_OVERRIDE;

@@ -90,7 +90,7 @@ public:
 
 protected:
     BackwardDifferenceDivergenceImageFilter();
-    ~BackwardDifferenceDivergenceImageFilter();
+    virtual ~BackwardDifferenceDivergenceImageFilter() ITK_OVERRIDE;
 
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
@@ -113,7 +113,7 @@ private:
     // sets them to zero anyway
     bool m_DimensionsProcessed[TInputImage::ImageDimension];
 
-    // The default is ConstantBoundaryCondition, but this behavior sometimes needs to be overriden
+    // The default is ConstantBoundaryCondition, but this behavior sometimes needs to be ITK_OVERRIDEn
     itk::ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
     // If so, do not perform boundary processing in AfterThreadedGenerateData
     bool                                                     m_IsBoundaryConditionOverriden;

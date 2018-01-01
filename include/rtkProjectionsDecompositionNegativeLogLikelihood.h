@@ -69,16 +69,16 @@ public:
   }
 
   // Destructor
-  ~ProjectionsDecompositionNegativeLogLikelihood()
+  virtual ~ProjectionsDecompositionNegativeLogLikelihood() ITK_OVERRIDE
   {
   }
 
-  virtual MeasureType GetValue( const ParametersType & parameters ) const ITK_OVERRIDE {
+  MeasureType GetValue( const ParametersType & ) const ITK_OVERRIDE {
   long double measure = 0;
   return measure;
   }
-  virtual void GetDerivative( const ParametersType & lineIntegrals,
-                      DerivativeType & derivatives ) const ITK_OVERRIDE {}
+  void GetDerivative( const ParametersType &,
+                      DerivativeType &) const ITK_OVERRIDE {}
   virtual void Initialize() {}
 
   virtual itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()

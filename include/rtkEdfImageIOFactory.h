@@ -63,7 +63,7 @@ public:
 
 protected:
   EdfImageIOFactory();
-  ~EdfImageIOFactory() {}
+  virtual ~EdfImageIOFactory() ITK_OVERRIDE {}
 
   typedef EdfImageIOFactory myProductType;
   const myProductType* m_MyProduct;

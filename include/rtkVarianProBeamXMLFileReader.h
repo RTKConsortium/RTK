@@ -55,11 +55,11 @@ public:
 
 protected:
   VarianProBeamXMLFileReader(){m_OutputObject = &m_Dictionary;};
-  virtual ~VarianProBeamXMLFileReader() {};
+  virtual ~VarianProBeamXMLFileReader() ITK_OVERRIDE {};
 
-  virtual void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
+  void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
 
-  virtual void EndElement(const char *name) ITK_OVERRIDE;
+  void EndElement(const char *name) ITK_OVERRIDE;
 
   void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
 
