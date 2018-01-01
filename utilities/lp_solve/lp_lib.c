@@ -160,7 +160,7 @@ void __WINAPI set_outputstream(lprec *lp, FILE *stream)
   lp->streamowned = FALSE;
 }
 
-MYBOOL __WINAPI set_outputfile(lprec *lp, char *filename)
+MYBOOL __WINAPI set_outputfile(lprec *lp, const char *filename)
 {
   MYBOOL ok;
   FILE   *output = stdout;
@@ -298,7 +298,7 @@ lprec * __WINAPI read_freempsex(void *userhandle, read_modeldata_func read_model
     return( NULL );
 }
 /* #endif */
-MYBOOL __WINAPI write_mps(lprec *lp, char *filename)
+MYBOOL __WINAPI write_mps(lprec *lp, const char *filename)
 {
   return(MPS_writefile(lp, MPSFIXED, filename));
 }
@@ -307,7 +307,7 @@ MYBOOL __WINAPI write_MPS(lprec *lp, FILE *output)
   return(MPS_writehandle(lp, MPSFIXED, output));
 }
 
-MYBOOL __WINAPI write_freemps(lprec *lp, char *filename)
+MYBOOL __WINAPI write_freemps(lprec *lp, const char *filename)
 {
   return(MPS_writefile(lp, MPSFREE, filename));
 }
@@ -316,7 +316,7 @@ MYBOOL __WINAPI write_freeMPS(lprec *lp, FILE *output)
   return(MPS_writehandle(lp, MPSFREE, output));
 }
 
-MYBOOL __WINAPI write_lp(lprec *lp, char *filename)
+MYBOOL __WINAPI write_lp(lprec *lp, const char *filename)
 {
   return(LP_writefile(lp, filename));
 }
@@ -325,26 +325,26 @@ MYBOOL __WINAPI write_LP(lprec *lp, FILE *output)
   return(LP_writehandle(lp, output));
 }
 #ifndef PARSER_LP
-MYBOOL __WINAPI LP_readhandle(lprec **lp, FILE *filename, int verbose, char *lp_name)
+MYBOOL __WINAPI LP_readhandle(lprec **lp, FILE *filename, int verbose, const char *lp_name)
 {
   return(FALSE);
 }
-lprec * __WINAPI read_lp(FILE *filename, int verbose, char *lp_name)
+lprec * __WINAPI read_lp(FILE *filename, int verbose, const char *lp_name)
 {
   return(NULL);
 }
-lprec * __WINAPI read_LP(char *filename, int verbose, char *lp_name)
+lprec * __WINAPI read_LP(char *filename, int verbose, const char *lp_name)
 {
   return(NULL);
 }
 #endif
 
-MYBOOL __WINAPI write_basis(lprec *lp, char *filename)
+MYBOOL __WINAPI write_basis(lprec *lp, const char *filename)
 {
   int typeMPS = MPSFIXED;
   return( MPS_writeBAS(lp, typeMPS, filename) );
 }
-MYBOOL __WINAPI read_basis(lprec *lp, char *filename, char *info)
+MYBOOL __WINAPI read_basis(lprec *lp, const char *filename, char *info)
 {
   int typeMPS = MPSFIXED;
 
@@ -485,11 +485,11 @@ void __WINAPI print_scales(lprec *lp)
 {
   REPORT_scales(lp);
 }
-MYBOOL __WINAPI print_debugdump(lprec *lp, char *filename)
+MYBOOL __WINAPI print_debugdump(lprec *lp, const char *filename)
 {
   return(REPORT_debugdump(lp, filename, (MYBOOL) (get_total_iter(lp) > 0)));
 }
-void __WINAPI print_str(lprec *lp, char *str)
+void __WINAPI print_str(lprec *lp, const char *str)
 {
   report(lp, lp->verbose, "%s", str);
 }
@@ -917,9 +917,9 @@ int __WINAPI get_pivoting(lprec *lp)
   return( (lp->piv_strategy | PRICE_STRATEGYMASK) ^ PRICE_STRATEGYMASK );
 }
 
-STATIC char *get_str_piv_rule(int rule)
+STATIC const char *get_str_piv_rule(int rule)
 {
-  static char *pivotText[PRICER_LASTOPTION+1] =
+  static const char * const pivotText[PRICER_LASTOPTION+1] =
   {"Bland first index", "Dantzig", "Devex", "Steepest Edge"};
 
   return( pivotText[rule] );
@@ -1251,13 +1251,13 @@ MYBOOL __WINAPI get_ptr_sensitivity_objex(lprec *lp, REAL **objfrom, REAL **objt
   }
 
   if((objfromvalue != NULL) /* || (objtillvalue != NULL) */) {
-    if((lp->objfromvalue == NULL) /* || (lp->objtillvalue == NULL) */) {
+    if(lp->objfromvalue == NULL /* || (lp->objtillvalue == NULL) */) {
       if((MIP_count(lp) > 0) && (lp->bb_totalnodes > 0)) {
         report(lp, CRITICAL, "get_ptr_sensitivity_objex: Sensitivity unknown\n");
         return(FALSE);
       }
       construct_sensitivity_duals(lp);
-      if((lp->objfromvalue == NULL) /* || (lp->objtillvalue == NULL) */)
+      if(lp->objfromvalue == NULL /* || (lp->objtillvalue == NULL) */)
         return(FALSE);
     }
   }
@@ -1332,8 +1332,9 @@ int __WINAPI get_status(lprec *lp)
   return(lp->spx_status);
 }
 
-char * __WINAPI get_statustext(lprec *lp, int statuscode)
+const char * __WINAPI get_statustext(lprec *lp, int statuscode)
 {
+  (void)lp;
   if (statuscode == NOBFP)             return("No basis factorization package");
   else if (statuscode == DATAIGNORED)  return("Invalid input data provided");
   else if (statuscode == NOMEMORY)     return("Not enough memory available");
@@ -2275,6 +2276,7 @@ STATIC MYBOOL shift_rowcoldata(lprec *lp, int base, int delta, LLrec *usedmap, M
 STATIC MYBOOL shift_basis(lprec *lp, int base, int delta, LLrec *usedmap, MYBOOL isrow)
 /* Note: Assumes that "lp->sum" and "lp->rows" HAVE NOT been updated to the new counts */
 {
+  (void)usedmap;
   int i, ii;
   MYBOOL Ok = TRUE;
 
@@ -3009,12 +3011,13 @@ MYBOOL __WINAPI set_obj_fn(lprec *lp, REAL *row)
   return( set_obj_fnex(lp, 0, row, NULL) );
 }
 
-MYBOOL __WINAPI str_set_obj_fn(lprec *lp, char *row_string)
+MYBOOL __WINAPI str_set_obj_fn(lprec *lp, const char *row_string)
 {
   int    i;
   MYBOOL ret = TRUE;
   REAL   *arow;
-  char   *p, *newp;
+  const char   *p;
+  char *newp;
 
   allocREAL(lp, &arow, lp->columns + 1, FALSE);
   p = row_string;
@@ -3150,10 +3153,11 @@ MYBOOL __WINAPI add_constraint(lprec *lp, REAL *row, int constr_type, REAL rh)
   return( add_constraintex(lp, 0, row, NULL, constr_type, rh) );
 }
 
-MYBOOL __WINAPI str_add_constraint(lprec *lp, char *row_string, int constr_type, REAL rh)
+MYBOOL __WINAPI str_add_constraint(lprec *lp, const char *row_string, int constr_type, REAL rh)
 {
   int    i;
-  char   *p, *newp;
+  const char   *p;
+  char *newp;
   REAL   *aRow;
   MYBOOL status = FALSE;
 
@@ -3292,12 +3296,13 @@ MYBOOL __WINAPI add_lag_con(lprec *lp, REAL *row, int con_type, REAL rhs)
   return(TRUE);
 }
 
-MYBOOL __WINAPI str_add_lag_con(lprec *lp, char *row_string, int con_type, REAL rhs)
+MYBOOL __WINAPI str_add_lag_con(lprec *lp, const char *row_string, int con_type, REAL rhs)
 {
   int    i;
   MYBOOL ret = TRUE;
   REAL   *a_row;
-  char   *p, *new_p;
+  const char   *p; 
+  char *new_p;
 
   allocREAL(lp, &a_row, lp->columns + 1, FALSE);
   p = row_string;
@@ -3411,12 +3416,13 @@ MYBOOL __WINAPI add_column(lprec *lp, REAL *column)
   return(add_columnex(lp, lp->rows, column, NULL));
 }
 
-MYBOOL __WINAPI str_add_column(lprec *lp, char *col_string)
+MYBOOL __WINAPI str_add_column(lprec *lp, const char *col_string)
 {
   int  i;
   MYBOOL ret = TRUE;
   REAL *aCol;
-  char *p, *newp;
+  const char *p;
+  char *newp;
 
   allocREAL(lp, &aCol, lp->rows + 1, FALSE);
   p = col_string;
@@ -3440,6 +3446,7 @@ MYBOOL __WINAPI str_add_column(lprec *lp, char *col_string)
 
 STATIC MYBOOL del_varnameex(lprec *lp, hashelem **namelist, int items, hashtable *ht, int varnr, LLrec *varmap)
 {
+  (void)lp;
   int i, n;
 
   /* First drop hash table entries of the deleted variables */
@@ -3757,7 +3764,7 @@ MYBOOL __WINAPI is_SOS_var(lprec *lp, int colnr)
   return((lp->var_type[colnr] & ISSOS) != 0);
 }
 
-int __WINAPI add_SOS(lprec *lp, char *name, int sostype, int priority, int count, int *sosvars, REAL *weights)
+int __WINAPI add_SOS(lprec *lp, const char *name, int sostype, int priority, int count, int *sosvars, REAL *weights)
 {
   SOSrec *SOS;
   int    k;
@@ -3790,7 +3797,7 @@ int __WINAPI add_SOS(lprec *lp, char *name, int sostype, int priority, int count
   return(k);
 }
 
-STATIC int add_GUB(lprec *lp, char *name, int priority, int count, int *gubvars)
+STATIC int add_GUB(lprec *lp, const char *name, int priority, int count, int *gubvars)
 {
   SOSrec *GUB;
   int    k;
@@ -4213,12 +4220,13 @@ void __WINAPI set_rh_vec(lprec *lp, REAL *rh)
   set_action(&lp->spx_action, ACTION_RECOMPUTE);
 }
 
-MYBOOL __WINAPI str_set_rh_vec(lprec *lp, char *rh_string)
+MYBOOL __WINAPI str_set_rh_vec(lprec *lp, const char *rh_string)
 {
   int  i;
   MYBOOL ret = TRUE;
   REAL *newrh;
-  char *p, *newp;
+  const char *p;
+  char *newp;
 
   allocREAL(lp, &newrh, lp->rows + 1, TRUE);
   p = rh_string;
@@ -4404,8 +4412,9 @@ REAL __WINAPI get_constr_value(lprec *lp, int rownr, int count, REAL *primsoluti
   return( value );
 }
 
-STATIC char *get_str_constr_class(lprec *lp, int con_class)
+STATIC const char *get_str_constr_class(lprec *lp, int con_class)
 {
+  (void)lp;
   switch(con_class) {
     case ROWCLASS_Unknown:     return("Unknown");
     case ROWCLASS_Objective:   return("Objective");
@@ -4422,8 +4431,9 @@ STATIC char *get_str_constr_class(lprec *lp, int con_class)
   }
 }
 
-STATIC char *get_str_constr_type(lprec *lp, int con_type)
+STATIC const char *get_str_constr_type(lprec *lp, int con_type)
 {
+  (void)lp;
   switch(con_type) {
     case FR: return("FR");
     case LE: return("LE");
@@ -5220,7 +5230,7 @@ MYBOOL __WINAPI is_nativeBFP(lprec *lp)
 #endif
 }
 
-MYBOOL __WINAPI set_BFP(lprec *lp, char *filename)
+MYBOOL __WINAPI set_BFP(lprec *lp, const char *filename)
 /* (Re)mapping of basis factorization variant methods is done here */
 {
   int result = LIB_LOADED;
@@ -5366,7 +5376,8 @@ MYBOOL __WINAPI set_BFP(lprec *lp, char *filename)
     }
   #else
    /* First standardize UNIX .SO library name format. */
-    char bfpname[260], *ptr;
+    char bfpname[260];
+    const char *ptr;
 
     strcpy(bfpname, filename);
     if((ptr = strrchr(filename, '/')) == NULL)
@@ -5529,7 +5540,7 @@ MYBOOL __WINAPI set_BFP(lprec *lp, char *filename)
 
 /* External language interface routines */
 /* DON'T MODIFY */
-lprec * __WINAPI read_XLI(char *xliname, char *modelname, char *dataname, char *options, int verbose)
+lprec * __WINAPI read_XLI(char *xliname, const char *modelname, const char *dataname, const char *options, int verbose)
 {
   lprec *lp;
 
@@ -5549,7 +5560,7 @@ lprec * __WINAPI read_XLI(char *xliname, char *modelname, char *dataname, char *
   return( lp );
 }
 
-MYBOOL __WINAPI write_XLI(lprec *lp, char *filename, char *options, MYBOOL results)
+MYBOOL __WINAPI write_XLI(lprec *lp, const char *filename, const char *options, MYBOOL results)
 {
   return( has_XLI(lp) && mat_validate(lp->matA) && lp->xli_writemodel(lp, filename, options, results) );
 }
@@ -5565,6 +5576,7 @@ MYBOOL __WINAPI has_XLI(lprec *lp)
 
 MYBOOL __WINAPI is_nativeXLI(lprec *lp)
 {
+  (void)lp;
 #ifdef ExcludeNativeLanguage
   return( FALSE );
 #elif LoadLanguageLib == TRUE
@@ -5574,7 +5586,7 @@ MYBOOL __WINAPI is_nativeXLI(lprec *lp)
 #endif
 }
 
-MYBOOL __WINAPI set_XLI(lprec *lp, char *filename)
+MYBOOL __WINAPI set_XLI(lprec *lp, const char *filename)
 /* (Re)mapping of external language interface variant methods is done here */
 {
   int result = LIB_LOADED;
@@ -5626,7 +5638,8 @@ MYBOOL __WINAPI set_XLI(lprec *lp, char *filename)
     }
   #else
    /* First standardize UNIX .SO library name format. */
-    char xliname[260], *ptr;
+    char xliname[260];
+    const char *ptr;
 
     strcpy(xliname, filename);
     if((ptr = strrchr(filename, '/')) == NULL)
@@ -5902,7 +5915,14 @@ MYBOOL __WINAPI is_feasible(lprec *lp, REAL *values, REAL threshold)
     }
   }
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
   this_rhs = (REAL *) mempool_obtainVector(lp->workarrays, lp->rows+1, sizeof(*this_rhs));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 /*  allocREAL(lp, &this_rhs, lp->rows + 1, TRUE); */
   for(j = 1; j <= lp->columns; j++) {
     elmnr = mat->col_end[j - 1];
@@ -5962,7 +5982,7 @@ int __WINAPI column_in_lp(lprec *lp, REAL *testcolumn)
   return( colnr );
 }
 
-MYBOOL __WINAPI set_lp_name(lprec *lp, char *name)
+MYBOOL __WINAPI set_lp_name(lprec *lp, const char *name)
 {
   if (name == NULL) {
     FREE(lp->lp_name);
@@ -5975,7 +5995,7 @@ MYBOOL __WINAPI set_lp_name(lprec *lp, char *name)
   return(TRUE);
 }
 
-char * __WINAPI get_lp_name(lprec *lp)
+const char * __WINAPI get_lp_name(lprec *lp)
 {
   return((lp->lp_name != NULL) ? lp->lp_name : (char *) "");
 }
@@ -5992,7 +6012,7 @@ STATIC MYBOOL init_rowcol_names(lprec *lp)
   return(TRUE);
 }
 
-MYBOOL rename_var(lprec *lp, int varindex, char *new_name, hashelem **list, hashtable **ht)
+MYBOOL rename_var(lprec *lp, int varindex, const char *new_name, hashelem **list, hashtable **ht)
 {
   hashelem *hp;
   MYBOOL   newitem;
@@ -6031,7 +6051,7 @@ void __WINAPI set_use_names(lprec *lp, MYBOOL isrow, MYBOOL use_names)
     lp->use_col_names = use_names;
 }
 
-int __WINAPI get_nameindex(lprec *lp, char *varname, MYBOOL isrow)
+int __WINAPI get_nameindex(lprec *lp, const char *varname, MYBOOL isrow)
 {
   if(isrow)
     return( find_row(lp, varname, FALSE) );
@@ -6039,7 +6059,7 @@ int __WINAPI get_nameindex(lprec *lp, char *varname, MYBOOL isrow)
     return( find_var(lp, varname, FALSE) );
 }
 
-MYBOOL __WINAPI set_row_name(lprec *lp, int rownr, char *new_name)
+MYBOOL __WINAPI set_row_name(lprec *lp, int rownr, const char *new_name)
 {
   if((rownr < 0) || (rownr > lp->rows+1)) {
     report(lp, IMPORTANT, "set_row_name: Row %d out of range", rownr);
@@ -6058,7 +6078,7 @@ MYBOOL __WINAPI set_row_name(lprec *lp, int rownr, char *new_name)
   return(TRUE);
 }
 
-char * __WINAPI get_row_name(lprec *lp, int rownr)
+const char * __WINAPI get_row_name(lprec *lp, int rownr)
 {
   if((rownr < 0) || (rownr > lp->rows+1)) {
     report(lp, IMPORTANT, "get_row_name: Row %d out of range", rownr);
@@ -6074,7 +6094,7 @@ char * __WINAPI get_row_name(lprec *lp, int rownr)
   return( get_origrow_name(lp, rownr) );
 }
 
-char * __WINAPI get_origrow_name(lprec *lp, int rownr)
+const char * __WINAPI get_origrow_name(lprec *lp, int rownr)
 {
   MYBOOL newrow;
   char   *ptr;
@@ -6111,7 +6131,7 @@ char * __WINAPI get_origrow_name(lprec *lp, int rownr)
   return(ptr);
 }
 
-MYBOOL __WINAPI set_col_name(lprec *lp, int colnr, char *new_name)
+MYBOOL __WINAPI set_col_name(lprec *lp, int colnr, const char *new_name)
 {
   if((colnr > lp->columns+1) || (colnr < 1)) {
     report(lp, IMPORTANT, "set_col_name: Column %d out of range", colnr);
@@ -6127,7 +6147,7 @@ MYBOOL __WINAPI set_col_name(lprec *lp, int colnr, char *new_name)
   return(TRUE);
 }
 
-char * __WINAPI get_col_name(lprec *lp, int colnr)
+const char * __WINAPI get_col_name(lprec *lp, int colnr)
 {
   if((colnr > lp->columns+1) || (colnr < 1)) {
     report(lp, IMPORTANT, "get_col_name: Column %d out of range", colnr);
@@ -6143,7 +6163,7 @@ char * __WINAPI get_col_name(lprec *lp, int colnr)
   return( get_origcol_name(lp, colnr) );
 }
 
-char * __WINAPI get_origcol_name(lprec *lp, int colnr)
+const char * __WINAPI get_origcol_name(lprec *lp, int colnr)
 {
   MYBOOL newcol;
   char   *ptr;
@@ -6319,7 +6339,14 @@ STATIC REAL compute_dualslacks(lprec *lp, int target, REAL **dvalues, int **nzdv
     target = SCAN_ALLVARS+ USE_NONBASICVARS;
 
   /* Define variable target list and compute the reduced costs */
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
   coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->columns+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
   if(!get_colIndexA(lp, target, coltarget, FALSE)) {
     mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
     return(FALSE);
@@ -6840,7 +6867,7 @@ STATIC REAL MIP_stepOF(lprec *lp)
     /* Check non-ints in the OF to see if we can get more info */
     if(realcount > 0) {
       int niv = 0;            /* Number of real variables identified as integer */
-      int nrows = lp->rows;
+      /* int nrows = lp->rows; */
       REAL    rowdelta;
 
       OFdelta = lp->infinite;
@@ -8294,6 +8321,8 @@ STATIC MYBOOL check_degeneracy(lprec *lp, REAL *pcol, int *degencount)
 STATIC MYBOOL performiteration(lprec *lp, int rownr, int varin, LREAL theta, MYBOOL primal, MYBOOL allowminit,
                                REAL *prow, int *nzprow, REAL *pcol, int *nzpcol, int *boundswaps)
 {
+  (void)pcol;
+  (void)nzpcol;
   int    varout;
   REAL   pivot, epsmargin, leavingValue, leavingUB, enteringUB;
   MYBOOL leavingToUB = FALSE, enteringFromUB, enteringIsFixed, leavingIsFixed;
@@ -8943,7 +8972,7 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 /*#define UseMaxValueInCheck*/
 #define RelativeAccuracyCheck
   MYBOOL isSC;
-  REAL   test, value, diff, maxdiff = 0.0, maxerr = 0.0, *matValue;
+  REAL   test, value, diff, maxdiff = 0.0, maxerr = 0.0;
 #ifndef RelativeAccuracyCheck
   REAL   hold;
 #endif
@@ -8952,8 +8981,7 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #elif !defined RelativeAccuracyCheck
   REAL *plusum = NULL, *negsum = NULL;
 #endif
-  int    i,j,n, errlevel = IMPORTANT, errlimit = 10, *matRownr, *matColnr;
-  MATrec *mat = lp->matA;
+  int    i,j,n, errlevel = IMPORTANT, errlimit = 10;
   int    solveStatus = OPTIMAL;
 
   report(lp, NORMAL, " \n");
@@ -9283,7 +9311,14 @@ STATIC MYBOOL construct_duals(lprec *lp)
     return(FALSE);
 
   /* Initialize */
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
   coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->columns+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
   if(!get_colIndexA(lp, SCAN_USERVARS+USE_NONBASICVARS, coltarget, FALSE)) {
     mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
     return(FALSE);
@@ -9488,7 +9523,14 @@ Abandon:
     infinite=lp->infinite;
     epsvalue=lp->epsmachine;
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
     coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->columns+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     if(!get_colIndexA(lp, SCAN_USERVARS+USE_NONBASICVARS, coltarget, FALSE)) {
       mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
       goto Abandon;
@@ -9627,6 +9669,7 @@ STATIC int findBasisPos(lprec *lp, int notint, int *var_basic)
 
 STATIC void replaceBasisVar(lprec *lp, int rownr, int var, int *var_basic, MYBOOL *is_basic)
 {
+  (void)lp;
   int out;
 
   out = var_basic[rownr];
@@ -10001,6 +10044,7 @@ STATIC MYBOOL pre_MIPOBJ(lprec *lp)
 }
 STATIC MYBOOL post_MIPOBJ(lprec *lp)
 {
+  (void)lp;
 #ifdef MIPboundWithOF
 /*
   if(lp->constraintOF) {

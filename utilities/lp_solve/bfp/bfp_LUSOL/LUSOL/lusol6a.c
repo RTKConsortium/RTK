@@ -354,6 +354,7 @@ void LU6CHK(LUSOLrec *LUSOL, int MODE, int LENA2, int *INFORM)
    ------------------------------------------------------------------ */
 void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
 {
+  (void)NZidx;
   int  JPIV, K, L, L1, LEN, LENL, LENL0, NUML, NUML0;
   REAL SMALL;
   register REAL VPIV;
@@ -446,6 +447,7 @@ void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
    ================================================================== */
 void LU6LD(LUSOLrec *LUSOL, int *INFORM, int MODE, REAL V[], int NZidx[])
 {
+  (void)NZidx;
   int  IPIV, K, L, L1, LEN, NUML0;
   REAL DIAG, SMALL;
   register REAL VPIV;
@@ -722,6 +724,7 @@ void LU6U(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
    ================================================================== */
 void LU6UT(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
 {
+  (void)NZidx;
   int  I, J, K, L, L1, L2, NRANK, NRANK1,
        *ip = LUSOL->ip + 1, *iq = LUSOL->iq + 1;
   REAL SMALL;

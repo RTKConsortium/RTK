@@ -1993,6 +1993,8 @@ MYBOOL mat_get_data(lprec *lp, int matindex, MYBOOL isrow, int **rownr, int **co
 MYBOOL mat_set_rowmap(MATrec *mat, int row_mat_index, int rownr, int colnr, int col_mat_index)
 {
 #if MatrixRowAccess == RAM_Index
+  (void)rownr;
+  (void)colnr;
   mat->row_mat[row_mat_index] = col_mat_index;
 
 #elif MatrixColAccess==CAM_Record
@@ -3132,6 +3134,7 @@ STATIC MYBOOL bimprove(lprec *lp, REAL *rhsvector, int *nzidx, REAL roundzero)
 
 STATIC void ftran(lprec *lp, REAL *rhsvector, int *nzidx, REAL roundzero)
 {
+  (void)roundzero;
 #if 0
   if(is_action(lp->improve, IMPROVE_SOLUTION) && lp->bfp_pivotcount(lp))
     fimprove(lp, rhsvector, nzidx, roundzero);
@@ -3142,6 +3145,7 @@ STATIC void ftran(lprec *lp, REAL *rhsvector, int *nzidx, REAL roundzero)
 
 STATIC void btran(lprec *lp, REAL *rhsvector, int *nzidx, REAL roundzero)
 {
+  (void)roundzero;
 #if 0
   if(is_action(lp->improve, IMPROVE_SOLUTION) && lp->bfp_pivotcount(lp))
     bimprove(lp, rhsvector, nzidx, roundzero);
@@ -3322,6 +3326,7 @@ STATIC int prod_Ax(lprec *lp, int *coltarget, REAL *input, int *nzinput,
                               REAL *output, int *nzoutput, int roundmode)
 /* prod_Ax is only used in fimprove; note that it is NOT VALIDATED/verified as of 20030801 - KE */
 {
+  (void)nzoutput;
   int      j, colnr, ib, ie, vb, ve;
   MYBOOL   localset, localnz = FALSE, isRC;
   MATrec   *mat = lp->matA;
@@ -3338,7 +3343,14 @@ STATIC int prod_Ax(lprec *lp, int *coltarget, REAL *input, int *nzinput,
                  USE_BASICVARS | OMIT_FIXED;
     if(isRC && is_piv_mode(lp, PRICE_PARTIAL) && !is_piv_mode(lp, PRICE_FORCEFULL))
       varset |= SCAN_PARTIALBLOCK;
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
     coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->sum+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     if(!get_colIndexA(lp, varset, coltarget, FALSE)) {
       mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
       return(FALSE);
@@ -3346,7 +3358,14 @@ STATIC int prod_Ax(lprec *lp, int *coltarget, REAL *input, int *nzinput,
   }
   localnz = (MYBOOL) (nzinput == NULL);
   if(localnz) {
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
     nzinput = (int *) mempool_obtainVector(lp->workarrays, lp->rows+1, sizeof(*nzinput));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     vec_compress(input, 0, lp->rows, lp->matA->epsvalue, NULL, nzinput);
   }
 
@@ -3417,7 +3436,14 @@ STATIC int prod_xA(lprec *lp, int *coltarget,
                  USE_NONBASICVARS | OMIT_FIXED;
     if(isRC && is_piv_mode(lp, PRICE_PARTIAL) && !is_piv_mode(lp, PRICE_FORCEFULL))
       varset |= SCAN_PARTIALBLOCK;
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
     coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->sum+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     if(!get_colIndexA(lp, varset, coltarget, FALSE)) {
       mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
       return(FALSE);
@@ -3620,7 +3646,14 @@ STATIC MYBOOL prod_xA2(lprec *lp, int *coltarget,
     int varset = SCAN_SLACKVARS + SCAN_USERVARS + /*SCAN_ALLVARS +*/
                  /*SCAN_PARTIALBLOCK+*/
                  USE_NONBASICVARS+OMIT_FIXED;
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
     coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->sum+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     if(!get_colIndexA(lp, varset, coltarget, FALSE)) {
       mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
       return(FALSE);
