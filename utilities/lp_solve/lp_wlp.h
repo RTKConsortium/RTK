@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 /* Put function headers here */
-MYBOOL LP_writefile(lprec *lp, char *filename);
+MYBOOL LP_writefile(lprec *lp, const char *filename);
 MYBOOL LP_writehandle(lprec *lp, FILE *output);
 
 

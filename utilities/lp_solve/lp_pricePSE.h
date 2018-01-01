@@ -11,7 +11,14 @@ extern "C" {
 
 /* Price norm management routines */
 STATIC MYBOOL initPricer(lprec *lp);
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
 INLINE MYBOOL applyPricer(lprec *lp);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 STATIC void simplexPricer(lprec *lp, MYBOOL isdual);
 STATIC void freePricer(lprec *lp);
 STATIC MYBOOL resizePricer(lprec *lp);

@@ -35,7 +35,7 @@
 void LU1DCP(LUSOLrec *LUSOL, REAL DA[], int LDA, int M, int N, REAL SMALL,
             int *NSING, int IPVT[], int IX[])
 {
-
+  (void)LUSOL;
   int       I, J, K, KP1, L, LAST, LENCOL, IMAX, JMAX, JLAST, JNEW;
   REAL      AIJMAX, AJMAX;
   register REAL T;
@@ -229,6 +229,7 @@ x10:
 void LU1DPP(LUSOLrec *LUSOL, REAL DA[], int LDA, int M, int N, REAL SMALL,
             int *NSING, int IPVT[], int IX[])
 {
+  (void)LUSOL;
   int            I, J, K, KP1, L, LAST, LENCOL;
   register REAL T;
 #ifdef LUSOLFastDenseIndex
@@ -354,6 +355,7 @@ x10:
 void LU1PQ1(LUSOLrec *LUSOL, int M, int N, int LEN[],
             int IPERM[], int LOC[], int INV[], int NUM[])
 {
+  (void)LUSOL;
   int NZEROS, NZ, I, L;
 
 /*      Count the number of rows of each length. */
@@ -410,6 +412,7 @@ void LU1PQ1(LUSOLrec *LUSOL, int M, int N, int LEN[],
 void LU1PQ2(LUSOLrec *LUSOL, int NZPIV, int *NZCHNG,
             int IND[], int LENOLD[], int LENNEW[], int IXLOC[], int IX[], int IXINV[])
 {
+  (void)LUSOL;
   int LR, J, NZ, NZNEW, L, NEXT, LNEW, JNEW;
 
   *NZCHNG = 0;
@@ -467,6 +470,7 @@ x120:
    ================================================================== */
 void LU1PQ3(LUSOLrec *LUSOL, int MN, int LEN[], int IPERM[], int IW[], int *NRANK)
 {
+  (void)LUSOL;
   int NZEROS, K, I;
 
   *NRANK = 0;

@@ -67,7 +67,7 @@ STATIC int append_SOSgroup(SOSgroup *group, SOSrec *SOS);
 STATIC int clean_SOSgroup(SOSgroup *group, MYBOOL forceupdatemap);
 STATIC void free_SOSgroup(SOSgroup **group);
 
-STATIC SOSrec *create_SOSrec(SOSgroup *group, char *name, int type, int priority, int size, int *variables, REAL *weights);
+STATIC SOSrec *create_SOSrec(SOSgroup *group, const char *name, int type, int priority, int size, int *variables, REAL *weights);
 STATIC MYBOOL delete_SOSrec(SOSgroup *group, int sosindex);
 STATIC int append_SOSrec(SOSrec *SOS, int size, int *variables, REAL *weights);
 STATIC void free_SOSrec(SOSrec *SOS);

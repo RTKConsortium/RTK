@@ -75,7 +75,7 @@ typedef double (BLAS_CALLMODEL BLAS_dnormi_func)(int *n, REAL *x);
 
 void init_BLAS(void);
 MYBOOL is_nativeBLAS(void);
-MYBOOL load_BLAS(char *libname);
+MYBOOL load_BLAS(const char *libname);
 MYBOOL unload_BLAS(void);
 
 /* ************************************************************************ */

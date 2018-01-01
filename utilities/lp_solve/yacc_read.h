@@ -33,23 +33,23 @@ typedef struct parse_parm_s
   void *parse_vars;
 } parse_parm;
 
-void lex_fatal_error(parse_parm *, void *, char *);
-int set_title(parse_parm *pp, char *name);
-int add_constraint_name(parse_parm *pp, char *name);
+void lex_fatal_error(parse_parm *, void *, const char * );
+int set_title(parse_parm *pp, const char *name);
+int add_constraint_name(parse_parm *pp, const char *name);
 int store_re_op(parse_parm *pp, char OP, int HadConstraint, int HadVar, int Had_lineair_sum);
 void null_tmp_store(parse_parm *pp, int init_Lin_term_count);
 int store_bounds(parse_parm *pp, int warn);
-void storevarandweight(parse_parm *pp, char *name);
+void storevarandweight(parse_parm *pp, const char *name);
 int set_sos_type(parse_parm *pp, int SOStype);
 int set_sos_weight(parse_parm *pp, double weight, int sos_decl);
-int set_sec_threshold(parse_parm *pp, char *name, REAL threshold);
+int set_sec_threshold(parse_parm *pp, const char *name, REAL threshold);
 int rhs_store(parse_parm *pp, REAL value, int HadConstraint, int HadVar, int Had_lineair_sum);
-int var_store(parse_parm *pp, char *var, REAL value, int HadConstraint, int HadVar, int Had_lineair_sum);
+int var_store(parse_parm *pp, const char *var, REAL value, int HadConstraint, int HadVar, int Had_lineair_sum);
 int negate_constraint(parse_parm *pp);
 void add_row(parse_parm *pp);
 void add_sos_row(parse_parm *pp, short SOStype);
 
-void read_error(parse_parm *, void *, char *);
+void read_error(parse_parm *, void *, const char * );
 void check_int_sec_sos_free_decl(parse_parm *, int, int, int, int);
 lprec *yacc_read(lprec *lp, int verbose, char *lp_name, int (*parse) (parse_parm *pp), parse_parm *pp, void (*delete_allocated_memory) (parse_parm *pp));
 

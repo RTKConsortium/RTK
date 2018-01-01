@@ -105,6 +105,8 @@ Finish:
 /* Solve L0' v = v based on row-based version of L0, constructed by LU1L0 */
 void LU6L0T_v(LUSOLrec *LUSOL, LUSOLmat *mat, REAL V[], int NZidx[], int *INFORM)
 {
+  (void)NZidx;
+  (void)INFORM;
 #ifdef DoTraceL0
   REAL TEMP;
 #endif
