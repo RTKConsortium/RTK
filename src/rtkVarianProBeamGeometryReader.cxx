@@ -48,7 +48,7 @@ rtk::VarianProBeamGeometryReader
   typedef itk::MetaDataObject< double > MetaDataDoubleType;
   const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["SID"].GetPointer() )->GetMetaDataObjectValue();
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["SAD"].GetPointer() )->GetMetaDataObjectValue();
-  typedef itk::MetaDataObject< std::string > MetaDataStringType;
+  //typedef itk::MetaDataObject< std::string > MetaDataStringType;
 
   // Projections reader (for angle)
   rtk::XimImageIOFactory::RegisterOneFactory();
