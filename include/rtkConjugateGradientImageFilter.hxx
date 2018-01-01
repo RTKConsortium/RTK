@@ -46,7 +46,7 @@ void ConjugateGradientImageFilter<OutputImageType>
 }
 
 template<typename OutputImageType>
-const double ConjugateGradientImageFilter<OutputImageType>
+double ConjugateGradientImageFilter<OutputImageType>
 ::GetC()
 {
   return this->m_C;
