@@ -295,6 +295,7 @@ static struct _functions functions[] =
   { "EPSPERTURB", setREALfunction(get_epsperturb, set_epsperturb), setNULLvalues, WRITE_ACTIVE },
   { "EPSPIVOT", setREALfunction(get_epspivot, set_epspivot), setNULLvalues, WRITE_ACTIVE },
   { "INFINITE", setREALfunction(get_infinite, set_infinite), setNULLvalues, WRITE_ACTIVE },
+  { "BREAK_NUMERIC_ACCURACY", setREALfunction(get_break_numeric_accuracy, set_break_numeric_accuracy), setNULLvalues, WRITE_ACTIVE },
 
   /* read-only options */
   { "DEBUG", setMYBOOLfunction(is_debug, set_debug), setNULLvalues, WRITE_COMMENTED },
@@ -310,7 +311,7 @@ static void write_params1(lprec *lp, FILE *fp, char *header, int newline)
   int ret = 0, ret2, i, j, k, value, value2, elements, majorversion, minorversion, release, build;
   unsigned int basemask;
   REAL a = 0;
-  char buf[4096], par[20];
+  char buf[4096], par[30];
 
   ini_writeheader(fp, header, newline);
   lp_solve_version(&majorversion, &minorversion, &release, &build);

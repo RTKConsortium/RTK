@@ -366,7 +366,7 @@ void __WINAPI reset_params(lprec *lp)
 
   lp->epsmachine        = DEF_EPSMACHINE;
   lp->epsperturb        = DEF_PERTURB;
-  lp->lag_accept        = DEF_LAGACCEPT;
+  /* lp->lag_accept        = DEF_LAGACCEPT; */
   set_epslevel(lp, EPS_DEFAULT);
 
   lp->tighten_on_set    = FALSE;
@@ -1251,13 +1251,13 @@ MYBOOL __WINAPI get_ptr_sensitivity_objex(lprec *lp, REAL **objfrom, REAL **objt
   }
 
   if((objfromvalue != NULL) /* || (objtillvalue != NULL) */) {
-    if(lp->objfromvalue == NULL) /* || (lp->objtillvalue == NULL) )*/ {
+    if((lp->objfromvalue == NULL) /* || (lp->objtillvalue == NULL) */) {
       if((MIP_count(lp) > 0) && (lp->bb_totalnodes > 0)) {
         report(lp, CRITICAL, "get_ptr_sensitivity_objex: Sensitivity unknown\n");
         return(FALSE);
       }
       construct_sensitivity_duals(lp);
-      if(lp->objfromvalue == NULL) /* || (lp->objtillvalue == NULL) )*/
+      if((lp->objfromvalue == NULL) /* || (lp->objtillvalue == NULL) */)
         return(FALSE);
     }
   }
@@ -1484,6 +1484,12 @@ lprec * __WINAPI make_lp(int rows, int columns)
 
   set_minim(lp);
   set_infiniteex(lp, DEF_INFINITE, TRUE);
+  /* set_break_numeric_accuracy(lp, DEF_INFINITE); */
+  /* set_break_numeric_accuracy(lp, 1e-5); */
+  /* set_break_numeric_accuracy(lp, 5e-5); */
+  /* set_break_numeric_accuracy(lp, 1e-6); */
+  /* set_break_numeric_accuracy(lp, 5e-6); */
+  set_break_numeric_accuracy(lp, 5e-7);
 
   initPricer(lp);
 
@@ -3582,6 +3588,8 @@ MYBOOL __WINAPI set_upbo(lprec *lp, int colnr, REAL value)
     set_action(&lp->spx_action, ACTION_REBASE);
     if(value > lp->infinite)
       value = lp->infinite;
+    if (value < lp->infinite && lp->orig_lowbo[lp->rows + colnr] > -lp->infinite && value != lp->orig_lowbo[lp->rows + colnr] && fabs(value - lp->orig_lowbo[lp->rows + colnr]) < lp->epsvalue)
+      value = lp->orig_lowbo[lp->rows + colnr];
     lp->orig_upbo[lp->rows + colnr] = value;
   }
   return(TRUE);
@@ -3628,6 +3636,8 @@ MYBOOL __WINAPI set_lowbo(lprec *lp, int colnr, REAL value)
     set_action(&lp->spx_action, ACTION_REBASE);
     if(value < -lp->infinite)
       value = -lp->infinite;
+    if (value > -lp->infinite && lp->orig_upbo[lp->rows + colnr] < lp->infinite && value != lp->orig_upbo[lp->rows + colnr] && fabs(value - lp->orig_upbo[lp->rows + colnr]) < lp->epsvalue)
+      value = lp->orig_upbo[lp->rows + colnr];
     lp->orig_lowbo[lp->rows + colnr] = value;
   }
   return(TRUE);
@@ -6577,8 +6587,26 @@ REAL MIP_stepOF(lprec *lp)
   }
   return( value );
 }
-#else
+#elif 0
+/*
+    original v5.5 implementation giving problems with some models
 
+    ex:
+
+        min: +r1 +r2;
+
+        R1: +r1 +r2 >= 1;
+        R2: +r1 -5.345 b1 = 0;
+        R3: +r2 -4.456 b2 = 0;
+
+        b1 <= 1;
+        b2 <= 1;
+
+        //b2>0.1;
+
+        int b1,b2;
+
+*/
 REAL MIP_stepOF(lprec *lp)
 /* This function tries to find a non-zero minimum improvement
    if the OF contains all integer variables (logic only applies if we are
@@ -6614,7 +6642,7 @@ REAL MIP_stepOF(lprec *lp)
       }
 
       /* If so, there may be a chance to find an improved stepsize */
-      if(ib < nrows)
+      if(ib <= nrows)
       for(colnr = 1; colnr <= lp->columns; colnr++) {
 
         /* Go directly to the next variable if this is an integer or
@@ -6664,6 +6692,199 @@ REAL MIP_stepOF(lprec *lp)
     }
   }
   return( value );
+}
+#else
+
+STATIC REAL row_plusdelta(lprec *lp, int rownr, int excludecol, int *intcount, int *realcount)
+{
+  MATrec   *mat = lp->matA;
+  int      j, jb, je, jj, bincount,
+           n = 0, nrows = lp->rows;
+  REAL     rowval, deltaOF = 0,
+           *obj_orig = lp->orig_obj, *obj_sort = NULL;
+
+  *realcount = 0;
+  *intcount  = 0;
+  bincount = 0;
+
+  /* Get OF row starting and ending positions, as well as the first column index */
+  if(rownr == 0) {
+    jb = 1;
+    je = lp->columns+1;
+  }
+  else {
+    jb = mat->row_end[rownr-1];
+    je = mat->row_end[rownr];
+  }
+
+  /* Fill the array */
+  for(j = jb; j < je; j++) {
+
+    if(rownr == 0) {
+      if(obj_orig[j] == 0)
+        continue;
+      jj = j;
+    }
+    else
+      jj = ROW_MAT_COLNR(j);
+
+    /* Check for exclusion column */
+    if(jj == excludecol)
+      continue;
+
+    /* Check that the variable is integer */
+    if(is_int(lp, jj)) {
+      rowval = lp->orig_upbo[nrows + jj];
+      if((rowval < lp->infinite) && (fabs(unscaled_value(lp, rowval - lp->orig_lowbo[nrows + jj], nrows + jj) - 1) < lp->epsint)) // difference between upper and lower = 1 is ok
+        bincount++;
+      if(rownr == 0)
+        rowval = unscaled_mat(lp, obj_orig[jj], 0, jj);
+      else
+        rowval = get_mat_byindex(lp, j, TRUE, FALSE);
+
+      /* Allocate array of coefficients to be sorted */
+      if(n == 0)
+        allocREAL(lp, &obj_sort, je-jb, FALSE);
+
+      obj_sort[n++] = rowval;
+    }
+    else
+      (*realcount)++;
+
+  }
+  (*intcount) = n;
+
+  if(*realcount == 0) {
+    if (n == 0 || bincount < n)
+      deltaOF = 0;
+    else if(n == 1)
+      deltaOF = obj_sort[0];
+    else {
+
+      REAL   newval;
+      MYBOOL loops = 0;
+
+      while(n > 0) {
+
+        /* Sort the coefficients in ascending order */
+        qsortex(obj_sort, n, 0, sizeof(*obj_sort), FALSE, compareREAL, NULL, 0);
+
+        /* Eliminate array duplicates (could consider applying an eps) */
+        j = 0; jb = 1;
+        do {
+          rowval = obj_sort[j];
+          while((jb < n) && (obj_sort[jb] == rowval)) jb++;
+          if((jb < n) && (++j < jb))
+            obj_sort[j] = obj_sort[jb];
+        } while(++jb < n);
+        n = j+1;
+
+        /* Get the reference minimum stepsize on the first iteration */
+        if(loops == 0) {
+          /* Spool to the coefficient closest to zero, which is the reference OF stepsize */
+          for(j = 0; (j < n) && (obj_sort[j] < 0); j++);
+
+          /* Case 1: All negative coefficients */
+          if(j >= n)
+            deltaOF = -obj_sort[n-1];
+          /* Case2: All positive coefficients */
+          else if(j == 0)
+            deltaOF = obj_sort[j];
+          /* Case 3: Both negative and positive coefficients */
+          else
+            deltaOF = MIN(-obj_sort[j-1], obj_sort[j]);
+        }
+
+        /* Adjust the reference minimum stepsize on next iterations */
+        loops++;
+
+        /* Loop over non-zero coefficient differences to
+             obtain minimum change, i.e. if one increases */
+        newval = lp->infinite;
+        for(j = 1; j < n; j++) {
+          rowval = obj_sort[j]-obj_sort[j-1];
+          SETMIN(newval, rowval);
+          obj_sort[j-1] = rowval;
+        }
+        n--;
+        SETMIN(deltaOF, newval);
+      }
+    }
+  }
+
+  /* Dispose of the work array */
+  FREE(obj_sort);
+
+  return( deltaOF );
+}
+
+/* v6.0 implementation converted to v5.5 */
+
+STATIC REAL MIP_stepOF(lprec *lp)
+/* This function tries to find a non-zero minimum improvement
+   if the OF contains all integer variables (logic only applies if we are
+   looking for a single solution, not possibly several equal-valued ones). */
+{
+  REAL    OFdelta = 0;
+  MATrec  *mat = lp->matA;
+
+  if((lp->int_vars > 0) && (lp->solutionlimit == 1) && mat_validate(mat)) {
+
+    int colnr, ib, ie,
+        intcount, realcount;
+
+    /* Get statistics for integer OF variables and compute base stepsize */
+    OFdelta = row_plusdelta(lp, 0, 0, &intcount, &realcount);
+/*    return( value ); */
+
+    /* Check non-ints in the OF to see if we can get more info */
+    if(realcount > 0) {
+      int niv = 0;            /* Number of real variables identified as integer */
+      int nrows = lp->rows;
+      REAL    rowdelta;
+
+      OFdelta = lp->infinite;
+      for(colnr = 1; (colnr <= lp->columns) && (niv < realcount); colnr++) {
+
+        /* Go directly to the next variable if this is an integer or
+          there is no row candidate to explore for hidden bounds for
+          real-valued variables (limit scan to one row/no recursion) */
+        if((lp->orig_obj[colnr] == 0) || is_int(lp, colnr))
+          continue;
+
+        /* Scan equality constraints */
+        ib = mat->col_end[colnr-1];
+        ie = mat->col_end[colnr];
+        while(ib < ie) {
+
+          /* Get "child" row statistics, but break out if we don't find enough
+             information, i.e. no integers with coefficients of proper type. */
+          rowdelta = row_plusdelta(lp, COL_MAT_ROWNR(ib), colnr, &intcount, &realcount);
+          if(realcount > 0) {
+            OFdelta = 0;
+            break;
+          }
+
+          /* We can update */
+          SETMIN(OFdelta, rowdelta);
+          ib++;
+        }
+
+        /* No point in continuing scan if we failed in the current column */
+        if(OFdelta == 0)
+          break;
+
+        /* We found an implied integer, update count */
+        niv++;
+      }
+
+      /* Check if we found information for any real-valued variable;
+         if not, then we must set the improvement delta to 0 */
+      if(realcount > niv)
+        OFdelta = 0;
+    }
+  }
+  return( OFdelta );
 }
 
 #endif
@@ -7387,13 +7608,15 @@ STATIC MYBOOL is_sc_violated(lprec *lp, int column)
 {
   int  varno;
   REAL tmpreal;
+  REAL eps = lp->epsvalue;                                    /* ß adding eps here*/
 
   varno = lp->rows+column;
   tmpreal = unscaled_value(lp, lp->sc_lobound[column], varno);
-  return( (MYBOOL) ((tmpreal > 0) &&                    /* it is an (inactive) SC variable...    */
-                    (lp->solution[varno] < tmpreal) &&  /* ...and the NZ lower bound is violated */
-                    (lp->solution[varno] > 0)) );       /* ...and the Z lowerbound is violated   */
+  return( (MYBOOL) ((tmpreal > 0) &&                          /* it is an (inactive) SC variable...    */
+                    (lp->solution[varno] < tmpreal - eps) &&  /* ...and the NZ lower bound is violated */
+                    (lp->solution[varno] > eps)) );           /* ...and the Z lowerbound is violated   */
 }
+
 STATIC int find_sc_bbvar(lprec *lp, int *count)
 {
   int    i, ii, n, bestvar;
@@ -8718,15 +8941,20 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
                           REAL *upbo, REAL *lowbo, REAL tolerance)
 {
 /*#define UseMaxValueInCheck*/
+#define RelativeAccuracyCheck
   MYBOOL isSC;
-  REAL   test, value, hold, diff, maxdiff = 0.0, maxerr = 0.0, *matValue,
+  REAL   test, value, diff, maxdiff = 0.0, maxerr = 0.0, *matValue;
+#ifndef RelativeAccuracyCheck
+  REAL   hold;
+#endif
 #ifdef UseMaxValueInCheck
-         *maxvalue = NULL,
-#else
-         *plusum = NULL, *negsum = NULL;
+  REAL *maxvalue = NULL;
+#elif !defined RelativeAccuracyCheck
+  REAL *plusum = NULL, *negsum = NULL;
 #endif
   int    i,j,n, errlevel = IMPORTANT, errlimit = 10, *matRownr, *matColnr;
   MATrec *mat = lp->matA;
+  int    solveStatus = OPTIMAL;
 
   report(lp, NORMAL, " \n");
   if(MIP_count(lp) > 0)
@@ -8743,10 +8971,12 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
   allocREAL(lp, &maxvalue, lp->rows + 1, FALSE);
   for(i = 0; i <= lp->rows; i++)
     maxvalue[i] = fabs(get_rh(lp, i));
-#else
+#elif !defined RelativeAccuracyCheck
   allocREAL(lp, &plusum, lp->rows + 1, TRUE);
   allocREAL(lp, &negsum, lp->rows + 1, TRUE);
 #endif
+
+#if defined UseMaxValueInCheck || !defined RelativeAccuracyCheck
   n = get_nonzeros(lp);
   matRownr = &COL_MAT_ROWNR(0);
   matColnr = &COL_MAT_COLNR(0);
@@ -8760,14 +8990,14 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
     test = fabs(test);
     if(test > maxvalue[*matRownr])
       maxvalue[*matRownr] = test;
-#else
+#elif !defined RelativeAccuracyCheck
     if(test > 0)
       plusum[*matRownr] += test;
     else
       negsum[*matRownr] += test;
 #endif
   }
-
+#endif
 
  /* Check if solution values are within the bounds; allowing a margin for numeric errors */
   n = 0;
@@ -8783,14 +9013,23 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
       test = unscaled_value(lp, lowbo[i], i);
 
     isSC = is_semicont(lp, i - lp->rows);
-    diff = my_reldiff(value, test);
-    if(diff < 0) {
-      if(isSC && (value < test/2))
-        test = 0;
-      SETMAX(maxerr, fabs(value-test));
-      SETMAX(maxdiff, fabs(diff));
+    diff = -my_reldiff(value, test);
+#ifdef RelativeAccuracyCheck
+    if (isSC && diff > 0 && my_reldiff(fabs(value), 0.0) < diff)
+        diff = my_reldiff(fabs(value), 0.0);
+#else
+    if(isSC && diff > 0 && (value < test/2))
+      test = 0;
+#endif
+    if(diff > 0) {
+      SETMAX(maxdiff, diff);
+#ifdef RelativeAccuracyCheck
+      maxerr = maxdiff;
+#else
+      SETMAX(maxerr, test - value);
+#endif
     }
-    if((diff < -tolerance) && !isSC)  {
+    if((diff > tolerance) && !isSC)  {
       if(n < errlimit)
       report(lp, errlevel,
         "check_solution: Variable   %s = " RESULTVALUEMASK " is below its lower bound " RESULTVALUEMASK "\n",
@@ -8801,8 +9040,12 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
     test = unscaled_value(lp, upbo[i], i);
     diff = my_reldiff(value, test);
     if(diff > 0) {
-      SETMAX(maxerr, fabs(value-test));
-      SETMAX(maxdiff, fabs(diff));
+      SETMAX(maxdiff, diff);
+#ifdef RelativeAccuracyCheck
+      maxerr = maxdiff;
+#else
+      SETMAX(maxerr, value - test);
+#endif
     }
     if(diff > tolerance) {
       if(n < errlimit)
@@ -8815,8 +9058,8 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 
  /* Check if constraint values are within the bounds; allowing a margin for numeric errors */
   for(i = 1; i <= lp->rows; i++) {
-
     test = lp->orig_rhs[i];
+
     if(is_infinite(lp, test))
       continue;
 
@@ -8838,7 +9081,8 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #ifndef LegacySlackDefinition
     value += test;
 #endif
-/*    diff = my_reldiff(value, test); */
+    diff = my_reldiff(value, test);
+#ifndef RelativeAccuracyCheck
 #ifdef UseMaxValueInCheck
     hold = maxvalue[i];
 #else
@@ -8846,10 +9090,16 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #endif
     if(hold < lp->epsvalue)
       hold = 1;
+
     diff = my_reldiff((value+1)/hold, (test+1)/hold);
+#endif
     if(diff > 0) {
-      SETMAX(maxerr, fabs(value-test));
-      SETMAX(maxdiff, fabs(diff));
+      SETMAX(maxdiff, diff);
+#ifdef RelativeAccuracyCheck
+      maxerr = maxdiff;
+#else
+      SETMAX(maxerr, value-test);
+#endif
     }
     if(diff > tolerance) {
       if(n < errlimit)
@@ -8885,7 +9135,8 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #ifndef LegacySlackDefinition
     value += test;
 #endif
-/*    diff = my_reldiff(value, test); */
+    diff = -my_reldiff(value, test);
+#ifndef RelativeAccuracyCheck
 #ifdef UseMaxValueInCheck
     hold = maxvalue[i];
 #else
@@ -8893,12 +9144,17 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #endif
     if(hold < lp->epsvalue)
       hold = 1;
-    diff = my_reldiff((value+1)/hold, (test+1)/hold);
-    if(diff < 0) {
-      SETMAX(maxerr, fabs(value-test));
-      SETMAX(maxdiff, fabs(diff));
+    diff = -my_reldiff((value+1)/hold, (test+1)/hold);
+#endif
+    if(diff > 0) {
+      SETMAX(maxdiff, diff);
+#ifdef RelativeAccuracyCheck
+      maxerr = maxdiff;
+#else
+      SETMAX(maxerr, test-value);
+#endif
     }
-    if(diff < -tolerance) {
+    if(diff > tolerance) {
       if(n < errlimit)
       report(lp, errlevel,
         "check_solution: Constraint %s = " RESULTVALUEMASK " is below its %s " RESULTVALUEMASK "\n",
@@ -8910,15 +9166,23 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 
 #ifdef UseMaxValueInCheck
   FREE(maxvalue);
-#else
+#elif !defined RelativeAccuracyCheck
   FREE(plusum);
   FREE(negsum);
 #endif
 
+#ifdef RelativeAccuracyCheck
+  report(lp, NORMAL, "\nRelative numeric accuracy ||*|| = %g\n", maxdiff);
+  if (maxdiff > lp->accuracy_error)
+  {
+    report(lp, IMPORTANT, "\nUnacceptable accuracy found (worse than required %g)\n", lp->accuracy_error);
+    solveStatus = ACCURACYERROR;
+  }
+#else
   if(n > 0) {
     report(lp, IMPORTANT, "\nSeriously low accuracy found ||*|| = %g (rel. error %g)\n",
                maxerr, maxdiff);
-    return(NUMFAILURE);
+    solveStatus = NUMFAILURE;
   }
   else {
     if(maxerr > 1.0e-7)
@@ -8931,11 +9195,28 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
       report(lp, NORMAL, "\nVery good numeric accuracy ||*|| = %g\n", maxerr);
     else
       report(lp, NORMAL, "\nExcellent numeric accuracy ||*|| = %g\n", maxerr);
-
-    return(OPTIMAL);
   }
+#endif
 
+  lp->accuracy = maxerr;
+
+  return(solveStatus);
 } /* check_solution */
+
+REAL __WINAPI get_accuracy(lprec *lp)
+{
+  return(lp->accuracy);
+}
+
+void __WINAPI set_break_numeric_accuracy(lprec *lp, REAL accuracy)
+{
+  lp->accuracy_error = accuracy;
+}
+
+REAL __WINAPI get_break_numeric_accuracy(lprec *lp)
+{
+  return(lp->accuracy_error);
+}
 
 STATIC void transfer_solution_var(lprec *lp, int uservar)
 {
@@ -9713,6 +9994,9 @@ STATIC MYBOOL pre_MIPOBJ(lprec *lp)
   }
 #endif
   lp->bb_deltaOF = MIP_stepOF(lp);
+  if(lp->bb_deltaOF < MAX(lp->epsvalue, lp->mip_absgap))
+      lp->bb_deltaOF = 0;
+
   return( TRUE );
 }
 STATIC MYBOOL post_MIPOBJ(lprec *lp)

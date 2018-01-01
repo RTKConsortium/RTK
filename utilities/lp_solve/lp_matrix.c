@@ -1053,13 +1053,13 @@ STATIC MYBOOL mat_setrow(MATrec *mat, int rowno, int count, REAL *row, int *coln
 
   /* Optionally tally and map the new non-zero values */
   i  = mat->row_end[rowno-1];
-  ii = mat->row_end[rowno];     // ****** KE 20070106 - was "-1"
+  ii = mat->row_end[rowno];     /* ****** KE 20070106 - was "-1" */
   firstcol = mat->columns + 1;
   if(isNZ) {
     /* See if we can do fast in-place replacements of leading items */
     colnr = 1; /* initialise in case of an empty row */
     while((i < ii) /* && (count > 0) */ && ((colnr = ROW_MAT_COLNR(i)) == *colno) && (count > 0)) {
-      value = *row;             // ****** KE 20080111 - Added line
+      value = *row;             /* ****** KE 20080111 - Added line */
       if(mat->is_roworder) {
         if(isA && doscale)
           value = scaled_mat(lp, value, colnr, rowno);
@@ -1098,7 +1098,7 @@ STATIC MYBOOL mat_setrow(MATrec *mat, int rowno, int count, REAL *row, int *coln
     else
       colnr = 0;
     for(k = 1; k <= kk; k++) {
-      value = row[k];           // ****** KE 20080111 - Added line
+      value = row[k];           /* ****** KE 20080111 - Added line */
       if(fabs(value) > mat->epsvalue) {
         /* See if we can do fast in-place replacements of leading items */
         if((addto == NULL) && (i < ii) && (colnr == k)) {

@@ -524,7 +524,7 @@ SetLB:
         new_bound = BB->sc_bound;
     }
     /* Handle pure integers (non-SOS, non-SC, but Ok for GUB!) */
-    else if(BB->vartype == BB_INT) {
+    else if((BB->vartype == BB_INT)) {
       if(((ceil(BB->lastsolution) == BB->lastsolution)) ||    /* Skip branch 0 if the current solution is integer */
          (ceil(BB->lastsolution) >   /* Skip cases where the upper bound becomes violated */
           unscaled_value(lp, ult_upbo, K)+intmargin) ||
@@ -605,9 +605,11 @@ Finish:
           BB->isfloor = FALSE;
         else if(fabs(BB->upbo[K]-BB->UPbound) < intmargin)
           BB->isfloor = TRUE;
-        else
+        else {
+          BB->isfloor = TRUE;
           report(BB->lp, IMPORTANT, "fillbranches_BB: Inconsistent equal-valued bounds for %s\n",
                                     get_col_name(BB->lp, k));
+        }
       }
       if((BB->nodesleft == 1) &&
          ((BB->isfloor && (BB->UPbound >= lp->infinite)) ||
