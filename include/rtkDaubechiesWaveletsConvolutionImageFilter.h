@@ -90,7 +90,7 @@ public:
     void SetReconstruction();
 
     /** Prints some debugging information. */
-    virtual void PrintSelf(std::ostream& os, itk::Indent i) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream& os, itk::Indent i) const ITK_OVERRIDE;
 
     /** Set and Get macro for the wavelet order */
     itkSetMacro(Order, unsigned int);
@@ -102,7 +102,7 @@ public:
 
 protected:
     DaubechiesWaveletsConvolutionImageFilter();
-    ~DaubechiesWaveletsConvolutionImageFilter();
+    virtual ~DaubechiesWaveletsConvolutionImageFilter() ITK_OVERRIDE;
 
     typedef std::vector<typename TImage::PixelType> CoefficientVector;
 

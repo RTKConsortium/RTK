@@ -139,7 +139,7 @@ public:
 
 protected:
     MotionCompensatedFourDReconstructionConjugateGradientOperator();
-    ~MotionCompensatedFourDReconstructionConjugateGradientOperator() {}
+    virtual ~MotionCompensatedFourDReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
 
     /** Builds the pipeline and computes output information */
     void GenerateOutputInformation() ITK_OVERRIDE;

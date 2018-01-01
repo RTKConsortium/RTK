@@ -81,7 +81,7 @@ public:
 
 protected:
   PolynomialGainCorrectionImageFilter();
-  ~PolynomialGainCorrectionImageFilter() {}
+  virtual ~PolynomialGainCorrectionImageFilter() ITK_OVERRIDE {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

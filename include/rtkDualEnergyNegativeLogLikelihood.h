@@ -67,7 +67,7 @@ public:
   }
 
   // Destructor
-  ~DualEnergyNegativeLogLikelihood()
+  virtual ~DualEnergyNegativeLogLikelihood() ITK_OVERRIDE
   {
   }
 

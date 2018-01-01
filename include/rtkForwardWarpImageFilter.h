@@ -69,7 +69,7 @@ public:
 
 protected:
   ForwardWarpImageFilter();
-  ~ForwardWarpImageFilter() {}
+  virtual ~ForwardWarpImageFilter() ITK_OVERRIDE {}
 
   void GenerateData() ITK_OVERRIDE;
 

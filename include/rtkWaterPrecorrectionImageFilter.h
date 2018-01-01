@@ -71,7 +71,7 @@ public:
 
 protected:
   WaterPrecorrectionImageFilter();
-  ~WaterPrecorrectionImageFilter() {}
+  virtual ~WaterPrecorrectionImageFilter() ITK_OVERRIDE {}
 
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
 

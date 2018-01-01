@@ -260,7 +260,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometry();
-  ~ThreeDCircularProjectionGeometry() {}
+  virtual ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {}
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);
@@ -322,7 +322,7 @@ protected:
                  const Matrix3x3Type &referenceMatrix) const;
 
   /** Clone the geometry object in a new one. */
-  virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
   /** Circular geometry parameters per projection (angles in degrees between 0
     and 360). */

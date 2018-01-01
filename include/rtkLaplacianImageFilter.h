@@ -61,7 +61,7 @@ public:
 
 protected:
   LaplacianImageFilter();
-  ~LaplacianImageFilter() {}
+  virtual ~LaplacianImageFilter() ITK_OVERRIDE {}
 
   /** Does the real work. */
   void GenerateData() ITK_OVERRIDE;

@@ -171,7 +171,7 @@ public:
 
 protected:
     ConjugateGradientConeBeamReconstructionFilter();
-    ~ConjugateGradientConeBeamReconstructionFilter() {}
+    virtual ~ConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

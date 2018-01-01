@@ -93,7 +93,7 @@ public:
 
 protected:
   LagCorrectionImageFilter();
-  ~LagCorrectionImageFilter() {}
+  virtual ~LagCorrectionImageFilter() ITK_OVERRIDE {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

@@ -73,7 +73,7 @@ public:
 
 protected:
   MedianImageFilter();
-  ~MedianImageFilter() {}
+  virtual ~MedianImageFilter() ITK_OVERRIDE {}
 
   //virtual void GenerateOutputInformation();
   //virtual void GenerateInputRequestedRegion();
