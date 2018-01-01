@@ -158,8 +158,8 @@ int main(int argc, char *argv[])
     if (first)
       {
       // Initialization of the output volume
-      InputImageType::SizeType    sizeInput = outImage->GetLargestPossibleRegion().GetSize();
-      sizeInput[2] = Nproj;
+      InputImageType::SizeType    sizeInput_local = outImage->GetLargestPossibleRegion().GetSize();
+      sizeInput_local[2] = Nproj;
       InputImageType::SpacingType spacingInput = outImage->GetSpacing();
       InputImageType::PointType   originInput = outImage->GetOrigin();
       InputImageType::DirectionType imageDirection;
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
       constantSource->SetOrigin(originInput);
       constantSource->SetSpacing(spacingInput);
       constantSource->SetDirection(imageDirection);
-      constantSource->SetSize(sizeInput);
+      constantSource->SetSize(sizeInput_local);
       constantSource->SetConstant(0.);
       first = false;
       }
