@@ -47,7 +47,7 @@ int main(int argc, char * argv[])
 
   typedef itk::VectorImage< PixelValueType, Dimension > MaterialsVolumeType;
   typedef itk::ImageFileReader< MaterialsVolumeType > MaterialsVolumeReaderType;
-  typedef itk::ImageFileWriter< MaterialsVolumeType > MaterialsVolumeWriterType;
+  //typedef itk::ImageFileWriter< MaterialsVolumeType > MaterialsVolumeWriterType;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< PixelValueType, Dimension + 1 > VolumeSeriesType;
