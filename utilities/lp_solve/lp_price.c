@@ -968,7 +968,14 @@ STATIC int rowprim(lprec *lp, int colnr, LREAL *theta, REAL *pcol, int *nzpcol, 
   /* Update local value of pivot setting */
   lp->_piv_rule_ = get_piv_rule(lp);
   if(nzpcol == NULL)
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
     nzlist = (int *) mempool_obtainVector(lp->workarrays, lp->rows+1, sizeof(*nzlist));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
   else
     nzlist = nzpcol;
 
@@ -1288,6 +1295,7 @@ STATIC int rowdual(lprec *lp, REAL *rhvec, MYBOOL forceoutEQ, MYBOOL updateinfea
 STATIC void longdual_testset(lprec *lp, int which, int rownr, REAL *prow, int *nzprow,
                                                     REAL *drow, int *nzdrow)
 {
+  (void)nzdrow;
   int i,j;
   REAL F = lp->infinite;
   if(which == 0) {             /* Maros Example-1 - raw data */

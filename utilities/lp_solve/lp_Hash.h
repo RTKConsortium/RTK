@@ -32,8 +32,8 @@ STATIC hashelem  *puthash(const char *name, int index, hashelem **list, hashtabl
 STATIC void      drophash(const char *name, hashelem **list, hashtable *ht);
 STATIC void      free_hash_item(hashelem **hp);
 STATIC hashtable *copy_hash_table(hashtable *ht, hashelem **list, int newsize);
-STATIC int find_var(lprec *lp, char *name, MYBOOL verbose);
-STATIC int find_row(lprec *lp, char *name, MYBOOL Unconstrained_rows_found);
+STATIC int find_var(lprec *lp, const char *name, MYBOOL verbose);
+STATIC int find_row(lprec *lp, const char *name, MYBOOL Unconstrained_rows_found);
 
 #ifdef __cplusplus
  }

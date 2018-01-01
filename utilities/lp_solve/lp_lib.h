@@ -821,7 +821,7 @@ typedef MYBOOL (__WINAPI add_columnex_func)(lprec *lp, int count, REAL *column, 
 typedef MYBOOL (__WINAPI add_constraint_func)(lprec *lp, REAL *row, int constr_type, REAL rh);
 typedef MYBOOL (__WINAPI add_constraintex_func)(lprec *lp, int count, REAL *row, int *colno, int constr_type, REAL rh);
 typedef MYBOOL (__WINAPI add_lag_con_func)(lprec *lp, REAL *row, int con_type, REAL rhs);
-typedef int (__WINAPI add_SOS_func)(lprec *lp, char *name, int sostype, int priority, int count, int *sosvars, REAL *weights);
+typedef int (__WINAPI add_SOS_func)(lprec *lp, const char *name, int sostype, int priority, int count, int *sosvars, REAL *weights);
 typedef int (__WINAPI column_in_lp_func)(lprec *lp, REAL *column);
 typedef lprec * (__WINAPI copy_lp_func)(lprec *lp);
 typedef void (__WINAPI default_basis_func)(lprec *lp);
@@ -838,7 +838,7 @@ typedef int (__WINAPI get_bb_floorfirst_func)(lprec *lp);
 typedef int (__WINAPI get_bb_rule_func)(lprec *lp);
 typedef MYBOOL (__WINAPI get_bounds_tighter_func)(lprec *lp);
 typedef REAL (__WINAPI get_break_at_value_func)(lprec *lp);
-typedef char * (__WINAPI get_col_name_func)(lprec *lp, int colnr);
+typedef const char * (__WINAPI get_col_name_func)(lprec *lp, int colnr);
 typedef MYBOOL (__WINAPI get_column_func)(lprec *lp, int colnr, REAL *column);
 typedef int (__WINAPI get_columnex_func)(lprec *lp, int colnr, REAL *column, int *nzrow);
 typedef int (__WINAPI get_constr_type_func)(lprec *lp, int rownr);
@@ -856,7 +856,7 @@ typedef REAL (__WINAPI get_infinite_func)(lprec *lp);
 typedef MYBOOL (__WINAPI get_lambda_func)(lprec *lp, REAL *lambda);
 typedef REAL (__WINAPI get_lowbo_func)(lprec *lp, int colnr);
 typedef int (__WINAPI get_lp_index_func)(lprec *lp, int orig_index);
-typedef char * (__WINAPI get_lp_name_func)(lprec *lp);
+typedef const char * (__WINAPI get_lp_name_func)(lprec *lp);
 typedef int (__WINAPI get_Lrows_func)(lprec *lp);
 typedef REAL (__WINAPI get_mat_func)(lprec *lp, int rownr, int colnr);
 typedef REAL (__WINAPI get_mat_byindex_func)(lprec *lp, int matindex, MYBOOL isrow, MYBOOL adjustsign);
@@ -866,7 +866,7 @@ typedef REAL (__WINAPI get_mip_gap_func)(lprec *lp, MYBOOL absolute);
 typedef int (__WINAPI get_multiprice_func)(lprec *lp, MYBOOL getabssize);
 typedef MYBOOL (__WINAPI is_use_names_func)(lprec *lp, MYBOOL isrow);
 typedef void (__WINAPI set_use_names_func)(lprec *lp, MYBOOL isrow, MYBOOL use_names);
-typedef int (__WINAPI get_nameindex_func)(lprec *lp, char *varname, MYBOOL isrow);
+typedef int (__WINAPI get_nameindex_func)(lprec *lp, const char *varname, MYBOOL isrow);
 typedef int (__WINAPI get_Ncolumns_func)(lprec *lp);
 typedef REAL (__WINAPI get_negrange_func)(lprec *lp);
 typedef int (__WINAPI get_nz_func)(lprec *lp);
@@ -876,8 +876,8 @@ typedef int (__WINAPI get_Nrows_func)(lprec *lp);
 typedef REAL (__WINAPI get_obj_bound_func)(lprec *lp);
 typedef REAL (__WINAPI get_objective_func)(lprec *lp);
 typedef int (__WINAPI get_orig_index_func)(lprec *lp, int lp_index);
-typedef char * (__WINAPI get_origcol_name_func)(lprec *lp, int colnr);
-typedef char * (__WINAPI get_origrow_name_func)(lprec *lp, int rownr);
+typedef const char * (__WINAPI get_origcol_name_func)(lprec *lp, int colnr);
+typedef const char * (__WINAPI get_origrow_name_func)(lprec *lp, int rownr);
 typedef void (__WINAPI get_partialprice_func)(lprec *lp, int *blockcount, int *blockstart, MYBOOL isrow);
 typedef int (__WINAPI get_pivoting_func)(lprec *lp);
 typedef int (__WINAPI get_presolve_func)(lprec *lp);
@@ -897,7 +897,7 @@ typedef REAL (__WINAPI get_rh_func)(lprec *lp, int rownr);
 typedef REAL (__WINAPI get_rh_range_func)(lprec *lp, int rownr);
 typedef int (__WINAPI get_rowex_func)(lprec *lp, int rownr, REAL *row, int *colno);
 typedef MYBOOL (__WINAPI get_row_func)(lprec *lp, int rownr, REAL *row);
-typedef char * (__WINAPI get_row_name_func)(lprec *lp, int rownr);
+typedef const char * (__WINAPI get_row_name_func)(lprec *lp, int rownr);
 typedef REAL (__WINAPI get_scalelimit_func)(lprec *lp);
 typedef int (__WINAPI get_scaling_func)(lprec *lp);
 typedef MYBOOL (__WINAPI get_sensitivity_obj_func)(lprec *lp, REAL *objfrom, REAL *objtill);
@@ -907,7 +907,7 @@ typedef int (__WINAPI get_simplextype_func)(lprec *lp);
 typedef int (__WINAPI get_solutioncount_func)(lprec *lp);
 typedef int (__WINAPI get_solutionlimit_func)(lprec *lp);
 typedef int (__WINAPI get_status_func)(lprec *lp);
-typedef char * (__WINAPI get_statustext_func)(lprec *lp, int statuscode);
+typedef const char * (__WINAPI get_statustext_func)(lprec *lp, int statuscode);
 typedef long (__WINAPI get_timeout_func)(lprec *lp);
 typedef COUNTER (__WINAPI get_total_iter_func)(lprec *lp);
 typedef COUNTER (__WINAPI get_total_nodes_func)(lprec *lp);
@@ -950,13 +950,13 @@ typedef MYBOOL (__WINAPI is_trace_func)(lprec *lp);
 typedef void (__WINAPI lp_solve_version_func)(int *majorversion, int *minorversion, int *release, int *build);
 typedef lprec * (__WINAPI make_lp_func)(int rows, int columns);
 typedef void (__WINAPI print_constraints_func)(lprec *lp, int columns);
-typedef MYBOOL (__WINAPI print_debugdump_func)(lprec *lp, char *filename);
+typedef MYBOOL (__WINAPI print_debugdump_func)(lprec *lp, const char *filename);
 typedef void (__WINAPI print_duals_func)(lprec *lp);
 typedef void (__WINAPI print_lp_func)(lprec *lp);
 typedef void (__WINAPI print_objective_func)(lprec *lp);
 typedef void (__WINAPI print_scales_func)(lprec *lp);
 typedef void (__WINAPI print_solution_func)(lprec *lp, int columns);
-typedef void (__WINAPI print_str_func)(lprec *lp, char *str);
+typedef void (__WINAPI print_str_func)(lprec *lp, const char *str);
 typedef void (__WINAPI print_tableau_func)(lprec *lp);
 typedef void (__WINAPI put_abortfunc_func)(lprec *lp, lphandle_intfunc newctrlc, void *ctrlchandle);
 typedef void (__WINAPI put_bb_nodefunc_func)(lprec *lp, lphandleint_intfunc newnode, void *bbnodehandle);
@@ -965,10 +965,10 @@ typedef void (__WINAPI put_logfunc_func)(lprec *lp, lphandlestr_func newlog, voi
 typedef void (__WINAPI put_msgfunc_func)(lprec *lp, lphandleint_func newmsg, void *msghandle, int mask);
 typedef lprec * (__WINAPI read_LP_func)(char *filename, int verbose, char *lp_name);
 typedef lprec * (__WINAPI read_MPS_func)(char *filename, int options);
-typedef lprec * (__WINAPI read_XLI_func)(char *xliname, char *modelname, char *dataname, char *options, int verbose);
-typedef MYBOOL (__WINAPI read_basis_func)(lprec *lp, char *filename, char *info);
+typedef lprec * (__WINAPI read_XLI_func)(char *xliname, const char *modelname, const char *dataname, const char *options, int verbose);
+typedef MYBOOL (__WINAPI read_basis_func)(lprec *lp, const char *filename, char *info);
 typedef void (__WINAPI reset_basis_func)(lprec *lp);
-typedef MYBOOL (__WINAPI read_params_func)(lprec *lp, char *filename, char *options);
+typedef MYBOOL (__WINAPI read_params_func)(lprec *lp, const char *filename, const char *options);
 typedef void (__WINAPI reset_params_func)(lprec *lp);
 typedef MYBOOL (__WINAPI resize_lp_func)(lprec *lp, int rows, int columns);
 typedef MYBOOL (__WINAPI set_add_rowmode_func)(lprec *lp, MYBOOL turnon);
@@ -979,7 +979,7 @@ typedef void (__WINAPI set_basiscrash_func)(lprec *lp, int mode);
 typedef void (__WINAPI set_bb_depthlimit_func)(lprec *lp, int bb_maxlevel);
 typedef void (__WINAPI set_bb_floorfirst_func)(lprec *lp, int bb_floorfirst);
 typedef void (__WINAPI set_bb_rule_func)(lprec *lp, int bb_rule);
-typedef MYBOOL (__WINAPI set_BFP_func)(lprec *lp, char *filename);
+typedef MYBOOL (__WINAPI set_BFP_func)(lprec *lp, const char *filename);
 typedef MYBOOL (__WINAPI set_binary_func)(lprec *lp, int colnr, MYBOOL must_be_bin);
 typedef MYBOOL (__WINAPI set_bounds_func)(lprec *lp, int colnr, REAL lower, REAL upper);
 typedef void (__WINAPI set_bounds_tighter_func)(lprec *lp, MYBOOL tighten);
@@ -987,7 +987,7 @@ typedef void (__WINAPI set_break_at_first_func)(lprec *lp, MYBOOL break_at_first
 typedef void (__WINAPI set_break_at_value_func)(lprec *lp, REAL break_at_value);
 typedef MYBOOL (__WINAPI set_column_func)(lprec *lp, int colnr, REAL *column);
 typedef MYBOOL (__WINAPI set_columnex_func)(lprec *lp, int colnr, int count, REAL *column, int *rowno);
-typedef MYBOOL (__WINAPI set_col_name_func)(lprec *lp, int colnr, char *new_name);
+typedef MYBOOL (__WINAPI set_col_name_func)(lprec *lp, int colnr, const char *new_name);
 typedef MYBOOL (__WINAPI set_constr_type_func)(lprec *lp, int rownr, int con_type);
 typedef void (__WINAPI set_debug_func)(lprec *lp, MYBOOL debug);
 typedef void (__WINAPI set_epsb_func)(lprec *lp, REAL epsb);
@@ -1003,7 +1003,7 @@ typedef void (__WINAPI set_infinite_func)(lprec *lp, REAL infinite);
 typedef MYBOOL (__WINAPI set_int_func)(lprec *lp, int colnr, MYBOOL must_be_int);
 typedef void (__WINAPI set_lag_trace_func)(lprec *lp, MYBOOL lag_trace);
 typedef MYBOOL (__WINAPI set_lowbo_func)(lprec *lp, int colnr, REAL value);
-typedef MYBOOL (__WINAPI set_lp_name_func)(lprec *lp, char *lpname);
+typedef MYBOOL (__WINAPI set_lp_name_func)(lprec *lp, const char *lpname);
 typedef MYBOOL (__WINAPI set_mat_func)(lprec *lp, int row, int column, REAL value);
 typedef void (__WINAPI set_maxim_func)(lprec *lp);
 typedef void (__WINAPI set_maxpivot_func)(lprec *lp, int max_num_inv);
@@ -1016,7 +1016,7 @@ typedef void (__WINAPI set_obj_bound_func)(lprec *lp, REAL obj_bound);
 typedef MYBOOL (__WINAPI set_obj_fn_func)(lprec *lp, REAL *row);
 typedef MYBOOL (__WINAPI set_obj_fnex_func)(lprec *lp, int count, REAL *row, int *colno);
 typedef void (__WINAPI set_obj_in_basis_func)(lprec *lp, MYBOOL obj_in_basis);
-typedef MYBOOL (__WINAPI set_outputfile_func)(lprec *lp, char *filename);
+typedef MYBOOL (__WINAPI set_outputfile_func)(lprec *lp, const char *filename);
 typedef void (__WINAPI set_outputstream_func)(lprec *lp, FILE *stream);
 typedef MYBOOL (__WINAPI set_partialprice_func)(lprec *lp, int blockcount, int *blockstart, MYBOOL isrow);
 typedef void (__WINAPI set_pivoting_func)(lprec *lp, int piv_rule);
@@ -1029,7 +1029,7 @@ typedef MYBOOL (__WINAPI set_rh_range_func)(lprec *lp, int rownr, REAL deltavalu
 typedef void (__WINAPI set_rh_vec_func)(lprec *lp, REAL *rh);
 typedef MYBOOL (__WINAPI set_row_func)(lprec *lp, int rownr, REAL *row);
 typedef MYBOOL (__WINAPI set_rowex_func)(lprec *lp, int rownr, int count, REAL *row, int *colno);
-typedef MYBOOL (__WINAPI set_row_name_func)(lprec *lp, int rownr, char *new_name);
+typedef MYBOOL (__WINAPI set_row_name_func)(lprec *lp, int rownr, const char *new_name);
 typedef void (__WINAPI set_scalelimit_func)(lprec *lp, REAL scalelimit);
 typedef void (__WINAPI set_scaling_func)(lprec *lp, int scalemode);
 typedef MYBOOL (__WINAPI set_semicont_func)(lprec *lp, int colnr, MYBOOL must_be_sc);
@@ -1042,31 +1042,31 @@ typedef MYBOOL (__WINAPI set_upbo_func)(lprec *lp, int colnr, REAL value);
 typedef MYBOOL (__WINAPI set_var_branch_func)(lprec *lp, int colnr, int branch_mode);
 typedef MYBOOL (__WINAPI set_var_weights_func)(lprec *lp, REAL *weights);
 typedef void (__WINAPI set_verbose_func)(lprec *lp, int verbose);
-typedef MYBOOL (__WINAPI set_XLI_func)(lprec *lp, char *filename);
+typedef MYBOOL (__WINAPI set_XLI_func)(lprec *lp, const char *filename);
 typedef int (__WINAPI solve_func)(lprec *lp);
-typedef MYBOOL (__WINAPI str_add_column_func)(lprec *lp, char *col_string);
-typedef MYBOOL (__WINAPI str_add_constraint_func)(lprec *lp, char *row_string ,int constr_type, REAL rh);
-typedef MYBOOL (__WINAPI str_add_lag_con_func)(lprec *lp, char *row_string, int con_type, REAL rhs);
-typedef MYBOOL (__WINAPI str_set_obj_fn_func)(lprec *lp, char *row_string);
-typedef MYBOOL (__WINAPI str_set_rh_vec_func)(lprec *lp, char *rh_string);
+typedef MYBOOL (__WINAPI str_add_column_func)(lprec *lp, const char *col_string);
+typedef MYBOOL (__WINAPI str_add_constraint_func)(lprec *lp, const char *row_string ,int constr_type, REAL rh);
+typedef MYBOOL (__WINAPI str_add_lag_con_func)(lprec *lp, const char *row_string, int con_type, REAL rhs);
+typedef MYBOOL (__WINAPI str_set_obj_fn_func)(lprec *lp, const char *row_string);
+typedef MYBOOL (__WINAPI str_set_rh_vec_func)(lprec *lp, const char *rh_string);
 typedef REAL (__WINAPI time_elapsed_func)(lprec *lp);
 typedef void (__WINAPI unscale_func)(lprec *lp);
-typedef MYBOOL (__WINAPI write_lp_func)(lprec *lp, char *filename);
+typedef MYBOOL (__WINAPI write_lp_func)(lprec *lp, const char *filename);
 typedef MYBOOL (__WINAPI write_LP_func)(lprec *lp, FILE *output);
-typedef MYBOOL (__WINAPI write_mps_func)(lprec *lp, char *filename);
+typedef MYBOOL (__WINAPI write_mps_func)(lprec *lp, const char *filename);
 typedef MYBOOL (__WINAPI write_MPS_func)(lprec *lp, FILE *output);
-typedef MYBOOL (__WINAPI write_freemps_func)(lprec *lp, char *filename);
+typedef MYBOOL (__WINAPI write_freemps_func)(lprec *lp, const char *filename);
 typedef MYBOOL (__WINAPI write_freeMPS_func)(lprec *lp, FILE *output);
-typedef MYBOOL (__WINAPI write_XLI_func)(lprec *lp, char *filename, char *options, MYBOOL results);
-typedef MYBOOL (__WINAPI write_basis_func)(lprec *lp, char *filename);
-typedef MYBOOL (__WINAPI write_params_func)(lprec *lp, char *filename, char *options);
+typedef MYBOOL (__WINAPI write_XLI_func)(lprec *lp, const char *filename, const char *options, MYBOOL results);
+typedef MYBOOL (__WINAPI write_basis_func)(lprec *lp, const char *filename);
+typedef MYBOOL (__WINAPI write_params_func)(lprec *lp, const char *filename, const char *options);
 
 
 /* Prototypes for callbacks from basis inverse/factorization libraries       */
 /* ------------------------------------------------------------------------- */
 typedef MYBOOL (__WINAPI userabortfunc)(lprec *lp, int level);
-typedef void   (__VACALL reportfunc)(lprec *lp, int level, char *format, ...);
-typedef char * (__VACALL explainfunc)(lprec *lp, char *format, ...);
+typedef void   (__VACALL reportfunc)(lprec *lp, int level, const char *format, ...);
+typedef const char * (__VACALL explainfunc)(lprec *lp, const char *format, ...);
 typedef int    (__WINAPI getvectorfunc)(lprec *lp, int varin, REAL *pcol, int *nzlist, int *maxabs);
 typedef int    (__WINAPI getpackedfunc)(lprec *lp, int j, int rn[], double bj[]);
 typedef REAL    (__WINAPI get_OF_activefunc)(lprec *lp, int varnr, REAL mult);
@@ -1079,7 +1079,7 @@ typedef void   (__WINAPI clear_actionfunc)(int *actionvar, int actionmask);
 
 /* Prototypes for basis inverse/factorization libraries                      */
 /* ------------------------------------------------------------------------- */
-typedef char   *(BFP_CALLMODEL BFPchar)(void);
+typedef const char   *(BFP_CALLMODEL BFPchar)(void);
 typedef void   (BFP_CALLMODEL BFP_lp)(lprec *lp);
 typedef void   (BFP_CALLMODEL BFP_lpint)(lprec *lp, int newsize);
 typedef int    (BFP_CALLMODEL BFPint_lp)(lprec *lp);
@@ -1094,7 +1094,7 @@ typedef void   (BFP_CALLMODEL BFP_lprealintrealint)(lprec *lp, REAL *prow, int *
 typedef MYBOOL (BFP_CALLMODEL BFPbool_lp)(lprec *lp);
 typedef MYBOOL (BFP_CALLMODEL BFPbool_lpbool)(lprec *lp, MYBOOL changesign);
 typedef MYBOOL (BFP_CALLMODEL BFPbool_lpint)(lprec *lp, int size);
-typedef MYBOOL (BFP_CALLMODEL BFPbool_lpintintchar)(lprec *lp, int size, int deltasize, char *options);
+typedef MYBOOL (BFP_CALLMODEL BFPbool_lpintintchar)(lprec *lp, int size, int deltasize, const char *options);
 typedef MYBOOL (BFP_CALLMODEL BFPbool_lpintintint)(lprec *lp, int size, int deltasize, int sizeofvar);
 typedef LREAL  (BFP_CALLMODEL BFPlreal_lpintintreal)(lprec *lp, int row_nr, int col_nr, REAL *pcol);
 typedef REAL   (BFP_CALLMODEL BFPreal_lplrealreal)(lprec *lp, LREAL theta, REAL *pcol);
@@ -1104,10 +1104,10 @@ typedef int    (BFP_CALLMODEL BFPint_lpintrealcbintint)(lprec *lp, int items, ge
 
 /* Prototypes for external language libraries                                */
 /* ------------------------------------------------------------------------- */
-typedef char   *(XLI_CALLMODEL XLIchar)(void);
+typedef const char   *(XLI_CALLMODEL XLIchar)(void);
 typedef MYBOOL (XLI_CALLMODEL XLIbool_lpintintint)(lprec* lp, int size, int deltasize, int sizevar);
-typedef MYBOOL (XLI_CALLMODEL XLIbool_lpcharcharcharint)(lprec *lp, char *modelname, char *dataname, char *options, int verbose);
-typedef MYBOOL (XLI_CALLMODEL XLIbool_lpcharcharbool)(lprec *lp, char *filename, char *options, MYBOOL results);
+typedef MYBOOL (XLI_CALLMODEL XLIbool_lpcharcharcharint)(lprec *lp, const char *modelname, const char *dataname, const char *options, int verbose);
+typedef MYBOOL (XLI_CALLMODEL XLIbool_lpcharcharbool)(lprec *lp, const char *filename, const char *options, MYBOOL results);
 
 
 /* Main lp_solve prototypes and function definitions                         */
@@ -1730,7 +1730,7 @@ void __EXPORT_TYPE __WINAPI lp_solve_version(int *majorversion, int *minorversio
 lprec __EXPORT_TYPE * __WINAPI make_lp(int rows, int columns);
 MYBOOL __EXPORT_TYPE __WINAPI resize_lp(lprec *lp, int rows, int columns);
 int __EXPORT_TYPE __WINAPI get_status(lprec *lp);
-char __EXPORT_TYPE * __WINAPI get_statustext(lprec *lp, int statuscode);
+const char __EXPORT_TYPE * __WINAPI get_statustext(lprec *lp, int statuscode);
 MYBOOL __EXPORT_TYPE __WINAPI is_obj_in_basis(lprec *lp);
 void __EXPORT_TYPE __WINAPI set_obj_in_basis(lprec *lp, MYBOOL obj_in_basis);
 /* Create and initialise a lprec structure defaults */
@@ -1744,27 +1744,27 @@ void __EXPORT_TYPE __WINAPI delete_lp(lprec *lp);
 void __EXPORT_TYPE __WINAPI free_lp(lprec **plp);
 /* Remove problem from memory */
 
-MYBOOL __EXPORT_TYPE __WINAPI set_lp_name(lprec *lp, char *lpname);
-char __EXPORT_TYPE * __WINAPI get_lp_name(lprec *lp);
+MYBOOL __EXPORT_TYPE __WINAPI set_lp_name(lprec *lp, const char *lpname);
+const char __EXPORT_TYPE * __WINAPI get_lp_name(lprec *lp);
 /* Set and get the problem name */
 
 MYBOOL __EXPORT_TYPE __WINAPI has_BFP(lprec *lp);
 MYBOOL __EXPORT_TYPE __WINAPI is_nativeBFP(lprec *lp);
-MYBOOL __EXPORT_TYPE __WINAPI set_BFP(lprec *lp, char *filename);
+MYBOOL __EXPORT_TYPE __WINAPI set_BFP(lprec *lp, const char *filename);
 /* Set basis factorization engine */
 
-lprec __EXPORT_TYPE * __WINAPI read_XLI(char *xliname, char *modelname, char *dataname, char *options, int verbose);
-MYBOOL __EXPORT_TYPE __WINAPI write_XLI(lprec *lp, char *filename, char *options, MYBOOL results);
+lprec __EXPORT_TYPE * __WINAPI read_XLI(char *xliname, const char *modelname, const char *dataname, const char *options, int verbose);
+MYBOOL __EXPORT_TYPE __WINAPI write_XLI(lprec *lp, const char *filename, const char *options, MYBOOL results);
 MYBOOL __EXPORT_TYPE __WINAPI has_XLI(lprec *lp);
 MYBOOL __EXPORT_TYPE __WINAPI is_nativeXLI(lprec *lp);
-MYBOOL __EXPORT_TYPE __WINAPI set_XLI(lprec *lp, char *filename);
+MYBOOL __EXPORT_TYPE __WINAPI set_XLI(lprec *lp, const char *filename);
 /* Set external language interface */
 
 MYBOOL __EXPORT_TYPE __WINAPI set_obj(lprec *lp, int colnr, REAL value);
 MYBOOL __EXPORT_TYPE __WINAPI set_obj_fn(lprec *lp, REAL *row);
 MYBOOL __EXPORT_TYPE __WINAPI set_obj_fnex(lprec *lp, int count, REAL *row, int *colno);
 /* set the objective function (Row 0) of the matrix */
-MYBOOL __EXPORT_TYPE __WINAPI str_set_obj_fn(lprec *lp, char *row_string);
+MYBOOL __EXPORT_TYPE __WINAPI str_set_obj_fn(lprec *lp, const char *row_string);
 /* The same, but with string input */
 void __EXPORT_TYPE __WINAPI set_sense(lprec *lp, MYBOOL maximize);
 void __EXPORT_TYPE __WINAPI set_maxim(lprec *lp);
@@ -1778,7 +1778,7 @@ MYBOOL __EXPORT_TYPE __WINAPI set_add_rowmode(lprec *lp, MYBOOL turnon);
 MYBOOL __EXPORT_TYPE __WINAPI is_add_rowmode(lprec *lp);
 /* Add a constraint to the problem, row is the constraint row, rh is the right hand side,
    constr_type is the type of constraint (LE (<=), GE(>=), EQ(=)) */
-MYBOOL __EXPORT_TYPE __WINAPI str_add_constraint(lprec *lp, char *row_string, int constr_type, REAL rh);
+MYBOOL __EXPORT_TYPE __WINAPI str_add_constraint(lprec *lp, const char *row_string, int constr_type, REAL rh);
 /* The same, but with string input */
 
 MYBOOL __EXPORT_TYPE __WINAPI set_row(lprec *lp, int rownr, REAL *row);
@@ -1793,7 +1793,7 @@ STATIC MYBOOL del_constraintex(lprec *lp, LLrec *rowmap);
 
 MYBOOL __EXPORT_TYPE __WINAPI add_lag_con(lprec *lp, REAL *row, int con_type, REAL rhs);
 /* add a Lagrangian constraint of form Row' x contype Rhs */
-MYBOOL __EXPORT_TYPE __WINAPI str_add_lag_con(lprec *lp, char *row_string, int con_type, REAL rhs);
+MYBOOL __EXPORT_TYPE __WINAPI str_add_lag_con(lprec *lp, const char *row_string, int con_type, REAL rhs);
 /* The same, but with string input */
 void __EXPORT_TYPE __WINAPI set_lag_trace(lprec *lp, MYBOOL lag_trace);
 MYBOOL __EXPORT_TYPE __WINAPI is_lag_trace(lprec *lp);
@@ -1803,9 +1803,9 @@ MYBOOL __EXPORT_TYPE __WINAPI set_constr_type(lprec *lp, int rownr, int con_type
 int __EXPORT_TYPE __WINAPI get_constr_type(lprec *lp, int rownr);
 REAL __EXPORT_TYPE __WINAPI get_constr_value(lprec *lp, int rownr, int count, REAL *primsolution, int *nzindex);
 MYBOOL __EXPORT_TYPE __WINAPI is_constr_type(lprec *lp, int rownr, int mask);
-STATIC char *get_str_constr_type(lprec *lp, int con_type);
+STATIC const char *get_str_constr_type(lprec *lp, int con_type);
 STATIC int get_constr_class(lprec *lp, int rownr);
-STATIC char *get_str_constr_class(lprec *lp, int con_class);
+STATIC const char *get_str_constr_class(lprec *lp, int con_class);
 /* Set the type of constraint in row Row (LE, GE, EQ) */
 
 MYBOOL __EXPORT_TYPE __WINAPI set_rh(lprec *lp, int rownr, REAL value);
@@ -1816,12 +1816,12 @@ REAL __EXPORT_TYPE __WINAPI get_rh_range(lprec *lp, int rownr);
 /* Set the RHS range; i.e. the lower and upper bounds of a constraint row */
 void __EXPORT_TYPE __WINAPI set_rh_vec(lprec *lp, REAL *rh);
 /* Set the right hand side vector */
-MYBOOL __EXPORT_TYPE __WINAPI str_set_rh_vec(lprec *lp, char *rh_string);
+MYBOOL __EXPORT_TYPE __WINAPI str_set_rh_vec(lprec *lp, const char *rh_string);
 /* The same, but with string input */
 
 MYBOOL __EXPORT_TYPE __WINAPI add_column(lprec *lp, REAL *column);
 MYBOOL __EXPORT_TYPE __WINAPI add_columnex(lprec *lp, int count, REAL *column, int *rowno);
-MYBOOL __EXPORT_TYPE __WINAPI str_add_column(lprec *lp, char *col_string);
+MYBOOL __EXPORT_TYPE __WINAPI str_add_column(lprec *lp, const char *col_string);
 /* Add a column to the problem */
 
 MYBOOL __EXPORT_TYPE __WINAPI set_column(lprec *lp, int colnr, REAL *column);
@@ -1877,18 +1877,18 @@ MYBOOL __EXPORT_TYPE __WINAPI get_pseudocosts(lprec *lp, REAL *clower, REAL *cup
    note that setting of pseudocosts can only happen in response to a
    call-back function optionally requesting this */
 
-int  __EXPORT_TYPE __WINAPI add_SOS(lprec *lp, char *name, int sostype, int priority, int count, int *sosvars, REAL *weights);
+int  __EXPORT_TYPE __WINAPI add_SOS(lprec *lp, const char *name, int sostype, int priority, int count, int *sosvars, REAL *weights);
 MYBOOL __EXPORT_TYPE __WINAPI is_SOS_var(lprec *lp, int colnr);
 /* Add SOS constraints */
 
-MYBOOL __EXPORT_TYPE __WINAPI set_row_name(lprec *lp, int rownr, char *new_name);
-char __EXPORT_TYPE * __WINAPI get_row_name(lprec *lp, int rownr);
-char __EXPORT_TYPE * __WINAPI get_origrow_name(lprec *lp, int rownr);
+MYBOOL __EXPORT_TYPE __WINAPI set_row_name(lprec *lp, int rownr, const char *new_name);
+const char __EXPORT_TYPE * __WINAPI get_row_name(lprec *lp, int rownr);
+const char __EXPORT_TYPE * __WINAPI get_origrow_name(lprec *lp, int rownr);
 /* Set/Get the name of a constraint row */   /* Get added by KE */
 
-MYBOOL __EXPORT_TYPE __WINAPI set_col_name(lprec *lp, int colnr, char *new_name);
-char __EXPORT_TYPE * __WINAPI get_col_name(lprec *lp, int colnr);
-char __EXPORT_TYPE * __WINAPI get_origcol_name(lprec *lp, int colnr);
+MYBOOL __EXPORT_TYPE __WINAPI set_col_name(lprec *lp, int colnr, const char *new_name);
+const char __EXPORT_TYPE * __WINAPI get_col_name(lprec *lp, int colnr);
+const char __EXPORT_TYPE * __WINAPI get_origcol_name(lprec *lp, int colnr);
 /* Set/Get the name of a variable column */  /* Get added by KE */
 
 void __EXPORT_TYPE __WINAPI unscale(lprec *lp);
@@ -1951,12 +1951,12 @@ lprec __EXPORT_TYPE * __WINAPI read_freeMPS(char *filename, int options);
 lprec __EXPORT_TYPE * __WINAPI read_freemps(FILE *filename, int options);
 
 /* Write a MPS file to output */
-MYBOOL __EXPORT_TYPE __WINAPI write_mps(lprec *lp, char *filename);
+MYBOOL __EXPORT_TYPE __WINAPI write_mps(lprec *lp, const char *filename);
 MYBOOL __EXPORT_TYPE __WINAPI write_MPS(lprec *lp, FILE *output);
-MYBOOL __EXPORT_TYPE __WINAPI write_freemps(lprec *lp, char *filename);
+MYBOOL __EXPORT_TYPE __WINAPI write_freemps(lprec *lp, const char *filename);
 MYBOOL __EXPORT_TYPE __WINAPI write_freeMPS(lprec *lp, FILE *output);
 
-MYBOOL __EXPORT_TYPE __WINAPI write_lp(lprec *lp, char *filename);
+MYBOOL __EXPORT_TYPE __WINAPI write_lp(lprec *lp, const char *filename);
 MYBOOL __EXPORT_TYPE __WINAPI write_LP(lprec *lp, FILE *output);
  /* Write a LP file to output */
 
@@ -1965,12 +1965,12 @@ lprec __EXPORT_TYPE * __WINAPI read_lp(FILE *filename, int verbose, char *lp_nam
 lprec __EXPORT_TYPE * __WINAPI read_LP(char *filename, int verbose, char *lp_name);
 /* Old-style lp format file parser */
 
-MYBOOL __EXPORT_TYPE __WINAPI write_basis(lprec *lp, char *filename);
-MYBOOL __EXPORT_TYPE __WINAPI read_basis(lprec *lp, char *filename, char *info);
+MYBOOL __EXPORT_TYPE __WINAPI write_basis(lprec *lp, const char *filename);
+MYBOOL __EXPORT_TYPE __WINAPI read_basis(lprec *lp, const char *filename, char *info);
 /* Read and write basis from/to file in CPLEX BAS format */
 
-MYBOOL __EXPORT_TYPE __WINAPI write_params(lprec *lp, char *filename, char *options);
-MYBOOL __EXPORT_TYPE __WINAPI read_params(lprec *lp, char *filename, char *options);
+MYBOOL __EXPORT_TYPE __WINAPI write_params(lprec *lp, const char *filename, const char *options);
+MYBOOL __EXPORT_TYPE __WINAPI read_params(lprec *lp, const char *filename, const char *options);
 void __EXPORT_TYPE __WINAPI reset_params(lprec *lp);
 /* Read and write parameter file */
 
@@ -1989,10 +1989,10 @@ void __EXPORT_TYPE __WINAPI print_duals(lprec *lp);
 void __EXPORT_TYPE __WINAPI print_scales(lprec *lp);
 /* If scaling is used, print the scaling factors */
 
-void __EXPORT_TYPE __WINAPI print_str(lprec *lp, char *str);
+void __EXPORT_TYPE __WINAPI print_str(lprec *lp, const char *str);
 
 void __EXPORT_TYPE __WINAPI set_outputstream(lprec *lp, FILE *stream);
-MYBOOL __EXPORT_TYPE __WINAPI set_outputfile(lprec *lp, char *filename);
+MYBOOL __EXPORT_TYPE __WINAPI set_outputfile(lprec *lp, const char *filename);
 
 void __EXPORT_TYPE __WINAPI set_verbose(lprec *lp, int verbose);
 int __EXPORT_TYPE __WINAPI get_verbose(lprec *lp);
@@ -2009,7 +2009,7 @@ MYBOOL __EXPORT_TYPE __WINAPI is_debug(lprec *lp);
 void __EXPORT_TYPE __WINAPI set_trace(lprec *lp, MYBOOL trace);
 MYBOOL __EXPORT_TYPE __WINAPI is_trace(lprec *lp);
 
-MYBOOL __EXPORT_TYPE __WINAPI print_debugdump(lprec *lp, char *filename);
+MYBOOL __EXPORT_TYPE __WINAPI print_debugdump(lprec *lp, const char *filename);
 
 void __EXPORT_TYPE __WINAPI set_anti_degen(lprec *lp, int anti_degen);
 int __EXPORT_TYPE __WINAPI get_anti_degen(lprec *lp);
@@ -2078,7 +2078,7 @@ int __EXPORT_TYPE __WINAPI get_multiprice(lprec *lp, MYBOOL getabssize);
 MYBOOL __EXPORT_TYPE __WINAPI is_use_names(lprec *lp, MYBOOL isrow);
 void __EXPORT_TYPE __WINAPI set_use_names(lprec *lp, MYBOOL isrow, MYBOOL use_names);
 
-int __EXPORT_TYPE __WINAPI get_nameindex(lprec *lp, char *varname, MYBOOL isrow);
+int __EXPORT_TYPE __WINAPI get_nameindex(lprec *lp, const char *varname, MYBOOL isrow);
 
 MYBOOL __EXPORT_TYPE __WINAPI is_piv_mode(lprec *lp, int testmask);
 MYBOOL __EXPORT_TYPE __WINAPI is_piv_rule(lprec *lp, int rule);
@@ -2162,8 +2162,8 @@ MYBOOL __EXPORT_TYPE __WINAPI MPS_writefileex(lprec *lp, int typeMPS, void *user
 MYBOOL set_callbacks(lprec *lp);
 STATIC int yieldformessages(lprec *lp);
 MYBOOL __WINAPI userabort(lprec *lp, int message);
-/*char * __VACALL explain(lprec *lp, char *format, ...);
-void __VACALL report(lprec *lp, int level, char *format, ...);*/
+/*char * __VACALL explain(lprec *lp, const char *format, ...);
+void __VACALL report(lprec *lp, int level, const char *format, ...);*/
 
 /* Memory management routines */
 STATIC MYBOOL append_rows(lprec *lp, int deltarows);
@@ -2213,7 +2213,7 @@ MYBOOL __WINAPI is_action(int actionvar, int testmask);
 /* INLINE */ MYBOOL is_bb_rule(lprec *lp, int bb_rule);
 /* INLINE */ MYBOOL is_bb_mode(lprec *lp, int bb_mask);
 /* INLINE */ int get_piv_rule(lprec *lp);
-STATIC char *get_str_piv_rule(int rule);
+STATIC const char *get_str_piv_rule(int rule);
 STATIC MYBOOL __WINAPI set_var_priority(lprec *lp);
 STATIC int find_sc_bbvar(lprec *lp, int *count);
 STATIC int find_sos_bbvar(lprec *lp, int *count, MYBOOL intsos);
@@ -2229,7 +2229,7 @@ STATIC MYBOOL construct_duals(lprec *lp);
 STATIC MYBOOL construct_sensitivity_duals(lprec *lp);
 STATIC MYBOOL construct_sensitivity_obj(lprec *lp);
 
-STATIC int add_GUB(lprec *lp, char *name, int priority, int count, int *sosvars);
+STATIC int add_GUB(lprec *lp, const char *name, int priority, int count, int *sosvars);
 STATIC basisrec *push_basis(lprec *lp, int *basisvar, MYBOOL *isbasic, MYBOOL *islower);
 STATIC MYBOOL compare_basis(lprec *lp);
 STATIC MYBOOL restore_basis(lprec *lp);

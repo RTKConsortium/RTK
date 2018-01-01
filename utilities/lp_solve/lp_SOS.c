@@ -136,7 +136,7 @@ STATIC void free_SOSgroup(SOSgroup **group)
 }
 
 /* SOS record functions */
-STATIC SOSrec *create_SOSrec(SOSgroup *group, char *name, int type, int priority, int size, int *variables, REAL *weights)
+STATIC SOSrec *create_SOSrec(SOSgroup *group, const char *name, int type, int priority, int size, int *variables, REAL *weights)
 {
   SOSrec *SOS;
 

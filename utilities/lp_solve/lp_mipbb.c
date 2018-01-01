@@ -306,6 +306,7 @@ STATIC REAL probe_BB(BBrec *BB)
 
 STATIC REAL presolve_BB(BBrec *BB)
 {
+  (void)BB;
   return( 0 );
 }
 
@@ -524,7 +525,7 @@ SetLB:
         new_bound = BB->sc_bound;
     }
     /* Handle pure integers (non-SOS, non-SC, but Ok for GUB!) */
-    else if((BB->vartype == BB_INT)) {
+    else if(BB->vartype == BB_INT) {
       if(((ceil(BB->lastsolution) == BB->lastsolution)) ||    /* Skip branch 0 if the current solution is integer */
          (ceil(BB->lastsolution) >   /* Skip cases where the upper bound becomes violated */
           unscaled_value(lp, ult_upbo, K)+intmargin) ||
@@ -745,11 +746,13 @@ STATIC MYBOOL nextbranch_BB(BBrec *BB)
 /* Cut generation and management routines */
 STATIC MYBOOL initcuts_BB(lprec *lp)
 {
+  (void)lp;
   return( TRUE );
 }
 
 STATIC int updatecuts_BB(lprec *lp)
 {
+  (void)lp;
   return( 0 );
 }
 
@@ -1372,10 +1375,12 @@ STATIC MYBOOL strongbranch_BB(lprec *lp, BBrec *BB, int varno, int vartype, int 
 /* Future functions */
 STATIC MYBOOL pre_BB(lprec *lp)
 {
+  (void)lp;
   return( TRUE );
 }
 STATIC MYBOOL post_BB(lprec *lp)
 {
+  (void)lp;
   return( TRUE );
 }
 

@@ -278,10 +278,10 @@ int mod(int n, int d);
 
 void strtoup(char *s);
 void strtolo(char *s);
-void strcpyup(char *t, char *s);
-void strcpylo(char *t, char *s);
+void strcpyup(char *t, const char *s);
+void strcpylo(char *t, const char *s);
 
-MYBOOL so_stdname(char *stdname, char *descname, int buflen);
+MYBOOL so_stdname(char *stdname, const char *descname, int buflen);
 int gcd(LLONG a, LLONG b, int *c, int *d);
 
 int findIndex(int target, int *attributes, int count, int offset);
@@ -312,9 +312,9 @@ REAL sortREALByINT(REAL *item, int *weight, int size, int offset, MYBOOL unique)
 
 double timeNow(void);
 
-void blockWriteBOOL(FILE *output, char *label, MYBOOL *myvector, int first, int last, MYBOOL asRaw);
-void blockWriteINT(FILE *output, char *label, int *myvector, int first, int last);
-void blockWriteREAL(FILE *output, char *label, REAL *myvector, int first, int last);
+void blockWriteBOOL(FILE *output, const char *label, MYBOOL *myvector, int first, int last, MYBOOL asRaw);
+void blockWriteINT(FILE *output, const char *label, int *myvector, int first, int last);
+void blockWriteREAL(FILE *output, const char *label, REAL *myvector, int first, int last);
 
 void printvec( int n, REAL *x, int modulo );
 void printmatSQ( int size, int n, REAL *X, int modulo );
@@ -323,8 +323,8 @@ void printmatUT( int size, int n, REAL *U, int modulo );
 unsigned int catchFPU(unsigned int mask);
 
 #if defined _MSC_VER
-int fileCount( char *filemask );
-MYBOOL fileSearchPath( char *envvar, char *searchfile, char *foundpath );
+int fileCount( const char *filemask );
+MYBOOL fileSearchPath( const char *envvar, const char *searchfile, const char *foundpath );
 #endif
 
 #ifdef __cplusplus

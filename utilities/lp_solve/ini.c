@@ -6,7 +6,7 @@
 
 #include "ini.h"
 
-FILE *ini_create(char *filename)
+FILE *ini_create(const char *filename)
 {
   FILE *fp;
 
@@ -15,7 +15,7 @@ FILE *ini_create(char *filename)
   return(fp);
 }
 
-FILE *ini_open(char *filename)
+FILE *ini_open(const char *filename)
 {
   FILE *fp;
 
@@ -24,19 +24,19 @@ FILE *ini_open(char *filename)
   return(fp);
 }
 
-void ini_writecomment(FILE *fp, char *comment)
+void ini_writecomment(FILE *fp, const char *comment)
 {
   fprintf(fp, "; %s\n", comment);
 }
 
-void ini_writeheader(FILE *fp, char *header, int addnewline)
+void ini_writeheader(FILE *fp, const char *header, int addnewline)
 {
   if((addnewline) && (ftell(fp) > 0))
     fputs("\n", fp);
   fprintf(fp, "[%s]\n", header);
 }
 
-void ini_writedata(FILE *fp, char *name, char *data)
+void ini_writedata(FILE *fp, const char *name, const char *data)
 {
   if(name != NULL)
     fprintf(fp, "%s=%s\n", name, data);
@@ -44,7 +44,7 @@ void ini_writedata(FILE *fp, char *name, char *data)
     fprintf(fp, "%s\n", data);
 }
 
-int ini_readdata(FILE *fp, char *data, int szdata, int withcomment)
+int ini_readdata(FILE *fp, char * const data, int szdata, int withcomment)
 {
   int l;
   char *ptr;

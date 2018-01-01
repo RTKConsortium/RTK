@@ -844,7 +844,7 @@ PRIVATE int clear_mark
 
 PRIVATE void print_report
 (
-    char *method,
+    const char * method,
     int stats [COLAMD_STATS]
 ) ;
 
@@ -3040,7 +3040,7 @@ PRIVATE int clear_mark	/* return the new value for tag_mark */
 
 PRIVATE void print_report
 (
-    char *method,
+    const char * method,
     int stats [COLAMD_STATS]
 )
 {
