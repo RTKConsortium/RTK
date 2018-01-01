@@ -114,7 +114,7 @@ public:
     typedef std::vector<double>                                                    SignalVectorType;
 
     /** The forward projection filter cannot be set by the user */
-    void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer _arg) {}
+    void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer ) {}
 
     /** The ND + time motion vector field */
     void SetDisplacementField(const DVFSequenceImageType* DVFs);

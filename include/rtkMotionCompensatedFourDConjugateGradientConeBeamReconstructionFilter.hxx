@@ -75,6 +75,8 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter< VolumeSerie
 #ifdef RTK_USE_CUDA
   dynamic_cast<MCProjStackToFourDType*>(this->m_ProjStackToFourDFilter.GetPointer())->SetSignal(signal);
   dynamic_cast<MCCGOperatorType*>(this->m_CGOperator.GetPointer())->SetSignal(signal);
+#else
+  (void)signal;
 #endif
 }
 
