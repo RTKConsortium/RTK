@@ -146,17 +146,17 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
         }
 
       // Apply perspective
-      double perspFactor = matrix[Dimension-1][Dimension];
+      double perspFactor_local = matrix[Dimension-1][Dimension];
       for(unsigned int j=0; j<Dimension; j++)
-        perspFactor += matrix[Dimension-1][j] * point[j];
-      perspFactor = 1/perspFactor;
+        perspFactor_local += matrix[Dimension-1][j] * point[j];
+      perspFactor_local = 1/perspFactor_local;
       for(unsigned int i=0; i<Dimension-1; i++)
-        pointProj[i] = pointProj[i]*perspFactor;
+        pointProj[i] = pointProj[i]*perspFactor_local;
 
       // Interpolate if in projection
       if( interpolator->IsInsideBuffer(pointProj) )
         {
-        itOut.Set( itOut.Get() + perspFactor*perspFactor*interpolator->EvaluateAtContinuousIndex(pointProj) );
+        itOut.Set( itOut.Get() + perspFactor_local*perspFactor_local*interpolator->EvaluateAtContinuousIndex(pointProj) );
         }
 
       ++itOut;
