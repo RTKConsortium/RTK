@@ -253,6 +253,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType threadId )
 {
+  (void)threadId;
   typename TInputImage::DirectionType d = this->GetInput()->GetDirection();
   if( d[0][0]==1. && d[0][1]==0. && d[0][2]==0. &&
       d[1][0]==0. && d[1][1]==1. && d[1][2]==0. &&

@@ -33,6 +33,7 @@ void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 ::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
 {
+  (void)bWithExternalHalfPixelBorder;
   m_RBIFunctor->SetBoxFromImage(_arg);
   this->Modified();
 }
