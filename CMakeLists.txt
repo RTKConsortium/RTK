@@ -173,10 +173,10 @@ endif()
 list(APPEND RTK_INCLUDE_DIRS "${PROJECT_BINARY_DIR}")
 include_directories(${RTK_INCLUDE_DIRS})
 
-if(ITK_VERSION LESS "4.4")
+if(ITK_VERSION VERSION_LESS "4.4")
   include_directories(BEFORE utilities/itkImageScanlineConstIterator)
 endif()
-if(ITK_VERSION LESS "4.5")
+if(ITK_VERSION VERSION_LESS "4.5")
   include_directories(BEFORE utilities/itkBinShrinkImageFilter)
 endif()
 
