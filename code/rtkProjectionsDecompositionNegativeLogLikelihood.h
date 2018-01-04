@@ -23,6 +23,7 @@
 #include <itkVectorImage.h>
 #include <itkVariableLengthVector.h>
 #include <itkVariableSizeMatrix.h>
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -105,7 +106,7 @@ public:
   return fischer;
   }
 
-  virtual void ComputeFischerMatrix(const ParametersType & lineIntegrals){}
+  virtual void ComputeFischerMatrix(const ParametersType & lineIntegrals) {}
 
   unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
   {

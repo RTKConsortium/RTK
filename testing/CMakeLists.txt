@@ -46,6 +46,10 @@ add_test(rtkfdktest ${EXECUTABLE_OUTPUT_PATH}/rtkfdktest)
 ADD_CUDA_TEST(rtkfdk rtkfdktest.cxx)
 ADD_CUDA_TEST(rtkfdkprojweightcomp rtkfdkprojweightcompcudatest.cxx)
 
+add_executable(rtkfbpparalleltest rtkfbpparalleltest.cxx)
+target_link_libraries(rtkfbpparalleltest ${RTK_LIBRARIES})
+add_test(rtkfbpparalleltest ${EXECUTABLE_OUTPUT_PATH}/rtkfbpparalleltest)
+
 add_executable(rtkimporttest rtkimporttest.cxx)
 target_link_libraries(rtkimporttest ${RTK_LIBRARIES})
 add_test(rtkimporttest ${EXECUTABLE_OUTPUT_PATH}/rtkimporttest)

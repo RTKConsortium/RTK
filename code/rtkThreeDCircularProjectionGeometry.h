@@ -40,6 +40,8 @@ namespace rtk
  *
  * If SDD equals 0., then one is dealing with a parallel geometry.
  *
+ * More information is provided in \ref DocGeo3D.
+ *
  * \author Simon Rit
  *
  * \ingroup ProjectionGeometry

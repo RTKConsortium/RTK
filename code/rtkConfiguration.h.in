@@ -28,6 +28,13 @@ namespace rtk
   typedef itk::ThreadIdType ThreadIdType;
 }
 
+#if ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 5
+namespace itk
+{
+  typedef double SpacePrecisionType;
+}
+#endif
+
 #ifndef CUDA_FOUND
 #cmakedefine CUDA_FOUND
 #endif

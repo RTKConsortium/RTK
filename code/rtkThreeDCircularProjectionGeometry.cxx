@@ -67,6 +67,19 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
   const double outOfPlaneAngle, const double inPlaneAngle,
   const double sourceOffsetX, const double sourceOffsetY)
 {
+  // Check parallel / divergent projections consistency
+  if( m_GantryAngles.size() )
+    {
+    if( sdd == 0. && m_SourceToDetectorDistances[0] != 0. )
+      {
+      itkGenericExceptionMacro(<< "Cannot add a parallel projection in a 3D geometry object containing divergent projections");
+      }
+    if( sdd != 0. && m_SourceToDetectorDistances[0] == 0. )
+      {
+      itkGenericExceptionMacro(<< "Cannot add a divergent projection in a 3D geometry object containing parallel projections");
+      }
+    }
+
   // Detector orientation parameters
   m_GantryAngles.push_back( ConvertAngleBetween0And2PIRadians(gantryAngle) );
   m_OutOfPlaneAngles.push_back( ConvertAngleBetween0And2PIRadians(outOfPlaneAngle) );
@@ -539,7 +552,14 @@ GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const
   matrix.SetIdentity();
   matrix[0][3] = this->GetProjectionOffsetsX()[i];
   matrix[1][3] = this->GetProjectionOffsetsY()[i];
-  matrix[2][3] = this->GetSourceToIsocenterDistances()[i]-this->GetSourceToDetectorDistances()[i];
+  if(this->GetSourceToDetectorDistances()[i] == 0.)
+    {
+    matrix[2][3] = -1. * this->GetSourceToIsocenterDistances()[i];
+    }
+  else
+    {
+    matrix[2][3] = this->GetSourceToIsocenterDistances()[i]-this->GetSourceToDetectorDistances()[i];
+    }
   matrix[2][2] = 0.; // Force z to axis to detector distance
   return matrix;
 }

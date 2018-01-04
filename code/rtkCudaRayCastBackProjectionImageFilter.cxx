@@ -38,6 +38,12 @@ void
 CudaRayCastBackProjectionImageFilter
 ::GPUGenerateData()
 {
+  if (this->GetGeometry()->GetSourceToDetectorDistances()[0] &&
+      this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0)
+    {
+    itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
+    }
+
   GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
   if( !geometry )
     {
