@@ -54,6 +54,7 @@ public:
   /** Displacement type */
   typedef TDVF                                      DisplacementFieldType;
   typedef typename DisplacementFieldType::Pointer   DisplacementFieldPointer;
+  typedef typename DisplacementFieldType::ConstPointer   DisplacementFieldConstPointer;
   typedef typename DisplacementFieldType::PixelType DisplacementType;
 
   /** Point type */
