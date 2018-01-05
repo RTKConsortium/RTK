@@ -227,6 +227,7 @@ void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::PrintTiming(std::ostream& os) const
 {
+  (void)os;
 }
 
 } // end namespace rtk

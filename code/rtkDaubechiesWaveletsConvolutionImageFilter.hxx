@@ -63,7 +63,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>
 template<typename TImage>
 void
 DaubechiesWaveletsConvolutionImageFilter<TImage>
-::PrintSelf(std::ostream& os, itk::Indent i)
+::PrintSelf(std::ostream& os, itk::Indent i) const
 {
   os  << i << "DaubechiesWaveletsConvolutionImageFilter { this=" << this
       << " }" << std::endl;
