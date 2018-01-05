@@ -40,7 +40,7 @@
 /* ------------------------------------------------------------------------- */
 
 /* First define general utilties for reporting and output */
-char * __VACALL explain(lprec *lp, char *format, ...)
+const char * __VACALL explain(lprec *lp, const char *format, ...)
 {
   char buff[DEF_STRBUFSIZE+1];
   va_list ap;
@@ -52,7 +52,7 @@ char * __VACALL explain(lprec *lp, char *format, ...)
   strcpy(lp->ex_status, buff);
   return( lp->ex_status );
 }
-void __VACALL report(lprec *lp, int level, char *format, ...)
+void __VACALL report(lprec *lp, int level, const char * format, ...)
 {
   char buff[DEF_STRBUFSIZE+1];
   va_list ap;
@@ -96,7 +96,7 @@ STATIC void print_indent(lprec *lp)
   report(lp, NEUTRAL, "> ");
 } /* print_indent */
 
-STATIC void debug_print(lprec *lp, char *format, ...)
+STATIC void debug_print(lprec *lp, const char *format, ...)
 {
   va_list ap;
 
@@ -160,7 +160,7 @@ STATIC void debug_print_bounds(lprec *lp, REAL *upbo, REAL *lowbo)
 } /* debug_print_bounds */
 
 /* List a vector of LREAL values for the given index range */
-void blockWriteLREAL(FILE *output, char *label, LREAL *vector, int first, int last)
+void blockWriteLREAL(FILE *output, const char *label, LREAL *vector, int first, int last)
 {
   int i, k = 0;
 
@@ -293,7 +293,7 @@ void blockWriteBMAT(FILE *output, const char *label, lprec* lp, int first, int l
 
 /* Do a generic readable data dump of key lp_solve model variables;
    principally for run difference and debugging purposes */
-MYBOOL REPORT_debugdump(lprec *lp, char *filename, MYBOOL livedata)
+MYBOOL REPORT_debugdump(lprec *lp, const char *filename, MYBOOL livedata)
 {
   FILE   *output = stdout;
   MYBOOL ok;
@@ -625,7 +625,14 @@ MYBOOL REPORT_tableau(lprec *lp)
                               (lp->is_lower[j] ? 1 : -1));
   fprintf(stream, "\n");
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
   coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->columns+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
   if(!get_colIndexA(lp, SCAN_USERVARS+USE_NONBASICVARS, coltarget, FALSE)) {
     mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
     return(FALSE);
@@ -657,7 +664,7 @@ MYBOOL REPORT_tableau(lprec *lp)
   return(TRUE);
 }
 
-void REPORT_constraintinfo(lprec *lp, char *datainfo)
+void REPORT_constraintinfo(lprec *lp, const char *datainfo)
 {
   int i, tally[ROWCLASS_MAX+1];
 
@@ -673,7 +680,7 @@ void REPORT_constraintinfo(lprec *lp, char *datainfo)
       report(lp, NORMAL, "%-15s %4d\n", get_str_constr_class(lp, i), tally[i]);
 }
 
-void REPORT_modelinfo(lprec *lp, MYBOOL doName, char *datainfo)
+void REPORT_modelinfo(lprec *lp, MYBOOL doName, const char *datainfo)
 {
   if(doName) {
     report(lp, NORMAL, "\nModel name:  '%s' - run #%-5d\n",
@@ -697,7 +704,7 @@ void REPORT_modelinfo(lprec *lp, MYBOOL doName, char *datainfo)
 /* Save a matrix column subset to a MatrixMarket formatted file,
    say to export the basis matrix for further numerical analysis.
    If colndx is NULL, then the full constraint matrix is assumed. */
-MYBOOL REPORT_mat_mmsave(lprec *lp, char *filename, int *colndx, MYBOOL includeOF, char *infotext)
+MYBOOL REPORT_mat_mmsave(lprec *lp, const char *filename, int *colndx, MYBOOL includeOF, const char *infotext)
 {
   int         n, m, nz, i, j, k, kk;
   MATrec      *mat = lp->matA;

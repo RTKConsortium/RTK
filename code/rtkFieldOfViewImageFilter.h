@@ -108,7 +108,7 @@ public:
 
 protected:
   FieldOfViewImageFilter();
-  ~FieldOfViewImageFilter() {}
+  virtual ~FieldOfViewImageFilter() ITK_OVERRIDE {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

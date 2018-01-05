@@ -90,7 +90,7 @@ protected:
   /** Standard constructor. **/
   Reg23ProjectionGeometry();
   /** Destructor. **/
-  ~Reg23ProjectionGeometry();
+  virtual ~Reg23ProjectionGeometry() ITK_OVERRIDE;
 
 private:
   /** Purposely not implemented. **/

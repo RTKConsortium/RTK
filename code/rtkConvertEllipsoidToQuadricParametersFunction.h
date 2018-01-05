@@ -101,7 +101,7 @@ protected:
   ConvertEllipsoidToQuadricParametersFunction();
 
   /// Destructor
-  ~ConvertEllipsoidToQuadricParametersFunction() {}
+  virtual ~ConvertEllipsoidToQuadricParametersFunction() ITK_OVERRIDE {}
 
   /** Corners of the image Quadric */
   double     m_SemiPrincipalAxisX;

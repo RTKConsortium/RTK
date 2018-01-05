@@ -70,7 +70,7 @@ public:
 
 protected:
     AverageOutOfROIImageFilter();
-    ~AverageOutOfROIImageFilter() {}
+    virtual ~AverageOutOfROIImageFilter() ITK_OVERRIDE {}
 
     typename TROI::Pointer GetROI();
 

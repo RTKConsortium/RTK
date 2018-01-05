@@ -69,16 +69,16 @@ public:
   }
 
   // Destructor
-  ~ProjectionsDecompositionNegativeLogLikelihood()
+  virtual ~ProjectionsDecompositionNegativeLogLikelihood() ITK_OVERRIDE
   {
   }
 
-  virtual MeasureType GetValue( const ParametersType & parameters ) const ITK_OVERRIDE {
+  MeasureType GetValue( const ParametersType & ) const ITK_OVERRIDE {
   long double measure = 0;
   return measure;
   }
-  virtual void GetDerivative( const ParametersType & lineIntegrals,
-                      DerivativeType & derivatives ) const ITK_OVERRIDE {}
+  void GetDerivative( const ParametersType &,
+                      DerivativeType &) const ITK_OVERRIDE {}
   virtual void Initialize() {}
 
   virtual itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()
@@ -106,7 +106,7 @@ public:
   return fischer;
   }
 
-  virtual void ComputeFischerMatrix(const ParametersType & lineIntegrals) {}
+  virtual void ComputeFischerMatrix(const ParametersType & ) {}
 
   unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
   {
@@ -212,6 +212,8 @@ public:
 
   virtual vnl_vector<double>  GetVariances( const ParametersType & lineIntegrals ) const
   {
+  (void)lineIntegrals;
+
   vnl_vector<double> meaninglessResult;
   meaninglessResult.set_size(m_NumberOfSpectralBins);
   meaninglessResult.fill(0.);

@@ -35,11 +35,11 @@ typedef void (__WINAPI fn_REAL_set_function)(lprec *lp, REAL value);
 
 struct _values {
   int value;
-  char *svalue;
+  const char *svalue;
 };
 
 struct _functions {
-  char *par;                                    /* name of parameter in ini file */
+  const char *par;                                    /* name of parameter in ini file */
   union {
     fn_int_get_function *int_get_function;         /* set via setintfunction */
     fn_long_get_function *long_get_function;       /* set via setlongfunction */
@@ -295,6 +295,7 @@ static struct _functions functions[] =
   { "EPSPERTURB", setREALfunction(get_epsperturb, set_epsperturb), setNULLvalues, WRITE_ACTIVE },
   { "EPSPIVOT", setREALfunction(get_epspivot, set_epspivot), setNULLvalues, WRITE_ACTIVE },
   { "INFINITE", setREALfunction(get_infinite, set_infinite), setNULLvalues, WRITE_ACTIVE },
+  { "BREAK_NUMERIC_ACCURACY", setREALfunction(get_break_numeric_accuracy, set_break_numeric_accuracy), setNULLvalues, WRITE_ACTIVE },
 
   /* read-only options */
   { "DEBUG", setMYBOOLfunction(is_debug, set_debug), setNULLvalues, WRITE_COMMENTED },
@@ -305,12 +306,13 @@ static struct _functions functions[] =
   { "VERBOSE", setintfunction(get_verbose, set_verbose), setvalues(verbose, ~0), WRITE_COMMENTED },
 };
 
-static void write_params1(lprec *lp, FILE *fp, char *header, int newline)
+static void write_params1(lprec *lp, FILE *fp, const char *header, int newline)
 {
-  int ret = 0, ret2, i, j, k, value, value2, elements, majorversion, minorversion, release, build;
+  int ret = 0, ret2, j, k, value, value2, elements, majorversion, minorversion, release, build;
+  size_t i;
   unsigned int basemask;
   REAL a = 0;
-  char buf[4096], par[20];
+  char buf[4096], par[30];
 
   ini_writeheader(fp, header, newline);
   lp_solve_version(&majorversion, &minorversion, &release, &build);
@@ -390,9 +392,10 @@ static void write_params1(lprec *lp, FILE *fp, char *header, int newline)
   }
 }
 
-static void readoptions(char *options, char **header)
+static void readoptions(const char *options, char **header)
 {
-  char *ptr1, *ptr2;
+  const char *ptr1;
+  const char *ptr2;
 
   if(options != NULL) {
     ptr1 = options;
@@ -414,7 +417,7 @@ static void readoptions(char *options, char **header)
     *header = strdup("Default");
 }
 
-MYBOOL __WINAPI write_params(lprec *lp, char *filename, char *options)
+MYBOOL __WINAPI write_params(lprec *lp, const char *filename, const char *options)
 {
   int k, ret, params_written;
   FILE *fp, *fp0;
@@ -513,7 +516,7 @@ MYBOOL __WINAPI write_params(lprec *lp, char *filename, char *options)
 }
 
 
-MYBOOL __WINAPI read_params(lprec *lp, char *filename, char *options)
+MYBOOL __WINAPI read_params(lprec *lp, const char *filename, const char *options)
 {
   int ret, looping, line;
   FILE *fp;

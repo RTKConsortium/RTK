@@ -198,7 +198,7 @@ public:
 
 protected:
     DeconstructImageFilter();
-    ~DeconstructImageFilter() {}
+    virtual ~DeconstructImageFilter() ITK_OVERRIDE {}
     void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
 
     /** Modifies the storage for Input and Output images.

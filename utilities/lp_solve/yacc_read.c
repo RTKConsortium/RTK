@@ -103,7 +103,7 @@ struct structcoldata {
   struct  column   *col;
 };
 
-static void error(parse_parm *pp, int verbose, char *string)
+static void error(parse_parm *pp, int verbose, const char *string)
 {
   if(pp == NULL)
     report(NULL, CRITICAL, string);
@@ -114,13 +114,14 @@ static void error(parse_parm *pp, int verbose, char *string)
 /*
  * error handling routine for yyparse()
  */
-void read_error(parse_parm *pp, void *scanner, char *string)
+void read_error(parse_parm *pp, void *scanner, const char * string)
 {
+  (void)scanner;
   error(pp, CRITICAL, string);
 }
 
 /* called when lex gets a fatal error */
-void lex_fatal_error(parse_parm *pp, void *scanner, char *msg)
+void lex_fatal_error(parse_parm *pp, void *scanner, const char * msg)
 {
   read_error(pp, scanner, msg);
   longjmp(pp->jump_buf, 1);
@@ -165,7 +166,7 @@ void check_int_sec_sos_free_decl(parse_parm *pp, int within_int_decl, int within
   }
 }
 
-static void add_int_var(parse_parm *pp, char *name, short int_decl)
+static void add_int_var(parse_parm *pp, const char *name, short int_decl)
 {
   hashelem *hp;
 
@@ -173,13 +174,13 @@ static void add_int_var(parse_parm *pp, char *name, short int_decl)
     char buf[256];
 
     sprintf(buf, "Unknown variable %s declared integer, ignored", name);
-    error(pp, NORMAL, buf);
+    error(pp, IMPORTANT, buf);
   }
   else if(pp->coldata[hp->index].must_be_int) {
     char buf[256];
 
     sprintf(buf, "Variable %s declared integer more than once, ignored", name);
-    error(pp, NORMAL, buf);
+    error(pp, IMPORTANT, buf);
   }
   else {
     pp->coldata[hp->index].must_be_int = TRUE;
@@ -188,14 +189,14 @@ static void add_int_var(parse_parm *pp, char *name, short int_decl)
         char buf[256];
 
         sprintf(buf, "Variable %s: lower bound on variable redefined", name);
-        error(pp, NORMAL, buf);
+        error(pp, IMPORTANT, buf);
       }
       pp->coldata[hp->index].lowbo = 0;
       if(pp->coldata[hp->index].upbo < DEF_INFINITE) {
         char buf[256];
 
         sprintf(buf, "Variable %s: upper bound on variable redefined", name);
-        error(pp, NORMAL, buf);
+        error(pp, IMPORTANT, buf);
       }
       pp->coldata[hp->index].upbo = 1;
     }
@@ -206,7 +207,7 @@ static void add_int_var(parse_parm *pp, char *name, short int_decl)
   }
 }
 
-static void add_sec_var(parse_parm *pp, char *name)
+static void add_sec_var(parse_parm *pp, const char *name)
 {
   hashelem *hp;
 
@@ -214,19 +215,19 @@ static void add_sec_var(parse_parm *pp, char *name)
     char buf[256];
 
     sprintf(buf, "Unknown variable %s declared semi-continuous, ignored", name);
-    error(pp, NORMAL, buf);
+    error(pp, IMPORTANT, buf);
   }
   else if(pp->coldata[hp->index].must_be_sec) {
     char buf[256];
 
     sprintf(buf, "Variable %s declared semi-continuous more than once, ignored", name);
-    error(pp, NORMAL, buf);
+    error(pp, IMPORTANT, buf);
   }
   else
     pp->coldata[hp->index].must_be_sec = TRUE;
 }
 
-int set_sec_threshold(parse_parm *pp, char *name, REAL threshold)
+int set_sec_threshold(parse_parm *pp, const char *name, REAL threshold)
 {
   hashelem *hp;
 
@@ -234,7 +235,7 @@ int set_sec_threshold(parse_parm *pp, char *name, REAL threshold)
     char buf[256];
 
     sprintf(buf, "Unknown variable %s declared semi-continuous, ignored", name);
-    error(pp, NORMAL, buf);
+    error(pp, IMPORTANT, buf);
     return(FALSE);
   }
 
@@ -243,7 +244,7 @@ int set_sec_threshold(parse_parm *pp, char *name, REAL threshold)
 
     pp->coldata[hp->index].must_be_sec = FALSE;
     sprintf(buf, "Variable %s declared semi-continuous, but it has a non-negative lower bound (%f), ignored", name, pp->coldata[hp->index].lowbo);
-    error(pp, NORMAL, buf);
+    error(pp, IMPORTANT, buf);
   }
   if (threshold > pp->coldata[hp->index].lowbo)
     pp->coldata[hp->index].lowbo = threshold;
@@ -251,7 +252,7 @@ int set_sec_threshold(parse_parm *pp, char *name, REAL threshold)
   return(pp->coldata[hp->index].must_be_sec);
 }
 
-static void add_free_var(parse_parm *pp, char *name)
+static void add_free_var(parse_parm *pp, const char *name)
 {
   hashelem *hp;
 
@@ -259,19 +260,35 @@ static void add_free_var(parse_parm *pp, char *name)
     char buf[256];
 
     sprintf(buf, "Unknown variable %s declared free, ignored", name);
-    error(pp, NORMAL, buf);
+    error(pp, IMPORTANT, buf);
   }
   else if(pp->coldata[hp->index].must_be_free) {
     char buf[256];
 
     sprintf(buf, "Variable %s declared free more than once, ignored", name);
-    error(pp, NORMAL, buf);
+    error(pp, IMPORTANT, buf);
   }
   else
+  {
+    if(pp->coldata[hp->index].lowbo != -DEF_INFINITE * (REAL) 10.0) {
+      char buf[256];
+
+      sprintf(buf, "Variable %s: lower bound on variable redefined", name);
+      error(pp, IMPORTANT, buf);
+    }
+
+    if(pp->coldata[hp->index].upbo < DEF_INFINITE) {
+      char buf[256];
+
+      sprintf(buf, "Variable %s: upper bound on variable redefined", name);
+      error(pp, IMPORTANT, buf);
+    }
+
     pp->coldata[hp->index].must_be_free = TRUE;
+  }
 }
 
-static int add_sos_name(parse_parm *pp, char *name)
+static int add_sos_name(parse_parm *pp, const char *name)
 {
   struct structSOS *SOS;
 
@@ -295,7 +312,7 @@ static int add_sos_name(parse_parm *pp, char *name)
   return(TRUE);
 }
 
-static int add_sos_var(parse_parm *pp, char *name)
+static int add_sos_var(parse_parm *pp, const char *name)
 {
   struct structSOSvars *SOSvar;
 
@@ -322,7 +339,7 @@ static int add_sos_var(parse_parm *pp, char *name)
   return(TRUE);
 }
 
-void storevarandweight(parse_parm *pp, char *name)
+void storevarandweight(parse_parm *pp, const char *name)
 {
   if(!pp->Ignore_int_decl) {
     add_int_var(pp, name, pp->int_decl);
@@ -436,7 +453,7 @@ void null_tmp_store(parse_parm *pp, int init_Lin_term_count)
  *            A(row, variable). If A(row, variable) already contains data,
  *            value is added to the existing value.
  */
-static int store(parse_parm *pp, char *variable,
+static int store(parse_parm *pp, const char *variable,
                  int row,
                  REAL value)
 {
@@ -619,6 +636,7 @@ int negate_constraint(parse_parm *pp)
  */
 int rhs_store(parse_parm *pp, REAL value, int HadConstraint, int HadVar, int Had_lineair_sum)
 {
+  (void)Had_lineair_sum;
   if(/* pp->Lin_term_count > 1 */ (HadConstraint && HadVar) || (pp->Rows == 0)){ /* not a bound */
     if (pp->Rows == 0)
       value = -value;
@@ -664,8 +682,11 @@ int rhs_store(parse_parm *pp, REAL value, int HadConstraint, int HadVar, int Had
  * count the amount of lineair terms in a constraint
  * only store in data-structure if the constraint is not a bound
  */
-int var_store(parse_parm *pp, char *var, REAL value, int HadConstraint, int HadVar, int Had_lineair_sum)
+int var_store(parse_parm *pp, const char *var, REAL value, int HadConstraint, int HadVar, int Had_lineair_sum)
 {
+  (void)HadConstraint;
+  (void)HadVar;
+  (void)Had_lineair_sum;
   int row;
 
   row = pp->Rows;
@@ -787,13 +808,13 @@ int store_bounds(parse_parm *pp, int warn)
   return(TRUE);
 } /* store_bounds */
 
-int set_title(parse_parm *pp, char *name)
+int set_title(parse_parm *pp, const char *name)
 {
   pp->title = strdup(name);
   return(TRUE);
 }
 
-int add_constraint_name(parse_parm *pp, char *name)
+int add_constraint_name(parse_parm *pp, const char *name)
 {
   int row;
   hashelem *hp;
@@ -1078,9 +1099,9 @@ static int readinput(parse_parm *pp, lprec *lp)
   while(pp->FirstSOS != NULL)
   {
     struct structSOSvars *SOSvars, *SOSvars1;
-    int *sosvars, n, col;
+    int *sosvars, n, col2;
     REAL *weights;
-    hashelem *hp;
+    hashelem *hp2;
 
     pp->LastSOS = pp->FirstSOS;
     pp->FirstSOS = pp->FirstSOS->next;
@@ -1099,12 +1120,12 @@ static int readinput(parse_parm *pp, lprec *lp)
       SOSvars1 = SOSvars;
       SOSvars = SOSvars->next;
       if(lp != NULL) {
-        col = SOSvars1->col;
-        if(col == 0)
-          if((hp = findhash(SOSvars1->name, lp->colname_hashtab)) != NULL)
-            col = hp->index;
-        if (col) {
-          sosvars[n] = col;
+        col2 = SOSvars1->col;
+        if(col2 == 0)
+          if((hp2 = findhash(SOSvars1->name, lp->colname_hashtab)) != NULL)
+            col2 = hp2->index;
+        if (col2) {
+          sosvars[n] = col2;
           weights[n++] = SOSvars1->weight;
         }
       }

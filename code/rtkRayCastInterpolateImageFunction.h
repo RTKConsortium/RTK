@@ -139,7 +139,7 @@ public:
    * specified index position. No bounds checking is done.
    * The point is assume to lie within the image buffer.
    *
-   * Subclasses must override this method.
+   virtual * Subclasses must ITK_OVERRIDE this method.
    *
    * ImageFunction::IsInsideBuffer() can be used to check bounds before
    * calling the method. 
@@ -190,7 +190,7 @@ protected:
   RayCastInterpolateImageFunction();
 
   /// Destructor
-  ~RayCastInterpolateImageFunction() {}
+  virtual ~RayCastInterpolateImageFunction() ITK_OVERRIDE {}
 
   /// Print the object
   void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;

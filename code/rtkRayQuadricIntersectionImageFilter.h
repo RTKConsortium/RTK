@@ -75,7 +75,7 @@ public:
 
 protected:
   RayQuadricIntersectionImageFilter();
-  ~RayQuadricIntersectionImageFilter() {}
+  virtual ~RayQuadricIntersectionImageFilter() ITK_OVERRIDE {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

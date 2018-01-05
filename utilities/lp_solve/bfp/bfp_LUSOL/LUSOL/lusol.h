@@ -332,11 +332,11 @@ MYBOOL LUSOL_addSingularity(LUSOLrec *LUSOL, int singcol, int *inform);
 int LUSOL_getSingularity(LUSOLrec *LUSOL, int singitem);
 int LUSOL_findSingularityPosition(LUSOLrec *LUSOL, int singcol);
 
-char *LUSOL_pivotLabel(LUSOLrec *LUSOL);
-char *LUSOL_informstr(LUSOLrec *LUSOL, int inform);
+const char *LUSOL_pivotLabel(LUSOLrec *LUSOL);
+const char *LUSOL_informstr(LUSOLrec *LUSOL, int inform);
 REAL LUSOL_vecdensity(LUSOLrec *LUSOL, REAL V[]);
-void LUSOL_report(LUSOLrec *LUSOL, int msglevel, char *format, ...);
-void LUSOL_timer(LUSOLrec *LUSOL, int timerid, char *text);
+void LUSOL_report(LUSOLrec *LUSOL, int msglevel, const char *format, ...);
+void LUSOL_timer(LUSOLrec *LUSOL, int timerid, const char *text);
 
 int LUSOL_ftran(LUSOLrec *LUSOL, REAL b[], int NZidx[], MYBOOL prepareupdate);
 int LUSOL_btran(LUSOLrec *LUSOL, REAL b[], int NZidx[]);

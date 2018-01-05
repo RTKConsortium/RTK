@@ -83,7 +83,7 @@ protected:
   GeometricPhantomFileReader() {};
 
   /// Destructor
-  ~GeometricPhantomFileReader() {}
+  virtual ~GeometricPhantomFileReader() ITK_OVERRIDE {}
 
   /** Corners of the image Quadric */
   VectorOfVectorType      m_Fig;
