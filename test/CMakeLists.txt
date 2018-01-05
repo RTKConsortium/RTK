@@ -259,3 +259,5 @@ rtk_add_test(rtkGeometryFromMatrixTest rtkgeometryfrommatrixtest.cxx)
 rtk_add_test(rtkOraTest rtkoratest.cxx
   DATA{Input/Ora/0_afterLog.ora.xml,0_afterLog.mhd,0_afterLog.raw}
   DATA{Baseline/Ora/geometry.xml,attenuation.mha})
+
+itk_python_add_test(NAME rtkFirstReconstructionPythonTest COMMAND rtkFirstReconstruction.py ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
