@@ -24,9 +24,10 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
 #-----------------------------------------------------------------------------
 # Find ITK.
 # Required to include ITK_USE_FILE in order to Register IO factories
+# Force requested modules to be RTK dependencies only, otherwise all
+# available factories will try to register themselves.
 if(NOT ITK_SOURCE_DIR)
-  find_package(ITK REQUIRED)
-  set(ITK_MODULES_REQUESTED ${ITK_MODULE_RTK_DEPENDS})
+  find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
   include(${ITK_USE_FILE})
 endif()
 #-----------------------------------------------------------------------------
