@@ -3,20 +3,6 @@
 #
 include (${CMAKE_ROOT}/Modules/Documentation.cmake)
 
-
-find_package(LATEX)
-if(PDFLATEX_COMPILER)
-  file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/Doxygen/html)
-  add_custom_target( GeometryDocumentation
-                     COMMAND ${PDFLATEX_COMPILER} ${PROJECT_SOURCE_DIR}/documentation/geometry.tex
-                     DEPENDS ${PROJECT_SOURCE_DIR}/documentation/geometry.tex
-                     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/Doxygen/html
-                    )
-  set(LATEXTARGETS GeometryDocumentation)
-else()
-  set(LATEXTARGETS "")
-endif()
-
 find_package(Doxygen)
 if (BUILD_DOXYGEN)
 

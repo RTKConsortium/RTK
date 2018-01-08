@@ -142,6 +142,12 @@ void
 CudaWarpForwardProjectionImageFilter
 ::GPUGenerateData()
 {
+  if (this->GetGeometry()->GetSourceToDetectorDistances()[0] &&
+      this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0)
+    {
+    itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
+    }
+
   itk::Matrix<double, 4, 4> matrixIdxInputVol;
   itk::Matrix<double, 4, 4> indexInputToPPInputMatrix;
   itk::Matrix<double, 4, 4> indexInputToIndexDVFMatrix;

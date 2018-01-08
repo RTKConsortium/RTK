@@ -51,11 +51,13 @@ public:
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef typename TOutputImage::RegionType               OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer OutputImageBaseConstPointer;
-  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
-  typedef typename GeometryType::Pointer                  GeometryPointer;
-  typedef RayBoxIntersectionFunction<double, 3>           RBIFunctionType;
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
+
+  typedef typename TOutputImage::RegionType                                          OutputImageRegionType;
+  typedef rtk::ThreeDCircularProjectionGeometry                                      GeometryType;
+  typedef typename GeometryType::Pointer                                             GeometryPointer;
+  typedef RayBoxIntersectionFunction<double, itkGetStaticConstMacro(ImageDimension)> RBIFunctionType;
+  typedef itk::ImageBase<itkGetStaticConstMacro(ImageDimension)>                     ImageBaseType;
 
   /** Useful defines. */
   typedef itk::Vector<double, 3> VectorType;
@@ -70,8 +72,8 @@ public:
   itkGetMacro(Geometry, GeometryPointer);
   itkSetMacro(Geometry, GeometryPointer);
 
-  /** Set the box from an image */
-  void SetBoxFromImage(OutputImageBaseConstPointer _arg);
+  /** Set the box from an image. See rtkRayBoxIntersectionFunction::SetBoxFromImage. */
+  void SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder=true);
 
   /** Set the box from an image */
   void SetBoxMin(VectorType _boxMin);
@@ -100,7 +102,7 @@ private:
   void operator=(const Self&);            //purposely not implemented
 
   /** Functor object to compute the intersection */
-  RBIFunctionType::Pointer m_RBIFunctor;
+  typename RBIFunctionType::Pointer m_RBIFunctor;
 
   /** RTK geometry object */
   GeometryPointer m_Geometry;
