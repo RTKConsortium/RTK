@@ -52,7 +52,7 @@ ConvexObject
     {
     for(int j=0; j<Dimension; j++)
       {
-      m_PlaneDirections[i][j] *= r[j];
+      m_PlaneDirections[i][j] /= r[j];
       }
     }
 }
