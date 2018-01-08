@@ -47,7 +47,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
 ::Protected_EvaluateDisplacementAtPhysicalPoint(const PointType & point, DisplacementType &output)
 {
 
-  DisplacementFieldPointer fieldPtr = this->GetDisplacementField();
+  const DisplacementFieldType* fieldPtr = this->GetDisplacementField();
 
   itk::ContinuousIndex< double, TDVF::ImageDimension > index;
   fieldPtr->TransformPhysicalPointToContinuousIndex(point, index);
@@ -141,7 +141,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
 ::GenerateData()
 {
   Superclass::BeforeThreadedGenerateData();
-  DisplacementFieldPointer fieldPtr = this->GetDisplacementField();
+  const DisplacementFieldType* fieldPtr = this->GetDisplacementField();
 
   // Connect input image to interpolator
   m_Protected_StartIndex = fieldPtr->GetBufferedRegion().GetIndex();
@@ -168,7 +168,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
   // iterator for the output image
   itk::ImageRegionConstIteratorWithIndex< TOutputImage > inputIt(
         inputPtr, inputPtr->GetBufferedRegion());
-  itk::ImageRegionIterator< DisplacementFieldType >  fieldIt(fieldPtr, fieldPtr->GetBufferedRegion());
+  itk::ImageRegionIterator< const DisplacementFieldType >  fieldIt(fieldPtr, fieldPtr->GetBufferedRegion());
   typename TOutputImage::IndexType        index;
   typename TOutputImage::IndexType        baseIndex;
   typename TOutputImage::IndexType        neighIndex;
