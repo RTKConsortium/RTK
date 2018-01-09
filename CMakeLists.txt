@@ -118,6 +118,27 @@ if ((${_index} EQUAL -1) AND RTK_WRAP_PYTHON)
     turn off python wrapping by setting RTK_WRAP_PYTHON:BOOL=OFF")
 endif()
 
+# --------------------------------------------------------
+# Setup KWStyle from ITK
+if(ITK_USE_KWSTYLE)
+  set( KWStyle_DIR ${CMAKE_BINARY_DIR}/KWStyle-build )
+  set( KWSTYLE_EXECUTABLE ${KWStyle_DIR}/KWStyle)
+
+  set(WORKING_DIR "")
+  if(ITK_SOURCE_DIR)
+    set(WORKING_DIR "${ITK_SOURCE_DIR}")
+  else()
+    set(WORKING_DIR "${CMAKE_SOURCE_DIR}")
+  endif()
+
+  find_package( Git )
+  if(GIT_FOUND AND EXISTS "${WORKING_DIR}/.git/config")
+    execute_process( COMMAND ${GIT_EXECUTABLE} config hooks.KWStyle.path
+      "${KWSTYLE_EXECUTABLE}"
+      WORKING_DIRECTORY ${WORKING_DIR} )
+  endif()
+endif()
+
 #=========================================================
 # ITKCudaCommon
 #=========================================================
