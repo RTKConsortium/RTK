@@ -20,7 +20,7 @@
 #define rtkJosephBackProjectionImageFilter_hxx
 
 #include "rtkHomogeneousMatrix.h"
-#include "rtkBox.h"
+#include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 
 #include <itkImageRegionConstIterator.h>
@@ -96,8 +96,8 @@ JosephBackProjectionImageFilter<TInputImage,
                                   volPPToIndex);
 
   // Create intersection functions, one for each possible main direction
-  typename Box::Pointer box = Box::New();
-  typename Box::VectorType boxMin, boxMax;
+  typename BoxShape::Pointer box = BoxShape::New();
+  typename BoxShape::VectorType boxMin, boxMax;
   for(unsigned int i=0; i<Dimension; i++)
     {
     boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
@@ -108,7 +108,7 @@ JosephBackProjectionImageFilter<TInputImage,
   box->SetBoxMax(boxMax);
 
   // Go over each pixel of the projection
-  typename Box::VectorType stepMM, np, fp;
+  typename BoxShape::VectorType stepMM, np, fp;
   for(unsigned int pix=0; pix<buffReg.GetNumberOfPixels(); pix++, itIn->Next())
     {
     typename InputRegionIterator::PointType sourcePosition = itIn->GetSourcePosition();
@@ -116,7 +116,7 @@ JosephBackProjectionImageFilter<TInputImage,
 
     // Select main direction
     unsigned int mainDir = 0;
-    Box::VectorType dirVoxAbs;
+    BoxShape::VectorType dirVoxAbs;
     for(unsigned int i=0; i<Dimension; i++)
       {
       dirVoxAbs[i] = vnl_math_abs( dirVox[i] );
@@ -125,7 +125,7 @@ JosephBackProjectionImageFilter<TInputImage,
       }
 
     // Test if there is an intersection
-    Box::ScalarType near, far;
+    BoxShape::ScalarType near, far;
     if( box->IsIntersectedByRay(sourcePosition, dirVox, near, far) &&
         far>=0. && // check if detector after the source
         near<=1.)  // check if detector after or in the volume

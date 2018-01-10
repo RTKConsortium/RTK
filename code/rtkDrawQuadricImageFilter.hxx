@@ -24,7 +24,7 @@
 #include <itkImageRegionIterator.h>
 
 #include "rtkDrawQuadricImageFilter.h"
-#include "rtkQuadric.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
@@ -52,18 +52,18 @@ DrawQuadricImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   if( this->GetConvexObject() == ITK_NULLPTR )
-    this->SetConvexObject( Quadric::New().GetPointer() );
+    this->SetConvexObject( QuadricShape::New().GetPointer() );
 
   Superclass::BeforeThreadedGenerateData();
 
-  Quadric * qo = dynamic_cast< Quadric* >( this->GetConvexObject() );
+  QuadricShape * qo = dynamic_cast< QuadricShape* >( this->GetConvexObject() );
   if( qo == ITK_NULLPTR )
     {
-    itkExceptionMacro("This is not a Quadric!");
+    itkExceptionMacro("This is not a QuadricShape!");
     }
 
   qo->SetDensity( this->GetDensity() );
-  qo->SetClippingPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
   qo->SetA(this->GetA());
   qo->SetB(this->GetB());
   qo->SetC(this->GetC());
@@ -79,7 +79,7 @@ DrawQuadricImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 DrawQuadricImageFilter<TInputImage, TOutputImage>
-::AddClippingPlane(const VectorType & dir, const ScalarType & pos)
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);

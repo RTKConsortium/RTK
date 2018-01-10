@@ -19,15 +19,15 @@
 #ifndef rtkDrawBoxImageFilter_h
 #define rtkDrawBoxImageFilter_h
 
-#include "rtkDrawConvexObjectImageFilter.h"
+#include "rtkDrawConvexImageFilter.h"
 #include "rtkConfiguration.h"
-#include "rtkBox.h"
+#include "rtkBoxShape.h"
 
 namespace rtk
 {
 
 /** \class DrawBoxImageFilter
- * \brief Draws in a 3D image user defined Box.
+ * \brief Draws in a 3D image user defined BoxShape.
  *
  * \test rtkdrawgeometricphantomtest.cxx
  *
@@ -37,27 +37,27 @@ namespace rtk
  */
 template <class TInputImage, class TOutputImage>
 class DrawBoxImageFilter :
-public DrawConvexObjectImageFilter< TInputImage, TOutputImage >
+public DrawConvexImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawBoxImageFilter                                    Self;
-  typedef DrawConvexObjectImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  typedef DrawBoxImageFilter                              Self;
+  typedef DrawConvexImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                         Pointer;
+  typedef itk::SmartPointer<const Self>                   ConstPointer;
 
   /** Convenient typedefs. */
-  typedef Box::PointType          PointType;
-  typedef Box::VectorType         VectorType;
-  typedef Box::ScalarType         ScalarType;
-  typedef Box::RotationMatrixType RotationMatrixType;
-  typedef Box::ImageBaseType      ImageBaseType;
+  typedef BoxShape::PointType          PointType;
+  typedef BoxShape::VectorType         VectorType;
+  typedef BoxShape::ScalarType         ScalarType;
+  typedef BoxShape::RotationMatrixType RotationMatrixType;
+  typedef BoxShape::ImageBaseType      ImageBaseType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawBoxImageFilter, DrawConvexObjectImageFilter);
+  itkTypeMacro(DrawBoxImageFilter, DrawConvexImageFilter);
 
   /** Get / Set the constant density of the volume */
   itkGetMacro(Density, ScalarType);
@@ -67,7 +67,7 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
-  void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
   /** Set the box from an image. See rtkDrawBoxFunction::SetBoxFromImage. */
   void SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder=true);

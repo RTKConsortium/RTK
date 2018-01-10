@@ -18,7 +18,7 @@
 
 #include <fstream>
 #include "rtkGeometricPhantomFileReader.h"
-#include "rtkQuadric.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
@@ -48,8 +48,8 @@ GeometricPhantomFileReader
       if( (offset = line.find(search_fig[i], 0)) != std::string::npos )
         {
         const std::string parameterNames[9] = {"Figure", "A=", "B=", "C=", "x=", "y=", "z=", "beta=", "gray=" };
-        std::vector<ConvexObject::ScalarType> parameters;
-        parameters.push_back((ConvexObject::ScalarType)i);
+        std::vector<ConvexShape::ScalarType> parameters;
+        parameters.push_back((ConvexShape::ScalarType)i);
         for ( int j = 1; j < 9; j++ )
           {
           double val = 0.;
@@ -65,9 +65,9 @@ GeometricPhantomFileReader
           parameters.push_back(val);
           }
 
-        Quadric::Pointer qo = Quadric::New();
-        Quadric::VectorType axis;
-        Quadric::PointType center;
+        QuadricShape::Pointer qo = QuadricShape::New();
+        QuadricShape::VectorType axis;
+        QuadricShape::PointType center;
         for(int k=0; k<3; k++)
           {
           axis[k] = parameters[k+1];
@@ -85,7 +85,7 @@ GeometricPhantomFileReader
           }
 
         qo->SetDensity(parameters[8]);
-        m_GeometricPhantom->AddConvexObject(qo.GetPointer());
+        m_GeometricPhantom->AddConvexShape(qo.GetPointer());
         }
       }
     }

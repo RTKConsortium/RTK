@@ -16,19 +16,19 @@
  *
  *=========================================================================*/
 
-#ifndef rtkDrawConvexObjectImageFilter_h
-#define rtkDrawConvexObjectImageFilter_h
+#ifndef rtkDrawConvexImageFilter_h
+#define rtkDrawConvexImageFilter_h
 
 
 #include <itkInPlaceImageFilter.h>
-#include "rtkConvexObject.h"
+#include "rtkConvexShape.h"
 #include "rtkMacro.h"
 
 namespace rtk
 {
 
-/** \class DrawConvexObjectImageFilter
- * \brief Base Class for drawing a 3D image by using a DrawConvexObject. Uses a functor to fill the image.
+/** \class DrawConvexImageFilter
+ * \brief Base Class for drawing a 3D image by using a DrawConvex. Uses a functor to fill the image.
  *
  * \author Mathieu Dupont, Simon Rit
  *
@@ -36,39 +36,39 @@ namespace rtk
 
 template < class TInputImage,
            class TOutputImage >
-class DrawConvexObjectImageFilter :
+class DrawConvexImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 
 public:
   /** Standard class typedefs. */
-  typedef DrawConvexObjectImageFilter                       Self;
+  typedef DrawConvexImageFilter                             Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
   /** Convenient typedefs. */
   typedef typename TOutputImage::RegionType OutputImageRegionType;
-  typedef ConvexObject::Pointer             ConvexObjectPointer;
-  typedef ConvexObject::ScalarType          ScalarType;
-  typedef ConvexObject::PointType           PointType;
-  typedef ConvexObject::VectorType          VectorType;
+  typedef ConvexShape::Pointer             ConvexShapePointer;
+  typedef ConvexShape::ScalarType          ScalarType;
+  typedef ConvexShape::PointType           PointType;
+  typedef ConvexShape::VectorType          VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro ( DrawConvexObjectImageFilter, itk::InPlaceImageFilter );
+  itkTypeMacro ( DrawConvexImageFilter, itk::InPlaceImageFilter );
 
   /** Get / Set the object pointer to the geometry. */
-  itkGetObjectMacro(ConvexObject, ConvexObject);
-  itkSetObjectMacro(ConvexObject, ConvexObject);
+  itkGetObjectMacro(ConvexShape, ConvexShape);
+  itkSetObjectMacro(ConvexShape, ConvexShape);
 
 protected:
-  DrawConvexObjectImageFilter();
-  ~DrawConvexObjectImageFilter() {}
+  DrawConvexImageFilter();
+  ~DrawConvexImageFilter() {}
 
-  /** ConvexObject must be created in the BeforeThreadedGenerateData in the
+  /** ConvexShape must be created in the BeforeThreadedGenerateData in the
    * daugter classes. */
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
@@ -77,11 +77,10 @@ protected:
                              ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
-  DrawConvexObjectImageFilter ( const Self& ); //purposely not implemented
-  void operator=(const Self&);                 //purposely not implemented
+  DrawConvexImageFilter ( const Self& ); //purposely not implemented
+  void operator=(const Self&);           //purposely not implemented
 
-  ConvexObjectPointer     m_ConvexObject;
-
+  ConvexShapePointer      m_ConvexShape;
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<PointType>  m_PlanePositions;
@@ -91,7 +90,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawConvexObjectImageFilter.hxx"
+#include "rtkDrawConvexImageFilter.hxx"
 #endif
 
 #endif

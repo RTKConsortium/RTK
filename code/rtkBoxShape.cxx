@@ -16,13 +16,13 @@
  *
  *=========================================================================*/
 
-#include "rtkBox.h"
+#include "rtkBoxShape.h"
 
 namespace rtk
 {
 
-Box
-::Box():
+BoxShape
+::BoxShape():
   m_BoxMin(0.),
   m_BoxMax(0.)
 {
@@ -30,7 +30,7 @@ Box
 }
 
 bool
-Box
+BoxShape
 ::IsInside(const PointType& point) const
 {
   RotationMatrixType dirt;
@@ -45,11 +45,11 @@ Box
      t[2] < min[2] ||
      t[2] > max[2])
     return false;
- return ApplyClippingPlanes(point);
+ return ApplyClipPlanes(point);
 }
 
 bool
-Box
+BoxShape
 ::IsIntersectedByRay(const PointType & rayOrigin,
                      const VectorType & rayDirection,
                      double & near,
@@ -96,11 +96,11 @@ Box
     if(far<0) return false;
     }
 
-  return ApplyClippingPlanes(rayOrigin, rayDirection, near, far);
+  return ApplyClipPlanes(rayOrigin, rayDirection, near, far);
 }
 
 void
-Box
+BoxShape
 ::Rescale(const VectorType &r)
 {
   Superclass::Rescale(r);
@@ -112,7 +112,7 @@ Box
 }
 
 void
-Box
+BoxShape
 ::Translate(const VectorType &t)
 {
   Superclass::Translate(t);
@@ -121,7 +121,7 @@ Box
 }
 
 void
-Box
+BoxShape
 ::Rotate(const RotationMatrixType &r)
 {
   Superclass::Rotate(r);
@@ -131,7 +131,7 @@ Box
 }
 
 itk::LightObject::Pointer
-Box
+BoxShape
 ::InternalClone() const
 {
   LightObject::Pointer loPtr = Superclass::InternalClone();
@@ -145,18 +145,18 @@ Box
 }
 
 void
-Box
+BoxShape
 ::SetBoxFromImage( const ImageBaseType *img, bool bWithExternalHalfPixelBorder )
 {
   if(Dimension != img->GetImageDimension())
-    itkGenericExceptionMacro(<< "Box and image dimensions must agree");
+    itkGenericExceptionMacro(<< "BoxShape and image dimensions must agree");
 
-  // Box corner 1
+  // BoxShape corner 1
   m_BoxMin = img->GetOrigin().GetVectorFromOrigin();
   if(bWithExternalHalfPixelBorder)
     m_BoxMin -= img->GetDirection() * img->GetSpacing() * 0.5;
 
-  // Box corner 2
+  // BoxShape corner 2
   for(unsigned int i=0; i<Dimension; i++)
     if(bWithExternalHalfPixelBorder)
       m_BoxMax[i] = img->GetSpacing()[i] * img->GetLargestPossibleRegion().GetSize()[i];

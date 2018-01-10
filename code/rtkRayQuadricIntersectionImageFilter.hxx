@@ -24,7 +24,7 @@
 #include <itkImageRegionIterator.h>
 
 #include "rtkRayQuadricIntersectionImageFilter.h"
-#include "rtkQuadric.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
@@ -51,19 +51,19 @@ void
 RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if( this->GetConvexObject() == ITK_NULLPTR )
-    this->SetConvexObject( Quadric::New().GetPointer() );
+  if( this->GetConvexShape() == ITK_NULLPTR )
+    this->SetConvexShape( QuadricShape::New().GetPointer() );
 
   Superclass::BeforeThreadedGenerateData();
 
-  Quadric * qo = dynamic_cast< Quadric * >( this->GetConvexObject() );
+  QuadricShape * qo = dynamic_cast< QuadricShape * >( this->GetConvexShape() );
   if( qo == ITK_NULLPTR )
     {
-    itkExceptionMacro("This is not a Quadric!");
+    itkExceptionMacro("This is not a QuadricShape!");
     }
 
   qo->SetDensity( this->GetDensity() );
-  qo->SetClippingPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
   qo->SetA(this->GetA());
   qo->SetB(this->GetB());
   qo->SetC(this->GetC());
@@ -79,7 +79,7 @@ RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>
-::AddClippingPlane(const VectorType & dir, const ScalarType & pos)
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);

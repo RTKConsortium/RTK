@@ -16,30 +16,30 @@
  *
  *=========================================================================*/
 
-#ifndef rtkIntersectionOfConvexObjects_h
-#define rtkIntersectionOfConvexObjects_h
+#ifndef rtkIntersectionOfConvexShapes_h
+#define rtkIntersectionOfConvexShapes_h
 
 #include "rtkWin32Header.h"
 #include "rtkMacro.h"
-#include "rtkConvexObject.h"
+#include "rtkConvexShape.h"
 
 namespace rtk
 {
 
-class RTK_EXPORT IntersectionOfConvexObjects:
-    public ConvexObject
+class RTK_EXPORT IntersectionOfConvexShapes:
+    public ConvexShape
 {
 public:
   /** Standard class typedefs. */
-  typedef IntersectionOfConvexObjects   Self;
-  typedef ConvexObject                  Superclass;
+  typedef IntersectionOfConvexShapes    Self;
+  typedef ConvexShape                   Superclass;
   typedef itk::SmartPointer<Self>       Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Convenient typedefs. */
   itkStaticConstMacro(Dimension, unsigned int, Superclass::Dimension);
-  typedef ConvexObject::Pointer            ConvexObjectPointer;
-  typedef std::vector<ConvexObjectPointer> ConvexObjectVector;
+  typedef ConvexShape::Pointer             ConvexShapePointer;
+  typedef std::vector<ConvexShapePointer>  ConvexShapeVector;
   typedef Superclass::ScalarType           ScalarType;
   typedef Superclass::PointType            PointType;
   typedef Superclass::VectorType           VectorType;
@@ -49,12 +49,12 @@ public:
   itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(IntersectionOfConvexObjects, ConvexObject);
+  itkTypeMacro(IntersectionOfConvexShapes, ConvexShape);
 
-  /** See rtk::ConvexObject::IsInside. */
+  /** See rtk::ConvexShape::IsInside. */
   virtual bool IsInside(const PointType & point) const ITK_OVERRIDE;
 
-  /** See rtk::ConvexObject::IsIntersectedByRay for the goal and
+  /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
@@ -63,9 +63,9 @@ public:
                                   ScalarType & far) const ITK_OVERRIDE;
 
   /** Add convex object to phantom. */
-  void AddConvexObject(const ConvexObjectPointer &co);
-  itkGetConstReferenceMacro(ConvexObjects, ConvexObjectVector);
-  itkSetMacro(ConvexObjects, ConvexObjectVector);
+  void AddConvexShape(const ConvexShapePointer &co);
+  itkGetConstReferenceMacro(ConvexShapes, ConvexShapeVector);
+  itkSetMacro(ConvexShapes, ConvexShapeVector);
 
   /** Rescale object along each direction by a 3D vector. */
   virtual void Rescale(const VectorType &r) ITK_OVERRIDE;
@@ -79,9 +79,9 @@ public:
   virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
 private:
-  IntersectionOfConvexObjects();
+  IntersectionOfConvexShapes();
 
-  ConvexObjectVector m_ConvexObjects;
+  ConvexShapeVector m_ConvexShapes;
 };
 
 } // end namespace rtk

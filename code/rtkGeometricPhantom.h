@@ -19,12 +19,12 @@
 #ifndef rtkGeometricPhantom_h
 #define rtkGeometricPhantom_h
 
-#include "rtkConvexObject.h"
+#include "rtkConvexShape.h"
 
 namespace rtk
 {
 /** \class GeometricPhantom
- * \brief Geometric phantom, i.e., a set of rtk::ConvexObjects.
+ * \brief Geometric phantom, i.e., a set of rtk::ConvexShapes.
  *
  * \author Simon Rit
  *
@@ -39,11 +39,11 @@ public:
   typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Convenient typedefs. */
-  typedef ConvexObject::Pointer            ConvexObjectPointer;
-  typedef std::vector<ConvexObjectPointer> ConvexObjectVector;
-  typedef ConvexObject::PointType          PointType;
-  typedef ConvexObject::VectorType         VectorType;
-  typedef ConvexObject::RotationMatrixType RotationMatrixType;
+  typedef ConvexShape::Pointer            ConvexShapePointer;
+  typedef std::vector<ConvexShapePointer> ConvexShapeVector;
+  typedef ConvexShape::PointType          PointType;
+  typedef ConvexShape::VectorType         VectorType;
+  typedef ConvexShape::RotationMatrixType RotationMatrixType;
 
 
   /** Method for creation through the object factory. */
@@ -62,10 +62,10 @@ public:
   virtual void Rotate(const RotationMatrixType &r);
 
   /** Get reference to vector of objects. */
-  itkGetConstReferenceMacro(ConvexObjects, ConvexObjectVector);
+  itkGetConstReferenceMacro(ConvexShapes, ConvexShapeVector);
 
   /** Add convex object to phantom. */
-  void AddConvexObject(const ConvexObjectPointer &co);
+  void AddConvexShape(const ConvexShapePointer &co);
 
 protected:
   GeometricPhantom() {}
@@ -75,7 +75,7 @@ private:
   GeometricPhantom(const Self&); //purposely not implemented
   void operator=(const Self&);   //purposely not implemented
 
-  ConvexObjectVector m_ConvexObjects;
+  ConvexShapeVector m_ConvexShapes;
 };
 
 }

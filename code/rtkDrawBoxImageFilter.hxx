@@ -24,7 +24,6 @@
 #include <itkImageRegionIterator.h>
 
 #include "rtkDrawBoxImageFilter.h"
-#include "rtkBox.h"
 
 namespace rtk
 {
@@ -45,18 +44,18 @@ DrawBoxImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   if( this->GetConvexObject() == ITK_NULLPTR )
-    this->SetConvexObject( Box::New().GetPointer() );
+    this->SetConvexObject( BoxShape::New().GetPointer() );
 
   Superclass::BeforeThreadedGenerateData();
 
-  Box * qo = dynamic_cast< Box * >( this->GetConvexObject() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexObject() );
   if( qo == ITK_NULLPTR )
     {
-    itkExceptionMacro("This is not a Box!");
+    itkExceptionMacro("This is not a BoxShape!");
     }
 
   qo->SetDensity( this->GetDensity() );
-  qo->SetClippingPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
   qo->SetBoxMin(this->GetBoxMin());
   qo->SetBoxMax(this->GetBoxMax());
 }
@@ -64,7 +63,7 @@ DrawBoxImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 DrawBoxImageFilter<TInputImage, TOutputImage>
-::AddClippingPlane(const VectorType & dir, const ScalarType & pos)
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
@@ -76,11 +75,11 @@ DrawBoxImageFilter<TInputImage,TOutputImage>
 ::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
 {
   if( this->GetConvexObject() == ITK_NULLPTR )
-    this->SetConvexObject( Box::New().GetPointer() );
-  Box * qo = dynamic_cast< Box * >( this->GetConvexObject() );
+    this->SetConvexObject( BoxShape::New().GetPointer() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexObject() );
   if( qo == ITK_NULLPTR )
     {
-    itkExceptionMacro("This is not a Box!");
+    itkExceptionMacro("This is not a BoxShape!");
     }
   qo->SetBoxFromImage(_arg);
   SetBoxMin(qo->GetBoxMin());

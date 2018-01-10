@@ -28,7 +28,7 @@ template <class TInputImage, class TOutputImage>
 DrawSheppLoganFilter<TInputImage, TOutputImage>
 ::DrawSheppLoganFilter()
 {
-  this->SetPhantomScale(ConvexObject::VectorType(128));
+  this->SetPhantomScale(ConvexShape::VectorType(128));
 }
 
 template <class TInputImage, class TOutputImage>

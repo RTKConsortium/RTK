@@ -52,10 +52,10 @@ public:
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
   /** Convenient typedefs. */
-  typedef GeometricPhantom::Pointer                       GeometricPhantomPointer;
-  typedef std::string                                     StringType;
-  typedef ConvexObject::VectorType                        VectorType;
-  typedef ConvexObject::RotationMatrixType                RotationMatrixType;
+  typedef GeometricPhantom::Pointer       GeometricPhantomPointer;
+  typedef std::string                     StringType;
+  typedef ConvexShape::VectorType         VectorType;
+  typedef ConvexShape::RotationMatrixType RotationMatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -19,7 +19,7 @@
 #ifndef rtkDrawQuadricImageFilter_h
 #define rtkDrawQuadricImageFilter_h
 
-#include "rtkDrawConvexObjectImageFilter.h"
+#include "rtkDrawConvexImageFilter.h"
 #include "rtkConfiguration.h"
 
 namespace rtk
@@ -36,24 +36,24 @@ namespace rtk
  */
 template <class TInputImage, class TOutputImage>
 class DrawQuadricImageFilter:
-public DrawConvexObjectImageFilter< TInputImage, TOutputImage >
+public DrawConvexImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawQuadricImageFilter                                Self;
-  typedef DrawConvexObjectImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  typedef DrawQuadricImageFilter                          Self;
+  typedef DrawConvexImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                         Pointer;
+  typedef itk::SmartPointer<const Self>                   ConstPointer;
 
   /** Convenient typedefs. */
-  typedef ConvexObject::VectorType VectorType;
-  typedef ConvexObject::ScalarType ScalarType;
+  typedef ConvexShape::VectorType VectorType;
+  typedef ConvexShape::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawQuadricImageFilter, DrawConvexObjectImageFilter);
+  itkTypeMacro(DrawQuadricImageFilter, DrawConvexImageFilter);
 
   /** Get / Set the constant density of the volume */
   itkGetMacro(Density, ScalarType);
@@ -63,7 +63,7 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
-  void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
   itkGetMacro(A, ScalarType);
   itkSetMacro(A, ScalarType);

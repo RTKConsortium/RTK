@@ -41,10 +41,10 @@ set(RTK_LIBRARY_FILES
             rtkOraImageIO.cxx
             rtkOraImageIOFactory.cxx
             rtkConditionalMedianImageFilter.cxx
-            rtkConvexObject.cxx
-            rtkQuadric.cxx
-            rtkBox.cxx
-            rtkIntersectionOfConvexObjects.cxx
+            rtkConvexShape.cxx
+            rtkQuadricShape.cxx
+            rtkBoxShape.cxx
+            rtkIntersectionOfConvexShapes.cxx
             rtkGeometricPhantom.cxx
             rtkGeometricPhantomFileReader.cxx
             rtkForbildPhantomFileReader.cxx

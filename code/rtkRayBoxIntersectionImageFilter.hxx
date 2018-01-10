@@ -24,7 +24,7 @@
 #include <itkImageRegionIterator.h>
 
 #include "rtkRayBoxIntersectionImageFilter.h"
-#include "rtkBox.h"
+#include "rtkBoxShape.h"
 
 namespace rtk
 {
@@ -44,19 +44,19 @@ void
 RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if( this->GetConvexObject() == ITK_NULLPTR )
-    this->SetConvexObject( Box::New().GetPointer() );
+  if( this->GetConvexShape() == ITK_NULLPTR )
+    this->SetConvexShape( BoxShape::New().GetPointer() );
 
   Superclass::BeforeThreadedGenerateData();
 
-  Box * qo = dynamic_cast< Box * >( this->GetConvexObject() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexShape() );
   if( qo == ITK_NULLPTR )
     {
-    itkExceptionMacro("This is not a Box!");
+    itkExceptionMacro("This is not a BoxShape!");
     }
 
   qo->SetDensity( this->GetDensity() );
-  qo->SetClippingPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
   qo->SetBoxMin(this->GetBoxMin());
   qo->SetBoxMax(this->GetBoxMax());
 }
@@ -64,7 +64,7 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
-::AddClippingPlane(const VectorType & dir, const ScalarType & pos)
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
@@ -75,12 +75,12 @@ void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 ::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
 {
-  if( this->GetConvexObject() == ITK_NULLPTR )
-    this->SetConvexObject( Box::New().GetPointer() );
-  Box * qo = dynamic_cast< Box * >( this->GetConvexObject() );
+  if( this->GetConvexShape() == ITK_NULLPTR )
+    this->SetConvexShape( BoxShape::New().GetPointer() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexShape() );
   if( qo == ITK_NULLPTR )
     {
-    itkExceptionMacro("This is not a Box!");
+    itkExceptionMacro("This is not a BoxShape!");
     }
   qo->SetBoxFromImage(_arg);
   SetBoxMin(qo->GetBoxMin());

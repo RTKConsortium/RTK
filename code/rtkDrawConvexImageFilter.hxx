@@ -16,10 +16,10 @@
  *
  *=========================================================================*/
 
-#ifndef rtkDrawConvexObjectImageFilter_hxx
-#define rtkDrawConvexObjectImageFilter_hxx
+#ifndef rtkDrawConvexImageFilter_hxx
+#define rtkDrawConvexImageFilter_hxx
 
-#include "rtkDrawConvexObjectImageFilter.h"
+#include "rtkDrawConvexImageFilter.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
@@ -28,28 +28,28 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-DrawConvexObjectImageFilter<TInputImage, TOutputImage>
-::DrawConvexObjectImageFilter()
+DrawConvexImageFilter<TInputImage, TOutputImage>
+::DrawConvexImageFilter()
 {
 }
 
 template <class TInputImage, class TOutputImage>
 void
-DrawConvexObjectImageFilter<TInputImage,TOutputImage>
+DrawConvexImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if( this->m_ConvexObject.IsNull() )
-    itkExceptionMacro(<<"ConvexObject has not been set.")
+  if( this->m_ConvexShape.IsNull() )
+    itkExceptionMacro(<<"ConvexShape has not been set.")
 }
 
 template <class TInputImage, class TOutputImage>
 void
-DrawConvexObjectImageFilter<TInputImage, TOutputImage>
+DrawConvexImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType threadId )
 {
   // Local convex object since convex objects are not thread safe
-  ConvexObjectPointer co = dynamic_cast<ConvexObject *>(m_ConvexObject->Clone().GetPointer());
+  ConvexShapePointer co = dynamic_cast<ConvexShape *>(m_ConvexShape->Clone().GetPointer());
 
   typename TOutputImage::PointType point;
   const    TInputImage * input = this->GetInput();

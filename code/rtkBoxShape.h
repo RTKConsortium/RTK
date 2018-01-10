@@ -16,25 +16,34 @@
  *
  *=========================================================================*/
 
-#ifndef rtkBox_h
-#define rtkBox_h
+#ifndef rtkBoxShape_h
+#define rtkBoxShape_h
 
 #include "rtkWin32Header.h"
 #include "rtkMacro.h"
-#include "rtkConvexObject.h"
+#include "rtkConvexShape.h"
 
 #include <itkImageBase.h>
 
 namespace rtk
 {
 
-class RTK_EXPORT Box:
-    public ConvexObject
+/** \class BoxShape
+ * \brief BoxShape defines a paralleliped.
+ * The box is defined by its two opposite corners, BoxMin and BoxMax, and a
+ * rotation matrix Direction. The box corresponding to an Image can be set
+ * using the function SetBoxShapeFromImage.
+ *
+ * \author Simon Rit
+ *
+ */
+class RTK_EXPORT BoxShape:
+    public ConvexShape
 {
 public:
   /** Standard class typedefs. */
-  typedef Box                           Self;
-  typedef ConvexObject                  Superclass;
+  typedef BoxShape                      Self;
+  typedef ConvexShape                   Superclass;
   typedef itk::SmartPointer<Self>       Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
@@ -50,12 +59,12 @@ public:
   itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Box, ConvexObject);
+  itkTypeMacro(BoxShape, ConvexShape);
 
-  /** See rtk::ConvexObject::IsInside. */
+  /** See rtk::ConvexShape::IsInside. */
   virtual bool IsInside(const PointType & point) const ITK_OVERRIDE;
 
-  /** See rtk::ConvexObject::IsIntersectedByRay for the goal and
+  /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
@@ -72,13 +81,13 @@ public:
   /** Translate object by a given 3D vector. */
   virtual void Rotate(const RotationMatrixType &r) ITK_OVERRIDE;
 
-    /** Get / Set the box inferior corner. Every coordinate must be inferior to
-   * those of the superior corner. */
+  /** Get / Set the box inferior corner. Every corner coordinate must be
+   * inferior to those of the superior corner. */
   itkGetConstMacro(BoxMin, PointType);
   itkSetMacro(BoxMin, PointType);
 
-  /** Get / Set the box superior corner. Every coordinate must be superior to
-   * those of the inferior corner. */
+  /** Get / Set the box superior corner. Every corner coordinate must be
+   * superior to those of the inferior corner. */
   itkGetConstMacro(BoxMax, PointType);
   itkSetMacro(BoxMax, PointType);
 
@@ -92,7 +101,7 @@ public:
   void SetBoxFromImage( const ImageBaseType *img, bool bWithExternalHalfPixelBorder=true );
 
 private:
-  Box();
+  BoxShape();
 
   PointType          m_BoxMin;
   PointType          m_BoxMax;

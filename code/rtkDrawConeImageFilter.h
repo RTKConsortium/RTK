@@ -46,7 +46,7 @@ public:
   typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Convenient typedefs. */
-  typedef ConvexObject::ScalarType ScalarType;
+  typedef ConvexShape::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

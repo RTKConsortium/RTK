@@ -16,10 +16,10 @@
  *
  *=========================================================================*/
 
-#ifndef rtkRayConvexObjectIntersectionImageFilter_hxx
-#define rtkRayConvexObjectIntersectionImageFilter_hxx
+#ifndef rtkRayConvexIntersectionImageFilter_hxx
+#define rtkRayConvexIntersectionImageFilter_hxx
 
-#include "rtkRayConvexObjectIntersectionImageFilter.h"
+#include "rtkRayConvexIntersectionImageFilter.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 
 #include <itkImageRegionConstIterator.h>
@@ -29,29 +29,29 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage>
-::RayConvexObjectIntersectionImageFilter():
+RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
+::RayConvexIntersectionImageFilter():
   m_Geometry(ITK_NULLPTR)
 {
 }
 
 template <class TInputImage, class TOutputImage>
 void
-RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage>
+RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if( this->m_ConvexObject.IsNull() )
-    itkExceptionMacro(<<"ConvexObject has not been set.")
+  if( this->m_ConvexShape.IsNull() )
+    itkExceptionMacro(<<"ConvexShape has not been set.")
 }
 
 template <class TInputImage, class TOutputImage>
 void
-RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage>
+RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType threadId)
 {
   // Local convex object since convex objects are not thread safe
-  ConvexObjectPointer co = dynamic_cast<ConvexObject *>(m_ConvexObject->Clone().GetPointer());
+  ConvexShapePointer co = dynamic_cast<ConvexShape *>(m_ConvexShape->Clone().GetPointer());
 
   // Iterators on input and output
   typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
@@ -66,7 +66,7 @@ RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage>
   for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
     {
     // Compute ray intersection length
-    ConvexObject::ScalarType near, far;
+    ConvexShape::ScalarType near, far;
     if( co->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), near, far) )
       itOut.Set( itIn->Get() + co->GetDensity() * ( far - near ) );
     else

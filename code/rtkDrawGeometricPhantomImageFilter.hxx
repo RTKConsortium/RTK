@@ -22,7 +22,7 @@
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkGeometricPhantomFileReader.h"
 #include "rtkForbildPhantomFileReader.h"
-#include "rtkDrawConvexObjectImageFilter.h"
+#include "rtkDrawConvexImageFilter.h"
 
 #include <iostream>
 #include <fstream>
@@ -67,7 +67,7 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
     }
 
   //Check that it's not empty
-  const GeometricPhantom::ConvexObjectVector &cov = m_GeometricPhantom->GetConvexObjects();
+  const GeometricPhantom::ConvexShapeVector &cov = m_GeometricPhantom->GetConvexShapes();
   if( cov.size() == 0 )
     itkExceptionMacro(<< "Empty phantom");
 
@@ -75,25 +75,25 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
   std::vector< typename itk::ImageSource<TOutputImage>::Pointer > drawers;
   for(size_t i=0; i<cov.size(); i++)
     {
-    ConvexObject::Pointer co = cov[i]->Clone();
+    ConvexShape::Pointer co = cov[i]->Clone();
     co->Rotate( m_RotationMatrix );
     co->Translate( m_OriginOffset );
     co->Rescale( m_PhantomScale );
 
     if( drawers.size() )
       {
-      typedef DrawConvexObjectImageFilter<TOutputImage, TOutputImage>  RCOIType;
+      typedef DrawConvexImageFilter<TOutputImage, TOutputImage>  RCOIType;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(drawers.back()->GetOutput());
-      rcoi->SetConvexObject(co);
+      rcoi->SetConvexShape(co);
       drawers.push_back( rcoi.GetPointer() );
       }
     else
       {
-      typedef DrawConvexObjectImageFilter<TInputImage, TOutputImage>  RCOIType;
+      typedef DrawConvexImageFilter<TInputImage, TOutputImage>  RCOIType;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(this->GetInput());
-      rcoi->SetConvexObject(co);
+      rcoi->SetConvexShape(co);
       drawers.push_back( rcoi.GetPointer() );
       }
     }
