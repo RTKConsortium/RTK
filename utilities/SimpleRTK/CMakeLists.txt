@@ -330,7 +330,7 @@ get_filename_component( _itk_root "${_itk_root}" PATH )
 get_filename_component( _itk_root "${_itk_root}" PATH )
 set( _itk_doc_path "${_itk_root}/share/doc/ITK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}" )
 
-if(ITK_VERSION VERSION_LESS "4.12.2")
+if(ITK_VERSION VERSION_LESS "4.12.3")
   set(_readme "README.txt")
 else()
   set(_readme "README.md")
