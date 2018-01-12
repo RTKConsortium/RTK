@@ -134,8 +134,17 @@ set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 #=========================================================
 # RTK uses KWStyle for checking the coding style
 include(${RTK_SOURCE_DIR}/cmake/KWStyle/KWStyle.cmake)
-#=========================================================
 
+# Setup KWStyle path for git hooks
+if(KWSTYLE_EXECUTABLE)
+  find_package( Git )
+  if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git/config")
+    execute_process( COMMAND ${GIT_EXECUTABLE} config hooks.KWStyle.path
+      "${KWSTYLE_EXECUTABLE}"
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} )
+  endif()
+endif()
+#=========================================================
 
 #=========================================================
 # If choose to build documentation, then search for Doxygen executables.

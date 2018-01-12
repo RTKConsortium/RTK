@@ -56,7 +56,7 @@ if(KWSTYLE_FOUND)
 #  Define file names
 #
 set(KWSTYLE_CONFIGURATION_FILE
-  ${PROJECT_BINARY_DIR}/cmake/KWStyle/RTK.kws.xml)
+  ${PROJECT_SOURCE_DIR}/cmake/KWStyle/RTK.kws.xml)
 
 set(KWSTYLE_RTK_FILES_LIST
   ${PROJECT_BINARY_DIR}/cmake/KWStyle/RTKFiles.txt)
@@ -70,11 +70,6 @@ set(KWSTYLE_RTK_OVERWRITE_FILE
 configure_file(
   ${PROJECT_SOURCE_DIR}/cmake/KWStyle/RTKFiles.txt.in
   ${KWSTYLE_RTK_FILES_LIST})
-
-configure_file(
-  ${PROJECT_SOURCE_DIR}/cmake/KWStyle/RTK.kws.xml.in
-  ${KWSTYLE_CONFIGURATION_FILE})
-
 
 #
 #  Define formatting for error messages
