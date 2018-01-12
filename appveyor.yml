@@ -1,0 +1,45 @@
+platform:
+  - x64
+
+environment:
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
+  ITK_VERSION: v4.12.0
+  ITK_SOURCE_DIR: "C:/projects/ITK"
+  ITK_BINARY_DIR: "C:/projects/ITK-build"
+  BUILD_TYPE: Release
+  CTEST_SOURCE_DIRECTORY: "%APPVEYOR_BUILD_FOLDER%"
+  CTEST_BINARY_DIRECTORY: "%APPVEYOR_BUILD_FOLDER%/build"
+  CTEST_CMAKE_GENERATOR: "Visual Studio 14 2015 Win64"
+  CTEST_TEST_TIMEOUT: "300"
+  CTEST_BUILD_CONFIGURATION: Release
+  CTEST_CONFIGURATION_TYPE: Release
+
+  matrix:
+    - GENERATOR: "%CTEST_CMAKE_GENERATOR%"
+
+cache:
+  - '%ITK_SOURCE_DIR%'
+  - '%ITK_BINARY_DIR%'
+
+build:
+  parallel: true
+  verbosity: minimal
+
+before_build:
+  - if not exist "%ITK_SOURCE_DIR%" (
+      cd C:/projects/ &
+      git clone --depth 1 --branch %ITK_VERSION% https://github.com/InsightSoftwareConsortium/ITK.git ITK
+    )
+  - if not exist "%ITK_BINARY_DIR%" (
+      cd C:/projects/ &
+      mkdir "%ITK_BINARY_DIR%" & cd "%ITK_BINARY_DIR%" & cmake -G "%GENERATOR%" -DBUILD_TESTING:BOOL=OFF ../ITK & cmake --build . --config %BUILD_TYPE% &
+      cd '%APPVEYOR_BUILD_FOLDER%'
+    )
+
+build_script:
+  - cd "%APPVEYOR_BUILD_FOLDER%" & mkdir build & cd build
+  - ctest -V -C %CTEST_CONFIGURATION_TYPE% -D GENERATOR="%CTEST_CMAKE_GENERATOR%" -D SRC_DIR="%CTEST_SOURCE_DIRECTORY%" -D BIN_DIR="%CTEST_BINARY_DIRECTORY%" -D CONFIG_TYPE="%CTEST_CONFIGURATION_TYPE%" -D ITK_DIR="%ITK_BINARY_DIR%" -D APPVEYOR_BRANCH="%APPVEYOR_PULL_REQUEST_REPO_BRANCH%" -D APPVEYOR_BUILD_NUM="%APPVEYOR_BUILD_NUMBER%" -S "%APPVEYOR_BUILD_FOLDER%/cmake/appveyor.config"
+
+test: off
+
+deploy: off
