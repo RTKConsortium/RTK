@@ -103,6 +103,7 @@ add_custom_command(
   COMMAND ${KWSTYLE_EXECUTABLE}
   ARGS    ${KWSTYLE_ARGUMENTS_CODE}
   COMMENT "Coding Style Checker"
+  WORKING_DIRECTORY ${RTK_SOURCE_DIR}
   )
 
 add_custom_target(StyleCheckCode DEPENDS ${RTK_BINARY_DIR}/KWStyleCodeReport.txt)
