@@ -417,4 +417,11 @@ RTK_ADD_TEST(NAME rtkoratest
              DATA{Data/Input/Ora/0_afterLog.ora.xml,0_afterLog.mhd,0_afterLog.raw}
              DATA{Data/Baseline/Ora/geometry.xml,attenuation.mha})
 
+add_executable(rtkbioscantest rtkbioscantest.cxx)
+target_link_libraries(rtkbioscantest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkbioscantest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkbioscantest
+             DATA{Data/Input/Bioscan/bioscan.dcm}
+             DATA{Data/Baseline/Bioscan/geometry.xml})
+
 
