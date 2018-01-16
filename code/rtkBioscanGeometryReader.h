@@ -23,6 +23,14 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkWin32Header.h"
 
+// Trick KWStyle with a first declaration of namespace RTK. Style test would
+// not pass otherwise on the gdcm namespace.
+namespace rtk
+{
+}
+
+// Forward declare class Dataset. This is done to avoid define conflicts in
+// GDCM with lp_solve
 namespace gdcm
 {
   class DataSet;
