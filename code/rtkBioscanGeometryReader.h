@@ -22,7 +22,11 @@
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkWin32Header.h"
-#include <gdcmDataSet.h>
+
+namespace gdcm
+{
+  class DataSet;
+}
 
 namespace rtk
 {
@@ -37,6 +41,7 @@ namespace rtk
  *
  * \ingroup IOFilters
  */
+
 class RTK_EXPORT BioscanGeometryReader:
     public itk::LightProcessObject
 {

@@ -25,6 +25,7 @@
 
 #include <gdcmImageReader.h>
 #include <gdcmAttribute.h>
+#include <gdcmDataSet.h>
 
 namespace rtk
 {
@@ -40,7 +41,7 @@ GetVectorTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) co
     }
   const gdcm::DataElement & de = ds.GetDataElement(tag);
   gdcm::Element<gdcm::VR::FL,gdcm::VM::VM1_n> el;
-  el.SetFromDataElement( de );
+  el.Set( de.GetValue() );
   std::vector<float> val;
   for(int i=0; i<el.GetLength(); i++)
     {
