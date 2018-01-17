@@ -46,10 +46,10 @@ class ITK_EXPORT RayEllipsoidIntersectionImageFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef RayEllipsoidIntersectionImageFilter                              Self;
+  typedef RayEllipsoidIntersectionImageFilter                        Self;
   typedef RayConvexIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                          Pointer;
-  typedef itk::SmartPointer<const Self>                                    ConstPointer;
+  typedef itk::SmartPointer<Self>                                    Pointer;
+  typedef itk::SmartPointer<const Self>                              ConstPointer;
 
   /** Convenient typedefs. */
   typedef ConvexShape::PointType  PointType;

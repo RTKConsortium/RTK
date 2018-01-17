@@ -49,10 +49,10 @@ public:
 
   /** Convenient typedefs. */
   typedef typename TOutputImage::RegionType OutputImageRegionType;
-  typedef ConvexShape::Pointer             ConvexShapePointer;
-  typedef ConvexShape::ScalarType          ScalarType;
-  typedef ConvexShape::PointType           PointType;
-  typedef ConvexShape::VectorType          VectorType;
+  typedef ConvexShape::Pointer              ConvexShapePointer;
+  typedef ConvexShape::ScalarType           ScalarType;
+  typedef ConvexShape::PointType            PointType;
+  typedef ConvexShape::VectorType           VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );
