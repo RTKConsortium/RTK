@@ -106,7 +106,7 @@ int main(int argc, char * argv[])
   ppc->SetOriginOffset(offset);
   ppc->SetRotationMatrix(rot);
   ppc->SetConfigFile(args_info.phantomfile_arg);
-  ppc->SetIsForbildConfigFile(args_info.phantomfile_arg);
+  ppc->SetIsForbildConfigFile(args_info.forbild_flag);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( ppc->Update() )
 

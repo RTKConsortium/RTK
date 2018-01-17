@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
   dq->SetOriginOffset(offset);
   dq->SetRotationMatrix(rot);
   dq->SetConfigFile(args_info.phantomfile_arg);
-  dq->SetIsForbildConfigFile(args_info.phantomfile_arg);
+  dq->SetIsForbildConfigFile(args_info.forbild_flag);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dq->Update() )
 
   // Add noise
