@@ -90,7 +90,7 @@ GenerateData()
     reader.SetFileName( m_ProjectionsFileNames[noProj].c_str() );
     if ( !reader.Read() )
       {
-      itkExceptionMacro(<< "Cannot read requested file");
+      itkExceptionMacro(<< "Cannot read requested file: " << m_ProjectionsFileNames[noProj]);
       }
     const gdcm::DataSet & ds =  reader.GetFile().GetDataSet();
 

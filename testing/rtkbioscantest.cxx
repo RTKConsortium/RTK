@@ -22,7 +22,7 @@ int main(int, char** )
   // Ora geometry
   std::vector<std::string> filenames;
   filenames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/Bioscan/Bioscan.dcm") );
+                       std::string("/Input/Bioscan/bioscan.dcm") );
   rtk::BioscanGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::BioscanGeometryReader::New();
   geoTargReader->SetProjectionsFileNames( filenames );
