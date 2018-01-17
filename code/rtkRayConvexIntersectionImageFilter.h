@@ -16,21 +16,21 @@
  *
  *=========================================================================*/
 
-#ifndef rtkRayConvexObjectIntersectionImageFilter_h
-#define rtkRayConvexObjectIntersectionImageFilter_h
+#ifndef rtkRayConvexIntersectionImageFilter_h
+#define rtkRayConvexIntersectionImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
 #include "rtkConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkConvexObject.h"
+#include "rtkConvexShape.h"
 
 namespace rtk
 {
 
-/** \class RayConvexObjectIntersectionImageFilter
+/** \class RayConvexIntersectionImageFilter
  * \brief Computes intersection of projection rays with convex objects.
  *
- * ConvexObjects are ellipsoid, cone, cylinder... See
+ * ConvexShapes are ellipsoid, cone, cylinder... See
  * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
  * for more information.
  *
@@ -39,43 +39,43 @@ namespace rtk
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class RayConvexObjectIntersectionImageFilter :
+class RayConvexIntersectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef RayConvexObjectIntersectionImageFilter            Self;
+  typedef RayConvexIntersectionImageFilter                  Self;
   typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
   /** Convenient typedefs. */
-  typedef typename TOutputImage::RegionType               OutputImageRegionType;
-  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
-  typedef typename GeometryType::Pointer                  GeometryPointer;
-  typedef ConvexObject::Pointer                           ConvexObjectPointer;
-  typedef ConvexObject::ScalarType                        ScalarType;
-  typedef ConvexObject::PointType                         PointType;
+  typedef typename TOutputImage::RegionType     OutputImageRegionType;
+  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  typedef typename GeometryType::Pointer        GeometryPointer;
+  typedef ConvexShape::Pointer                  ConvexShapePointer;
+  typedef ConvexShape::ScalarType               ScalarType;
+  typedef ConvexShape::PointType                PointType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RayConvexObjectIntersectionImageFilter, itk::InPlaceImageFilter);
+  itkTypeMacro(RayConvexIntersectionImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to the geometry. */
-  itkGetObjectMacro(ConvexObject, ConvexObject);
-  itkSetObjectMacro(ConvexObject, ConvexObject);
+  itkGetObjectMacro(ConvexShape, ConvexShape);
+  itkSetObjectMacro(ConvexShape, ConvexShape);
 
   /** Get / Set the object pointer to projection geometry */
   itkGetObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
 protected:
-  RayConvexObjectIntersectionImageFilter();
-  ~RayConvexObjectIntersectionImageFilter() {}
+  RayConvexIntersectionImageFilter();
+  ~RayConvexIntersectionImageFilter() {}
 
-  /** ConvexObject must be created in the BeforeThreadedGenerateData in the
+  /** ConvexShape must be created in the BeforeThreadedGenerateData in the
    * daugter classes. */
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
@@ -84,18 +84,17 @@ protected:
                              ThreadIdType threadId ) ITK_OVERRIDE;
 
 private:
-  RayConvexObjectIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                         //purposely not implemented
+  RayConvexIntersectionImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);                   //purposely not implemented
 
-  ConvexObjectPointer     m_ConvexObject;
-
-  GeometryPointer m_Geometry;
+  ConvexShapePointer m_ConvexShape;
+  GeometryPointer    m_Geometry;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayConvexObjectIntersectionImageFilter.hxx"
+#include "rtkRayConvexIntersectionImageFilter.hxx"
 #endif
 
 #endif

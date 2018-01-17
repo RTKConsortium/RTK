@@ -16,26 +16,36 @@
  *
  *=========================================================================*/
 
-#ifndef rtkQuadric_h
-#define rtkQuadric_h
+#ifndef rtkQuadricShape_h
+#define rtkQuadricShape_h
 
 #include "rtkWin32Header.h"
 
 #include <itkPoint.h>
 #include <rtkMacro.h>
 
-#include "rtkConvexObject.h"
+#include "rtkConvexShape.h"
 
 namespace rtk
 {
 
-class RTK_EXPORT Quadric:
-    public ConvexObject
+/** \class QuadricShape
+ * \brief Defines a 3D quadric shape.
+ *
+ * A quadric shape has the equation
+ * Ax^2 + By^2 + Cz^2 + Dxy+ Exz + Fyz + Gx + Hy + Iz + J = 0
+ *
+ *
+ * \author Simon Rit
+ *
+ */
+class RTK_EXPORT QuadricShape:
+    public ConvexShape
 {
 public:
   /** Standard class typedefs. */
-  typedef Quadric                       Self;
-  typedef ConvexObject                  Superclass;
+  typedef QuadricShape                  Self;
+  typedef ConvexShape                   Superclass;
   typedef itk::SmartPointer<Self>       Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
 
@@ -48,12 +58,12 @@ public:
   itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Quadric, ConvexObject);
+  itkTypeMacro(QuadricShape, ConvexShape);
 
-  /** See rtk::ConvexObject::IsInside. */
+  /** See rtk::ConvexShape::IsInside. */
   virtual bool IsInside(const PointType & point) const ITK_OVERRIDE;
 
-  /** See rtk::ConvexObject::IsIntersectedByRay for the goal and
+  /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
@@ -67,7 +77,7 @@ public:
   /** Translate object by a given 3D vector. */
   virtual void Translate(const VectorType &t) ITK_OVERRIDE;
 
-  /** Translate object by a given 3D vector. */
+  /** Rotate object by a given 3D vector. */
   virtual void Rotate(const RotationMatrixType &r) ITK_OVERRIDE;
 
   itkGetConstMacro(A, ScalarType);
@@ -96,7 +106,7 @@ public:
   virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
 private:
-  Quadric();
+  QuadricShape();
 
   ScalarType m_A;
   ScalarType m_B;

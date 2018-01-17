@@ -46,13 +46,13 @@ public:
   typedef itk::SmartPointer<const Self>  ConstPointer;
 
   /** Convenient typedefs. */
-  itkStaticConstMacro(Dimension, unsigned int, ConvexObject::Dimension);
-  typedef GeometricPhantom::Pointer            GeometricPhantomPointer;
-  typedef ConvexObject::ScalarType             ScalarType;
-  typedef ConvexObject::PointType              PointType;
-  typedef ConvexObject::VectorType             VectorType;
-  typedef ConvexObject::RotationMatrixType     RotationMatrixType;
-  typedef GeometricPhantom::ConvexObjectVector ConvexObjectVectorType;
+  itkStaticConstMacro(Dimension, unsigned int, ConvexShape::Dimension);
+  typedef GeometricPhantom::Pointer           GeometricPhantomPointer;
+  typedef ConvexShape::ScalarType             ScalarType;
+  typedef ConvexShape::PointType              PointType;
+  typedef ConvexShape::VectorType             VectorType;
+  typedef ConvexShape::RotationMatrixType     RotationMatrixType;
+  typedef GeometricPhantom::ConvexShapeVector ConvexShapeVectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -90,7 +90,7 @@ protected:
 
   bool FindParameterInString(const std::string &name,const std::string &s, ScalarType & param);
   bool FindVectorInString(const std::string &name,const std::string &s, VectorType & vec);
-  void FindClippingPlanes(const std::string &s);
+  void FindClipPlanes(const std::string &s);
   void FindUnions(const std::string &s);
 
 private:
@@ -100,8 +100,8 @@ private:
   GeometricPhantomPointer m_GeometricPhantom;
   std::string             m_Filename;
   PointType               m_Center;
-  ConvexObject::Pointer   m_ConvexObject;
-  ConvexObjectVectorType  m_Unions;
+  ConvexShape::Pointer    m_ConvexShape;
+  ConvexShapeVectorType   m_Unions;
 };
 
 } // end namespace rtk

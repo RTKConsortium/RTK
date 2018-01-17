@@ -16,13 +16,13 @@
  *
  *=========================================================================*/
 
-#include "rtkQuadric.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
 
-Quadric
-::Quadric():
+QuadricShape
+::QuadricShape():
     m_A(0.),
     m_B(0.),
     m_C(0.),
@@ -37,7 +37,7 @@ Quadric
 }
 
 bool
-Quadric
+QuadricShape
 ::IsInside(const PointType& point) const
 {
   ScalarType QuadricEllip = this->GetA()*point[0]*point[0]   +
@@ -49,12 +49,12 @@ Quadric
                             this->GetG()*point[0] + this->GetH()*point[1] +
                             this->GetI()*point[2] + this->GetJ();
  if(QuadricEllip<=0)
-    return ApplyClippingPlanes(point);
+    return ApplyClipPlanes(point);
  return false;
 }
 
 bool
-Quadric
+QuadricShape
 ::IsIntersectedByRay(const PointType & rayOrigin,
                      const VectorType & rayDirection,
                      double & near,
@@ -107,11 +107,11 @@ Quadric
       std::swap(near, far);
     }
 
-  return ApplyClippingPlanes(rayOrigin, rayDirection, near, far);
+  return ApplyClipPlanes(rayOrigin, rayDirection, near, far);
 }
 
 void
-Quadric
+QuadricShape
 ::Rescale(const VectorType &r)
 {
   Superclass::Rescale(r);
@@ -127,7 +127,7 @@ Quadric
 }
 
 void
-Quadric
+QuadricShape
 ::Translate(const VectorType &t)
 {
   Superclass::Translate(t);
@@ -147,7 +147,7 @@ Quadric
 }
 
 void
-Quadric
+QuadricShape
 ::Rotate(const RotationMatrixType &r)
 {
   Superclass::Rotate(r);
@@ -189,7 +189,7 @@ Quadric
 }
 
 void
-Quadric
+QuadricShape
 ::SetEllipsoid(const PointType &center,
                const VectorType &axis,
                const ScalarType &yangle)
@@ -254,7 +254,7 @@ Quadric
 }
 
 itk::LightObject::Pointer
-Quadric
+QuadricShape
 ::InternalClone() const
 {
   LightObject::Pointer loPtr = Superclass::InternalClone();

@@ -20,7 +20,7 @@
 #define rtkDrawConeImageFilter_hxx
 
 #include "rtkDrawConeImageFilter.h"
-#include "rtkQuadric.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
@@ -31,7 +31,7 @@ DrawConeImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   Superclass::BeforeThreadedGenerateData();
-  dynamic_cast<Quadric *>(this->GetConvexObject())->SetJ(0.);
+  dynamic_cast<QuadricShape *>(this->GetConvexShape())->SetJ(0.);
 }
 
 }// end namespace rtk

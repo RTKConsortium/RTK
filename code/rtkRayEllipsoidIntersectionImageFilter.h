@@ -42,25 +42,25 @@ namespace rtk
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT RayEllipsoidIntersectionImageFilter :
-  public RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage>
+  public RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
   typedef RayEllipsoidIntersectionImageFilter                              Self;
-  typedef RayConvexObjectIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef RayConvexIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                                          Pointer;
   typedef itk::SmartPointer<const Self>                                    ConstPointer;
 
   /** Convenient typedefs. */
-  typedef ConvexObject::PointType  PointType;
-  typedef ConvexObject::VectorType VectorType;
-  typedef ConvexObject::ScalarType ScalarType;
+  typedef ConvexShape::PointType  PointType;
+  typedef ConvexShape::VectorType VectorType;
+  typedef ConvexShape::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RayEllipsoidIntersectionImageFilter, RayConvexObjectIntersectionImageFilter);
+  itkTypeMacro(RayEllipsoidIntersectionImageFilter, RayConvexIntersectionImageFilter);
 
   /** Get / Set the constant density of the volume */
   itkGetMacro(Density, ScalarType);
@@ -70,7 +70,7 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
-  void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
   itkGetMacro(Center, PointType);
   itkSetMacro(Center, PointType);

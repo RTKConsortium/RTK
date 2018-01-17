@@ -54,10 +54,10 @@ SheppLoganPhantom
   center[0] = centerx;
   center[1] = centery;
   center[2] = centerz;
-  Quadric::Pointer q = Quadric::New();
+  QuadricShape::Pointer q = QuadricShape::New();
   q->SetEllipsoid(center, semiprincipalaxis, angle);
   q->SetDensity(density);
-  this->AddConvexObject(q.GetPointer());
+  this->AddConvexShape(q.GetPointer());
 }
 
 }

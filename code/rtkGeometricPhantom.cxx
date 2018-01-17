@@ -24,9 +24,9 @@ void
 GeometricPhantom
 ::Rescale(const VectorType &r)
 {
-  for(size_t i=0; i<m_ConvexObjects.size(); i++)
+  for(size_t i=0; i<m_ConvexShapes.size(); i++)
     {
-    m_ConvexObjects[i]->Rescale(r);
+    m_ConvexShapes[i]->Rescale(r);
     }
 }
 
@@ -34,9 +34,9 @@ void
 GeometricPhantom
 ::Translate(const VectorType &t)
 {
-  for(size_t i=0; i<m_ConvexObjects.size(); i++)
+  for(size_t i=0; i<m_ConvexShapes.size(); i++)
     {
-    m_ConvexObjects[i]->Translate(t);
+    m_ConvexShapes[i]->Translate(t);
     }
 }
 
@@ -44,17 +44,17 @@ void
 GeometricPhantom
 ::Rotate(const RotationMatrixType &r)
 {
-  for(size_t i=0; i<m_ConvexObjects.size(); i++)
+  for(size_t i=0; i<m_ConvexShapes.size(); i++)
     {
-    m_ConvexObjects[i]->Rotate(r);
+    m_ConvexShapes[i]->Rotate(r);
     }
 }
 
 void
 GeometricPhantom
-::AddConvexObject(const ConvexObjectPointer &co)
+::AddConvexShape(const ConvexShapePointer &co)
 {
-  m_ConvexObjects.push_back(co);
+  m_ConvexShapes.push_back(co);
 }
 
 }

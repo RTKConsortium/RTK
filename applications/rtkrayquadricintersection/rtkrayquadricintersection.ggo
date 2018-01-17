@@ -7,4 +7,4 @@ option "geometry"   g  "XML geometry file name"                                 
 option "output"     o "Output projections file name"                              string   yes
 option "parameters" p "A,B,C,D,E,F,G,H,I,J.  See http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm." double multiple yes
 option "mult"       m "Multiplier for the intersection"                                      double   no default="1"
-option "planes"     - "Clipping planes, n*4 parameters (3 for the normal, 4th for distance)" double multiple no
+option "planes"     - "Clip planes, n*4 parameters (3 for the normal, 4th for distance)" double multiple no

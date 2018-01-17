@@ -20,9 +20,9 @@
 #include <stdlib.h>
 #include <itksys/RegularExpression.hxx>
 #include "rtkForbildPhantomFileReader.h"
-#include "rtkQuadric.h"
-#include "rtkBox.h"
-#include "rtkIntersectionOfConvexObjects.h"
+#include "rtkQuadricShape.h"
+#include "rtkBoxShape.h"
+#include "rtkIntersectionOfConvexShapes.h"
 
 namespace rtk
 {
@@ -81,27 +81,27 @@ ForbildPhantomFileReader
 
     // Density
     ScalarType density = rho;
-    for(size_t i=0; i<m_GeometricPhantom->GetConvexObjects().size(); i++)
+    for(size_t i=0; i<m_GeometricPhantom->GetConvexShapes().size(); i++)
       {
-      if(m_GeometricPhantom->GetConvexObjects()[i]->IsInside(m_Center))
-        density -= m_GeometricPhantom->GetConvexObjects()[i]->GetDensity();
+      if(m_GeometricPhantom->GetConvexShapes()[i]->IsInside(m_Center))
+        density -= m_GeometricPhantom->GetConvexShapes()[i]->GetDensity();
       }
     for(size_t i=0; i<m_Unions.size(); i++)
       {
       if(m_Unions[i]->IsInside(m_Center))
         density -= m_Unions[i]->GetDensity();
       }
-    if(m_ConvexObject.IsNotNull())
+    if(m_ConvexShape.IsNotNull())
       {
-      m_ConvexObject->SetDensity(density);
-      m_GeometricPhantom->AddConvexObject(m_ConvexObject);
-      FindClippingPlanes(line);
+      m_ConvexShape->SetDensity(density);
+      m_GeometricPhantom->AddConvexShape(m_ConvexShape);
+      FindClipPlanes(line);
       FindUnions(line);
-      m_ConvexObject = ConvexObject::Pointer(ITK_NULLPTR);
+      m_ConvexShape = ConvexShape::Pointer(ITK_NULLPTR);
       }
     }
   for(size_t i=0; i<m_Unions.size(); i++)
-    m_GeometricPhantom->AddConvexObject(m_Unions[i]);
+    m_GeometricPhantom->AddConvexShape(m_Unions[i]);
   myFile.close();
 }
 
@@ -114,9 +114,9 @@ ForbildPhantomFileReader
     itkExceptionMacro(<< "Could not find r (radius) in "<< s);
   VectorType axes;
   axes.Fill(r);
-  Quadric::Pointer q = Quadric::New();
+  QuadricShape::Pointer q = QuadricShape::New();
   q->SetEllipsoid(m_Center, axes);
-  m_ConvexObject = q.GetPointer();
+  m_ConvexShape = q.GetPointer();
 }
 
 void
@@ -130,10 +130,10 @@ ForbildPhantomFileReader
     itkExceptionMacro(<< "Could not find dy in "<< s);
   if(!FindParameterInString("dz", s, length[2]))
     itkExceptionMacro(<< "Could not find dz in "<< s);
-  Box::Pointer b = Box::New();
+  BoxShape::Pointer b = BoxShape::New();
   b->SetBoxMin(m_Center - 0.5 * length);
   b->SetBoxMax(m_Center + 0.5 * length);
-  m_ConvexObject = b.GetPointer();
+  m_ConvexShape = b.GetPointer();
 }
 
 void
@@ -150,7 +150,7 @@ ForbildPhantomFileReader
   axes.Fill(r);
   VectorType planeDir;
   planeDir.Fill(0.);
-  ConvexObject::RotationMatrixType rot;
+  ConvexShape::RotationMatrixType rot;
   rot.SetIdentity();
   if(fig == "Cylinder_x")
     {
@@ -176,13 +176,13 @@ ForbildPhantomFileReader
       itkExceptionMacro(<< "Could not find axis in "<< s);
     rot = ComputeRotationMatrixBetweenVectors(planeDir, dir);
     }
-  Quadric::Pointer q = Quadric::New();
+  QuadricShape::Pointer q = QuadricShape::New();
   q->SetEllipsoid(VectorType(0.), axes);
-  q->AddClippingPlane(planeDir, 0.5*l);
-  q->AddClippingPlane(-1.*planeDir, 0.5*l);
+  q->AddClipPlane(planeDir, 0.5*l);
+  q->AddClipPlane(-1.*planeDir, 0.5*l);
   q->Rotate(rot);
   q->Translate(m_Center);
-  m_ConvexObject = q.GetPointer();
+  m_ConvexShape = q.GetPointer();
 }
 
 void
@@ -208,10 +208,10 @@ ForbildPhantomFileReader
   for(int i=0; i<Dimension; i++)
     planeDir[i] = (axes[i]==0.)?1.:0.;
 
-  Quadric::Pointer q = Quadric::New();
+  QuadricShape::Pointer q = QuadricShape::New();
   q->SetEllipsoid(VectorType(0.), axes);
-  q->AddClippingPlane(planeDir, 0.5*l);
-  q->AddClippingPlane(-1.*planeDir, 0.5*l);
+  q->AddClipPlane(planeDir, 0.5*l);
+  q->AddClipPlane(-1.*planeDir, 0.5*l);
   if(fig == "Ellipt_Cyl")
     {
     VectorType a_x;
@@ -233,7 +233,7 @@ ForbildPhantomFileReader
     q->Rotate(rot);
     }
   q->Translate(m_Center);
-  m_ConvexObject = q.GetPointer();
+  m_ConvexShape = q.GetPointer();
 }
 
 void
@@ -247,7 +247,7 @@ ForbildPhantomFileReader
     itkExceptionMacro(<< "Could not find dy in "<< s);
   if(!FindParameterInString("dz", s, axes[2]))
     itkExceptionMacro(<< "Could not find dz in "<< s);
-  Quadric::Pointer q = Quadric::New();
+  QuadricShape::Pointer q = QuadricShape::New();
   q->SetEllipsoid(VectorType(0.), axes);
 
   if(fig == "Ellipsoid_free")
@@ -272,7 +272,7 @@ ForbildPhantomFileReader
     q->Rotate(rot);
     }
   q->Translate(m_Center);
-  m_ConvexObject = q.GetPointer();
+  m_ConvexShape = q.GetPointer();
 }
 
 void
@@ -336,7 +336,7 @@ ForbildPhantomFileReader
     return r;
     }
   VectorType v = CrossProduct(s, d);
-  ConvexObject::RotationMatrixType vx;
+  ConvexShape::RotationMatrixType vx;
   vx.Fill(0.);
   vx[0][1] = -v[2];
   vx[1][0] =  v[2];
@@ -351,7 +351,7 @@ ForbildPhantomFileReader
 
 void
 ForbildPhantomFileReader
-::FindClippingPlanes(const std::string &s)
+::FindClipPlanes(const std::string &s)
 {
   // of the form r(x,y,z) > expr
   std::string regex(" +r *\\( *([-+0-9.]*) *, *([-+0-9.]*) *, *([-+0-9.]*) *\\) *([<>]) *([-+0-9.]*)");
@@ -369,7 +369,7 @@ ForbildPhantomFileReader
     vec /= vec.GetNorm();
     ScalarType sign = (re.match(4) == std::string("<"))?1.:-1.;
     ScalarType expr = atof(re.match(5).c_str());
-    m_ConvexObject->AddClippingPlane(sign*vec, sign*expr);
+    m_ConvexShape->AddClipPlane(sign*vec, sign*expr);
     currs += re.end();
     }
 
@@ -385,7 +385,7 @@ ForbildPhantomFileReader
     vec[0] = 1.;
     ScalarType sign = (re.match(1) == std::string("<"))?1.:-1.;
     ScalarType expr = atof(re.match(2).c_str());
-    m_ConvexObject->AddClippingPlane(sign*vec, sign*expr);
+    m_ConvexShape->AddClipPlane(sign*vec, sign*expr);
     currs += re.end();
     }
 
@@ -401,7 +401,7 @@ ForbildPhantomFileReader
     vec[1] = 1.;
     ScalarType sign = (re.match(1) == std::string("<"))?1.:-1.;
     ScalarType expr = atof(re.match(2).c_str());
-    m_ConvexObject->AddClippingPlane(sign*vec, sign*expr);
+    m_ConvexShape->AddClipPlane(sign*vec, sign*expr);
     currs += re.end();
     }
 
@@ -417,7 +417,7 @@ ForbildPhantomFileReader
     vec[2] = 1.;
     ScalarType sign = (re.match(1) == std::string("<"))?1.:-1.;
     ScalarType expr = atof(re.match(2).c_str());
-    m_ConvexObject->AddClippingPlane(sign*vec, sign*expr);
+    m_ConvexShape->AddClipPlane(sign*vec, sign*expr);
     currs += re.end();
     }
 }
@@ -434,16 +434,16 @@ ForbildPhantomFileReader
   while(re.find(currs))
     {
     currs += re.end();
-    IntersectionOfConvexObjects::Pointer ico = IntersectionOfConvexObjects::New();
-    ico->AddConvexObject(m_ConvexObject);
-    size_t len = m_GeometricPhantom->GetConvexObjects().size();
+    IntersectionOfConvexShapes::Pointer ico = IntersectionOfConvexShapes::New();
+    ico->AddConvexShape(m_ConvexShape);
+    size_t len = m_GeometricPhantom->GetConvexShapes().size();
     int u = atoi(re.match(1).c_str());
     size_t pos = len+u-1;
-    ico->AddConvexObject(m_GeometricPhantom->GetConvexObjects()[pos]);
-    if(m_ConvexObject->GetDensity() !=
-       m_GeometricPhantom->GetConvexObjects()[pos]->GetDensity())
+    ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[pos]);
+    if(m_ConvexShape->GetDensity() !=
+       m_GeometricPhantom->GetConvexShapes()[pos]->GetDensity())
       itkExceptionMacro(<< "Cannot unionize objects of different density in " << s);
-    ico->SetDensity(-1.*m_ConvexObject->GetDensity());
+    ico->SetDensity(-1.*m_ConvexShape->GetDensity());
     m_Unions.push_back(ico.GetPointer());
     }
 }

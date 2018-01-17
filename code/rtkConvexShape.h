@@ -16,30 +16,33 @@
  *
  *=========================================================================*/
 
-#ifndef rtkConvexObject_h
-#define rtkConvexObject_h
+#ifndef rtkConvexShape_h
+#define rtkConvexShape_h
 
 #include <itkMatrix.h>
 #include <itkPoint.h>
 #include <itkDataObject.h>
 #include <itkObjectFactory.h>
 
-#include "rtkMacro.h"
 #include "rtkWin32Header.h"
 
 namespace rtk
 {
-/** \class ConvexObject
- * \brief Base class for a 3D object. rtk::DrawImageFilter fills uses it (and IsInside) to fill a volume.
+/** \class ConvexShape
+ * \brief Base class for a 3D convex shape.
+ *
+ * A ConvexShape is used to draw and project (in the tomographic sense) a
+ * geometric phantom using the functions IsInside and IsIntersectedByRay,
+ * respectively.
  *
  * \author Mathieu Dupont, Simon Rit
  *
  */
-class RTK_EXPORT ConvexObject: public itk::DataObject
+class RTK_EXPORT ConvexShape: public itk::DataObject
 {
 public:
   /** Standard class typedefs. */
-  typedef ConvexObject                  Self;
+  typedef ConvexShape                   Self;
   typedef itk::DataObject               Superclass;
   typedef itk::SmartPointer<Self>       Pointer;
   typedef itk::SmartPointer<const Self> ConstPointer;
@@ -55,13 +58,14 @@ public:
   itkNewMacro ( Self );
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ConvexObject, itk::DataObject);
+  itkTypeMacro(ConvexShape, itk::DataObject);
 
   /** Returns true if a point is inside the object. */
   virtual bool IsInside(const PointType & point) const;
 
-  /** Returns true if a ray intersects the object. If it does, you can access
-   * the intersection points with GetNearestDistance() and GetFarthestDistance. */
+  /** Returns true if a ray intersects the object. If it does, the parameters
+  ** near and far get the shape distance from the source in the ray direction.
+  ** Note that near and far can be negative and near<far. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
                                   double & near,
@@ -73,13 +77,13 @@ public:
   /** Translate object by a given 3D vector. */
   virtual void Translate(const VectorType &t);
 
-  /** Translate object by a given 3D vector. */
+  /** Rotate object according to a 3D rotation matrix. */
   virtual void Rotate(const RotationMatrixType &r);
 
   /** Add clipping plane to the object. The plane is defined by the equation
    * dir * (x,y,z)' + pos = 0. */
-  void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
-  void SetClippingPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos);
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+  void SetClipPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos);
 
   /** Volume density, i.e., value in the volume. */
   itkSetMacro (Density, ScalarType);
@@ -91,16 +95,16 @@ public:
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
 protected:
-  ConvexObject();
-  bool ApplyClippingPlanes(const PointType & rayOrigin,
-                           const VectorType & rayDirection,
-                           ScalarType & near,
-                           ScalarType & far) const;
-  bool ApplyClippingPlanes(const PointType & point) const;
+  ConvexShape();
+  bool ApplyClipPlanes(const PointType & rayOrigin,
+                       const VectorType & rayDirection,
+                       ScalarType & near,
+                       ScalarType & far) const;
+  bool ApplyClipPlanes(const PointType & point) const;
   virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
 private:
-  ConvexObject(const Self&);   //purposely not implemented
+  ConvexShape(const Self&);    //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
   ScalarType              m_Density;

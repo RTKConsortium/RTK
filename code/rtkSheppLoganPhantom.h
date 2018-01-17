@@ -20,7 +20,7 @@
 #define rtkSheppLoganPhantom_h
 
 #include "rtkGeometricPhantom.h"
-#include "rtkQuadric.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
@@ -40,9 +40,9 @@ public:
   typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Convenient typedefs. */
-  typedef Quadric::ScalarType ScalarType;
-  typedef Quadric::PointType  PointType;
-  typedef Quadric::VectorType VectorType;
+  typedef QuadricShape::ScalarType ScalarType;
+  typedef QuadricShape::PointType  PointType;
+  typedef QuadricShape::VectorType VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

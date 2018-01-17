@@ -16,17 +16,19 @@
  *
  *=========================================================================*/
 
-#include "rtkConvexObject.h"
+#include "rtkConvexShape.h"
 
 namespace rtk
 {
-ConvexObject
-::ConvexObject():
+
+ConvexShape
+::ConvexShape():
     m_Density(0.)
 {
 }
+
 bool
-ConvexObject
+ConvexShape
 ::IsInside(const PointType& point) const
 {
   itkExceptionMacro(<< "This method should have been reimplemented in base classe");
@@ -34,7 +36,7 @@ ConvexObject
 }
 
 bool
-ConvexObject
+ConvexShape
 ::IsIntersectedByRay(const PointType & rayOrigin,
                      const VectorType & rayDirection,
                      ScalarType & near,
@@ -45,7 +47,7 @@ ConvexObject
 }
 
 void
-ConvexObject
+ConvexShape
 ::Rescale(const VectorType &r)
 {
   for(size_t i=0; i<m_PlaneDirections.size(); i++)
@@ -58,7 +60,7 @@ ConvexObject
 }
 
 void
-ConvexObject
+ConvexShape
 ::Translate(const VectorType &t)
 {
   for(size_t i=0; i<m_PlaneDirections.size(); i++)
@@ -68,7 +70,7 @@ ConvexObject
 }
 
 void
-ConvexObject
+ConvexShape
 ::Rotate(const RotationMatrixType &r)
 {
   for(size_t i=0; i<m_PlaneDirections.size(); i++)
@@ -78,40 +80,40 @@ ConvexObject
 }
 
 itk::LightObject::Pointer
-ConvexObject
+ConvexShape
 ::InternalClone() const
 {
   LightObject::Pointer loPtr = Superclass::InternalClone();
   Self::Pointer clone = dynamic_cast<Self *>(loPtr.GetPointer());
 
   clone->SetDensity( this->GetDensity() );
-  clone->SetClippingPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  clone->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
 
   return loPtr;
 }
 
 void
-ConvexObject
-::AddClippingPlane(const VectorType & dir, const ScalarType & pos)
+ConvexShape
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
 }
 
 void
-ConvexObject
-::SetClippingPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos)
+ConvexShape
+::SetClipPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos)
 {
   m_PlaneDirections = dir;
   m_PlanePositions = pos;
 }
 
 bool
-ConvexObject
-::ApplyClippingPlanes(const PointType & rayOrigin,
-                      const VectorType & rayDirection,
-                      double & near,
-                      double & far) const
+ConvexShape
+::ApplyClipPlanes(const PointType & rayOrigin,
+                  const VectorType & rayDirection,
+                  double & near,
+                  double & far) const
 {
   for(size_t i=0; i<m_PlaneDirections.size(); i++)
     {
@@ -147,8 +149,8 @@ ConvexObject
 }
 
 bool
-ConvexObject
-::ApplyClippingPlanes(const PointType & point) const
+ConvexShape
+::ApplyClipPlanes(const PointType & point) const
 {
   for(size_t i=0; i<m_PlaneDirections.size(); i++)
     {

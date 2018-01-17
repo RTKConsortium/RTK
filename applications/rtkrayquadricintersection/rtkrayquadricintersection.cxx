@@ -83,7 +83,7 @@ int main(int argc, char * argv[])
     for(ptrdiff_t i=0; i<args_info.planes_given/4; i++)
       {
       RQIType::VectorType planeDir(args_info.planes_arg+i*4);
-      rqi->AddClippingPlane(planeDir, args_info.planes_arg[i*4+3]);
+      rqi->AddClipPlane(planeDir, args_info.planes_arg[i*4+3]);
       }
     }
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rqi->Update() )

@@ -57,8 +57,8 @@ public:
   typedef typename GeometryType::Pointer                  GeometryPointer;
   typedef GeometricPhantom::Pointer                       GeometricPhantomPointer;
   typedef std::string                                     StringType;
-  typedef ConvexObject::VectorType                        VectorType;
-  typedef ConvexObject::RotationMatrixType                RotationMatrixType;
+  typedef ConvexShape::VectorType                         VectorType;
+  typedef ConvexShape::RotationMatrixType                 RotationMatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

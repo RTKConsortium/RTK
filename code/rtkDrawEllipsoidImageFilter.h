@@ -19,7 +19,7 @@
 #ifndef rtkDrawEllipsoidImageFilter_h
 #define rtkDrawEllipsoidImageFilter_h
 
-#include "rtkDrawConvexObjectImageFilter.h"
+#include "rtkDrawConvexImageFilter.h"
 #include "rtkConfiguration.h"
 
 namespace rtk
@@ -36,25 +36,25 @@ namespace rtk
  */
 template <class TInputImage, class TOutputImage>
 class DrawEllipsoidImageFilter :
-public DrawConvexObjectImageFilter< TInputImage, TOutputImage >
+public DrawConvexImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawEllipsoidImageFilter                              Self;
-  typedef DrawConvexObjectImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  typedef DrawEllipsoidImageFilter                        Self;
+  typedef DrawConvexImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                         Pointer;
+  typedef itk::SmartPointer<const Self>                   ConstPointer;
 
   /** Convenient typedefs. */
-  typedef ConvexObject::PointType  PointType;
-  typedef ConvexObject::VectorType VectorType;
-  typedef ConvexObject::ScalarType ScalarType;
+  typedef ConvexShape::PointType  PointType;
+  typedef ConvexShape::VectorType VectorType;
+  typedef ConvexShape::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawEllipsoidImageFilter, DrawConvexObjectImageFilter);
+  itkTypeMacro(DrawEllipsoidImageFilter, DrawConvexImageFilter);
   /** Get / Set the constant density of the volume */
   itkGetMacro(Density, ScalarType);
   itkSetMacro(Density, ScalarType);
@@ -63,7 +63,7 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
-  void AddClippingPlane(const VectorType & dir, const ScalarType & pos);
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
 
   itkGetMacro(Center, PointType);

@@ -22,7 +22,7 @@
 #include "rtkProjectGeometricPhantomImageFilter.h"
 #include "rtkGeometricPhantomFileReader.h"
 #include "rtkForbildPhantomFileReader.h"
-#include "rtkRayConvexObjectIntersectionImageFilter.h"
+#include "rtkRayConvexIntersectionImageFilter.h"
 
 #include <iostream>
 #include <fstream>
@@ -67,7 +67,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
     }
 
   //Check that it's not empty
-  const GeometricPhantom::ConvexObjectVector &cov = m_GeometricPhantom->GetConvexObjects();
+  const GeometricPhantom::ConvexShapeVector &cov = m_GeometricPhantom->GetConvexShapes();
   if( cov.size() == 0 )
     itkExceptionMacro(<< "Empty phantom");
 
@@ -75,27 +75,27 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
   std::vector< typename itk::ImageSource<TOutputImage>::Pointer > projectors;
   for(size_t i=0; i<cov.size(); i++)
     {
-    ConvexObject::Pointer co = cov[i]->Clone();
+    ConvexShape::Pointer co = cov[i]->Clone();
     co->Rotate( m_RotationMatrix );
     co->Translate( m_OriginOffset );
     co->Rescale( m_PhantomScale );
 
     if( projectors.size() )
       {
-      typedef RayConvexObjectIntersectionImageFilter<TOutputImage, TOutputImage>  RCOIType;
+      typedef RayConvexIntersectionImageFilter<TOutputImage, TOutputImage>  RCOIType;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(projectors.back()->GetOutput());
       rcoi->SetGeometry(this->GetGeometry());
-      rcoi->SetConvexObject(co);
+      rcoi->SetConvexShape(co);
       projectors.push_back( rcoi.GetPointer() );
       }
     else
       {
-      typedef RayConvexObjectIntersectionImageFilter<TInputImage, TOutputImage>  RCOIType;
+      typedef RayConvexIntersectionImageFilter<TInputImage, TOutputImage>  RCOIType;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(this->GetInput());
       rcoi->SetGeometry(this->GetGeometry());
-      rcoi->SetConvexObject(co);
+      rcoi->SetConvexShape(co);
       projectors.push_back( rcoi.GetPointer() );
       }
     }
