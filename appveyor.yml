@@ -33,15 +33,17 @@ before_build:
   - if not exist "%ITK_BINARY_DIR%" (
       cd C:/projects/ &
       mkdir "%ITK_BINARY_DIR%" & cd "%ITK_BINARY_DIR%" & cmake -G "%GENERATOR%" -DBUILD_TESTING:BOOL=OFF ../ITK & cmake --build . --config %BUILD_TYPE% &
-      cd '%APPVEYOR_BUILD_FOLDER%'
+      exit 1
     )
-  - if exist "%ITK_BINARY_DIR%" (
+  - if not exist "%ITK_BINARY_DIR%/bin/itkTestDriver" (
       cd "%ITK_BINARY_DIR%" &
       cmake -DBUILD_TESTING:BOOL=ON . & cmake --build . --config %BUILD_TYPE% --target itkTestDriver
     )
 
 build_script:
   - cd "%APPVEYOR_BUILD_FOLDER%" & mkdir build & cd build
+  - cmake -G"%CTEST_CMAKE_GENERATOR%" -DITK_DIR="%ITK_BINARY_DIR%" "%APPVEYOR_BUILD_FOLDER%"
+  - appveyor-retry cmake --build . --config %BUILD_TYPE% --target ITKData
   - ctest -V -C %CTEST_CONFIGURATION_TYPE% -S "%APPVEYOR_BUILD_FOLDER%/cmake/appveyor.config" -D GENERATOR="%CTEST_CMAKE_GENERATOR%" -D SRC_DIR="%CTEST_SOURCE_DIRECTORY%" -D BIN_DIR="%CTEST_BINARY_DIRECTORY%" -D CONFIG_TYPE="%CTEST_CONFIGURATION_TYPE%" -D ITK_DIR="%ITK_BINARY_DIR%" -D APPVEYOR_BRANCH="%APPVEYOR_REPO_BRANCH%" -D APPVEYOR_BUILD_NUM="%APPVEYOR_BUILD_NUMBER%"
 
 test: off
