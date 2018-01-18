@@ -49,6 +49,7 @@ set(RTK_LIBRARY_FILES
             rtkGeometricPhantomFileReader.cxx
             rtkForbildPhantomFileReader.cxx
             rtkSheppLoganPhantom.cxx
+            rtkBioscanGeometryReader.cxx
    )
 
 if(RTK_TIME_EACH_FILTER)
