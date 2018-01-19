@@ -160,7 +160,9 @@ int main(int, char** )
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
   pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
-  std::ofstream signalFile("signal.txt");
+  std::string signalFileName = "signal_4DRooster.txt";
+
+  std::ofstream signalFile(signalFileName.c_str());
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     {
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
@@ -349,7 +351,7 @@ int main(int, char** )
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName("signal.txt");
+  phaseReader->SetFileName(signalFileName);
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
@@ -360,7 +362,7 @@ int main(int, char** )
   rooster->SetInputProjectionStack(pasteFilter->GetOutput());
   rooster->SetGeometry(geometry);
   rooster->SetWeights(phaseReader->GetOutput());
-  rooster->SetSignal(rtk::ReadSignalFile("signal.txt"));
+  rooster->SetSignal(rtk::ReadSignalFile(signalFileName));
   rooster->SetGeometry( geometry );
   rooster->SetCG_iterations( 2 );
   rooster->SetMainLoop_iterations( 2);
@@ -462,7 +464,7 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
-  itksys::SystemTools::RemoveFile("signal.txt");
+  itksys::SystemTools::RemoveFile(signalFileName);
   delete[] Volumes;
 
   return EXIT_SUCCESS;
