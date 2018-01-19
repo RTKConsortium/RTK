@@ -25,16 +25,14 @@ namespace rtk
 {
 
 /** \class SheppLoganPhantomFilter
- * \brief Computes intersection between source rays and ellipsoids,
- * in order to create the projections of a Shepp-Logan phantom resized
- * to m_PhantoScale ( default 128 ).
+ * \brief Analytical projection of a SheppLoganPhantom with a 128 (default) scale.
  *
  * \test rtkRaycastInterpolatorForwardProjectionTest.cxx,
  * rtkprojectgeometricphantomtest.cxx, rtkfdktest.cxx, rtkrampfiltertest.cxx,
  * rtkforwardprojectiontest.cxx, rtkdisplaceddetectortest.cxx,
  * rtkshortscantest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
@@ -54,7 +52,6 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SheppLoganPhantomFilter, ProjectGeometricPhantomImageFilter);
-
 
 protected:
   SheppLoganPhantomFilter();

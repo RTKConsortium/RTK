@@ -26,11 +26,15 @@ namespace rtk
 {
 
 /** \class DrawCylinderImageFilter
- * \brief Draws in a 3D image user defined Cylinder.
+ * \brief Draws a cylinder in a 3D image.
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * A cylinder is actually defined by a QuadricShape using first
+ * QuadricShape::SetEllipsoid and then with the cylinder direction defined by
+ * one 0 component in the axis vector.
  *
- * \author Marc Vila
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
+ *
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
@@ -62,7 +66,7 @@ protected:
 
 private:
   DrawCylinderImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
+  void operator=(const Self&);          //purposely not implemented
 };
 
 } // end namespace rtk

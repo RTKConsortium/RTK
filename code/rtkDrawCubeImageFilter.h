@@ -23,6 +23,7 @@
 
 #include <vector>
 
+// Kept for backward compatibility
 #define DrawCubeImageFilter DrawBoxImageFilter
 
 #endif

@@ -26,11 +26,11 @@ namespace rtk
 {
 
 /** \class RayQuadricIntersectionImageFilter
- * \brief Draws in a 3D image user defined Quadric.
+ * \brief Analytical projection of a QuadricShape
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
@@ -64,8 +64,10 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
+  /** See ConvexShape for the definition of clip planes. */
   void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
+  /** Get/Set QuadricShape parameters. */
   itkGetMacro(A, ScalarType);
   itkSetMacro(A, ScalarType);
   itkGetMacro(B, ScalarType);

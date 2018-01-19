@@ -26,12 +26,12 @@ namespace rtk
 {
 
 /** \class GeometricPhantomFileReader
- * \brief Reads configuration file containing specifications of a geometric
- * phantom.
+ * \brief Reads configuration file in a user-defined file format
  *
- * \test rtkprojectgeometricphantomtest.cxx, rtkdrawgeometricphantomtest.cxx
+ * \test rtkprojectgeometricphantomtest.cxx, rtkdrawgeometricphantomtest.cxx,
+ *       rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup Functions
  */

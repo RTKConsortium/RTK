@@ -27,11 +27,11 @@ namespace rtk
 {
 
 /** \class RayBoxIntersectionImageFilter
- * \brief Draws in a 3D image user defined BoxShape.
+ * \brief Analytical projection of a BoxShape.
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
@@ -67,11 +67,13 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
+  /** See ConvexShape for the definition of clip planes. */
   void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
-  /** Set the box from an image. See rtkRayBoxIntersectionFunction::SetBoxFromImage. */
+  /** Set the box from an image. See rtk::BoxShape::SetBoxFromImage. */
   void SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder=true);
 
+  /** Get/Set the box parameters. See rtk::BoxShape. */
   itkGetMacro(BoxMin, PointType);
   itkSetMacro(BoxMin, PointType);
   itkGetMacro(BoxMax, PointType);

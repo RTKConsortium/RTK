@@ -35,7 +35,9 @@ namespace rtk
  * geometric phantom using the functions IsInside and IsIntersectedByRay,
  * respectively.
  *
- * \author Mathieu Dupont, Simon Rit
+ * \test rtkforbildtest.cxx
+ *
+ * \author Simon Rit
  *
  */
 class RTK_EXPORT ConvexShape: public itk::DataObject
@@ -65,7 +67,7 @@ public:
 
   /** Returns true if a ray intersects the object. If it does, the parameters
   ** near and far get the shape distance from the source in the ray direction.
-  ** Note that near and far can be negative and near<far. */
+  ** Note that near<far, and near and far can be negative. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
                                   double & near,

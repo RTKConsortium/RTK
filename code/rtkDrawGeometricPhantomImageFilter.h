@@ -27,16 +27,11 @@ namespace rtk
 {
 
 /** \class DrawGeometricPhantomImageFilter
- * \brief  Computes intersection between source rays and ellipsoids
+ * \brief Draws a GeometricPhantom in a 3D image
  *
- * Computes intersection between source rays and ellipsoids,
- * in order to create the projections of a specific phantom which is
- * specified in a configuration file following the convention of
- * http://www.slaney.org/pct/pct-errata.html
+ * \test rtkprojectgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \test rtkprojectgeometricphantomtest.cxx
- *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
@@ -67,16 +62,16 @@ public:
   itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
   itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
 
-  /** Get/Set Number of Figures.*/
+  /** Get/Set the phantom file path. */
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
-  /** Multiplicative Scaling factor for the phantom described ConfigFile. */
+  /** Multiplicative scaling factor along each 3D component. */
   itkSetMacro(PhantomScale, VectorType);
   itkGetMacro(PhantomScale, VectorType);
 
-  /** Get / Set the spatial position of the phantom Shepp Logan phantom relative to its
-   * center. The default value is (0, 0, 0). */
+  /** Get / Set the spatial offset of the phantom relative to its center. The
+   * default value is (0, 0, 0). */
   itkSetMacro(OriginOffset, VectorType);
   itkGetMacro(OriginOffset, VectorType);
 

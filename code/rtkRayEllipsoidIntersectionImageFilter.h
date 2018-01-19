@@ -30,11 +30,10 @@ namespace rtk
 {
 
 /** \class RayEllipsoidIntersectionImageFilter
- * \brief Computes intersection of projection rays with ellipsoids.
+ * \brief Analytical projection of ellipsoids
  *
- * See http://en.wikipedia.org/wiki/Ellipsoid for more information.
- *
- * \test rtksarttest.cxx, rtkamsterdamshroudtest.cxx, rtkmotioncompensatedfdktest.cxx
+ * \test rtksarttest.cxx, rtkamsterdamshroudtest.cxx,
+*        rtkmotioncompensatedfdktest.cxx, rtkforbildtest.cxx
  *
  * \author Simon Rit
  *
@@ -70,14 +69,18 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
+  /** See ConvexShape for the definition of clip planes. */
   void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
+  /** Get/Set the center of the ellipsoid. */
   itkGetMacro(Center, PointType);
   itkSetMacro(Center, PointType);
 
+  /** Get/Set the semi-principal axes of the ellipsoid. */
   itkGetMacro(Axis, VectorType);
   itkSetMacro(Axis, VectorType);
 
+  /** Get/Set the rotation angle around the y axis. */
   itkGetMacro(Angle, ScalarType);
   itkSetMacro(Angle, ScalarType);
 

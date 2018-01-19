@@ -34,7 +34,9 @@ namespace rtk
  *
  * A quadric shape has the equation
  * Ax^2 + By^2 + Cz^2 + Dxy+ Exz + Fyz + Gx + Hy + Iz + J = 0
+ * It is assumed to be convex (which is not always true).
  *
+ * \test rtkforbildtest.cxx
  *
  * \author Simon Rit
  *

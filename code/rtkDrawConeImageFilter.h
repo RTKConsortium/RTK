@@ -26,11 +26,11 @@ namespace rtk
 {
 
 /** \class DrawConeImageFilter
- * \brief Draws in a 3D image user defined Cone.
+ * \brief Draws a cone in a 3D image.
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */

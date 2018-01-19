@@ -25,7 +25,12 @@
 namespace rtk
 {
 /** \class SheppLoganPhantom
- * \brief SheppLogan phantom, i.e., a set of rtk::ConvexObjects.
+ * \brief SheppLogan phantom as defined in "Principles of CT imaging" by Kak & Slaney
+ *
+ * See http://www.slaney.org/pct/pct-errata.html for the correction of the
+ * phantom definition.
+ *
+ * \test rtkfdktest.cxx
  *
  * \author Simon Rit
  *

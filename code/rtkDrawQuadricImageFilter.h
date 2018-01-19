@@ -26,11 +26,11 @@ namespace rtk
 {
 
 /** \class DrawQuadricImageFilter
- * \brief Draws in a 3D image user defined Quadric.
+ * \brief Draws a QuadricShape in a 3D image
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
@@ -55,7 +55,7 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(DrawQuadricImageFilter, DrawConvexImageFilter);
 
-  /** Get / Set the constant density of the volume */
+  /** Get / Set the constant density of the QuadricShape */
   itkGetMacro(Density, ScalarType);
   itkSetMacro(Density, ScalarType);
 
@@ -63,6 +63,7 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
+  /** See ConvexShape for the definition of clip planes. */
   void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
   itkGetMacro(A, ScalarType);

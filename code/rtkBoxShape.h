@@ -34,6 +34,8 @@ namespace rtk
  * rotation matrix Direction. The box corresponding to an Image can be set
  * using the function SetBoxShapeFromImage.
  *
+ * \test rtkforbildtest.cxx
+ *
  * \author Simon Rit
  *
  */
@@ -98,6 +100,9 @@ public:
 
   virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
 
+  /** Set the 3D box is the portion of space defined by the LargestPossibleRegion.
+   * bWithExternalHalfPixelBorder can be used to include or exclude a half voxel
+   * border. */
   void SetBoxFromImage( const ImageBaseType *img, bool bWithExternalHalfPixelBorder=true );
 
 private:

@@ -28,7 +28,9 @@ namespace rtk
 {
 
 /** \class DrawConvexImageFilter
- * \brief Base Class for drawing a 3D image by using a DrawConvex. Uses a functor to fill the image.
+ * \brief Draws a rtk::ConvexShape in a 3D image.
+ *
+ * \test rtkforbildtest.cxx
  *
  * \author Mathieu Dupont, Simon Rit
  *
@@ -60,7 +62,7 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro ( DrawConvexImageFilter, itk::InPlaceImageFilter );
 
-  /** Get / Set the object pointer to the geometry. */
+  /** Get / Set the object pointer to the ConvexShape. */
   itkGetObjectMacro(ConvexShape, ConvexShape);
   itkSetObjectMacro(ConvexShape, ConvexShape);
 
@@ -80,10 +82,7 @@ private:
   DrawConvexImageFilter ( const Self& ); //purposely not implemented
   void operator=(const Self&);           //purposely not implemented
 
-  ConvexShapePointer      m_ConvexShape;
-  ScalarType              m_Density;
-  std::vector<VectorType> m_PlaneDirections;
-  std::vector<PointType>  m_PlanePositions;
+  ConvexShapePointer m_ConvexShape;
 };
 
 

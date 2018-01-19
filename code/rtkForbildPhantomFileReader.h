@@ -26,14 +26,15 @@ namespace rtk
 {
 
 /** \class ForbildPhantomFileReader
- * \brief Reads configuration file containing specifications of a geometric
- * phantom.
+ * \brief Reads GeometricPhantom from a Forbild file
  *
- * \test rtkprojectgeometricphantomtest.cxx, rtkdrawgeometricphantomtest.cxx
+ * See http://www.imp.uni-erlangen.de/phantoms/. In addition to the original
+ * parameters, the parameter "union=N", allows defining the union with a previous
+ * shape. For example, union=-1 will create a union with the previous shape.
  *
- * \author Marc Vila
+ * \test rtkforbildtest.cxx
  *
- * \ingroup Functions
+ * \author Simon Rit
  */
 class RTK_EXPORT ForbildPhantomFileReader :
     public itk::LightProcessObject
@@ -64,7 +65,7 @@ public:
   itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
   itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
 
-  /** Get/Set the filename to read. */
+  /** Get/Set path to phantom definition file. */
   itkGetStringMacro(Filename);
   itkSetStringMacro(Filename);
 
@@ -72,7 +73,6 @@ public:
   virtual void GenerateOutputInformation();
 
 protected:
-
   /// Constructor
   ForbildPhantomFileReader() {};
 

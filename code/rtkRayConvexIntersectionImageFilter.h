@@ -28,11 +28,9 @@ namespace rtk
 {
 
 /** \class RayConvexIntersectionImageFilter
- * \brief Computes intersection of projection rays with convex objects.
+ * \brief Analytical projection of ConvexShape
  *
- * ConvexShapes are ellipsoid, cone, cylinder... See
- * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
- * for more information.
+ * \test rtkfdktest.cxx, rtkforbildtest.cxx
  *
  * \author Simon Rit
  *
@@ -63,7 +61,7 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(RayConvexIntersectionImageFilter, itk::InPlaceImageFilter);
 
-  /** Get / Set the object pointer to the geometry. */
+  /** Get / Set the object pointer to the ConvexShape. */
   itkGetObjectMacro(ConvexShape, ConvexShape);
   itkSetObjectMacro(ConvexShape, ConvexShape);
 

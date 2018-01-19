@@ -26,6 +26,13 @@
 namespace rtk
 {
 
+/** \class IntersectionOfConvexShapes
+ * \brief Defines a shape as the intersection of several ConvexShape
+ *
+ * \test rtkforbildtest.cxx
+ *
+ * \author Simon Rit
+ */
 class RTK_EXPORT IntersectionOfConvexShapes:
     public ConvexShape
 {
@@ -54,9 +61,7 @@ public:
   /** See rtk::ConvexShape::IsInside. */
   virtual bool IsInside(const PointType & point) const ITK_OVERRIDE;
 
-  /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
-   * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
-   * for the computation. */
+  /** See rtk::ConvexShape::IsIntersectedByRay. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
                                   ScalarType & near,
@@ -73,7 +78,7 @@ public:
   /** Translate object by a given 3D vector. */
   virtual void Translate(const VectorType &t) ITK_OVERRIDE;
 
-  /** Translate object by a given 3D vector. */
+  /** Rotate object according to a 3D rotation matrix. */
   virtual void Rotate(const RotationMatrixType &r) ITK_OVERRIDE;
 
   virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;

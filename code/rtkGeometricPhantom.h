@@ -24,7 +24,9 @@
 namespace rtk
 {
 /** \class GeometricPhantom
- * \brief Geometric phantom, i.e., a set of rtk::ConvexShapes.
+ * \brief Container for a geometric phantom, i.e., a set of ConvexShapes.
+ *
+ * \test rtkforbildtest.cxx
  *
  * \author Simon Rit
  *
@@ -58,7 +60,7 @@ public:
   /** Translate object by a given 3D vector. */
   virtual void Translate(const VectorType &t);
 
-  /** Translate object by a given 3D vector. */
+  /** Rotate object according to a 3D rotation matrix. */
   virtual void Rotate(const RotationMatrixType &r);
 
   /** Get reference to vector of objects. */

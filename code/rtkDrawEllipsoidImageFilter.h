@@ -26,11 +26,11 @@ namespace rtk
 {
 
 /** \class DrawEllipsoidImageFilter
- * \brief Draws in a 3D image user defined Ellipsoid.
+ * \brief Draws an ellipsoid in a 3D image
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
@@ -55,6 +55,7 @@ public:
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DrawEllipsoidImageFilter, DrawConvexImageFilter);
+
   /** Get / Set the constant density of the volume */
   itkGetMacro(Density, ScalarType);
   itkSetMacro(Density, ScalarType);
@@ -63,15 +64,18 @@ public:
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
+  /** See ConvexShape for the definition of clip planes. */
   void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
-
+  /** Get/Set the center of the ellipsoid. */
   itkGetMacro(Center, PointType);
   itkSetMacro(Center, PointType);
 
+  /** Get/Set the semi-principal axes of the ellipsoid. */
   itkGetMacro(Axis, VectorType);
   itkSetMacro(Axis, VectorType);
 
+  /** Get/Set the rotation angle around the y axis. */
   itkGetMacro(Angle, ScalarType);
   itkSetMacro(Angle, ScalarType);
 
