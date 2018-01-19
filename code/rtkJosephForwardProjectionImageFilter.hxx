@@ -102,18 +102,18 @@ JosephForwardProjectionImageFilter<TInputImage,
       }
 
     // Test if there is an intersection
-    BoxShape::ScalarType near, far;
-    if( box->IsIntersectedByRay(sourcePosition, dirVox, near, far) &&
-        far>=0. && // check if detector after the source
-        near<=1.)  // check if detector after or in the volume
+    BoxShape::ScalarType nearDist, farDist;
+    if( box->IsIntersectedByRay(sourcePosition, dirVox, nearDist, farDist) &&
+        farDist>=0. && // check if detector after the source
+        nearDist<=1.)  // check if detector after or in the volume
       {
       // Clip the casting between source and pixel of the detector
-      near = std::max(near, 0.);
-      far = std::min(far, 1.);
+      nearDist = std::max(nearDist, 0.);
+      farDist = std::min(farDist, 1.);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
-      np = sourcePosition + near * dirVox;
-      fp = sourcePosition + far * dirVox;
+      np = sourcePosition + nearDist * dirVox;
+      fp = sourcePosition + farDist * dirVox;
       if(np[mainDir]>fp[mainDir])
         std::swap(np, fp);
 

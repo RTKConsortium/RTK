@@ -63,9 +63,9 @@ RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
   for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
     {
     // Compute ray intersection length
-    ConvexShape::ScalarType near, far;
-    if( m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), near, far) )
-      itOut.Set( itIn->Get() + m_ConvexShape->GetDensity() * ( far - near ) );
+    ConvexShape::ScalarType nearDist, farDist;
+    if( m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), nearDist, farDist) )
+      itOut.Set( itIn->Get() + m_ConvexShape->GetDensity() * ( farDist - nearDist ) );
     else
       itOut.Set( itIn->Get() );
     }

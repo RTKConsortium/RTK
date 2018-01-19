@@ -39,8 +39,8 @@ bool
 ConvexShape
 ::IsIntersectedByRay(const PointType & rayOrigin,
                      const VectorType & rayDirection,
-                     ScalarType & near,
-                     ScalarType & far) const
+                     ScalarType & nearDist,
+                     ScalarType & farDist) const
 {
   itkExceptionMacro(<< "This method should have been reimplemented in base classe");
   return false;
@@ -112,8 +112,8 @@ bool
 ConvexShape
 ::ApplyClipPlanes(const PointType & rayOrigin,
                   const VectorType & rayDirection,
-                  double & near,
-                  double & far) const
+                  double & nearDist,
+                  double & farDist) const
 {
   for(size_t i=0; i<m_PlaneDirections.size(); i++)
     {
@@ -134,15 +134,15 @@ ConvexShape
     // If plane is pointing in the same direction as the ray
     if( rayDirPlaneDir >= 0 )
       {
-      if(planeDist<=near)
+      if(planeDist<=nearDist)
         return false;
-      far = std::min(far, planeDist);
+      farDist = std::min(farDist, planeDist);
       }
     else
       {
-      if(planeDist>=far)
+      if(planeDist>=farDist)
         return false;
-      near = std::max(near, planeDist);
+      nearDist = std::max(nearDist, planeDist);
       }
     }
   return true;
