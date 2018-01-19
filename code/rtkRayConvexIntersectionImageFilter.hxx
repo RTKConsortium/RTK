@@ -50,9 +50,6 @@ RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType threadId)
 {
-  // Local convex object since convex objects are not thread safe
-  ConvexShapePointer co = dynamic_cast<ConvexShape *>(m_ConvexShape->Clone().GetPointer());
-
   // Iterators on input and output
   typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
   InputRegionIterator *itIn;
@@ -67,8 +64,8 @@ RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
     {
     // Compute ray intersection length
     ConvexShape::ScalarType near, far;
-    if( co->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), near, far) )
-      itOut.Set( itIn->Get() + co->GetDensity() * ( far - near ) );
+    if( m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), near, far) )
+      itOut.Set( itIn->Get() + m_ConvexShape->GetDensity() * ( far - near ) );
     else
       itOut.Set( itIn->Get() );
     }

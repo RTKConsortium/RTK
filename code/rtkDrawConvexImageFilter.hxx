@@ -48,9 +48,6 @@ DrawConvexImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType threadId )
 {
-  // Local convex object since convex objects are not thread safe
-  ConvexShapePointer co = dynamic_cast<ConvexShape *>(m_ConvexShape->Clone().GetPointer());
-
   typename TOutputImage::PointType point;
   const    TInputImage * input = this->GetInput();
 
@@ -61,8 +58,8 @@ DrawConvexImageFilter<TInputImage, TOutputImage>
     {
     this->GetInput()->TransformIndexToPhysicalPoint(itOut.GetIndex(), point);
     PointType p(&(point[0]));
-    if(co->IsInside(p))
-      itOut.Set( itIn.Get() + co->GetDensity() );
+    if(m_ConvexShape->IsInside(p))
+      itOut.Set( itIn.Get() + m_ConvexShape->GetDensity() );
     else
       itOut.Set( itIn.Get() );
     ++itIn;
