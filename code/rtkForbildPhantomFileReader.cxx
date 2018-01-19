@@ -46,7 +46,7 @@ ForbildPhantomFileReader
     getline(myFile, line, '}');
 
     // Find fig
-    std::string regex = "\\\[ *([a-zA-Z_]*):";
+    std::string regex = "\\[ *([a-zA-Z_]*):";
     itksys::RegularExpression re;
     if(!re.compile(regex.c_str()))
       itkExceptionMacro(<< "Could not compile " << regex);
