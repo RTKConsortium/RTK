@@ -43,7 +43,7 @@ GetVectorTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) co
   gdcm::Element<gdcm::VR::FL,gdcm::VM::VM1_n> el;
   el.Set( de.GetValue() );
   std::vector<float> val;
-  for(int i=0; i<el.GetLength(); i++)
+  for(unsigned int i=0; i<el.GetLength(); i++)
     {
     val.push_back(el.GetValue(i));
     }
