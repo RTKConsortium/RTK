@@ -70,8 +70,8 @@ public:
    * for the computation. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
-                                  double & near,
-                                  double & far) const ITK_OVERRIDE;
+                                  double & nearDist,
+                                  double & farDist) const ITK_OVERRIDE;
 
   /** Rescale object along each direction by a 3D vector. */
   virtual void Rescale(const VectorType &r) ITK_OVERRIDE;

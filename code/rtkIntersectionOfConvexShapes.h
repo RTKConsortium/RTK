@@ -64,8 +64,8 @@ public:
   /** See rtk::ConvexShape::IsIntersectedByRay. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
-                                  ScalarType & near,
-                                  ScalarType & far) const ITK_OVERRIDE;
+                                  ScalarType & nearDist,
+                                  ScalarType & farDist) const ITK_OVERRIDE;
 
   /** Add convex object to phantom. */
   void AddConvexShape(const ConvexShapePointer &co);

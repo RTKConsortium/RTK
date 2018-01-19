@@ -42,19 +42,19 @@ bool
 IntersectionOfConvexShapes
 ::IsIntersectedByRay(const PointType & rayOrigin,
                      const VectorType & rayDirection,
-                     ScalarType & near,
-                     ScalarType & far) const
+                     ScalarType & nearDist,
+                     ScalarType & farDist) const
 {
-  near = itk::NumericTraits< ScalarType >::NonpositiveMin();
-  far = itk::NumericTraits< ScalarType >::max();
+  nearDist = itk::NumericTraits< ScalarType >::NonpositiveMin();
+  farDist = itk::NumericTraits< ScalarType >::max();
   for(size_t i=0; i<m_ConvexShapes.size(); i++)
     {
     ScalarType n, f;
     if( !m_ConvexShapes[i]->IsIntersectedByRay(rayOrigin, rayDirection, n, f) )
       return false;
-    near = std::max(near, n);
-    far = std::min(far, f);
-    if(near >= far)
+    nearDist = std::max(nearDist, n);
+    farDist = std::min(farDist, f);
+    if(nearDist >= farDist)
       return false;
     }
   return true;

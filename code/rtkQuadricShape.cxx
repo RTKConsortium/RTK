@@ -57,8 +57,8 @@ bool
 QuadricShape
 ::IsIntersectedByRay(const PointType & rayOrigin,
                      const VectorType & rayDirection,
-                     double & near,
-                     double & far) const
+                     double & nearDist,
+                     double & farDist) const
 {
   // http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
   ScalarType Aq = m_A*rayDirection[0]*rayDirection[0] +
@@ -90,24 +90,24 @@ QuadricShape
   const ScalarType zero = itk::NumericTraits<ScalarType>::ZeroValue();
   if(Aq==zero)
     {
-    near = -Cq/Bq;
-    far = itk::NumericTraits<ScalarType>::max();
+    nearDist = -Cq/Bq;
+    farDist = itk::NumericTraits<ScalarType>::max();
     }
   else
     {
     ScalarType discriminant = Bq*Bq-4*Aq*Cq;
     if(discriminant<zero)
       return false;
-    near  = (-Bq-sqrt(discriminant))/(2*Aq);
-    far = (-Bq+sqrt(discriminant))/(2*Aq);
+    nearDist  = (-Bq-sqrt(discriminant))/(2*Aq);
+    farDist = (-Bq+sqrt(discriminant))/(2*Aq);
 
     // The following condition is equivant to but assumed to be faster
-    //if( vcl_abs(near)>vcl_abs(far) )
-    if( (near-far)*(near+far)>0. )
-      std::swap(near, far);
+    //if( vcl_abs(nearDist)>vcl_abs(farDist) )
+    if( (nearDist-farDist)*(nearDist+farDist)>0. )
+      std::swap(nearDist, farDist);
     }
 
-  return ApplyClipPlanes(rayOrigin, rayDirection, near, far);
+  return ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist);
 }
 
 void
