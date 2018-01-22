@@ -32,7 +32,7 @@
 #endif
 
 
-#if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS) 
+#if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS) && !defined(__CUDACC__)
 # ifdef rtkcuda_EXPORTS
 #  define rtkcuda_EXPORT __declspec(dllexport)
 # else
