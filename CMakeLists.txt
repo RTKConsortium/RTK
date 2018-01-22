@@ -20,6 +20,7 @@ cmake_policy (SET CMP0003 NEW)
 if(POLICY CMP0054)
   cmake_policy (SET CMP0054 NEW)
 endif()
+cmake_policy (SET CMP0022 NEW)
 
 ## Default to release
 if (NOT CMAKE_BUILD_TYPE)
