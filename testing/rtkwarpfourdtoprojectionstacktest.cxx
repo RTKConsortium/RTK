@@ -164,7 +164,9 @@ int main(int, char** )
   PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
   pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
 
-  std::ofstream signalFile("signal.txt");
+  std::string signalFileName = "signal_bw.txt";
+
+  std::ofstream signalFile(signalFileName.c_str());
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     {
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
@@ -361,7 +363,7 @@ int main(int, char** )
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName("signal.txt");
+  phaseReader->SetFileName(signalFileName);
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
@@ -373,7 +375,7 @@ int main(int, char** )
   warpforwardproject->SetGeometry(geometry);
   warpforwardproject->SetDisplacementField(deformationField);
   warpforwardproject->SetWeights(phaseReader->GetOutput());
-  warpforwardproject->SetSignal(rtk::ReadSignalFile("signal.txt"));
+  warpforwardproject->SetSignal(rtk::ReadSignalFile(signalFileName));
 
 #ifndef RTK_USE_CUDA
   std::cout << "\n\n****** Case 1: Non-warped joseph forward projection (warped forward projection exists only in CUDA) ******" << std::endl;
@@ -395,7 +397,7 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
-  itksys::SystemTools::RemoveFile("signal.txt");
+  itksys::SystemTools::RemoveFile(signalFileName);
   delete[] Volumes;
 
   return EXIT_SUCCESS;
