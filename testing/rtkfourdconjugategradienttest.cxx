@@ -154,7 +154,9 @@ int main(int, char** )
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
   pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
-  std::ofstream signalFile("signal.txt");
+  std::string signalFileName = "signal_4DConjugatedGradient.txt";
+
+  std::ofstream signalFile(signalFileName.c_str());
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     {
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
@@ -256,7 +258,7 @@ int main(int, char** )
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName("signal.txt");
+  phaseReader->SetFileName(signalFileName);
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
@@ -268,7 +270,7 @@ int main(int, char** )
   conjugategradient->SetGeometry(geometry);
   conjugategradient->SetNumberOfIterations(3);
   conjugategradient->SetWeights(phaseReader->GetOutput());
-  conjugategradient->SetSignal(rtk::ReadSignalFile("signal.txt"));
+  conjugategradient->SetSignal(rtk::ReadSignalFile(signalFileName));
 
   std::cout << "\n\n****** Case 1: Joseph forward projector, Voxel-Based back projector, CPU interpolation and splat ******" << std::endl;
 
@@ -291,7 +293,7 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
-  itksys::SystemTools::RemoveFile("signal.txt");
+  itksys::SystemTools::RemoveFile(signalFileName.c_str());
   delete[] Volumes;
 
   return EXIT_SUCCESS;

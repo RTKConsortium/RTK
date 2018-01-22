@@ -128,7 +128,8 @@ int main(int, char** )
     }
 
   // Signal
-  std::ofstream signalFile("signal.txt");
+  std::string signalFileName = "signal_CyclicDeformation.txt";
+  std::ofstream signalFile(signalFileName.c_str());
   signalFile << "0.3" << std::endl;
 
   // Set the forward and back projection filters to be used
@@ -138,7 +139,7 @@ int main(int, char** )
 
   CyclicDeformationType::Pointer cyclic = CyclicDeformationType::New();
   cyclic->SetInput(deformationField);
-  cyclic->SetSignalFilename("signal.txt");
+  cyclic->SetSignalFilename(signalFileName);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( cyclic->Update() );
 
   CheckVectorImageQuality<DVFImageType>(cyclic->GetOutput(), cyclic->GetOutput(), 0.4, 12, 2.0);
@@ -149,7 +150,7 @@ int main(int, char** )
 
   cyclic = rtk::CudaCyclicDeformationImageFilter::New();
   cyclic->SetInput(deformationField);
-  cyclic->SetSignalFilename("signal.txt");
+  cyclic->SetSignalFilename(signalFileName);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( cyclic->Update() );
 
   CheckVectorImageQuality<DVFImageType>(cyclic->GetOutput(), cyclic->GetOutput(), 0.4, 12, 2.0);
@@ -157,7 +158,7 @@ int main(int, char** )
 
 #endif
 
-  itksys::SystemTools::RemoveFile("signal.txt");
+  itksys::SystemTools::RemoveFile(signalFileName.c_str());
 
   return EXIT_SUCCESS;
 }
