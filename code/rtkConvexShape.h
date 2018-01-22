@@ -25,6 +25,7 @@
 #include <itkObjectFactory.h>
 
 #include "rtkWin32Header.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
