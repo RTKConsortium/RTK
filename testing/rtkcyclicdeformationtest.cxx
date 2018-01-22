@@ -158,7 +158,7 @@ int main(int, char** )
 
 #endif
 
-  itksys::SystemTools::RemoveFile(signalFileName);
+  itksys::SystemTools::RemoveFile(signalFileName.c_str());
 
   return EXIT_SUCCESS;
 }

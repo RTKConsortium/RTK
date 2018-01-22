@@ -397,7 +397,7 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
-  itksys::SystemTools::RemoveFile(signalFileName);
+  itksys::SystemTools::RemoveFile(signalFileName.c_str());
   delete[] Volumes;
 
   return EXIT_SUCCESS;
