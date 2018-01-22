@@ -57,6 +57,7 @@ mark_as_advanced(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
 
 set(RTK_LIBRARY_PATH "${LIBRARY_OUTPUT_PATH}")
 set(RTK_EXECUTABLE_PATH "${EXECUTABLE_OUTPUT_PATH}")
+set(RTK_EXPORTS_FILE "RTKTargets.cmake")
 set(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 #=========================================================
@@ -213,8 +214,16 @@ add_subdirectory(code)
 # Generate RTKConfig.cmake for the build tree.
 set (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 set (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
+
+set (RTK_EXPORTS_FILE_CONFIG "cmake/${RTK_EXPORTS_FILE}")
+set (RTK_MODULE_PATH_CONFIG "${RTK_SOURCE_DIR}/cmake/")
 configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
+
+# export rtk at this time, because we need it for applications and examples
+EXPORT(EXPORT RTK FILE "${RTK_BINARY_DIR}/cmake/${RTK_EXPORTS_FILE}")
+
+
 #=========================================================
 
 option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
@@ -244,3 +253,8 @@ if(BUILD_SIMPLERTK)
   set(RTK_DIR ${CMAKE_BINARY_DIR})
   include(utilities/SimpleRTK/SimpleRTKWithSwig.cmake)
 endif()
+
+INSTALL(EXPORT RTK 
+  FILE "${RTK_EXPORTS_FILE}"
+  DESTINATION "${RTK_INSTALL_PACKAGE_DIR}"
+  )
