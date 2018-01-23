@@ -318,6 +318,12 @@ add_executable(rtkI0estimationtest rtkI0estimationtest.cxx)
 target_link_libraries(rtkI0estimationtest ${RTK_LIBRARIES})
 add_test(rtkI0estimationtest ${EXECUTABLE_OUTPUT_PATH}/rtkI0estimationtest)
 
+add_executable(rtkforbildtest rtkforbildtest.cxx)
+target_link_libraries(rtkforbildtest ${RTK_LIBRARIES})
+RTK_ADD_TEST(NAME rtkforbildtest
+             COMMAND ${EXECUTABLE_OUTPUT_PATH}/rtkforbildtest
+             DATA{Data/Input/Forbild/thorax.txt})
+
 if(ITK_VERSION VERSION_GREATER 4.3.2)
   add_executable(rtkselectoneprojpercycletest rtkselectoneprojpercycletest.cxx)
   target_link_libraries(rtkselectoneprojpercycletest ${RTK_LIBRARIES})

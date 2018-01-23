@@ -19,65 +19,52 @@
 #ifndef rtkDrawConeImageFilter_h
 #define rtkDrawConeImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkDrawQuadricImageFilter.h"
-
-
+#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConfiguration.h"
-#include <vector>
 
 namespace rtk
 {
 
 /** \class DrawConeImageFilter
- * \brief Draws in a 3D image user defined Cone.
+ * \brief Draws a cone in a 3D image.
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
-template <class TInputImage,
-          class TOutputImage,
-          typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
-                                                  typename TInputImage::PixelType,
-                                                  typename TOutputImage::PixelType>
-                                                  >
-class ITK_EXPORT DrawConeImageFilter :
-public DrawQuadricImageFilter<TInputImage,
-                              TOutputImage,
-                              DrawQuadricSpatialObject,
-                              TFunction
-                             >
+template <class TInputImage, class TOutputImage>
+class DrawConeImageFilter:
+public DrawEllipsoidImageFilter< TInputImage, TOutputImage >
 {
-       public:
+public:
   /** Standard class typedefs. */
-  typedef DrawConeImageFilter                               Self;
-  typedef DrawQuadricImageFilter < TInputImage,
-                                   TOutputImage,
-                                   DrawQuadricSpatialObject,
-                                   TFunction >              Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
-  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
+  typedef DrawConeImageFilter                                Self;
+  typedef DrawEllipsoidImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
-  typedef itk::Vector<double,3>                             VectorType;
+  /** Convenient typedefs. */
+  typedef ConvexShape::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawConeImageFilter, DrawQuadricSpatialObject);
+  itkTypeMacro(DrawConeImageFilter, DrawConeImageFilter);
 
 protected:
-  DrawConeImageFilter();
+  DrawConeImageFilter() {}
   ~DrawConeImageFilter() {}
+
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 private:
   DrawConeImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);      //purposely not implemented
 };
+
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION

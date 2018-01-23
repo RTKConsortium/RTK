@@ -30,21 +30,27 @@ set(RTK_LIBRARY_FILES
             rtkThreeDCircularProjectionGeometry.cxx
             rtkReg23ProjectionGeometry.cxx
             rtkThreeDCircularProjectionGeometryXMLFile.cxx
-            rtkGeometricPhantomFileReader.cxx
             rtkDigisensGeometryXMLFileReader.cxx
             rtkDigisensGeometryReader.cxx
             rtkXRadGeometryReader.cxx
             rtkXRadImageIO.cxx
             rtkXRadImageIOFactory.cxx
             rtkIOFactories.cxx
-            rtkConvertEllipsoidToQuadricParametersFunction.cxx
-            rtkDrawQuadricSpatialObject.cxx
             rtkOraXMLFileReader.cxx
             rtkOraGeometryReader.cxx
             rtkOraImageIO.cxx
             rtkOraImageIOFactory.cxx
             rtkConditionalMedianImageFilter.cxx
-            rtkBioscanGeometryReader.cxx)
+            rtkConvexShape.cxx
+            rtkQuadricShape.cxx
+            rtkBoxShape.cxx
+            rtkIntersectionOfConvexShapes.cxx
+            rtkGeometricPhantom.cxx
+            rtkGeometricPhantomFileReader.cxx
+            rtkForbildPhantomFileReader.cxx
+            rtkSheppLoganPhantom.cxx
+            rtkBioscanGeometryReader.cxx
+   )
 
 if(RTK_TIME_EACH_FILTER)
     set(RTK_LIBRARY_FILES

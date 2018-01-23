@@ -18,39 +18,43 @@
 
 #include <fstream>
 #include "rtkGeometricPhantomFileReader.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
-bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
+void
+GeometricPhantomFileReader
+::GenerateOutputInformation()
 {
+  m_GeometricPhantom = GeometricPhantom::New();
+
   //Admitted figures
-  const std::string search_fig[4] = {"Ellipsoid", "Cylinder", "Cone", "Box"};
+  const unsigned int NFIGURES = 4;
+  const std::string search_fig[NFIGURES] = {"Ellipsoid", "Cylinder", "Cone", "Box"};
   size_t            offset        = 0;
   std::string       line;
   std::ifstream     myFile;
 
-  myFile.open( ConfigFile.c_str() );
+  myFile.open( m_Filename.c_str() );
   if ( !myFile.is_open() )
     {
     itkGenericExceptionMacro("Error opening File");
-    return false;
     }
-  unsigned int k=0;
   while ( !myFile.eof() )
     {
-    k++;
     getline(myFile, line);
-    for(unsigned int i = 0; i < 4; i++)
+    for(unsigned int i = 0; i < NFIGURES; i++)
       {
       if( (offset = line.find(search_fig[i], 0)) != std::string::npos )
         {
         const std::string parameterNames[9] = {"Figure", "A=", "B=", "C=", "x=", "y=", "z=", "beta=", "gray=" };
-        VectorType parameters;
-        parameters.push_back((double)i);
+        std::vector<ConvexShape::ScalarType> parameters;
+        parameters.push_back((ConvexShape::ScalarType)i);
         for ( int j = 1; j < 9; j++ )
           {
           double val = 0.;
-          if ( ( offset = line.find(parameterNames[j], 0) ) != std::string::npos )
+          offset = line.find(parameterNames[j], 0);
+          if ( offset != std::string::npos )
             {
             offset += parameterNames[j].length();
             std::string s = line.substr(offset,line.length()-offset);
@@ -60,29 +64,32 @@ bool GeometricPhantomFileReader::Config(const std::string ConfigFile )
             }
           parameters.push_back(val);
           }
-        m_Fig.push_back(parameters);
-        m_FigureTypes.push_back(search_fig[i]);
+
+        QuadricShape::Pointer qo = QuadricShape::New();
+        QuadricShape::VectorType axis;
+        QuadricShape::PointType center;
+        for(int k=0; k<3; k++)
+          {
+          axis[k] = parameters[k+1];
+          center[k] = parameters[k+4];
+          }
+        if(search_fig[i]=="Box")
+          {
+          // TODO
+          }
+        else
+          {
+          qo->SetEllipsoid(center, axis, parameters[7]);
+          if(search_fig[i]=="Cone")
+            qo->SetJ(0.);
+          }
+
+        qo->SetDensity(parameters[8]);
+        m_GeometricPhantom->AddConvexShape(qo.GetPointer());
         }
       }
     }
-    myFile.close();
-    return true;
-}
-
-GeometricPhantomFileReader::VectorOfVectorType GeometricPhantomFileReader::GetFig ()
-{
-  itkDebugMacro("returning Fig.");
-  return this->m_Fig;
-}
-
-void GeometricPhantomFileReader::SetFig (const VectorOfVectorType _arg)
-{
-  itkDebugMacro("setting Fig");
-  if (this->m_Fig != _arg)
-    {
-    this->m_Fig = _arg;
-    this->Modified();
-    }
+  myFile.close();
 }
 
 } // namespace rtk

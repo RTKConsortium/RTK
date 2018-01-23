@@ -19,67 +19,54 @@
 #ifndef rtkDrawCylinderImageFilter_h
 #define rtkDrawCylinderImageFilter_h
 
-
-#include <itkAddImageFilter.h>
-
-#include "rtkDrawImageFilter.h"
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
-#include "rtkDrawQuadricImageFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConfiguration.h"
-
-#include <iostream>
-#include <vector>
 
 namespace rtk
 {
 
 /** \class DrawCylinderImageFilter
- * \brief Draws in a 3D image user defined Cylinder.
+ * \brief Draws a cylinder in a 3D image.
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * A cylinder is actually defined by a QuadricShape using first
+ * QuadricShape::SetEllipsoid and then with the cylinder direction defined by
+ * one 0 component in the axis vector.
  *
- * \author Marc Vila
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
+ *
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
-  template <class TInputImage,
-            class TOutputImage,
-            typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
-                                                    typename TInputImage::PixelType,
-                                                    typename TOutputImage::PixelType>
-                                                    >
-class ITK_EXPORT DrawCylinderImageFilter :
-  public DrawQuadricImageFilter<TInputImage,
-                                TOutputImage,
-                                DrawQuadricSpatialObject,
-                                TFunction>
+template <class TInputImage, class TOutputImage>
+class DrawCylinderImageFilter:
+public DrawEllipsoidImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
   typedef DrawCylinderImageFilter                            Self;
-  typedef DrawQuadricImageFilter < TInputImage,
-                                   TOutputImage,
-                                   DrawQuadricSpatialObject,
-                                   TFunction >               Superclass;
+  typedef DrawEllipsoidImageFilter<TInputImage,TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
-  typedef typename TOutputImage::RegionType                  OutputImageRegionType;
 
-  typedef itk::Vector<double,3>                              VectorType;
+  /** Convenient typedefs. */
+  typedef ConvexShape::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawCylinderImageFilter, DrawQuadricImageFilter);
+  itkTypeMacro(DrawCylinderImageFilter, DrawCylinderImageFilter);
 
 protected:
-  DrawCylinderImageFilter();
+  DrawCylinderImageFilter() {}
   ~DrawCylinderImageFilter() {}
+
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
 private:
   DrawCylinderImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  void operator=(const Self&);          //purposely not implemented
 };
 
 } // end namespace rtk

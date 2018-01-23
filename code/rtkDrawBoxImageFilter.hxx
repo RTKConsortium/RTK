@@ -16,73 +16,75 @@
  *
  *=========================================================================*/
 
-#ifndef rtkDrawQuadricImageFilter_hxx
-#define rtkDrawQuadricImageFilter_hxx
+#ifndef rtkDrawBoxImageFilter_hxx
+#define rtkDrawBoxImageFilter_hxx
 
 #include <iostream>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkDrawQuadricImageFilter.h"
-#include "rtkQuadricShape.h"
+#include "rtkDrawBoxImageFilter.h"
 
 namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-DrawQuadricImageFilter<TInputImage, TOutputImage>
-::DrawQuadricImageFilter():
+DrawBoxImageFilter<TInputImage, TOutputImage>
+::DrawBoxImageFilter():
   m_Density(1.),
-  m_A(0.),
-  m_B(0.),
-  m_C(0.),
-  m_D(0.),
-  m_E(0.),
-  m_F(0.),
-  m_G(0.),
-  m_H(0.),
-  m_I(0.),
-  m_J(0.)
+  m_BoxMin(0.),
+  m_BoxMax(0.)
 {
+  m_Direction.SetIdentity();
 }
 
 template <class TInputImage, class TOutputImage>
 void
-DrawQuadricImageFilter<TInputImage, TOutputImage>
+DrawBoxImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   if( this->GetConvexObject() == ITK_NULLPTR )
-    this->SetConvexObject( QuadricShape::New().GetPointer() );
+    this->SetConvexObject( BoxShape::New().GetPointer() );
 
   Superclass::BeforeThreadedGenerateData();
 
-  QuadricShape * qo = dynamic_cast< QuadricShape* >( this->GetConvexObject() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexObject() );
   if( qo == ITK_NULLPTR )
     {
-    itkExceptionMacro("This is not a QuadricShape!");
+    itkExceptionMacro("This is not a BoxShape!");
     }
 
   qo->SetDensity( this->GetDensity() );
   qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
-  qo->SetA(this->GetA());
-  qo->SetB(this->GetB());
-  qo->SetC(this->GetC());
-  qo->SetD(this->GetD());
-  qo->SetE(this->GetE());
-  qo->SetF(this->GetF());
-  qo->SetG(this->GetG());
-  qo->SetH(this->GetH());
-  qo->SetI(this->GetI());
-  qo->SetJ(this->GetJ());
+  qo->SetBoxMin(this->GetBoxMin());
+  qo->SetBoxMax(this->GetBoxMax());
 }
 
 template <class TInputImage, class TOutputImage>
 void
-DrawQuadricImageFilter<TInputImage, TOutputImage>
+DrawBoxImageFilter<TInputImage, TOutputImage>
 ::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
+}
+
+template <class TInputImage, class TOutputImage>
+void
+DrawBoxImageFilter<TInputImage,TOutputImage>
+::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
+{
+  if( this->GetConvexObject() == ITK_NULLPTR )
+    this->SetConvexObject( BoxShape::New().GetPointer() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexObject() );
+  if( qo == ITK_NULLPTR )
+    {
+    itkExceptionMacro("This is not a BoxShape!");
+    }
+  qo->SetBoxFromImage(_arg);
+  SetBoxMin(qo->GetBoxMin());
+  SetBoxMax(qo->GetBoxMin());
+  SetDirection(qo->GetDirection());
 }
 
 }// end namespace rtk
