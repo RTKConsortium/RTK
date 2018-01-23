@@ -70,7 +70,7 @@ public:
   /** Add convex object to phantom. */
   void AddConvexShape(const ConvexShapePointer &co);
   itkGetConstReferenceMacro(ConvexShapes, ConvexShapeVector);
-  itkSetMacro(ConvexShapes, ConvexShapeVector);
+  virtual void SetConvexShapes(const ConvexShapeVector &_arg);
 
   /** Rescale object along each direction by a 3D vector. */
   virtual void Rescale(const VectorType &r) ITK_OVERRIDE;

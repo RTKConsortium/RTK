@@ -26,6 +26,17 @@ IntersectionOfConvexShapes
 {
 }
 
+void
+IntersectionOfConvexShapes
+::SetConvexShapes(const ConvexShapeVector &_arg)
+{
+  if (this->m_ConvexShapes != _arg)
+    {
+    this->m_ConvexShapes = _arg;
+    this->Modified();
+    }
+}
+
 bool
 IntersectionOfConvexShapes
 ::IsInside(const PointType& point) const
