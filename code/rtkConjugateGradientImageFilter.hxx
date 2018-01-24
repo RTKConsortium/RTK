@@ -19,7 +19,10 @@
 #ifndef rtkConjugateGradientImageFilter_hxx
 #define rtkConjugateGradientImageFilter_hxx
 
+#include <itkImageFileWriter.h>
 #include "rtkConjugateGradientImageFilter.h"
+#include <string>       // std::string
+#include <sstream>      // std::stringstream
 
 namespace rtk
 {
@@ -167,6 +170,14 @@ template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
 ::GenerateData()
 {
+  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+  typename WriterType::Pointer writer = WriterType::New();
+  std::stringstream ss;
+  ss << "/tmp/CG_iteration_" << 0 << ".mha";
+  writer->SetInput(this->GetX());
+  writer->SetFileName(ss.str());
+  writer->Update();
+
   typename SubtractFilterType::Pointer SubtractFilter = SubtractFilterType::New();
   SubtractFilter->SetInput(0, this->GetB());
   SubtractFilter->SetInput(1, m_A->GetOutput());
@@ -246,6 +257,13 @@ void ConjugateGradientImageFilter<OutputImageType>
     GetR_kPlusOne_Filter->Update();
     GetX_kPlusOne_Filter->SetAlphak(GetR_kPlusOne_Filter->GetAlphak());
     GetX_kPlusOne_Filter->Update();
+
+    ss.str( std::string() );
+    ss.clear();
+    ss << "/tmp/CG_iteration_" << iter + 1 << ".mha";
+    writer->SetInput(GetX_kPlusOne_Filter->GetOutput());
+    writer->SetFileName(ss.str());
+    writer->Update();
 
     // Compare the squared difference between X_k and X_kPlusOne
     // with the stopping criterion

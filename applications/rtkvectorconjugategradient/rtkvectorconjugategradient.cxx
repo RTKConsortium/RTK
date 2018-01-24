@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
   typedef double OutputPixelType;
   const unsigned int Dimension = 3;
   std::vector<double> costs;
-  std::ostream_iterator<double> costs_it(std::cout,"\n");
+  std::ostream_iterator<double> costs_it(std::cout << std::setprecision(15),"\n");
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension >   OutputImageType;

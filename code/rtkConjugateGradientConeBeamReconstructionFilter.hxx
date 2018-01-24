@@ -207,7 +207,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   m_CGOperator->SetTikhonov(m_Tikhonov);
 
   // Set memory management parameters
-  m_MultiplyProjectionsFilter->ReleaseDataFlagOn();
+  m_MultiplyProjectionsFilter->SetReleaseDataFlag(this->m_IterationCosts); // To compute the constant C, we need the output of the multiplyProjectionsFilter
   m_BackProjectionFilterForB->ReleaseDataFlagOn();
   if (this->GetSupportMask().IsNotNull())
     {
