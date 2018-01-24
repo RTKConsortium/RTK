@@ -80,7 +80,7 @@ int main(int argc, char * argv[])
       std::cerr << "--plane requires four parameters" << std::endl;
       exit(EXIT_FAILURE);
       }
-    for(ptrdiff_t i=0; i<args_info.planes_given/4; i++)
+    for(unsigned int i=0; i<args_info.planes_given/4; i++)
       {
       RQIType::VectorType planeDir(args_info.planes_arg+i*4);
       rqi->AddClipPlane(planeDir, args_info.planes_arg[i*4+3]);
