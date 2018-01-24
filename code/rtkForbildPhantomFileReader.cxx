@@ -205,7 +205,7 @@ ForbildPhantomFileReader
     itkExceptionMacro(<< "Exactly two among dx dy dz are required for "
                       << fig << ", " << found << " found in " << s);
   VectorType planeDir;
-  for(int i=0; i<Dimension; i++)
+  for(unsigned int i=0; i<Dimension; i++)
     planeDir[i] = (axes[i]==0.)?1.:0.;
 
   QuadricShape::Pointer q = QuadricShape::New();
@@ -224,7 +224,7 @@ ForbildPhantomFileReader
     a_y /= a_y.GetNorm();
     VectorType a_z = CrossProduct(a_x, a_y);
     RotationMatrixType rot;
-    for(int i=0; i<Dimension; i++)
+    for(unsigned int i=0; i<Dimension; i++)
       {
       rot[0][i] = a_x[i];
       rot[1][i] = a_y[i];

@@ -52,7 +52,7 @@ ConvexShape
 {
   for(size_t i=0; i<m_PlaneDirections.size(); i++)
     {
-    for(int j=0; j<Dimension; j++)
+    for(unsigned int j=0; j<Dimension; j++)
       {
       m_PlaneDirections[i][j] /= r[j];
       }

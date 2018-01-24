@@ -230,9 +230,6 @@ QuadricShape
   ScalarType TempA = m_A;
   ScalarType TempB = m_B;
   ScalarType TempC = m_C;
-  ScalarType TempD = m_D;
-  ScalarType TempE = m_E;
-  ScalarType TempF = m_F;
   ScalarType TempG = m_G;
   ScalarType TempH = m_H;
   ScalarType TempI = m_I;
