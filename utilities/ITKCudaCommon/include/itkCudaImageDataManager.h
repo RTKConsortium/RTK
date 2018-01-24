@@ -29,8 +29,6 @@
 
 namespace itk
 {
-template < class TPixel, unsigned int NDimension > class CudaImage;
-
 /**
  * \class CudaImageDataManager
  *
@@ -44,7 +42,6 @@ class ITK_EXPORT CudaImageDataManager : public CudaDataManager
 {
   // allow CudaKernelManager to access Cuda buffer pointer
   friend class CudaKernelManager;
-  friend class CudaImage< typename ImageType::PixelType, ImageType::ImageDimension >;
 
 public:
   typedef CudaImageDataManager      Self;
@@ -52,10 +49,12 @@ public:
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
+  typedef typename ImageType::RegionType RegionType;
+  typedef typename ImageType::IndexType  IndexType;
+  typedef typename ImageType::SizeType   SizeType;
+
   itkNewMacro(Self);
   itkTypeMacro(CudaImageDataManager, CudaDataManager);
-
-  static const unsigned int ImageDimension = ImageType::ImageDimension;
 
   itkGetObjectMacro(GPUBufferedRegionIndex, CudaDataManager);
   itkGetObjectMacro(GPUBufferedRegionSize, CudaDataManager);
@@ -86,8 +85,8 @@ private:
   void operator=(const Self&);
 
   ImageType*                         m_Image;
-  int                                m_BufferedRegionIndex[ImageType::ImageDimension];
-  int                                m_BufferedRegionSize[ImageType::ImageDimension];
+  IndexType                          m_BufferedRegionIndex;
+  SizeType                           m_BufferedRegionSize;
   typename CudaDataManager::Pointer  m_GPUBufferedRegionIndex;
   typename CudaDataManager::Pointer  m_GPUBufferedRegionSize;
 
