@@ -164,7 +164,7 @@ if (RTK_USE_CUDA)
               ${rtkcuda_CUDA_WRAPPERS}
               ${rtkcuda_CUDA_FILES})
   set_target_properties (rtkcuda PROPERTIES LINKER_LANGUAGE CXX)
-  target_link_libraries(rtkcuda $<BUILD_INTERFACE:${CUDA_LIBRARIES}> $<BUILD_INTERFACE:${CUDA_cufft_LIBRARY}> $<BUILD_INTERFACE:${CUDA_cublas_LIBRARY}> RTK ITKCudaCommon)
+  target_link_libraries(rtkcuda "$<BUILD_INTERFACE:${CUDA_LIBRARIES}>" $<BUILD_INTERFACE:${CUDA_cufft_LIBRARY}> $<BUILD_INTERFACE:${CUDA_cublas_LIBRARY}> RTK ITKCudaCommon)
   
   target_include_directories(rtkcuda PUBLIC $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}>)
 endif ()
