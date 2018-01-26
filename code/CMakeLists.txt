@@ -195,7 +195,7 @@ if(NOT RTK_INSTALL_NO_DEVELOPMENT)
                 ${RTK_SOURCE_DIR}/cmake/UseRTK.cmake
                 ${RTK_SOURCE_DIR}/cmake/FindCUDA_wrap.cmake
                 ${RTK_SOURCE_DIR}/cmake/nvcc-check.cmake
-                ${RTK_SOURCE_DIR}/cmake/has_cuda_gpu.c
+                ${RTK_SOURCE_DIR}/cmake/has_cuda_gpu.cxx
           DESTINATION ${RTK_INSTALL_PACKAGE_DIR})
 
   # Include .h and .hxx files
