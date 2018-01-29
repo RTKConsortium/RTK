@@ -160,7 +160,7 @@ void __WINAPI set_outputstream(lprec *lp, FILE *stream)
   lp->streamowned = FALSE;
 }
 
-MYBOOL __WINAPI set_outputfile(lprec *lp, char *filename)
+MYBOOL __WINAPI set_outputfile(lprec *lp, const char *filename)
 {
   MYBOOL ok;
   FILE   *output = stdout;
@@ -298,7 +298,7 @@ lprec * __WINAPI read_freempsex(void *userhandle, read_modeldata_func read_model
     return( NULL );
 }
 /* #endif */
-MYBOOL __WINAPI write_mps(lprec *lp, char *filename)
+MYBOOL __WINAPI write_mps(lprec *lp, const char *filename)
 {
   return(MPS_writefile(lp, MPSFIXED, filename));
 }
@@ -307,7 +307,7 @@ MYBOOL __WINAPI write_MPS(lprec *lp, FILE *output)
   return(MPS_writehandle(lp, MPSFIXED, output));
 }
 
-MYBOOL __WINAPI write_freemps(lprec *lp, char *filename)
+MYBOOL __WINAPI write_freemps(lprec *lp, const char *filename)
 {
   return(MPS_writefile(lp, MPSFREE, filename));
 }
@@ -316,7 +316,7 @@ MYBOOL __WINAPI write_freeMPS(lprec *lp, FILE *output)
   return(MPS_writehandle(lp, MPSFREE, output));
 }
 
-MYBOOL __WINAPI write_lp(lprec *lp, char *filename)
+MYBOOL __WINAPI write_lp(lprec *lp, const char *filename)
 {
   return(LP_writefile(lp, filename));
 }
@@ -325,26 +325,26 @@ MYBOOL __WINAPI write_LP(lprec *lp, FILE *output)
   return(LP_writehandle(lp, output));
 }
 #ifndef PARSER_LP
-MYBOOL __WINAPI LP_readhandle(lprec **lp, FILE *filename, int verbose, char *lp_name)
+MYBOOL __WINAPI LP_readhandle(lprec **lp, FILE *filename, int verbose, const char *lp_name)
 {
   return(FALSE);
 }
-lprec * __WINAPI read_lp(FILE *filename, int verbose, char *lp_name)
+lprec * __WINAPI read_lp(FILE *filename, int verbose, const char *lp_name)
 {
   return(NULL);
 }
-lprec * __WINAPI read_LP(char *filename, int verbose, char *lp_name)
+lprec * __WINAPI read_LP(char *filename, int verbose, const char *lp_name)
 {
   return(NULL);
 }
 #endif
 
-MYBOOL __WINAPI write_basis(lprec *lp, char *filename)
+MYBOOL __WINAPI write_basis(lprec *lp, const char *filename)
 {
   int typeMPS = MPSFIXED;
   return( MPS_writeBAS(lp, typeMPS, filename) );
 }
-MYBOOL __WINAPI read_basis(lprec *lp, char *filename, char *info)
+MYBOOL __WINAPI read_basis(lprec *lp, const char *filename, char *info)
 {
   int typeMPS = MPSFIXED;
 
@@ -366,7 +366,7 @@ void __WINAPI reset_params(lprec *lp)
 
   lp->epsmachine        = DEF_EPSMACHINE;
   lp->epsperturb        = DEF_PERTURB;
-  lp->lag_accept        = DEF_LAGACCEPT;
+  /* lp->lag_accept        = DEF_LAGACCEPT; */
   set_epslevel(lp, EPS_DEFAULT);
 
   lp->tighten_on_set    = FALSE;
@@ -485,11 +485,11 @@ void __WINAPI print_scales(lprec *lp)
 {
   REPORT_scales(lp);
 }
-MYBOOL __WINAPI print_debugdump(lprec *lp, char *filename)
+MYBOOL __WINAPI print_debugdump(lprec *lp, const char *filename)
 {
   return(REPORT_debugdump(lp, filename, (MYBOOL) (get_total_iter(lp) > 0)));
 }
-void __WINAPI print_str(lprec *lp, char *str)
+void __WINAPI print_str(lprec *lp, const char *str)
 {
   report(lp, lp->verbose, "%s", str);
 }
@@ -917,9 +917,9 @@ int __WINAPI get_pivoting(lprec *lp)
   return( (lp->piv_strategy | PRICE_STRATEGYMASK) ^ PRICE_STRATEGYMASK );
 }
 
-STATIC char *get_str_piv_rule(int rule)
+STATIC const char *get_str_piv_rule(int rule)
 {
-  static char *pivotText[PRICER_LASTOPTION+1] =
+  static const char * const pivotText[PRICER_LASTOPTION+1] =
   {"Bland first index", "Dantzig", "Devex", "Steepest Edge"};
 
   return( pivotText[rule] );
@@ -1251,13 +1251,13 @@ MYBOOL __WINAPI get_ptr_sensitivity_objex(lprec *lp, REAL **objfrom, REAL **objt
   }
 
   if((objfromvalue != NULL) /* || (objtillvalue != NULL) */) {
-    if(lp->objfromvalue == NULL) /* || (lp->objtillvalue == NULL) )*/ {
+    if(lp->objfromvalue == NULL /* || (lp->objtillvalue == NULL) */) {
       if((MIP_count(lp) > 0) && (lp->bb_totalnodes > 0)) {
         report(lp, CRITICAL, "get_ptr_sensitivity_objex: Sensitivity unknown\n");
         return(FALSE);
       }
       construct_sensitivity_duals(lp);
-      if(lp->objfromvalue == NULL) /* || (lp->objtillvalue == NULL) )*/
+      if(lp->objfromvalue == NULL /* || (lp->objtillvalue == NULL) */)
         return(FALSE);
     }
   }
@@ -1332,8 +1332,9 @@ int __WINAPI get_status(lprec *lp)
   return(lp->spx_status);
 }
 
-char * __WINAPI get_statustext(lprec *lp, int statuscode)
+const char * __WINAPI get_statustext(lprec *lp, int statuscode)
 {
+  (void)lp;
   if (statuscode == NOBFP)             return("No basis factorization package");
   else if (statuscode == DATAIGNORED)  return("Invalid input data provided");
   else if (statuscode == NOMEMORY)     return("Not enough memory available");
@@ -1484,6 +1485,12 @@ lprec * __WINAPI make_lp(int rows, int columns)
 
   set_minim(lp);
   set_infiniteex(lp, DEF_INFINITE, TRUE);
+  /* set_break_numeric_accuracy(lp, DEF_INFINITE); */
+  /* set_break_numeric_accuracy(lp, 1e-5); */
+  /* set_break_numeric_accuracy(lp, 5e-5); */
+  /* set_break_numeric_accuracy(lp, 1e-6); */
+  /* set_break_numeric_accuracy(lp, 5e-6); */
+  set_break_numeric_accuracy(lp, 5e-7);
 
   initPricer(lp);
 
@@ -2269,6 +2276,7 @@ STATIC MYBOOL shift_rowcoldata(lprec *lp, int base, int delta, LLrec *usedmap, M
 STATIC MYBOOL shift_basis(lprec *lp, int base, int delta, LLrec *usedmap, MYBOOL isrow)
 /* Note: Assumes that "lp->sum" and "lp->rows" HAVE NOT been updated to the new counts */
 {
+  (void)usedmap;
   int i, ii;
   MYBOOL Ok = TRUE;
 
@@ -3003,12 +3011,13 @@ MYBOOL __WINAPI set_obj_fn(lprec *lp, REAL *row)
   return( set_obj_fnex(lp, 0, row, NULL) );
 }
 
-MYBOOL __WINAPI str_set_obj_fn(lprec *lp, char *row_string)
+MYBOOL __WINAPI str_set_obj_fn(lprec *lp, const char *row_string)
 {
   int    i;
   MYBOOL ret = TRUE;
   REAL   *arow;
-  char   *p, *newp;
+  const char   *p;
+  char *newp;
 
   allocREAL(lp, &arow, lp->columns + 1, FALSE);
   p = row_string;
@@ -3144,10 +3153,11 @@ MYBOOL __WINAPI add_constraint(lprec *lp, REAL *row, int constr_type, REAL rh)
   return( add_constraintex(lp, 0, row, NULL, constr_type, rh) );
 }
 
-MYBOOL __WINAPI str_add_constraint(lprec *lp, char *row_string, int constr_type, REAL rh)
+MYBOOL __WINAPI str_add_constraint(lprec *lp, const char *row_string, int constr_type, REAL rh)
 {
   int    i;
-  char   *p, *newp;
+  const char   *p;
+  char *newp;
   REAL   *aRow;
   MYBOOL status = FALSE;
 
@@ -3286,12 +3296,13 @@ MYBOOL __WINAPI add_lag_con(lprec *lp, REAL *row, int con_type, REAL rhs)
   return(TRUE);
 }
 
-MYBOOL __WINAPI str_add_lag_con(lprec *lp, char *row_string, int con_type, REAL rhs)
+MYBOOL __WINAPI str_add_lag_con(lprec *lp, const char *row_string, int con_type, REAL rhs)
 {
   int    i;
   MYBOOL ret = TRUE;
   REAL   *a_row;
-  char   *p, *new_p;
+  const char   *p; 
+  char *new_p;
 
   allocREAL(lp, &a_row, lp->columns + 1, FALSE);
   p = row_string;
@@ -3405,12 +3416,13 @@ MYBOOL __WINAPI add_column(lprec *lp, REAL *column)
   return(add_columnex(lp, lp->rows, column, NULL));
 }
 
-MYBOOL __WINAPI str_add_column(lprec *lp, char *col_string)
+MYBOOL __WINAPI str_add_column(lprec *lp, const char *col_string)
 {
   int  i;
   MYBOOL ret = TRUE;
   REAL *aCol;
-  char *p, *newp;
+  const char *p;
+  char *newp;
 
   allocREAL(lp, &aCol, lp->rows + 1, FALSE);
   p = col_string;
@@ -3434,6 +3446,7 @@ MYBOOL __WINAPI str_add_column(lprec *lp, char *col_string)
 
 STATIC MYBOOL del_varnameex(lprec *lp, hashelem **namelist, int items, hashtable *ht, int varnr, LLrec *varmap)
 {
+  (void)lp;
   int i, n;
 
   /* First drop hash table entries of the deleted variables */
@@ -3582,6 +3595,8 @@ MYBOOL __WINAPI set_upbo(lprec *lp, int colnr, REAL value)
     set_action(&lp->spx_action, ACTION_REBASE);
     if(value > lp->infinite)
       value = lp->infinite;
+    if (value < lp->infinite && lp->orig_lowbo[lp->rows + colnr] > -lp->infinite && value != lp->orig_lowbo[lp->rows + colnr] && fabs(value - lp->orig_lowbo[lp->rows + colnr]) < lp->epsvalue)
+      value = lp->orig_lowbo[lp->rows + colnr];
     lp->orig_upbo[lp->rows + colnr] = value;
   }
   return(TRUE);
@@ -3628,6 +3643,8 @@ MYBOOL __WINAPI set_lowbo(lprec *lp, int colnr, REAL value)
     set_action(&lp->spx_action, ACTION_REBASE);
     if(value < -lp->infinite)
       value = -lp->infinite;
+    if (value > -lp->infinite && lp->orig_upbo[lp->rows + colnr] < lp->infinite && value != lp->orig_upbo[lp->rows + colnr] && fabs(value - lp->orig_upbo[lp->rows + colnr]) < lp->epsvalue)
+      value = lp->orig_upbo[lp->rows + colnr];
     lp->orig_lowbo[lp->rows + colnr] = value;
   }
   return(TRUE);
@@ -3747,7 +3764,7 @@ MYBOOL __WINAPI is_SOS_var(lprec *lp, int colnr)
   return((lp->var_type[colnr] & ISSOS) != 0);
 }
 
-int __WINAPI add_SOS(lprec *lp, char *name, int sostype, int priority, int count, int *sosvars, REAL *weights)
+int __WINAPI add_SOS(lprec *lp, const char *name, int sostype, int priority, int count, int *sosvars, REAL *weights)
 {
   SOSrec *SOS;
   int    k;
@@ -3780,7 +3797,7 @@ int __WINAPI add_SOS(lprec *lp, char *name, int sostype, int priority, int count
   return(k);
 }
 
-STATIC int add_GUB(lprec *lp, char *name, int priority, int count, int *gubvars)
+STATIC int add_GUB(lprec *lp, const char *name, int priority, int count, int *gubvars)
 {
   SOSrec *GUB;
   int    k;
@@ -4203,12 +4220,13 @@ void __WINAPI set_rh_vec(lprec *lp, REAL *rh)
   set_action(&lp->spx_action, ACTION_RECOMPUTE);
 }
 
-MYBOOL __WINAPI str_set_rh_vec(lprec *lp, char *rh_string)
+MYBOOL __WINAPI str_set_rh_vec(lprec *lp, const char *rh_string)
 {
   int  i;
   MYBOOL ret = TRUE;
   REAL *newrh;
-  char *p, *newp;
+  const char *p;
+  char *newp;
 
   allocREAL(lp, &newrh, lp->rows + 1, TRUE);
   p = rh_string;
@@ -4394,8 +4412,9 @@ REAL __WINAPI get_constr_value(lprec *lp, int rownr, int count, REAL *primsoluti
   return( value );
 }
 
-STATIC char *get_str_constr_class(lprec *lp, int con_class)
+STATIC const char *get_str_constr_class(lprec *lp, int con_class)
 {
+  (void)lp;
   switch(con_class) {
     case ROWCLASS_Unknown:     return("Unknown");
     case ROWCLASS_Objective:   return("Objective");
@@ -4412,8 +4431,9 @@ STATIC char *get_str_constr_class(lprec *lp, int con_class)
   }
 }
 
-STATIC char *get_str_constr_type(lprec *lp, int con_type)
+STATIC const char *get_str_constr_type(lprec *lp, int con_type)
 {
+  (void)lp;
   switch(con_type) {
     case FR: return("FR");
     case LE: return("LE");
@@ -5210,7 +5230,7 @@ MYBOOL __WINAPI is_nativeBFP(lprec *lp)
 #endif
 }
 
-MYBOOL __WINAPI set_BFP(lprec *lp, char *filename)
+MYBOOL __WINAPI set_BFP(lprec *lp, const char *filename)
 /* (Re)mapping of basis factorization variant methods is done here */
 {
   int result = LIB_LOADED;
@@ -5356,7 +5376,8 @@ MYBOOL __WINAPI set_BFP(lprec *lp, char *filename)
     }
   #else
    /* First standardize UNIX .SO library name format. */
-    char bfpname[260], *ptr;
+    char bfpname[260];
+    const char *ptr;
 
     strcpy(bfpname, filename);
     if((ptr = strrchr(filename, '/')) == NULL)
@@ -5519,7 +5540,7 @@ MYBOOL __WINAPI set_BFP(lprec *lp, char *filename)
 
 /* External language interface routines */
 /* DON'T MODIFY */
-lprec * __WINAPI read_XLI(char *xliname, char *modelname, char *dataname, char *options, int verbose)
+lprec * __WINAPI read_XLI(char *xliname, const char *modelname, const char *dataname, const char *options, int verbose)
 {
   lprec *lp;
 
@@ -5539,7 +5560,7 @@ lprec * __WINAPI read_XLI(char *xliname, char *modelname, char *dataname, char *
   return( lp );
 }
 
-MYBOOL __WINAPI write_XLI(lprec *lp, char *filename, char *options, MYBOOL results)
+MYBOOL __WINAPI write_XLI(lprec *lp, const char *filename, const char *options, MYBOOL results)
 {
   return( has_XLI(lp) && mat_validate(lp->matA) && lp->xli_writemodel(lp, filename, options, results) );
 }
@@ -5555,6 +5576,7 @@ MYBOOL __WINAPI has_XLI(lprec *lp)
 
 MYBOOL __WINAPI is_nativeXLI(lprec *lp)
 {
+  (void)lp;
 #ifdef ExcludeNativeLanguage
   return( FALSE );
 #elif LoadLanguageLib == TRUE
@@ -5564,7 +5586,7 @@ MYBOOL __WINAPI is_nativeXLI(lprec *lp)
 #endif
 }
 
-MYBOOL __WINAPI set_XLI(lprec *lp, char *filename)
+MYBOOL __WINAPI set_XLI(lprec *lp, const char *filename)
 /* (Re)mapping of external language interface variant methods is done here */
 {
   int result = LIB_LOADED;
@@ -5616,7 +5638,8 @@ MYBOOL __WINAPI set_XLI(lprec *lp, char *filename)
     }
   #else
    /* First standardize UNIX .SO library name format. */
-    char xliname[260], *ptr;
+    char xliname[260];
+    const char *ptr;
 
     strcpy(xliname, filename);
     if((ptr = strrchr(filename, '/')) == NULL)
@@ -5892,7 +5915,14 @@ MYBOOL __WINAPI is_feasible(lprec *lp, REAL *values, REAL threshold)
     }
   }
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
   this_rhs = (REAL *) mempool_obtainVector(lp->workarrays, lp->rows+1, sizeof(*this_rhs));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 /*  allocREAL(lp, &this_rhs, lp->rows + 1, TRUE); */
   for(j = 1; j <= lp->columns; j++) {
     elmnr = mat->col_end[j - 1];
@@ -5952,7 +5982,7 @@ int __WINAPI column_in_lp(lprec *lp, REAL *testcolumn)
   return( colnr );
 }
 
-MYBOOL __WINAPI set_lp_name(lprec *lp, char *name)
+MYBOOL __WINAPI set_lp_name(lprec *lp, const char *name)
 {
   if (name == NULL) {
     FREE(lp->lp_name);
@@ -5965,7 +5995,7 @@ MYBOOL __WINAPI set_lp_name(lprec *lp, char *name)
   return(TRUE);
 }
 
-char * __WINAPI get_lp_name(lprec *lp)
+const char * __WINAPI get_lp_name(lprec *lp)
 {
   return((lp->lp_name != NULL) ? lp->lp_name : (char *) "");
 }
@@ -5982,7 +6012,7 @@ STATIC MYBOOL init_rowcol_names(lprec *lp)
   return(TRUE);
 }
 
-MYBOOL rename_var(lprec *lp, int varindex, char *new_name, hashelem **list, hashtable **ht)
+MYBOOL rename_var(lprec *lp, int varindex, const char *new_name, hashelem **list, hashtable **ht)
 {
   hashelem *hp;
   MYBOOL   newitem;
@@ -6021,7 +6051,7 @@ void __WINAPI set_use_names(lprec *lp, MYBOOL isrow, MYBOOL use_names)
     lp->use_col_names = use_names;
 }
 
-int __WINAPI get_nameindex(lprec *lp, char *varname, MYBOOL isrow)
+int __WINAPI get_nameindex(lprec *lp, const char *varname, MYBOOL isrow)
 {
   if(isrow)
     return( find_row(lp, varname, FALSE) );
@@ -6029,7 +6059,7 @@ int __WINAPI get_nameindex(lprec *lp, char *varname, MYBOOL isrow)
     return( find_var(lp, varname, FALSE) );
 }
 
-MYBOOL __WINAPI set_row_name(lprec *lp, int rownr, char *new_name)
+MYBOOL __WINAPI set_row_name(lprec *lp, int rownr, const char *new_name)
 {
   if((rownr < 0) || (rownr > lp->rows+1)) {
     report(lp, IMPORTANT, "set_row_name: Row %d out of range", rownr);
@@ -6048,7 +6078,7 @@ MYBOOL __WINAPI set_row_name(lprec *lp, int rownr, char *new_name)
   return(TRUE);
 }
 
-char * __WINAPI get_row_name(lprec *lp, int rownr)
+const char * __WINAPI get_row_name(lprec *lp, int rownr)
 {
   if((rownr < 0) || (rownr > lp->rows+1)) {
     report(lp, IMPORTANT, "get_row_name: Row %d out of range", rownr);
@@ -6064,7 +6094,7 @@ char * __WINAPI get_row_name(lprec *lp, int rownr)
   return( get_origrow_name(lp, rownr) );
 }
 
-char * __WINAPI get_origrow_name(lprec *lp, int rownr)
+const char * __WINAPI get_origrow_name(lprec *lp, int rownr)
 {
   MYBOOL newrow;
   char   *ptr;
@@ -6101,7 +6131,7 @@ char * __WINAPI get_origrow_name(lprec *lp, int rownr)
   return(ptr);
 }
 
-MYBOOL __WINAPI set_col_name(lprec *lp, int colnr, char *new_name)
+MYBOOL __WINAPI set_col_name(lprec *lp, int colnr, const char *new_name)
 {
   if((colnr > lp->columns+1) || (colnr < 1)) {
     report(lp, IMPORTANT, "set_col_name: Column %d out of range", colnr);
@@ -6117,7 +6147,7 @@ MYBOOL __WINAPI set_col_name(lprec *lp, int colnr, char *new_name)
   return(TRUE);
 }
 
-char * __WINAPI get_col_name(lprec *lp, int colnr)
+const char * __WINAPI get_col_name(lprec *lp, int colnr)
 {
   if((colnr > lp->columns+1) || (colnr < 1)) {
     report(lp, IMPORTANT, "get_col_name: Column %d out of range", colnr);
@@ -6133,7 +6163,7 @@ char * __WINAPI get_col_name(lprec *lp, int colnr)
   return( get_origcol_name(lp, colnr) );
 }
 
-char * __WINAPI get_origcol_name(lprec *lp, int colnr)
+const char * __WINAPI get_origcol_name(lprec *lp, int colnr)
 {
   MYBOOL newcol;
   char   *ptr;
@@ -6309,7 +6339,14 @@ STATIC REAL compute_dualslacks(lprec *lp, int target, REAL **dvalues, int **nzdv
     target = SCAN_ALLVARS+ USE_NONBASICVARS;
 
   /* Define variable target list and compute the reduced costs */
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
   coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->columns+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
   if(!get_colIndexA(lp, target, coltarget, FALSE)) {
     mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
     return(FALSE);
@@ -6577,8 +6614,26 @@ REAL MIP_stepOF(lprec *lp)
   }
   return( value );
 }
-#else
+#elif 0
+/*
+    original v5.5 implementation giving problems with some models
 
+    ex:
+
+        min: +r1 +r2;
+
+        R1: +r1 +r2 >= 1;
+        R2: +r1 -5.345 b1 = 0;
+        R3: +r2 -4.456 b2 = 0;
+
+        b1 <= 1;
+        b2 <= 1;
+
+        //b2>0.1;
+
+        int b1,b2;
+
+*/
 REAL MIP_stepOF(lprec *lp)
 /* This function tries to find a non-zero minimum improvement
    if the OF contains all integer variables (logic only applies if we are
@@ -6614,7 +6669,7 @@ REAL MIP_stepOF(lprec *lp)
       }
 
       /* If so, there may be a chance to find an improved stepsize */
-      if(ib < nrows)
+      if(ib <= nrows)
       for(colnr = 1; colnr <= lp->columns; colnr++) {
 
         /* Go directly to the next variable if this is an integer or
@@ -6664,6 +6719,199 @@ REAL MIP_stepOF(lprec *lp)
     }
   }
   return( value );
+}
+#else
+
+STATIC REAL row_plusdelta(lprec *lp, int rownr, int excludecol, int *intcount, int *realcount)
+{
+  MATrec   *mat = lp->matA;
+  int      j, jb, je, jj, bincount,
+           n = 0, nrows = lp->rows;
+  REAL     rowval, deltaOF = 0,
+           *obj_orig = lp->orig_obj, *obj_sort = NULL;
+
+  *realcount = 0;
+  *intcount  = 0;
+  bincount = 0;
+
+  /* Get OF row starting and ending positions, as well as the first column index */
+  if(rownr == 0) {
+    jb = 1;
+    je = lp->columns+1;
+  }
+  else {
+    jb = mat->row_end[rownr-1];
+    je = mat->row_end[rownr];
+  }
+
+  /* Fill the array */
+  for(j = jb; j < je; j++) {
+
+    if(rownr == 0) {
+      if(obj_orig[j] == 0)
+        continue;
+      jj = j;
+    }
+    else
+      jj = ROW_MAT_COLNR(j);
+
+    /* Check for exclusion column */
+    if(jj == excludecol)
+      continue;
+
+    /* Check that the variable is integer */
+    if(is_int(lp, jj)) {
+      rowval = lp->orig_upbo[nrows + jj];
+      if((rowval < lp->infinite) && (fabs(unscaled_value(lp, rowval - lp->orig_lowbo[nrows + jj], nrows + jj) - 1) < lp->epsint)) // difference between upper and lower = 1 is ok
+        bincount++;
+      if(rownr == 0)
+        rowval = unscaled_mat(lp, obj_orig[jj], 0, jj);
+      else
+        rowval = get_mat_byindex(lp, j, TRUE, FALSE);
+
+      /* Allocate array of coefficients to be sorted */
+      if(n == 0)
+        allocREAL(lp, &obj_sort, je-jb, FALSE);
+
+      obj_sort[n++] = rowval;
+    }
+    else
+      (*realcount)++;
+
+  }
+  (*intcount) = n;
+
+  if(*realcount == 0) {
+    if (n == 0 || bincount < n)
+      deltaOF = 0;
+    else if(n == 1)
+      deltaOF = obj_sort[0];
+    else {
+
+      REAL   newval;
+      MYBOOL loops = 0;
+
+      while(n > 0) {
+
+        /* Sort the coefficients in ascending order */
+        qsortex(obj_sort, n, 0, sizeof(*obj_sort), FALSE, compareREAL, NULL, 0);
+
+        /* Eliminate array duplicates (could consider applying an eps) */
+        j = 0; jb = 1;
+        do {
+          rowval = obj_sort[j];
+          while((jb < n) && (obj_sort[jb] == rowval)) jb++;
+          if((jb < n) && (++j < jb))
+            obj_sort[j] = obj_sort[jb];
+        } while(++jb < n);
+        n = j+1;
+
+        /* Get the reference minimum stepsize on the first iteration */
+        if(loops == 0) {
+          /* Spool to the coefficient closest to zero, which is the reference OF stepsize */
+          for(j = 0; (j < n) && (obj_sort[j] < 0); j++);
+
+          /* Case 1: All negative coefficients */
+          if(j >= n)
+            deltaOF = -obj_sort[n-1];
+          /* Case2: All positive coefficients */
+          else if(j == 0)
+            deltaOF = obj_sort[j];
+          /* Case 3: Both negative and positive coefficients */
+          else
+            deltaOF = MIN(-obj_sort[j-1], obj_sort[j]);
+        }
+
+        /* Adjust the reference minimum stepsize on next iterations */
+        loops++;
+
+        /* Loop over non-zero coefficient differences to
+             obtain minimum change, i.e. if one increases */
+        newval = lp->infinite;
+        for(j = 1; j < n; j++) {
+          rowval = obj_sort[j]-obj_sort[j-1];
+          SETMIN(newval, rowval);
+          obj_sort[j-1] = rowval;
+        }
+        n--;
+        SETMIN(deltaOF, newval);
+      }
+    }
+  }
+
+  /* Dispose of the work array */
+  FREE(obj_sort);
+
+  return( deltaOF );
+}
+
+/* v6.0 implementation converted to v5.5 */
+
+STATIC REAL MIP_stepOF(lprec *lp)
+/* This function tries to find a non-zero minimum improvement
+   if the OF contains all integer variables (logic only applies if we are
+   looking for a single solution, not possibly several equal-valued ones). */
+{
+  REAL    OFdelta = 0;
+  MATrec  *mat = lp->matA;
+
+  if((lp->int_vars > 0) && (lp->solutionlimit == 1) && mat_validate(mat)) {
+
+    int colnr, ib, ie,
+        intcount, realcount;
+
+    /* Get statistics for integer OF variables and compute base stepsize */
+    OFdelta = row_plusdelta(lp, 0, 0, &intcount, &realcount);
+/*    return( value ); */
+
+    /* Check non-ints in the OF to see if we can get more info */
+    if(realcount > 0) {
+      int niv = 0;            /* Number of real variables identified as integer */
+      /* int nrows = lp->rows; */
+      REAL    rowdelta;
+
+      OFdelta = lp->infinite;
+      for(colnr = 1; (colnr <= lp->columns) && (niv < realcount); colnr++) {
+
+        /* Go directly to the next variable if this is an integer or
+          there is no row candidate to explore for hidden bounds for
+          real-valued variables (limit scan to one row/no recursion) */
+        if((lp->orig_obj[colnr] == 0) || is_int(lp, colnr))
+          continue;
+
+        /* Scan equality constraints */
+        ib = mat->col_end[colnr-1];
+        ie = mat->col_end[colnr];
+        while(ib < ie) {
+
+          /* Get "child" row statistics, but break out if we don't find enough
+             information, i.e. no integers with coefficients of proper type. */
+          rowdelta = row_plusdelta(lp, COL_MAT_ROWNR(ib), colnr, &intcount, &realcount);
+          if(realcount > 0) {
+            OFdelta = 0;
+            break;
+          }
+
+          /* We can update */
+          SETMIN(OFdelta, rowdelta);
+          ib++;
+        }
+
+        /* No point in continuing scan if we failed in the current column */
+        if(OFdelta == 0)
+          break;
+
+        /* We found an implied integer, update count */
+        niv++;
+      }
+
+      /* Check if we found information for any real-valued variable;
+         if not, then we must set the improvement delta to 0 */
+      if(realcount > niv)
+        OFdelta = 0;
+    }
+  }
+  return( OFdelta );
 }
 
 #endif
@@ -7387,13 +7635,15 @@ STATIC MYBOOL is_sc_violated(lprec *lp, int column)
 {
   int  varno;
   REAL tmpreal;
+  REAL eps = lp->epsvalue;                                    /* ß adding eps here*/
 
   varno = lp->rows+column;
   tmpreal = unscaled_value(lp, lp->sc_lobound[column], varno);
-  return( (MYBOOL) ((tmpreal > 0) &&                    /* it is an (inactive) SC variable...    */
-                    (lp->solution[varno] < tmpreal) &&  /* ...and the NZ lower bound is violated */
-                    (lp->solution[varno] > 0)) );       /* ...and the Z lowerbound is violated   */
+  return( (MYBOOL) ((tmpreal > 0) &&                          /* it is an (inactive) SC variable...    */
+                    (lp->solution[varno] < tmpreal - eps) &&  /* ...and the NZ lower bound is violated */
+                    (lp->solution[varno] > eps)) );           /* ...and the Z lowerbound is violated   */
 }
+
 STATIC int find_sc_bbvar(lprec *lp, int *count)
 {
   int    i, ii, n, bestvar;
@@ -8071,6 +8321,8 @@ STATIC MYBOOL check_degeneracy(lprec *lp, REAL *pcol, int *degencount)
 STATIC MYBOOL performiteration(lprec *lp, int rownr, int varin, LREAL theta, MYBOOL primal, MYBOOL allowminit,
                                REAL *prow, int *nzprow, REAL *pcol, int *nzpcol, int *boundswaps)
 {
+  (void)pcol;
+  (void)nzpcol;
   int    varout;
   REAL   pivot, epsmargin, leavingValue, leavingUB, enteringUB;
   MYBOOL leavingToUB = FALSE, enteringFromUB, enteringIsFixed, leavingIsFixed;
@@ -8718,15 +8970,19 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
                           REAL *upbo, REAL *lowbo, REAL tolerance)
 {
 /*#define UseMaxValueInCheck*/
+#define RelativeAccuracyCheck
   MYBOOL isSC;
-  REAL   test, value, hold, diff, maxdiff = 0.0, maxerr = 0.0, *matValue,
-#ifdef UseMaxValueInCheck
-         *maxvalue = NULL,
-#else
-         *plusum = NULL, *negsum = NULL;
+  REAL   test, value, diff, maxdiff = 0.0, maxerr = 0.0;
+#ifndef RelativeAccuracyCheck
+  REAL   hold;
 #endif
-  int    i,j,n, errlevel = IMPORTANT, errlimit = 10, *matRownr, *matColnr;
-  MATrec *mat = lp->matA;
+#ifdef UseMaxValueInCheck
+  REAL *maxvalue = NULL;
+#elif !defined RelativeAccuracyCheck
+  REAL *plusum = NULL, *negsum = NULL;
+#endif
+  int    i,j,n, errlevel = IMPORTANT, errlimit = 10;
+  int    solveStatus = OPTIMAL;
 
   report(lp, NORMAL, " \n");
   if(MIP_count(lp) > 0)
@@ -8743,10 +8999,12 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
   allocREAL(lp, &maxvalue, lp->rows + 1, FALSE);
   for(i = 0; i <= lp->rows; i++)
     maxvalue[i] = fabs(get_rh(lp, i));
-#else
+#elif !defined RelativeAccuracyCheck
   allocREAL(lp, &plusum, lp->rows + 1, TRUE);
   allocREAL(lp, &negsum, lp->rows + 1, TRUE);
 #endif
+
+#if defined UseMaxValueInCheck || !defined RelativeAccuracyCheck
   n = get_nonzeros(lp);
   matRownr = &COL_MAT_ROWNR(0);
   matColnr = &COL_MAT_COLNR(0);
@@ -8760,14 +9018,14 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
     test = fabs(test);
     if(test > maxvalue[*matRownr])
       maxvalue[*matRownr] = test;
-#else
+#elif !defined RelativeAccuracyCheck
     if(test > 0)
       plusum[*matRownr] += test;
     else
       negsum[*matRownr] += test;
 #endif
   }
-
+#endif
 
  /* Check if solution values are within the bounds; allowing a margin for numeric errors */
   n = 0;
@@ -8783,14 +9041,23 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
       test = unscaled_value(lp, lowbo[i], i);
 
     isSC = is_semicont(lp, i - lp->rows);
-    diff = my_reldiff(value, test);
-    if(diff < 0) {
-      if(isSC && (value < test/2))
-        test = 0;
-      SETMAX(maxerr, fabs(value-test));
-      SETMAX(maxdiff, fabs(diff));
+    diff = -my_reldiff(value, test);
+#ifdef RelativeAccuracyCheck
+    if (isSC && diff > 0 && my_reldiff(fabs(value), 0.0) < diff)
+        diff = my_reldiff(fabs(value), 0.0);
+#else
+    if(isSC && diff > 0 && (value < test/2))
+      test = 0;
+#endif
+    if(diff > 0) {
+      SETMAX(maxdiff, diff);
+#ifdef RelativeAccuracyCheck
+      maxerr = maxdiff;
+#else
+      SETMAX(maxerr, test - value);
+#endif
     }
-    if((diff < -tolerance) && !isSC)  {
+    if((diff > tolerance) && !isSC)  {
       if(n < errlimit)
       report(lp, errlevel,
         "check_solution: Variable   %s = " RESULTVALUEMASK " is below its lower bound " RESULTVALUEMASK "\n",
@@ -8801,8 +9068,12 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
     test = unscaled_value(lp, upbo[i], i);
     diff = my_reldiff(value, test);
     if(diff > 0) {
-      SETMAX(maxerr, fabs(value-test));
-      SETMAX(maxdiff, fabs(diff));
+      SETMAX(maxdiff, diff);
+#ifdef RelativeAccuracyCheck
+      maxerr = maxdiff;
+#else
+      SETMAX(maxerr, value - test);
+#endif
     }
     if(diff > tolerance) {
       if(n < errlimit)
@@ -8815,8 +9086,8 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 
  /* Check if constraint values are within the bounds; allowing a margin for numeric errors */
   for(i = 1; i <= lp->rows; i++) {
-
     test = lp->orig_rhs[i];
+
     if(is_infinite(lp, test))
       continue;
 
@@ -8838,7 +9109,8 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #ifndef LegacySlackDefinition
     value += test;
 #endif
-/*    diff = my_reldiff(value, test); */
+    diff = my_reldiff(value, test);
+#ifndef RelativeAccuracyCheck
 #ifdef UseMaxValueInCheck
     hold = maxvalue[i];
 #else
@@ -8846,10 +9118,16 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #endif
     if(hold < lp->epsvalue)
       hold = 1;
+
     diff = my_reldiff((value+1)/hold, (test+1)/hold);
+#endif
     if(diff > 0) {
-      SETMAX(maxerr, fabs(value-test));
-      SETMAX(maxdiff, fabs(diff));
+      SETMAX(maxdiff, diff);
+#ifdef RelativeAccuracyCheck
+      maxerr = maxdiff;
+#else
+      SETMAX(maxerr, value-test);
+#endif
     }
     if(diff > tolerance) {
       if(n < errlimit)
@@ -8885,7 +9163,8 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #ifndef LegacySlackDefinition
     value += test;
 #endif
-/*    diff = my_reldiff(value, test); */
+    diff = -my_reldiff(value, test);
+#ifndef RelativeAccuracyCheck
 #ifdef UseMaxValueInCheck
     hold = maxvalue[i];
 #else
@@ -8893,12 +9172,17 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 #endif
     if(hold < lp->epsvalue)
       hold = 1;
-    diff = my_reldiff((value+1)/hold, (test+1)/hold);
-    if(diff < 0) {
-      SETMAX(maxerr, fabs(value-test));
-      SETMAX(maxdiff, fabs(diff));
+    diff = -my_reldiff((value+1)/hold, (test+1)/hold);
+#endif
+    if(diff > 0) {
+      SETMAX(maxdiff, diff);
+#ifdef RelativeAccuracyCheck
+      maxerr = maxdiff;
+#else
+      SETMAX(maxerr, test-value);
+#endif
     }
-    if(diff < -tolerance) {
+    if(diff > tolerance) {
       if(n < errlimit)
       report(lp, errlevel,
         "check_solution: Constraint %s = " RESULTVALUEMASK " is below its %s " RESULTVALUEMASK "\n",
@@ -8910,15 +9194,23 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
 
 #ifdef UseMaxValueInCheck
   FREE(maxvalue);
-#else
+#elif !defined RelativeAccuracyCheck
   FREE(plusum);
   FREE(negsum);
 #endif
 
+#ifdef RelativeAccuracyCheck
+  report(lp, NORMAL, "\nRelative numeric accuracy ||*|| = %g\n", maxdiff);
+  if (maxdiff > lp->accuracy_error)
+  {
+    report(lp, IMPORTANT, "\nUnacceptable accuracy found (worse than required %g)\n", lp->accuracy_error);
+    solveStatus = ACCURACYERROR;
+  }
+#else
   if(n > 0) {
     report(lp, IMPORTANT, "\nSeriously low accuracy found ||*|| = %g (rel. error %g)\n",
                maxerr, maxdiff);
-    return(NUMFAILURE);
+    solveStatus = NUMFAILURE;
   }
   else {
     if(maxerr > 1.0e-7)
@@ -8931,11 +9223,28 @@ STATIC int check_solution(lprec *lp, int  lastcolumn, REAL *solution,
       report(lp, NORMAL, "\nVery good numeric accuracy ||*|| = %g\n", maxerr);
     else
       report(lp, NORMAL, "\nExcellent numeric accuracy ||*|| = %g\n", maxerr);
-
-    return(OPTIMAL);
   }
+#endif
 
+  lp->accuracy = maxerr;
+
+  return(solveStatus);
 } /* check_solution */
+
+REAL __WINAPI get_accuracy(lprec *lp)
+{
+  return(lp->accuracy);
+}
+
+void __WINAPI set_break_numeric_accuracy(lprec *lp, REAL accuracy)
+{
+  lp->accuracy_error = accuracy;
+}
+
+REAL __WINAPI get_break_numeric_accuracy(lprec *lp)
+{
+  return(lp->accuracy_error);
+}
 
 STATIC void transfer_solution_var(lprec *lp, int uservar)
 {
@@ -9002,7 +9311,14 @@ STATIC MYBOOL construct_duals(lprec *lp)
     return(FALSE);
 
   /* Initialize */
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
   coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->columns+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
   if(!get_colIndexA(lp, SCAN_USERVARS+USE_NONBASICVARS, coltarget, FALSE)) {
     mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
     return(FALSE);
@@ -9207,7 +9523,14 @@ Abandon:
     infinite=lp->infinite;
     epsvalue=lp->epsmachine;
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
     coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->columns+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     if(!get_colIndexA(lp, SCAN_USERVARS+USE_NONBASICVARS, coltarget, FALSE)) {
       mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);
       goto Abandon;
@@ -9346,6 +9669,7 @@ STATIC int findBasisPos(lprec *lp, int notint, int *var_basic)
 
 STATIC void replaceBasisVar(lprec *lp, int rownr, int var, int *var_basic, MYBOOL *is_basic)
 {
+  (void)lp;
   int out;
 
   out = var_basic[rownr];
@@ -9713,10 +10037,14 @@ STATIC MYBOOL pre_MIPOBJ(lprec *lp)
   }
 #endif
   lp->bb_deltaOF = MIP_stepOF(lp);
+  if(lp->bb_deltaOF < MAX(lp->epsvalue, lp->mip_absgap))
+      lp->bb_deltaOF = 0;
+
   return( TRUE );
 }
 STATIC MYBOOL post_MIPOBJ(lprec *lp)
 {
+  (void)lp;
 #ifdef MIPboundWithOF
 /*
   if(lp->constraintOF) {

@@ -99,7 +99,7 @@ STATIC void stallMonitor_reset(lprec *lp)
   monitor->countstep = 1;
 }
 
-STATIC MYBOOL stallMonitor_create(lprec *lp, MYBOOL isdual, char *funcname)
+STATIC MYBOOL stallMonitor_create(lprec *lp, MYBOOL isdual, const char *funcname)
 {
   OBJmonrec *monitor = NULL;
   if(lp->monitor != NULL)
@@ -562,6 +562,7 @@ STATIC void clear_artificials(lprec *lp)
 
 STATIC int primloop(lprec *lp, MYBOOL primalfeasible, REAL primaloffset)
 {
+  (void)primaloffset;
   MYBOOL primal = TRUE, bfpfinal = FALSE, changedphase = FALSE, forceoutEQ = AUTOMATIC,
          primalphase1, pricerCanChange, minit, stallaccept, pendingunbounded;
   int    i, j, k, colnr = 0, rownr = 0, lastnr = 0,
@@ -1524,6 +1525,7 @@ Finish:
 
 STATIC int spx_run(lprec *lp, MYBOOL validInvB)
 {
+  (void)validInvB;
   int    i, j, singular_count, lost_feas_count, *infeasibles = NULL, *boundflip_count;
   MYBOOL primalfeasible, dualfeasible, lost_feas_state, isbb;
   REAL   primaloffset = 0, dualoffset = 0;
@@ -1709,7 +1711,7 @@ lprec *make_lag(lprec *lpserver)
 
     /* First create and core variable data */
     set_sense(hlp, is_maxim(lpserver));
-    hlp->lag_bound = lpserver->bb_limitOF;
+    /*hlp->lag_bound = lpserver->bb_limitOF;*/
     for(i = 1; i <= lpserver->columns; i++) {
       set_mat(hlp, 0, i, get_mat(lpserver, 0, i));
       if(is_binary(lpserver, i))
@@ -1736,6 +1738,7 @@ lprec *make_lag(lprec *lpserver)
 STATIC int heuristics(lprec *lp, int mode)
 /* Initialize / bound a MIP problem */
 {
+  (void)mode;
   lprec *hlp;
   int   status = PROCFAIL;
 
@@ -1846,7 +1849,7 @@ STATIC int lag_solve(lprec *lp, REAL start_bound, int num_iter)
           LagFeas = FALSE;
       }
       /* Test for convergence and update */
-      if(Converged && (fabs(my_reldiff(hold , SubGrad[i])) > lp->lag_accept))
+      if(Converged && (fabs(my_reldiff(hold , SubGrad[i])) > /* lp->lag_accept */ DEF_LAGACCEPT))
         Converged = FALSE;
       SubGrad[i] = hold;
       SqrsumSubGrad += hold * hold;
@@ -1975,7 +1978,7 @@ STATIC int lag_solve(lprec *lp, REAL start_bound, int num_iter)
 
   /* Transfer solution values */
   if(AnyFeas) {
-    lp->lag_bound = my_chsign(is_maxim(lp), Zbest);
+    /*lp->lag_bound = my_chsign(is_maxim(lp), Zbest);*/
     for(i = 0; i <= lp->sum; i++)
       lp->solution[i] = BestFeasSol[i];
     transfer_solution(lp, TRUE);

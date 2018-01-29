@@ -46,7 +46,7 @@
 
 
 #define presolve_setstatus(one, two)  presolve_setstatusex(one, two, __LINE__, __FILE__)
-STATIC int presolve_setstatusex(presolverec *psdata, int status, int lineno, char *filename)
+STATIC int presolve_setstatusex(presolverec *psdata, int status, int lineno, const char *filename)
 {
   if((status == INFEASIBLE) || (status == UNBOUNDED)) {
     report(psdata->lp,
@@ -374,6 +374,7 @@ INLINE REAL presolve_roundval(lprec *lp, REAL value)
   return( value );
 }
 
+/*
 INLINE MYBOOL presolve_mustupdate(lprec *lp, int colnr)
 {
 #if 0
@@ -384,6 +385,7 @@ INLINE MYBOOL presolve_mustupdate(lprec *lp, int colnr)
           my_infinite(lp, lp->orig_upbo[lp->rows+colnr]) );
 #endif
 }
+*/
 
 INLINE REAL presolve_sumplumin(lprec *lp, int item, psrec *ps, MYBOOL doUpper)
 {
@@ -455,7 +457,7 @@ STATIC MYBOOL presolve_rowfeasible(presolverec *psdata, int rownr, MYBOOL userow
   return( status );
 }
 
-STATIC MYBOOL presolve_debugmap(presolverec *psdata, char *caption)
+STATIC MYBOOL presolve_debugmap(presolverec *psdata, const char *caption)
 {
   lprec *lp = psdata->lp;
   MATrec *mat = lp->matA;
@@ -1050,6 +1052,7 @@ Done:
 
 STATIC MYBOOL presolve_fixSOS1(presolverec *psdata, int colnr, REAL fixvalue, int *nr, int *nv)
 {
+  (void)nr;
   lprec    *lp = psdata->lp;
   int      i, k, j;
   SOSrec   *SOS;
@@ -1341,6 +1344,7 @@ STATIC MYBOOL isnz_origobj(lprec *lp, int colnr)
 
 STATIC MYBOOL presolve_testrow(presolverec *psdata, int lastrow)
 {
+  (void)lastrow;
   if(psdata->forceupdate) {
     presolve_updatesums(psdata);
     psdata->forceupdate = FALSE;
@@ -2600,6 +2604,7 @@ int BFP_CALLMODEL presolve_getcolumnEQ(lprec *lp, int colnr, REAL nzvalues[], in
 }
 STATIC int presolve_singularities(presolverec *psdata, int *nn, int *nr, int *nv, int *nSum)
 {
+  (void)nv;
   lprec *lp = psdata->lp;
   int i, j, n, *rmapin = NULL, *rmapout = NULL, *cmapout = NULL;
 
@@ -3604,7 +3609,7 @@ STATIC MYBOOL presolve_finalize(presolverec *psdata)
   return(mat_validate(lp->matA));
 }
 
-STATIC MYBOOL presolve_debugdump(lprec *lp, presolverec *psdata, char *filename, MYBOOL doappend)
+STATIC MYBOOL presolve_debugdump(lprec *lp, presolverec *psdata, const char *filename, MYBOOL doappend)
 {
   FILE   *output = stdout;
   int   size;
@@ -4076,6 +4081,7 @@ STATIC int presolve_coldominance01(presolverec *psdata, NATURAL *nConRemoved, NA
 /* The current version of this routine eliminates binary variables
    that are dominated via set coverage or unit knapsack constraints */
 {
+  (void)nConRemoved; 
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   NATURAL  i, ib, ie, jx, item, item2,
@@ -4268,6 +4274,7 @@ Finish:
 STATIC int presolve_aggregate(presolverec *psdata, int *nConRemoved, int *nVarsFixed, int *nSum)
 /* This routine combines compatible or identical columns */
 {
+  (void)nConRemoved;
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   MYBOOL   first;
@@ -4483,6 +4490,7 @@ Finish:
 
 STATIC int presolve_makesparser(presolverec *psdata, int *nCoeffChanged, int *nConRemove, int *nVarFixed, int *nSum)
 {
+  (void)nVarFixed;
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   MYBOOL   chsign;
@@ -4759,6 +4767,7 @@ Finish:
 
 STATIC int presolve_SOS1(presolverec *psdata, int *nCoeffChanged, int *nConRemove, int *nVarFixed, int *nSOS, int *nSum)
 {
+  (void)nVarFixed;
   lprec    *lp = psdata->lp;
   MYBOOL   candelete, SOS_GUBactive = FALSE;
   int      iCoeffChanged = 0, iConRemove = 0, iSOS = 0,
@@ -5507,12 +5516,12 @@ write_lp(lp, "test_in.lp");    /* Write to lp-formatted file for debugging */
     for(i = 1; i <= SOS_count(lp); i++) {
       k = SOS_infeasible(lp->SOS, i);
       if(k > 0) {
-        presolverec psdata;
+        presolverec psdata2;
 
-        psdata.lp = lp;
+        psdata2.lp = lp;
         report(lp, NORMAL, "presolve: Found SOS %d (type %d) to be range-infeasible on variable %d\n",
                             i, SOS_get_type(lp->SOS, i), k);
-        status = presolve_setstatus(&psdata, INFEASIBLE);
+        status = presolve_setstatus(&psdata2, INFEASIBLE);
         j++;
       }
     }

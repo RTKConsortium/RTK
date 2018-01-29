@@ -169,6 +169,10 @@ int comp_bits(MYBOOL *bitarray1, MYBOOL *bitarray2, int items)
   /* Do the wide unsigned integer part for speed */
   items4 = items / sizeof(unsigned long);
   i = 0;
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
   while(i < items4) {
     comp4 = ((unsigned long *) bitarray1)[i] &  ~((unsigned long *) bitarray2)[i];
     if(comp4)
@@ -178,6 +182,9 @@ int comp_bits(MYBOOL *bitarray1, MYBOOL *bitarray2, int items)
       right++;
     i++;
   }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
   /* Do the trailing slow narrow unsigned integer part */
   i *= sizeof(unsigned long);
@@ -298,7 +305,7 @@ STATIC char *mempool_obtainVector(workarraysrec *mempool, int count, int unitsiz
 
   return( newmem );
 }
-STATIC MYBOOL mempool_releaseVector(workarraysrec *mempool, char *memvector, MYBOOL forcefree)
+STATIC MYBOOL mempool_releaseVector(workarraysrec *mempool, const char *memvector, MYBOOL forcefree)
 {
   int i;
 
@@ -600,6 +607,7 @@ STATIC void chsign_bounds(REAL *lobound, REAL *upbound)
 /* ---------------------------------------------------------------------------------- */
 STATIC REAL rand_uniform(lprec *lp, REAL range)
 {
+  (void)lp;
   static MYBOOL randomized = FALSE; /* static ok here for reentrancy/multithreading */
 
   if(!randomized) {
@@ -853,6 +861,8 @@ STATIC int nextInactiveLink(LLrec *linkmap, int backitemnr)
 
 STATIC int prevInactiveLink(LLrec *linkmap, int forwitemnr)
 {
+  (void)linkmap;
+  (void)forwitemnr;
   return( 0 );
 }
 

@@ -23,7 +23,7 @@
 /* Input and output of lp format model files for lp_solve                    */
 /* ------------------------------------------------------------------------- */
 
-static int write_data(void *userhandle, write_modeldata_func write_modeldata, char *format, ...)
+static int write_data(void *userhandle, write_modeldata_func write_modeldata, const char *format, ...)
 {
   char buff[DEF_STRBUFSIZE+1];
   va_list ap;
@@ -36,7 +36,7 @@ static int write_data(void *userhandle, write_modeldata_func write_modeldata, ch
   return(n);
 }
 
-STATIC void write_lpcomment(void *userhandle, write_modeldata_func write_modeldata, char *string, MYBOOL newlinebefore)
+STATIC void write_lpcomment(void *userhandle, write_modeldata_func write_modeldata, const char *string, MYBOOL newlinebefore)
 {
   write_data(userhandle, write_modeldata, "%s/* %s */\n", (newlinebefore) ? "\n" : "", string);
 }
@@ -91,7 +91,7 @@ MYBOOL __WINAPI write_lpex(lprec *lp, void *userhandle, write_modeldata_func wri
          *idx;
   MYBOOL ok;
   REAL   a, *val;
-  char   *ptr;
+  const char   *ptr;
 
   if(!mat_validate(lp->matA)) {
     report(lp, IMPORTANT, "LP_writefile: Could not validate the data matrix.\n");
@@ -326,7 +326,7 @@ static int __WINAPI write_lpdata(void *userhandle, char *buf)
   return(fprintf((FILE *) userhandle, "%s", buf));
 }
 
-MYBOOL LP_writefile(lprec *lp, char *filename)
+MYBOOL LP_writefile(lprec *lp, const char *filename)
 {
   FILE *output = stdout;
   MYBOOL ok;

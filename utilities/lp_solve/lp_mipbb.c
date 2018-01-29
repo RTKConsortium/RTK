@@ -306,6 +306,7 @@ STATIC REAL probe_BB(BBrec *BB)
 
 STATIC REAL presolve_BB(BBrec *BB)
 {
+  (void)BB;
   return( 0 );
 }
 
@@ -605,9 +606,11 @@ Finish:
           BB->isfloor = FALSE;
         else if(fabs(BB->upbo[K]-BB->UPbound) < intmargin)
           BB->isfloor = TRUE;
-        else
+        else {
+          BB->isfloor = TRUE;
           report(BB->lp, IMPORTANT, "fillbranches_BB: Inconsistent equal-valued bounds for %s\n",
                                     get_col_name(BB->lp, k));
+        }
       }
       if((BB->nodesleft == 1) &&
          ((BB->isfloor && (BB->UPbound >= lp->infinite)) ||
@@ -743,11 +746,13 @@ STATIC MYBOOL nextbranch_BB(BBrec *BB)
 /* Cut generation and management routines */
 STATIC MYBOOL initcuts_BB(lprec *lp)
 {
+  (void)lp;
   return( TRUE );
 }
 
 STATIC int updatecuts_BB(lprec *lp)
 {
+  (void)lp;
   return( 0 );
 }
 
@@ -1370,10 +1375,12 @@ STATIC MYBOOL strongbranch_BB(lprec *lp, BBrec *BB, int varno, int vartype, int 
 /* Future functions */
 STATIC MYBOOL pre_BB(lprec *lp)
 {
+  (void)lp;
   return( TRUE );
 }
 STATIC MYBOOL post_BB(lprec *lp)
 {
+  (void)lp;
   return( TRUE );
 }
 

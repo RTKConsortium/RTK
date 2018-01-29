@@ -87,7 +87,7 @@ void strtolo(char *s)
     s++;
   }
 }
-void strcpyup(char *t, char *s)
+void strcpyup(char *t, const char *s)
 {
   if((s != NULL) && (t != NULL)) {
     while (*s) {
@@ -98,7 +98,7 @@ void strcpyup(char *t, char *s)
     *t = '\0';
   }
 }
-void strcpylo(char *t, char *s)
+void strcpylo(char *t, const char *s)
 {
   if((s != NULL) && (t != NULL)) {
     while (*s) {
@@ -111,9 +111,9 @@ void strcpylo(char *t, char *s)
 }
 
 /* Unix library naming utility function */
-MYBOOL so_stdname(char *stdname, char *descname, int buflen)
+MYBOOL so_stdname(char *stdname, const char *descname, int buflen)
 {
-  char *ptr;
+  const char *ptr;
 
   if((descname == NULL) || (stdname == NULL) || (((int) strlen(descname)) >= buflen - 6))
     return( FALSE );
@@ -855,7 +855,7 @@ double timeNow(void)
 /* Miscellaneous reporting functions */
 
 /* List a vector of INT values for the given index range */
-void blockWriteINT(FILE *output, char *label, int *myvector, int first, int last)
+void blockWriteINT(FILE *output, const char *label, int *myvector, int first, int last)
 {
   int i, k = 0;
 
@@ -874,7 +874,7 @@ void blockWriteINT(FILE *output, char *label, int *myvector, int first, int last
 }
 
 /* List a vector of MYBOOL values for the given index range */
-void blockWriteBOOL(FILE *output, char *label, MYBOOL *myvector, int first, int last, MYBOOL asRaw)
+void blockWriteBOOL(FILE *output, const char *label, MYBOOL *myvector, int first, int last, MYBOOL asRaw)
 {
   int i, k = 0;
 
@@ -896,7 +896,7 @@ void blockWriteBOOL(FILE *output, char *label, MYBOOL *myvector, int first, int 
 }
 
 /* List a vector of REAL values for the given index range */
-void blockWriteREAL(FILE *output, char *label, REAL *myvector, int first, int last)
+void blockWriteREAL(FILE *output, const char *label, REAL *myvector, int first, int last)
 {
   int i, k = 0;
 
@@ -959,7 +959,7 @@ void printmatSQ( int size, int n, REAL *X, int modulo)
 # define intptr_t long
 #endif
 
-int fileCount( char *filemask )
+int fileCount( const char *filemask )
 {
   struct   _finddata_t c_file;
   intptr_t hFile;
@@ -976,7 +976,7 @@ int fileCount( char *filemask )
   }
   return( count );
 }
-MYBOOL fileSearchPath( char *envvar, char *searchfile, char *foundpath )
+MYBOOL fileSearchPath( const char *envvar, const char *searchfile, const char *foundpath )
 {
    char pathbuffer[_MAX_PATH];
 

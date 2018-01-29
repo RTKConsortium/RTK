@@ -199,7 +199,7 @@ STATIC hashtable *copy_hash_table(hashtable *ht, hashelem **list, int newsize)
   return(copy);
 }
 
-STATIC int find_row(lprec *lp, char *name, MYBOOL Unconstrained_rows_found)
+STATIC int find_row(lprec *lp, const char *name, MYBOOL Unconstrained_rows_found)
 {
   hashelem *hp;
 
@@ -219,7 +219,7 @@ STATIC int find_row(lprec *lp, char *name, MYBOOL Unconstrained_rows_found)
   return(hp->index);
 }
 
-STATIC int find_var(lprec *lp, char *name, MYBOOL verbose)
+STATIC int find_var(lprec *lp, const char *name, MYBOOL verbose)
 {
   hashelem *hp;
 
