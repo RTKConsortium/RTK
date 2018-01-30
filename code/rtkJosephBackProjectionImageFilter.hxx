@@ -181,14 +181,14 @@ JosephBackProjectionImageFilter<TInputImage,
 
       if (fs == ns) //If the voxel is a corner, we can skip most steps
         {
-          BilinearSplatOnBorders(itIn->Get(), fp[mainDir] - np[mainDir], stepMM.GetNorm(),
+          BilinearSplatOnBorders(itIn->Value(), fp[mainDir] - np[mainDir], stepMM.GetNorm(),
                                   pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
                                   offsetx, offsety, minx, miny, maxx, maxy);
         }
       else
         {
         // First step
-        BilinearSplatOnBorders(itIn->Get(), residual + 0.5, stepMM.GetNorm(),
+        BilinearSplatOnBorders(itIn->Value(), residual + 0.5, stepMM.GetNorm(),
                                pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
                                offsetx, offsety, minx, miny, maxx, maxy);
 
@@ -203,7 +203,7 @@ JosephBackProjectionImageFilter<TInputImage,
         // Middle steps
         for(int i=ns+1; i<fs; i++)
           {
-          BilinearSplat(itIn->Get(), 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
+          BilinearSplat(itIn->Value(), 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -215,7 +215,7 @@ JosephBackProjectionImageFilter<TInputImage,
           }
 
         // Last step
-        BilinearSplatOnBorders(itIn->Get(), fp[mainDir] - fs + 0.5, stepMM.GetNorm(),
+        BilinearSplatOnBorders(itIn->Value(), fp[mainDir] - fs + 0.5, stepMM.GetNorm(),
                                pxiyi, pxsyi, pxiys, pxsys, currentx, currenty,
                                offsetx, offsety, minx, miny, maxx, maxy);
         }
@@ -231,17 +231,17 @@ void
 JosephBackProjectionImageFilter<TInputImage,
                                    TOutputImage,
                                    TSplatWeightMultiplication>
-::BilinearSplat(const InputPixelType rayValue,
-                                               const double stepLengthInVoxel,
-                                               const double voxelSize,
-                                               OutputPixelType *pxiyi,
-                                               OutputPixelType *pxsyi,
-                                               OutputPixelType *pxiys,
-                                               OutputPixelType *pxsys,
-                                               const double x,
-                                               const double y,
-                                               const int ox,
-                                               const int oy)
+::BilinearSplat(const InputPixelType &rayValue,
+                const double stepLengthInVoxel,
+                const double voxelSize,
+                OutputPixelType *pxiyi,
+                OutputPixelType *pxsyi,
+                OutputPixelType *pxiys,
+                OutputPixelType *pxsys,
+                const double x,
+                const double y,
+                const int ox,
+                const int oy)
 {
   int ix = vnl_math_floor(x);
   int iy = vnl_math_floor(y);
@@ -251,11 +251,10 @@ JosephBackProjectionImageFilter<TInputImage,
   CoordRepType lxc = 1.-lx;
   CoordRepType lyc = 1.-ly;
 
-  pxiyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
-  pxsyi[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
-  pxiys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
-  pxsys[idx] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
-
+  m_SplatWeightMultiplication(rayValue, pxiyi[idx], stepLengthInVoxel, voxelSize, lxc * lyc);
+  m_SplatWeightMultiplication(rayValue, pxsyi[idx], stepLengthInVoxel, voxelSize, lx * lyc);
+  m_SplatWeightMultiplication(rayValue, pxiys[idx], stepLengthInVoxel, voxelSize, lxc * ly);
+  m_SplatWeightMultiplication(rayValue, pxsys[idx], stepLengthInVoxel, voxelSize, lx * ly);
 }
 
 template <class TInputImage,
@@ -265,21 +264,21 @@ void
 JosephBackProjectionImageFilter<TInputImage,
                                    TOutputImage,
                                    TSplatWeightMultiplication>
-::BilinearSplatOnBorders(const InputPixelType rayValue,
-                                               const double stepLengthInVoxel,
-                                               const double voxelSize,
-                                               OutputPixelType *pxiyi,
-                                               OutputPixelType *pxsyi,
-                                               OutputPixelType *pxiys,
-                                               OutputPixelType *pxsys,
-                                               const double x,
-                                               const double y,
-                                               const int ox,
-                                               const int oy,
-                                               const CoordRepType minx,
-                                               const CoordRepType miny,
-                                               const CoordRepType maxx,
-                                               const CoordRepType maxy)
+::BilinearSplatOnBorders(const InputPixelType &rayValue,
+                         const double stepLengthInVoxel,
+                         const double voxelSize,
+                         OutputPixelType *pxiyi,
+                         OutputPixelType *pxsyi,
+                         OutputPixelType *pxiys,
+                         OutputPixelType *pxsys,
+                         const double x,
+                         const double y,
+                         const int ox,
+                         const int oy,
+                         const CoordRepType minx,
+                         const CoordRepType miny,
+                         const CoordRepType maxx,
+                         const CoordRepType maxy)
 {
   int ix = vnl_math_floor(x);
   int iy = vnl_math_floor(y);
@@ -299,11 +298,10 @@ JosephBackProjectionImageFilter<TInputImage,
   if(ix >= maxx) offset_xs = -ox;
   if(iy >= maxy) offset_ys = -oy;
 
-  pxiyi[idx + offset_xi + offset_yi] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * lyc);
-  pxiys[idx + offset_xi + offset_ys] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lxc * ly);
-  pxsyi[idx + offset_xs + offset_yi] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * lyc);
-  pxsys[idx + offset_xs + offset_ys] += m_SplatWeightMultiplication(rayValue, stepLengthInVoxel, voxelSize, lx * ly);
-
+  m_SplatWeightMultiplication(rayValue, pxiyi[idx + offset_xi + offset_yi], stepLengthInVoxel, voxelSize, lxc * lyc);
+  m_SplatWeightMultiplication(rayValue, pxiys[idx + offset_xi + offset_ys], stepLengthInVoxel, voxelSize, lxc * ly);
+  m_SplatWeightMultiplication(rayValue, pxsyi[idx + offset_xs + offset_yi], stepLengthInVoxel, voxelSize, lx * lyc);
+  m_SplatWeightMultiplication(rayValue, pxsys[idx + offset_xs + offset_ys], stepLengthInVoxel, voxelSize, lx * ly);
 }
 
 
