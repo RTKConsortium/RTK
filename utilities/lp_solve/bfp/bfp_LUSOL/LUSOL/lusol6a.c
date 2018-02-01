@@ -354,7 +354,6 @@ void LU6CHK(LUSOLrec *LUSOL, int MODE, int LENA2, int *INFORM)
    ------------------------------------------------------------------ */
 void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
 {
-  (void)NZidx;
   int  JPIV, K, L, L1, LEN, LENL, LENL0, NUML, NUML0;
   REAL SMALL;
   register REAL VPIV;
@@ -364,6 +363,7 @@ void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
 #else
   int  I, J;
 #endif
+  (void)NZidx;
 
   NUML0 = LUSOL->luparm[LUSOL_IP_COLCOUNT_L0];
   LENL0 = LUSOL->luparm[LUSOL_IP_NONZEROS_L0];
@@ -447,7 +447,6 @@ void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
    ================================================================== */
 void LU6LD(LUSOLrec *LUSOL, int *INFORM, int MODE, REAL V[], int NZidx[])
 {
-  (void)NZidx;
   int  IPIV, K, L, L1, LEN, NUML0;
   REAL DIAG, SMALL;
   register REAL VPIV;
@@ -457,6 +456,7 @@ void LU6LD(LUSOLrec *LUSOL, int *INFORM, int MODE, REAL V[], int NZidx[])
 #else
   int  J;
 #endif
+  (void)NZidx;
 
 /*      Solve L D v(new) = v  or  L|D|v(new) = v, depending on mode.
         The code for L is the same as in lu6L,
@@ -724,7 +724,6 @@ void LU6U(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
    ================================================================== */
 void LU6UT(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
 {
-  (void)NZidx;
   int  I, J, K, L, L1, L2, NRANK, NRANK1,
        *ip = LUSOL->ip + 1, *iq = LUSOL->iq + 1;
   REAL SMALL;
@@ -733,6 +732,7 @@ void LU6UT(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
   REAL *aptr;
   int  *jptr;
 #endif
+  (void)NZidx;
 
   NRANK = LUSOL->luparm[LUSOL_IP_RANK_U];
   SMALL = LUSOL->parmlu[LUSOL_RP_ZEROTOLERANCE];

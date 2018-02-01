@@ -684,10 +684,10 @@ int rhs_store(parse_parm *pp, REAL value, int HadConstraint, int HadVar, int Had
  */
 int var_store(parse_parm *pp, const char *var, REAL value, int HadConstraint, int HadVar, int Had_lineair_sum)
 {
+  int row;
   (void)HadConstraint;
   (void)HadVar;
   (void)Had_lineair_sum;
-  int row;
 
   row = pp->Rows;
 

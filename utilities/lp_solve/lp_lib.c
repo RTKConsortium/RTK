@@ -2276,9 +2276,9 @@ STATIC MYBOOL shift_rowcoldata(lprec *lp, int base, int delta, LLrec *usedmap, M
 STATIC MYBOOL shift_basis(lprec *lp, int base, int delta, LLrec *usedmap, MYBOOL isrow)
 /* Note: Assumes that "lp->sum" and "lp->rows" HAVE NOT been updated to the new counts */
 {
-  (void)usedmap;
   int i, ii;
   MYBOOL Ok = TRUE;
+  (void)usedmap;
 
   /* Don't bother to shift the basis if it is not yet ready */
   if(!is_BasisReady(lp))
@@ -3446,8 +3446,8 @@ MYBOOL __WINAPI str_add_column(lprec *lp, const char *col_string)
 
 STATIC MYBOOL del_varnameex(lprec *lp, hashelem **namelist, int items, hashtable *ht, int varnr, LLrec *varmap)
 {
-  (void)lp;
   int i, n;
+  (void)lp;
 
   /* First drop hash table entries of the deleted variables */
   if(varmap != NULL)
@@ -8321,14 +8321,14 @@ STATIC MYBOOL check_degeneracy(lprec *lp, REAL *pcol, int *degencount)
 STATIC MYBOOL performiteration(lprec *lp, int rownr, int varin, LREAL theta, MYBOOL primal, MYBOOL allowminit,
                                REAL *prow, int *nzprow, REAL *pcol, int *nzpcol, int *boundswaps)
 {
-  (void)pcol;
-  (void)nzpcol;
   int    varout;
   REAL   pivot, epsmargin, leavingValue, leavingUB, enteringUB;
   MYBOOL leavingToUB = FALSE, enteringFromUB, enteringIsFixed, leavingIsFixed;
   MYBOOL *islower = &(lp->is_lower[varin]);
   MYBOOL minitNow = FALSE, minitStatus = ITERATE_MAJORMAJOR;
   LREAL  deltatheta = theta;
+  (void)pcol;
+  (void)nzpcol;
 
   if(userabort(lp, MSG_ITERATION))
     return( minitNow );
@@ -9669,8 +9669,8 @@ STATIC int findBasisPos(lprec *lp, int notint, int *var_basic)
 
 STATIC void replaceBasisVar(lprec *lp, int rownr, int var, int *var_basic, MYBOOL *is_basic)
 {
-  (void)lp;
   int out;
+  (void)lp;
 
   out = var_basic[rownr];
   var_basic[rownr] = var;

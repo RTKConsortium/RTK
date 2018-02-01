@@ -562,7 +562,6 @@ STATIC void clear_artificials(lprec *lp)
 
 STATIC int primloop(lprec *lp, MYBOOL primalfeasible, REAL primaloffset)
 {
-  (void)primaloffset;
   MYBOOL primal = TRUE, bfpfinal = FALSE, changedphase = FALSE, forceoutEQ = AUTOMATIC,
          primalphase1, pricerCanChange, minit, stallaccept, pendingunbounded;
   int    i, j, k, colnr = 0, rownr = 0, lastnr = 0,
@@ -573,6 +572,7 @@ STATIC int primloop(lprec *lp, MYBOOL primalfeasible, REAL primaloffset)
          *drow = lp->drow;
   int    *workINT = NULL,
          *nzdrow = lp->nzdrow;
+  (void)primaloffset;
 
   if(lp->spx_trace)
     report(lp, DETAILED, "Entered primal simplex algorithm with feasibility %s\n",
@@ -1525,10 +1525,10 @@ Finish:
 
 STATIC int spx_run(lprec *lp, MYBOOL validInvB)
 {
-  (void)validInvB;
   int    i, j, singular_count, lost_feas_count, *infeasibles = NULL, *boundflip_count;
   MYBOOL primalfeasible, dualfeasible, lost_feas_state, isbb;
   REAL   primaloffset = 0, dualoffset = 0;
+  (void)validInvB;
 
   lp->current_iter  = 0;
   lp->current_bswap = 0;
@@ -1738,9 +1738,9 @@ lprec *make_lag(lprec *lpserver)
 STATIC int heuristics(lprec *lp, int mode)
 /* Initialize / bound a MIP problem */
 {
-  (void)mode;
   lprec *hlp;
   int   status = PROCFAIL;
+  (void)mode;
 
   if(lp->bb_level > 1)
     return( status );

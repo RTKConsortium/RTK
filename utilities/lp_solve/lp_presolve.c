@@ -1052,12 +1052,12 @@ Done:
 
 STATIC MYBOOL presolve_fixSOS1(presolverec *psdata, int colnr, REAL fixvalue, int *nr, int *nv)
 {
-  (void)nr;
   lprec    *lp = psdata->lp;
   int      i, k, j;
   SOSrec   *SOS;
   REAL     newvalue;
   MYBOOL   *fixed = NULL, status = FALSE;
+  (void)nr;
 
   /* Allocate working member list */
   if(!allocMYBOOL(lp, &fixed, lp->columns+1, TRUE) )
@@ -2604,9 +2604,9 @@ int BFP_CALLMODEL presolve_getcolumnEQ(lprec *lp, int colnr, REAL nzvalues[], in
 }
 STATIC int presolve_singularities(presolverec *psdata, int *nn, int *nr, int *nv, int *nSum)
 {
-  (void)nv;
   lprec *lp = psdata->lp;
   int i, j, n, *rmapin = NULL, *rmapout = NULL, *cmapout = NULL;
+  (void)nv;
 
   if(lp->bfp_findredundant(lp, 0, NULL, NULL, NULL) == 0)
     return( 0 );
@@ -4081,7 +4081,6 @@ STATIC int presolve_coldominance01(presolverec *psdata, NATURAL *nConRemoved, NA
 /* The current version of this routine eliminates binary variables
    that are dominated via set coverage or unit knapsack constraints */
 {
-  (void)nConRemoved; 
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   NATURAL  i, ib, ie, jx, item, item2,
@@ -4093,6 +4092,7 @@ STATIC int presolve_coldominance01(presolverec *psdata, NATURAL *nConRemoved, NA
            *colvalues = NULL, *colobj = NULL;
   LLrec    *sets = NULL;
   UNIONTYPE QSORTrec *QS = (UNIONTYPE QSORTrec *) calloc(n+1, sizeof(*QS));
+  (void)nConRemoved; 
 
   /* Check if we were able to obtain working memory */
   if(QS == NULL)
@@ -4274,7 +4274,6 @@ Finish:
 STATIC int presolve_aggregate(presolverec *psdata, int *nConRemoved, int *nVarsFixed, int *nSum)
 /* This routine combines compatible or identical columns */
 {
-  (void)nConRemoved;
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   MYBOOL   first;
@@ -4282,6 +4281,7 @@ STATIC int presolve_aggregate(presolverec *psdata, int *nConRemoved, int *nVarsF
            *coldel = NULL, status = RUNNING, iVarFixed = 0;
   REAL     scale, *colvalues = NULL;
   UNIONTYPE QSORTrec *QScand = (UNIONTYPE QSORTrec *) calloc(lp->columns+1, sizeof(*QScand));
+  (void)nConRemoved;
 
   /* Check if we were able to obtain working memory */
   if(QScand == NULL)
@@ -4490,7 +4490,6 @@ Finish:
 
 STATIC int presolve_makesparser(presolverec *psdata, int *nCoeffChanged, int *nConRemove, int *nVarFixed, int *nSum)
 {
-  (void)nVarFixed;
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   MYBOOL   chsign;
@@ -4499,6 +4498,7 @@ STATIC int presolve_makesparser(presolverec *psdata, int *nCoeffChanged, int *nC
   REAL     test, ratio, value, valueEQ, *valptr;
   LLrec    *EQlist = NULL;
   UNIONTYPE QSORTrec *QS = (UNIONTYPE QSORTrec *) calloc(lp->rows, sizeof(*QS));
+  (void)nVarFixed;
 
   /* Check if we were able to obtain working memory */
   if((QS == NULL) || (psdata->rows->varmap->count == 0) || (psdata->EQmap->count == 0))
@@ -4767,13 +4767,13 @@ Finish:
 
 STATIC int presolve_SOS1(presolverec *psdata, int *nCoeffChanged, int *nConRemove, int *nVarFixed, int *nSOS, int *nSum)
 {
-  (void)nVarFixed;
   lprec    *lp = psdata->lp;
   MYBOOL   candelete, SOS_GUBactive = FALSE;
   int      iCoeffChanged = 0, iConRemove = 0, iSOS = 0,
            i,ix,iix, j,jx,jjx, status = RUNNING;
   REAL     Value1;
   MATrec   *mat = lp->matA;
+  (void)nVarFixed;
 
   for(i = lastActiveLink(psdata->rows->varmap); i > 0; ) {
     candelete = FALSE;

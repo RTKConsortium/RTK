@@ -94,7 +94,6 @@ Finish:
 /* Solve U w = v based on column-based version of U, constructed by LU1U0 */
 void LU6U0_v(LUSOLrec *LUSOL, LUSOLmat *mat, REAL V[], REAL W[], int NZidx[], int *INFORM)
 {
-  (void)NZidx;
 #ifdef DoTraceU0
   REAL TEMP;
 #endif
@@ -107,6 +106,7 @@ void LU6U0_v(LUSOLrec *LUSOL, LUSOLmat *mat, REAL V[], REAL W[], int NZidx[], in
 #else
   int  J;
 #endif
+  (void)NZidx;
 
   NRANK = LUSOL->luparm[LUSOL_IP_RANK_U];
   SMALL = LUSOL->parmlu[LUSOL_RP_ZEROTOLERANCE];

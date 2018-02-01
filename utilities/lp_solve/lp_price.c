@@ -1295,9 +1295,10 @@ STATIC int rowdual(lprec *lp, REAL *rhvec, MYBOOL forceoutEQ, MYBOOL updateinfea
 STATIC void longdual_testset(lprec *lp, int which, int rownr, REAL *prow, int *nzprow,
                                                     REAL *drow, int *nzdrow)
 {
-  (void)nzdrow;
   int i,j;
   REAL F = lp->infinite;
+  (void)nzdrow;
+
   if(which == 0) {             /* Maros Example-1 - raw data */
     j =  1; i = lp->rows+j; lp->upbo[i] = 0;  lp->is_lower[i] =  TRUE; nzprow[j] = i; prow[i] =  2; drow[i] = -1;
     j =  2; i = lp->rows+j; lp->upbo[i] = 1;  lp->is_lower[i] =  TRUE; nzprow[j] = i; prow[i] = -2; drow[i] =  2;
