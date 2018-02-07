@@ -20,79 +20,77 @@
 #define rtkProjectGeometricPhantomImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
+#include <itkAddImageFilter.h>
+#include "rtkGeometricPhantom.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkRayQuadricIntersectionImageFilter.h"
-#include "rtkGeometricPhantomFileReader.h"
-
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkRayBoxIntersectionImageFilter.h"
-#include "itkAddImageFilter.h"
-
-#include <vector>
 
 namespace rtk
 {
 
 /** \class ProjectGeometricPhantomImageFilter
- * \brief  Computes intersection between source rays and ellipsoids
+ * \brief Analytical projection a GeometricPhantom
  *
- * Computes intersection between source rays and ellipsoids,
- * in order to create the projections of a specific phantom which is
- * specified in a configuration file following the convention of
- * http://www.slaney.org/pct/pct-errata.html
+ * \test rtkprojectgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \test rtkprojectgeometricphantomtest.cxx
- *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT ProjectGeometricPhantomImageFilter :
-  public RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage>
+class ProjectGeometricPhantomImageFilter :
+  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef ProjectGeometricPhantomImageFilter                            Self;
-  typedef RayEllipsoidIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                 ConstPointer;
-  typedef typename TOutputImage::RegionType                             OutputImageRegionType;
-  typedef typename TOutputImage::Superclass::ConstPointer               OutputImageBaseConstPointer;
+  typedef ProjectGeometricPhantomImageFilter                Self;
+  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                           Pointer;
+  typedef itk::SmartPointer<const Self>                     ConstPointer;
 
-  typedef float OutputPixelType;
-
-  typedef TOutputImage                                                               OutputImageType;
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>       RBIType;
-  typedef itk::AddImageFilter <TOutputImage, TOutputImage, TOutputImage>             AddImageFilterType;
-  typedef itk::Vector<double, 3>                                                     VectorType;
-  typedef std::string                                                                StringType;
-  typedef std::vector< std::vector<double> >                                         VectorOfVectorType;
-  typedef rtk::GeometricPhantomFileReader                                            CFRType;
+  /** Convenient typedefs. */
+  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
+  typedef typename GeometryType::Pointer                  GeometryPointer;
+  typedef GeometricPhantom::Pointer                       GeometricPhantomPointer;
+  typedef std::string                                     StringType;
+  typedef ConvexShape::VectorType                         VectorType;
+  typedef ConvexShape::RotationMatrixType                 RotationMatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ProjectGeometricPhantomImageFilter, RayEllipsoidIntersectionImageFilter);
+  itkTypeMacro(ProjectGeometricPhantomImageFilter, itk::InPlaceImageFilter);
 
-  /** Get/Set Number of Figures.*/
+  /** Get / Set the object pointer to the geometry. */
+  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
+
+  /** Get / Set the object pointer to projection geometry */
+  itkGetObjectMacro(Geometry, GeometryType);
+  itkSetObjectMacro(Geometry, GeometryType);
+
+  /** Get/Set the phantom file path. */
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
-  /** Multiplicative Scaling factor for the phantom described ConfigFile. */
+  /** Multiplicative scaling factor along each 3D component. */
   itkSetMacro(PhantomScale, VectorType);
   itkGetMacro(PhantomScale, VectorType);
 
-  /** Get / Set the spatial position of the phantom Shepp Logan phantom relative to its
-   * center. The default value is (0, 0, 0). */
+  /** Get / Set the spatial offset of the phantom relative to its center. The
+   * default value is (0, 0, 0). */
   itkSetMacro(OriginOffset, VectorType);
   itkGetMacro(OriginOffset, VectorType);
 
-  virtual VectorOfVectorType GetFig ();
-  virtual void SetFig (const VectorOfVectorType _arg);
+  /** Interpret config file as Forbild file (see
+   * http://www.imp.uni-erlangen.de/phantoms/). */
+  itkSetMacro(IsForbildConfigFile, bool);
+  itkGetConstMacro(IsForbildConfigFile, bool);
+  itkBooleanMacro(IsForbildConfigFile);
+
+  /** Get / Set a rotation matrix for the phantom. Default is identity. */
+  itkSetMacro(RotationMatrix, RotationMatrixType);
+  itkGetMacro(RotationMatrix, RotationMatrixType);
 
 protected:
   ProjectGeometricPhantomImageFilter();
@@ -102,13 +100,15 @@ protected:
 
 private:
   ProjectGeometricPhantomImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  void operator=(const Self&);                     //purposely not implemented
 
-  VectorOfVectorType     m_Fig;
-  StringType             m_ConfigFile;
-
-  VectorType m_PhantomScale;
-  VectorType m_OriginOffset;
+  GeometricPhantomPointer m_GeometricPhantom;
+  GeometryPointer         m_Geometry;
+  StringType              m_ConfigFile;
+  VectorType              m_PhantomScale;
+  VectorType              m_OriginOffset;
+  bool                    m_IsForbildConfigFile;
+  RotationMatrixType      m_RotationMatrix;
 };
 
 } // end namespace rtk

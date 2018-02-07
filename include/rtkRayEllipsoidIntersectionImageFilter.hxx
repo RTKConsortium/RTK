@@ -20,57 +20,48 @@
 #define rtkRayEllipsoidIntersectionImageFilter_hxx
 
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIteratorWithIndex.h>
-
-#include "rtkHomogeneousMatrix.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
 RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
-::RayEllipsoidIntersectionImageFilter():m_EQPFunctor( EQPFunctionType::New() )
+::RayEllipsoidIntersectionImageFilter():
+    m_Density(1.),
+    m_Angle(0.)
 {
-  m_Axis.Fill(0.);
   m_Center.Fill(0.);
-  m_Angle = 0.;
-  m_Figure = "Ellipsoid";
+  m_Axis.Fill(0.);
 }
 
 template <class TInputImage, class TOutputImage>
-void RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
+void
+RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
+::BeforeThreadedGenerateData()
 {
+  if( this->GetConvexShape() == ITK_NULLPTR )
+    this->SetConvexShape( QuadricShape::New().GetPointer() );
   Superclass::BeforeThreadedGenerateData();
-
-  typename EQPFunctionType::VectorType semiprincipalaxis;
-  typename EQPFunctionType::VectorType center;
-  semiprincipalaxis[0] = m_Axis[0];
-  semiprincipalaxis[1] = m_Axis[1];
-  semiprincipalaxis[2] = m_Axis[2];
-  center[0] = m_Center[0];
-  center[1] = m_Center[1];
-  center[2] = m_Center[2];
-
-  //Set type of Figure
-  m_EQPFunctor->SetFigure(m_Figure);
-  //Translate from regular expression to quadric
-  m_EQPFunctor->Translate(semiprincipalaxis);
-  //Applies rotation and translation if necessary
-  m_EQPFunctor->Rotate(m_Angle, center);
-  //Setting parameters in order to compute the projections
-  this->GetRQIFunctor()->SetA( m_EQPFunctor->GetA() );
-  this->GetRQIFunctor()->SetB( m_EQPFunctor->GetB() );
-  this->GetRQIFunctor()->SetC( m_EQPFunctor->GetC() );
-  this->GetRQIFunctor()->SetD( m_EQPFunctor->GetD() );
-  this->GetRQIFunctor()->SetE( m_EQPFunctor->GetE() );
-  this->GetRQIFunctor()->SetF( m_EQPFunctor->GetF() );
-  this->GetRQIFunctor()->SetG( m_EQPFunctor->GetG() );
-  this->GetRQIFunctor()->SetH( m_EQPFunctor->GetH() );
-  this->GetRQIFunctor()->SetI( m_EQPFunctor->GetI() );
-  this->GetRQIFunctor()->SetJ( m_EQPFunctor->GetJ() );
+  QuadricShape * qo = dynamic_cast< QuadricShape * >( this->GetConvexShape() );
+  if( qo == ITK_NULLPTR )
+    {
+    itkExceptionMacro("This is not a QuadricShape!");
+    }
+  qo->SetEllipsoid(m_Center, m_Axis, m_Angle);
+  qo->SetDensity(m_Density);
+  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
 }
+
+template <class TInputImage, class TOutputImage>
+void
+RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
+{
+  m_PlaneDirections.push_back(dir);
+  m_PlanePositions.push_back(pos);
+}
+
 }// end namespace rtk
 
 #endif

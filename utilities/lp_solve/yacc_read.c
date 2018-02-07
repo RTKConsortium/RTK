@@ -688,6 +688,9 @@ int var_store(parse_parm *pp, const char *var, REAL value, int HadConstraint, in
   (void)HadVar;
   (void)Had_lineair_sum;
   int row;
+  (void)HadConstraint;
+  (void)HadVar;
+  (void)Had_lineair_sum;
 
   row = pp->Rows;
 

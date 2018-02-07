@@ -77,7 +77,10 @@ ReadSignalFile(std::string filename)
       {
       std::istringstream tmp(s);
       tmp >> value;
-      signalVector.push_back(itk::Math::Round<double>(value * 100) / 100);
+      if (itk::Math::Round<double>(value * 100) / 100 == 1)
+        signalVector.push_back(0);
+      else
+        signalVector.push_back(itk::Math::Round<double>(value * 100) / 100);
       }
     }
 

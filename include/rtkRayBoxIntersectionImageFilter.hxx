@@ -19,79 +19,75 @@
 #ifndef rtkRayBoxIntersectionImageFilter_hxx
 #define rtkRayBoxIntersectionImageFilter_hxx
 
-#include "rtkRayBoxIntersectionImageFilter.h"
-
+#include <iostream>
 #include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIteratorWithIndex.h>
+#include <itkImageRegionIterator.h>
 
-#include "rtkHomogeneousMatrix.h"
-#include "rtkProjectionsRegionConstIteratorRayBased.h"
+#include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkBoxShape.h"
 
 namespace rtk
 {
+
+template <class TInputImage, class TOutputImage>
+RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
+::RayBoxIntersectionImageFilter():
+  m_Density(1.),
+  m_BoxMin(0.),
+  m_BoxMax(0.)
+{
+  m_Direction.SetIdentity();
+}
+
+template <class TInputImage, class TOutputImage>
+void
+RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
+::BeforeThreadedGenerateData()
+{
+  if( this->GetConvexShape() == ITK_NULLPTR )
+    this->SetConvexShape( BoxShape::New().GetPointer() );
+
+  Superclass::BeforeThreadedGenerateData();
+
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexShape() );
+  if( qo == ITK_NULLPTR )
+    {
+    itkExceptionMacro("This is not a BoxShape!");
+    }
+
+  qo->SetDensity( this->GetDensity() );
+  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetBoxMin(this->GetBoxMin());
+  qo->SetBoxMax(this->GetBoxMax());
+}
+
+template <class TInputImage, class TOutputImage>
+void
+RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
+{
+  m_PlaneDirections.push_back(dir);
+  m_PlanePositions.push_back(pos);
+}
 
 template <class TInputImage, class TOutputImage>
 void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 ::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
 {
-  m_RBIFunctor->SetBoxFromImage(_arg);
-  this->Modified();
-}
-
-template <class TInputImage, class TOutputImage>
-void
-RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
-::SetBoxMin(VectorType _boxMin)
-{
-  m_RBIFunctor->SetBoxMin(_boxMin);
-  this->Modified();
-}
-
-template <class TInputImage, class TOutputImage>
-void
-RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
-::SetBoxMax(VectorType _boxMax)
-{
-  m_RBIFunctor->SetBoxMax(_boxMax);
-  this->Modified();
-}
-
-template <class TInputImage, class TOutputImage>
-void
-RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType itkNotUsed(threadId) )
-{
-  // Create local object for multithreading purposes
-  typename RBIFunctionType::Pointer rbiFunctor = RBIFunctionType::New();
-  rbiFunctor->SetBoxMin(m_RBIFunctor->GetBoxMin());
-  rbiFunctor->SetBoxMax(m_RBIFunctor->GetBoxMax());
-
-  // Iterators on input and output
-  typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
-  InputRegionIterator *itIn;
-  itIn = InputRegionIterator::New(this->GetInput(),
-                                  outputRegionForThread,
-                                  m_Geometry);
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
-  OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
-
-  // Go over each projection
-  for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
+  if( this->GetConvexShape() == ITK_NULLPTR )
+    this->SetConvexShape( BoxShape::New().GetPointer() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexShape() );
+  if( qo == ITK_NULLPTR )
     {
-    rbiFunctor->SetRayOrigin( itIn->GetSourcePosition() );
-
-    // Compute ray intersection length
-    if( rbiFunctor->Evaluate(itIn->GetDirection()) )
-      itOut.Set( itIn->Get() + m_Density*(rbiFunctor->GetFarthestDistance() - rbiFunctor->GetNearestDistance()) );
-    else
-      itOut.Set( itIn->Get() );
+    itkExceptionMacro("This is not a BoxShape!");
     }
-
-  delete itIn;
+  qo->SetBoxFromImage(_arg);
+  SetBoxMin(qo->GetBoxMin());
+  SetBoxMax(qo->GetBoxMax());
+  SetDirection(qo->GetDirection());
 }
 
-} // end namespace rtk
+}// end namespace rtk
 
 #endif

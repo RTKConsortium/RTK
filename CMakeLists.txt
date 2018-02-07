@@ -14,6 +14,7 @@ endif()
 if(POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
+cmake_policy (SET CMP0022 NEW)
 
 project(RTK)
 

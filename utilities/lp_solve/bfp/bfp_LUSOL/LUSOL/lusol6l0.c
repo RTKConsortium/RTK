@@ -105,12 +105,10 @@ Finish:
 /* Solve L0' v = v based on row-based version of L0, constructed by LU1L0 */
 void LU6L0T_v(LUSOLrec *LUSOL, LUSOLmat *mat, REAL V[], int NZidx[], int *INFORM)
 {
-  (void)NZidx;
-  (void)INFORM;
+  int  LEN, K, KK, L, L1, NUML0;
 #ifdef DoTraceL0
   REAL TEMP;
 #endif
-  int  LEN, K, KK, L, L1, NUML0;
   REAL SMALL;
   register REAL VPIV;
 #if (defined LUSOLFastSolve) && !(defined DoTraceL0)
@@ -119,6 +117,8 @@ void LU6L0T_v(LUSOLrec *LUSOL, LUSOLmat *mat, REAL V[], int NZidx[], int *INFORM
 #else
   int  J;
 #endif
+  (void)NZidx;
+  (void)INFORM;
 
   NUML0 = LUSOL->luparm[LUSOL_IP_ROWCOUNT_L0];
   SMALL = LUSOL->parmlu[LUSOL_RP_ZEROTOLERANCE];

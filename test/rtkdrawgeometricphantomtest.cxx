@@ -5,6 +5,8 @@
 #include "rtkGeometricPhantomFileReader.h"
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
+#include "rtkDrawCylinderImageFilter.h"
+#include "rtkDrawConeImageFilter.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 

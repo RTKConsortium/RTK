@@ -46,18 +46,11 @@ int main(int argc, char * argv[])
   typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
   DSLType::VectorType offset(0.);
   DSLType::VectorType scale;
-  if(args_info.offset_given)
-    {
-    offset[0] = args_info.offset_arg[0];
-    offset[1] = args_info.offset_arg[1];
-    offset[2] = args_info.offset_arg[2];
-    }
+  for(unsigned int i=0; i<vnl_math_min(args_info.offset_given, Dimension); i++)
+    offset[i] = args_info.offset_arg[i];
   scale.Fill(args_info.phantomscale_arg[0]);
-  if(args_info.phantomscale_given)
-    {
-    for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
-      scale[i] = args_info.phantomscale_arg[i];
-    }
+  for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
+    scale[i] = args_info.phantomscale_arg[i];
   DSLType::Pointer dsl = DSLType::New();
   dsl->SetPhantomScale( scale );
   dsl->SetInput( constantImageSource->GetOutput() );

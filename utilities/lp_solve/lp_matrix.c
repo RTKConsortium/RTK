@@ -3333,6 +3333,7 @@ STATIC int prod_Ax(lprec *lp, int *coltarget, REAL *input, int *nzinput,
   REAL     sdp;
   REAL     *value;
   int      *rownr;
+  (void)nzoutput;
 
   /* Find what variable range to scan - default is {SCAN_USERVARS} */
   /* Define default column target if none was provided */

@@ -93,7 +93,7 @@ endif()
 if(CUDA_FOUND)
   try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
          ${CMAKE_BINARY_DIR} 
-         ${CMAKE_CURRENT_LIST_DIR}/has_cuda_gpu.c
+         ${CMAKE_CURRENT_LIST_DIR}/has_cuda_gpu.cxx
          CMAKE_FLAGS 
              -DINCLUDE_DIRECTORIES:STRING=${CUDA_TOOLKIT_INCLUDE}
              -DLINK_LIBRARIES:STRING=${CUDA_CUDART_LIBRARY}

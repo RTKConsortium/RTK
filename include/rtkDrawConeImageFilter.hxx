@@ -20,23 +20,19 @@
 #define rtkDrawConeImageFilter_hxx
 
 #include "rtkDrawConeImageFilter.h"
-
-#include <iostream>
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
-
-#include "rtkHomogeneousMatrix.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage, typename TFunction>
-DrawConeImageFilter<TInputImage, TOutputImage, TFunction>
-::DrawConeImageFilter()
+template <class TInputImage, class TOutputImage>
+void
+DrawConeImageFilter<TInputImage, TOutputImage>
+::BeforeThreadedGenerateData()
 {
-  this->SetFigure("Cone");
+  Superclass::BeforeThreadedGenerateData();
+  dynamic_cast<QuadricShape *>(this->GetConvexShape())->SetJ(0.);
 }
-
 
 }// end namespace rtk
 

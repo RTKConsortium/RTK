@@ -19,89 +19,72 @@
 #ifndef rtkRayQuadricIntersectionImageFilter_hxx
 #define rtkRayQuadricIntersectionImageFilter_hxx
 
-#include "rtkRayQuadricIntersectionImageFilter.h"
-
+#include <iostream>
 #include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIteratorWithIndex.h>
+#include <itkImageRegionIterator.h>
 
-#include "rtkHomogeneousMatrix.h"
-#include "rtkProjectionsRegionConstIteratorRayBased.h"
+#include "rtkRayQuadricIntersectionImageFilter.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
+RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>
 ::RayQuadricIntersectionImageFilter():
-  m_RQIFunctor( RQIFunctionType::New() ),
-  m_Geometry(ITK_NULLPTR),
-  m_Density(1.)
+  m_Density(1.),
+  m_A(0.),
+  m_B(0.),
+  m_C(0.),
+  m_D(0.),
+  m_E(0.),
+  m_F(0.),
+  m_G(0.),
+  m_H(0.),
+  m_I(0.),
+  m_J(0.)
 {
-}
-
-template <class TInputImage, class TOutputImage>
-RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>::RQIFunctionType::Pointer
-RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
-::GetRQIFunctor()
-{
-  this->Modified();
-  return this->m_RQIFunctor;
 }
 
 template <class TInputImage, class TOutputImage>
 void
-RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
+RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if(this->GetGeometry()->GetGantryAngles().size() !=
-          this->GetOutput()->GetLargestPossibleRegion().GetSize()[2])
-      itkExceptionMacro(<<"Number of projections in the input stack and the geometry object differ.")
+  if( this->GetConvexShape() == ITK_NULLPTR )
+    this->SetConvexShape( QuadricShape::New().GetPointer() );
+
+  Superclass::BeforeThreadedGenerateData();
+
+  QuadricShape * qo = dynamic_cast< QuadricShape * >( this->GetConvexShape() );
+  if( qo == ITK_NULLPTR )
+    {
+    itkExceptionMacro("This is not a QuadricShape!");
+    }
+
+  qo->SetDensity( this->GetDensity() );
+  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetA(this->GetA());
+  qo->SetB(this->GetB());
+  qo->SetC(this->GetC());
+  qo->SetD(this->GetD());
+  qo->SetE(this->GetE());
+  qo->SetF(this->GetF());
+  qo->SetG(this->GetG());
+  qo->SetH(this->GetH());
+  qo->SetI(this->GetI());
+  qo->SetJ(this->GetJ());
 }
 
 template <class TInputImage, class TOutputImage>
 void
-RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType itkNotUsed(threadId) )
+RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
-  // Create local object for multithreading purposes
-  RQIFunctionType::Pointer rqiFunctor = RQIFunctionType::New();
-  rqiFunctor->SetA( m_RQIFunctor->GetA() );
-  rqiFunctor->SetB( m_RQIFunctor->GetB() );
-  rqiFunctor->SetC( m_RQIFunctor->GetC() );
-  rqiFunctor->SetD( m_RQIFunctor->GetD() );
-  rqiFunctor->SetE( m_RQIFunctor->GetE() );
-  rqiFunctor->SetF( m_RQIFunctor->GetF() );
-  rqiFunctor->SetG( m_RQIFunctor->GetG() );
-  rqiFunctor->SetH( m_RQIFunctor->GetH() );
-  rqiFunctor->SetI( m_RQIFunctor->GetI() );
-  rqiFunctor->SetJ( m_RQIFunctor->GetJ() );
-
-  // Iterators on input and output
-  typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
-  InputRegionIterator *itIn;
-  itIn = InputRegionIterator::New(this->GetInput(),
-                                  outputRegionForThread,
-                                  m_Geometry);
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
-  OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
-
-  // Go over each projection
-  for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
-    {
-
-    rqiFunctor->SetRayOrigin( itIn->GetSourcePosition() );
-
-    // Compute ray intersection length
-    if( rqiFunctor->Evaluate(itIn->GetDirection()) )
-      itOut.Set( itIn->Get() + m_Density*(rqiFunctor->GetFarthestDistance() - rqiFunctor->GetNearestDistance() ));
-    else
-      itOut.Set( itIn->Get() );
-    }
-
-  delete itIn;
+  m_PlaneDirections.push_back(dir);
+  m_PlanePositions.push_back(pos);
 }
 
-} // end namespace rtk
+}// end namespace rtk
 
 #endif

@@ -150,33 +150,6 @@
 //--------------------------------------------------------------------
 
 //--------------------------------------------------------------------
-/** \brief Set and Get built-in type (std::vector). Creates members
- *  Get"name()" and Set"name"()
- *
- * \author Simon Rit
- *
- * \ingroup Macro
- */
-#define rtkGetStdVectorMacro(name, type)                              \
-  virtual type Get##name ()                                           \
-  {                                                                   \
-    itkDebugMacro("returning std::vector");                           \
-    return this->m_##name;                                            \
-  }
-
-#define rtkSetStdVectorMacro(name, type)                              \
-  virtual void Set##name (const type _arg)                            \
-  {                                                                   \
-    itkDebugMacro("setting " #name " of type " #type );               \
-    if ( this->m_##name != _arg )                                     \
-    {                                                                 \
-      this->m_##name = _arg;                                          \
-      this->Modified();                                               \
-    }                                                                 \
-  }
-//--------------------------------------------------------------------
-
-//--------------------------------------------------------------------
 /** \brief Redefine ITK's New macros in order to add a watcher to
  * each new filter created
  *

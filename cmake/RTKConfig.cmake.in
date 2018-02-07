@@ -1,16 +1,55 @@
-set(RTK_INCLUDE_DIRS "@RTK_INCLUDE_DIRS@")
-set(RTK_LIBRARY_DIRS "@RTK_LIBRARY_DIRS@")
-set(RTK_LIBRARIES "@RTK_LIBRARIES@")
+get_filename_component(RTK_PACKAGE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+get_filename_component(_TEMP "${RTK_PACKAGE_DIR}" PATH) # lib/cmake
+get_filename_component(_TEMP "${_TEMP}" PATH) # lib
+get_filename_component(RTK_INSTALL_PATH "${_TEMP}" PATH)
 
 # The RTK version number
 set(RTK_VERSION_MAJOR "@RTK_VERSION_MAJOR@")
 set(RTK_VERSION_MINOR "@RTK_VERSION_MINOR@")
 set(RTK_VERSION_PATCH "@RTK_VERSION_PATCH@")
 
-# The location of the UseRTK.cmake file.
-set(ITK_DIR "@ITK_DIR@")
-set(RTK_USE_FILE "@RTK_USE_FILE@")
-
 # Whether the compiled version of RTK uses CUDA
 set(RTK_USE_CUDA @RTK_USE_CUDA@)
 
+if(${RTK_USE_CUDA})
+set(CMAKE_MODULE_PATH "@RTK_MODULE_PATH_CONFIG@" ${CMAKE_MODULE_PATH})
+
+# if we are using CUDA, make sure CUDA libraries are available
+  find_package(CUDA_wrap REQUIRED)
+  include_directories(${CUDA_INCLUDE_DIRS})
+  set(RTK_CUDA_PROJECTIONS_SLAB_SIZE "16" CACHE STRING "Number of projections processed simultaneously in CUDA forward and back projections")
+endif()
+
+set(RTK_INCLUDE_DIRS "@RTK_INCLUDE_DIRS@")
+set(RTK_LIBRARY_DIRS "@RTK_LIBRARY_DIRS@")
+set(RTK_LIBRARIES "@RTK_LIBRARIES@")
+
+
+# The location of the UseRTK.cmake file.
+if(NOT ${ITK_FOUND})
+  set(ITK_DIR "@ITK_DIR@")
+endif()
+set(RTK_USE_FILE "@RTK_USE_FILE@")
+
+
+include("${RTK_PACKAGE_DIR}/@RTK_EXPORTS_FILE_CONFIG@")
+
+if(${RTK_USE_CUDA})
+  set_property(TARGET ITKCudaCommon APPEND PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE 
+    ${CUDA_LIBRARIES} 
+    ${CUDA_cufft_LIBRARY} 
+    ${CUDA_cublas_LIBRARY}
+  )
+  set_property(TARGET ITKCudaCommon APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES 
+    ${CUDA_INCLUDE_DIRS}
+  )
+
+  set_property(TARGET rtkcuda APPEND PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE 
+    ${CUDA_LIBRARIES} 
+    ${CUDA_CUDA_LIBRARY} 
+  )
+  set_property(TARGET rtkcuda APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES 
+    ${CUDA_INCLUDE_DIRS}
+  )
+endif()

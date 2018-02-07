@@ -19,95 +19,85 @@
 #ifndef rtkRayBoxIntersectionImageFilter_h
 #define rtkRayBoxIntersectionImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkRayBoxIntersectionFunction.h"
+#include "rtkRayConvexIntersectionImageFilter.h"
 #include "rtkConfiguration.h"
+#include "rtkBoxShape.h"
 
 namespace rtk
 {
 
 /** \class RayBoxIntersectionImageFilter
- * \brief Computes intersection of projection rays with image box.
+ * \brief Analytical projection of a BoxShape.
  *
- * The filter uses RayBoxIntersectionFunction.
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \test rtkRaycastInterpolatorForwardProjectionTest.cxx,
- * rtkforwardprojectiontest.cxx
- *
- * \author Simon Rit
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
-
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT RayBoxIntersectionImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+class RayBoxIntersectionImageFilter :
+public RayConvexIntersectionImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef RayBoxIntersectionImageFilter                     Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  typedef RayBoxIntersectionImageFilter                              Self;
+  typedef RayConvexIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                    Pointer;
+  typedef itk::SmartPointer<const Self>                              ConstPointer;
 
-  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
-
-  typedef typename TOutputImage::RegionType                                          OutputImageRegionType;
-  typedef rtk::ThreeDCircularProjectionGeometry                                      GeometryType;
-  typedef typename GeometryType::Pointer                                             GeometryPointer;
-  typedef RayBoxIntersectionFunction<double, itkGetStaticConstMacro(ImageDimension)> RBIFunctionType;
-  typedef itk::ImageBase<itkGetStaticConstMacro(ImageDimension)>                     ImageBaseType;
-
-  /** Useful defines. */
-  typedef itk::Vector<double, 3> VectorType;
+  /** Convenient typedefs. */
+  typedef BoxShape::PointType          PointType;
+  typedef BoxShape::VectorType         VectorType;
+  typedef BoxShape::ScalarType         ScalarType;
+  typedef BoxShape::RotationMatrixType RotationMatrixType;
+  typedef BoxShape::ImageBaseType      ImageBaseType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RayBoxIntersectionImageFilter, itk::ImageToImageFilter);
+  itkTypeMacro(RayBoxIntersectionImageFilter, RayConvexIntersectionImageFilter);
 
-  /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, GeometryPointer);
-  itkSetMacro(Geometry, GeometryPointer);
+  /** Get / Set the constant density of the volume */
+  itkGetMacro(Density, ScalarType);
+  itkSetMacro(Density, ScalarType);
 
-  /** Set the box from an image. See rtkRayBoxIntersectionFunction::SetBoxFromImage. */
+  /** Get reference to vector of plane parameters. */
+  itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
+  itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
+
+  /** See ConvexShape for the definition of clip planes. */
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+
+  /** Set the box from an image. See rtk::BoxShape::SetBoxFromImage. */
   void SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder=true);
 
-  /** Set the box from an image */
-  void SetBoxMin(VectorType _boxMin);
-
-  /** Set the box from an image */
-  void SetBoxMax(VectorType _boxMax);
-
-  /** Get / Set the multiplicative constant of the volume */
-  itkGetMacro(Density, double);
-  itkSetMacro(Density, double);
-
+  /** Get/Set the box parameters. See rtk::BoxShape. */
+  itkGetMacro(BoxMin, PointType);
+  itkSetMacro(BoxMin, PointType);
+  itkGetMacro(BoxMax, PointType);
+  itkSetMacro(BoxMax, PointType);
+  itkGetMacro(Direction, RotationMatrixType);
+  itkSetMacro(Direction, RotationMatrixType);
 
 protected:
-  RayBoxIntersectionImageFilter() : m_RBIFunctor(RBIFunctionType::New()), m_Geometry(ITK_NULLPTR), m_Density(1.) {}
+  RayBoxIntersectionImageFilter();
   ~RayBoxIntersectionImageFilter() {}
 
-  /** Apply changes to the input image requested region. */
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
-
-  /** The two inputs should not be in the same space so there is nothing
-   * to verify. */
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
 
 private:
   RayBoxIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  void operator=(const Self&);         //purposely not implemented
 
-  /** Functor object to compute the intersection */
-  typename RBIFunctionType::Pointer m_RBIFunctor;
+  ScalarType              m_Density;
+  std::vector<VectorType> m_PlaneDirections;
+  std::vector<ScalarType> m_PlanePositions;
 
-  /** RTK geometry object */
-  GeometryPointer m_Geometry;
-
-  double m_Density;
+  PointType               m_BoxMin;
+  PointType               m_BoxMax;
+  RotationMatrixType      m_Direction;
 };
 
 } // end namespace rtk

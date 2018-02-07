@@ -1,16 +1,19 @@
 set(RTK_SRCS
+  rtkBioscanGeometryReader.cxx
+  rtkBoxShape.cxx
   rtkConditionalMedianImageFilter.cxx
-  rtkConvertEllipsoidToQuadricParametersFunction.cxx
+  rtkConvexShape.cxx
   rtkDbf.cxx
   rtkDCMImagXImageIO.cxx
   rtkDCMImagXImageIOFactory.cxx
   rtkDigisensGeometryReader.cxx
   rtkDigisensGeometryXMLFileReader.cxx
-  rtkDrawQuadricSpatialObject.cxx
   rtkEdfImageIO.cxx
   rtkEdfImageIOFactory.cxx
   rtkElektaSynergyGeometryReader.cxx
   rtkElektaXVI5GeometryXMLFile.cxx
+  rtkForbildPhantomFileReader.cxx
+  rtkGeometricPhantom.cxx
   rtkGeometricPhantomFileReader.cxx
   rtkGlobalTimer.cxx
   rtkGlobalTimerProbesCollector.cxx
@@ -21,13 +24,16 @@ set(RTK_SRCS
   rtkImagXImageIO.cxx
   rtkImagXImageIOFactory.cxx
   rtkImagXXMLFileReader.cxx
+  rtkIntersectionOfConvexShapes.cxx
   rtkIOFactories.cxx
   rtkMedianImageFilter.cxx
   rtkOraGeometryReader.cxx
   rtkOraImageIO.cxx
   rtkOraImageIOFactory.cxx
   rtkOraXMLFileReader.cxx
+  rtkQuadricShape.cxx
   rtkReg23ProjectionGeometry.cxx
+  rtkSheppLoganPhantom.cxx
   rtkThreeDCircularProjectionGeometry.cxx
   rtkThreeDCircularProjectionGeometryXMLFileReader.cxx
   rtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
