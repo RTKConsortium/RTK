@@ -19,5 +19,7 @@ itk_wrap_named_class("rtk::FFTConvolutionImageFilter" rtkFFTConvolutionImageFilt
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3${ITKM_D}"
       "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${ITKT_D}")
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3${ITKM_F}"
+      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${ITKT_F}")
   endforeach()
 itk_end_wrap_class()

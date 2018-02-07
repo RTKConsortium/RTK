@@ -60,7 +60,7 @@ public:
   ~LUT() {};
 
   /** Get/Set the lookup table. */
-  LookupTableDataPointer GetLookupTable() {
+  LookupTablePointer GetLookupTable() {
     return m_LookupTablePointer;
   }
   void SetLookupTable(LookupTablePointer lut) {
@@ -70,11 +70,15 @@ public:
     m_Interpolator->SetInputImage(lut);
   }
 
+  LookupTableDataPointer GetLookupTable() const {
+    return m_LookupTableDataPointer;
+  }
+
   bool operator!=( const LUT & lut ) const {
-    return m_LookupTableDataPointer != lut->GetLookupTableDataPointer;
+    return m_LookupTableDataPointer != lut.GetLookupTable();
   }
   bool operator==( const LUT & lut ) const {
-    return m_LookupTableDataPointer == lut->GetLookupTableDataPointer;
+    return m_LookupTableDataPointer == lut.GetLookupTable();
   }
 
   inline TOutput operator()( const TInput & val ) const;

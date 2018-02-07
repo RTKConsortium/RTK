@@ -1,0 +1,7 @@
+itk_wrap_class("rtk::LagCorrectionImageFilter" POINTER)
+  foreach(t ${WRAP_ITK_REAL})
+    foreach(modelOrder 1 2 3 4)
+      itk_wrap_template("I${ITKM_${t}}3${modelOrder}" "itk::Image<${ITKT_${t}}, 3>, ${modelOrder}")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()

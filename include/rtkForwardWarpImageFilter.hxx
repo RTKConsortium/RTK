@@ -22,7 +22,7 @@
 #include "rtkForwardWarpImageFilter.h"
 #include "rtkHomogeneousMatrix.h"
 
-#include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIteratorWithIndex.h>
 #include <itkNeighborhoodIterator.h>
 #include <itkConstantBoundaryCondition.h>

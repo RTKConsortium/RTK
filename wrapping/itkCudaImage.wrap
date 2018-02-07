@@ -4,11 +4,12 @@ if(RTK_USE_CUDA)
   # itk::CudaImage : CI
   #-----------------------------------------------------------------------------
   itk_wrap_class("itk::CudaImage" POINTER_WITH_CONST_POINTER)
-    foreach(d ${ITK_WRAP_IMAGE_DIMS})
-      foreach(t ${WRAP_ITK_REAL})
+    foreach(t ${WRAP_ITK_REAL})
+      foreach(d ${ITK_WRAP_IMAGE_DIMS})
         itk_wrap_template("${ITKM_${t}}${d}" "${ITKT_${t}}, ${d}")
       endforeach()
-   endforeach()
+      itk_wrap_template("CV${ITKM_${t}}34" "itk::CovariantVector< ${ITKT_${t}}, 3 >, 4")
+    endforeach()
   itk_end_wrap_class()
 
 endif()

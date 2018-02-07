@@ -20,7 +20,6 @@
 
 #include "rtkSubSelectImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkPhaseReader.h"
 
 namespace rtk
 {

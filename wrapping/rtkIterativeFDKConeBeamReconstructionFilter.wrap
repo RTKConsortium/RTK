@@ -1,0 +1,14 @@
+itk_wrap_class("rtk::IterativeFDKConeBeamReconstructionFilter" POINTER)
+
+  #WARNING: Templates can not be defined for both itk::Image and itk::CudaImage.
+  
+  if(RTK_USE_CUDA)
+    itk_wrap_template("CIF3CIF3D" "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, double")
+  else()
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3D"
+        "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, double")
+    endforeach()
+  endif()
+
+itk_end_wrap_class()

@@ -263,3 +263,5 @@ rtk_add_test(rtkOraTest rtkoratest.cxx
 rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
   DATA{Input/Bioscan/bioscan.dcm}
   DATA{Baseline/Bioscan/geometry.xml})
+
+itk_python_add_test(NAME rtkFirstReconstructionPythonTest COMMAND rtkFirstReconstruction.py ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
