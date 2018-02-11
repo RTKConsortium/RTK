@@ -131,8 +131,10 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId )
 {
+  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
+
   // Pad image region enlarged along X
   RegionType enlargedRegionX = outputRegionForThread;
   enlargedRegionX.SetIndex(0, this->GetInput()->GetRequestedRegion().GetIndex(0) );
@@ -182,6 +184,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     itD.Set( itS.Get() );
     ++itS;
     ++itD;
+    progress.CompletedPixel();
     }
 }
 

@@ -26,6 +26,7 @@
 
 #include <itkExtractImageFilter.h>
 #include <itkTimeProbe.h>
+#include <itkProgressAccumulator.h>
 
 namespace rtk
 {

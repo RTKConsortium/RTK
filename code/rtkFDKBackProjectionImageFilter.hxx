@@ -21,6 +21,7 @@
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
+#include <itkProgressReporter.h>
 
 #define BILINEAR_BACKPROJECTION
 
@@ -49,7 +50,7 @@ template <class TInputImage, class TOutputImage>
 void
 FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType itkNotUsed(threadId) )
+                       ThreadIdType threadId )
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
@@ -87,6 +88,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   // Continuous index at which we interpolate
   itk::ContinuousIndex<double, Dimension-1> pointProj;
 
+  itk::ProgressReporter progress(this, threadId, nProj);
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
@@ -107,11 +109,13 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
     if (fabs(matrix[1][0])<1e-10 && fabs(matrix[2][0])<1e-10)
       {
       OptimizedBackprojectionX( outputRegionForThread, matrix, projection);
+      progress.CompletedPixel();
       continue;
       }
     if (fabs(matrix[1][1])<1e-10 && fabs(matrix[2][1])<1e-10)
       {
       OptimizedBackprojectionY( outputRegionForThread, matrix, projection);
+      progress.CompletedPixel();
       continue;
       }
 
@@ -143,7 +147,9 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 
       ++itOut;
       }
+    progress.CompletedPixel();
     }
+
 }
 
 template <class TInputImage, class TOutputImage>

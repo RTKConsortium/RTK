@@ -54,7 +54,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId))
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId)
 {
   // Prepare point increment (TransformIndexToPhysicalPoint too slow)
   typename InputImageType::PointType pointBase, pointIncrement;
@@ -74,6 +74,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   itI.GoToBegin();
   itO.GoToBegin();
 
+  itk::ProgressReporter progress(this, threadId, (int)outputRegionForThread.GetSize(2));
   // Go over output, compute weights and avoid redundant computation
   for(int k=outputRegionForThread.GetIndex(2);
           k<outputRegionForThread.GetIndex(2)+(int)outputRegionForThread.GetSize(2);
@@ -123,7 +124,8 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
           itO.Set( itI.Get() * weight);
         }
       }
-    }
+    progress.CompletedPixel();
+  }
 }
 
 } // end namespace rtk
