@@ -12,5 +12,5 @@ else
 	cd /home/srit/src/itk/lin64-dg
 fi
 cmake ../itk -DBUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF -DModule_ITKReview=ON -DITK_USE_FFTWD=ON -DITK_USE_FFTWF=ON -DITK_USE_SYSTEM_FFTW=ON
-make -j18
+make -j12
 

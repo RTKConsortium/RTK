@@ -15,6 +15,7 @@ set(ENV{CXX} "/home/srit/src/gcc/gcc472-install/bin/c++")
 set(ENV{LD_LIBRARY_PATH} "/home/srit/src/gcc/gcc472-install/lib64:$ENV{LD_LIBRARY_PATH}")
 set(ENV{LD_LIBRARY_PATH} "/home/srit/src/gcc/gcc472-install/lib:$ENV{LD_LIBRARY_PATH}")
 set(ENV{PATH} "/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/srit/src/gcc/gcc436-install/bin")
+set(ENV{PATH} "/home/srit/src/gcc/gcc447-install/bin:$ENV{PATH}")
 set(ENV{PATH} "/home/srit/src/gcc/gcc472-install/bin:$ENV{PATH}")
 
 set(CONFIGURE_OPTIONS
