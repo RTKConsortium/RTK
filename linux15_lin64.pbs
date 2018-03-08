@@ -3,11 +3,9 @@
 #PBS -o /home/srit/tmp/rtk_dashboard.out
 #PBS -e /home/srit/tmp/rtk_dashboard.err
 #PBS -q gpu
-#PBS -W x=GRES:gpu@1
 #PBS -M simon.rit@creatis.insa-lyon.fr
 set -x
 
-export ITK_USE_THREADPOOL=ON
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=12
 export CXXFLAGS="-fPIC -std=c++11"
 export PATH=$PATH:~/src/gcc/gcc472-install/bin
@@ -18,32 +16,12 @@ rm -fr /tmp/RTK_dashboard
 mkdir /tmp/RTK_dashboard
 git clone git://github.com/SimonRit/RTK.git /tmp/RTK_dashboard/RTK
 
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda70_itk4_sharedlibs.cmake
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4.cmake -V
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_simplertk.cmake -V
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4_simplertk.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_cov.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_nofftw.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_valgrind.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4_valgrind.cmake -V
-
-export CC="/home/srit/src/gcc/gcc472-install/bin/gcc"
-export CXX="/home/srit/src/gcc/gcc472-install/bin/c++"
-export LD_LIBRARY_PATH="/home/srit/src/gcc/gcc472-install/lib64:$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="/home/srit/src/gcc/gcc472-install/lib:$LD_LIBRARY_PATH"
-export PATH="/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/srit/src/gcc/gcc436-install/bin"
-export PATH="/home/srit/src/gcc/gcc472-install/bin:$PATH"
-
-export PATH=/home/srit/src/cmake/lin64-dg-v284/bin:$PATH
-
-unset CXXFLAGS
-export PATH=/home/srit/src/cmake/lin64-dg-v312-gcc450/bin:$PATH
-ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc472_cuda41_itk4.cmake -V
-ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc472_cuda50_itk4.cmake -V
-export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1
-ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk420.cmake -V
-ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk460.cmake -V
 
 # Generate a script to perform a cuda-memcheck on all tests
 grep Command /tmp/RTK_dashboard/RTK_lin64_gcc_cuda_system_itk4/Testing/Temporary/LastTest_*.log | sed 's/Command:/cuda-memcheck --error-exitcode 1 --leak-check full/g' > /tmp/RTK_dashboard/cudamemchecks.sh
