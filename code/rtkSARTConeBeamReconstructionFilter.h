@@ -130,34 +130,35 @@ namespace rtk
  *
  * \ingroup ReconstructionAlgorithm
  */
-template<class TInputImage, class TOutputImage=TInputImage>
+template<class TVolumeImage, class TProjectionImage=TVolumeImage>
 class ITK_EXPORT SARTConeBeamReconstructionFilter :
-  public rtk::IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+  public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
   /** Standard class typedefs. */
   typedef SARTConeBeamReconstructionFilter                                 Self;
-  typedef IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage> Superclass;
+  typedef IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage> Superclass;
   typedef itk::SmartPointer<Self>                                          Pointer;
   typedef itk::SmartPointer<const Self>                                    ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TInputImage  InputImageType;
-  typedef TOutputImage OutputImageType;
+  typedef TVolumeImage  VolumeType;
+  typedef TProjectionImage ProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< InputImageType, InputImageType >                          ExtractFilterType;
-  typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >      MultiplyFilterType;
-  typedef rtk::ForwardProjectionImageFilter< OutputImageType, OutputImageType >              ForwardProjectionFilterType;
-  typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                       SubtractFilterType;
-  typedef itk::AddImageFilter< OutputImageType, OutputImageType >                            AddFilterType;
-  typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >                 BackProjectionFilterType;
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>               RayBoxIntersectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<OutputImageType, OutputImageType, OutputImageType> DivideFilterType;
-  typedef rtk::ConstantImageSource<OutputImageType>                                          ConstantImageSourceType;
-  typedef itk::ThresholdImageFilter<OutputImageType>                                         ThresholdFilterType;
-  typedef rtk::DisplacedDetectorImageFilter<InputImageType>                                  DisplacedDetectorFilterType;
-  typedef itk::MultiplyImageFilter<InputImageType,InputImageType, InputImageType>            GatingWeightsFilterType;
+  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                          ExtractFilterType;
+  typedef itk::MultiplyImageFilter< ProjectionType, ProjectionType, ProjectionType >	     MultiplyFilterType;
+  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >                    ForwardProjectionFilterType;
+  typedef itk::SubtractImageFilter< ProjectionType, ProjectionType >                         SubtractFilterType;
+  typedef itk::AddImageFilter< VolumeType, VolumeType >                                      AddFilterType;
+  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
+  typedef rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>               RayBoxIntersectionFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideFilterType;
+  typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
+  typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
+  typedef itk::ThresholdImageFilter<VolumeType>                                              ThresholdFilterType;
+  typedef rtk::DisplacedDetectorImageFilter<ProjectionType>                                  DisplacedDetectorFilterType;
+  typedef itk::MultiplyImageFilter<ProjectionType,ProjectionType, ProjectionType>            GatingWeightsFilterType;
 
 /** Standard New method. */
   itkNewMacro(Self);
@@ -224,8 +225,8 @@ protected:
   typename BackProjectionFilterType::Pointer     m_BackProjectionFilter;
   typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
   typename DivideFilterType::Pointer             m_DivideFilter;
-  typename ConstantImageSourceType::Pointer      m_ConstantProjectionStackSource;
-  typename ConstantImageSourceType::Pointer      m_ConstantVolumeSource;
+  typename ConstantProjectionSourceType::Pointer m_ConstantProjectionStackSource;
+  typename ConstantVolumeSourceType::Pointer     m_ConstantVolumeSource;
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
   typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
   typename GatingWeightsFilterType::Pointer      m_GatingWeightsFilter;
