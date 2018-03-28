@@ -85,7 +85,7 @@ private:
   VarianProBeamGeometryReader(const Self&);
   void operator=(const Self&);
 
-  virtual void GenerateData() ITK_OVERRIDE;
+  void GenerateData() ITK_OVERRIDE;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_XMLFileName;

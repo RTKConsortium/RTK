@@ -90,19 +90,19 @@ public:
     void SetReconstruction();
 
     /** Prints some debugging information. */
-    virtual void PrintSelf(std::ostream& os, itk::Indent i);
+    void PrintSelf(std::ostream& os, itk::Indent i) const ITK_OVERRIDE;
 
     /** Set and Get macro for the wavelet order */
-    itkSetMacro(Order, unsigned int)
-    itkGetMacro(Order, unsigned int)
+    itkSetMacro(Order, unsigned int);
+    itkGetConstMacro(Order, unsigned int);
 
     /** Set and Get macro for the pass vector */
-    itkSetMacro(Pass, PassVector)
-    itkGetMacro(Pass, PassVector)
+    itkSetMacro(Pass, PassVector);
+    itkGetMacro(Pass, PassVector);
 
 protected:
     DaubechiesWaveletsConvolutionImageFilter();
-    ~DaubechiesWaveletsConvolutionImageFilter();
+    virtual ~DaubechiesWaveletsConvolutionImageFilter() ITK_OVERRIDE;
 
     typedef std::vector<typename TImage::PixelType> CoefficientVector;
 

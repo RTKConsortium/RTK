@@ -1,9 +1,14 @@
 #=========================================================
 # RTK : Reconstruction Toolkit
 #=========================================================
-cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
-if(WIN32 OR NOT EXISTS /dev/urandom)
-  cmake_minimum_required(VERSION 2.8.5)
+if(CMAKE_CXX_STANDARD)
+  #If building for ITKv5 or C++11, then a newer version of cmake
+  #is needed to respect the CMAKE_CXX_STANDARD flags.
+  cmake_minimum_required(VERSION 3.8.2 FATAL_ERROR)
+elseif(WIN32 OR NOT EXISTS /dev/urandom)
+  cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
+else()
+  cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
 endif()
 
 ## Tell CMake to be quiet
@@ -22,8 +27,6 @@ project(RTK)
 set(RTK_VERSION_MAJOR "1")
 set(RTK_VERSION_MINOR "3")
 set(RTK_VERSION_PATCH "0")
-
-set(RTK_LIBRARIES RTK)
 
 ## Default to release
 if (NOT CMAKE_BUILD_TYPE)
@@ -78,6 +81,7 @@ set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 if(NOT ITK_SOURCE_DIR)
   include(itk-module-init.cmake)
 endif()
+#message(FATAL_ERROR "${RTK_LIBRARIES}")
 
 #=========================================================
 # If choose to build documentation, then search for Doxygen executables.
@@ -185,6 +189,8 @@ endif()
 # Generate RTKConfig.cmake for the build tree.
 set (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 set (RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set (RTK_LIBRARIES itkRTK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR})
+
 configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
 

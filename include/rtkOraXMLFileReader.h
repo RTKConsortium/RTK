@@ -51,7 +51,7 @@ public:
 
 protected:
   OraXMLFileReader();
-  ~OraXMLFileReader() {};
+  virtual ~OraXMLFileReader() ITK_OVERRIDE {};
 
   void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
 

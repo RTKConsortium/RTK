@@ -9,6 +9,7 @@ set(RTK_IO_DEPENDS
   ITKIORAW
   ITKIOTIFF
   ITKIOXML
+  ITKIOBMP
   )
 
 set(RTK_DEPENDS
@@ -20,6 +21,7 @@ set(RTK_DEPENDS
   ITKSmoothing
   ITKImageNoise
   ${RTK_IO_DEPENDS}
+  ${ITK_MODULES_ENABLED}
   )
 
 # -----------------------------------------

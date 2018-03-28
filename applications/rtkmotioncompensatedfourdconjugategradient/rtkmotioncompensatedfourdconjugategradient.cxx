@@ -47,7 +47,7 @@ int main(int argc, char * argv[])
   typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
   typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #endif
-  typedef ProjectionStackType                   VolumeType;
+  //typedef ProjectionStackType                   VolumeType;
   typedef itk::ImageFileReader<  DVFSequenceImageType > DVFReaderType;
 
   // Projections reader

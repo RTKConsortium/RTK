@@ -60,6 +60,7 @@ void
 ElektaXVI5GeometryXMLFileReader::
 StartElement(const char * name,const char **atts)
 {
+  (void)atts;
   m_CurCharacterData = "";
   this->StartElement(name);
 }
