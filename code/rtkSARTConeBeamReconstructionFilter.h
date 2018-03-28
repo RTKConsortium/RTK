@@ -136,13 +136,13 @@ class ITK_EXPORT SARTConeBeamReconstructionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef SARTConeBeamReconstructionFilter                                 Self;
+  typedef SARTConeBeamReconstructionFilter                                      Self;
   typedef IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage> Superclass;
-  typedef itk::SmartPointer<Self>                                          Pointer;
-  typedef itk::SmartPointer<const Self>                                    ConstPointer;
+  typedef itk::SmartPointer<Self>                                               Pointer;
+  typedef itk::SmartPointer<const Self>                                         ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TVolumeImage  VolumeType;
+  typedef TVolumeImage     VolumeType;
   typedef TProjectionImage ProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
@@ -152,7 +152,7 @@ public:
   typedef itk::SubtractImageFilter< ProjectionType, ProjectionType >                         SubtractFilterType;
   typedef itk::AddImageFilter< VolumeType, VolumeType >                                      AddFilterType;
   typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
-  typedef rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>               RayBoxIntersectionFilterType;
+  typedef rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>                 RayBoxIntersectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideFilterType;
   typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
   typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
