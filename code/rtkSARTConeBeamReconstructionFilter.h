@@ -147,7 +147,7 @@ public:
 
   /** Typedefs of each subfilter of this composite filter */
   typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                          ExtractFilterType;
-  typedef itk::MultiplyImageFilter< ProjectionType, ProjectionType, ProjectionType >	     MultiplyFilterType;
+  typedef itk::MultiplyImageFilter< ProjectionType, ProjectionType, ProjectionType >         MultiplyFilterType;
   typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >                    ForwardProjectionFilterType;
   typedef itk::SubtractImageFilter< ProjectionType, ProjectionType >                         SubtractFilterType;
   typedef itk::AddImageFilter< VolumeType, VolumeType >                                      AddFilterType;
