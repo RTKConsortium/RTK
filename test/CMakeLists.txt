@@ -167,6 +167,16 @@ rtk_add_test(rtkDrawGeometricPhantomTest rtkdrawgeometricphantomtest.cxx
   DATA{Input/GeometricPhantom/SheppLogan.txt}
   DATA{Input/GeometricPhantom/Geometries.txt})
 
+rtk_add_test(rtkWeidingerForwardModelTest rtkweidingerforwardmodeltest.cxx
+  DATA{Input/Spectral/OneStep/materialProjections.mha}
+  DATA{Input/Spectral/OneStep/photonCounts.mha}
+  DATA{Input/Spectral/OneStep/spectrum.mha}
+  DATA{Input/Spectral/OneStep/projOfOnes.mha}
+  DATA{Input/Spectral/OneStep/binnedDetectorResponse.csv}
+  DATA{Input/Spectral/OneStep/materialAttenuations.csv}
+  DATA{Baseline/Spectral/OneStep/out1.mha}
+  DATA{Baseline/Spectral/OneStep/out2.mha})
+
 rtk_add_test(rtkSartTest rtksarttest.cxx)
 rtk_add_cuda_test(rtkSartCudaTest rtksarttest.cxx)
 
