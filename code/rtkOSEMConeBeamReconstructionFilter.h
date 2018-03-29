@@ -133,24 +133,24 @@ class ITK_EXPORT OSEMConeBeamReconstructionFilter :
 {
 public:
   /** Standard class typedefs. */
-  typedef OSEMConeBeamReconstructionFilter                                 Self;
+  typedef OSEMConeBeamReconstructionFilter					Self;
   typedef IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage> Superclass;
-  typedef itk::SmartPointer<Self>                                          Pointer;
-  typedef itk::SmartPointer<const Self>                                    ConstPointer;
+  typedef itk::SmartPointer<Self>						Pointer;
+  typedef itk::SmartPointer<const Self>						ConstPointer;
 
   /** Some convenient typedefs. */
-  typedef TVolumeImage  VolumeType;
+  typedef TVolumeImage	   VolumeType;
   typedef TProjectionImage ProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                 ExtractFilterType;
+  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >		    ExtractFilterType;
   typedef itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >	    MultiplyFilterType;
-  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >           ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >              BackProjectionFilterType;
+  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >	    ForwardProjectionFilterType;
+  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >		    BackProjectionFilterType;
   typedef itk::DivideImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
   typedef itk::DivideImageFilter<VolumeType, VolumeType, VolumeType>		    DivideVolumeFilterType;
-  typedef rtk::ConstantImageSource<VolumeType>                                      ConstantVolumeSourceType;
-  typedef rtk::ConstantImageSource<VolumeType>                                      ConstantProjectionSourceType;
+  typedef rtk::ConstantImageSource<VolumeType>					    ConstantVolumeSourceType;
+  typedef rtk::ConstantImageSource<VolumeType>					    ConstantProjectionSourceType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -172,13 +172,13 @@ public:
   itkGetMacro(NumberOfProjectionsPerSubset, unsigned int);
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
-  /** Get / Set the convergence factor. Default is 0.3. */
-  itkGetMacro(Lambda, double);
-  itkSetMacro(Lambda, double);
+//  /** Get / Set the convergence factor. Default is 0.3. */
+//  itkGetMacro(Lambda, double);
+//  itkSetMacro(Lambda, double);
 
-  /** Get / Set the positivity enforcement behaviour */
-  itkGetMacro(EnforcePositivity, bool);
-  itkSetMacro(EnforcePositivity, bool);
+//  /** Get / Set the positivity enforcement behaviour */
+//  itkGetMacro(EnforcePositivity, bool);
+//  itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
   void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
@@ -186,12 +186,12 @@ public:
   /** Select the backprojection filter */
   void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
 
-  /** In the case of a gated OSEM, set the gating weights */
-  void SetGatingWeights(std::vector<float> weights);
+//  /** In the case of a gated OSEM, set the gating weights */
+//  void SetGatingWeights(std::vector<float> weights);
 
-  /** Set / Get whether the displaced detector filter should be disabled */
-  itkSetMacro(DisableDisplacedDetectorFilter, bool)
-  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+//  /** Set / Get whether the displaced detector filter should be disabled */
+//  itkSetMacro(DisableDisplacedDetectorFilter, bool)
+//  itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   OSEMConeBeamReconstructionFilter();
   ~OSEMConeBeamReconstructionFilter() {}
@@ -207,17 +207,16 @@ protected:
   void VerifyInputInformation() ITK_OVERRIDE {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer            m_ExtractFilter;
-  typename ForwardProjectionFilterType::Pointer  m_ForwardProjectionFilter;
-  typename MultiplyFilterType::Pointer           m_MultiplyFilter;
-  typename BackProjectionFilterType::Pointer     m_BackProjectionFilter;
-  typename DivideProjectionFilterType::Pointer   m_DivideProjectionFilter;
+  typename ExtractFilterType::Pointer		 m_ExtractFilter;
+  typename ForwardProjectionFilterType::Pointer	 m_ForwardProjectionFilter;
+  typename MultiplyFilterType::Pointer		 m_MultiplyFilter;
+  typename BackProjectionFilterType::Pointer	 m_BackProjectionFilter;
+  typename BackProjectionFilterType::Pointer	 m_BackProjectionNormalizationFilter;
+  typename DivideProjectionFilterType::Pointer	 m_DivideProjectionFilter;
   typename DivideVolumeFilterType::Pointer	 m_DivideVolumeFilter;
-  typename ConstantProjectionSourceType::Pointer m_ConstantProjectionStackSource;
-  typename ConstantVolumeSourceType::Pointer     m_ConstantVolumeSource;
-
-  bool m_EnforcePositivity;
-  bool m_DisableDisplacedDetectorFilter;
+  typename ConstantProjectionSourceType::Pointer m_ZeroConstantProjectionStackSource;
+  typename ConstantProjectionSourceType::Pointer m_OneConstantProjectionStackSource;
+  typename ConstantVolumeSourceType::Pointer	 m_ConstantVolumeSource;
 
 private:
   /** Number of projections processed before the volume is updated (several for OS-EM) */
@@ -243,18 +242,18 @@ private:
   std::vector<float>  m_GatingWeights;
 
   /** Time probes */
-  itk::TimeProbe m_ExtractProbe;
-  itk::TimeProbe m_ZeroMultiplyProbe;
-  itk::TimeProbe m_ForwardProjectionProbe;
-  itk::TimeProbe m_SubtractProbe;
-  itk::TimeProbe m_DisplacedDetectorProbe;
-  itk::TimeProbe m_MultiplyProbe;
-  itk::TimeProbe m_RayBoxProbe;
-  itk::TimeProbe m_DivideProbe;
-  itk::TimeProbe m_BackProjectionProbe;
-  itk::TimeProbe m_ThresholdProbe;
-  itk::TimeProbe m_AddProbe;
-  itk::TimeProbe m_GatingProbe;
+//  itk::TimeProbe m_ExtractProbe;
+//  itk::TimeProbe m_ZeroMultiplyProbe;
+//  itk::TimeProbe m_ForwardProjectionProbe;
+//  itk::TimeProbe m_SubtractProbe;
+//  itk::TimeProbe m_DisplacedDetectorProbe;
+//  itk::TimeProbe m_MultiplyProbe;
+//  itk::TimeProbe m_RayBoxProbe;
+//  itk::TimeProbe m_DivideProbe;
+//  itk::TimeProbe m_BackProjectionProbe;
+//  itk::TimeProbe m_ThresholdProbe;
+//  itk::TimeProbe m_AddProbe;
+//  itk::TimeProbe m_GatingProbe;
 
 }; // end of class
 

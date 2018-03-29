@@ -240,6 +240,11 @@ target_link_libraries(rtksarttest ${RTK_LIBRARIES})
 add_test(rtksarttest ${EXECUTABLE_OUTPUT_PATH}/rtksarttest)
 ADD_CUDA_TEST(rtksart rtksarttest.cxx)
 
+add_executable(rtkosemtest rtkosemtest.cxx)
+target_link_libraries(rtkosemtest ${RTK_LIBRARIES})
+add_test(rtkosemtest ${EXECUTABLE_OUTPUT_PATH}/rtkosemtest)
+ADD_CUDA_TEST(rtkosem rtkosemtest.cxx)
+
 add_executable(rtkfourdsarttest rtkfourdsarttest.cxx)
 target_link_libraries(rtkfourdsarttest ${RTK_LIBRARIES})
 add_test(rtkfourdsarttest ${EXECUTABLE_OUTPUT_PATH}/rtkfourdsarttest)
