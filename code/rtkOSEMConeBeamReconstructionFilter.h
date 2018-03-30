@@ -26,6 +26,7 @@
 #include <itkMultiplyImageFilter.h>
 #include <itkAddImageAdaptor.h>
 #include <itkDivideImageFilter.h>
+#include <itkDivideOrZeroOutImageFilter.h>
 #include <itkTimeProbe.h>
 
 
@@ -147,10 +148,10 @@ public:
   typedef itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >	    MultiplyFilterType;
   typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >	    ForwardProjectionFilterType;
   typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >		    BackProjectionFilterType;
-  typedef itk::DivideImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
-  typedef itk::DivideImageFilter<VolumeType, VolumeType, VolumeType>		    DivideVolumeFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>	    DivideVolumeFilterType;
   typedef rtk::ConstantImageSource<VolumeType>					    ConstantVolumeSourceType;
-  typedef rtk::ConstantImageSource<VolumeType>					    ConstantProjectionSourceType;
+  typedef rtk::ConstantImageSource<ProjectionType>				    ConstantProjectionSourceType;
 
   /** Standard New method. */
   itkNewMacro(Self);

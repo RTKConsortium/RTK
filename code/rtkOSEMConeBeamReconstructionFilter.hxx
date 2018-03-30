@@ -20,9 +20,12 @@
 #define rtkOSEMConeBeamReconstructionFilter_hxx
 
 #include "rtkOSEMConeBeamReconstructionFilter.h"
+#include "rtkGeneralPurposeFunctions.h"
 
 #include <algorithm>
 #include <itkTimeProbe.h>
+
+#include <itkImageFileWriter.h>
 
 namespace rtk
 {
@@ -142,6 +145,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 
   m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
   m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
+  m_DivideVolumeFilter->SetConstant(1);
 
   m_MultiplyFilter->SetInput2(this->GetInput(0));
 
@@ -149,6 +153,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   m_ForwardProjectionFilter->SetInput( 1, this->GetInput(0) );
 
   m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput() );
+  m_DivideProjectionFilter->SetConstant(1);
 
   // For the same reason, set geometry now
   // Check and set geometry
@@ -228,7 +233,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 	m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
 
 	m_MultiplyFilter->SetInput1(m_DivideVolumeFilter->GetOutput());
-
 	m_MultiplyFilter->Update();
 
         // To start a new subset:

@@ -49,6 +49,7 @@ int main(int, char** )
   ConstantImageSourceType::SpacingType spacing;
 
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer volumeSource  = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -70,7 +71,11 @@ int main(int, char** )
   tomographySource->SetOrigin( origin );
   tomographySource->SetSpacing( spacing );
   tomographySource->SetSize( size );
-  tomographySource->SetConstant( 1. );
+  tomographySource->SetConstant( 0. );
+  volumeSource->SetOrigin( origin );
+  volumeSource->SetSpacing( spacing );
+  volumeSource->SetSize( size );
+  volumeSource->SetConstant( 1. );
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -255.;
@@ -130,29 +135,29 @@ int main(int, char** )
   // OSEM reconstruction filtering
   typedef rtk::OSEMConeBeamReconstructionFilter< OutputImageType > OSEMType;
   OSEMType::Pointer osem = OSEMType::New();
-  osem->SetInput( tomographySource->GetOutput() );
+  osem->SetInput(0, volumeSource->GetOutput() );
   osem->SetInput(1, rei->GetOutput());
   osem->SetGeometry( geometry );
-  osem->SetNumberOfIterations( 1 );
+  osem->SetNumberOfIterations( 10 );
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  osem->SetBackProjectionFilter( 0 ); // Voxel based
+  osem->SetBackProjectionFilter( 1 ); // Voxel based
   osem->SetForwardProjectionFilter( 0 ); // Joseph
-  osem->SetNumberOfProjectionsPerSubset(180);
+  osem->SetNumberOfProjectionsPerSubset(5);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 24.0, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, OS-EM with 2 projections per subset ******" << std::endl;
 
-  osem->SetBackProjectionFilter( 0 ); // Voxel based
+  osem->SetBackProjectionFilter( 1 ); // Voxel based
   osem->SetForwardProjectionFilter( 0 ); // Joseph
   osem->SetNumberOfProjectionsPerSubset(2);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 24.0, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 //  std::cout << "\n\n****** Case 3: Normalized Joseph Backprojector ******" << std::endl;
