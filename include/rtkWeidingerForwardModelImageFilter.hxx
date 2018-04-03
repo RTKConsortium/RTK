@@ -33,16 +33,6 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
 {
   this->SetNumberOfRequiredInputs(4);
 
-//#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-//  // Set the direction along which the output requested region should NOT be split
-//  m_Splitter = itk::ImageRegionSplitterDirection::New();
-//  m_Splitter->SetDirection(TInputImage::ImageDimension - 1);
-//#else
-//  // Old versions of ITK (before 4.4) do not have the ImageRegionSplitterDirection
-//  // and should run this filter with only one thread
-//  this->SetNumberOfThreads(1);
-//#endif
-
   this->SetNthOutput( 0, this->MakeOutput(0) );
   this->SetNthOutput( 1, this->MakeOutput(1) );
 }
@@ -202,32 +192,6 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
     {
     this->Modified();
     }
-}
-
-//#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-//  template< class TMaterialProjections,
-//class TPhotonCounts,
-//class TSpectrum>
-//  const itk::ImageRegionSplitterBase*
-//  WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>
-//  ::GetImageRegionSplitter(void) const
-//  {
-//    return m_Splitter;
-//  }
-//#endif
-
-template< class TMaterialProjections, class TPhotonCounts, class TSpectrum, class TProjections>
-void
-WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>
-::BeforeThreadedGenerateData()
-{
-//#if !(ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4))
-//  if (this->GetNumberOfThreads() > 1)
-//    {
-//    itkWarningMacro(<< "WeidingerForwardModelImageFilter cannot use multiple threads with ITK versions older than v4.4. Reverting to single thread behavior");
-//    this->SetNumberOfThreads(1);
-//    }
-//#endif
 }
 
 template< class TMaterialProjections, class TPhotonCounts, class TSpectrum, class TProjections>
