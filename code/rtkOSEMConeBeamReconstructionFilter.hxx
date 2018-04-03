@@ -84,15 +84,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
     }
 }
 
-//template<class TVolumeImage, class TProjectionImage>
-//void
-//OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-//::SetGatingWeights(std::vector<float> weights)
-//{
-//  m_GatingWeights = weights;
-//  m_IsGated = true;
-//}
-
 template<class TVolumeImage, class TProjectionImage>
 void
 OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
@@ -199,9 +190,10 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
     projOrder[i] = i;
   std::random_shuffle( projOrder.begin(), projOrder.end() );
 
-
+  int cpt = 0;
   // Declare the image used in the main loop
   typename TVolumeImage::Pointer pimg;
+  typename TVolumeImage::Pointer norm;
 
   // For each iteration, go over each projection
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
@@ -222,14 +214,16 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
       // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
+      m_BackProjectionNormalizationFilter->GetOutput()->UpdateOutputInformation();
+      m_BackProjectionNormalizationFilter->GetOutput()->PropagateRequestedRegion();
 
       m_BackProjectionFilter->Update();
+      m_BackProjectionNormalizationFilter->Update();
 
       projectionsProcessedInSubset++;
       if ((projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset) || (i == nProj - 1))
         {
-	m_BackProjectionNormalizationFilter->GetOutput()->UpdateOutputInformation();
-	m_BackProjectionNormalizationFilter->GetOutput()->PropagateRequestedRegion();
+	m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
 	m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
 
 	m_MultiplyFilter->SetInput1(m_DivideVolumeFilter->GetOutput());
@@ -244,6 +238,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
         m_ForwardProjectionFilter->SetInput(1, pimg );
 	m_MultiplyFilter->SetInput2(pimg);
         m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+	m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
 
         projectionsProcessedInSubset = 0;
         }
@@ -253,46 +248,14 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
         pimg = m_BackProjectionFilter->GetOutput();
         pimg->DisconnectPipeline();
         m_BackProjectionFilter->SetInput(0, pimg);
+	norm = m_BackProjectionNormalizationFilter->GetOutput();
+	norm->DisconnectPipeline();
+	m_BackProjectionNormalizationFilter->SetInput(0, norm);
         }
       }
     }
   this->GraftOutput( pimg );
 }
-
-//template<class TVolumeImage, class TProjectionImage>
-//void
-//OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-//::PrintTiming(std::ostream & os) const
-//{
-//  os << "OSEMConeBeamReconstructionFilter timing:" << std::endl;
-//  os << "  Extraction of projection sub-stacks: " << m_ExtractProbe.GetTotal()
-//     << ' ' << m_ExtractProbe.GetUnit() << std::endl;
-//  os << "  Multiplication by zero: " << m_ZeroMultiplyProbe.GetTotal()
-//     << ' ' << m_ZeroMultiplyProbe.GetUnit() << std::endl;
-//  os << "  Forward projection: " << m_ForwardProjectionProbe.GetTotal()
-//     << ' ' << m_ForwardProjectionProbe.GetUnit() << std::endl;
-//  os << "  Subtraction: " << m_SubtractProbe.GetTotal()
-//     << ' ' << m_SubtractProbe.GetUnit() << std::endl;
-//  os << "  Multiplication by lambda: " << m_MultiplyProbe.GetTotal()
-//     << ' ' << m_MultiplyProbe.GetUnit() << std::endl;
-//  os << "  Ray box intersection: " << m_RayBoxProbe.GetTotal()
-//     << ' ' << m_RayBoxProbe.GetUnit() << std::endl;
-//  os << "  Division: " << m_DivideProbe.GetTotal()
-//     << ' ' << m_DivideProbe.GetUnit() << std::endl;
-//  os << "  Multiplication by the gating weights: " << m_GatingProbe.GetTotal()
-//     << ' ' << m_GatingProbe.GetUnit() << std::endl;
-//  os << "  Displaced detector: " << m_DisplacedDetectorProbe.GetTotal()
-//     << ' ' << m_DisplacedDetectorProbe.GetUnit() << std::endl;
-//  os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
-//     << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
-//  os << "  Volume update: " << m_AddProbe.GetTotal()
-//     << ' ' << m_AddProbe.GetUnit() << std::endl;
-//  if (m_EnforcePositivity)
-//    {
-//    os << "  Positivity enforcement: " << m_ThresholdProbe.GetTotal()
-//    << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
-//    }
-//}
 
 } // end namespace rtk
 

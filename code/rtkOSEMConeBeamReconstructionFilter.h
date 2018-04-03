@@ -27,8 +27,6 @@
 #include <itkAddImageAdaptor.h>
 #include <itkDivideImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
-#include <itkTimeProbe.h>
-
 
 #include "rtkConstantImageSource.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
@@ -37,94 +35,76 @@ namespace rtk
 {
 
 /** \class OSEMConeBeamReconstructionFilter
- * \brief Implements the Simultaneous Algebraic Reconstruction Technique [Andersen, 1984]
+ * \brief Implements the Ordered-Subset Expectation-Maximization algorithm.
  *
  * OSEMConeBeamReconstructionFilter is a composite filter which combines
  * the different steps of the OSEM cone-beam reconstruction, mainly:
- * - ExtractFilterType to work on one projection at a time
+ * - ExtractFilterType to create the subsets.
  * - ForwardProjectionImageFilter,
- * - SubtractImageFilter,
+ * - DivideImageFilter,
  * - BackProjectionImageFilter.
  * The input stack of projections is processed piece by piece (the size is
  * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
  * to extract sub-stacks.
  *
- * Two weighting steps must be applied when processing a given projection:
- * - each pixel of the forward projection must be divided by the total length of the
- * intersection between the ray and the reconstructed volume. This weighting step
- * is performed using the part of the pipeline that contains RayBoxIntersectionImageFilter
+ * One weighting steps must be applied when processing a given subset:
  * - each voxel of the back projection must be divided by the value it would take if
- * a projection filled with ones was being reprojected. This weighting step is not
- * performed when using a voxel-based back projection, as the weights are all equal to one
- * in this case. When using a ray-based backprojector, typically Joseph,it must be performed.
- * It is implemented in NormalizedJosephBackProjectionImageFilter, which
- * is used in the OSEM pipeline.
+ * a projection filled with ones was being reprojected.
  *
  * \dot
  * digraph OSEMConeBeamReconstructionFilter {
  *
- * Input0 [ label="Input 0 (Volume)"];
- * Input0 [shape=Mdiamond];
- * Input1 [label="Input 1 (Projections)"];
- * Input1 [shape=Mdiamond];
- * Output [label="Output (Reconstruction)"];
- * Output [shape=Mdiamond];
+ *  Input0 [ label="Input 0 (Volume)"];
+ *  Input0 [shape=Mdiamond];
+ *  Input1 [label="Input 1 (Projections)"];
+ *  Input1 [shape=Mdiamond];
+ *  Output [label="Output (Reconstruction)"];
+ *  Output [shape=Mdiamond];
  *
- * node [shape=box];
- * ForwardProject [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
- * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
- * MultiplyByZero [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
- * AfterExtract [label="", fixedsize="false", width=0, height=0, shape=none];
- * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
- * MultiplyByLambda [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
- * Divide [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
- * GatingWeight [ label="itk::MultiplyImageFilter (by gating weight)" URL="\ref itk::MultiplyImageFilter", style=dashed];
- * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
- * ConstantProjectionStack [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
- * ExtractConstantProjection [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
- * RayBox [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
- * ConstantVolume [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
- * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
- * Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
- * OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
- * Threshold [ label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
- * OutofThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
- * OutofBP [label="", fixedsize="false", width=0, height=0, shape=none];
- * BeforeBP [label="", fixedsize="false", width=0, height=0, shape=none];
- * BeforeAdd [label="", fixedsize="false", width=0, height=0, shape=none];
- * Input0 -> OutofInput0 [arrowhead=none];
- * OutofInput0 -> ForwardProject;
- * OutofInput0 -> BeforeAdd [arrowhead=none];
- * BeforeAdd -> Add;
- * ConstantVolume -> BeforeBP [arrowhead=none];
- * BeforeBP -> BackProjection;
- * Extract -> AfterExtract[arrowhead=none];
- * AfterExtract -> MultiplyByZero;
- * AfterExtract -> Subtract;
- * MultiplyByZero -> ForwardProject;
- * Input1 -> Extract;
- * ForwardProject -> Subtract;
- * Subtract -> MultiplyByLambda;
- * MultiplyByLambda -> Divide;
- * Divide -> GatingWeight;
- * GatingWeight -> Displaced;
- * ConstantProjectionStack -> ExtractConstantProjection;
- * ExtractConstantProjection -> RayBox;
- * RayBox -> Divide;
- * Displaced -> BackProjection;
- * BackProjection -> OutofBP [arrowhead=none];
- * OutofBP -> Add;
- * OutofBP -> BeforeBP [style=dashed, constraint=false];
- * Add -> Threshold;
- * Threshold -> OutofThreshold [arrowhead=none];
- * OutofThreshold -> OutofInput0 [headport="se", style=dashed];
- * OutofThreshold -> Output;
- * }
+ *  node [shape=box];
+ *  ForwardProject [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
+ *  Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ *  Divide1 [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
+ *  Divide [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
+ *  ProjectionZero [ label="rtk::ConstantImageSource (full of zero)" URL="\ref rtk::ConstantImageSource"];
+ *  ConstantVolume2[ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ *  ConstantVolume [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ *  ConstantProjectionStack [ label="rtk::ConstantImageSource (full of one)" URL="\ref rtk::ConstantImageSource"];
+ *  BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+ *  BackProjection2 [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+ *  Multiply [ label="itk::MultiplyImageFilter " URL="\ref itk::MultiplyImageFilter"];
+ *  OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+ *  OutofMultiply [label="", fixedsize="false", width=0, height=0, shape=none];
+ *  OutofBP [label="", fixedsize="false", width=0, height=0, shape=none];
+ *  BeforeBP [label="", fixedsize="false", width=0, height=0, shape=none];
+ *  BeforeMultiply [label="", fixedsize="false", width=0, height=0, shape=none];
+ *  Input0 -> OutofInput0 [arrowhead=none];
+ *  OutofInput0 -> ForwardProject;
+ *  OutofInput0 -> BeforeMultiply [arrowhead=none];
+ *  BeforeMultiply -> Multiply;
+ *  Extract -> Divide1;
+ *  ProjectionZero -> ForwardProject;
+ *  Input1 -> Extract;
+ *  ForwardProject -> Divide1;
+ *  Divide1 -> BackProjection;
+ *  ConstantVolume -> BeforeBP [arrowhead=none];
+ *  BeforeBP -> BackProjection;
+ *  ConstantProjectionStack -> BackProjection2;
+ *  ConstantVolume2 -> BackProjection2;
+ *  BackProjection2 -> Divide;
+ *  BackProjection -> OutofBP [arrowhead=none];
+ *  Divide -> Multiply
+ *  OutofBP-> Divide;
+ *  OutofBP -> BeforeBP [style=dashed, constraint=false];
+ *  Multiply -> OutofMultiply;
+ *  OutofMultiply -> OutofInput0 [headport="se", style=dashed];
+ *  OutofMultiply -> Output;
+ *  }
  * \enddot
  *
- * \test rtkOSEMtest.cxx
+ * \test rtkosemtest.cxx
  *
- * \author Simon Rit
+ * \author Antoine Robert
  *
  * \ingroup ReconstructionAlgorithm
  */
@@ -144,14 +124,14 @@ public:
   typedef TProjectionImage ProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >		    ExtractFilterType;
-  typedef itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >	    MultiplyFilterType;
-  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >	    ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >		    BackProjectionFilterType;
+  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                          ExtractFilterType;
+  typedef itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >	             MultiplyFilterType;
+  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >                    ForwardProjectionFilterType;
+  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>	    DivideVolumeFilterType;
-  typedef rtk::ConstantImageSource<VolumeType>					    ConstantVolumeSourceType;
-  typedef rtk::ConstantImageSource<ProjectionType>				    ConstantProjectionSourceType;
+  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>	             DivideVolumeFilterType;
+  typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
+  typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -163,8 +143,6 @@ public:
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
 
-  void PrintTiming(std::ostream& os) const;
-
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
   itkSetMacro(NumberOfIterations, unsigned int);
@@ -173,26 +151,11 @@ public:
   itkGetMacro(NumberOfProjectionsPerSubset, unsigned int);
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
-//  /** Get / Set the convergence factor. Default is 0.3. */
-//  itkGetMacro(Lambda, double);
-//  itkSetMacro(Lambda, double);
-
-//  /** Get / Set the positivity enforcement behaviour */
-//  itkGetMacro(EnforcePositivity, bool);
-//  itkSetMacro(EnforcePositivity, bool);
-
   /** Select the ForwardProjection filter */
   void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
 
   /** Select the backprojection filter */
   void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
-
-//  /** In the case of a gated OSEM, set the gating weights */
-//  void SetGatingWeights(std::vector<float> weights);
-
-//  /** Set / Get whether the displaced detector filter should be disabled */
-//  itkSetMacro(DisableDisplacedDetectorFilter, bool)
-//  itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   OSEMConeBeamReconstructionFilter();
   ~OSEMConeBeamReconstructionFilter() {}
@@ -232,29 +195,6 @@ private:
 
   /** Number of iterations */
   unsigned int m_NumberOfIterations;
-
-  /** Convergence factor according to Andersen's publications which relates
-   * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
-  double m_Lambda;
-
-  /** Have gating weights been set ? If so, apply them, otherwise ignore
-   * the gating weights filter */
-  bool                m_IsGated;
-  std::vector<float>  m_GatingWeights;
-
-  /** Time probes */
-//  itk::TimeProbe m_ExtractProbe;
-//  itk::TimeProbe m_ZeroMultiplyProbe;
-//  itk::TimeProbe m_ForwardProjectionProbe;
-//  itk::TimeProbe m_SubtractProbe;
-//  itk::TimeProbe m_DisplacedDetectorProbe;
-//  itk::TimeProbe m_MultiplyProbe;
-//  itk::TimeProbe m_RayBoxProbe;
-//  itk::TimeProbe m_DivideProbe;
-//  itk::TimeProbe m_BackProjectionProbe;
-//  itk::TimeProbe m_ThresholdProbe;
-//  itk::TimeProbe m_AddProbe;
-//  itk::TimeProbe m_GatingProbe;
 
 }; // end of class
 

@@ -138,36 +138,39 @@ int main(int, char** )
   osem->SetInput(0, volumeSource->GetOutput() );
   osem->SetInput(1, rei->GetOutput());
   osem->SetGeometry( geometry );
-  osem->SetNumberOfIterations( 10 );
 
-  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Joseph-Based Backprojector, ML-EM 7 iterations ******" << std::endl;
 
-  osem->SetBackProjectionFilter( 1 ); // Voxel based
+  osem->SetNumberOfIterations(7);
+  osem->SetBackProjectionFilter( 1 ); // Joseph based
   osem->SetForwardProjectionFilter( 0 ); // Joseph
-  osem->SetNumberOfProjectionsPerSubset(5);
+  osem->SetNumberOfProjectionsPerSubset(NumberOfProjectionImages);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 24.0, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.0, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, OS-EM with 2 projections per subset ******" << std::endl;
+  std::cout << "\n\n****** Case 2: Joseph-Based Backprojector, OS-EM with 50 projections per subset and 4 iterations******" << std::endl;
 
-  osem->SetBackProjectionFilter( 1 ); // Voxel based
+  osem->SetNumberOfIterations(4);
+  osem->SetBackProjectionFilter( 1 ); // Joseph based
   osem->SetForwardProjectionFilter( 0 ); // Joseph
-  osem->SetNumberOfProjectionsPerSubset(2);
+  osem->SetNumberOfProjectionsPerSubset(50);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 24.0, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.0, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-//  std::cout << "\n\n****** Case 3: Normalized Joseph Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector, OS-EM with 50 projections per subset and 4 iterations******" << std::endl;
 
-//  osem->SetBackProjectionFilter( 3 ); // Normalized Joseph
-//  osem->SetForwardProjectionFilter( 0 ); // Joseph
-//  TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
+  osem->SetNumberOfIterations(4);
+  osem->SetBackProjectionFilter( 0 ); // Voxel-Based
+  osem->SetForwardProjectionFilter( 0 ); // Joseph
+  osem->SetNumberOfProjectionsPerSubset(50);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-//  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
-//  std::cout << "\n\nTest PASSED! " << std::endl;
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector ******" << std::endl;
