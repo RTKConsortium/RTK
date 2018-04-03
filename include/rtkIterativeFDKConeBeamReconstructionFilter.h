@@ -156,7 +156,7 @@ public:
   void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (int ) ITK_OVERRIDE {}
+  void SetBackProjectionFilter (int itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "Backprojection cannot be changed");}
 
   /** Get / Set the truncation correction */
   itkGetMacro(TruncationCorrection, double);

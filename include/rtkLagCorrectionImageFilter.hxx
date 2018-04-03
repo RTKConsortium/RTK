@@ -101,9 +101,8 @@ void LagCorrectionImageFilter<TImage, ModelOrder>
 
 template<typename TImage, unsigned ModelOrder>
 void LagCorrectionImageFilter<TImage, ModelOrder>::
-ThreadedGenerateData(const ImageRegionType & thRegion, itk::ThreadIdType threadId)
+ThreadedGenerateData(const ImageRegionType & thRegion, itk::ThreadIdType itkNotUsed(threadId))
 {
-  (void)threadId;
   // Input / ouput iterators
   itk::ImageRegionConstIterator<TImage> itIn(this->GetInput(), thRegion);
   itk::ImageRegionIterator<TImage>     itOut(this->GetOutput(), thRegion);

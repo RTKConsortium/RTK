@@ -91,9 +91,10 @@ public:
 
   // Not used with a simplex optimizer, but may be useful later
   // for gradient based methods
-  void GetDerivative( const ParametersType &,
-                      DerivativeType & ) const ITK_OVERRIDE
+  void GetDerivative( const ParametersType & itkNotUsed(lineIntegrals),
+                      DerivativeType & itkNotUsed(derivatives)) const ITK_OVERRIDE
   {
+  itkExceptionMacro(<< "Not implemented");
   }
 
   // Main method

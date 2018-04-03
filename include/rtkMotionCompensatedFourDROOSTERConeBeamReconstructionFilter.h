@@ -161,8 +161,8 @@ public:
     <VolumeSeriesType, ProjectionStackType>    MotionCompensatedFourDCGFilterType;
 
   /** Neither the forward nor the back projection filter can be set by the user */
-  void SetForwardProjectionFilter(int ) ITK_OVERRIDE {}
-  void SetBackProjectionFilter(int ) ITK_OVERRIDE {}
+  void SetForwardProjectionFilter(int itkNotUsed(fwtype)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
+  void SetBackProjectionFilter(int itkNotUsed(bptype)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
 
   /** Set the vector containing the signal in the sub-filters */
   void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;

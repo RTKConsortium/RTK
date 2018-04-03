@@ -121,8 +121,8 @@ public:
     typedef rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>                  DVFInterpolatorType;
 
     /** The forward and back projection filters cannot be set by the user */
-    void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer ) {}
-    void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer ) {}
+    void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer itkNotUsed(_arg)) {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
+    void SetBackProjectionFilter (const typename Superclass::BackProjectionFilterType::Pointer itkNotUsed(_arg)) {itkExceptionMacro(<< "BackProjection cannot be changed");}
 
     /** The ND + time motion vector field */
     void SetDisplacementField(const DVFSequenceImageType* DVFs);

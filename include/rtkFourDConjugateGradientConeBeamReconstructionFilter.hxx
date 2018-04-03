@@ -225,9 +225,8 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::PrintTiming(std::ostream& os) const
+::PrintTiming(std::ostream& itkNotUsed(os)) const
 {
-  (void)os;
 }
 
 } // end namespace rtk
