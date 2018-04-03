@@ -67,7 +67,7 @@ public:
 
 protected:
   HisImageIOFactory();
-  ~HisImageIOFactory() {}
+  virtual ~HisImageIOFactory() ITK_OVERRIDE {}
   typedef HisImageIOFactory myProductType;
   const myProductType* m_MyProduct;
 

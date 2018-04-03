@@ -54,6 +54,7 @@ public:
   /** Displacement type */
   typedef TDVF                                      DisplacementFieldType;
   typedef typename DisplacementFieldType::Pointer   DisplacementFieldPointer;
+  typedef typename DisplacementFieldType::ConstPointer   DisplacementFieldConstPointer;
   typedef typename DisplacementFieldType::PixelType DisplacementType;
 
   /** Point type */
@@ -68,7 +69,7 @@ public:
 
 protected:
   ForwardWarpImageFilter();
-  ~ForwardWarpImageFilter() {}
+  virtual ~ForwardWarpImageFilter() ITK_OVERRIDE {}
 
   void GenerateData() ITK_OVERRIDE;
 

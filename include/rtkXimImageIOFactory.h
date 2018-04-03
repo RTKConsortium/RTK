@@ -70,7 +70,7 @@ public:
 
 protected:
   XimImageIOFactory();
-  ~XimImageIOFactory() {};
+  virtual ~XimImageIOFactory() ITK_OVERRIDE {};
   typedef XimImageIOFactory myProductType;
   const myProductType* m_MyProduct;
 

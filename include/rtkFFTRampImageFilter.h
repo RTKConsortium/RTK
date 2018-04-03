@@ -127,9 +127,9 @@ public:
   
 protected:
   FFTRampImageFilter();
-  ~FFTRampImageFilter() {}
+  virtual ~FFTRampImageFilter() ITK_OVERRIDE {}
 
-  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.  */

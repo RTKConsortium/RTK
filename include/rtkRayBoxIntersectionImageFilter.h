@@ -83,7 +83,7 @@ public:
 
 protected:
   RayBoxIntersectionImageFilter();
-  ~RayBoxIntersectionImageFilter() {}
+  ~RayBoxIntersectionImageFilter() ITK_OVERRIDE {}
 
   void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
 
