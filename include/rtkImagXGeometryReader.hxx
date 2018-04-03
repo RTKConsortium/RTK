@@ -307,15 +307,15 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
 
   for (unsigned int i = 0; i < 5; i++)
     {
-    listPx.pop_front(); Cm.Px.push_back(atof(listPx.front().second.c_str() ) );
-    listPy.pop_front(); Cm.Py.push_back(atof(listPy.front().second.c_str() ) );
-    listPz.pop_front(); Cm.Pz.push_back(atof(listPz.front().second.c_str() ) );
-    listRx.pop_front(); Cm.Rx.push_back(atof(listRx.front().second.c_str() ) );
-    listRy.pop_front(); Cm.Ry.push_back(atof(listRy.front().second.c_str() ) );
-    listRz.pop_front(); Cm.Rz.push_back(atof(listRz.front().second.c_str() ) );
-    listTx.pop_front(); Cm.Tx.push_back(atof(listTx.front().second.c_str() ) );
-    listTy.pop_front(); Cm.Ty.push_back(atof(listTy.front().second.c_str() ) );
-    listTz.pop_front(); Cm.Tz.push_back(atof(listTz.front().second.c_str() ) );
+      listPx.pop_front(); Cm.Px[i] = atof(listPx.front().second.c_str());
+      listPy.pop_front(); Cm.Py[i] = atof(listPy.front().second.c_str());
+      listPz.pop_front(); Cm.Pz[i] = atof(listPz.front().second.c_str());
+      listRx.pop_front(); Cm.Rx[i] = atof(listRx.front().second.c_str());
+      listRy.pop_front(); Cm.Ry[i] = atof(listRy.front().second.c_str());
+      listRz.pop_front(); Cm.Rz[i] = atof(listRz.front().second.c_str());
+      listTx.pop_front(); Cm.Tx[i] = atof(listTx.front().second.c_str());
+      listTy.pop_front(); Cm.Ty[i] = atof(listTy.front().second.c_str());
+      listTz.pop_front(); Cm.Tz[i] = atof(listTz.front().second.c_str());
     }
 
   Cm.isValid = true;
