@@ -164,8 +164,9 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   this->GetOutput()->SetLargestPossibleRegion( m_MultiplyFilter->GetOutput()->GetLargestPossibleRegion() );
 
   // Set memory management flags
-//  m_ForwardProjectionFilter->ReleaseDataFlagOn();
-//  m_DivideProjectionFilter->ReleaseDataFlagOn();
+  m_ForwardProjectionFilter->ReleaseDataFlagOn();
+  m_DivideProjectionFilter->ReleaseDataFlagOn();
+  m_DivideVolumeFilter->ReleaseDataFlagOn();
 
 }
 
