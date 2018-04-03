@@ -177,6 +177,11 @@ rtk_add_test(rtkWeidingerForwardModelTest rtkweidingerforwardmodeltest.cxx
   DATA{Baseline/Spectral/OneStep/out1.mha}
   DATA{Baseline/Spectral/OneStep/out2.mha})
 
+rtk_add_test(rtkNewtonUpdateTest rtknewtonupdatetest.cxx
+  DATA{Input/Spectral/OneStep/gradient.mha}
+  DATA{Input/Spectral/OneStep/hessian.mha}
+  DATA{Baseline/Spectral/OneStep/newtonUpdate.mha})
+
 rtk_add_test(rtkSartTest rtksarttest.cxx)
 rtk_add_cuda_test(rtkSartCudaTest rtksarttest.cxx)
 
