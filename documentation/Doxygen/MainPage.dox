@@ -1,19 +1,14 @@
-/*! \mainpage  Reconstruction ToolKit
+/**
  *
- * \image html http://www.openrtk.org/opensourcelogos/rtk100.png
+ * \mainpage  Reconstruction Toolkit
  *
- * \section intro Introduction
+ * \image html http://www.openrtk.org/opensourcelogos/rtk100.png width=200
  *
- * Welcome to the RTK project! The objective of this project is to develop open-source software 
- * for fast tomographic reconstruction compatible with ITK. 
- *
- * \section homepage Home Page
- *
- * The Home Page of the Reconstruction toolkit can be found at :
+ * Welcome to the RTK project! The objective of this project is to develop
+ * open-source software for fast tomographic reconstruction compatible with
+ * ITK. The Home Page of the Reconstruction toolkit can be found at :
  *
  * http://www.openrtk.org/
- *
- * \section howto How to use this documentation
  *
  * This documentation describes the API of the Toolkit. The Modules
  * link presents a hierarchy of classes organized according to their
