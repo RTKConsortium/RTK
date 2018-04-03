@@ -139,10 +139,10 @@ int main(int, char** )
   osem->SetInput(1, rei->GetOutput());
   osem->SetGeometry( geometry );
 
-  std::cout << "\n\n****** Case 1: Joseph-Based Backprojector, ML-EM 7 iterations ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector, ML-EM 7 iterations ******" << std::endl;
 
   osem->SetNumberOfIterations(7);
-  osem->SetBackProjectionFilter( 1 ); // Joseph based
+  osem->SetBackProjectionFilter( 0 ); // Voxel based
   osem->SetForwardProjectionFilter( 0 ); // Joseph
   osem->SetNumberOfProjectionsPerSubset(NumberOfProjectionImages);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
