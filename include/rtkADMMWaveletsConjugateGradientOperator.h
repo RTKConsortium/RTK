@@ -138,7 +138,7 @@ public:
 
 protected:
     ADMMWaveletsConjugateGradientOperator();
-    ~ADMMWaveletsConjugateGradientOperator() {}
+    virtual ~ADMMWaveletsConjugateGradientOperator() ITK_OVERRIDE {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

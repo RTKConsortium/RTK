@@ -60,7 +60,7 @@ public:
 
 protected:
   DrawCylinderImageFilter() {}
-  ~DrawCylinderImageFilter() {}
+  ~DrawCylinderImageFilter() ITK_OVERRIDE {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

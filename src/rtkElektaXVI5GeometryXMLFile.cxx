@@ -58,7 +58,7 @@ CanReadFile(const char *name)
 
 void
 ElektaXVI5GeometryXMLFileReader::
-StartElement(const char * name,const char **atts)
+StartElement(const char * name,const char **itkNotUsed(atts))
 {
   m_CurCharacterData = "";
   this->StartElement(name);

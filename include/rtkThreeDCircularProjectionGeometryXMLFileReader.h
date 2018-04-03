@@ -71,7 +71,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();
-  ~ThreeDCircularProjectionGeometryXMLFileReader() {}
+  virtual ~ThreeDCircularProjectionGeometryXMLFileReader() ITK_OVERRIDE {}
 
   /** Callback function -- called from XML parser with start-of-element
    * information.
@@ -113,6 +113,6 @@ private:
 
   /** File format version */
   unsigned int m_Version;
-} ;
+};
 }
 #endif

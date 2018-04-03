@@ -177,7 +177,7 @@ public:
 
 protected:
   LookupTableImageFilter() {}
-  ~LookupTableImageFilter() {}
+  virtual ~LookupTableImageFilter() ITK_OVERRIDE {}
   typename LookupTableType::Pointer m_LookupTable;
 
 private:

@@ -56,7 +56,7 @@ public:
 
 protected:
   DrawConeImageFilter() {}
-  ~DrawConeImageFilter() {}
+  ~DrawConeImageFilter() ITK_OVERRIDE {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

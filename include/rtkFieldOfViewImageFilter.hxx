@@ -253,7 +253,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType threadId )
+                       ThreadIdType itkNotUsed(threadId) )
 {
   typename TInputImage::DirectionType d = this->GetInput()->GetDirection();
   if( d[0][0]==1. && d[0][1]==0. && d[0][2]==0. &&

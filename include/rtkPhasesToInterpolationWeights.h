@@ -84,7 +84,7 @@ public:
 protected:
 
     PhasesToInterpolationWeights();
-    ~PhasesToInterpolationWeights () {}
+    virtual ~PhasesToInterpolationWeights () ITK_OVERRIDE {}
 
     /** Print the reader. */
     void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;

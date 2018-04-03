@@ -110,7 +110,7 @@ public:
 
 protected:
   VarianObiRawImageFilter();
-  ~VarianObiRawImageFilter() {}
+  virtual ~VarianObiRawImageFilter() ITK_OVERRIDE {}
 
 private:
   VarianObiRawImageFilter(const Self&); //purposely not implemented

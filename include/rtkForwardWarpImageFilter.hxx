@@ -168,7 +168,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>
   // iterator for the output image
   itk::ImageRegionConstIteratorWithIndex< TOutputImage > inputIt(
         inputPtr, inputPtr->GetBufferedRegion());
-  itk::ImageRegionIterator< const DisplacementFieldType >  fieldIt(fieldPtr, fieldPtr->GetBufferedRegion());
+  itk::ImageRegionConstIterator< const DisplacementFieldType >  fieldIt(fieldPtr, fieldPtr->GetBufferedRegion());
   typename TOutputImage::IndexType        index;
   typename TOutputImage::IndexType        baseIndex;
   typename TOutputImage::IndexType        neighIndex;
