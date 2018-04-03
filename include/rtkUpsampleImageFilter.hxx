@@ -173,14 +173,14 @@ UpsampleImageFilter<TInputImage,TOutputImage>
       inputLine.SetSize(inputLineSize);
       inputLine.SetIndex(inputStartIndex + inputOffset);
 
-      OutputIterator outIt(outputPtr, outputLine);
+      OutputIterator outIt_local(outputPtr, outputLine);
       InputIterator inIt(inputPtr, inputLine);
 
       // Walk the line and copy the pixels
       while(!inIt.IsAtEnd())
         {
-        outIt.Set(inIt.Get());
-        for (unsigned int i=0; i<m_Factors[0]; i++) ++outIt;
+        outIt_local.Set(inIt.Get());
+        for (unsigned int i=0; i<m_Factors[0]; i++) ++outIt_local;
         ++inIt;
 
         progress.CompletedPixel();
