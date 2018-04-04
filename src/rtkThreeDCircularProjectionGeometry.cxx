@@ -197,8 +197,6 @@ AddProjection(const PointType &sourcePosition,
   double SID = n[0] * S[0] + n[1] * S[1] + n[2] * S[2];
   // SDD: distance from source to detector along detector normal
   double SDD = n[0] * (S[0] - R[0]) + n[1] * (S[1] - R[1]) + n[2] * (S[2] - R[2]);
-  if (fabs(SDD) < 1e-6) // source is in detector plane
-    return false;
 
   // source offset: compute source's "in-plane" x/y shift off isocenter
   VectorType Sv;
