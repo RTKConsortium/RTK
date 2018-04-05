@@ -27,7 +27,6 @@
 
 #include <itkImageFileWriter.h>
 #include <itkStreamingImageFilter.h>
-#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -46,16 +45,11 @@ int main(int argc, char * argv[])
   typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkramp>(reader, args_info);
-  itk::TimeProbe readerProbe;
   if(!args_info.lowmem_flag)
     {
     if(args_info.verbose_flag)
-      std::cout << "Reading... " << std::flush;
-    readerProbe.Start();
+      std::cout << "Reading... " << std::endl;
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
-    readerProbe.Stop();
-    if(args_info.verbose_flag)
-      std::cout << "It took " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
   else
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
@@ -100,14 +94,7 @@ int main(int argc, char * argv[])
     streamer->SetInput( rampFilter->GetOutput() );
   streamer->SetNumberOfStreamDivisions( 1+reader->GetOutput()->GetLargestPossibleRegion().GetSize(2) / args_info.subsetsize_arg );
 
-  itk::TimeProbe probe;
-  probe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() )
-  probe.Stop();
-  std::cout << "The streamed ramp filter update took "
-            << probe.GetMean()
-            << probe.GetUnit()
-            << std::endl;
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;

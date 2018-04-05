@@ -22,7 +22,6 @@
 #include "rtkIterativeFDKConeBeamReconstructionFilter.h"
 
 #include <algorithm>
-#include <itkTimeProbe.h>
 
 namespace rtk
 {

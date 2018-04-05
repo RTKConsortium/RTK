@@ -6,7 +6,6 @@ option "config"      - "Config file"                                           s
 option "geometry"    g "XML geometry file name"                                string yes
 option "output"      o "Output file name"                                      string yes
 option "niterations" n "Number of iterations"                                  int    no   default="5"
-option "time"        t "Records elapsed time during the process"               flag   off
 option "lambda"      l "Convergence factor"                                    double no   default="0.3"
 option "positivity"  - "Enforces positivity during the reconstruction"         flag   off
 option "input"     i "Input volume"              string          no

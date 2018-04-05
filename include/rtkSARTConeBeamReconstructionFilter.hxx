@@ -22,7 +22,6 @@
 #include "rtkSARTConeBeamReconstructionFilter.h"
 
 #include <algorithm>
-#include <itkTimeProbe.h>
 
 namespace rtk
 {
@@ -285,65 +284,10 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
 
-      m_ExtractProbe.Start();
-      m_ExtractFilter->Update();
-      m_ExtractFilterRayBox->Update();
-      m_ExtractProbe.Stop();
-
-      m_ZeroMultiplyProbe.Start();
-      m_ZeroMultiplyFilter->Update();
-      m_ZeroMultiplyProbe.Stop();
-
-      m_ForwardProjectionProbe.Start();
-      m_ForwardProjectionFilter->Update();
-      m_ForwardProjectionProbe.Stop();
-
-      m_SubtractProbe.Start();
-      m_SubtractFilter->Update();
-      m_SubtractProbe.Stop();
-
-      m_MultiplyProbe.Start();
-      m_MultiplyFilter->Update();
-      m_MultiplyProbe.Stop();
-
-      m_RayBoxProbe.Start();
-      m_RayBoxFilter->Update();
-      m_RayBoxProbe.Stop();
-
-      m_DivideProbe.Start();
-      m_DivideFilter->Update();
-      m_DivideProbe.Stop();
-
-      if (m_IsGated)
-        {
-        m_GatingProbe.Start();
-        m_GatingWeightsFilter->Update();
-        m_GatingProbe.Stop();
-        }
-
-      m_DisplacedDetectorProbe.Start();
-      m_DisplacedDetectorFilter->Update();
-      m_DisplacedDetectorProbe.Stop();
-
-      m_BackProjectionProbe.Start();
-      m_BackProjectionFilter->Update();
-      m_BackProjectionProbe.Stop();
-
       projectionsProcessedInSubset++;
       if ((projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset) || (i == nProj - 1))
         {
         m_AddFilter->SetInput1(m_BackProjectionFilter->GetOutput());
-
-        m_AddProbe.Start();
-        m_AddFilter->Update();
-        m_AddProbe.Start();
-
-        if (m_EnforcePositivity)
-          {
-          m_ThresholdProbe.Start();
-          m_ThresholdFilter->Update();
-          m_ThresholdProbe.Stop();
-          }
 
         // To start a new subset:
         // - plug the output of the pipeline back into the Forward projection filter
@@ -352,6 +296,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
           pimg = m_ThresholdFilter->GetOutput();
         else
           pimg = m_AddFilter->GetOutput();
+        pimg->Update();
         pimg->DisconnectPipeline();
 
         m_ForwardProjectionFilter->SetInput(1, pimg );
@@ -363,6 +308,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
       // Backproject in the same image otherwise.
       else
         {
+        m_BackProjectionFilter->Update();
         pimg = m_BackProjectionFilter->GetOutput();
         pimg->DisconnectPipeline();
         m_BackProjectionFilter->SetInput(0, pimg);
@@ -370,41 +316,6 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
       }
     }
   this->GraftOutput( pimg );
-}
-
-template<class TVolumeImage, class TProjectionImage>
-void
-SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-::PrintTiming(std::ostream & os) const
-{
-  os << "SARTConeBeamReconstructionFilter timing:" << std::endl;
-  os << "  Extraction of projection sub-stacks: " << m_ExtractProbe.GetTotal()
-     << ' ' << m_ExtractProbe.GetUnit() << std::endl;
-  os << "  Multiplication by zero: " << m_ZeroMultiplyProbe.GetTotal()
-     << ' ' << m_ZeroMultiplyProbe.GetUnit() << std::endl;
-  os << "  Forward projection: " << m_ForwardProjectionProbe.GetTotal()
-     << ' ' << m_ForwardProjectionProbe.GetUnit() << std::endl;
-  os << "  Subtraction: " << m_SubtractProbe.GetTotal()
-     << ' ' << m_SubtractProbe.GetUnit() << std::endl;
-  os << "  Multiplication by lambda: " << m_MultiplyProbe.GetTotal()
-     << ' ' << m_MultiplyProbe.GetUnit() << std::endl;
-  os << "  Ray box intersection: " << m_RayBoxProbe.GetTotal()
-     << ' ' << m_RayBoxProbe.GetUnit() << std::endl;
-  os << "  Division: " << m_DivideProbe.GetTotal()
-     << ' ' << m_DivideProbe.GetUnit() << std::endl;
-  os << "  Multiplication by the gating weights: " << m_GatingProbe.GetTotal()
-     << ' ' << m_GatingProbe.GetUnit() << std::endl;
-  os << "  Displaced detector: " << m_DisplacedDetectorProbe.GetTotal()
-     << ' ' << m_DisplacedDetectorProbe.GetUnit() << std::endl;
-  os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
-     << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
-  os << "  Volume update: " << m_AddProbe.GetTotal()
-     << ' ' << m_AddProbe.GetUnit() << std::endl;
-  if (m_EnforcePositivity)
-    {
-    os << "  Positivity enforcement: " << m_ThresholdProbe.GetTotal()
-    << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
-    }
 }
 
 } // end namespace rtk

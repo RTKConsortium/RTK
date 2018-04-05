@@ -132,18 +132,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
       }
-
-    m_PreFilterProbe.Start();
-    m_WeightFilter->Update();
-    m_PreFilterProbe.Stop();
-
-    m_FilterProbe.Start();
-    m_RampFilter->Update();
-    m_FilterProbe.Stop();
-
-    m_BackProjectionProbe.Start();
     m_BackProjectionFilter->Update();
-    m_BackProjectionProbe.Stop();
     }
 
   this->GraftOutput( m_BackProjectionFilter->GetOutput() );
@@ -170,20 +159,6 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
     m_BackProjectionFilter->SetGeometry(_arg);
     this->Modified();
     }
-}
-
-template<class TInputImage, class TOutputImage, class TFFTPrecision>
-void
-FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
-::PrintTiming(std::ostream& os) const
-{
-  os << "FDKConeBeamReconstructionFilter timing:" << std::endl;
-  os << "  Prefilter operations: " << m_PreFilterProbe.GetTotal()
-     << ' ' << m_PreFilterProbe.GetUnit() << std::endl;
-  os << "  Ramp filter: " << m_FilterProbe.GetTotal()
-     << ' ' << m_FilterProbe.GetUnit() << std::endl;
-  os << "  Backprojection: " << m_BackProjectionProbe.GetTotal()
-     << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>

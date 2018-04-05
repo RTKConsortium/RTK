@@ -27,7 +27,6 @@
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageAdaptor.h>
 #include <itkDivideOrZeroOutImageFilter.h>
-#include <itkTimeProbe.h>
 #include <itkThresholdImageFilter.h>
 
 #include "rtkRayBoxIntersectionImageFilter.h"
@@ -166,8 +165,6 @@ public:
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
 
-  void PrintTiming(std::ostream& os) const;
-
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
   itkSetMacro(NumberOfIterations, unsigned int);
@@ -258,20 +255,6 @@ private:
   /** Convergence factor according to Andersen's publications which relates
    * to the step size of the gradient descent. Default 0.3, Must be in (0,2). */
   double m_Lambda;
-
-  /** Time probes */
-  itk::TimeProbe m_ExtractProbe;
-  itk::TimeProbe m_ZeroMultiplyProbe;
-  itk::TimeProbe m_ForwardProjectionProbe;
-  itk::TimeProbe m_SubtractProbe;
-  itk::TimeProbe m_MultiplyProbe;
-  itk::TimeProbe m_RayBoxProbe;
-  itk::TimeProbe m_DivideProbe;
-  itk::TimeProbe m_BackProjectionProbe;
-  itk::TimeProbe m_ThresholdProbe;
-  itk::TimeProbe m_AddProbe;
-  itk::TimeProbe m_DisplacedDetectorProbe;
-
 }; // end of class
 
 } // end namespace rtk

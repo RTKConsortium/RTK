@@ -30,7 +30,6 @@
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
-#include <itkTimeProbe.h>
 #ifdef RTK_USE_CUDA
   #include "rtkCudaConjugateGradientImageFilter_4f.h"
 #endif
@@ -125,8 +124,6 @@ public:
   /** Get / Set the object pointer to projection geometry */
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
-
-  void PrintTiming(std::ostream& os) const;
 
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int)

@@ -18,9 +18,8 @@
 #ifndef rtkWatcherForTimer_h
 #define rtkWatcherForTimer_h
 
-#include "itkCommand.h"
-#include "itkProcessObject.h"
-#include "itkTimeProbe.h"
+#include <itkCommand.h>
+#include <itkProcessObject.h>
 
 namespace rtk
 {

@@ -510,56 +510,6 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   this->GraftOutput( m_DownstreamFilter->GetOutput() );
 }
 
-//template< typename VolumeSeriesType, typename ProjectionStackType>
-//void
-//FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-//::PrintTiming(std::ostream& os) const
-//{
-//  os << "FourDROOSTERConeBeamReconstructionFilter timing:" << std::endl;
-//  os << "  4D conjugate gradient reconstruction: " << m_CGProbe.GetTotal()
-//     << ' ' << m_CGProbe.GetUnit() << std::endl;
-//  if (m_PerformPositivity)
-//    {
-//    os << "  Positivity enforcement: " << m_PositivityProbe.GetTotal()
-//      << ' ' << m_PositivityProbe.GetUnit() << std::endl;
-//    }
-//  if (m_PerformMotionMask)
-//    {
-//    os << "  Averaging along time outside the ROI where movement is allowed: " << m_MotionMaskProbe.GetTotal()
-//      << ' ' << m_MotionMaskProbe.GetUnit() << std::endl;
-//    }
-//  if (m_PerformTVSpatialDenoising)
-//    {
-//    os << "  Total Variation spatial denoising: " << m_TVSpatialDenoisingProbe.GetTotal()
-//      << ' ' << m_TVSpatialDenoisingProbe.GetUnit() << std::endl;
-//    }
-//  if (m_PerformWaveletsSpatialDenoising)
-//    {
-//    os << "  Wavelets spatial denoising: " << m_WaveletsSpatialDenoisingProbe.GetTotal()
-//      << ' ' << m_WaveletsSpatialDenoisingProbe.GetUnit() << std::endl;
-//    }
-//  if (m_PerformWarping)
-//    {
-//    os << "  Warping volumes to reference position: " << m_WarpingProbe.GetTotal()
-//       << ' ' << m_WarpingProbe.GetUnit() << std::endl;
-//    }
-//  if (m_PerformTVTemporalDenoising)
-//    {
-//    os << "  Temporal total variation denoising: " << m_TVTemporalDenoisingProbe.GetTotal()
-//      << ' ' << m_TVTemporalDenoisingProbe.GetUnit() << std::endl;
-//    }
-//  if (m_PerformL0TemporalDenoising)
-//    {
-//    os << "  Gradient's L0 norm temporal denoising: " << m_L0TemporalDenoisingProbe.GetTotal()
-//      << ' ' << m_L0TemporalDenoisingProbe.GetUnit() << std::endl;
-//    }
-//  if (m_PerformWarping)
-//    {
-//    os << "  Warping volumes back from average position: " << m_UnwarpingProbe.GetTotal()
-//       << ' ' << m_UnwarpingProbe.GetUnit() << std::endl;
-//    }
-//}
-
 }// end namespace
 
 

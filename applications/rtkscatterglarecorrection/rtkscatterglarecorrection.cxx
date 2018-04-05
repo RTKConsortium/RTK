@@ -32,7 +32,6 @@
 #include <itkPasteImageFilter.h>
 #include <rtkConstantImageSource.h>
 #include <itkImageFileWriter.h>
-#include <itkTimeProbe.h>
 
 #include <vector>
 #include <algorithm>
@@ -93,7 +92,6 @@ int main(int argc, char *argv[])
   std::cout << "Starting processing" << std::endl;
   int projid = 0;
   bool first = true;
-  std::vector<int> avgTimings;
   while (projid < Nproj)
     {
     int curBufferSize = std::min(args_info.bufferSize_arg, Nproj - projid);
@@ -117,21 +115,9 @@ int main(int argc, char *argv[])
     InputImageType::Pointer image = extract->GetOutput();
     image->DisconnectPipeline();
 
-    itk::TimeProbe probe;
-    probe.Start();
-
     SFilter->SetInput(image);
     SFilter->GetOutput()->SetRequestedRegion(image->GetRequestedRegion());
     TRY_AND_EXIT_ON_ITK_EXCEPTION( SFilter->Update() )
-
-    probe.Stop();
-    float rrtime = probe.GetMean() / static_cast<float>(curBufferSize);
-
-    if (projid > 0) // Because first timing includes filter initialization time
-      {
-      avgTimings.push_back(rrtime);
-      }
-      std::cout << "Timing per projection: " << rrtime/1.e6 << " usec" << std::endl;
 
     InputImageType::Pointer procImage = SFilter->GetOutput();
     procImage->DisconnectPipeline();
@@ -185,10 +171,6 @@ int main(int argc, char *argv[])
 
     projid += curBufferSize;
     }
-
-  float sumpp = static_cast<float>(std::accumulate(avgTimings.begin(), avgTimings.end(), 0.f));
-  float meanpp = sumpp / static_cast<float>(avgTimings.size());
-  std::cout << "Average time per projection [us]: " << meanpp/1.e6 << std::endl;
 
   typedef itk::ImageFileWriter<InputImageType> FileWriterType;
   FileWriterType::Pointer writer = FileWriterType::New();

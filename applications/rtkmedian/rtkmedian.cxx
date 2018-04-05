@@ -21,7 +21,6 @@
 #include "rtkMedianImageFilter.h"
 
 #include <itkImageFileWriter.h>
-#include <itkTimeProbe.h>
 #include <itkImageFileReader.h>
 
 int main(int argc, char * argv[])

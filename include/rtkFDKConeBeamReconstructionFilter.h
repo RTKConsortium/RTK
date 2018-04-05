@@ -25,7 +25,6 @@
 #include "rtkConfiguration.h"
 
 #include <itkExtractImageFilter.h>
-#include <itkTimeProbe.h>
 
 namespace rtk
 {
@@ -98,8 +97,6 @@ public:
   /** Get pointer to the ramp filter used by the feldkamp reconstruction */
   typename RampFilterType::Pointer GetRampFilter() { return m_RampFilter; }
 
-  void PrintTiming(std::ostream& os) const;
-
   /** Get / Set the number of cone-beam projection images processed
       simultaneously. Default is 4. */
   itkGetMacro(ProjectionSubsetSize, unsigned int);
@@ -138,11 +135,6 @@ private:
 
   /** Number of projections processed at a time. */
   unsigned int m_ProjectionSubsetSize;
-
-  /** Probes to time reconstruction */
-  itk::TimeProbe m_PreFilterProbe;
-  itk::TimeProbe m_FilterProbe;
-  itk::TimeProbe m_BackProjectionProbe;
 }; // end of class
 
 } // end namespace rtk

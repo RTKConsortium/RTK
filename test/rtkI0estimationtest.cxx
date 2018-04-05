@@ -2,7 +2,6 @@
 #include "rtkMacro.h"
 #include "rtkI0EstimationProjectionFilter.h"
 #include <itkRandomImageSource.h>
-#include <itkTimeProbe.h>
 
 /**
  * \file rtkI0estimationtest.cxx
@@ -14,8 +13,6 @@
 
 int main(int, char** )
 {
-  itk::TimeProbe clock;
-
   const unsigned int Dimension = 3;
   typedef itk::Image<unsigned short, Dimension> ImageType;
 
@@ -54,12 +51,7 @@ int main(int, char** )
     randomSource->Update();
 
     i0est->SetInput(randomSource->GetOutput());
-
-    clock.Start();
-
     i0est->Update();
-
-    clock.Stop();
   }
 
   // If all succeed

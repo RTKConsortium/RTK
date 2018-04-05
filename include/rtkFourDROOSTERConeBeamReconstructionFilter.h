@@ -264,8 +264,6 @@ public:
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void SetWeights(const itk::Array2D<float> _arg);
 
-//  void PrintTiming(std::ostream& os) const;
-
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool)
   itkGetMacro(DisableDisplacedDetectorFilter, bool)
@@ -413,18 +411,6 @@ protected:
 
   // Signal
   std::vector<double>                            m_Signal;
-
-//  /** Time probes */
-//  itk::TimeProbe m_CGProbe;
-//  itk::TimeProbe m_PositivityProbe;
-//  itk::TimeProbe m_MotionMaskProbe;
-//  itk::TimeProbe m_TVSpatialDenoisingProbe;
-//  itk::TimeProbe m_WaveletsSpatialDenoisingProbe;
-//  itk::TimeProbe m_TVTemporalDenoisingProbe;
-//  itk::TimeProbe m_TNVDenoisingProbe;
-//  itk::TimeProbe m_L0TemporalDenoisingProbe;
-//  itk::TimeProbe m_WarpingProbe;
-//  itk::TimeProbe m_UnwarpingProbe;
 
 private:
   FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented

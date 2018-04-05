@@ -28,7 +28,6 @@
 #include "rtkConjugateGradientGetP_kPlusOneImageFilter.h"
 
 #include "rtkConjugateGradientOperator.h"
-#include "itkTimeProbe.h"
 
 namespace rtk
 {
@@ -75,9 +74,6 @@ public:
   itkGetMacro(IterationCosts, bool)
   itkSetMacro(IterationCosts, bool)
   
-//  itkSetMacro(MeasureExecutionTimes, bool)
-//  itkGetMacro(MeasureExecutionTimes, bool)
-
   void SetA(ConjugateGradientOperatorPointerType _arg );
 
   /** The input image to be updated.*/
@@ -119,7 +115,6 @@ protected:
 private:
   ConjugateGradientImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
-//  bool m_MeasureExecutionTimes;
 };
 } //namespace RTK
 

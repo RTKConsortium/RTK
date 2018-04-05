@@ -148,8 +148,6 @@ public:
   /** Pass the backprojection filter to ProjectionStackToFourD*/
   void SetBackProjectionFilter(int bptype) ITK_OVERRIDE;
 
-  void PrintTiming(std::ostream& os) const;
-
   // Regularization steps to perform
   itkSetMacro(PerformPositivity, bool)
   itkGetMacro(PerformPositivity, bool)
@@ -264,13 +262,6 @@ protected:
 
   // Geometry
   typename rtk::ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-
-  /** Time probes */
-  itk::TimeProbe m_CGProbe;
-  itk::TimeProbe m_PositivityProbe;
-  itk::TimeProbe m_TVSpatialDenoisingProbe;
-  itk::TimeProbe m_WaveletsSpatialDenoisingProbe;
-  itk::TimeProbe m_SoftThresholdImageProbe;
 
 private:
   RegularizedConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented

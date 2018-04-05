@@ -31,7 +31,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>::ConjugateGradientCo
 
   // Set the default values of member parameters
   m_NumberOfIterations=3;
-  m_MeasureExecutionTimes=false;
   m_IterationCosts=false;
   m_Gamma = 0;
   m_Regularized = false;
@@ -223,7 +222,6 @@ void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 ::GenerateData()
 {
-  itk::TimeProbe ConjugateGradientTimeProbe;
   typename StatisticsImageFilterType::Pointer StatisticsImageFilterForC = StatisticsImageFilterType::New();
   typename MultiplyFilterType::Pointer MultiplyFilterForC = MultiplyFilterType::New();
 
@@ -239,23 +237,11 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
     m_ConjugateGradientFilter->SetC(0.5*StatisticsImageFilterForC->GetSum());
     }
 
-  if(m_MeasureExecutionTimes)
-    {
-    std::cout << "Starting ConjugateGradient" << std::endl;
-    ConjugateGradientTimeProbe.Start();
-    }
-
   m_ConjugateGradientFilter->Update();
 
   if (this->GetSupportMask())
     {
     m_MultiplyOutputFilter->Update();
-    }
-
-  if(m_MeasureExecutionTimes)
-    {
-    ConjugateGradientTimeProbe.Stop();
-    std::cout << "ConjugateGradient took " << ConjugateGradientTimeProbe.GetTotal() << ' ' << ConjugateGradientTimeProbe.GetUnit() << std::endl;
     }
 
   if (this->GetSupportMask())

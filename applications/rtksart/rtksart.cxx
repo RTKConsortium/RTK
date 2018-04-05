@@ -116,25 +116,12 @@ int main(int argc, char * argv[])
   sart->SetLambda( args_info.lambda_arg );
   sart->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
-  itk::TimeProbe totalTimeProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::endl << std::flush;
-    totalTimeProbe.Start();
-    }
   if(args_info.positivity_flag)
     {
     sart->SetEnforcePositivity(true);
     }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() )
-
-  if(args_info.time_flag)
-    {
-    sart->PrintTiming(std::cout);
-    totalTimeProbe.Stop();
-    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
-    }
 
   // Write
   typedef itk::ImageFileWriter< OutputImageType > WriterType;

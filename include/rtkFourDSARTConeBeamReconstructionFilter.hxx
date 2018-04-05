@@ -23,7 +23,6 @@
 #include "rtkGeneralPurposeFunctions.h"
 
 #include <algorithm>
-#include <itkTimeProbe.h>
 
 namespace rtk
 {
@@ -384,60 +383,17 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_ProjectionStackToFourDFilter->GetOutput()->UpdateOutputInformation();
       m_ProjectionStackToFourDFilter->GetOutput()->PropagateRequestedRegion();
 
-      m_ExtractProbe.Start();
-      m_ExtractFilter->Update();
-      m_ExtractFilterRayBox->Update();
-      m_ExtractProbe.Stop();
-
-      m_ZeroMultiplyProbe.Start();
-      m_ZeroMultiplyFilter->Update();
-      m_ZeroMultiplyProbe.Stop();
-
-      m_ForwardProjectionProbe.Start();
-      m_FourDToProjectionStackFilter->Update();
-      m_ForwardProjectionProbe.Stop();
-
-      m_SubtractProbe.Start();
-      m_SubtractFilter->Update();
-      m_SubtractProbe.Stop();
-
-      m_MultiplyProbe.Start();
-      m_MultiplyFilter->Update();
-      m_MultiplyProbe.Stop();
-
-      m_RayBoxProbe.Start();
-      m_RayBoxFilter->Update();
-      m_RayBoxProbe.Stop();
-
-      m_DivideProbe.Start();
-      m_DivideFilter->Update();
-      m_DivideProbe.Stop();
-
-      m_DisplacedDetectorProbe.Start();
-      m_DisplacedDetectorFilter->Update();
-      m_DisplacedDetectorProbe.Stop();
-
-      m_BackProjectionProbe.Start();
-      m_ProjectionStackToFourDFilter->Update();
-      m_BackProjectionProbe.Stop();
-
-      m_AddProbe.Start();
       m_AddFilter->Update();
-      m_AddProbe.Stop();
 
       projectionsProcessedInSubset++;
       if ((projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset) || (i == nProj - 1))
         {
-        m_AddProbe.Start();
         m_AddFilter2->SetInput1(m_AddFilter->GetOutput());
         m_AddFilter2->Update();
-        m_AddProbe.Stop();
 
         if (m_EnforcePositivity)
           {
-          m_ThresholdProbe.Start();
           m_ThresholdFilter->Update();
-          m_ThresholdProbe.Stop();
           }
         }
 
@@ -450,39 +406,6 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   else
     {
     this->GraftOutput( m_AddFilter2->GetOutput() );
-    }
-}
-
-template<class VolumeSeriesType, class ProjectionStackType>
-void
-FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::PrintTiming(std::ostream & os) const
-{
-  os << "FourDSARTConeBeamReconstructionFilter timing:" << std::endl;
-  os << "  Extraction of projection sub-stacks: " << m_ExtractProbe.GetTotal()
-     << ' ' << m_ExtractProbe.GetUnit() << std::endl;
-  os << "  Multiplication by zero: " << m_ZeroMultiplyProbe.GetTotal()
-     << ' ' << m_ZeroMultiplyProbe.GetUnit() << std::endl;
-  os << "  Forward projection: " << m_ForwardProjectionProbe.GetTotal()
-     << ' ' << m_ForwardProjectionProbe.GetUnit() << std::endl;
-  os << "  Subtraction: " << m_SubtractProbe.GetTotal()
-     << ' ' << m_SubtractProbe.GetUnit() << std::endl;
-  os << "  Multiplication by lambda: " << m_MultiplyProbe.GetTotal()
-     << ' ' << m_MultiplyProbe.GetUnit() << std::endl;
-  os << "  Ray box intersection: " << m_RayBoxProbe.GetTotal()
-     << ' ' << m_RayBoxProbe.GetUnit() << std::endl;
-  os << "  Division: " << m_DivideProbe.GetTotal()
-     << ' ' << m_DivideProbe.GetUnit() << std::endl;
-  os << "  Displaced detector: " << m_DisplacedDetectorProbe.GetTotal()
-     << ' ' << m_DisplacedDetectorProbe.GetUnit() << std::endl;
-  os << "  Back projection: " << m_BackProjectionProbe.GetTotal()
-     << ' ' << m_BackProjectionProbe.GetUnit() << std::endl;
-  os << "  Volume update: " << m_AddProbe.GetTotal()
-     << ' ' << m_AddProbe.GetUnit() << std::endl;
-  if (m_EnforcePositivity)
-    {
-    os << "  Positivity enforcement: " << m_ThresholdProbe.GetTotal()
-    << ' ' << m_ThresholdProbe.GetUnit() << std::endl;
     }
 }
 

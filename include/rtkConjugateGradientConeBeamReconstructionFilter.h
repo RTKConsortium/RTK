@@ -20,7 +20,6 @@
 #define rtkConjugateGradientConeBeamReconstructionFilter_h
 
 #include <itkMultiplyImageFilter.h>
-#include <itkTimeProbe.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 
 #include "rtkConjugateGradientImageFilter.h"
@@ -145,9 +144,6 @@ public:
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)
 
-    itkSetMacro(MeasureExecutionTimes, bool)
-    itkGetMacro(MeasureExecutionTimes, bool)
-
     itkSetMacro(IterationCosts, bool)
     itkGetMacro(IterationCosts, bool)
 
@@ -206,7 +202,6 @@ private:
 
     int                          m_NumberOfIterations;
     float                        m_Gamma;
-    bool                         m_MeasureExecutionTimes;
     bool                         m_IterationCosts;
     bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;

@@ -33,7 +33,6 @@
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -72,8 +71,7 @@ int main(int argc, char * argv[])
 
   // Create back projection image filter
   if(args_info.verbose_flag)
-    std::cout << "Backprojecting volume..." << std::flush;
-  itk::TimeProbe bpProbe;
+    std::cout << "Backprojecting volume..." << std::endl;
   rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
 
   // In case warp backprojection is used, we create a deformation
@@ -145,29 +143,16 @@ int main(int argc, char * argv[])
   bp->SetInput( constantImageSource->GetOutput() );
   bp->SetInput( 1, reader->GetOutput() );
   bp->SetGeometry( geometryReader->GetOutputObject() );
-  bpProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() )
-  bpProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << bpProbe.GetMean() << ' ' << bpProbe.GetUnit()
-              << '.' << std::endl;
 
   // Write
   if(args_info.verbose_flag)
-    std::cout << "Writing... " << std::flush;
-  itk::TimeProbe writeProbe;
+    std::cout << "Writing... " << std::endl;
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( bp->GetOutput() );
-  writeProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-  writeProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << writeProbe.GetMean() << ' ' << writeProbe.GetUnit()
-              << '.' << std::endl;
 
   return EXIT_SUCCESS;
 }

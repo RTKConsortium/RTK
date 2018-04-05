@@ -23,8 +23,6 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkPhasesToInterpolationWeights.h"
 
-#include <itkTimeProbe.h>
-
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
 #endif
@@ -117,20 +115,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dvfReader->Update() )
   warpbackprojectsequence->SetDisplacementField(dvfReader->GetOutput());
 
-  itk::TimeProbe readerProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackprojectsequence->Update() )
-
-  if(args_info.time_flag)
-    {
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
