@@ -2,10 +2,6 @@ WRAP_GGO(rtkadmmtotalvariation_GGO_C rtkadmmtotalvariation.ggo ../rtkinputprojec
 add_executable(rtkadmmtotalvariation rtkadmmtotalvariation.cxx ${rtkadmmtotalvariation_GGO_C})
 target_link_libraries(rtkadmmtotalvariation RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkadmmtotalvariation rtkcuda)
-endif()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkadmmtotalvariation) 

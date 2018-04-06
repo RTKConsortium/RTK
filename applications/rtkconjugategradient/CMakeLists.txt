@@ -2,10 +2,6 @@ WRAP_GGO(rtkconjugategradient_GGO_C rtkconjugategradient.ggo ../rtkinputprojecti
 add_executable(rtkconjugategradient rtkconjugategradient.cxx ${rtkconjugategradient_GGO_C})
 target_link_libraries(rtkconjugategradient RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkconjugategradient rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkconjugategradient) 

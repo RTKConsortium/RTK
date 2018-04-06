@@ -1,0 +1,25 @@
+#-----------------------------------------------------------------------------
+# Add missing template <int, 2>
+#-----------------------------------------------------------------------------
+itk_wrap_class("itk::Vector")
+    itk_wrap_template("i2" "int, 2")
+itk_end_wrap_class()
+
+itk_wrap_class("itk::FixedArray")
+    itk_wrap_template("i2" "int, 2")
+itk_end_wrap_class()
+
+#-----------------------------------------------------------------------------
+# rtk::FFTConvolutionImageFilter
+#-----------------------------------------------------------------------------
+itk_wrap_include( rtkFFTConvolutionImageFilter.h )
+itk_wrap_include( itkImage.h )
+
+itk_wrap_named_class("rtk::FFTConvolutionImageFilter" rtkFFTConvolutionImageFilter POINTER)
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3${ITKM_D}"
+      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${ITKT_D}")
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3${ITKM_F}"
+      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${ITKT_F}")
+  endforeach()
+itk_end_wrap_class()

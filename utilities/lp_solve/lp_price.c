@@ -1295,6 +1295,7 @@ STATIC int rowdual(lprec *lp, REAL *rhvec, MYBOOL forceoutEQ, MYBOOL updateinfea
 STATIC void longdual_testset(lprec *lp, int which, int rownr, REAL *prow, int *nzprow,
                                                     REAL *drow, int *nzdrow)
 {
+  (void)nzdrow;
   int i,j;
   REAL F = lp->infinite;
   (void)nzdrow;

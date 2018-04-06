@@ -1052,6 +1052,7 @@ Done:
 
 STATIC MYBOOL presolve_fixSOS1(presolverec *psdata, int colnr, REAL fixvalue, int *nr, int *nv)
 {
+  (void)nr;
   lprec    *lp = psdata->lp;
   int      i, k, j;
   SOSrec   *SOS;
@@ -2604,6 +2605,7 @@ int BFP_CALLMODEL presolve_getcolumnEQ(lprec *lp, int colnr, REAL nzvalues[], in
 }
 STATIC int presolve_singularities(presolverec *psdata, int *nn, int *nr, int *nv, int *nSum)
 {
+  (void)nv;
   lprec *lp = psdata->lp;
   int i, j, n, *rmapin = NULL, *rmapout = NULL, *cmapout = NULL;
   (void)nv;
@@ -4081,6 +4083,7 @@ STATIC int presolve_coldominance01(presolverec *psdata, NATURAL *nConRemoved, NA
 /* The current version of this routine eliminates binary variables
    that are dominated via set coverage or unit knapsack constraints */
 {
+  (void)nConRemoved; 
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   NATURAL  i, ib, ie, jx, item, item2,
@@ -4274,6 +4277,7 @@ Finish:
 STATIC int presolve_aggregate(presolverec *psdata, int *nConRemoved, int *nVarsFixed, int *nSum)
 /* This routine combines compatible or identical columns */
 {
+  (void)nConRemoved;
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   MYBOOL   first;
@@ -4490,6 +4494,7 @@ Finish:
 
 STATIC int presolve_makesparser(presolverec *psdata, int *nCoeffChanged, int *nConRemove, int *nVarFixed, int *nSum)
 {
+  (void)nVarFixed;
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   MYBOOL   chsign;
@@ -4767,6 +4772,7 @@ Finish:
 
 STATIC int presolve_SOS1(presolverec *psdata, int *nCoeffChanged, int *nConRemove, int *nVarFixed, int *nSOS, int *nSum)
 {
+  (void)nVarFixed;
   lprec    *lp = psdata->lp;
   MYBOOL   candelete, SOS_GUBactive = FALSE;
   int      iCoeffChanged = 0, iConRemove = 0, iSOS = 0,

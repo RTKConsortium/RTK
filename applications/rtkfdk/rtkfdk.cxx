@@ -34,9 +34,7 @@
 #include "rtkCyclicDeformationImageFilter.h"
 
 #include <itkStreamingImageFilter.h>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
 #include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])
@@ -133,8 +131,9 @@ int main(int argc, char * argv[])
   // compensation are set, we still create the object before hand to avoid auto
   // destruction.
   typedef itk::Vector<float,3> DVFPixelType;
+  typedef itk::Image< DVFPixelType, 4 > DVFImageSequenceType;
   typedef itk::Image< DVFPixelType, 3 > DVFImageType;
-  typedef rtk::CyclicDeformationImageFilter< DVFImageType > DeformationType;
+  typedef rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType > DeformationType;
   typedef itk::ImageFileReader<DeformationType::InputImageType> DVFReaderType;
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   DeformationType::Pointer def = DeformationType::New();
@@ -198,11 +197,9 @@ int main(int argc, char * argv[])
   StreamerType::Pointer streamerBP = StreamerType::New();
   streamerBP->SetInput( pfeldkamp );
   streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Prevent splitting along z axis. As a result, splitting will be performed along y axis
   streamerBP->SetRegionSplitter(splitter);
-#endif
 
   // Write
   typedef itk::ImageFileWriter<CPUOutputImageType> WriterType;

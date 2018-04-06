@@ -43,7 +43,7 @@ CudaUnaryFunctorImageFilter< TInputImage, TOutputImage, TFunction, TParentImageF
   typename GPUInputImage::Pointer  inPtr =  dynamic_cast< GPUInputImage * >( this->ProcessObject::GetInput(0) );
   typename GPUOutputImage::Pointer otPtr =  dynamic_cast< GPUOutputImage * >( this->ProcessObject::GetOutput(0) );
 
-  typename GPUOutputImageGPUOutputImage::SizeType outSize = otPtr->GetLargestPossibleRegion().GetSize();
+  typename GPUOutputImage::SizeType outSize = otPtr->GetLargestPossibleRegion().GetSize();
 
   int imgSize[3] = { 1, 1, 1 };
 

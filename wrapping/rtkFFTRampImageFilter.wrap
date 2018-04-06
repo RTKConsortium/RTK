@@ -1,0 +1,8 @@
+itk_wrap_class("rtk::FFTRampImageFilter"  POINTER)
+  set(IMAGE_DIMS 3) #Only wrap for 3D images because of rtkBackProjectionImageFilter dimension restriction
+  foreach(d ${IMAGE_DIMS})
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("I${ITKM_${t}}${d}I${ITKM_${t}}${d}${ITKM_D}" "itk::Image<${ITKT_${t}}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>, ${ITKT_D}")
+    endforeach()
+ endforeach()
+itk_end_wrap_class()

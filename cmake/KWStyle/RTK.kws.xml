@@ -10,7 +10,7 @@
 <Spaces>3</Spaces>
 <Comments>/**, *, */,true</Comments>
 <Namespace>rtk</Namespace>
-<NameOfClass>[NameOfClass],itk</NameOfClass>
+<NameOfClass>[NameOfClass],rtk</NameOfClass>
 <IfNDefDefine>[NameOfClass]_[Extension]</IfNDefDefine>
 <EmptyLines>2</EmptyLines>
 <Template>[TNV]</Template>

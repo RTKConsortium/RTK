@@ -112,6 +112,7 @@ STATIC void namecpy(char *into, const char *from)
 STATIC int scan_lineFIXED(lprec *lp, int section, char* line, char *field1, char *field2, char *field3,
                           double *field4, char *field5, double *field6)
 {
+  (void)section;
   int  items = 0, line_len;
   char buf[16], *ptr1, *ptr2;
   (void)section;
@@ -248,6 +249,7 @@ STATIC int lenfield(char *line, int line_len)
 STATIC int scan_lineFREE(lprec *lp, int section, char* line, char *field1, char *field2, char *field3,
                          double *field4, char *field5, double *field6)
 {
+  (void)lp;
   int  items = 0, line_len, len;
   char buf[256], *ptr1 = NULL, *ptr2;
   (void)lp;
