@@ -56,7 +56,7 @@ public:
 
 protected:
   VarianObiXMLFileReader(){m_OutputObject = &m_Dictionary;};
-  ~VarianObiXMLFileReader() {}
+  virtual ~VarianObiXMLFileReader() ITK_OVERRIDE {}
 
   void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
 

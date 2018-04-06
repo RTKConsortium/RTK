@@ -107,7 +107,7 @@ public:
 
 protected:
     DaubechiesWaveletsDenoiseSequenceImageFilter();
-    ~DaubechiesWaveletsDenoiseSequenceImageFilter() {}
+    virtual ~DaubechiesWaveletsDenoiseSequenceImageFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

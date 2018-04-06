@@ -44,7 +44,6 @@ int main(int argc, char * argv[])
   typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
 #endif
-  typedef ProjectionStackType                   VolumeType;
 
   // Projections reader
   typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;

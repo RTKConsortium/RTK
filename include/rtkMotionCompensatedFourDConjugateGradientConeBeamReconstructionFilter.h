@@ -100,8 +100,8 @@ public:
   itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter, FourDConjugateGradientConeBeamReconstructionFilter)
 
   /** Neither the Forward nor the Back projection filters can be set by the user */
-  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE {}
-  void SetBackProjectionFilter (int _arg) ITK_OVERRIDE {}
+  void SetForwardProjectionFilter (int itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
+  void SetBackProjectionFilter (int itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
 
   /** The ND + time motion vector field */
   void SetDisplacementField(const DVFSequenceImageType* DVFs);
@@ -122,7 +122,7 @@ public:
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
-  ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() {}
+  virtual ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
 
   void GenerateOutputInformation() ITK_OVERRIDE;
   void GenerateInputRequestedRegion() ITK_OVERRIDE;

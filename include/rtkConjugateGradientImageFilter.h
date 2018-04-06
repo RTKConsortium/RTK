@@ -88,14 +88,14 @@ public:
 
   /** Set and Get the constant quantity BtWB for residual costs calculation */
   void SetC(const double _arg);
-  const double GetC();
+  double GetC();
 
   /** Setter and getter for ResidualCosts storing array **/
   const std::vector<double> &GetResidualCosts();
   
 protected:
   ConjugateGradientImageFilter();
-  ~ConjugateGradientImageFilter() {}
+  virtual ~ConjugateGradientImageFilter() ITK_OVERRIDE {}
 
   OutputImagePointer GetX();
   OutputImagePointer GetB();

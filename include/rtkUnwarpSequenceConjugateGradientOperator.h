@@ -98,7 +98,7 @@ public:
 
 protected:
     UnwarpSequenceConjugateGradientOperator();
-    ~UnwarpSequenceConjugateGradientOperator() {}
+    virtual ~UnwarpSequenceConjugateGradientOperator() ITK_OVERRIDE {}
 
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;

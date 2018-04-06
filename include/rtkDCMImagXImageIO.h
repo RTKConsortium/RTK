@@ -51,7 +51,7 @@ public:
 
 protected:
   DCMImagXImageIO() {}
-  ~DCMImagXImageIO() {}
+  virtual ~DCMImagXImageIO() ITK_OVERRIDE {}
 };
 
 } // end namespace

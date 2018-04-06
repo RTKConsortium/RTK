@@ -81,7 +81,7 @@ public:
 
 protected:
   DrawEllipsoidImageFilter();
-  ~DrawEllipsoidImageFilter() {}
+  virtual ~DrawEllipsoidImageFilter() ITK_OVERRIDE {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 

@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
   typedef unsigned short InputPixelType;
   const unsigned int Dimension = 3;
   typedef itk::Image< InputPixelType, Dimension > InputImageType;
-  typedef itk::Image< unsigned, Dimension >       OutputHistogramType;
 
   typedef rtk::ProjectionsReader< InputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();

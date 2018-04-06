@@ -112,7 +112,7 @@ public:
 
 protected:
   SpectralForwardModelImageFilter();
-  ~SpectralForwardModelImageFilter() {}
+  virtual ~SpectralForwardModelImageFilter() ITK_OVERRIDE {}
 
   /**  Create the Output */
   typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;

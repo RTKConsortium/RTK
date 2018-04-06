@@ -132,10 +132,8 @@ int main(int, char** )
   ifdk->SetNumberOfIterations(3);
 #ifdef USE_CUDA
   ifdk->SetForwardProjectionFilter(2);
-  ifdk->SetBackProjectionFilter(2);
 #else
   ifdk->SetForwardProjectionFilter(0);
-  ifdk->SetBackProjectionFilter(0);
 #endif
   TRY_AND_EXIT_ON_ITK_EXCEPTION( ifdk->Update() );
 

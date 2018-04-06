@@ -90,7 +90,7 @@ public:
 
 protected:
     BackwardDifferenceDivergenceImageFilter();
-    ~BackwardDifferenceDivergenceImageFilter();
+    virtual ~BackwardDifferenceDivergenceImageFilter() ITK_OVERRIDE;
 
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 

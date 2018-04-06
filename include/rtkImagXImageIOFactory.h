@@ -64,7 +64,7 @@ public:
 
 protected:
   ImagXImageIOFactory();
-  ~ImagXImageIOFactory() {}
+  virtual ~ImagXImageIOFactory() ITK_OVERRIDE {}
   typedef ImagXImageIOFactory myProductType;
   const myProductType* m_MyProduct;
 private:

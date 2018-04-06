@@ -117,7 +117,7 @@ public:
 
 protected:
   JosephBackProjectionImageFilter() {}
-  ~JosephBackProjectionImageFilter() {}
+  virtual ~JosephBackProjectionImageFilter() ITK_OVERRIDE {}
 
   void GenerateData() ITK_OVERRIDE;
 
