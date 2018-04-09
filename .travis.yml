@@ -38,15 +38,10 @@ matrix:
 
 cache:
   - directories:
-    - $HOME/itk-v4.2.0
-    - $HOME/itk-v4.2.0-build
-    - $HOME/itk-v4.5.0
-    - $HOME/itk-v4.5.0-build
-    - $HOME/itk-v4.10.0
-    - $HOME/itk-v4.10.0-build
     - $HOME/itk-v4.12.0
     - $HOME/itk-v4.12.0-build
     - $HOME/build/SimonRit/RTK/build/ExternalData
+    - $HOME/cmake
   - timeout: 1000
 
 before_install:
@@ -64,6 +59,20 @@ before_install:
   - if test "$CUDA" != NONE; then export PATH=${CUDA_TOOLKIT_ROOT_DIR}/bin:${PATH}; fi
   - if test $TRAVIS_OS_NAME == osx ; then HOMEBREW_NO_AUTO_UPDATE=1 brew install fftw; fi
   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
+
+install:
+  - CMAKE_VERSION=3.9.5
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      if ! test -d $HOME/cmake/bin; then
+        CMAKE_URL="https://cmake.org/files/v${CMAKE_VERSION%.[0-9]}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz"
+        travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C $HOME/cmake
+        export PATH=$HOME/cmake/bin:${PATH}
+      fi
+    else
+      brew upgrade cmake
+    fi
+  - cmake --version
 
 before_script:
   - export NUM_THREADS=4
