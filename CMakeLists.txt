@@ -198,6 +198,7 @@ endif()
 #=========================================================
 # Build applications
 #=========================================================
+option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
 option(BUILD_APPLICATIONS "Build RTK applications" ON)
 if(BUILD_APPLICATIONS)
   add_subdirectory(applications)
