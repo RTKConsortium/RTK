@@ -106,8 +106,8 @@ private:
   // DICOM tag for AI versions
   static const std::string m_AI_VERSION_1p2;
   static const std::string m_AI_VERSION_1p5;
-  static const std::string m_AI_VERSION_2p1;
-
+  static const std::string m_AI_VERSION_2pX;
+  
   // DICOM tags depend on AI version
   std::string getAIversion();
 

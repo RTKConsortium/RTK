@@ -38,7 +38,7 @@ template< typename TInputImage >
 const std::string ImagXGeometryReader<TInputImage>::m_AI_VERSION_1p5 = "IMAGX:1.6";
 
 template< typename TInputImage >
-const std::string ImagXGeometryReader<TInputImage>::m_AI_VERSION_2p1 = "adaPTinsight: 2.1";
+const std::string ImagXGeometryReader<TInputImage>::m_AI_VERSION_2pX = "adaPTinsight: 2";
 
 template< typename TInputImage >
 typename ImagXGeometryReader<TInputImage>::FlexmapType
@@ -479,9 +479,9 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
 
   bool isImagX1p2 = (version.find(m_AI_VERSION_1p2) != std::string::npos);
   bool isImagX1p5 = (version.find(m_AI_VERSION_1p5) != std::string::npos);
-  bool isImagX2p1 = (version.find(m_AI_VERSION_2p1) != std::string::npos);
-
-  if(!isImagX1p2 && !isImagX1p5 && !isImagX2p1)
+  bool isImagX2pX = (version.find(m_AI_VERSION_2pX) != std::string::npos);  
+  
+  if(!isImagX1p2 && !isImagX1p5 && !isImagX2pX)
     {
     itkExceptionMacro("Unknown AI version : " << version);
     }
@@ -489,7 +489,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
   std::string gantryAngleTag;
   FlexmapType flex;
   CalibrationModelType calibModel;
-  if (isImagX2p1)
+  if (isImagX2pX)
     {
     gantryAngleTag = "300a|011e"; // Warning: CBCT tube angle!
     if (!m_CalibrationXMLFileName.empty() )
@@ -538,7 +538,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
       float gantryAngle = std::atof(value.c_str() );
       addEntryToGeometry(calibModel, gantryAngle);
       }
-    else if (isImagX2p1) // Using flexmap
+    else if (isImagX2pX) // Using flexmap
       {
       float cbctTubeAngle = std::atof(value.c_str() );
       float gantryAngle = cbctTubeAngle + flex.sourceToNozzleOffsetAngle;
