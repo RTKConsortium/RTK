@@ -27,7 +27,6 @@
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageAdaptor.h>
 #include <itkDivideOrZeroOutImageFilter.h>
-#include <itkTimeProbe.h>
 #include <itkThresholdImageFilter.h>
 
 #include "rtkRayBoxIntersectionImageFilter.h"
@@ -170,8 +169,6 @@ public:
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
   itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
 
-  void PrintTiming(std::ostream& os) const;
-
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
   itkSetMacro(NumberOfIterations, unsigned int);
@@ -257,21 +254,6 @@ private:
    * the gating weights filter */
   bool                m_IsGated;
   std::vector<float>  m_GatingWeights;
-
-  /** Time probes */
-  itk::TimeProbe m_ExtractProbe;
-  itk::TimeProbe m_ZeroMultiplyProbe;
-  itk::TimeProbe m_ForwardProjectionProbe;
-  itk::TimeProbe m_SubtractProbe;
-  itk::TimeProbe m_DisplacedDetectorProbe;
-  itk::TimeProbe m_MultiplyProbe;
-  itk::TimeProbe m_RayBoxProbe;
-  itk::TimeProbe m_DivideProbe;
-  itk::TimeProbe m_BackProjectionProbe;
-  itk::TimeProbe m_ThresholdProbe;
-  itk::TimeProbe m_AddProbe;
-  itk::TimeProbe m_GatingProbe;
-
 }; // end of class
 
 } // end namespace rtk

@@ -270,79 +270,28 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
       this->GetInputVolume()->GetBufferPointer();
       }
 
-    m_CGProbe.Start();
-    m_CGFilter->Update();
-    m_CGProbe.Stop();
     currentDownstreamFilter = m_CGFilter;
-
     if (m_PerformPositivity)
       {
-      m_PositivityProbe.Start();
-      m_PositivityFilter->Update();
-      m_PositivityProbe.Stop();
-
       currentDownstreamFilter = m_PositivityFilter;
       }
-
     if (m_PerformTVSpatialDenoising)
       {
-      m_TVSpatialDenoisingProbe.Start();
-      m_TVDenoising->Update();
-      m_TVSpatialDenoisingProbe.Stop();
-
       currentDownstreamFilter = m_TVDenoising;
       }
-
     if (m_PerformWaveletsSpatialDenoising)
       {
-      m_WaveletsSpatialDenoisingProbe.Start();
-      m_WaveletsDenoising->Update();
-      m_WaveletsSpatialDenoisingProbe.Stop();
-
       currentDownstreamFilter = m_WaveletsDenoising;
       }
-
     if (m_PerformSoftThresholdOnImage)
       {
-      m_SoftThresholdImageProbe.Start();
-      m_SoftThresholdFilter->Update();
-      m_SoftThresholdImageProbe.Stop();
-
       currentDownstreamFilter = m_SoftThresholdFilter;
       }
+
+    currentDownstreamFilter->Update();
     }
 
   this->GraftOutput( currentDownstreamFilter->GetOutput() );
-}
-
-template< typename TImage >
-void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::PrintTiming(std::ostream& os) const
-{
-  os << "RegularizedConjugateGradientConeBeamReconstructionFilter timing:" << std::endl;
-  os << "  3D conjugate gradient reconstruction: " << m_CGProbe.GetTotal()
-     << ' ' << m_CGProbe.GetUnit() << std::endl;
-  if (m_PerformPositivity)
-    {
-    os << "  Positivity enforcement: " << m_PositivityProbe.GetTotal()
-      << ' ' << m_PositivityProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformTVSpatialDenoising)
-    {
-    os << "  Total Variation spatial denoising: " << m_TVSpatialDenoisingProbe.GetTotal()
-      << ' ' << m_TVSpatialDenoisingProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformWaveletsSpatialDenoising)
-    {
-    os << "  Wavelets spatial denoising: " << m_WaveletsSpatialDenoisingProbe.GetTotal()
-      << ' ' << m_WaveletsSpatialDenoisingProbe.GetUnit() << std::endl;
-    }
-  if (m_PerformSoftThresholdOnImage)
-    {
-    os << "  Soft thresholding in image domain: " << m_SoftThresholdImageProbe.GetTotal()
-      << ' ' << m_SoftThresholdImageProbe.GetUnit() << std::endl;
-    }
 }
 
 }// end namespace

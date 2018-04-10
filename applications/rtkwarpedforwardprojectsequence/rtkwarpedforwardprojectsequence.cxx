@@ -27,7 +27,6 @@
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -83,8 +82,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dvfReader->Update() )
 
   if(args_info.verbose_flag)
-    std::cout << "Projecting volume sequence..." << std::flush;
-  itk::TimeProbe projProbe;
+    std::cout << "Projecting volume sequence..." << std::endl;
 
   typedef rtk::WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType> WarpForwardProjectType;
   WarpForwardProjectType::Pointer forwardProjection = WarpForwardProjectType::New();
@@ -95,32 +93,16 @@ int main(int argc, char * argv[])
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   forwardProjection->SetWeights(phaseReader->GetOutput());
   forwardProjection->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
-
-  projProbe.Start();
-  
   TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() )
-
-  projProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << projProbe.GetMean() << ' ' << projProbe.GetUnit()
-              << '.' << std::endl;
 
   // Write
   if(args_info.verbose_flag)
-    std::cout << "Writing... " << std::flush;
-  itk::TimeProbe writeProbe;
+    std::cout << "Writing... " << std::endl;
   typedef itk::ImageFileWriter< ProjectionStackType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( forwardProjection->GetOutput() );
-  writeProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-  writeProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << writeProbe.GetMean() << ' ' << projProbe.GetUnit()
-              << '.' << std::endl;
 
   return EXIT_SUCCESS;
 }

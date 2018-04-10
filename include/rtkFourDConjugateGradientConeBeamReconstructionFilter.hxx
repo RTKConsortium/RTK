@@ -222,13 +222,6 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   this->GraftOutput( pimg);
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
-void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::PrintTiming(std::ostream& itkNotUsed(os)) const
-{
-}
-
 } // end namespace rtk
 
 #endif // rtkFourDConjugateGradientConeBeamReconstructionFilter_hxx

@@ -30,7 +30,6 @@
 #include <itkImageFileWriter.h>
 #include <itkExtractImageFilter.h>
 #include <itkPasteImageFilter.h>
-#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -111,7 +110,6 @@ int main(int argc, char * argv[])
   int Nbuffers = static_cast<int>(std::ceil(static_cast<float>(Nprojections) / static_cast<float>(bufferSize)));
 
   bool first = true;
-  std::vector<float> preprocTimings;
   for (int bid = 0; bid < Nbuffers; ++bid)
     {
     int bufferIdx = bid*bufferSize;
@@ -138,15 +136,8 @@ int main(int argc, char * argv[])
     InputImageType::Pointer buffer = extract->GetOutput();
     buffer->DisconnectPipeline();
 
-    itk::TimeProbe probe;
-    probe.Start();
-
     gainfilter->SetInput(extract->GetOutput());
     TRY_AND_EXIT_ON_ITK_EXCEPTION( gainfilter->Update() )
-
-    probe.Stop();
-    float rrtime = probe.GetMean() / static_cast<float>(currentBufferSize);
-    preprocTimings.push_back(rrtime);
 
     if (first)
       {
@@ -184,10 +175,6 @@ int main(int argc, char * argv[])
     pasteFilter->SetDestinationIndex(current_idx);
     TRY_AND_EXIT_ON_ITK_EXCEPTION( pasteFilter->Update() )
     }
-
-  float sumpp = static_cast<float>(std::accumulate(preprocTimings.begin(), preprocTimings.end(), 0.0));
-  float meanpp = sumpp / static_cast<float>(preprocTimings.size());
-  std::cout << "Gain correction average time per projection [us]: " << meanpp/1.e6 << std::endl;
 
   typedef itk::ImageFileWriter<OutputImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();

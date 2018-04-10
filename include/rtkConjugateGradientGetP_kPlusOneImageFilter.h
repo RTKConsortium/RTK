@@ -29,7 +29,7 @@ template< typename TInputImage>
 class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
 public:
-    
+
   /** Standard class typedefs. */
   typedef ConjugateGradientGetP_kPlusOneImageFilter           Self;
   typedef itk::ImageToImageFilter< TInputImage, TInputImage>  Superclass;

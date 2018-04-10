@@ -114,25 +114,12 @@ int main(int argc, char * argv[])
   fourdsart->SetLambda( args_info.lambda_arg );
   fourdsart->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
-  itk::TimeProbe totalTimeProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::endl << std::flush;
-    totalTimeProbe.Start();
-    }
   if(args_info.positivity_flag)
     {
     fourdsart->SetEnforcePositivity(true);
     }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fourdsart->Update() )
-
-  if(args_info.time_flag)
-    {
-    fourdsart->PrintTiming(std::cout);
-    totalTimeProbe.Stop();
-    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
-    }
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;

@@ -32,7 +32,6 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   m_NumberOfIterations = 1;
   m_IterationCosts = false;
   m_C=0.0;
-//  m_MeasureExecutionTimes = false;
 
   m_A = ConjugateGradientOperatorType::New();
 }

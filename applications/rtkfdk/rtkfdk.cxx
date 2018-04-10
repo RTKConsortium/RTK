@@ -56,16 +56,11 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfdk>(reader, args_info);
 
-  itk::TimeProbe readerProbe;
   if(!args_info.lowmem_flag)
     {
     if(args_info.verbose_flag)
-      std::cout << "Reading... " << std::flush;
-    readerProbe.Start();
+      std::cout << "Reading... " << std::endl;
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
-    readerProbe.Stop();
-    if(args_info.verbose_flag)
-      std::cout << "It took " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
   // Geometry
@@ -208,24 +203,9 @@ int main(int argc, char * argv[])
   writer->SetInput( streamerBP->GetOutput() );
 
   if(args_info.verbose_flag)
-    std::cout << "Reconstructing and writing... " << std::flush;
-  itk::TimeProbe writerProbe;
+    std::cout << "Reconstructing and writing... " << std::endl;
 
-  writerProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-  writerProbe.Stop();
-
-  if(args_info.verbose_flag)
-    {
-    std::cout << "It took " << writerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    if(!strcmp(args_info.hardware_arg, "cpu") )
-      feldkamp->PrintTiming(std::cout);
-#ifdef RTK_USE_CUDA
-    else if(!strcmp(args_info.hardware_arg, "cuda") )
-      feldkampCUDA->PrintTiming(std::cout);
-#endif
-    std::cout << std::endl;
-    }
 
   return EXIT_SUCCESS;
 }

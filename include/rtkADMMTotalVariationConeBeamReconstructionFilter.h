@@ -23,7 +23,6 @@
 #include <itkAddImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
-#include <itkTimeProbe.h>
 
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkSoftThresholdTVImageFilter.h"
@@ -195,8 +194,6 @@ public:
     itkSetMacro(CG_iterations, float)
     itkGetMacro(CG_iterations, float)
 
-    void PrintTiming(std::ostream& os) const;
-
     /** Set / Get whether the displaced detector filter should be disabled */
     itkSetMacro(DisableDisplacedDetectorFilter, bool)
     itkGetMacro(DisableDisplacedDetectorFilter, bool)
@@ -254,11 +251,6 @@ private:
     unsigned int    m_CG_iterations;
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-
-    /** Time probes */
-    itk::TimeProbe m_BeforeConjugateGradientProbe;
-    itk::TimeProbe m_ConjugateGradientProbe;
-    itk::TimeProbe m_TVSoftTresholdingProbe;
 };
 } //namespace ITK
 

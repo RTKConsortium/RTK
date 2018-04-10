@@ -67,8 +67,8 @@ install:
       if ! test -d $HOME/cmake/bin; then
         CMAKE_URL="https://cmake.org/files/v${CMAKE_VERSION%.[0-9]}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz"
         travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C $HOME/cmake
-        export PATH=$HOME/cmake/bin:${PATH}
       fi
+      export PATH=$HOME/cmake/bin:${PATH}
     else
       brew upgrade cmake
     fi

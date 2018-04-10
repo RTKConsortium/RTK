@@ -21,7 +21,6 @@
 
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
-#include <itkTimeProbe.h>
 #include <itkThresholdImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 
@@ -224,15 +223,6 @@ private:
 
   /** Convergence factor. Default 0.3 */
   double m_Lambda;
-
-  /** Time probes */
-  itk::TimeProbe m_FDKProbe;
-  itk::TimeProbe m_AddProbe;
-  itk::TimeProbe m_ThresholdProbe;
-  itk::TimeProbe m_ForwardProjectionProbe;
-  itk::TimeProbe m_SubtractProbe;
-  itk::TimeProbe m_MultiplyProbe;
-
 }; // end of class
 
 } // end namespace rtk

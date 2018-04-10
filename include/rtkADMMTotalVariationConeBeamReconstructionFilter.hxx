@@ -241,37 +241,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
       m_GradientFilter2->SetInput(m_ConjugateGradientFilter->GetOutput());
       m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
       }
-
-    m_BeforeConjugateGradientProbe.Start();
-    m_SubtractVolumeFilter->Update();
-    m_BeforeConjugateGradientProbe.Stop();
-
-    m_ConjugateGradientProbe.Start();
-    m_ConjugateGradientFilter->Update();
-    m_ConjugateGradientProbe.Stop();
-
-    m_TVSoftTresholdingProbe.Start();
     m_SubtractFilter2->Update();
-    m_TVSoftTresholdingProbe.Stop();
     }
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
-}
-
-template< typename TOutputImage, typename TGradientOutputImage>
-void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
-::PrintTiming(std::ostream & os) const
-{
-  os << "ADMMWaveletsConeBeamReconstructionFilter timing:" << std::endl;
-  os << "  Before conjugate gradient (computation of the B of AX=B): "
-     << m_BeforeConjugateGradientProbe.GetTotal()
-     << ' ' << m_BeforeConjugateGradientProbe.GetUnit() << std::endl;
-  os << "  Conjugate gradient optimization: "
-     << m_ConjugateGradientProbe.GetTotal()
-     << ' ' << m_ConjugateGradientProbe.GetUnit() << std::endl;
-  os << "  TV soft thresholding: "
-     << m_TVSoftTresholdingProbe.GetTotal()
-     << ' ' << m_TVSoftTresholdingProbe.GetUnit() << std::endl;
 }
 
 }// end namespace

@@ -139,21 +139,7 @@ int main(int argc, char * argv[])
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
-  itk::TimeProbe readerProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
-
-  if(args_info.time_flag)
-    {
-//    conjugategradient->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
 
   if(args_info.costs_given)
     {
