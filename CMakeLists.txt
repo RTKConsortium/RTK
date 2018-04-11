@@ -19,6 +19,13 @@ foreach(p ${CMAKE_POLICIES})
   endif()
 endforeach()
 
+#=========================================================
+# Help function to debug CMake
+macro (DD in)
+  message(${in}=[${${in}}])
+endmacro()
+#=========================================================
+
 project(RTK)
 
 ## RTK Version
