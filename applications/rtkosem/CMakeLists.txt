@@ -2,10 +2,6 @@ WRAP_GGO(rtkosem_GGO_C rtkosem.ggo ../rtkinputprojections_section.ggo ../rtk3Dou
 add_executable(rtkosem rtkosem.cxx ${rtkosem_GGO_C})
 target_link_libraries(rtkosem RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkosem rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkosem)
