@@ -258,7 +258,7 @@ rtk_add_cuda_test(rtkFourDRoosterCudaTest rtkfourdroostertest.cxx)
 rtk_add_cuda_test(rtkADMMWaveletsCudaTest rtkadmmwaveletstest.cxx)
 rtk_add_cuda_test(rtkADMMTotalVariationCudaTest rtkadmmtotalvariationtest.cxx 
   DATA{Input/Phases/phases.txt}
-  Data{Input/Phases/phases_3projs.txt})
+  DATA{Input/Phases/phases_3projs.txt})
 rtk_add_cuda_test(rtkRegularizedConjugateGradientCudaTest rtkregularizedconjugategradienttest.cxx)
 rtk_add_cuda_test(rtkCudaRaycastAdjointOperatorsCudaTest rtkcudaraycastadjointoperatorstest.cxx)
 rtk_add_cuda_test(rtkCyclicDeformationCudaTest rtkcyclicdeformationtest.cxx)
