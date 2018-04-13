@@ -84,8 +84,8 @@ endif()
 
 #=========================================================
 # If choose to build documentation, then search for Doxygen executables.
-option(BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
-if(BUILD_DOXYGEN)
+option(RTK_BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
+if(RTK_BUILD_DOXYGEN)
   add_subdirectory(documentation/Doxygen)
 endif()
 
@@ -202,7 +202,7 @@ endif()
 # Build applications
 #=========================================================
 option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
-option(BUILD_APPLICATIONS "Build RTK applications" ON)
-if(BUILD_APPLICATIONS)
+option(RTK_BUILD_APPLICATIONS "Build RTK applications" ON)
+if(RTK_BUILD_APPLICATIONS)
   add_subdirectory(applications)
 endif()

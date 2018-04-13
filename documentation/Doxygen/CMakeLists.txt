@@ -4,7 +4,7 @@
 include (${CMAKE_ROOT}/Modules/Documentation.cmake)
 
 find_package(Doxygen)
-if (BUILD_DOXYGEN)
+if (RTK_BUILD_DOXYGEN)
 
   #
   # Configure the script and the doxyfile, then add target
