@@ -20,6 +20,7 @@
 #include <fstream>
 
 #include "rtkprojectionmatrix_ggo.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkGgoFunctions.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkConfiguration.h"
