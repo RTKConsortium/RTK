@@ -187,8 +187,8 @@ public:
   itkGetMacro(TV_iterations, int)
 
   // Geometry
-  itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
-  itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
+  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
   /** Preconditioning flag for the conjugate gradient filter */
   itkSetMacro(Preconditioned, bool)

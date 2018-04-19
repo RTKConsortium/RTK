@@ -154,7 +154,7 @@ public:
   typename TOutputImage::ConstPointer GetSupportMask();
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-  itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
+  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
   
   /** If Regularized, perform laplacian-based regularization during 
   *  reconstruction (gamma is the strength of the regularization) */

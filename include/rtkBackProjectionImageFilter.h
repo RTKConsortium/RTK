@@ -68,7 +68,7 @@ public:
   itkTypeMacro(BackProjectionImageFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, GeometryPointer);
+  itkGetObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
   /** Get / Set the transpose flag for 2D projections (optimization trick) */

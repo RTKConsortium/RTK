@@ -141,11 +141,11 @@ protected:
    * NewProjection method has already been called. */
   virtual void NewPixel() = 0;
 
-  ThreeDCircularProjectionGeometry * m_Geometry;
-  MatrixType                         m_PostMultiplyMatrix;
-  PointType                          m_SourcePosition;
-  PointType                          m_PixelPosition;
-  PointType                          m_SourceToPixel;
+  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
+  MatrixType                                m_PostMultiplyMatrix;
+  PointType                                 m_SourcePosition;
+  PointType                                 m_PixelPosition;
+  PointType                                 m_SourceToPixel;
 };
 } // end namespace itk
 

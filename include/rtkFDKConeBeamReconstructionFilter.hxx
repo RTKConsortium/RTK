@@ -81,6 +81,9 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
   const unsigned int Dimension = this->InputImageDimension;
 
+  m_WeightFilter->SetGeometry(m_Geometry);
+  m_BackProjectionFilter->SetGeometry(m_Geometry);
+
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
   typename ExtractFilterType::InputImageRegionType projRegion;
@@ -137,28 +140,6 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   this->GraftOutput( m_BackProjectionFilter->GetOutput() );
   this->GenerateOutputInformation();
-}
-
-template<class TInputImage, class TOutputImage, class TFFTPrecision>
-ThreeDCircularProjectionGeometry::Pointer
-FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
-::GetGeometry()
-{
-  return this->m_WeightFilter->GetGeometry();
-}
-
-template<class TInputImage, class TOutputImage, class TFFTPrecision>
-void
-FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
-::SetGeometry(ThreeDCircularProjectionGeometry* _arg)
-{
-  itkDebugMacro("setting GeometryPointer to " << _arg);
-  if (this->GetGeometry() != _arg)
-    {
-    m_WeightFilter->SetGeometry(_arg);
-    m_BackProjectionFilter->SetGeometry(_arg);
-    this->Modified();
-    }
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>

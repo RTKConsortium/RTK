@@ -44,7 +44,7 @@ CudaRayCastBackProjectionImageFilter
     itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
     }
 
-  GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
+  GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry());
   if( !geometry )
     {
     itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");

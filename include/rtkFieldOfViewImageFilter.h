@@ -70,7 +70,7 @@ public:
   itkTypeMacro(FieldOfViewImageFilter, InPlaceImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, GeometryPointer);
+  itkGetObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
   /** Get / Set of the member Mask. If set, all the pixels in the field of view

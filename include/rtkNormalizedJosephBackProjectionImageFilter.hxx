@@ -72,9 +72,8 @@ NormalizedJosephBackProjectionImageFilter<TInputImage,TOutputImage>
   m_AddFilter->SetInput(0, this->GetInput(0));
 
   // Set geometry
-  GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
-  m_JosephBackProjector->SetGeometry(geometry);
-  m_JosephBackProjectorOfConstantProjection->SetGeometry(geometry);
+  m_JosephBackProjector->SetGeometry(this->GetGeometry());
+  m_JosephBackProjectorOfConstantProjection->SetGeometry(this->GetGeometry());
 
   // Set constant image sources
   m_ConstantVolumeSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(0)));

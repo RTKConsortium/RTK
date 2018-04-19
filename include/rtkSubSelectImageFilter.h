@@ -79,8 +79,8 @@ public:
   typedef rtk::ConstantImageSource<ProjectionStackType>                     EmptyProjectionStackSourceType;
   typedef rtk::ThreeDCircularProjectionGeometry                             GeometryType;
 
-  itkSetMacro(InputGeometry, GeometryType::Pointer)
-  itkGetMacro(InputGeometry, GeometryType::Pointer)
+  itkSetObjectMacro(InputGeometry, GeometryType)
+  itkGetObjectMacro(InputGeometry, GeometryType)
 
   itkGetMacro(SelectedProjections, std::vector<bool>)
 

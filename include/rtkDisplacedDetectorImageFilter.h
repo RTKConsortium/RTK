@@ -85,7 +85,7 @@ public:
   itkTypeMacro(DisplacedDetectorImageFilter, ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, GeometryPointer);
+  itkGetObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
   /** Get / Set whether the projections should be padded

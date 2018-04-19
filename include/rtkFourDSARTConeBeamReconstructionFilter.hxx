@@ -244,12 +244,12 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
   // For the same reason, set geometry now
   // Check and set geometry
-  if(this->GetGeometry().GetPointer() == ITK_NULLPTR)
+  if(this->GetGeometry() == ITK_NULLPTR)
     {
     itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
     }
   m_FourDToProjectionStackFilter->SetGeometry(this->m_Geometry);
-  m_ProjectionStackToFourDFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_ProjectionStackToFourDFilter->SetGeometry(this->m_Geometry);
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   m_ConstantProjectionStackSource->SetInformationFromImage(const_cast<ProjectionStackType *>(this->GetInputProjectionStack().GetPointer()));
@@ -257,7 +257,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   m_ConstantProjectionStackSource->UpdateOutputInformation();
 
   // Create the m_RayBoxFiltersectionImageFilter
-  m_RayBoxFilter->SetGeometry(this->GetGeometry().GetPointer());
+  m_RayBoxFilter->SetGeometry(this->GetGeometry());
   itk::Vector<double, 3> Corner1, Corner2;
 
   Corner1[0] = this->GetInput(0)->GetOrigin()[0];

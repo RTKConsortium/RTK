@@ -59,8 +59,8 @@ public:
   itkTypeMacro(MaskCollimationImageFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, GeometryPointer);
-  itkSetMacro(Geometry, GeometryPointer);
+  itkGetObjectMacro(Geometry, GeometryType);
+  itkSetObjectMacro(Geometry, GeometryType);
 
 protected:
   MaskCollimationImageFilter();

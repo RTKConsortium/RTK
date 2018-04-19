@@ -88,8 +88,8 @@ public:
   itkTypeMacro(FDKConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  virtual ThreeDCircularProjectionGeometry::Pointer GetGeometry();
-  virtual void SetGeometry(ThreeDCircularProjectionGeometry *_arg);
+  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
   /** Get pointer to the weighting filter used by the feldkamp reconstruction */
   typename WeightFilterType::Pointer GetWeightFilter() { return m_WeightFilter; }
@@ -135,6 +135,9 @@ private:
 
   /** Number of projections processed at a time. */
   unsigned int m_ProjectionSubsetSize;
+
+  /** Geometry propagated to subfilters of the mini-pipeline. */
+  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 }; // end of class
 
 } // end namespace rtk

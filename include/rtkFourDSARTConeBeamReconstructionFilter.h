@@ -162,8 +162,8 @@ public:
   typename ProjectionStackType::Pointer   GetInputProjectionStack();
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
-  itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
+  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);

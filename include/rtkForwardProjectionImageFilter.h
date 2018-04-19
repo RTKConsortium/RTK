@@ -51,8 +51,8 @@ public:
   itkTypeMacro(ForwardProjectionImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, GeometryPointer);
-  itkSetMacro(Geometry, GeometryPointer);
+  itkGetObjectMacro(Geometry, GeometryType);
+  itkSetObjectMacro(Geometry, GeometryType);
 
 protected:
   ForwardProjectionImageFilter() : m_Geometry(ITK_NULLPTR) {
