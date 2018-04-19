@@ -105,6 +105,7 @@ JosephBackProjectionImageFilter<TInputImage,
     boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
                 this->GetOutput()->GetRequestedRegion().GetSize()[i] - 1;
+    boxMax[i] *= 1.-itk::NumericTraits<BoxShape::ScalarType>::epsilon();
     }
   box->SetBoxMin(boxMin);
   box->SetBoxMax(boxMax);
