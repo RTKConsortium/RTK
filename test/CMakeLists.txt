@@ -185,6 +185,9 @@ rtk_add_test(rtkNewtonUpdateTest rtknewtonupdatetest.cxx
 rtk_add_test(rtkSartTest rtksarttest.cxx)
 rtk_add_cuda_test(rtkSartCudaTest rtksarttest.cxx)
 
+rtk_add_test(rtkOsemTest rtkosemtest.cxx)
+rtk_add_cuda_test(rtkOsemCudaTest rtkosemtest.cxx)
+
 rtk_add_test(rtkFourDSartTest rtkfourdsarttest.cxx)
 rtk_add_cuda_test(rtkFourDSartCudaTest rtkfourdsarttest.cxx)
 
