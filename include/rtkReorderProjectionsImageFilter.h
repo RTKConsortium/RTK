@@ -62,8 +62,8 @@ public:
   itkTypeMacro(ReorderProjectionsImageFilter, ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(OutputGeometry, GeometryPointer);
-  itkSetMacro(InputGeometry, GeometryPointer);
+  itkGetObjectMacro(OutputGeometry, GeometryType);
+  itkSetObjectMacro(InputGeometry, GeometryType);
 
   /** Set the input signal */
   void SetInputSignal(const std::vector<double> signal);

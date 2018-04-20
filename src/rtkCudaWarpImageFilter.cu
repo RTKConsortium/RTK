@@ -296,7 +296,7 @@ CUDA_warp(int input_vol_dim[3],
   unsigned int  blocksInY = (output_vol_dim[1]-1)/tBlock_y + 1;
   unsigned int  blocksInZ = (output_vol_dim[2]-1)/tBlock_z + 1;
 
-  if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
+  if(GetCudaComputeCapability(device).first<=1)
     {
     dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
     dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);

@@ -71,7 +71,7 @@ public:
   itkTypeMacro(ParkerShortScanImageFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetMacro(Geometry, GeometryPointer);
+  itkGetObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
 protected:

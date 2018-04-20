@@ -174,7 +174,7 @@ public:
     void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
 
     /** Pass the geometry to all filters needing it */
-    itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
+    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
     /** Increase the value of Beta at each iteration */
     void SetBetaForCurrentIteration(int iter);

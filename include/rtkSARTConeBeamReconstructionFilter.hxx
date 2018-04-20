@@ -172,12 +172,12 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 
   // For the same reason, set geometry now
   // Check and set geometry
-  if(this->GetGeometry().GetPointer() == ITK_NULLPTR)
+  if(this->GetGeometry() == ITK_NULLPTR)
     {
     itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
     }
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_BackProjectionFilter->SetGeometry(this->m_Geometry);
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   if (m_IsGated) // For gated SART, insert a gating filter into the pipeline
@@ -193,7 +193,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 
 
   // Create the m_RayBoxFiltersectionImageFilter
-  m_RayBoxFilter->SetGeometry(this->GetGeometry().GetPointer());
+  m_RayBoxFilter->SetGeometry(this->GetGeometry());
 
   m_RayBoxFilter->SetBoxFromImage(this->GetInput(0), false);
 

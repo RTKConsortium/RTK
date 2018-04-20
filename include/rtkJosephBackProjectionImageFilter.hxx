@@ -51,7 +51,7 @@ JosephBackProjectionImageFilter<TInputImage,
   offsets[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(0)->GetBufferedRegion().GetSize()[0] * this->GetInput(0)->GetBufferedRegion().GetSize()[1];
 
-  GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry().GetPointer());
+  GeometryType *geometry = dynamic_cast<GeometryType*>(this->GetGeometry());
   if( !geometry )
     {
     itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");
@@ -105,6 +105,7 @@ JosephBackProjectionImageFilter<TInputImage,
     boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     boxMax[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] +
                 this->GetOutput()->GetRequestedRegion().GetSize()[i] - 1;
+    boxMax[i] *= 1.-itk::NumericTraits<BoxShape::ScalarType>::epsilon();
     }
   box->SetBoxMin(boxMin);
   box->SetBoxMax(boxMax);

@@ -19,6 +19,13 @@ foreach(p ${CMAKE_POLICIES})
   endif()
 endforeach()
 
+#=========================================================
+# Help function to debug CMake
+macro (DD in)
+  message(${in}=[${${in}}])
+endmacro()
+#=========================================================
+
 project(RTK)
 
 ## RTK Version
@@ -84,8 +91,8 @@ endif()
 
 #=========================================================
 # If choose to build documentation, then search for Doxygen executables.
-option(BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
-if(BUILD_DOXYGEN)
+option(RTK_BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
+if(RTK_BUILD_DOXYGEN)
   add_subdirectory(documentation/Doxygen)
 endif()
 
@@ -170,6 +177,17 @@ list(APPEND RTK_INCLUDE_DIRS
 list(APPEND RTK_INCLUDE_DIRS
   ${RTK_BINARY_DIR})
 
+# Setup build locations.
+if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/bin)
+endif()
+if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/lib)
+endif()
+if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/lib)
+endif()
+
 # Export library linking directories (used by LIBPATH)
 set(RTK_SYSTEM_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 set(RTK_SYSTEM_INCLUDE_DIRS ${RTK_INCLUDE_DIRS})
@@ -202,7 +220,7 @@ endif()
 # Build applications
 #=========================================================
 option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
-option(BUILD_APPLICATIONS "Build RTK applications" ON)
-if(BUILD_APPLICATIONS)
+option(RTK_BUILD_APPLICATIONS "Build RTK applications" ON)
+if(RTK_BUILD_APPLICATIONS)
   add_subdirectory(applications)
 endif()

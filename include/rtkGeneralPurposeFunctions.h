@@ -59,6 +59,7 @@ GetSortingPermutation(std::vector<TVectorElement> input)
   return result;
 }
 
+inline
 static std::vector<double>
 ReadSignalFile(std::string filename)
 {

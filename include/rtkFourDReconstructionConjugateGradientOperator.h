@@ -167,7 +167,7 @@ public:
     void SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to all filters needing it */
-    itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
+    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
     /** Use CUDA interpolation/splat filters */
     itkSetMacro(UseCudaInterpolation, bool)

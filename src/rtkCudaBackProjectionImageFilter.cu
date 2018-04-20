@@ -281,7 +281,7 @@ CUDA_back_project(int projSize[3],
   // Allocate array for input projections, in order to bind them to
   // either a 2D layered texture (requires GetCudaComputeCapability >= 2.0) or
   // a 3D texture
-  if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
+  if(GetCudaComputeCapability(device).first<=1)
     cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent);
   else
     cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent, cudaArrayLayered);
@@ -308,7 +308,7 @@ CUDA_back_project(int projSize[3],
 
   // Run kernels. Note: Projection data is passed via texture memory,
   // transform matrix is passed via constant memory
-  if(CUDA_VERSION<4000 || GetCudaComputeCapability(device).first<=1)
+  if(GetCudaComputeCapability(device).first<=1)
     {
     // Compute block and grid sizes
     dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);

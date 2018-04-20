@@ -326,11 +326,11 @@ public:
   itkSetMacro(TV_iterations, int)
   itkGetMacro(TV_iterations, int)
   itkSetMacro(L0_iterations, int)
-  itkGetMacro(L0_iterations, int)  
+  itkGetMacro(L0_iterations, int)
 
   // Geometry
-  itkSetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
-  itkGetMacro(Geometry, typename ThreeDCircularProjectionGeometry::Pointer)
+  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
   /** Store the phase signal in a member variable */
   virtual void SetSignal(const std::vector<double> signal);

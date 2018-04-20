@@ -149,7 +149,7 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
   itk::ImageRegionConstIterator<InputImageType> itDark(m_DarkImage, darkRegion);
 
   // Get gain map buffer
-  const float *gainBuffer = m_GainImage->GetBufferPointer();
+  const typename OutputImageType::PixelType *gainBuffer = m_GainImage->GetBufferPointer();
 
   int startk = static_cast<int>(outputRegionForThread.GetIndex(2));
   for (int k = startk; k < startk + static_cast<int>(outputRegionForThread.GetSize(2)); k++)

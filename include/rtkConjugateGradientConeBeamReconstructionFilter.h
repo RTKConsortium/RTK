@@ -139,7 +139,7 @@ public:
     typename TOutputImage::ConstPointer GetSupportMask();
 
     /** Pass the geometry to all filters needing it */
-    itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
+    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)

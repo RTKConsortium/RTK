@@ -49,22 +49,22 @@ if(CUDA_FOUND)
     if(${CUDA_VERSION} VERSION_GREATER "8.99")
       FIND_GCC(GCC_PATH "6" "4")
     endif()
-    if(NOT GCC_PATH AND ${CUDA_VERSION} VERSION_GREATER "6.99")
+    if(NOT GCC_PATH )
       FIND_GCC(GCC_PATH "4" "9")
     endif()
-    if(NOT GCC_PATH AND ${CUDA_VERSION} VERSION_GREATER "5.4.99")
+    if(NOT GCC_PATH )
       FIND_GCC(GCC_PATH "4" "8")
     endif()
-    if(NOT GCC_PATH AND ${CUDA_VERSION} VERSION_GREATER "5.4.99")
+    if(NOT GCC_PATH )
       FIND_GCC(GCC_PATH "4" "7")
     endif()
-    if(NOT GCC_PATH AND ${CUDA_VERSION} VERSION_GREATER "4.1.99")
+    if(NOT GCC_PATH )
       FIND_GCC(GCC_PATH "4" "6")
     endif()
-    if(NOT GCC_PATH AND ${CUDA_VERSION} VERSION_GREATER "4.0.99")
+    if(NOT GCC_PATH )
       FIND_GCC(GCC_PATH "4" "5")
     endif()
-    if(NOT GCC_PATH AND ${CUDA_VERSION} VERSION_GREATER "3.99")
+    if(NOT GCC_PATH )
       FIND_GCC(GCC_PATH "4" "4")
     endif()
     if(NOT GCC_PATH)
@@ -78,7 +78,7 @@ if(CUDA_FOUND)
     endif()
 
     if(GCC_PATH)
-      if(NOT APPLE OR "${CUDA_VERSION}" LESS 7.0)
+      if(NOT APPLE)
         message(STATUS "nvcc-check: Found adequate gcc (${GCC_PATH})... telling nvcc to use it!")
         #Only append option if not already done
         list (FIND CUDA_NVCC_FLAGS "--compiler-bindir" _index)
@@ -89,24 +89,5 @@ if(CUDA_FOUND)
     else()
       message(FATAL_ERROR "nvcc-check: Please install adequate gcc for cuda.\nNote that gcc-4.x can be installed side-by-side with your current version of gcc.\n")
     endif()
-  endif()
-
-
-  if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "APPLE")
-      # For CUDA 3.2: surface_functions.h does some non-compliant things...
-      #               so we tell g++ to ignore them when called via nvcc
-      #               by passing the -fpermissive flag through the nvcc
-      #               build trajectory.  Unfortunately, nvcc will also
-      #               blindly pass this flag to gcc, even though it is not
-      #               valid... resulting in TONS of warnings.  So, we go
-      #               version checking again, this time nvcc...
-      # Get the nvcc version number
-
-      # This issue seems to be only if cuda is installed in system so test CUDA_INCLUDE_DIRS
-      # (see http://nvidia.custhelp.com/app/answers/detail/a_id/2869/~/linux-based-cuda-v3.x-compiler-issue-affecting-cuda-surface-apis)
-      if(CUDA_VERSION_MAJOR MATCHES "3" AND CUDA_VERSION_MINOR MATCHES "2" AND CUDA_INCLUDE_DIRS MATCHES "/usr/include")
-          set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --compiler-options='-fpermissive')
-          message(STATUS "nvcc-check: CUDA 3.2 exception: CUDA_NVCC_FLAGS set to \"${CUDA_NVCC_FLAGS}\"")
-      endif()
   endif()
 endif()

@@ -140,7 +140,7 @@ public:
     void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
 
     /** Pass the geometry to all filters needing it */
-    itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
+    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
     /** Set the regularization parameter */
     itkSetMacro(Beta, float)

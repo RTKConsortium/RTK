@@ -377,6 +377,9 @@
 #define LE                       ROWTYPE_LE
 #define GE                       ROWTYPE_GE
 #define EQ                       ROWTYPE_EQ
+#ifdef OF
+# undef OF
+#endif
 #define OF                       ROWTYPE_OF
 
 /* MIP constraint classes */
