@@ -1,22 +1,28 @@
 #PBS -N rtk_dashboard
 #PBS -l walltime=10:00:00,nodes=1:ppn=12,mem=16gb
+#PBS -W x=GRES:gpu@1
 #PBS -o /home/srit/tmp/rtk_dashboard.out
 #PBS -e /home/srit/tmp/rtk_dashboard.err
 #PBS -q gpu
 #PBS -M simon.rit@creatis.insa-lyon.fr
 set -x
 
+hostname
+
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=12
 export CXXFLAGS="-fPIC -std=c++11"
 export PATH=$PATH:~/src/gcc/gcc472-install/bin
+export PATH=~/src/kwstyle/lin64-dg/bin:$PATH
+export CUDA_INCLUDE_DIRS=/usr/include/cuda
+export CUDA_BIN_PATH=/usr/bin
+export CUDA_INC_PATH=/usr/include/cuda
 
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda70_itk4.cmake
+/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4.cmake -V
 
 rm -fr /tmp/RTK_dashboard
 mkdir /tmp/RTK_dashboard
-git clone git://github.com/SimonRit/RTK.git /tmp/RTK_dashboard/RTK
+git clone -b RTK-ExternalModule git://github.com/SimonRit/RTK.git /tmp/RTK_dashboard/RTK
 
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_cov.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_nofftw.cmake -V
