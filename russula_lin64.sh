@@ -1,5 +1,5 @@
 #!/bin/bash -x
-export CXX="/usr/bin/c++ -fPIC -std=c++11"
+export CXXFLAGS="-fPIC -std=c++11"
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_debug.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_style.cmake -V
