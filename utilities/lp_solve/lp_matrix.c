@@ -3326,6 +3326,7 @@ STATIC int prod_Ax(lprec *lp, int *coltarget, REAL *input, int *nzinput,
                               REAL *output, int *nzoutput, int roundmode)
 /* prod_Ax is only used in fimprove; note that it is NOT VALIDATED/verified as of 20030801 - KE */
 {
+  (void)nzoutput;
   int      j, colnr, ib, ie, vb, ve;
   MYBOOL   localset, localnz = FALSE, isRC;
   MATrec   *mat = lp->matA;

@@ -20,7 +20,7 @@
 
 #include "itkCudaUtil.h"
 #include <itkLightObject.h>
-#include "rtkWin32Header.h"
+#include "itkCudaWin32Header.h"
 
 //
 // Singleton class for CudaContextManager

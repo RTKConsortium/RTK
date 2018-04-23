@@ -1,4 +1,4 @@
-testing/.*\.cxx Namespace Disable
-testing/.*\.cxx Header Disable
+test/.*\.cxx Namespace Disable
+test/.*\.cxx Header Disable
 examples/.*\.cxx Namespace Disable
 examples/.*\.cxx Header Disable

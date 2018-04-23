@@ -2,10 +2,6 @@ WRAP_GGO(rtktutorialapplication_GGO_C rtktutorialapplication.ggo ${RTK_BINARY_DI
 add_executable(rtktutorialapplication rtktutorialapplication.cxx ${rtktutorialapplication_GGO_C})
 target_link_libraries(rtktutorialapplication RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtktutorialapplication rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtktutorialapplication) 

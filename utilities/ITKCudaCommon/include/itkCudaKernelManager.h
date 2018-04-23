@@ -25,7 +25,7 @@
 #include "itkCudaImage.h"
 #include "itkCudaContextManager.h"
 #include "itkCudaDataManager.h"
-#include "rtkWin32Header.h"
+#include "itkCudaWin32Header.h"
 
 namespace itk
 {

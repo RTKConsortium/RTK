@@ -94,6 +94,7 @@ Finish:
 /* Solve U w = v based on column-based version of U, constructed by LU1U0 */
 void LU6U0_v(LUSOLrec *LUSOL, LUSOLmat *mat, REAL V[], REAL W[], int NZidx[], int *INFORM)
 {
+  (void)NZidx;
 #ifdef DoTraceU0
   REAL TEMP;
 #endif

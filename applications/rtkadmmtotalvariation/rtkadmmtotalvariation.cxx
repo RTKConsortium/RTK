@@ -20,7 +20,6 @@
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
 
-#include <itkTimeProbe.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 

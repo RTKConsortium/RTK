@@ -1,0 +1,63 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef __rtkConfiguration_h
+#define __rtkConfiguration_h
+//This file is interpreted by cmake, to define macros based on the cmake configuration options
+//
+
+#include <itkConfigure.h>
+#include <itkIntTypes.h>
+namespace rtk
+{
+  typedef itk::ThreadIdType ThreadIdType;
+}
+
+#if ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 5
+namespace itk
+{
+  typedef double SpacePrecisionType;
+}
+#endif
+
+#ifndef CUDA_FOUND
+#cmakedefine CUDA_FOUND
+#endif
+#cmakedefine RTK_TIME_EACH_FILTER
+#cmakedefine RTK_USE_CUDA
+#cmakedefine RTK_BUILD_SHARED_LIBS 1
+#ifndef SLAB_SIZE
+  #define SLAB_SIZE @RTK_CUDA_PROJECTIONS_SLAB_SIZE@
+#endif
+
+#define RTK_BINARY_DIR "@RTK_BINARY_DIR@"
+
+/* Fix for ITK4 */
+#if defined(ITK_USE_FFTWF) && !defined(USE_FFTWF)
+#  define USE_FFTWF
+#endif
+#if defined(ITK_USE_FFTWD) && !defined(USE_FFTWD)
+#  define USE_FFTWD
+#endif
+
+#define RTK_VERSION_MAJOR @RTK_VERSION_MAJOR@
+#define RTK_VERSION_MINOR @RTK_VERSION_MINOR@
+#define RTK_VERSION_PATCH @RTK_VERSION_PATCH@
+#define RTK_VERSION_STRING "@RTK_VERSION_STRING@"
+
+#endif

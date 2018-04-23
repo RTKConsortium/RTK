@@ -1,0 +1,34 @@
+if(RTK_USE_CUDA)
+
+  #-- itk::InPlaceImageFilter templates --
+  itk_wrap_class("itk::InPlaceImageFilter" POINTER)  
+    foreach(d ${ITK_WRAP_IMAGE_DIMS})
+      foreach(t ${WRAP_ITK_REAL})
+        itk_wrap_template("CI${ITKM_${t}}${d}" "itk::CudaImage<${ITKT_${t}}, ${d}>")
+      endforeach()
+    endforeach()
+  itk_end_wrap_class()
+
+  #-- itk::CudaImageToImageFilter templates --
+  itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
+    foreach(d ${ITK_WRAP_IMAGE_DIMS})
+      foreach(t ${WRAP_ITK_REAL})
+        itk_wrap_template("CI${ITKM_${t}}${d}CI${ITKM_${t}}${d}IPIFCI${ITKM_${t}}${d}" "itk::CudaImage<${ITKT_${t}}, ${d}>, itk::CudaImage<${ITKT_${t}}, ${d}>, itk::InPlaceImageFilter< itk::CudaImage<${ITKT_${t}}, ${d}> >")
+      endforeach()
+    endforeach()
+  itk_end_wrap_class()
+
+  #-----------------------------------------------------------------------------
+  # itk::CudaImageToImageFilter
+  #-----------------------------------------------------------------------------
+  itk_wrap_class("itk::CudaInPlaceImageFilter" POINTER)
+    #itk_wrap_image_filter_combinations("${WRAP_ITK_REAL}" "${WRAP_ITK_REAL}")
+    foreach(d ${ITK_WRAP_IMAGE_DIMS})
+      foreach(t ${WRAP_ITK_REAL})
+        itk_wrap_template("CI${ITKM_${t}}${d}CI${ITKM_${t}}${d}"
+          "itk::CudaImage<${ITKT_${t}}, ${d}>, itk::CudaImage<${ITKT_${t}}, ${d}>")
+      endforeach()
+    endforeach()
+  itk_end_wrap_class()
+
+endif()

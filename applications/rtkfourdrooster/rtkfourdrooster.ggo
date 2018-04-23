@@ -9,7 +9,6 @@ option "output"      o "Output file name"                                      s
 option "niter"       n "Number of main loop iterations"                        int    no   default="5"
 option "cgiter"      - "Number of conjugate gradient nested iterations"        int    no   default="4"
 option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
-option "time"        t "Records elapsed time during the process"               flag   off
 option "cudadvfinterpolation"   - "Perform DVF interpolation calculations on GPU"        flag   off
 option "nodisplaced" - "Disable the displaced detector filter"                 flag   off
 

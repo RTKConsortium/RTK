@@ -1,0 +1,4 @@
+itk_wrap_class("rtk::LUTbasedVariableI0RawToAttenuationImageFilter" POINTER)
+  #TODO: Wrap integer types
+  itk_wrap_image_filter_combinations("${WRAP_ITK_INT}" "${WRAP_ITK_REAL}" 3)
+itk_end_wrap_class()

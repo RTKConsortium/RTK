@@ -6,7 +6,6 @@ option "config"         - "Config file"                                         
 option "geometry"       g "XML geometry file name"                                                                    string yes
 option "output"         o "Output file name"                                                                          string yes
 option "niter"          n "Number of iterations"                                                                      int    no   default="5"
-option "time"           t "Records elapsed time during the process"                                                   flag   off  
 option "input"          i "Input volume"                                                                              string no
 option "weights"        w "Weights file for Weighted Least Squares (WLS)"                                             string no
 option "gammalaplacian"	- "Laplacian regularization weight"                                                           float  no   default="0"

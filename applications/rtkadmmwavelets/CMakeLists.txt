@@ -2,10 +2,6 @@ WRAP_GGO(rtkadmmwavelets_GGO_C rtkadmmwavelets.ggo ../rtkinputprojections_sectio
 add_executable(rtkadmmwavelets rtkadmmwavelets.cxx ${rtkadmmwavelets_GGO_C})
 target_link_libraries(rtkadmmwavelets RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkadmmwavelets rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkadmmwavelets) 

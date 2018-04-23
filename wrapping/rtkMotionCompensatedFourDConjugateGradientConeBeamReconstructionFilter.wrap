@@ -1,0 +1,15 @@
+itk_wrap_class("rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter" POINTER)
+
+  #WARNING: Templates can not be defined for both itk::Image and itk::CudaImage
+  # Templates definition for this class should match Superclass.
+
+  if(RTK_USE_CUDA)
+    itk_wrap_template("CIF4CIF3" "itk::CudaImage<float, 4>, itk::CudaImage<float, 3>")
+  else()
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("I${ITKM_${t}}4I${ITKM_${t}}3"
+        "itk::Image<${ITKT_${t}}, 4>, itk::Image<${ITKT_${t}}, 3>")
+    endforeach()
+  endif()
+
+itk_end_wrap_class()
