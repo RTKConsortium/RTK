@@ -43,9 +43,6 @@ namespace rtk
         fw = rtk::JosephForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
       break;
       case(1):
-        fw = rtk::RayCastInterpolatorForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
-      break;
-      case(2):
       #ifdef RTK_USE_CUDA
         fw = rtk::CudaForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
       #else

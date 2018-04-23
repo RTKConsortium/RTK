@@ -24,7 +24,6 @@
 #ifdef RTK_USE_CUDA
 #include "rtkCudaForwardProjectionImageFilter.h"
 #endif
-#include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -97,9 +96,6 @@ int main(int argc, char * argv[])
   {
   case(fp_arg_Joseph):
     forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(fp_arg_RayCastInterpolator):
-    forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA

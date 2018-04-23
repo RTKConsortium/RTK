@@ -14,7 +14,7 @@ option "cudadvfinterpolation"   - "Perform DVF interpolation calculations on GPU
 option "nodisplaced"    - "Disable the displaced detector filter"              flag   off
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","CudaRayCast" enum no default="Joseph"
 option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
 
 section "Phase gating"
