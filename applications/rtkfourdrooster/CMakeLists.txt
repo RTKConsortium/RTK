@@ -2,10 +2,6 @@ WRAP_GGO(rtkfourdrooster_GGO_C rtkfourdrooster.ggo ../rtkinputprojections_sectio
 add_executable(rtkfourdrooster rtkfourdrooster.cxx ${rtkfourdrooster_GGO_C})
 target_link_libraries(rtkfourdrooster RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkfourdrooster rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkfourdrooster) 

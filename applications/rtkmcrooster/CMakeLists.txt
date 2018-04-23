@@ -2,10 +2,6 @@ WRAP_GGO(rtkmcrooster_GGO_C rtkmcrooster.ggo ../rtkinputprojections_section.ggo 
 add_executable(rtkmcrooster rtkmcrooster.cxx ${rtkmcrooster_GGO_C})
 target_link_libraries(rtkmcrooster RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkmcrooster rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkmcrooster) 

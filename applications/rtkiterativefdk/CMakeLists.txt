@@ -2,10 +2,6 @@ WRAP_GGO(rtkiterativefdk_GGO_C rtkiterativefdk.ggo ../rtkinputprojections_sectio
 add_executable(rtkiterativefdk rtkiterativefdk.cxx ${rtkiterativefdk_GGO_C})
 target_link_libraries(rtkiterativefdk RTK)
 
-if(RTK_USE_CUDA)
-  target_link_libraries(rtkiterativefdk rtkcuda)
-endif()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkiterativefdk) 

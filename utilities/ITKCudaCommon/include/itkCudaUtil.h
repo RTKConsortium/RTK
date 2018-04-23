@@ -33,7 +33,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
-#include "rtkWin32Header.h"
+#include "itkCudaWin32Header.h"
 
 namespace itk
 {
@@ -42,7 +42,7 @@ namespace itk
  * provides the GPU kernel source code as a const char*
  */
 #define itkCudaKernelClassMacro(kernel)  \
-class ITK_EXPORT kernel                  \
+class ITKCudaCommon_EXPORT kernel                  \
   {                                      \
     public:                              \
       static std::string GetCudaPTXSource(); \

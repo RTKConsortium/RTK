@@ -38,18 +38,10 @@ CudaImage< TPixel, VImageDimension >::~CudaImage()
 }
 
 template <class TPixel, unsigned int VImageDimension>
-#if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 6)
-  void CudaImage< TPixel, VImageDimension >::Allocate()
-#else
-  void CudaImage< TPixel, VImageDimension >::Allocate(bool initializePixels)
-#endif
+void CudaImage< TPixel, VImageDimension >::Allocate(bool initializePixels)
 {
   // allocate CPU memory - calling Allocate() in superclass
-#if ITK_VERSION_MAJOR < 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 6)
-  Superclass::Allocate();
-#else
   Superclass::Allocate(initializePixels);
-#endif
 
   // allocate Cuda memory
   this->ComputeOffsetTable();
@@ -57,19 +49,17 @@ template <class TPixel, unsigned int VImageDimension>
   m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
   m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
-  
+
   // When we allocate both buffers are dirty and set so to avoid useless transfers
   // between GPU and CPU.
   m_DataManager->SetGPUDirtyFlag(true);
   m_DataManager->SetCPUDirtyFlag(true);
 
-// If initialize pixel is set then we set the CPU dirty flag to false
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR > 5)
+  // If initialize pixel is set then we set the CPU dirty flag to false
   if(initializePixels)
     {
     m_DataManager->SetCPUDirtyFlag(false);
     }
-#endif
 
   // prevent unnecessary copy from CPU to Cuda at the beginning
   m_DataManager->SetTimeStamp(this->GetTimeStamp());
@@ -226,7 +216,7 @@ CudaImage< TPixel, VImageDimension >::Graft(const DataObject *data)
 
   //std::cout << this << " graft from " << data << std::endl;
   m_DataManager = dynamic_cast<CudaImageDataManagerType*>((((CudaImage*)data)->GetCudaDataManager()).GetPointer());
-  
+
   return;
 
   // Pass regular pointer to Graft() instead of smart pointer due to type

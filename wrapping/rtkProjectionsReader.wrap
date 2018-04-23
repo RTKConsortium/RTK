@@ -1,0 +1,10 @@
+itk_wrap_class("rtk::ProjectionsReader" POINTER)
+  # Force uchar image IO
+  UNIQUE(image_types "UC;${WRAP_ITK_REAL}")
+  itk_wrap_image_filter("${image_types}" 1)
+  
+  #WARNING: "UC;${WRAP_ITK_REAL}" is too restrictive. 
+  # Types should be similar to vnl wrapped types : 
+  #  "D;F;SI;SL;LD;SC;UC;US;UI;UL"
+  #Removing VectorImage<> (VI) and WRAP_ITK_SCALAR
+itk_end_wrap_class()

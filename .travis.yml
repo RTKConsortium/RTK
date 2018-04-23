@@ -19,53 +19,29 @@ matrix:
   include:
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.5.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
+      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.5.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
-    - os: osx
-      compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
-    - os: osx
-      compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
-    - os: osx
-      compiler: clang
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
+      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
+      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
+      env: ITK_VERSION=v4.12.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF SIMPLERTK=OFF
+      env: ITK_VERSION=v4.12.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON SIMPLERTK=OFF
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=NONE TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.2.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON SIMPLERTK=OFF
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=ON APPLICATIONS=ON SIMPLERTK=OFF
-    - os: linux
-      compiler: gcc
-      env: ITK_VERSION=v4.10.0 CUDA=7.5-18 TESTING=OFF APPLICATIONS=OFF SIMPLERTK=ON
+      env: ITK_VERSION=v4.12.0 CUDA=7.5-18 TESTING=OFF APPLICATIONS=ON
 
 cache:
   - directories:
-    - $HOME/itk-v4.2.0
-    - $HOME/itk-v4.2.0-build
-    - $HOME/itk-v4.5.0
-    - $HOME/itk-v4.5.0-build
-    - $HOME/itk-v4.10.0
-    - $HOME/itk-v4.10.0-build
+    - $HOME/itk-v4.12.0
+    - $HOME/itk-v4.12.0-build
     - $HOME/build/SimonRit/RTK/build/ExternalData
+    - $HOME/cmake
   - timeout: 1000
 
 before_install:
@@ -83,6 +59,20 @@ before_install:
   - if test "$CUDA" != NONE; then export PATH=${CUDA_TOOLKIT_ROOT_DIR}/bin:${PATH}; fi
   - if test $TRAVIS_OS_NAME == osx ; then HOMEBREW_NO_AUTO_UPDATE=1 brew install fftw; fi
   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
+
+install:
+  - CMAKE_VERSION=3.9.5
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      if ! test -d $HOME/cmake/bin; then
+        CMAKE_URL="https://cmake.org/files/v${CMAKE_VERSION%.[0-9]}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz"
+        travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C $HOME/cmake
+      fi
+      export PATH=$HOME/cmake/bin:${PATH}
+    else
+      brew upgrade cmake
+    fi
+  - cmake --version
 
 before_script:
   - export NUM_THREADS=4
@@ -109,12 +99,9 @@ script:
   - cd -
   - if ! test -d build; then mkdir build; fi
   - cd build
-  - CMAKE_OPTIONS="-DBUILD_APPLICATIONS=${APPLICATIONS} ${CMAKE_OPTIONS}"
+  - CMAKE_OPTIONS="-DRTK_BUILD_APPLICATIONS=${APPLICATIONS} ${CMAKE_OPTIONS}"
   - CMAKE_OPTIONS="-DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
-  - if test $SIMPLERTK == ON ; then CMAKE_OPTIONS="-DBUILD_SIMPLERTK=ON -DWRAP_PYTHON=ON ${CMAKE_OPTIONS}"; fi
-  - if test $SIMPLERTK == ON ; then CMAKE_OPTIONS="-DPYTHON_LIBRARY=$(python-config --prefix)/lib/libpython2.7.dylib -DPYTHON_INCLUDE_DIR=$(python-config --prefix)/include/python2.7 ${CMAKE_OPTIONS}"; fi
-  - if test $TRAVIS_OS_NAME == linux ; then CMAKE_OPTIONS="-DRTK_USE_KWSTYLE=ON ${CMAKE_OPTIONS}"; fi
+  - if test $TRAVIS_OS_NAME == linux ; then CMAKE_OPTIONS="-DITK_USE_KWSTYLE=ON ${CMAKE_OPTIONS}"; fi
   - if [ $DO_BUILD_RTK == true ]; then cmake .. $CMAKE_OPTIONS || travis_terminate 1; fi
-  - if [ $DO_BUILD_RTK == true ] && [ "$TRAVIS_OS_NAME" == linux ]; then make StyleCheckCode || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ]; then make --jobs=$NUM_THREADS --keep-going all || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ] && [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test || travis_terminate 1; fi

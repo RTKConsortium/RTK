@@ -1,0 +1,14 @@
+itk_wrap_include(rtkCyclicDeformationImageFilter.h)
+
+itk_wrap_class("rtk::FDKWarpBackProjectionImageFilter"  POINTER)
+  #Class templated with <itk::Image<PixelType, Dimension>, itk::Image<PixelType, Dimension>, DeformationType>
+  #Deformation Type :
+  #  rtk::CyclicDeformationImageFilter<itk::Image<float, 4>, itk::Image<float, 3>>  --> CDFIF4IF3
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3CDFI${ITKM_${t}}4I${ITKM_${t}}3"
+      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, rtk::CyclicDeformationImageFilter< itk::Image<${ITKT_${t}}, 4>, itk::Image<${ITKT_${t}}, 3> >")
+
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3CDFI${ITKM_V${t}3}4I${ITKM_V${t}3}3"
+      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, rtk::CyclicDeformationImageFilter< itk::Image<${ITKT_V${t}3}, 4>, itk::Image<${ITKT_V${t}3}, 3> >")
+  endforeach()
+itk_end_wrap_class()

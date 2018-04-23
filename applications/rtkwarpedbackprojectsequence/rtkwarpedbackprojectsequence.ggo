@@ -6,7 +6,6 @@ option "config"      - "Config file"                                           s
 option "geometry"    g "XML geometry file name"                                string yes
 option "input"       i "Input volume"                                          string no
 option "output"      o "Output file name"                                      string yes
-option "time"        t "Records elapsed time during the process"               flag   off
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes

@@ -2,10 +2,6 @@ WRAP_GGO(rtkscatterglarecorrection_GGO_C rtkscatterglarecorrection.ggo ../rtkinp
 add_executable(rtkscatterglarecorrection rtkscatterglarecorrection.cxx ${rtkscatterglarecorrection_GGO_C})
 target_link_libraries(rtkscatterglarecorrection RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkscatterglarecorrection rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkscatterglarecorrection) 

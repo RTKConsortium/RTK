@@ -2,10 +2,6 @@ WRAP_GGO(rtkparkershortscanweighting_GGO_C rtkparkershortscanweighting.ggo ../rt
 add_executable(rtkparkershortscanweighting rtkparkershortscanweighting.cxx ${rtkparkershortscanweighting_GGO_C})
 target_link_libraries(rtkparkershortscanweighting RTK)
 
-if(RTK_USE_CUDA)
-  target_link_libraries(rtkparkershortscanweighting rtkcuda)
-endif()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkparkershortscanweighting) 

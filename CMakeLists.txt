@@ -1,43 +1,23 @@
 #=========================================================
-cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
-if(WIN32 OR NOT EXISTS /dev/urandom)
-  cmake_minimum_required(VERSION 2.8.5)
-endif()
-
+# RTK : Reconstruction Toolkit
 #=========================================================
-#RTK = Reconstruction toolkit
-project(RTK)
-#=========================================================
+# Respect the CMAKE_CXX_STANDARD flags when building for
+# ITKv5 or C++11.
+cmake_minimum_required(VERSION 3.9.5 FATAL_ERROR)
 
-#=========================================================
-#Support for the CTest dashboard testing system
-include(CTest)
-include(cmake/RTKExternalData.cmake)
-#=========================================================
+## Only policies introduced after the cmake_minimum_required
+## version need to explicitly be set to NEW.
+## Refer to https://cmake.org/cmake/help/v3.11/manual/cmake-policies.7.html
+set(CMAKE_POLICIES
+  CMP0070
+  CMP0071
+  CMP0072)
 
-## Tell CMake to be quiet
-cmake_policy (SET CMP0003 NEW)
-if(POLICY CMP0054)
-  cmake_policy (SET CMP0054 NEW)
-endif()
-cmake_policy (SET CMP0022 NEW)
-
-## Default to release
-if (NOT CMAKE_BUILD_TYPE)
-  set (CMAKE_BUILD_TYPE Release)
-endif ()
-
-if(BUILD_TESTING)
-  enable_testing()
-endif()
-#=========================================================
-
-#=========================================================
-set(RTK_VERSION_MAJOR "1")
-set(RTK_VERSION_MINOR "4")
-set(RTK_VERSION_PATCH "0")
-
-#=========================================================
+foreach(p ${CMAKE_POLICIES})
+  if(POLICY ${p})
+    cmake_policy(SET ${p} NEW)
+  endif()
+endforeach()
 
 #=========================================================
 # Help function to debug CMake
@@ -46,74 +26,47 @@ macro (DD in)
 endmacro()
 #=========================================================
 
-#=========================================================
-# Output directories.
-if(NOT LIBRARY_OUTPUT_PATH)
-  set (LIBRARY_OUTPUT_PATH ${RTK_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all libraries.")
-endif()
-if(NOT EXECUTABLE_OUTPUT_PATH)
-  set (EXECUTABLE_OUTPUT_PATH ${RTK_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all executables.")
-endif()
-mark_as_advanced(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
+project(RTK)
 
-set(RTK_LIBRARY_PATH "${LIBRARY_OUTPUT_PATH}")
-set(RTK_EXECUTABLE_PATH "${EXECUTABLE_OUTPUT_PATH}")
-set(RTK_EXPORTS_FILE "RTKTargets.cmake")
-set(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
+## RTK Version
+set(RTK_VERSION_MAJOR "1")
+set(RTK_VERSION_MINOR "4")
+set(RTK_VERSION_PATCH "0")
+
+set(RTK_LIBRARIES RTK)
+
+## Default to release
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif ()
+
+#=========================================================
+# Installation variables
+#=========================================================
+if(NOT RTK_INSTALL_RUNTIME_DIR)
+  set(RTK_INSTALL_RUNTIME_DIR bin)
+endif()
+if(NOT RTK_INSTALL_LIB_DIR)
+  set(RTK_INSTALL_LIB_DIR lib)
+endif()
+if(NOT RTK_INSTALL_ARCHIVE_DIR)
+  set(RTK_INSTALL_ARCHIVE_DIR lib)
+endif()
+if(NOT RTK_INSTALL_INCLUDE_DIR)
+  set(RTK_INSTALL_INCLUDE_DIR include/RTK)
+endif()
+if(NOT RTK_INSTALL_PACKAGE_DIR)
+  set(RTK_INSTALL_PACKAGE_DIR "lib/cmake/RTK")
+endif()
+
+#Set position independent code for Unix (-fPIC)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #=========================================================
 # Remove some MS Visual c++ flags
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)
 endif()
-
-# Flag required for shared libraries
-if ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-endif ()
-#=========================================================
-
-#=========================================================
-# Find ITK (required)
-find_package(ITK 4.2.0 REQUIRED)
-if(ITK_FOUND)
-  include(${ITK_USE_FILE})
-else()
-  message(FATAL_ERROR "Cannot build without ITK. Set ITK_DIR.")
-endif()
-set(ITK_LIBRARIES_SANS_VTK)
-foreach(lib ${ITK_LIBRARIES})
-  if(NOT lib MATCHES "ITKVtkGlue")
-    list(APPEND ITK_LIBRARIES_SANS_VTK ${lib})
-  endif()
-endforeach()
-set(ITK_LIBRARIES ${ITK_LIBRARIES_SANS_VTK})
-
-# GPU optional dependencies
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
-find_package(CUDA_wrap)
-if(CUDA_FOUND)
-    if(${CUDA_VERSION} LESS 4.1)
-    message(WARNING "CUDA version ${CUDA_VERSION} is not supported by RTK.")
-    set(RTK_USE_CUDA_DEFAULT OFF)
-  else()
-    set(RTK_USE_CUDA_DEFAULT ON)
-  endif()
-else()
-  set(RTK_USE_CUDA_DEFAULT OFF)
-endif()
-option(RTK_USE_CUDA "Use CUDA for RTK" ${RTK_USE_CUDA_DEFAULT})
-
-if(RTK_USE_CUDA)
-  if(NOT CUDA_FOUND)
-    find_package(CUDA_wrap REQUIRED)
-  endif()
-  include_directories(${CUDA_INCLUDE_DIRS})
-  set(RTK_CUDA_PROJECTIONS_SLAB_SIZE "16" CACHE STRING "Number of projections processed simultaneously in CUDA forward and back projections")
-endif()
-#=========================================================
 
 #=========================================================
 # Remove some Intel compiler warnings
@@ -125,137 +78,149 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd1268")
   endif()
 endif()
-#=========================================================
 
-#=========================================================
+# --------------------------------------------------------
 # Shared libraries option
-option(BUILD_SHARED_LIBS "Build RTK with shared libraries." ${ITK_BUILD_SHARED})
 set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
-#=========================================================
 
-#=========================================================
-# RTK uses KWStyle for checking the coding style
-include(${RTK_SOURCE_DIR}/cmake/KWStyle/KWStyle.cmake)
-
-# Setup KWStyle path for git hooks
-if(KWSTYLE_EXECUTABLE)
-  find_package( Git )
-  if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git/config")
-    execute_process( COMMAND ${GIT_EXECUTABLE} config hooks.KWStyle.path
-      "${KWSTYLE_EXECUTABLE}"
-      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} )
-  endif()
+# --------------------------------------------------------
+# Initialization
+if(NOT ITK_SOURCE_DIR)
+  include(itk-module-init.cmake)
 endif()
-#=========================================================
 
 #=========================================================
 # If choose to build documentation, then search for Doxygen executables.
-option(BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
-if(BUILD_DOXYGEN)
+option(RTK_BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
+if(RTK_BUILD_DOXYGEN)
   add_subdirectory(documentation/Doxygen)
 endif()
-#=========================================================
 
 #=========================================================
-# Installation variables
-if(NOT RTK_INSTALL_RUNTIME_DIR)
-  set(RTK_INSTALL_RUNTIME_DIR bin)
-endif()
-if(NOT RTK_INSTALL_LIB_DIR)
-  set(RTK_INSTALL_LIB_DIR lib)
-endif()
-if(NOT RTK_INSTALL_ARCHIVE_DIR)
-  set(RTK_INSTALL_ARCHIVE_DIR lib)
-endif()
-if(NOT RTK_INSTALL_INCLUDE_DIR)
-  set(RTK_INSTALL_INCLUDE_DIR include/RTK-${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR})
-endif()
-if(NOT RTK_INSTALL_PACKAGE_DIR)
-  set(RTK_INSTALL_PACKAGE_DIR "lib/cmake/RTK-${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}")
-endif()
+# lp_solve library
 #=========================================================
-# Utilities
-list(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/code")
-if(RTK_USE_CUDA)
-  list(APPEND RTK_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/utilities/ITKCudaCommon/include/")
-  list(APPEND RTK_INCLUDE_DIRS ${CUDA_TOOLKIT_INCLUDE})
-endif()
-list(APPEND RTK_INCLUDE_DIRS "${PROJECT_BINARY_DIR}")
-include_directories(${RTK_INCLUDE_DIRS})
-
-if(ITK_VERSION VERSION_LESS "4.4")
-  include_directories(BEFORE utilities/itkImageScanlineConstIterator)
-endif()
-if(ITK_VERSION VERSION_LESS "4.5")
-  include_directories(BEFORE utilities/itkBinShrinkImageFilter)
-endif()
-
-if(RTK_USE_CUDA)
-  add_subdirectory(utilities/ITKCudaCommon)
-  include_directories(utilities/ITKCudaCommon/include)
-endif()
 add_subdirectory(utilities/lp_solve)
-include_directories(
-        utilities/lp_solve
-        utilities/lp_solve/shared
-        utilities/lp_solve/bfp
-        utilities/lp_solve/bfp/bfp_LUSOL
-        utilities/lp_solve/bfp/bfp_LUSOL/LUSOL
-        utilities/lp_solve/colamd)
+
+set(LPSOLVE_INCLUDE_DIRS
+  ${PROJECT_SOURCE_DIR}/utilities/lp_solve
+  ${PROJECT_SOURCE_DIR}/utilities/lp_solve/shared
+  ${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp
+  ${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL
+  ${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL/LUSOL
+  ${PROJECT_SOURCE_DIR}/utilities/lp_solve/colamd
+  )
+
 list(APPEND RTK_INCLUDE_DIRS
-    "${PROJECT_SOURCE_DIR}/utilities/lp_solve"
-    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/shared"
-    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp"
-    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL"
-    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL/LUSOL"
-    "${PROJECT_SOURCE_DIR}/utilities/lp_solve/colamdcode")
-add_subdirectory(code)
+  "${LPSOLVE_INCLUDE_DIRS}")
+
+# --------------------------------------------------------
+# Find ITK (required)
+if(NOT ITK_SOURCE_DIR)
+  find_package(ITK 4.12.0 REQUIRED)
+endif()
+
+# --------------------------------------------------------
+# Check Image Dims required for Python wrapping
+set(WRAPPING_CONFIG_ERROR_LOG "
+  Python wrapping configuration is incorrect.
+
+  Please rebuild both ITK and RTK with the following options:
+    -ITK_WRAP_IMAGE_DIMS=\"2;3;4\"
+    -ITK_WRAP_unsigned_short:BOOL=ON
+
+  Or turn off python wrapping by setting RTK_WRAP_PYTHON:BOOL=OFF.
+  ")
+
+list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+if ((${_index} EQUAL -1) AND RTK_WRAP_PYTHON)
+  message(FATAL_ERROR ${WRAPPING_CONFIG_ERROR_LOG})
+endif()
+
+if (NOT ITK_WRAP_unsigned_short AND RTK_WRAP_PYTHON)
+  message(FATAL_ERROR ${WRAPPING_CONFIG_ERROR_LOG})
+endif()
+
+# --------------------------------------------------------
+# Setup KWStyle from ITK
+if(ITK_USE_KWSTYLE)
+  set( KWStyle_DIR ${CMAKE_BINARY_DIR}/KWStyle-build )
+  set( KWSTYLE_EXECUTABLE ${KWStyle_DIR}/KWStyle)
+
+  set(WORKING_DIR "")
+  if(ITK_SOURCE_DIR)
+    set(WORKING_DIR "${ITK_SOURCE_DIR}")
+  else()
+    set(WORKING_DIR "${CMAKE_SOURCE_DIR}")
+  endif()
+
+  find_package( Git )
+  if(GIT_FOUND AND EXISTS "${WORKING_DIR}/.git/config")
+    execute_process( COMMAND ${GIT_EXECUTABLE} config hooks.KWStyle.path
+      "${KWSTYLE_EXECUTABLE}"
+      WORKING_DIRECTORY ${WORKING_DIR} )
+  endif()
+endif()
+
+#=========================================================
+# ITKCudaCommon
+#=========================================================
+if(RTK_USE_CUDA)
+  if(NOT TARGET ITKCudaCommon)
+    add_subdirectory(utilities/ITKCudaCommon)
+  endif()
+endif()
+list(APPEND RTK_INCLUDE_DIRS
+  ${ITKCudaCommon_INCLUDE_DIRS})
+#=========================================================
+# Include directories
+#=========================================================
+list(APPEND RTK_INCLUDE_DIRS
+  ${RTK_BINARY_DIR})
+
+# Setup build locations.
+if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/bin)
+endif()
+if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/lib)
+endif()
+if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/lib)
+endif()
+
+# Export library linking directories (used by LIBPATH)
+set(RTK_SYSTEM_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+set(RTK_SYSTEM_INCLUDE_DIRS ${RTK_INCLUDE_DIRS})
+
+#=========================================================
+# Configure and build ITK external module
+#=========================================================
+if(NOT ITK_SOURCE_DIR)
+  list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
+  include(ITKModuleExternal)
+else()
+  itk_module_impl()
+endif()
 
 #=========================================================
 # Generate RTKConfig.cmake for the build tree.
 set (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
-set (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
-
-set (RTK_EXPORTS_FILE_CONFIG "cmake/${RTK_EXPORTS_FILE}")
-set (RTK_MODULE_PATH_CONFIG "${RTK_SOURCE_DIR}/cmake/")
+set (RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
 
-# export rtk at this time, because we need it for applications and examples
-EXPORT(EXPORT RTK FILE "${RTK_BINARY_DIR}/cmake/${RTK_EXPORTS_FILE}")
-
-
-#=========================================================
-
-option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
-if(ITK_VERSION LESS "4.6")
-    set(RTK_TIME_EACH_FILTER OFF) 
+configure_file(CTestCustom.cmake ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+#-----------------------------------------------------------------------------
+# The subdirectories added below this line should use only the public
+# interface with find_package(ITK). Set ITK_DIR to use this ITK build.
+if(ITK_SOURCE_DIR)
+  set(ITK_DIR "${ITK_BINARY_DIR}")
 endif()
-
-option(BUILD_APPLICATIONS "Build RTK applications" ON)
-if(BUILD_APPLICATIONS)
+#=========================================================
+# Build applications
+#=========================================================
+option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
+option(RTK_BUILD_APPLICATIONS "Build RTK applications" ON)
+if(RTK_BUILD_APPLICATIONS)
   add_subdirectory(applications)
 endif()
-
-if(BUILD_TESTING)
-  add_subdirectory(testing)
-endif()
-
-option(BUILD_EXAMPLES "Build RTK examples" ON)
-if(BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif()
-
-ExternalData_Add_Target(rtkData)
-
-option(BUILD_SIMPLERTK "Build SimpleRTK Wrapping" OFF)
-if(BUILD_SIMPLERTK)
-  # SimpleRTK is meant to be build separately, so we set the variables
-  set(RTK_DIR ${CMAKE_BINARY_DIR})
-  include(utilities/SimpleRTK/SimpleRTKWithSwig.cmake)
-endif()
-
-INSTALL(EXPORT RTK 
-  FILE "${RTK_EXPORTS_FILE}"
-  DESTINATION "${RTK_INSTALL_PACKAGE_DIR}"
-  )
