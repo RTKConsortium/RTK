@@ -1,13 +1,13 @@
 RTK: The Reconstruction ToolKit 
 -------------------------------
 
-.. image:: https://circleci.com/gh/SimonRit/RTK/tree/RTK-ExternalModule.svg?style=shield
+.. image:: https://circleci.com/gh/SimonRit/RTK/tree/master.svg?style=shield
     :target: https://circleci.com/gh/SimonRit/RTK
 
-.. image:: https://travis-ci.org/SimonRit/RTK.svg?branch=RTK-ExternalModule
+.. image:: https://api.travis-ci.org/SimonRit/RTK.svg
     :target: https://travis-ci.org/SimonRit/RTK/branches
 
-.. image:: https://ci.appveyor.com/api/projects/status/dpflok54d64t3dq9/branch/RTK-ExternalModule?svg=true
+.. image:: https://ci.appveyor.com/api/projects/status/dpflok54d64t3dq9/branch/master?svg=true
     :target: https://ci.appveyor.com/project/simonrit/rtk
 
 Links
