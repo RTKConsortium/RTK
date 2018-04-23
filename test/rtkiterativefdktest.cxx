@@ -131,9 +131,9 @@ int main(int, char** )
   ifdk->SetGeometry( geometry );
   ifdk->SetNumberOfIterations(3);
 #ifdef USE_CUDA
-  ifdk->SetForwardProjectionFilter(2);
+  ifdk->SetForwardProjectionFilter( 1 );
 #else
-  ifdk->SetForwardProjectionFilter(0);
+  ifdk->SetForwardProjectionFilter( 0 );
 #endif
   TRY_AND_EXIT_ON_ITK_EXCEPTION( ifdk->Update() );
 

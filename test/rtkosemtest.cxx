@@ -176,7 +176,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector ******" << std::endl;
 
   osem->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  osem->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  osem->SetForwardProjectionFilter( 1 ); // Cuda ray cast
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
   CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);

@@ -285,7 +285,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 2: CUDA ray cast forward projector, CUDA Voxel-Based back projector, GPU interpolation and splat ******" << std::endl;
 
   conjugategradient->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  conjugategradient->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  conjugategradient->SetForwardProjectionFilter( 1 ); // Cuda ray cast
   conjugategradient->SetCudaConjugateGradient(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 

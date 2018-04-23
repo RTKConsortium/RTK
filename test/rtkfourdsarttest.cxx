@@ -299,7 +299,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 3: CUDA ray cast forward projector, CUDA Voxel-Based back projector, GPU interpolation and splat ******" << std::endl;
 
   fourdsart->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  fourdsart->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  fourdsart->SetForwardProjectionFilter( 1 ); // Cuda ray cast
   fourdsart->SetNumberOfProjectionsPerSubset(1);
   fourdsart->SetNumberOfIterations(3);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fourdsart->Update() );
