@@ -6,16 +6,7 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
 set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk4_cov")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-dg-debug")
-set(ENV{CUDA_BIN_PATH} "/usr/bin")
-set(ENV{CUDA_LIB_PATH} "/usr/lib64/nvidia")
 set(CTEST_BUILD_FLAGS -j12)
-
-# OpenCL
-set(ENV{LD_LIBRARY_PATH} "/usr/lib64/nvidia:$ENV{LD_LIBRARY_PATH}")
-set(CONFIGURE_OPTIONS
-   -DRTK_USE_CUDA:BOOL=ON
-   -DCUDA_CUDA_LIBRARY:PATH=/usr/lib64/libcuda.so
-  )
 
 # Coverage
 SET(CTEST_COVERAGE_COMMAND "/usr/bin/gcov")
