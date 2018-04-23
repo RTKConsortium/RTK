@@ -35,7 +35,7 @@
 
 /* Routines with UNIQUE implementations for each inversion engine                     */
 /* ---------------------------------------------------------------------------------- */
-char   __BFP_EXPORT_TYPE *(BFP_CALLMODEL bfp_name)(void);
+const char   __BFP_EXPORT_TYPE *(BFP_CALLMODEL bfp_name)(void);
 void   __BFP_EXPORT_TYPE (BFP_CALLMODEL bfp_free)(lprec *lp);
 MYBOOL __BFP_EXPORT_TYPE (BFP_CALLMODEL bfp_resize)(lprec *lp, int newsize);
 int    __BFP_EXPORT_TYPE (BFP_CALLMODEL bfp_nonzeros)(lprec *lp, MYBOOL maximum);
@@ -69,7 +69,7 @@ int    BFP_CALLMODEL bfp_rowextra(lprec *lp);
 /* Routines with OPTIONAL SHARED code; template routines suitable for canned          */
 /* inverse engines are located in lp_BFP2.c                                           */
 /* ---------------------------------------------------------------------------------- */
-MYBOOL __BFP_EXPORT_TYPE (BFP_CALLMODEL bfp_init)(lprec *lp, int size, int deltasize, char *options);
+MYBOOL __BFP_EXPORT_TYPE (BFP_CALLMODEL bfp_init)(lprec *lp, int size, int deltasize, const char *options);
 MYBOOL __BFP_EXPORT_TYPE (BFP_CALLMODEL bfp_restart)(lprec *lp);
 MYBOOL __BFP_EXPORT_TYPE (BFP_CALLMODEL bfp_implicitslack)(lprec *lp);
 MYBOOL __BFP_EXPORT_TYPE (BFP_CALLMODEL bfp_pivotalloc)(lprec *lp, int newsize);

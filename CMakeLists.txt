@@ -20,6 +20,7 @@ cmake_policy (SET CMP0003 NEW)
 if(POLICY CMP0054)
   cmake_policy (SET CMP0054 NEW)
 endif()
+cmake_policy (SET CMP0022 NEW)
 
 ## Default to release
 if (NOT CMAKE_BUILD_TYPE)
@@ -33,7 +34,7 @@ endif()
 
 #=========================================================
 set(RTK_VERSION_MAJOR "1")
-set(RTK_VERSION_MINOR "3")
+set(RTK_VERSION_MINOR "4")
 set(RTK_VERSION_PATCH "0")
 
 #=========================================================
@@ -57,6 +58,7 @@ mark_as_advanced(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
 
 set(RTK_LIBRARY_PATH "${LIBRARY_OUTPUT_PATH}")
 set(RTK_EXECUTABLE_PATH "${EXECUTABLE_OUTPUT_PATH}")
+set(RTK_EXPORTS_FILE "RTKTargets.cmake")
 set(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
 #=========================================================
@@ -134,8 +136,17 @@ set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 #=========================================================
 # RTK uses KWStyle for checking the coding style
 include(${RTK_SOURCE_DIR}/cmake/KWStyle/KWStyle.cmake)
-#=========================================================
 
+# Setup KWStyle path for git hooks
+if(KWSTYLE_EXECUTABLE)
+  find_package( Git )
+  if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git/config")
+    execute_process( COMMAND ${GIT_EXECUTABLE} config hooks.KWStyle.path
+      "${KWSTYLE_EXECUTABLE}"
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} )
+  endif()
+endif()
+#=========================================================
 
 #=========================================================
 # If choose to build documentation, then search for Doxygen executables.
@@ -172,10 +183,10 @@ endif()
 list(APPEND RTK_INCLUDE_DIRS "${PROJECT_BINARY_DIR}")
 include_directories(${RTK_INCLUDE_DIRS})
 
-if(ITK_VERSION_MINOR LESS "4")
+if(ITK_VERSION VERSION_LESS "4.4")
   include_directories(BEFORE utilities/itkImageScanlineConstIterator)
 endif()
-if(ITK_VERSION_MINOR LESS "5")
+if(ITK_VERSION VERSION_LESS "4.5")
   include_directories(BEFORE utilities/itkBinShrinkImageFilter)
 endif()
 
@@ -204,8 +215,16 @@ add_subdirectory(code)
 # Generate RTKConfig.cmake for the build tree.
 set (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 set (RTK_LIBRARY_DIRS ${RTK_LIBRARY_PATH})
+
+set (RTK_EXPORTS_FILE_CONFIG "cmake/${RTK_EXPORTS_FILE}")
+set (RTK_MODULE_PATH_CONFIG "${RTK_SOURCE_DIR}/cmake/")
 configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
+
+# export rtk at this time, because we need it for applications and examples
+EXPORT(EXPORT RTK FILE "${RTK_BINARY_DIR}/cmake/${RTK_EXPORTS_FILE}")
+
+
 #=========================================================
 
 option(RTK_TIME_EACH_FILTER "Time each RTK filter in a global object and report times in RTK applications" OFF)
@@ -235,3 +254,8 @@ if(BUILD_SIMPLERTK)
   set(RTK_DIR ${CMAKE_BINARY_DIR})
   include(utilities/SimpleRTK/SimpleRTKWithSwig.cmake)
 endif()
+
+INSTALL(EXPORT RTK 
+  FILE "${RTK_EXPORTS_FILE}"
+  DESTINATION "${RTK_INSTALL_PACKAGE_DIR}"
+  )

@@ -8,3 +8,6 @@ option "phantomfile"  - "Parameters of the phantom reference"       string      
 option "noise"        - "Gaussian noise parameter (SD)"             double          no
 option "phantomscale" - "Scaling factor for the phantom dimensions" double multiple no default="1."
 option "offset"       - "3D spatial offset of the phantom center"   double multiple no
+option "forbild"      f "Interpret phantomfile as Forbild file"     flag            off
+option "rotation"     - "Rotation matrix for the phantom"           double multiple no
+

@@ -19,135 +19,90 @@
 #ifndef rtkDrawGeometricPhantomImageFilter_hxx
 #define rtkDrawGeometricPhantomImageFilter_hxx
 
-#include <iostream>
-#include "rtkDrawEllipsoidImageFilter.h"
-#include "rtkDrawCylinderImageFilter.h"
-#include "rtkDrawConeImageFilter.h"
-#include "rtkDrawCubeImageFilter.h"
-#include "itkAddImageFilter.h"
+#include "rtkDrawGeometricPhantomImageFilter.h"
+#include "rtkGeometricPhantomFileReader.h"
+#include "rtkForbildPhantomFileReader.h"
+#include "rtkDrawConvexImageFilter.h"
 
-#include "rtkHomogeneousMatrix.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace rtk
 {
-
 template <class TInputImage, class TOutputImage>
 DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>
 ::DrawGeometricPhantomImageFilter():
 m_PhantomScale(1.),
-m_OriginOffset(0.)
+m_OriginOffset(0.),
+m_IsForbildConfigFile(false)
 {
+  m_RotationMatrix.SetIdentity();
 }
 
-template <class TInputImage, class TOutputImage>
-void DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
+template< class TInputImage, class TOutputImage >
+void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData()
 {
-  VectorOfVectorType figParam;
-  //Getting phantom parameters
-  CFRType::Pointer cfr = CFRType::New();
-  cfr->Config(m_ConfigFile);
-  figParam = cfr->GetFig();
-  VectorType semiprincipalaxis;
-  VectorType center;
-
-  //Add Image Filter used to concatenate the different figures obtained on each iteration
-  typedef itk::AddImageFilter <TOutputImage, TOutputImage, TOutputImage> AddImageFilterType;
-  typename AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
-
-  unsigned int NumberOfFig = figParam.size();
-  for(unsigned int i=0; i<NumberOfFig; i++)
-  {
-    //Set figures parameters
-    semiprincipalaxis[0] = figParam[i][1] * m_PhantomScale[0];
-    semiprincipalaxis[1] = figParam[i][2] * m_PhantomScale[1];
-    semiprincipalaxis[2] = figParam[i][3] * m_PhantomScale[2];
-    center[0] = (figParam[i][4] + m_OriginOffset[0]) * m_PhantomScale[0];
-    center[1] = (figParam[i][5] + m_OriginOffset[1]) * m_PhantomScale[1];
-    center[2] = (figParam[i][6] + m_OriginOffset[2]) * m_PhantomScale[2];
-
-    //Deciding which figure to draw
-    switch ((int)figParam[i][0])
+  //Reading figure config file
+  if(! m_ConfigFile.empty() )
     {
-      case 0:
+    if(m_IsForbildConfigFile)
       {
-        // Create figure object (3D ellipsoid).
-        typedef rtk::DrawEllipsoidImageFilter<TInputImage, TOutputImage> DEType;
-        typename DEType::Pointer de = DEType::New();
-        de->SetInput( this->GetInput() );
-        de->SetAxis(semiprincipalaxis);
-        de->SetCenter(center);
-        de->SetAngle(figParam[i][7]);
-        de->SetDensity(figParam[i][8]);
-        de->Update();
-        addFilter->SetInput1(de->GetOutput());
-        if(!i)
-          addFilter->SetInput2(this->GetInput());
-        else
-          addFilter->SetInput2(this->GetOutput());
-        break;
+      typedef rtk::ForbildPhantomFileReader ReaderType;
+      ReaderType::Pointer reader = ReaderType::New();
+      reader->SetFilename(m_ConfigFile);
+      reader->GenerateOutputInformation();
+      this->m_GeometricPhantom = reader->GetGeometricPhantom();
       }
-      case 1:
+    else
       {
-        // Create figure object (3D cylinder).
-        typedef rtk::DrawCylinderImageFilter<TInputImage, TOutputImage> DCType;
-        typename DCType::Pointer dc = DCType::New();
-        dc->SetInput( this->GetInput() );
-        dc->SetAxis(semiprincipalaxis);
-        dc->SetCenter(center);
-        dc->SetAngle(figParam[i][7]);
-        dc->SetDensity(figParam[i][8]);
-        dc->Update();
-        addFilter->SetInput1(dc->GetOutput());
-        if(!i)
-          addFilter->SetInput2(this->GetInput());
-        else
-          addFilter->SetInput2(this->GetOutput());
-        break;
-      }
-      case 2:
-      {
-        // Create figure object (3D cone).
-        typedef rtk::DrawConeImageFilter<TInputImage, TOutputImage> DCOType;
-        typename DCOType::Pointer dco = DCOType::New();
-        dco->SetInput( this->GetInput() );
-        dco->SetAxis(semiprincipalaxis);
-        dco->SetCenter(center);
-        dco->SetAngle(figParam[i][7]);
-        dco->SetDensity(figParam[i][8]);
-        dco->Update();
-        addFilter->SetInput1(dco->GetOutput());
-        if(!i)
-          addFilter->SetInput2(this->GetInput());
-        else
-          addFilter->SetInput2(this->GetOutput());
-        break;
-      }
-      case 3:
-      {
-        // Create figure object (3D box).
-        typedef rtk::DrawCubeImageFilter<TInputImage, TOutputImage> DBType;
-        typename DBType::Pointer db = DBType::New();
-        db->SetInput( this->GetInput() );
-        db->SetAxis(semiprincipalaxis);
-        db->SetCenter(center);
-        db->SetAngle(figParam[i][7]);
-        db->SetDensity(figParam[i][8]);
-        db->Update();
-        addFilter->SetInput1(db->GetOutput());
-        if(!i)
-          addFilter->SetInput2(this->GetInput());
-        else
-          addFilter->SetInput2(this->GetOutput());
-        break;
+      typedef rtk::GeometricPhantomFileReader ReaderType;
+      ReaderType::Pointer reader = ReaderType::New();
+      reader->SetFilename(m_ConfigFile);
+      reader->GenerateOutputInformation();
+      this->m_GeometricPhantom = reader->GetGeometricPhantom();
       }
     }
 
-    addFilter->Update();
-    this->GraftOutput( addFilter->GetOutput() );
+  //Check that it's not empty
+  const GeometricPhantom::ConvexShapeVector &cov = m_GeometricPhantom->GetConvexShapes();
+  if( cov.size() == 0 )
+    itkExceptionMacro(<< "Empty phantom");
 
-  }
+  // Create one add filter per convex object
+  std::vector< typename itk::ImageSource<TOutputImage>::Pointer > drawers;
+  for(size_t i=0; i<cov.size(); i++)
+    {
+    ConvexShape::Pointer co = cov[i]->Clone();
+    co->Rotate( m_RotationMatrix );
+    co->Translate( m_OriginOffset );
+    co->Rescale( m_PhantomScale );
+
+    if( drawers.size() )
+      {
+      typedef DrawConvexImageFilter<TOutputImage, TOutputImage>  RCOIType;
+      typename RCOIType::Pointer rcoi = RCOIType::New();
+      rcoi->SetInput(drawers.back()->GetOutput());
+      rcoi->SetConvexShape(co);
+      drawers.push_back( rcoi.GetPointer() );
+      }
+    else
+      {
+      typedef DrawConvexImageFilter<TInputImage, TOutputImage>  RCOIType;
+      typename RCOIType::Pointer rcoi = RCOIType::New();
+      rcoi->SetInput(this->GetInput());
+      rcoi->SetConvexShape(co);
+      drawers.push_back( rcoi.GetPointer() );
+      }
+    }
+
+  drawers.back()->GetOutput()->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+  drawers.back()->Update();
+  this->GraftOutput( drawers.back()->GetOutput() );
 }
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif

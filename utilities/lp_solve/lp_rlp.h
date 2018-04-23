@@ -1648,7 +1648,7 @@ static int lp_yy_get_next_buffer (lp_yyscan_t lp_yyscanner)
 
 #ifndef YY_NO_INPUT
 #ifdef __cplusplus
-    static int lp_yyinput (lp_yyscan_t lp_yyscanner)
+    static inline int lp_yyinput (lp_yyscan_t lp_yyscanner)
 #else
     static int input  (lp_yyscan_t lp_yyscanner)
 #endif
@@ -2097,6 +2097,7 @@ YY_BUFFER_STATE lp_yy_scan_bytes  (lp_yyconst char * lp_yybytes, int  _lp_yybyte
 
 static void lp_yy_fatal_error (lp_yyconst char* msg , lp_yyscan_t lp_yyscanner)
 {
+        (void) lp_yyscanner; /* Remove unused parameter warning */
     	(void) fprintf( stderr, "%s\n", msg );
 	exit( YY_EXIT_FAILURE );
 }
@@ -2429,11 +2430,13 @@ static int lp_yy_flex_strlen (lp_yyconst char * s , lp_yyscan_t lp_yyscanner)
 
 void *lp_yyalloc (lp_yy_size_t  size , lp_yyscan_t lp_yyscanner)
 {
+        (void) lp_yyscanner; /* Remove unused parameter warning */
 	return (void *) malloc( size );
 }
 
 void *lp_yyrealloc  (void * ptr, lp_yy_size_t  size , lp_yyscan_t lp_yyscanner)
 {
+        (void) lp_yyscanner; /* Remove unused parameter warning */
 	/* The cast to (char *) in the following accommodates both
 	 * implementations that use char* generic pointers, and those
 	 * that use void* generic pointers.  It works with the latter
@@ -2446,6 +2449,7 @@ void *lp_yyrealloc  (void * ptr, lp_yy_size_t  size , lp_yyscan_t lp_yyscanner)
 
 void lp_yyfree (void * ptr , lp_yyscan_t lp_yyscanner)
 {
+        (void) lp_yyscanner; /* Remove unused parameter warning */
 	free( (char *) ptr );	/* see lp_yyrealloc() for (char *) cast */
 }
 

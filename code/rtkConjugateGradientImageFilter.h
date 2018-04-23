@@ -79,9 +79,6 @@ public:
   itkGetMacro(IterationCosts, bool)
   itkSetMacro(IterationCosts, bool)
 
-//  itkSetMacro(MeasureExecutionTimes, bool)
-//  itkGetMacro(MeasureExecutionTimes, bool)
-
   /** Set/Get a stopping criterion */
   itkGetMacro(TargetSumOfSquaresBetweenConsecutiveIterates, double)
   itkSetMacro(TargetSumOfSquaresBetweenConsecutiveIterates, double)

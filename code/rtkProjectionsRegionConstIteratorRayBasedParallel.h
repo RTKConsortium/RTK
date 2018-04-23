@@ -45,6 +45,7 @@ public:
   typedef typename itk::Vector<double, 3>      PointType;
   typedef typename Superclass::MatrixType      MatrixType;
   typedef itk::Matrix< double, 4, 4 >          HomogeneousMatrixType;
+  typedef itk::Matrix< double, 3, 3 >          RotationMatrixType;
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image.
@@ -64,7 +65,8 @@ protected:
    * NewProjection method has already been called. */
   inline virtual void NewPixel();
 
-  MatrixType m_ProjectionIndexTransformMatrix;
+  MatrixType         m_ProjectionIndexTransformMatrix;
+  RotationMatrixType m_PostRotationMatrix;
 };
 } // end namespace itk
 

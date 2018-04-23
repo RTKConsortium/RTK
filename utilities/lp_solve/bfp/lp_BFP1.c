@@ -16,6 +16,8 @@ MYBOOL BFP_CALLMODEL bfp_compatible(lprec *lp, int bfpversion, int lpversion, in
 {
   MYBOOL status = FALSE;
 
+  (void) lpversion; /* unused variable */
+  
   if((lp != NULL) && (bfpversion == BFPVERSION) && (sizeof(REAL) == sizeofvar)) {
 #if 0
     if(lpversion == MAJORVERSION)  /* Forces BFP renewal at lp_solve major version changes */
@@ -34,6 +36,7 @@ int BFP_CALLMODEL bfp_status(lprec *lp)
 /* DON'T MODIFY */
 int BFP_CALLMODEL bfp_indexbase(lprec *lp)
 {
+  (void)lp; /* unused variable*/
   return( MATINDEXBASE );
 }
 

@@ -84,6 +84,7 @@ add_subdirectory(rtkdigisensgeometry)
 add_subdirectory(rtkxradgeometry)
 add_subdirectory(rtkimagxgeometry)
 add_subdirectory(rtkorageometry)
+add_subdirectory(rtkbioscangeometry)
 #=========================================================
 
 # Testing of the applications

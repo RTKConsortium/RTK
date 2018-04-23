@@ -26,8 +26,8 @@
 
 namespace rtk
 {
-template<class TInputImage, class TOutputImage>
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+template<class TVolumeImage, class TProjectionImage>
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::SARTConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(2);
@@ -46,25 +46,25 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   m_GatingWeightsFilter = GatingWeightsFilterType::New();
-  m_ConstantVolumeSource = ConstantImageSourceType::New();
+  m_ConstantVolumeSource = ConstantVolumeSourceType::New();
 
   // Create the filters required for correct weighting of the difference
   // projection
   m_ExtractFilterRayBox = ExtractFilterType::New();
   m_RayBoxFilter = RayBoxIntersectionFilterType::New();
   m_DivideFilter = DivideFilterType::New();
-  m_ConstantProjectionStackSource = ConstantImageSourceType::New();
+  m_ConstantProjectionStackSource = ConstantProjectionSourceType::New();
 
   // Create the filter that enforces positivity
   m_ThresholdFilter = ThresholdFilterType::New();
 
   //Permanent internal connections
-  m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
+  m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename ProjectionType::PixelType>::ZeroValue() );
   m_ZeroMultiplyFilter->SetInput2( m_ExtractFilter->GetOutput() );
 
   m_SubtractFilter->SetInput(0, m_ExtractFilter->GetOutput() );
 
-  m_MultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
+  m_MultiplyFilter->SetInput1( itk::NumericTraits<typename ProjectionType::PixelType>::ZeroValue() );
   m_MultiplyFilter->SetInput2( m_SubtractFilter->GetOutput() );
 
   m_ExtractFilterRayBox->SetInput(m_ConstantProjectionStackSource->GetOutput());
@@ -82,9 +82,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_DisableDisplacedDetectorFilter = false;
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::SetForwardProjectionFilter (int _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
@@ -94,9 +94,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     }
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::SetBackProjectionFilter (int _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
@@ -106,22 +106,22 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     }
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::SetGatingWeights(std::vector<float> weights)
 {
   m_GatingWeights = weights;
   m_IsGated = true;
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr =
-    const_cast< TInputImage * >( this->GetInput() );
+    const_cast< TVolumeImage * >( this->GetInput() );
 
   if ( !inputPtr )
     return;
@@ -138,9 +138,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     }
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::GenerateOutputInformation()
 {
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
@@ -155,7 +155,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
   // Links with the forward and back projection filters should be set here
   // and not in the constructor, as these filters are set at runtime
-  m_ConstantVolumeSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(0)));
+  m_ConstantVolumeSource->SetInformationFromImage(const_cast<TVolumeImage *>(this->GetInput(0)));
   m_ConstantVolumeSource->SetConstant(0);
   m_ConstantVolumeSource->UpdateOutputInformation();
 
@@ -188,24 +188,15 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
     m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
     }
 
-  m_ConstantProjectionStackSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(1)));
+  m_ConstantProjectionStackSource->SetInformationFromImage(const_cast<TProjectionImage *>(this->GetInput(1)));
   m_ConstantProjectionStackSource->SetConstant(0);
   m_ConstantProjectionStackSource->UpdateOutputInformation();
 
 
   // Create the m_RayBoxFiltersectionImageFilter
   m_RayBoxFilter->SetGeometry(this->GetGeometry().GetPointer());
-  itk::Vector<double, 3> Corner1, Corner2;
 
-  Corner1[0] = this->GetInput(0)->GetOrigin()[0];
-  Corner1[1] = this->GetInput(0)->GetOrigin()[1];
-  Corner1[2] = this->GetInput(0)->GetOrigin()[2];
-  Corner2[0] = this->GetInput(0)->GetOrigin()[0] + this->GetInput(0)->GetLargestPossibleRegion().GetSize()[0] * this->GetInput(0)->GetSpacing()[0];
-  Corner2[1] = this->GetInput(0)->GetOrigin()[1] + this->GetInput(0)->GetLargestPossibleRegion().GetSize()[1] * this->GetInput(0)->GetSpacing()[1];
-  Corner2[2] = this->GetInput(0)->GetOrigin()[2] + this->GetInput(0)->GetLargestPossibleRegion().GetSize()[2] * this->GetInput(0)->GetSpacing()[2];
-
-  m_RayBoxFilter->SetBoxMin(Corner1);
-  m_RayBoxFilter->SetBoxMax(Corner2);
+  m_RayBoxFilter->SetBoxFromImage(this->GetInput(0), false);
 
   if(m_EnforcePositivity)
     {
@@ -244,9 +235,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
 
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::GenerateData()
 {
   const unsigned int Dimension = this->InputImageDimension;
@@ -271,7 +262,7 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   m_ConstantProjectionStackSource->Update();
 
   // Declare the image used in the main loop
-  typename TInputImage::Pointer pimg;
+  typename TVolumeImage::Pointer pimg;
 
   // For each iteration, go over each projection
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
@@ -381,9 +372,9 @@ SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
   this->GraftOutput( pimg );
 }
 
-template<class TInputImage, class TOutputImage>
+template<class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TInputImage, TOutputImage>
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::PrintTiming(std::ostream & os) const
 {
   os << "SARTConeBeamReconstructionFilter timing:" << std::endl;

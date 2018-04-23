@@ -71,7 +71,8 @@ int main(int, char** )
   destinationIndexRef.Fill(0);
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
 
-  std::ofstream signalFile("signal.txt");
+  std::string signalFileName = "signal_SelectOneProjPerCycle.txt";
+  std::ofstream signalFile(signalFileName.c_str());
   OutputImageType::Pointer wholeImage    = projectionsSource->GetOutput();
   OutputImageType::Pointer wholeImageRef = projectionsSourceRef->GetOutput();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
@@ -145,7 +146,7 @@ int main(int, char** )
   select->SetInput(wholeImage);
   select->SetInputGeometry(geometry);
   select->SetPhase(0.4);
-  select->SetSignalFilename("signal.txt");
+  select->SetSignalFilename(signalFileName);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( select->Update() );
 
   CheckImageQuality<OutputImageType>(select->GetOutput(), wholeImageRef, 1e-12, 1e20, 1-1e-12);
@@ -153,7 +154,7 @@ int main(int, char** )
 
   std::cout << "Test PASSED! " << std::endl;
 
-  itksys::SystemTools::RemoveFile("signal.txt");
+  itksys::SystemTools::RemoveFile(signalFileName.c_str());
 
   return EXIT_SUCCESS;
 }

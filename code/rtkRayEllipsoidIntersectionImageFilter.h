@@ -25,17 +25,15 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
 
 namespace rtk
 {
 
 /** \class RayEllipsoidIntersectionImageFilter
- * \brief Computes intersection of projection rays with ellipsoids.
+ * \brief Analytical projection of ellipsoids
  *
- * See http://en.wikipedia.org/wiki/Ellipsoid for more information.
- *
- * \test rtksarttest.cxx, rtkamsterdamshroudtest.cxx, rtkmotioncompensatedfdktest.cxx
+ * \test rtksarttest.cxx, rtkamsterdamshroudtest.cxx,
+*        rtkmotioncompensatedfdktest.cxx, rtkforbildtest.cxx
  *
  * \author Simon Rit
  *
@@ -43,37 +41,48 @@ namespace rtk
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT RayEllipsoidIntersectionImageFilter :
-  public RayQuadricIntersectionImageFilter<TInputImage,TOutputImage>
+  public RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef RayEllipsoidIntersectionImageFilter                         Self;
-  typedef RayQuadricIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  typedef RayEllipsoidIntersectionImageFilter                        Self;
+  typedef RayConvexIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                    Pointer;
+  typedef itk::SmartPointer<const Self>                              ConstPointer;
 
-  typedef itk::Vector<double,3>                                       VectorType;
+  /** Convenient typedefs. */
+  typedef ConvexShape::PointType  PointType;
+  typedef ConvexShape::VectorType VectorType;
+  typedef ConvexShape::ScalarType ScalarType;
 
-  typedef ConvertEllipsoidToQuadricParametersFunction                 EQPFunctionType;
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RayEllipsoidIntersectionImageFilter, RayQuadricIntersectionImageFilter);
+  itkTypeMacro(RayEllipsoidIntersectionImageFilter, RayConvexIntersectionImageFilter);
 
-  /** Get/Set the semi-principal axes of the ellipsoid.*/
+  /** Get / Set the constant density of the volume */
+  itkGetMacro(Density, ScalarType);
+  itkSetMacro(Density, ScalarType);
 
-  itkSetMacro(Angle, double);
-  itkGetMacro(Angle, double);
+  /** Get reference to vector of plane parameters. */
+  itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
+  itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
-  itkSetMacro(Axis, VectorType);
+  /** See ConvexShape for the definition of clip planes. */
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+
+  /** Get/Set the center of the ellipsoid. */
+  itkGetMacro(Center, PointType);
+  itkSetMacro(Center, PointType);
+
+  /** Get/Set the semi-principal axes of the ellipsoid. */
   itkGetMacro(Axis, VectorType);
+  itkSetMacro(Axis, VectorType);
 
-  itkSetMacro(Center, VectorType);
-  itkGetMacro(Center, VectorType);
-
-  itkSetMacro(Figure, std::string);
-  itkGetMacro(Figure, std::string);
+  /** Get/Set the rotation angle around the y axis. */
+  itkGetMacro(Angle, ScalarType);
+  itkSetMacro(Angle, ScalarType);
 
 protected:
   RayEllipsoidIntersectionImageFilter();
@@ -85,12 +94,13 @@ private:
   RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);            //purposely not implemented
 
-  VectorType               m_Axis;
-  VectorType               m_Center;
-  double                   m_Attenuation;
-  double                   m_Angle;
-  std::string              m_Figure;
-  EQPFunctionType::Pointer m_EQPFunctor;
+  ScalarType              m_Density;
+  std::vector<VectorType> m_PlaneDirections;
+  std::vector<ScalarType> m_PlanePositions;
+
+  PointType               m_Center;
+  VectorType              m_Axis;
+  ScalarType              m_Angle;
 };
 
 } // end namespace rtk

@@ -19,127 +19,98 @@
 #ifndef rtkDrawQuadricImageFilter_h
 #define rtkDrawQuadricImageFilter_h
 
-#include <itkAddImageFilter.h>
-
-#include "rtkDrawQuadricSpatialObject.h"
-#include "rtkDrawImageFilter.h"
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
+#include "rtkDrawConvexImageFilter.h"
 #include "rtkConfiguration.h"
-#include "rtkDrawQuadricImageFilter.h"
 
 namespace rtk
 {
 
 /** \class DrawQuadricImageFilter
- * \brief Draws in a 3D image user defined Quadric.
+ * \brief Draws a QuadricShape in a 3D image
  *
- * \test rtkdrawgeometricphantomtest.cxx
+ * \test rtkdrawgeometricphantomtest.cxx, rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
-template <class TInputImage,
-          class TOutputImage,
-          class TSpatialObject = DrawQuadricSpatialObject,
-          typename TFunction = itk::Functor::Add2<typename TInputImage::PixelType,
-                                                  typename TInputImage::PixelType,
-                                                  typename TOutputImage::PixelType>
-                                                  >
-class ITK_EXPORT DrawQuadricImageFilter :
-public DrawImageFilter< TInputImage,
-                        TOutputImage,
-                        DrawQuadricSpatialObject,
-                        TFunction >
+template <class TInputImage, class TOutputImage>
+class DrawQuadricImageFilter:
+public DrawConvexImageFilter< TInputImage, TOutputImage >
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawQuadricImageFilter                           Self;
-  typedef DrawImageFilter<TInputImage,TOutputImage,
-                          DrawQuadricSpatialObject,
-                          TFunction  >                     Superclass;
-  typedef itk::SmartPointer<Self>                          Pointer;
-  typedef itk::SmartPointer<const Self>                    ConstPointer;
-  typedef typename TOutputImage::RegionType                OutputImageRegionType;
+  typedef DrawQuadricImageFilter                          Self;
+  typedef DrawConvexImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                         Pointer;
+  typedef itk::SmartPointer<const Self>                   ConstPointer;
 
-  typedef itk::Vector<double,3>                            VectorType;
-  typedef std::string                                      StringType;
-  typedef rtk::ConvertEllipsoidToQuadricParametersFunction EQPFunctionType;
-
-
-  void SetFigure(StringType Figure)
-    {
-    if (Figure ==  this->m_SpatialObject.m_Figure)
-      {
-      return;
-      }
-    this->m_SpatialObject.m_Figure = Figure;
-    this->m_SpatialObject.UpdateParameters();
-    this->Modified();
-    }
-
-  void SetAxis(VectorType Axis)
-    {
-    if ( Axis == this->m_SpatialObject.m_Axis )
-      {
-      return;
-      }
-    this->m_SpatialObject.m_Axis = Axis;
-    this->m_SpatialObject.UpdateParameters();
-    this->Modified();
-    }
-
-  VectorType GetAxis()
-    {
-    return this->m_SpatialObject.m_Axis;
-    }
-
-
-   void SetCenter(VectorType Center)
-    {
-    if ( Center == this->m_SpatialObject.m_Center )
-      {
-      return;
-      }
-    this->m_SpatialObject.m_Center = Center;
-    this->m_SpatialObject.UpdateParameters();
-    this->Modified();
-    }
-
-  VectorType GetCenter()
-    {
-    return this->m_SpatialObject.m_Center;
-    }
-
-  void SetAngle(double Angle)
-    {
-    if ( Angle == this->m_SpatialObject.m_Angle )
-      {
-      return;
-      }
-    this->m_SpatialObject.m_Angle = Angle;
-    this->m_SpatialObject.UpdateParameters();
-    this->Modified();
-    }
-
-  double GetAngle()
-    {
-    return this->m_SpatialObject.m_Angle;
-    }
+  /** Convenient typedefs. */
+  typedef ConvexShape::VectorType VectorType;
+  typedef ConvexShape::ScalarType ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawQuadricImageFilter, DrawImageFilter);
+  itkTypeMacro(DrawQuadricImageFilter, DrawConvexImageFilter);
+
+  /** Get / Set the constant density of the QuadricShape */
+  itkGetMacro(Density, ScalarType);
+  itkSetMacro(Density, ScalarType);
+
+  /** Get reference to vector of plane parameters. */
+  itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
+  itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
+
+  /** See ConvexShape for the definition of clip planes. */
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+
+  itkGetMacro(A, ScalarType);
+  itkSetMacro(A, ScalarType);
+  itkGetMacro(B, ScalarType);
+  itkSetMacro(B, ScalarType);
+  itkGetMacro(C, ScalarType);
+  itkSetMacro(C, ScalarType);
+  itkGetMacro(D, ScalarType);
+  itkSetMacro(D, ScalarType);
+  itkGetMacro(E, ScalarType);
+  itkSetMacro(E, ScalarType);
+  itkGetMacro(F, ScalarType);
+  itkSetMacro(F, ScalarType);
+  itkGetMacro(G, ScalarType);
+  itkSetMacro(G, ScalarType);
+  itkGetMacro(H, ScalarType);
+  itkSetMacro(H, ScalarType);
+  itkGetMacro(I, ScalarType);
+  itkSetMacro(I, ScalarType);
+  itkGetMacro(J, ScalarType);
+  itkSetMacro(J, ScalarType);
 
 protected:
   DrawQuadricImageFilter();
   ~DrawQuadricImageFilter() {}
 
+  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
+
 private:
   DrawQuadricImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);         //purposely not implemented
+
+  ScalarType              m_Density;
+  std::vector<VectorType> m_PlaneDirections;
+  std::vector<ScalarType> m_PlanePositions;
+
+  ScalarType m_A;
+  ScalarType m_B;
+  ScalarType m_C;
+  ScalarType m_D;
+  ScalarType m_E;
+  ScalarType m_F;
+  ScalarType m_G;
+  ScalarType m_H;
+  ScalarType m_I;
+  ScalarType m_J;
 };
 
 } // end namespace rtk

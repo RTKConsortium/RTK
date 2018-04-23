@@ -2153,15 +2153,15 @@ lp_yyreduce:
 
   if(pv->Within_sos_decl1 == 1)
   {
-    parse_parm *pp = PARM;
-    parse_vars *pv = (parse_vars *) pp->parse_vars;
+    parse_parm *pp2 = PARM;
+    parse_vars *pv2 = (parse_vars *) pp2->parse_vars;
 
-    storevarandweight(pp, pv->Last_var0);
-    set_sos_type(pp, pv->SOStype);
-    check_int_sec_sos_free_decl(pp, (int) pv->Within_int_decl, (int) pv->Within_sec_decl, 2, (int) pv->Within_free_decl);
-    pv->Within_sos_decl1 = 2;
-    pv->SOSNr = 0;
-    pv->SOSweight++;
+    storevarandweight(pp2, pv2->Last_var0);
+    set_sos_type(pp2, pv2->SOStype);
+    check_int_sec_sos_free_decl(pp2, (int) pv2->Within_int_decl, (int) pv2->Within_sec_decl, 2, (int) pv2->Within_free_decl);
+    pv2->Within_sos_decl1 = 2;
+    pv2->SOSNr = 0;
+    pv2->SOSweight++;
   }
 }
     break;
@@ -2456,7 +2456,7 @@ lprec * __WINAPI read_lpex(void *userhandle, read_modeldata_func read_modeldata,
   return(read_lp1(NULL, userhandle, read_modeldata, verbose, lp_name));
 }
 
-lprec *read_LP1(lprec *lp, char *filename, int verbose, char *lp_name)
+lprec *read_LP1(lprec *lp, const char *filename, int verbose, char *lp_name)
 {
   FILE *fpin;
 

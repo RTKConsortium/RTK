@@ -20,8 +20,9 @@
 #define rtkJosephBackProjectionImageFilter_hxx
 
 #include "rtkHomogeneousMatrix.h"
-#include "rtkRayBoxIntersectionFunction.h"
+#include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
+#include "rtkRayBoxIntersectionFunction.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -150,6 +151,7 @@ JosephBackProjectionImageFilter<TInputImage,
     extent[i] = this->GetInput(1)->GetSpacing()[i] * buffReg.GetSize()[i];
     normalizedExtent[i] = extent[i] / spacing[i];
     }
+
   if(normalizedExtent[0] > normalizedExtent[1])
     m_SplitAxis = 0;
   else

@@ -30,28 +30,24 @@ void CudaImageDataManager< ImageType >::SetImagePointer(ImageType* img)
 {
   m_Image = img;
 
-  typedef typename ImageType::RegionType RegionType;
-  typedef typename ImageType::IndexType  IndexType;
-  typedef typename ImageType::SizeType   SizeType;
-
   RegionType region = m_Image->GetBufferedRegion();
   IndexType  index  = region.GetIndex();
   SizeType   size   = region.GetSize();
 
-  for (unsigned int d = 0; d < ImageDimension; d++)
+  for (unsigned int d = 0; d < ImageType::ImageDimension; d++)
     {
     m_BufferedRegionIndex[d] = index[d];
     m_BufferedRegionSize[d] = size[d];
     }
 
   m_GPUBufferedRegionIndex = CudaDataManager::New();
-  m_GPUBufferedRegionIndex->SetBufferSize(sizeof(int) * ImageDimension);
-  m_GPUBufferedRegionIndex->SetCPUBufferPointer(m_BufferedRegionIndex);
+  m_GPUBufferedRegionIndex->SetBufferSize(sizeof(int) * ImageType::ImageDimension);
+  m_GPUBufferedRegionIndex->SetCPUBufferPointer(&m_BufferedRegionIndex);
   m_GPUBufferedRegionIndex->SetGPUBufferDirty();
 
   m_GPUBufferedRegionSize = CudaDataManager::New();
-  m_GPUBufferedRegionSize->SetBufferSize(sizeof(int) * ImageDimension);
-  m_GPUBufferedRegionSize->SetCPUBufferPointer(m_BufferedRegionSize);
+  m_GPUBufferedRegionSize->SetBufferSize(sizeof(int) * ImageType::ImageDimension);
+  m_GPUBufferedRegionSize->SetCPUBufferPointer(&m_BufferedRegionSize);
   m_GPUBufferedRegionSize->SetGPUBufferDirty();
 }
 

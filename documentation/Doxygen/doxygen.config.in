@@ -392,7 +392,7 @@ TYPEDEF_HIDES_STRUCT   = NO
 # the optimal cache size from a speed point of view.
 # Minimum value: 0, maximum value: 9, default value: 0.
 
-LOOKUP_CACHE_SIZE      = 0
+LOOKUP_CACHE_SIZE      = 2
 
 #---------------------------------------------------------------------------
 # Build related configuration options
@@ -661,7 +661,7 @@ FILE_VERSION_FILTER    =
 # DoxygenLayout.xml, doxygen will parse it automatically even if the LAYOUT_FILE
 # tag is left empty.
 
-LAYOUT_FILE            =
+LAYOUT_FILE            = "@RTK_SOURCE_DIR@/documentation/Doxygen/DoxygenLayout.xml"
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files containing
 # the reference definitions. This must be a list of .bib files. The .bib
@@ -765,8 +765,6 @@ INPUT_ENCODING         = UTF-8
 # *.qsf, *.as and *.js.
 
 FILE_PATTERNS          = *.h \
-                         *.hxx \
-                         *.cxx \
                          *.dox
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
@@ -987,7 +985,7 @@ ALPHABETICAL_INDEX     = YES
 # Minimum value: 1, maximum value: 20, default value: 5.
 # This tag requires that the tag ALPHABETICAL_INDEX is set to YES.
 
-COLS_IN_ALPHA_INDEX    = 3
+COLS_IN_ALPHA_INDEX    = 1
 
 # In case all classes in a project start with a common prefix, all classes will
 # be put under the same header in the alphabetical index. The IGNORE_PREFIX tag
@@ -1061,7 +1059,7 @@ HTML_FOOTER            = "@PROJECT_SOURCE_DIR@/documentation/Doxygen/DoxygenFoot
 # obsolete.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_STYLESHEET        = "@PROJECT_SOURCE_DIR@/documentation/Doxygen/DoxygenStyle.css"
+HTML_STYLESHEET        =
 
 # The HTML_EXTRA_STYLESHEET tag can be used to specify an additional user-
 # defined cascading style sheet that is included after the standard style sheets
@@ -1072,7 +1070,7 @@ HTML_STYLESHEET        = "@PROJECT_SOURCE_DIR@/documentation/Doxygen/DoxygenStyl
 # see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  =
+HTML_EXTRA_STYLESHEET  = "@PROJECT_SOURCE_DIR@/documentation/Doxygen/DoxygenStyle.css"
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1117,7 +1115,7 @@ HTML_COLORSTYLE_GAMMA  = 80
 # If the HTML_TIMESTAMP tag is set to YES then the footer of each generated HTML
 # page will contain the date and time when the page was generated. Setting this
 # to NO can help when comparing the output of multiple runs.
-# The default value is: NO.
+# The default value is: YES.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 HTML_TIMESTAMP         = YES
@@ -1596,7 +1594,8 @@ PAPER_TYPE             = letter
 # If left blank no extra packages will be included.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-EXTRA_PACKAGES         =
+EXTRA_PACKAGES         = amsmath \
+                         amsfonts
 
 # The LATEX_HEADER tag can be used to specify a personal LaTeX header for the
 # generated LaTeX document. The header should contain everything until the first
@@ -1793,18 +1792,6 @@ GENERATE_XML           = NO
 
 XML_OUTPUT             = xml
 
-# The XML_SCHEMA tag can be used to specify a XML schema, which can be used by a
-# validating XML parser to check the syntax of the XML files.
-# This tag requires that the tag GENERATE_XML is set to YES.
-
-XML_SCHEMA             =
-
-# The XML_DTD tag can be used to specify a XML DTD, which can be used by a
-# validating XML parser to check the syntax of the XML files.
-# This tag requires that the tag GENERATE_XML is set to YES.
-
-XML_DTD                =
-
 # If the XML_PROGRAMLISTING tag is set to YES doxygen will dump the program
 # listings (including syntax highlighting and cross-referencing information) to
 # the XML output. Note that enabling this will significantly increase the size
@@ -1950,15 +1937,21 @@ PREDEFINED             = "itkNotUsed(x)=" \
                          "itkGetStringMacro(name)=                   virtual const char* Get##name () const;" \
                          "itkSetClampMacro(name,type,min,max)=                   virtual void Set##name (type _arg);" \
                          "itkSetObjectMacro(name,type)=                   virtual void Set##name (type* _arg);" \
-                         "itkGetObjectMacro(name,type)=                   virtual type* Get##name ();" \
                          "itkSetConstObjectMacro(name,type)=                   virtual void Set##name ( const type* _arg);" \
-                         "itkGetConstObjectMacro(name,type)=                   virtual const type* Get##name ();" \
-                         "itkGetConstReferenceMacro(name,type)=                   virtual const type& Get##name ();" \
+                         "itkGetConstObjectMacro(name,type)=      virtual const type* Get##name () const;" \
+                         "itkGetModifiableObjectMacro(name,type)= virtual type* GetModifiable##name ();  virtual const type* Get##name () const;" \
+                         "itkGetConstReferenceMacro(name,type)=                   virtual const type& Get##name () const;" \
                          "itkSetEnumMacro(name,type)=                   virtual void Set##name (const type _arg);" \
                          "itkGetEnumMacro(name,type)=                   virtual type Get##name () const;" \
                          "itkGetConstReferenceObjectMacro(name,type)=                   virtual const type::Pointer& Get##name () const;" \
-                         "itkSetDecoratedInputMacro(name, type, number)=                   virtual void Set##name##Input(const SimpleDataObjectDecorator<type> *_arg);                   virtual void SetInput##number(const SimpleDataObjectDecorator<type> *_arg);                   virtual const SimpleDataObjectDecorator<type> * Get##name##Input() const;                   virtual const SimpleDataObjectDecorator<type> * GetInput##number() const;                   virtual void Set##name(const type &_arg);" \
+                         "itkSetDecoratedInputMacro(name, type)=                   virtual void Set##name##Input(const SimpleDataObjectDecorator<type> *_arg);                   virtual void Set##name(const type &_arg);              void Set##name(const SimpleDataObjectDecorator< type > *_arg)" \
+                         "itkGetDecoratedInputMacro(name, type)= virtual const SimpleDataObjectDecorator< type > * Get##name##Input() const; virtual const type & Get##name() const; " \
+                         "itkSetGetDecoratedInputMacro(name, type)=                   virtual void Set##name##Input(const SimpleDataObjectDecorator< type > *_arg);         virtual void Set##name(const type &_arg);          virtual void Set##name(const SimpleDataObjectDecorator< type > *_arg);        virtual const SimpleDataObjectDecorator< type > * Get##name##Input() const;              virtual const type & Get##name() const;          " \
                          "itkSetDecoratedObjectInputMacro(name, type, number)=                   virtual void Set##name##Input(const DataObjectDecorator<type> *_arg);                   virtual void SetInput##number(const DataObjectDecorator<type> *_arg);                   virtual const DataObjectDecorator<type> * Get##name##Input() const;                   virtual const DataObjectDecorator<type> * GetInput##number() const;                   virtual void Set##name(const type *_arg);" \
+                         "itkGetDecoratedObjectInputMacro(name, type)= virtual const DataObjectDecorator< type > * Get##name##Input() const; virtual const type * Get##name() const; " \
+                         "itkSetGetDecoratedObjectInputMacro(name, type)= virtual void Set##name##Input(const DataObjectDecorator<type> *_arg);                   virtual void SetInput##number(const DataObjectDecorator<type> *_arg);                   virtual const DataObjectDecorator<type> * Get##name##Input() const;                   virtual const DataObjectDecorator<type> * GetInput##number() const;                   virtual void Set##name(const type *_arg); virtual const DataObjectDecorator< type > * Get##name##Input() const; virtual const type * Get##name() const; " \
+                         "itkSetDecoratedOutputMacro(name, type)=                   virtual void Set##name##Output(const SimpleDataObjectDecorator<type> *_arg);                   virtual void Set##name(const type &_arg);              void Set##name(const SimpleDataObjectDecorator< type > *_arg)" \
+                         "itkGetDecoratedOutputMacro(name, type)= virtual const SimpleDataObjectDecorator< type > * Get##name##Output() const; virtual const type & Get##name() const; " \
                          "itkBooleanMacro(name)=                   virtual void name##On ();                   virtual void name##Off ();" \
                          "itkSetVector2Macro(name,type)=                   virtual void Set##name (type _arg1, type _arg2)                   virtual void Set##name (type _arg[2]);" \
                          "itkGetVector2Macro(name,type)=                   virtual type* Get##name () const;                   virtual void Get##name (type& _arg1, type& _arg2) const;                   virtual void Get##name (type _arg[2]) const;" \
@@ -1972,14 +1965,15 @@ PREDEFINED             = "itkNotUsed(x)=" \
                          "itkGetVectorMacro(name,type,count)=                   virtual type* Get##name () const;" \
                          "itkSetInputMacro(name,type)=         virtual void Set##name(const type *input);" \
                          "itkGetInputMacro(name,type)=         virtual const type * Get##name() const;" \
-                         "itkNewMacro(type)=                   static Pointer New();                                                                           virtual::itk::LightObject::Pointer CreateAnother(void) const;" \
+                         "itkNewMacro(type)=                   static Pointer New();                                                                           virtual::itk::LightObject::Pointer CreateAnother() const;" \
                          "itkSimpleNewMacro(type)=             static Pointer New();" \
-                         "itkCreateAnotherMacro(type)=         virtual::itk::LightObject::Pointer CreateAnother(void) const;" \
-                         "itkFactorylessNewMacro(x)=                   static Pointer New(void);                   virtual ::itk::LightObject::Pointer CreateAnother(void) const;" \
+                         "itkCreateAnotherMacro(type)=         virtual::itk::LightObject::Pointer CreateAnother() const;" \
+                         "itkFactorylessNewMacro(x)=                   static Pointer New();                   virtual ::itk::LightObject::Pointer CreateAnother() const;" \
                          "itkTypeMacro(thisClass,superclass)=                   virtual const char *GetNameOfClass() const;" \
                          "itkEventMacro(thisClass,superclass)=                   class thisClass : public superclass {};" \
-                         "itkConceptMacro(thisName,thisConcept)=                   /** This class requires thisName                       in the form of thisConcept */                     typedef thisConcept thisName;" \
-                         "vcl_numeric_limits=                   std::numeric_limits" \
+                         "itkDeclareExceptionMacro(newexcp,parentexcp,whatmessage)=         namespace itk {         class newexcp : public parentexcp {        public:       newexcp( const char *file, unsigned int lineNumber ) :        parentexcp( file, lineNumber )          { this->SetDescription( whatmessage ); }          newexcp( const std::string & file, unsigned int lineNumber ) :          parentexcp( file, lineNumber )          { this->SetDescription( whatmessage ); }          itkTypeMacro( newexcp, , parentexcp);         };        }" \
+                         "itkConceptMacro(thisName,thisConcept)=                   /* This class requires thisName                       in the form of thisConcept */" \
+                         "std::numeric_limits=                   std::numeric_limits" \
                          "ITK_TYPENAME=                   typename" \
                          "itkTemplateFloatingToIntegerMacro(name)=                   template <TReturn, typename TInput> name( TInput x )" \
                          "FEM_ABSTRACT_CLASS(thisClass,parentClass)=                   public:                                                                   /** Standard  Self typedef.*/                                          typedef thisClass Self;                                                 /** Standard  Superclass typedef. */                                   typedef parentClass Superclass;                                         /** Pointer or SmartPointer to an object. */                            typedef Self* Pointer;                                                  /** Const pointer or SmartPointer to an object. */                      typedef const Self* ConstPointer;                                     private:" \
@@ -1992,10 +1986,17 @@ PREDEFINED             = "itkNotUsed(x)=" \
                          "VXL_LITTLE_ENDIAN=0" \
                          "VNL_DLL_DATA=" \
                          "size_t=vcl_size_t" \
-                         "USE_FFTWD" \
-                         "USE_FFTWF" \
+                         "ITK_USE_FFTWD" \
+                         "ITK_USE_FFTWF" \
                          "ITK_USE_CONCEPT_CHECKING" \
-                         "__itkMacro_h"
+                         "itkMacro_h" \
+                         "ITK_LEGACY_REMOVE" \
+                         "ITKCommon_EXPORT_EXPLICIT" \
+                         "ITK_OVERRIDE= override " \
+                         "ITK_NULLPTR=  nullptr " \
+                         "ITK_NOEXCEPT= noexcept " \
+                         "ITK_DISALLOW_COPY_AND_ASSIGN(type)="\
+                         "ITK_FORCE_EXPORT_MACRO(X)="
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
@@ -2299,7 +2300,7 @@ MSCFILE_DIRS           =
 # Minimum value: 0, maximum value: 10000, default value: 50.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_GRAPH_MAX_NODES    = 50
+DOT_GRAPH_MAX_NODES    = 150
 
 # The MAX_DOT_GRAPH_DEPTH tag can be used to set the maximum depth of the graphs
 # generated by dot. A depth value of 3 means that only nodes reachable from the

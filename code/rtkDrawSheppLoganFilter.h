@@ -19,89 +19,49 @@
 #ifndef rtkDrawSheppLoganFilter_h
 #define rtkDrawSheppLoganFilter_h
 
-#include <itkInPlaceImageFilter.h>
-
-#include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkConvertEllipsoidToQuadricParametersFunction.h"
+#include "rtkDrawGeometricPhantomImageFilter.h"
 
 namespace rtk
 {
 
 /** \class DrawSheppLoganFilter
- * \brief Draws in a 3D image the Shepp-Logan phantom described in
- *  http://www.slaney.org/pct/pct-errata.html
- * Y and Z have been exchanged to follow the coordinate system of the IEC 61217
- * international standard used by RTK.
+ * \brief Draws a SheppLoganPhantom in a 3D image with a default scale of 128.
  *
- * \test rtkdrawgeometricphantomtest.cxx,
- * rtkRaycastInterpolatorForwardProjectionTest.cxx,
- * rtkfdktest.cxx, rtkrampfiltertest.cxx, rtkforwardprojectiontest.cxx,
- * rtkdisplaceddetectortest.cxx, rtkshortscantest.cxx
+ * \test rtkRaycastInterpolatorForwardProjectionTest.cxx,
+ * rtkprojectgeometricphantomtest.cxx, rtkfdktest.cxx, rtkrampfiltertest.cxx,
+ * rtkforwardprojectiontest.cxx, rtkdisplaceddetectortest.cxx,
+ * rtkshortscantest.cxx, rtkforbildtest.cxx
  *
- * \author Marc Vila
+ * \author Marc Vila, Simon Rit
  *
  * \ingroup InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT DrawSheppLoganFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT DrawSheppLoganFilter:
+  public DrawGeometricPhantomImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef DrawSheppLoganFilter                              Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
-  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
+  typedef DrawSheppLoganFilter                                      Self;
+  typedef DrawGeometricPhantomImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                   Pointer;
+  typedef itk::SmartPointer<const Self>                             ConstPointer;
 
-  typedef itk::Vector<double,3>                             VectorType;
-  typedef std::string                                       StringType;
-
-  typedef rtk::ConvertEllipsoidToQuadricParametersFunction  EQPFunctionType;
-  struct FigureType
-  {
-    FigureType():angle(0.),attenuation(0.){};
-    VectorType semiprincipalaxis;
-    VectorType center;
-    double     angle;
-    double     attenuation;
-  };
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DrawSheppLoganFilter, InPlaceImageFilter);
-
-  /** Multiplicative Scaling factor for the phantom parameters described in
-   * http://www.slaney.org/pct/pct-errata.html. */
-  itkSetMacro(PhantomScale, VectorType);
-  itkGetMacro(PhantomScale, VectorType);
-
-  /** Get / Set the spatial position of the Shepp Logan phantom relative to its
-   * center. The default value is (0, 0, 0). */
-  itkSetMacro(OriginOffset, VectorType);
-  itkGetMacro(OriginOffset, VectorType);
+  itkTypeMacro(DrawSheppLoganFilter, DrawGeometricPhantomImageFilter);
 
 protected:
   DrawSheppLoganFilter();
   ~DrawSheppLoganFilter() {}
 
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
-  void SetEllipsoid(FigureType* rei,
-                    double spax,
-                    double spay,
-                    double spaz,
-                    double centerx,
-                    double centery,
-                    double centerz,
-                    double angle,
-                    double density);
+  void GenerateData() ITK_OVERRIDE;
+
 private:
   DrawSheppLoganFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
-  VectorType m_PhantomScale;
-  VectorType m_OriginOffset;
+  void operator=(const Self&);          //purposely not implemented
 };
 
 } // end namespace rtk

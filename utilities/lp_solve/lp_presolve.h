@@ -87,8 +87,15 @@ STATIC MYBOOL presolve_freeUndo(lprec *lp);
 
 STATIC MYBOOL presolve_updatesums(presolverec *psdata);
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
 INLINE int presolve_nextrow(presolverec *psdata, int colnr, int *previtem);
 INLINE int presolve_nextcol(presolverec *psdata, int rownr, int *previtem);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 STATIC presolverec *presolve_init(lprec *lp);
 STATIC void presolve_free(presolverec **psdata);
@@ -98,6 +105,10 @@ STATIC int presolve_colremove(presolverec *psdata, int colnr, MYBOOL allowrowdel
 
 STATIC MYBOOL presolve_colfixdual(presolverec *psdata, int colnr, REAL *fixValue, int *status);
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
 INLINE int presolve_rowlength(presolverec *psdata, int rownr)
 {
   int *items = psdata->rows->next[rownr];
@@ -115,6 +126,9 @@ INLINE int presolve_collength(presolverec *psdata, int colnr)
   else
     return( items[0] );
 }
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 STATIC int presolve(lprec *lp);
 STATIC MYBOOL postsolve(lprec *lp, int status);

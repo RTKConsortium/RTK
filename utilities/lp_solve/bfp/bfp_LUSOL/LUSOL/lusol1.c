@@ -35,7 +35,6 @@
 void LU1DCP(LUSOLrec *LUSOL, REAL DA[], int LDA, int M, int N, REAL SMALL,
             int *NSING, int IPVT[], int IX[])
 {
-
   int       I, J, K, KP1, L, LAST, LENCOL, IMAX, JMAX, JLAST, JNEW;
   REAL      AIJMAX, AJMAX;
   register REAL T;
@@ -45,6 +44,7 @@ void LU1DCP(LUSOLrec *LUSOL, REAL DA[], int LDA, int M, int N, REAL SMALL,
 #else
   register int IDA1, IDA2;
 #endif
+  (void)LUSOL;
 
   *NSING = 0;
   LENCOL = M+1;
@@ -237,6 +237,7 @@ void LU1DPP(LUSOLrec *LUSOL, REAL DA[], int LDA, int M, int N, REAL SMALL,
 #else
   register int IDA1, IDA2;
 #endif
+  (void)LUSOL;
 
   *NSING = 0;
   K = 1;
@@ -355,6 +356,7 @@ void LU1PQ1(LUSOLrec *LUSOL, int M, int N, int LEN[],
             int IPERM[], int LOC[], int INV[], int NUM[])
 {
   int NZEROS, NZ, I, L;
+  (void)LUSOL;
 
 /*      Count the number of rows of each length. */
   NZEROS = 0;
@@ -411,6 +413,7 @@ void LU1PQ2(LUSOLrec *LUSOL, int NZPIV, int *NZCHNG,
             int IND[], int LENOLD[], int LENNEW[], int IXLOC[], int IX[], int IXINV[])
 {
   int LR, J, NZ, NZNEW, L, NEXT, LNEW, JNEW;
+  (void)LUSOL;
 
   *NZCHNG = 0;
   for(LR = 1; LR <= NZPIV; LR++) {
@@ -468,6 +471,7 @@ x120:
 void LU1PQ3(LUSOLrec *LUSOL, int MN, int LEN[], int IPERM[], int IW[], int *NRANK)
 {
   int NZEROS, K, I;
+  (void)LUSOL;
 
   *NRANK = 0;
   NZEROS = 0;

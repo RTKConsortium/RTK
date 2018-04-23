@@ -330,17 +330,23 @@ get_filename_component( _itk_root "${_itk_root}" PATH )
 get_filename_component( _itk_root "${_itk_root}" PATH )
 set( _itk_doc_path "${_itk_root}/share/doc/ITK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}" )
 
+if(ITK_VERSION VERSION_LESS "4.12.3")
+  set(_readme "README.txt")
+else()
+  set(_readme "README.md")
+endif()
+
 if( EXISTS "${_itk_source_path}/NOTICE" )
   set( ITK_DOC_FILES
     # "${_itk_source_path}/LICENSE" SimpleRTK has same license file
     "${_itk_source_path}/NOTICE"
-    "${_itk_source_path}/README.txt"
+    "${_itk_source_path}/${_readme}"
     )
 elseif( EXISTS "${_itk_doc_path}/NOTICE" )
   set( ITK_DOC_FILES
     # "${_itk_doc_path}/LICENSE" SimpleRTK has same license file
     "${_itk_doc_path}/NOTICE"
-    "${_itk_doc_path}/README.txt"
+    "${_itk_doc_path}/${_readme}"
     )
 else()
   message( "doc_path: ${_itk_doc_path}" )

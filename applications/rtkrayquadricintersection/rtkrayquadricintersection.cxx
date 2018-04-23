@@ -58,28 +58,41 @@ int main(int argc, char * argv[])
   constantImageSource->SetSize( sizeOutput );
 
   // Create projection image filter
-  typedef rtk::RayQuadricIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
-  RBIType::Pointer rbi = RBIType::New();
-  rbi->SetInput( constantImageSource->GetOutput() );
-  if(args_info.parameters_given>0) rbi->GetRQIFunctor()->SetA(args_info.parameters_arg[0]);
-  if(args_info.parameters_given>1) rbi->GetRQIFunctor()->SetB(args_info.parameters_arg[1]);
-  if(args_info.parameters_given>2) rbi->GetRQIFunctor()->SetC(args_info.parameters_arg[2]);
-  if(args_info.parameters_given>3) rbi->GetRQIFunctor()->SetD(args_info.parameters_arg[3]);
-  if(args_info.parameters_given>4) rbi->GetRQIFunctor()->SetE(args_info.parameters_arg[4]);
-  if(args_info.parameters_given>5) rbi->GetRQIFunctor()->SetF(args_info.parameters_arg[5]);
-  if(args_info.parameters_given>6) rbi->GetRQIFunctor()->SetG(args_info.parameters_arg[6]);
-  if(args_info.parameters_given>7) rbi->GetRQIFunctor()->SetH(args_info.parameters_arg[7]);
-  if(args_info.parameters_given>8) rbi->GetRQIFunctor()->SetI(args_info.parameters_arg[8]);
-  if(args_info.parameters_given>9) rbi->GetRQIFunctor()->SetJ(args_info.parameters_arg[9]);
-  rbi->SetDensity(args_info.mult_arg);
-  rbi->SetGeometry( geometryReader->GetOutputObject() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rbi->Update() )
+  typedef rtk::RayQuadricIntersectionImageFilter<OutputImageType, OutputImageType> RQIType;
+  RQIType::Pointer rqi = RQIType::New();
+  rqi->SetInput( constantImageSource->GetOutput() );
+  if(args_info.parameters_given>0) rqi->SetA(args_info.parameters_arg[0]);
+  if(args_info.parameters_given>1) rqi->SetB(args_info.parameters_arg[1]);
+  if(args_info.parameters_given>2) rqi->SetC(args_info.parameters_arg[2]);
+  if(args_info.parameters_given>3) rqi->SetD(args_info.parameters_arg[3]);
+  if(args_info.parameters_given>4) rqi->SetE(args_info.parameters_arg[4]);
+  if(args_info.parameters_given>5) rqi->SetF(args_info.parameters_arg[5]);
+  if(args_info.parameters_given>6) rqi->SetG(args_info.parameters_arg[6]);
+  if(args_info.parameters_given>7) rqi->SetH(args_info.parameters_arg[7]);
+  if(args_info.parameters_given>8) rqi->SetI(args_info.parameters_arg[8]);
+  if(args_info.parameters_given>9) rqi->SetJ(args_info.parameters_arg[9]);
+  rqi->SetDensity(args_info.mult_arg);
+  rqi->SetGeometry( geometryReader->GetOutputObject() );
+  if(args_info.planes_given)
+    {
+    if(args_info.planes_given % 4 != 0 )
+      {
+      std::cerr << "--plane requires four parameters" << std::endl;
+      exit(EXIT_FAILURE);
+      }
+    for(unsigned int i=0; i<args_info.planes_given/4; i++)
+      {
+      RQIType::VectorType planeDir(args_info.planes_arg+i*4);
+      rqi->AddClipPlane(planeDir, args_info.planes_arg[i*4+3]);
+      }
+    }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( rqi->Update() )
 
   // Write
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
-  writer->SetInput( rbi->GetOutput() );
+  writer->SetInput( rqi->GetOutput() );
   if(args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )

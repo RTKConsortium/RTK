@@ -55,7 +55,7 @@ MYBOOL is_nativeBLAS(void)
 #endif
 }
 
-MYBOOL load_BLAS(char *libname)
+MYBOOL load_BLAS(const char *libname)
 {
   MYBOOL result = TRUE;
 
@@ -106,7 +106,8 @@ MYBOOL load_BLAS(char *libname)
     }
   #else
    /* First standardize UNIX .SO library name format. */
-    char blasname[260], *ptr;
+    char blasname[260];
+    const char *ptr;
 
     strcpy(blasname, libname);
     if((ptr = strrchr(libname, '/')) == NULL)

@@ -31,6 +31,7 @@ LPSOLVEAPIDEF del_constraint_func           *_del_constraint;
 LPSOLVEAPIDEF delete_lp_func                *_delete_lp;
 LPSOLVEAPIDEF dualize_lp_func               *_dualize_lp;
 LPSOLVEAPIDEF free_lp_func                  *_free_lp;
+/*LPSOLVEAPIDEF get_accuracy_func             *_get_accuracy;*/
 LPSOLVEAPIDEF get_anti_degen_func           *_get_anti_degen;
 LPSOLVEAPIDEF get_basis_func                *_get_basis;
 LPSOLVEAPIDEF get_basiscrash_func           *_get_basiscrash;
@@ -39,6 +40,7 @@ LPSOLVEAPIDEF get_bb_floorfirst_func        *_get_bb_floorfirst;
 LPSOLVEAPIDEF get_bb_rule_func              *_get_bb_rule;
 LPSOLVEAPIDEF get_bounds_tighter_func       *_get_bounds_tighter;
 LPSOLVEAPIDEF get_break_at_value_func       *_get_break_at_value;
+/*LPSOLVEAPIDEF get_break_numeric_accuracy_func *_get_break_numeric_accuracy;*/
 LPSOLVEAPIDEF get_col_name_func             *_get_col_name;
 LPSOLVEAPIDEF get_column_func               *_get_column;
 LPSOLVEAPIDEF get_columnex_func             *_get_columnex;
@@ -185,6 +187,7 @@ LPSOLVEAPIDEF set_bounds_func               *_set_bounds;
 LPSOLVEAPIDEF set_bounds_tighter_func       *_set_bounds_tighter;
 LPSOLVEAPIDEF set_break_at_first_func       *_set_break_at_first;
 LPSOLVEAPIDEF set_break_at_value_func       *_set_break_at_value;
+/*LPSOLVEAPIDEF set_break_numeric_accuracy_func *_set_break_numeric_accuracy;*/
 LPSOLVEAPIDEF set_column_func               *_set_column;
 LPSOLVEAPIDEF set_columnex_func             *_set_columnex;
 LPSOLVEAPIDEF set_col_name_func             *_set_col_name;
@@ -278,6 +281,7 @@ static int init_lpsolve(lprec *lp)
   _delete_lp = lp->delete_lp;
   _dualize_lp = lp->dualize_lp;
   _free_lp = lp->free_lp;
+  /*_get_accuracy = lp->get_accuracy;*/
   _get_anti_degen = lp->get_anti_degen;
   _get_basis = lp->get_basis;
   _get_basiscrash = lp->get_basiscrash;
@@ -286,6 +290,7 @@ static int init_lpsolve(lprec *lp)
   _get_bb_rule = lp->get_bb_rule;
   _get_bounds_tighter = lp->get_bounds_tighter;
   _get_break_at_value = lp->get_break_at_value;
+/*  _get_break_numeric_accuracy = lp->get_break_numeric_accuracy;*/
   _get_col_name = lp->get_col_name;
   _get_columnex = lp->get_columnex;
   _get_constr_type = lp->get_constr_type;
@@ -430,6 +435,7 @@ static int init_lpsolve(lprec *lp)
   _set_bounds_tighter = lp->set_bounds_tighter;
   _set_break_at_first = lp->set_break_at_first;
   _set_break_at_value = lp->set_break_at_value;
+/*  _set_break_numeric_accuracy = lp->set_break_numeric_accuracy;*/
   _set_column = lp->set_column;
   _set_columnex = lp->set_columnex;
   _set_col_name = lp->set_col_name;
@@ -569,6 +575,7 @@ static int init_lpsolve(hlpsolve lpsolve)
   _delete_lp = (delete_lp_func *) AddressOf(lpsolve, "delete_lp");
   _dualize_lp = (dualize_lp_func *) AddressOf(lpsolve, "dualize_lp");
   _free_lp = (free_lp_func *) AddressOf(lpsolve, "free_lp");
+  /*_get_accuracy = (get_accuracy_func *) AddressOf(lpsolve, "get_accuracy");*/
   _get_anti_degen = (get_anti_degen_func *) AddressOf(lpsolve, "get_anti_degen");
   _get_basis = (get_basis_func *) AddressOf(lpsolve, "get_basis");
   _get_basiscrash = (get_basiscrash_func *) AddressOf(lpsolve, "get_basiscrash");
@@ -577,6 +584,7 @@ static int init_lpsolve(hlpsolve lpsolve)
   _get_bb_rule = (get_bb_rule_func *) AddressOf(lpsolve, "get_bb_rule");
   _get_bounds_tighter = (get_bounds_tighter_func *) AddressOf(lpsolve, "get_bounds_tighter");
   _get_break_at_value = (get_break_at_value_func *) AddressOf(lpsolve, "get_break_at_value");
+/*  _get_break_numeric_accuracy = (get_break_numeric_accuracy_func *) AddressOf(lpsolve, "get_break_numeric_accuracy");*/
   _get_col_name = (get_col_name_func *) AddressOf(lpsolve, "get_col_name");
   _get_column = (get_column_func *) AddressOf(lpsolve, "get_column");
   _get_columnex = (get_columnex_func *) AddressOf(lpsolve, "get_columnex");
@@ -723,6 +731,7 @@ static int init_lpsolve(hlpsolve lpsolve)
   _set_bounds_tighter = (set_bounds_tighter_func *) AddressOf(lpsolve, "set_bounds_tighter");
   _set_break_at_first = (set_break_at_first_func *) AddressOf(lpsolve, "set_break_at_first");
   _set_break_at_value = (set_break_at_value_func *) AddressOf(lpsolve, "set_break_at_value");
+/*  _set_break_numeric_accuracy = (set_break_numeric_accuracy_func *) AddressOf(lpsolve, "set_break_numeric_accuracy");*/
   _set_column = (set_column_func *) AddressOf(lpsolve, "set_column");
   _set_columnex = (set_columnex_func *) AddressOf(lpsolve, "set_columnex");
   _set_col_name = (set_col_name_func *) AddressOf(lpsolve, "set_col_name");
@@ -820,6 +829,7 @@ static int init_lpsolve(hlpsolve lpsolve)
 #define delete_lp _delete_lp
 #define dualize_lp _dualize_lp
 #define free_lp _free_lp
+/*#define get_accuracy _get_accuracy*/
 #define get_anti_degen _get_anti_degen
 #define get_basis _get_basis
 #define get_basiscrash _get_basiscrash
@@ -828,6 +838,7 @@ static int init_lpsolve(hlpsolve lpsolve)
 #define get_bb_rule _get_bb_rule
 #define get_bounds_tighter _get_bounds_tighter
 #define get_break_at_value _get_break_at_value
+/*#define get_break_numeric_accuracy _get_break_numeric_accuracy*/
 #define get_col_name _get_col_name
 #define get_column _get_column
 #define get_columnex _get_columnex
@@ -974,6 +985,7 @@ static int init_lpsolve(hlpsolve lpsolve)
 #define set_bounds_tighter _set_bounds_tighter
 #define set_break_at_first _set_break_at_first
 #define set_break_at_value _set_break_at_value
+/*#define set_break_numeric_accuracy _set_break_numeric_accuracy*/
 #define set_column _set_column
 #define set_columnex _set_columnex
 #define set_col_name _set_col_name

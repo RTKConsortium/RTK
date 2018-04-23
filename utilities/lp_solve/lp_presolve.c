@@ -46,7 +46,7 @@
 
 
 #define presolve_setstatus(one, two)  presolve_setstatusex(one, two, __LINE__, __FILE__)
-STATIC int presolve_setstatusex(presolverec *psdata, int status, int lineno, char *filename)
+STATIC int presolve_setstatusex(presolverec *psdata, int status, int lineno, const char *filename)
 {
   if((status == INFEASIBLE) || (status == UNBOUNDED)) {
     report(psdata->lp,
@@ -374,6 +374,7 @@ INLINE REAL presolve_roundval(lprec *lp, REAL value)
   return( value );
 }
 
+/*
 INLINE MYBOOL presolve_mustupdate(lprec *lp, int colnr)
 {
 #if 0
@@ -384,6 +385,7 @@ INLINE MYBOOL presolve_mustupdate(lprec *lp, int colnr)
           my_infinite(lp, lp->orig_upbo[lp->rows+colnr]) );
 #endif
 }
+*/
 
 INLINE REAL presolve_sumplumin(lprec *lp, int item, psrec *ps, MYBOOL doUpper)
 {
@@ -455,7 +457,7 @@ STATIC MYBOOL presolve_rowfeasible(presolverec *psdata, int rownr, MYBOOL userow
   return( status );
 }
 
-STATIC MYBOOL presolve_debugmap(presolverec *psdata, char *caption)
+STATIC MYBOOL presolve_debugmap(presolverec *psdata, const char *caption)
 {
   lprec *lp = psdata->lp;
   MATrec *mat = lp->matA;
@@ -1055,6 +1057,7 @@ STATIC MYBOOL presolve_fixSOS1(presolverec *psdata, int colnr, REAL fixvalue, in
   SOSrec   *SOS;
   REAL     newvalue;
   MYBOOL   *fixed = NULL, status = FALSE;
+  (void)nr;
 
   /* Allocate working member list */
   if(!allocMYBOOL(lp, &fixed, lp->columns+1, TRUE) )
@@ -1341,6 +1344,7 @@ STATIC MYBOOL isnz_origobj(lprec *lp, int colnr)
 
 STATIC MYBOOL presolve_testrow(presolverec *psdata, int lastrow)
 {
+  (void)lastrow;
   if(psdata->forceupdate) {
     presolve_updatesums(psdata);
     psdata->forceupdate = FALSE;
@@ -2602,6 +2606,7 @@ STATIC int presolve_singularities(presolverec *psdata, int *nn, int *nr, int *nv
 {
   lprec *lp = psdata->lp;
   int i, j, n, *rmapin = NULL, *rmapout = NULL, *cmapout = NULL;
+  (void)nv;
 
   if(lp->bfp_findredundant(lp, 0, NULL, NULL, NULL) == 0)
     return( 0 );
@@ -3604,7 +3609,7 @@ STATIC MYBOOL presolve_finalize(presolverec *psdata)
   return(mat_validate(lp->matA));
 }
 
-STATIC MYBOOL presolve_debugdump(lprec *lp, presolverec *psdata, char *filename, MYBOOL doappend)
+STATIC MYBOOL presolve_debugdump(lprec *lp, presolverec *psdata, const char *filename, MYBOOL doappend)
 {
   FILE   *output = stdout;
   int   size;
@@ -4087,6 +4092,7 @@ STATIC int presolve_coldominance01(presolverec *psdata, NATURAL *nConRemoved, NA
            *colvalues = NULL, *colobj = NULL;
   LLrec    *sets = NULL;
   UNIONTYPE QSORTrec *QS = (UNIONTYPE QSORTrec *) calloc(n+1, sizeof(*QS));
+  (void)nConRemoved; 
 
   /* Check if we were able to obtain working memory */
   if(QS == NULL)
@@ -4275,6 +4281,7 @@ STATIC int presolve_aggregate(presolverec *psdata, int *nConRemoved, int *nVarsF
            *coldel = NULL, status = RUNNING, iVarFixed = 0;
   REAL     scale, *colvalues = NULL;
   UNIONTYPE QSORTrec *QScand = (UNIONTYPE QSORTrec *) calloc(lp->columns+1, sizeof(*QScand));
+  (void)nConRemoved;
 
   /* Check if we were able to obtain working memory */
   if(QScand == NULL)
@@ -4491,6 +4498,7 @@ STATIC int presolve_makesparser(presolverec *psdata, int *nCoeffChanged, int *nC
   REAL     test, ratio, value, valueEQ, *valptr;
   LLrec    *EQlist = NULL;
   UNIONTYPE QSORTrec *QS = (UNIONTYPE QSORTrec *) calloc(lp->rows, sizeof(*QS));
+  (void)nVarFixed;
 
   /* Check if we were able to obtain working memory */
   if((QS == NULL) || (psdata->rows->varmap->count == 0) || (psdata->EQmap->count == 0))
@@ -4765,6 +4773,7 @@ STATIC int presolve_SOS1(presolverec *psdata, int *nCoeffChanged, int *nConRemov
            i,ix,iix, j,jx,jjx, status = RUNNING;
   REAL     Value1;
   MATrec   *mat = lp->matA;
+  (void)nVarFixed;
 
   for(i = lastActiveLink(psdata->rows->varmap); i > 0; ) {
     candelete = FALSE;
@@ -5507,12 +5516,12 @@ write_lp(lp, "test_in.lp");    /* Write to lp-formatted file for debugging */
     for(i = 1; i <= SOS_count(lp); i++) {
       k = SOS_infeasible(lp->SOS, i);
       if(k > 0) {
-        presolverec psdata;
+        presolverec psdata2;
 
-        psdata.lp = lp;
+        psdata2.lp = lp;
         report(lp, NORMAL, "presolve: Found SOS %d (type %d) to be range-infeasible on variable %d\n",
                             i, SOS_get_type(lp->SOS, i), k);
-        status = presolve_setstatus(&psdata, INFEASIBLE);
+        status = presolve_setstatus(&psdata2, INFEASIBLE);
         j++;
       }
     }

@@ -89,7 +89,7 @@ End
 
 /* copy a MPS name, only trailing spaces are removed. In MPS, names can have
    embedded spaces! */
-STATIC void namecpy(char *into, char *from)
+STATIC void namecpy(char *into, const char *from)
 {
   int i;
 
@@ -114,6 +114,7 @@ STATIC int scan_lineFIXED(lprec *lp, int section, char* line, char *field1, char
 {
   int  items = 0, line_len;
   char buf[16], *ptr1, *ptr2;
+  (void)section;
 
   line_len = (int) strlen(line);
   while ((line_len) && ((line[line_len-1] == '\n') || (line[line_len-1] == '\r') || (line[line_len-1] == ' ')))
@@ -249,6 +250,7 @@ STATIC int scan_lineFREE(lprec *lp, int section, char* line, char *field1, char 
 {
   int  items = 0, line_len, len;
   char buf[256], *ptr1 = NULL, *ptr2;
+  (void)lp;
 
   line_len = (int) strlen(line);
   while ((line_len) && ((line[line_len-1] == '\n') || (line[line_len-1] == '\r') || (line[line_len-1] == ' ')))
@@ -449,7 +451,7 @@ STATIC int scan_lineFREE(lprec *lp, int section, char* line, char *field1, char 
 }
 
 STATIC int addmpscolumn(lprec *lp, MYBOOL Int_section, int typeMPS, MYBOOL *Column_ready,
-                        int *count, REAL *Last_column, int *Last_columnno, char *Last_col_name)
+                        int *count, REAL *Last_column, int *Last_columnno, const char *Last_col_name)
 {
   int ok = TRUE;
 
@@ -519,7 +521,7 @@ STATIC MYBOOL appendmpsitem(int *count, int rowIndex[], REAL rowValue[])
   return( TRUE );
 }
 
-MYBOOL MPS_readfile(lprec **newlp, char *filename, int typeMPS, int verbose)
+MYBOOL MPS_readfile(lprec **newlp, const char *filename, int typeMPS, int verbose)
 {
   MYBOOL status = FALSE;
   FILE   *fpin;
@@ -1272,13 +1274,13 @@ static char *formatnumber12(char *numberbuffer, double a)
 #endif
 }
 
-STATIC char *MPSnameFIXED(char *name0, char *name)
+STATIC const char *MPSnameFIXED(char *name0, const char *name)
 {
   sprintf(name0, "%-8.8s", name);
   return(name0);
 }
 
-STATIC char *MPSnameFREE(char *name0, char *name)
+STATIC const char *MPSnameFREE(char *name0, const char *name)
 {
   if(strlen(name) < 8)
     return(MPSnameFIXED(name0, name));
@@ -1286,7 +1288,7 @@ STATIC char *MPSnameFREE(char *name0, char *name)
     return(name);
 }
 
-static void write_data(void *userhandle, write_modeldata_func write_modeldata, char *format, ...)
+static void write_data(void *userhandle, write_modeldata_func write_modeldata, const char *format, ...)
 {
   char buff[DEF_STRBUFSIZE+1];
   va_list ap;
@@ -1302,7 +1304,7 @@ MYBOOL __WINAPI MPS_writefileex(lprec *lp, int typeMPS, void *userhandle, write_
   int    i, j, jj, je, k, marker, putheader, ChangeSignObj = FALSE, *idx, *idx1;
   MYBOOL ok = TRUE, names_used;
   REAL   a, *val, *val1;
-  char * (*MPSname)(char *name0, char *name);
+  const char * (*MPSname)(char *name0, const char *name);
   char numberbuffer[15];
   char name0[9];
 
@@ -1577,7 +1579,7 @@ static int __WINAPI write_lpdata(void *userhandle, char *buf)
   return(TRUE);
 }
 
-MYBOOL MPS_writefile(lprec *lp, int typeMPS, char *filename)
+MYBOOL MPS_writefile(lprec *lp, int typeMPS, const char *filename)
 {
   FILE *output = stdout;
   MYBOOL ok;
@@ -1616,7 +1618,7 @@ MYBOOL MPS_writehandle(lprec *lp, int typeMPS, FILE *output)
 /* Read and write BAS files */
 /* #define OldNameMatch */
 #ifdef OldNameMatch
-static int MPS_getnameidx(lprec *lp, char *varname, MYBOOL isrow)
+static int MPS_getnameidx(lprec *lp, const char *varname, MYBOOL isrow)
 {
   int in = -1;
 
@@ -1628,7 +1630,7 @@ static int MPS_getnameidx(lprec *lp, char *varname, MYBOOL isrow)
   return( in );
 }
 #else
-static int MPS_getnameidx(lprec *lp, char *varname, MYBOOL tryrowfirst)
+static int MPS_getnameidx(lprec *lp, const char *varname, MYBOOL tryrowfirst)
 {
   int in = -1;
 
@@ -1665,7 +1667,7 @@ static int MPS_getnameidx(lprec *lp, char *varname, MYBOOL tryrowfirst)
 }
 #endif
 
-MYBOOL MPS_readBAS(lprec *lp, int typeMPS, char *filename, char *info)
+MYBOOL MPS_readBAS(lprec *lp, int typeMPS, const char *filename, char *info)
 {
   char   field1[BUFSIZ], field2[BUFSIZ], field3[BUFSIZ], field5[BUFSIZ],
          line[BUFSIZ], tmp[BUFSIZ], *ptr;
@@ -1785,13 +1787,13 @@ MYBOOL MPS_readBAS(lprec *lp, int typeMPS, char *filename, char *info)
   return( ok );
 }
 
-MYBOOL MPS_writeBAS(lprec *lp, int typeMPS, char *filename)
+MYBOOL MPS_writeBAS(lprec *lp, int typeMPS, const char *filename)
 {
   int    ib, in;
   MYBOOL ok;
   char   name1[100], name2[100];
   FILE   *output = stdout;
-  char * (*MPSname)(char *name0, char *name);
+  const char * (*MPSname)(char *name0, const char *name);
   char name0[9];
 
   /* Set name formatter */

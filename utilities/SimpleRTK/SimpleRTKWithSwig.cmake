@@ -130,6 +130,10 @@ VariableListToArgs( SRTK_LANGUAGES_VARS  ep_languages_args )
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/SimpleRTK-build/CMakeCacheInit.txt" "${ep_simplertk_cache}${ep_common_cache}\n${ep_languages_cache}" )
 
 set(proj SimpleRTK)
+set(SimpleRTKDeps "RTK")
+if(RTK_USE_CUDA)
+  list(APPEND SimpleRTKDeps "rtkcuda")
+endif()
 ExternalProject_Add(${proj}
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}
@@ -168,7 +172,7 @@ ExternalProject_Add(${proj}
     -DWRAP_R:BOOL=${WRAP_R}
     -DBUILD_EXAMPLES:BOOL=${BUILD_TESTING}
 	-DSimpleRTK_PYTHON_WHEEL=1
-  DEPENDS ${${CMAKE_PROJECT_NAME}_DEPENDENCIES} RTK
+  DEPENDS ${${CMAKE_PROJECT_NAME}_DEPENDENCIES} ${SimpleRTKDeps}
 )
 
 

@@ -62,7 +62,7 @@ int comp_bits(MYBOOL *bitarray1, MYBOOL *bitarray2, int items);
 
 STATIC workarraysrec *mempool_create(lprec *lp);
 STATIC char *mempool_obtainVector(workarraysrec *mempool, int count, int unitsize);
-STATIC MYBOOL mempool_releaseVector(workarraysrec *mempool, char *memvector, MYBOOL forcefree);
+STATIC MYBOOL mempool_releaseVector(workarraysrec *mempool, const char *memvector, MYBOOL forcefree);
 STATIC MYBOOL mempool_free(workarraysrec **mempool);
 
 STATIC void roundVector(LREAL *myvector, int endpos, LREAL roundzero);

@@ -266,6 +266,7 @@ STATIC MYBOOL updatePricer(lprec *lp, int rownr, int colnr, REAL *pcol, REAL *pr
   REAL   *vEdge = NULL, cEdge, hold, *newEdge, *w = NULL;
   int    i, m, n, exitcol, errlevel = DETAILED;
   MYBOOL forceRefresh = FALSE, isDual, isDEVEX, ok = FALSE;
+  (void)nzprow;
 
   if(!applyPricer(lp))
     return(ok);
@@ -383,8 +384,15 @@ STATIC MYBOOL updatePricer(lprec *lp, int rownr, int colnr, REAL *pcol, REAL *pr
     if(!isDEVEX)
       isDEVEX = is_piv_mode(lp, PRICE_PRIMALFALLBACK);
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-align"
+#endif
     /* Initialize column target array */
     coltarget = (int *) mempool_obtainVector(lp->workarrays, lp->sum+1, sizeof(*coltarget));
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     ok = get_colIndexA(lp, SCAN_SLACKVARS+SCAN_USERVARS+USE_NONBASICVARS, coltarget, FALSE);
     if(!ok) {
       mempool_releaseVector(lp->workarrays, (char *) coltarget, FALSE);

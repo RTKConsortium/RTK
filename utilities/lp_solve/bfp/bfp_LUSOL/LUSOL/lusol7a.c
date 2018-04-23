@@ -107,6 +107,7 @@ x990:
    ================================================================== */
 void LU7CYC(LUSOLrec *LUSOL, int KFIRST, int KLAST, int IX[])
 {
+  (void)LUSOL;
   if(KFIRST<KLAST) {
     int IFIRST, K;
 #ifdef LUSOLFastMove
