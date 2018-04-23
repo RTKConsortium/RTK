@@ -6,7 +6,6 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
 set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk4")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-dg")
-set(ENV{CUDA_INC_PATH} "/usr/include/cuda")
 set(CTEST_BUILD_FLAGS -j12)
 set(ENV{CXXFLAGS} "-fPIC -std=c++11")
 
