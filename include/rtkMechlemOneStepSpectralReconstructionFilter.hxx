@@ -47,8 +47,8 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 
   // Set permanent parameters
   m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::Zero);
-  m_SingleComponentProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelValueType>::Zero);
-  m_SingleComponentVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelValueType>::One);
+  m_SingleComponentProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::Zero);
+  m_SingleComponentVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::One);
   m_GradientsSource->SetConstant(itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TGradientsImage::PixelType>::Zero);
   m_HessiansSource->SetConstant(itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::THessiansImage::PixelType>::Zero);
 
@@ -186,9 +186,9 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
     #endif
     break;
-    case(3):
-      bp = rtk::NormalizedJosephBackProjectionImageFilter<THessians,THessians>::New();
-      break;
+//    case(3):
+//      bp = rtk::NormalizedJosephBackProjectionImageFilter<THessians,THessians>::New();
+//      break;
     case(4):
     #ifdef RTK_USE_CUDA
       // The current CUDA implementation only allows one component
@@ -201,6 +201,22 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       itkGenericExceptionMacro(<< "Unhandled --bp value.");
     }
   return bp;
+}
+
+template< class TOutputImage, class TPhotonCounts, class TSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
+::SetMaterialAttenuations(const MaterialAttenuationsType & matAtt)
+{
+  m_WeidingerForward->SetMaterialAttenuations(matAtt);
+}
+
+template< class TOutputImage, class TPhotonCounts, class TSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
+::SetBinnedDetectorResponse(const BinnedDetectorResponseType & detResp)
+{
+  m_WeidingerForward->SetBinnedDetectorResponse(detResp);
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>

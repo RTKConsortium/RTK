@@ -112,10 +112,15 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(MechlemOneStepSpectralReconstructionFilter, itk::ImageToImageFilter)
 
-    /** Internal typedef */
-    typedef itk::Image< itk::Vector<typename TOutputImage::PixelValueType, TOutputImage::PixelType::Dimension * TOutputImage::PixelType::Dimension> > THessiansImage;
+    /** Internal typedefs and parameters */
+    itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
+    itkStaticConstMacro(nMaterials, unsigned int, TOutputImage::PixelType::Dimension);
+    itkStaticConstMacro(nEnergies, unsigned int, TSpectrum::PixelType::Dimension);
+    typedef typename TOutputImage::PixelType::ValueType dataType;
+
+    typedef itk::Image< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
     typedef TOutputImage TGradientsImage;
-    typedef itk::Image<typename TOutputImage::PixelValueType, TOutputImage::ImageDimension> TSingleComponentImage;
+    typedef itk::Image<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
 
     /** Filter typedefs */
     typedef rtk::ForwardProjectionImageFilter< TSingleComponentImage, TSingleComponentImage > SingleComponentForwardProjectionFilterType;
@@ -156,6 +161,13 @@ public:
 //    itkGetMacro(Regularized, bool)
 //    itkSetMacro(Gamma, float)
 //    itkGetMacro(Gamma, float)
+
+    /** Set methods forwarding the detector response and material attenuation
+     * matrices to the internal WeidingerForwardModel filter */
+    typedef itk::Matrix<dataType, nBins, nEnergies>       BinnedDetectorResponseType;
+    typedef itk::Matrix<dataType, nEnergies, nMaterials>  MaterialAttenuationsType;
+    virtual void SetBinnedDetectorResponse(const BinnedDetectorResponseType & detResp);
+    virtual void SetMaterialAttenuations(const MaterialAttenuationsType & matAtt);
 
 protected:
     MechlemOneStepSpectralReconstructionFilter();
