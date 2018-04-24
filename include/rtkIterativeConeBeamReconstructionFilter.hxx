@@ -76,9 +76,9 @@ namespace rtk
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
       break;
-      case(3):
-        bp = rtk::NormalizedJosephBackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
-        break;
+//      case(3):
+//        bp = rtk::NormalizedJosephBackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
+//        break;
       case(4):
       #ifdef RTK_USE_CUDA
         bp = rtk::CudaRayCastBackProjectionImageFilter::New();

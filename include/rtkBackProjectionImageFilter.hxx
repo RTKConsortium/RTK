@@ -367,7 +367,17 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       v = v*w-pIndex[1];
       du = w * matrix[0][0];
 
-      double u1, u2, v1, v2;
+      // C++11 construct to get either the input image's PixelType (if it is a scalar)
+      // or the input image's PixelType::ValueType (if PixelType is a vector)
+      // In both cases, dataType is a scalar type.
+      // Note: std_conditional<bool, T1, T2>::type is of type T1 if bool==true, and of type T2 otherwise
+      // In this case, writing TInputImage::PixelType::ValueType directly as T1 or T2 is
+      // impossible, since when PixelType is a scalar, it has no ValueType. So when TInputImage::PixelType
+      // is a scalar, we construct an itk::Vector of TInputImage::PixelType, and then we take its ValueType.
+      typedef typename std::conditional<std::is_scalar<typename TInputImage::PixelType>::value,
+                                        itk::Vector<typename TInputImage::PixelType, 1>,
+                                        typename TInputImage::PixelType>::type::ValueType dataType;
+      dataType u1, u2, v1, v2;
       vi = vnl_math_floor(v);
       if(vi>=0 && vi<(int)pSize[1]-1)
         {
@@ -440,7 +450,17 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
           ui = vnl_math_floor(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
-            double u1, u2, v1, v2;
+            // C++11 construct to get either the input image's PixelType (if it is a scalar)
+            // or the input image's PixelType::ValueType (if PixelType is a vector)
+            // In both cases, dataType is a scalar type.
+            // Note: std_conditional<bool, T1, T2>::type is of type T1 if bool==true, and of type T2 otherwise
+            // In this case, writing TInputImage::PixelType::ValueType directly as T1 or T2 is
+            // impossible, since when PixelType is a scalar, it has no ValueType. So when TInputImage::PixelType
+            // is a scalar, we construct an itk::Vector of TInputImage::PixelType, and then we take its ValueType.
+            typedef typename std::conditional<std::is_scalar<typename TInputImage::PixelType>::value,
+                                              itk::Vector<typename TInputImage::PixelType, 1>,
+                                              typename TInputImage::PixelType>::type::ValueType dataType;
+            dataType u1, u2, v1, v2;
             pProj = projection->GetBufferPointer() + vi * pSize[0] + ui;
             v1 = v-vi;
             v2 = 1.0-v1;

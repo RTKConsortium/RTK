@@ -51,7 +51,7 @@ public:
 
   inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
                              const double itkNotUsed(stepLengthInVoxel),
-                             const TCoordRepType weight,
+                             const TInput weight,
                              const TInput *p,
                              const int i ) const
   {
