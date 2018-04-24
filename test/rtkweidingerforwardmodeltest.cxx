@@ -26,7 +26,7 @@ int main(int, char** )
   typedef double dataType;
   typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TMaterialProjections;
   typedef itk::Image<itk::Vector<dataType, nBins>, 3> TPhotonCounts;
-  typedef itk::Image<itk::Vector<dataType, nEnergies>, 3> TSpectrum;
+  typedef itk::Image<itk::Vector<dataType, nEnergies>, 2> TSpectrum;
   typedef itk::Image<dataType, 3> TProjections;
   typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TOutput1;
   typedef itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3> TOutput2;
