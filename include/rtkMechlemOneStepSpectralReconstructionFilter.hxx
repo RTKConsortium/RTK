@@ -224,23 +224,23 @@ void
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
 ::GenerateInputRequestedRegion()
 {
-  // Input 0 is the volume we update
-  typename Superclass::InputImagePointer inputPtr0 =
-          const_cast< TOutputImage * >( this->GetInput(0) );
+  // Input 0 is the material volumes we update
+  typename TOutputImage::Pointer inputPtr0 =
+          const_cast< TOutputImage * >( this->GetInputMaterialVolumes().GetPointer() );
   if ( !inputPtr0 )
       return;
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
   // Input 1 is the photon counts
-  typename Superclass::InputImagePointer  inputPtr1 =
-          const_cast< TOutputImage * >( this->GetInput(1) );
+  typename TPhotonCounts::Pointer inputPtr1 =
+          const_cast< TPhotonCounts * >( this->GetInputPhotonCounts().GetPointer() );
   if ( !inputPtr1 )
       return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 
-  // Input 2 is the weights map on projections, either user-defined or filled with ones (default)
-  typename Superclass::InputImagePointer  inputPtr2 =
-          const_cast< TOutputImage * >( this->GetInput(2) );
+  // Input 2 is the incident spectrum
+  typename TSpectrum::Pointer inputPtr2 =
+          const_cast< TSpectrum * >( this->GetInputSpectrum().GetPointer() );
   if ( !inputPtr2 )
       return;
   inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
