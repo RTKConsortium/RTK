@@ -22,6 +22,7 @@
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
+#include <itkPixelTraits.h>
 
 namespace rtk
 {
@@ -117,11 +118,7 @@ public:
 
 template <class TInputImage,
           class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType,
-                                                                                                typename std::conditional<
-                                                                                                  std::is_scalar<typename TInputImage::PixelType>::value,
-                                                                                                  itk::Vector<typename TInputImage::PixelType, 1>,
-                                                                                                  typename TInputImage::PixelType>::type::ValueType>,
+          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType,typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
           class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>
           >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
