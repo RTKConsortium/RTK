@@ -26,6 +26,7 @@
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageAdaptor.h>
+#include <itkAddImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 #include <itkThresholdImageFilter.h>
 
@@ -152,7 +153,8 @@ public:
   typedef itk::AddImageFilter< VolumeType, VolumeType >                                      AddFilterType;
   typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
   typedef rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>                 RayBoxIntersectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>                DivideVolumeFilterType;
   typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
   typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
   typedef itk::ThresholdImageFilter<VolumeType>                                              ThresholdFilterType;
@@ -220,9 +222,12 @@ protected:
   typename AddFilterType::Pointer                m_AddFilter;
   typename MultiplyFilterType::Pointer           m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer     m_BackProjectionFilter;
+  typename BackProjectionFilterType::Pointer     m_BackProjectionNormalizationFilter;
   typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
-  typename DivideFilterType::Pointer             m_DivideFilter;
+  typename DivideProjectionFilterType::Pointer   m_DivideProjectionFilter;
+  typename DivideVolumeFilterType::Pointer       m_DivideVolumeFilter;
   typename ConstantProjectionSourceType::Pointer m_ConstantProjectionStackSource;
+  typename ConstantProjectionSourceType::Pointer m_OneConstantProjectionStackSource;
   typename ConstantVolumeSourceType::Pointer     m_ConstantVolumeSource;
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
   typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
