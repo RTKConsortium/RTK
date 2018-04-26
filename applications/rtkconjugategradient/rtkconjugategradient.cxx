@@ -21,7 +21,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #include <iostream>
 #include <fstream>

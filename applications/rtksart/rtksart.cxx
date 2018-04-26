@@ -21,7 +21,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
 
 #ifdef RTK_USE_CUDA

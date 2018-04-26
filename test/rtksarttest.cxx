@@ -4,7 +4,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -155,9 +154,9 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 3: Normalized Joseph Backprojector ******" << std::endl;
-
-  sart->SetBackProjectionFilter( 3 ); // Normalized Joseph
+  std::cout << "\n\n****** Case 3: Joseph Backprojector ******" << std::endl;
+  sart->SetNumberOfProjectionsPerSubset(1);
+  sart->SetBackProjectionFilter( 1 ); // Joseph
   sart->SetForwardProjectionFilter( 0 ); // Joseph
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
