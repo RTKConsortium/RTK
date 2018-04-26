@@ -2,7 +2,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 
 #ifdef USE_CUDA

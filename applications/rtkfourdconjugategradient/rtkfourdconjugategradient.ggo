@@ -15,4 +15,4 @@ option "signal"    - "File containing the phase of each projection"             
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
+option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","CudaRayCast" enum no default="VoxelBasedBackProjection"

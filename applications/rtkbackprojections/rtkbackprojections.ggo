@@ -7,7 +7,7 @@ option "geometry"  g  "XML geometry file name"                                  
 option "output"    o "Output volume file name"                                   string   yes
 
 section "Projectors"
-option "bp"    - "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","NormalizedJoseph","CudaFDKBackProjection","CudaBackProjection","CudaRayCast"  enum no default="VoxelBasedBackProjection"
+option "bp"    - "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","CudaFDKBackProjection","CudaBackProjection","CudaRayCast"  enum no default="VoxelBasedBackProjection"
 
 section "Warped backprojection"
 option "signal"    - "Signal file name"          string    no

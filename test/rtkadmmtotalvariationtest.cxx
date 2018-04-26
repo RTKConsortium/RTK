@@ -2,7 +2,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
 

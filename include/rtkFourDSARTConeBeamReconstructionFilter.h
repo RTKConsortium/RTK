@@ -26,6 +26,7 @@
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageAdaptor.h>
+#include <itkAddImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 #include <itkThresholdImageFilter.h>
 

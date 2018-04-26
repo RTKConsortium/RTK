@@ -4,7 +4,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -182,25 +181,6 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
-
-//  std::cout << "\n\n****** Case 5: Voxel-Based Backprojector and gating ******" << std::endl;
-
-//  osem->SetBackProjectionFilter( 0 ); // Voxel based
-//  osem->SetForwardProjectionFilter( 0 ); // Joseph
-
-//  // Generate arbitrary gating weights (select every third projection)
-//  std::vector<float> gatingWeights;
-//  for (unsigned int i=0; i<NumberOfProjectionImages; i++)
-//    {
-//      if ((i%3)==0) gatingWeights.push_back(1);
-//      else gatingWeights.push_back(0);
-//    }
-//  osem->SetGatingWeights( gatingWeights );
-
-//  TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
-
-//  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
-//  std::cout << "\n\nTest PASSED! " << std::endl;
 
 
   return EXIT_SUCCESS;
