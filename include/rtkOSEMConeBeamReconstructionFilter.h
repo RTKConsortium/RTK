@@ -110,7 +110,7 @@ namespace rtk
  */
 template<class TVolumeImage, class TProjectionImage=TVolumeImage>
 class ITK_EXPORT OSEMConeBeamReconstructionFilter :
-  public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
+    public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
   /** Standard class typedefs. */
@@ -125,11 +125,11 @@ public:
 
   /** Typedefs of each subfilter of this composite filter */
   typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                          ExtractFilterType;
-  typedef itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >	             MultiplyFilterType;
+  typedef itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >                     MultiplyFilterType;
   typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >                    ForwardProjectionFilterType;
   typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
   typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>	             DivideVolumeFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>                DivideVolumeFilterType;
   typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
   typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
 
@@ -171,16 +171,16 @@ protected:
   void VerifyInputInformation() ITK_OVERRIDE {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer		 m_ExtractFilter;
+  typename ExtractFilterType::Pointer            m_ExtractFilter;
   typename ForwardProjectionFilterType::Pointer	 m_ForwardProjectionFilter;
-  typename MultiplyFilterType::Pointer		 m_MultiplyFilter;
-  typename BackProjectionFilterType::Pointer	 m_BackProjectionFilter;
-  typename BackProjectionFilterType::Pointer	 m_BackProjectionNormalizationFilter;
+  typename MultiplyFilterType::Pointer           m_MultiplyFilter;
+  typename BackProjectionFilterType::Pointer     m_BackProjectionFilter;
+  typename BackProjectionFilterType::Pointer     m_BackProjectionNormalizationFilter;
   typename DivideProjectionFilterType::Pointer	 m_DivideProjectionFilter;
-  typename DivideVolumeFilterType::Pointer	 m_DivideVolumeFilter;
+  typename DivideVolumeFilterType::Pointer       m_DivideVolumeFilter;
   typename ConstantProjectionSourceType::Pointer m_ZeroConstantProjectionStackSource;
   typename ConstantProjectionSourceType::Pointer m_OneConstantProjectionStackSource;
-  typename ConstantVolumeSourceType::Pointer	 m_ConstantVolumeSource;
+  typename ConstantVolumeSourceType::Pointer     m_ConstantVolumeSource;
 
 private:
   /** Number of projections processed before the volume is updated (several for OS-EM) */

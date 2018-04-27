@@ -65,10 +65,10 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::SetForwardProjectionFilter (int _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
-    {
+  {
     Superclass::SetForwardProjectionFilter( _arg );
     m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
-    }
+  }
 }
 
 template<class TVolumeImage, class TProjectionImage>
@@ -77,11 +77,11 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::SetBackProjectionFilter (int _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
-    {
+  {
     Superclass::SetBackProjectionFilter( _arg );
     m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
     m_BackProjectionNormalizationFilter = this->InstantiateBackProjectionFilter(_arg );
-    }
+  }
 }
 
 template<class TVolumeImage, class TProjectionImage>
@@ -90,7 +90,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 ::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr =
-    const_cast< TVolumeImage * >( this->GetInput() );
+      const_cast< TVolumeImage * >( this->GetInput() );
 
   if ( !inputPtr )
     return;
@@ -149,9 +149,9 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   // For the same reason, set geometry now
   // Check and set geometry
   if(this->GetGeometry().GetPointer() == ITK_NULLPTR)
-    {
+  {
     itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
-    }
+  }
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
   m_BackProjectionNormalizationFilter->SetGeometry(this->m_Geometry.GetPointer());
@@ -198,10 +198,10 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 
   // For each iteration, go over each projection
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
-    {
+  {
     unsigned int projectionsProcessedInSubset = 0;
     for(unsigned int i = 0; i < nProj; i++)
-      {
+    {
       // Change projection subset
       subsetRegion.SetIndex( Dimension-1, projOrder[i] );
       m_ExtractFilter->SetExtractionRegion(subsetRegion);
@@ -223,38 +223,38 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 
       projectionsProcessedInSubset++;
       if ((projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset) || (i == nProj - 1))
-        {
-	m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
-	m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+      {
+        m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
+        m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
 
-	m_MultiplyFilter->SetInput1(m_DivideVolumeFilter->GetOutput());
-	m_MultiplyFilter->Update();
+        m_MultiplyFilter->SetInput1(m_DivideVolumeFilter->GetOutput());
+        m_MultiplyFilter->Update();
 
         // To start a new subset:
         // - plug the output of the pipeline back into the Forward projection filter
         // - set the input of the Back projection filter to zero
-	pimg = m_MultiplyFilter->GetOutput();
+        pimg = m_MultiplyFilter->GetOutput();
         pimg->DisconnectPipeline();
 
         m_ForwardProjectionFilter->SetInput(1, pimg );
-	m_MultiplyFilter->SetInput2(pimg);
+        m_MultiplyFilter->SetInput2(pimg);
         m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-	m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+        m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
 
         projectionsProcessedInSubset = 0;
-        }
+      }
       // Backproject in the same image otherwise.
       else
-        {
+      {
         pimg = m_BackProjectionFilter->GetOutput();
         pimg->DisconnectPipeline();
         m_BackProjectionFilter->SetInput(0, pimg);
-	norm = m_BackProjectionNormalizationFilter->GetOutput();
-	norm->DisconnectPipeline();
-	m_BackProjectionNormalizationFilter->SetInput(0, norm);
-        }
+        norm = m_BackProjectionNormalizationFilter->GetOutput();
+        norm->DisconnectPipeline();
+        m_BackProjectionNormalizationFilter->SetInput(0, norm);
       }
     }
+  }
   this->GraftOutput( pimg );
 }
 

@@ -20,7 +20,7 @@
  * Joseph and CUDA Voxel-Based). The generated results are compared to the
  * expected results (analytical calculation).
  *
- * \author Simon Rit and Marc Vila
+ * \author Antoine Robert
  */
 
 int main(int, char** )
