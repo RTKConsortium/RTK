@@ -191,7 +191,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
     projOrder[i] = i;
   std::random_shuffle( projOrder.begin(), projOrder.end() );
 
-  int cpt = 0;
   // Declare the image used in the main loop
   typename TVolumeImage::Pointer pimg;
   typename TVolumeImage::Pointer norm;
