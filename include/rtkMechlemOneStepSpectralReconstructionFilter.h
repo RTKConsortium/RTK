@@ -24,7 +24,7 @@
 #include "rtkWeidingerForwardModelImageFilter.h"
 #include "rtkGetNewtonUpdateImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include <itkSubtractImageFilter.h>
+#include "rtkNesterovUpdateImageFilter.h"
 
 namespace rtk
 {
@@ -63,12 +63,12 @@ namespace rtk
    * BackProjectionHessians [ label="rtk::BackProjectionImageFilter (hessians)" URL="\ref rtk::BackProjectionImageFilter"];
    * Weidinger[ label="rtk::WeidingerForwardModelImageFilter" URL="\ref rtk::WeidingerForwardModelImageFilter"];
    * Newton[ label="rtk::GetNewtonUpdateImageFilter" URL="\ref rtk::GetNewtonUpdateImageFilter"];
-   * Subtract[ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
-   * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
-   * AfterSubtract [label="", fixedsize="false", width=0, height=0, shape=none];
+   * Nesterov[ label="rtk::NesterovUpdateImageFilter" URL="\ref rtk::NesterovUpdateImageFilter"];
+   * Alphak [label="", fixedsize="false", width=0, height=0, shape=none];
+   * NextAlphak [label="", fixedsize="false", width=0, height=0, shape=none];
    *
-   * Input0 -> AfterInput0 [arrowhead=none];
-   * AfterInput0 -> ForwardProjection;
+   * Input0 -> Alphak [arrowhead=none];
+   * Alphak -> ForwardProjection;
    * ProjectionsSource -> ForwardProjection;
    * Input1 -> Weidinger;
    * Input2 -> Weidinger;
@@ -82,11 +82,11 @@ namespace rtk
    * Weidinger -> BackProjectionHessians;
    * BackProjectionGradients -> Newton;
    * BackProjectionHessians -> Newton;
-   * Newton -> Subtract;
-   * AfterInput0 -> Subtract;
-   * Subtract -> AfterSubtract [arrowhead=none];
-   * AfterSubtract -> Output;
-   * AfterSubtract -> AfterInput0 [style=dashed, constraint=false]
+   * Newton -> Nesterov;
+   * Input0 -> Nesterov;
+   * Nesterov -> NextAlphak [arrowhead=none];
+   * NextAlphak -> Output;
+   * NextAlphak -> Alphak [style=dashed, constraint=false];
    * }
    * \enddot
    *
@@ -127,8 +127,8 @@ public:
     typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
     typedef rtk::BackProjectionImageFilter< TGradientsImage, TGradientsImage >            GradientsBackProjectionFilterType;
     typedef rtk::BackProjectionImageFilter< THessiansImage, THessiansImage >              HessiansBackProjectionFilterType;
-    typedef itk::SubtractImageFilter<TOutputImage>                                        SubtractFilterType;
-    typedef rtk::ConstantImageSource<TSingleComponentImage>                                 SingleComponentImageSourceType;
+    typedef rtk::NesterovUpdateImageFilter<TOutputImage>                                  NesterovFilterType;
+    typedef rtk::ConstantImageSource<TSingleComponentImage>                               SingleComponentImageSourceType;
     typedef rtk::ConstantImageSource<TOutputImage>                                        MaterialProjectionsSourceType;
     typedef rtk::ConstantImageSource<TGradientsImage>                                     GradientsSourceType;
     typedef rtk::ConstantImageSource<THessiansImage>                                      HessiansSourceType;
@@ -185,7 +185,7 @@ protected:
     typename HessiansSourceType::Pointer                                     m_HessiansSource;
     typename WeidingerForwardModelType::Pointer                              m_WeidingerForward;
     typename NewtonFilterType::Pointer                                       m_NewtonFilter;
-    typename SubtractFilterType::Pointer                                     m_SubtractFilter;
+    typename NesterovFilterType::Pointer                                     m_NesterovFilter;
     typename ForwardProjectionFilterType::Pointer                            m_ForwardProjectionFilter;
     typename GradientsBackProjectionFilterType::Pointer                      m_GradientsBackProjectionFilter;
     typename HessiansBackProjectionFilterType::Pointer                       m_HessiansBackProjectionFilter;

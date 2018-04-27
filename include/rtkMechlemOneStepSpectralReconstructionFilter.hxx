@@ -43,7 +43,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_HessiansSource = HessiansSourceType::New();
   m_WeidingerForward = WeidingerForwardModelType::New();
   m_NewtonFilter = NewtonFilterType::New();
-  m_SubtractFilter = SubtractFilterType::New();
+  m_NesterovFilter = NesterovFilterType::New();
 
   // Set permanent parameters
   m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::Zero);
@@ -51,7 +51,6 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_SingleComponentVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::One);
   m_GradientsSource->SetConstant(itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TGradientsImage::PixelType>::Zero);
   m_HessiansSource->SetConstant(itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::THessiansImage::PixelType>::Zero);
-
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -274,8 +273,8 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_NewtonFilter->SetInputGradient(m_GradientsBackProjectionFilter->GetOutput());
   m_NewtonFilter->SetInputHessian(m_HessiansBackProjectionFilter->GetOutput());
 
-  m_SubtractFilter->SetInput1(this->GetInputMaterialVolumes());
-  m_SubtractFilter->SetInput2(m_NewtonFilter->GetOutput());
+  m_NesterovFilter->SetInput(0, this->GetInputMaterialVolumes());
+  m_NesterovFilter->SetInput(1, m_NewtonFilter->GetOutput());
 
   // Set information for the sources
   m_SingleComponentProjectionsSource->SetInformationFromImage(this->GetInputPhotonCounts());
@@ -294,10 +293,10 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 
 
   // Have the last filter calculate its output information
-  m_SubtractFilter->UpdateOutputInformation();
+  m_NesterovFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_SubtractFilter->GetOutput() );
+  this->GetOutput()->CopyInformation( m_NesterovFilter->GetOutput() );
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -305,21 +304,35 @@ void
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
 ::GenerateData()
 {
-typename TOutputImage::Pointer pimg;
+  // Nesterov filter needs its input to be updated before it is initialized
+  // since it allocates its internal images to the same size as the input
+  m_NesterovFilter->UpdateOutputInformation();
 
-for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
-  {
-  if (iter>0)
+  // Initialize Nesterov filter
+  m_NesterovFilter->SetNumberOfIterations(m_NumberOfIterations+1);
+  m_NesterovFilter->ResetIterations();
+
+  typename TOutputImage::Pointer NextAlpha_k;
+
+  for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
     {
-    pimg = m_SubtractFilter->GetOutput();
-    pimg->DisconnectPipeline();
-    m_SubtractFilter->SetInput1(pimg);
-    m_ForwardProjectionFilter->SetInput(1, pimg);
-    }
-  m_SubtractFilter->Update();
+    // Starting from the second iteration, plug the output
+    // of Nesterov back as input of the forward projection
+    // The Nesterov filter itself doesn't need its output
+    // plugged back as input, since it stores intermediate
+    // images that contain all the required data. It only
+    // needs the new update from rtkGetNewtonUpdateImageFilter
+    if (iter>0)
+      {
+      NextAlpha_k = m_NesterovFilter->GetOutput();
+      NextAlpha_k->DisconnectPipeline();
+      m_ForwardProjectionFilter->SetInput(1, NextAlpha_k);
+      }
 
-  }
-  this->GraftOutput( m_SubtractFilter->GetOutput() );
+    // Update the most downstream filter
+    m_NesterovFilter->Update();
+    }
+  this->GraftOutput( m_NesterovFilter->GetOutput() );
 }
 
 }// end namespace
