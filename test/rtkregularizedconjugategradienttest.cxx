@@ -177,7 +177,7 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector, all regularization steps on ******" << std::endl;
 
-  regularizedConjugateGradient->SetForwardProjectionFilter( 2 );
+  regularizedConjugateGradient->SetForwardProjectionFilter( 1 );
   regularizedConjugateGradient->SetBackProjectionFilter( 2 );
   regularizedConjugateGradient->SetCudaConjugateGradient(true);
   regularizedConjugateGradient->SetPerformPositivity(true);

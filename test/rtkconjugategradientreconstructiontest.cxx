@@ -160,7 +160,7 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  conjugategradient->SetForwardProjectionFilter(2);
+  conjugategradient->SetForwardProjectionFilter( 1 );
   conjugategradient->SetBackProjectionFilter( 2 );
   conjugategradient->SetRegularized(false);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );

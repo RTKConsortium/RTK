@@ -167,7 +167,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector ******" << std::endl;
 
   sart->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  sart->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  sart->SetForwardProjectionFilter( 1 ); // Cuda ray cast
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);

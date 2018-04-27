@@ -224,7 +224,7 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  admmWavelets->SetForwardProjectionFilter( 2 );
+  admmWavelets->SetForwardProjectionFilter( 1 );
   admmWavelets->SetBackProjectionFilter( 2 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmWavelets->Update() );
 

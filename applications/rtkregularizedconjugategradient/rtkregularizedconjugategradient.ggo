@@ -16,7 +16,7 @@ option "costs"          - "Show residual costs at each iteration at the end of t
 option "nodisplaced"    - "Disable the displaced detector filter"                                                     flag   off
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","CudaRayCast" enum no default="Joseph"
 option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","CudaRayCast" enum no default="VoxelBasedBackProjection"
 
 section "Regularization"

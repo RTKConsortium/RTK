@@ -446,7 +446,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 4: CUDA forward and back projectors, only L0 temporal denoising ******" << std::endl;
 
   rooster->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  rooster->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  rooster->SetForwardProjectionFilter( 1 ); // Cuda ray cast
   
   rooster->SetPerformPositivity(false);
   rooster->SetPerformMotionMask(false);
