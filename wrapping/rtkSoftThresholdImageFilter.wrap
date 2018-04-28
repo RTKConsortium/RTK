@@ -14,10 +14,10 @@ set(WRAPPER_AUTO_INCLUDE_HEADERS ON)
 #   rtk::Function::SoftThreshold<float, float>>
 #-----------------------------------------------------------------------------
 itk_wrap_class("itk::UnaryFunctorImageFilter" POINTER)
-
-  itk_wrap_template("IF3IF3STFF"
-    "itk::Image<float, 3>, itk::Image<float, 3>, rtk::Functor::SoftThreshold<float, float>")
-
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3ST${ITKM_${t}}${ITKM_${t}}"
+      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, rtk::Functor::SoftThreshold<${ITKT_${t}}, ${ITKT_${t}}>")
+  endforeach()
 itk_end_wrap_class()
 
 #-----------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 
 itk_wrap_class("rtk::SimplexSpectralProjectionsDecompositionImageFilter" POINTER)
   foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("VI${ITKM_${t}}3VI${ITKM_${t}}3VI${ITKM_${t}}2I${ITKM_${t}}2I${ITKM_${t}}2"
-        "itk::VectorImage<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_${t}}, 2>, itk::Image<${ITKT_${t}}, 2>, itk::Image<${ITKT_${t}}, 2>")
+    itk_wrap_template("VI${ITKM_${t}}3VI${ITKM_${t}}3VIF2IF2IF2"
+        "itk::VectorImage<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_F}, 2>, itk::Image<${ITKT_F}, 2>, itk::Image<${ITKT_F}, 2>")
   endforeach()
 itk_end_wrap_class()
