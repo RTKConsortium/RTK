@@ -274,8 +274,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 1: Joseph forward projector, Voxel-Based back projector, CPU interpolation and splat ******" << std::endl;
 
-  conjugategradient->SetBackProjectionFilter( 0 ); // Voxel based
-  conjugategradient->SetForwardProjectionFilter( 0 ); // Joseph
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::BP_VOXELBASED);
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientFilterType::FP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<VolumeSeriesType>(conjugategradient->GetOutput(), join->GetOutput(), 0.4, 12, 2.0);
@@ -284,8 +284,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 2: CUDA ray cast forward projector, CUDA Voxel-Based back projector, GPU interpolation and splat ******" << std::endl;
 
-  conjugategradient->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  conjugategradient->SetForwardProjectionFilter( 1 ); // Cuda ray cast
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::BP_CUDAVOXELBASED);
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientFilterType::FP_CUDARAYCAST);
   conjugategradient->SetCudaConjugateGradient(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 

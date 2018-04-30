@@ -133,6 +133,9 @@ public:
   typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
   typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
 
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
   /** Standard New method. */
   itkNewMacro(Self);
 
@@ -152,10 +155,10 @@ public:
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 protected:
   OSEMConeBeamReconstructionFilter();
   ~OSEMConeBeamReconstructionFilter() {}

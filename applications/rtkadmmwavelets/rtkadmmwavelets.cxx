@@ -98,8 +98,8 @@ int main(int argc, char * argv[])
     ADMM_Wavelets_FilterType::Pointer admmFilter = ADMM_Wavelets_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
-  admmFilter->SetForwardProjectionFilter(args_info.fp_arg);
-  admmFilter->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, admmFilter.GetPointer());
+  SetBackProjectionFromGgo(args_info, admmFilter.GetPointer());
 
   // Set the geometry and interpolation weights
   admmFilter->SetGeometry(geometryReader->GetOutputObject());

@@ -118,7 +118,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -131,7 +131,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetBackProjectionFilter (int _arg)
+::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {

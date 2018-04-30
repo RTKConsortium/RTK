@@ -83,6 +83,9 @@ public:
   typedef ProjectionStackType   VolumeType;
   typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
 
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          DVFSequenceImageType;
   typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      DVFImageType;
@@ -100,8 +103,8 @@ public:
   itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter, FourDConjugateGradientConeBeamReconstructionFilter)
 
   /** Neither the Forward nor the Back projection filters can be set by the user */
-  void SetForwardProjectionFilter (int itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
-  void SetBackProjectionFilter (int itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
+  void SetForwardProjectionFilter (ForwardProjectionType itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
+  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
 
   /** The ND + time motion vector field */
   void SetDisplacementField(const DVFSequenceImageType* DVFs);
