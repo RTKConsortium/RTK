@@ -115,6 +115,9 @@ public:
   typedef rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
   typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                                    DisplacedDetectorFilterType;
 
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
   /** Standard New method. */
   itkNewMacro(Self)
 
@@ -142,10 +145,10 @@ public:
   typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
   /** Pass the ForwardProjection filter to the conjugate gradient operator */
-  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
+  virtual void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
 
   /** Pass the backprojection filter to the conjugate gradient operator and to the filter generating the B of AX=B */
-  void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
+  virtual void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);

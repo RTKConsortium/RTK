@@ -51,11 +51,16 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   // projection
   m_ExtractFilterRayBox = ExtractFilterType::New();
   m_RayBoxFilter = RayBoxIntersectionFilterType::New();
-  m_DivideFilter = DivideFilterType::New();
+  m_DivideProjectionFilter = DivideProjectionFilterType::New();
   m_ConstantProjectionStackSource = ConstantProjectionSourceType::New();
 
   // Create the filter that enforces positivity
   m_ThresholdFilter = ThresholdFilterType::New();
+
+  // Create the filters required for the normalization of the
+  // backprojection
+  m_OneConstantProjectionStackSource = ConstantProjectionSourceType::New();
+  m_DivideVolumeFilter = DivideVolumeFilterType::New();
 
   //Permanent internal connections
   m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename ProjectionType::PixelType>::ZeroValue() );
@@ -66,11 +71,13 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   m_MultiplyFilter->SetInput1( itk::NumericTraits<typename ProjectionType::PixelType>::ZeroValue() );
   m_MultiplyFilter->SetInput2( m_SubtractFilter->GetOutput() );
 
+  m_AddFilter->SetInput1(m_DivideVolumeFilter->GetOutput());
+
   m_ExtractFilterRayBox->SetInput(m_ConstantProjectionStackSource->GetOutput());
   m_RayBoxFilter->SetInput(m_ExtractFilterRayBox->GetOutput());
-  m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
-  m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
-  m_DisplacedDetectorFilter->SetInput(m_DivideFilter->GetOutput());
+  m_DivideProjectionFilter->SetInput1(m_MultiplyFilter->GetOutput());
+  m_DivideProjectionFilter->SetInput2(m_RayBoxFilter->GetOutput());
+  m_DisplacedDetectorFilter->SetInput(m_DivideProjectionFilter->GetOutput());
 
   // Default parameters
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
@@ -84,7 +91,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 template<class TVolumeImage, class TProjectionImage>
 void
 SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -96,12 +103,13 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 template<class TVolumeImage, class TProjectionImage>
 void
 SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-::SetBackProjectionFilter (int _arg)
+::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {
     Superclass::SetBackProjectionFilter( _arg );
     m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
+    m_BackProjectionNormalizationFilter = this->InstantiateBackProjectionFilter( _arg );
     }
 }
 
@@ -158,11 +166,21 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   m_ConstantVolumeSource->SetConstant(0);
   m_ConstantVolumeSource->UpdateOutputInformation();
 
+  m_OneConstantProjectionStackSource->SetInformationFromImage(const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
+  m_OneConstantProjectionStackSource->SetConstant(1);
+
   m_BackProjectionFilter->SetInput ( 0, m_ConstantVolumeSource->GetOutput() );
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput() );
   m_BackProjectionFilter->SetTranspose(false);
 
-  m_AddFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+  m_BackProjectionNormalizationFilter->SetInput ( 0, m_ConstantVolumeSource->GetOutput() );
+  m_BackProjectionNormalizationFilter->SetInput(1, m_OneConstantProjectionStackSource->GetOutput() );
+  m_BackProjectionNormalizationFilter->SetTranspose(false);
+
+  m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+  m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
+  m_DivideVolumeFilter->SetConstant(0);
+
   m_AddFilter->SetInput2(this->GetInput(0));
 
   m_ForwardProjectionFilter->SetInput( 0, m_ZeroMultiplyFilter->GetOutput() );
@@ -178,11 +196,12 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
     }
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry);
+  m_BackProjectionNormalizationFilter->SetGeometry(this->m_Geometry);
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
 
   if (m_IsGated) // For gated SART, insert a gating filter into the pipeline
     {
-    m_GatingWeightsFilter->SetInput1(m_DivideFilter->GetOutput());
+    m_GatingWeightsFilter->SetInput1(m_DivideProjectionFilter->GetOutput());
     m_GatingWeightsFilter->SetConstant2(1);
     m_DisplacedDetectorFilter->SetInput(m_GatingWeightsFilter->GetOutput());
     }
@@ -226,8 +245,9 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   m_SubtractFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
   m_RayBoxFilter->ReleaseDataFlagOn();
-  m_DivideFilter->ReleaseDataFlagOn();
+  m_DivideProjectionFilter->ReleaseDataFlagOn();
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
+  m_DivideVolumeFilter->ReleaseDataFlagOn();
 
   if (m_EnforcePositivity)
     m_AddFilter->ReleaseDataFlagOn();
@@ -255,13 +275,14 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
     projOrder[i] = i;
   std::random_shuffle( projOrder.begin(), projOrder.end() );
 
-  m_MultiplyFilter->SetInput1( (const float) m_Lambda/(double)m_NumberOfProjectionsPerSubset  );
+  m_MultiplyFilter->SetInput1( (const float) m_Lambda );
 
   // Create the zero projection stack used as input by RayBoxIntersectionFilter
   m_ConstantProjectionStackSource->Update();
 
   // Declare the image used in the main loop
   typename TVolumeImage::Pointer pimg;
+  typename TVolumeImage::Pointer norm;
 
   // For each iteration, go over each projection
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
@@ -273,6 +294,9 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
       subsetRegion.SetIndex( Dimension-1, projOrder[i] );
       m_ExtractFilter->SetExtractionRegion(subsetRegion);
       m_ExtractFilterRayBox->SetExtractionRegion(subsetRegion);
+      m_ExtractFilter->UpdateOutputInformation();
+
+      m_OneConstantProjectionStackSource->SetInformationFromImage(const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
 
       // Set gating weight for the current projection
       if (m_IsGated)
@@ -283,11 +307,16 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
       // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
+      m_BackProjectionNormalizationFilter->GetOutput()->UpdateOutputInformation();
+      m_BackProjectionNormalizationFilter->GetOutput()->PropagateRequestedRegion();
 
       projectionsProcessedInSubset++;
       if ((projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset) || (i == nProj - 1))
         {
-        m_AddFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+        m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
+        m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+        m_AddFilter->SetInput1(m_DivideVolumeFilter->GetOutput());
+        m_DivideVolumeFilter->Update();
 
         // To start a new subset:
         // - plug the output of the pipeline back into the Forward projection filter
@@ -302,6 +331,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
         m_ForwardProjectionFilter->SetInput(1, pimg );
         m_AddFilter->SetInput2(pimg);
         m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+        m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
 
         projectionsProcessedInSubset = 0;
         }
@@ -309,9 +339,13 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
       else
         {
         m_BackProjectionFilter->Update();
+        m_BackProjectionNormalizationFilter->Update();
         pimg = m_BackProjectionFilter->GetOutput();
         pimg->DisconnectPipeline();
         m_BackProjectionFilter->SetInput(0, pimg);
+        norm = m_BackProjectionNormalizationFilter->GetOutput();
+        norm->DisconnectPipeline();
+        m_BackProjectionNormalizationFilter->SetInput(0, norm);
         }
       }
     }

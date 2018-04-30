@@ -80,7 +80,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 template< typename TOutputImage >
 void
 ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -93,7 +93,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 template< typename TOutputImage >
 void
 ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::SetBackProjectionFilter (int _arg)
+::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {

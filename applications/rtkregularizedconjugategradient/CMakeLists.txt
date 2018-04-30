@@ -1,4 +1,4 @@
-WRAP_GGO(rtkregularizedconjugategradient_GGO_C rtkregularizedconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+WRAP_GGO(rtkregularizedconjugategradient_GGO_C rtkregularizedconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 add_executable(rtkregularizedconjugategradient rtkregularizedconjugategradient.cxx ${rtkregularizedconjugategradient_GGO_C})
 target_link_libraries(rtkregularizedconjugategradient RTK)
 

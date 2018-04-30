@@ -149,8 +149,8 @@ int main(int, char** )
   regularizedConjugateGradient->SetNumberOfLevels(3);
 
   // In all cases except CUDA, use the Joseph forward projector and Voxel-based back projector
-  regularizedConjugateGradient->SetForwardProjectionFilter(0);
-  regularizedConjugateGradient->SetBackProjectionFilter( 0 );
+  regularizedConjugateGradient->SetForwardProjectionFilter(RegularizedCGType::FP_JOSEPH);
+  regularizedConjugateGradient->SetBackProjectionFilter(RegularizedCGType::BP_VOXELBASED);
 
   std::cout << "\n\n****** Case 1: Positivity + TV regularization ******" << std::endl;
 
@@ -177,8 +177,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector, all regularization steps on ******" << std::endl;
 
-  regularizedConjugateGradient->SetForwardProjectionFilter( 2 );
-  regularizedConjugateGradient->SetBackProjectionFilter( 2 );
+  regularizedConjugateGradient->SetForwardProjectionFilter(RegularizedCGType::FP_CUDARAYCAST);
+  regularizedConjugateGradient->SetBackProjectionFilter(RegularizedCGType::BP_CUDAVOXELBASED);
   regularizedConjugateGradient->SetCudaConjugateGradient(true);
   regularizedConjugateGradient->SetPerformPositivity(true);
   regularizedConjugateGradient->SetPerformTVSpatialDenoising(true);

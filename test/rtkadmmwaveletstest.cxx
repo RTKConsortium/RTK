@@ -203,11 +203,11 @@ int main(int, char** )
   admmWavelets->SetOrder( 3 );
 
   // In all cases, use the Joseph forward projector
-  admmWavelets->SetForwardProjectionFilter(0);
+  admmWavelets->SetForwardProjectionFilter(ADMMWaveletsType::FP_JOSEPH);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  admmWavelets->SetBackProjectionFilter( 0 );
+  admmWavelets->SetBackProjectionFilter(ADMMWaveletsType::BP_VOXELBASED);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmWavelets->Update() );
 
   CheckImageQuality<OutputImageType>(admmWavelets->GetOutput(), dsl->GetOutput());
@@ -215,7 +215,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
 
-  admmWavelets->SetBackProjectionFilter( 1 );
+  admmWavelets->SetBackProjectionFilter(ADMMWaveletsType::BP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmWavelets->Update() );
 
   CheckImageQuality<OutputImageType>(admmWavelets->GetOutput(), dsl->GetOutput());
@@ -224,8 +224,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  admmWavelets->SetForwardProjectionFilter( 2 );
-  admmWavelets->SetBackProjectionFilter( 2 );
+  admmWavelets->SetForwardProjectionFilter(ADMMWaveletsType::FP_CUDARAYCAST);
+  admmWavelets->SetBackProjectionFilter(ADMMWaveletsType::BP_CUDAVOXELBASED);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmWavelets->Update() );
 
   CheckImageQuality<OutputImageType>(admmWavelets->GetOutput(), dsl->GetOutput());

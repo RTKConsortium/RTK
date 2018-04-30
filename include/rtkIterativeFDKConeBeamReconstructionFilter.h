@@ -118,6 +118,9 @@ public:
   typedef TInputImage  InputImageType;
   typedef TOutputImage OutputImageType;
 
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
   /** Typedefs of each subfilter of this composite filter */
   typedef rtk::DisplacedDetectorImageFilter<OutputImageType, OutputImageType>                       DisplacedDetectorFilterType;
   typedef rtk::ParkerShortScanImageFilter<OutputImageType, OutputImageType>                         ParkerFilterType;
@@ -152,10 +155,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (int itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "Backprojection cannot be changed");}
+  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "Backprojection cannot be changed");}
 
   /** Get / Set the truncation correction */
   itkGetMacro(TruncationCorrection, double);

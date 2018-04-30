@@ -35,7 +35,7 @@ namespace Functor
  *
  * \ingroup Functions
  */
-template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
+template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplication
 {
 public:

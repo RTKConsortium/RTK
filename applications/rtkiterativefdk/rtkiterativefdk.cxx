@@ -80,7 +80,7 @@ int main(int argc, char * argv[])
   f->SetInput( 0, constantImageSource->GetOutput() ); \
   f->SetInput( 1, reader->GetOutput() ); \
   f->SetGeometry(geometryReader->GetOutputObject()); \
-  f->SetForwardProjectionFilter(args_info.fp_arg); \
+  SetForwardProjectionFromGgo(args_info, f.GetPointer()); \
   f->SetNumberOfIterations(args_info.niterations_arg); \
   f->SetTruncationCorrection(args_info.pad_arg); \
   f->SetHannCutFrequency(args_info.hann_arg); \

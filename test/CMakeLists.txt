@@ -100,8 +100,6 @@ rtk_add_test(rtkScatterGlareFilterNoFFTWTest rtkscatterglarefiltertest.cxx)
 rtk_add_test(rtkGainCorrectionTest rtkgaincorrectiontest.cxx)
 rtk_add_cuda_test(rtkGainCorrectionCudaTest rtkgaincorrectiontest.cxx)
 
-rtk_add_test(rtkRaycastInterpolatorForwardProjectionTest rtkRaycastInterpolatorForwardProjectionTest.cxx)
-
 rtk_add_test(rtkForwardProjectionTest rtkforwardprojectiontest.cxx)
 rtk_add_cuda_test(rtkForwardProjectionCudaTest rtkforwardprojectiontest.cxx)
 
