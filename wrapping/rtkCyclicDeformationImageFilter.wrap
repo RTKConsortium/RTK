@@ -1,9 +1,7 @@
 
 #Add unexisting itk::ImageToImageFilter templates 
 itk_wrap_class("itk::ImageToImageFilter" POINTER)
-  foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("${ITKM_I${ITKM_V${t}3}4}${ITKM_I${ITKM_V${t}3}3}" "itk::Image<${ITKT_V${t}3}, 4>, itk::Image<${ITKT_V${t}3}, 3>") #Wrap vector types
-  endforeach()
+    itk_wrap_template("${ITKM_I${ITKM_VF3}4}${ITKM_I${ITKM_VF3}3}" "itk::Image<${ITKT_VF3}, 4>, itk::Image<${ITKT_VF3}, 3>")
 itk_end_wrap_class()
 
 #-----------------------------------------------------------------------------
@@ -12,10 +10,8 @@ itk_end_wrap_class()
 itk_wrap_class("rtk::CyclicDeformationImageFilter"  POINTER)
   set(INPUT_IMAGE_DIMS 4)
   set(OUTPUT_IMAGE_DIMS 3)
-  foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("I${ITKM_${t}}${INPUT_IMAGE_DIMS}I${ITKM_${t}}${OUTPUT_IMAGE_DIMS}"
-      "itk::Image<${ITKT_${t}}, ${INPUT_IMAGE_DIMS}>, itk::Image<${ITKT_${t}}, ${OUTPUT_IMAGE_DIMS}>")
-    itk_wrap_template("I${ITKM_V${t}3}${INPUT_IMAGE_DIMS}I${ITKM_V${t}3}${OUTPUT_IMAGE_DIMS}"
-      "itk::Image<${ITKT_V${t}3}, ${INPUT_IMAGE_DIMS}>, itk::Image<${ITKT_V${t}3}, ${OUTPUT_IMAGE_DIMS}>") #Wrap vector types
-  endforeach()
+    itk_wrap_template("IF${INPUT_IMAGE_DIMS}IF${OUTPUT_IMAGE_DIMS}"
+      "itk::Image<${ITKT_F}, ${INPUT_IMAGE_DIMS}>, itk::Image<${ITKT_F}, ${OUTPUT_IMAGE_DIMS}>")
+    itk_wrap_template("I${ITKM_VF3}${INPUT_IMAGE_DIMS}I${ITKM_VF3}${OUTPUT_IMAGE_DIMS}"
+      "itk::Image<${ITKT_VF3}, ${INPUT_IMAGE_DIMS}>, itk::Image<${ITKT_VF3}, ${OUTPUT_IMAGE_DIMS}>") #Wrap vector types
 itk_end_wrap_class()
