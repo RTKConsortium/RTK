@@ -26,3 +26,206 @@ if(RTK_USE_CUDA)
     itk_wrap_template("CIF3CIF3CteISrcCIF3" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::ConstantImageSource< itk::CudaImage<${ITKT_F}, 3> >")
   itk_end_wrap_class()
 endif()
+
+# ---------------------------------------------------------------------------
+# Wrap itk::ContinuousIndex missing types
+# ---------------------------------------------------------------------------
+itk_wrap_class("itk::ContinuousIndex")
+
+  # Wrap ITK double missing types
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("D1" "${ITKT_D}, 1")
+    itk_wrap_template("D2" "${ITKT_D}, 2")
+    itk_wrap_template("D3" "${ITKT_D}, 3")
+  endif()
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    if (ITK_WRAP_double)
+      itk_wrap_template("D1" "double, 1")
+    endif()
+  endif()
+
+itk_end_wrap_class()
+
+# ---------------------------------------------------------------------------
+# Wrap itk::Point missing types
+# ---------------------------------------------------------------------------
+itk_wrap_class("itk::Point")
+
+  # Wrap ITK double missing types
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("D1" "${ITKT_D}, 1")
+    itk_wrap_template("D2" "${ITKT_D}, 2")
+    itk_wrap_template("D3" "${ITKT_D}, 3")
+  endif()
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    if (ITK_WRAP_double)
+      itk_wrap_template("D1" "double, 1")
+    endif()
+  endif()
+
+itk_end_wrap_class()
+
+# ---------------------------------------------------------------------------
+# Wrap itk::ImageBase missing types
+# ---------------------------------------------------------------------------
+itk_wrap_class("itk::ImageBase" POINTER)
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("1" "1")
+  endif()
+
+itk_end_wrap_class()
+
+# ---------------------------------------------------------------------------
+# Wrap itk::Image missing types
+# ---------------------------------------------------------------------------
+itk_wrap_class("itk::Image" POINTER)
+
+  # Wrap ITK double missing types
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("D1" "${ITKT_D}, 1")
+    itk_wrap_template("D2" "${ITKT_D}, 2")
+    itk_wrap_template("D3" "${ITKT_D}, 3")
+  endif()
+
+  # Wrap ITK unsigned char missing types
+  if (NOT ITK_WRAP_unsigned_char)
+    itk_wrap_template("UC1" "${ITKT_UC}, 1")
+  endif()
+
+  # Wrap ITK unsigned short missing types
+  if (NOT ITK_WRAP_unsigned_short)
+    itk_wrap_template("US2" "${ITKT_US}, 2")
+    itk_wrap_template("US3" "${ITKT_US}, 3")
+  endif()
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("F1" "${ITKT_F}, 1")
+	if (ITK_WRAP_double)
+      itk_wrap_template("D1" "${ITKT_D}, 1")
+    endif()
+	if (ITK_WRAP_unsigned_char)
+      itk_wrap_template("UC1" "${ITKT_UC}, 1")
+    endif()
+  endif()
+
+itk_end_wrap_class()
+
+# ---------------------------------------------------------------------------
+# Wrap itk::ImageSource missing types
+# ---------------------------------------------------------------------------
+itk_wrap_class("itk::ImageSource" POINTER)
+
+  # Wrap ITK double missing types
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("ID1" "itk::Image<${ITKT_D}, 1>")
+    itk_wrap_template("ID2" "itk::Image<${ITKT_D}, 2>")
+    itk_wrap_template("ID3" "itk::Image<${ITKT_D}, 3>")
+  endif()
+
+  # Wrap ITK unsigned char missing types
+  if (NOT ITK_WRAP_unsigned_char)
+    itk_wrap_template("IUC1" "itk::Image<${ITKT_UC}, 1>")
+  endif()
+
+  # Wrap ITK unsigned short missing types
+  if (NOT ITK_WRAP_unsigned_short)
+    itk_wrap_template("IUS2" "itk::Image<${ITKT_US}, 2>")
+    itk_wrap_template("IUS3" "itk::Image<${ITKT_US}, 3>")
+  endif()
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("IF1" "itk::Image<${ITKT_F}, 1>")
+	if (ITK_WRAP_double)
+      itk_wrap_template("ID1" "itk::Image<${ITKT_D}, 1>")
+    endif()
+	if (ITK_WRAP_unsigned_char)
+      itk_wrap_template("IUC1" "itk::Image<${ITKT_UC}, 1>")
+    endif()
+  endif()
+
+itk_end_wrap_class()
+
+# ---------------------------------------------------------------------------
+# Wrap itk::ImageToImageFilter missing types
+# ---------------------------------------------------------------------------
+itk_wrap_class("itk::ImageToImageFilter" POINTER)
+
+  # Wrap ITK double missing types --
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
+	itk_wrap_template("ID3ID2" "itk::Image<${ITKT_D}, 3>, itk::Image<${ITKT_D}, 2>")
+  endif()
+
+  # Wrap ITK unsigned short missing types
+  if (NOT ITK_WRAP_unsigned_short)
+    itk_wrap_template("IUS2IUS2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_US}, 2>")
+    itk_wrap_template("IUS3IUS3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_US}, 3>")
+  endif()
+
+  # Wrap ITK unsigned short combination (required by : rtkLookupTableImageFilter)
+  itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+  itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
+
+  # Wrap ITK CovariantVector missing types
+  itk_wrap_template("ICVD33ICVD33" "itk::Image<itk::CovariantVector<${ITKT_D}, 3>, 3>, itk::Image<itk::CovariantVector<${ITKT_D}, 3>, 3>")
+
+  # Wrap ITK real type combination
+  itk_wrap_template("IF3ID2" "itk::Image<${ITKT_F}, 3>, itk::Image<${ITKT_D}, 2>")
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("IF1IF1" "itk::Image<${ITKT_F}, 1>, itk::Image<${ITKT_F}, 1>")
+	if (ITK_WRAP_double)
+      itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
+    endif()
+  endif()
+
+itk_end_wrap_class()
+
+# ---------------------------------------------------------------------------
+# Wrap itk::InPlaceImageFilter missing types
+# ---------------------------------------------------------------------------
+itk_wrap_class("itk::InPlaceImageFilter" POINTER)
+
+  # Wrap ITK double missing types --
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
+	itk_wrap_template("ID3ID2" "itk::Image<${ITKT_D}, 3>, itk::Image<${ITKT_D}, 2>")
+  endif()
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("IF1IF1" "itk::Image<${ITKT_F}, 1>, itk::Image<${ITKT_F}, 1>")
+	if (ITK_WRAP_double)
+      itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
+    endif()
+  endif()
+
+  # Wrap ITK unsigned short missing types
+  if (NOT ITK_WRAP_unsigned_short)
+    itk_wrap_template("IUS3IUS3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_US}, 3>")
+  endif()
+
+  # Wrap ITK unsigned short combination (required by : rtkLookupTableImageFilter)
+  itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+  itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
+
+  # Wrap ITK real type combination
+  itk_wrap_template("IF3ID2" "itk::Image<${ITKT_F}, 3>, itk::Image<${ITKT_D}, 2>")
+
+itk_end_wrap_class()
