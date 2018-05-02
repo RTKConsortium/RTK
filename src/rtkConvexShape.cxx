@@ -96,6 +96,11 @@ void
 ConvexShape
 ::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
+  for(size_t i=0; i<m_PlaneDirections.size(); i++)
+    {
+    if(dir==m_PlaneDirections[i] && pos==m_PlanePositions[i])
+      return;
+    }
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
 }

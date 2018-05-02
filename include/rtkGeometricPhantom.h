@@ -45,6 +45,7 @@ public:
   typedef std::vector<ConvexShapePointer> ConvexShapeVector;
   typedef ConvexShape::PointType          PointType;
   typedef ConvexShape::VectorType         VectorType;
+  typedef ConvexShape::ScalarType         ScalarType;
   typedef ConvexShape::RotationMatrixType RotationMatrixType;
 
 
@@ -69,6 +70,10 @@ public:
   /** Add convex object to phantom. */
   void AddConvexShape(const ConvexShapePointer &co);
 
+  /** Add clipping plane to the object. The plane is defined by the equation
+   * dir * (x,y,z)' + pos = 0. */
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+
 protected:
   GeometricPhantom() {}
   ~GeometricPhantom() {}
@@ -77,7 +82,9 @@ private:
   GeometricPhantom(const Self&); //purposely not implemented
   void operator=(const Self&);   //purposely not implemented
 
-  ConvexShapeVector m_ConvexShapes;
+  ConvexShapeVector       m_ConvexShapes;
+  std::vector<VectorType> m_PlaneDirections;
+  std::vector<ScalarType> m_PlanePositions;
 };
 
 }
