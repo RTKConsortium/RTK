@@ -56,12 +56,12 @@ int main(int, char** )
   // Read all inputs
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
   incidentSpectrumReader->SetFileName( std::string(RTK_DATA_ROOT) +
-                                       std::string("/Input/Spectral/incident_spectrum.mha") );
+                                       std::string("/Input/Spectral/OneStep/incident_spectrum_64_rows.mha") );
   incidentSpectrumReader->Update();
 
   vIncidentSpectrumReaderType::Pointer vIncidentSpectrumReader = vIncidentSpectrumReaderType::New();
   vIncidentSpectrumReader->SetFileName( std::string(RTK_DATA_ROOT) +
-                                       std::string("/Input/Spectral/incident_spectrum.mha") );
+                                       std::string("/Input/Spectral/OneStep/incident_spectrum_64_rows.mha") );
   vIncidentSpectrumReader->Update();
 
   DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
@@ -82,8 +82,8 @@ int main(int, char** )
 
   // Define the material concentrations
   MaterialPixelType concentrations;
-  concentrations[0] = 0.02; // Iodine
-  concentrations[1] = 0.01; // Gadolinium
+  concentrations[0] = 0.002; // Iodine
+  concentrations[1] = 0.001; // Gadolinium
   concentrations[2] = 1;    // Water
 
   // Constant image sources
@@ -95,21 +95,21 @@ int main(int, char** )
   // Generate a blank volume
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
   origin[0] = -127.;
-  origin[1] = -1.;
+  origin[1] = -127.;
   origin[2] = -127.;
 #if FAST_TESTS_NO_CHECKS
   size[0] = 2;
-  size[1] = 3;
+  size[1] = 2;
   size[2] = 2;
   spacing[0] = 252.;
-  spacing[1] = 1.;
+  spacing[1] = 252.;
   spacing[2] = 252.;
 #else
   size[0] = 64;
-  size[1] = 3;
+  size[1] = 64;
   size[2] = 64;
   spacing[0] = 4.;
-  spacing[1] = 1.;
+  spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
   tomographySource->SetOrigin( origin );
@@ -127,21 +127,21 @@ int main(int, char** )
   // Generate a blank set of projections
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -255.;
-  origin[1] = 0.;
+  origin[1] = -255.;
   origin[2] = -255.;
 #if FAST_TESTS_NO_CHECKS
   size[0] = 2;
-  size[1] = 1;
+  size[1] = 2;
   size[2] = NumberOfProjectionImages;
   spacing[0] = 504.;
-  spacing[1] = 1.;
+  spacing[1] = 504.;
   spacing[2] = 504.;
 #else
   size[0] = 64;
-  size[1] = 1;
+  size[1] = 64;
   size[2] = NumberOfProjectionImages;
   spacing[0] = 8.;
-  spacing[1] = 1.;
+  spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
   projectionsSource->SetOrigin( origin );
@@ -290,9 +290,17 @@ int main(int, char** )
   mechlemOneStep->SetBinnedDetectorResponse(detectorResponseMatrix);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetGeometry( geometry );
-  mechlemOneStep->SetNumberOfIterations( 50 );
+  mechlemOneStep->SetNumberOfIterations( 20 );
 
-  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Joseph Backprojector ******" << std::endl;
+
+  mechlemOneStep->SetBackProjectionFilter( 1 );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
+
+  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 2: Voxel-based Backprojector ******" << std::endl;
 
   mechlemOneStep->SetBackProjectionFilter( 0 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
@@ -300,13 +308,6 @@ int main(int, char** )
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
-
-  mechlemOneStep->SetBackProjectionFilter( 1 );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
-
-  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
 #endif
