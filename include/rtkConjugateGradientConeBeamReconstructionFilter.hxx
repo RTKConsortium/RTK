@@ -83,7 +83,7 @@ const std::vector<double> &ConjugateGradientConeBeamReconstructionFilter<TOutput
 template< typename TOutputImage>
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -96,7 +96,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
 template< typename TOutputImage>
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage>
-::SetBackProjectionFilter (int _arg)
+::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {

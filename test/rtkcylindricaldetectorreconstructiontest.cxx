@@ -142,8 +142,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 1: Joseph forward and back projectors ******" << std::endl;
 
-  conjugategradient->SetForwardProjectionFilter(0);
-  conjugategradient->SetBackProjectionFilter(1);
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_JOSEPH);
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -152,8 +152,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 2: CUDA ray cast forward and back projectors ******" << std::endl;
 
-  conjugategradient->SetForwardProjectionFilter(1);
-  conjugategradient->SetBackProjectionFilter(4);
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_CUDARAYCAST);
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_CUDARAYCAST);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -169,8 +169,8 @@ int main(int, char** )
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   conjugategradient->SetGeometry(geometry);
-  conjugategradient->SetForwardProjectionFilter(0);
-  conjugategradient->SetBackProjectionFilter(0);
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_JOSEPH);
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_VOXELBASED);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -179,8 +179,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 4: CUDA ray cast forward projection, CUDA voxel based back projection ******" << std::endl;
 
-  conjugategradient->SetForwardProjectionFilter(1);
-  conjugategradient->SetBackProjectionFilter(2);
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_CUDARAYCAST);
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_CUDAVOXELBASED);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);

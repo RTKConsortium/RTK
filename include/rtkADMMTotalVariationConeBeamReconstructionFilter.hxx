@@ -96,7 +96,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -109,7 +109,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
 template< typename TOutputImage, typename TGradientOutputImage> 
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
-::SetBackProjectionFilter (int _arg)
+::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {

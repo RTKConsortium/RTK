@@ -111,8 +111,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::RegularizedConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer regularizedConjugateGradient = ConjugateGradientFilterType::New();
-  regularizedConjugateGradient->SetForwardProjectionFilter(args_info.fp_arg);
-  regularizedConjugateGradient->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, regularizedConjugateGradient.GetPointer());
+  SetBackProjectionFromGgo(args_info, regularizedConjugateGradient.GetPointer());
   regularizedConjugateGradient->SetInputVolume(inputFilter->GetOutput() );
   regularizedConjugateGradient->SetInputProjectionStack(reader->GetOutput());
   regularizedConjugateGradient->SetInputWeights( weightsSource->GetOutput());

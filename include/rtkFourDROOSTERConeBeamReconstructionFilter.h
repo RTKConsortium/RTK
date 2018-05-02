@@ -255,11 +255,14 @@ public:
   typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>                                TemporalL0DenoisingFilterType;
   typedef rtk::TotalNuclearVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>    TNVDenoisingFilterType;
 
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
-  void SetForwardProjectionFilter(int fwtype) ITK_OVERRIDE;
+  void SetForwardProjectionFilter(ForwardProjectionType fwtype) ITK_OVERRIDE;
 
   /** Pass the backprojection filter to ProjectionStackToFourD*/
-  void SetBackProjectionFilter(int bptype) ITK_OVERRIDE;
+  void SetBackProjectionFilter(BackProjectionType bptype) ITK_OVERRIDE;
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void SetWeights(const itk::Array2D<float> _arg);

@@ -24,7 +24,6 @@
 #include "rtkJosephForwardProjectionImageFilter.h"
 // Back projection filters
 #include "rtkJosephBackProjectionImageFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
@@ -59,7 +58,9 @@ public:
   typedef itk::SmartPointer<const Self>                       ConstPointer;
 
   /** Convenient typedefs */
-  typedef ProjectionStackType VolumeType;
+  typedef ProjectionStackType                                                     VolumeType;
+  typedef enum {FP_UNKNOWN=-1, FP_JOSEPH=0, FP_CUDARAYCAST=2}                                    ForwardProjectionType;
+  typedef enum {BP_UNKNOWN=-1, BP_VOXELBASED=0,BP_JOSEPH=1,BP_CUDAVOXELBASED=2,BP_CUDARAYCAST=4} BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
   typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >  ForwardProjectionFilterType;
@@ -74,10 +75,10 @@ public:
   itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter)
 
   /** Accessors to forward and backprojection types. */
-  virtual void SetForwardProjectionFilter (int fwtype);
-  int GetForwardProjectionFilter () { return m_CurrentForwardProjectionConfiguration; }
-  virtual void SetBackProjectionFilter (int bptype);
-  int GetBackProjectionFilter () { return m_CurrentBackProjectionConfiguration; }
+  virtual void SetForwardProjectionFilter (ForwardProjectionType fwtype);
+  ForwardProjectionType GetForwardProjectionFilter () { return m_CurrentForwardProjectionConfiguration; }
+  virtual void SetBackProjectionFilter (BackProjectionType bptype);
+  BackProjectionType GetBackProjectionFilter () { return m_CurrentBackProjectionConfiguration; }
 
 protected:
   IterativeConeBeamReconstructionFilter();
@@ -93,8 +94,8 @@ protected:
 
   /** Internal variables storing the current forward
     and back projection methods */
-  int m_CurrentForwardProjectionConfiguration;
-  int m_CurrentBackProjectionConfiguration;
+  ForwardProjectionType m_CurrentForwardProjectionConfiguration;
+  BackProjectionType    m_CurrentBackProjectionConfiguration;
 
 private:
   //purposely not implemented

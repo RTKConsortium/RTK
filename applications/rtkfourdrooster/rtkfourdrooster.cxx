@@ -118,8 +118,8 @@ int main(int argc, char * argv[])
   // Also set the forward and back projection filters to be used
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
-  rooster->SetForwardProjectionFilter(args_info.fp_arg);
-  rooster->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
+  SetBackProjectionFromGgo(args_info, rooster.GetPointer());
   rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );

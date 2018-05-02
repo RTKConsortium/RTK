@@ -21,7 +21,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #include <iostream>
 #include <fstream>
@@ -117,8 +116,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
-  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
+  SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
   conjugategradient->SetInput( inputFilter->GetOutput() );
   conjugategradient->SetInput(1, reader->GetOutput());
   conjugategradient->SetInput(2, weightsSource->GetOutput());

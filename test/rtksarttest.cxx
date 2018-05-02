@@ -4,7 +4,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -138,8 +137,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  sart->SetBackProjectionFilter( 0 ); // Voxel based
-  sart->SetForwardProjectionFilter( 0 ); // Joseph
+  sart->SetBackProjectionFilter(SARTType::BP_VOXELBASED);
+  sart->SetForwardProjectionFilter(SARTType::FP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
@@ -147,18 +146,18 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Voxel-Based Backprojector, OS-SART with 2 projections per subset ******" << std::endl;
 
-  sart->SetBackProjectionFilter( 0 ); // Voxel based
-  sart->SetForwardProjectionFilter( 0 ); // Joseph
+  sart->SetBackProjectionFilter(SARTType::BP_VOXELBASED);
+  sart->SetForwardProjectionFilter(SARTType::FP_JOSEPH);
   sart->SetNumberOfProjectionsPerSubset(2);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 3: Normalized Joseph Backprojector ******" << std::endl;
-
-  sart->SetBackProjectionFilter( 3 ); // Normalized Joseph
-  sart->SetForwardProjectionFilter( 0 ); // Joseph
+  std::cout << "\n\n****** Case 3: Joseph Backprojector ******" << std::endl;
+  sart->SetNumberOfProjectionsPerSubset(1);
+  sart->SetBackProjectionFilter(SARTType::BP_JOSEPH);
+  sart->SetForwardProjectionFilter(SARTType::FP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
@@ -167,8 +166,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector ******" << std::endl;
 
-  sart->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  sart->SetForwardProjectionFilter( 1 ); // Cuda ray cast
+  sart->SetBackProjectionFilter(SARTType::BP_CUDAVOXELBASED);
+  sart->SetForwardProjectionFilter(SARTType::FP_CUDARAYCAST);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() );
 
   CheckImageQuality<OutputImageType>(sart->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
@@ -177,8 +176,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 5: Voxel-Based Backprojector and gating ******" << std::endl;
 
-  sart->SetBackProjectionFilter( 0 ); // Voxel based
-  sart->SetForwardProjectionFilter( 0 ); // Joseph
+  sart->SetBackProjectionFilter(SARTType::BP_VOXELBASED);
+  sart->SetForwardProjectionFilter(SARTType::FP_JOSEPH);
 
   // Generate arbitrary gating weights (select every third projection)
   std::vector<float> gatingWeights;

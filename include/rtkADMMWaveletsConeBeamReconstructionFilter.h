@@ -169,11 +169,14 @@ public:
     typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TOutputImage>             SoftThresholdFilterType;
     typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                               DisplacedDetectorFilterType;
 
+    typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+    typedef typename Superclass::BackProjectionType    BackProjectionType;
+
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
-    void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
+    void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
 
     /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
-    void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
+    void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
     /** Pass the geometry to all filters needing it */
     itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)

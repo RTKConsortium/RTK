@@ -21,7 +21,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
 
 #ifdef RTK_USE_CUDA
@@ -97,8 +96,8 @@ int main(int argc, char * argv[])
       rtk::SARTConeBeamReconstructionFilter< OutputImageType >::New();
 
   // Set the forward and back projection filters
-  sart->SetForwardProjectionFilter(args_info.fp_arg);
-  sart->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, sart.GetPointer());
+  SetBackProjectionFromGgo(args_info, sart.GetPointer());
   sart->SetInput( inputFilter->GetOutput() );
   if (args_info.signal_given)
     {

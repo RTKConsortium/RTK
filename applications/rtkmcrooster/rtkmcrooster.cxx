@@ -120,8 +120,8 @@ int main(int argc, char * argv[])
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   typedef rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCROOSTERFilterType;
   MCROOSTERFilterType::Pointer mcrooster = MCROOSTERFilterType::New();
-  mcrooster->SetForwardProjectionFilter(args_info.fp_arg);
-  mcrooster->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, mcrooster.GetPointer());
+  SetBackProjectionFromGgo(args_info, mcrooster.GetPointer());
   mcrooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   mcrooster->SetCG_iterations( args_info.cgiter_arg );
   mcrooster->SetMainLoop_iterations( args_info.niter_arg );

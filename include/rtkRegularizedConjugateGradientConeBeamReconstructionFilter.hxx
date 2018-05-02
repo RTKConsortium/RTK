@@ -134,7 +134,7 @@ GetSupportMask()
 template< typename TImage >
 void
 RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::SetForwardProjectionFilter(int _arg)
+::SetForwardProjectionFilter(ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -146,7 +146,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
 template< typename TImage >
 void
 RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::SetBackProjectionFilter(int _arg)
+::SetBackProjectionFilter(BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {

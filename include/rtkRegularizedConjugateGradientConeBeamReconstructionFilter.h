@@ -114,6 +114,9 @@ public:
   typedef itk::Image<CovariantVectorForSpatialGradient, TImage::ImageDimension>       GradientImageType;
 #endif
 
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
@@ -143,10 +146,10 @@ public:
   typedef rtk::SoftThresholdImageFilter<TImage, TImage>                                 SoftThresholdFilterType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
-  void SetForwardProjectionFilter(int fwtype) ITK_OVERRIDE;
+  void SetForwardProjectionFilter(ForwardProjectionType fwtype) ITK_OVERRIDE;
 
   /** Pass the backprojection filter to ProjectionStackToFourD*/
-  void SetBackProjectionFilter(int bptype) ITK_OVERRIDE;
+  void SetBackProjectionFilter(BackProjectionType bptype) ITK_OVERRIDE;
 
   // Regularization steps to perform
   itkSetMacro(PerformPositivity, bool)

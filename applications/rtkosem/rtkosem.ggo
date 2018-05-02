@@ -9,7 +9,3 @@ option "niterations" n "Number of iterations"                                  i
 option "input"     i "Input volume"              string          no
 option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (several for OSEM, all for MLEM)" int no default="1"
 
-section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
-

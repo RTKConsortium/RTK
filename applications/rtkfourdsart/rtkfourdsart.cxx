@@ -102,8 +102,8 @@ int main(int argc, char * argv[])
       rtk::FourDSARTConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType >::New();
 
   // Set the forward and back projection filters
-  fourdsart->SetForwardProjectionFilter(args_info.fp_arg);
-  fourdsart->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, fourdsart.GetPointer());
+  SetBackProjectionFromGgo(args_info, fourdsart.GetPointer());
   fourdsart->SetInputVolumeSeries(inputFilter->GetOutput() );
   fourdsart->SetInputProjectionStack(reader->GetOutput());
   fourdsart->SetGeometry( geometryReader->GetOutputObject() );
