@@ -36,8 +36,9 @@ int main(int, char** )
   typedef itk::Vector<DataType, nMaterials>   MaterialPixelType;
   typedef itk::Vector<DataType, nBins>        PhotonCountsPixelType;
   typedef itk::Vector<DataType, nEnergies>    SpectrumPixelType;
-#ifdef USE_CUDA
-#else
+
+//#ifdef USE_CUDA
+//#else
   typedef itk::Image<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::VectorImage<DataType, Dimension>           MaterialProjectionsType;
   typedef itk::Image<PhotonCountsPixelType, Dimension>    PhotonCountsType;
@@ -46,7 +47,7 @@ int main(int, char** )
   typedef itk::Image<DataType, Dimension-1 >              DetectorResponseImageType;
   typedef itk::Image<DataType, Dimension-1 >              MaterialAttenuationsImageType;
   typedef itk::Image<DataType, Dimension>                 SingleComponentImageType;
-#endif
+//#endif
 
   typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
   typedef itk::ImageFileReader<vIncidentSpectrum> vIncidentSpectrumReaderType;

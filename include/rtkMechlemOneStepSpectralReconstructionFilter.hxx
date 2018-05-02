@@ -131,30 +131,6 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::ForwardProjectionFilterType::Pointer
-MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
-::InstantiateForwardProjectionFilter (int fwtype)
-{
-  // Declare the pointer
-  typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::ForwardProjectionFilterType::Pointer fw;
-
-  // Instantiate it
-  switch(fwtype)
-    {
-    case(MechlemOneStepSpectralReconstructionFilter::FP_JOSEPH):
-      fw = rtk::JosephForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
-    break;
-    case(MechlemOneStepSpectralReconstructionFilter::FP_CUDARAYCAST):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
-    break;
-
-    default:
-      itkGenericExceptionMacro(<< "Unhandled --fp value.");
-    }
-  return fw;
-}
-
-template< class TOutputImage, class TPhotonCounts, class TSpectrum>
 typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentForwardProjectionFilterType::Pointer
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
 ::InstantiateSingleComponentForwardProjectionFilter (int fwtype)
@@ -179,38 +155,6 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       itkGenericExceptionMacro(<< "Unhandled --fp value.");
     }
   return fw;
-}
-
-template< class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::GradientsBackProjectionFilterType::Pointer
-MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
-::InstantiateBackProjectionFilter(int bptype)
-{
-  // Define the type of image to be back projected
-  typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TGradientsImage TGradients;
-
-  // Declare the pointer
-  typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::GradientsBackProjectionFilterType::Pointer bp;
-
-  // Instantiate it
-  switch(bptype)
-    {
-    case(MechlemOneStepSpectralReconstructionFilter::BP_VOXELBASED):
-      bp = rtk::BackProjectionImageFilter<TGradients, TGradients>::New();
-      break;
-    case(MechlemOneStepSpectralReconstructionFilter::BP_JOSEPH):
-      bp = rtk::JosephBackProjectionImageFilter<TGradients, TGradients>::New();
-      break;
-    case(MechlemOneStepSpectralReconstructionFilter::BP_CUDAVOXELBASED):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
-    break;
-    case(MechlemOneStepSpectralReconstructionFilter::BP_CUDARAYCAST):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
-      break;
-    default:
-      itkGenericExceptionMacro(<< "Unhandled --bp value.");
-    }
-  return bp;
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>

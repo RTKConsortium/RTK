@@ -210,9 +210,7 @@ protected:
 
     /** Functions to instantiate forward and back projection filters with a different
      * number of components than the ones provided by the IterativeConeBeamReconstructionFilter class */
-    typename ForwardProjectionFilterType::Pointer InstantiateForwardProjectionFilter(int fwtype);
     typename SingleComponentForwardProjectionFilterType::Pointer InstantiateSingleComponentForwardProjectionFilter(int fwtype);
-    typename GradientsBackProjectionFilterType::Pointer InstantiateBackProjectionFilter (int bptype);
     typename HessiansBackProjectionFilterType::Pointer InstantiateHessiansBackProjectionFilter (int bptype);
 
 private:
