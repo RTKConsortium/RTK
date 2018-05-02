@@ -131,26 +131,21 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentForwardProjectionFilterType::Pointer
+typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::ForwardProjectionFilterType::Pointer
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
-::InstantiateSingleComponentForwardProjectionFilter (int fwtype)
+::InstantiateForwardProjectionFilter (int fwtype)
 {
-  // Define the type of image to be back projected
-  typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TSingleComponentImage TSingleComponent;
-
   // Declare the pointer
-  typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentForwardProjectionFilterType::Pointer fw;
+  typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::ForwardProjectionFilterType::Pointer fw;
+
+  // Instantiate it
   switch(fwtype)
     {
-    case(0):
-      fw = rtk::JosephForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
+    case(MechlemOneStepSpectralReconstructionFilter::FP_JOSEPH):
+      fw = rtk::JosephForwardProjectionImageFilter<TOutputImage, TOutputImage>::New();
     break;
-    case(1):
-    #ifdef RTK_USE_CUDA
-      fw = rtk::CudaForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
-    #else
-      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
-    #endif
+    case(MechlemOneStepSpectralReconstructionFilter::FP_CUDARAYCAST):
+      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
     break;
 
     default:
@@ -160,41 +155,89 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentForwardProjectionFilterType::Pointer
+MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
+::InstantiateSingleComponentForwardProjectionFilter (int fwtype)
+{
+  // Define the type of image to be back projected
+  typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TSingleComponentImage TSingleComponent;
+
+  // Declare the pointer
+  typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentForwardProjectionFilterType::Pointer fw;
+
+  // Instantiate it
+  switch(fwtype)
+    {
+    case(MechlemOneStepSpectralReconstructionFilter::FP_JOSEPH):
+      fw = rtk::JosephForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
+    break;
+    case(MechlemOneStepSpectralReconstructionFilter::FP_CUDARAYCAST):
+      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+    break;
+
+    default:
+      itkGenericExceptionMacro(<< "Unhandled --fp value.");
+    }
+  return fw;
+}
+
+template< class TOutputImage, class TPhotonCounts, class TSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::GradientsBackProjectionFilterType::Pointer
+MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
+::InstantiateBackProjectionFilter(int bptype)
+{
+  // Define the type of image to be back projected
+  typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TGradientsImage TGradients;
+
+  // Declare the pointer
+  typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::GradientsBackProjectionFilterType::Pointer bp;
+
+  // Instantiate it
+  switch(bptype)
+    {
+    case(MechlemOneStepSpectralReconstructionFilter::BP_VOXELBASED):
+      bp = rtk::BackProjectionImageFilter<TGradients, TGradients>::New();
+      break;
+    case(MechlemOneStepSpectralReconstructionFilter::BP_JOSEPH):
+      bp = rtk::JosephBackProjectionImageFilter<TGradients, TGradients>::New();
+      break;
+    case(MechlemOneStepSpectralReconstructionFilter::BP_CUDAVOXELBASED):
+      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+    break;
+    case(MechlemOneStepSpectralReconstructionFilter::BP_CUDARAYCAST):
+      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+      break;
+    default:
+      itkGenericExceptionMacro(<< "Unhandled --bp value.");
+    }
+  return bp;
+}
+
+template< class TOutputImage, class TPhotonCounts, class TSpectrum>
 typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::HessiansBackProjectionFilterType::Pointer
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
-::InstantiateHessiansBackProjectionFilter (int bptype)
+::InstantiateHessiansBackProjectionFilter(int bptype)
 {
   // Define the type of image to be back projected
   typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::THessiansImage THessians;
 
   // Declare the pointer
   typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::HessiansBackProjectionFilterType::Pointer bp;
+
+  // Instantiate it
   switch(bptype)
     {
-    case(0):
-      bp = rtk::BackProjectionImageFilter<THessians,THessians>::New();
+    case(MechlemOneStepSpectralReconstructionFilter::BP_VOXELBASED):
+      bp = rtk::BackProjectionImageFilter<THessians, THessians>::New();
       break;
-    case(1):
-      bp = rtk::JosephBackProjectionImageFilter<THessians,THessians>::New();
+    case(MechlemOneStepSpectralReconstructionFilter::BP_JOSEPH):
+      bp = rtk::JosephBackProjectionImageFilter<THessians, THessians>::New();
       break;
-    case(2):
-    #ifdef RTK_USE_CUDA
-      // The current CUDA implementation only allows one component
-//      bp = rtk::CudaBackProjectionImageFilter::New();
-    #else
-      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
-    #endif
+    case(MechlemOneStepSpectralReconstructionFilter::BP_CUDAVOXELBASED):
+      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
     break;
-//    case(3):
-//      bp = rtk::NormalizedJosephBackProjectionImageFilter<THessians,THessians>::New();
-//      break;
-    case(4):
-    #ifdef RTK_USE_CUDA
-      // The current CUDA implementation only allows one component
-//      bp = rtk::CudaRayCastBackProjectionImageFilter::New();
-    #else
-      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
-    #endif
+    case(MechlemOneStepSpectralReconstructionFilter::BP_CUDARAYCAST):
+      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
       break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --bp value.");
