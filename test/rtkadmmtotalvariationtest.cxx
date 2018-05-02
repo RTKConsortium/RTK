@@ -2,7 +2,6 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
 
@@ -143,11 +142,11 @@ int main(int, char** )
   admmtotalvariation->SetCG_iterations( 2 );
 
   // In all cases except CUDA, use the Joseph forward projector
-  admmtotalvariation->SetForwardProjectionFilter(0);
+  admmtotalvariation->SetForwardProjectionFilter(ADMMTotalVariationType::FP_JOSEPH);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  admmtotalvariation->SetBackProjectionFilter( 0 );
+  admmtotalvariation->SetBackProjectionFilter(ADMMTotalVariationType::BP_VOXELBASED);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
@@ -155,7 +154,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
 
-  admmtotalvariation->SetBackProjectionFilter( 1 );
+  admmtotalvariation->SetBackProjectionFilter(ADMMTotalVariationType::BP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
@@ -164,7 +163,7 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  admmtotalvariation->SetForwardProjectionFilter( 2 );
+  admmtotalvariation->SetForwardProjectionFilter( 1 );
   admmtotalvariation->SetBackProjectionFilter( 2 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
@@ -174,8 +173,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Voxel-Based Backprojector and gating ******" << std::endl;
 
-  admmtotalvariation->SetForwardProjectionFilter(0); // Joseph
-  admmtotalvariation->SetBackProjectionFilter( 0 ); // Voxel based
+  admmtotalvariation->SetForwardProjectionFilter(ADMMTotalVariationType::FP_JOSEPH);
+  admmtotalvariation->SetBackProjectionFilter(ADMMTotalVariationType::BP_VOXELBASED);
 
   // Generate arbitrary gating weights (select every third projection)
   typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;

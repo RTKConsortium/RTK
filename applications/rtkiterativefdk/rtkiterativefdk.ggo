@@ -18,4 +18,4 @@ option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)" 
 option "hannY"     - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","CudaRayCast" enum no default="Joseph"

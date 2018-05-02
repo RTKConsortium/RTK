@@ -59,7 +59,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {

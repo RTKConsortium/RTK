@@ -114,8 +114,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
-  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
+  SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
   conjugategradient->SetInputVolumeSeries(inputFilter->GetOutput() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetCudaConjugateGradient(args_info.cudacg_flag);

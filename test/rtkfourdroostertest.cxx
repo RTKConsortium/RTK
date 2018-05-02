@@ -380,8 +380,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 1: Joseph forward projector, voxel-based back projector, positivity, motion mask, wavelets spatial denoising, TV temporal denoising, no warping ******" << std::endl;
 
-  rooster->SetBackProjectionFilter( 0 ); // Voxel based
-  rooster->SetForwardProjectionFilter( 0 ); // Joseph
+  rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_VOXELBASED );
+  rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_JOSEPH );
   
   rooster->SetPerformPositivity(true);
   rooster->SetPerformMotionMask(true);
@@ -400,8 +400,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Joseph forward projector, voxel-based back projector, positivity, no motion mask, TV spatial denoising, L0 temporal denoising, motion compensation (nearest neighbor interpolation). Inverse warping by conjugate gradient ******" << std::endl;
 
-  rooster->SetBackProjectionFilter( 0 ); // Voxel based
-  rooster->SetForwardProjectionFilter( 0 ); // Joseph
+  rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_VOXELBASED );
+  rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_JOSEPH );
 
   rooster->SetPerformPositivity(true);
   rooster->SetPerformMotionMask(false);
@@ -421,8 +421,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 3: Joseph forward projector, voxel-based back projector, no positivity, motion mask, no spatial denoising, motion compensation and temporal TV denoising. Inverse warping by warping with approximate inverse DVF ******" << std::endl;
 
-  rooster->SetBackProjectionFilter( 0 ); // Voxel based
-  rooster->SetForwardProjectionFilter( 0 ); // Joseph
+  rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_VOXELBASED );
+  rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_JOSEPH );
   
   rooster->SetPerformPositivity(false);
   rooster->SetPerformMotionMask(true);
@@ -445,8 +445,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 4: CUDA forward and back projectors, only L0 temporal denoising ******" << std::endl;
 
-  rooster->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  rooster->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_CUDAVOXELBASED ); // Cuda voxel based
+  rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_CUDARAYCAST ); // Cuda ray cast
   
   rooster->SetPerformPositivity(false);
   rooster->SetPerformMotionMask(false);

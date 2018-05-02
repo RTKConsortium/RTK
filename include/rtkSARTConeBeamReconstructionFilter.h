@@ -26,6 +26,7 @@
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkAddImageAdaptor.h>
+#include <itkAddImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 #include <itkThresholdImageFilter.h>
 
@@ -152,14 +153,18 @@ public:
   typedef itk::AddImageFilter< VolumeType, VolumeType >                                      AddFilterType;
   typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
   typedef rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>                 RayBoxIntersectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
+  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>                DivideVolumeFilterType;
   typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
   typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
   typedef itk::ThresholdImageFilter<VolumeType>                                              ThresholdFilterType;
   typedef rtk::DisplacedDetectorImageFilter<ProjectionType>                                  DisplacedDetectorFilterType;
   typedef itk::MultiplyImageFilter<ProjectionType,ProjectionType, ProjectionType>            GatingWeightsFilterType;
 
-/** Standard New method. */
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
+  /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
@@ -186,10 +191,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
   /** In the case of a gated SART, set the gating weights */
   void SetGatingWeights(std::vector<float> weights);
@@ -197,6 +202,7 @@ public:
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool)
   itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
   SARTConeBeamReconstructionFilter();
   virtual ~SARTConeBeamReconstructionFilter() ITK_OVERRIDE {}
@@ -220,9 +226,12 @@ protected:
   typename AddFilterType::Pointer                m_AddFilter;
   typename MultiplyFilterType::Pointer           m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer     m_BackProjectionFilter;
+  typename BackProjectionFilterType::Pointer     m_BackProjectionNormalizationFilter;
   typename RayBoxIntersectionFilterType::Pointer m_RayBoxFilter;
-  typename DivideFilterType::Pointer             m_DivideFilter;
+  typename DivideProjectionFilterType::Pointer   m_DivideProjectionFilter;
+  typename DivideVolumeFilterType::Pointer       m_DivideVolumeFilter;
   typename ConstantProjectionSourceType::Pointer m_ConstantProjectionStackSource;
+  typename ConstantProjectionSourceType::Pointer m_OneConstantProjectionStackSource;
   typename ConstantVolumeSourceType::Pointer     m_ConstantVolumeSource;
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
   typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;

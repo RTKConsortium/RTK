@@ -22,7 +22,6 @@
 #include "rtkForwardProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
-#include "rtkRayCastInterpolateImageFunction.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>

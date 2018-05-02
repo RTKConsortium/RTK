@@ -62,7 +62,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 template<class TVolumeImage, class TProjectionImage>
 void
 OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -74,7 +74,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 template<class TVolumeImage, class TProjectionImage>
 void
 OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-::SetBackProjectionFilter (int _arg)
+::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {
@@ -191,7 +191,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
     projOrder[i] = i;
   std::random_shuffle( projOrder.begin(), projOrder.end() );
 
-  int cpt = 0;
   // Declare the image used in the main loop
   typename TVolumeImage::Pointer pimg;
   typename TVolumeImage::Pointer norm;
