@@ -122,6 +122,9 @@ public:
     typedef TOutputImage TGradientsImage;
     typedef itk::Image<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
 
+    typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+    typedef typename Superclass::BackProjectionType    BackProjectionType;
+
     /** Filter typedefs */
     typedef rtk::ForwardProjectionImageFilter< TSingleComponentImage, TSingleComponentImage > SingleComponentForwardProjectionFilterType;
     typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
@@ -135,11 +138,11 @@ public:
     typedef rtk::WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
     typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>              NewtonFilterType;
 
-    /** Pass the ForwardProjection filter to the conjugate gradient operator */
-    void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
+    /** Instantiate the forward projection filters */
+    void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
 
-    /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
-    void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
+    /** Instantiate the back projection filters */
+    void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
     /** Pass the geometry to all filters needing it */
     itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)

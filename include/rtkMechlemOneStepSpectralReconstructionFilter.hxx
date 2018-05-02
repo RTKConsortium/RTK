@@ -107,7 +107,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
 void
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -120,7 +120,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
 void
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
-::SetBackProjectionFilter (int _arg)
+::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {

@@ -12,7 +12,3 @@ option "detector"       d "Detector response file"                              
 option "incident"       - "Incident spectrum file (mhd image)"                                string yes
 option "attenuations"   a "Material attenuations file"                                        string yes
 option "thresholds"     t "Lower threshold of bins, expressed in pulse height"                int    yes  multiple
-
-section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"

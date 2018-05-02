@@ -283,7 +283,7 @@ int main(int, char** )
   // Reconstruct using Mechlem
   typedef rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumeType, PhotonCountsType, IncidentSpectrumImageType> MechlemType;
   MechlemType::Pointer mechlemOneStep = MechlemType::New();
-  mechlemOneStep->SetForwardProjectionFilter( 0 ); // Joseph
+  mechlemOneStep->SetForwardProjectionFilter( MechlemType::FP_JOSEPH ); // Joseph
   mechlemOneStep->SetInputMaterialVolumes( materialVolumeSource->GetOutput() );
   mechlemOneStep->SetInputPhotonCounts(composePhotonCounts->GetOutput());
   mechlemOneStep->SetInputSpectrum(incidentSpectrumReader->GetOutput());
@@ -294,7 +294,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 1: Joseph Backprojector ******" << std::endl;
 
-  mechlemOneStep->SetBackProjectionFilter( 1 );
+  mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_JOSEPH );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
 
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
@@ -302,7 +302,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Voxel-based Backprojector ******" << std::endl;
 
-  mechlemOneStep->SetBackProjectionFilter( 0 );
+  mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_VOXELBASED );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
 
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);

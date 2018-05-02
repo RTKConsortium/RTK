@@ -163,8 +163,8 @@ int main(int argc, char * argv[])
                                                           PhotonCountsType,
                                                           IncidentSpectrumType> MechlemFilterType;
   MechlemFilterType::Pointer mechlemOneStep = MechlemFilterType::New();
-  mechlemOneStep->SetForwardProjectionFilter(args_info.fp_arg);
-  mechlemOneStep->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
+  SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   mechlemOneStep->SetInputMaterialVolumes( inputFilter->GetOutput() );
   mechlemOneStep->SetInputPhotonCounts(photonCountsReader->GetOutput());
   mechlemOneStep->SetInputSpectrum(incidentSpectrumReader->GetOutput());
