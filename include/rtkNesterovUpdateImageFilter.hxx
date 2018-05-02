@@ -133,7 +133,6 @@ template<typename OutputImageType>
 void NesterovUpdateImageFilter<OutputImageType>
 ::AfterThreadedGenerateData()
 {
-  std::cout << "Used t = " << m_tCoeffs[m_CurrentIteration] << "and ratio = " << m_Ratios[m_CurrentIteration + 1] << std::endl;
   m_CurrentIteration++;
   m_MustInitializeIntermediateImages = false;
 }
