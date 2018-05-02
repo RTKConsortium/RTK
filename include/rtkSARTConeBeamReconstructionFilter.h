@@ -161,7 +161,10 @@ public:
   typedef rtk::DisplacedDetectorImageFilter<ProjectionType>                                  DisplacedDetectorFilterType;
   typedef itk::MultiplyImageFilter<ProjectionType,ProjectionType, ProjectionType>            GatingWeightsFilterType;
 
-/** Standard New method. */
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
+  /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
@@ -188,10 +191,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
   /** In the case of a gated SART, set the gating weights */
   void SetGatingWeights(std::vector<float> weights);
@@ -199,6 +202,7 @@ public:
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool)
   itkGetMacro(DisableDisplacedDetectorFilter, bool)
+
 protected:
   SARTConeBeamReconstructionFilter();
   virtual ~SARTConeBeamReconstructionFilter() ITK_OVERRIDE {}

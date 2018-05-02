@@ -278,8 +278,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 1: Joseph forward projector, Voxel-Based back projector, CPU interpolation and splat ******" << std::endl;
 
-  fourdsart->SetBackProjectionFilter( 0 ); // Voxel based
-  fourdsart->SetForwardProjectionFilter( 0 ); // Joseph
+  fourdsart->SetBackProjectionFilter(FourDSARTFilterType::BP_VOXELBASED);
+  fourdsart->SetForwardProjectionFilter(FourDSARTFilterType::FP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fourdsart->Update() );
 
   CheckImageQuality<VolumeSeriesType>(fourdsart->GetOutput(), join->GetOutput(), 0.22, 12, 2.0);
@@ -287,8 +287,8 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Joseph forward projector, Voxel-Based back projector, CPU interpolation and splat, 2 projections per subset ******" << std::endl;
 
-  fourdsart->SetBackProjectionFilter( 0 ); // Voxel based
-  fourdsart->SetForwardProjectionFilter( 0 ); // Joseph
+  fourdsart->SetBackProjectionFilter(FourDSARTFilterType::BP_VOXELBASED);
+  fourdsart->SetForwardProjectionFilter(FourDSARTFilterType::FP_JOSEPH);
   fourdsart->SetNumberOfProjectionsPerSubset(2);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fourdsart->Update() );
 
@@ -298,8 +298,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA ray cast forward projector, CUDA Voxel-Based back projector, GPU interpolation and splat ******" << std::endl;
 
-  fourdsart->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  fourdsart->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  fourdsart->SetBackProjectionFilter(FourDSARTFilterType::BP_CUDAVOXELBASED);
+  fourdsart->SetForwardProjectionFilter(FourDSARTFilterType::FP_CUDARAYCAST);
   fourdsart->SetNumberOfProjectionsPerSubset(1);
   fourdsart->SetNumberOfIterations(3);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fourdsart->Update() );

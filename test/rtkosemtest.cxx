@@ -141,8 +141,8 @@ int main(int, char** )
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector, ML-EM 7 iterations ******" << std::endl;
 
   osem->SetNumberOfIterations(7);
-  osem->SetBackProjectionFilter( 0 ); // Voxel based
-  osem->SetForwardProjectionFilter( 0 ); // Joseph
+  osem->SetBackProjectionFilter(OSEMType::BP_VOXELBASED);
+  osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPH);
   osem->SetNumberOfProjectionsPerSubset(NumberOfProjectionImages);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
@@ -152,8 +152,8 @@ int main(int, char** )
   std::cout << "\n\n****** Case 2: Joseph-Based Backprojector, OS-EM with 50 projections per subset and 4 iterations******" << std::endl;
 
   osem->SetNumberOfIterations(4);
-  osem->SetBackProjectionFilter( 1 ); // Joseph based
-  osem->SetForwardProjectionFilter( 0 ); // Joseph
+  osem->SetBackProjectionFilter(OSEMType::BP_JOSEPH);
+  osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPH);
   osem->SetNumberOfProjectionsPerSubset(50);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
@@ -163,8 +163,8 @@ int main(int, char** )
   std::cout << "\n\n****** Case 3: Voxel-Based Backprojector, OS-EM with 50 projections per subset and 4 iterations******" << std::endl;
 
   osem->SetNumberOfIterations(4);
-  osem->SetBackProjectionFilter( 0 ); // Voxel-Based
-  osem->SetForwardProjectionFilter( 0 ); // Joseph
+  osem->SetBackProjectionFilter(OSEMType::BP_VOXELBASED);
+  osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPH);
   osem->SetNumberOfProjectionsPerSubset(50);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
@@ -174,8 +174,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 4: CUDA Voxel-Based Backprojector ******" << std::endl;
 
-  osem->SetBackProjectionFilter( 2 ); // Cuda voxel based
-  osem->SetForwardProjectionFilter( 2 ); // Cuda ray cast
+  osem->SetBackProjectionFilter(OSEMType::BP_CUDAVOXELBASED);
+  osem->SetForwardProjectionFilter(OSEMType::FP_CUDARAYCAST);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
   CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);

@@ -91,7 +91,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 template<class TVolumeImage, class TProjectionImage>
 void
 SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-::SetForwardProjectionFilter (int _arg)
+::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
     {
@@ -103,7 +103,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 template<class TVolumeImage, class TProjectionImage>
 void
 SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
-::SetBackProjectionFilter (int _arg)
+::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
     {

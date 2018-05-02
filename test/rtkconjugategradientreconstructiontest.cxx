@@ -133,14 +133,14 @@ int main(int, char** )
   conjugategradient->SetNumberOfIterations( 5 );
 
   // In all cases, use the Joseph forward projector
-  conjugategradient->SetForwardProjectionFilter(0);
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_JOSEPH);
   ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
   uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
   uniformWeightsSource->SetConstant(1.0);
 
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
-  conjugategradient->SetBackProjectionFilter( 0 );
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_VOXELBASED);
   conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
@@ -149,7 +149,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 2: Joseph Backprojector, laplacian regularization ******" << std::endl;
 
-  conjugategradient->SetBackProjectionFilter( 1 );
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_JOSEPH);
   conjugategradient->SetRegularized(true);
   conjugategradient->SetGamma(0.01);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
@@ -160,8 +160,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  conjugategradient->SetForwardProjectionFilter(2);
-  conjugategradient->SetBackProjectionFilter( 2 );
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_CUDARAYCAST);
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_CUDAVOXELBASED);
   conjugategradient->SetRegularized(false);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
@@ -174,7 +174,7 @@ int main(int, char** )
   uniformWeightsSource->SetConstant(2.0);
   conjugategradient->SetRegularized(false);
 
-  conjugategradient->SetBackProjectionFilter( 1 );
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);

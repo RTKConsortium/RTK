@@ -139,6 +139,9 @@ public:
   typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>                                    CovariantVectorForTemporalGradient;
   typedef CovariantVectorForSpatialGradient                                                                 DVFVectorType;
 
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>   SpatialGradientImageType;
   typedef itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>  TemporalGradientImageType;
@@ -161,8 +164,8 @@ public:
     <VolumeSeriesType, ProjectionStackType>    MotionCompensatedFourDCGFilterType;
 
   /** Neither the forward nor the back projection filter can be set by the user */
-  void SetForwardProjectionFilter(int itkNotUsed(fwtype)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
-  void SetBackProjectionFilter(int itkNotUsed(bptype)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
+  void SetForwardProjectionFilter(ForwardProjectionType itkNotUsed(fwtype)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
+  void SetBackProjectionFilter(BackProjectionType itkNotUsed(bptype)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
 
   /** Set the vector containing the signal in the sub-filters */
   void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;

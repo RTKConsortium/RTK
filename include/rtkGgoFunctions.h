@@ -250,6 +250,64 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() );
 }
 
+/** \brief Set the correct RTK backprojection type from gengetopt
+ * Given a gengetopt bp_arg option from the rtkprojectors_section.ggo, will
+ * set the corresponding enum value from rtk::IterativeConeBeamReconstructionFilter
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TArgsInfo, class TIterativeReconstructionFilter >
+void
+SetBackProjectionFromGgo(const TArgsInfo &args_info, TIterativeReconstructionFilter *recon)
+{
+  switch(args_info.bp_arg)
+    {
+    case(-1): //bp__NULL
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_UNKNOWN);
+      break;
+    case(0): //bp_arg_VoxelBasedBackProjection
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_VOXELBASED);
+      break;
+    case(1): //bp_arg_Joseph
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_JOSEPH);
+      break;
+    case(2): //bp_arg_CudaVoxelBased
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDAVOXELBASED);
+      break;
+    case(3): //bp_arg_CudaRayCast
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDARAYCAST);
+      break;
+    }
+}
+
+/** \brief Set the correct RTK forward projection type from gengetopt
+ * Given a gengetopt fp_arg option from the rtkprojectors_section.ggo, will
+ * set the corresponding enum value from rtk::IterativeConeBeamReconstructionFilter
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TArgsInfo, class TIterativeReconstructionFilter  >
+void
+SetForwardProjectionFromGgo(const TArgsInfo &args_info, TIterativeReconstructionFilter *recon)
+{
+  switch(args_info.fp_arg)
+    {
+    case(-1): //fp__NULL
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_UNKNOWN);
+      break;
+    case(0): //fp_arg_Joseph
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_JOSEPH);
+      break;
+    case(1): //fp_arg_CudaRayCast
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDARAYCAST);
+      break;
+    }
+}
+
 }
 
 #endif // rtkGgoFunctions_h

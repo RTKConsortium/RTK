@@ -132,6 +132,9 @@ public:
   typedef VolumeSeriesType      OutputImageType;
   typedef ProjectionStackType   VolumeType;
 
+  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
+  typedef typename Superclass::BackProjectionType    BackProjectionType;
+
   /** Typedefs of each subfilter of this composite filter */
   typedef itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >                             ExtractFilterType;
   typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >                   ForwardProjectionFilterType;
@@ -148,7 +151,7 @@ public:
   typedef rtk::ConstantImageSource<ProjectionStackType>                                                   ConstantProjectionStackSourceType;
   typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
 
-/** Standard New method. */
+  /** Standard New method. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
@@ -183,10 +186,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (int _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);

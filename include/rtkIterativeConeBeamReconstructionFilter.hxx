@@ -27,8 +27,8 @@ namespace rtk
   IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
   ::IterativeConeBeamReconstructionFilter()
   {
-    m_CurrentForwardProjectionConfiguration = -1;
-    m_CurrentBackProjectionConfiguration = -1;
+    m_CurrentForwardProjectionConfiguration = FP_UNKNOWN;
+    m_CurrentBackProjectionConfiguration = BP_UNKNOWN;
   }
 
   template<class TOutputImage, class ProjectionStackType>
@@ -39,13 +39,10 @@ namespace rtk
     ForwardProjectionPointerType fw;
     switch(fwtype)
       {
-      case(0):
+      case(FP_JOSEPH):
         fw = rtk::JosephForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
       break;
-      case(1):
-        fw = rtk::RayCastInterpolatorForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
-      break;
-      case(2):
+      case(FP_CUDARAYCAST):
       #ifdef RTK_USE_CUDA
         fw = rtk::CudaForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
       #else
@@ -66,20 +63,20 @@ namespace rtk
     BackProjectionPointerType bp;
     switch(bptype)
       {
-      case(0):
+      case(BP_VOXELBASED):
         bp = rtk::BackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
         break;
-      case(1):
+      case(BP_JOSEPH):
         bp = rtk::JosephBackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
         break;
-      case(2):
+      case(BP_CUDAVOXELBASED):
       #ifdef RTK_USE_CUDA
         bp = rtk::CudaBackProjectionImageFilter::New();
       #else
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
       break;
-      case(3):
+      case(BP_CUDARAYCAST):
       #ifdef RTK_USE_CUDA
         bp = rtk::CudaRayCastBackProjectionImageFilter::New();
       #else
@@ -95,7 +92,7 @@ namespace rtk
   template<class TOutputImage, class ProjectionStackType>
   void
   IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
-  ::SetForwardProjectionFilter (int fwtype)
+  ::SetForwardProjectionFilter (ForwardProjectionType fwtype)
   {
     if (m_CurrentForwardProjectionConfiguration != fwtype)
       {
@@ -106,7 +103,7 @@ namespace rtk
   template<class TOutputImage, class ProjectionStackType>
   void
   IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
-  ::SetBackProjectionFilter (int bptype)
+  ::SetBackProjectionFilter (BackProjectionType bptype)
   {
     if (m_CurrentBackProjectionConfiguration != bptype)
       {

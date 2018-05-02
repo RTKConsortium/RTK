@@ -15,10 +15,6 @@ option "mask"           m "Apply a support binary mask: reconstruction kept null
 option "costs"          - "Show residual costs at each iteration at the end of the process"                           flag   off
 option "nodisplaced"    - "Disable the displaced detector filter"                                                     flag   off
 
-section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","CudaRayCast" enum no default="VoxelBasedBackProjection"
-
 section "Regularization"
 option "nopositivity" - "Do not enforce positivity"                                                             flag    off
 option "tviter"      - "Total variation regularization: number of iterations"            			int     no      default="10"

@@ -83,8 +83,8 @@ int main(int argc, char * argv[])
       rtk::OSEMConeBeamReconstructionFilter< OutputImageType >::New();
 
   // Set the forward and back projection filters
-  osem->SetForwardProjectionFilter(args_info.fp_arg);
-  osem->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, osem.GetPointer());
+  SetBackProjectionFromGgo(args_info, osem.GetPointer());
   osem->SetInput( inputFilter->GetOutput() );
   osem->SetInput(1, reader->GetOutput());
   osem->SetGeometry( geometryReader->GetOutputObject() );

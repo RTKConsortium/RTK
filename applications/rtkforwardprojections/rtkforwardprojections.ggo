@@ -10,5 +10,5 @@ option "step"      s "Step size along ray (for CudaRayCast only)"               
 option "lowmem"    l "Compute only one projection at a time"                     flag     off
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","CudaRayCast" enum no default="Joseph"
 
