@@ -25,7 +25,7 @@
 
 
 #include "rtkScatterGlareCorrectionImageFilter.h"
-#include "rtkCudaFFTConvolutionImageFilter.h"
+#include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
 namespace rtk
 {
 
@@ -41,9 +41,9 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 class CudaScatterGlareCorrectionImageFilter :
-  public CudaFFTConvolutionImageFilter< ScatterGlareCorrectionImageFilter< itk::CudaImage<float,3>,
-                                                                           itk::CudaImage<float,3>,
-                                                                           float > >
+  public CudaFFTProjectionsConvolutionImageFilter< ScatterGlareCorrectionImageFilter< itk::CudaImage<float,3>,
+                                                                                      itk::CudaImage<float,3>,
+                                                                                      float > >
 {
 public:
   /** Standard class typedefs. */

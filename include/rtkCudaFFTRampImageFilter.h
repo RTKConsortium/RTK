@@ -23,7 +23,7 @@
 //Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkCudaFFTConvolutionImageFilter.h"
+#include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
 #include "rtkFFTRampImageFilter.h"
 
 namespace rtk
@@ -39,7 +39,7 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 class CudaFFTRampImageFilter :
-  public CudaFFTConvolutionImageFilter< FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
+  public CudaFFTProjectionsConvolutionImageFilter< FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
   /** Standard class typedefs. */

@@ -10,12 +10,12 @@ itk_wrap_class("itk::FixedArray")
 itk_end_wrap_class()
 
 #-----------------------------------------------------------------------------
-# rtk::FFTConvolutionImageFilter
+# rtk::FFTProjectionsConvolutionImageFilter
 #-----------------------------------------------------------------------------
-itk_wrap_include( rtkFFTConvolutionImageFilter.h )
+itk_wrap_include( rtkFFTProjectionsConvolutionImageFilter.h )
 itk_wrap_include( itkImage.h )
 
-itk_wrap_named_class("rtk::FFTConvolutionImageFilter" rtkFFTConvolutionImageFilter POINTER)
+itk_wrap_named_class("rtk::FFTProjectionsConvolutionImageFilter" rtkFFTProjectionsConvolutionImageFilter POINTER)
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3${ITKM_D}"
       "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${ITKT_D}")

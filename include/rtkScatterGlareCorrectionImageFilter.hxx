@@ -42,7 +42,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::UpdateFFTConvolutionKernel(const SizeType size)
+::UpdateFFTProjectionsConvolutionKernel(const SizeType size)
 {
   if(m_Coefficients.size() != 2)
     {

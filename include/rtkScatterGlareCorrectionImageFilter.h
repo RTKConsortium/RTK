@@ -20,7 +20,7 @@
 #define rtkScatterGlareCorrectionImageFilter_h
 
 #include "rtkConfiguration.h"
-#include "rtkFFTConvolutionImageFilter.h"
+#include "rtkFFTProjectionsConvolutionImageFilter.h"
 
 namespace rtk
 {
@@ -40,12 +40,12 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
 class ITK_EXPORT ScatterGlareCorrectionImageFilter :
-    public rtk::FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+    public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
   /** Standard class typedefs. */
   typedef ScatterGlareCorrectionImageFilter                  Self;
-  typedef rtk::FFTConvolutionImageFilter< TInputImage,
+  typedef rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
                                           TOutputImage,
                                           TFFTPrecision>     Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
@@ -69,7 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(ScatterGlareCorrectionImageFilter, FFTConvolutionImageFilter);
+  itkTypeMacro(ScatterGlareCorrectionImageFilter, FFTProjectionsConvolutionImageFilter);
 
   itkGetConstMacro(Coefficients, CoefficientVectorType);
   virtual void SetCoefficients(const CoefficientVectorType coefficients)
@@ -87,7 +87,7 @@ protected:
 
   /** Create the deconvolution kernel
   */
-  void UpdateFFTConvolutionKernel(const SizeType size) ITK_OVERRIDE;
+  void UpdateFFTProjectionsConvolutionKernel(const SizeType size) ITK_OVERRIDE;
 
 private:
   ScatterGlareCorrectionImageFilter(const Self&); //purposely not implemented

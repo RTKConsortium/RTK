@@ -79,7 +79,7 @@ if (RTK_USE_CUDA)
     rtkCudaDisplacedDetectorImageFilter.cu
     rtkCudaFDKBackProjectionImageFilter.cu
     rtkCudaFDKWeightProjectionFilter.cu
-    rtkCudaFFTConvolutionImageFilter.cu
+    rtkCudaFFTProjectionsConvolutionImageFilter.cu
     rtkCudaFirstOrderKernels.cu
     rtkCudaForwardProjectionImageFilter.cu
     rtkCudaForwardWarpImageFilter.cu

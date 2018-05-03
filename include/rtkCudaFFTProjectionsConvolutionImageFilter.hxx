@@ -16,15 +16,15 @@
  *
  *=========================================================================*/
 
-#ifndef rtkCudaFFTConvolutionImageFilter_hxx
-#define rtkCudaFFTConvolutionImageFilter_hxx
+#ifndef rtkCudaFFTProjectionsConvolutionImageFilter_hxx
+#define rtkCudaFFTProjectionsConvolutionImageFilter_hxx
 
 #include "rtkConfiguration.h"
 //Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkCudaFFTConvolutionImageFilter.h"
-#include "rtkCudaFFTConvolutionImageFilter.hcu"
+#include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
+#include "rtkCudaFFTProjectionsConvolutionImageFilter.hcu"
 
 #include "rtkCudaCropImageFilter.h"
 #include "rtkCudaCropImageFilter.hcu"
@@ -35,8 +35,8 @@ namespace rtk
 {
 
 template<class TParentImageFilter>
-CudaFFTConvolutionImageFilter<TParentImageFilter>
- ::CudaFFTConvolutionImageFilter()
+CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>
+ ::CudaFFTProjectionsConvolutionImageFilter()
  {
    // We use FFTW for the kernel so we need to do the same thing as in the parent
 #if defined(USE_FFTWF)
@@ -45,13 +45,13 @@ CudaFFTConvolutionImageFilter<TParentImageFilter>
  }
 
 template<class TParentImageFilter>
-typename CudaFFTConvolutionImageFilter<TParentImageFilter>::FFTInputImagePointer
-CudaFFTConvolutionImageFilter<TParentImageFilter>::PadInputImageRegion(const RegionType &inputRegion)
+typename CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::FFTInputImagePointer
+CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::PadInputImageRegion(const RegionType &inputRegion)
 {
   CudaImageType::RegionType inBuffRegion = this->GetInput()->GetBufferedRegion();
   if(inBuffRegion != this->GetInput()->GetRequestedRegion())
     {
-    itkExceptionMacro(<< "CudaFFTConvolutionImageFilter assumes that input requested and buffered regions are equal.");
+    itkExceptionMacro(<< "CudaFFTProjectionsConvolutionImageFilter assumes that input requested and buffered regions are equal.");
     }
 
   TParentImageFilter::UpdateTruncationMirrorWeights();
@@ -89,7 +89,7 @@ CudaFFTConvolutionImageFilter<TParentImageFilter>::PadInputImageRegion(const Reg
 
 template<class TParentImageFilter>
 void
-CudaFFTConvolutionImageFilter<TParentImageFilter>
+CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>
 ::GPUGenerateData()
 {
   // Pad image region
@@ -102,10 +102,10 @@ CudaFFTConvolutionImageFilter<TParentImageFilter>
   if(inputDimension.y==1 && inputDimension.z>1) // Troubles cuda 3.2 and 4.0
     std::swap(inputDimension.y, inputDimension.z);
 
-  // Get FFT ramp kernel. Must be itk::Image because GetFFTConvolutionKernel is not
+  // Get FFT ramp kernel. Must be itk::Image because GetFFTProjectionsConvolutionKernel is not
   // compatible with itk::CudaImage + ITK 3.20.
   typename Superclass::FFTOutputImageType::SizeType s = paddedImage->GetLargestPossibleRegion().GetSize();
-  this->UpdateFFTConvolutionKernel(s);
+  this->UpdateFFTProjectionsConvolutionKernel(s);
   if(this->m_KernelFFTCUDA.GetPointer() == ITK_NULLPTR ||
      this->m_KernelFFTCUDA->GetTimeStamp() < this->m_KernelFFT->GetTimeStamp())
     {

@@ -18,7 +18,7 @@
 
 // rtk includes
 #include "rtkCudaUtilities.hcu"
-#include "rtkCudaFFTConvolutionImageFilter.hcu"
+#include "rtkCudaFFTProjectionsConvolutionImageFilter.hcu"
 
 #include <itkMacro.h>
 

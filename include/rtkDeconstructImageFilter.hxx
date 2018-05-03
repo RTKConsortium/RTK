@@ -149,7 +149,7 @@ void DeconstructImageFilter<TImage>
   // Create and set the kernel sources
   this->GeneratePassVectors();
 
-  // Create all FFTConvolution and Downsampling filters
+  // Create all FFTProjectionsConvolution and Downsampling filters
   for (unsigned int i=0; i<n * m_NumberOfLevels; i++)
     {
     m_ConvolutionFilters.push_back(ConvolutionFilterType::New());

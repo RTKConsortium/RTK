@@ -21,7 +21,7 @@
 
 #include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
-#include "rtkFFTConvolutionImageFilter.h"
+#include "rtkFFTProjectionsConvolutionImageFilter.h"
 #include "rtkMacro.h"
 
 // The Set macro is redefined to clear the current FFT kernel when a parameter
@@ -48,7 +48,7 @@ namespace rtk
 /** \class FFTRampImageFilter
  * \brief Implements the ramp image filter of the filtered backprojection algorithm.
  *
- * The filter code is based on FFTConvolutionImageFilter by Gaetan Lehmann
+ * The filter code is based on FFTProjectionsConvolutionImageFilter by Gaetan Lehmann
  * (see http://hdl.handle.net/10380/3154)
  *
  * \test rtkrampfiltertest.cxx
@@ -60,16 +60,16 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
 class ITK_EXPORT FFTRampImageFilter :
-  public rtk::FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+  public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
   /** Standard class typedefs. */
-  typedef FFTRampImageFilter                                 Self;
-  typedef rtk::FFTConvolutionImageFilter< TInputImage,
-                                          TOutputImage,
-                                          TFFTPrecision>     Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  typedef FFTRampImageFilter                                        Self;
+  typedef rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
+                                                     TOutputImage,
+                                                     TFFTPrecision> Superclass;
+  typedef itk::SmartPointer<Self>                                   Pointer;
+  typedef itk::SmartPointer<const Self>                             ConstPointer;
 
   /** Some convenient typedefs. */
   typedef TInputImage                                       InputImageType;
@@ -87,7 +87,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(FFTRampImageFilter, FFTConvolutionImageFilter);
+  itkTypeMacro(FFTRampImageFilter, FFTProjectionsConvolutionImageFilter);
 
   /** Set/Get the Hann window frequency. 0 (default) disables it */
   itkGetConstMacro(HannCutFrequency, double);
@@ -133,7 +133,7 @@ protected:
 
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.  */
-  void UpdateFFTConvolutionKernel(const SizeType size) ITK_OVERRIDE;
+  void UpdateFFTProjectionsConvolutionKernel(const SizeType size) ITK_OVERRIDE;
 
 private:
   FFTRampImageFilter(const Self&); //purposely not implemented

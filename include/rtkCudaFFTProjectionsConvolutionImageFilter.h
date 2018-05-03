@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef rtkCudaFFTConvolutionImageFilter_h
-#define rtkCudaFFTConvolutionImageFilter_h
+#ifndef rtkCudaFFTProjectionsConvolutionImageFilter_h
+#define rtkCudaFFTProjectionsConvolutionImageFilter_h
 
 #include "rtkConfiguration.h"
 //Conditional definition of the class to pass ITKHeaderTest
@@ -29,15 +29,15 @@
 namespace rtk
 {
 
-/** \class CudaFFTConvolutionImageFilter
+/** \class CudaFFTProjectionsConvolutionImageFilter
  * \brief Implements 1D or 2D FFT convolution.
  *
  * This filter implements a convolution using FFT of the input image. The
  * convolution kernel must be defined in the parent class, passed via the
  * template argument. The template argument must be a child of
- * rtk::FFTConvolutionImageFilter.
+ * rtk::FFTProjectionsConvolutionImageFilter.
  *
- * \see rtk::FFTConvolutionImageFilter
+ * \see rtk::FFTProjectionsConvolutionImageFilter
  *
  * \test rtkrampfiltertest.cxx, rtkrampfiltertest2.cxx
  *
@@ -46,17 +46,17 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 template< class TParentImageFilter >
-class CudaFFTConvolutionImageFilter:
+class CudaFFTProjectionsConvolutionImageFilter:
   public itk::CudaImageToImageFilter< itk::CudaImage<float,3>,
                                       itk::CudaImage<float,3>,
                                       TParentImageFilter >
 {
 public:
   /** Standard class typedefs. */
-  typedef CudaFFTConvolutionImageFilter Self;
-  typedef TParentImageFilter            Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  typedef CudaFFTProjectionsConvolutionImageFilter Self;
+  typedef TParentImageFilter                       Superclass;
+  typedef itk::SmartPointer<Self>                  Pointer;
+  typedef itk::SmartPointer<const Self>            ConstPointer;
 
   /** Convenient typedefs. */
   typedef typename TParentImageFilter::RegionType           RegionType;
@@ -66,18 +66,18 @@ public:
   typedef CudaFFTOutputImageType::Pointer                   CudaFFTOutputImagePointer;
 
   /** Runtime information support. */
-  itkTypeMacro(CudaFFTConvolutionImageFilter, TParentImageFilter);
+  itkTypeMacro(CudaFFTProjectionsConvolutionImageFilter, TParentImageFilter);
 
 protected:
-  CudaFFTConvolutionImageFilter();
-  ~CudaFFTConvolutionImageFilter(){}
+  CudaFFTProjectionsConvolutionImageFilter();
+  ~CudaFFTProjectionsConvolutionImageFilter(){}
 
   virtual void GPUGenerateData();
 
   virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
 
 private:
-  CudaFFTConvolutionImageFilter(const Self&); // purposely not implemented
+  CudaFFTProjectionsConvolutionImageFilter(const Self&); // purposely not implemented
   void operator=(const Self&);                // purposely not implemented
 
   CudaFFTOutputImagePointer m_KernelFFTCUDA;
@@ -86,7 +86,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkCudaFFTConvolutionImageFilter.hxx"
+#include "rtkCudaFFTProjectionsConvolutionImageFilter.hxx"
 #endif
 
 #endif //end conditional definition of the class

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef rtkFFTConvolutionImageFilter_h
-#define rtkFFTConvolutionImageFilter_h
+#ifndef rtkFFTProjectionsConvolutionImageFilter_h
+#define rtkFFTProjectionsConvolutionImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkConceptChecking.h>
@@ -28,7 +28,7 @@
 namespace rtk
 {
 
-/** \class FFTConvolutionImageFilter
+/** \class FFTProjectionsConvolutionImageFilter
  * \brief Base class for 1D or 2D FFT based convolution of projections
  *
  * The filter code is based on FFTConvolutionImageFilter by Gaetan Lehmann
@@ -42,12 +42,12 @@ namespace rtk
  */
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
-class ITK_EXPORT FFTConvolutionImageFilter :
+class ITK_EXPORT FFTProjectionsConvolutionImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef FFTConvolutionImageFilter                          Self;
+  typedef FFTProjectionsConvolutionImageFilter               Self;
   typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
   typedef itk::SmartPointer<Self>                            Pointer;
   typedef itk::SmartPointer<const Self>                      ConstPointer;
@@ -72,7 +72,7 @@ public:
                       TOutputImage::ImageDimension);
 
   /** Runtime information support. */
-  itkTypeMacro(FFTConvolutionImageFilter, ImageToImageFilter);
+  itkTypeMacro(FFTProjectionsConvolutionImageFilter, ImageToImageFilter);
 
   /**
    * Set/Get the greatest prime factor allowed on the size of the padded image.
@@ -114,8 +114,8 @@ public:
     }
 
 protected:
-  FFTConvolutionImageFilter();
-  virtual ~FFTConvolutionImageFilter() ITK_OVERRIDE {}
+  FFTProjectionsConvolutionImageFilter();
+  virtual ~FFTProjectionsConvolutionImageFilter() ITK_OVERRIDE {}
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
@@ -140,7 +140,7 @@ protected:
 
   /** Creates and return a pointer to the convolution kernel. Can be 1D or 2D.
    *  Used in generate data functions, must be implemented in daughter classes.  */
-  virtual void UpdateFFTConvolutionKernel(const SizeType size) = 0;
+  virtual void UpdateFFTProjectionsConvolutionKernel(const SizeType size) = 0;
 
   /** Pre compute weights for truncation correction in a lookup table. The index
     * is the distance to the original image border.
@@ -160,8 +160,8 @@ protected:
   FFTOutputImagePointer m_KernelFFT;
 
 private:
-  FFTConvolutionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
+  FFTProjectionsConvolutionImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);                       //purposely not implemented
 
   /** Percentage of the image width which is feathered with data to correct for truncation.
     * 0 (default) means no correction.
@@ -184,7 +184,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFFTConvolutionImageFilter.hxx"
+#include "rtkFFTProjectionsConvolutionImageFilter.hxx"
 #endif
 
 #endif

@@ -56,7 +56,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::UpdateFFTConvolutionKernel(const SizeType s)
+::UpdateFFTProjectionsConvolutionKernel(const SizeType s)
 {
   if(this->m_KernelFFT.GetPointer() != ITK_NULLPTR && s == this->m_PreviousKernelUpdateSize)
     {

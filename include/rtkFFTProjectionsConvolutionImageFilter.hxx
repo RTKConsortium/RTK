@@ -16,10 +16,10 @@
  *
  *=========================================================================*/
 
-#ifndef rtkFFTConvolutionImageFilter_hxx
-#define rtkFFTConvolutionImageFilter_hxx
+#ifndef rtkFFTProjectionsConvolutionImageFilter_hxx
+#define rtkFFTProjectionsConvolutionImageFilter_hxx
 
-#include "rtkFFTConvolutionImageFilter.h"
+#include "rtkFFTProjectionsConvolutionImageFilter.h"
 
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154
@@ -33,8 +33,8 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::FFTConvolutionImageFilter() :
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+::FFTProjectionsConvolutionImageFilter() :
   m_KernelDimension(1),
   m_TruncationCorrection(0.),
   m_GreatestPrimeFactor(2),
@@ -54,7 +54,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -81,7 +81,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 int
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GetTruncationCorrectionExtent()
 {
   return vnl_math_floor(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0));
@@ -89,7 +89,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::BeforeThreadedGenerateData()
 {
   UpdateTruncationMirrorWeights();
@@ -108,12 +108,12 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   // Update FFT ramp kernel (if required)
   RegionType paddedRegion = GetPaddedImageRegion( this->GetInput()->GetRequestedRegion() );
-  UpdateFFTConvolutionKernel( paddedRegion.GetSize() );
+  UpdateFFTProjectionsConvolutionKernel( paddedRegion.GetSize() );
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::AfterThreadedGenerateData()
 {
   if(this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 &&
@@ -123,7 +123,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
 {
   // Pad image region enlarged along X
@@ -179,8 +179,8 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
-typename FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTInputImagePointer
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+typename FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTInputImagePointer
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::PadInputImageRegion(const RegionType &inputRegion)
 {
   UpdateTruncationMirrorWeights();
@@ -260,8 +260,8 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
-typename FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::RegionType
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+typename FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::RegionType
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GetPaddedImageRegion(const RegionType &inputRegion)
 {
   RegionType paddedRegion = inputRegion;
@@ -291,7 +291,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::PrintSelf(std::ostream &os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
@@ -300,7 +300,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 bool
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::IsPrime( int n ) const
 {
   int last = (int)vcl_sqrt( double(n) );
@@ -313,7 +313,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 int
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GreatestPrimeFactor( int n ) const
 {
   int v = 2;
@@ -328,7 +328,7 @@ FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-FFTConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::UpdateTruncationMirrorWeights()
 {
   const unsigned int next = this->GetTruncationCorrectionExtent();
