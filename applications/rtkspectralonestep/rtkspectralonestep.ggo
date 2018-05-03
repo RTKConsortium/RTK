@@ -12,3 +12,4 @@ option "detector"       d "Detector response file"                              
 option "incident"       - "Incident spectrum file (mhd image)"                                string yes
 option "attenuations"   a "Material attenuations file"                                        string yes
 option "thresholds"     t "Lower threshold of bins, expressed in pulse height"                int    yes  multiple
+option "nprojpersubset" - "Number of projections processed at each update (0 means all)"      int    no   default="0"

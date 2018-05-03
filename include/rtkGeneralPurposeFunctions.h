@@ -27,37 +27,12 @@
 namespace rtk
 {
 
-/** \brief Sorts a vector and returns the sorting permutation
- *
- * This function takes a vector and returns another vector
- * containing the permutated indices, not the sorted values.
+/** \brief A few functions that are used either in the applications or for debugging purposes
  *
  * \author Cyril Mory
  *
  * \ingroup Functions
  */
-template< typename TVectorElement >
-std::vector<unsigned int>
-GetSortingPermutation(std::vector<TVectorElement> input)
-{
-  // Define a vector of pairs (value and index)
-  std::vector<std::pair<TVectorElement, unsigned int> > pairsVector;
-
-  // Fill it
-  for (unsigned int i = 0; i < input.size(); i++)
-      pairsVector.push_back(std::make_pair(input[i], i));
-
-  // Sort it according to values
-  std::sort(pairsVector.begin(), pairsVector.end());
-
-  // Extract the permutated indices
-  std::vector<unsigned int> result;
-  for (unsigned int i = 0; i < pairsVector.size(); i++)
-      result.push_back(pairsVector[i].second);
-
-  // Return
-  return result;
-}
 
 inline
 static std::vector<double>

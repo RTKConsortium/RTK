@@ -31,11 +31,15 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 
   // Set the default values of member parameters
   m_NumberOfIterations=3;
+  m_NumberOfProjectionsPerSubset=0;
+  m_NumberOfSubsets=0;
+  m_NumberOfProjections=0;
 //  m_IterationCosts=false;
 //  m_Gamma = 0;
 //  m_Regularized = false;
 
   // Create the filters
+  m_ExtractPhotonCountsFilter = ExtractPhotonCountsFilterType::New();
   m_ProjectionsSource = MaterialProjectionsSourceType::New();
   m_SingleComponentProjectionsSource = SingleComponentImageSourceType::New();
   m_SingleComponentVolumeSource = SingleComponentImageSourceType::New();
@@ -237,9 +241,30 @@ void
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
 ::GenerateOutputInformation()
 {
+  typename TPhotonCounts::RegionType largest = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
+  m_NumberOfProjections = largest.GetSize()[TPhotonCounts::ImageDimension - 1];
+
+  // Check the number of projections per subset. If it is 0, set it to the number of projections
+  // i.e. form only one subset
+  if (m_NumberOfProjectionsPerSubset == 0)
+      m_NumberOfProjectionsPerSubset = m_NumberOfProjections;
+
+  // Pre-compute the number of subsets, and their size
+  m_NumberOfProjectionsInSubset.clear();
+  m_NumberOfSubsets = std::ceil( (float) m_NumberOfProjections / (float) m_NumberOfProjectionsPerSubset);
+  for (unsigned int s=0; s<m_NumberOfSubsets; s++)
+    m_NumberOfProjectionsInSubset.push_back(std::min(m_NumberOfProjectionsPerSubset, m_NumberOfProjections - s * m_NumberOfProjectionsPerSubset));
+
+  // Compute the extract filter's initial extract region
+  typename TPhotonCounts::RegionType extractionRegion = largest;
+  extractionRegion.SetSize(TPhotonCounts::ImageDimension - 1, m_NumberOfProjectionsInSubset[0]);
+  extractionRegion.SetIndex(TPhotonCounts::ImageDimension - 1, 0);
+
   // Set runtime connections. Links with the forward and back projection filters should be set here,
   // since those filters are not instantiated by the constructor, but by
   // a call to SetForwardProjectionFilter() and SetBackProjectionFilter()
+  m_ExtractPhotonCountsFilter->SetInput(this->GetInputPhotonCounts());
+
   m_ForwardProjectionFilter->SetInput(0, m_ProjectionsSource->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, this->GetInputMaterialVolumes());
 
@@ -247,7 +272,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_SingleComponentForwardProjectionFilter->SetInput(1, m_SingleComponentVolumeSource->GetOutput());
 
   m_WeidingerForward->SetInputMaterialProjections(m_ForwardProjectionFilter->GetOutput());
-  m_WeidingerForward->SetInputPhotonCounts(this->GetInputPhotonCounts());
+  m_WeidingerForward->SetInputPhotonCounts(m_ExtractPhotonCountsFilter->GetOutput());
   m_WeidingerForward->SetInputSpectrum(this->GetInputSpectrum());
   m_WeidingerForward->SetInputProjectionsOfOnes(m_SingleComponentForwardProjectionFilter->GetOutput());
 
@@ -263,9 +288,11 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_NesterovFilter->SetInput(0, this->GetInputMaterialVolumes());
   m_NesterovFilter->SetInput(1, m_NewtonFilter->GetOutput());
 
-  // Set information for the sources
-  m_SingleComponentProjectionsSource->SetInformationFromImage(this->GetInputPhotonCounts());
-  m_ProjectionsSource->SetInformationFromImage(this->GetInputPhotonCounts());
+  // Set information for the extract filter and the sources
+  m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
+  m_ExtractPhotonCountsFilter->UpdateOutputInformation();
+  m_SingleComponentProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
+  m_ProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
   m_SingleComponentVolumeSource->SetInformationFromImage(this->GetInputMaterialVolumes());
   m_GradientsSource->SetInformationFromImage(this->GetInputMaterialVolumes());
   m_HessiansSource->SetInformationFromImage(this->GetInputMaterialVolumes());
@@ -296,28 +323,46 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_NesterovFilter->UpdateOutputInformation();
 
   // Initialize Nesterov filter
-  m_NesterovFilter->SetNumberOfIterations(m_NumberOfIterations+1);
+  m_NesterovFilter->SetNumberOfIterations(m_NumberOfIterations * m_NumberOfSubsets + 1);
   m_NesterovFilter->ResetIterations();
 
+  // Declare the pointer that will be used to plug output back as input
   typename TOutputImage::Pointer NextAlpha_k;
 
+  // Run the iteration loop
   for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
     {
-    // Starting from the second iteration, plug the output
-    // of Nesterov back as input of the forward projection
-    // The Nesterov filter itself doesn't need its output
-    // plugged back as input, since it stores intermediate
-    // images that contain all the required data. It only
-    // needs the new update from rtkGetNewtonUpdateImageFilter
-    if (iter>0)
+    for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset++)
       {
-      NextAlpha_k = m_NesterovFilter->GetOutput();
-      NextAlpha_k->DisconnectPipeline();
-      m_ForwardProjectionFilter->SetInput(1, NextAlpha_k);
+      // Starting from the second subset, or the second iteration
+      // if there is only one subset, plug the output
+      // of Nesterov back as input of the forward projection
+      // The Nesterov filter itself doesn't need its output
+      // plugged back as input, since it stores intermediate
+      // images that contain all the required data. It only
+      // needs the new update from rtkGetNewtonUpdateImageFilter
+      if ((iter + subset) >0)
+        {
+        NextAlpha_k = m_NesterovFilter->GetOutput();
+        NextAlpha_k->DisconnectPipeline();
+        m_ForwardProjectionFilter->SetInput(1, NextAlpha_k);
+        }
+
+      // Set the extract filter's region
+      typename TPhotonCounts::RegionType extractionRegion = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
+      extractionRegion.SetSize(TPhotonCounts::ImageDimension - 1, m_NumberOfProjectionsInSubset[subset]);
+      extractionRegion.SetIndex(TPhotonCounts::ImageDimension - 1, subset * m_NumberOfProjectionsPerSubset);
+      m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
+      m_ExtractPhotonCountsFilter->UpdateOutputInformation();
+
+      // Set the projection sources accordingly
+      m_SingleComponentProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
+      m_ProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
+
+      // Update the most downstream filter
+      m_NesterovFilter->Update();
       }
 
-    // Update the most downstream filter
-    m_NesterovFilter->Update();
     }
   this->GraftOutput( m_NesterovFilter->GetOutput() );
 }

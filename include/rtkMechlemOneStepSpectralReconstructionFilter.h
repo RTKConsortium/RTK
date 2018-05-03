@@ -25,6 +25,7 @@
 #include "rtkGetNewtonUpdateImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkNesterovUpdateImageFilter.h"
+#include <itkExtractImageFilter.h>
 
 namespace rtk
 {
@@ -52,6 +53,7 @@ namespace rtk
    * Output [shape=Mdiamond];
    * 
    * node [shape=box];
+   * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
    * VolumeSource [ label="rtk::ConstantImageSource (1 component volume, full of ones)" URL="\ref rtk::ConstantImageSource"];
    * SingleComponentProjectionsSource [ label="rtk::ConstantImageSource (1 component projections, full of zeros)" URL="\ref rtk::ConstantImageSource"];
    * VolumeSourceGradients [ label="rtk::ConstantImageSource (m components)" URL="\ref rtk::ConstantImageSource"];
@@ -61,16 +63,17 @@ namespace rtk
    * SingleComponentForwardProjection [ label="rtk::ForwardProjectionImageFilter (1 component)" URL="\ref rtk::ForwardProjectionImageFilter"];
    * BackProjectionGradients [ label="rtk::BackProjectionImageFilter (gradients)" URL="\ref rtk::BackProjectionImageFilter"];
    * BackProjectionHessians [ label="rtk::BackProjectionImageFilter (hessians)" URL="\ref rtk::BackProjectionImageFilter"];
-   * Weidinger[ label="rtk::WeidingerForwardModelImageFilter" URL="\ref rtk::WeidingerForwardModelImageFilter"];
-   * Newton[ label="rtk::GetNewtonUpdateImageFilter" URL="\ref rtk::GetNewtonUpdateImageFilter"];
-   * Nesterov[ label="rtk::NesterovUpdateImageFilter" URL="\ref rtk::NesterovUpdateImageFilter"];
-   * Alphak [label="", fixedsize="false", width=0, height=0, shape=none];
-   * NextAlphak [label="", fixedsize="false", width=0, height=0, shape=none];
+   * Weidinger [ label="rtk::WeidingerForwardModelImageFilter" URL="\ref rtk::WeidingerForwardModelImageFilter"];
+   * Newton [ label="rtk::GetNewtonUpdateImageFilter" URL="\ref rtk::GetNewtonUpdateImageFilter"];
+   * Nesterov [ label="rtk::NesterovUpdateImageFilter" URL="\ref rtk::NesterovUpdateImageFilter"];
+   * Alphak [ label="", fixedsize="false", width=0, height=0, shape=none];
+   * NextAlphak [ label="", fixedsize="false", width=0, height=0, shape=none];
    *
    * Input0 -> Alphak [arrowhead=none];
    * Alphak -> ForwardProjection;
    * ProjectionsSource -> ForwardProjection;
-   * Input1 -> Weidinger;
+   * Input1 -> Extract;
+   * Extract -> Weidinger;
    * Input2 -> Weidinger;
    * ForwardProjection -> Weidinger;
    * VolumeSourceGradients -> BackProjectionGradients;
@@ -126,6 +129,7 @@ public:
     typedef typename Superclass::BackProjectionType    BackProjectionType;
 
     /** Filter typedefs */
+    typedef itk::ExtractImageFilter<TPhotonCounts, TPhotonCounts>                         ExtractPhotonCountsFilterType;
     typedef rtk::ForwardProjectionImageFilter< TSingleComponentImage, TSingleComponentImage > SingleComponentForwardProjectionFilterType;
     typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
     typedef rtk::BackProjectionImageFilter< TGradientsImage, TGradientsImage >            GradientsBackProjectionFilterType;
@@ -149,6 +153,8 @@ public:
 
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)
+    itkSetMacro(NumberOfProjectionsPerSubset, int)
+    itkGetMacro(NumberOfProjectionsPerSubset, int)
 
     /** Set methods for all inputs, since they have different types */
     void SetInputMaterialVolumes(const TOutputImage* materialVolumes);
@@ -180,6 +186,7 @@ protected:
     void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
+    typename ExtractPhotonCountsFilterType::Pointer                          m_ExtractPhotonCountsFilter;
     typename SingleComponentForwardProjectionFilterType::Pointer             m_SingleComponentForwardProjectionFilter;
     typename MaterialProjectionsSourceType::Pointer                          m_ProjectionsSource;
     typename SingleComponentImageSourceType::Pointer                         m_SingleComponentProjectionsSource;
@@ -220,6 +227,10 @@ private:
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
     int                          m_NumberOfIterations;
+    unsigned int                 m_NumberOfProjectionsPerSubset;
+    unsigned int                 m_NumberOfSubsets;
+    std::vector<unsigned int>    m_NumberOfProjectionsInSubset;
+    unsigned int                 m_NumberOfProjections;
 //    float                        m_Gamma;
 //    bool                         m_IterationCosts;
 //    bool                         m_Regularized;

@@ -4,6 +4,7 @@
 #include "rtkConstantImageSource.h"
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
 #include "rtkSpectralForwardModelImageFilter.h"
+#include "rtkReorderProjectionsImageFilter.h"
 
 //#ifdef USE_CUDA
 //  #include "itkCudaImage.h"
@@ -309,6 +310,24 @@ int main(int, char** )
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+  std::cout << "\n\n****** Case 2: Voxel-based Backprojector, 4 subsets ******" << std::endl;
+
+  typedef rtk::ReorderProjectionsImageFilter<PhotonCountsType> ReorderProjectionsFilterType;
+  ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
+  reorder->SetInput(composePhotonCounts->GetOutput());
+  reorder->SetInputGeometry(geometry);
+  reorder->SetPermutation(rtk::ReorderProjectionsImageFilter<PhotonCountsType>::SHUFFLE);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( reorder->Update() )
+  mechlemOneStep->SetInputPhotonCounts(reorder->GetOutput());
+  mechlemOneStep->SetGeometry(reorder->GetOutputGeometry());
+
+  mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_VOXELBASED );
+  mechlemOneStep->SetNumberOfProjectionsPerSubset(NumberOfProjectionImages / 4);
+  mechlemOneStep->SetNumberOfIterations( 5 );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
+
+  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
 #endif

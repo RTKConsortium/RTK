@@ -21,9 +21,12 @@
 
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkReorderProjectionsImageFilter.h"
 
+#include <algorithm>    // std::shuffle
+#include <vector>       // std::vector
+#include <random>       // std::default_random_engine
 #include <iostream>
-#include <fstream>
 #include <iterator>
 
 #include <itkImageFileWriter.h>
@@ -146,6 +149,7 @@ int main(int argc, char * argv[])
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
+
   // Set the forward and back projection filters to be used
   typedef rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType,
                                                           PhotonCountsType,
@@ -154,12 +158,30 @@ int main(int argc, char * argv[])
   SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   mechlemOneStep->SetInputMaterialVolumes( inputFilter->GetOutput() );
-  mechlemOneStep->SetInputPhotonCounts(photonCountsReader->GetOutput());
   mechlemOneStep->SetInputSpectrum(incidentSpectrumReader->GetOutput());
   mechlemOneStep->SetBinnedDetectorResponse(detectorResponseMatrix);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
-  mechlemOneStep->SetGeometry( geometryReader->GetOutputObject() );
   mechlemOneStep->SetNumberOfIterations( args_info.niterations_arg );
+  mechlemOneStep->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
+
+  // If subsets are used, reorder projections and geometry according to
+  // a random permutation
+  if (args_info.nprojpersubset_arg != 0)
+    {
+    typedef rtk::ReorderProjectionsImageFilter<PhotonCountsType> ReorderProjectionsFilterType;
+    ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
+    reorder->SetInput(photonCountsReader->GetOutput());
+    reorder->SetInputGeometry(geometryReader->GetOutputObject());
+    reorder->SetPermutation(rtk::ReorderProjectionsImageFilter<PhotonCountsType>::SHUFFLE);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION( reorder->Update() )
+    mechlemOneStep->SetInputPhotonCounts(reorder->GetOutput());
+    mechlemOneStep->SetGeometry(reorder->GetOutputGeometry());
+    }
+  else
+    {
+    mechlemOneStep->SetInputPhotonCounts(photonCountsReader->GetOutput());
+    mechlemOneStep->SetGeometry(geometryReader->GetOutputObject());
+    }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() )
 
