@@ -25,21 +25,21 @@
 namespace rtk
 {
 
-template<typename OutputImageType>
-NesterovUpdateImageFilter<OutputImageType>::NesterovUpdateImageFilter()
+template<typename TImage>
+NesterovUpdateImageFilter<TImage>::NesterovUpdateImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
-  m_Vk = OutputImageType::New();
-  m_Zk = OutputImageType::New();
+  m_Vk = TImage::New();
+  m_Zk = TImage::New();
 
   m_NumberOfIterations = 100;
   m_MustInitializeIntermediateImages = true;
   this->ResetIterations();
 }
 
-template<typename OutputImageType>
+template<typename TImage>
 void
-NesterovUpdateImageFilter<OutputImageType>::ResetIterations()
+NesterovUpdateImageFilter<TImage>::ResetIterations()
 {
   // Nesterov's coefficients change at every iteration,
   // and this filter only performs one iteration. It needs
@@ -61,26 +61,26 @@ NesterovUpdateImageFilter<OutputImageType>::ResetIterations()
   m_MustInitializeIntermediateImages = true;
 }
 
-template<typename OutputImageType>
-void NesterovUpdateImageFilter<OutputImageType>
+template<typename TImage>
+void NesterovUpdateImageFilter<TImage>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the image to update
   typename Superclass::InputImagePointer inputPtr0 =
-    const_cast< OutputImageType * >( this->GetInput(0) );
+    const_cast< TImage * >( this->GetInput(0) );
   if ( !inputPtr0 ) return;
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
   // Input 1 is the update computed by Newton's method
   typename Superclass::InputImagePointer inputPtr1 =
-    const_cast< OutputImageType * >( this->GetInput(1) );
+    const_cast< TImage * >( this->GetInput(1) );
   if ( !inputPtr1 ) return;
   inputPtr1->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 }
 
-template<typename OutputImageType>
-void NesterovUpdateImageFilter<OutputImageType>
-::ThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+template<typename TImage>
+void NesterovUpdateImageFilter<TImage>
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 {
 
   if (m_MustInitializeIntermediateImages)
@@ -94,9 +94,9 @@ void NesterovUpdateImageFilter<OutputImageType>
     m_Zk->Allocate();
 
     // Copy the input 0 into them
-    itk::ImageRegionConstIterator<OutputImageType> inIt(this->GetInput(0), outputRegionForThread);
-    itk::ImageRegionIterator<OutputImageType> vIt(m_Vk, outputRegionForThread);
-    itk::ImageRegionIterator<OutputImageType> zIt(m_Zk, outputRegionForThread);
+    itk::ImageRegionConstIterator<TImage> inIt(this->GetInput(0), outputRegionForThread);
+    itk::ImageRegionIterator<TImage> vIt(m_Vk, outputRegionForThread);
+    itk::ImageRegionIterator<TImage> zIt(m_Zk, outputRegionForThread);
 
     while(!inIt.IsAtEnd())
       {
@@ -110,10 +110,10 @@ void NesterovUpdateImageFilter<OutputImageType>
     }
 
   // Create iterators for all inputs and outputs
-  itk::ImageRegionIterator<OutputImageType> alpha_k_It(this->GetOutput(), outputRegionForThread);
-  itk::ImageRegionIterator<OutputImageType> v_k_It(m_Vk, outputRegionForThread);
-  itk::ImageRegionIterator<OutputImageType> z_k_It(m_Zk, outputRegionForThread);
-  itk::ImageRegionConstIterator<OutputImageType> g_k_It(this->GetInput(1), outputRegionForThread);
+  itk::ImageRegionIterator<TImage> alpha_k_It(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIterator<TImage> v_k_It(m_Vk, outputRegionForThread);
+  itk::ImageRegionIterator<TImage> z_k_It(m_Zk, outputRegionForThread);
+  itk::ImageRegionConstIterator<TImage> g_k_It(this->GetInput(1), outputRegionForThread);
 
   // Perform computations
   while(!alpha_k_It.IsAtEnd())
@@ -129,8 +129,8 @@ void NesterovUpdateImageFilter<OutputImageType>
     }
 }
 
-template<typename OutputImageType>
-void NesterovUpdateImageFilter<OutputImageType>
+template<typename TImage>
+void NesterovUpdateImageFilter<TImage>
 ::AfterThreadedGenerateData()
 {
   m_CurrentIteration++;

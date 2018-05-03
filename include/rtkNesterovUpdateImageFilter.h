@@ -35,15 +35,18 @@ namespace rtk
  *
 */
 
-template< typename OutputImageType>
-class NesterovUpdateImageFilter : public itk::InPlaceImageFilter< OutputImageType,  OutputImageType>
+template< typename TImage>
+class NesterovUpdateImageFilter : public itk::InPlaceImageFilter< TImage,  TImage>
 {
 public:
    
   /** Standard class typedefs. */
-  typedef NesterovUpdateImageFilter                                              Self;
-  typedef itk::InPlaceImageFilter< OutputImageType, OutputImageType>                Superclass;
-  typedef itk::SmartPointer< Self >                                                 Pointer;
+  typedef NesterovUpdateImageFilter                        Self;
+  typedef itk::InPlaceImageFilter< TImage, TImage>         Superclass;
+  typedef itk::SmartPointer< Self >                        Pointer;
+
+  /** Convenient typedef */
+  typedef typename Superclass::OutputImageType::RegionType OutputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -64,21 +67,21 @@ protected:
   virtual ~NesterovUpdateImageFilter() ITK_OVERRIDE {}
 
   /** Does the real work. */
-  void ThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
-  void AfterThreadedGenerateData();
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void AfterThreadedGenerateData() ITK_OVERRIDE;
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   int                 m_NumberOfIterations;
   int                 m_CurrentIteration;
   bool                m_MustInitializeIntermediateImages;
-  std::vector<typename OutputImageType::PixelType::ValueType> m_tCoeffs;
-  std::vector<typename OutputImageType::PixelType::ValueType> m_Sums;
-  std::vector<typename OutputImageType::PixelType::ValueType> m_Ratios;
+  std::vector<typename TImage::PixelType::ValueType> m_tCoeffs;
+  std::vector<typename TImage::PixelType::ValueType> m_Sums;
+  std::vector<typename TImage::PixelType::ValueType> m_Ratios;
 
   // Internal images
-  typename OutputImageType::Pointer m_Vk;
-  typename OutputImageType::Pointer m_Zk;
+  typename TImage::Pointer m_Vk;
+  typename TImage::Pointer m_Zk;
 
 private:
   NesterovUpdateImageFilter(const Self &); //purposely not implemented
