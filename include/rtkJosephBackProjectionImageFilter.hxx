@@ -35,6 +35,18 @@ namespace rtk
 template <class TInputImage,
           class TOutputImage,
           class TSplatWeightMultiplication>
+JosephBackProjectionImageFilter<TInputImage,
+                                TOutputImage,
+                                TSplatWeightMultiplication>
+::JosephBackProjectionImageFilter():
+    m_InferiorClip(0.),
+    m_SuperiorClip(1.)
+{
+}
+
+template <class TInputImage,
+          class TOutputImage,
+          class TSplatWeightMultiplication>
 void
 JosephBackProjectionImageFilter<TInputImage,
                                 TOutputImage,
@@ -134,8 +146,8 @@ JosephBackProjectionImageFilter<TInputImage,
         nearDist<=1.)  // check if detector after or in the volume
       {
       // Clip the casting between source and pixel of the detector
-      nearDist = std::max(nearDist, 0.);
-      farDist = std::min(farDist, 1.);
+      nearDist = std::max(nearDist, m_InferiorClip);
+      farDist = std::min(farDist, m_SuperiorClip);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
       np = sourcePosition + nearDist * dirVox;

@@ -166,8 +166,16 @@ public:
       }
     }
 
+  /** Each ray is clipped from source+m_InferiorClip*(pixel-source) to
+  ** source+m_SuperiorClip*(pixel-source) with m_InferiorClip and
+  ** m_SuperiorClip equal 0 and 1 by default. */
+  itkGetMacro(InferiorClip, double)
+  itkSetMacro(InferiorClip, double)
+  itkGetMacro(SuperiorClip, double)
+  itkSetMacro(SuperiorClip, double)
+
 protected:
-  JosephForwardProjectionImageFilter() {}
+  JosephForwardProjectionImageFilter();
   virtual ~JosephForwardProjectionImageFilter() ITK_OVERRIDE {}
 
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
@@ -208,6 +216,8 @@ private:
 
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TProjectedValueAccumulation        m_ProjectedValueAccumulation;
+  double                             m_InferiorClip;
+  double                             m_SuperiorClip;
 };
 
 } // end namespace rtk

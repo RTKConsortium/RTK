@@ -114,9 +114,16 @@ public:
       }
     }
 
+  /** Each ray is clipped from source+m_InferiorClip*(pixel-source) to
+  ** source+m_SuperiorClip*(pixel-source) with m_InferiorClip and
+  ** m_SuperiorClip equal 0 and 1 by default. */
+  itkGetMacro(InferiorClip, double)
+  itkSetMacro(InferiorClip, double)
+  itkGetMacro(SuperiorClip, double)
+  itkSetMacro(SuperiorClip, double)
 
 protected:
-  JosephBackProjectionImageFilter() {}
+  JosephBackProjectionImageFilter();
   virtual ~JosephBackProjectionImageFilter() ITK_OVERRIDE {}
 
   void GenerateData() ITK_OVERRIDE;
@@ -160,6 +167,8 @@ private:
 
   /** Functor */
   TSplatWeightMultiplication m_SplatWeightMultiplication;
+  double                     m_InferiorClip;
+  double                     m_SuperiorClip;
 };
 
 } // end namespace rtk
