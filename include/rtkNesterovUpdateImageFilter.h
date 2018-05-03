@@ -49,7 +49,7 @@ public:
   itkNewMacro(Self)
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(NesterovUpdateImageFilter, itk::ImageToImageFilter)
+  itkTypeMacro(NesterovUpdateImageFilter, itk::InPlaceImageFilter)
 
   /** Get and Set macro*/
   itkGetMacro(NumberOfIterations, int)
