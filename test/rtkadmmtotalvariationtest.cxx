@@ -163,8 +163,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  admmtotalvariation->SetForwardProjectionFilter( 1 );
-  admmtotalvariation->SetBackProjectionFilter( 2 );
+  admmtotalvariation->SetForwardProjectionFilter( ADMMTotalVariationType::FP_CUDARAYCAST );
+  admmtotalvariation->SetBackProjectionFilter( ADMMTotalVariationType::BP_CUDAVOXELBASED );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);

@@ -176,11 +176,15 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
   endif()
 
   # Wrap ITK unsigned short combination (required by : rtkLookupTableImageFilter)
-  itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
-  itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
+  if (NOT ITK_WRAP_unsigned_short OR NOT ITK_WRAP_double)
+    itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+    itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
+  endif()
 
   # Wrap ITK CovariantVector missing types
-  itk_wrap_template("ICVD33ICVD33" "itk::Image<itk::CovariantVector<${ITKT_D}, 3>, 3>, itk::Image<itk::CovariantVector<${ITKT_D}, 3>, 3>")
+  if (NOT ITK_WRAP_covariant_vector_double)
+    itk_wrap_template("ICVD33ICVD33" "itk::Image<itk::CovariantVector<${ITKT_D}, 3>, 3>, itk::Image<itk::CovariantVector<${ITKT_D}, 3>, 3>")
+  endif()
 
   # Wrap ITK real type combination
   itk_wrap_template("IF3ID2" "itk::Image<${ITKT_F}, 3>, itk::Image<${ITKT_D}, 2>")
@@ -222,8 +226,10 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
   endif()
 
   # Wrap ITK unsigned short combination (required by : rtkLookupTableImageFilter)
-  itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
-  itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
+  if (NOT ITK_WRAP_unsigned_short OR NOT ITK_WRAP_double)
+    itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+    itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
+  endif()
 
   # Wrap ITK real type combination
   itk_wrap_template("IF3ID2" "itk::Image<${ITKT_F}, 3>, itk::Image<${ITKT_D}, 2>")
