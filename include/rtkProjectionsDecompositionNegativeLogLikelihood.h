@@ -57,7 +57,7 @@ public:
   typedef vnl_matrix<double>                        MaterialAttenuationsType;
   typedef vnl_matrix<float>                         IncidentSpectrumType;
   typedef itk::VariableLengthVector<double>         MeasuredDataType;
-  typedef itk::VariableLengthVector<unsigned int>   ThresholdsType;
+  typedef itk::VariableLengthVector<int>            ThresholdsType;
   typedef itk::VariableSizeMatrix<double>           MeanAttenuationInBinType;
 
   // Constructor
@@ -160,7 +160,7 @@ public:
       {
       double accumulate = 0;
       double accumulateWeights = 0;
-      for (unsigned int energy=m_Thresholds[bin]-1; (energy<m_Thresholds[bin+1]) && (energy < this->m_MaterialAttenuations.rows()); energy++)
+      for (int energy=m_Thresholds[bin]-1; (energy<m_Thresholds[bin+1]) && (energy < (int)(this->m_MaterialAttenuations.rows())); energy++)
         {
         accumulate += this->m_MaterialAttenuations[energy][mat] * this->m_IncidentSpectrum[0][energy];
         accumulateWeights += this->m_IncidentSpectrum[0][energy];

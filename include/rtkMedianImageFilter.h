@@ -59,7 +59,7 @@ public:
   typedef TImage::PixelType                 *InputImagePointer;
   typedef TImage::RegionType                OutputImageRegionType;
 
-  typedef itk::Vector<unsigned int, TImage::ImageDimension> VectorType;
+  typedef itk::Vector<int, TImage::ImageDimension> VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

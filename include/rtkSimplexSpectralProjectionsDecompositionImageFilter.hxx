@@ -338,7 +338,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
       indexDet[0] = energy;
       for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
         {
-        for (unsigned int pulseHeight=m_Thresholds[bin]-1; pulseHeight<m_Thresholds[bin+1]; pulseHeight++)
+        for (int pulseHeight=m_Thresholds[bin]-1; pulseHeight<m_Thresholds[bin+1]; pulseHeight++)
           {
           indexDet[1] = pulseHeight;
           // Linear interpolation on the pulse heights: half of the pulses that have "threshold"
