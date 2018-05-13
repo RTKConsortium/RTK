@@ -26,6 +26,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
+#include <itkPixelTraits.h>
 
 namespace rtk
 {
@@ -367,7 +368,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       v = v*w-pIndex[1];
       du = w * matrix[0][0];
 
-      double u1, u2, v1, v2;
+      typedef typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType ComponentType;
+      ComponentType u1, u2, v1, v2;
       vi = vnl_math_floor(v);
       if(vi>=0 && vi<(int)pSize[1]-1)
         {
@@ -440,7 +442,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
           ui = vnl_math_floor(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
-            double u1, u2, v1, v2;
+            typedef typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType ComponentType;
+            ComponentType u1, u2, v1, v2;
             pProj = projection->GetBufferPointer() + vi * pSize[0] + ui;
             v1 = v-vi;
             v2 = 1.0-v1;

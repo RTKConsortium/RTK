@@ -344,7 +344,9 @@ JosephForwardProjectionImageFilter<TInputImage,
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx + offset_xs + offset_yi);
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx + offset_xs + offset_ys);
 
-  return (stepLengthInVoxel * result);
+  result *= stepLengthInVoxel;
+
+  return (result);
 }
 
 

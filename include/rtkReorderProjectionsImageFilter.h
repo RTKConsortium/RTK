@@ -27,11 +27,17 @@ namespace rtk
 {
 
 /** \class ReorderProjectionsImageFilter
- * \brief Sorts projections and other inputs by ascending phase
+ * \brief Sorts or shuffle projections and geometry inputs
+ *
+ * This filter permutes projections and geometry with the same permutation.
+ * The permutation is either the one that sorts projections by ascending phase,
+ * so that the ones with the same phase can be forward and back projected together
+ * (which is faster than one-by-one), or it is a random shuffle, useful for subset
+ * processings.
  *
  * \test
  *
- * \author Simon Rit
+ * \author Cyril Mory
  *
  * \ingroup ImageToImageFilter
  */
@@ -51,6 +57,7 @@ public:
   typedef TInputImage                             InputImageType;
   typedef TOutputImage                            OutputImageType;
   typedef typename OutputImageType::RegionType    OutputImageRegionType;
+  typedef enum {NONE=0, SORT=1, SHUFFLE=2}        PermutationType;
 
   typedef ThreeDCircularProjectionGeometry        GeometryType;
   typedef GeometryType::Pointer                   GeometryPointer;
@@ -65,6 +72,10 @@ public:
   itkGetObjectMacro(OutputGeometry, GeometryType);
   itkSetObjectMacro(InputGeometry, GeometryType);
 
+  /** Get / Set the kind of permutation requested */
+  itkGetMacro(Permutation, PermutationType);
+  itkSetMacro(Permutation, PermutationType);
+
   /** Set the input signal */
   void SetInputSignal(const std::vector<double> signal);
   std::vector<double> GetOutputSignal();
@@ -75,9 +86,6 @@ protected:
   virtual ~ReorderProjectionsImageFilter() ITK_OVERRIDE {}
 
   void GenerateData() ITK_OVERRIDE;
-
-  // Iterative filters do not need padding
-  bool m_PadOnTruncatedSide;
 
 private:
   ReorderProjectionsImageFilter(const Self&); //purposely not implemented
@@ -90,6 +98,9 @@ private:
   /** Input and output signal vectors */
   std::vector<double>   m_InputSignal;
   std::vector<double>   m_OutputSignal;
+
+  /** Permutation type */
+  PermutationType m_Permutation;
 
 }; // end of class
 

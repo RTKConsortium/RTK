@@ -27,6 +27,8 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
+#include <algorithm>    // std::shuffle
+#include <random>       // std::default_random_engine
 namespace rtk
 {
 
@@ -35,6 +37,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
 ::ReorderProjectionsImageFilter()
 {
   m_OutputGeometry = GeometryType::New();
+  m_Permutation = NONE;
 }
 
 template <class TInputImage, class TOutputImage>
@@ -43,6 +46,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
 ::SetInputSignal(const std::vector<double> signal)
 {
   m_InputSignal = signal;
+  m_Permutation = SORT;
 }
 
 template <class TInputImage, class TOutputImage>
@@ -58,12 +62,49 @@ void
 ReorderProjectionsImageFilter<TInputImage, TOutputImage>
 ::GenerateData()
 {
-  std::vector<unsigned int> permutation = rtk::GetSortingPermutation(m_InputSignal);
+  unsigned int NumberOfProjections = this->GetInput()->GetLargestPossibleRegion().GetSize()[TInputImage::ImageDimension -1];
+  std::vector<unsigned int> permutation;
+  switch(m_Permutation)
+    {
+    case(NONE):
+      {
+      for (unsigned int i = 0; i < NumberOfProjections; i++)
+        permutation.push_back(i);
+      break;
+      }
+    case(SORT):
+      {
+      // Define a vector of pairs (signal value, and index)
+      std::vector<std::pair<double, unsigned int> > pairsVector;
+
+      // Fill it with the signal values, and with the integers from 0 to m_InputSignal.size() - 1
+      for (unsigned int i = 0; i < NumberOfProjections; i++)
+          pairsVector.push_back(std::make_pair(m_InputSignal[i], i));
+
+      // Sort it according to values
+      std::sort(pairsVector.begin(), pairsVector.end());
+
+      // Extract the permutated indices
+      for (unsigned int i = 0; i < NumberOfProjections; i++)
+          permutation.push_back(pairsVector[i].second);
+      break;
+      }
+    case(SHUFFLE):
+      {
+      for (unsigned int i = 0; i < NumberOfProjections; i++)
+        permutation.push_back(i);
+      std::default_random_engine randomGenerator(0); // The seed is hard-coded to 0 to make the behavior reproducible
+      std::shuffle(permutation.begin(), permutation.end(), randomGenerator);
+      break;
+      }
+    default:
+      itkGenericExceptionMacro(<< "Unhandled projection reordering method");
+    }
 
   // Allocate the pixels of the output, and at first fill them with zeros
   this->GetOutput()->SetBufferedRegion(this->GetOutput()->GetRequestedRegion());
   this->GetOutput()->Allocate();
-  this->GetOutput()->FillBuffer(0);
+  this->GetOutput()->FillBuffer(itk::NumericTraits<typename TInputImage::PixelType>::Zero);
 
   // Declare regions used in the loop
   typename TInputImage::RegionType inputRegion = this->GetOutput()->GetRequestedRegion();
@@ -112,8 +153,9 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
                                                      m_InputGeometry->GetCollimationVInf()[permutation[proj]],
                                                      m_InputGeometry->GetCollimationVSup()[permutation[proj]]);
 
-    // Copy the signal
-    m_OutputSignal.push_back(m_InputSignal[permutation[proj]]);
+    // Copy the signal, if any
+    if (m_Permutation == SORT)
+      m_OutputSignal.push_back(m_InputSignal[permutation[proj]]);
     }
 
 }

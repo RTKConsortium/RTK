@@ -222,10 +222,11 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
   // The spectrum input has the size of a single projection, ie it has no third dimension
   // Compute the requested region for the spectrum
   typename TSpectrum::RegionType spectrumRegion;
-  spectrumRegion.SetIndex(outputRequested1.GetIndex());
-  spectrumRegion.SetSize(outputRequested1.GetSize());
-  spectrumRegion.SetIndex(TSpectrum::ImageDimension - 1, 0);
-  spectrumRegion.SetSize(TSpectrum::ImageDimension - 1, 1);
+  for (unsigned int d=0; d<TSpectrum::ImageDimension; d++)
+    {
+    spectrumRegion.SetIndex(d, outputRequested1.GetIndex()[d]);
+    spectrumRegion.SetSize(d, outputRequested1.GetSize()[d]);
+    }
 
   // Set the requested region for the spectrum
   input3Ptr->SetRequestedRegion(spectrumRegion);
@@ -238,10 +239,11 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
 {
   // Create the region corresponding to outputRegionForThread for the spectrum input (last dimension removed)
   typename TSpectrum::RegionType spectrumRegion;
-  spectrumRegion.SetIndex(outputRegionForThread.GetIndex());
-  spectrumRegion.SetSize(outputRegionForThread.GetSize());
-  spectrumRegion.SetIndex(TSpectrum::ImageDimension - 1, 0);
-  spectrumRegion.SetSize(TSpectrum::ImageDimension - 1, 1);
+  for (unsigned int d=0; d<TSpectrum::ImageDimension; d++)
+    {
+    spectrumRegion.SetIndex(d, outputRegionForThread.GetIndex()[d]);
+    spectrumRegion.SetSize(d, outputRegionForThread.GetSize()[d]);
+    }
 
   // Create iterators for all inputs and outputs
   itk::ImageRegionIterator<TOutputImage1> out1It(this->GetOutput1(), outputRegionForThread);

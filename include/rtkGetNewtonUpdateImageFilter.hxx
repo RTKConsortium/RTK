@@ -105,9 +105,11 @@ GetNewtonUpdateImageFilter< TGradient, THessian>
     {
     // Make a vnl matrix out of the values read in input 2 (the hessian, but stored in a vector)
     vnl_matrix<dataType> hessian = vnl_matrix<dataType>(hessIt.Get().GetDataPointer(), nChannels, nChannels);
+    vnl_matrix<dataType> regul = vnl_matrix<dataType>(nChannels, nChannels, 0);
+    regul.fill_diagonal(1e-8);
 
     // Invert the hessian, multiply by the gradient, and write it in output
-    forOutput.SetVnlVector(vnl_inverse(hessian) * gradIt.Get().GetVnlVector());
+    forOutput.SetVnlVector(vnl_inverse(hessian + regul) * gradIt.Get().GetVnlVector());
     outIt.Set(forOutput);
 
     ++outIt;

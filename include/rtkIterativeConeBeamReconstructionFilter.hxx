@@ -31,6 +31,50 @@ namespace rtk
     m_CurrentBackProjectionConfiguration = BP_UNKNOWN;
   }
 
+#ifdef RTK_USE_CUDA
+  template<> inline
+  typename IterativeConeBeamReconstructionFilter<itk::CudaImage<float, 4>, itk::CudaImage<float, 3>>::ForwardProjectionPointerType
+  IterativeConeBeamReconstructionFilter<itk::CudaImage<float, 4>, itk::CudaImage<float, 3>>
+  ::InstantiateForwardProjectionFilter (int fwtype)
+  {
+    ForwardProjectionPointerType fw;
+    switch(fwtype)
+      {
+      case(FP_JOSEPH):
+        fw = rtk::JosephForwardProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
+      break;
+      case(FP_CUDARAYCAST):
+        fw = rtk::CudaForwardProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
+      break;
+
+      default:
+        itkGenericExceptionMacro(<< "Unhandled --fp value.");
+      }
+    return fw;
+  }
+
+  template<> inline
+  typename IterativeConeBeamReconstructionFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::ForwardProjectionPointerType
+  IterativeConeBeamReconstructionFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>
+  ::InstantiateForwardProjectionFilter (int fwtype)
+  {
+    ForwardProjectionPointerType fw;
+    switch(fwtype)
+      {
+      case(FP_JOSEPH):
+        fw = rtk::JosephForwardProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
+      break;
+      case(FP_CUDARAYCAST):
+        fw = rtk::CudaForwardProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
+      break;
+
+      default:
+        itkGenericExceptionMacro(<< "Unhandled --fp value.");
+      }
+    return fw;
+  }
+#endif
+
   template<class TOutputImage, class ProjectionStackType>
   typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::ForwardProjectionPointerType
   IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
@@ -44,7 +88,7 @@ namespace rtk
       break;
       case(FP_CUDARAYCAST):
       #ifdef RTK_USE_CUDA
-        fw = rtk::CudaForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+        itkGenericExceptionMacro(<< "Cuda projectors currently accept 3D float images only");
       #else
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
@@ -55,6 +99,58 @@ namespace rtk
       }
     return fw;
   }
+
+#ifdef RTK_USE_CUDA
+  template<> inline
+  typename IterativeConeBeamReconstructionFilter<itk::CudaImage<float, 4>, itk::CudaImage<float, 3> >::BackProjectionPointerType
+  IterativeConeBeamReconstructionFilter<itk::CudaImage<float, 4>, itk::CudaImage<float, 3> >::InstantiateBackProjectionFilter(int bptype)
+  {
+    BackProjectionPointerType bp;
+    switch(bptype)
+      {
+      case(BP_VOXELBASED):
+        bp = rtk::BackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >::New();
+        break;
+      case(BP_JOSEPH):
+        bp = rtk::JosephBackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >::New();
+        break;
+      case(BP_CUDAVOXELBASED):
+        bp = rtk::CudaBackProjectionImageFilter::New();
+      break;
+      case(BP_CUDARAYCAST):
+        bp = rtk::CudaRayCastBackProjectionImageFilter::New();
+        break;
+      default:
+        itkGenericExceptionMacro(<< "Unhandled --bp value.");
+      }
+    return bp;
+  }
+
+  template<> inline
+  typename IterativeConeBeamReconstructionFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >::BackProjectionPointerType
+  IterativeConeBeamReconstructionFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >::InstantiateBackProjectionFilter(int bptype)
+  {
+    BackProjectionPointerType bp;
+    switch(bptype)
+      {
+      case(BP_VOXELBASED):
+        bp = rtk::BackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >::New();
+        break;
+      case(BP_JOSEPH):
+        bp = rtk::JosephBackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >::New();
+        break;
+      case(BP_CUDAVOXELBASED):
+        bp = rtk::CudaBackProjectionImageFilter::New();
+      break;
+      case(BP_CUDARAYCAST):
+        bp = rtk::CudaRayCastBackProjectionImageFilter::New();
+        break;
+      default:
+        itkGenericExceptionMacro(<< "Unhandled --bp value.");
+      }
+    return bp;
+  }
+#endif
 
   template<class TOutputImage, class ProjectionStackType>
   typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::BackProjectionPointerType
@@ -71,14 +167,14 @@ namespace rtk
         break;
       case(BP_CUDAVOXELBASED):
       #ifdef RTK_USE_CUDA
-        bp = rtk::CudaBackProjectionImageFilter::New();
+        itkGenericExceptionMacro(<< "Cuda projectors currently accept 3D float images only");
       #else
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
       break;
       case(BP_CUDARAYCAST):
       #ifdef RTK_USE_CUDA
-        bp = rtk::CudaRayCastBackProjectionImageFilter::New();
+        itkGenericExceptionMacro(<< "Cuda projectors currently accept 3D float images only");
       #else
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
