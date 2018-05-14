@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
   inputFilter->Update();
 
   // Read the material attenuations image as a matrix
-  typename MaterialAttenuationsType::IndexType indexMat;
+  MaterialAttenuationsType::IndexType indexMat;
   itk::Matrix<dataType, nEnergies, nMaterials> materialAttenuationsMatrix;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
@@ -119,7 +119,7 @@ int main(int argc, char * argv[])
 
   // Read the detector response image as a matrix, and bin it
   itk::Matrix<dataType, nBins, nEnergies> detectorResponseMatrix;
-  typename DetectorResponseType::IndexType indexDet;
+  DetectorResponseType::IndexType indexDet;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
     indexDet[0] = energy;

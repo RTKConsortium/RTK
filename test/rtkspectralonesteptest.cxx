@@ -154,7 +154,7 @@ int main(int, char** )
 
   // Create a vectorImage of blank photon counts
   typedef itk::VectorImage<DataType, Dimension> vPhotonCountsType;
-  typename vPhotonCountsType::Pointer vPhotonCounts = vPhotonCountsType::New();
+  vPhotonCountsType::Pointer vPhotonCounts = vPhotonCountsType::New();
   vPhotonCounts->CopyInformation(projectionsSource->GetOutput());
   vPhotonCounts->SetVectorLength(nBins);
   vPhotonCounts->SetRegions(vPhotonCounts->GetLargestPossibleRegion());
@@ -249,7 +249,7 @@ int main(int, char** )
   composePhotonCounts->Update();
 
   // Read the material attenuations image as a matrix
-  typename MaterialAttenuationsImageType::IndexType indexMat;
+  MaterialAttenuationsImageType::IndexType indexMat;
   itk::Matrix<DataType, nEnergies, nMaterials> materialAttenuationsMatrix;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
@@ -263,7 +263,7 @@ int main(int, char** )
 
   // Read the detector response image as a matrix, and bin it
   itk::Matrix<DataType, nBins, nEnergies> detectorResponseMatrix;
-  typename DetectorResponseImageType::IndexType indexDet;
+  DetectorResponseImageType::IndexType indexDet;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
     indexDet[0] = energy;
