@@ -120,27 +120,6 @@ if(NOT ITK_SOURCE_DIR)
 endif()
 
 # --------------------------------------------------------
-# Check Image Dims required for Python wrapping
-set(WRAPPING_CONFIG_ERROR_LOG "
-  Python wrapping configuration is incorrect.
-
-  Please rebuild both ITK and RTK with the following options:
-    -ITK_WRAP_IMAGE_DIMS=\"2;3;4\"
-    -ITK_WRAP_unsigned_short:BOOL=ON
-
-  Or turn off python wrapping by setting RTK_WRAP_PYTHON:BOOL=OFF.
-  ")
-
-list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
-if ((${_index} EQUAL -1) AND RTK_WRAP_PYTHON)
-  message(FATAL_ERROR ${WRAPPING_CONFIG_ERROR_LOG})
-endif()
-
-if (NOT ITK_WRAP_unsigned_short AND RTK_WRAP_PYTHON)
-  message(FATAL_ERROR ${WRAPPING_CONFIG_ERROR_LOG})
-endif()
-
-# --------------------------------------------------------
 # Setup KWStyle from ITK
 if(ITK_USE_KWSTYLE)
   set( KWStyle_DIR ${CMAKE_BINARY_DIR}/KWStyle-build )

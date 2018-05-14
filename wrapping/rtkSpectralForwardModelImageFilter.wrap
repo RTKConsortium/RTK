@@ -6,9 +6,9 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
   endforeach()
 itk_end_wrap_class()
 
-#itk::VariableLengthVector<unsigned int>
+#itk::VariableLengthVector<int>
 itk_wrap_class("itk::VariableLengthVector")
-  itk_wrap_template("UI" "unsigned int")
+  itk_wrap_template("I" "int")
 itk_end_wrap_class()
 
 itk_wrap_class("rtk::SpectralForwardModelImageFilter" POINTER)

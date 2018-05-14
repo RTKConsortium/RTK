@@ -77,6 +77,8 @@ macro (WRAP_GGO GGO_SRCS)
     endif()
   endif()
   if(MSVC)
-    set_source_files_properties(${${GGO_SRCS}} PROPERTIES COMPILE_FLAGS "/W0")
+    # Disable double to float truncation warning as gengetopt cannot append "f"
+    # to force default numeric float values in the .ggo config file
+    set_source_files_properties(${${GGO_SRCS}} PROPERTIES COMPILE_FLAGS "/wd4305")
   endif()
 endmacro ()
