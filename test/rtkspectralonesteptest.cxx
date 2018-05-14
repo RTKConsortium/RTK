@@ -310,7 +310,7 @@ int main(int, char** )
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Voxel-based Backprojector, 4 subsets ******" << std::endl;
+  std::cout << "\n\n****** Case 3: Voxel-based Backprojector, 4 subsets ******" << std::endl;
 
   typedef rtk::ReorderProjectionsImageFilter<PhotonCountsType> ReorderProjectionsFilterType;
   ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
@@ -324,6 +324,19 @@ int main(int, char** )
   mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_VOXELBASED );
   mechlemOneStep->SetNumberOfProjectionsPerSubset(NumberOfProjectionImages / 4);
   mechlemOneStep->SetNumberOfIterations( 5 );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
+
+  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 4: Voxel-based Backprojector, 4 subsets, with regularization ******" << std::endl;
+
+  typename MaterialVolumeType::RegionType::SizeType radius;
+  radius.Fill(1);
+  typename MaterialVolumeType::PixelType weights;
+  weights.Fill(1);
+  mechlemOneStep->SetRegularizationRadius(radius);
+  mechlemOneStep->SetRegularizationWeights(weights);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
 
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);

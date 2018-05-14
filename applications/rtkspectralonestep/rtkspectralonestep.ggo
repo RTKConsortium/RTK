@@ -7,9 +7,11 @@ option "geometry"       g "XML geometry file name"                              
 option "output"         o "Output file name"                                                  string yes
 option "niterations"    n "Number of iterations"                                              int    no   default="5"
 option "input"          i "Material volumes initial guess"                                    string no
-option "spectral"       s "Spectral projections to be decomposed"                             string yes
+option "spectral"       s "Spectral projections, i.e. photon counts"                          string yes
 option "detector"       d "Detector response file"                                            string yes
 option "incident"       - "Incident spectrum file (mhd image)"                                string yes
 option "attenuations"   a "Material attenuations file"                                        string yes
 option "thresholds"     t "Lower threshold of bins, expressed in pulse height"                int    yes  multiple
 option "nprojpersubset" - "Number of projections processed at each update (0 means all)"      int    no   default="0"
+option "regul_weights"  - "Regularization parameters for each material"                       double multiple no
+option "regul_radius"   - "Radius of the neighborhood for regularization"                     int    multiple no
