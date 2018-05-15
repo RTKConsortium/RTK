@@ -331,9 +331,9 @@ int main(int, char** )
 
   std::cout << "\n\n****** Case 4: Voxel-based Backprojector, 4 subsets, with regularization ******" << std::endl;
 
-  typename MaterialVolumeType::RegionType::SizeType radius;
+  MaterialVolumeType::RegionType::SizeType radius;
   radius.Fill(1);
-  typename MaterialVolumeType::PixelType weights;
+  MaterialVolumeType::PixelType weights;
   weights.Fill(1);
   mechlemOneStep->SetRegularizationRadius(radius);
   mechlemOneStep->SetRegularizationWeights(weights);
