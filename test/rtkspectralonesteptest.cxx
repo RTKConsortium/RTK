@@ -322,7 +322,7 @@ int main(int, char** )
   mechlemOneStep->SetGeometry(reorder->GetOutputGeometry());
 
   mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_VOXELBASED );
-  mechlemOneStep->SetNumberOfProjectionsPerSubset(NumberOfProjectionImages / 4);
+  mechlemOneStep->SetNumberOfSubsets(4);
   mechlemOneStep->SetNumberOfIterations( 5 );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
 

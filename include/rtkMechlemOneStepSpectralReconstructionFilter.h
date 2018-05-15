@@ -168,8 +168,8 @@ public:
 
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)
-    itkSetMacro(NumberOfProjectionsPerSubset, int)
-    itkGetMacro(NumberOfProjectionsPerSubset, int)
+    itkSetMacro(NumberOfSubsets, int)
+    itkGetMacro(NumberOfSubsets, int)
 
     /** Set methods for all inputs, since they have different types */
     void SetInputMaterialVolumes(const TOutputImage* materialVolumes);

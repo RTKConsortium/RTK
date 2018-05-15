@@ -32,7 +32,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_NumberOfProjectionsPerSubset=0;
-  m_NumberOfSubsets=0;
+  m_NumberOfSubsets=1;
   m_NumberOfProjections=0;
   m_RegularizationWeights.Fill(0);
   m_RegularizationRadius.Fill(0);
@@ -249,14 +249,9 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   typename TPhotonCounts::RegionType largest = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
   m_NumberOfProjections = largest.GetSize()[TPhotonCounts::ImageDimension - 1];
 
-  // Check the number of projections per subset. If it is 0, set it to the number of projections
-  // i.e. form only one subset
-  if (m_NumberOfProjectionsPerSubset == 0)
-      m_NumberOfProjectionsPerSubset = m_NumberOfProjections;
-
-  // Pre-compute the number of subsets, and their size
+  // Pre-compute the number of projections in each subset
   m_NumberOfProjectionsInSubset.clear();
-  m_NumberOfSubsets = std::ceil( (float) m_NumberOfProjections / (float) m_NumberOfProjectionsPerSubset);
+  m_NumberOfProjectionsPerSubset = std::ceil( (float) m_NumberOfProjections / (float) m_NumberOfSubsets);
   for (unsigned int s=0; s<m_NumberOfSubsets; s++)
     m_NumberOfProjectionsInSubset.push_back(std::min(m_NumberOfProjectionsPerSubset, m_NumberOfProjections - s * m_NumberOfProjectionsPerSubset));
 
@@ -321,7 +316,6 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   // Set regularization parameters
   m_SQSRegul->SetRegularizationWeights(m_RegularizationWeights);
   m_SQSRegul->SetRadius(m_RegularizationRadius);
-
 
   // Have the last filter calculate its output information
   m_NesterovFilter->UpdateOutputInformation();

@@ -176,13 +176,13 @@ int main(int argc, char * argv[])
   mechlemOneStep->SetBinnedDetectorResponse(detectorResponseMatrix);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetNumberOfIterations( args_info.niterations_arg );
-  mechlemOneStep->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
+  mechlemOneStep->SetNumberOfSubsets( args_info.subsets_arg );
   mechlemOneStep->SetRegularizationRadius( regulRadius );
   mechlemOneStep->SetRegularizationWeights( regulWeights );
 
   // If subsets are used, reorder projections and geometry according to
   // a random permutation
-  if (args_info.nprojpersubset_arg != 0)
+  if (args_info.subsets_arg != 1)
     {
     typedef rtk::ReorderProjectionsImageFilter<PhotonCountsType> ReorderProjectionsFilterType;
     ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
