@@ -77,7 +77,7 @@ int main(int, char** )
   materialAttenuationsReader->Update();
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 1;
+  const unsigned int NumberOfProjectionImages = 4;
 #else
   const unsigned int NumberOfProjectionImages = 64;
 #endif
