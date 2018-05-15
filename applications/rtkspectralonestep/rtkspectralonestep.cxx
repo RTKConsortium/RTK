@@ -149,6 +149,20 @@ int main(int argc, char * argv[])
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
+  // Read the regularization parameters
+  typename MaterialVolumesType::RegionType::SizeType regulRadius;
+  if(args_info.regul_radius_given)
+    for(unsigned int i=0; i<Dimension; i++)
+      regulRadius[i] = args_info.regul_radius_arg[i];
+  else
+    regulRadius.Fill(0);
+
+  typename MaterialVolumesType::PixelType regulWeights;
+  if(args_info.regul_weights_given)
+    for(unsigned int i=0; i<Dimension; i++)
+      regulWeights[i] = args_info.regul_weights_arg[i];
+  else
+    regulWeights.Fill(0);
 
   // Set the forward and back projection filters to be used
   typedef rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType,
@@ -162,11 +176,13 @@ int main(int argc, char * argv[])
   mechlemOneStep->SetBinnedDetectorResponse(detectorResponseMatrix);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetNumberOfIterations( args_info.niterations_arg );
-  mechlemOneStep->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
+  mechlemOneStep->SetNumberOfSubsets( args_info.subsets_arg );
+  mechlemOneStep->SetRegularizationRadius( regulRadius );
+  mechlemOneStep->SetRegularizationWeights( regulWeights );
 
   // If subsets are used, reorder projections and geometry according to
   // a random permutation
-  if (args_info.nprojpersubset_arg != 0)
+  if (args_info.subsets_arg != 1)
     {
     typedef rtk::ReorderProjectionsImageFilter<PhotonCountsType> ReorderProjectionsFilterType;
     ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
