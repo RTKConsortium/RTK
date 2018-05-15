@@ -324,7 +324,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     // Interpolate if in projection
     if( interpolator->IsInsideBuffer(pointProjIdx) )
       {
-      typename TOutputImage::PixelType v = interpolator->EvaluateAtContinuousIndex(pointProj);
+      typename TOutputImage::PixelType v = interpolator->EvaluateAtContinuousIndex(pointProjIdx);
       itOut.Set(itOut.Get() + v);
       }
 
