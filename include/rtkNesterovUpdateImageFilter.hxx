@@ -51,7 +51,7 @@ NesterovUpdateImageFilter<TImage>::ResetIterations()
   m_tCoeffs.push_back(1.0);
   m_Sums.push_back(0.0);
   m_Ratios.push_back(0.0);
-  for (unsigned int k=1; k<m_NumberOfIterations; k++)
+  for (int k=1; k<m_NumberOfIterations; k++)
     {
     m_tCoeffs.push_back(0.5 * (1 + sqrt(1+ 4 * m_tCoeffs[k-1] * m_tCoeffs[k-1])));
     m_Sums.push_back(m_Sums[k-1] + m_tCoeffs[k]);

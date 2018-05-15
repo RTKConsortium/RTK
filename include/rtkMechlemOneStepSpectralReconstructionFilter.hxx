@@ -330,7 +330,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   typename TOutputImage::Pointer NextAlpha_k;
 
   // Run the iteration loop
-  for(unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
+  for(int iter = 0; iter < m_NumberOfIterations; iter++)
     {
     for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset++)
       {

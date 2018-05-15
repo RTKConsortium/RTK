@@ -72,7 +72,7 @@ int main(int , char** )
   std::cout << "\n\n****** Case 1: median 3x3 ******" << std::endl;
 
   // Update median filter
-  itk::Vector<unsigned int,2> median_window;
+  itk::Vector<int,2> median_window;
   median_window[0]=3;
   median_window[1]=3;
   median->SetInput(output);
