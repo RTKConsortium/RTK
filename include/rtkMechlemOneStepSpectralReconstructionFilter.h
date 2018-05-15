@@ -25,7 +25,11 @@
 #include "rtkGetNewtonUpdateImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkNesterovUpdateImageFilter.h"
+#include "rtkSeparableQuadraticSurrogateRegularizationImageFilter.h"
+#include "rtkAddMatrixAndDiagonalImageFilter.h"
+
 #include <itkExtractImageFilter.h>
+#include <itkAddImageFilter.h>
 
 namespace rtk
 {
@@ -64,13 +68,17 @@ namespace rtk
    * BackProjectionGradients [ label="rtk::BackProjectionImageFilter (gradients)" URL="\ref rtk::BackProjectionImageFilter"];
    * BackProjectionHessians [ label="rtk::BackProjectionImageFilter (hessians)" URL="\ref rtk::BackProjectionImageFilter"];
    * Weidinger [ label="rtk::WeidingerForwardModelImageFilter" URL="\ref rtk::WeidingerForwardModelImageFilter"];
+   * SQSRegul [ label="rtk::SeparableQuadraticSurrogateRegularizationImageFilter" URL="\ref rtk::SeparableQuadraticSurrogateRegularizationImageFilter"];
+   * AddGradients [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+   * AddHessians [ label="rtk::AddMatrixAndDiagonalImageFilter" URL="\ref rtk::AddMatrixAndDiagonalImageFilter"];
    * Newton [ label="rtk::GetNewtonUpdateImageFilter" URL="\ref rtk::GetNewtonUpdateImageFilter"];
    * Nesterov [ label="rtk::NesterovUpdateImageFilter" URL="\ref rtk::NesterovUpdateImageFilter"];
    * Alphak [ label="", fixedsize="false", width=0, height=0, shape=none];
    * NextAlphak [ label="", fixedsize="false", width=0, height=0, shape=none];
-   *
+   * 
    * Input0 -> Alphak [arrowhead=none];
    * Alphak -> ForwardProjection;
+   * Alphak -> SQSRegul;
    * ProjectionsSource -> ForwardProjection;
    * Input1 -> Extract;
    * Extract -> Weidinger;
@@ -83,8 +91,12 @@ namespace rtk
    * SingleComponentForwardProjection -> Weidinger;
    * Weidinger -> BackProjectionGradients;
    * Weidinger -> BackProjectionHessians;
-   * BackProjectionGradients -> Newton;
-   * BackProjectionHessians -> Newton;
+   * SQSRegul -> AddGradients;
+   * BackProjectionGradients -> AddGradients;
+   * AddGradients -> Newton;
+   * SQSRegul -> AddHessians;
+   * BackProjectionHessians -> AddHessians;
+   * AddHessians -> Newton;
    * Newton -> Nesterov;
    * Input0 -> Nesterov;
    * Nesterov -> NextAlphak [arrowhead=none];
@@ -130,6 +142,7 @@ public:
 
     /** Filter typedefs */
     typedef itk::ExtractImageFilter<TPhotonCounts, TPhotonCounts>                         ExtractPhotonCountsFilterType;
+    typedef itk::AddImageFilter<TGradientsImage>                                          AddFilterType;
     typedef rtk::ForwardProjectionImageFilter< TSingleComponentImage, TSingleComponentImage > SingleComponentForwardProjectionFilterType;
     typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
     typedef rtk::BackProjectionImageFilter< TGradientsImage, TGradientsImage >            GradientsBackProjectionFilterType;
@@ -139,7 +152,9 @@ public:
     typedef rtk::ConstantImageSource<TOutputImage>                                        MaterialProjectionsSourceType;
     typedef rtk::ConstantImageSource<TGradientsImage>                                     GradientsSourceType;
     typedef rtk::ConstantImageSource<THessiansImage>                                      HessiansSourceType;
+    typedef rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage>    SQSRegularizationType;
     typedef rtk::WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
+    typedef rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>         AddMatrixAndDiagonalFilterType;
     typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>              NewtonFilterType;
 
     /** Instantiate the forward projection filters */
@@ -153,23 +168,24 @@ public:
 
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)
-    itkSetMacro(NumberOfProjectionsPerSubset, int)
-    itkGetMacro(NumberOfProjectionsPerSubset, int)
+    itkSetMacro(NumberOfSubsets, int)
+    itkGetMacro(NumberOfSubsets, int)
 
     /** Set methods for all inputs, since they have different types */
     void SetInputMaterialVolumes(const TOutputImage* materialVolumes);
     void SetInputPhotonCounts(const TPhotonCounts* photonCounts);
     void SetInputSpectrum(const TSpectrum* spectrum);
 
+    /** Set/Get for the regularization weights */
+    itkSetMacro(RegularizationWeights, typename TOutputImage::PixelType)
+    itkGetMacro(RegularizationWeights, typename TOutputImage::PixelType)
+
+    /** Set/Get for the radius */
+    itkSetMacro(RegularizationRadius, typename TOutputImage::RegionType::SizeType)
+    itkGetMacro(RegularizationRadius, typename TOutputImage::RegionType::SizeType)
+
 //    itkSetMacro(IterationCosts, bool)
 //    itkGetMacro(IterationCosts, bool)
-
-//    /** If Regularized, perform laplacian-based regularization during
-//     *  reconstruction (gamma is the strength of the regularization) */
-//    itkSetMacro(Regularized, bool)
-//    itkGetMacro(Regularized, bool)
-//    itkSetMacro(Gamma, float)
-//    itkGetMacro(Gamma, float)
 
     /** Set methods forwarding the detector response and material attenuation
      * matrices to the internal WeidingerForwardModel filter */
@@ -187,6 +203,7 @@ protected:
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename ExtractPhotonCountsFilterType::Pointer                          m_ExtractPhotonCountsFilter;
+    typename AddFilterType::Pointer                                          m_AddGradients;
     typename SingleComponentForwardProjectionFilterType::Pointer             m_SingleComponentForwardProjectionFilter;
     typename MaterialProjectionsSourceType::Pointer                          m_ProjectionsSource;
     typename SingleComponentImageSourceType::Pointer                         m_SingleComponentProjectionsSource;
@@ -194,6 +211,8 @@ protected:
     typename GradientsSourceType::Pointer                                    m_GradientsSource;
     typename HessiansSourceType::Pointer                                     m_HessiansSource;
     typename WeidingerForwardModelType::Pointer                              m_WeidingerForward;
+    typename SQSRegularizationType::Pointer                                  m_SQSRegul;
+    typename AddMatrixAndDiagonalFilterType::Pointer                         m_AddHessians;
     typename NewtonFilterType::Pointer                                       m_NewtonFilter;
     typename NesterovFilterType::Pointer                                     m_NesterovFilter;
     typename ForwardProjectionFilterType::Pointer                            m_ForwardProjectionFilter;
@@ -220,20 +239,22 @@ protected:
     typename SingleComponentForwardProjectionFilterType::Pointer InstantiateSingleComponentForwardProjectionFilter(int fwtype);
     typename HessiansBackProjectionFilterType::Pointer InstantiateHessiansBackProjectionFilter (int bptype);
 
+    ThreeDCircularProjectionGeometry::Pointer   m_Geometry;
+
+    int                                         m_NumberOfIterations;
+    unsigned int                                m_NumberOfProjectionsPerSubset;
+    unsigned int                                m_NumberOfSubsets;
+    std::vector<unsigned int>                   m_NumberOfProjectionsInSubset;
+    unsigned int                                m_NumberOfProjections;
+
+    typename TOutputImage::PixelType            m_RegularizationWeights;
+    typename TOutputImage::RegionType::SizeType m_RegularizationRadius;
+
 private:
     MechlemOneStepSpectralReconstructionFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
-    ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-
-    int                          m_NumberOfIterations;
-    unsigned int                 m_NumberOfProjectionsPerSubset;
-    unsigned int                 m_NumberOfSubsets;
-    std::vector<unsigned int>    m_NumberOfProjectionsInSubset;
-    unsigned int                 m_NumberOfProjections;
-//    float                        m_Gamma;
 //    bool                         m_IterationCosts;
-//    bool                         m_Regularized;
 };
 } //namespace ITK
 

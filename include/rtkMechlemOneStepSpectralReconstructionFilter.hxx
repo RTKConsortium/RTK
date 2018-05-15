@@ -32,19 +32,24 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   // Set the default values of member parameters
   m_NumberOfIterations=3;
   m_NumberOfProjectionsPerSubset=0;
-  m_NumberOfSubsets=0;
+  m_NumberOfSubsets=1;
   m_NumberOfProjections=0;
+  m_RegularizationWeights.Fill(0);
+  m_RegularizationRadius.Fill(0);
 //  m_IterationCosts=false;
 //  m_Gamma = 0;
 //  m_Regularized = false;
 
   // Create the filters
   m_ExtractPhotonCountsFilter = ExtractPhotonCountsFilterType::New();
+  m_AddGradients = AddFilterType::New();
+  m_AddHessians = AddMatrixAndDiagonalFilterType::New();
   m_ProjectionsSource = MaterialProjectionsSourceType::New();
   m_SingleComponentProjectionsSource = SingleComponentImageSourceType::New();
   m_SingleComponentVolumeSource = SingleComponentImageSourceType::New();
   m_GradientsSource = GradientsSourceType::New();
   m_HessiansSource = HessiansSourceType::New();
+  m_SQSRegul = SQSRegularizationType::New();
   m_WeidingerForward = WeidingerForwardModelType::New();
   m_NewtonFilter = NewtonFilterType::New();
   m_NesterovFilter = NesterovFilterType::New();
@@ -244,14 +249,9 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   typename TPhotonCounts::RegionType largest = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
   m_NumberOfProjections = largest.GetSize()[TPhotonCounts::ImageDimension - 1];
 
-  // Check the number of projections per subset. If it is 0, set it to the number of projections
-  // i.e. form only one subset
-  if (m_NumberOfProjectionsPerSubset == 0)
-      m_NumberOfProjectionsPerSubset = m_NumberOfProjections;
-
-  // Pre-compute the number of subsets, and their size
+  // Pre-compute the number of projections in each subset
   m_NumberOfProjectionsInSubset.clear();
-  m_NumberOfSubsets = std::ceil( (float) m_NumberOfProjections / (float) m_NumberOfProjectionsPerSubset);
+  m_NumberOfProjectionsPerSubset = std::ceil( (float) m_NumberOfProjections / (float) m_NumberOfSubsets);
   for (unsigned int s=0; s<m_NumberOfSubsets; s++)
     m_NumberOfProjectionsInSubset.push_back(std::min(m_NumberOfProjectionsPerSubset, m_NumberOfProjections - s * m_NumberOfProjectionsPerSubset));
 
@@ -282,8 +282,16 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_HessiansBackProjectionFilter->SetInput(0, m_HessiansSource->GetOutput());
   m_HessiansBackProjectionFilter->SetInput(1, m_WeidingerForward->GetOutput2());
 
-  m_NewtonFilter->SetInputGradient(m_GradientsBackProjectionFilter->GetOutput());
-  m_NewtonFilter->SetInputHessian(m_HessiansBackProjectionFilter->GetOutput());
+  m_SQSRegul->SetInput(this->GetInputMaterialVolumes());
+
+  m_AddGradients->SetInput1(m_SQSRegul->GetOutput(0));
+  m_AddGradients->SetInput2(m_GradientsBackProjectionFilter->GetOutput());
+
+  m_AddHessians->SetInputDiagonal(m_SQSRegul->GetOutput(1));
+  m_AddHessians->SetInputMatrix(m_HessiansBackProjectionFilter->GetOutput());
+
+  m_NewtonFilter->SetInputGradient(m_AddGradients->GetOutput());
+  m_NewtonFilter->SetInputHessian(m_AddHessians->GetOutput());
 
   m_NesterovFilter->SetInput(0, this->GetInputMaterialVolumes());
   m_NesterovFilter->SetInput(1, m_NewtonFilter->GetOutput());
@@ -305,6 +313,9 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 
   // Set memory management parameters
 
+  // Set regularization parameters
+  m_SQSRegul->SetRegularizationWeights(m_RegularizationWeights);
+  m_SQSRegul->SetRadius(m_RegularizationRadius);
 
   // Have the last filter calculate its output information
   m_NesterovFilter->UpdateOutputInformation();
@@ -346,6 +357,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
         NextAlpha_k = m_NesterovFilter->GetOutput();
         NextAlpha_k->DisconnectPipeline();
         m_ForwardProjectionFilter->SetInput(1, NextAlpha_k);
+        m_SQSRegul->SetInput(NextAlpha_k);
         }
 
       // Set the extract filter's region
