@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 # rtk::IterativeConeBeamReconstructionFilter
 #-----------------------------------------------------------------------------
-itk_wrap_class("rtk::IterativeConeBeamReconstructionFilter" POINTER_WITH_SUPERCLASS)
+itk_wrap_class("rtk::IterativeConeBeamReconstructionFilter" POINTER)
 
   #WARNING: Templates can not be defined for both itk::Image and itk::CudaImage.
   # The "=" operator for one subclass (rtk::FourDConjugateGradientConeBeamReconstructionFilter) 

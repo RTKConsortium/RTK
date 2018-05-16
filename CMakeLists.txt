@@ -79,6 +79,14 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   endif()
 endif()
 
+#=========================================================
+# Allow for multiple CL.EXE to write to the same .PDB file
+if(RTK_USE_CUDA)
+  if(WIN32)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FS")
+  endif()
+endif()
+
 # --------------------------------------------------------
 # Shared libraries option
 set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
