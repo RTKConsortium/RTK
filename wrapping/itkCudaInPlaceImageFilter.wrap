@@ -1,12 +1,14 @@
 if(RTK_USE_CUDA)
 
   #-- itk::InPlaceImageFilter templates --
-  itk_wrap_class("itk::InPlaceImageFilter" POINTER)  
+  itk_wrap_class("itk::InPlaceImageFilter" POINTER)
+
     foreach(d ${ITK_WRAP_IMAGE_DIMS})
       foreach(t ${WRAP_ITK_REAL})
         itk_wrap_template("CI${ITKM_${t}}${d}" "itk::CudaImage<${ITKT_${t}}, ${d}>")
       endforeach()
     endforeach()
+
   itk_end_wrap_class()
 
   #-- itk::CudaImageToImageFilter templates --

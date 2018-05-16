@@ -123,6 +123,37 @@ itk_wrap_class("itk::Image" POINTER)
 
 itk_end_wrap_class()
 
+# ----------------------------------------------------------------------------
+# Wrap CUDA base classes. Required by the wrapped class following this block
+# ----------------------------------------------------------------------------
+if(RTK_USE_CUDA)
+
+  #----------------------------------------------------------
+  itk_wrap_class("itk::CudaImage" POINTER_WITH_CONST_POINTER)
+
+    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+    if (${_index} EQUAL -1)
+      itk_wrap_template("F4" "${ITKT_F}, 4")
+    endif()
+
+    itk_wrap_template("${ITKM_CVF3}4" "${ITKT_CVF3}, 4")
+
+  itk_end_wrap_class()
+
+  #----------------------------------------------------------
+  itk_wrap_class("itk::CudaImageDataManager" POINTER)
+
+    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+    if(${_index} EQUAL -1)
+        itk_wrap_template("CIF4" "itk::CudaImage<${ITKT_F}, 4>")
+    endif()
+
+    itk_wrap_template("CICVF34" "itk::CudaImage<itk::CovariantVector<${ITKT_F}, 3>, 4>")
+
+  itk_end_wrap_class()
+ 
+endif()
+
 # ---------------------------------------------------------------------------
 # Wrap itk::ImageSource missing types
 # ---------------------------------------------------------------------------
@@ -162,6 +193,18 @@ itk_wrap_class("itk::ImageSource" POINTER)
   list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
   if (${_index} EQUAL -1)
     itk_wrap_template("IF4" "itk::Image<${ITKT_F}, 4>")
+    if(RTK_USE_CUDA)
+      itk_wrap_template("CIF4" "itk::CudaImage<${ITKT_F}, 4>")
+    endif()
+  endif()
+
+  # Wrap CUDA types
+  if(RTK_USE_CUDA)
+    foreach(d ${ITK_WRAP_IMAGE_DIMS})
+      foreach(t ${WRAP_ITK_REAL})
+        itk_wrap_template("CI${ITKM_${t}}${d}" "itk::CudaImage<${ITKT_${t}}, ${d}>")
+      endforeach()
+    endforeach()
   endif()
 
 itk_end_wrap_class()
@@ -213,6 +256,20 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
     itk_wrap_template("IF4IF3" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 3>")
   endif()
 
+  if(RTK_USE_CUDA)
+    foreach(d ${ITK_WRAP_IMAGE_DIMS})
+      foreach(t ${WRAP_ITK_REAL})
+        itk_wrap_template("CI${ITKM_${t}}${d}CI${ITKM_${t}}${d}"
+          "itk::CudaImage<${ITKT_${t}}, ${d}>, itk::CudaImage<${ITKT_${t}}, ${d}>")
+      endforeach()
+    endforeach()
+
+    # Wrap ITK dimension 4 missing types
+    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+    if (${_index} EQUAL -1)
+      itk_wrap_template("CIF4CIF4" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>")
+    endif()
+  endif()
 itk_end_wrap_class()
 
 # ---------------------------------------------------------------------------
@@ -249,6 +306,14 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
 
   # Wrap ITK real type combination
   itk_wrap_template("IF3ID2" "itk::Image<${ITKT_F}, 3>, itk::Image<${ITKT_D}, 2>")
+
+  if(RTK_USE_CUDA)
+    # Wrap ITK dimension 4 CUDA missing types
+    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+    if (${_index} EQUAL -1)
+      itk_wrap_template("CIF4CIF4" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>")
+    endif()
+  endif()
 
 itk_end_wrap_class()
 

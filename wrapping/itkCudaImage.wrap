@@ -8,7 +8,6 @@ if(RTK_USE_CUDA)
       foreach(d ${ITK_WRAP_IMAGE_DIMS})
         itk_wrap_template("${ITKM_${t}}${d}" "${ITKT_${t}}, ${d}")
       endforeach()
-      itk_wrap_template("CV${ITKM_${t}}34" "itk::CovariantVector< ${ITKT_${t}}, 3 >, 4")
     endforeach()
   itk_end_wrap_class()
 
