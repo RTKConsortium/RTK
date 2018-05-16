@@ -150,14 +150,14 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Read the regularization parameters
-  typename MaterialVolumesType::RegionType::SizeType regulRadius;
+  MaterialVolumesType::RegionType::SizeType regulRadius;
   if(args_info.regul_radius_given)
     for(unsigned int i=0; i<Dimension; i++)
       regulRadius[i] = args_info.regul_radius_arg[i];
   else
     regulRadius.Fill(0);
 
-  typename MaterialVolumesType::PixelType regulWeights;
+  MaterialVolumesType::PixelType regulWeights;
   if(args_info.regul_weights_given)
     for(unsigned int i=0; i<Dimension; i++)
       regulWeights[i] = args_info.regul_weights_arg[i];
