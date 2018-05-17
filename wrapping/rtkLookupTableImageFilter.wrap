@@ -28,6 +28,8 @@ itk_wrap_class("itk::UnaryFunctorImageFilter" POINTER)
     foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("I${ITKM_${i}}3I${ITKM_${t}}3LUT${ITKM_${i}}${ITKM_${t}}"
       "itk::Image<${ITKT_${i}}, 3>, itk::Image<${ITKT_${t}}, 3>, rtk::Functor::LUT< ${ITKT_${i}}, ${ITKT_${t}} >")
+    itk_wrap_template("I${ITKM_${i}}2I${ITKM_${t}}2LUT${ITKM_${i}}${ITKM_${t}}"
+      "itk::Image<${ITKT_${i}}, 2>, itk::Image<${ITKT_${t}}, 2>, rtk::Functor::LUT< ${ITKT_${i}}, ${ITKT_${t}} >")
     endforeach()
   endforeach()
 
@@ -46,7 +48,7 @@ itk_end_wrap_class()
 #-----------------------------------------------------------------------------
 itk_wrap_class("rtk::LookupTableImageFilter" POINTER)
 
-  itk_wrap_image_filter_combinations("${WRAP_ITK_INT}" "${WRAP_ITK_REAL}" 3)
+  itk_wrap_image_filter_combinations("${WRAP_ITK_INT}" "${WRAP_ITK_REAL}" 2+)
   
   # Wrap ITK unsigned short missing types -- required by LUTbasedVariableI0RawToAttenuationImageFilter
   if (NOT ITK_WRAP_unsigned_short)
