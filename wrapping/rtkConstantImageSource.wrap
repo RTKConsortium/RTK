@@ -101,6 +101,11 @@ itk_wrap_class("itk::Image" POINTER)
     itk_wrap_template("US3" "${ITKT_US}, 3")
   endif()
 
+  # Wrap ITK short combination (required by : rtkLookupTableImageFilter)
+  if (NOT ITK_WRAP_signed_short)
+    itk_wrap_template("SS3" "${ITKT_SS}, 3")
+  endif()
+
   # Wrap ITK dimension 1 missing types
   list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
   if (${_index} EQUAL -1)
@@ -184,10 +189,17 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
   endif()
 
   # Wrap ITK unsigned short combination (required by : rtkLookupTableImageFilter)
-  if (NOT ITK_WRAP_unsigned_short OR NOT ITK_WRAP_double)
-    itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+  if (NOT ITK_WRAP_unsigned_short)
+    if (NOT ITK_WRAP_double)
+      itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+    endif()
     itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
     itk_wrap_template("IUS2IF2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_F}, 2>")
+  endif()
+
+  # Wrap ITK short combination (required by : rtkLookupTableImageFilter)
+  if (NOT ITK_WRAP_signed_short)
+    itk_wrap_template("ISS3IF3" "itk::Image<${ITKT_SS}, 3>, itk::Image<${ITKT_F}, 3>")
   endif()
 
   # Wrap ITK CovariantVector missing types
@@ -211,6 +223,7 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
   list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
   if (${_index} EQUAL -1)
     itk_wrap_template("IF4IF3" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 3>")
+    itk_wrap_template("IF4IF4" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 4>")
   endif()
 
 itk_end_wrap_class()
@@ -241,10 +254,17 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
   endif()
 
   # Wrap ITK unsigned short combination (required by : rtkLookupTableImageFilter)
-  if (NOT ITK_WRAP_unsigned_short OR NOT ITK_WRAP_double)
-    itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+  if (NOT ITK_WRAP_unsigned_short)
+    if (NOT ITK_WRAP_double)
+      itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+    endif()
     itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
     itk_wrap_template("IUS2IF2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_F}, 2>")
+  endif()
+
+  # Wrap ITK short combination (required by : rtkLookupTableImageFilter)
+  if (NOT ITK_WRAP_signed_short)
+    itk_wrap_template("ISS3IF3" "itk::Image<${ITKT_SS}, 3>, itk::Image<${ITKT_F}, 3>")
   endif()
 
   # Wrap ITK real type combination
@@ -312,3 +332,17 @@ itk_wrap_simple_type("itk::VectorImage< float, 3 >::ConstPointer" "itkVectorImag
 
 itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
 itk_wrap_simple_type("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
+
+if (ITK_WRAP_double)
+  itk_wrap_simple_type_swig_interface("itk::Image< double, 3 >::ConstPointer" "itkImageD3_ConstPointer")
+  itk_wrap_simple_type("itk::Image< double, 3 >::ConstPointer" "itkImageD3_ConstPointer")
+
+  itk_wrap_simple_type_swig_interface("itk::Image< double, 4 >::ConstPointer" "itkImageD4_ConstPointer")
+  itk_wrap_simple_type("itk::Image< double, 4 >::ConstPointer" "itkImageD4_ConstPointer")
+
+  itk_wrap_simple_type_swig_interface("itk::VectorImage< double, 3 >::ConstPointer" "itkVectorImageD3_ConstPointer")
+  itk_wrap_simple_type("itk::VectorImage< double, 3 >::ConstPointer" "itkVectorImageD3_ConstPointer")
+
+  itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
+  itk_wrap_simple_type("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
+endif()
