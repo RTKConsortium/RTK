@@ -32,7 +32,7 @@ namespace rtk
 
 std::vector<float>
 BioscanGeometryReader::
-GetVectorTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) const
+GetVectorTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
 {
   const gdcm::Tag tag(group, element);
   if( !ds.FindDataElement( tag ) )
@@ -52,7 +52,7 @@ GetVectorTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) co
 
 std::string
 BioscanGeometryReader::
-GetStringTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) const
+GetStringTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
 {
   const gdcm::Tag tag(group, element);
   if( !ds.FindDataElement( tag ) )
@@ -66,7 +66,7 @@ GetStringTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) co
 
 double
 BioscanGeometryReader::
-GetFloatTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) const
+GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
 {
   const gdcm::Tag tag(group, element);
   if( !ds.FindDataElement( tag ) )
