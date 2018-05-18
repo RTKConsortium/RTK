@@ -91,9 +91,9 @@ public:
     }
 
 protected:
-  std::vector<float> GetVectorTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) const;
-  std::string GetStringTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) const;
-  double GetFloatTagValue(const gdcm::DataSet & ds, uint16_t group, uint16_t element) const;
+  std::vector<float> GetVectorTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
+  std::string GetStringTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
+  double GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
 
   BioscanGeometryReader(): m_Geometry(ITK_NULLPTR) {};
   ~BioscanGeometryReader() {}
