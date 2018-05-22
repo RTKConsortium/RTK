@@ -104,6 +104,17 @@ if(RTK_BUILD_DOXYGEN)
   add_subdirectory(documentation/Doxygen)
 endif()
 
+# Setup build locations.
+if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/bin)
+endif()
+if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/lib)
+endif()
+if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/lib)
+endif()
+
 #=========================================================
 # lp_solve library
 #=========================================================
@@ -163,17 +174,6 @@ list(APPEND RTK_INCLUDE_DIRS
 #=========================================================
 list(APPEND RTK_INCLUDE_DIRS
   ${RTK_BINARY_DIR})
-
-# Setup build locations.
-if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/bin)
-endif()
-if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/lib)
-endif()
-if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/lib)
-endif()
 
 # Export library linking directories (used by LIBPATH)
 set(RTK_SYSTEM_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
