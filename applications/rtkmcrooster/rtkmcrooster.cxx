@@ -120,8 +120,8 @@ int main(int argc, char * argv[])
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   typedef rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCROOSTERFilterType;
   MCROOSTERFilterType::Pointer mcrooster = MCROOSTERFilterType::New();
-  mcrooster->SetForwardProjectionFilter(args_info.fp_arg);
-  mcrooster->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, mcrooster.GetPointer());
+  SetBackProjectionFromGgo(args_info, mcrooster.GetPointer());
   mcrooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   mcrooster->SetCG_iterations( args_info.cgiter_arg );
   mcrooster->SetMainLoop_iterations( args_info.niter_arg );
@@ -210,21 +210,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( idvfReader->Update() )
   mcrooster->SetInverseDisplacementField(idvfReader->GetOutput());
 
-  itk::TimeProbe readerProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mcrooster->Update() )
-
-//  if(args_info.time_flag)
-//    {
-//    mcrooster->PrintTiming(std::cout);
-//    readerProbe.Stop();
-//    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-//    }
 
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
   WriterType::Pointer writer = WriterType::New();

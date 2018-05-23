@@ -21,7 +21,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
 
 #ifdef RTK_USE_CUDA
@@ -97,8 +96,8 @@ int main(int argc, char * argv[])
       rtk::SARTConeBeamReconstructionFilter< OutputImageType >::New();
 
   // Set the forward and back projection filters
-  sart->SetForwardProjectionFilter(args_info.fp_arg);
-  sart->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, sart.GetPointer());
+  SetBackProjectionFromGgo(args_info, sart.GetPointer());
   sart->SetInput( inputFilter->GetOutput() );
   if (args_info.signal_given)
     {
@@ -116,25 +115,12 @@ int main(int argc, char * argv[])
   sart->SetLambda( args_info.lambda_arg );
   sart->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
-  itk::TimeProbe totalTimeProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::endl << std::flush;
-    totalTimeProbe.Start();
-    }
   if(args_info.positivity_flag)
     {
     sart->SetEnforcePositivity(true);
     }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() )
-
-  if(args_info.time_flag)
-    {
-    sart->PrintTiming(std::cout);
-    totalTimeProbe.Stop();
-    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
-    }
 
   // Write
   typedef itk::ImageFileWriter< OutputImageType > WriterType;

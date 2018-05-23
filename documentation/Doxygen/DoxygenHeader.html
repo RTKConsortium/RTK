@@ -8,6 +8,19 @@
 <link href="$relpath$tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="$relpath$jquery.js"></script>
 <script type="text/javascript" src="$relpath$dynsections.js"></script>
+<script type="text/javascript">
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./serviceWorker.js').then(function (registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope)
+    }, function (err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err)
+    })
+  })
+}
+</script>
 $treeview
 $search
 $mathjax
@@ -23,7 +36,7 @@ $extrastylesheet
  <tbody>
  <tr style="height: 56px;">
   <!--BEGIN PROJECT_LOGO-->
-  <td id="projectlogo"><img alt="Logo" src="$relpath$$projectlogo"/></td>
+  <td id="projectlogo"><img alt="Logo" src="http://www.openrtk.org/opensourcelogos/rtk75.png" height="100"/></td>
   <!--END PROJECT_LOGO-->
   <!--BEGIN PROJECT_NAME-->
   <td style="padding-left: 0.5em;">

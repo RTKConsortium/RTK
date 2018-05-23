@@ -1,0 +1,28 @@
+#-----------------------------------------------------------------------------
+# rtk::Functor::SoftThreshold< float, float >
+#-----------------------------------------------------------------------------
+set(WRAPPER_AUTO_INCLUDE_HEADERS OFF)
+itk_wrap_named_class("rtk::Functor::SoftThreshold" "rtkFunctorSoftThreshold")
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("${ITKM_${t}}${ITKM_${t}}" "${ITKT_${t}}, ${ITKT_${t}}")
+  endforeach()
+itk_end_wrap_class()
+set(WRAPPER_AUTO_INCLUDE_HEADERS ON)
+
+#-----------------------------------------------------------------------------
+# itk::UnaryFunctorImageFilter<itk::Image<float, 3>, itk::Image<float, 3>,
+#   rtk::Function::SoftThreshold<float, float>>
+#-----------------------------------------------------------------------------
+itk_wrap_class("itk::UnaryFunctorImageFilter" POINTER)
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3ST${ITKM_${t}}${ITKM_${t}}"
+      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, rtk::Functor::SoftThreshold<${ITKT_${t}}, ${ITKT_${t}}>")
+  endforeach()
+itk_end_wrap_class()
+
+#-----------------------------------------------------------------------------
+# rtk::SoftThresholdImageFilter
+#-----------------------------------------------------------------------------
+itk_wrap_class("rtk::SoftThresholdImageFilter" POINTER)
+  itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
+itk_end_wrap_class()

@@ -45,7 +45,6 @@ int main(int argc, char * argv[])
   typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
   typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
 #endif
   typedef ProjectionStackType                   VolumeType;
   typedef itk::ImageFileReader<  DVFSequenceImageType > DVFReaderType;
@@ -119,8 +118,8 @@ int main(int argc, char * argv[])
   // Also set the forward and back projection filters to be used
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
-  rooster->SetForwardProjectionFilter(args_info.fp_arg);
-  rooster->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
+  SetBackProjectionFromGgo(args_info, rooster.GetPointer());
   rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );
@@ -234,21 +233,7 @@ int main(int argc, char * argv[])
       }
     }
 
-  itk::TimeProbe readerProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
-
-//  if(args_info.time_flag)
-//    {
-//    rooster->PrintTiming(std::cout);
-//    readerProbe.Stop();
-//    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-//    }
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;

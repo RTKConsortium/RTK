@@ -47,7 +47,6 @@ int main(int argc, char * argv[])
 
   typedef itk::VectorImage< PixelValueType, Dimension > MaterialsVolumeType;
   typedef itk::ImageFileReader< MaterialsVolumeType > MaterialsVolumeReaderType;
-  typedef itk::ImageFileWriter< MaterialsVolumeType > MaterialsVolumeWriterType;
 
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< PixelValueType, Dimension + 1 > VolumeSeriesType;
@@ -206,8 +205,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
-  rooster->SetForwardProjectionFilter(args_info.fp_arg);
-  rooster->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
+  SetBackProjectionFromGgo(args_info, rooster.GetPointer());
   rooster->SetInputVolumeSeries(input);
   rooster->SetCG_iterations( args_info.cgiter_arg );
   rooster->SetMainLoop_iterations( args_info.niter_arg );
@@ -283,21 +282,7 @@ int main(int argc, char * argv[])
   else
     rooster->SetPerformTNVDenoising(false);
 
-  itk::TimeProbe readerProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
-
-  if(args_info.time_flag)
-    {
-//    rooster->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
 
   // Convert to result to a vector image
   typedef rtk::ImageToVectorImageFilter<VolumeSeriesType, MaterialsVolumeType> VolumeSeriesToVectorVolumeFilterType;

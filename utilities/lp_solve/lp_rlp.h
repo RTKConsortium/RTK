@@ -1650,7 +1650,7 @@ static int lp_yy_get_next_buffer (lp_yyscan_t lp_yyscanner)
 #ifdef __cplusplus
     static inline int lp_yyinput (lp_yyscan_t lp_yyscanner)
 #else
-    static inline int input  (lp_yyscan_t lp_yyscanner)
+    static int input  (lp_yyscan_t lp_yyscanner)
 #endif
 
 {

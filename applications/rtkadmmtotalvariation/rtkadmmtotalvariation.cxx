@@ -20,7 +20,6 @@
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
 
-#include <itkTimeProbe.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
@@ -111,8 +110,8 @@ int main(int argc, char * argv[])
     ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
-  admmFilter->SetForwardProjectionFilter(args_info.fp_arg);
-  admmFilter->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, admmFilter.GetPointer());
+  SetBackProjectionFromGgo(args_info, admmFilter.GetPointer());
 
   // Set all four numerical parameters
   admmFilter->SetCG_iterations(args_info.CGiter_arg);

@@ -21,7 +21,6 @@
 #include "rtkMedianImageFilter.h"
 
 #include <itkImageFileWriter.h>
-#include <itkTimeProbe.h>
 #include <itkImageFileReader.h>
 
 int main(int argc, char * argv[])
@@ -31,7 +30,7 @@ int main(int argc, char * argv[])
 
   typedef unsigned short OutputPixelType;
   const unsigned int     Dimension = 2;
-  unsigned int           medianWindow[2];
+  int                    medianWindow[2];
 
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
 

@@ -1,7 +1,0 @@
-#!/bin/sh
-echo 'Your work tree has not been configured for SimpleRTK development.
-Paste the following commands into a shell:
-
- ./Utilities/SetupForDevelopment.sh
-
-exit 1

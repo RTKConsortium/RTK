@@ -2279,6 +2279,7 @@ STATIC MYBOOL shift_basis(lprec *lp, int base, int delta, LLrec *usedmap, MYBOOL
   (void)usedmap;
   int i, ii;
   MYBOOL Ok = TRUE;
+  (void)usedmap;
 
   /* Don't bother to shift the basis if it is not yet ready */
   if(!is_BasisReady(lp))
@@ -3448,6 +3449,7 @@ STATIC MYBOOL del_varnameex(lprec *lp, hashelem **namelist, int items, hashtable
 {
   (void)lp;
   int i, n;
+  (void)lp;
 
   /* First drop hash table entries of the deleted variables */
   if(varmap != NULL)
@@ -8329,6 +8331,8 @@ STATIC MYBOOL performiteration(lprec *lp, int rownr, int varin, LREAL theta, MYB
   MYBOOL *islower = &(lp->is_lower[varin]);
   MYBOOL minitNow = FALSE, minitStatus = ITERATE_MAJORMAJOR;
   LREAL  deltatheta = theta;
+  (void)pcol;
+  (void)nzpcol;
 
   if(userabort(lp, MSG_ITERATION))
     return( minitNow );
@@ -9671,6 +9675,7 @@ STATIC void replaceBasisVar(lprec *lp, int rownr, int var, int *var_basic, MYBOO
 {
   (void)lp;
   int out;
+  (void)lp;
 
   out = var_basic[rownr];
   var_basic[rownr] = var;

@@ -2,10 +2,6 @@ WRAP_GGO(rtkmotioncompensatedfourdconjugategradient_GGO_C rtkmotioncompensatedfo
 add_executable(rtkmotioncompensatedfourdconjugategradient rtkmotioncompensatedfourdconjugategradient.cxx ${rtkmotioncompensatedfourdconjugategradient_GGO_C})
 target_link_libraries(rtkmotioncompensatedfourdconjugategradient RTK)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkmotioncompensatedfourdconjugategradient rtkcuda)
-endif ()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkmotioncompensatedfourdconjugategradient) 

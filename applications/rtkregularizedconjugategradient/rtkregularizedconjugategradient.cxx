@@ -111,8 +111,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::RegularizedConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer regularizedConjugateGradient = ConjugateGradientFilterType::New();
-  regularizedConjugateGradient->SetForwardProjectionFilter(args_info.fp_arg);
-  regularizedConjugateGradient->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, regularizedConjugateGradient.GetPointer());
+  SetBackProjectionFromGgo(args_info, regularizedConjugateGradient.GetPointer());
   regularizedConjugateGradient->SetInputVolume(inputFilter->GetOutput() );
   regularizedConjugateGradient->SetInputProjectionStack(reader->GetOutput());
   regularizedConjugateGradient->SetInputWeights( weightsSource->GetOutput());
@@ -170,21 +170,7 @@ int main(int argc, char * argv[])
   else
     regularizedConjugateGradient->SetSoftThresholdOnImage(false);
 
-  itk::TimeProbe readerProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() )
-
-  if(args_info.time_flag)
-    {
-    regularizedConjugateGradient->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
 
   // Write
   typedef itk::ImageFileWriter< OutputImageType > WriterType;

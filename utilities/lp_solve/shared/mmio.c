@@ -267,6 +267,8 @@ int mm_read_mtx_crd_data(FILE *f, int M, int N, int nz, int I[], int J[],
     (void)M; // Remove unused variable warning
     (void)N; // Remove unused variable warning
     int i;
+    (void)M; // Remove unused variable warning
+    (void)N; // Remove unused variable warning
     if (mm_is_complex(matcode))
     {
         for (i=0; i<nz; i++)
