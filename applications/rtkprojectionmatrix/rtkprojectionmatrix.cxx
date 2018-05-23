@@ -24,6 +24,7 @@
 #include "rtkGgoFunctions.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkConfiguration.h"
+#include "rtkMatlabSparseMatrix.h"
 
 namespace rtk
 {
@@ -66,6 +67,13 @@ private:
 };
 }
 }
+
+std::ostream &operator<<(std::ostream &out, rtk::MatlabSparseMatrix& matlabSparseMatrix)
+{
+  matlabSparseMatrix.Save(out);
+  return out;
+}
+
 
 int main(int argc, char * argv[])
 {
@@ -162,25 +170,8 @@ int main(int argc, char * argv[])
     std::cerr << "Failed to open " << args_info.output_arg << std::endl;
     return EXIT_FAILURE;
     }
-  backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix().reset();
-  double element[3];
-  while(backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix().next())
-    {
-    element[0] = (double)backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix().getrow();
-    int col = (double)backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix().getcolumn();
-    OutputImageType::IndexType idx = backProjection->GetOutput()->ComputeIndex(col);
-    if(idx[1] != 1)
-      continue;
-    element[1] = idx[0] + idx[2]*backProjection->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
-    element[2] = (double)backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix().value();
-    ofs.write((char *)element, sizeof(double)*3);
-    }
-  // Add a 0. in the file for the last element
-  element[0] = reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() - 1;
-  element[1] = backProjection->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels()/
-               backProjection->GetOutput()->GetLargestPossibleRegion().GetSize()[1] - 1;
-  element[2] = 0.;
-  ofs.write((char *)element, sizeof(double)*3);
+  rtk::MatlabSparseMatrix matlabSparseMatrix(backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix(), backProjection->GetOutput());
+  ofs << matlabSparseMatrix;
   ofs.close();
   return EXIT_SUCCESS;
 }
