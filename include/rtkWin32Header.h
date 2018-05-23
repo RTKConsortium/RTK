@@ -21,7 +21,7 @@
 #include "rtkConfiguration.h"
 
 #if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS) 
-# ifdef RTK_EXPORTS || defined(__CUDACC__)
+# if defined(RTK_EXPORTS) || defined(__CUDACC__)
 #  define RTK_EXPORT __declspec(dllexport)
 # else
 #  define RTK_EXPORT __declspec(dllimport)
