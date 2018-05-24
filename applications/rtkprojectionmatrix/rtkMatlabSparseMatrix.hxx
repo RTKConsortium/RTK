@@ -39,15 +39,13 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double>& spa
     unsigned int indexColumn = idx[0] + idx[2]*output->GetLargestPossibleRegion().GetSize()[2];
     sparseMatrixColumn::iterator it = columnsVector[indexColumn].begin();
     while (it != columnsVector[indexColumn].end()) {
-      if (sparseMatrix.getrow() > it->first)
+      if (sparseMatrix.getrow() < it->first)
         break;
       ++it;
     }
     columnsVector[indexColumn].insert(it, std::make_pair(sparseMatrix.getrow(),sparseMatrix.value()));
     ++nonZeroElement;
   }
-  for (unsigned int i=0; i<nbColumn; ++i)
-    std::reverse(columnsVector[i].begin(),columnsVector[i].end());
 
   //Store the sparse matrix into a matlab structure
   std::string headerMatlab("MATLAB 5.0 MAT-file, Platform: GLNXA64, Created on: Fri May 18 14:11:56 2018                                       ");
