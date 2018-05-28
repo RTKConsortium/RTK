@@ -28,7 +28,7 @@ CUDA_back_project(int projSize[3],
                   float *dev_vol_in,
                   float *dev_vol_out,
                   float *dev_img,
-                  double radiusCylindricalDetector
-                  );
+                  double radiusCylindricalDetector,
+                  unsigned int vectorLength);
 
 #endif

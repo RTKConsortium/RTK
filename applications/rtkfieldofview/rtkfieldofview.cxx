@@ -124,7 +124,7 @@ int main(int argc, char * argv[])
     typedef rtk::BackProjectionImageFilter<MaskImgType, MaskImgType> BPType;
     BPType::Pointer bp = BPType::New();
 #ifdef RTK_USE_CUDA
-    typedef rtk::CudaBackProjectionImageFilter BPCudaType;
+    typedef rtk::CudaBackProjectionImageFilter<MaskImgType> BPCudaType;
     if(!strcmp(args_info.hardware_arg, "cuda") )
       bp = BPCudaType::New();
 #endif

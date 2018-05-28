@@ -115,7 +115,7 @@ namespace rtk
         bp = rtk::JosephBackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >::New();
         break;
       case(BP_CUDAVOXELBASED):
-        bp = rtk::CudaBackProjectionImageFilter::New();
+        bp = rtk::CudaBackProjectionImageFilter<itk::CudaImage<float, 3>>::New();
       break;
       case(BP_CUDARAYCAST):
         bp = rtk::CudaRayCastBackProjectionImageFilter::New();
@@ -140,7 +140,7 @@ namespace rtk
         bp = rtk::JosephBackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >::New();
         break;
       case(BP_CUDAVOXELBASED):
-        bp = rtk::CudaBackProjectionImageFilter::New();
+        bp = rtk::CudaBackProjectionImageFilter<itk::CudaImage<float, 3>>::New();
       break;
       case(BP_CUDARAYCAST):
         bp = rtk::CudaRayCastBackProjectionImageFilter::New();

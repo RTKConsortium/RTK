@@ -40,8 +40,7 @@
 #include <cuda.h>
 
 // T E X T U R E S ////////////////////////////////////////////////////////
-texture<float, cudaTextureType2DLayered> tex_proj;
-texture<float, 3, cudaReadModeElementType> tex_proj_3D;
+static cudaTextureObject_t tex_proj[3];
 
 // Constant memory
 __constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
@@ -55,137 +54,9 @@ __constant__ int3 c_volSize;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_( S T A R T )_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
+template<unsigned int vectorLength, bool isCylindrical>
 __global__
-void kernel(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y)
-{
-  // CUDA 2.0 does not allow for a 3D grid, which severely
-  // limits the manipulation of large 3D arrays of data.  The
-  // following code is a hack to bypass this implementation
-  // limitation.
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
-
-  if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
-    {
-    return;
-    }
-
-  // Index row major into the volume
-  long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
-
-  float3 ip;
-  float  voxel_data = 0;
-
-  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
-    {
-    // matrix multiply
-    ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
-
-    // Change coordinate systems
-    ip.z = 1 / ip.z;
-    ip.x = ip.x * ip.z;
-    ip.y = ip.y * ip.z;
-
-    // Get texture point, clip left to GPU
-    voxel_data += tex3D(tex_proj_3D, ip.x, ip.y, proj + 0.5);
-    }
-
-  // Place it into the volume
-  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
-}
-
-__global__
-void kernel_cylindrical_detector(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y, double radius)
-{
-  // CUDA 2.0 does not allow for a 3D grid, which severely
-  // limits the manipulation of large 3D arrays of data.  The
-  // following code is a hack to bypass this implementation
-  // limitation.
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
-
-  if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
-    {
-    return;
-    }
-
-  // Index row major into the volume
-  long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
-
-  float3 ip, pp;
-  float  voxel_data = 0;
-
-  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
-    {
-    // matrix multiply
-    pp = matrix_multiply(make_float3(i,j,k), &(c_volIndexToProjPP[12*proj]));
-
-    // Change coordinate systems
-    pp.z = 1 / pp.z;
-    pp.x = pp.x * pp.z;
-    pp.y = pp.y * pp.z;
-
-    // Apply correction for cylindrical detector
-    double u = pp.x;
-    pp.x = radius * atan(u / radius);
-    pp.y = pp.y * radius / sqrt(radius * radius + u * u);
-
-    // Get projection index
-    ip.x = c_projPPToProjIndex[0 * 3 + 0] * pp.x + c_projPPToProjIndex[0 * 3 + 1] * pp.y + c_projPPToProjIndex[0 * 3 + 2];
-    ip.y = c_projPPToProjIndex[1 * 3 + 0] * pp.x + c_projPPToProjIndex[1 * 3 + 1] * pp.y + c_projPPToProjIndex[1 * 3 + 2];
-
-    // Get texture point, clip left to GPU
-    voxel_data += tex3D(tex_proj_3D, ip.x, ip.y, proj + 0.5);
-    }
-
-  // Place it into the volume
-  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
-}
-
-__global__
-void kernel_3Dgrid(float *dev_vol_in, float * dev_vol_out)
-{
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
-
-  if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
-    {
-    return;
-    }
-
-  // Index row major into the volume
-  long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
-
-  float3 ip;
-  float  voxel_data = 0;
-
-  for (unsigned int proj = 0; proj<c_projSize.z; proj++)
-    {
-    // matrix multiply
-    ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
-
-    // Change coordinate systems
-    ip.z = 1 / ip.z;
-    ip.x = ip.x * ip.z;
-    ip.y = ip.y * ip.z;
-
-    // Get texture point, clip left to GPU, and accumulate in voxel_data
-    voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj);
-    }
-
-  // Place it into the volume
-  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
-}
-
-__global__
-void kernel_3Dgrid_cylindrical_detector(float *dev_vol_in, float * dev_vol_out, double radius)
+void kernel_backProject(float *dev_vol_in, float * dev_vol_out, double radius, cudaTextureObject_t tex_proj0, cudaTextureObject_t tex_proj1, cudaTextureObject_t tex_proj2)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -200,34 +71,61 @@ void kernel_3Dgrid_cylindrical_detector(float *dev_vol_in, float * dev_vol_out, 
   long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
 
   float3 ip, pp;
-  float  voxel_data = 0;
+  float voxel_data[vectorLength];
+  for (unsigned int c=0; c<vectorLength; c++)
+    voxel_data[c] = 0.0f;
 
   for (unsigned int proj = 0; proj<c_projSize.z; proj++)
     {
-    // matrix multiply
-    pp = matrix_multiply(make_float3(i,j,k), &(c_volIndexToProjPP[12*proj]));
+    if (isCylindrical)
+      {
+      // matrix multiply
+      pp = matrix_multiply(make_float3(i,j,k), &(c_volIndexToProjPP[12*proj]));
 
-    // Change coordinate systems
-    pp.z = 1 / pp.z;
-    pp.x = pp.x * pp.z;
-    pp.y = pp.y * pp.z;
+      // Change coordinate systems
+      pp.z = 1 / pp.z;
+      pp.x = pp.x * pp.z;
+      pp.y = pp.y * pp.z;
 
-    // Apply correction for cylindrical detector
-    double u = pp.x;
-    pp.x = radius * atan(u / radius);
-    pp.y = pp.y * radius / sqrt(radius * radius + u * u);
+      // Apply correction for cylindrical detector
+      double u = pp.x;
+      pp.x = radius * atan(u / radius);
+      pp.y = pp.y * radius / sqrt(radius * radius + u * u);
 
-    // Get projection index
-    ip.x = c_projPPToProjIndex[0 * 3 + 0] * pp.x + c_projPPToProjIndex[0 * 3 + 1] * pp.y + c_projPPToProjIndex[0 * 3 + 2];
-    ip.y = c_projPPToProjIndex[1 * 3 + 0] * pp.x + c_projPPToProjIndex[1 * 3 + 1] * pp.y + c_projPPToProjIndex[1 * 3 + 2];
+      // Get projection index
+      ip.x = c_projPPToProjIndex[0 * 3 + 0] * pp.x + c_projPPToProjIndex[0 * 3 + 1] * pp.y + c_projPPToProjIndex[0 * 3 + 2];
+      ip.y = c_projPPToProjIndex[1 * 3 + 0] * pp.x + c_projPPToProjIndex[1 * 3 + 1] * pp.y + c_projPPToProjIndex[1 * 3 + 2];
+      }
+    else
+      {
+      // matrix multiply
+      ip = matrix_multiply(make_float3(i,j,k), &(c_matrices[12*proj]));
+
+      // Change coordinate systems
+      ip.z = 1 / ip.z;
+      ip.x = ip.x * ip.z;
+      ip.y = ip.y * ip.z;
+      }
 
     // Get texture point, clip left to GPU, and accumulate in voxel_data
-    voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj);
+    switch(vectorLength)
+      {
+      case 1:
+        voxel_data[0] += tex2DLayered<float>(tex_proj0, ip.x, ip.y, proj);
+        break;
+      case 3:
+        voxel_data[0] += tex2DLayered<float>(tex_proj0, ip.x, ip.y, proj);
+        voxel_data[1] += tex2DLayered<float>(tex_proj1, ip.x, ip.y, proj);
+        voxel_data[2] += tex2DLayered<float>(tex_proj2, ip.x, ip.y, proj);
+        break;
+      }
     }
 
   // Place it into the volume
-  dev_vol_out[vol_idx] = dev_vol_in[vol_idx] + voxel_data;
+  for (unsigned int c=0; c<vectorLength; c++)
+    dev_vol_out[vol_idx * vectorLength + c] = dev_vol_in[vol_idx * vectorLength + c] + voxel_data[c];
 }
+
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -238,17 +136,21 @@ void kernel_3Dgrid_cylindrical_detector(float *dev_vol_in, float * dev_vol_out, 
 // FUNCTION: CUDA_back_project /////////////////////////////
 void
 CUDA_back_project(int projSize[3],
-  int volSize[3],
-  float *matrices,
-  float *volIndexToProjPPs,
-  float *projPPToProjIndex,
-  float *dev_vol_in,
-  float *dev_vol_out,
-  float *dev_proj,
-  double radiusCylindricalDetector)
+                  int volSize[3],
+                  float *matrices,
+                  float *volIndexToProjPPs,
+                  float *projPPToProjIndex,
+                  float *dev_vol_in,
+                  float *dev_vol_out,
+                  float *dev_proj,
+                  double radiusCylindricalDetector,
+                  unsigned int vectorLength)
 {
+  // 2D layered texture requires CudaComputeCapability >= 2.0
   int device;
   cudaGetDevice(&device);
+  if(GetCudaComputeCapability(device).first<=1)
+    itkGenericExceptionMacro(<< "RTK no longer supports GPUs with CudaComputeCapability < 2.0")
 
   // Copy the size of inputs into constant memory
   cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
@@ -258,43 +160,6 @@ CUDA_back_project(int projSize[3],
   cudaMemcpyToSymbol(c_matrices,          &(matrices[0]),          12 * sizeof(float) * projSize[2]);
   cudaMemcpyToSymbol(c_volIndexToProjPP,  &(volIndexToProjPPs[0]), 12 * sizeof(float) * projSize[2]);
   cudaMemcpyToSymbol(c_projPPToProjIndex, &(projPPToProjIndex[0]), 9 * sizeof(float));
-
-  // set texture parameters
-  tex_proj.addressMode[0] = cudaAddressModeBorder;
-  tex_proj.addressMode[1] = cudaAddressModeBorder;
-  tex_proj.addressMode[2] = cudaAddressModeBorder;
-  tex_proj.filterMode = cudaFilterModeLinear;
-  tex_proj.normalized = false; // don't access with normalized texture coords
-
-  tex_proj_3D.addressMode[0] = cudaAddressModeBorder;
-  tex_proj_3D.addressMode[1] = cudaAddressModeBorder;
-  tex_proj_3D.addressMode[2] = cudaAddressModeBorder;
-  tex_proj_3D.filterMode = cudaFilterModeLinear;
-  tex_proj_3D.normalized = false; // don't access with normalized texture coords
-
-  // Copy projection data to array, bind the array to the texture
-  cudaExtent projExtent = make_cudaExtent(projSize[0], projSize[1], projSize[2]);
-  cudaArray *array_proj;
-  static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  CUDA_CHECK_ERROR;
-
-  // Allocate array for input projections, in order to bind them to
-  // either a 2D layered texture (requires GetCudaComputeCapability >= 2.0) or
-  // a 3D texture
-  if(GetCudaComputeCapability(device).first<=1)
-    cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent);
-  else
-    cudaMalloc3DArray((cudaArray**)&array_proj, &channelDesc, projExtent, cudaArrayLayered);
-  CUDA_CHECK_ERROR;
-
-  // Copy data to 3D array
-  cudaMemcpy3DParms copyParams = {0};
-  copyParams.srcPtr   = make_cudaPitchedPtr(dev_proj, projSize[0]*sizeof(float), projSize[0], projSize[1]);
-  copyParams.dstArray = (cudaArray*)array_proj;
-  copyParams.extent   = projExtent;
-  copyParams.kind     = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&copyParams);
-  CUDA_CHECK_ERROR;
 
   // Thread Block Dimensions
   const int tBlock_x = 16;
@@ -308,56 +173,45 @@ CUDA_back_project(int projSize[3],
 
   // Run kernels. Note: Projection data is passed via texture memory,
   // transform matrix is passed via constant memory
-  if(GetCudaComputeCapability(device).first<=1)
+
+  // Compute block and grid sizes
+  dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
+  dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+  CUDA_CHECK_ERROR;
+
+  cudaArray** projComponentArrays = new cudaArray* [vectorLength];
+
+  // Prepare texture objects
+  prepareTextureObject(projSize, dev_proj, projComponentArrays, vectorLength, tex_proj, true);
+
+  // Run the kernel. Since "vectorLength" is passed as a function argument, not as a template argument,
+  // the compiler can't assume it's constant, and a dirty trick has to be used.
+  // I did not manage to make CUDA_forward_project templated over vectorLength,
+  // which would be the best solution
+  switch(vectorLength)
     {
-    // Compute block and grid sizes
-    dim3 dimGrid  = dim3(blocksInX, blocksInY*blocksInZ);
-    dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+    case 1:
+      if (radiusCylindricalDetector == 0)
+        kernel_backProject<1, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, tex_proj[0], tex_proj[1], tex_proj[2]);
+      else
+        kernel_backProject<1, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, tex_proj[0], tex_proj[1], tex_proj[2]);
+    break;
 
-    // Bind the array of projections to a 3D texture
-    cudaBindTextureToArray(tex_proj_3D, (cudaArray*)array_proj, channelDesc);
-    CUDA_CHECK_ERROR;
-
-    if (radiusCylindricalDetector == 0)
-      {
-      kernel <<< dimGrid, dimBlock >>> ( dev_vol_in,
-                                         dev_vol_out,
-                                         blocksInY );
-      }
-    else
-      {
-      kernel_cylindrical_detector  <<< dimGrid, dimBlock >>> ( dev_vol_in,
-                                                               dev_vol_out,
-                                                               blocksInY,
-                                                               radiusCylindricalDetector);
-      }
-
-    // Unbind the image and projection matrix textures
-    cudaUnbindTexture (tex_proj_3D);
-    CUDA_CHECK_ERROR;
+    case 3:
+      if (radiusCylindricalDetector == 0)
+        kernel_backProject<3, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, tex_proj[0], tex_proj[1], tex_proj[2]);
+      else
+        kernel_backProject<3, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, tex_proj[0], tex_proj[1], tex_proj[2]);
+    break;
     }
-  else
-    {
-    // Compute block and grid sizes
-    dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
-    dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
-    CUDA_CHECK_ERROR;
-
-    // Bind the array of projections to a 2D layered texture
-    cudaBindTextureToArray(tex_proj, (cudaArray*)array_proj, channelDesc);
-    CUDA_CHECK_ERROR;
-
-    if (radiusCylindricalDetector == 0)
-      kernel_3Dgrid <<< dimGrid, dimBlock >>> ( dev_vol_in, dev_vol_out);
-    else
-      kernel_3Dgrid_cylindrical_detector <<< dimGrid, dimBlock >>> ( dev_vol_in, dev_vol_out, radiusCylindricalDetector);
-
-    // Unbind the image and projection matrix textures
-    cudaUnbindTexture (tex_proj);
-    CUDA_CHECK_ERROR;
-    }
+  CUDA_CHECK_ERROR;
 
   // Cleanup
-  cudaFreeArray ((cudaArray*)array_proj);
+  for (unsigned int c=0; c<vectorLength; c++)
+    {
+    cudaFreeArray ((cudaArray*) projComponentArrays[c]);
+    cudaDestroyTextureObject(tex_proj[c]);
+    }
+  delete[] projComponentArrays;
   CUDA_CHECK_ERROR;
 }

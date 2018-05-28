@@ -104,7 +104,6 @@ if (RTK_USE_CUDA)
 
   set(RTK_SRCS ${RTK_SRCS}
     rtkCudaAverageOutOfROIImageFilter.cxx
-    rtkCudaBackProjectionImageFilter.cxx
     rtkCudaConjugateGradientImageFilter_3f.cxx
     rtkCudaConjugateGradientImageFilter_4f.cxx
     rtkCudaConstantVolumeSeriesSource.cxx
