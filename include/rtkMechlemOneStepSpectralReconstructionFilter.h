@@ -117,9 +117,9 @@ class MechlemOneStepSpectralReconstructionFilter : public rtk::IterativeConeBeam
 {
 public:
     /** Standard class typedefs. */
-    typedef MechlemOneStepSpectralReconstructionFilter                      Self;
-    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>  Superclass;
-    typedef itk::SmartPointer< Self >                                          Pointer;
+    typedef MechlemOneStepSpectralReconstructionFilter                          Self;
+    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>   Superclass;
+    typedef itk::SmartPointer< Self >                                           Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -133,9 +133,15 @@ public:
     itkStaticConstMacro(nEnergies, unsigned int, TSpectrum::PixelType::Dimension);
     typedef typename TOutputImage::PixelType::ValueType dataType;
 
+#ifdef RTK_USE_CUDA
+    typedef itk::CudaImage< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
+    typedef itk::CudaImage<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
+#else
     typedef itk::Image< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
-    typedef TOutputImage TGradientsImage;
     typedef itk::Image<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
+#endif
+
+    typedef TOutputImage TGradientsImage;
 
     typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
     typedef typename Superclass::BackProjectionType    BackProjectionType;

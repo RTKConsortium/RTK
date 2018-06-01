@@ -157,7 +157,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       fw = rtk::JosephForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
     break;
     case(MechlemOneStepSpectralReconstructionFilter::FP_CUDARAYCAST):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+      fw = rtk::CudaForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
     break;
 
     default:
@@ -187,7 +187,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       bp = rtk::JosephBackProjectionImageFilter<THessians, THessians>::New();
       break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDAVOXELBASED):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+      bp = rtk::CudaBackProjectionImageFilter<THessians>::New();
     break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDARAYCAST):
       itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");

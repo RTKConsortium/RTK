@@ -21,6 +21,10 @@
 #include "itkImageToImageFilter.h"
 #include "rtkMacro.h"
 
+#ifdef RTK_USE_CUDA
+  #include <itkCudaImage.h>
+#endif
+
 namespace rtk
 {
   /** \class WeidingerForwardModelImageFilter
@@ -64,7 +68,11 @@ public:
     to allow vector back projection */
     typedef TMaterialProjections TOutputImage1;
     typedef itk::Vector<dataType, nMaterials * nMaterials> TPixelOutput2;
+#ifdef RTK_USE_CUDA
+    typedef itk::CudaImage<TPixelOutput2, TMaterialProjections::ImageDimension > TOutputImage2;
+#else
     typedef itk::Image<TPixelOutput2, TMaterialProjections::ImageDimension > TOutputImage2;
+#endif
 
     /** Define the getters for the outputs, with correct types */
     TOutputImage1* GetOutput1();

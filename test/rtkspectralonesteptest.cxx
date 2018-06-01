@@ -6,9 +6,9 @@
 #include "rtkSpectralForwardModelImageFilter.h"
 #include "rtkReorderProjectionsImageFilter.h"
 
-//#ifdef USE_CUDA
-//  #include "itkCudaImage.h"
-//#endif
+#ifdef USE_CUDA
+  #include "itkCudaImage.h"
+#endif
 
 #include <itkImageFileReader.h>
 #include <itkComposeImageFilter.h>
@@ -38,17 +38,23 @@ int main(int, char** )
   typedef itk::Vector<DataType, nBins>        PhotonCountsPixelType;
   typedef itk::Vector<DataType, nEnergies>    SpectrumPixelType;
 
-//#ifdef USE_CUDA
-//#else
-  typedef itk::Image<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::VectorImage<DataType, Dimension>           MaterialProjectionsType;
+  typedef itk::VectorImage<DataType, Dimension - 1>       vIncidentSpectrum;
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<MaterialPixelType, Dimension>        MaterialVolumeType;
+  typedef itk::CudaImage<PhotonCountsPixelType, Dimension>    PhotonCountsType;
+  typedef itk::CudaImage<SpectrumPixelType, Dimension-1 >     IncidentSpectrumImageType;
+  typedef itk::CudaImage<DataType, Dimension-1 >              DetectorResponseImageType;
+  typedef itk::CudaImage<DataType, Dimension-1 >              MaterialAttenuationsImageType;
+  typedef itk::CudaImage<DataType, Dimension>                 SingleComponentImageType;
+#else
+  typedef itk::Image<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::Image<PhotonCountsPixelType, Dimension>    PhotonCountsType;
   typedef itk::Image<SpectrumPixelType, Dimension-1 >     IncidentSpectrumImageType;
-  typedef itk::VectorImage<DataType, Dimension - 1>       vIncidentSpectrum;
   typedef itk::Image<DataType, Dimension-1 >              DetectorResponseImageType;
   typedef itk::Image<DataType, Dimension-1 >              MaterialAttenuationsImageType;
   typedef itk::Image<DataType, Dimension>                 SingleComponentImageType;
-//#endif
+#endif
 
   typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
   typedef itk::ImageFileReader<vIncidentSpectrum> vIncidentSpectrumReaderType;
