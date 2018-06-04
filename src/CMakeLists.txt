@@ -96,6 +96,7 @@ if (RTK_USE_CUDA)
     rtkCudaWarpBackProjectionImageFilter.cu
     rtkCudaWarpForwardProjectionImageFilter.cu
     rtkCudaWarpImageFilter.cu
+    rtkCudaWeidingerForwardModelImageFilter.cu
     )
 
   set(CUDA_PROPAGATE_HOST_FLAGS ON)

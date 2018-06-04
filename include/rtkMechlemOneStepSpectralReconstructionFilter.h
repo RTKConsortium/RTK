@@ -31,6 +31,10 @@
 #include <itkExtractImageFilter.h>
 #include <itkAddImageFilter.h>
 
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaWeidingerForwardModelImageFilter.h"
+#endif
+
 namespace rtk
 {
   /** \class MechlemOneStepSpectralReconstructionFilter
@@ -159,7 +163,11 @@ public:
     typedef rtk::ConstantImageSource<TGradientsImage>                                     GradientsSourceType;
     typedef rtk::ConstantImageSource<THessiansImage>                                      HessiansSourceType;
     typedef rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage>    SQSRegularizationType;
+#ifdef RTK_USE_CUDA
+    typedef rtk::CudaWeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
+#else
     typedef rtk::WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
+#endif
     typedef rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>         AddMatrixAndDiagonalFilterType;
     typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>              NewtonFilterType;
 

@@ -185,6 +185,26 @@ cudaFree(singleComponent);
 // Destroy CUBLAS context
 cublasDestroy(handle);
 }
+inline __device__ void matrix_matrix_multiply( float* A, float* B, float* C,
+                                               unsigned int rowsA,
+                                               unsigned int colsB,
+                                               unsigned int colsArowsB)
+{
+  unsigned int indexInA, indexInB, indexInC;
+  for (unsigned int rowA=0; rowA < rowsA; rowA++)
+    {
+    for (unsigned int colB=0; colB < colsB; colB++)
+      {
+      indexInC = rowA * colsB + colB;
+      C[indexInC] = 0.0f;
+      for (unsigned int colArowB=0; colArowB < colsArowsB; colArowB++)
+        {
+        indexInA = rowA * colsArowsB + colArowB;
+        indexInB = colArowB * colsB + colB;
+        C[indexInC] += A[indexInA] * B[indexInB];
+        }
+      }
+    }
+}
 
-//static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
 #endif
