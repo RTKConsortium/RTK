@@ -42,10 +42,7 @@
 /***************************************************
 * MACRO to handle the long list of arguments of kernels
 ***************************************************/
-#define KERNEL_ARGS dev_vol_in, dev_vol_out, radiusCylindricalDetector, tex_proj[0], tex_proj[1], tex_proj[2], tex_proj[3], tex_proj[4], tex_proj[5], tex_proj[6], tex_proj[7], tex_proj[8]
-
-// T E X T U R E S ////////////////////////////////////////////////////////
-static cudaTextureObject_t tex_proj[9];
+#define KERNEL_ARGS dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj
 
 // Constant memory
 __constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
@@ -64,15 +61,7 @@ __global__
 void kernel_backProject(float *dev_vol_in,
                         float * dev_vol_out,
                         double radius,
-                        cudaTextureObject_t tex_proj0,
-                        cudaTextureObject_t tex_proj1,
-                        cudaTextureObject_t tex_proj2,
-                        cudaTextureObject_t tex_proj3,
-                        cudaTextureObject_t tex_proj4,
-                        cudaTextureObject_t tex_proj5,
-                        cudaTextureObject_t tex_proj6,
-                        cudaTextureObject_t tex_proj7,
-                        cudaTextureObject_t tex_proj8)
+                        cudaTextureObject_t* dev_tex_proj)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -124,28 +113,8 @@ void kernel_backProject(float *dev_vol_in,
       }
 
     // Get texture point, clip left to GPU, and accumulate in voxel_data
-    switch(vectorLength)
-      {
-      case 1:
-        voxel_data[0] += tex2DLayered<float>(tex_proj0, ip.x, ip.y, proj);
-        break;
-      case 3:
-        voxel_data[0] += tex2DLayered<float>(tex_proj0, ip.x, ip.y, proj);
-        voxel_data[1] += tex2DLayered<float>(tex_proj1, ip.x, ip.y, proj);
-        voxel_data[2] += tex2DLayered<float>(tex_proj2, ip.x, ip.y, proj);
-        break;
-      case 9:
-        voxel_data[0] += tex2DLayered<float>(tex_proj0, ip.x, ip.y, proj);
-        voxel_data[1] += tex2DLayered<float>(tex_proj1, ip.x, ip.y, proj);
-        voxel_data[2] += tex2DLayered<float>(tex_proj2, ip.x, ip.y, proj);
-        voxel_data[3] += tex2DLayered<float>(tex_proj3, ip.x, ip.y, proj);
-        voxel_data[4] += tex2DLayered<float>(tex_proj4, ip.x, ip.y, proj);
-        voxel_data[5] += tex2DLayered<float>(tex_proj5, ip.x, ip.y, proj);
-        voxel_data[6] += tex2DLayered<float>(tex_proj6, ip.x, ip.y, proj);
-        voxel_data[7] += tex2DLayered<float>(tex_proj7, ip.x, ip.y, proj);
-        voxel_data[8] += tex2DLayered<float>(tex_proj8, ip.x, ip.y, proj);
-        break;
-      }
+    for (unsigned int c=0; c<vectorLength; c++)
+      voxel_data[c] = tex2DLayered<float>(dev_tex_proj[c], ip.x, ip.y, proj);
     }
 
   // Place it into the volume
@@ -208,15 +177,23 @@ CUDA_back_project(int projSize[3],
 
   cudaArray** projComponentArrays = new cudaArray* [vectorLength];
 
-  // Prepare texture objects
+  // Create an array of textures
+  cudaTextureObject_t* tex_proj = new cudaTextureObject_t[vectorLength];
+
+  // Prepare texture objects (needs an array of cudaTextureObjects on the host as "tex_proj" argument)
   prepareTextureObject(projSize, dev_proj, projComponentArrays, vectorLength, tex_proj, true);
+
+  // Copy them to a device pointer, since it will have to be de-referenced in the kernels
+  cudaTextureObject_t* dev_tex_proj;
+  cudaMalloc(&dev_tex_proj, vectorLength * sizeof(cudaTextureObject_t));
+  cudaMemcpy(dev_tex_proj, tex_proj, vectorLength * sizeof(cudaTextureObject_t), cudaMemcpyHostToDevice);
 
   // Run the kernel. Since "vectorLength" is passed as a function argument, not as a template argument,
   // the compiler can't assume it's constant, and a dirty trick has to be used.
   // I did not manage to make CUDA_forward_project templated over vectorLength,
   // which would be the best solution
   // Since the list of arguments is long, and is the same in all cases (only the template parameters
-  // change, it is passed by a macro
+  // change), it is passed by a macro
   switch(vectorLength)
     {
     case 1:
@@ -248,6 +225,7 @@ CUDA_back_project(int projSize[3],
     cudaFreeArray ((cudaArray*) projComponentArrays[c]);
     cudaDestroyTextureObject(tex_proj[c]);
     }
+  cudaFree(dev_tex_proj);
   delete[] projComponentArrays;
   CUDA_CHECK_ERROR;
 }

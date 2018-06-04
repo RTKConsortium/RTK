@@ -39,9 +39,7 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-// TEXTURES AND CONSTANTS //
-static cudaTextureObject_t tex_vol[3];
-
+// CONSTANTS //
 __constant__ int3 c_projSize;
 __constant__ float3 c_boxMin;
 __constant__ float3 c_boxMax;
@@ -120,7 +118,7 @@ void notex3D(float *vol, float3 pos, int3 volSize, float* sample)
 // KERNEL kernel_forwardProject
 template<unsigned int vectorLength, bool useTexture>
 __global__
-void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out, float* dev_vol, cudaTextureObject_t tex_vol0, cudaTextureObject_t tex_vol1, cudaTextureObject_t tex_vol2)
+void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out, float* dev_vol, cudaTextureObject_t* dev_tex_vol)
 {
   unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y*blockDim.y + threadIdx.y;
@@ -194,17 +192,8 @@ void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out, float* dev_v
         // Read from 3D texture from volume(s)
         if (useTexture)
           {
-          switch(vectorLength)
-            {
-            case 1:
-              sample[0] = tex3D<float>(tex_vol0, pos.x, pos.y, pos.z);
-              break;
-            case 3:
-              sample[0] = tex3D<float>(tex_vol0, pos.x, pos.y, pos.z);
-              sample[1] = tex3D<float>(tex_vol1, pos.x, pos.y, pos.z);
-              sample[2] = tex3D<float>(tex_vol2, pos.x, pos.y, pos.z);
-              break;
-            }
+          for (unsigned int c=0; c<vectorLength; c++)
+            sample[c] = tex3D<float>(dev_tex_vol[c], pos.x, pos.y, pos.z);
           }
         else
           {
@@ -269,12 +258,19 @@ CUDA_forward_project(int projSize[3],
   cudaMemcpyToSymbol(c_translatedProjectionIndexTransformMatrices, &(translatedProjectionIndexTransformMatrices[0]), 12 * sizeof(float) * projSize[2]);
   cudaMemcpyToSymbol(c_translatedVolumeTransformMatrices, &(translatedVolumeTransformMatrices[0]), 12 * sizeof(float) * projSize[2]);
 
+  // Create an array of textures
+  cudaTextureObject_t* tex_vol = new cudaTextureObject_t[vectorLength];
   if (useCudaTexture)
     {
     cudaArray** volComponentArrays = new cudaArray* [vectorLength];
 
-    // Prepare texture objects
+    // Prepare texture objects (needs an array of cudaTextureObjects on the host as "tex_vol" argument)
     prepareTextureObject(volSize, dev_vol, volComponentArrays, vectorLength, tex_vol, false);
+
+    // Copy them to a device pointer, since it will have to be de-referenced in the kernels
+    cudaTextureObject_t* dev_tex_vol;
+    cudaMalloc(&dev_tex_vol, vectorLength * sizeof(cudaTextureObject_t));
+    cudaMemcpy(dev_tex_vol, tex_vol, vectorLength * sizeof(cudaTextureObject_t), cudaMemcpyHostToDevice);
 
     // Run the kernel. Since "vectorLength" is passed as a function argument, not as a template argument,
     // the compiler can't assume it's constant, and a dirty trick has to be used.
@@ -283,11 +279,11 @@ CUDA_forward_project(int projSize[3],
     switch(vectorLength)
       {
       case 1:
-      kernel_forwardProject<1, true> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, tex_vol[0], tex_vol[1], tex_vol[2]);
+      kernel_forwardProject<1, true> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
       break;
 
       case 3:
-      kernel_forwardProject<3, true> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, tex_vol[0], tex_vol[1], tex_vol[2]);
+      kernel_forwardProject<3, true> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
       break;
       }
     CUDA_CHECK_ERROR;
@@ -298,6 +294,7 @@ CUDA_forward_project(int projSize[3],
       cudaFreeArray ((cudaArray*) volComponentArrays[c]);
       cudaDestroyTextureObject(tex_vol[c]);
       }
+    cudaFree(dev_tex_vol);
     delete[] volComponentArrays;
     CUDA_CHECK_ERROR;
     }
@@ -306,11 +303,11 @@ CUDA_forward_project(int projSize[3],
     switch(vectorLength)
       {
       case 1:
-      kernel_forwardProject<1, false> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, tex_vol[0], tex_vol[1], tex_vol[2]);
+      kernel_forwardProject<1, false> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, tex_vol);
       break;
 
       case 3:
-      kernel_forwardProject<3, false> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, tex_vol[0], tex_vol[1], tex_vol[2]);
+      kernel_forwardProject<3, false> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, tex_vol);
       break;
       }
     }
