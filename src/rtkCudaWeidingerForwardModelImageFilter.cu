@@ -41,7 +41,7 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 
-#define IDX2D(r,c,cols) = ((r)*(cols)+(c))
+#define IDX2D(r,c,cols) ((r)*(cols)+(c))
 
 // CONSTANTS //////////////////////////////////////////////////////////////
 __constant__ int3 c_projSize;
@@ -73,9 +73,9 @@ void kernel_forward_model(float* pMatProj, float* pPhoCount, float* pSpectrum, f
 
   // Compute the efficient spectrum at the current pixel
   float efficientSpectrum[nBins * nEnergies];
-  for (unsigned int r=0; r<nBins; r++)
-    for (unsigned int c=0; c<nEnergies; c++)
-      efficientSpectrum[c + nEnergies * r] = pSpectrum[c + nEnergies * first_proj_idx] * c_binnedDetectorResponse[c + nEnergies * r];
+  for (unsigned int b=0; b<nBins; b++)
+    for (unsigned int e=0; e<nEnergies; e++)
+      efficientSpectrum[IDX2D(b,e,nEnergies)] = pSpectrum[e + nEnergies * first_proj_idx] * c_binnedDetectorResponse[IDX2D(b,e,nEnergies)];
 
   // Get attenuation factors at each energy from material projections
   float attenuationFactors[nEnergies];
@@ -86,8 +86,8 @@ void kernel_forward_model(float* pMatProj, float* pPhoCount, float* pSpectrum, f
                          1,
                          nMaterials);
 
-  for (unsigned int r=0; r<nEnergies; r++)
-    attenuationFactors[r] = std::exp(-attenuationFactors[r]);
+  for (unsigned int e=0; e<nEnergies; e++)
+    attenuationFactors[e] = std::exp(-attenuationFactors[e]);
 
   // Get the expected photon counts through these attenuations
   float expectedCounts[nBins];
@@ -100,16 +100,16 @@ void kernel_forward_model(float* pMatProj, float* pPhoCount, float* pSpectrum, f
 
   // Get intermediate variables used in the computation of the first output
   float oneMinusRatios[nBins];
-  for (unsigned int r=0; r<nBins; r++)
-    oneMinusRatios[r] = 1 - (pPhoCount[proj_idx * nBins + r] / expectedCounts[r]);
+  for (unsigned int b=0; b<nBins; b++)
+    oneMinusRatios[b] = 1 - (pPhoCount[proj_idx * nBins + b] / expectedCounts[b]);
 
   // Form an intermediate variable used for the gradient of the cost function,
   // (the derivation of the exponential implies that a m_MaterialAttenuations
   // gets out), by equivalent of element-wise product with implicit extension
   float intermForGradient[nEnergies * nMaterials];
-  for (unsigned int r=0; r<nEnergies; r++)
-    for (unsigned int c=0; c<nMaterials; c++)
-      intermForGradient[c + nMaterials * r] = c_materialAttenuations[c + nMaterials * r] * attenuationFactors[r];
+  for (unsigned int e=0; e<nEnergies; e++)
+    for (unsigned int m=0; m<nMaterials; m++)
+      intermForGradient[IDX2D(e,m,nMaterials)] = c_materialAttenuations[IDX2D(e,m,nMaterials)] * attenuationFactors[e];
 
   // Multiply by the spectrum
   float interm2ForGradient[nBins * nMaterials];
@@ -121,20 +121,20 @@ void kernel_forward_model(float* pMatProj, float* pPhoCount, float* pSpectrum, f
                          nEnergies);
 
   // Take the opposite
-  for (unsigned int r=0; r<nBins; r++)
-    for (unsigned int c=0; c<nMaterials; c++)
-      interm2ForGradient[c + nMaterials * r] *= -1;
+  for (unsigned int b=0; b<nBins; b++)
+    for (unsigned int m=0; m<nMaterials; m++)
+      interm2ForGradient[IDX2D(b,m,nMaterials)] *= -1;
 
   // Compute the product with oneMinusRatios, with implicit extension
-  for (unsigned int r=0; r<nBins; r++)
-    for (unsigned int c=0; c<nMaterials; c++)
-      interm2ForGradient[c + nMaterials * r] *= oneMinusRatios[r];
+  for (unsigned int b=0; b<nBins; b++)
+    for (unsigned int m=0; m<nMaterials; m++)
+      interm2ForGradient[IDX2D(b,m,nMaterials)] *= oneMinusRatios[b];
 
   // Finally, compute the vector to be written in first output
   // by summing on the bins
-  for (unsigned int r=0; r<nBins; r++)
-    for (unsigned int c=0; c<nMaterials; c++)
-      pOut1[proj_idx * nMaterials + c] += interm2ForGradient[c + nMaterials * r];
+  for (unsigned int b=0; b<nBins; b++)
+    for (unsigned int m=0; m<nMaterials; m++)
+      pOut1[proj_idx * nMaterials + m] += interm2ForGradient[IDX2D(b,m,nMaterials)];
 
   // Now compute output2
 
@@ -157,9 +157,9 @@ void kernel_forward_model(float* pMatProj, float* pPhoCount, float* pSpectrum, f
                          nEnergies);
 
   // Sum on the bins
-  for (unsigned int r=0; r<nBins; r++)
+  for (unsigned int b=0; b<nBins; b++)
     for (unsigned int c=0; c<nMaterials * nMaterials; c++)
-      pOut2[proj_idx * nMaterials * nMaterials + c] += interm2ForHessian[c + nMaterials * nMaterials * r];
+      pOut2[proj_idx * nMaterials * nMaterials + c] += interm2ForHessian[IDX2D(b,c,nMaterials * nMaterials)];
 
   // Multiply by the projection of ones
   for (unsigned int c=0; c<nMaterials * nMaterials; c++)
