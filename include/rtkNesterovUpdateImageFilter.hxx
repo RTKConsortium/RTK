@@ -87,9 +87,8 @@ void NesterovUpdateImageFilter<TImage>
 
 template<typename TImage>
 void NesterovUpdateImageFilter<TImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+::BeforeThreadedGenerateData()
 {
-
   if (m_MustInitializeIntermediateImages)
     {
     // Allocate the intermediate images
@@ -99,7 +98,15 @@ void NesterovUpdateImageFilter<TImage>
     m_Zk->CopyInformation(this->GetInput(0));
     m_Zk->SetRegions(m_Zk->GetLargestPossibleRegion());
     m_Zk->Allocate();
+    }
+}
 
+template<typename TImage>
+void NesterovUpdateImageFilter<TImage>
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+{
+  if (m_MustInitializeIntermediateImages)
+    {
     // Copy the input 0 into them
     itk::ImageRegionConstIterator<TImage> inIt(this->GetInput(0), outputRegionForThread);
     itk::ImageRegionIterator<TImage> vIt(m_Vk, outputRegionForThread);
