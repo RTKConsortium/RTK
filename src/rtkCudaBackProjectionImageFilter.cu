@@ -114,7 +114,7 @@ void kernel_backProject(float *dev_vol_in,
 
     // Get texture point, clip left to GPU, and accumulate in voxel_data
     for (unsigned int c=0; c<vectorLength; c++)
-      voxel_data[c] = tex2DLayered<float>(dev_tex_proj[c], ip.x, ip.y, proj);
+      voxel_data[c] += tex2DLayered<float>(dev_tex_proj[c], ip.x, ip.y, proj);
     }
 
   // Place it into the volume
