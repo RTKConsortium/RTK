@@ -105,8 +105,8 @@ JosephForwardProjectionImageFilter<TInputImage,
   typename BoxShape::VectorType stepMM, np, fp;
   for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
     {
-    typename InputRegionIterator::PointType sourcePosition = itIn->GetSourcePosition();
-    typename InputRegionIterator::PointType dirVox = itIn->GetSourceToPixel();
+    typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
+    typename InputRegionIterator::PointType dirVox = - itIn->GetSourceToPixel();
 
     // Select main direction
     unsigned int mainDir = 0;
@@ -120,17 +120,18 @@ JosephForwardProjectionImageFilter<TInputImage,
 
     // Test if there is an intersection
     BoxShape::ScalarType nearDist, farDist;
-    if( box->IsIntersectedByRay(sourcePosition, dirVox, nearDist, farDist) &&
+    if( box->IsIntersectedByRay(pixelPosition, dirVox, nearDist, farDist) &&
         farDist>=0. && // check if detector after the source
         nearDist<=1.)  // check if detector after or in the volume
       {
+
       // Clip the casting between source and pixel of the detector
       nearDist = std::max(nearDist, m_InferiorClip);
       farDist = std::min(farDist, m_SuperiorClip);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
-      np = sourcePosition + nearDist * dirVox;
-      fp = sourcePosition + farDist * dirVox;
+      np = pixelPosition + nearDist * dirVox;
+      fp = pixelPosition + farDist * dirVox;
       if(np[mainDir]>fp[mainDir])
         std::swap(np, fp);
 
@@ -227,7 +228,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                    itOut.Value(),
                                    sum,
                                    stepMM,
-                                   sourcePosition,
+                                   pixelPosition,
                                    dirVox,
                                    np,
                                    fp);
@@ -237,11 +238,11 @@ JosephForwardProjectionImageFilter<TInputImage,
                                    itIn->Get(),
                                    itOut.Value(),
                                    0.,
-                                   sourcePosition,
-                                   sourcePosition,
+                                   pixelPosition,
+                                   pixelPosition,
                                    dirVox,
-                                   sourcePosition,
-                                   sourcePosition);
+                                   pixelPosition,
+                                   pixelPosition);
     }
   delete itIn;
 }
@@ -339,6 +340,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   if(iy < miny) offset_yi = oy;
   if(ix >= maxx) offset_xs = -ox;
   if(iy >= maxy) offset_ys = -oy;
+
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx + offset_xi + offset_ys);
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx + offset_xs + offset_yi);
