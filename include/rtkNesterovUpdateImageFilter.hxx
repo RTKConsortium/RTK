@@ -38,6 +38,13 @@ NesterovUpdateImageFilter<TImage>::NesterovUpdateImageFilter()
 }
 
 template<typename TImage>
+NesterovUpdateImageFilter<TImage>::~NesterovUpdateImageFilter()
+{
+  m_Vk->ReleaseData();
+  m_Zk->ReleaseData();
+}
+
+template<typename TImage>
 void
 NesterovUpdateImageFilter<TImage>::ResetIterations()
 {

@@ -226,6 +226,7 @@ CUDA_back_project(int projSize[3],
     cudaDestroyTextureObject(tex_proj[c]);
     }
   cudaFree(dev_tex_proj);
+  delete[] tex_proj;
   delete[] projComponentArrays;
   CUDA_CHECK_ERROR;
 }

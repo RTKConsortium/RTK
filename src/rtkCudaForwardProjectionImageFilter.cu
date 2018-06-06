@@ -311,4 +311,5 @@ CUDA_forward_project(int projSize[3],
       break;
       }
     }
+  delete[] tex_vol;
 }
