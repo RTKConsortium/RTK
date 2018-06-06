@@ -62,7 +62,7 @@ public:
   itkTypeMacro(ForbildPhantomFileReader, itk::LightProcessObject);
 
   /** Get / Set the object pointer to geometric phantom. */
-  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkGetModifiableObjectMacro(GeometricPhantom, GeometricPhantom);
   itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
 
   /** Get/Set path to phantom definition file. */

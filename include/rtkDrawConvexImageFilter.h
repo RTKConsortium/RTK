@@ -63,7 +63,7 @@ public:
   itkTypeMacro ( DrawConvexImageFilter, itk::InPlaceImageFilter );
 
   /** Get / Set the object pointer to the ConvexShape. */
-  itkGetObjectMacro(ConvexShape, ConvexShape);
+  itkGetModifiableObjectMacro(ConvexShape, ConvexShape);
   itkSetObjectMacro(ConvexShape, ConvexShape);
 
 protected:

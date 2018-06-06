@@ -333,7 +333,7 @@ public:
 
   // Geometry
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
-  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
   /** Store the phase signal in a member variable */
   virtual void SetSignal(const std::vector<double> signal);
