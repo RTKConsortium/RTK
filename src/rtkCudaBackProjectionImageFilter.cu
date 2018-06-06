@@ -39,11 +39,6 @@
 *****************/
 #include <cuda.h>
 
-/***************************************************
-* MACRO to handle the long list of arguments of kernels
-***************************************************/
-#define KERNEL_ARGS dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj
-
 // Constant memory
 __constant__ float c_matrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_volIndexToProjPP[SLAB_SIZE * 12];
@@ -198,23 +193,23 @@ CUDA_back_project(int projSize[3],
     {
     case 1:
       if (radiusCylindricalDetector == 0)
-        kernel_backProject<1, false> <<< dimGrid, dimBlock >>> (KERNEL_ARGS);
+        kernel_backProject<1, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
       else
-        kernel_backProject<1, true> <<< dimGrid, dimBlock >>> (KERNEL_ARGS);
+        kernel_backProject<1, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
       break;
 
     case 3:
       if (radiusCylindricalDetector == 0)
-        kernel_backProject<3, false> <<< dimGrid, dimBlock >>> (KERNEL_ARGS);
+        kernel_backProject<3, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
       else
-        kernel_backProject<3, true> <<< dimGrid, dimBlock >>> (KERNEL_ARGS);
+        kernel_backProject<3, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
       break;
 
     case 9:
       if (radiusCylindricalDetector == 0)
-        kernel_backProject<9, false> <<< dimGrid, dimBlock >>> (KERNEL_ARGS);
+        kernel_backProject<9, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
       else
-        kernel_backProject<9, true> <<< dimGrid, dimBlock >>> (KERNEL_ARGS);
+        kernel_backProject<9, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
       break;
     }
   CUDA_CHECK_ERROR;
