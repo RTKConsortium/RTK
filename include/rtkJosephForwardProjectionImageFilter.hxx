@@ -169,7 +169,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       CoordRepType currenty = np[notMainDirSup] + residual * stepy;
 
       // Initialize the accumulation
-      typename TOutputImage::PixelType sum = itk::NumericTraits<typename TOutputImage::PixelType>::Zero;
+      typename TOutputImage::PixelType sum = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
 
       if (fs == ns) //If the voxel is a corner, we can skip most steps
         {
@@ -334,7 +334,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   int offset_xs = 0;
   int offset_ys = 0;
 
-  OutputPixelType result = itk::NumericTraits<typename TOutputImage::PixelType>::Zero;
+  OutputPixelType result = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
   if(ix < minx) offset_xi = ox;
   if(iy < miny) offset_yi = oy;
   if(ix >= maxx) offset_xs = -ox;

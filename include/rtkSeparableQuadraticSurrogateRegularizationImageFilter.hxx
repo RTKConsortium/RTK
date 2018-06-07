@@ -135,8 +135,8 @@ void SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
   // Walk the output image
   while(!out1It.IsAtEnd())
     {
-    out1 = itk::NumericTraits<typename TImage::PixelType>::Zero;
-    out2 = itk::NumericTraits<typename TImage::PixelType>::Zero;
+    out1 = itk::NumericTraits<typename TImage::PixelType>::ZeroValue();
+    out2 = itk::NumericTraits<typename TImage::PixelType>::ZeroValue();
 
     // Walk the neighborhood of the current pixel in the input image
     for (unsigned int i=0; i<nIt.Size(); i++)

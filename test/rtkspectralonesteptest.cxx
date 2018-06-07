@@ -124,7 +124,7 @@ int main(int, char** )
   typedef rtk::ConstantImageSource< MaterialVolumeType > MaterialVolumeSourceType;
   MaterialVolumeSourceType::Pointer materialVolumeSource = MaterialVolumeSourceType::New();
   materialVolumeSource->SetInformationFromImage(tomographySource->GetOutput());
-  materialVolumeSource->SetConstant( itk::NumericTraits<MaterialPixelType>::Zero );
+  materialVolumeSource->SetConstant( itk::NumericTraits<MaterialPixelType>::ZeroValue() );
 
   // Generate a blank set of projections
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
