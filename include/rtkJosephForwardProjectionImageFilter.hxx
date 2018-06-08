@@ -44,6 +44,9 @@ JosephForwardProjectionImageFilter<TInputImage,
     m_InferiorClip(0.),
     m_SuperiorClip(1.)
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
 }
 
 template <class TInputImage,

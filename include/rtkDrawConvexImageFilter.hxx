@@ -45,8 +45,12 @@ DrawConvexImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 DrawConvexImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType threadId )
+                       ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   typename TOutputImage::PointType point;
   const    TInputImage * input = this->GetInput();

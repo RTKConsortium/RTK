@@ -134,7 +134,11 @@ protected:
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   /**  Create the Output */
   typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;

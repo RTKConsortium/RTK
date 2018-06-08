@@ -88,8 +88,12 @@ protected:
   void GenerateOutputInformation() ITK_OVERRIDE;
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
                                      ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   // Linear interpolation position and weights
   unsigned int m_FrameInf;

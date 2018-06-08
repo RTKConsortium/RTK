@@ -34,6 +34,10 @@ template< typename TInputImage, typename TRealType, typename TOutputImage >
 SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 ::SingularValueThresholdImageFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+
   m_Threshold = 0;
 
   // Set the direction along which the output requested region should NOT be split
@@ -60,9 +64,6 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
   // the last dimension and computes the average, and
   // a similar output iterator that replaces the output
   // by their average along last dimension if ROI=1
-
-  // Support progress methods/callbacks
-  itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
 
   // Create a region containing only the first frame of outputRegionForThread
   typename TInputImage::RegionType FirstFrameRegion = outputRegionForThread;
@@ -124,7 +125,6 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
       }
 
     ++FakeIterator;
-    progress.CompletedPixel();
     }
 }
 

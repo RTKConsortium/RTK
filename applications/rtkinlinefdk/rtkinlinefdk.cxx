@@ -67,6 +67,12 @@ void computeOffsetsFromGeometry(rtk::ThreeDCircularProjectionGeometry::Pointer g
 static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg);
 static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg);
 
+#if ITK_VERSION_MAJOR < 5
+  using MultiThreaderType = itk::MultiThreader;
+#else
+  using MultiThreaderType = itk::PlatformMultiThreader;
+#endif
+
 int main(int argc, char * argv[])
 {
   GGO(rtkinlinefdk, args_info);
@@ -79,7 +85,7 @@ int main(int argc, char * argv[])
   threadInfo.minimumOffsetX = 0.0;
   threadInfo.maximumOffsetX = 0.0;
 
-  itk::MultiThreader::Pointer threader = itk::MultiThreader::New();
+  MultiThreaderType::Pointer threader = MultiThreaderType::New();
   threader->SetMultipleMethod(0, AcquisitionCallback, (void*)&threadInfo);
   threader->SetMultipleMethod(1, InlineThreadCallback, (void*)&threadInfo);
   threader->SetNumberOfThreads(2);
@@ -93,7 +99,7 @@ int main(int argc, char * argv[])
 static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
 {
   double minOffset, maxOffset;
-  ThreadInfoStruct *threadInfo = (ThreadInfoStruct *)(((itk::MultiThreader::ThreadInfoStruct *)(arg))->UserData);
+  ThreadInfoStruct *threadInfo = (ThreadInfoStruct *)(((MultiThreaderType::ThreadInfoStruct *)(arg))->UserData);
 
   threadInfo->mutex.Lock();
 
@@ -165,7 +171,7 @@ static ITK_THREAD_RETURN_TYPE AcquisitionCallback(void *arg)
 // still to be implemented.
 static ITK_THREAD_RETURN_TYPE InlineThreadCallback(void *arg)
 {
-  ThreadInfoStruct *threadInfo = (ThreadInfoStruct *)(((itk::MultiThreader::ThreadInfoStruct *)(arg))->UserData);
+  ThreadInfoStruct *threadInfo = (ThreadInfoStruct *)(((MultiThreaderType::ThreadInfoStruct *)(arg))->UserData);
   threadInfo->mutex.Lock();
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;

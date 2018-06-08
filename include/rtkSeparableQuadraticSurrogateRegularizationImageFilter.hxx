@@ -119,7 +119,11 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
 
 template<typename TImage>
 void SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread)
+#endif
 {
   // Create iterators for all inputs and outputs
   itk::ImageRegionIterator<TImage> out1It(this->GetOutput(0), outputRegionForThread);

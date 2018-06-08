@@ -92,7 +92,11 @@ GetNewtonUpdateImageFilter< TGradient, THessian>
 template< class TGradient, class THessian>
 void
 GetNewtonUpdateImageFilter< TGradient, THessian>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread)
+#endif
 {
   // Create iterators for all inputs and outputs
   itk::ImageRegionIterator<TGradient> outIt(this->GetOutput(), outputRegionForThread);

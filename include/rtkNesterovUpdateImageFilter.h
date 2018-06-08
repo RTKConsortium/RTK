@@ -67,7 +67,11 @@ protected:
   virtual ~NesterovUpdateImageFilter() ITK_OVERRIDE {}
 
   /** Does the real work. */
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
   void AfterThreadedGenerateData() ITK_OVERRIDE;
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;

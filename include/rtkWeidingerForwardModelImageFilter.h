@@ -93,7 +93,11 @@ protected:
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Does the real work. */
+#if ITK_VERSION_MAJOR<5
     void ThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+    void DynamicThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
     /** Creates the Outputs */
     itk::DataObject::Pointer MakeOutput(unsigned int idx);

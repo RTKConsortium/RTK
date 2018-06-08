@@ -82,7 +82,11 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void 
 UpsampleImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId)
+#if ITK_VERSION_MAJOR<5
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   //Get the input and output pointers
   InputImageConstPointer  inputPtr    = this->GetInput();
@@ -112,9 +116,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 
   outputStartIndex = outputPtr->GetLargestPossibleRegion().GetIndex();
   inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
-
-  //Support progress methods/callbacks
-  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
 
   //Find the first output pixel that is copied from the input (the one with lowest indices
   //in all dimensions)
@@ -182,8 +183,6 @@ UpsampleImageFilter<TInputImage,TOutputImage>
         outIt_local.Set(inIt.Get());
         for (unsigned int i=0; i<m_Factors[0]; i++) ++outIt_local;
         ++inIt;
-
-        progress.CompletedPixel();
         }
 
       }

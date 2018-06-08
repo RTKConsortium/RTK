@@ -21,7 +21,11 @@
 template <>
 void
 rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread)
+#endif
 {
 typedef itk::VectorImage<float, 3> TInputImage;
 
