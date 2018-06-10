@@ -62,11 +62,11 @@ public:
   itkTypeMacro(RayConvexIntersectionImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to the ConvexShape. */
-  itkGetObjectMacro(ConvexShape, ConvexShape);
+  itkGetModifiableObjectMacro(ConvexShape, ConvexShape);
   itkSetObjectMacro(ConvexShape, ConvexShape);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
+  itkGetModifiableObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
 protected:

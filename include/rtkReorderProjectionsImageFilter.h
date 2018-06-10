@@ -69,7 +69,7 @@ public:
   itkTypeMacro(ReorderProjectionsImageFilter, ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(OutputGeometry, GeometryType);
+  itkGetModifiableObjectMacro(OutputGeometry, GeometryType);
   itkSetObjectMacro(InputGeometry, GeometryType);
 
   /** Get / Set the kind of permutation requested */

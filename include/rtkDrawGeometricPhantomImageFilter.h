@@ -59,7 +59,7 @@ public:
   itkTypeMacro(DrawGeometricPhantomImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to the geometry. */
-  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkGetModifiableObjectMacro(GeometricPhantom, GeometricPhantom);
   itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
 
   /** Get/Set the phantom file path. */

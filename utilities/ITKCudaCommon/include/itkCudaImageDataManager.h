@@ -56,8 +56,8 @@ public:
   itkNewMacro(Self);
   itkTypeMacro(CudaImageDataManager, CudaDataManager);
 
-  itkGetObjectMacro(GPUBufferedRegionIndex, CudaDataManager);
-  itkGetObjectMacro(GPUBufferedRegionSize, CudaDataManager);
+  itkGetModifiableObjectMacro(GPUBufferedRegionIndex, CudaDataManager);
+  itkGetModifiableObjectMacro(GPUBufferedRegionSize, CudaDataManager);
 
   void SetImagePointer(ImageType* img);
   ImageType *GetImagePointer()

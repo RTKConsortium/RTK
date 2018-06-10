@@ -156,7 +156,7 @@ public:
     return Superclass::GetPixelContainer();
   }
 
-  itkGetObjectMacro(DataManager, CudaImageDataManager< CudaImage >);
+  itkGetModifiableObjectMacro(DataManager, CudaImageDataManager< CudaImage >);
 
   CudaDataManager::Pointer GetCudaDataManager() const;
   
