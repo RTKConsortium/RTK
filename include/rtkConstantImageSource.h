@@ -111,7 +111,7 @@ public:
   itkGetConstMacro(Constant, OutputImagePixelType);
 
   /** Set output image information from an existing image */
-  void SetInformationFromImage(const typename TOutputImage::Superclass* image);
+  void SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension>* image);
 
 protected:
   ConstantImageSource();

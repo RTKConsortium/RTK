@@ -117,7 +117,7 @@ int main(int argc, char * argv[])
       break;
     case(bp_arg_CudaBackProjection):
 #ifdef RTK_USE_CUDA
-      bp = rtk::CudaBackProjectionImageFilter::New();
+      bp = rtk::CudaBackProjectionImageFilter<OutputImageType>::New();
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;
       return EXIT_FAILURE;
