@@ -59,7 +59,7 @@ CudaForwardProjectionImageFilter<TInputImage,
     itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
     }
 
-  const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const typename Superclass::GeometryType *geometry = this->GetGeometry();
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
   const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
