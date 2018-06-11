@@ -14,6 +14,7 @@
 /* MUST MODIFY */
 MYBOOL BFP_CALLMODEL bfp_compatible(lprec *lp, int bfpversion, int lpversion, int sizeofvar)
 {
+  (void) lpversion; /* unused variable */
   MYBOOL status = FALSE;
 
   (void) lpversion; /* unused variable */

@@ -6,7 +6,6 @@ option "config"    - "Config file"                                              
 option "geometry"  g  "XML geometry file name"                                   string                       yes
 option "output"    o "Output file name"                                          string                       yes
 option "niterations" n "Number of iterations"         				 int                          no   default="1"
-option "time"       - "Records elapsed time"                                    flag                         off
 option "alpha"     - "Regularization parameter"         			 float                        no   default="0.1"
 option "beta"      - "Augmented Lagrangian constraint multiplier"         	 float                        no   default="1"
 option "CGiter"     - "Number of nested iterations of conjugate gradient"       int                       no      default="5"
@@ -14,8 +13,4 @@ option "order"      - "The order of the Daubechies wavelets"                    
 option "levels"     - "The number of decomposition levels in the wavelets transform" int                  no default="5"
 option "input"     i "Input volume"                     string                       no
 option "nodisplaced" - "Disable the displaced detector filter"                  flag                      off
-
-section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast","Siddon" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
 

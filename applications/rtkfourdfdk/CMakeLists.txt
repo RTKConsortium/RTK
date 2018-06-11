@@ -2,10 +2,6 @@ WRAP_GGO(rtkfourdfdk_GGO_C rtkfourdfdk.ggo ../rtkinputprojections_section.ggo ..
 add_executable(rtkfourdfdk rtkfourdfdk.cxx ${rtkfourdfdk_GGO_C})
 target_link_libraries(rtkfourdfdk RTK)
 
-if(RTK_USE_CUDA)
-  target_link_libraries(rtkfourdfdk rtkcuda)
-endif()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkfourdfdk) 

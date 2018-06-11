@@ -1,0 +1,18 @@
+#-----------------------------------------------------------------------------
+# itk::ImageToImageFilter< itk::Image< float,3 >,itk::VectorImage< float,2 > >
+#-----------------------------------------------------------------------------
+itk_wrap_class("itk::ImageToImageFilter" POINTER)
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}3VI${ITKM_${t}}2" "itk::Image<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_${t}}, 2>")
+  endforeach()
+itk_end_wrap_class()
+
+#-----------------------------------------------------------------------------
+# rtk::ImageToVectorImageFilter
+#-----------------------------------------------------------------------------
+itk_wrap_class("rtk::ImageToVectorImageFilter" POINTER)
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}2VI${ITKM_${t}}2" "itk::Image<${ITKT_${t}}, 2>, itk::VectorImage<${ITKT_${t}}, 2>")
+    itk_wrap_template("I${ITKM_${t}}3VI${ITKM_${t}}2" "itk::Image<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_${t}}, 2>")
+  endforeach()
+itk_end_wrap_class()

@@ -46,14 +46,9 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkiterativefdk>(reader, args_info);
 
-  itk::TimeProbe readerProbe;
   if(args_info.verbose_flag)
-    std::cout << "Reading... " << std::flush;
-  readerProbe.Start();
+    std::cout << "Reading... " << std::endl;
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
-  readerProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << "It took " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
 
   // Geometry
   if(args_info.verbose_flag)
@@ -85,7 +80,7 @@ int main(int argc, char * argv[])
   f->SetInput( 0, constantImageSource->GetOutput() ); \
   f->SetInput( 1, reader->GetOutput() ); \
   f->SetGeometry(geometryReader->GetOutputObject()); \
-  f->SetForwardProjectionFilter(args_info.fp_arg); \
+  SetForwardProjectionFromGgo(args_info, f.GetPointer()); \
   f->SetNumberOfIterations(args_info.niterations_arg); \
   f->SetTruncationCorrection(args_info.pad_arg); \
   f->SetHannCutFrequency(args_info.hann_arg); \
@@ -126,17 +121,9 @@ int main(int argc, char * argv[])
   writer->SetInput( IFDKOutputPointer );
 
   if(args_info.verbose_flag)
-    std::cout << "Reconstructing and writing... " << std::flush;
-  itk::TimeProbe writerProbe;
+    std::cout << "Reconstructing and writing... " << std::endl;
 
-  writerProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-  writerProbe.Stop();
-
-  if(args_info.verbose_flag)
-    {
-    std::cout << "It took " << writerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
 
   return EXIT_SUCCESS;
 }

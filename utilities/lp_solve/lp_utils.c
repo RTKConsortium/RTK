@@ -607,6 +607,7 @@ STATIC void chsign_bounds(REAL *lobound, REAL *upbound)
 /* ---------------------------------------------------------------------------------- */
 STATIC REAL rand_uniform(lprec *lp, REAL range)
 {
+  (void)lp;
   static MYBOOL randomized = FALSE; /* static ok here for reentrancy/multithreading */
   (void)lp;
 

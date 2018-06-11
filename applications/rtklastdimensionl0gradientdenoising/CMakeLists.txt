@@ -2,10 +2,6 @@ WRAP_GGO(rtklastdimensionl0gradientdenoising_GGO_C rtklastdimensionl0gradientden
 add_executable(rtklastdimensionl0gradientdenoising rtklastdimensionl0gradientdenoising.cxx ${rtklastdimensionl0gradientdenoising_GGO_C})
 target_link_libraries(rtklastdimensionl0gradientdenoising RTK)
 
-if(RTK_USE_CUDA)
-  target_link_libraries(rtklastdimensionl0gradientdenoising rtkcuda)
-endif()
-
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtklastdimensionl0gradientdenoising) 

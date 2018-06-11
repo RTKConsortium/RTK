@@ -24,11 +24,9 @@
 #ifdef RTK_USE_CUDA
 #include "rtkCudaForwardProjectionImageFilter.h"
 #endif
-#include "rtkRayCastInterpolatorForwardProjectionImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -73,23 +71,15 @@ int main(int argc, char * argv[])
     std::cout << "Reading input volume "
               << args_info.input_arg
               << "..."
-              << std::flush;
-  itk::TimeProbe readerProbe;
+              << std::endl;
   typedef itk::ImageFileReader<  OutputImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
-  readerProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
-  readerProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << readerProbe.GetMean() << ' ' << readerProbe.GetUnit()
-              << '.' << std::endl;
 
   // Create forward projection image filter
   if(args_info.verbose_flag)
-    std::cout << "Projecting volume..." << std::flush;
-  itk::TimeProbe projProbe;
+    std::cout << "Projecting volume..." << std::endl;
 
   rtk::ForwardProjectionImageFilter<OutputImageType, OutputImageType>::Pointer forwardProjection;
   
@@ -97,9 +87,6 @@ int main(int argc, char * argv[])
   {
   case(fp_arg_Joseph):
     forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(fp_arg_RayCastInterpolator):
-    forwardProjection = rtk::RayCastInterpolatorForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
     break;
   case(fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
@@ -117,21 +104,14 @@ int main(int argc, char * argv[])
   forwardProjection->SetInput( constantImageSource->GetOutput() );
   forwardProjection->SetInput( 1, reader->GetOutput() );
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
-  projProbe.Start();
   if(!args_info.lowmem_flag)
     {
     TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() )
     }
-  projProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << projProbe.GetMean() << ' ' << projProbe.GetUnit()
-              << '.' << std::endl;
 
   // Write
   if(args_info.verbose_flag)
-    std::cout << "Writing... " << std::flush;
-  itk::TimeProbe writeProbe;
+    std::cout << "Writing... " << std::endl;
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
@@ -140,13 +120,7 @@ int main(int argc, char * argv[])
     {
     writer->SetNumberOfStreamDivisions(sizeOutput[2]);
     }
-  writeProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-  writeProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << writeProbe.GetMean() << ' ' << projProbe.GetUnit()
-              << '.' << std::endl;
 
   return EXIT_SUCCESS;
 }

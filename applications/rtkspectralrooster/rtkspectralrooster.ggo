@@ -8,14 +8,9 @@ option "output"      o "Output file name"                                      s
 option "niter"       n "Number of main loop iterations"                        int    no   default="5"
 option "cgiter"      - "Number of conjugate gradient nested iterations"        int    no   default="4"
 option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
-option "time"        t "Records elapsed time during the process"               flag   off
 option "input"       i "Input volume"                                          string no
 option "projection"  p "Vector projections file"                               string yes
 option "nodisplaced" - "Disable the displaced detector filter"                 flag   off
-
-section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","RayCastInterpolator","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","NormalizedJoseph","CudaRayCast" enum no default="VoxelBasedBackProjection"
 
 section "Regularization"
 option "nopositivity" - "Do not enforce positivity"                                                             flag    off

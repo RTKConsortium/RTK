@@ -1,0 +1,11 @@
+package "rtkosem"
+purpose "Reconstructs a 3D volume from a sequence of projections with Ordered subset expectation maximization."
+
+option "verbose"     v "Verbose execution"                                     flag   off
+option "config"      - "Config file"                                           string no
+option "geometry"    g "XML geometry file name"                                string yes
+option "output"      o "Output file name"                                      string yes
+option "niterations" n "Number of iterations"                                  int    no   default="5"
+option "input"     i "Input volume"              string          no
+option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (several for OSEM, all for MLEM)" int no default="1"
+

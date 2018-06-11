@@ -1,0 +1,3 @@
+itk_wrap_class("rtk::ElektaSynergyRawLookupTableImageFilter" POINTER)
+  itk_wrap_image_filter("${US}" 2 2+)
+itk_end_wrap_class()

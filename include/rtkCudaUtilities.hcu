@@ -1,0 +1,210 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef __rtkCudaUtilities_hcu
+#define __rtkCudaUtilities_hcu
+
+#ifdef _WIN32
+# include <math.h>
+# define __CUDA_INTERNAL_COMPILATION__
+# include <math_functions.h>
+# undef __CUDA_INTERNAL_COMPILATION__
+#endif
+#include <cuda_runtime_api.h>
+#include <string>
+#include <vector>
+#define ITK_STATIC
+#include <itkMacro.h>
+#undef ITK_STATIC
+#include <cuda.h>
+#include <cublas_v2.h>
+
+#define CUDA_CHECK_ERROR \
+    { \
+    cudaError_t err = cudaGetLastError(); \
+    if (cudaSuccess != err) \
+      itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) << std::endl); \
+    }
+
+#define CUFFT_CHECK_ERROR(result) \
+    { \
+    if (result) \
+      itkGenericExceptionMacro(<< "CUFFT ERROR #" << result << std::endl); \
+    }
+
+std::vector<int> GetListOfCudaDevices();
+std::pair<int,int> GetCudaComputeCapability(int device);
+size_t GetFreeGPUGlobalMemory(int device);
+
+inline __host__ __device__ float3 matrix_multiply(float3 a, float* matrix)
+{
+    return make_float3(matrix[0] * a.x + matrix[1] * a.y + matrix[2] * a.z + matrix[3],
+                       matrix[4] * a.x + matrix[5] * a.y + matrix[6] * a.z + matrix[7],
+                       matrix[8] * a.x + matrix[9] * a.y + matrix[10] * a.z + matrix[11]);
+}
+inline __host__ __device__ float3 operator-(float3 a, float3 b)
+{
+    return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+inline __host__ __device__ float3 fminf(float3 a, float3 b)
+{
+  return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
+}
+inline __host__ __device__ float3 fmaxf(float3 a, float3 b)
+{
+  return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
+}
+inline __host__ __device__ float dot(float3 a, float3 b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+inline __host__ __device__ float3 operator/(float3 a, float3 b)
+{
+    return make_float3(a.x / b.x, a.y / b.y, a.z / b.z);
+}
+inline __host__ __device__ float3 operator/(float3 a, float b)
+{
+    return make_float3(a.x / b, a.y / b, a.z / b);
+}
+inline __host__ __device__ float3 operator*(float3 a, float3 b)
+{
+    return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
+}
+inline __host__ __device__ float3 operator*(float b, float3 a)
+{
+    return make_float3(b * a.x, b * a.y, b * a.z);
+}
+inline __host__ __device__ float3 operator+(float3 a, float3 b)
+{
+    return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
+}
+inline __host__ __device__ float3 operator+(float3 a, float b)
+{
+    return make_float3(a.x + b, a.y + b, a.z + b);
+}
+inline __host__ __device__ void operator+=(float3 &a, float3 b)
+{
+    a.x += b.x; a.y += b.y; a.z += b.z;
+}
+inline __host__ __device__ int iDivUp(int a, int b)
+{
+  return (a % b != 0) ? (a / b + 1) : (a / b);
+}
+inline __host__ __device__ float dot_vector(float3 u, float3 v)
+{
+    return u.x*v.x + u.y*v.y + u.z*v.z;
+}
+inline __host__  void prepareTextureObject(int size[3],
+                                           float *dev_ptr,
+                                           cudaArray **&componentArrays,
+                                           unsigned int nComponents,
+                                           cudaTextureObject_t *tex,
+                                           bool isProjections)
+{
+// Create CUBLAS context
+cublasHandle_t  handle;
+cublasCreate(&handle);
+
+// create texture object
+cudaResourceDesc resDesc;
+memset(&resDesc, 0, sizeof(resDesc));
+resDesc.resType = cudaResourceTypeArray;
+
+cudaTextureDesc texDesc;
+memset(&texDesc, 0, sizeof(texDesc));
+texDesc.readMode = cudaReadModeElementType;
+for (unsigned int component = 0; component < nComponents; component++)
+  {
+  if (isProjections)
+    texDesc.addressMode[component] = cudaAddressModeBorder;
+  else
+    texDesc.addressMode[component] = cudaAddressModeClamp;
+  }
+texDesc.filterMode = cudaFilterModeLinear;
+
+static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32,0,0,0, cudaChannelFormatKindFloat);
+cudaExtent volExtent = make_cudaExtent(size[0], size[1], size[2]);
+
+// Allocate an intermediate memory space to extract the components of the input volume
+float *singleComponent;
+int numel = size[0] * size[1] * size[2];
+cudaMalloc(&singleComponent, numel * sizeof(float));
+float one = 1.0;
+
+// Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
+// The best way to understand it is to read
+// http://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
+for (unsigned int component = 0; component < nComponents; component++)
+  {
+  // Reset the intermediate memory
+  cudaMemset((void *)singleComponent, 0, numel * sizeof(float));
+
+  // Fill it with the current component
+  float * pComponent = dev_ptr + component;
+  cublasSaxpy(handle, numel, &one, pComponent, nComponents, singleComponent, 1);
+
+  // Allocate the cudaArray. Projections use layered arrays, volumes use default 3D arrays
+  if (isProjections)
+    cudaMalloc3DArray((cudaArray**)& componentArrays[component], &channelDesc, volExtent, cudaArrayLayered);
+  else
+    cudaMalloc3DArray((cudaArray**)& componentArrays[component], &channelDesc, volExtent);
+
+  // Fill it with the current singleComponent
+  cudaMemcpy3DParms CopyParams = {0};
+  CopyParams.srcPtr   = make_cudaPitchedPtr(singleComponent, size[0] * sizeof(float), size[0], size[1]);
+  CopyParams.dstArray = (cudaArray*) componentArrays[component];
+  CopyParams.extent   = volExtent;
+  CopyParams.kind     = cudaMemcpyDeviceToDevice;
+  cudaMemcpy3D(&CopyParams);
+  CUDA_CHECK_ERROR;
+
+  // Fill in the texture object with all this information
+  resDesc.res.array.array = componentArrays[component];
+  cudaCreateTextureObject(&tex[component], &resDesc, &texDesc, NULL);
+  CUDA_CHECK_ERROR;
+  }
+
+// Intermediate memory is no longer needed
+cudaFree(singleComponent);
+
+// Destroy CUBLAS context
+cublasDestroy(handle);
+}
+inline __device__ void matrix_matrix_multiply( float* A, float* B, float* C,
+                                               unsigned int rowsA,
+                                               unsigned int colsB,
+                                               unsigned int colsArowsB)
+{
+  unsigned int indexInA, indexInB, indexInC;
+  for (unsigned int rowA=0; rowA < rowsA; rowA++)
+    {
+    for (unsigned int colB=0; colB < colsB; colB++)
+      {
+      indexInC = rowA * colsB + colB;
+      C[indexInC] = 0.0f;
+      for (unsigned int colArowB=0; colArowB < colsArowsB; colArowB++)
+        {
+        indexInA = rowA * colsArowsB + colArowB;
+        indexInB = colArowB * colsB + colB;
+        C[indexInC] += A[indexInA] * B[indexInB];
+        }
+      }
+    }
+}
+
+#endif

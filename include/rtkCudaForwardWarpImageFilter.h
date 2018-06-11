@@ -1,0 +1,86 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef rtkCudaForwardWarpImageFilter_h
+#define rtkCudaForwardWarpImageFilter_h
+
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
+#include "rtkWin32Header.h"
+#include "rtkForwardWarpImageFilter.h"
+
+#include <itkCudaImage.h>
+#include <itkCudaInPlaceImageFilter.h>
+
+namespace rtk
+{
+
+/** \class CudaForwardWarpImageFilter
+ * \brief Cuda version of the ForwardWarpImageFilter
+ *
+ * Deform an image using a Displacement Vector Field, by performing
+ * trilinear splat. Adjoint of the regular warp filter. GPU-based implementation
+ *
+ * \test rtkwarptest
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup CudaImageToImageFilter
+ */
+class RTK_EXPORT CudaForwardWarpImageFilter :
+  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+    rtk::ForwardWarpImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
+{
+public:
+  /** Standard class typedefs. */
+  typedef itk::CudaImage<float,3>                                 ImageType;
+  typedef itk::CovariantVector<float, 3>                          DisplacementVectorType;
+  typedef itk::CudaImage<DisplacementVectorType, 3>               DVFType;
+  typedef ForwardWarpImageFilter< ImageType, ImageType, DVFType>  ForwardWarpImageFilterType;
+  typedef CudaForwardWarpImageFilter                              Self;
+  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
+                     ForwardWarpImageFilterType>                  Superclass;
+  typedef itk::SmartPointer<Self>                                 Pointer;
+  typedef itk::SmartPointer<const Self>                           ConstPointer;
+
+  typedef ImageType::RegionType                                   OutputImageRegionType;
+
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(CudaForwardWarpImageFilter, Superclass);
+
+protected:
+  CudaForwardWarpImageFilter();
+  virtual ~CudaForwardWarpImageFilter() {};
+
+  virtual void GPUGenerateData();
+
+private:
+  CudaForwardWarpImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);                   //purposely not implemented
+};
+
+} // end namespace rtk
+
+#endif //end conditional definition of the class
+
+#endif

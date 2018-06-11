@@ -114,8 +114,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
-  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
+  SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
   conjugategradient->SetInputVolumeSeries(inputFilter->GetOutput() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetCudaConjugateGradient(args_info.cudacg_flag);
@@ -127,21 +127,7 @@ int main(int argc, char * argv[])
   conjugategradient->SetWeights(signalToInterpolationWeights->GetOutput());
   conjugategradient->SetSignal(reorder->GetOutputSignal());
 
-  itk::TimeProbe readerProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
-
-  if(args_info.time_flag)
-    {
-//    conjugategradient->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    }
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;

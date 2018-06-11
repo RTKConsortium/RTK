@@ -1,0 +1,45 @@
+# itk::CovariantVector< double, 1 >
+itk_wrap_class("itk::CovariantVector")
+  itk_wrap_template("${ITKM_D}1" "double, 1")
+itk_end_wrap_class()
+
+# itk::Point< double, 1 >
+itk_wrap_class("itk::Point")
+  itk_wrap_template("${ITKM_D}1" "double, 1")
+itk_end_wrap_class()
+
+# itk::Matrix< double, 1, 1 >
+itk_wrap_class("itk::Matrix")
+  itk_wrap_template("${ITKM_D}11" "double, 1, 1")
+itk_end_wrap_class()
+
+# itk::ImageBase< 1 >
+itk_wrap_class("itk::ImageBase" POINTER)
+  itk_wrap_template("1" "1")
+itk_end_wrap_class()
+
+# itk::Image< double, 1 >
+itk_wrap_class("itk::Image" POINTER)
+  itk_wrap_template("${ITKM_D}1" "double, 1")
+itk_end_wrap_class()
+
+# itk::ImageSource< itk::Image< double, 1 > >
+itk_wrap_class("itk::ImageSource" POINTER)
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("ID1" "itk::Image<${ITKT_D}, 1>")
+    endforeach()
+itk_end_wrap_class()
+
+# itk::ImageToImageFilter< itk::Image< double, 2 >, itk::Image< double, 1 > >
+itk_wrap_class("itk::ImageToImageFilter" POINTER)
+  itk_wrap_template("I${ITKM_D}2I${ITKM_D}1" "itk::Image< double, 2 >, itk::Image< double, 1 >")
+itk_end_wrap_class()
+
+# ----------------------------------------------------------------------------
+# rtk::Reg1DExtractShroudSignalImageFilter
+# ----------------------------------------------------------------------------
+itk_wrap_class("rtk::Reg1DExtractShroudSignalImageFilter" POINTER)
+
+  itk_wrap_template("${ITKM_D}${ITKM_D}" "double, double")
+
+itk_end_wrap_class()

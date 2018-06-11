@@ -34,9 +34,7 @@
 #include "rtkCyclicDeformationImageFilter.h"
 
 #include <itkStreamingImageFilter.h>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-  #include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
 #include <itkImageFileWriter.h>
 
 int main(int argc, char * argv[])
@@ -58,16 +56,11 @@ int main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfdk>(reader, args_info);
 
-  itk::TimeProbe readerProbe;
   if(!args_info.lowmem_flag)
     {
     if(args_info.verbose_flag)
-      std::cout << "Reading... " << std::flush;
-    readerProbe.Start();
+      std::cout << "Reading... " << std::endl;
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
-    readerProbe.Stop();
-    if(args_info.verbose_flag)
-      std::cout << "It took " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
     }
 
   // Geometry
@@ -133,8 +126,9 @@ int main(int argc, char * argv[])
   // compensation are set, we still create the object before hand to avoid auto
   // destruction.
   typedef itk::Vector<float,3> DVFPixelType;
+  typedef itk::Image< DVFPixelType, 4 > DVFImageSequenceType;
   typedef itk::Image< DVFPixelType, 3 > DVFImageType;
-  typedef rtk::CyclicDeformationImageFilter< DVFImageType > DeformationType;
+  typedef rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType > DeformationType;
   typedef itk::ImageFileReader<DeformationType::InputImageType> DVFReaderType;
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   DeformationType::Pointer def = DeformationType::New();
@@ -198,11 +192,9 @@ int main(int argc, char * argv[])
   StreamerType::Pointer streamerBP = StreamerType::New();
   streamerBP->SetInput( pfeldkamp );
   streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
   itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Prevent splitting along z axis. As a result, splitting will be performed along y axis
   streamerBP->SetRegionSplitter(splitter);
-#endif
 
   // Write
   typedef itk::ImageFileWriter<CPUOutputImageType> WriterType;
@@ -211,24 +203,9 @@ int main(int argc, char * argv[])
   writer->SetInput( streamerBP->GetOutput() );
 
   if(args_info.verbose_flag)
-    std::cout << "Reconstructing and writing... " << std::flush;
-  itk::TimeProbe writerProbe;
+    std::cout << "Reconstructing and writing... " << std::endl;
 
-  writerProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-  writerProbe.Stop();
-
-  if(args_info.verbose_flag)
-    {
-    std::cout << "It took " << writerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-    if(!strcmp(args_info.hardware_arg, "cpu") )
-      feldkamp->PrintTiming(std::cout);
-#ifdef RTK_USE_CUDA
-    else if(!strcmp(args_info.hardware_arg, "cuda") )
-      feldkampCUDA->PrintTiming(std::cout);
-#endif
-    std::cout << std::endl;
-    }
 
   return EXIT_SUCCESS;
 }

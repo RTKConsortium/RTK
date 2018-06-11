@@ -23,7 +23,6 @@
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
@@ -33,7 +32,6 @@
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkTimeProbe.h>
 
 int main(int argc, char * argv[])
 {
@@ -72,14 +70,14 @@ int main(int argc, char * argv[])
 
   // Create back projection image filter
   if(args_info.verbose_flag)
-    std::cout << "Backprojecting volume..." << std::flush;
-  itk::TimeProbe bpProbe;
+    std::cout << "Backprojecting volume..." << std::endl;
   rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
 
   // In case warp backprojection is used, we create a deformation
   typedef itk::Vector<float,3> DVFPixelType;
+  typedef itk::Image< DVFPixelType, 4 > DVFImageSequenceType;
   typedef itk::Image< DVFPixelType, 3 > DVFImageType;
-  typedef rtk::CyclicDeformationImageFilter< DVFImageType > DeformationType;
+  typedef rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType > DeformationType;
   typedef itk::ImageFileReader<DeformationType::InputImageType> DVFReaderType;
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   DeformationType::Pointer def = DeformationType::New();
@@ -109,9 +107,6 @@ int main(int argc, char * argv[])
     case(bp_arg_Joseph):
       bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-    case(bp_arg_NormalizedJoseph):
-      bp = rtk::NormalizedJosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
-      break;
     case(bp_arg_CudaFDKBackProjection):
 #ifdef RTK_USE_CUDA
       bp = rtk::CudaFDKBackProjectionImageFilter::New();
@@ -122,7 +117,7 @@ int main(int argc, char * argv[])
       break;
     case(bp_arg_CudaBackProjection):
 #ifdef RTK_USE_CUDA
-      bp = rtk::CudaBackProjectionImageFilter::New();
+      bp = rtk::CudaBackProjectionImageFilter<OutputImageType>::New();
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;
       return EXIT_FAILURE;
@@ -144,29 +139,16 @@ int main(int argc, char * argv[])
   bp->SetInput( constantImageSource->GetOutput() );
   bp->SetInput( 1, reader->GetOutput() );
   bp->SetGeometry( geometryReader->GetOutputObject() );
-  bpProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() )
-  bpProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << bpProbe.GetMean() << ' ' << bpProbe.GetUnit()
-              << '.' << std::endl;
 
   // Write
   if(args_info.verbose_flag)
-    std::cout << "Writing... " << std::flush;
-  itk::TimeProbe writeProbe;
+    std::cout << "Writing... " << std::endl;
   typedef itk::ImageFileWriter<  OutputImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( bp->GetOutput() );
-  writeProbe.Start();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-  writeProbe.Stop();
-  if(args_info.verbose_flag)
-    std::cout << " done in "
-              << writeProbe.GetMean() << ' ' << writeProbe.GetUnit()
-              << '.' << std::endl;
 
   return EXIT_SUCCESS;
 }

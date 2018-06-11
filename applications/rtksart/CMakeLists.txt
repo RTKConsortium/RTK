@@ -1,10 +1,6 @@
-WRAP_GGO(rtksart_GGO_C rtksart.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+WRAP_GGO(rtksart_GGO_C rtksart.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 add_executable(rtksart rtksart.cxx ${rtksart_GGO_C})
 target_link_libraries(rtksart RTK)
-
-if (RTK_USE_CUDA)
-  target_link_libraries(rtksart rtkcuda)
-endif ()
 
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)

@@ -1,0 +1,8 @@
+itk_wrap_class("rtk::FDKConeBeamReconstructionFilter"  POINTER)
+  set(IMAGE_DIMS 3) #Only wrap for 3D images because of rtkBackProjectionImageFilter dimension restriction. Otherwise use global variable ${ITK_WRAP_IMAGE_DIMS}
+  foreach(d ${IMAGE_DIMS})
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("I${ITKM_${t}}${d}" "itk::Image<${ITKT_${t}}, ${d}>")
+    endforeach()
+ endforeach()
+itk_end_wrap_class()

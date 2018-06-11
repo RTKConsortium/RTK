@@ -8,6 +8,7 @@
 /* DON'T MODIFY */
 MYBOOL BFP_CALLMODEL bfp_init(lprec *lp, int size, int delta, const char *options)
 {
+  (void) delta;
   INVrec *lu;
   (void) delta;
 

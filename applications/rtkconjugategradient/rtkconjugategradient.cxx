@@ -21,7 +21,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #include <iostream>
 #include <fstream>
@@ -117,8 +116,8 @@ int main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(args_info.fp_arg);
-  conjugategradient->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
+  SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
   conjugategradient->SetInput( inputFilter->GetOutput() );
   conjugategradient->SetInput(1, reader->GetOutput());
   conjugategradient->SetInput(2, weightsSource->GetOutput());
@@ -138,28 +137,14 @@ int main(int argc, char * argv[])
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
-  itk::TimeProbe readerProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::flush;
-    readerProbe.Start();
-    }
-
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
 
-  if(args_info.time_flag)
+  if(args_info.costs_given)
     {
-//    conjugategradient->PrintTiming(std::cout);
-    readerProbe.Stop();
-    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+    costs=conjugategradient->GetResidualCosts();
+    std::cout << "Residual costs at each iteration :" << std::endl;
+    copy(costs.begin(),costs.end(),costs_it);
     }
-
-//  if(args_info.costs_given)
-//    {
-//    costs=conjugategradient->GetResidualCosts();
-//    std::cout << "Residual costs at each iteration :" << std::endl;
-//    copy(costs.begin(),costs.end(),costs_it);
-//    }
 
   // Write
   typedef itk::ImageFileWriter< OutputImageType > WriterType;

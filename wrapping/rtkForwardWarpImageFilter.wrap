@@ -1,0 +1,21 @@
+# Wrap base class template
+itk_wrap_class("itk::WarpImageFilter" POINTER)
+  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("I${ITKM_${t}}${d}I${ITKM_${t}}${d}ICV${ITKM_${t}}${d}${d}"
+        "itk::Image<${ITKT_${t}}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>, itk::Image< itk::CovariantVector<${ITKT_${t}}, ${d}>, ${d}>")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()
+
+#----------------------------------------------------------------------------
+# rtk::ForwardWarpImageFilter
+#----------------------------------------------------------------------------
+itk_wrap_class("rtk::ForwardWarpImageFilter" POINTER)
+  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+    foreach(t ${WRAP_ITK_REAL})
+      itk_wrap_template("I${ITKM_${t}}${d}I${ITKM_${t}}${d}ICV${ITKM_${t}}${d}${d}"
+        "itk::Image<${ITKT_${t}}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>, itk::Image< itk::CovariantVector<${ITKT_${t}}, ${d}>, ${d}>")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()

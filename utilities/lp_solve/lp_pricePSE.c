@@ -263,6 +263,7 @@ STATIC void freeWeights(REAL *w)
 
 STATIC MYBOOL updatePricer(lprec *lp, int rownr, int colnr, REAL *pcol, REAL *prow, int *nzprow)
 {
+  (void)nzprow;
   REAL   *vEdge = NULL, cEdge, hold, *newEdge, *w = NULL;
   int    i, m, n, exitcol, errlevel = DETAILED;
   MYBOOL forceRefresh = FALSE, isDual, isDEVEX, ok = FALSE;

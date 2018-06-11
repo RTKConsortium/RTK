@@ -44,7 +44,6 @@ int main(int argc, char * argv[])
   typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
   typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
 #endif
-  typedef ProjectionStackType                   VolumeType;
 
   // Projections reader
   typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
@@ -103,8 +102,8 @@ int main(int argc, char * argv[])
       rtk::FourDSARTConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType >::New();
 
   // Set the forward and back projection filters
-  fourdsart->SetForwardProjectionFilter(args_info.fp_arg);
-  fourdsart->SetBackProjectionFilter(args_info.bp_arg);
+  SetForwardProjectionFromGgo(args_info, fourdsart.GetPointer());
+  SetBackProjectionFromGgo(args_info, fourdsart.GetPointer());
   fourdsart->SetInputVolumeSeries(inputFilter->GetOutput() );
   fourdsart->SetInputProjectionStack(reader->GetOutput());
   fourdsart->SetGeometry( geometryReader->GetOutputObject() );
@@ -115,25 +114,12 @@ int main(int argc, char * argv[])
   fourdsart->SetLambda( args_info.lambda_arg );
   fourdsart->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
-  itk::TimeProbe totalTimeProbe;
-  if(args_info.time_flag)
-    {
-    std::cout << "Recording elapsed time... " << std::endl << std::flush;
-    totalTimeProbe.Start();
-    }
   if(args_info.positivity_flag)
     {
     fourdsart->SetEnforcePositivity(true);
     }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fourdsart->Update() )
-
-  if(args_info.time_flag)
-    {
-    fourdsart->PrintTiming(std::cout);
-    totalTimeProbe.Stop();
-    std::cout << "It took...  " << totalTimeProbe.GetMean() << ' ' << totalTimeProbe.GetUnit() << std::endl;
-    }
 
   // Write
   typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
