@@ -16,6 +16,13 @@
  *
  *=========================================================================*/
 
+#ifndef rtkCudaBackProjectionImageFilter_hxx
+#define rtkCudaBackProjectionImageFilter_hxx
+
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkCudaBackProjectionImageFilter.h"
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaBackProjectionImageFilter.hcu"
@@ -28,13 +35,15 @@
 namespace rtk
 {
 
-CudaBackProjectionImageFilter
+template <class ImageType>
+CudaBackProjectionImageFilter<ImageType>
 ::CudaBackProjectionImageFilter()
 {
 }
 
+template <class ImageType>
 void
-CudaBackProjectionImageFilter
+CudaBackProjectionImageFilter<ImageType>
 ::GPUGenerateData()
 {
   const unsigned int Dimension = ImageType::ImageDimension;
@@ -44,7 +53,7 @@ CudaBackProjectionImageFilter
     itkGenericExceptionMacro("The CUDA voxel based back projection image filter can only handle slabs of at most 1024 projections")
 
   // Rotation center (assumed to be at 0 yet)
-  ImageType::PointType rotCenterPoint;
+  typename ImageType::PointType rotCenterPoint;
   rotCenterPoint.Fill(0.0);
   itk::ContinuousIndex<double, Dimension> rotCenterIndex;
   this->GetInput(0)->TransformPhysicalPointToContinuousIndex(rotCenterPoint, rotCenterIndex);
@@ -73,7 +82,8 @@ CudaBackProjectionImageFilter
 
   float *stackGPUPointer = *(float**)( this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer() );
   ptrdiff_t projSize = this->GetInput(1)->GetBufferedRegion().GetSize()[0] *
-                       this->GetInput(1)->GetBufferedRegion().GetSize()[1];
+                       this->GetInput(1)->GetBufferedRegion().GetSize()[1] *
+                       itk::NumericTraits<typename ImageType::PixelType>::GetLength();
   stackGPUPointer += projSize * (iFirstProj-this->GetInput(1)->GetBufferedRegion().GetIndex()[2]);
 
   // Allocate a large matrix to hold the matrix of all projections
@@ -83,7 +93,7 @@ CudaBackProjectionImageFilter
   float *fprojPPToProjIndex = new float[9];
 
   // Projection physical point to projection index matrix
-  itk::Matrix<double, 3, 3> projPPToProjIndex = GetProjectionPhysicalPointToProjectionIndexMatrix();
+  itk::Matrix<double, 3, 3> projPPToProjIndex = this->GetProjectionPhysicalPointToProjectionIndexMatrix();
 
   // Correction for non-zero indices in the projections
   itk::Matrix<double, 3, 3> matrixIdxProj;
@@ -103,7 +113,7 @@ CudaBackProjectionImageFilter
     // Volume index to projection physical point matrix
     // normalized to have a correct backprojection weight
     // (1 at the isocenter)
-    ProjectionMatrixType volIndexToProjPP = GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
+    typename BackProjectionImageFilterType::ProjectionMatrixType volIndexToProjPP = this->GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
 
     // Correction for non-zero indices in the volume
     volIndexToProjPP = volIndexToProjPP.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
@@ -113,7 +123,7 @@ CudaBackProjectionImageFilter
       perspFactor += volIndexToProjPP[Dimension-1][j] * rotCenterIndex[j];
     volIndexToProjPP /= perspFactor;
 
-    ProjectionMatrixType matrix = ProjectionMatrixType(projPPToProjIndex.GetVnlMatrix() * volIndexToProjPP.GetVnlMatrix());
+    typename BackProjectionImageFilterType::ProjectionMatrixType matrix = typename BackProjectionImageFilterType::ProjectionMatrixType(projPPToProjIndex.GetVnlMatrix() * volIndexToProjPP.GetVnlMatrix());
 
     // Fill float arrays with matrices coefficients, to be passed to GPU
     for (int j = 0; j < 12; j++)
@@ -122,6 +132,8 @@ CudaBackProjectionImageFilter
       fMatrix[j + (iProj-iFirstProj) * 12] = matrix[j/4][j%4];
       }
     }
+
+  const unsigned int vectorLength = itk::PixelTraits<typename ImageType::PixelType>::Dimension;
 
   for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
     {
@@ -137,8 +149,8 @@ CudaBackProjectionImageFilter
                       pin,
                       pout,
                       stackGPUPointer + projSize * i,
-                      this->m_Geometry->GetRadiusCylindricalDetector()
-                      );
+                      this->m_Geometry->GetRadiusCylindricalDetector(),
+                      vectorLength);
 
     // Re-use the output as input
     pin = pout;
@@ -150,3 +162,7 @@ CudaBackProjectionImageFilter
 }
 
 } // end namespace rtk
+
+#endif //end conditional definition of the class
+
+#endif

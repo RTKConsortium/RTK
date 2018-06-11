@@ -63,8 +63,9 @@ CudaForwardProjectionImageFilter<TInputImage,
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
   const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
-  const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
-    this->GetOutput()->GetBufferedRegion().GetSize(1);
+  const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0)
+                                    * this->GetOutput()->GetBufferedRegion().GetSize(1)
+                                    * itk::NumericTraits<typename TInputImage::PixelType>::GetLength();
 
   itk::Vector<double, 4> source_position;
 
@@ -178,6 +179,8 @@ CudaForwardProjectionImageFilter<TInputImage,
     }
 
   int projectionOffset = 0;
+  const unsigned int vectorLength = itk::PixelTraits<typename TInputImage::PixelType>::Dimension;
+
   for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
     {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
@@ -198,7 +201,8 @@ CudaForwardProjectionImageFilter<TInputImage,
                         boxMin,
                         boxMax,
                         spacing,
-                        m_UseCudaTexture);
+                        m_UseCudaTexture,
+                        vectorLength);
     }
 
   delete[] translatedProjectionIndexTransformMatrices;

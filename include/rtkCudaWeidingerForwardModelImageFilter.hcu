@@ -16,19 +16,21 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaBackProjectionImageFilter_hcu
-#define __rtkCudaBackProjectionImageFilter_hcu
+#ifndef __rtkCudaWeidingerForwardModelImageFilter_hcu
+#define __rtkCudaWeidingerForwardModelImageFilter_hcu
 
 void
-CUDA_back_project(int projSize[3],
-                  int volSize[3],
-                  float *matrices,
-                  float *volIndexToProjPPs,
-                  float *projPPToProjIndex,
-                  float *dev_vol_in,
-                  float *dev_vol_out,
-                  float *dev_img,
-                  double radiusCylindricalDetector,
-                  unsigned int vectorLength);
+CUDA_WeidingerForwardModel( int projectionSize[3],
+                            float* materialAttenuations,
+                            float* binnedDetectorResponse,
+                            float* pMatProj,
+                            float* pPhoCount,
+                            float* pSpectrum,
+                            float* pProjOnes,
+                            float* pOut1,
+                            float* pOut2,
+                            unsigned int nBins,
+                            unsigned int nEnergies,
+                            unsigned int nMaterials);
 
 #endif

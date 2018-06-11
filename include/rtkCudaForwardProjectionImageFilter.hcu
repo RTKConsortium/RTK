@@ -22,7 +22,7 @@
 #include "rtkWin32Header.h"
 
 void
-RTK_EXPORT CUDA_forward_project( int projSize[3],
+RTK_EXPORT CUDA_forward_project(int projSize[3],
                       int volSize[3],
                       float *translatedProjectionIndexTransformMatrices,
                       float* translatedVolumeTransformMatrices,
@@ -35,6 +35,7 @@ RTK_EXPORT CUDA_forward_project( int projSize[3],
                       float box_min[3],
                       float box_max[3],
                       float spacing[3],
-                      bool useCudaTexture);
+                      bool useCudaTexture,
+                      const unsigned int vectorLength);
 
 #endif

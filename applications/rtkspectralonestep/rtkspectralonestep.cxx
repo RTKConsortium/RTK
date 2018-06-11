@@ -42,11 +42,19 @@ int main(int argc, char * argv[])
   const unsigned int nMaterials = 3;
 
   // Define types for the input images
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage< itk::Vector<dataType, nMaterials>, Dimension > MaterialVolumesType;
+  typedef itk::CudaImage< itk::Vector<dataType, nBins>, Dimension > PhotonCountsType;
+  typedef itk::CudaImage< itk::Vector<dataType, nEnergies>, Dimension-1 > IncidentSpectrumType;
+  typedef itk::CudaImage< dataType, 2 > DetectorResponseType;
+  typedef itk::CudaImage< dataType, 2 > MaterialAttenuationsType;
+#else
   typedef itk::Image< itk::Vector<dataType, nMaterials>, Dimension > MaterialVolumesType;
   typedef itk::Image< itk::Vector<dataType, nBins>, Dimension > PhotonCountsType;
   typedef itk::Image< itk::Vector<dataType, nEnergies>, Dimension-1 > IncidentSpectrumType;
   typedef itk::Image< dataType, 2 > DetectorResponseType;
   typedef itk::Image< dataType, 2 > MaterialAttenuationsType;
+#endif
 
   // Define types for the readers
   typedef itk::ImageFileReader<MaterialVolumesType> MaterialVolumesReaderType;

@@ -38,6 +38,13 @@ NesterovUpdateImageFilter<TImage>::NesterovUpdateImageFilter()
 }
 
 template<typename TImage>
+NesterovUpdateImageFilter<TImage>::~NesterovUpdateImageFilter()
+{
+  m_Vk->ReleaseData();
+  m_Zk->ReleaseData();
+}
+
+template<typename TImage>
 void
 NesterovUpdateImageFilter<TImage>::ResetIterations()
 {
@@ -80,13 +87,8 @@ void NesterovUpdateImageFilter<TImage>
 
 template<typename TImage>
 void NesterovUpdateImageFilter<TImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
-#else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
-#endif
+::BeforeThreadedGenerateData()
 {
-
   if (m_MustInitializeIntermediateImages)
     {
     // Allocate the intermediate images
@@ -96,7 +98,19 @@ void NesterovUpdateImageFilter<TImage>
     m_Zk->CopyInformation(this->GetInput(0));
     m_Zk->SetRegions(m_Zk->GetLargestPossibleRegion());
     m_Zk->Allocate();
+    }
+}
 
+template<typename TImage>
+void NesterovUpdateImageFilter<TImage>
+#if ITK_VERSION_MAJOR<5
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
+{
+  if (m_MustInitializeIntermediateImages)
+    {
     // Copy the input 0 into them
     itk::ImageRegionConstIterator<TImage> inIt(this->GetInput(0), outputRegionForThread);
     itk::ImageRegionIterator<TImage> vIt(m_Vk, outputRegionForThread);

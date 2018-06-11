@@ -157,7 +157,11 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       fw = rtk::JosephForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
     break;
     case(MechlemOneStepSpectralReconstructionFilter::FP_CUDARAYCAST):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+#ifdef RTK_USE_CUDA
+      fw = rtk::CudaForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
+#else
+      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
+#endif
     break;
 
     default:
@@ -187,10 +191,14 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       bp = rtk::JosephBackProjectionImageFilter<THessians, THessians>::New();
       break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDAVOXELBASED):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+#ifdef RTK_USE_CUDA
+      bp = rtk::CudaBackProjectionImageFilter<THessians>::New();
+#else
+      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
+#endif
     break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDARAYCAST):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+      itkGenericExceptionMacro(<< "The CUDA ray cast back projector can currently not handle vector images");
       break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --bp value.");
