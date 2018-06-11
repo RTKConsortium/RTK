@@ -31,6 +31,9 @@ namespace rtk
 //template<class TInputImage, class TOutputImage>
 MedianImageFilter::MedianImageFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
   m_MedianWindow[0]=3;
   m_MedianWindow[1]=3;
 }

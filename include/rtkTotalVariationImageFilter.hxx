@@ -32,6 +32,10 @@ template< typename TInputImage >
 TotalVariationImageFilter< TInputImage >
 ::TotalVariationImageFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+
   // first output is a copy of the image, DataObject created by
   // superclass
   m_SumOfSquareRoots.Fill(1);

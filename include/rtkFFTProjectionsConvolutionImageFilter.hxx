@@ -124,7 +124,11 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData( const RegionType& outputRegionForThread)
+#endif
 {
   // Pad image region enlarged along X
   RegionType enlargedRegionX = outputRegionForThread;

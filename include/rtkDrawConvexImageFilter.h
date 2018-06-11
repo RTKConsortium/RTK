@@ -75,8 +75,12 @@ protected:
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
   /** Apply changes to the input image requested region. */
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
                              ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) ITK_OVERRIDE;
+#endif
 
 private:
   DrawConvexImageFilter ( const Self& ); //purposely not implemented

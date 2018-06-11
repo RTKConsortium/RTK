@@ -58,7 +58,11 @@ XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
 template<class TInputImage, class TOutputImage>
 void
 XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   // Dark and flat image iterator
   OutputImageRegionType darkRegion = outputRegionForThread;

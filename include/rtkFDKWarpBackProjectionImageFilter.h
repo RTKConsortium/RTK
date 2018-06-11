@@ -77,7 +77,7 @@ public:
   itkSetObjectMacro(Deformation, DeformationType);
 
 protected:
-  FDKWarpBackProjectionImageFilter():m_DeformationUpdateError(false) {};
+  FDKWarpBackProjectionImageFilter();
   virtual ~FDKWarpBackProjectionImageFilter() ITK_OVERRIDE {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;

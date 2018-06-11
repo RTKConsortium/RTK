@@ -124,7 +124,11 @@ protected:
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   /** The inputs should not be in the same space so there is nothing
    * to verify. */

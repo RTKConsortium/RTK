@@ -32,6 +32,10 @@ template< class TInputImage, class TOutputImage, unsigned char bitShift >
 I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 ::I0EstimationProjectionFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+
   m_MaxPixelValue = (InputImagePixelType)((1<<24)-1);
   m_ExpectedI0 = m_MaxPixelValue;
   m_SaveHistograms = false;

@@ -34,7 +34,10 @@ ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::ConjugateGradientGetR_kPl
     m_SquaredNormR_k(0.),
     m_SquaredNormR_kPlusOne(0.)
 {
-    this->SetNumberOfRequiredInputs(3);
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+  this->SetNumberOfRequiredInputs(3);
 }
 
 template< typename TInputType>

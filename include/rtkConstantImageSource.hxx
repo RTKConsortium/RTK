@@ -162,7 +162,11 @@ ConstantImageSource<TOutputImage>
 template <typename TOutputImage>
 void 
 ConstantImageSource<TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
   for (; !it.IsAtEnd(); ++it)

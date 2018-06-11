@@ -103,7 +103,11 @@ void NesterovUpdateImageFilter<TImage>
 
 template<typename TImage>
 void NesterovUpdateImageFilter<TImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   if (m_MustInitializeIntermediateImages)
     {

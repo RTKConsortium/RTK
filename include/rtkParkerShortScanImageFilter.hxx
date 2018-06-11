@@ -31,7 +31,11 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   // Get angular gaps and max gap
   std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext( m_Geometry->GetGantryAngles() );

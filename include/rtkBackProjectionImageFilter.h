@@ -86,7 +86,11 @@ protected:
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   /** Special case when the detector is cylindrical and centered on source */
   virtual void CylindricalDetectorCenteredOnSourceBackprojection(const OutputImageRegionType& region,

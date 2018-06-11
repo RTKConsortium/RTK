@@ -68,7 +68,11 @@ protected:
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Does the real work. */
-    void ThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#if ITK_VERSION_MAJOR<5
+    void ThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread, itk::ThreadIdType threadId) ITK_OVERRIDE;
+#else
+    void DynamicThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
     /** Getters for the inputs */
     typename TDiagonal::ConstPointer GetInputDiagonal();

@@ -28,8 +28,13 @@ namespace rtk
 {
 
 template< typename VolumeSeriesType, typename VolumeType>
-SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SplatWithKnownWeightsImageFilter()
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
+::SplatWithKnownWeightsImageFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+
   this->SetNumberOfRequiredInputs(2);
   this->SetInPlace(true);
   m_ProjectionNumber = 0;

@@ -115,7 +115,11 @@ protected:
 
   /** Generates a FOV mask which is applied to the reconstruction
    * A call to this function will assume modification of the function.*/
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
 private:
   FieldOfViewImageFilter(const Self&);      //purposely not implemented

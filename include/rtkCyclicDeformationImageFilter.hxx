@@ -91,8 +91,12 @@ CyclicDeformationImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 CyclicDeformationImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   // Prepare inferior input iterator
   typename InputImageType::RegionType inputRegionForThreadInf;

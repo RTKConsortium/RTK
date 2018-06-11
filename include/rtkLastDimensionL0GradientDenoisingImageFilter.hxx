@@ -31,6 +31,10 @@ template< class TInputImage >
 LastDimensionL0GradientDenoisingImageFilter< TInputImage >
 ::LastDimensionL0GradientDenoisingImageFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+
   // Set the direction along which the output requested region should NOT be split
   m_Splitter = itk::ImageRegionSplitterDirection::New();
   m_Splitter->SetDirection(TInputImage::ImageDimension - 1);

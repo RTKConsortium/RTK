@@ -87,7 +87,11 @@ protected:
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
 private:
   //purposely not implemented
