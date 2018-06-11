@@ -45,14 +45,14 @@ public:
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
   typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::Pointer                    GeometryPointer;
+  typedef typename GeometryType::ConstPointer               GeometryPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ForwardProjectionImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkGetConstObjectMacro(Geometry, GeometryType);
+  itkSetConstObjectMacro(Geometry, GeometryType);
 
 protected:
   ForwardProjectionImageFilter() : m_Geometry(ITK_NULLPTR) {

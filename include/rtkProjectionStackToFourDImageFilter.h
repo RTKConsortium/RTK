@@ -139,7 +139,7 @@ public:
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
-    void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+    itkSetConstObjectMacro(Geometry, GeometryType);
 
     /** Use CUDA splat / sources */
     itkSetMacro(UseCudaSplat, bool)
@@ -168,18 +168,18 @@ protected:
     void InitializeConstantSource();
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename SplatFilterType::Pointer                       m_SplatFilter;
-    typename BackProjectionFilterType::Pointer              m_BackProjectionFilter;
-    typename ExtractFilterType::Pointer                     m_ExtractFilter;
-    typename ConstantVolumeSourceType::Pointer              m_ConstantVolumeSource;
-    typename ConstantVolumeSeriesSourceType::Pointer        m_ConstantVolumeSeriesSource;
+    typename SplatFilterType::Pointer                m_SplatFilter;
+    typename BackProjectionFilterType::Pointer       m_BackProjectionFilter;
+    typename ExtractFilterType::Pointer              m_ExtractFilter;
+    typename ConstantVolumeSourceType::Pointer       m_ConstantVolumeSource;
+    typename ConstantVolumeSeriesSourceType::Pointer m_ConstantVolumeSeriesSource;
 
     /** Other member variables */
-    itk::Array2D<float>                                     m_Weights;
-    GeometryType::Pointer                                   m_Geometry;
-    bool                                                    m_UseCudaSplat;
-    bool                                                    m_UseCudaSources;
-    std::vector<double>                                     m_Signal;
+    itk::Array2D<float>                              m_Weights;
+    GeometryType::ConstPointer                       m_Geometry;
+    bool                                             m_UseCudaSplat;
+    bool                                             m_UseCudaSources;
+    std::vector<double>                              m_Signal;
 
 private:
     ProjectionStackToFourDImageFilter(const Self &); //purposely not implemented

@@ -54,7 +54,7 @@ public:
    * coordinates to voxel indices in an itk Image. */
   ProjectionsRegionConstIteratorRayBasedParallel(const TImage *ptr,
                                                  const RegionType & region,
-                                                 ThreeDCircularProjectionGeometry *geometry,
+                                                 const ThreeDCircularProjectionGeometry *geometry,
                                                  const MatrixType &postMat);
 
 protected:

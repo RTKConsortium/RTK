@@ -172,9 +172,9 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_ConjugateGradientFilter->SetB(m_ProjStackToFourDFilter->GetOutput());
 
   // For the same reason, set geometry now
-  m_CGOperator->SetGeometry(this->m_Geometry);
-  m_ProjStackToFourDFilter->SetGeometry(this->m_Geometry.GetPointer());
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  m_CGOperator->SetGeometry( this->GetGeometry() );
+  m_ProjStackToFourDFilter->SetGeometry( this->GetGeometry() );
+  m_DisplacedDetectorFilter->SetGeometry( this->GetGeometry() );
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);

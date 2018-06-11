@@ -66,7 +66,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   offsets[0] = 1;
   offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
-  const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const typename Superclass::GeometryType::ConstPointer geometry = this->GetGeometry();
 
   // beginBuffer is pointing at point with index (0,0,0) in memory, even if
   // it is not in the allocated memory

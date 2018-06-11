@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
   // Write
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject( bioscanReader->GetGeometry() );
+  xmlWriter->SetObject( const_cast<rtk::ThreeDCircularProjectionGeometry *>(bioscanReader->GetGeometry()) );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
 
   return EXIT_SUCCESS;

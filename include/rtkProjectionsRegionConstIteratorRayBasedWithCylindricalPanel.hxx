@@ -28,7 +28,7 @@ template< typename TImage >
 ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
 ::ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel(const TImage *ptr,
                                                              const RegionType & region,
-                                                             ThreeDCircularProjectionGeometry *geometry,
+                                                             const ThreeDCircularProjectionGeometry *geometry,
                                                              const MatrixType &postMat):
   ProjectionsRegionConstIteratorRayBased< TImage >(ptr, region, geometry, postMat),
   m_Radius(geometry->GetRadiusCylindricalDetector()),

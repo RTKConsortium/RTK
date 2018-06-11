@@ -66,7 +66,7 @@ int main(int, char** )
   typedef rtk::MaskCollimationImageFilter<ImageType, ImageType> OFMType;
   OFMType::Pointer ofm = OFMType::New();
   ofm->SetInput( reader->GetOutput() );
-  ofm->SetGeometry( geoTargReader->GetGeometry() );
+  ofm->SetGeometry( geoTargReader->GetModifiableGeometry() );
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( ofm->Update() );
 

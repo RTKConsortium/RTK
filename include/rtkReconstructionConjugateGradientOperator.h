@@ -154,7 +154,7 @@ public:
   typename TOutputImage::ConstPointer GetSupportMask();
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
   
   /** If Regularized, perform laplacian-based regularization during 
   *  reconstruction (gamma is the strength of the regularization) */
@@ -174,23 +174,23 @@ protected:
   BackProjectionFilterPointer            m_BackProjectionFilter;
   ForwardProjectionFilterPointer         m_ForwardProjectionFilter;
 
-  typename ConstantSourceType::Pointer              m_ConstantProjectionsSource;
-  typename ConstantSourceType::Pointer              m_ConstantVolumeSource;
-  typename MultiplyFilterType::Pointer              m_MultiplyProjectionsFilter;
-  typename MultiplyFilterType::Pointer              m_MultiplyOutputVolumeFilter;
-  typename MultiplyFilterType::Pointer              m_MultiplyInputVolumeFilter;
-  typename MultiplyFilterType::Pointer              m_MultiplyLaplacianFilter;
-  typename AddFilterType::Pointer                   m_AddFilter;
-  typename LaplacianFilterType::Pointer             m_LaplacianFilter;
-  typename MultiplyFilterType::Pointer              m_MultiplySupportMaskFilter;
+  typename ConstantSourceType::Pointer  m_ConstantProjectionsSource;
+  typename ConstantSourceType::Pointer  m_ConstantVolumeSource;
+  typename MultiplyFilterType::Pointer  m_MultiplyProjectionsFilter;
+  typename MultiplyFilterType::Pointer  m_MultiplyOutputVolumeFilter;
+  typename MultiplyFilterType::Pointer  m_MultiplyInputVolumeFilter;
+  typename MultiplyFilterType::Pointer  m_MultiplyLaplacianFilter;
+  typename AddFilterType::Pointer       m_AddFilter;
+  typename LaplacianFilterType::Pointer m_LaplacianFilter;
+  typename MultiplyFilterType::Pointer  m_MultiplySupportMaskFilter;
 
   /** Member attributes */
-  rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
-  bool                                              m_Regularized;
-  float                                             m_Gamma; //Strength of the regularization
+  rtk::ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
+  bool                                                m_Regularized;
+  float                                               m_Gamma; //Strength of the regularization
 
   /** Pointers to intermediate images, used to simplify complex branching */
-  typename TOutputImage::Pointer                    m_FloatingInputPointer, m_FloatingOutputPointer;
+  typename TOutputImage::Pointer m_FloatingInputPointer, m_FloatingOutputPointer;
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */

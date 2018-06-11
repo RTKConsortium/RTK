@@ -164,7 +164,7 @@ public:
     void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
     /** Pass the geometry to all filters needing it */
-    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)
@@ -239,16 +239,16 @@ protected:
     typename SingleComponentForwardProjectionFilterType::Pointer InstantiateSingleComponentForwardProjectionFilter(int fwtype);
     typename HessiansBackProjectionFilterType::Pointer InstantiateHessiansBackProjectionFilter (int bptype);
 
-    ThreeDCircularProjectionGeometry::Pointer   m_Geometry;
+    ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
-    int                                         m_NumberOfIterations;
-    unsigned int                                m_NumberOfProjectionsPerSubset;
-    unsigned int                                m_NumberOfSubsets;
-    std::vector<unsigned int>                   m_NumberOfProjectionsInSubset;
-    unsigned int                                m_NumberOfProjections;
+    int                                            m_NumberOfIterations;
+    unsigned int                                   m_NumberOfProjectionsPerSubset;
+    unsigned int                                   m_NumberOfSubsets;
+    std::vector<unsigned int>                      m_NumberOfProjectionsInSubset;
+    unsigned int                                   m_NumberOfProjections;
 
-    typename TOutputImage::PixelType            m_RegularizationWeights;
-    typename TOutputImage::RegionType::SizeType m_RegularizationRadius;
+    typename TOutputImage::PixelType               m_RegularizationWeights;
+    typename TOutputImage::RegionType::SizeType    m_RegularizationRadius;
 
 private:
     MechlemOneStepSpectralReconstructionFilter(const Self &); //purposely not implemented

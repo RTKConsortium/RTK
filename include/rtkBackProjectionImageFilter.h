@@ -56,7 +56,7 @@ public:
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
   typedef rtk::ThreeDCircularProjectionGeometry                     GeometryType;
-  typedef typename GeometryType::Pointer                            GeometryPointer;
+  typedef typename GeometryType::ConstPointer                       GeometryConstPointer;
   typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
   typedef itk::Image<InputPixelType, TInputImage::ImageDimension-1> ProjectionImageType;
   typedef typename ProjectionImageType::Pointer                     ProjectionImagePointer;
@@ -68,8 +68,8 @@ public:
   itkTypeMacro(BackProjectionImageFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkGetConstObjectMacro(Geometry, GeometryType);
+  itkSetConstObjectMacro(Geometry, GeometryType);
 
   /** Get / Set the transpose flag for 2D projections (optimization trick) */
   itkGetMacro(Transpose, bool);
@@ -128,7 +128,7 @@ protected:
   itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> GetProjectionPhysicalPointToProjectionIndexMatrix();
 
   /** RTK geometry object */
-  GeometryPointer m_Geometry;
+  GeometryConstPointer m_Geometry;
 
 private:
   BackProjectionImageFilter(const Self&); //purposely not implemented

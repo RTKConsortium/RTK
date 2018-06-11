@@ -167,7 +167,7 @@ public:
     void SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to all filters needing it */
-    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
     /** Use CUDA interpolation/splat filters */
     itkSetMacro(UseCudaInterpolation, bool)
@@ -215,7 +215,7 @@ protected:
     typename ConstantVolumeSeriesSourceType::Pointer      m_ConstantVolumeSeriesSource;
     typename DisplacedDetectorFilterType::Pointer         m_DisplacedDetectorFilter;
 
-    ThreeDCircularProjectionGeometry::Pointer             m_Geometry;
+    ThreeDCircularProjectionGeometry::ConstPointer        m_Geometry;
     bool                                                  m_UseCudaInterpolation;
     bool                                                  m_UseCudaSplat;
     bool                                                  m_UseCudaSources;
