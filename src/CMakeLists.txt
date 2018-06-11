@@ -26,7 +26,6 @@ set(RTK_SRCS
   rtkImagXXMLFileReader.cxx
   rtkIntersectionOfConvexShapes.cxx
   rtkIOFactories.cxx
-  rtkMedianImageFilter.cxx
   rtkOraGeometryReader.cxx
   rtkOraImageIO.cxx
   rtkOraImageIOFactory.cxx

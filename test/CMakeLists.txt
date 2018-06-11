@@ -105,8 +105,6 @@ rtk_add_test(rtkBinningTest rtkbinningtest.cxx)
 
 rtk_add_test(rtkl0GradientNormTest rtkl0gradientnormtest.cxx)
 
-rtk_add_test(rtkMedianTest rtkmediantest.cxx)
-
 rtk_add_test(rtkWaterPreCorrectionTest rtkwaterprecorrectiontest.cxx)
 
 rtk_add_test(rtkLUTBasedVarI0RawToAttTest rtklutbasedvarI0rawtoatttest.cxx)
