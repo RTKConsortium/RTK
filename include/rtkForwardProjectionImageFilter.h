@@ -56,7 +56,7 @@ public:
 
 protected:
   ForwardProjectionImageFilter() : m_Geometry(ITK_NULLPTR) {
-    this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
+    this->SetNumberOfRequiredInputs(3); this->SetInPlace( true );
   };
 
   virtual ~ForwardProjectionImageFilter() ITK_OVERRIDE {}
