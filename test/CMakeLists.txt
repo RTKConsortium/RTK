@@ -124,10 +124,10 @@ rtk_add_test(rtkDecomposeSpectralProjectionsTest rtkdecomposespectralprojections
   DATA{Input/Spectral/material_attenuations.mha}
   DATA{Input/Spectral/detector_response.mha})
 
-rtk_add_test(rtkSpectralOneStepTest rtkspectralonesteptest.cxx
-  DATA{Input/Spectral/OneStep/incident_spectrum_64_rows.mha}
-  DATA{Input/Spectral/material_attenuations.mha}
-  DATA{Input/Spectral/detector_response.mha})
+#rtk_add_test(rtkSpectralOneStepTest rtkspectralonesteptest.cxx
+#  DATA{Input/Spectral/OneStep/incident_spectrum_64_rows.mha}
+#  DATA{Input/Spectral/material_attenuations.mha}
+#  DATA{Input/Spectral/detector_response.mha})
 
 rtk_add_test(rtkVectorImageConvertersTest rtkvectorimageconverterstest.cxx)
 
