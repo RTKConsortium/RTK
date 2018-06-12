@@ -78,6 +78,25 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
+  itk::ImageSource< OutputImageType >::Pointer attenuationFilter;
+  if(args_info.attenuationmap_given)
+    {
+    // Read an existing image to initialize the volume
+    typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
+    AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
+    attenuationReader->SetFileName( args_info.attenuationmap_arg );
+    attenuationFilter = attenuationReader;
+    }
+  else
+    {
+    // Create new empty volume
+    typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkosem>(constantImageSource, args_info);
+    constantImageSource->SetConstant(0.);
+    attenuationFilter = constantImageSource;
+    }
+
   // OSEM reconstruction filter
   rtk::OSEMConeBeamReconstructionFilter< OutputImageType >::Pointer osem =
       rtk::OSEMConeBeamReconstructionFilter< OutputImageType >::New();
@@ -87,6 +106,7 @@ int main(int argc, char * argv[])
   SetBackProjectionFromGgo(args_info, osem.GetPointer());
   osem->SetInput( inputFilter->GetOutput() );
   osem->SetInput(1, reader->GetOutput());
+  osem->SetInput(2, attenuationFilter->GetOutput());
   osem->SetGeometry( geometryReader->GetOutputObject() );
 
   osem->SetNumberOfIterations( args_info.niterations_arg );

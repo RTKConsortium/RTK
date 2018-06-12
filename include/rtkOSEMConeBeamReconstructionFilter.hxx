@@ -142,6 +142,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 
   m_ForwardProjectionFilter->SetInput( 0, m_ZeroConstantProjectionStackSource->GetOutput() );
   m_ForwardProjectionFilter->SetInput( 1, this->GetInput(0) );
+  m_ForwardProjectionFilter->SetInput(2, this->GetInput(2));
 
   m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput() );
   m_DivideProjectionFilter->SetConstant(1);
