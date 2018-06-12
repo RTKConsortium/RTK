@@ -32,6 +32,7 @@ SumOfSquaresImageFilter<TOutputImage>
 {
   m_SumOfSquares = 0;
   m_VectorOfPartialSSs.clear();
+  this->SetDynamicMultiThreading(false);
 }
 
 template <class TOutputImage>

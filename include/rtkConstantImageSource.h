@@ -62,7 +62,6 @@ public:
 
   /** Typedefs for the output image PixelType. */
   typedef typename TOutputImage::PixelType          OutputImagePixelType;
-  typedef typename TOutputImage::InternalPixelType  OutputImageInternalPixelType;
 
   /** Typedef to describe the output image region type. */
   typedef typename TOutputImage::RegionType OutputImageRegionType;
@@ -109,16 +108,8 @@ public:
   itkGetMacro( Index, IndexType );
 
   /** Set/Get the pixel value of output */
-  itkSetMacro(Constant, OutputImageInternalPixelType);
-  itkGetConstMacro(Constant, OutputImageInternalPixelType);
-
-  /** Set/Get the pixel value of output */
-  itkSetMacro(VectorConstant, OutputImagePixelType);
-  itkGetConstMacro(VectorConstant, OutputImagePixelType);
-
-  /** Set/Get the vector length, in case of a VectorImage */
-  itkSetMacro(VectorLength, unsigned int);
-  itkGetConstMacro(VectorLength, unsigned int);
+  itkSetMacro(Constant, OutputImagePixelType);
+  itkGetConstMacro(Constant, OutputImagePixelType);
 
   /** Set output image information from an existing image */
   void SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension>* image);
@@ -141,10 +132,8 @@ protected:
   PointType      m_Origin;
   DirectionType  m_Direction;
   IndexType      m_Index;
-  unsigned int   m_VectorLength;
 
-  OutputImageInternalPixelType  m_Constant;
-  OutputImagePixelType          m_VectorConstant;
+  OutputImagePixelType  m_Constant;
 
 private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented

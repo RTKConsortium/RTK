@@ -36,16 +36,24 @@ int main(int argc, char * argv[])
 {
   GGO(rtkvectorconjugategradient, args_info);
 
-  typedef double OutputPixelType;
   const unsigned int Dimension = 3;
+  const unsigned int nMaterials = 3;
+
+  typedef double DataType;
+  typedef itk::Vector<DataType, nMaterials> PixelType;
+  typedef itk::Vector<DataType, nMaterials * nMaterials> WeightsType;
+
   std::vector<double> costs;
   std::ostream_iterator<double> costs_it(std::cout << std::setprecision(15),"\n");
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension >   OutputImageType;
+  typedef itk::CudaImage< DataType, Dimension > SingleComponentImageType;
+  typedef itk::CudaImage< PixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage< WeightsType, Dimension > WeightsImageType;
 #else
-  typedef itk::VectorImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::Image< OutputPixelType, Dimension > SingleComponentImageType;
+  typedef itk::CudaImage< DataType, Dimension > SingleComponentImageType;
+  typedef itk::CudaImage< PixelType, Dimension > OutputImageType;
+  typedef itk::CudaImage< WeightsType, Dimension > WeightsImageType;
 #endif
 
   // Projections reader
@@ -81,37 +89,32 @@ int main(int argc, char * argv[])
     typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorconjugategradient>(constantImageSource, args_info);
-    constantImageSource->SetVectorLength(reader->GetOutput()->GetNumberOfComponentsPerPixel());
     inputFilter = constantImageSource;
     }
   inputFilter->Update();
 
   // Read weights if given, otherwise default to weights all equal to one
-  itk::ImageSource< OutputImageType >::Pointer weightsSource;
+  itk::ImageSource< WeightsImageType >::Pointer weightsSource;
   if(args_info.weights_given)
     {
-    typedef itk::ImageFileReader<  OutputImageType > WeightsReaderType;
+    typedef itk::ImageFileReader<  WeightsImageType > WeightsReaderType;
     WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
     weightsReader->SetFileName( args_info.weights_arg );
     weightsSource = weightsReader;
     }
   else
     {
-    typedef rtk::ConstantImageSource< OutputImageType > ConstantWeightsSourceType;
+    typedef rtk::ConstantImageSource< WeightsImageType > ConstantWeightsSourceType;
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
     
     // Set the weights to the identity matrix
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
     constantWeightsSource->SetInformationFromImage(reader->GetOutput());
-    unsigned int nbComponents = reader->GetOutput()->GetNumberOfComponentsPerPixel();
-    itk::VariableLengthVector<OutputPixelType> vForConstant;
-    vForConstant.SetSize(nbComponents * nbComponents);
-    vForConstant.Fill(0);
-    for (unsigned int i=0; i< nbComponents; i++)
-      for (unsigned int j=0; j< nbComponents; j++)
-        if (i==j) vForConstant[i + nbComponents * j]=1;
-    constantWeightsSource->SetVectorConstant(vForConstant);
-    constantWeightsSource->SetVectorLength(reader->GetOutput()->GetNumberOfComponentsPerPixel() * reader->GetOutput()->GetNumberOfComponentsPerPixel());
+    WeightsType constantWeight = itk::NumericTraits<WeightsType>::ZeroValue(constantWeight);
+    for (unsigned int i=0; i< nMaterials; i++)
+      constantWeight[i + i*nMaterials] = 1;
+
+    constantWeightsSource->SetConstant(constantWeight);
     weightsSource = constantWeightsSource;
     }
 

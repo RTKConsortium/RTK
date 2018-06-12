@@ -41,13 +41,7 @@ ConstantImageSource<TOutputImage>
       m_Direction[i][j] = (i==j)?1.:0.;
     }
 
-  m_VectorLength = 1; // Default behavior is to generate a scalar image
-  m_Constant = 0.;
-
-  OutputImagePixelType pix;
-  itk::NumericTraits<OutputImagePixelType>::SetLength(pix, 1);
-  pix = itk::NumericTraits<OutputImagePixelType>::ZeroValue(pix);
-  m_VectorConstant = pix;
+  m_Constant = itk::NumericTraits<OutputImagePixelType>::ZeroValue(m_Constant);
 }
 
 template <class TOutputImage>
@@ -142,7 +136,6 @@ ConstantImageSource<TOutputImage>
   this->SetSpacing( image->GetSpacing() );
   this->SetOrigin( image->GetOrigin() );
   this->SetDirection( image->GetDirection() );
-  this->SetVectorLength( image->GetNumberOfComponentsPerPixel() );
 }
 
 //----------------------------------------------------------------------------
@@ -162,7 +155,6 @@ ConstantImageSource<TOutputImage>
   output->SetSpacing(m_Spacing);
   output->SetOrigin(m_Origin);
   output->SetDirection(m_Direction);
-  output->SetNumberOfComponentsPerPixel(this->GetVectorLength());
 }
 
 //----------------------------------------------------------------------------
@@ -177,22 +169,9 @@ ConstantImageSource<TOutputImage>
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
 
-  // Initialize the pixel, be it a scalar or a variableLengthVector
-  OutputImagePixelType pix;
-  itk::NumericTraits<OutputImagePixelType>::SetLength(pix, this->GetVectorLength());
-
-  // If a vector has been passed as the constant, use it. Otherwise,
-  // use the scalar constant, and if the output is a VectorImage, fill its components
-  // with that scalar
-  unsigned int VectorConstantLength = itk::NumericTraits<OutputImagePixelType>::GetLength(m_VectorConstant);
-  if ((VectorConstantLength != 1) && (VectorConstantLength == this->GetVectorLength()))
-    pix = m_VectorConstant;
-  else
-    pix = itk::NumericTraits<OutputImagePixelType>::OneValue(pix) * this->GetConstant();
-
-  // Write it everywhere in the image
+  // Write the constant everywhere in the image
   for (; !it.IsAtEnd(); ++it)
-    it.Set(pix);
+    it.Set(m_Constant);
 }
 
 } // end namespace rtk

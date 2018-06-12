@@ -176,8 +176,8 @@ int main(int, char** )
       while(!outIt1.IsAtEnd())
         {
         temp[0] = inIt1.Get();
-        temp[1] = inIt1.Get() * 10;
-        temp[2] = inIt1.Get() / 10;
+        temp[1] = inIt1.Get();
+        temp[2] = inIt1.Get();
         outIt1.Set(temp);
         ++outIt1;
         ++inIt1;
@@ -192,8 +192,8 @@ int main(int, char** )
       while(!outIt2.IsAtEnd())
         {
         temp[0] = inIt2.Get();
-        temp[1] = inIt2.Get() * 10;
-        temp[2] = inIt2.Get() / 10;
+        temp[1] = inIt2.Get();
+        temp[2] = inIt2.Get();
         outIt2.Set(temp);
         ++outIt2;
         ++inIt2;
@@ -208,8 +208,8 @@ int main(int, char** )
       while(!outIt3.IsAtEnd())
         {
         temp[0] = inIt3.Get();
-        temp[1] = inIt3.Get() * 10;
-        temp[2] = inIt3.Get() / 10;
+        temp[1] = inIt3.Get();
+        temp[2] = inIt3.Get();
         outIt3.Set(temp);
         ++outIt3;
         ++inIt3;
@@ -223,8 +223,8 @@ int main(int, char** )
       while(!outIt4.IsAtEnd())
         {
         temp[0] = inIt4.Get();
-        temp[1] = inIt4.Get() * 10;
-        temp[2] = inIt4.Get() / 10;
+        temp[1] = inIt4.Get();
+        temp[2] = inIt4.Get();
         outIt4.Set(temp);
         ++outIt4;
         ++inIt4;
