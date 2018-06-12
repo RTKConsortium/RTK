@@ -280,7 +280,7 @@ void CheckVariableLengthVectorImageQuality(typename TImage::Pointer recon,
 }
 #endif //FAST_TESTS_NO_CHECKS
 
-void CheckGeometries(GeometryType *g1, GeometryType *g2)
+void CheckGeometries(const GeometryType *g1, const GeometryType *g2)
 {
 //  // It is often necessary to write the geometries and look at them
 //  // to understand why a given test fails. This portion of code

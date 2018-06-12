@@ -47,7 +47,7 @@ DrawEllipsoidImageFilter<TInputImage, TOutputImage>
   if( this->GetConvexShape() == ITK_NULLPTR )
     this->SetConvexShape( QuadricShape::New().GetPointer() );
   Superclass::BeforeThreadedGenerateData();
-  QuadricShape * qo = dynamic_cast< QuadricShape * >( this->GetConvexShape() );
+  QuadricShape * qo = dynamic_cast< QuadricShape * >( this->GetModifiableConvexShape() );
   if( qo == ITK_NULLPTR )
     {
     itkExceptionMacro("This is not a QuadricShape!");

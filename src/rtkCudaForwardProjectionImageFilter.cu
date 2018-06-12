@@ -51,64 +51,6 @@ __constant__ float c_translatedProjectionIndexTransformMatrices[SLAB_SIZE * 12];
 __constant__ float c_translatedVolumeTransformMatrices[SLAB_SIZE * 12]; //Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_sourcePos[SLAB_SIZE * 3]; //Can process stacks of at most SLAB_SIZE projections
 
-// Helper function to replace tex3D when not using textures
-template<unsigned int vectorLength>
-__device__
-void notex3D(float *vol, float3 pos, int3 volSize, float* sample)
-{
-  int3 floor_pos;
-  floor_pos.x = floor(pos.x);
-  floor_pos.y = floor(pos.y);
-  floor_pos.z = floor(pos.z);
-
-  // Compute the weights
-  float weights[8];
-
-  float3 Distance;
-  Distance.x = pos.x - floor_pos.x;
-  Distance.y = pos.y - floor_pos.y;
-  Distance.z = pos.z - floor_pos.z;
-
-  weights[0] = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z); //weight000
-  weights[1] = (1 - Distance.x) * (1 - Distance.y) * Distance.z;       //weight001
-  weights[2] = (1 - Distance.x) * Distance.y       * (1 - Distance.z); //weight010
-  weights[3] = (1 - Distance.x) * Distance.y       * Distance.z;       //weight011
-  weights[4] = Distance.x       * (1 - Distance.y) * (1 - Distance.z); //weight100
-  weights[5] = Distance.x       * (1 - Distance.y) * Distance.z;       //weight101
-  weights[6] = Distance.x       * Distance.y       * (1 - Distance.z); //weight110
-  weights[7] = Distance.x       * Distance.y       * Distance.z;       //weight111
-
-  // Compute positions of sampling, taking into account the clamping
-  float3 pos_low;
-  pos_low.x = max(static_cast<float>(floor_pos.x), 0.0f);
-  pos_low.y = max(static_cast<float>(floor_pos.y), 0.0f);
-  pos_low.z = max(static_cast<float>(floor_pos.z), 0.0f);
-
-  float3 pos_high;
-  pos_high.x = min(static_cast<float>(floor_pos.x + 1), static_cast<float>( volSize.x - 1) );
-  pos_high.y = min(static_cast<float>(floor_pos.y + 1), static_cast<float>( volSize.y - 1) );
-  pos_high.z = min(static_cast<float>(floor_pos.z + 1), static_cast<float>( volSize.z - 1) );
-
-  // Compute indices in the volume
-  long int indices[8];
-
-  indices[0] = pos_low.x  + pos_low.y  * volSize.x + pos_low.z  * volSize.x * volSize.y; //index000
-  indices[1] = pos_low.x  + pos_low.y  * volSize.x + pos_high.z * volSize.x * volSize.y; //index001
-  indices[2] = pos_low.x  + pos_high.y * volSize.x + pos_low.z  * volSize.x * volSize.y; //index010
-  indices[3] = pos_low.x  + pos_high.y * volSize.x + pos_high.z * volSize.x * volSize.y; //index011
-  indices[4] = pos_high.x + pos_low.y  * volSize.x + pos_low.z  * volSize.x * volSize.y; //index100
-  indices[5] = pos_high.x + pos_low.y  * volSize.x + pos_high.z * volSize.x * volSize.y; //index101
-  indices[6] = pos_high.x + pos_high.y * volSize.x + pos_low.z  * volSize.x * volSize.y; //index110
-  indices[7] = pos_high.x + pos_high.y * volSize.x + pos_high.z * volSize.x * volSize.y; //index111
-
-  // Perform interpolation
-  for (unsigned int c=0; c<vectorLength; c++)
-    {
-    sample[c] = 0;
-    for (unsigned int i=0; i<8; i++)
-      sample[c] += vol[indices[i] * vectorLength + c] * weights[i];
-    }
-}
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -116,7 +58,7 @@ void notex3D(float *vol, float3 pos, int3 volSize, float* sample)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 // KERNEL kernel_forwardProject
-template<unsigned int vectorLength, bool useTexture>
+template<unsigned int vectorLength>
 __global__
 void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out, float* dev_vol, cudaTextureObject_t* dev_tex_vol)
 {
@@ -190,15 +132,8 @@ void kernel_forwardProject(float *dev_proj_in, float *dev_proj_out, float* dev_v
       for(t=tnear; t<=tfar; t+=vStep)
         {
         // Read from 3D texture from volume(s)
-        if (useTexture)
-          {
-          for (unsigned int c=0; c<vectorLength; c++)
-            sample[c] = tex3D<float>(dev_tex_vol[c], pos.x, pos.y, pos.z);
-          }
-        else
-          {
-          notex3D<vectorLength>(dev_vol, pos, c_volSize, sample);
-          }
+        for (unsigned int c=0; c<vectorLength; c++)
+          sample[c] = tex3D<float>(dev_tex_vol[c], pos.x, pos.y, pos.z);
 
         // Accumulate
         for (unsigned int c=0; c<vectorLength; c++)
@@ -236,7 +171,6 @@ CUDA_forward_project(int projSize[3],
                       float box_min[3],
                       float box_max[3],
                       float spacing[3],
-                      bool useCudaTexture,
                       unsigned int vectorLength)
 {
   // Constant memory
@@ -260,56 +194,41 @@ CUDA_forward_project(int projSize[3],
 
   // Create an array of textures
   cudaTextureObject_t* tex_vol = new cudaTextureObject_t[vectorLength];
-  if (useCudaTexture)
+  cudaArray** volComponentArrays = new cudaArray* [vectorLength];
+
+  // Prepare texture objects (needs an array of cudaTextureObjects on the host as "tex_vol" argument)
+  prepareTextureObject(volSize, dev_vol, volComponentArrays, vectorLength, tex_vol, false);
+
+  // Copy them to a device pointer, since it will have to be de-referenced in the kernels
+  cudaTextureObject_t* dev_tex_vol;
+  cudaMalloc(&dev_tex_vol, vectorLength * sizeof(cudaTextureObject_t));
+  cudaMemcpy(dev_tex_vol, tex_vol, vectorLength * sizeof(cudaTextureObject_t), cudaMemcpyHostToDevice);
+
+  // Run the kernel. Since "vectorLength" is passed as a function argument, not as a template argument,
+  // the compiler can't assume it's constant, and a dirty trick has to be used.
+  // I did not manage to make CUDA_forward_project templated over vectorLength,
+  // which would be the best solution
+  switch(vectorLength)
     {
-    cudaArray** volComponentArrays = new cudaArray* [vectorLength];
+    case 1:
+    kernel_forwardProject<1> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
+    break;
 
-    // Prepare texture objects (needs an array of cudaTextureObjects on the host as "tex_vol" argument)
-    prepareTextureObject(volSize, dev_vol, volComponentArrays, vectorLength, tex_vol, false);
-
-    // Copy them to a device pointer, since it will have to be de-referenced in the kernels
-    cudaTextureObject_t* dev_tex_vol;
-    cudaMalloc(&dev_tex_vol, vectorLength * sizeof(cudaTextureObject_t));
-    cudaMemcpy(dev_tex_vol, tex_vol, vectorLength * sizeof(cudaTextureObject_t), cudaMemcpyHostToDevice);
-
-    // Run the kernel. Since "vectorLength" is passed as a function argument, not as a template argument,
-    // the compiler can't assume it's constant, and a dirty trick has to be used.
-    // I did not manage to make CUDA_forward_project templated over vectorLength,
-    // which would be the best solution
-    switch(vectorLength)
-      {
-      case 1:
-      kernel_forwardProject<1, true> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
-      break;
-
-      case 3:
-      kernel_forwardProject<3, true> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
-      break;
-      }
-    CUDA_CHECK_ERROR;
-
-    // Cleanup
-    for (unsigned int c=0; c<vectorLength; c++)
-      {
-      cudaFreeArray ((cudaArray*) volComponentArrays[c]);
-      cudaDestroyTextureObject(tex_vol[c]);
-      }
-    cudaFree(dev_tex_vol);
-    delete[] volComponentArrays;
-    CUDA_CHECK_ERROR;
+    case 3:
+    kernel_forwardProject<3> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
+    break;
     }
-  else
+  CUDA_CHECK_ERROR;
+
+  // Cleanup
+  for (unsigned int c=0; c<vectorLength; c++)
     {
-    switch(vectorLength)
-      {
-      case 1:
-      kernel_forwardProject<1, false> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, tex_vol);
-      break;
-
-      case 3:
-      kernel_forwardProject<3, false> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, tex_vol);
-      break;
-      }
+    cudaFreeArray ((cudaArray*) volComponentArrays[c]);
+    cudaDestroyTextureObject(tex_vol[c]);
     }
+  cudaFree(dev_tex_vol);
+  delete[] volComponentArrays;
+  CUDA_CHECK_ERROR;
+
   delete[] tex_vol;
 }

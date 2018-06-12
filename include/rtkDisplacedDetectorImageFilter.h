@@ -76,7 +76,7 @@ public:
   typedef itk::Image<typename TOutputImage::InternalPixelType, 1> WeightImageType;
 
   typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::Pointer            GeometryPointer;
+  typedef GeometryType::ConstPointer       GeometryConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -85,8 +85,8 @@ public:
   itkTypeMacro(DisplacedDetectorImageFilter, ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkGetConstObjectMacro(Geometry, GeometryType);
+  itkSetConstObjectMacro(Geometry, GeometryType);
 
   /** Get / Set whether the projections should be padded
    * (yes for FDK, no for iterative) */
@@ -133,7 +133,7 @@ private:
   void operator=(const Self&);               //purposely not implemented
 
   /** RTK geometry object */
-  GeometryPointer m_Geometry;
+  GeometryConstPointer m_Geometry;
 
   /**
    * Minimum and maximum offsets of the detector along the weighting direction, i.e. x.

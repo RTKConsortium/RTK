@@ -332,8 +332,8 @@ public:
   itkGetMacro(L0_iterations, int)
 
   // Geometry
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
-  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
   /** Store the phase signal in a member variable */
   virtual void SetSignal(const std::vector<double> signal);
@@ -410,7 +410,7 @@ protected:
   int   m_L0_iterations;
 
   // Geometry
-  typename rtk::ThreeDCircularProjectionGeometry::Pointer m_Geometry;
+  typename rtk::ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
   // Signal
   std::vector<double>                            m_Signal;

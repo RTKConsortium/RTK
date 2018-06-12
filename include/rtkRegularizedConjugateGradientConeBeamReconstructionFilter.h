@@ -191,7 +191,7 @@ public:
 
   // Geometry
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
-  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
   /** Preconditioning flag for the conjugate gradient filter */
   itkSetMacro(Preconditioned, bool)

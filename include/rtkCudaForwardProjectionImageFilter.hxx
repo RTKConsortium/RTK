@@ -42,7 +42,7 @@ template <class TInputImage,
 CudaForwardProjectionImageFilter<TInputImage,
                                  TOutputImage>
 ::CudaForwardProjectionImageFilter():
-  m_StepSize(1),m_UseCudaTexture(true)
+  m_StepSize(1)
 {
 }
 
@@ -59,7 +59,7 @@ CudaForwardProjectionImageFilter<TInputImage,
     itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
     }
 
-  const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const typename Superclass::GeometryType *geometry = this->GetGeometry();
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
   const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
@@ -116,12 +116,9 @@ CudaForwardProjectionImageFilter<TInputImage,
     projIndexTranslation[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
     volIndexTranslation[i][3] = -this->GetInput(1)->GetBufferedRegion().GetIndex(i);
 
-    if (m_UseCudaTexture)
-      {
-      // Adding 0.5 offset to change from the centered pixel convention (ITK)
-      // to the corner pixel convention (CUDA).
-      volPPToIndex[i][3] += 0.5;
-      }
+    // Adding 0.5 offset to change from the centered pixel convention (ITK)
+    // to the corner pixel convention (CUDA).
+    volPPToIndex[i][3] += 0.5;
     }
 
   // Compute matrices to transform projection index to volume index, one per projection
@@ -201,7 +198,6 @@ CudaForwardProjectionImageFilter<TInputImage,
                         boxMin,
                         boxMax,
                         spacing,
-                        m_UseCudaTexture,
                         vectorLength);
     }
 

@@ -35,7 +35,6 @@ RTK_EXPORT CUDA_forward_project(int projSize[3],
                       float box_min[3],
                       float box_max[3],
                       float spacing[3],
-                      bool useCudaTexture,
                       const unsigned int vectorLength);
 
 #endif

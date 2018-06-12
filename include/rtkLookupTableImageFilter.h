@@ -169,7 +169,7 @@ public:
   }
 
   /** Get lookup table. */
-  itkGetObjectMacro(LookupTable, LookupTableType);
+  itkGetModifiableObjectMacro(LookupTable, LookupTableType);
 
   /** Update the LUT before using it to process the data in case it is the
    * result of a pipeline. */

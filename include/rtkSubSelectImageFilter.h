@@ -80,7 +80,7 @@ public:
   typedef rtk::ThreeDCircularProjectionGeometry                             GeometryType;
 
   itkSetObjectMacro(InputGeometry, GeometryType)
-  itkGetObjectMacro(InputGeometry, GeometryType)
+  itkGetModifiableObjectMacro(InputGeometry, GeometryType)
 
   itkGetMacro(SelectedProjections, std::vector<bool>)
 

@@ -31,7 +31,7 @@ DrawConeImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   Superclass::BeforeThreadedGenerateData();
-  dynamic_cast<QuadricShape *>(this->GetConvexShape())->SetJ(0.);
+  dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape())->SetJ(0.);
 }
 
 }// end namespace rtk

@@ -50,7 +50,7 @@ public:
   /** Convenient typedefs. */
   typedef typename TOutputImage::RegionType     OutputImageRegionType;
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
-  typedef typename GeometryType::Pointer        GeometryPointer;
+  typedef typename GeometryType::ConstPointer   GeometryConstPointer;
   typedef ConvexShape::Pointer                  ConvexShapePointer;
   typedef ConvexShape::ScalarType               ScalarType;
   typedef ConvexShape::PointType                PointType;
@@ -62,12 +62,12 @@ public:
   itkTypeMacro(RayConvexIntersectionImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to the ConvexShape. */
-  itkGetObjectMacro(ConvexShape, ConvexShape);
+  itkGetModifiableObjectMacro(ConvexShape, ConvexShape);
   itkSetObjectMacro(ConvexShape, ConvexShape);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkGetConstObjectMacro(Geometry, GeometryType);
+  itkSetConstObjectMacro(Geometry, GeometryType);
 
 protected:
   RayConvexIntersectionImageFilter();
@@ -89,8 +89,8 @@ private:
   RayConvexIntersectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                   //purposely not implemented
 
-  ConvexShapePointer m_ConvexShape;
-  GeometryPointer    m_Geometry;
+  ConvexShapePointer   m_ConvexShape;
+  GeometryConstPointer m_Geometry;
 };
 
 } // end namespace rtk

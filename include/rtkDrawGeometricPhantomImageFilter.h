@@ -47,7 +47,7 @@ public:
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
   /** Convenient typedefs. */
-  typedef GeometricPhantom::Pointer       GeometricPhantomPointer;
+  typedef GeometricPhantom::ConstPointer  GeometricPhantomConstPointer;
   typedef std::string                     StringType;
   typedef ConvexShape::VectorType         VectorType;
   typedef ConvexShape::RotationMatrixType RotationMatrixType;
@@ -59,8 +59,8 @@ public:
   itkTypeMacro(DrawGeometricPhantomImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to the geometry. */
-  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
-  itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkGetConstObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkSetConstObjectMacro(GeometricPhantom, GeometricPhantom);
 
   /** Get/Set the phantom file path. */
   itkSetMacro(ConfigFile, StringType);
@@ -95,12 +95,12 @@ private:
   DrawGeometricPhantomImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
 
-  GeometricPhantomPointer m_GeometricPhantom;
-  StringType              m_ConfigFile;
-  VectorType              m_PhantomScale;
-  VectorType              m_OriginOffset;
-  bool                    m_IsForbildConfigFile;
-  RotationMatrixType      m_RotationMatrix;
+  GeometricPhantomConstPointer m_GeometricPhantom;
+  StringType                   m_ConfigFile;
+  VectorType                   m_PhantomScale;
+  VectorType                   m_OriginOffset;
+  bool                         m_IsForbildConfigFile;
+  RotationMatrixType           m_RotationMatrix;
 };
 
 } // end namespace rtk

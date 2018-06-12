@@ -160,9 +160,10 @@ public:
   typename TSingleComponentImage::ConstPointer GetSupportMask();
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-  itkSetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer)
-
-  /** Set/Get macros for the regularization parameters */
+  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  
+  /** Perform laplacian-based and/or Tikhonov regularization during 
+  *  reconstruction (gamma is the strength of laplacian the regularization) */
   itkSetMacro(Gamma, float)
   itkGetMacro(Gamma, float)
   itkSetMacro(Tikhonov, float)
@@ -192,12 +193,12 @@ protected:
   typename MatrixVectorMultiplyFilterType::Pointer  m_MatrixVectorMultiplyFilter;
 
   /** Member attributes */
-  rtk::ThreeDCircularProjectionGeometry::Pointer    m_Geometry;
-  float                                             m_Gamma; //Strength of the laplacian regularization
-  float                                             m_Tikhonov; //Strength of the Tikhonov regularization
+  rtk::ThreeDCircularProjectionGeometry::ConstPointer    m_Geometry;
+  float                                                  m_Gamma; //Strength of the laplacian regularization
+  float                                                  m_Tikhonov; //Strength of the Tikhonov regularization
 
   /** Pointers to intermediate images, used to simplify complex branching */
-  typename TOutputImage::Pointer                    m_FloatingInputPointer, m_FloatingOutputPointer;
+  typename TOutputImage::Pointer m_FloatingInputPointer, m_FloatingOutputPointer;
 
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */

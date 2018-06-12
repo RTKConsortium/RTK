@@ -58,7 +58,7 @@ public:
   itkNewMacro(Self);
 
   /** Get the pointer to the generated geometry object. */
-  itkGetObjectMacro(Geometry, GeometryType);
+  itkGetModifiableObjectMacro(Geometry, GeometryType);
 
   /** Some convenient typedefs. */
   typedef std::vector<std::string>            FileNamesContainer;

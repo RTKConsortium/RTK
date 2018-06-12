@@ -152,7 +152,7 @@ public:
     typename TSingleComponentImage::ConstPointer GetSupportMask();
 
     /** Pass the geometry to all filters needing it */
-    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)
@@ -212,7 +212,7 @@ private:
     ConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
 
-    ThreeDCircularProjectionGeometry::Pointer m_Geometry;
+    ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
     int                          m_NumberOfIterations;
     float                        m_Gamma;
