@@ -88,7 +88,7 @@ public:
   itkTypeMacro(FDKConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
   /** Get pointer to the weighting filter used by the feldkamp reconstruction */

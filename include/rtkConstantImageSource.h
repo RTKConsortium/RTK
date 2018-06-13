@@ -111,14 +111,18 @@ public:
   itkGetConstMacro(Constant, OutputImagePixelType);
 
   /** Set output image information from an existing image */
-  void SetInformationFromImage(const typename TOutputImage::Superclass* image);
+  void SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension>* image);
 
 protected:
   ConstantImageSource();
   virtual ~ConstantImageSource() ITK_OVERRIDE;
   void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

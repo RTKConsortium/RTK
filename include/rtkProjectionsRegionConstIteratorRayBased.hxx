@@ -31,7 +31,7 @@ template< typename TImage >
 ProjectionsRegionConstIteratorRayBased< TImage >
 ::ProjectionsRegionConstIteratorRayBased(const TImage *ptr,
                                          const RegionType & region,
-                                         ThreeDCircularProjectionGeometry *geometry,
+                                         const ThreeDCircularProjectionGeometry *geometry,
                                          const MatrixType &postMat):
   itk::ImageConstIteratorWithIndex< TImage >(ptr, region),
   m_Geometry(geometry),
@@ -85,7 +85,7 @@ ProjectionsRegionConstIteratorRayBased< TImage > *
 ProjectionsRegionConstIteratorRayBased< TImage >
 ::New(const TImage *ptr,
       const RegionType & region,
-      ThreeDCircularProjectionGeometry *geometry,
+      const ThreeDCircularProjectionGeometry *geometry,
       const MatrixType &postMat)
 {
   if(geometry->GetSourceToDetectorDistances().size() == 0)
@@ -118,7 +118,7 @@ ProjectionsRegionConstIteratorRayBased< TImage > *
 ProjectionsRegionConstIteratorRayBased< TImage >
 ::New(const TImage *ptr,
       const RegionType & region,
-      ThreeDCircularProjectionGeometry *geometry,
+      const ThreeDCircularProjectionGeometry *geometry,
       const HomogeneousMatrixType &postMat)
 {
   MatrixType pm;
@@ -133,7 +133,7 @@ rtk::ProjectionsRegionConstIteratorRayBased<TImage>*
 ProjectionsRegionConstIteratorRayBased< TImage >
 ::New(const TImage *ptr,
       const RegionType & region,
-      ThreeDCircularProjectionGeometry *geometry)
+      const ThreeDCircularProjectionGeometry *geometry)
 {
   MatrixType postMat;
   postMat.SetIdentity();

@@ -47,6 +47,9 @@ TComputeAttenuationCorrection>
   m_InferiorClip(0.),
   m_SuperiorClip(1.)
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
 }
 
 template <class TInputImage,
@@ -177,7 +180,7 @@ TComputeAttenuationCorrection>
   offsets[0] = 1;
   offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   offsets[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
-  const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const typename Superclass::GeometryType::ConstPointer geometry = this->GetGeometry();
 
   // beginBuffer is pointing at point with index (0,0,0) in memory, even if
   // it is not in the allocated memory
@@ -289,7 +292,7 @@ TComputeAttenuationCorrection>
       stepMM[mainDir]       = this->GetInput(1)->GetSpacing()[mainDir];
 
       // Initialize the accumulation
-      typename TOutputImage::PixelType sum = itk::NumericTraits<typename TOutputImage::PixelType>::Zero;
+      typename TOutputImage::PixelType sum = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
 
       typename TOutputImage::PixelType volumeValue = itk::NumericTraits<typename TOutputImage::PixelType>::Zero;
       if (fs == ns) //If the voxel is a corner, we can skip most steps
@@ -464,7 +467,7 @@ TComputeAttenuationCorrection>
   int offset_xs = 0;
   int offset_ys = 0;
 
-  OutputPixelType result = itk::NumericTraits<typename TOutputImage::PixelType>::Zero;
+  OutputPixelType result = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
   if(ix < minx) offset_xi = ox;
   if(iy < miny) offset_yi = oy;
   if(ix >= maxx) offset_xs = -ox;

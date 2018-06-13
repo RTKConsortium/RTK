@@ -84,14 +84,6 @@ rtk_add_cuda_test(rtkRampFilterCudaTest rtkrampfiltertest.cxx)
 rtk_add_test(rtkRampFilterTest2 rtkrampfiltertest2.cxx)
 rtk_add_cuda_test(rtkRampFilterCudaTest2 rtkrampfiltertest2.cxx)
 
-rtk_add_test(rtkRampFilterNoFFTWTest rtkrampfiltertest.cxx)
-set_target_properties(rtkRampFilterNoFFTWTest PROPERTIES COMPILE_FLAGS -DRAMP_FILTER_TEST_WITHOUT_FFTW)
-
-if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
-  rtk_add_cuda_test(rtkRampFilterNoFFTWCudaTest rtkrampfiltertest.cxx)
-  set_target_properties(rtkRampFilterNoFFTWCudaTest PROPERTIES COMPILE_FLAGS "-DUSE_CUDA -DRAMP_FILTER_TEST_WITHOUT_FFTW")
-endif()
-
 rtk_add_test(rtkScatterGlareFilterTest rtkscatterglarefiltertest.cxx)
 rtk_add_cuda_test(rtkScatterGlareFilterCudaTest rtkscatterglarefiltertest.cxx)
 
@@ -112,8 +104,6 @@ rtk_add_test(rtkFOVTest rtkfovtest.cxx)
 rtk_add_test(rtkBinningTest rtkbinningtest.cxx)
 
 rtk_add_test(rtkl0GradientNormTest rtkl0gradientnormtest.cxx)
-
-rtk_add_test(rtkMedianTest rtkmediantest.cxx)
 
 rtk_add_test(rtkWaterPreCorrectionTest rtkwaterprecorrectiontest.cxx)
 

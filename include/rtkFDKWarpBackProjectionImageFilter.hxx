@@ -30,6 +30,16 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage, class TDeformation>
+FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
+::FDKWarpBackProjectionImageFilter():
+    m_DeformationUpdateError(false)
+{
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+}
+
+template <class TInputImage, class TOutputImage, class TDeformation>
 void
 FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
 ::BeforeThreadedGenerateData()

@@ -49,8 +49,8 @@ public:
 
   /** Convenient typedefs. */
   typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
-  typedef typename GeometryType::Pointer                  GeometryPointer;
-  typedef GeometricPhantom::Pointer                       GeometricPhantomPointer;
+  typedef typename GeometryType::ConstPointer             GeometryConstPointer;
+  typedef GeometricPhantom::ConstPointer                  GeometricPhantomConstPointer;
   typedef std::string                                     StringType;
   typedef ConvexShape::VectorType                         VectorType;
   typedef ConvexShape::RotationMatrixType                 RotationMatrixType;
@@ -62,12 +62,12 @@ public:
   itkTypeMacro(ProjectGeometricPhantomImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to the geometry. */
-  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
-  itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkGetConstObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkSetConstObjectMacro(GeometricPhantom, GeometricPhantom);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkGetConstObjectMacro(Geometry, GeometryType);
+  itkSetConstObjectMacro(Geometry, GeometryType);
 
   /** Get/Set the phantom file path. */
   itkSetMacro(ConfigFile, StringType);
@@ -102,13 +102,13 @@ private:
   ProjectGeometricPhantomImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
 
-  GeometricPhantomPointer m_GeometricPhantom;
-  GeometryPointer         m_Geometry;
-  StringType              m_ConfigFile;
-  VectorType              m_PhantomScale;
-  VectorType              m_OriginOffset;
-  bool                    m_IsForbildConfigFile;
-  RotationMatrixType      m_RotationMatrix;
+  GeometricPhantomConstPointer m_GeometricPhantom;
+  GeometryConstPointer         m_Geometry;
+  StringType                   m_ConfigFile;
+  VectorType                   m_PhantomScale;
+  VectorType                   m_OriginOffset;
+  bool                         m_IsForbildConfigFile;
+  RotationMatrixType           m_RotationMatrix;
 };
 
 } // end namespace rtk

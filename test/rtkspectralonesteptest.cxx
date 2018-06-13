@@ -6,9 +6,9 @@
 #include "rtkSpectralForwardModelImageFilter.h"
 #include "rtkReorderProjectionsImageFilter.h"
 
-//#ifdef USE_CUDA
-//  #include "itkCudaImage.h"
-//#endif
+#ifdef USE_CUDA
+  #include "itkCudaImage.h"
+#endif
 
 #include <itkImageFileReader.h>
 #include <itkComposeImageFilter.h>
@@ -38,17 +38,23 @@ int main(int, char** )
   typedef itk::Vector<DataType, nBins>        PhotonCountsPixelType;
   typedef itk::Vector<DataType, nEnergies>    SpectrumPixelType;
 
-//#ifdef USE_CUDA
-//#else
-  typedef itk::Image<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::VectorImage<DataType, Dimension>           MaterialProjectionsType;
+  typedef itk::VectorImage<DataType, Dimension - 1>       vIncidentSpectrum;
+#ifdef RTK_USE_CUDA
+  typedef itk::CudaImage<MaterialPixelType, Dimension>        MaterialVolumeType;
+  typedef itk::CudaImage<PhotonCountsPixelType, Dimension>    PhotonCountsType;
+  typedef itk::CudaImage<SpectrumPixelType, Dimension-1 >     IncidentSpectrumImageType;
+  typedef itk::CudaImage<DataType, Dimension-1 >              DetectorResponseImageType;
+  typedef itk::CudaImage<DataType, Dimension-1 >              MaterialAttenuationsImageType;
+  typedef itk::CudaImage<DataType, Dimension>                 SingleComponentImageType;
+#else
+  typedef itk::Image<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::Image<PhotonCountsPixelType, Dimension>    PhotonCountsType;
   typedef itk::Image<SpectrumPixelType, Dimension-1 >     IncidentSpectrumImageType;
-  typedef itk::VectorImage<DataType, Dimension - 1>       vIncidentSpectrum;
   typedef itk::Image<DataType, Dimension-1 >              DetectorResponseImageType;
   typedef itk::Image<DataType, Dimension-1 >              MaterialAttenuationsImageType;
   typedef itk::Image<DataType, Dimension>                 SingleComponentImageType;
-//#endif
+#endif
 
   typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
   typedef itk::ImageFileReader<vIncidentSpectrum> vIncidentSpectrumReaderType;
@@ -124,7 +130,7 @@ int main(int, char** )
   typedef rtk::ConstantImageSource< MaterialVolumeType > MaterialVolumeSourceType;
   MaterialVolumeSourceType::Pointer materialVolumeSource = MaterialVolumeSourceType::New();
   materialVolumeSource->SetInformationFromImage(tomographySource->GetOutput());
-  materialVolumeSource->SetConstant( itk::NumericTraits<MaterialPixelType>::Zero );
+  materialVolumeSource->SetConstant( itk::NumericTraits<MaterialPixelType>::ZeroValue() );
 
   // Generate a blank set of projections
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
@@ -310,7 +316,7 @@ int main(int, char** )
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 3: Voxel-based Backprojector, 4 subsets ******" << std::endl;
+  std::cout << "\n\n****** Case 3: Voxel-based Backprojector, 4 subsets, with regularization  ******" << std::endl;
 
   typedef rtk::ReorderProjectionsImageFilter<PhotonCountsType> ReorderProjectionsFilterType;
   ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
@@ -324,13 +330,6 @@ int main(int, char** )
   mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_VOXELBASED );
   mechlemOneStep->SetNumberOfSubsets(4);
   mechlemOneStep->SetNumberOfIterations( 5 );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
-
-  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-
-  std::cout << "\n\n****** Case 4: Voxel-based Backprojector, 4 subsets, with regularization ******" << std::endl;
-
   MaterialVolumeType::RegionType::SizeType radius;
   radius.Fill(1);
   MaterialVolumeType::PixelType weights;
@@ -342,7 +341,15 @@ int main(int, char** )
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-#ifdef USE_CUDA
+#ifdef RTK_USE_CUDA
+  std::cout << "\n\n****** Case 4: CUDA voxel-based Backprojector, 4 subsets, with regularization ******" << std::endl;
+
+  mechlemOneStep->SetForwardProjectionFilter( MechlemType::FP_CUDARAYCAST );
+  mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_CUDAVOXELBASED );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
+
+  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
   return EXIT_SUCCESS;

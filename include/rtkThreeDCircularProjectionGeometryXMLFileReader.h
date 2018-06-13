@@ -67,7 +67,7 @@ public:
   int CanReadFile(const char* name) ITK_OVERRIDE;
 
   /** Get smart pointer to projection geometry. */
-  itkGetMacro(Geometry, GeometryPointer);
+  itkGetModifiableObjectMacro(Geometry, GeometryType);
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();

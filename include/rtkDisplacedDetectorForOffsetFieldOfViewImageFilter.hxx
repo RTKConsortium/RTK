@@ -120,7 +120,11 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   // Compute overlap between input and output
   OutputImageRegionType overlapRegion = outputRegionForThread;

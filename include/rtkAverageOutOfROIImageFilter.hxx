@@ -31,6 +31,10 @@ template< class TInputImage, class TROI >
 AverageOutOfROIImageFilter< TInputImage, TROI >
 ::AverageOutOfROIImageFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+
   this->SetNumberOfRequiredInputs(2);
 
   // Set the direction along which the output requested region should NOT be split

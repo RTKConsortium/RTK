@@ -358,7 +358,11 @@ template<typename DecomposedProjectionsType, typename MeasuredProjectionsType,
 void
 SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, MeasuredProjectionsType,
                                                    IncidentSpectrumImageType, DetectorResponseImageType, MaterialAttenuationsImageType>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread)
+#endif
 {
   ////////////////////////////////////////////////////////////////////
   // Create a Nelder-Mead simplex optimizer and its cost function

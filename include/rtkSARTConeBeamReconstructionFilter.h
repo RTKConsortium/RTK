@@ -171,7 +171,7 @@ public:
   itkTypeMacro(SARTConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */

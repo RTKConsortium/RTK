@@ -158,7 +158,7 @@ CudaWarpForwardProjectionImageFilter
     matrixIdxInputVol[i][3] = this->GetInputVolume()->GetBufferedRegion().GetIndex()[i]; // Should 0.5 be added here ?
     }
 
-  const Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const Superclass::GeometryType* geometry = this->GetGeometry();
   const unsigned int Dimension = InputImageType::ImageDimension;
   const unsigned int iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension-1);
   const unsigned int nProj = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(Dimension-1);

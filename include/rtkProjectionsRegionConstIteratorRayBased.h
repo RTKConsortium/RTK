@@ -74,25 +74,25 @@ public:
    * coordinates to voxel indices in an itk Image. */
   ProjectionsRegionConstIteratorRayBased(const TImage *ptr,
                                          const RegionType & region,
-                                         ThreeDCircularProjectionGeometry *geometry,
+                                         const ThreeDCircularProjectionGeometry *geometry,
                                          const MatrixType &postMat);
 
   static Self *
   New(const TImage *ptr,
       const RegionType & region,
-      ThreeDCircularProjectionGeometry *geometry,
+      const ThreeDCircularProjectionGeometry *geometry,
       const MatrixType &postMat);
 
   static Self *
   New(const TImage *ptr,
       const RegionType & region,
-      ThreeDCircularProjectionGeometry *geometry,
+      const ThreeDCircularProjectionGeometry *geometry,
       const HomogeneousMatrixType &postMat);
 
   static Self *
   New(const TImage *ptr,
       const RegionType & region,
-      ThreeDCircularProjectionGeometry *geometry);
+      const ThreeDCircularProjectionGeometry *geometry);
 
   /** Increment (prefix) the fastest moving dimension of the iterator's index.
    * This operator will constrain the iterator within the region (i.e. the
@@ -141,11 +141,11 @@ protected:
    * NewProjection method has already been called. */
   virtual void NewPixel() = 0;
 
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-  MatrixType                                m_PostMultiplyMatrix;
-  PointType                                 m_SourcePosition;
-  PointType                                 m_PixelPosition;
-  PointType                                 m_SourceToPixel;
+  ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
+  MatrixType                                     m_PostMultiplyMatrix;
+  PointType                                      m_SourcePosition;
+  PointType                                      m_PixelPosition;
+  PointType                                      m_SourceToPixel;
 };
 } // end namespace itk
 

@@ -71,7 +71,11 @@ ConditionalMedianImageFilter< TInputImage >
 template< typename TInputImage >
 void
 ConditionalMedianImageFilter< TInputImage >
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread)
+#endif
 {
   // Compute the centered difference with the previous and next frames, store it into the intermediate image
   itk::ConstNeighborhoodIterator<TInputImage> nIt(m_Radius, this->GetInput(), outputRegionForThread);

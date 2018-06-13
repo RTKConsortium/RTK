@@ -115,10 +115,22 @@ ConstantImageSource<TOutputImage>
   os << m_Size[i] << "]" << std::endl;
 }
 
+//template <class TOutputImage>
+//void
+//ConstantImageSource<TOutputImage>
+//::SetInformationFromImage(const typename TOutputImage::Superclass* image)
+//{
+//  this->SetSize( image->GetLargestPossibleRegion().GetSize() );
+//  this->SetIndex( image->GetLargestPossibleRegion().GetIndex() );
+//  this->SetSpacing( image->GetSpacing() );
+//  this->SetOrigin( image->GetOrigin() );
+//  this->SetDirection( image->GetDirection() );
+//}
+
 template <class TOutputImage>
 void
 ConstantImageSource<TOutputImage>
-::SetInformationFromImage(const typename TOutputImage::Superclass* image)
+::SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension>* image)
 {
   this->SetSize( image->GetLargestPossibleRegion().GetSize() );
   this->SetIndex( image->GetLargestPossibleRegion().GetIndex() );
@@ -150,7 +162,11 @@ ConstantImageSource<TOutputImage>
 template <typename TOutputImage>
 void 
 ConstantImageSource<TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
   for (; !it.IsAtEnd(); ++it)

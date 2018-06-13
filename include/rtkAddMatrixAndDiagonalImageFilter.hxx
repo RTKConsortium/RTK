@@ -92,7 +92,11 @@ AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
 template< class TDiagonal, class TMatrix>
 void
 AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread)
+#endif
 {
   // Create iterators for all inputs and outputs
   itk::ImageRegionIterator<TMatrix> outIt(this->GetOutput(), outputRegionForThread);

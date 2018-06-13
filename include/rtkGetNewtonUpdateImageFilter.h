@@ -69,7 +69,11 @@ protected:
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
     /** Does the real work. */
+#if ITK_VERSION_MAJOR<5
     void ThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+    void DynamicThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
     /** Getters for the inputs */
     typename TGradient::ConstPointer GetInputGradient();

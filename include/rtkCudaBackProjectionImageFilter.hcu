@@ -19,7 +19,10 @@
 #ifndef __rtkCudaBackProjectionImageFilter_hcu
 #define __rtkCudaBackProjectionImageFilter_hcu
 
+#include "rtkWin32Header.h"
+
 void
+RTK_EXPORT
 CUDA_back_project(int projSize[3],
                   int volSize[3],
                   float *matrices,
@@ -28,7 +31,7 @@ CUDA_back_project(int projSize[3],
                   float *dev_vol_in,
                   float *dev_vol_out,
                   float *dev_img,
-                  double radiusCylindricalDetector
-                  );
+                  double radiusCylindricalDetector,
+                  unsigned int vectorLength);
 
 #endif

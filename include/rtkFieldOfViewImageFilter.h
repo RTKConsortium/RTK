@@ -59,7 +59,7 @@ public:
   typedef typename TInputImage::Superclass                  ProjectionsStackType;
   typedef typename ProjectionsStackType::Pointer            ProjectionsStackPointer;
   typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::Pointer                    GeometryPointer;
+  typedef typename GeometryType::ConstPointer               GeometryConstPointer;
   typedef enum {RADIUSINF,RADIUSSUP,RADIUSBOTH}             FOVRadiusType;
 
 
@@ -70,8 +70,8 @@ public:
   itkTypeMacro(FieldOfViewImageFilter, InPlaceImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkGetConstObjectMacro(Geometry, GeometryType);
+  itkSetConstObjectMacro(Geometry, GeometryType);
 
   /** Get / Set of the member Mask. If set, all the pixels in the field of view
    * are set to 1. The data value is kept otherwise. Pixels outside the mask
@@ -115,13 +115,17 @@ protected:
 
   /** Generates a FOV mask which is applied to the reconstruction
    * A call to this function will assume modification of the function.*/
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
 private:
   FieldOfViewImageFilter(const Self&);      //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
-  GeometryPointer         m_Geometry;
+  GeometryConstPointer    m_Geometry;
   bool                    m_Mask;
   ProjectionsStackPointer m_ProjectionsStack;
   double                  m_Radius;

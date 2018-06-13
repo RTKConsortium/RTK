@@ -77,15 +77,6 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
 template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
-{
-  m_Geometry = _arg;
-  this->Modified();
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
-void
 ProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision>
 ::SetSignal(const std::vector<double> signal)
 {

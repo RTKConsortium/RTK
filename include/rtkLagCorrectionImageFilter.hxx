@@ -31,6 +31,10 @@ namespace rtk
 template<typename TImage, unsigned ModelOrder>
 LagCorrectionImageFilter<TImage, ModelOrder>::LagCorrectionImageFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
+
   this->SetNumberOfRequiredInputs(1);
   m_A.Fill(0.0f);
   m_B.Fill(0.0f);
@@ -100,8 +104,8 @@ void LagCorrectionImageFilter<TImage, ModelOrder>
 }
 
 template<typename TImage, unsigned ModelOrder>
-void LagCorrectionImageFilter<TImage, ModelOrder>::
-ThreadedGenerateData(const ImageRegionType & thRegion, itk::ThreadIdType itkNotUsed(threadId))
+void LagCorrectionImageFilter<TImage, ModelOrder>
+::ThreadedGenerateData(const ImageRegionType & thRegion, itk::ThreadIdType itkNotUsed(threadId))
 {
   // Input / ouput iterators
   itk::ImageRegionConstIterator<TImage> itIn(this->GetInput(), thRegion);
