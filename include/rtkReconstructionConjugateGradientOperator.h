@@ -114,7 +114,9 @@ namespace rtk
    * \ingroup ReconstructionAlgorithm
    */
 
-template< typename TOutputImage, typename TSingleComponentImage >
+template< typename TOutputImage,
+          typename TSingleComponentImage = TOutputImage,
+          typename TWeightsImage = TOutputImage>
 class ReconstructionConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
@@ -123,13 +125,18 @@ public:
   typedef ConjugateGradientOperator< TOutputImage >  Superclass;
   typedef itk::SmartPointer< Self >                  Pointer;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>, TOutputImage::ImageDimension > GradientImageType;
+  typedef itk::CudaImage<itk::CovariantVector<typename TOutputImage::PixelType, TOutputImage::ImageDimension>, TOutputImage::ImageDimension > GradientImageType;
 #else
   typedef itk::Image<itk::CovariantVector<typename TOutputImage::PixelType, TOutputImage::ImageDimension >, TOutputImage::ImageDimension > GradientImageType;
 #endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
+
+  /** Setters for the inputs */
+  void SetInputVolume(const TOutputImage* vol);
+  void SetInputProjectionStack(const TOutputImage* projs);
+  void SetInputWeights(const TWeightsImage* weights);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator)
@@ -143,9 +150,17 @@ public:
   typedef rtk::ConstantImageSource<TOutputImage>                          ConstantSourceType;
   typedef itk::MultiplyImageFilter<TOutputImage, TSingleComponentImage>   MultiplyFilterType;
   typedef itk::AddImageFilter<TOutputImage>                               AddFilterType;
-  typedef rtk::BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage> MatrixVectorMultiplyFilterType;
 
-  typedef rtk::LaplacianImageFilter<TOutputImage, GradientImageType>      LaplacianFilterType;
+  // If TOutputImage is an itk::Image of floats or double, so are the weights, and a simple Multiply filter is required
+  // If TOutputImage is an itk::Image of itk::Vector<float (or double)>, a BlockDiagonalMatrixVectorMultiply filter
+  // is needed. Thus the meta-programming construct
+  typedef rtk::BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage, TWeightsImage>  MatrixVectorMultiplyFilterType;
+  typedef itk::MultiplyImageFilter<TOutputImage, TOutputImage, TOutputImage>              PlainMultiplyFilterType;
+  typedef typename std::conditional<std::is_same< TSingleComponentImage, TOutputImage>::value,
+                                                  PlainMultiplyFilterType,
+                                                  MatrixVectorMultiplyFilterType>::type MultiplyWithWeightsFilterType;
+
+//  typedef rtk::LaplacianImageFilter<TOutputImage, GradientImageType>      LaplacianFilterType;
 
   typedef typename TOutputImage::Pointer                                  OutputImagePointer;
 
@@ -182,15 +197,14 @@ protected:
 
   typename ConstantSourceType::Pointer              m_ConstantProjectionsSource;
   typename ConstantSourceType::Pointer              m_ConstantVolumeSource;
-  typename MultiplyFilterType::Pointer              m_MultiplyProjectionsFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyOutputVolumeFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyInputVolumeFilter;
-  typename MultiplyFilterType::Pointer              m_MultiplyLaplacianFilter;
+//  typename MultiplyFilterType::Pointer              m_MultiplyLaplacianFilter;
   typename MultiplyFilterType::Pointer              m_MultiplyTikhonovFilter;
   typename AddFilterType::Pointer                   m_AddLaplacianFilter;
   typename AddFilterType::Pointer                   m_AddTikhonovFilter;
-  typename LaplacianFilterType::Pointer             m_LaplacianFilter;
-  typename MatrixVectorMultiplyFilterType::Pointer  m_MatrixVectorMultiplyFilter;
+//  typename LaplacianFilterType::Pointer             m_LaplacianFilter;
+  typename MultiplyWithWeightsFilterType::Pointer  m_MultiplyWithWeightsFilter;
 
   /** Member attributes */
   rtk::ThreeDCircularProjectionGeometry::ConstPointer    m_Geometry;
@@ -207,6 +221,11 @@ protected:
   /** The volume and the projections must have different requested regions */
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
   void GenerateOutputInformation() ITK_OVERRIDE;
+
+  /** Getters for the inputs */
+  typename TOutputImage::ConstPointer   GetInputVolume();
+  typename TOutputImage::ConstPointer   GetInputProjectionStack();
+  typename TWeightsImage::ConstPointer  GetInputWeights();
 
 private:
   ReconstructionConjugateGradientOperator(const Self &); //purposely not implemented

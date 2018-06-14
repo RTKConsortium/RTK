@@ -21,7 +21,6 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
-#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #include <iostream>
 #include <fstream>
@@ -39,7 +38,7 @@ int main(int argc, char * argv[])
   const unsigned int Dimension = 3;
   const unsigned int nMaterials = 3;
 
-  typedef double DataType;
+  typedef float DataType;
   typedef itk::Vector<DataType, nMaterials> PixelType;
   typedef itk::Vector<DataType, nMaterials * nMaterials> WeightsType;
 
@@ -51,9 +50,9 @@ int main(int argc, char * argv[])
   typedef itk::CudaImage< PixelType, Dimension > OutputImageType;
   typedef itk::CudaImage< WeightsType, Dimension > WeightsImageType;
 #else
-  typedef itk::CudaImage< DataType, Dimension > SingleComponentImageType;
-  typedef itk::CudaImage< PixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< WeightsType, Dimension > WeightsImageType;
+  typedef itk::Image< DataType, Dimension > SingleComponentImageType;
+  typedef itk::Image< PixelType, Dimension > OutputImageType;
+  typedef itk::Image< WeightsType, Dimension > WeightsImageType;
 #endif
 
   // Projections reader
@@ -129,13 +128,15 @@ int main(int argc, char * argv[])
     }
 
   // Set the forward and back projection filters to be used
-  typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType, SingleComponentImageType> ConjugateGradientFilterType;
+  typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType, SingleComponentImageType, WeightsImageType> ConjugateGradientFilterType;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  conjugategradient->SetForwardProjectionFilter(0);
-  conjugategradient->SetBackProjectionFilter(1);
-  conjugategradient->SetInput(0, inputFilter->GetOutput() );
-  conjugategradient->SetInput(1, reader->GetOutput());
-  conjugategradient->SetInput(2, weightsSource->GetOutput());
+//  conjugategradient->SetForwardProjectionFilter(ConjugateGradientFilterType::FP_JOSEPH);
+//  conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::BP_JOSEPH);
+  SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
+  SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
+  conjugategradient->SetInputVolume( inputFilter->GetOutput() );
+  conjugategradient->SetInputProjectionStack( reader->GetOutput());
+  conjugategradient->SetInputWeights( weightsSource->GetOutput());
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
   if(args_info.mask_given)
     {
@@ -149,7 +150,6 @@ int main(int argc, char * argv[])
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
-  conjugategradient->SetTargetSumOfSquaresBetweenConsecutiveIterates(args_info.targetSDD_arg);
 
   itk::TimeProbe readerProbe;
   if(args_info.time_flag)

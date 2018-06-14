@@ -24,8 +24,13 @@
 namespace rtk
 {
 
-template< typename TOutputImage, typename TSingleComponentImage>
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>::ConjugateGradientConeBeamReconstructionFilter()
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::ConjugateGradientConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(3);
 
@@ -35,56 +40,147 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 
   m_Gamma = 0;
   m_Tikhonov = 0;
-  m_Regularized = false;
   m_CudaConjugateGradient = true;
   m_DisableDisplacedDetectorFilter = false;
 
   // Create the filters
-#ifdef RTK_USE_CUDA
-  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
-  m_ConstantVolumeSource     = rtk::CudaConstantVolumeSource::New();
-#else
+//#ifdef RTK_USE_CUDA
+//  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
+//  m_ConstantVolumeSource    = rtk::CudaConstantVolumeSource::New();
+//#else
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_ConstantVolumeSource     = ConstantImageSourceType::New();
-#endif
+//#endif
   m_CGOperator = CGOperatorFilterType::New();
 
   m_MultiplyVolumeFilter = MultiplyFilterType::New();
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
   m_MultiplyOutputFilter = MultiplyFilterType::New();
+  m_MultiplyWithWeightsFilter = MultiplyWithWeightsFilterType::New();
 
   // Set permanent parameters
   m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>::
-SetSupportMask(const TSingleComponentImage *SupportMask)
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::SetInputVolume(const TOutputImage* vol)
+{
+  this->SetNthInput(0, const_cast<TOutputImage*>(vol));
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+void
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::SetInputProjectionStack(const TOutputImage* projs)
+{
+  this->SetNthInput(1, const_cast<TOutputImage*>(projs));
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+void
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::SetInputWeights(const TWeightsImage* weights)
+{
+  this->SetNthInput(2, const_cast<TWeightsImage*>(weights));
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+void
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::SetSupportMask(const TSingleComponentImage *SupportMask)
 {
   this->SetInput("SupportMask", const_cast<TSingleComponentImage*>(SupportMask));
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+typename TOutputImage::ConstPointer
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::GetInputVolume()
+{
+return static_cast< const TOutputImage* >
+       ( this->itk::ProcessObject::GetInput(0) );
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+typename TOutputImage::ConstPointer
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::GetInputProjectionStack()
+{
+return static_cast< const TOutputImage* >
+       ( this->itk::ProcessObject::GetInput(1) );
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+typename TWeightsImage::ConstPointer
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::GetInputWeights()
+{
+return static_cast< const TWeightsImage * >
+       ( this->itk::ProcessObject::GetInput(2) );
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 typename TSingleComponentImage::ConstPointer
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>::
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>::
 GetSupportMask()
 {
   return static_cast< const TSingleComponentImage * >
           ( this->itk::ProcessObject::GetInput("SupportMask") );
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
-const std::vector<double> &ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+const std::vector<double> &ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
 ::GetResidualCosts()
 {
   return m_ConjugateGradientFilter->GetResidualCosts();
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
 ::SetForwardProjectionFilter (ForwardProjectionType _arg)
 {
   if( _arg != this->GetForwardProjectionFilter() )
@@ -95,9 +191,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
     }
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
 ::SetBackProjectionFilter (BackProjectionType _arg)
 {
   if( _arg != this->GetBackProjectionFilter() )
@@ -109,28 +209,32 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
     }
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume we update
-  typename Superclass::InputImagePointer inputPtr0 =
-          const_cast< TOutputImage * >( this->GetInput(0) );
+  typename TOutputImage::Pointer inputPtr0 =
+          const_cast< TOutputImage * >( this->GetInputVolume().GetPointer() );
   if ( !inputPtr0 )
       return;
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
   // Input 1 is the stack of projections to backproject
-  typename Superclass::InputImagePointer  inputPtr1 =
-          const_cast< TOutputImage * >( this->GetInput(1) );
+  typename TOutputImage::Pointer inputPtr1 =
+          const_cast< TOutputImage * >( this->GetInputProjectionStack().GetPointer() );
   if ( !inputPtr1 )
       return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 
   // Input 2 is the weights map on projections, either user-defined or filled with ones (default)
-  typename Superclass::InputImagePointer  inputPtr2 =
-          const_cast< TOutputImage * >( this->GetInput(2) );
+  typename TWeightsImage::Pointer inputPtr2 =
+          const_cast< TWeightsImage * >( this->GetInputWeights().GetPointer() );
   if ( !inputPtr2 )
       return;
   inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
@@ -146,27 +250,31 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
     }
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
 ::GenerateOutputInformation()
 {
   // Choose between cuda or non-cuda conjugate gradient filter
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
-#ifdef RTK_USE_CUDA
-  if (m_CudaConjugateGradient)
-    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
-#endif
+//#ifdef RTK_USE_CUDA
+//  if (m_CudaConjugateGradient)
+//    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
+//#endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
   
   // Set runtime connections
-  m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
-  m_CGOperator->SetInput(1, this->GetInput(1));
+  m_ConstantVolumeSource->SetInformationFromImage(this->GetInputVolume());
+  m_CGOperator->SetInput(1, this->GetInputProjectionStack());
   m_CGOperator->SetSupportMask(this->GetSupportMask());
-  m_ConjugateGradientFilter->SetX(this->GetInput(0));
+  m_ConjugateGradientFilter->SetX(this->GetInputVolume());
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
-  m_DisplacedDetectorFilter->SetInput(this->GetInput(2));
+  m_DisplacedDetectorFilter->SetInput(this->GetInputProjectionStack());
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
@@ -174,10 +282,10 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   m_ConjugateGradientFilter->SetB(m_BackProjectionFilterForB->GetOutput());
 
   // Multiply the projections by the weights map
-  m_MultiplyProjectionsFilter->SetInput1(this->GetInput(1));  
-  m_MultiplyProjectionsFilter->SetInput2(m_DisplacedDetectorFilter->GetOutput());
+  m_MultiplyWithWeightsFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
+  m_MultiplyWithWeightsFilter->SetInput2(this->GetInputWeights());
   m_CGOperator->SetInput(2, m_DisplacedDetectorFilter->GetOutput());
-  m_BackProjectionFilterForB->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
+  m_BackProjectionFilterForB->SetInput(1, m_MultiplyWithWeightsFilter->GetOutput());
 
   // If a support mask is used, it serves as preconditioning weights
   if (this->GetSupportMask().IsNotNull())
@@ -218,9 +326,13 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   this->GetOutput()->CopyInformation( m_ConjugateGradientFilter->GetOutput() );
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage>
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
 ::GenerateData()
 {
   m_ConjugateGradientFilter->Update();

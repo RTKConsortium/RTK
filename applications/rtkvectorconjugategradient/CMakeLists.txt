@@ -1,10 +1,6 @@
-WRAP_GGO(rtkvectorconjugategradient_GGO_C rtkvectorconjugategradient.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+WRAP_GGO(rtkvectorconjugategradient_GGO_C rtkvectorconjugategradient.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
 add_executable(rtkvectorconjugategradient rtkvectorconjugategradient.cxx ${rtkvectorconjugategradient_GGO_C})
 target_link_libraries(rtkvectorconjugategradient RTK)
-
-if (RTK_USE_CUDA)
-  target_link_libraries(rtkvectorconjugategradient rtkcuda)
-endif ()
 
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)

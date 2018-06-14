@@ -63,7 +63,7 @@ public:
   typedef rtk::ConjugateGradientGetP_kPlusOneImageFilter<OutputImageType>           GetP_kPlusOne_FilterType;
   typedef rtk::ConjugateGradientGetR_kPlusOneImageFilter<OutputImageType>           GetR_kPlusOne_FilterType;
   typedef rtk::ConjugateGradientGetX_kPlusOneImageFilter<OutputImageType>           GetX_kPlusOne_FilterType;
-  typedef rtk::SumOfSquaresImageFilter<OutputImageType>                             SS_FilterType;
+//  typedef rtk::SumOfSquaresImageFilter<OutputImageType>                             SS_FilterType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -114,7 +114,7 @@ protected:
   bool                m_IterationCosts;
   std::vector<double> m_ResidualCosts;
   double              m_C;
-  double              m_TargetSumOfSquaresBetweenConsecutiveIterates;
+//  double              m_TargetSumOfSquaresBetweenConsecutiveIterates;
 
 private:
   ConjugateGradientImageFilter(const Self &); //purposely not implemented

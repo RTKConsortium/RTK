@@ -28,7 +28,7 @@ namespace Functor
  * \class MatrixVectorMult
  * \brief Functor for voxelwise matrix-vector multiplication
  */
-template< typename TInput1, typename TInput2 = TInput1, typename TOutput = TInput1 >
+template< typename TVector, typename TMatrixAsVector >
 class MatrixVectorMult
 {
 public:
@@ -45,44 +45,37 @@ public:
   }
 
   // Input 1 is the vector image, Input 2 is the matrix image
-  inline TOutput operator()(const TInput1 & A, const TInput2 & B) const
+  inline TVector operator()(const TVector & A, const TMatrixAsVector & B) const
   {
-  vnl_matrix<typename TInput2::ComponentType> mat = vnl_matrix<typename TInput2::ComponentType>(A.GetSize(), A.GetSize());
-  mat.copy_in(B.GetDataPointer());
-  vnl_vector<typename TInput1::ComponentType> vect(A.GetDataPointer(),A.GetSize());
-  vnl_vector<typename TInput1::ComponentType> vnl_result = mat * vect;
-
-  TOutput result;
-  result.SetSize(A.GetSize());
-  result.SetData(vnl_result.data_block(),A.GetSize(),false);
-
-  return static_cast< TOutput >( result );
+  vnl_matrix<typename TMatrixAsVector::ComponentType> mat = vnl_matrix<typename TMatrixAsVector::ComponentType>(TVector::Dimension, TVector::Dimension);
+  mat.copy_in(B.GetVnlVector().data_block());
+  itk::Matrix<typename TMatrixAsVector::ComponentType, TVector::Dimension, TVector::Dimension> matrix = itk::Matrix<typename TMatrixAsVector::ComponentType, TVector::Dimension, TVector::Dimension>(mat);
+  return(matrix * A);
   }
 };
 }
+
 /** \class rtkBlockDiagonalMatrixVectorMultiplyImageFilter
  * \brief
  *
  */
-template< typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1 >
+template< typename TImageOfVectors, typename TImageOfMatricesAsVectors>
 class ITK_EXPORT BlockDiagonalMatrixVectorMultiplyImageFilter:
   public
-  itk::BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
-                            Functor::MatrixVectorMult<
-                              typename TInputImage1::PixelType,
-                              typename TInputImage2::PixelType,
-                              typename TOutputImage::PixelType >   >
+  itk::BinaryFunctorImageFilter< TImageOfVectors, TImageOfMatricesAsVectors, TImageOfVectors,
+                              Functor::MatrixVectorMult<
+                              typename TImageOfVectors::PixelType,
+                              typename TImageOfMatricesAsVectors::PixelType>   >
 {
 public:
   /** Standard class typedefs. */
-  typedef BlockDiagonalMatrixVectorMultiplyImageFilter                            Self;
-  typedef itk::BinaryFunctorImageFilter< TInputImage1, TInputImage2, TOutputImage,
+  typedef BlockDiagonalMatrixVectorMultiplyImageFilter                                        Self;
+  typedef itk::BinaryFunctorImageFilter< TImageOfVectors, TImageOfMatricesAsVectors, TImageOfVectors,
                                          Functor::MatrixVectorMult<
-                                            typename TInputImage1::PixelType,
-                                            typename TInputImage2::PixelType,
-                                            typename TOutputImage::PixelType > >  Superclass;
-  typedef itk::SmartPointer< Self >                                               Pointer;
-  typedef itk::SmartPointer< const Self >                                         ConstPointer;
+                                            typename TImageOfVectors::PixelType,
+                                            typename TImageOfMatricesAsVectors::PixelType> >  Superclass;
+  typedef itk::SmartPointer< Self >                                                           Pointer;
+  typedef itk::SmartPointer< const Self >                                                     ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

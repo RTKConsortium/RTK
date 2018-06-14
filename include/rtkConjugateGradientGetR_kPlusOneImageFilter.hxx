@@ -145,7 +145,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
     squaredNormR_k += m_SquaredNormR_kVector[i];
     p_k_t_A_p_k += m_PktApkVector[i];
     }
-  double alphak = squaredNormR_k / (p_k_t_A_p_k + eps);
+  typename itk::PixelTraits<typename TInputType::PixelType>::ValueType alphak = squaredNormR_k / (p_k_t_A_p_k + eps);
 
   // Compute Rk+1 and write it on the output
   RegionIterator outputIt(this->GetOutput(), outputRegionForThread);

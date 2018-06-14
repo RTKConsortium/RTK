@@ -24,8 +24,12 @@
 namespace rtk
 {
 
-template< typename TOutputImage, typename TSingleComponentImage>
-ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                        TSingleComponentImage,
+                                        TWeightsImage>
 ::ReconstructionConjugateGradientOperator():
   m_Geometry(ITK_NULLPTR),
   m_Gamma(0),
@@ -34,22 +38,22 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
   this->SetNumberOfRequiredInputs(3);
 
   // Create filters
-#ifdef RTK_USE_CUDA
-  m_ConstantProjectionsSource = rtk::CudaConstantVolumeSource::New();
-  m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
-  m_LaplacianFilter = rtk::CudaLaplacianImageFilter::New();
-#else
+//#ifdef RTK_USE_CUDA
+//  m_ConstantProjectionsSource = rtk::CudaConstantVolumeSource::New();
+//  m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
+//  m_LaplacianFilter = rtk::CudaLaplacianImageFilter::New();
+//#else
   m_ConstantProjectionsSource = ConstantSourceType::New();
   m_ConstantVolumeSource = ConstantSourceType::New();
-  m_LaplacianFilter = LaplacianFilterType::New();
-#endif
-  m_MultiplyProjectionsFilter = MultiplyFilterType::New();
+//  m_LaplacianFilter = LaplacianFilterType::New();
+//#endif
+  m_MultiplyWithWeightsFilter = MultiplyWithWeightsFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
-  m_AddLaplacianFilter = AddFilterType::New();
+//  m_AddLaplacianFilter = AddFilterType::New();
   m_AddTikhonovFilter = AddFilterType::New();
 
-  m_MultiplyLaplacianFilter = MultiplyFilterType::New();
+//  m_MultiplyLaplacianFilter = MultiplyFilterType::New();
   m_MultiplyTikhonovFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
@@ -59,57 +63,152 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
   // Set memory management options
   m_ConstantProjectionsSource->ReleaseDataFlagOn();
   m_ConstantVolumeSource->ReleaseDataFlagOn();
-  m_LaplacianFilter->ReleaseDataFlagOn();
-  m_MultiplyLaplacianFilter->ReleaseDataFlagOn();
+//  m_LaplacianFilter->ReleaseDataFlagOn();
+//  m_MultiplyLaplacianFilter->ReleaseDataFlagOn();
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>::
-SetSupportMask(const TSingleComponentImage *SupportMask)
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::SetInputVolume(const TOutputImage* vol)
+{
+  this->SetNthInput(0, const_cast<TOutputImage*>(vol));
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+void
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::SetInputProjectionStack(const TOutputImage* projs)
+{
+  this->SetNthInput(1, const_cast<TOutputImage*>(projs));
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+void
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::SetInputWeights(const TWeightsImage* weights)
+{
+  this->SetNthInput(2, const_cast<TWeightsImage*>(weights));
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+void
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::SetSupportMask(const TSingleComponentImage *SupportMask)
 {
   this->SetInput("SupportMask", const_cast<TSingleComponentImage*>(SupportMask));
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+typename TOutputImage::ConstPointer
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::GetInputVolume()
+{
+return static_cast< const TOutputImage* >
+       ( this->itk::ProcessObject::GetInput(0) );
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+typename TOutputImage::ConstPointer
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::GetInputProjectionStack()
+{
+return static_cast< const TOutputImage* >
+       ( this->itk::ProcessObject::GetInput(1) );
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+typename TWeightsImage::ConstPointer
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::GetInputWeights()
+{
+return static_cast< const TWeightsImage * >
+       ( this->itk::ProcessObject::GetInput(2) );
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 typename TSingleComponentImage::ConstPointer
-ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>::
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>::
 GetSupportMask()
 {
   return static_cast< const TSingleComponentImage * >
           ( this->itk::ProcessObject::GetInput("SupportMask") );
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                        TSingleComponentImage,
+                                        TWeightsImage>
 ::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
 {
   m_BackProjectionFilter = _arg;
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                        TSingleComponentImage,
+                                        TWeightsImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                        TSingleComponentImage,
+                                        TWeightsImage>
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume in which we backproject
   typename Superclass::InputImagePointer inputPtr0 =
-    const_cast< TOutputImage * >( this->GetInput(0) );
+    const_cast< TOutputImage * >( this->GetInputVolume().GetPointer() );
   if ( !inputPtr0 ) return;
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
   // Input 1 is the stack of projections to backproject
   typename Superclass::InputImagePointer  inputPtr1 =
-    const_cast< TOutputImage * >( this->GetInput(1) );
+    const_cast< TOutputImage * >( this->GetInputProjectionStack().GetPointer() );
   if ( !inputPtr1 ) return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 
@@ -131,18 +230,22 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
     }
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                        TSingleComponentImage,
+                                        TWeightsImage>
 ::GenerateOutputInformation()
 {
   // Set runtime connections, and connections with
   // forward and back projection filters, which are set
   // at runtime
-  m_ConstantVolumeSource->SetInformationFromImage(this->GetInput(0));
-  m_ConstantProjectionsSource->SetInformationFromImage(this->GetInput(1));
+  m_ConstantVolumeSource->SetInformationFromImage(this->GetInputVolume());
+  m_ConstantProjectionsSource->SetInformationFromImage(this->GetInputProjectionStack());
 
-  m_FloatingInputPointer = const_cast<TOutputImage *>(this->GetInput(0));
+  m_FloatingInputPointer = const_cast<TOutputImage *>(this->GetInputVolume().GetPointer());
 
   // Set the first multiply filter to use the Support Mask, if any
   if (this->GetSupportMask().IsNotNull())
@@ -157,28 +260,28 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
   m_ForwardProjectionFilter->SetInput(1, m_FloatingInputPointer);
 
   // Set the multiply filter's inputs for the projection weights (for WLS minimization)
-  m_MultiplyProjectionsFilter->SetInput1(m_ForwardProjectionFilter->GetOutput());
-  m_MultiplyProjectionsFilter->SetInput2(this->GetInput(2));
+  m_MultiplyWithWeightsFilter->SetInput1(m_ForwardProjectionFilter->GetOutput());
+  m_MultiplyWithWeightsFilter->SetInput2(this->GetInputWeights());
 
   // Set the back projection filter's inputs
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-  m_BackProjectionFilter->SetInput(1, m_MultiplyProjectionsFilter->GetOutput());
+  m_BackProjectionFilter->SetInput(1, m_MultiplyWithWeightsFilter->GetOutput());
   m_FloatingOutputPointer= m_BackProjectionFilter->GetOutput();
 
-  // Set the filters to compute the laplacian regularization, if any
-  if (m_Gamma != 0)
-    {
-    m_LaplacianFilter->SetInput(m_FloatingInputPointer);
-    m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
-    // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian"
-    // for correctly applying quadratic regularization || grad f ||_2^2
-    m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
+//  // Set the filters to compute the laplacian regularization, if any
+//  if (m_Gamma != 0)
+//    {
+//    m_LaplacianFilter->SetInput(m_FloatingInputPointer);
+//    m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
+//    // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian"
+//    // for correctly applying quadratic regularization || grad f ||_2^2
+//    m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
 
-    m_AddLaplacianFilter->SetInput(0, m_BackProjectionFilter->GetOutput());
-    m_AddLaplacianFilter->SetInput(1, m_MultiplyLaplacianFilter->GetOutput());
+//    m_AddLaplacianFilter->SetInput(0, m_BackProjectionFilter->GetOutput());
+//    m_AddLaplacianFilter->SetInput(1, m_MultiplyLaplacianFilter->GetOutput());
 
-    m_FloatingOutputPointer= m_AddLaplacianFilter->GetOutput();
-    }
+//    m_FloatingOutputPointer= m_AddLaplacianFilter->GetOutput();
+//    }
 
   // Set the filters to compute the Tikhonov regularization, if any
   if (m_Tikhonov != 0)
@@ -216,8 +319,13 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>
   this->GetOutput()->CopyInformation( m_FloatingOutputPointer);
 }
 
-template< typename TOutputImage, typename TSingleComponentImage>
-void ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage>::GenerateData()
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+void
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                        TSingleComponentImage,
+                                        TWeightsImage>::GenerateData()
 {
   // Execute Pipeline
   m_FloatingOutputPointer->Update();
