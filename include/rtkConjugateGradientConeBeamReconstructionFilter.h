@@ -129,7 +129,9 @@ public:
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                    BackProjectionFilterType;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                                 ConjugateGradientFilterType;
     typedef itk::MultiplyImageFilter<TOutputImage, TSingleComponentImage, TOutputImage>     MultiplyFilterType;
-    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage> CGOperatorFilterType;
+    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage,
+                                                         TSingleComponentImage,
+                                                         TWeightsImage>                     CGOperatorFilterType;
     typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                                 DisplacedDetectorFilterType;
     typedef rtk::ConstantImageSource<TOutputImage>                                          ConstantImageSourceType;
     typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                                   DivideFilterType;

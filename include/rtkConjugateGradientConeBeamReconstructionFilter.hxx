@@ -270,7 +270,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
   
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInputVolume());
-  m_CGOperator->SetInput(1, this->GetInputProjectionStack());
+  m_CGOperator->SetInputProjectionStack(m_DisplacedDetectorFilter->GetOutput());
   m_CGOperator->SetSupportMask(this->GetSupportMask());
   m_ConjugateGradientFilter->SetX(this->GetInputVolume());
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
@@ -284,7 +284,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
   // Multiply the projections by the weights map
   m_MultiplyWithWeightsFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
   m_MultiplyWithWeightsFilter->SetInput2(this->GetInputWeights());
-  m_CGOperator->SetInput(2, m_DisplacedDetectorFilter->GetOutput());
+  m_CGOperator->SetInputWeights(this->GetInputWeights());
   m_BackProjectionFilterForB->SetInput(1, m_MultiplyWithWeightsFilter->GetOutput());
 
   // If a support mask is used, it serves as preconditioning weights

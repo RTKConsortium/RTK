@@ -201,20 +201,20 @@ ReconstructionConjugateGradientOperator<TOutputImage,
 ::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume in which we backproject
-  typename Superclass::InputImagePointer inputPtr0 =
+  typename TOutputImage::Pointer inputPtr0 =
     const_cast< TOutputImage * >( this->GetInputVolume().GetPointer() );
   if ( !inputPtr0 ) return;
   inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
   // Input 1 is the stack of projections to backproject
-  typename Superclass::InputImagePointer  inputPtr1 =
+  typename TOutputImage::Pointer  inputPtr1 =
     const_cast< TOutputImage * >( this->GetInputProjectionStack().GetPointer() );
   if ( !inputPtr1 ) return;
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 
   // Input 2 is the weights map on projections, if any
-  typename Superclass::InputImagePointer  inputPtr2 =
-          const_cast< TOutputImage * >( this->GetInput(2) );
+  typename TWeightsImage::Pointer  inputPtr2 =
+          const_cast< TWeightsImage * >( this->GetInputWeights().GetPointer() );
   if ( !inputPtr2 )
       return;
   inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
