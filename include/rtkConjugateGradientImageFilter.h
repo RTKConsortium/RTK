@@ -53,17 +53,9 @@ public:
   typedef itk::SmartPointer< Self >                                                 Pointer;
   typedef itk::Image<typename OutputImageType::InternalPixelType,
                               OutputImageType::ImageDimension>                      InternalImageType;
-  typedef itk::SubtractImageFilter<OutputImageType,OutputImageType,OutputImageType> SubtractFilterType;
-  typedef itk::AddImageFilter<OutputImageType,OutputImageType,OutputImageType>      AddFilterType;
-  typedef rtk::DotProductImageFilter<OutputImageType>                               DotProductFilterType;
-  typedef itk::StatisticsImageFilter<InternalImageType>                             StatisticsImageFilterType;
   typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
   typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
   typedef typename OutputImageType::Pointer                                         OutputImagePointer;
-  typedef rtk::ConjugateGradientGetP_kPlusOneImageFilter<OutputImageType>           GetP_kPlusOne_FilterType;
-  typedef rtk::ConjugateGradientGetR_kPlusOneImageFilter<OutputImageType>           GetR_kPlusOne_FilterType;
-  typedef rtk::ConjugateGradientGetX_kPlusOneImageFilter<OutputImageType>           GetX_kPlusOne_FilterType;
-//  typedef rtk::SumOfSquaresImageFilter<OutputImageType>                             SS_FilterType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -114,7 +106,6 @@ protected:
   bool                m_IterationCosts;
   std::vector<double> m_ResidualCosts;
   double              m_C;
-//  double              m_TargetSumOfSquaresBetweenConsecutiveIterates;
 
 private:
   ConjugateGradientImageFilter(const Self &); //purposely not implemented

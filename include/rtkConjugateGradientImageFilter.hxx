@@ -133,131 +133,106 @@ template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
 ::GenerateData()
 {
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
-  typename WriterType::Pointer writer = WriterType::New();
-  std::stringstream ss;
-  ss << "/tmp/CG_iteration_" << 0 << ".mha";
-  writer->SetInput(this->GetX());
-  writer->SetFileName(ss.str());
-  writer->Update();
+  typename OutputImageType::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
 
-  typename SubtractFilterType::Pointer SubtractFilter = SubtractFilterType::New();
-  SubtractFilter->SetInput(0, this->GetB());
-  SubtractFilter->SetInput(1, m_A->GetOutput());
-  SubtractFilter->Update();
+  // Create and allocate images
+  typename OutputImageType::Pointer Pk = OutputImageType::New();
+  typename OutputImageType::Pointer Rk = OutputImageType::New();
+  Pk->SetRegions(largest);
+  Rk->SetRegions(largest);
+  this->GetOutput()->SetRegions(largest);
+  Pk->Allocate();
+  Rk->Allocate();
+  this->GetOutput()->Allocate();
 
-  typename GetP_kPlusOne_FilterType::Pointer GetP_kPlusOne_Filter = GetP_kPlusOne_FilterType::New();
-  typename GetR_kPlusOne_FilterType::Pointer GetR_kPlusOne_Filter = GetR_kPlusOne_FilterType::New();
-  typename GetX_kPlusOne_FilterType::Pointer GetX_kPlusOne_Filter = GetX_kPlusOne_FilterType::New();
-//  typename SS_FilterType::Pointer SumOfSquaresFilter = SS_FilterType::New();
+  // In rtkConjugateGradientConeBeamReconstructionFilter, B is not updated
+  // So at this point, it is only an empty shell. Let's update it
+  this->GetB()->Update();
+  m_A->Update();
 
-  // Compute P_zero = R_zero
-  typename OutputImageType::Pointer P_zero = SubtractFilter->GetOutput();
-  P_zero->DisconnectPipeline();
+  // Declare many intermediate variables
+  typename itk::PixelTraits<typename OutputImageType::PixelType>::ValueType numerator, denominator, alpha, beta;
+  itk::ImageRegionConstIterator<OutputImageType> itB(this->GetB(), largest);
+  itk::ImageRegionIterator<OutputImageType> itA_out;
+  itk::ImageRegionIterator<OutputImageType> itP(Pk, largest);
+  itk::ImageRegionIterator<OutputImageType> itR(Rk, largest);
+  itk::ImageRegionIterator<OutputImageType> itX(this->GetOutput(), largest);
+  itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
 
-  // Compute AP_zero
-  m_A->SetX(P_zero);
-
-  GetR_kPlusOne_Filter->SetRk(P_zero);
-  GetR_kPlusOne_Filter->SetPk(P_zero);
-  GetR_kPlusOne_Filter->SetAPk(m_A->GetOutput());
-
-  GetP_kPlusOne_Filter->SetR_kPlusOne(GetR_kPlusOne_Filter->GetOutput());
-  GetP_kPlusOne_Filter->SetRk(P_zero);
-  GetP_kPlusOne_Filter->SetPk(P_zero);
-
-  GetX_kPlusOne_Filter->SetXk(this->GetX());
-  GetX_kPlusOne_Filter->SetPk(P_zero);
-
-  // Define the smart pointers that will be used with DisconnectPipeline()
-  typename OutputImageType::Pointer R_kPlusOne;
-  typename OutputImageType::Pointer P_kPlusOne;
-  typename OutputImageType::Pointer X_kPlusOne;
+  // Initialize P0 and R0
+  while(!itP.IsAtEnd())
+    {
+    itP.Set(itB.Get() - itA_out.Get());
+    itR.Set(itB.Get() - itA_out.Get());
+    ++itP;
+    ++itR;
+    ++itA_out;
+    ++itB;
+    }
+  itP.GoToBegin();
+  itR.GoToBegin();
+  itA_out.GoToBegin();
+  itB.GoToBegin();
 
   bool stopIterations = false;
-  int iter = 0;
-
-  // Start the iterative procedure
-  while ((iter<m_NumberOfIterations) && !stopIterations)
+  for(unsigned int iter=0; (iter<m_NumberOfIterations) && !stopIterations; iter++)
     {
-    if(iter>0)
-      {
-      R_kPlusOne = GetR_kPlusOne_Filter->GetOutput();
-      R_kPlusOne->DisconnectPipeline();
-
-      P_kPlusOne = GetP_kPlusOne_Filter->GetOutput();
-      P_kPlusOne->DisconnectPipeline();
-
-      X_kPlusOne = GetX_kPlusOne_Filter->GetOutput();
-      X_kPlusOne->DisconnectPipeline();
-
-      m_A->SetX(P_kPlusOne);
-
-      GetR_kPlusOne_Filter->SetRk(R_kPlusOne);
-      GetR_kPlusOne_Filter->SetPk(P_kPlusOne);
-      GetR_kPlusOne_Filter->SetAPk(m_A->GetOutput());
-
-      GetP_kPlusOne_Filter->SetRk(R_kPlusOne);
-      GetP_kPlusOne_Filter->SetR_kPlusOne(GetR_kPlusOne_Filter->GetOutput());
-
-//      SumOfSquaresFilter->SetInput(P_kPlusOne);
-
-//      GetP_kPlusOne_Filter->SetPk(SumOfSquaresFilter->GetOutput());
-//      GetX_kPlusOne_Filter->SetPk(SumOfSquaresFilter->GetOutput());
-
-      GetP_kPlusOne_Filter->SetPk(P_kPlusOne);
-      GetX_kPlusOne_Filter->SetPk(P_kPlusOne);
-      GetX_kPlusOne_Filter->SetXk(X_kPlusOne);
-
-      P_zero->ReleaseData();
-      }
-
+    // Compute A * Pk
+    m_A->SetX(Pk);
     m_A->Update();
-    GetR_kPlusOne_Filter->Update();
-    GetX_kPlusOne_Filter->SetAlphak(GetR_kPlusOne_Filter->GetAlphak());
-    GetX_kPlusOne_Filter->Update();
+    itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
 
-    ss.str( std::string() );
-    ss.clear();
-    ss << "/tmp/CG_iteration_" << iter + 1 << ".mha";
-    writer->SetInput(GetX_kPlusOne_Filter->GetOutput());
-    writer->SetFileName(ss.str());
-    writer->Update();
+    // Compute alpha
+    numerator = 0;
+    denominator = 0;
+    while(!itP.IsAtEnd())
+      {
+      numerator += itR.Get() * itR.Get();
+      denominator += itP.Get() * itA_out.Get();
+      ++itR;
+      ++itA_out;
+      ++itP;
+      }
+    itP.GoToBegin();
+    itR.GoToBegin();
+    itA_out.GoToBegin();
+    alpha = numerator / denominator;
 
-//    // Compare the squared difference between X_k and X_kPlusOne
-//    // with the stopping criterion
-//    if(iter>0)
-//      {
-//      double SDD = SumOfSquaresFilter->GetSumOfSquares() * GetR_kPlusOne_Filter->GetAlphak() * GetR_kPlusOne_Filter->GetAlphak();
-//      if ( SDD < m_TargetSumOfSquaresBetweenConsecutiveIterates)
-//        {
-//        stopIterations = true;
-//        std::cout << "Reached target difference between consecutive iterates in "<< iter << " iterations." << std::endl;
-//        }
-//      }
+    // Compute Xk+1
+    while(!itP.IsAtEnd())
+      {
+      itX.Set(itX.Get() + alpha * itP.Get());
+      ++itX;
+      ++itP;
+      }
+    itP.GoToBegin();
+    itX.GoToBegin();
 
-    GetP_kPlusOne_Filter->SetSquaredNormR_k(GetR_kPlusOne_Filter->GetSquaredNormR_k());
-    GetP_kPlusOne_Filter->SetSquaredNormR_kPlusOne(GetR_kPlusOne_Filter->GetSquaredNormR_kPlusOne());
-    GetP_kPlusOne_Filter->Update();
+    // Compute Rk+1 and beta simultaneously
+    denominator = numerator;
+    numerator = 0;
+    while(!itR.IsAtEnd())
+      {
+      itR.Set(itR.Get() - alpha * itA_out.Get());
+      numerator += itR.Get() * itR.Get();
+      ++itR;
+      ++itA_out;
+      }
+    itR.GoToBegin();
+    itA_out.GoToBegin();
+    beta = numerator / denominator;
 
-    iter++;
+    // Compute Pk+1
+    while(!itP.IsAtEnd())
+      {
+      itP.Set(itR.Get() + beta * itP.Get());
+      ++itR;
+      ++itP;
+      }
+    itR.GoToBegin();
+    itP.GoToBegin();
     }
-
-  this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
-
-  // Release the data from internal filters
-  if (m_NumberOfIterations > 1)
-    {
-    R_kPlusOne->ReleaseData();
-    P_kPlusOne->ReleaseData();
-    X_kPlusOne->ReleaseData();
-    }
-  GetR_kPlusOne_Filter->GetOutput()->ReleaseData();
-  GetP_kPlusOne_Filter->GetOutput()->ReleaseData();
-  m_A->GetOutput()->ReleaseData();
-  SubtractFilter->GetOutput()->ReleaseData();
 }
-
 }// end namespace
 
 
