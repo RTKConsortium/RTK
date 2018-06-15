@@ -18,80 +18,70 @@
 #ifndef rtkBlockDiagonalMatrixVectorMultiplyImageFilter_h
 #define rtkBlockDiagonalMatrixVectorMultiplyImageFilter_h
 
-#include "itkBinaryFunctorImageFilter.h"
+#include "itkImageToImageFilter.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
-namespace Functor
-{
-/**
- * \class MatrixVectorMult
- * \brief Functor for voxelwise matrix-vector multiplication
- */
-template< typename TVector, typename TMatrixAsVector >
-class MatrixVectorMult
-{
-public:
-  MatrixVectorMult() {}
-  ~MatrixVectorMult() {}
-  bool operator!=(const MatrixVectorMult &) const
-  {
-    return false;
-  }
-
-  bool operator==(const MatrixVectorMult & other) const
-  {
-    return !( *this != other );
-  }
-
-  // Input 1 is the vector image, Input 2 is the matrix image
-  inline TVector operator()(const TVector & A, const TMatrixAsVector & B) const
-  {
-  vnl_matrix<typename TMatrixAsVector::ComponentType> mat = vnl_matrix<typename TMatrixAsVector::ComponentType>(TVector::Dimension, TVector::Dimension);
-  mat.copy_in(B.GetVnlVector().data_block());
-  itk::Matrix<typename TMatrixAsVector::ComponentType, TVector::Dimension, TVector::Dimension> matrix = itk::Matrix<typename TMatrixAsVector::ComponentType, TVector::Dimension, TVector::Dimension>(mat);
-  return(matrix * A);
-  }
-};
-}
-
-/** \class rtkBlockDiagonalMatrixVectorMultiplyImageFilter
- * \brief
- *
- */
-template< typename TImageOfVectors, typename TImageOfMatricesAsVectors>
-class ITK_EXPORT BlockDiagonalMatrixVectorMultiplyImageFilter:
-  public
-  itk::BinaryFunctorImageFilter< TImageOfVectors, TImageOfMatricesAsVectors, TImageOfVectors,
-                              Functor::MatrixVectorMult<
-                              typename TImageOfVectors::PixelType,
-                              typename TImageOfMatricesAsVectors::PixelType>   >
+  /** \class BlockDiagonalMatrixVectorMultiplyImageFilter
+   * \brief Multiplies matrix by vector
+   *
+   * \author Cyril Mory
+   *
+   */
+template< class TVectorImage,
+          class TMatrixImage = itk::Image<itk::Vector<typename TVectorImage::PixelType::ValueType, TVectorImage::PixelType::Dimension * TVectorImage::PixelType::Dimension>, TVectorImage::ImageDimension > >
+class BlockDiagonalMatrixVectorMultiplyImageFilter : public itk::ImageToImageFilter<TVectorImage, TVectorImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef BlockDiagonalMatrixVectorMultiplyImageFilter                                        Self;
-  typedef itk::BinaryFunctorImageFilter< TImageOfVectors, TImageOfMatricesAsVectors, TImageOfVectors,
-                                         Functor::MatrixVectorMult<
-                                            typename TImageOfVectors::PixelType,
-                                            typename TImageOfMatricesAsVectors::PixelType> >  Superclass;
-  typedef itk::SmartPointer< Self >                                                           Pointer;
-  typedef itk::SmartPointer< const Self >                                                     ConstPointer;
+    /** Standard class typedefs. */
+    typedef BlockDiagonalMatrixVectorMultiplyImageFilter                    Self;
+    typedef itk::ImageToImageFilter<TVectorImage, TVectorImage> Superclass;
+    typedef itk::SmartPointer< Self >                     Pointer;
 
-  /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+    /** Method for creation through the object factory. */
+    itkNewMacro(Self)
 
-  /** Runtime information support. */
-  itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter,
-               itk::BinaryFunctorImageFilter);
+    /** Run-time type information (and related methods). */
+    itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter, itk::ImageToImageFilter)
+
+    /** Convenient parameters extracted from template types */
+    itkStaticConstMacro(nChannels, unsigned int, TVectorImage::PixelType::Dimension);
+
+    /** Convenient typedef */
+    typedef typename TVectorImage::PixelType::ValueType dataType;
+
+    /** Set methods for all inputs, since they have different types */
+    void SetInput1(const TVectorImage* vector);
+    void SetInput2(const TMatrixImage* matrix);
 
 protected:
-  BlockDiagonalMatrixVectorMultiplyImageFilter() {}
-  virtual ~BlockDiagonalMatrixVectorMultiplyImageFilter() {}
-  void VerifyInputInformation(){}
+    BlockDiagonalMatrixVectorMultiplyImageFilter();
+    ~BlockDiagonalMatrixVectorMultiplyImageFilter() {}
+
+    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+
+    /** Does the real work. */
+#if ITK_VERSION_MAJOR<5
+    void ThreadedGenerateData(const typename TVectorImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+    void DynamicThreadedGenerateData(const typename TVectorImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
+
+    /** Getters for the inputs */
+    typename TVectorImage::ConstPointer GetInput1();
+    typename TMatrixImage::ConstPointer GetInput2();
 
 private:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BlockDiagonalMatrixVectorMultiplyImageFilter);
+    BlockDiagonalMatrixVectorMultiplyImageFilter(const Self &); //purposely not implemented
+    void operator=(const Self &);  //purposely not implemented
+
 };
-} // end namespace rtk
+} //namespace RTK
+
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.hxx"
+#endif
 
 #endif
