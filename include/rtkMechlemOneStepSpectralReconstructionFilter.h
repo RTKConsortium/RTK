@@ -256,10 +256,10 @@ protected:
     ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
     int                                            m_NumberOfIterations;
-    unsigned int                                   m_NumberOfProjectionsPerSubset;
-    unsigned int                                   m_NumberOfSubsets;
-    std::vector<unsigned int>                      m_NumberOfProjectionsInSubset;
-    unsigned int                                   m_NumberOfProjections;
+    int                                            m_NumberOfProjectionsPerSubset;
+    int                                            m_NumberOfSubsets;
+    std::vector<int>                               m_NumberOfProjectionsInSubset;
+    int                                            m_NumberOfProjections;
 
     typename TOutputImage::PixelType               m_RegularizationWeights;
     typename TOutputImage::RegionType::SizeType    m_RegularizationRadius;

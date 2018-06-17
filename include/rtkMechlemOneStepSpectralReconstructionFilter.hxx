@@ -260,7 +260,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   // Pre-compute the number of projections in each subset
   m_NumberOfProjectionsInSubset.clear();
   m_NumberOfProjectionsPerSubset = std::ceil( (float) m_NumberOfProjections / (float) m_NumberOfSubsets);
-  for (unsigned int s=0; s<m_NumberOfSubsets; s++)
+  for (int s=0; s<m_NumberOfSubsets; s++)
     m_NumberOfProjectionsInSubset.push_back(std::min(m_NumberOfProjectionsPerSubset, m_NumberOfProjections - s * m_NumberOfProjectionsPerSubset));
 
   // Compute the extract filter's initial extract region
@@ -351,7 +351,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   // Run the iteration loop
   for(int iter = 0; iter < m_NumberOfIterations; iter++)
     {
-    for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset++)
+    for (int subset = 0; subset < m_NumberOfSubsets; subset++)
       {
       // Starting from the second subset, or the second iteration
       // if there is only one subset, plug the output
