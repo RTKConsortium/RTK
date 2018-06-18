@@ -21,9 +21,11 @@
 
 #include <itkImageFileWriter.h>
 #include "rtkConjugateGradientImageFilter.h"
-#include <string>       // std::string
-#include <sstream>      // std::stringstream
-
+#if ITK_VERSION_MAJOR>=5
+  #include <itkMultiThreaderBase.h>
+  #include <itkSimpleFastMutexLock.h>
+  #include <itkMutexLockHolder.h>
+#endif
 namespace rtk
 {
 
@@ -33,7 +35,6 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   this->SetNumberOfRequiredInputs(2);
 
   m_NumberOfIterations = 1;
-//  m_TargetSumOfSquaresBetweenConsecutiveIterates = 0;
   m_IterationCosts = false;
   m_C=0.0;
 
@@ -123,7 +124,6 @@ void ConjugateGradientImageFilter<OutputImageType>
 
   // Initialization
   m_A->SetX(this->GetX());
-  m_A->ReleaseDataFlagOn();
 
   // Compute output information
   this->m_A->UpdateOutputInformation();
@@ -134,6 +134,7 @@ void ConjugateGradientImageFilter<OutputImageType>
 ::GenerateData()
 {
   typename OutputImageType::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
+  typedef typename itk::PixelTraits<typename OutputImageType::PixelType>::ValueType DataType;
 
   // Create and allocate images
   typename OutputImageType::Pointer Pk = OutputImageType::New();
@@ -144,35 +145,73 @@ void ConjugateGradientImageFilter<OutputImageType>
   Pk->Allocate();
   Rk->Allocate();
   this->GetOutput()->Allocate();
+  Pk->CopyInformation(this->GetOutput());
+  Rk->CopyInformation(this->GetOutput());
 
   // In rtkConjugateGradientConeBeamReconstructionFilter, B is not updated
   // So at this point, it is only an empty shell. Let's update it
   this->GetB()->Update();
   m_A->Update();
 
-  // Declare many intermediate variables
-  typename itk::PixelTraits<typename OutputImageType::PixelType>::ValueType numerator, denominator, alpha, beta;
+  // Declare intermediate variables
+  DataType numerator, denominator, alpha, beta;
+
+#if ITK_VERSION_MAJOR<5
+  // Declare iterators that will be used throughout the calculations
   itk::ImageRegionConstIterator<OutputImageType> itB(this->GetB(), largest);
-  itk::ImageRegionIterator<OutputImageType> itA_out;
-  itk::ImageRegionIterator<OutputImageType> itP(Pk, largest);
-  itk::ImageRegionIterator<OutputImageType> itR(Rk, largest);
-  itk::ImageRegionIterator<OutputImageType> itX(this->GetOutput(), largest);
-  itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
+  itk::ImageRegionConstIterator<OutputImageType> itIn(this->GetX(), largest);
+  itk::ImageRegionIterator<OutputImageType> itA_out, itP, itR, itX;
 
   // Initialize P0 and R0
+  itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
+  itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
+  itX = itk::ImageRegionIterator<OutputImageType>(this->GetOutput(), largest);
+  itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
   while(!itP.IsAtEnd())
     {
-    itP.Set(itB.Get() - itA_out.Get());
     itR.Set(itB.Get() - itA_out.Get());
+    itP.Set(itR.Get());
+    itX.Set(itIn.Get());
     ++itP;
     ++itR;
     ++itA_out;
     ++itB;
+    ++itIn;
+    ++itX;
     }
-  itP.GoToBegin();
-  itR.GoToBegin();
-  itA_out.GoToBegin();
-  itB.GoToBegin();
+#else
+  // Instantiate the multithreader
+  itk::MultiThreaderBase::Pointer mt = itk::MultiThreaderBase::New();
+  itk::SimpleFastMutexLock accumulationLock;
+
+  // Compute Xk+1
+  mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+      (
+      largest,
+      [this, Pk, Rk](const typename OutputImageType::RegionType & outputRegionForThread)
+        {
+        itk::ImageRegionIterator<OutputImageType> itP(Pk, outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itR(Rk, outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itB(this->GetB(), outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itA_out(this->m_A->GetOutput(), outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itIn(this->GetX(), outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itX(this->GetOutput(), outputRegionForThread);
+        while(!itP.IsAtEnd())
+          {
+          itR.Set(itB.Get() - itA_out.Get());
+          itP.Set(itR.Get());
+          itX.Set(itIn.Get());
+          ++itP;
+          ++itR;
+          ++itA_out;
+          ++itB;
+          ++itIn;
+          ++itX;
+          }
+        },
+      nullptr
+      );
+#endif
 
   bool stopIterations = false;
   for(unsigned int iter=0; (iter<m_NumberOfIterations) && !stopIterations; iter++)
@@ -180,11 +219,14 @@ void ConjugateGradientImageFilter<OutputImageType>
     // Compute A * Pk
     m_A->SetX(Pk);
     m_A->Update();
-    itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
 
     // Compute alpha
     numerator = 0;
     denominator = 0;
+#if ITK_VERSION_MAJOR<5
+    itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
+    itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
+    itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
     while(!itP.IsAtEnd())
       {
       numerator += itR.Get() * itR.Get();
@@ -193,24 +235,70 @@ void ConjugateGradientImageFilter<OutputImageType>
       ++itA_out;
       ++itP;
       }
-    itP.GoToBegin();
-    itR.GoToBegin();
-    itA_out.GoToBegin();
+#else
+    mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+        (
+        largest,
+        [this, Pk, Rk, &numerator, &denominator, &accumulationLock](const typename OutputImageType::RegionType & outputRegionForThread)
+          {
+          itk::ImageRegionIterator<OutputImageType> itP(Pk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itR(Rk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itA_out(this->m_A->GetOutput(), outputRegionForThread);
+          DataType currentThreadNumerator = 0.0;
+          DataType currentThreadDenominator = 0.0;
+          while(!itP.IsAtEnd())
+            {
+            currentThreadNumerator += itR.Get() * itR.Get();
+            currentThreadDenominator += itP.Get() * itA_out.Get();
+            ++itR;
+            ++itA_out;
+            ++itP;
+            }
+
+          itk::MutexLockHolder<itk::SimpleFastMutexLock> mutexHolder(accumulationLock);
+          numerator += currentThreadNumerator;
+          denominator += currentThreadDenominator;
+          },
+        nullptr
+        );
+#endif
     alpha = numerator / denominator;
 
-    // Compute Xk+1
+#if ITK_VERSION_MAJOR<5
+    itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
+    itX = itk::ImageRegionIterator<OutputImageType>(this->GetOutput(), largest);
     while(!itP.IsAtEnd())
       {
       itX.Set(itX.Get() + alpha * itP.Get());
       ++itX;
       ++itP;
       }
-    itP.GoToBegin();
-    itX.GoToBegin();
+#else
+    // Compute Xk+1
+    mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+        (
+        largest,
+        [this, alpha, Pk](const typename OutputImageType::RegionType & outputRegionForThread)
+          {
+          itk::ImageRegionIterator<OutputImageType> itP(Pk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itX(this->GetOutput(), outputRegionForThread);
+          while(!itP.IsAtEnd())
+            {
+            itX.Set(itX.Get() + alpha * itP.Get());
+            ++itX;
+            ++itP;
+            }
+          },
+        nullptr
+        );
+#endif
 
     // Compute Rk+1 and beta simultaneously
     denominator = numerator;
     numerator = 0;
+#if ITK_VERSION_MAJOR<5
+    itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
+    itA_out = itk::ImageRegionIterator<OutputImageType>(this->m_A->GetOutput(), largest);
     while(!itR.IsAtEnd())
       {
       itR.Set(itR.Get() - alpha * itA_out.Get());
@@ -218,20 +306,66 @@ void ConjugateGradientImageFilter<OutputImageType>
       ++itR;
       ++itA_out;
       }
-    itR.GoToBegin();
-    itA_out.GoToBegin();
+#else
+    mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+        (
+        largest,
+        [this, Rk, &numerator, &accumulationLock, alpha](const typename OutputImageType::RegionType & outputRegionForThread)
+          {
+          itk::ImageRegionIterator<OutputImageType> itR(Rk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itA_out(this->m_A->GetOutput(), outputRegionForThread);
+          DataType currentThreadNumerator = 0.0;
+          while(!itR.IsAtEnd())
+            {
+            itR.Set(itR.Get() - alpha * itA_out.Get());
+            currentThreadNumerator += itR.Get() * itR.Get();
+            ++itR;
+            ++itA_out;
+            }
+
+          itk::MutexLockHolder<itk::SimpleFastMutexLock> mutexHolder(accumulationLock);
+          numerator += currentThreadNumerator;
+          },
+        nullptr
+        );
+#endif
     beta = numerator / denominator;
 
+#if ITK_VERSION_MAJOR<5
     // Compute Pk+1
+    itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
+    itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
     while(!itP.IsAtEnd())
       {
       itP.Set(itR.Get() + beta * itP.Get());
       ++itR;
       ++itP;
       }
-    itR.GoToBegin();
-    itP.GoToBegin();
+#else
+    mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+        (
+        largest,
+        [Rk, Pk, beta](const typename OutputImageType::RegionType & outputRegionForThread)
+          {
+          itk::ImageRegionIterator<OutputImageType> itR(Rk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itP(Pk, outputRegionForThread);
+          while(!itR.IsAtEnd())
+            {
+            itP.Set(itR.Get() + beta * itP.Get());
+            ++itR;
+            ++itP;
+            }
+          },
+        nullptr
+        );
+#endif
+
+    // Let the m_A filter know that Pk has been modified, and it should
+    // recompute its output at the beginning of next iteration
+    Pk->Modified();
     }
+
+  m_A->GetOutput()->ReleaseData();
 }
 }// end namespace
 
