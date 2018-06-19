@@ -19,7 +19,6 @@
 #ifndef rtkConjugateGradientImageFilter_hxx
 #define rtkConjugateGradientImageFilter_hxx
 
-#include <itkImageFileWriter.h>
 #include "rtkConjugateGradientImageFilter.h"
 #if ITK_VERSION_MAJOR>=5
   #include <itkMultiThreaderBase.h>
@@ -154,7 +153,8 @@ void ConjugateGradientImageFilter<OutputImageType>
   m_A->Update();
 
   // Declare intermediate variables
-  DataType numerator, denominator, alpha, beta;
+  DataType numerator, denominator, alpha, beta, eps;
+  eps = itk::NumericTraits<DataType>::min(eps);
 
 #if ITK_VERSION_MAJOR<5
   // Declare iterators that will be used throughout the calculations
@@ -262,7 +262,7 @@ void ConjugateGradientImageFilter<OutputImageType>
         nullptr
         );
 #endif
-    alpha = numerator / denominator;
+    alpha = numerator / (denominator + eps);
 
 #if ITK_VERSION_MAJOR<5
     itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
@@ -329,7 +329,7 @@ void ConjugateGradientImageFilter<OutputImageType>
         nullptr
         );
 #endif
-    beta = numerator / denominator;
+    beta = numerator / (denominator + eps);
 
 #if ITK_VERSION_MAJOR<5
     // Compute Pk+1
@@ -364,7 +364,6 @@ void ConjugateGradientImageFilter<OutputImageType>
     // recompute its output at the beginning of next iteration
     Pk->Modified();
     }
-
   m_A->GetOutput()->ReleaseData();
 }
 }// end namespace
