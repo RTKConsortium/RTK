@@ -58,7 +58,7 @@ itk_wrap_class("rtk::LookupTableImageFilter" POINTER)
   if (NOT ITK_WRAP_unsigned_short)
     itk_wrap_template("IUS2IF2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_F}, 2>")
     itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
-    itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 4>, itk::Image<${ITKT_F}, 4>")
+    itk_wrap_template("IUS4IF4" "itk::Image<${ITKT_US}, 4>, itk::Image<${ITKT_F}, 4>")
   endif()
 
 itk_end_wrap_class()
