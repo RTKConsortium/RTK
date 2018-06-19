@@ -1,0 +1,327 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef rtkJosephForwardAttenuatedProjectionImageFilter_h
+#define rtkJosephForwardAttenuatedProjectionImageFilter_h
+
+#include "rtkConfiguration.h"
+#include "rtkForwardProjectionImageFilter.h"
+#include "rtkMacro.h"
+#include <itkPixelTraits.h>
+#include <math.h>
+
+namespace rtk
+{
+namespace Functor
+{
+/** \class InterpolationWeightMultiplication
+ * \brief Function to multiply the interpolation weights with the projected
+ * volume values.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TInput, class TCoordRepType, class TOutput=TInput >
+class InterpolationWeightMultiplication
+{
+public:
+  InterpolationWeightMultiplication()
+  {
+    for (int i = 0; i < ITK_MAX_THREADS; i++)
+    {
+      m_Attenuation[i] = 0;
+    }
+  }
+
+  ~InterpolationWeightMultiplication() {};
+  bool operator!=( const InterpolationWeightMultiplication & ) const {
+    return false;
+  }
+  bool operator==(const InterpolationWeightMultiplication & other) const
+  {
+    return !( *this != other );
+  }
+
+  inline TOutput operator()( const ThreadIdType threadId,
+                             const double itkNotUsed(stepLengthInVoxel),
+                             const TCoordRepType weight,
+                             const TInput *p,
+                             const int i )
+  {
+    m_Attenuation[threadId] += weight*(p+m_AttenuationMinusEmissionMapsPtrDiff)[i]/1000.;
+    return weight*p[i];
+  }
+  void SetAttenuationMinusEmissionMapsPtrDiff(std::ptrdiff_t pd) {m_AttenuationMinusEmissionMapsPtrDiff = pd;}
+  TOutput *GetAttenuation() {return m_Attenuation;}
+
+  void ResetAttenuation(const ThreadIdType threadId)
+  {
+      m_Attenuation[threadId] = 0;
+  }
+
+private:
+  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
+  TOutput m_Attenuation[ITK_MAX_THREADS];
+};
+
+/** \class ComputeAttenuationCorrection
+ * \brief Function to compute the attenuation correction on the projection.
+ *
+ * \author Antoine Robert
+ *
+ * \ingroup Functions
+ */
+template< class TInput, class TOutput>
+class ComputeAttenuationCorrection
+{
+public:
+  typedef itk::Vector<double, 3> VectorType;
+
+  ComputeAttenuationCorrection()
+  {
+    for (int i = 0; i < ITK_MAX_THREADS; i++)
+    {
+      ex1[i] = 1;
+    }
+  }
+  ~ComputeAttenuationCorrection() {};
+  bool operator!=( const ComputeAttenuationCorrection & ) const
+  {
+    return false;
+  }
+  bool operator==(const ComputeAttenuationCorrection & other) const
+  {
+    return !( *this != other );
+  }
+
+  inline TOutput operator()(const ThreadIdType threadId,
+                            const TInput volumeValue,
+                            const TInput *attenuationValue,
+                            const VectorType &stepInMM)
+  {
+    TInput ex2 = exp(-attenuationValue[threadId]*stepInMM.GetNorm());
+    TInput wf;
+    if(attenuationValue[threadId] > 0)
+    {
+      wf = (ex1[threadId]-ex2)/attenuationValue[threadId];
+    }
+    else
+    {
+      wf  = ex1[threadId];//*stepInMM.GetNorm();
+    }
+    ex1[threadId] = ex2 ;
+    return wf *volumeValue;
+  }
+
+  void ResetEx1(const ThreadIdType threadId)
+  {
+      ex1[threadId] = 1;
+  }
+
+private:
+  TInput ex1[ITK_MAX_THREADS];
+};
+
+/** \class ProjectedValueAccumulation
+ * \brief Function to accumulate the ray casting on the projection.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Functions
+ */
+template< class TInput, class TOutput >
+class ProjectedValueAccumulation
+{
+public:
+  typedef itk::Vector<double, 3> VectorType;
+
+  ProjectedValueAccumulation() {};
+  ~ProjectedValueAccumulation() {};
+  bool operator!=( const ProjectedValueAccumulation & ) const
+  {
+    return false;
+  }
+  bool operator==(const ProjectedValueAccumulation & other) const
+  {
+    return !( *this != other );
+  }
+
+  inline void operator()( const ThreadIdType itkNotUsed(threadId),
+                          const TInput &input,
+                          TOutput &output,
+                          const TOutput &rayCastValue,
+                          const VectorType &stepInMM,
+                          const VectorType &itkNotUsed(source),
+                          const VectorType &itkNotUsed(sourceToPixel),
+                          const VectorType &itkNotUsed(nearestPoint),
+                          const VectorType &itkNotUsed(farthestPoint)) const
+  {
+    output = input + rayCastValue * stepInMM.GetNorm();
+  }
+};
+
+} // end namespace Functor
+
+
+/** \class JosephForwardProjectionImageFilter
+ * \brief Joseph forward projection.
+ *
+ * Performs a forward projection, i.e. accumulation along x-ray lines,
+ * using [Joseph, IEEE TMI, 1982]. The forward projector tests if the  detector
+ * has been placed after the source and the volume. If the detector is in the volume
+ * the ray tracing is performed only until that point.
+ *
+ * \test rtkforwardattenuatedprojectiontest.cxx
+ *
+ * \author Simon Rit
+ *
+ * \ingroup Projector
+ */
+
+template <class TInputImage,
+          class TOutputImage,
+          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType,typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
+          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
+          class TComputeAttenuationCorrection      = Functor::ComputeAttenuationCorrection<typename TInputImage::PixelType, typename TOutputImage::PixelType>
+          >
+class ITK_EXPORT JosephForwardAttenuatedProjectionImageFilter :
+    public ForwardProjectionImageFilter<TInputImage,TOutputImage>
+{
+public:
+  /** Standard class typedefs. */
+  typedef JosephForwardAttenuatedProjectionImageFilter           Self;
+  typedef ForwardProjectionImageFilter<TInputImage,TOutputImage> Superclass;
+  typedef itk::SmartPointer<Self>                                Pointer;
+  typedef itk::SmartPointer<const Self>                          ConstPointer;
+  typedef typename TInputImage::PixelType                        InputPixelType;
+  typedef typename TOutputImage::PixelType                       OutputPixelType;
+  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
+  typedef double                                                 CoordRepType;
+  typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
+
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(JosephForwardAttenuatedProjectionImageFilter, ForwardProjectionImageFilter);
+
+  /** Get/Set the functor that is used to multiply each interpolation value with a volume value */
+  TInterpolationWeightMultiplication &       GetInterpolationWeightMultiplication() { return m_InterpolationWeightMultiplication; }
+  const TInterpolationWeightMultiplication & GetInterpolationWeightMultiplication() const { return m_InterpolationWeightMultiplication; }
+  void SetInterpolationWeightMultiplication(const TInterpolationWeightMultiplication & _arg)
+  {
+    if ( m_InterpolationWeightMultiplication != _arg )
+    {
+      m_InterpolationWeightMultiplication = _arg;
+      this->Modified();
+    }
+  }
+
+  /** Get/Set the functor that is used to accumulate values in the projection image after the ray
+   * casting has been performed. */
+  TProjectedValueAccumulation &       GetProjectedValueAccumulation() { return m_ProjectedValueAccumulation; }
+  const TProjectedValueAccumulation & GetProjectedValueAccumulation() const { return m_ProjectedValueAccumulation; }
+  void SetProjectedValueAccumulation(const TProjectedValueAccumulation & _arg)
+  {
+    if ( m_ProjectedValueAccumulation != _arg )
+    {
+      m_ProjectedValueAccumulation = _arg;
+      this->Modified();
+    }
+  }
+
+  /** Get/Set the functor that is used to compute the attenuation correction */
+  TComputeAttenuationCorrection &       GetComputeAttenuationCorrection() { return m_ComputeAttenuationCorrection; }
+  const TComputeAttenuationCorrection & GetComputeAttenuationCorrection() const { return m_ComputeAttenuationCorrection; }
+  void SetComputeAttenuationCorrection(const TComputeAttenuationCorrection & _arg)
+  {
+    if ( m_ComputeAttenuationCorrection != _arg )
+    {
+      m_ComputeAttenuationCorrection = _arg;
+      this->Modified();
+    }
+  }
+
+  /** Each ray is clipped from source+m_InferiorClip*(pixel-source) to
+  ** source+m_SuperiorClip*(pixel-source) with m_InferiorClip and
+  ** m_SuperiorClip equal 0 and 1 by default. */
+  itkGetMacro(InferiorClip, double)
+  itkSetMacro(InferiorClip, double)
+  itkGetMacro(SuperiorClip, double)
+  itkSetMacro(SuperiorClip, double)
+
+  protected:
+    JosephForwardAttenuatedProjectionImageFilter();
+  virtual ~JosephForwardAttenuatedProjectionImageFilter() ITK_OVERRIDE {}
+
+  /** Apply changes to the input image requested region. */
+  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+
+  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+
+  /** Only the last two inputs should be in the same space so we need
+   * to overwrite the method. */
+  void VerifyInputInformation() ITK_OVERRIDE ;
+
+  inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
+                                               const double stepLengthInVoxel,
+                                               const InputPixelType *pxiyi,
+                                               const InputPixelType *pxsyi,
+                                               const InputPixelType *pxiys,
+                                               const InputPixelType *pxsys,
+                                               const double x,
+                                               const double y,
+                                               const int ox,
+                                               const int oy);
+
+  inline OutputPixelType BilinearInterpolationOnBorders(const ThreadIdType threadId,
+                                                        const double stepLengthInVoxel,
+                                                        const InputPixelType *pxiyi,
+                                                        const InputPixelType *pxsyi,
+                                                        const InputPixelType *pxiys,
+                                                        const InputPixelType *pxsys,
+                                                        const double x,
+                                                        const double y,
+                                                        const int ox,
+                                                        const int oy,
+                                                        const double minx,
+                                                        const double miny,
+                                                        const double maxx,
+                                                        const double maxy);
+
+private:
+  JosephForwardAttenuatedProjectionImageFilter(const Self&); //purposely not implemented
+  void operator=(const Self&);                     //purposely not implemented
+
+  TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
+  TProjectedValueAccumulation        m_ProjectedValueAccumulation;
+  TComputeAttenuationCorrection      m_ComputeAttenuationCorrection;
+  double                             m_InferiorClip;
+  double                             m_SuperiorClip;
+};
+
+} // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkJosephForwardProjectionImageFilter.hxx"
+#endif
+
+#endif
