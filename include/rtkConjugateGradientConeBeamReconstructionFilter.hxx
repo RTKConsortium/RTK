@@ -261,10 +261,10 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
 {
   // Choose between cuda or non-cuda conjugate gradient filter
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
-//#ifdef RTK_USE_CUDA
-//  if (m_CudaConjugateGradient)
-//    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_3f::New();
-//#endif
+#ifdef RTK_USE_CUDA
+  if (m_CudaConjugateGradient)
+    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter<TOutputImage>::New();
+#endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
   

@@ -69,7 +69,7 @@ if (RTK_USE_CUDA)
   set(RTK_CUDA_FILES
     rtkCudaAverageOutOfROIImageFilter.cu
     rtkCudaBackProjectionImageFilter.cu
-    rtkCudaConjugateGradientImageFilter_3f.cu
+    rtkCudaConjugateGradientImageFilter.cu
     rtkCudaConjugateGradientImageFilter_4f.cu
     rtkCudaConstantVolumeSeriesSource.cu
     rtkCudaConstantVolumeSource.cu
@@ -104,7 +104,6 @@ if (RTK_USE_CUDA)
 
   set(RTK_SRCS ${RTK_SRCS}
     rtkCudaAverageOutOfROIImageFilter.cxx
-    rtkCudaConjugateGradientImageFilter_3f.cxx
     rtkCudaConjugateGradientImageFilter_4f.cxx
     rtkCudaConstantVolumeSeriesSource.cxx
     rtkCudaConstantVolumeSource.cxx

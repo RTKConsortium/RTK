@@ -32,7 +32,7 @@
 #include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaConjugateGradientImageFilter_3f.h"
+  #include "rtkCudaConjugateGradientImageFilter.h"
   #include "rtkCudaDisplacedDetectorImageFilter.h"
   #include "rtkCudaConstantVolumeSource.h"
 #endif

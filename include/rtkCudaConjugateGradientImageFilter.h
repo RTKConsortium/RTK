@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef rtkCudaConjugateGradientImageFilter_3f_h
-#define rtkCudaConjugateGradientImageFilter_3f_h
+#ifndef rtkCudaConjugateGradientImageFilter_h
+#define rtkCudaConjugateGradientImageFilter_h
 
 #include "rtkConfiguration.h"
 //Conditional definition of the class to pass ITKHeaderTest
@@ -30,7 +30,7 @@
 namespace rtk
 {
 
-/** \class CudaConjugateGradientImageFilter_3f
+/** \class CudaConjugateGradientImageFilter
  * \brief A 3D float conjugate gradient image filter on GPU.
  *
  *
@@ -40,38 +40,43 @@ namespace rtk
  * \ingroup CudaImageToImageFilter
  */
 
-class RTK_EXPORT CudaConjugateGradientImageFilter_3f :
-  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-         ConjugateGradientImageFilter< itk::CudaImage<float,3> > >
+template < class TImage >
+class ITK_EXPORT CudaConjugateGradientImageFilter :
+  public itk::CudaImageToImageFilter< TImage, TImage,
+         ConjugateGradientImageFilter< TImage > >
 {
 public:
   /** Standard class typedefs. */
-  typedef rtk::CudaConjugateGradientImageFilter_3f                    Self;
-  typedef itk::CudaImage<float,3>                                     OutputImageType;
-  typedef rtk::ConjugateGradientImageFilter< OutputImageType >        Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  typedef rtk::CudaConjugateGradientImageFilter<TImage>      Self;
+  typedef rtk::ConjugateGradientImageFilter< TImage >        Superclass;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self)
 
   /** Runtime information support. */
-  itkTypeMacro(CudaConjugateGradientImageFilter_3f, ConjugateGradientImageFilter)
+  itkTypeMacro(CudaConjugateGradientImageFilter, ConjugateGradientImageFilter)
 
 protected:
-  CudaConjugateGradientImageFilter_3f();
-  ~CudaConjugateGradientImageFilter_3f(){
+  CudaConjugateGradientImageFilter();
+  ~CudaConjugateGradientImageFilter(){
   }
 
   virtual void GPUGenerateData();
 
 private:
-  CudaConjugateGradientImageFilter_3f(const Self&); //purposely not implemented
+  CudaConjugateGradientImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 
 } // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkCudaConjugateGradientImageFilter.hxx"
+#endif
+
 
 #endif //end conditional definition of the class
 
