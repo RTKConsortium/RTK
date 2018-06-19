@@ -43,16 +43,14 @@ namespace rtk
 */
 
 template< typename OutputImageType>
-class ConjugateGradientImageFilter : public itk::ImageToImageFilter< OutputImageType,  OutputImageType>
+class ConjugateGradientImageFilter : public itk::InPlaceImageFilter< OutputImageType,  OutputImageType>
 {
 public:
    
   /** Standard class typedefs. */
   typedef ConjugateGradientImageFilter                                              Self;
-  typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                Superclass;
+  typedef itk::InPlaceImageFilter< OutputImageType, OutputImageType>                Superclass;
   typedef itk::SmartPointer< Self >                                                 Pointer;
-  typedef itk::Image<typename OutputImageType::InternalPixelType,
-                              OutputImageType::ImageDimension>                      InternalImageType;
   typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
   typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
   typedef typename OutputImageType::Pointer                                         OutputImagePointer;
@@ -61,7 +59,7 @@ public:
   itkNewMacro(Self)
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ConjugateGradientImageFilter, itk::ImageToImageFilter)
+  itkTypeMacro(ConjugateGradientImageFilter, itk::InPlaceImageFilter)
 
   /** Get and Set macro*/
   itkGetMacro(NumberOfIterations, int)
