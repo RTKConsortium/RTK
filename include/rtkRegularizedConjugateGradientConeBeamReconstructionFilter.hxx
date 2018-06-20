@@ -197,7 +197,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   // Plug the positivity filter if requested
   if (m_PerformPositivity)
     {
-    m_PositivityFilter->SetInPlace(true);
+    m_PositivityFilter->SetInPlace(false);
 
     m_PositivityFilter->SetOutsideValue(0.0);
     m_PositivityFilter->ThresholdBelow(0.0);
@@ -220,8 +220,6 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
 
   if (m_PerformWaveletsSpatialDenoising)
     {
-    currentDownstreamFilter->ReleaseDataFlagOn();
-
     m_WaveletsDenoising->SetInput(currentDownstreamFilter->GetOutput());
     m_WaveletsDenoising->SetOrder(m_Order);
     m_WaveletsDenoising->SetThreshold(m_SoftThresholdWavelets);
