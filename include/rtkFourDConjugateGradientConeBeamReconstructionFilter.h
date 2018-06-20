@@ -31,7 +31,7 @@
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaConjugateGradientImageFilter_4f.h"
+  #include "rtkCudaConjugateGradientImageFilter.h"
 #endif
 
 namespace rtk

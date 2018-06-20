@@ -39,14 +39,8 @@ void
 CudaConjugateGradientImageFilter<TImage>
 ::GPUGenerateData()
 {
-  const unsigned int Dimension = TImage::ImageDimension;
   typedef typename itk::PixelTraits<typename TImage::PixelType>::ValueType DataType;
-  int size[Dimension];
-
-  for (int i=0; i<Dimension; i++)
-    {
-    size[i] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[i];
-    }
+  long int numberOfElements = this->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() * itk::PixelTraits<typename TImage::PixelType>::Dimension;
 
   // Create and allocate images
   typename TImage::Pointer P_k = TImage::New();
@@ -61,10 +55,9 @@ CudaConjugateGradientImageFilter<TImage>
   // Copy the input to the output (X_0 = input)
   DataType *pin = *(DataType**)( this->GetX()->GetCudaDataManager()->GetGPUBufferPointer() );
   DataType *pX = *(DataType**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  const unsigned int nComponents = itk::PixelTraits<typename TImage::PixelType>::Dimension;
 
   // On GPU, initialize the output to the input
-  CUDA_copy(size, pin, pX, nComponents);
+  CUDA_copy(numberOfElements, pin, pX);
 
   // Compute A * X0
   this->m_A->SetX(this->GetX());
@@ -79,8 +72,8 @@ CudaConjugateGradientImageFilter<TImage>
   DataType *pAOut = *(DataType**)( AOut->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // Compute, on GPU, R_zero = P_zero = this->GetB() - this->m_A->GetOutput()
-  CUDA_copy(size, pB, pR, nComponents);
-  CUDA_subtract(size, pR, pAOut, nComponents);
+  CUDA_copy(numberOfElements, pB, pR);
+  CUDA_subtract(numberOfElements, pR, pAOut);
 
   // B is now useless, and the memory it takes on the GPU is critical.
   // Transfer it back to the CPU memory
@@ -89,7 +82,7 @@ CudaConjugateGradientImageFilter<TImage>
   DataType *pP = *(DataType**)( P_k->GetCudaDataManager()->GetGPUBufferPointer() );
 
   // P0 = R0
-  CUDA_copy(size, pR, pP, nComponents);
+  CUDA_copy(numberOfElements, pR, pP);
 
   // Start iterations
   for (int iter=0; iter<this->m_NumberOfIterations; iter++)
@@ -107,7 +100,7 @@ CudaConjugateGradientImageFilter<TImage>
 
     // Compute, on GPU, alpha_k (only on GPU), X_k+1 (output), R_k+1, beta_k (only on GPU), P_k+1
     // The inputs are replaced by their next iterate
-    CUDA_conjugate_gradient(size, pX, pR, pP, pAOut, nComponents);
+    CUDA_conjugate_gradient(numberOfElements, pX, pR, pP, pAOut);
 
     P_k->Modified();
     }

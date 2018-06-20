@@ -19,46 +19,37 @@
 #ifndef __rtkCudaConjugateGradientImageFilter_hcu
 #define __rtkCudaConjugateGradientImageFilter_hcu
 
-#include <vector_types.h>
-
 void
-CUDA_copy(int size[3],
+CUDA_copy(long int numberOfElements,
           float* in,
-          float* out,
-          unsigned int nComp);
+          float* out);
 
 void
-CUDA_copy(int size[3],
+CUDA_copy(long int numberOfElements,
           double* in,
-          double* out,
-          unsigned int nComp);
+          double* out);
 
 void
-CUDA_subtract( int size[3],
+CUDA_subtract( long int numberOfElements,
                float* out,
-               float* toBeSubtracted,
-               unsigned int nComp);
+               float* toBeSubtracted);
 
 void
-CUDA_subtract( int size[3],
+CUDA_subtract( long int numberOfElements,
                double* out,
-               double* toBeSubtracted,
-               unsigned int nComp);
+               double* toBeSubtracted);
 
 void
-CUDA_conjugate_gradient( int size[3],
+CUDA_conjugate_gradient( long int numberOfElements,
                          float* Xk,
                          float* Rk,
                          float* Pk,
-                         float* APk,
-                         unsigned int nComp);
+                         float* APk);
 
 void
-CUDA_conjugate_gradient( int size[3],
+CUDA_conjugate_gradient( long int numberOfElements,
                          double* Xk,
                          double* Rk,
                          double* Pk,
-                         double* APk,
-                         unsigned int nComp);
-
+                         double* APk);
 #endif
