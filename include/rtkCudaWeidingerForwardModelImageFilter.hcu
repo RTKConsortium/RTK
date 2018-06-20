@@ -19,7 +19,10 @@
 #ifndef __rtkCudaWeidingerForwardModelImageFilter_hcu
 #define __rtkCudaWeidingerForwardModelImageFilter_hcu
 
+#include "rtkWin32Header.h"
+
 void
+RTK_EXPORT
 CUDA_WeidingerForwardModel( int projectionSize[3],
                             float* materialAttenuations,
                             float* binnedDetectorResponse,
