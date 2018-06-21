@@ -37,12 +37,12 @@ template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
           class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
+          class TSumAlongRay>
 JosephForwardProjectionImageFilter<TInputImage,
 TOutputImage,
 TInterpolationWeightMultiplication,
 TProjectedValueAccumulation,
-TComputeAttenuationCorrection>
+TSumAlongRay>
 ::JosephForwardProjectionImageFilter():
   m_InferiorClip(0.),
   m_SuperiorClip(1.)
@@ -56,122 +56,12 @@ template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
           class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
-void
-JosephForwardProjectionImageFilter<TInputImage,
+          class TSumAlongRay>
+void JosephForwardProjectionImageFilter<TInputImage,
 TOutputImage,
 TInterpolationWeightMultiplication,
 TProjectedValueAccumulation,
-TComputeAttenuationCorrection>
-::VerifyInputInformation()
-{
-
-  TOutputImage *inputPtr1 = nullptr;
-  itk::InputDataObjectIterator it(this);
-  for(; !it.IsAtEnd(); ++it )
-  {
-    // Check whether the output is an image of the appropriate
-    // dimension (use ProcessObject's version of the GetInput()
-    // method since it returns the input as a pointer to a
-    // DataObject as opposed to the subclass version which
-    // static_casts the input to an TInputImage).
-    if(it.GetName() != "Primary" )
-    {
-      inputPtr1 = dynamic_cast< TOutputImage * >( it.GetInput() );
-    }
-    if ( inputPtr1 )
-    {
-      break;
-    }
-  }
-
-
-  for (; !it.IsAtEnd(); ++it )
-  {
-    if(it.GetName() != "Primary" )
-    {
-      TOutputImage * inputPtrN = dynamic_cast< TOutputImage * >( it.GetInput() );
-      // Physical space computation only matters if we're using two
-      // images, and not an image and a constant.
-      if( inputPtrN )
-      {
-        // check that the image occupy the same physical space, and that
-        // each index is at the same physical location
-
-        // tolerance for origin and spacing depends on the size of pixel
-        // tolerance for directions a fraction of the unit cube.
-        const double coordinateTol
-            = std::abs(Self::GetGlobalDefaultCoordinateTolerance() * inputPtr1->GetSpacing()[0]); // use first dimension spacing
-
-        if ( !inputPtr1->GetOrigin().GetVnlVector().is_equal(inputPtrN->GetOrigin().GetVnlVector(), coordinateTol) ||
-             !inputPtr1->GetSpacing().GetVnlVector().is_equal(inputPtrN->GetSpacing().GetVnlVector(), coordinateTol) ||
-             !inputPtr1->GetDirection().GetVnlMatrix().as_ref().is_equal(inputPtrN->GetDirection().GetVnlMatrix(), Self::GetGlobalDefaultDirectionTolerance()) )
-        {
-          std::ostringstream originString, spacingString, directionString;
-          if ( !inputPtr1->GetOrigin().GetVnlVector().is_equal(inputPtrN->GetOrigin().GetVnlVector(), coordinateTol) )
-          {
-            originString.setf( std::ios::scientific );
-            originString.precision( 7 );
-            originString << "InputImage Origin: " << inputPtr1->GetOrigin()
-                         << ", InputImage" << it.GetName() << " Origin: " << inputPtrN->GetOrigin() << std::endl;
-            originString << "\tTolerance: " << coordinateTol << std::endl;
-          }
-          if ( !inputPtr1->GetSpacing().GetVnlVector().is_equal(inputPtrN->GetSpacing().GetVnlVector(), coordinateTol) )
-          {
-            spacingString.setf( std::ios::scientific );
-            spacingString.precision( 7 );
-            spacingString << "InputImage Spacing: " << inputPtr1->GetSpacing()
-                          << ", InputImage" << it.GetName() << " Spacing: " << inputPtrN->GetSpacing() << std::endl;
-            spacingString << "\tTolerance: " << coordinateTol << std::endl;
-          }
-          if ( !inputPtr1->GetDirection().GetVnlMatrix().as_ref().is_equal(inputPtrN->GetDirection().GetVnlMatrix(), Self::GetGlobalDefaultDirectionTolerance()) )
-          {
-            directionString.setf( std::ios::scientific );
-            directionString.precision( 7 );
-            directionString << "InputImage Direction: " << inputPtr1->GetDirection()
-                            << ", InputImage" << it.GetName() << " Direction: " << inputPtrN->GetDirection() << std::endl;
-            directionString << "\tTolerance: " << Self::GetGlobalDefaultDirectionTolerance()<< std::endl;
-          }
-          itkExceptionMacro(<< "Inputs do not occupy the same physical space! "
-                            << std::endl
-                            << originString.str() << spacingString.str()
-                            << directionString.str() );
-        }
-      }
-    }
-  }
-
-}
-
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
-void
-JosephForwardProjectionImageFilter<TInputImage,
-TOutputImage,
-TInterpolationWeightMultiplication,
-TProjectedValueAccumulation,
-TComputeAttenuationCorrection>
-::BeforeThreadedGenerateData()
-{
-  //TODO: check that same meta in input 1 and 2
-  //TODO: check that same buffered regions
-  m_InterpolationWeightMultiplication.SetAttenuationMinusEmissionMapsPtrDiff(this->GetInput(2)->GetBufferPointer()-this->GetInput(1)->GetBufferPointer());
-}
-
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
-void
-JosephForwardProjectionImageFilter<TInputImage,
-TOutputImage,
-TInterpolationWeightMultiplication,
-TProjectedValueAccumulation,
-TComputeAttenuationCorrection>
+TSumAlongRay>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType threadId )
 {
@@ -301,7 +191,7 @@ TComputeAttenuationCorrection>
                                               pxiyi, pxsyi, pxiys, pxsys,
                                               currentx, currenty, offsetx, offsety,
                                               minx, miny, maxx, maxy);
-        sum += m_ComputeAttenuationCorrection(threadId, volumeValue, m_InterpolationWeightMultiplication.GetAttenuation(), stepMM);
+        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
       }
       else
       {
@@ -310,7 +200,7 @@ TComputeAttenuationCorrection>
                                               pxiyi, pxsyi, pxiys, pxsys,
                                               currentx, currenty, offsetx, offsety,
                                               minx, miny, maxx, maxy);
-        sum += m_ComputeAttenuationCorrection(threadId, volumeValue, m_InterpolationWeightMultiplication.GetAttenuation(), stepMM);
+        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
 
         // Move to next main direction slice
         pxiyi += offsetz;
@@ -326,7 +216,7 @@ TComputeAttenuationCorrection>
           volumeValue = BilinearInterpolation(threadId, 1.0,
                                        pxiyi, pxsyi, pxiys, pxsys,
                                        currentx, currenty, offsetx, offsety);
-          sum += m_ComputeAttenuationCorrection(threadId, volumeValue, m_InterpolationWeightMultiplication.GetAttenuation(), stepMM);
+          sum += m_SumAlongRay(threadId, volumeValue, stepMM);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -342,9 +232,8 @@ TComputeAttenuationCorrection>
                                               pxiyi, pxsyi, pxiys, pxsys,
                                               currentx, currenty, offsetx, offsety,
                                               minx, miny, maxx, maxy);
-        sum += m_ComputeAttenuationCorrection(threadId, volumeValue, m_InterpolationWeightMultiplication.GetAttenuation(), stepMM);
+        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
       }
-
       // Accumulate
       m_ProjectedValueAccumulation(threadId,
                                    itIn->Get(),
@@ -355,9 +244,6 @@ TComputeAttenuationCorrection>
                                    dirVox,
                                    np,
                                    fp);
-
-      m_InterpolationWeightMultiplication.ResetAttenuation();
-      m_ComputeAttenuationCorrection.ResetEx1();
     }
     else
       m_ProjectedValueAccumulation(threadId,
@@ -377,17 +263,17 @@ template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
           class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
+          class TSumAlongRay>
 typename JosephForwardProjectionImageFilter<TInputImage,
 TOutputImage,
 TInterpolationWeightMultiplication,
 TProjectedValueAccumulation,
-TComputeAttenuationCorrection>::OutputPixelType
+TSumAlongRay>::OutputPixelType
 JosephForwardProjectionImageFilter<TInputImage,
 TOutputImage,
 TInterpolationWeightMultiplication,
 TProjectedValueAccumulation,
-TComputeAttenuationCorrection>
+TSumAlongRay>
 ::BilinearInterpolation( const ThreadIdType threadId,
                          const double stepLengthInVoxel,
                          const InputPixelType *pxiyi,
@@ -428,17 +314,17 @@ template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
           class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
+          class TSumAlongRay>
 typename JosephForwardProjectionImageFilter<TInputImage,
 TOutputImage,
 TInterpolationWeightMultiplication,
 TProjectedValueAccumulation,
-TComputeAttenuationCorrection>::OutputPixelType
+TSumAlongRay>::OutputPixelType
 JosephForwardProjectionImageFilter<TInputImage,
 TOutputImage,
 TInterpolationWeightMultiplication,
 TProjectedValueAccumulation,
-TComputeAttenuationCorrection>
+TSumAlongRay>
 ::BilinearInterpolationOnBorders( const ThreadIdType threadId,
                                   const double stepLengthInVoxel,
                                   const InputPixelType *pxiyi,

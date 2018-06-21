@@ -23,7 +23,6 @@
 #include "rtkForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
 #include <itkPixelTraits.h>
-#include <math.h>
 
 namespace rtk
 {
@@ -41,14 +40,7 @@ template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplication
 {
 public:
-  InterpolationWeightMultiplication()
-  {
-    for (int i = 0; i < ITK_MAX_THREADS; i++)
-    {
-      m_Attenuation[i] = 0;
-    }
-  }
-
+  InterpolationWeightMultiplication() {};
   ~InterpolationWeightMultiplication() {};
   bool operator!=( const InterpolationWeightMultiplication & ) const {
     return false;
@@ -58,35 +50,17 @@ public:
     return !( *this != other );
   }
 
-  inline TOutput operator()( const ThreadIdType threadId,
+  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
                              const double itkNotUsed(stepLengthInVoxel),
                              const TCoordRepType weight,
                              const TInput *p,
-                             const int i )
+                             const int i ) const
   {
-    m_Attenuation[threadId] += weight*(p+m_AttenuationMinusEmissionMapsPtrDiff)[i];
     return weight*p[i];
   }
-  void SetAttenuationMinusEmissionMapsPtrDiff(std::ptrdiff_t pd) {m_AttenuationMinusEmissionMapsPtrDiff = pd;}
-  TOutput *GetAttenuation() {return m_Attenuation;}
-
-  void ResetAttenuation()
-  {
-    for (int i = 0; i < ITK_MAX_THREADS; i++)
-    {
-      m_Attenuation[i] = 0;
-    }
-  }
-
-private:
-  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
-  TOutput m_Attenuation[ITK_MAX_THREADS];
-
-  //  ptrdiff_t // pa-pv
-  //  att       // atenl, à initaliser à 0 et à réinitialiser à 0 en fin de rayon, 1 par thread
 };
 
-/** \class ComputeAttenuationCorrection
+/** \class SumAlongRay
  * \brief Function to compute the attenuation correction on the projection.
  *
  * \author Antoine Robert
@@ -94,47 +68,28 @@ private:
  * \ingroup Functions
  */
 template< class TInput, class TOutput>
-class ComputeAttenuationCorrection
+class SumAlongRay
 {
 public:
   typedef itk::Vector<double, 3> VectorType;
 
-  ComputeAttenuationCorrection()
-  {
-    ex1 = 1;
-  }
-  ~ComputeAttenuationCorrection() {};
-  bool operator!=( const ComputeAttenuationCorrection & ) const
+  SumAlongRay(){};
+  ~SumAlongRay() {};
+  bool operator!=( const SumAlongRay & ) const
   {
     return false;
   }
-  bool operator==(const ComputeAttenuationCorrection & other) const
+  bool operator==(const SumAlongRay & other) const
   {
     return !( *this != other );
   }
 
-  inline TOutput operator()(const ThreadIdType threadId,
+  inline TOutput operator()(const ThreadIdType itkNotUsed(threadId),
                             const TInput volumeValue,
-                            const TInput *attenuationValue,
-                            const VectorType &stepInMM)
+                            const VectorType &itkNotUsed(stepInMM))
   {
-    TInput ex2 = exp(attenuationValue[threadId]*stepInMM.GetNorm());
-    TInput wf;
-    if(attenuationValue[threadId] > 0)
-      wf = (ex1-ex2)/attenuationValue[threadId];
-    else
-      wf = ex1*stepInMM.GetNorm();
-    ex1 = ex2;
-    return wf*volumeValue;
+    return volumeValue;
   }
-
-  void ResetEx1()
-  {
-    ex1 = 1;
-  }
-
-private:
-  TInput ex1;
 };
 
 /** \class ProjectedValueAccumulation
@@ -153,13 +108,13 @@ public:
   ProjectedValueAccumulation() {};
   ~ProjectedValueAccumulation() {};
   bool operator!=( const ProjectedValueAccumulation & ) const
-  {
+    {
     return false;
-  }
+    }
   bool operator==(const ProjectedValueAccumulation & other) const
-  {
+    {
     return !( *this != other );
-  }
+    }
 
   inline void operator()( const ThreadIdType itkNotUsed(threadId),
                           const TInput &input,
@@ -170,9 +125,9 @@ public:
                           const VectorType &itkNotUsed(sourceToPixel),
                           const VectorType &itkNotUsed(nearestPoint),
                           const VectorType &itkNotUsed(farthestPoint)) const
-  {
+    {
     output = input + rayCastValue * stepInMM.GetNorm();
-  }
+    }
 };
 
 } // end namespace Functor
@@ -197,10 +152,10 @@ template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType,typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
           class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
-          class TComputeAttenuationCorrection      = Functor::ComputeAttenuationCorrection<typename TInputImage::PixelType, typename TOutputImage::PixelType>
+          class TSumAlongRay                       = Functor::SumAlongRay<typename TInputImage::PixelType, typename TOutputImage::PixelType>
           >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
-    public ForwardProjectionImageFilter<TInputImage,TOutputImage>
+  public ForwardProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
@@ -224,35 +179,35 @@ public:
   TInterpolationWeightMultiplication &       GetInterpolationWeightMultiplication() { return m_InterpolationWeightMultiplication; }
   const TInterpolationWeightMultiplication & GetInterpolationWeightMultiplication() const { return m_InterpolationWeightMultiplication; }
   void SetInterpolationWeightMultiplication(const TInterpolationWeightMultiplication & _arg)
-  {
-    if ( m_InterpolationWeightMultiplication != _arg )
     {
+    if ( m_InterpolationWeightMultiplication != _arg )
+      {
       m_InterpolationWeightMultiplication = _arg;
       this->Modified();
+      }
     }
-  }
 
   /** Get/Set the functor that is used to accumulate values in the projection image after the ray
    * casting has been performed. */
   TProjectedValueAccumulation &       GetProjectedValueAccumulation() { return m_ProjectedValueAccumulation; }
   const TProjectedValueAccumulation & GetProjectedValueAccumulation() const { return m_ProjectedValueAccumulation; }
   void SetProjectedValueAccumulation(const TProjectedValueAccumulation & _arg)
-  {
-    if ( m_ProjectedValueAccumulation != _arg )
     {
+    if ( m_ProjectedValueAccumulation != _arg )
+      {
       m_ProjectedValueAccumulation = _arg;
       this->Modified();
+      }
     }
-  }
 
-  /** Get/Set the functor that is used to compute the attenuation correction */
-  TComputeAttenuationCorrection &       GetComputeAttenuationCorrection() { return m_ComputeAttenuationCorrection; }
-  const TComputeAttenuationCorrection & GetComputeAttenuationCorrection() const { return m_ComputeAttenuationCorrection; }
-  void SetComputeAttenuationCorrection(const TComputeAttenuationCorrection & _arg)
+  /** Get/Set the functor that is used to compute the sum along the ray*/
+  TSumAlongRay &       GetSumAlongRay() { return m_SumAlongRay; }
+  const TSumAlongRay & GetSumAlongRay() const { return m_SumAlongRay; }
+  void SetSumAlongRay(const TSumAlongRay & _arg)
   {
-    if ( m_ComputeAttenuationCorrection != _arg )
+    if ( m_SumAlongRay != _arg )
     {
-      m_ComputeAttenuationCorrection = _arg;
+      m_SumAlongRay = _arg;
       this->Modified();
     }
   }
@@ -265,16 +220,15 @@ public:
   itkGetMacro(SuperiorClip, double)
   itkSetMacro(SuperiorClip, double)
 
-  protected:
-    JosephForwardProjectionImageFilter();
+protected:
+  JosephForwardProjectionImageFilter();
   virtual ~JosephForwardProjectionImageFilter() ITK_OVERRIDE {}
 
-  void BeforeThreadedGenerateData();
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
 
-  /** Only the last two inputs should be in the same space so we need
-   * to overwrite the method. */
-  void VerifyInputInformation() ITK_OVERRIDE ;
+  /** The two inputs should not be in the same space so there is nothing
+   * to verify. */
+  void VerifyInputInformation() ITK_OVERRIDE {}
 
   inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
                                                const double stepLengthInVoxel,
@@ -288,29 +242,31 @@ public:
                                                const int oy);
 
   inline OutputPixelType BilinearInterpolationOnBorders(const ThreadIdType threadId,
-                                                        const double stepLengthInVoxel,
-                                                        const InputPixelType *pxiyi,
-                                                        const InputPixelType *pxsyi,
-                                                        const InputPixelType *pxiys,
-                                                        const InputPixelType *pxsys,
-                                                        const double x,
-                                                        const double y,
-                                                        const int ox,
-                                                        const int oy,
-                                                        const double minx,
-                                                        const double miny,
-                                                        const double maxx,
-                                                        const double maxy);
+                                               const double stepLengthInVoxel,
+                                               const InputPixelType *pxiyi,
+                                               const InputPixelType *pxsyi,
+                                               const InputPixelType *pxiys,
+                                               const InputPixelType *pxsys,
+                                               const double x,
+                                               const double y,
+                                               const int ox,
+                                               const int oy,
+                                               const double minx,
+                                               const double miny,
+                                               const double maxx,
+                                               const double maxy);
+
+protected:
+  double                             m_InferiorClip;
+  double                             m_SuperiorClip;
+  TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
+  TProjectedValueAccumulation        m_ProjectedValueAccumulation;
+  TSumAlongRay                       m_SumAlongRay;
 
 private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
 
-  TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
-  TProjectedValueAccumulation        m_ProjectedValueAccumulation;
-  TComputeAttenuationCorrection      m_ComputeAttenuationCorrection;
-  double                             m_InferiorClip;
-  double                             m_SuperiorClip;
 };
 
 } // end namespace rtk
