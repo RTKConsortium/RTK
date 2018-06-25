@@ -91,6 +91,18 @@ endif()
 # Shared libraries option
 set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
+# ----------------------------------------------------------------------------
+# Set RTK_DATA_ROOT
+# Internally used by XRadRawToAttenuationImageFilter to set the path for its
+# flat and dark headers.
+if(NOT ITK_SOURCE_DIR)
+  set(RTK_DATA_ROOT ${CMAKE_BINARY_DIR}/ExternalData/test CACHE PATH "Path of the data root" FORCE)
+else()
+  file(RELATIVE_PATH RTK_RELATIVE_PATH ${ITK_SOURCE_DIR} ${RTK_SOURCE_DIR})
+  set(RTK_DATA_ROOT ${ExternalData_BINARY_ROOT}/${RTK_RELATIVE_PATH}/test CACHE PATH "Path of the data root" FORCE)
+endif()
+mark_as_advanced(RTK_DATA_ROOT)
+
 # --------------------------------------------------------
 # Initialization
 if(NOT ITK_SOURCE_DIR)
