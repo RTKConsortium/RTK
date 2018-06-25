@@ -153,6 +153,13 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
 {
   bool modified = false;
 
+  unsigned int nEnergies = detResp.columns();
+  if (m_BinnedDetectorResponse.columns() != nEnergies)
+    {
+    modified = true;
+    m_BinnedDetectorResponse.set_size(nBins, nEnergies);
+    }
+
   for ( unsigned int r = 0; r < nBins; r++ )
     {
     for ( unsigned int c = 0; c < nEnergies; c++ )
@@ -176,6 +183,13 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
 ::SetMaterialAttenuations(const MaterialAttenuationsType & matAtt)
 {
   bool modified = false;
+
+  unsigned int nEnergies = matAtt.rows();
+  if (m_MaterialAttenuations.rows() != nEnergies)
+    {
+    modified = true;
+    m_MaterialAttenuations.set_size(nEnergies, nMaterials);
+    }
 
   for ( unsigned int r = 0; r < nEnergies; r++ )
     {
@@ -219,13 +233,15 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
   input2Ptr->SetRequestedRegion(outputRequested1);
   input4Ptr->SetRequestedRegion(outputRequested1);
 
-  // The spectrum input has the size of a single projection, ie it has no third dimension
+  // The spectrum input's first dimension is the energy,
+  // and then come the spatial dimensions. The projection
+  // number is discarded
   // Compute the requested region for the spectrum
-  typename TSpectrum::RegionType spectrumRegion;
-  for (unsigned int d=0; d<TSpectrum::ImageDimension; d++)
+  typename TSpectrum::RegionType spectrumRegion = input3Ptr->GetLargestPossibleRegion();
+  for (unsigned int d=0; d<TSpectrum::ImageDimension-1; d++)
     {
-    spectrumRegion.SetIndex(d, outputRequested1.GetIndex()[d]);
-    spectrumRegion.SetSize(d, outputRequested1.GetSize()[d]);
+    spectrumRegion.SetIndex(d+1, outputRequested1.GetIndex()[d]);
+    spectrumRegion.SetSize(d+1, outputRequested1.GetSize()[d]);
     }
 
   // Set the requested region for the spectrum
@@ -241,13 +257,14 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
 ::DynamicThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread)
 #endif
 {
-  // Create the region corresponding to outputRegionForThread for the spectrum input (last dimension removed)
-  typename TSpectrum::RegionType spectrumRegion;
-  for (unsigned int d=0; d<TSpectrum::ImageDimension; d++)
+  // Create the region corresponding to outputRegionForThread for the spectrum input
+  typename TSpectrum::RegionType spectrumRegion = this->GetInputSpectrum()->GetLargestPossibleRegion();
+  for (unsigned int d=0; d<TSpectrum::ImageDimension-1; d++)
     {
-    spectrumRegion.SetIndex(d, outputRegionForThread.GetIndex()[d]);
-    spectrumRegion.SetSize(d, outputRegionForThread.GetSize()[d]);
+    spectrumRegion.SetIndex(d+1, outputRegionForThread.GetIndex()[d]);
+    spectrumRegion.SetSize(d+1, outputRegionForThread.GetSize()[d]);
     }
+  unsigned int nEnergies = spectrumRegion.GetSize()[0];
 
   // Create iterators for all inputs and outputs
   itk::ImageRegionIterator<TOutputImage1> out1It(this->GetOutput1(), outputRegionForThread);
@@ -258,15 +275,16 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
   itk::ImageRegionConstIterator<TProjections> projOfOnesIt(this->GetInputProjectionsOfOnes(), outputRegionForThread);
 
   // Declare intermediate variables
-  itk::Matrix<dataType, nBins, nEnergies> efficientSpectrum;
-  itk::Vector<dataType, nEnergies> attenuationFactors;
-  itk::Vector<dataType, nBins> expectedCounts;
-  itk::Vector<dataType, nBins> oneMinusRatios;
-  itk::Matrix<dataType, nEnergies, nMaterials> intermForGradient;
-  itk::Matrix<dataType, nBins, nMaterials> interm2ForGradient;
+  vnl_vector<dataType> spectrum(nEnergies);
+  vnl_matrix<dataType> efficientSpectrum(nBins, nEnergies);
+  vnl_vector<dataType> attenuationFactors(nEnergies);
+  vnl_vector<dataType> expectedCounts(nBins);
+  vnl_vector<dataType> oneMinusRatios(nBins);
+  vnl_matrix<dataType> intermForGradient(nEnergies, nMaterials);
+  vnl_matrix<dataType> interm2ForGradient(nBins, nMaterials);
   itk::Vector<dataType, nMaterials> forOutput1;
-  itk::Matrix<dataType, nEnergies, nMaterials * nMaterials> intermForHessian;
-  itk::Matrix<dataType, nBins, nMaterials * nMaterials> interm2ForHessian;
+  vnl_matrix<dataType> intermForHessian(nEnergies, nMaterials * nMaterials);
+  vnl_matrix<dataType> interm2ForHessian(nBins, nMaterials * nMaterials);
   itk::Vector<dataType, nMaterials * nMaterials> forOutput2;
 
   while(!out1It.IsAtEnd())
@@ -274,13 +292,20 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
     // After each projection, the spectrum's iterator must come back to the beginning
     if (spectrumIt.IsAtEnd()) spectrumIt.GoToBegin();
 
+    // Read the spectrum at the current pixel
+    for(unsigned int e=0; e<nEnergies; e++)
+      {
+      spectrum[e] = spectrumIt.Get();
+      ++spectrumIt;
+      }
+
     // Get efficient spectrum, by equivalent of element-wise product with implicit extension
     for (unsigned int r=0; r<nBins; r++)
       for (unsigned int c=0; c<nEnergies; c++)
-        efficientSpectrum[r][c] = m_BinnedDetectorResponse[r][c] * spectrumIt.Get()[c];
+        efficientSpectrum[r][c] = m_BinnedDetectorResponse[r][c] * spectrum[c];
 
     // Get attenuation factors at each energy from material projections
-    attenuationFactors = m_MaterialAttenuations * projIt.Get();
+    attenuationFactors = m_MaterialAttenuations * projIt.Get().GetVnlVector();
     for (unsigned int r=0; r<nEnergies; r++)
       attenuationFactors[r] = std::exp(-attenuationFactors[r]);
 
@@ -299,7 +324,7 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
         intermForGradient[r][c] = m_MaterialAttenuations[r][c] * attenuationFactors[r];
 
     // Multiply by the spectrum
-    interm2ForGradient = itk::Matrix<dataType, nBins, nMaterials>(- efficientSpectrum.GetVnlMatrix() * intermForGradient.GetVnlMatrix());
+    interm2ForGradient = - efficientSpectrum * intermForGradient;
 
     // Compute the product with oneMinusRatios, with implicit extension
     for (unsigned int r=0; r<nBins; r++)
@@ -327,7 +352,7 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
           intermForHessian[r][c2 + nMaterials * c] = m_MaterialAttenuations[r][c] * m_MaterialAttenuations[r][c2] * attenuationFactors[r];
 
     // Multiply by the spectrum
-    interm2ForHessian = itk::Matrix<dataType, nBins, nMaterials * nMaterials>(efficientSpectrum.GetVnlMatrix() * intermForHessian.GetVnlMatrix());
+    interm2ForHessian = efficientSpectrum * intermForHessian;
 
     // Sum on the bins
     forOutput2.Fill(0);
@@ -345,7 +370,6 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
     ++out2It;
     ++projIt;
     ++photonCountsIt;
-    ++spectrumIt;
     ++projOfOnesIt;
     }
 }

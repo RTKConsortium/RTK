@@ -54,6 +54,7 @@ CudaWeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpec
   this->AllocateOutputs();
 
   const unsigned int Dimension = TMaterialProjections::ImageDimension;
+  unsigned int nEnergies = this->m_MaterialAttenuations.rows();
 
   // Get the size of the input projections in a Cuda-convenient format
   int projectionSize[Dimension];
@@ -70,8 +71,8 @@ CudaWeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpec
 
   // Run the forward projection with a slab of SLAB_SIZE or less projections
   CUDA_WeidingerForwardModel( projectionSize,
-                              this->m_MaterialAttenuations.GetVnlMatrix().data_block(),
-                              this->m_BinnedDetectorResponse.GetVnlMatrix().data_block(),
+                              this->m_MaterialAttenuations.data_block(),
+                              this->m_BinnedDetectorResponse.data_block(),
                               pMatProj,
                               pPhoCount,
                               pSpectrum,
@@ -79,7 +80,7 @@ CudaWeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpec
                               pOut1,
                               pOut2,
                               CudaWeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections >::nBins,
-                              CudaWeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections >::nEnergies,
+                              nEnergies,
                               CudaWeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections >::nMaterials);
 
 }

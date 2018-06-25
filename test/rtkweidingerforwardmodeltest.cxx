@@ -26,13 +26,13 @@ int main(int, char** )
   typedef double dataType;
   typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TMaterialProjections;
   typedef itk::Image<itk::Vector<dataType, nBins>, 3> TPhotonCounts;
-  typedef itk::Image<itk::Vector<dataType, nEnergies>, 2> TSpectrum;
+  typedef itk::Image<dataType, 3> TSpectrum;
   typedef itk::Image<dataType, 3> TProjections;
   typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TOutput1;
   typedef itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3> TOutput2;
 
-  typedef itk::Matrix<dataType, nBins, nEnergies>       BinnedDetectorResponseType;
-  typedef itk::Matrix<dataType, nEnergies, nMaterials>  MaterialAttenuationsType;
+  vnl_matrix<dataType> detectorResponse(nBins, nEnergies);
+  vnl_matrix<dataType> materialAttenuations(nEnergies, nMaterials);
 
   // Define, instantiate, set and update readers
   typedef itk::ImageFileReader<TMaterialProjections> MaterialProjectionsReaderType;
@@ -75,7 +75,6 @@ int main(int, char** )
   std::string filename = std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/binnedDetectorResponse.csv");
   csvReader->SetFileName( filename );
   csvReader->Parse();
-  BinnedDetectorResponseType detectorResponse;
   for (unsigned int r=0; r<nBins; r++)
     for (unsigned int c=0; c<nEnergies; c++)
       detectorResponse[r][c] = csvReader->GetOutput()->GetData(r, c);
@@ -84,7 +83,6 @@ int main(int, char** )
   filename = std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/materialAttenuations.csv");
   csvReader->SetFileName( filename );
   csvReader->Parse();
-  MaterialAttenuationsType materialAttenuations;
   for (unsigned int r=0; r<nEnergies; r++)
     for (unsigned int c=0; c<nMaterials; c++)
       materialAttenuations[r][c] = csvReader->GetOutput()->GetData(r, c);

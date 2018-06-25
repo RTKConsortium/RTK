@@ -134,7 +134,6 @@ public:
     /** Internal typedefs and parameters */
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TOutputImage::PixelType::Dimension);
-    itkStaticConstMacro(nEnergies, unsigned int, TSpectrum::PixelType::Dimension);
     typedef typename TOutputImage::PixelType::ValueType dataType;
 
 #ifdef RTK_USE_CUDA
@@ -203,8 +202,8 @@ public:
 
     /** Set methods forwarding the detector response and material attenuation
      * matrices to the internal WeidingerForwardModel filter */
-    typedef itk::Matrix<dataType, nBins, nEnergies>       BinnedDetectorResponseType;
-    typedef itk::Matrix<dataType, nEnergies, nMaterials>  MaterialAttenuationsType;
+    typedef vnl_matrix<dataType>  BinnedDetectorResponseType;
+    typedef vnl_matrix<dataType>  MaterialAttenuationsType;
     virtual void SetBinnedDetectorResponse(const BinnedDetectorResponseType & detResp);
     virtual void SetMaterialAttenuations(const MaterialAttenuationsType & matAtt);
 

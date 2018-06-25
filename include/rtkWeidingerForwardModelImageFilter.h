@@ -57,7 +57,6 @@ public:
     /** Convenient parameters extracted from template types */
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TMaterialProjections::PixelType::Dimension);
-    itkStaticConstMacro(nEnergies, unsigned int, TSpectrum::PixelType::Dimension);
 
     /** Convenient typedef */
     typedef typename TMaterialProjections::PixelType::ValueType dataType;
@@ -85,8 +84,8 @@ public:
     void SetInputProjectionsOfOnes(const TProjections* projectionsOfOnes);
 
     /** Typedefs for additional input information */
-    typedef itk::Matrix<dataType, nBins, nEnergies>       BinnedDetectorResponseType;
-    typedef itk::Matrix<dataType, nEnergies, nMaterials>  MaterialAttenuationsType;
+    typedef vnl_matrix<dataType>    BinnedDetectorResponseType;
+    typedef vnl_matrix<dataType>    MaterialAttenuationsType;
 
     /** Set and Get macros for the additional input information */
     itkGetConstReferenceMacro(BinnedDetectorResponse, BinnedDetectorResponseType)
@@ -99,6 +98,7 @@ protected:
     ~WeidingerForwardModelImageFilter() {}
 
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
