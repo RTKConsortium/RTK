@@ -14,17 +14,15 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
 # Required to include ITK_USE_FILE in order to Register IO factories
 # Force requested modules to be RTK dependencies only, otherwise all
 # available factories will try to register themselves.
-if(NOT ITK_SOURCE_DIR)
-  find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
-  include(${ITK_USE_FILE})
-endif()
+find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
+include(${ITK_USE_FILE})
 
 #-----------------------------------------------------------------------------
 # rtk_add_test(testname testfile [DATA{}])
 # Add regular test as opposed to tests depending on CUDA
 function(rtk_add_test testname testfile)
   add_executable(${testname} ${testfile})
-  target_link_libraries( ${testname} ${RTK_LIBRARIES})
+  target_link_libraries( ${testname} ${RTK_LIBRARIES} ${ITK_LIBRARIES})
   itk_add_test(NAME ${testname}
     COMMAND itkTestDriver
     $<TARGET_FILE:${testname}>
@@ -37,7 +35,7 @@ endfunction()
 function(rtk_add_cuda_test testname testfile)
   if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
     add_executable(${testname} ${testfile})
-    target_link_libraries( ${testname} ${RTK_LIBRARIES})
+    target_link_libraries( ${testname} ${RTK_LIBRARIES} ${ITK_LIBRARIES})
     itk_add_test(NAME ${testname}
       COMMAND itkTestDriver
       $<TARGET_FILE:${testname}>
@@ -52,7 +50,7 @@ itk_module_test()
 #-----------------------------------------------------------------------------
 # Executable to check the image quality
 add_executable(rtkcheckimagequality rtkcheckimagequality.cxx)
-target_link_libraries(rtkcheckimagequality ${RTK_LIBRARIES} ${RTK-Test_LIBRARIES})
+target_link_libraries(rtkcheckimagequality ${ITK_LIBRARIES} ${RTK_LIBRARIES} ${RTK-Test_LIBRARIES})
 
 rtk_add_test(rtkFDKTest rtkfdktest.cxx)
 rtk_add_cuda_test(rtkFDKCudaTest rtkfdktest.cxx)
