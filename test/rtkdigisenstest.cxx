@@ -20,20 +20,25 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 5)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "  calibration.cal  projection.tif  geometry.xml  reference.mha" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // Elekta geometry
   rtk::DigisensGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::DigisensGeometryReader::New();
-  geoTargReader->SetXMLFileName( std::string(RTK_DATA_ROOT) +
-                                 std::string("/Input/Digisens/calibration.cal") );
+  geoTargReader->SetXMLFileName(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) + 
-                             std::string("/Baseline/Digisens/geometry.xml") );
+  geoRefReader->SetFilename(argv[3]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // 1. Check geometries
@@ -48,16 +53,14 @@ int main(int, char** )
   typedef rtk::ProjectionsReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/Digisens/ima0010.tif") );
+  fileNames.push_back(argv[2]);
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   std::vector<std::string> fileNamesRef;
-  fileNamesRef.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/Digisens/attenuation.mha") );
+  fileNamesRef.push_back(argv[4]);
   readerRef->SetFileNames( fileNamesRef );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
