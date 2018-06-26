@@ -19,6 +19,7 @@
 #include <fstream>
 #include "rtkGeometricPhantomFileReader.h"
 #include "rtkQuadricShape.h"
+#include "rtkBoxShape.h"
 
 namespace rtk
 {
@@ -63,29 +64,32 @@ GeometricPhantomFileReader
             //Saving all parameters for each ellipsoid
             }
           parameters.push_back(val);
-          }
-
-        QuadricShape::Pointer qo = QuadricShape::New();
+          } 
+        ConvexShape::Pointer cs;
         QuadricShape::VectorType axis;
         QuadricShape::PointType center;
         for(int k=0; k<3; k++)
-          {
+           {
           axis[k] = parameters[k+1];
           center[k] = parameters[k+4];
           }
         if(search_fig[i]=="Box")
           {
-          // TODO
+          BoxShape::Pointer bs = BoxShape::New();
+          bs->SetBoxMin(center-axis);
+          bs->SetBoxMax(center+axis);
+          cs = bs.GetPointer();
           }
         else
           {
+          QuadricShape::Pointer qo = QuadricShape::New();
           qo->SetEllipsoid(center, axis, parameters[7]);
           if(search_fig[i]=="Cone")
             qo->SetJ(0.);
+          cs = qo.GetPointer();
           }
-
-        qo->SetDensity(parameters[8]);
-        m_GeometricPhantom->AddConvexShape(qo.GetPointer());
+        cs->SetDensity(parameters[8]);
+        m_GeometricPhantom->AddConvexShape(cs);
         }
       }
     }
