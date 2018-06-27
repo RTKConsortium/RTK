@@ -22,8 +22,15 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 3)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << " phases.txt phases_light.txt" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
@@ -180,11 +187,9 @@ int main(int, char** )
   typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
   PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
 #if FAST_TESTS_NO_CHECKS
-  phaseGating->SetPhasesFileName(std::string(RTK_DATA_ROOT) +
-                           std::string("/Input/Phases/phases_3projs.txt"));
+  phaseGating->SetPhasesFileName(argv[2]);
 #else
-  phaseGating->SetPhasesFileName(std::string(RTK_DATA_ROOT) +
-                           std::string("/Input/Phases/phases.txt"));
+  phaseGating->SetPhasesFileName(argv[1]);
 #endif
   phaseGating->SetGatingWindowWidth(0.20);
   phaseGating->SetGatingWindowShape(0); // Rectangular

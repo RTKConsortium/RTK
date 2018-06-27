@@ -20,25 +20,29 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 8)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "  image.DBF frame.DBF proj.his elektaGeometry.xml refGeometry.xml reference.mha refElektaGeometry.xml" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   std::cout << "Testing geometry with FRAME.DBF..." << std::endl;
 
   // Elekta geometry
   rtk::ElektaSynergyGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::ElektaSynergyGeometryReader::New();
   geoTargReader->SetDicomUID("1.3.46.423632.135428.1351013645.166");
-  geoTargReader->SetImageDbfFileName( std::string(RTK_DATA_ROOT) +
-                                      std::string("/Input/Elekta/IMAGE.DBF") );
-  geoTargReader->SetFrameDbfFileName( std::string(RTK_DATA_ROOT) +
-                                      std::string("/Input/Elekta/FRAME.DBF") );
+  geoTargReader->SetImageDbfFileName(argv[1]);
+  geoTargReader->SetFrameDbfFileName(argv[2]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
-                             std::string("/Baseline/Elekta/geometry.xml") );
+  geoRefReader->SetFilename(argv[5]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   std::cout << "Testing geometry with _Frames.xml..." << std::endl;
@@ -46,15 +50,13 @@ int main(int, char** )
   // Elekta geometry XVI v5
   rtk::ElektaXVI5GeometryXMLFileReader::Pointer geo5TargReader;
   geo5TargReader = rtk::ElektaXVI5GeometryXMLFileReader::New();
-  geo5TargReader->SetFilename(std::string(RTK_DATA_ROOT) +
-                              std::string("/Input/Elekta/_Frames.xml"));
+  geo5TargReader->SetFilename(argv[4]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geo5TargReader->GenerateOutputInformation() );
 
   // Reference geometry v5
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geo5RefReader;
   geo5RefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geo5RefReader->SetFilename( std::string(RTK_DATA_ROOT) +
-                             std::string("/Baseline/Elekta/geometry5.xml") );
+  geo5RefReader->SetFilename(argv[7]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geo5RefReader->GenerateOutputInformation() )
 
   // 1. Check geometries
@@ -72,16 +74,14 @@ int main(int, char** )
   typedef rtk::ProjectionsReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/Elekta/raw.his") );
+  fileNames.push_back(argv[3]);
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/Elekta/attenuation.mha") );
+  fileNames.push_back(argv[6]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -93,8 +93,7 @@ int main(int, char** )
   typedef itk::Image< InputPixelType, 3 > InputImageType;
   typedef itk::ImageFileReader< InputImageType> RawReaderType;
   RawReaderType::Pointer r = RawReaderType::New();
-  r->SetFileName(std::string(RTK_DATA_ROOT) +
-                 std::string("/Input/Elekta/raw.his"));
+  r->SetFileName(argv[3]);
   r->Update();
 
   typedef rtk::ElektaSynergyLookupTableImageFilter<ImageType> FullLUTType;
