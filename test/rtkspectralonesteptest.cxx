@@ -27,8 +27,15 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 4)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "  incident_spectrum  detector_response  material_attenuations" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   const unsigned int Dimension = 3;
   const unsigned int nBins = 5;
   const unsigned int nMaterials = 3;
@@ -63,23 +70,19 @@ int main(int, char** )
 
   // Read all inputs
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
-  incidentSpectrumReader->SetFileName( std::string(RTK_DATA_ROOT) +
-                                       std::string("/Input/Spectral/OneStep/incident_spectrum_64_rows.mha") );
+  incidentSpectrumReader->SetFileName(argv[1]);
   incidentSpectrumReader->Update();
 
   vIncidentSpectrumReaderType::Pointer vIncidentSpectrumReader = vIncidentSpectrumReaderType::New();
-  vIncidentSpectrumReader->SetFileName( std::string(RTK_DATA_ROOT) +
-                                       std::string("/Input/Spectral/OneStep/incident_spectrum_64_rows.mha") );
+  vIncidentSpectrumReader->SetFileName(argv[1]);
   vIncidentSpectrumReader->Update();
 
   DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
-  detectorResponseReader->SetFileName( std::string(RTK_DATA_ROOT) +
-                                       std::string("/Input/Spectral/detector_response.mha") );
+  detectorResponseReader->SetFileName(argv[2]);
   detectorResponseReader->Update();
 
   MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
-  materialAttenuationsReader->SetFileName( std::string(RTK_DATA_ROOT) +
-                                           std::string("/Input/Spectral/material_attenuations.mha") );
+  materialAttenuationsReader->SetFileName(argv[3]);
   materialAttenuationsReader->Update();
 
 #if FAST_TESTS_NO_CHECKS

@@ -16,8 +16,15 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 4)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << " gradient.mha hessian.mha reference.mha" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // Define types
   const unsigned int nMaterials=3;
   typedef double dataType;
@@ -27,17 +34,17 @@ int main(int, char** )
   // Define, instantiate, set and update readers
   typedef itk::ImageFileReader<TGradient> GradientReaderType;
   GradientReaderType::Pointer gradientReader = GradientReaderType::New();
-  gradientReader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/gradient.mha"));
+  gradientReader->SetFileName(argv[1]);
   gradientReader->Update();
 
   typedef itk::ImageFileReader<THessian> HessianReaderType;
   HessianReaderType::Pointer hessianReader = HessianReaderType::New();
-  hessianReader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/hessian.mha"));
+  hessianReader->SetFileName(argv[2]);
   hessianReader->Update();
 
   typedef itk::ImageFileReader<TGradient> OutputReaderType;
   OutputReaderType::Pointer outputReader = OutputReaderType::New();
-  outputReader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Baseline/Spectral/OneStep/newtonUpdate.mha"));
+  outputReader->SetFileName(argv[3]);
   outputReader->Update();
 
   // Create the filter

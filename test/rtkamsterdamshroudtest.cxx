@@ -26,7 +26,7 @@
  *
  * \author Marc Vila
  */
-int main(int, char** )
+int main(int argc, char*argv[])
 {
   const unsigned int Dimension = 3;
   typedef double                                     reg1DPixelType;
@@ -38,6 +38,13 @@ int main(int, char** )
 #else
   const unsigned int NumberOfProjectionImages = 100;
 #endif
+
+  if (argc < 3)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << " croppedRefObject refObject " << std::endl;
+    return EXIT_FAILURE;
+  }
 
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
   GeometryType::Pointer geometryMain = GeometryType::New();
@@ -209,8 +216,7 @@ int main(int, char** )
   // Read reference object
   typedef itk::ImageFileReader< ShroudFilterType::OutputImageType > ReaderAmsterdamType;
   ReaderAmsterdamType::Pointer reader2 = ReaderAmsterdamType::New();
-  reader2->SetFileName(std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/AmsterdamShroud/Amsterdam_crop.mha"));
+  reader2->SetFileName(argv[1]);
   reader2->Update();
 
   CheckImageQuality< ShroudFilterType::OutputImageType >(shroudFilter->GetOutput(), reader2->GetOutput(), 1.20e-6, 185, 2.0);
@@ -223,8 +229,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update());
 
   // Read reference object
-  reader2->SetFileName(std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/AmsterdamShroud/Amsterdam.mha"));
+  reader2->SetFileName(argv[2]);
   reader2->Update();
 
   CheckImageQuality< ShroudFilterType::OutputImageType >(shroudFilter->GetOutput(), reader2->GetOutput(), 1.20e-6, 185, 2.0);

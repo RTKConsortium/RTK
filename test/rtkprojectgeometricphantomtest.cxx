@@ -24,8 +24,15 @@ typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
  * \author Marc Vila
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "  ConfigFile.txt" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
   typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
@@ -83,8 +90,7 @@ int main(int, char** )
   PGPType::Pointer pgp=PGPType::New();
   pgp->SetInput( projectionsSource->GetOutput() );
   pgp->SetGeometry(geometry);
-  pgp->SetConfigFile(std::string(RTK_DATA_ROOT) +
-                     std::string("/Input/GeometricPhantom/SheppLogan.txt"));
+  pgp->SetConfigFile(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( pgp->Update() );
 
   CheckImageQuality<OutputImageType>(slp->GetOutput(), pgp->GetOutput(), 0.00055, 88, 255.0);

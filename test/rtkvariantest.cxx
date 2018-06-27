@@ -20,25 +20,29 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 9)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "  projection.hnd acqui.xml ximFile.xim varianGeometry.xml reference.mha  refGeometry.xml refGeometry.xml reference.mha" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   std::vector<std::string> fileNames;
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/Varian/raw.hnd") );
+  fileNames.push_back(argv[1]);
 
   // Varian geometry
   rtk::VarianObiGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::VarianObiGeometryReader::New();
-  geoTargReader->SetXMLFileName( std::string(RTK_DATA_ROOT) +
-                                 std::string("/Input/Varian/acqui.xml") );
+  geoTargReader->SetXMLFileName(argv[2]);
   geoTargReader->SetProjectionsFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
-                             std::string("/Baseline/Varian/geometry.xml") );
+  geoRefReader->SetFilename(argv[6]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // 1. Check geometries
@@ -58,8 +62,7 @@ int main(int, char** )
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/Varian/attenuation.mha") );
+  fileNames.push_back(argv[5]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -68,20 +71,17 @@ int main(int, char** )
 
   ///////////////////// Xim file format
   fileNames.clear();
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/Varian/Proj_00000.xim") );
+  fileNames.push_back(argv[3]);
 
   // Varian geometry
   rtk::VarianProBeamGeometryReader::Pointer geoProBeamReader;
   geoProBeamReader = rtk::VarianProBeamGeometryReader::New();
-  geoProBeamReader->SetXMLFileName( std::string(RTK_DATA_ROOT) +
-                                    std::string("/Input/Varian/acqui_probeam.xml") );
+  geoProBeamReader->SetXMLFileName(argv[4]);
   geoProBeamReader->SetProjectionsFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoProBeamReader->UpdateOutputData() );
 
   // Reference geometry
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
-                             std::string("/Baseline/Varian/geometryProBeam.xml") );
+  geoRefReader->SetFilename(argv[7]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // 1. Check geometries
@@ -94,8 +94,7 @@ int main(int, char** )
 
   // Reference projections reader
   fileNames.clear();
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/Varian/attenuationProBeam.mha") );
+  fileNames.push_back(argv[8]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

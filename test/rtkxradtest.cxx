@@ -19,20 +19,25 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 5)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "  xradGeometry.header xradProj.header refGeometry.xml reference.mha" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // Elekta geometry
   rtk::XRadGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::XRadGeometryReader::New();
-  geoTargReader->SetImageFileName( std::string(RTK_DATA_ROOT) +
-                                   std::string("/Input/XRad/SolidWater_HiGain1x1.header") );
+  geoTargReader->SetImageFileName(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
-                             std::string("/Baseline/XRad/geometry.xml") );
+  geoRefReader->SetFilename(argv[3]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // 1. Check geometries
@@ -47,16 +52,14 @@ int main(int, char** )
   typedef rtk::ProjectionsReader< ImageType > ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/XRad/SolidWater_HiGain1x1_firstProj.header") );
+  fileNames.push_back(argv[2]);
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/XRad/attenuation.mha") );
+  fileNames.push_back(argv[4]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

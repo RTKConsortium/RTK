@@ -17,14 +17,20 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 3)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "oraGeometry.xml refGeometry.xml reference.mha" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   std::cout << "Testing geometry..." << std::endl;
 
   // Ora geometry
   std::vector<std::string> filenames;
-  filenames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/Ora/0_afterLog.ora.xml") );
+  filenames.push_back(argv[1]);
   rtk::OraGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::OraGeometryReader::New();
   geoTargReader->SetProjectionsFileNames( filenames );
@@ -33,8 +39,7 @@ int main(int, char** )
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
-                             std::string("/Baseline/Ora/geometry.xml") );
+  geoRefReader->SetFilename(argv[2]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // Check geometries
@@ -73,8 +78,7 @@ int main(int, char** )
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   filenames.clear();
-  filenames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/Ora/attenuation.mha") );
+  filenames.push_back(argv[3]);
   readerRef->SetFileNames( filenames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
