@@ -2,7 +2,7 @@
 #include <rtkConstantImageSource.h>
 #include <rtkThreeDCircularProjectionGeometryXMLFileWriter.h>
 #include <rtkRayEllipsoidIntersectionImageFilter.h>
-#include <rtkFDKConeBeamReconstructionFilter.h>
+#include <rtkCudaFDKConeBeamReconstructionFilter.h>
 #include <rtkFieldOfViewImageFilter.h>
 
 // ITK includes
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     }
 
   // Defines the image type
-  typedef itk::Image< float, 3 > ImageType;
+  typedef itk::CudaImage< float, 3 > ImageType;
 
   // Defines the RTK geometry object
   typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
@@ -88,8 +88,8 @@ int main(int argc, char **argv)
 
   // FDK reconstruction
   std::cout << "Reconstructing..." << std::endl;
-  typedef rtk::FDKConeBeamReconstructionFilter< ImageType > FDKCPUType;
-  FDKCPUType::Pointer feldkamp = FDKCPUType::New();
+  typedef rtk::CudaFDKConeBeamReconstructionFilter FDKGPUType;
+  FDKGPUType::Pointer feldkamp = FDKGPUType::New();
   feldkamp->SetInput(0, constantImageSource2->GetOutput());
   feldkamp->SetInput(1, rei->GetOutput());
   feldkamp->SetGeometry(geometry);
