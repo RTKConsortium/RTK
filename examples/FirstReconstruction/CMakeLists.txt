@@ -13,4 +13,3 @@ endif()
 # Executable
 add_executable(FirstReconstruction FirstReconstruction.cxx )
 target_link_libraries(FirstReconstruction ${RTK_LIBRARIES})
-target_link_libraries(FirstReconstruction ${ITK_LIBRARIES})
