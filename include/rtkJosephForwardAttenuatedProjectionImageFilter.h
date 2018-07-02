@@ -31,19 +31,19 @@ namespace rtk
 {
 namespace Functor
 {
-/** \class InterpolationWeightMultiplication
+/** \class InterpolationWeightMultiplicationAttenuated
  * \brief Function to multiply the interpolation weights with the projected
- * volume values.
+ * volume values and attenuation map.
  *
- * \author Simon Rit
+ * \author Antoine Robert
  *
  * \ingroup Functions
  */
 template< class TInput, class TCoordRepType, class TOutput = TInput >
-class InterpolationWeightMultiplication2
+class InterpolationWeightMultiplicationAttenuated
 {
 public:
-  InterpolationWeightMultiplication2()
+  InterpolationWeightMultiplicationAttenuated()
   {
     for (int i = 0; i < ITK_MAX_THREADS; i++)
     {
@@ -53,11 +53,11 @@ public:
     }
   }
 
-  ~InterpolationWeightMultiplication2() {};
-  bool operator!=( const InterpolationWeightMultiplication2 & ) const {
+  ~InterpolationWeightMultiplicationAttenuated() {};
+  bool operator!=( const InterpolationWeightMultiplicationAttenuated & ) const {
     return false;
   }
-  bool operator==(const InterpolationWeightMultiplication2 & other) const
+  bool operator==(const InterpolationWeightMultiplicationAttenuated & other) const
   {
     return !( *this != other );
   }
@@ -138,26 +138,26 @@ private:
   TInput* m_ex1;
 };
 
-/** \class ProjectedValueAccumulation
+/** \class ProjectedValueAccumulationAttenuated
  * \brief Function to accumulate the ray casting on the projection.
  *
- * \author Simon Rit
+ * \author Antoine Robert
  *
  * \ingroup Functions
  */
 template< class TInput, class TOutput >
-class ProjectedValueAccumulation2
+class ProjectedValueAccumulationAttenuated
 {
 public:
   typedef itk::Vector<double, 3> VectorType;
 
-  ProjectedValueAccumulation2() {};
-  ~ProjectedValueAccumulation2() {};
-  bool operator!=( const ProjectedValueAccumulation2 & ) const
+  ProjectedValueAccumulationAttenuated() {};
+  ~ProjectedValueAccumulationAttenuated() {};
+  bool operator!=( const ProjectedValueAccumulationAttenuated & ) const
   {
     return false;
   }
-  bool operator==(const ProjectedValueAccumulation2 & other) const
+  bool operator==(const ProjectedValueAccumulationAttenuated & other) const
   {
     return !( *this != other );
   }
@@ -191,22 +191,22 @@ private:
 /** \class JosephForwardAttenuatedProjectionImageFilter
  * \brief Joseph forward projection.
  *
- * Performs a forward projection, i.e. accumulation along x-ray lines,
- * using [Joseph, IEEE TMI, 1982]. The forward projector tests if the  detector
+ * Performs a attenuated Joseph forward projection, i.e. accumulation along x-ray lines,
+ * using [Joseph, IEEE TMI, 1982] and [Gullberg, Phys. Med. Biol., 1985]. The forward projector tests if the  detector
  * has been placed after the source and the volume. If the detector is in the volume
  * the ray tracing is performed only until that point.
  *
  * \test rtkforwardattenuatedprojectiontest.cxx
  *
- * \author Simon Rit
+ * \author Antoine Robert
  *
  * \ingroup Projector
  */
 
 template <class TInputImage,
           class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication2<typename TInputImage::PixelType,typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
-          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation2<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
+          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplicationAttenuated<typename TInputImage::PixelType,typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
+          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulationAttenuated<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
           class TSumAlongRay     = Functor::ComputeAttenuationCorrection<typename TInputImage::PixelType, typename TOutputImage::PixelType>
           >
 class ITK_EXPORT JosephForwardAttenuatedProjectionImageFilter :
