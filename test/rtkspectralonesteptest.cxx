@@ -43,21 +43,20 @@ int main(int argc, char*argv[])
   typedef float                               DataType;
   typedef itk::Vector<DataType, nMaterials>   MaterialPixelType;
   typedef itk::Vector<DataType, nBins>        PhotonCountsPixelType;
-  typedef itk::Vector<DataType, nEnergies>    SpectrumPixelType;
 
   typedef itk::VectorImage<DataType, Dimension>           MaterialProjectionsType;
   typedef itk::VectorImage<DataType, Dimension - 1>       vIncidentSpectrum;
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::CudaImage<PhotonCountsPixelType, Dimension>    PhotonCountsType;
-  typedef itk::CudaImage<SpectrumPixelType, Dimension-1 >     IncidentSpectrumImageType;
+  typedef itk::CudaImage<DataType, Dimension >                IncidentSpectrumImageType;
   typedef itk::CudaImage<DataType, Dimension-1 >              DetectorResponseImageType;
   typedef itk::CudaImage<DataType, Dimension-1 >              MaterialAttenuationsImageType;
   typedef itk::CudaImage<DataType, Dimension>                 SingleComponentImageType;
 #else
   typedef itk::Image<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::Image<PhotonCountsPixelType, Dimension>    PhotonCountsType;
-  typedef itk::Image<SpectrumPixelType, Dimension-1 >     IncidentSpectrumImageType;
+  typedef itk::Image<DataType, Dimension >                IncidentSpectrumImageType;
   typedef itk::Image<DataType, Dimension-1 >              DetectorResponseImageType;
   typedef itk::Image<DataType, Dimension-1 >              MaterialAttenuationsImageType;
   typedef itk::Image<DataType, Dimension>                 SingleComponentImageType;
@@ -74,15 +73,15 @@ int main(int argc, char*argv[])
   incidentSpectrumReader->Update();
 
   vIncidentSpectrumReaderType::Pointer vIncidentSpectrumReader = vIncidentSpectrumReaderType::New();
-  vIncidentSpectrumReader->SetFileName(argv[1]);
+  vIncidentSpectrumReader->SetFileName(argv[2]);
   vIncidentSpectrumReader->Update();
 
   DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
-  detectorResponseReader->SetFileName(argv[2]);
+  detectorResponseReader->SetFileName(argv[3]);
   detectorResponseReader->Update();
 
   MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
-  materialAttenuationsReader->SetFileName(argv[3]);
+  materialAttenuationsReader->SetFileName(argv[4]);
   materialAttenuationsReader->Update();
 
 #if FAST_TESTS_NO_CHECKS
@@ -259,7 +258,7 @@ int main(int argc, char*argv[])
 
   // Read the material attenuations image as a matrix
   MaterialAttenuationsImageType::IndexType indexMat;
-  itk::Matrix<DataType, nEnergies, nMaterials> materialAttenuationsMatrix;
+  vnl_matrix<DataType> materialAttenuationsMatrix(nEnergies, nMaterials);
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
     indexMat[1] = energy;
@@ -271,7 +270,7 @@ int main(int argc, char*argv[])
     }
 
   // Read the detector response image as a matrix, and bin it
-  itk::Matrix<DataType, nBins, nEnergies> detectorResponseMatrix;
+  vnl_matrix<DataType> detectorResponseMatrix(nBins, nEnergies);
   DetectorResponseImageType::IndexType indexDet;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
