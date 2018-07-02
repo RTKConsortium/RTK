@@ -16,16 +16,21 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << " ElektaProjections " << std::endl;
+    return EXIT_FAILURE;
+  }
 
   // Elekta projections reader
   typedef itk::Image< unsigned short, 3 > ShortImageType;
   typedef rtk::ProjectionsReader< ShortImageType > ReaderType;
   ReaderType::Pointer r = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/Elekta/raw.his") );
+  fileNames.push_back( argv[1] );
   r->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( r->Update() );
 

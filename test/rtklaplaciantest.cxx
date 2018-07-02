@@ -20,8 +20,15 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << " reference.mha" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
 
@@ -75,8 +82,7 @@ int main(int, char** )
   // Read a reference image
   typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer readerRef = ReaderType::New();
-  readerRef->SetFileName( std::string(RTK_DATA_ROOT) +
-                          std::string("/Baseline/Laplacian/Laplacian.mha"));
+  readerRef->SetFileName(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
   
   
