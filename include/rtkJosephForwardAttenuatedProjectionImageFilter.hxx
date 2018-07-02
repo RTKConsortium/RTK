@@ -197,8 +197,9 @@ TComputeAttenuationCorrection>
 ::BeforeThreadedGenerateData()
 {
   this->m_InterpolationWeightMultiplication.SetAttenuationMinusEmissionMapsPtrDiff(this->GetInput(2)->GetBufferPointer()-this->GetInput(1)->GetBufferPointer());
-  this->m_ProjectedValueAccumulation.SetAttenuationVector(this->m_InterpolationWeightMultiplication.GetAttenuation());
-  this->m_SumAlongRay.SetAttenuationVector(this->m_InterpolationWeightMultiplication.GetAttenuation());
+  this->m_ProjectedValueAccumulation.SetAttenuationVector(this->m_InterpolationWeightMultiplication.GetAttenuationRay());
+  this->m_SumAlongRay.SetAttenuationRayVector(this->m_InterpolationWeightMultiplication.GetAttenuationRay());
+  this->m_SumAlongRay.SetAttenuationPixelVector(this->m_InterpolationWeightMultiplication.GetAttenuationPixel());
   this->m_ProjectedValueAccumulation.SetEx1(this->m_InterpolationWeightMultiplication.GetEx1());
   this->m_SumAlongRay.SetEx1(this->m_InterpolationWeightMultiplication.GetEx1());
 }

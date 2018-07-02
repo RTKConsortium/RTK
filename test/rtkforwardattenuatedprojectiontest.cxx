@@ -4,9 +4,12 @@
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
-
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkImageRegionIterator.h>
+#include <math.h>
+
 
 #ifdef USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
@@ -15,7 +18,7 @@
 #endif
 
 /**
- * \file rtkforwardprojectiontest.cxx
+ * \file rtkforwardattenuatedprojectiontest.cxx
  *
  * \brief Functional test for forward projection
  *
@@ -49,12 +52,16 @@ int main(int , char** )
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
+  const double att = 0.0154;
 
   // Create Joseph Forward Projector volume input.
   const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
   origin[0] = -126;
   origin[1] = -126;
   origin[2] = -126;
+//  origin[0] = -6;
+//  origin[1] = -6;
+//  origin[2] = -6;
 #if FAST_TESTS_NO_CHECKS
   size[0] = 2;
   size[1] = 2;
@@ -69,6 +76,12 @@ int main(int , char** )
   spacing[0] = 4.;
   spacing[1] = 4.;
   spacing[2] = 4.;
+//  size[0] = 3;
+//  size[1] = 3;
+//  size[2] = 3;
+//  spacing[0] = 4;
+//  spacing[1] = 4;
+//  spacing[2] = 4;
 #endif
   volInput->SetOrigin( origin );
   volInput->SetSpacing( spacing );
@@ -78,30 +91,15 @@ int main(int , char** )
 
   // Create Joseph Forward Projector attenuation map.
   const ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
-  origin[0] = -126;
-  origin[1] = -126;
-  origin[2] = -126;
-#if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
-#else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
-#endif
+
   attenuationInput->SetOrigin( origin );
   attenuationInput->SetSpacing( spacing );
   attenuationInput->SetSize( size );
-  attenuationInput->SetConstant( 154. );
+  attenuationInput->SetConstant( att );
   attenuationInput->UpdateOutputInformation();
 
+  size.Fill(1);
+  origin.Fill(0.);
   // Initialization Volume, it is used in the Joseph Forward Projector and in the
   // Ray Box Intersection Filter in order to initialize the stack of projections.
   const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
@@ -116,7 +114,7 @@ int main(int , char** )
 #ifdef USE_CUDA
   typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
 #else
-  typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
+  typedef rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
 #endif
   JFPType::Pointer jfp = JFPType::New();
   jfp->InPlaceOff();
@@ -133,12 +131,12 @@ int main(int , char** )
   rbi->InPlaceOff();
   rbi->SetInput( projInput->GetOutput() );
   VectorType boxMin, boxMax;
-  boxMin[0] = -126.0;
-  boxMin[1] = -126.0;
-  boxMin[2] = -126.0;
-  boxMax[0] =  126.0;
-  boxMax[1] =  126.0;
-  boxMax[2] =   47.6;
+  boxMin[0] = -126;
+  boxMin[1] = -126;
+  boxMin[2] = -126;
+  boxMax[0] =  126;
+  boxMax[1] =  126;
+  boxMax[2] =  47.6;
   rbi->SetBoxMin(boxMin);
   rbi->SetBoxMax(boxMax);
 
@@ -167,6 +165,20 @@ int main(int , char** )
     if(q==0) {
       rbi->SetGeometry( geometry );
       rbi->Update();
+      typedef itk::ImageRegionIterator<OutputImageType> ImageIterator;
+      ImageIterator itRbi( rbi->GetOutput(), rbi->GetOutput()->GetBufferedRegion() );
+
+      itRbi.GoToBegin();
+
+      while( !itRbi.IsAtEnd() )
+      {
+        typename OutputImageType::PixelType RefVal = itRbi.Get();
+        if(att == 0)
+          itRbi.Set(RefVal);
+        else
+          itRbi.Set((1-exp(-RefVal*att))/(att));
+        ++itRbi;
+      }
     }
 
     jfp->SetGeometry(geometry);
@@ -175,94 +187,6 @@ int main(int , char** )
     CheckImageQuality<OutputImageType>(stream->GetOutput(), rbi->GetOutput(), 1.28, 44.0, 255.0);
     std::cout << "\n\nTest of quarter #" << q << " PASSED! " << std::endl;
   }
-
-#ifdef USE_CUDA
-  jfp->SetStepSize(1);
-#endif
-
-  std::cout << "\n\n****** Case 2: outer ray source ******" << std::endl;
-  boxMax[2] = 126.0;
-  rbi->SetBoxMax(boxMax);
-
-  // Geometry
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
-  GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int i=0; i<NumberOfProjectionImages; i++)
-    geometry->AddProjection(500., 1000., i*8.);
-
-  rbi->SetGeometry( geometry );
-  rbi->Update();
-
-  jfp->SetGeometry( geometry );
-  stream->Update();
-
-  CheckImageQuality<OutputImageType>(stream->GetOutput(), rbi->GetOutput(), 1.28, 44.0, 255.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-
-  std::cout << "\n\n****** Case 3: Shepp-Logan, outer ray source ******" << std::endl;
-
-  // Create Shepp Logan reference projections
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
-  SLPType::Pointer slp = SLPType::New();
-  slp->InPlaceOff();
-  slp->SetInput( projInput->GetOutput() );
-  slp->SetGeometry(geometry);
-  slp->Update();
-
-  // Create a Shepp Logan reference volume (finer resolution)
-  origin.Fill(-127);
-  size.Fill(128);
-  spacing.Fill(2.);
-  volInput->SetOrigin( origin );
-  volInput->SetSpacing( spacing );
-  volInput->SetSize( size );
-  volInput->SetConstant( 0. );
-
-  attenuationInput->SetOrigin( origin );
-  attenuationInput->SetSpacing( spacing );
-  attenuationInput->SetSize( size );
-  attenuationInput->SetConstant( 154. );
-  attenuationInput->UpdateOutputInformation();
-
-  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
-  DSLType::Pointer dsl = DSLType::New();
-  dsl->InPlaceOff();
-  dsl->SetInput( volInput->GetOutput() );
-  dsl->Update();
-  
-  // Forward projection
-  jfp->SetInput( 1, dsl->GetOutput() );
-  jfp->SetInput(2, attenuationInput->GetOutput());
-  stream->Update();
-
-  CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 44, 255.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-
-  std::cout << "\n\n****** Case 4: Shepp-Logan, outer ray source, cylindrical detector ******" << std::endl;
-  geometry->SetRadiusCylindricalDetector(600);
-
-  slp->SetGeometry(geometry);
-  slp->Update();
-
-  jfp->SetGeometry( geometry );
-  stream->Update();
-
-  CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 44, 255.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
-
-  std::cout << "\n\n****** Case 5: Shepp-Logan, inner ray source ******" << std::endl;
-  geometry = GeometryType::New();
-  for(unsigned int i=0; i<NumberOfProjectionImages; i++)
-    geometry->AddProjection(120., 1000., i*8.);
-
-  slp->SetGeometry(geometry);
-  slp->Update();
-
-  jfp->SetGeometry( geometry );
-  stream->Update();
-
-  CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 44, 255.0);
-  std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
 }
