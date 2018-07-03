@@ -8,7 +8,8 @@ if len ( sys.argv ) < 3:
   sys.exit ( 1 )
 
 # Defines the image type
-ImageType = rtk.CudaImage[itk.F,3]
+GPUImageType = rtk.CudaImage[itk.F,3]
+CPUImageType = rtk.Image[itk.F,3]
 
 # Defines the RTK geometry object
 geometry = rtk.ThreeDCircularProjectionGeometry.New()
@@ -28,7 +29,7 @@ xmlWriter.SetInput ( geometry );
 xmlWriter.Update();
 
 # Create a stack of empty projection images
-ConstantImageSourceType = rtk.ConstantImageSource[ImageType]
+ConstantImageSourceType = rtk.ConstantImageSource[GPUImageType]
 constantImageSource = ConstantImageSourceType.New()
 origin = [ -127, -127, 0. ]
 sizeOutput = [ 128, 128,  numberOfProjections ]
@@ -38,7 +39,7 @@ constantImageSource.SetSpacing( spacing )
 constantImageSource.SetSize( sizeOutput )
 constantImageSource.SetConstant(0.)
 
-REIType = rtk.RayEllipsoidIntersectionImageFilter[ImageType, ImageType]
+REIType = rtk.RayEllipsoidIntersectionImageFilter[CPUImageType, CPUImageType]
 rei = REIType.New()
 semiprincipalaxis = [ 50, 50, 50]
 center = [ 0, 0, 10]
@@ -60,18 +61,23 @@ constantImageSource2.SetSpacing( spacing )
 constantImageSource2.SetSize( sizeOutput )
 constantImageSource2.SetConstant(0.)
 
+# Graft the projections to an itk::CudaImage
+projections = GPUImageType.New()
+rei.Update()
+projections.Graft(rei.GetOutput())
+
 # FDK reconstruction
 print("Reconstructing...")
-FDKCPUType = rtk.CudaFDKConeBeamReconstructionFilter
-feldkamp = FDKCPUType.New()
+FDKGPUType = rtk.CudaFDKConeBeamReconstructionFilter
+feldkamp = FDKGPUType.New()
 feldkamp.SetInput(0, constantImageSource2.GetOutput());
-feldkamp.SetInput(1, rei.GetOutput());
+feldkamp.SetInput(1, projections);
 feldkamp.SetGeometry(geometry);
 feldkamp.GetRampFilter().SetTruncationCorrection(0.0);
 feldkamp.GetRampFilter().SetHannCutFrequency(0.0);
 
 # Field-of-view masking
-FOVFilterType = rtk.FieldOfViewImageFilter[ImageType, ImageType]
+FOVFilterType = rtk.FieldOfViewImageFilter[CPUImageType, CPUImageType]
 fieldofview = FOVFilterType.New()
 fieldofview.SetInput(0, feldkamp.GetOutput())
 fieldofview.SetProjectionsStack(rei.GetOutput())
@@ -79,7 +85,7 @@ fieldofview.SetGeometry(geometry)
 
 # Writer
 print("Writing output image...")
-WriterType = rtk.ImageFileWriter[ImageType]
+WriterType = rtk.ImageFileWriter[CPUImageType]
 writer = WriterType.New();
 writer.SetFileName(sys.argv[1]);
 writer.SetInput(fieldofview.GetOutput());

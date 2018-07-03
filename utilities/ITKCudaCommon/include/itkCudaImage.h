@@ -65,7 +65,7 @@ public:
   typedef typename PixelContainer::Pointer       PixelContainerPointer;
   typedef typename PixelContainer::ConstPointer  PixelContainerConstPointer;
   typedef typename Superclass::AccessorType      AccessorType;
-   
+
   typedef unsigned long                         ModifiedTimeType;
   typedef DefaultPixelAccessorFunctor< Self >   AccessorFunctorType;
 
@@ -146,7 +146,7 @@ public:
   /** Return a pointer to the container. */
   PixelContainer * GetPixelContainer()
   {
-    m_DataManager->SetGPUBufferDirty(); 
+    m_DataManager->SetGPUBufferDirty();
     return Superclass::GetPixelContainer();
   }
 
@@ -159,7 +159,7 @@ public:
   itkGetModifiableObjectMacro(DataManager, CudaImageDataManager< CudaImage >);
 
   CudaDataManager::Pointer GetCudaDataManager() const;
-  
+
   /** Overload the SetBufferedRegion function because if the size changes we need
    *  to invalidated the GPU buffer */
   void SetBufferedRegion(const RegionType & region);
@@ -181,8 +181,9 @@ public:
   }
 
   /** Graft the data and information from one CudaImage to another. */
-  virtual void Graft(const DataObject *data);
-  
+  virtual void Graft(const Superclass *data) override;
+  virtual void Graft(const DataObject *data) override;
+
 protected:
   CudaImage();
   virtual ~CudaImage();
@@ -192,7 +193,7 @@ private:
   // functions that are purposely not implemented
   CudaImage(const Self&);
   void operator=(const Self&);
-  
+
   typename CudaImageDataManager< CudaImage >::Pointer m_DataManager;
 };
 
