@@ -256,7 +256,6 @@ protected:
                                                const double maxx,
                                                const double maxy);
 
-protected:
   double                             m_InferiorClip;
   double                             m_SuperiorClip;
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
