@@ -11,6 +11,8 @@ itk_wrap_class("rtk::BackProjectionImageFilter" POINTER)
     foreach(t ${WRAP_ITK_REAL})
       itk_wrap_template("CI${ITKM_${t}}3CI${ITKM_${t}}3"
         "itk::CudaImage<${ITKT_${t}}, 3>, itk::CudaImage<${ITKT_${t}}, 3>")
+      itk_wrap_template("CI${ITKM_V${ITKM_${t}}3}3CI${ITKM_V${ITKM_${t}}3}3"
+        "itk::CudaImage<itk::Vector<${ITKT_${t}},3>, 3>, itk::CudaImage<itk::Vector<${ITKT_${t}},3>, 3>")
     endforeach()
   endif()
 
@@ -20,9 +22,30 @@ if(RTK_USE_CUDA)
   #-----------------------------------------------------------------------------
   # Templates to be used with rtk::CudaBackProjectionImageFilter
   #-----------------------------------------------------------------------------
+  itk_wrap_class("itk::CudaImage" POINTER_WITH_CONST_POINTER)
+    itk_wrap_template("${ITKM_VF3}3" "itk::Vector<${ITKT_F},3>, 3")
+  itk_end_wrap_class()
+
+  itk_wrap_class("itk::CudaImageDataManager" POINTER)
+    itk_wrap_template("CI${ITKM_VF3}3" "itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>")
+  itk_end_wrap_class()
+
+  itk_wrap_class("itk::ImageSource" POINTER)
+    itk_wrap_template("CI${ITKM_VF3}3" "itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>")
+  itk_end_wrap_class()
+ 
+  itk_wrap_class("itk::ImageToImageFilter" POINTER)
+    itk_wrap_template("CI${ITKM_VF3}3CI${ITKM_VF3}3" "itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>, itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>")
+  itk_end_wrap_class()
+ 
+  itk_wrap_class("itk::InPlaceImageFilter" POINTER)
+    itk_wrap_template("CI${ITKM_VF3}3CI${ITKM_VF3}3" "itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>, itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>")
+  itk_end_wrap_class()
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
-    itk_wrap_template("CIF3CIF3BPCIF3CIF3"
+    itk_wrap_template("CIF33CIF33BPCIF33CIF33"
       "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::BackProjectionImageFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3> >")
+    itk_wrap_template("CIVF33CIVF33BPCIVF33CIVF33"
+      "itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>, itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>, rtk::BackProjectionImageFilter< itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>, itk::CudaImage<itk::Vector<${ITKT_F},3>, 3> >")
   itk_end_wrap_class()
 
   itk_wrap_class("itk::CudaInPlaceImageFilter" POINTER)
