@@ -24,8 +24,15 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 2)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << " phases.txt" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   const unsigned int Dimension = 3;
   typedef float                                    OutputPixelType;
 
@@ -145,8 +152,7 @@ int main(int, char** )
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
-  phaseReader->SetFileName(std::string(RTK_DATA_ROOT) +
-                           std::string("/Input/Phases/phases_slow.txt"));
+  phaseReader->SetFileName(argv[1]);
   phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
   phaseReader->Update();
 
@@ -162,8 +168,7 @@ int main(int, char** )
   fw->SetForwardProjectionFilter( jfw.GetPointer() );
   fw->SetGeometry( geometry );
   fw->SetWeights(phaseReader->GetOutput());
-  fw->SetSignal(rtk::ReadSignalFile(std::string(RTK_DATA_ROOT) +
-                           std::string("/Input/Phases/phases_slow.txt")));
+  fw->SetSignal(rtk::ReadSignalFile(argv[1]));
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
 
   std::cout << "\n\n****** Projection stack to 4D ******" << std::endl;
@@ -178,8 +183,7 @@ int main(int, char** )
   bp->SetBackProjectionFilter( jbp.GetPointer() );
   bp->SetGeometry( geometry.GetPointer() );
   bp->SetWeights(phaseReader->GetOutput());
-  bp->SetSignal(rtk::ReadSignalFile(std::string(RTK_DATA_ROOT) +
-                           std::string("/Input/Phases/phases_slow.txt")));
+  bp->SetSignal(rtk::ReadSignalFile(argv[1]));
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
 
   CheckScalarProducts<VolumeSeriesType, ProjectionStackType>(randomVolumeSeriesSource->GetOutput(), bp->GetOutput(), randomProjectionStackSource->GetOutput(), fw->GetOutput());

@@ -46,6 +46,7 @@ namespace itk
 #endif
 
 #define RTK_BINARY_DIR "@RTK_BINARY_DIR@"
+#define RTK_DATA_ROOT "@RTK_DATA_ROOT@"
 
 /* Fix for ITK4 */
 #if defined(ITK_USE_FFTWF) && !defined(USE_FFTWF)

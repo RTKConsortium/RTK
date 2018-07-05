@@ -16,30 +16,34 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 8)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << "  projection.dcm calibration.xml room.xml imagX.xml geometry.xml reference.mha DCMreference.mha" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   typedef float OutputPixelType;
   const unsigned int Dimension = 3;
   typedef itk::Image< OutputPixelType, Dimension > ImageType;
 
   // Generate projections names
   std::vector<std::string> FileNames;
-  FileNames.push_back(std::string(RTK_DATA_ROOT) + std::string("/Input/ImagX/1.dcm"));
+  FileNames.push_back(argv[1]);
 
   // Create geometry reader
   rtk::ImagXGeometryReader<ImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<ImageType>::New();
   imagxReader->SetProjectionsFileNames(FileNames);
-  imagxReader->SetCalibrationXMLFileName(std::string(RTK_DATA_ROOT) +
-                                         std::string("/Input/ImagX/calibration.xml"));
-  imagxReader->SetRoomXMLFileName(std::string(RTK_DATA_ROOT) +
-                                  std::string("/Input/ImagX/room.xml"));
+  imagxReader->SetCalibrationXMLFileName(argv[2]);
+  imagxReader->SetRoomXMLFileName(argv[3]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( imagxReader->UpdateOutputData() );
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geoRefReader->SetFilename( std::string(RTK_DATA_ROOT) +
-                             std::string("/Baseline/ImagX/geo.xml") );
+  geoRefReader->SetFilename(argv[5]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
 
   // Check geometries
@@ -57,8 +61,7 @@ int main(int, char** )
   crop[2] = 0;
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Input/ImagX/raw.xml") );
+  fileNames.push_back(argv[4]);
   reader->SetFileNames( fileNames );
   reader->SetShrinkFactors(binning);
   reader->SetLowerBoundaryCropSize(crop);
@@ -70,8 +73,7 @@ int main(int, char** )
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/ImagX/attenuation.mha") );
+  fileNames.push_back(argv[6]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -80,7 +82,7 @@ int main(int, char** )
 
   std::cout << std::endl << std::endl << "Checking one projection in dcm format..." << std::endl;
   fileNames.clear();
-  fileNames.push_back(std::string(RTK_DATA_ROOT) + std::string("/Input/ImagX/1.dcm"));
+  fileNames.push_back(argv[1]);
   reader->SetFileNames( fileNames );
   reader->SetShrinkFactors(binning);
   reader->SetLowerBoundaryCropSize(crop);
@@ -91,8 +93,7 @@ int main(int, char** )
 
   // Reference projections reader
   fileNames.clear();
-  fileNames.push_back( std::string(RTK_DATA_ROOT) +
-                       std::string("/Baseline/ImagX/attenuationDCM.mha") );
+  fileNames.push_back(argv[7]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
