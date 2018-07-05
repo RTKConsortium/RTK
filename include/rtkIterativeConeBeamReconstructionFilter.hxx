@@ -100,6 +100,22 @@ namespace rtk
   }
 #endif
 
+  template<> inline
+  typename IterativeConeBeamReconstructionFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3>>::ForwardProjectionPointerType
+  IterativeConeBeamReconstructionFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3>>
+  ::InstantiateForwardProjectionFilter (int fwtype)
+  {
+    ForwardProjectionPointerType fw;
+    switch(fwtype)
+      {
+      case(FP_JOSEPH):
+        fw = rtk::JosephForwardProjectionImageFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3>>::New();
+      break;
+      default:
+        itkGenericExceptionMacro(<< "Unhandled --fp value.");
+      }
+    return fw;
+  }
   template<class TOutputImage, class ProjectionStackType>
   typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::ForwardProjectionPointerType
   IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
@@ -209,6 +225,25 @@ namespace rtk
     return bp;
   }
 #endif
+
+  template<> inline
+  typename IterativeConeBeamReconstructionFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3> >::BackProjectionPointerType
+  IterativeConeBeamReconstructionFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3> >::InstantiateBackProjectionFilter(int bptype)
+  {
+    BackProjectionPointerType bp;
+    switch(bptype)
+      {
+      case(BP_VOXELBASED):
+        bp = rtk::BackProjectionImageFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3> >::New();
+        break;
+      case(BP_JOSEPH):
+        bp = rtk::JosephBackProjectionImageFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3> >::New();
+        break;
+      default:
+        itkGenericExceptionMacro(<< "Unhandled --bp value.");
+      }
+    return bp;
+  }
 
   template<class TOutputImage, class ProjectionStackType>
   typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::BackProjectionPointerType

@@ -184,7 +184,7 @@ TSumAlongRay>
       // Initialize the accumulation
       typename TOutputImage::PixelType sum = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
 
-      typename TOutputImage::PixelType volumeValue = itk::NumericTraits<typename TOutputImage::PixelType>::Zero;
+      typename TInputImage::PixelType volumeValue = itk::NumericTraits<typename TInputImage::PixelType>::ZeroValue();
       if (fs == ns) //If the voxel is a corner, we can skip most steps
       {
         volumeValue = BilinearInterpolationOnBorders(threadId, fp[mainDir] - np[mainDir],

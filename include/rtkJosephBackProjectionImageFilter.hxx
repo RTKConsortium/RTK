@@ -201,8 +201,8 @@ void JosephBackProjectionImageFilter<TInputImage,
       stepMM[notMainDirSup] = this->GetInput(0)->GetSpacing()[notMainDirSup] * stepy;
       stepMM[mainDir]       = this->GetInput(0)->GetSpacing()[mainDir];
 
-      typename TOutputImage::PixelType rayValue = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
-      typename TOutputImage::PixelType attenuationRay = itk::NumericTraits<typename TOutputImage::PixelType>::Zero;
+      typename TInputImage::PixelType rayValue = itk::NumericTraits<typename TInputImage::PixelType>::ZeroValue();
+      typename TOutputImage::PixelType attenuationRay = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
       bool isNewRay = true;
       if (fs == ns) //If the voxel is a corner, we can skip most steps
         {
