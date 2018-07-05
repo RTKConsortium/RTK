@@ -67,7 +67,12 @@ namespace rtk
       case(FP_CUDARAYCAST):
         fw = rtk::CudaForwardProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
       break;
-
+      case(FP_JOSEPHATTENUATED):
+    {
+        fw = rtk::JosephForwardAttenuatedProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
+        m_CurrentForwardProjectionConfiguration = FP_JOSEPHATTENUATED;
+      }
+      break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --fp value.");
       }
@@ -88,7 +93,6 @@ namespace rtk
       case(FP_CUDARAYCAST):
         fw = rtk::CudaForwardProjectionImageFilter<itk::CudaImage<itk::Vector<float, 3>, 3>, itk::CudaImage<itk::Vector<float, 3>, 3>>::New();
       break;
-
       default:
         itkGenericExceptionMacro(<< "Unhandled --fp value.");
       }
@@ -114,7 +118,9 @@ namespace rtk
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
       break;
-
+      case(FP_JOSEPHATTENUATED):
+          fw = rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+      break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --fp value.");
       }
@@ -165,6 +171,12 @@ namespace rtk
       break;
       case(BP_CUDARAYCAST):
         bp = rtk::CudaRayCastBackProjectionImageFilter::New();
+        break;
+      case(BP_JOSEPHATTENUATED):
+    {
+        bp = rtk::JosephBackAttenuatedProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
+         m_CurrentBackProjectionConfiguration =BP_JOSEPHATTENUATED;
+    }
         break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --bp value.");
@@ -224,6 +236,9 @@ namespace rtk
       #else
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
+        break;
+      case(BP_JOSEPHATTENUATED):
+        bp = rtk::JosephBackAttenuatedProjectionImageFilter<ProjectionStackType, VolumeType>::New();
         break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --bp value.");
