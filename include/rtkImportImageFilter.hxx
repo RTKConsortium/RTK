@@ -205,12 +205,12 @@ ImportImageFilter< TImage >
   typedef itk::CudaImage<typename TImage::PixelType, TImage::ImageDimension> TCudaImage;
   if (TCudaImage* cudaOutputPtr = dynamic_cast<TCudaImage*>(outputPtr.GetPointer()))
     {
-    cudaOutputPtr->GetDataManager()->SetBufferSize(m_Size * sizeof(typename TImage::PixelType));
-    cudaOutputPtr->GetDataManager()->SetImagePointer(cudaOutputPtr);
-    cudaOutputPtr->GetDataManager()->SetCPUBufferPointer(m_ImportPointer);
-    cudaOutputPtr->GetDataManager()->SetGPUDirtyFlag(true);
-    cudaOutputPtr->GetDataManager()->SetCPUDirtyFlag(false);
-    cudaOutputPtr->GetDataManager()->SetTimeStamp(outputPtr->GetPixelContainer()->GetTimeStamp());
+    cudaOutputPtr->GetModifiableDataManager()->SetBufferSize(m_Size * sizeof(typename TImage::PixelType));
+    cudaOutputPtr->GetModifiableDataManager()->SetImagePointer(cudaOutputPtr);
+    cudaOutputPtr->GetModifiableDataManager()->SetCPUBufferPointer(m_ImportPointer);
+    cudaOutputPtr->GetModifiableDataManager()->SetGPUDirtyFlag(true);
+    cudaOutputPtr->GetModifiableDataManager()->SetCPUDirtyFlag(false);
+    cudaOutputPtr->GetModifiableDataManager()->SetTimeStamp(outputPtr->GetPixelContainer()->GetTimeStamp());
     }
 #endif
 }

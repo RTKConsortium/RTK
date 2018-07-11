@@ -39,6 +39,11 @@ endfunction()
 
 itk_module_test()
 
+# Use sha512 algorithm to generate content link
+if(NOT ITK_SOURCE_DIR)
+  set(ExternalData_LINK_CONTENT SHA512)
+endif()
+
 #-----------------------------------------------------------------------------
 # Executable to check the image quality
 add_executable(rtkcheckimagequality rtkcheckimagequality.cxx)
